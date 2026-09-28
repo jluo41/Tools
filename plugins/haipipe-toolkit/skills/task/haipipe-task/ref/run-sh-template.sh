@@ -9,7 +9,7 @@ RUN_FAMILY="Execution"
 RUN_OPERATION="task-execution"
 RUN_TARGET="bounded-target"
 REQUIRED_RESULTS=("metrics.json")
-# Additional frozen inputs: "path|sha256". Relative paths resolve from Job.
+# Additional declared input files: "path". Relative paths resolve from Job.
 RUN_INPUTS=()
 
 # Extend when file existence is not the complete acceptance test.
@@ -97,40 +97,43 @@ ADDRESS_READABLE="${BP}.${JP}.${TP}.${RP}"
 
 GIT_SHA="$(git -C "$JOB_FOLDER" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 GIT_DIRTY=$([ -n "$(git -C "$JOB_FOLDER" status --porcelain 2>/dev/null)" ] && echo true || echo false)
-CONFIG_SHA256="$(shasum -a 256 "$CONFIG" 2>/dev/null | awk '{print $1}')"
-CONFIG_SHA256="${CONFIG_SHA256:-unknown}"
 HOST="$(hostname)/$(whoami)"
-CMD="bash $TICKET"
+# Receipts and notebooks carry SPACE-relative paths: the user name and the
+# checkout folder differ per machine, so an absolute path is wrong on the next one.
+REPO_ROOT_PHYS="$(cd -P "$REPO_ROOT" && pwd)"
+space_rel() {
+  local root
+  for root in "$REPO_ROOT" "$REPO_ROOT_PHYS"; do
+    case "$1" in
+      "$root") echo .; return ;;
+      "$root"/*) echo "${1#"$root"/}"; return ;;
+    esac
+  done
+  echo "$1"
+}
+CMD="bash $(space_rel "$TICKET")"
 TICKET_ARGS_JSON="$(python3 -c 'import json, sys; print(json.dumps(sys.argv[1:]))' "$@")"
 RESULT_PATH="${RESULTS_DIR#"$OUTPUT_ROOT"/}"
 
 _yaml_sq() { printf '%s' "$1" | sed "s/'/''/g"; }
 
 RESOLVED_RUN_INPUTS=()
+INPUT_FILES=()
 # bash 3.2, which is what macOS ships, treats "${arr[@]}" of an EMPTY array as
 # unbound under `set -u` and aborts. The [@]+ form is empty-safe on 3.2 and on 5.
 for input_spec in "${RUN_INPUTS[@]+"${RUN_INPUTS[@]}"}"; do
+  # An older Ticket may still carry "path|<hash>"; only the path is read.
   input_path="${input_spec%%|*}"
-  if [ "$input_path" = "$input_spec" ]; then input_sha=auto; else input_sha="${input_spec#*|}"; fi
   case "$input_path" in /*) input_abs="$input_path" ;; *) input_abs="$JOB_FOLDER/$input_path" ;; esac
   [ -f "$input_abs" ] && [ -r "$input_abs" ] || fail_shape "declared input is not a readable file: $input_path"
-  observed_sha="$(shasum -a 256 "$input_abs" 2>/dev/null | awk '{print $1}')"
-  [ -n "$observed_sha" ] || fail_shape "cannot fingerprint declared input: $input_path"
-  if [ "$input_sha" != auto ] && [ "$input_sha" != "$observed_sha" ]; then
-    fail_shape "declared input hash changed: $input_path"
-  fi
-  input_sha="$observed_sha"
-  RESOLVED_RUN_INPUTS+=("${input_path}|${input_sha}")
+  RESOLVED_RUN_INPUTS+=("$input_path")
+  INPUT_FILES+=("$input_abs")
 done
 
 emit_inputs_yaml() {
   printf "  - path: '%s'\n" "$(_yaml_sq "$CONFIG_REL")"
-  printf "    sha256: '%s'\n" "$CONFIG_SHA256"
-  for input_spec in "${RESOLVED_RUN_INPUTS[@]+"${RESOLVED_RUN_INPUTS[@]}"}"; do
-    input_path="${input_spec%%|*}"
-    input_sha="${input_spec#*|}"
+  for input_path in "${RESOLVED_RUN_INPUTS[@]+"${RESOLVED_RUN_INPUTS[@]}"}"; do
     printf "  - path: '%s'\n" "$(_yaml_sq "$input_path")"
-    printf "    sha256: '%s'\n" "$(_yaml_sq "$input_sha")"
   done
 }
 
@@ -168,7 +171,6 @@ operation:  $RUN_OPERATION
 target:     $RUN_TARGET
 status:     $receipt_status
 attempt:    $ATTEMPT
-contract_sha256: $CONTRACT_SHA256
 ticket:     $TICKET_REL
 result:     $RESULT_PATH
 inputs:
@@ -191,7 +193,6 @@ address: $ADDRESS
 address_readable: $ADDRESS_READABLE
 project: $PROJECT
 config_file: $CONFIG_REL
-config_sha256: $CONFIG_SHA256
 settings:
   config_file: $CONFIG_REL
   ticket_args: $TICKET_ARGS_JSON
@@ -207,26 +208,26 @@ EOF
 RUN_LOCK="$RESULTS_DIR/.run-lock"
 mkdir "$RUN_LOCK" 2>/dev/null || fail_shape "Run is already active or needs abandoned-lock recovery: $RUN_NAME"
 trap 'rmdir "$RUN_LOCK" 2>/dev/null || true' EXIT
-INPUT_SNAPSHOT="$RUN_LOCK/inputs.txt"
-emit_inputs_yaml > "$INPUT_SNAPSHOT"
-# Compare a frozen contract and preserve the prior receipt before launch.
+# Check the prior receipt and preserve it before launch. A contract file
+# (Ticket, config, worker, declared input) newer than that receipt means the
+# commission changed after it was written. No hash is computed or compared;
+# a leftover hash field in an older receipt is ignored.
 # No worker is run and no old receipt is changed when these checks fail.
-HISTORY_META="$(python3 - "$RUNTIME_YAML" "$TICKET" "$CONFIG" "$WORKER" \
-  "$INPUT_SNAPSHOT" "$RUN_FAMILY" "$RUN_OPERATION" "$RUN_TARGET" "$TICKET_ARGS_JSON" <<'PY_HISTORY'
+ATTEMPT="$(python3 - "$RUNTIME_YAML" "$TICKET_ARGS_JSON" "$TICKET" "$CONFIG" "$WORKER" \
+  "${INPUT_FILES[@]+"${INPUT_FILES[@]}"}" <<'PY_HISTORY'
 from pathlib import Path
-import hashlib, json, re, shutil, sys
-runtime, ticket, config, worker, inputs = map(Path, sys.argv[1:6])
-def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-def scalar(text, key):
-    match = re.search(r"^" + re.escape(key) + r":[ \t]*(.*)$", text, re.M)
+import json, re, shutil, sys
+runtime, args = Path(sys.argv[1]), json.loads(sys.argv[2])
+config = Path(sys.argv[4])
+contract_files = [Path(p) for p in sys.argv[3:]]
+def scalar(text, key, indent=""):
+    match = re.search(r"^" + indent + re.escape(key) + r":[ \t]*(.*)$", text, re.M)
     return match.group(1).strip().strip("\"'") if match else ""
 def stop(reason):
     raise SystemExit("Run history: " + reason)
-contract = dict(ticket=digest(ticket), config=digest(config), worker=digest(worker),
-                inputs=inputs.read_text(), family=sys.argv[6], operation=sys.argv[7],
-                target=sys.argv[8], args=json.loads(sys.argv[9]))
-fingerprint = hashlib.sha256(json.dumps(contract, sort_keys=True).encode()).hexdigest()
+def newer_than_receipt(paths):
+    written = runtime.stat().st_mtime
+    return [str(p) for p in paths if p.stat().st_mtime > written]
 attempt = 1
 if runtime.is_file():
     previous = runtime.read_text()
@@ -235,14 +236,23 @@ if runtime.is_file():
         stop("closed Result is immutable; reuse it or commission a new Run")
     started = scalar(previous, "started_at")
     if status == "planned" and started in {"", "null", "~"}:
-        config_hash = scalar(previous, "config_sha256")
-        if config_hash and config_hash not in {"null", "~"} and config_hash != contract["config"]:
-            stop("planned config changed; resolve the frozen commission before dispatch")
+        if newer_than_receipt([config]):
+            stop("planned config changed after planning; resolve the commission before dispatch")
     else:
         if status not in {"failed", "blocked", "running"}:
             stop("unknown prior state; owner recovery is required")
-        if scalar(previous, "contract_sha256") != fingerprint:
-            stop("changed or unproven frozen contract; preserve history and resolve through the owner")
+        changed = newer_than_receipt(contract_files)
+        if changed:
+            stop("contract files changed after the prior attempt (" + ", ".join(changed)
+                 + "); preserve history and resolve through the owner")
+        old_args = scalar(previous, "ticket_args", indent=r"[ \t]+")
+        if old_args and old_args not in {"null", "~"}:
+            try:
+                same_args = json.loads(old_args) == args
+            except ValueError:
+                same_args = False
+            if not same_args:
+                stop("Ticket arguments changed after the prior attempt; resolve through the owner")
         old_attempt = scalar(previous, "attempt")
         if not old_attempt.isdigit() or int(old_attempt) < 1:
             stop("prior attempt number is missing or invalid")
@@ -252,14 +262,11 @@ if runtime.is_file():
         archive.mkdir(parents=True)
         shutil.copy2(runtime, archive / "runtime.yaml")
         attempt = int(old_attempt) + 1
-print(fingerprint, attempt)
+print(attempt)
 PY_HISTORY
 )"
 HISTORY_EXIT=$?
-rm -f "$INPUT_SNAPSHOT"
-[ "$HISTORY_EXIT" -eq 0 ] || fail_shape "retry history or frozen-contract check failed"
-CONTRACT_SHA256="${HISTORY_META%% *}"
-ATTEMPT="${HISTORY_META##* }"
+[ "$HISTORY_EXIT" -eq 0 ] || fail_shape "retry history or changed-contract check failed"
 write_receipt running null null null null null
 
 if [ "$NOTEBOOK_MODE" = off ]; then
@@ -277,11 +284,15 @@ if [ "$NOTEBOOK_MODE" = off ]; then
   # The worker reads $HAIPIPE_CONFIG, which is the same value papermill injects.
   python "$WORKER" || EXIT_CODE=$?
 else
+  # A reader-facing worker (`# notebook: hide-code`) hides its input: the converter marks its own
+  # cells, and papermill's report mode also hides the parameters cell it injects.
+  REPORT_MODE=()
+  grep -qE '^#[[:space:]]*notebook:[[:space:]]*hide-code' "$WORKER" && REPORT_MODE=(--report-mode)
   {
     # && not ;: a failed conversion leaves no _source.ipynb, and papermill then
     # reports a missing file instead of the conversion error that actually broke.
     python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" "$WORKER" -o "$NOTEBOOK_TEMPLATE" \
-      && papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" -p config "$CONFIG"
+      && papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" -p config "$CONFIG" ${REPORT_MODE[@]+"${REPORT_MODE[@]}"}
   } || EXIT_CODE=$?
 fi
 
@@ -289,6 +300,15 @@ case "$NOTEBOOK_MODE" in
   thin) jupyter nbconvert --clear-output --inplace "$NB_TARGET" 2>/dev/null || echo "==> [warn] could not thin notebook" >&2 ;;
   off) : ;;   # nothing was written: the off branch above never ran papermill
 esac
+
+# The notebook is generated from the worker .py and is never edited here: an
+# absolute path it shows (a print, the injected config) is fixed at its source.
+if [ "$NOTEBOOK_MODE" != off ] && grep -Iq -e "$REPO_ROOT/" -e "$REPO_ROOT_PHYS/" "$NB_TARGET" 2>/dev/null; then
+  echo "==> [warn] the notebook shows an absolute SPACE path; print it SPACE-relative in the worker .py" >&2
+fi
+if grep -rIlq --exclude='0-*.log' -e "$REPO_ROOT/" -e "$REPO_ROOT_PHYS/" "$RESULTS_DIR" 2>/dev/null; then
+  echo "==> [warn] a Result file holds an absolute SPACE path; write it SPACE-relative" >&2
+fi
 
 ENDED="$(date -Iseconds)"
 DURATION="$(python3 -c "

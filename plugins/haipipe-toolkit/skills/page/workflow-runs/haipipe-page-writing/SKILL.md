@@ -10,12 +10,16 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   writing Run, WRITE cycle, publish page, build page, /haipipe-page-writing.
 metadata:
-  version: "0.18.0"
-  last_updated: "2026-09-22"
+  version: "0.20.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-page-writing · adopt agreed text and deliver one Page version
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means adopted `## Content` (written by `cli/page.py adopt` from the Draft) and every delivery artifact: change the Draft, the Evidence Markdown or the exporter, then rerun.
+
+> ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Result, receipt or runtime.yaml.
 
 Load, in order: `haipipe-page`, `haipipe-page-workflow`, this skill,
 Folder-owning workflow or canonical family skill, exact Page Face owner,
@@ -85,6 +89,11 @@ Build       requested/current declared delivery projections
 Pre-check   formal non-closing readiness judgment → independent CHECK
 ```
 
+Adopt is code: run `haipipe-page/cli/page.py adopt <page> --dry-run`, show the diff, then
+run it without `--dry-run`. It refuses rather than guess (paragraphs that differ, a sentence to
+place among untagged blocks); fix what it names in the Draft or the Page, then adopt again.
+Never retype adopted sentences into `## Content` by hand.
+
 CONTENT does not manage the feedback loop, allocate one replacement writing
 Run per accepted paragraph, or automatically humanize an agreed passage.
 The interactive workflow owns original feedback, Steps, Versions and scoped
@@ -94,7 +103,7 @@ human acceptance; this Run owns the adopted Page and delivery trace.
 
 Before adoption, read the current Context, selected plan, accepted writing
 snapshot and destination Page. Follow only selected Evidence Result pointers,
-not historical Result trees unless a pointer/hash disagrees.
+not historical Result trees unless a pointer disagrees.
 
 | Check | Required fact |
 |---|---|
@@ -103,7 +112,7 @@ not historical Result trees unless a pointer/hash disagrees.
 | Shape | current checked Shape, or an explicit interactive user instruction to adopt the accepted Shape; do not block this Page profile on a duplicate `approved:` tick |
 | Writing | Exact target text accepted by the person, with actor, quoted decision and reviewed Run/Version/Step; no inferred acceptance |
 | Evidence | Every Bullet declares typed Items or justified `none`; required locally attainable Results ready and folded; CITE verification satisfied |
-| Source | Current destination hash and target mapping match the adoption base |
+| Source | Destination Page not saved since the adoption base was read (file time or `git diff`); target mapping matches |
 | Form | Owner's actual paragraph/word/sentence/citation/display requirements measured; missing policy is `not specified`, not a guessed venue rule |
 
 A failed authority/source row stops adoption. Missing evidence routes to
@@ -128,12 +137,12 @@ only when the named authority makes it binding; report the actual tradeoff.
    owner's sentence apparatus: a Section maps one Bullet to one sentence with
    its stable `realizes:` link. Keep internal process metadata out of prose.
 4. Recheck the base immediately before writing. If a concurrent session changed
-   it, stop/rebase explicitly; do not overwrite or silently trust an old hash.
+   it, stop/rebase explicitly; do not overwrite or silently trust an old read.
    Existing source-writer locks/token checks remain mandatory where available.
 5. Read the result back. Compare accepted and saved prose and every protected
-   target. Record Run/Version/Step, accepted text hash, target addresses, source
-   before/after hashes and exact authorized integration edits in the CONTENT
-   receipt. No extra writing Run is required.
+   target. Record Run/Version/Step, accepted text version, target addresses,
+   the Page's saved time before/after and exact authorized integration edits in
+   the CONTENT receipt. No extra writing Run is required.
 
 The current implementation permits scoped source editing; this skill update
 does not introduce a multi-paragraph atomic promoter. Do not claim transactional
@@ -184,8 +193,9 @@ python3 <haipipe-page-writing>/cli/promote_paragraph.py --page <page>.md --resul
 python3 <haipipe-page-writing>/cli/promote_paragraph.py --page <page>.md --result <resolved-result>
 ```
 
-This promoter requires a complete single-paragraph runtime and frozen
-`page-source` hash. It locks/rechecks the Page, preserves unsupported apparatus
+This promoter requires a complete single-paragraph runtime and the time the
+Run read the Page (`read_at` on its `page-source` input, else `started_at`). It
+locks the Page, refuses it when saved after that time, preserves unsupported apparatus
 by refusing unsafe writes, and records verified promotion with recovery for an
 interrupted application. It **does not accept** interactive Version folders.
 Do not manufacture per-paragraph Run wrappers to feed agreed interactive text
@@ -232,7 +242,7 @@ context: <current identity>
 plan: <exact approved/inherited Shape>
 decision: <exact user instruction that authorizes CONTENT when this is the interactive Page profile>
 writing: <accepted Run/Version/Step and human-decision source>
-adoption: <targets; accepted text hash; Page before/after; scoped changes>
+adoption: <targets; accepted text version; Page saved before/after; scoped changes>
 integration: <Item/Result bindings; continuity findings; reopened targets>
 page: <source identity>
 delivery: [<actual outputs; frozen input identity; current/stale>]

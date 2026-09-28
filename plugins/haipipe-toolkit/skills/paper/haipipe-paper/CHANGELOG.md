@@ -1,3 +1,31 @@
+## 1.4.2 · 2026-09-28 · Keep existing Codex threads (JL 260928)
+
+- `scripts/create_section_sessions.py`: an Appendix unit whose pages each name their own live `codex-session:` counts as having Codex (`one per page`); the plan no longer creates one new thread and writes it over all pages, nor binds the whole unit to the first page's pair. `ref/section-sessions.md`: look for a paper's existing Codex threads and bind them before creating. Found on Paper-TimeEventDM-ISR2026, whose 13 per-page Codex threads from 260917 were missed.
+
+## 1.4.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- `ref/page-integration.md`, `ref/run-naming.md`: the Ideation sync and Page projection receipts carry the revision number only, and a reused Result is named by path and version; no `source_hash`, output hash or hash pin. `scripts/audit_page_compatibility.py` no longer accepts `sha256:` as a Story binding: `story-row:` needs `+ <Story version>`.
+
+## 1.4.0 · 2026-09-28
+
+- Add `/haipipe-paper sessions` (JL 260928): once the Story's C8 compile order fixes the
+  Sections, `scripts/create_section_sessions.py` gives each unit (a Main Section Page, and the
+  whole Appendix group as ONE unit by default, `--appendix each` to split) a named Claude session
+  `<Short>-<unit>` and a named Codex thread `<Short>-<unit>-Codex`, pairs them (identity-only
+  call-peer), writes `session:` and `codex-session:` into each page header, gives both a read-only
+  first turn with five scope rules, and stops the Claude session after that turn so `/resume` can
+  open it. Codex threads are made through `codex app-server` (`thread/start`, `thread/name/set`,
+  `turn/start`) so the Codex app lists them by name; `codex exec` threads are unlisted and unnamed.
+  An existing Claude↔Codex pair is bound, not duplicated. Plan-only by default; `--apply` creates.
+  A Claude session is the unit's own only when its saved name is `<Short>-<unit>`, so a
+  `session:` copied in from a predecessor paper is replaced, not reused (found by a fresh-agent
+  plan-only run on the JAMA paper). The prefix is recorded in `board.md` as `session-prefix:` on
+  the first `--apply` and read from there afterwards. Contract: `ref/section-sessions.md`.
+- A Section Run has two bookends the author calls (JL 260928): only the Section's Draft file
+  changes in between; records and one log entry are written at the close; Content adoption and
+  the web → LaTeX → Word lanes follow on request; assembly sees a mid-Run Section's previous
+  export. Contract lives in `haipipe-page-workflow` 0.65.0 (`interactive-writing-run.md` §🔖).
+
 ## 1.3.0 · 2026-09-21
 
 - Add the sourced 21-point submission-readiness overlay to the G4 gate, with

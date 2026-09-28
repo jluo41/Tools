@@ -60,7 +60,8 @@ Steps
 
 From: DrFirst-SPACE (OptTimeR1 Extended). Skills: haipipe-data 0.3.2,
 -source 0.3.2, -record 0.3.1, -case 0.3.2, -external 0.3.1,
-haipipe-task-for-data 0.8.4. Code: haipipe-code `27b1525` on `code-drfirst`.
+haipipe-task-for-data 0.8.4. Code: haipipe-code `27b1525` on `code-drfirst`;
+its shared code is on `origin/main` since 2026-09-26.
 Check: space-check items `code: fn_dir`, `code: loaders`, `trap: fn_version
 ignored`, `haifn: <version>`, `config -> version`, `dataset <project> j5N`,
 `code: external bundle`.
@@ -100,15 +101,23 @@ Steps: every SPACE
    git -C Tools pull --ff-only        # or ../Tools-SPACE on JL's main machine
    Tools/install.sh --no-marketplace --project "$(pwd)"
    ```
-2. Bring `code/` up to `27b1525` or later. On `code-drfirst`, pull. On
-   another branch, merge or cherry-pick `27b1525`. It touches only the
-   framework (`haipipe/base.py`, the five Fn loaders, the haistep bootstrap,
-   the four manifests, `endpoint_base`, `external_base/`, `tuner_xgboost.py`,
-   `case_utils.py`) plus DrFirst's own generated Fns, which another project
-   never loads.
+2. Bring `code/` up to the shared framework by merging `origin/main`. Since
+   2026-09-26 it carries `27b1525`'s shared code (`haipipe/base.py`, the five
+   Fn loaders, the haistep bootstrap, the four manifests, `endpoint_base`,
+   `external_base/`, `tuner_xgboost.py`, `case_utils.py`), without DrFirst's
+   own generated Fns, plus three shared fixes: `1469831` (`select_example_case`
+   matches every shared key), `07f7091` (`local_external_store` keeps object
+   dtype under pandas 3), `ba4ea0d` (InferenceArgs in the Endpoint_Set manifest).
    ```bash
-   git -C code fetch origin && git -C code cherry-pick 27b1525
+   git -C code fetch origin
+   git -C code merge-tree --write-tree --name-only HEAD origin/main   # conflicts, if any
+   git -C code merge origin/main
    ```
+   A branch that already has `27b1525` (`code-drfirst`) got the same files by
+   another commit, so expect add/add conflicts such as
+   `external_base/providers/local_external_store.py` (take `origin/main`: it
+   adds the pandas 3 fix), and resolve the rest by hand
+   (`code-drfirst` on 2026-09-26: also `model_base/modelinstance_pipeline.py`).
 3. Check a flat Run still works: cook one existing small dataset stage and
    compare its row counts with the last Result. Nothing else is needed to
    stay on the flat folders.
@@ -143,7 +152,7 @@ Steps: an endpoint that ships external data (optional)
 
 1. Stage `external/` from the training SourceSet's `external-dependency.json`
    (trim + pre-key), not by copying the ExternalStore. Reference script:
-   DrFirst-SPACE `examples-3-model/Project-ExpModel-OptTime/tasks/b03_C_optimal_timing_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`.
+   DrFirst-SPACE `examples-3-model/Project-ExpModel-OptTime/tasks/b31_C_model_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`.
 2. Give the Input2SrcFn a per-process asset cache and a `Warmup(SPACE)` that
    runs one lookup per shipped asset.
 3. Set `MODEL_SERVER_WORKERS` so that workers × peak memory per worker fits

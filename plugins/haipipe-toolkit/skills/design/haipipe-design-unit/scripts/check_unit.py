@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Read-only Design Ticket/Result gate. Requires PyYAML; never generates content."""
+"""Read-only Design Ticket/Result gate. Requires PyYAML; never generates content.
+
+No content hashes (JL 260928): a reference is a path; staleness is file time,
+a source modified after the record that names it. Any hash field left in an
+older record is ignored.
+"""
 from __future__ import annotations
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -14,7 +18,6 @@ RUN = re.compile(r"rd[0-9]{2,}_(generate|verify)_[a-z0-9][a-z0-9_-]*")
 # The worker never produces them, so the folder audit checks only their
 # Ticket/Result pairing and a recorded decision, never worker semantics.
 DECISION_RUN = re.compile(r"rd[0-9]{2,}_(commission|adopt)_[a-z0-9][a-z0-9_-]*")
-HASH = re.compile(r"[0-9a-f]{64}")
 ROLES = {"evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff"}
 KINDS = {"max_chars", "contains", "excludes", "starts_with", "ends_with", "semantic", "visual"}
 UNRESOLVED_REASONS = {
@@ -51,10 +54,6 @@ UniqueLoader.add_constructor(
 def need(condition, message):
     if not condition:
         raise ContractError(message)
-
-
-def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def document(path):
@@ -119,14 +118,21 @@ def resolve(root, value, bounded=False):
     return path
 
 
-def reference(root, ref, bounded=False):
+def reference(root, ref, bounded=False, record=None):
+    """Resolve one referenced file. With ``record``, the file must not be newer
+    than the record that names it (staleness by file time, never a hash)."""
     need(isinstance(ref, dict), "file reference must be a mapping")
     path = resolve(root, ref.get("path"), bounded)
-    sha = ref.get("sha256")
-    need(isinstance(sha, str) and bool(HASH.fullmatch(sha)), "invalid SHA-256")
+    parts = Path(str(ref.get("path"))).parts
+    if not bounded and not path.is_file() and parts[:1] == ("outline",):
+        moved = root / "draft" / Path(*parts[1:])  # Page layout 0.118 renamed a Folder's outline/ to draft/
+        if moved.is_file():
+            path = moved.resolve()
     shown = _shown(path, root)
     need(path.is_file(), f"missing input/artifact: {shown}")
-    need(digest(path) == sha, f"hash mismatch: {shown} changed after it was pinned")
+    if record is not None:
+        need(path.stat().st_mtime <= Path(record).stat().st_mtime,
+             f"stale: {shown} changed after {Path(record).name} was written")
     return path
 
 
@@ -139,12 +145,12 @@ def _shown(path, root):
         return path.name
 
 
-def artifact_records(folder, records):
+def artifact_records(folder, records, record=None):
     need(isinstance(records, list) and records, "a Generate Result requires content artifacts")
     seen = set()
     out = []
     for ref in records:
-        path = reference(folder, ref, bounded=True)
+        path = reference(folder, ref, bounded=True, record=record)
         need(ref["path"].startswith("content/"), "a Generate Result artifact must live in content/")
         need(path not in seen, "duplicate content artifact")
         seen.add(path)
@@ -152,7 +158,7 @@ def artifact_records(folder, records):
     return out
 
 
-def render_records(output, manifest, subjects, item=None):
+def render_records(output, manifest, subjects, item=None, record=None):
     """Validate optional render evidence without counting pictures as content.
 
     subjects maps resolved source artifact paths to their Generate Run ids.
@@ -161,7 +167,7 @@ def render_records(output, manifest, subjects, item=None):
     if "render_manifest" not in manifest:
         return []
     root = output.resolve() / "render"
-    path = reference(output, manifest["render_manifest"], bounded=True)
+    path = reference(output, manifest["render_manifest"], bounded=True, record=record)
     need(inside(path, root), "render manifest must live in Result render/")
     rows = json.loads(path.read_text(encoding="utf-8"))
     need(isinstance(rows, list) and rows, "render manifest requires a nonempty list")
@@ -173,10 +179,10 @@ def render_records(output, manifest, subjects, item=None):
         need(not item or row["item"] == item, "render item mismatch")
         need(type(row.get("version")) is int and row["version"] > 0,
              "render version must be a positive integer")
-        source = reference(path.parent, {"path": row.get("source"), "sha256": row.get("sha256")})
+        source = reference(path.parent, {"path": row.get("source")})
         need(source in subjects and subjects[source] == row.get("candidate"),
-             "render source/candidate is not a pinned content artifact")
-        picture = reference(path.parent, {"path": row.get("render"), "sha256": row.get("render_sha256")}, bounded=True)
+             "render source/candidate is not a commissioned content artifact")
+        picture = reference(path.parent, {"path": row.get("render")}, bounded=True, record=record)
         need(inside(picture, root), "picture must live in Result render/")
         key = (row["candidate"], source, row["version"])
         need(key not in seen, "duplicate render version for source")
@@ -189,8 +195,15 @@ def context(ticket, historical=False):
     """Read and check one Ticket.  ``historical`` reads a closed run: an input that
     lives outside the Design Folder (an Insight page, still being edited) is
     history the run already consumed, so its later edits do not void the run.
-    Everything inside the folder (config, approval, targets, artifacts) stays exact."""
+
+    Staleness is file time, never a hash (JL 260928).  An open run is stale when
+    one of its ``inputs`` or ``targets`` is newer than its Ticket; a closed Verify
+    is stale when a target Result is newer than the Verify's own ``result.yaml``.
+    The config and approval record are frozen copies the workbench writes with
+    the Ticket; they are checked for existence only, so a fresh checkout (which
+    writes ``scripts/`` after ``runs/`` and ``results/``) never reads as stale."""
     ticket = Path(ticket).resolve()
+    since = None if historical else ticket
     need(ticket.parent.name == "runs" and ticket.suffix == ".yaml",
          "Ticket must be owner/runs/<run>.yaml")
     data = document(ticket)
@@ -265,7 +278,7 @@ def context(ticket, historical=False):
         roles.add(item["role"])
         if historical and not inside(resolve(owner, item.get("path")), owner.resolve()):
             continue
-        path = reference(owner, item)
+        path = reference(owner, item, record=since)
         need(not inside(path, output), "input/output overlap")
         if "run_id" in item:
             run_id = string(item["run_id"], "upstream run_id")
@@ -281,8 +294,10 @@ def context(ticket, historical=False):
     subjects = []
     producers = set()
     seen_targets = set()
+    closed = output / "result.yaml"
+    target_since = since if not historical else (closed if closed.is_file() else None)
     for target in targets:
-        path = reference(owner, target)
+        path = reference(owner, target, record=target_since)
         need(path.name == "result.yaml", "target must name a Generate result.yaml")
         need(path not in seen_targets, "duplicate verification target")
         seen_targets.add(path)
@@ -300,9 +315,10 @@ def context(ticket, historical=False):
         runtime = document(path.parent / "runtime.yaml")
         need(runtime.get("status") == "complete" and runtime.get("run") == manifest.get("run"),
              "target generation is not complete")
-        target_artifacts = artifact_records(path.parent, manifest.get("artifacts"))
+        target_artifacts = artifact_records(path.parent, manifest.get("artifacts"), record=path)
         render_records(path.parent, manifest,
-                       {artifact: target_run for _, artifact in target_artifacts}, data.get("item"))
+                       {artifact: target_run for _, artifact in target_artifacts}, data.get("item"),
+                       record=path)
         for rel, artifact in target_artifacts:
             subjects.append((target["path"] + "::" + rel, artifact))
     if config["review_mode"] == "independent":
@@ -324,12 +340,10 @@ def validate(ticket, result=None, historical=False):
         for key in ("run", "operation", "target"):
             need(manifest.get(key) == data[key], f"Result {key} mismatch")
         need(manifest.get("producer") == data["actor"], "Result producer mismatch")
-        need(manifest.get("ticket_sha256") == digest(ticket), "Result Ticket hash mismatch")
-        need(manifest.get("config_sha256") == data["config"]["sha256"],
-             "Result config hash mismatch")
-        need(manifest.get("targets") == data["targets"], "Result target refs mismatch")
+        need([t.get("path") for t in manifest.get("targets") or []] == [t.get("path") for t in data["targets"]],
+             "Result target refs mismatch")
         if data["operation"] == "generate":
-            subjects = artifact_records(output, manifest.get("artifacts"))
+            subjects = artifact_records(output, manifest.get("artifacts"), record=result)
             need(len(subjects) == config["unit"]["count"], "Generate artifact count mismatch")
         else:
             need(manifest.get("artifacts") == [], "verify must not produce replacement artifacts")
@@ -337,8 +351,8 @@ def validate(ticket, result=None, historical=False):
             path: (data["run"] if data["operation"] == "generate"
                    else Path(target.split("::", 1)[0]).parent.name)
             for target, path in subjects
-        }, data.get("item"))
-        checks_path = reference(output, manifest.get("checks"), bounded=True)
+        }, data.get("item"), record=result)
+        checks_path = reference(output, manifest.get("checks"), bounded=True, record=result)
         checks = document(checks_path).get("checks")
         need(isinstance(checks, list), "checks must be a list")
         expected = {(target, c["id"]) for target, _ in subjects for c in config["criteria"]}
@@ -425,11 +439,11 @@ def audit_folder(folder):
             runtime = {}
         if runtime.get("status") == "superseded":
             # A queued run replaced before any worker touched it (an input changed after
-            # it was queued): its pins are stale by definition; only its reason is checked.
+            # it was queued): it is stale by definition; only its reason is checked.
             if not runtime.get("failure") or (output / "result.yaml").is_file():
                 issues.append(f"{ticket}: a superseded run needs a reason and no result")
             continue
-        # an open run must still match its pins; a closed one is read as history
+        # an open run's inputs must not be newer than its Ticket; a closed one is read as history
         closed = runtime.get("status") in {"complete", "failed", "blocked"}
         for problem in validate(ticket, historical=closed):
             issues.append(f"{ticket}: {problem}")
@@ -439,7 +453,6 @@ def audit_folder(folder):
             for key, expected in {"run": ticket.stem, "family": "design",
                                   "operation": data.get("operation"),
                                   "target": data.get("target"),
-                                  "ticket_sha256": digest(ticket),
                                   "ticket": f"runs/{ticket.name}",
                                   "result": f"results/{ticket.stem}/"}.items():
                 need(runtime.get(key) == expected, f"runtime {key} mismatch")
@@ -452,8 +465,8 @@ def audit_folder(folder):
             need(isinstance(bound, list), "runtime missing input manifest")
             expected_inputs = [data["config"], data["approval"]["record"]]
             expected_inputs += data.get("inputs", []) + data.get("targets", [])
-            actual = {(r["path"], r["sha256"]) for r in bound}
-            need(all((r["path"], r["sha256"]) in actual for r in expected_inputs),
+            actual = {r.get("path") for r in bound if isinstance(r, dict)}
+            need(all(r.get("path") in actual for r in expected_inputs),
                  "runtime input manifest is incomplete")
             status = runtime.get("status")
             need(status in {"planned", "running", "complete", "failed", "blocked", "superseded"},

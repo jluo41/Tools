@@ -12,13 +12,14 @@ paragraph and not to the page. Three kinds can hang there, and the badge at the
 end of the sentence says which:
 
 ```
-⚑  a TYPED LANE, and there are eight
+⚑  a TYPED LANE, and there are nine
    📚 > Citation:    a source
    🔢 > Value:       a number and where it came from
    🖼 > Display:     a figure or table
+   ⚙️ > Supporting Run:  the Task or Discovery Run behind that evidence
    ⚠️ > Check:       something still to verify
    🔎 > Q-consumer:  a question this sentence needs answered
-   🔗 > Link:   📄 > Source:   📝 > Note:   for what the five above miss
+   🔗 > Link:   📄 > Source:   📝 > Note:   for what the six above miss
 
 💬  a COMMENT · `> JL: …` · a person is waiting on an answer
 

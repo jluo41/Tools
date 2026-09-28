@@ -12,8 +12,8 @@ its height against the viewport, how far the last block reaches, the number of
 buttons and links, the smallest tap target, and the weakest text contrast.
 
 With --manifest it appends one entry naming the picture, the draft it belongs
-to (`candidate`), source/picture hashes and version. Pin the manifest as
-`render_manifest` in result.yaml before completing the Result. The presenter
+to (`candidate`), the source and the version (no content hashes, JL 260928).
+Name the manifest as `render_manifest` in result.yaml before completing the Result. The presenter
 reads it directly; this script never writes a Delivery projection or runtime.
 Each picture/version is written once; a changed screen needs a new version.
 Requires PyYAML, Playwright's Python package and a local Chrome/Chromium binary;
@@ -22,7 +22,6 @@ it uses that binary directly and does not download a browser.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import shutil
@@ -133,10 +132,6 @@ def render(html: Path, png: Path, width: int, height: int, scale: int) -> dict:
     return measured
 
 
-def sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def output_paths(args):
     """Check every persistent write before starting Chrome or creating files."""
     result = args.result_dir.resolve()
@@ -166,7 +161,7 @@ def main() -> int:
     ap.add_argument("--height", type=int, default=844)
     ap.add_argument("--scale", type=int, default=2, help="device pixel ratio of the picture")
     ap.add_argument("--json", type=Path, help="also write the measurements here")
-    ap.add_argument("--manifest", type=Path, help="Result-local render/manifest.json; pin it in result.yaml")
+    ap.add_argument("--manifest", type=Path, help="Result-local render/manifest.json; name it in result.yaml")
     ap.add_argument("--item", help="Design Item id, required with --manifest")
     ap.add_argument("--candidate", help="the Generate run this picture belongs to, required with --manifest")
     ap.add_argument("--version", type=int, help="picture version, required with --manifest")
@@ -194,14 +189,12 @@ def main() -> int:
             sys.exit("render source/version already exists; use a new version")
 
     measured = render(args.html, args.png, args.width, args.height, args.scale)
-    report = {"screen": str(args.html), "sha256": sha(args.html), "picture": str(args.png),
-              "render_sha256": sha(args.png), **measured}
+    report = {"screen": str(args.html), "picture": str(args.png), **measured}
 
     if args.manifest:
         entries.append({"item": args.item, "render": os.path.relpath(args.png.resolve(), args.manifest.parent.resolve()),
                         "candidate": args.candidate, "source": source,
-                        "sha256": report["sha256"], "version": args.version,
-                        "render_sha256": report["render_sha256"],
+                        "version": args.version,
                         "viewport": report["viewport"], "scale": args.scale,
                         "measured": {k: measured[k] for k in
                                      ("page_height", "page_width", "viewport_width", "viewport_height",

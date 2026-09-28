@@ -1,5 +1,51 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.22.0 · 2026-09-26
+
+- A labeling job's Runs sit in the Page folder, beside `labeling/`:
+  `<Page>/runs/<run>.yaml` and `<Page>/results/<run>/`, the same lane every
+  other Page uses. `labeling/` now holds only the job's own state.
+- Receipt paths are relative to the Page, so job files read `labeling/...`.
+- `engine/job.py` gains `page_root`, `runs_dir`, `results_dir` and `page_path`;
+  the calibration, embedding, page plugin and presenter code read through them.
+- S-Label-4's seven Runs moved up; all 45 receipt hashes still match.
+- The surface matches the Page workbench (260927): four Spaces (Data, Labeling,
+  Quality, Delivery), no Run Space, no page bar, no Focus. The page is the title,
+  the Space tabs with Studio Chat at the end, then one Space: its content on the
+  left and its Runs panel on the right at every width, sticky while scrolling;
+  `▸/◂` folds the panel to a thin strip.
+- A view lists only its own Run types, from the new `view` column of the Workflow
+  map in `ref-space-mapping.md`; types not built yet stay in the map only. The
+  selected Run shows its name, state, Resume or Rerun, a folded Prompt whose Copy
+  works folded, Running process and Results. `+ New Run` shows an open prompt.
+- Workflow (Phases, SOP, Workflow map) and All runs open only from
+  `?drawer=workflow` and `?drawer=allruns`.
+- Hints, notes, status chips and explanation sentences are cut from every view;
+  the Discussion view keeps only its question and `Copy discussion brief` (the
+  example cards and run plan are gone). The Embedding view lists only unfinished
+  builds. `_RUN_WORDS` follows the ref again.
+- Content and Runs pick each other, as the Page workbench's Card ↔ Runs: a build
+  in Data › Embedding and its `embedding-build` Run, a round in Labeling › Rounds
+  and its Runs, linked by the Run's `target`.
+- A rerun on the same target is named `-2`, `-3` after the older Run; Runs sort
+  by rlNN number (rl10 after rl03).
+- The round's chat prompt lives only in the Runs panel (`Resume` on its
+  `human-calibration` Run); Rounds no longer repeats it.
+- No placeholders: `—` and `not implemented · HOLD` lines are left blank.
+- New Run type `definition-discussion` (26 operation kinds; JL 260927, after
+  finding S-Label-4's label wording was AI-written): the human settles each
+  label's wording in chat through `engine/definition_discussion.py` (start, say,
+  decide, close). A changed wording is one `job.revise_meanings` revision
+  (`gates/meaning-revisions/<seq>.json`) that retires G0, so Confirm meaning is
+  pressed again; `status` rebuilds the P0 anchor through the revision chain.
+  Refused once any item is judged. SOP step 2; happy-path plan is 44 Runs.
+- Labeling → Discussion shows each discussion's labels before and after; the
+  Label view's ⧉ buttons and the Discussion view's Copy brief are gone, since
+  their prompts are now this Run's `+ New Run` and `Resume`.
+- `_space_mapping_ref()` finds `skills/label-building/ref/ref-space-mapping.md`,
+  so the SOP and Workflow map render again.
+- Design: `servers/workbench-labeling/studio/labeling-workbench-design.excalidraw`.
+
 ## 0.21.0 · 2026-09-22
 
 - Renamed from `haipipe-plugin-labeling` to `haipipe-workbench-labeling`, pairing

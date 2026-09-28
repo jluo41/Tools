@@ -14,7 +14,7 @@
         failed carrying the check's own words. A verify never runs in the same
         dispatch as the generate it judges.
 
-A planned run whose pinned files changed after it was queued (an insight page
+A planned run whose input files changed after it was queued (an insight page
 edited since) is skipped with the names of the files; the person clicks
 "Queue again" on the Page level, which replaces it with a fresh run.
 
@@ -72,7 +72,7 @@ def brief_for(row: dict, actor: str) -> str:
         f"Read the agent contract at {AGENT_DOC} and load {UNIT_SKILL} completely.\n"
         f"Run record: {row['ticket']}\nDesign Folder: {row['folder']}\n"
         f"Operation: {op}. Write only results/{row['run']}/ (content, checks.yaml, result.yaml) with the v2 "
-        "result schema, pinning the run record's sha256 and the config's sha256. "
+        "result schema, naming the run record and the config by path and version (no content hashes). "
         + ("Do not read any generate discussion; judge the draft only against the frozen criteria.\n" if op == "verify"
            else "Read the frozen design_intent first; never back-fill the bet after seeing the draft.\n")
         + "Do not touch runtime.yaml, the register, or any other file. Return the verdict and the checks in text."

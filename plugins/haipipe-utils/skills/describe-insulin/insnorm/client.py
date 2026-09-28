@@ -51,6 +51,26 @@ from .pk_table import (ALIASES, COMBINATIONS, PK, PK_BASIS, REFERENCE_BASIS,
                        UNSUPPORTED_BASIS)
 from .lexicon import lookup as lexicon_lookup
 
+
+def _pinned_pk():
+    """PK from the pinned ext_insulin_pk table, in pk_table.PK's own tuple shape, or None.
+    The table is built FROM pk_table.py (b51 j04 t01), so reading it here makes the
+    service answer from the published version; the build keeps reading the code."""
+    from ._lock import lock_file
+    path = lock_file("ext_insulin_pk")
+    if path is None:
+        return None
+    import pandas as pd
+    out = {}
+    for r in pd.read_parquet(path).itertuples(index=False):
+        num = lambda v: None if v is None or v != v else int(v)          # noqa: E731
+        out[r.InsulinResolved_original] = (r.InsulinClass, num(r.OnsetMin), num(r.PeakMin),
+                                           num(r.DurationMin), bool(r.Biphasic), r.Note)
+    return out
+
+
+PK = _pinned_pk() or PK
+
 DEFAULT_TRANSPORT = os.environ.get("INSNORM_TRANSPORT", "local")
 DEFAULT_URL = os.environ.get("INSNORM_URL", "http://127.0.0.1:8070/insulin")
 
@@ -184,6 +204,12 @@ def _lookup(name):
 
 def _lookup_text(name):
     """Resolve a non-ID string after any input-shape handling."""
+    # A PK key written as is answers before canon(): canon strips 'u300' as a
+    # strength word, which is right for 'Lantus U-100' and wrong for the key
+    # 'insulin glargine u300', whose curve differs from U-100's.
+    exact = re.sub(r"\s+", " ", str(name or "").strip().lower())
+    if exact in PK:
+        return exact, OK, f"label_table:{exact}"
     return _lookup_canon(canon(name))
 
 
@@ -191,6 +217,11 @@ def _lookup_canon(c):
     """Resolve an already-canonical string."""
     if not c:
         return None, MISS, "not_resolvable:empty"
+    # A canonical PK key answers as itself. Without this, 'insulin human 70/30'
+    # fell through to the longest alias it contains and came back as 'insulin
+    # human regular' (480 min, not biphasic); five of the 17 keys did (260926).
+    if c in PK:
+        return c, OK, f"label_table:{c}"
     if c in COMBINATIONS:
         key, note = COMBINATIONS[c]
         return key, ALIAS, f"combination:{note.split(';')[0]}"

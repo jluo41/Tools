@@ -11,7 +11,6 @@ resume.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import importlib
 import json
 import os
@@ -48,8 +47,6 @@ DEFAULT_MODELS = {
 }
 
 
-def _sha256(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _write_text(path: Path, text: str) -> None:
@@ -96,7 +93,7 @@ def _read_system_prompt(args: argparse.Namespace) -> tuple[str, list[dict[str, s
         if not path.is_file():
             raise FileNotFoundError(f"Skill context file not found: {path}")
         skill_text = path.read_text(encoding="utf-8")
-        supplied_skills.append({"path": str(path), "sha256": _sha256(skill_text)})
+        supplied_skills.append({"path": str(path)})   # no content hash (JL 260928)
         system += (
             "\n\n--- BEGIN EXPLICIT DELEGATED SKILL: "
             + str(path)
@@ -179,8 +176,6 @@ def _base_record(
         "max_attempts": args.max_attempts,
         "call_store": str(call_store),
         "receipt_dir": str(out_dir),
-        "prompt_sha256": _sha256(prompt),
-        "system_prompt_sha256": _sha256(system_prompt),
         "explicit_skill_context": supplied_skills,
         "billing_note": (
             "This records provider-reported per-turn usage/cost only. It does not "

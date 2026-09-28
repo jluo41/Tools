@@ -63,7 +63,12 @@ def _external_store():
 _STORE = _external_store()
 _LEGACY_DB = _STORE / "@v1215" / "usda_fdc" / "usda_nutrition.sqlite"
 _FOODBANK_DB = _STORE / "@v1215" / "foodbank" / "foodbank.sqlite"
-USDA_DB = pathlib.Path(os.environ.get("FOODNORM_DB", _LEGACY_DB))
+def _pinned_bank():
+    from ._lock import lock_file              # the sqlite inside the pinned ext_food_bank version
+    return lock_file("ext_food_bank", "usda_nutrition.sqlite")
+
+
+USDA_DB = pathlib.Path(os.environ.get("FOODNORM_DB") or _pinned_bank() or _LEGACY_DB)
 
 # App UI labels that occupy the FoodName field but name no food. Sending one of
 # these to a food bank can only produce a wrong match -- there is nothing to match.

@@ -125,7 +125,7 @@ XK  pooling verdict K-from-K: a claim about claims — POOL, SPLIT, or
                         unanswered subgroup W
 ```
 
-At verdict time, cite the shared-threshold file and its version/hash, the
+At verdict time, cite the shared-threshold file and its version, the
 compared partitions and outcome rows, and the differences that would change
 counsel. The threshold source must predate the compared Results and be the same
 for F and every partition config. POOL needs evidence precise enough to rule

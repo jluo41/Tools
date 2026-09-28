@@ -229,7 +229,8 @@ class WriteSideTest(FeedbackFixture):
         self.assertEqual(result["run"], "rp-para-01_P01-P02")
         self.assertEqual((result["run_version"], result["step"], result["feedback"]), ("v002", "s001", "F01"))
         v002 = (self.results / "v002.md").read_text(encoding="utf-8")
-        self.assertIn("Prior Version: v001.md · SHA-256 ", v002)
+        self.assertIn("Prior Version: v001.md\n", v002)
+        self.assertNotIn("SHA-256", v002)          # no content hashes (JL 260928)
         self.assertIn("## Step s001", v002)
         self.assertIn("### Human feedback", v002)
         self.assertNotIn("### Saved result", v002)
@@ -247,7 +248,7 @@ class WriteSideTest(FeedbackFixture):
         self.assertRegex(runtime, r"(?m)^version: v002$")
         self.assertRegex(runtime, r"(?m)^step: s001$")
         self.assertRegex(runtime, r"(?m)^supersedes: results/rp-para-01_P01-P02/v001.md$")
-        self.assertRegex(runtime, r"(?m)^version_sha256: [0-9a-f]{64}$")
+        self.assertNotIn("sha256", runtime)        # the old record's version_sha256 is dropped
         self.assertRegex(runtime, r"(?m)^  name: haipipe-writing$")   # nested keys survive
         working = (self.results / "working.md").read_text(encoding="utf-8")
         self.assertIn("- Current version/step: v002/s001", working)
@@ -378,7 +379,7 @@ class StandaloneWireTest(FeedbackFixture):
             connection.close()
 
     def test_draft_space_get_then_post_writes_a_scratch_run(self):
-        code, body = self.request("GET", "/_board/outline?path=&file=%s&lens=div" % self.page.name)
+        code, body = self.request("GET", "/_board/draft?path=&file=%s&lens=div" % self.page.name)
         self.assertEqual(code, 200)
         self.assertIn('data-scratch-scope="paragraph"', body)
         self.assertNotIn("Save note", body)
@@ -387,7 +388,7 @@ class StandaloneWireTest(FeedbackFixture):
             "target": "C1.P2", "notes": "Start with the visit.",
             "file": self.page.name, "path": "",
         }
-        code, body = self.request("POST", "/_board/outline", scratch)
+        code, body = self.request("POST", "/_board/draft", scratch)
         self.assertEqual(code, 200, body)
         result = json.loads(body)
         self.assertTrue(result["ok"], result)
@@ -396,7 +397,7 @@ class StandaloneWireTest(FeedbackFixture):
         self.assertTrue((scratch_result / "v001.md").is_file())
         self.assertIn("AI generated the Scratch Summary and the person closed the Run.",
                       (scratch_result / "v001.md").read_text(encoding="utf-8"))
-        code, body = self.request("GET", "/_board/outline?path=&file=%s&lens=div" % self.page.name)
+        code, body = self.request("GET", "/_board/draft?path=&file=%s&lens=div" % self.page.name)
         self.assertIn('class="scratch-status">Closed</span>', body)
 
 

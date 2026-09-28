@@ -10,12 +10,16 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-20"
+  version: "0.8.4"
+  last_updated: "2026-09-28"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
 # /haipipe-paper-assemble · build the paper from source
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the paper's `delivery/` (`master.tex`, `sections/`, `appendices/`, `displays/`, `reference.bib`, PDF, DOCX, build manifest): fix a Section Page or `scripts/build_delivery.py`, then rebuild.
+>
+> ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). Since 0.8.4 the engine writes none: `build-manifest.json` lists inputs by path, a version is its number and date, and a stale fragment is found by file time.
 
 This is the paper-level document contract. It is different from
 `haipipe-workbench-page/ref/delivery.md`, which exports one Board Page for a coauthor. Assembly
@@ -36,8 +40,9 @@ Paper-<Slug>/                          the board at the paper root
   │       §8 Section Narrative + haipipe:compile-order block = reading order
   └── Ba-<desk>-Main/S-<desk>-Main-<Title>/       stable Section identity; each Page owns its words:
         └── delivery/latex/            <page>.tex (body fragment, what the paper
-                                       \inputs) · <page>-complete.tex/.pdf (the
-                                       page's own standalone deliverable)
+                                       \inputs) · <page>-master.tex → <page>.pdf (the
+                                       page's own standalone deliverable) ·
+                                       selected-bibliography/<page>.bib
               ↓
 delivery/paper-build.toml              paper configuration
               ↓
@@ -45,7 +50,7 @@ delivery/latex/                        GENERATED whole from the pages
   ├── master.tex                       one \input per page, Story compile order
   ├── sections/ · appendices/          copies of the pages' <page>.tex fragments
   ├── displays/                        copies of accepted display floats + assets
-  └── reference.bib                    merged from delivery/latex/<page>-complete.bib
+  └── reference.bib                    merged from delivery/latex/selected-bibliography/<page>.bib
               ↓
 shared assembly engine + venue profile
               ↓
@@ -55,7 +60,7 @@ DOCX / PDF / supplement / snapshots / build manifest
 The Board and Page files decide what the paper is allowed to claim and whether
 the relevant Section is CHECK-closed. Each Section Page owns its wording and
 projects it into `delivery/latex/<page>.tex`, the body fragment used by the
-paper builder. `<page>-complete.tex` is only the standalone Page wrapper;
+paper builder. `<page>-master.tex` is only the standalone Page wrapper;
 it is not a manuscript input. The selected Story C8 compile-order block owns
 the order. The paper's `delivery/latex/` is regenerated from the body fragments
 and is never edited by hand (JL 260907; this replaces the 260824
@@ -70,7 +75,7 @@ A Section Page enters the build when three things exist on it: an approved
 outline table (`outline/<page>-outline-v*.md` with its tick), a preview PDF for
 every display unit the page CITES and that is LIVE
 (`results/<re-run>/payload/<unit>/preview.pdf`), and its own compiled page PDF
-(`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A page missing any of
+(`delivery/latex/<page>.pdf`). A page missing any of
 the three is listed in the build manifest as not ready and the build is
 `DRAFT`; the builder never substitutes an older desk-room copy for it.
 
@@ -97,8 +102,8 @@ The shared Page outline policy keeps `v0.x` unapproved; an inspection never
 promotes it. Honor explicit `supersedes:` lineage before choosing a current
 outline by numeric version, so a structural restart cannot revive an older
 approval. Ambiguous lineage requires repair, not a guessed current plan.
-Record the inspected outline path, version, approval, and content hash in the
-manifest. These mechanical milestones do not establish G4: missing checks for
+Record the inspected outline path, version, and approval in the manifest (no
+content hash). These mechanical milestones do not establish G4: missing checks for
 current Page CHECK closure, accepted evidence, or human submission approval
 must remain explicit blockers, and the build stays `DRAFT`.
 
@@ -114,10 +119,13 @@ failed build must not be presented as freshly verified results.
 | Lane | Input | Output | Purpose |
 |---|---|---|---|
 | Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<page>/delivery/word/` | coauthor review of one Section/Page |
-| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `delivery/latex/<page>-complete.bib` | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
+| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `delivery/latex/selected-bibliography/<page>.bib` | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
 
-The Page's `delivery/latex/<page>-complete.bib` is the citation projection
-paired with its fragment; the accepted CITE Results remain citation authority.
+The Page's `delivery/latex/selected-bibliography/<page>.bib` is the citation
+projection paired with its fragment: the Page export freezes it from the selected,
+verified CITE Results (a Result's `payload.bibliography`; for an older paper-local
+CITE Result, each cited key taken exactly from the `.bib` of a Supporting Result it
+names). The accepted CITE Results remain citation authority.
 Regenerate stale Page delivery before assembly. An included, cited Page missing that Bib
 fails with its exact path; excluded DRAFT stubs keep their not-ready status.
 Retired `outline/evidence/bibex/` and flat `bibex/`
@@ -301,7 +309,7 @@ venue_profile = "misq"
 [pages]
 # where the words come from: the Section Page groups, and the Story page whose
 # `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
-# <page>/delivery/latex/<page>.tex, its delivery/latex/<page>-complete.bib, and the float.tex +
+# <page>/delivery/latex/<page>.tex, its delivery/latex/selected-bibliography/<page>.bib, and the float.tex +
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
@@ -364,7 +372,7 @@ source.
 
 The optional `[evidence] lock` is a materialized receipt generated from the
 Section Pages. It may identify the Section source, Page evidence item, type
-(`VALUE`, `CITE`, or `DISPLAY`), state, and source hashes. The engine uses it
+(`VALUE`, `CITE`, or `DISPLAY`), state, and source paths. The engine uses it
 only to validate traceability and build status:
 
 - the Section source owns the reader-facing claim and any accepted number;
@@ -404,7 +412,7 @@ resolve Paper and its delivery/
 ```
 
 `sent/` and `released/` are frozen copies and never rebuilt in place; the
-Round's close receipt under `outline/` carries their manifest hashes.
+Round's close receipt under `outline/` carries their paths and manifest `built` times.
 `haipipe-paper-round` owns the folder shape. A freeze fails if any declared
 output is missing or if the destination already contains a prior snapshot;
 this prevents a partial send from masquerading as a complete Round.
@@ -443,8 +451,9 @@ Instead:
 
 1. read `paper-build.toml` and resolve the declared master, sections, displays,
    bibliography, profile, evidence lock, and output paths;
-2. inspect `build-manifest.json` and compare its config/source/profile/output
-   hashes against the declared files currently on disk;
+2. inspect `build-manifest.json` and compare its `built` time and recorded
+   config/source/profile/output paths against the declared files on disk; a
+   source newer than `built` (file time or `git diff`) makes the build stale;
 3. inspect the readiness, evidence, unresolved-reference, and renderer fields
    in `build-manifest.json`;
 4. if appropriate, invoke only the wrapper's early environment preflight;
@@ -471,7 +480,7 @@ At minimum, a complete manuscript build records:
 - optional `draft-sections/*.docx` snapshots generated from the active source;
 - copied or normalized submission assets;
 - `build-manifest.json` or equivalent containing engine/profile versions,
-  config hash, source paths and source hashes, and output paths;
+  config path, source paths, output paths, and the `built` time;
 - a machine-readable `build-manifest.json` containing page readiness, counts,
   unresolved references, missing assets, word-count results, renderer outcomes,
   and build status.
@@ -525,7 +534,8 @@ available:
 - no raw TeX commands or parser sentinels leak into emitted prose/cells;
 - main-text word count uses the selected venue profile and states what it
   excludes;
-- source, config, profile, engine version, and output hashes are recorded;
+- source, config and output paths, profile and engine versions, and the
+  `built` time are recorded;
 - DOCX structure has the expected tables, figures, headings, and sections;
 - rendered pages are visually inspected when the output is being handed off;
 - if the build is run before G4, the result is visibly marked `DRAFT`.

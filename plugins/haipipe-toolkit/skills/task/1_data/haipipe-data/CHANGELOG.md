@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.5] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `fn/fn-4-design-kitchen.md`: the caching example is modification-time invalidation, not content-hash invalidation.
+
 ## [0.3.4] — 2026-09-25
 
 - AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).

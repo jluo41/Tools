@@ -43,7 +43,7 @@ Common elements:
     tasks/bNN_<block>/board.md
     tasks/bNN_<block>/jNN_<job>/src/                 shared libraries/defaults
     tasks/bNN_<block>/jNN_<job>/tNN_<task>/
-      tNN_<task>.md + outline/ + workflow/
+      tNN_<task>.md + draft/ + workflow/
       scripts/                                    dispatcher, orchestrator, workers
       scripts/config/rNN_<run>.do                  per-run globals
       scripts/config/rNN_<run>.yaml                optional metadata wrapper

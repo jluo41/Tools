@@ -49,9 +49,11 @@ Workflow map           owed Run Specs for the selected cell, resource map,
 
 ### Applicable Specs and actual Runs
 
-The presenter reads `definition_ref` and verifies `definition_hash` from each
-open Insight Runtime. It shows only selected, still-owed Specs in that frozen
-`haipipe.insight-definition/v1` record. A Spec joins the selected question and
+The presenter reads `definition_ref` (the versioned definition file, for
+example `definition-v001.yaml`) from each open Insight Runtime. It shows only
+selected, still-owed Specs in that frozen `haipipe.insight-definition/v1`
+record. No content hash is recorded or compared; the version in the file name
+identifies the definition. A Spec joins the selected question and
 partition through its exact target/consumers, an exact target Page, or a
 single-answer-target definition; declared dependencies follow that join.
 An explicit different/partial cell binding never falls back to a shared Page.
@@ -91,7 +93,7 @@ and result authority.
 ### Copy request contract
 
 Requests contain the exact Board, selected question and partition, answer Page,
-bounded target, frozen definition and hash, Spec and canonical Run Type, owner
+bounded target, frozen definition and its version, Spec and canonical Run Type, owner
 and worker Skills, actor, input/dependency/entry requirements, current matching
 native Runs and next permitted action. Canonical identifiers survive display
 name expansion. With no selected Spec, the chain request asks the controller to

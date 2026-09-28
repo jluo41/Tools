@@ -23,7 +23,7 @@ These base fields follow `haipipe-run` and never disappear:
 | `status` | enum | `planned`, `running`, `complete`, `failed`, `blocked`, or `superseded` |
 | `ticket` | path | authored Ticket path |
 | `result` | path | paired Result directory under resolved `$OUTPUT_ROOT` |
-| `inputs` | list | frozen authoritative paths and hashes |
+| `inputs` | list | authoritative input paths |
 | `worker` | mapping | worker kind and name |
 | `started_at` | RFC 3339/null | null until actual launch; non-null includes UTC offset |
 | `finished_at` | RFC 3339/null | null while unfinished; written at actual terminal state |
@@ -31,7 +31,7 @@ These base fields follow `haipipe-run` and never disappear:
 | `failure` | string/null | truthful terminal reason |
 
 A canonical Task receipt also records `address`, `git_sha`, `git_dirty`,
-`host`, `config_file`, `config_sha256`, and `settings`. `settings` must
+`host`, `config_file`, and `settings`. `settings` must
 account for every value that varied for this Run; at minimum it records the
 pinned configuration and Ticket arguments. `notebook`, `duration`,
 `exit_code`, and `headline` are useful Task-dialect extensions.
@@ -40,15 +40,16 @@ pinned configuration and Ticket arguments. `notebook`, `duration`,
 Attempt history
 ---------------
 
-New shell Tickets record `contract_sha256` (Ticket, config, worker, verified
-input hashes, target and arguments) and an integer `attempt` at launch.
-Each declared input must be a readable file; an explicit pinned hash must
-match its current bytes before launch or retry.
+New shell Tickets record an integer `attempt` at launch. Each declared input
+must be a readable file. A receipt records paths, never content hashes; a
+reader ignores a leftover hash field in an older receipt.
 Before an unchanged-contract retry, the Ticket preserves the previous receipt
 at `attempts/<six-digit-attempt>/runtime.yaml` and increments `attempt`.
 These archives are history, not additional Runs or current receipts.
-A missing/changed fingerprint requires owner recovery or a new commission;
-legacy receipts are never silently asserted to have frozen inputs.
+The contract counts as changed when the Ticket, config, worker, or a declared
+input is newer (file modification time) than the prior receipt, or when the
+Ticket arguments differ from `settings.ticket_args`. A changed contract
+requires owner recovery or a new commission.
 A complete/superseded Result cannot be overwritten by retry. Preserve any
 partial payload needed for recovery before retry; published outputs remain
 immutable. The native `.run-lock` excludes simultaneous writers. An abandoned
@@ -88,7 +89,6 @@ ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
 result: t01_example/results/r01_page-evidence-item_e01-display-effect/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
-    sha256: <64-hex>
 worker:
   kind: script
   name: t01_example/scripts/render_effect.py
@@ -101,7 +101,6 @@ git_sha: e2d67d63
 git_dirty: false
 host: aikong/jluo41
 config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
-config_sha256: <64-hex>
 settings:
   config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
   ticket_args: []
@@ -121,7 +120,6 @@ ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
 result: t01_example/results/r01_page-evidence-item_e01-display-effect/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
-    sha256: <64-hex>
 worker:
   kind: script
   name: t01_example/scripts/render_effect.py
@@ -135,7 +133,6 @@ git_dirty: false
 host: aikong/jluo41
 exit_code: 0
 config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
-config_sha256: <64-hex>
 settings:
   config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
   ticket_args: []

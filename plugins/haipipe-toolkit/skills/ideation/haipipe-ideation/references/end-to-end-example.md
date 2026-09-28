@@ -177,7 +177,6 @@ id: s01
 snapshot: workflow/selections/s01.yaml
 source:
   sync_revision: 2
-  source_hash: sha256:<reviewed semantic source>
 reviewed_cards:
 - cards/i01_moderation.yaml
 - cards/i02_prediction.yaml
@@ -215,8 +214,8 @@ candidates:
 Save identical copies at workflow/selection.yaml and workflow/selections/s01.yaml.
 Project each answered card and Venue Fit human_target using receipts.md; keep
 machine recommendations separate. The handoff uses version 3, id s01 and
-snapshot handoff/history/s01.yaml. It points to Paper sync revision 2 and its
-source hash, this immutable human receipt, the Idea
+snapshot handoff/history/s01.yaml. It points to Paper sync revision 2,
+this immutable human receipt, the Idea
 Card, claim ids, owner Results, pilot receipt, Venue Fit Card, current Venue
 contract, hard claim limits, and the planned Story route. Paper P0 projects
 the receipt's verdict, target, and `went to` fields; it does not decide again.

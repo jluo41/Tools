@@ -1,3 +1,19 @@
+## 0.20.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- `cli/promote_paragraph.py` writes and compares no sha256. Staleness is file time: the Page is
+  stale when saved after the Run read it (`read_at` on the `page-source` input, else `started_at`).
+  Idempotency and interrupted-write recovery compare the addressed paragraph's text.
+- The promotion receipt drops `result_sha256`, `page_before_sha256`, `planned_page_after_sha256` and
+  `page_after_sha256`; it records `page_read_at`, the locator and times. Leftover `sha256` keys in
+  an older runtime.yaml are ignored, never required.
+- `SKILL.md` and `ref/paragraph-run.md` name inputs by path, version and date, never by hash.
+
+## 0.19.0 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+- The Adopt movement is `haipipe-page/cli/page.py adopt <page>` (dry run first); sentences are
+  never retyped into `## Content` by hand (haipipe-page 0.119.0).
+
 ## 0.18.0 · 2026-09-22
 
 - Renamed from `haipipe-page-content` and moved to `skills/page/workflow-runs/`: the skill is named

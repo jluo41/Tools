@@ -8,8 +8,8 @@ description: >-
   belongs; it never predicts acceptance or chooses the target for the user.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-09-22"
+  version: "0.1.4"
+  last_updated: "2026-09-28"
   capability_family: "2_test"
 ---
 
@@ -92,14 +92,14 @@ through the named Venue contract; every local interpretation stays
 `LOCAL DECISION`.
 
 Each independent assessor gets a distinct snapshot and binding. For a durable
-Run, inherit evaluator, rubric and frozen-input hashes through the Run's
+Run, inherit evaluator, rubric and frozen-input list through the Run's
 `assessment_id`; for direct or one-off work, include the full binding inline
 as described in `../haipipe-ideation/references/receipts.md`. Preserve every
-snapshot and list its `assessment_id`, receipt path and exact-byte SHA-256 in
+snapshot and list its `assessment_id` and receipt path in
 the current Venue Fit Card's `assessment_receipts`. With one judgment, its
 binding may be projected in `assessment_binding`; with multiple judgments,
 leave that singular field null and point `review_resolution` to the resolution
-receipt with its SHA-256. Unresolved dimensions and overall status remain
+receipt. Unresolved dimensions and overall status remain
 `unknown`, with `human_target.status: open` and a HOLD route. Do not average
 fit labels or overwrite a review.
 

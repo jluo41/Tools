@@ -1,5 +1,38 @@
 # CHANGELOG · haipipe-workbench-paper
 
+## 0.7.1 · 2026-09-28
+
+- The Narrative card's Session row reads the Section Page's own `session:` and
+  `codex-session:` lines (written by `/haipipe-paper sessions`) and joins a call-peer pair by
+  that exact Claude session id, before the old exact-name lookup. It shows the pair name,
+  `claude <id>` and `codex <id> · <date>`; a page with no session still reads `no session · plan`.
+
+## 0.7.0 · 2026-09-27
+
+- The Paper Workbench follows the Page workbench (JL 260927: "make it aligned"; the drawing is
+  `servers/workbench-paper/studio/paper-workbench-design.excalidraw`). Four Spaces: Ideation ·
+  Story (Spine, Questions, Roadmap) · Sections (Main, Appendix × Table, Narrative, Evidence) ·
+  Delivery (LaTeX, Word × Preview, Artifacts, Checks; Rounds). Each Space has its content on the
+  left and its own Runs panel on the right, the Page's `runs_panel.py` markup; buttons come from
+  `haipipe-paper-workflow/ref/run-cards.md`. Opening a card or clicking a row selects it for the panel.
+- Gone: the Setup Space (a C8 row with no Page reads `not set up`; the Codex session sits on the
+  Section's Narrative card), the Run Space (its runs are in the Runs panels; gates show where they
+  happen), the Workflow map and folder tree (docs only), the backend Markdown cards, `⧉ chat` and
+  `⧉ Copy Run request`, tallies, briefs and hint lines. Old `#setup/…`, `#run/…` and view routes
+  still land on the view that holds their content.
+- Sections Space is new: the compile order joined to each Section Page (draft version, state,
+  Open ↗ to its workbench), the C8 narrative cards, and the hero Displays and Values; a selected
+  Section shows its Narrative review and its own Draft, Evidence and Delivery runs.
+- Shared with the Page workbench (`servers/workbench-page/runs_panel.py`): a type's count follows
+  the selected target and view, and the panel opens on a type that has runs there; `panel_markup`
+  is the reusable half of `panel_html`; judgment runs show as `run-idea`, `run-claim`, `run-task`,
+  `run-narrative`.
+- `tests/audit_paper_views.py` walks the seventeen new routes and flags a view with no Runs panel.
+- Rosters and Stories in other shapes now read: a `### Label · folder · what it holds` heading, or one
+  with no folder (the page is found by its own folder name), and C8 rows written as records
+  (`**S-<id> (N) · job**` + `- **Field**: value` lines) beside the table form. A desk name may carry
+  a hyphen (`S-JAMA-IM-Main-1-Introduction`). Paper-AgreeableOpioid-Jama showed no Story before.
+
 ## 0.6.0 · 2026-09-22
 
 - Story Space reads legacy numbered Story pages (`Story01-seed`, `Story02-roadmap`,

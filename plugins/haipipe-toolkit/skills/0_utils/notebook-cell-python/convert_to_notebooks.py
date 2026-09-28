@@ -16,7 +16,7 @@ Usage:
 """
 
 import argparse
-import hashlib
+import ast
 import json
 import os
 import re
@@ -101,6 +101,43 @@ def parse_python_to_cells(py_content):
 
     return cells
 
+def docstring_to_markdown(cells, reader=False):
+    """The module docstring opens the notebook as a fenced txt markdown cell.
+
+    Left as code, the docstring is a cell whose output is the escaped string
+    itself, so the notebook opened on a block of '\\n' text. A reader notebook
+    (`# notebook: hide-code`) drops it: the docstring is written for whoever
+    edits the .py, and the notebook opens on its own title instead.
+    """
+    if not cells or cells[0]["cell_type"] != "code":
+        return cells
+    source = "\n".join(cells[0]["source"])
+    try:
+        body = ast.parse(source).body
+    except SyntaxError:
+        return cells
+    if len(body) == 1 and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+            and isinstance(body[0].value.value, str):
+        if reader:
+            return cells[1:]
+        text = body[0].value.value.strip("\n").splitlines()
+        cells[0] = {"cell_type": "markdown", "source": ["```txt", *text, "```"]}
+    return cells
+
+
+HIDE_CODE = re.compile(r'^#\s*notebook:\s*hide-code\b', re.M)
+
+
+def hide_code(notebook, py_content):
+    """A reader-facing notebook shows outputs only: a `# notebook: hide-code` line in the .py
+    marks every code cell hidden (`jupyter.source_hidden`) when the notebook is created, so
+    nothing rewrites the notebook after it runs. Jupyter and VS Code both honour the flag."""
+    if HIDE_CODE.search(py_content):
+        for cell in notebook["cells"]:
+            if cell["cell_type"] == "code":
+                cell["metadata"].setdefault("jupyter", {})["source_hidden"] = True
+    return notebook
+
 
 def create_notebook(cells):
     """Create Jupyter notebook structure from cells."""
@@ -129,9 +166,8 @@ def create_notebook(cells):
                 "outputs": [],
                 "source": '\n'.join(cell["source"])
             }
-        # nbformat 4.5 requires stable, unique IDs for each cell.
-        identity = str(index) + "\n" + nb_cell["source"]
-        nb_cell["id"] = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
+        # nbformat 4.5 requires stable, unique IDs for each cell: its position, no hash.
+        nb_cell["id"] = f"cell-{index:03d}"
         nb_cells.append(nb_cell)
 
     notebook = {
@@ -170,10 +206,10 @@ def convert_py_to_ipynb(py_path, ipynb_path):
         py_content = f.read()
 
     # Parse cells
-    cells = parse_python_to_cells(py_content)
+    cells = docstring_to_markdown(parse_python_to_cells(py_content), reader=bool(HIDE_CODE.search(py_content)))
 
     # Create notebook
-    notebook = create_notebook(cells)
+    notebook = hide_code(create_notebook(cells), py_content)
 
     # Write notebook
     with open(ipynb_path, 'w', encoding='utf-8') as f:

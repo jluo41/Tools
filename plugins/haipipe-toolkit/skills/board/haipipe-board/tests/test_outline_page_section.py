@@ -135,7 +135,7 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("Supporting Runs</th>", html)
         self.assertIn("Local Run</th>", html)
         self.assertIn(
-            'class="outline-bullet-link" href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=div&amp;focus=C1.P1.B1"',
+            'class="outline-bullet-link" href="/_board/draft?path=/board.md&amp;file=QA/QA1.md&amp;lens=div&amp;focus=C1.P1.B1"',
             html,
         )
         self.assertIn('data-outline-lens="div" data-outline-focus="C1.P1.B1"', html)
@@ -144,25 +144,25 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("State the page product", html)
         self.assertNotIn("The sentence belongs in Content, not the plan.", html)
         self.assertIn(
-            'class="outline-feedback" href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb&amp;focus=feedback-S1-PP1"',
+            'class="outline-feedback" href="/_board/draft?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb&amp;focus=feedback-S1-PP1"',
             html,
         )
         self.assertIn('data-outline-lens="fb"', html)
         self.assertIn('data-outline-focus="feedback-S1-PP1"', html)
         self.assertIn('title="RD01 S1-PP1">S1-PP1</a>', html)
         self.assertIn('aria-label="E01-VALUE-product · VALUE · checked product source"', html)
-        self.assertIn("<b>E1V.Product</b>", html)
+        self.assertIn("<b>Evalue01.Product</b>", html)
         # The Evidence chip is the same kind of precise Outline route as a
         # Feedback id or a Run token: one URL that names the workspace and the
         # exact Result row. The compact Page owns no Evidence popover.
         self.assertIn(
             '<a class="outline-evidence mut" '
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=evidence'
+            'href="/_board/draft?path=/board.md&amp;file=QA/QA1.md&amp;lens=evidence'
             '&amp;focus=run-E01-VALUE-product" '
             'data-outline-lens="evidence" '
             'data-outline-focus="run-E01-VALUE-product" '
             'aria-label="E01-VALUE-product · VALUE · checked product source" '
-            'title="E01-VALUE-product · VALUE · specified"><b>E1V.Product</b></a>',
+            'title="E01-VALUE-product · VALUE · specified"><b>Evalue01.Product</b></a>',
             html,
         )
         self.assertNotIn("popovertarget=\"outline-item-", html)
@@ -174,7 +174,7 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertNotIn("PageX Bindings", html)
         self.assertNotIn('href="../runs.html', html)
         self.assertIn(
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=run&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
+            'href="/_board/draft?path=/board.md&amp;file=QA/QA1.md&amp;lens=run&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
             html,
         )
         self.assertIn('data-outline-focus="run-E01-VALUE-product"', html)
@@ -253,7 +253,7 @@ class OutlinePageSectionTest(unittest.TestCase):
 
         for label in ("S1-PP5", "S1-PP7", "S1-PP2", "S1-PP3"):
             self.assertIn(
-                'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb'
+                'href="/_board/draft?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb'
                 f'&amp;focus=feedback-{label}" data-outline-lens="fb" '
                 f'data-outline-focus="feedback-{label}" title="RD01 {label}">{label}</a>',
                 html,
@@ -267,8 +267,8 @@ class OutlinePageSectionTest(unittest.TestCase):
 
     def test_wall_abbreviates_all_three_evidence_types(self):
         cases = (
-            ("CITE", "E02-CITE-guideline", "guideline source", "Guideline", "E2C.Guideline"),
-            ("DISPLAY", "E03-DISPLAY-forest", "association forest", "EffectForest", "E3D.EffectForest"),
+            ("CITE", "E02-CITE-guideline", "guideline source", "Guideline", "Ecite02.Guideline"),
+            ("DISPLAY", "E03-DISPLAY-forest", "association forest", "EffectForest", "Edisplay03.EffectForest"),
         )
         for item_type, item_id, name, label, visible in cases:
             with self.subTest(item_type=item_type), TemporaryDirectory() as temp:

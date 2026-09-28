@@ -4,7 +4,7 @@ description: "Unified Stata-engine job specialist: handles all 4 stages internal
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [job]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -79,7 +79,7 @@ tasks/bNN_<block>/
     ├── src/                         shared libraries + config-defaults.do
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
@@ -108,7 +108,7 @@ tasks/bNN_<block>/
     ├── src/                         shared libraries + config-defaults.do
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
@@ -139,7 +139,7 @@ tasks/bNN_<block>/
     ├── src/                         shared libraries + config-defaults.do
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
@@ -172,7 +172,7 @@ tasks/bNN_<block>/
     ├── src/                         shared libraries + config-defaults.do
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper

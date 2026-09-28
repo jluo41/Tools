@@ -30,7 +30,7 @@ from urllib.parse import parse_qs, quote, urlparse
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
         "meeting": "🗣", "_runs": "🧾", "_fixture": "📦",
-        "outline": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
+        "outline": "🧭", "draft": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
         "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
         "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
         "results": "📦", "outline/evidence/supporting-runs": "🧷"}
@@ -212,20 +212,20 @@ def folder_status(page_src):
         # evidence lane gets its own explicit path. This prevents the plan's
         # eight records from being visually merged with bibex/display/PageX
         # material and avoids counting the same files twice.
-        if d.name == "outline":
-            rows.append(row_for(d, "outline", recursive=False))
-            for sub in ("records", "previous"):
+        if d.name in ("outline", "draft"):  # the plan folder (draft/ since Page 0.118)
+            rows.append(row_for(d, d.name, recursive=False))
+            for sub in ("records", "previous", "_archive"):
                 if (d / sub).is_dir() and not (d / sub).is_symlink():
-                    rows.append(row_for(d / sub, "outline/%s" % sub))
+                    rows.append(row_for(d / sub, "%s/%s" % (d.name, sub)))
             skill = d / "skill"
             if skill.is_dir() and not skill.is_symlink():
-                rows.append(row_for(skill, "outline/skill"))
+                rows.append(row_for(skill, "%s/skill" % d.name))
             evidence = d / "evidence"
             if evidence.is_dir():
                 for lane in sorted(evidence.iterdir()):
                     if lane.is_dir() and not lane.is_symlink():
                         rows.append(row_for(
-                            lane, "outline/evidence/%s" % lane.name))
+                            lane, "%s/evidence/%s" % (d.name, lane.name)))
             continue
         if d.name in ("delivery", "studio"):
             for lane in sorted(d.iterdir()):
@@ -377,7 +377,9 @@ class FolderStatMixin:
         # flat pre-sweep lanes does.
         have_cat = {c for c in ("delivery", "studio") if c in known}
         have_cat |= {c for n, c in CATEGORY.items() if n in known}
-        gaps = [n for n in ("outline", "workflow") if n not in known]
+        # The plan folder is draft/ since 0.118; an older Page still shows outline/.
+        gaps = [] if {"draft", "outline"} & known else ["draft"]
+        gaps += [n for n in ("workflow",) if n not in known]
         gaps += [c + "/" for c in ("delivery", "studio")
                  if c not in have_cat]
         if gaps:

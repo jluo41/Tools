@@ -1,3 +1,8 @@
+## 0.6.1 · 2026-09-28
+
+- A ninth typed lane, `> Supporting Run:` (⚙️): the Task or Discovery Run behind a sentence's
+  evidence, written by `page.py adopt` (haipipe-page 0.119.0). Lane counts and lists updated.
+
 ## 0.6.0 · 2026-09-20
 
 - Make the Board-hosted Page a reading surface with one Copy prompt action for

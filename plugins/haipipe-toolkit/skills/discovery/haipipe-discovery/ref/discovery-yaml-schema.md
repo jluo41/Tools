@@ -13,7 +13,7 @@ discoveries/                                  bank
         └── t01_<noun>_<qualifier>/           Task Page
             ├── t01_<noun>_<qualifier>.md
             ├── discovery.yaml
-            ├── outline/                      Page process + Evidence Workspace
+            ├── draft/                      Page process + Evidence Workspace
             │   └── evidence/
             │       └── bibex/t01_<...>.bib   derived
             ├── scripts/                      optional instrument
@@ -40,7 +40,7 @@ sync with `scripts/board_sync.py`; do not copy Run inventories, Result prose,
 or Page bodies into the manifest or Board source.
 
 New manifests point `report.evidence_bib` to the Outline-owned
-`outline/evidence/bibex/` lane. A legacy root `evidence/bibex/` path may be
+`draft/evidence/bibex/` lane. A legacy root `evidence/bibex/` path may be
 read during migration, but new writes must not create or refresh that lane.
 The checker rejects a root `<task>/evidence/` lane in a current v6 Task.
 
@@ -113,21 +113,18 @@ leave it outside the admitted Run set and record the unresolved screening item
 or return to SCOPE; do not silently relabel uncertainty as irrelevance.
 
 For broad retrieval, freeze the exact rule and retain a disposition receipt for
-each screened candidate. `candidate_rule_sha256` hashes the frozen rule text;
-`candidate_rule_version` identifies its criteria revision. Each disposition
-names the evaluator and timestamp, and links either to the admitted owning Run
-or to a frozen candidate-record URI and SHA-256 (required for excluded or
-unresolved candidates, which have no Run). This preserves what the evaluator
-actually screened, not just the rule they meant to apply.
+each screened candidate. `candidate_rule_version` identifies the frozen rule;
+any edit to the rule text mints a new version. Each disposition names the
+evaluator and timestamp, and links either to the admitted owning Run or to a
+saved candidate-record URI (required for excluded or unresolved candidates,
+which have no Run). This preserves what the evaluator actually screened, not
+just the rule they meant to apply.
 
-Compute `candidate_rule_sha256` over the UTF-8 bytes of the parsed YAML scalar
-value, without further normalization. Compute `candidate_decisions_sha256`
-over the list serialized as UTF-8 JSON with object keys sorted, no extra
-whitespace, and list order preserved. Use the same JSON serialization for
-`scope_snapshot_sha256`, with the frozen `question`, `discovery_type`, exact
-declared source boundary from the Task Page's `## Source map`, and candidate
-rule/version/hash as the object. Candidate snapshot hashes cover the exact saved provider record bytes;
-`page_snapshot_sha256` covers the exact closed Page bytes encoded as UTF-8.
+No content hash is written or compared. The rule is identified by
+`candidate_rule_version` and `candidate_rule_frozen_at`; the decision log is
+append-only; a saved candidate record is never overwritten. A closing
+assessment is stale when the Task Page or `discovery.yaml` was modified after
+its `assessed_at` (file time or `git diff`).
 
 ```yaml
 sources:
@@ -135,7 +132,6 @@ sources:
     Include studies that evaluate adaptive sampling for rare-phenotype
     detection; exclude generic sampling without that application.
   candidate_rule_version: "candidate-admission/1"
-  candidate_rule_sha256: "sha256:<rule-text-digest>"
   candidate_rule_frozen_by: "person:<identifier>"
   candidate_rule_frozen_at: "2026-09-01T10:00:00-04:00"
   candidate_decisions:
@@ -154,7 +150,6 @@ sources:
       decided_at: "2026-09-01T10:14:00-04:00"
       candidate_snapshot:
         uri: "results/search/s2-record-123.json"
-        sha256: "sha256:<record-digest>"
 ```
 
 `sources.from_topic` is a read-only supporting reference to another Discovery
@@ -163,7 +158,7 @@ one upstream paper becomes load-bearing, D1 ACQUIRE must admit a local
 `paper-analysis` Run carrying the upstream Result path as provenance (or
 `source-analysis` only for a genuinely non-paper Subject); only the local
 completed Result Bib may enter this Task's
-`outline/evidence/bibex/<task>.bib`.
+`draft/evidence/bibex/<task>.bib`.
 
 No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
 is authoritative for both. No `parent` or `consumed_by` field: the Discovery
@@ -232,11 +227,9 @@ sources:
     citation counts with the search date for ordering only. Resolve canonical
     identity before opening a Paper Run.
   candidate_rule_version: "candidate-admission/1"
-  candidate_rule_sha256: "sha256:<rule-text-digest>"
   candidate_rule_frozen_by: "person:<identifier>"
   candidate_rule_frozen_at: "2026-09-01T10:00:00-04:00"
   candidate_decisions: [] # append one disposition receipt per screened candidate
-  candidate_decisions_sha256: "sha256:<decision-log-digest>"
 instrument:
   needed: false
   path: ""
@@ -259,15 +252,12 @@ report:
     criteria_version: "discovery-confidence/v1"
     criteria_ref: "discovery-yaml-schema.md#confidence-and-evidence-axes and the frozen Task type promise"
     assessed_at: "2026-09-01T12:30:00-04:00"
-    scope_snapshot_sha256: "sha256:<scope-digest>"
-    page_snapshot_sha256: "sha256:<closed-page-digest>"
-    candidate_decisions_sha256: "sha256:<decision-log-digest>"
     input_runs:
       - readable: "b02.j03.t01.r01"
         compact: "b02j03t01r01"
   completed_runs: 7
   unresolved_runs: 1
-  evidence_bib: outline/evidence/bibex/t01_adaptive_sampling_verdict.bib
+  evidence_bib: draft/evidence/bibex/t01_adaptive_sampling_verdict.bib
 ```
 
 ## Lifecycle status
@@ -321,10 +311,10 @@ Common fields: `outcome`, `summary`, `confidence`, `completed_runs`,
 
 At CLOSE, `report.assessment` is required whenever an outcome, verdict, or
 confidence label is assigned. It records who made the judgment, the exact
-version/section that supplied its criteria, the time, a hash of the closed Page
-snapshot, and the full identities of the Results considered. A typed record's
-`assessment_ref` points to this same receipt; do not copy or silently revise the
-judgment without a new timestamp and input snapshot. For an assessed confidence,
+version/section that supplied its criteria, the time, and the full identities
+of the Results considered. A typed record's `assessment_ref` points to this
+same receipt; do not copy or silently revise the judgment without a new
+timestamp. For an assessed confidence,
 `assessment.criteria_version` is `discovery-confidence/v1` and
 `assessment.criteria_ref` points to this section and the applicable type anchor.
 For a factual `source-map`, use the frozen candidate-admission rule as the
@@ -435,7 +425,7 @@ type-specific anchor; `not-applicable` is not an assessed confidence label.
 For terminal `ok` or `inconclusive`, all common fields are mandatory,
 `completed_runs` and `unresolved_runs` must equal the runtime inventory, and
 `evidence_bib` must be exactly the canonical same-stem path under
-`outline/evidence/bibex/`. The root Page must also carry a closed `✅` state,
+`draft/evidence/bibex/`. The root Page must also carry a closed `✅` state,
 with no active Aim. A preserved legacy `reported` receipt may omit new
 reconciliation fields, but every field it does carry must still be truthful.
 

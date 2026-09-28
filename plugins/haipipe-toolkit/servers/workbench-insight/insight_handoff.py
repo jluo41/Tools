@@ -1,9 +1,18 @@
 """Read current handoff eligibility from exact owner receipts; never grant it."""
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 import re
+
+
+def _plain(value):
+    """Ignore hash fields left in older records (JL 260928: no content hashes)."""
+    if isinstance(value, dict):
+        return {k: _plain(v) for k, v in value.items()
+                if k not in {"sha256", "hash"} and not str(k).endswith(("_sha256", "_hash"))}
+    if isinstance(value, list):
+        return [_plain(v) for v in value]
+    return value
 
 
 def watch_paths(board: Path) -> list[Path]:
@@ -31,14 +40,17 @@ def watch_paths(board: Path) -> list[Path]:
     return paths
 
 
-def pinned_bytes(folder: Path, reference: dict) -> bytes:
-    """Read a whole file or one explicitly anchored Markdown log record."""
+def _source_path(folder: Path, reference: dict) -> tuple[Path, str]:
     if not isinstance(reference, dict) or not isinstance(reference.get("path"), str):
-        raise ValueError("missing pinned source path")
+        raise ValueError("missing recorded source path")
     name, _, anchor = reference["path"].partition("#")
     path = Path(name)
-    if not path.is_absolute():
-        path = folder / path
+    return (path if path.is_absolute() else folder / path), anchor
+
+
+def recorded_bytes(folder: Path, reference: dict) -> bytes:
+    """Read a whole file or one explicitly anchored Markdown log record."""
+    path, anchor = _source_path(folder, reference)
     content = path.read_bytes()
     if anchor:
         text = content.decode("utf-8")
@@ -49,14 +61,25 @@ def pinned_bytes(folder: Path, reference: dict) -> bytes:
         tail = text[match.end():]
         end = re.search(rf"(?m)^#{{1,{len(match[1])}}} ", tail)
         content = tail[:end.start() if end else len(tail)].strip().encode("utf-8")
-    if hashlib.sha256(content).hexdigest() != reference.get("sha256"):
-        raise ValueError(f"source or receipt changed: {reference['path']}")
     return content
+
+
+def changed_after(folder: Path, reference: dict, receipt: dict) -> bool:
+    """Staleness by file time: a whole-file source modified after the receipt file.
+
+    An anchored log record is not compared, because appending a later record
+    to the same log moves the file time without changing this one.
+    """
+    path, anchor = _source_path(folder, reference)
+    if anchor:
+        return False
+    signed, _ = _source_path(folder, receipt)
+    return path.stat().st_mtime > signed.stat().st_mtime
 
 
 def _control(folder: Path, reference: dict, key: str, page_pin: dict) -> dict:
     import yaml
-    content = pinned_bytes(folder, reference).decode("utf-8")
+    content = recorded_bytes(folder, reference).decode("utf-8")
     fenced = re.search(r"(?ms)^```yaml\s*\n(.*?)^```\s*$", content)
     record = yaml.safe_load(fenced[1] if fenced else content)
     if not isinstance(record, dict) or record.get("key") != key or record.get("status") != "passed":
@@ -67,9 +90,9 @@ def _control(folder: Path, reference: dict, key: str, page_pin: dict) -> dict:
     if record.get("authority") != expected_owner:
         raise ValueError(f"{key} has the wrong resource owner")
     # Page addresses in receipts are resolved relative to the Wisdom Folder,
-    # just like the index. Receipts pin a version and bytes, not `latest`.
-    if record.get("page") != page_pin:
-        raise ValueError(f"{key} does not bind this exact Page version/hash")
+    # just like the index. Receipts name an exact version, not `latest`.
+    if _plain(record.get("page")) != _plain(page_pin):
+        raise ValueError(f"{key} does not bind this exact Page version")
     return record
 
 
@@ -96,17 +119,21 @@ def eligibility(page: dict, signature: str, serves: str) -> dict:
             raise ValueError("handoff needs an exact Page version")
         if (folder / pin.get("path", "")).resolve() != page["path"].resolve():
             raise ValueError("handoff binding names another Page")
-        pinned_bytes(folder, pin)
+        recorded_bytes(folder, pin)
         dependencies = record.get("dependencies")
         if not isinstance(dependencies, list) or not dependencies:
-            raise ValueError("handoff dependencies have not been pinned")
+            raise ValueError("handoff dependencies have not been recorded")
         for dependency in dependencies:
-            pinned_bytes(folder, dependency)
+            recorded_bytes(folder, dependency)
         signed = _control(folder, record.get("gi5"), "GI5", pin)
         if signed.get("signature") != signature:
             raise ValueError("person signature differs from the GI5 record")
-        if signed.get("dependencies") != dependencies:
+        if _plain(signed.get("dependencies")) != _plain(dependencies):
             raise ValueError("GI5 does not bind the recorded dependencies")
+        for source in [pin, *dependencies]:
+            if changed_after(folder, source, record.get("gi5")):
+                return {**result, "eligibility": "stale",
+                        "eligibility_reason": f"{source['path']} changed after the GI5 signature (file time)"}
         result["signature_current"] = True
         refs = record.get("gi6", [])
         refs = refs if isinstance(refs, list) else [refs]
@@ -114,7 +141,7 @@ def eligibility(page: dict, signature: str, serves: str) -> dict:
         settled_questions = set()
         for ref in refs:
             settled = _control(folder, ref, "GI6", pin)
-            if settled.get("signature_receipt") != record.get("gi5"):
+            if _plain(settled.get("signature_receipt")) != _plain(record.get("gi5")):
                 raise ValueError("GI6 does not reference this exact signature receipt")
             target = settled.get("target", {})
             if target.get("question") not in questions or target.get("partition") != (page.get("partition") or "F"):

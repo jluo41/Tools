@@ -25,7 +25,8 @@ def migrate_global_paragraphs(page) -> dict:
     plan = latest_outline(plan_dir(page.folder), page.source.stem)
     if plan is None:
         raise ValueError("Page has no current Shape to migrate")
-    mapping = global_paragraph_mapping(plan.read_text(encoding="utf-8"))
+    from src.plan_layout import to_canonical  # a three-section plan maps like its Draft-first form
+    mapping = global_paragraph_mapping(to_canonical(plan.read_text(encoding="utf-8")))
     changed_mapping = {old: new for old, new in mapping.items() if old != new}
     if not changed_mapping:
         return {"paragraphs": len(mapping), "changed_addresses": 0, "files": []}

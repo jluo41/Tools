@@ -43,13 +43,17 @@ from .constants import (ALIAS, CLASS_ONLY, CODED, GOOD, MISS, NAMED, OK,
 from .dialect import Item
 
 
-def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
+def resolve(item: Item, ndc_hint: Optional[str] = None) -> Tuple[Optional[Dict], str, str, Optional[str]]:
     """One typed item -> (FDA record or None, confidence, source, ndc).
 
     Every not-knowing gets its OWN source string, because they have different
     fixes: no drug was named, the number was a sentinel, the id is absent from
     our lexicon, the name is a class, or the FDA file does not list it.
     Rule 5 -- they may not share a column.
+
+    ndc_hint: an NDC the caller already holds for a named item (a plain name
+    plus its national code, e.g. from a cohort's own catalog). It is tried
+    first, exactly as the lexicon's NDC is for a WellDoc id.
     """
     if item.kind == PLACEHOLDER:
         return None, MISS, "not_resolvable:placeholder", None
@@ -71,7 +75,7 @@ def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
         # unwrapped through the WellDoc lexicon.
         provenance = f"lexicon:{item.key}|"
     else:
-        name = item.key
+        name, ndc = item.key, (ndc_hint or None)
 
     # A -- the code
     if ndc:

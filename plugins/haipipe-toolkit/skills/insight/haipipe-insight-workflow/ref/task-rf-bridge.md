@@ -21,7 +21,7 @@ cross-scope authority bridge with five mechanically readable assertions:
    versions, with current applicability; unrelated open items do not block it;
 3. the borrowed RF traces through named D/I/K/W rows in that exact Result;
 4. the InsightBoard Question QW row records instance, `riNN`, base-R pointer, frozen
-   dataset binding, execution version, RF id, Result path/hash, and the local
+   dataset binding, execution version, RF id, Result path, and the local
    Wisdom Folder; a bare R is not an RI evidence address;
 5. the W Folder's Evidence Item graph binds that exact Supporting Result and
    completes its local Evidence Run. Page navigation alone is not evidence.

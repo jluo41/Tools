@@ -92,7 +92,6 @@ source:
   test_matrix: cards/test-matrix.yaml | null
 stage: I1 | I2
 sync_revision: 3
-source_hash: "sha256:<hash of this semantic packet>"
 projection:
   change_class: state | portfolio | structure
   affected_idea_ids: [i01]
@@ -103,17 +102,14 @@ paper_page:
   working:
     state: not-requested | current | stale | blocked
     revision: 2 | null
-    source_hash: "sha256:<consumed sync hash>" | null
     receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-working.yaml" | null
   release:
     state: not-requested | current | stale | blocked
     revision: 2 | null
-    source_hash: "sha256:<released source hash>" | null
     receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-release.yaml" | null
   delivery:
     state: not-requested | current | stale | blocked
     revision: 2 | null
-    source_hash: "sha256:<delivery source hash>" | null
     receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-delivery.yaml" | null
 discovery_landscape:
   accepted_syntheses: ["discoveries/.../<page>.md"]
@@ -159,13 +155,13 @@ I2, the packet projects the current matrix. `paper_page.state: missing` is a
 request for `haipipe-paper-ideation` to mint or bind the one evergreen P0 Page;
 it is not permission for Ideation to create Paper files itself.
 
-`sync_revision` and `source_hash` identify the reviewed semantic source.
-Compute the source fingerprint from the semantic packet, excluding source_hash,
-updated_at, paper_page projection receipts/surfaces, and human-only ideas[].state
-and ideas[].decision_ref projections. Refreshing those human projections does
-not advance the evidence revision. Changes to evidence, claims, tests or machine
-recommendations do advance it. New I3 selection/handoff pins both values; an old
-snapshot remains historical and cannot authorize a new handoff after they change.
+`sync_revision` identifies the reviewed semantic source; no content hash is
+written or compared. Changes to evidence, claims, tests or machine
+recommendations advance it. Refreshing `updated_at`, the `paper_page`
+projection receipts/surfaces, or the human-only `ideas[].state` and
+`ideas[].decision_ref` projections does not. A new I3 selection/handoff records
+the revision it consumed; an old snapshot remains historical and cannot
+authorize a new handoff after the revision changes.
 The three
 `paper_page` surfaces are independent attestations, not three names for one
 `current` flag:
@@ -173,14 +169,14 @@ The three
 - `working` records the latest Page-owned projection refresh. It may be current
   before adopted Content or delivery is current.
 - `release` records the Page-level CONTENT/release pass. It is current only
-  when it consumed the same semantic revision and source hash as `working`.
+  when it consumed the same semantic revision as `working`.
 - `delivery` records the generated delivery from that released Page source. It
   is current only when `release` is current and its receipt names the matching
   released source.
 
 Every current surface has a real Page-owned dispatch receipt (serialized `phase`) whose
-`paper_projection` extension records the consumed `sync_revision`,
-`source_hash`, Page path, surface, output hash, and timestamp. A Page update may bring the working
+`paper_projection` extension records the consumed `sync_revision`, Page path,
+surface, and timestamp. A Page update may bring the working
 Outline/preview/Bullet Workspace to the new revision while leaving adopted
 Content and `delivery/` stale by design. A formal Page-level CONTENT pass is
 required before those published surfaces can be called current.
@@ -234,8 +230,8 @@ does not release Content automatically.
   Every material change increments `sync_revision` and routes the changed
   packet to the same Paper P0 working projection rather than minting another
   portfolio; release of adopted Content remains governed by the Page barrier.
-- A working projection is current only when its revision and source hash equal
-  the sync packet and its normal Page workflow records a working receipt; this
+- A working projection is current only when its revision equals the sync
+  packet's `sync_revision` and its normal Page workflow records a working receipt; this
   does not silently promote adopted Content or delivery to current.
 - The sync operation is not a Page Run and does not mint `rpNN`. Do not create
   a local Ideation Run for it. If a human asks for bounded prose feedback on

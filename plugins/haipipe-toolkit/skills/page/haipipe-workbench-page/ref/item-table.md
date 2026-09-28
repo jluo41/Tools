@@ -54,7 +54,6 @@ page_run: re-display-01_example-display
 status: complete
 input:
   path: <frozen-local-input>
-  sha256: <64-hex>
 supporting_results: []
 local_sources: []
 payload:
@@ -120,9 +119,9 @@ reader normalizes both to the authored token and keeps the bare key as
 Keep the labels in the Result envelope. Do not create `outline/evidence/`,
 `results/values/`, or a separate folder for each label.
 
-`supporting_results` entries name the full Run id, Result path, and hash;
-`local_sources` entries name governed paths and hashes. DISPLAY records unit
-and artifact hashes in `provenance`. VALUE and CITE use their typed payload
+`supporting_results` entries name the full Run id and Result path;
+`local_sources` entries name governed paths. DISPLAY records unit
+and artifact paths in `provenance`. VALUE and CITE use their typed payload
 keys from the references below. A failed or blocked attempt keeps a truthful
 envelope with `status`, failed checks, and provenance rather than pretending
 to be ready.
@@ -213,10 +212,11 @@ The record head has three parts: item id, target bullet address, and a short
 human-readable evidence name. `Target` repeats the address intentionally so
 record renderers can show it as a column. The labels are fixed and ordered:
 
-The Board wall projects that identity as
-`E<n><kind>.<Label>`, where
-`V = VALUE`, `C = CITE`, and `D = DISPLAY`; for example,
-`E3V.AdjustedFx`. `Label` is authored by SHAPE, contains one or two concepts,
+Every surface names an item by one short name, `E<kind><NN>` (JL 260928):
+`Evalue03`, `Ecite25`, `Edisplay13` (`TABLE` reads `display`), from
+`src/item_table.py::short_name`. It keeps the stored number, which stays unique
+across the Page's types, so `E13` and `Edisplay13` never name two items. The
+Board wall adds the Label: `Evalue03.AdjustedFx`. `Label` is authored by SHAPE, contains one or two concepts,
 matches `[A-Za-z][A-Za-z0-9]{0,11}`, and stays stable unless the item's
 meaning changes. It is never generated from the full readable name. Legacy
 records without `Label` receive a bounded 12-character fallback until their
@@ -266,7 +266,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Serves` | SHAPE; `DISPLAY` only | optional additional Bullet addresses served by the same placed display; Target remains the single owner and no sibling inherits the Item |
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
-| `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
+| `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>` |
 | `Local Run` | SURVEY declares; LAND allocates/binds | exactly one typed Page `RE` lineage: `re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>`, plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
 | `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
@@ -275,7 +275,7 @@ test, or Run address. A typed `Status` label is a defect because status is
 derived from receipts and Results.
 
 A recovered prior output may carry the binding qualifier
-`provisional · <path>#<sha256>` after LAND verifies it against the current
+`provisional · <path>` after LAND verifies it against the current
 contract. `provisional` is not a Run action and does not replace `reuse` or
 `rerun`; it records that the accepted Supporting Result came from a governed
 old store. A newer canonical Result for the same target marks the provisional
@@ -316,12 +316,12 @@ outline version.
 VALUE and CITE payloads remain only at their governed Result addresses.
 DISPLAY payloads live at the resolved Result address and are exposed through
 the Result manifest's unit pointer. The governed Result envelope records the
-source local Run id, resolved Result path, unit pointer, and hashes. There is
+source local Run id, resolved Result path, and unit pointer. There is
 no `outline/evidence/display/` lane and no intermediate duplicate payload to
 copy; the Result envelope remains the provenance authority.
 For a consumer-serving canonical Task, the admitted PHI-safe unit is the narrow
 Page-authority exception to `$OUTPUT_ROOT`; `result.yaml` and `runtime.yaml`
-remain in the resolved Result store and point to/hash the unit.
+remain in the resolved Result store and point to the unit.
 
 Local indexing is owner-native. A Job-backed Task uses the Task's normal
 `bNNjNNtNNrNN` identity; before allocation its `new-run` declaration names the
@@ -366,7 +366,7 @@ Insight     an accepted instance/item execution Result with a traceable RF
 ```
 
 Current Insight instance references use `<instance>#<riNN_stem>@<vNNN>` plus
-the base-R pointer and exact Result path/hash in the frozen Local Input.
+the base-R pointer and exact Result path in the frozen Local Input.
 Historical `<instance>#<rNN_stem>@<vNNN>` references remain readable.
 `Insight · reuse · <full-id>` may
 support another Page; instance-local Execution supports use `Execution` with
@@ -433,7 +433,7 @@ navigation or a constraint until a Supporting Run makes an independently
 auditable Result available.
 
 A governed static source already owned by this Page may be named directly in
-`Local Input` with its path and frozen hash. That exception does not authorize
+`Local Input` with its path. That exception does not authorize
 copying an external Result into the Page or using a whole Folder as evidence.
 
 `evidence/pagex.md` is historical reference only. It is not read by the
@@ -484,5 +484,5 @@ state; the authored table never stores it:
 
 The overview stays compact: canonical item identity, target, support count,
 local Run, state, and Result. Clicking the item or Run reveals the frozen
-input, individual Supporting Runs, governed local-source hashes, Run/Result
+input, individual Supporting Runs, governed local-source paths, Run/Result
 paths, acceptance checks, and artifacts.

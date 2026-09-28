@@ -1,5 +1,9 @@
 # haipipe-insight-question · version history
 
+## 1.3.3 — 2026-09-28 · No content hashes (JL 260928)
+
+- A bridge QW row records the Task Insight Result path and version, never a content hash.
+
 ## 1.3.2 — 2026-09-20
 
 - Define the Question-owned GI6 receipt for a licensed

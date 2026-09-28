@@ -21,7 +21,7 @@ from src.plan_shape import (check as plan_shape_check, check_serves,      # noqa
                             check_bullet_grammar, check_head_style,
                             check_note_quotes_page, check_coverage,
                             paragraph_order_findings)
-from src.outline_version import latest_outline, legacy_integer_issue, version_policy_issues    # noqa: E402
+from src.outline_version import latest_outline, legacy_integer_issue, version_policy_issues, record_path, plan_dir    # noqa: E402
 
 SKILLS = BOARD_SKILL.parent.parent                # skills/
 
@@ -41,7 +41,7 @@ def _board_of(page: Path) -> Path:
 
 
 def _latest_plan(page: Path):
-    o = page.parent / "outline"
+    o = plan_dir(page.parent)
     return latest_outline(o, page.stem)
 
 
@@ -55,7 +55,7 @@ def main():
         raise SystemExit(f"not a page: {page}")
     board = _board_of(page)
     stem = page.stem
-    o = page.parent / "outline"
+    o = plan_dir(page.parent)
     out = []
 
     # ① the three derived files, regenerated whole. context-record.py joined
@@ -69,13 +69,13 @@ def main():
 
     # ② what the pass must READ, in one screen
     print(f"OUTLINE pass · {stem} · board {board.name}")
-    req = o / f"{stem}-requirement.md"
+    req = record_path(o, stem, "requirement")
     if req.is_file():
         heads = re.findall(r"(?m)^### (V\d) · (.+)$", req.read_text(encoding="utf-8", errors="replace"))
         print("requirement  " + " · ".join(f"{v} {h[:40]}" for v, h in heads) if heads else "requirement  (no venue division bound)")
     else:
         print("requirement  none (no structure-source:)")
-    fb = o / f"{stem}-feedback.md"
+    fb = record_path(o, stem, "feedback")
     if fb.is_file():
         m = re.search(r"(?m)^status:\s*(.+)$", fb.read_text(encoding="utf-8", errors="replace"))
         print("feedback     " + (m.group(1).strip() if m else "(no status line)"))

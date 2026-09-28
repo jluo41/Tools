@@ -15,7 +15,7 @@ writing:
   run: null                       # existing host id; null for standalone work
   version: null                   # use host values when present
   step: null
-  baseline: null                  # exact saved text or recoverable path/version/hash
+  baseline: null                  # exact saved text or recoverable path/version
   candidate: null                 # evaluate: text/path being reviewed; defaults to baseline
   plan: null                      # host slice; required for plan-based realization
   evidence: []                    # exact Results/static sources for factual claims
@@ -33,8 +33,8 @@ Values above illustrate the envelope, not a ready-to-run Ticket. Fill it from
 the actual request. A file edit needs its text, scope and applicable constraints;
 it does not require a Page, Outline, Evidence workspace, or a new Run. For
 Page work, resolve identities and inputs from its existing Ticket and records.
-The rubric's content hash and selected method versions/hashes are frozen in
-the effective packet. Resolve a declared requirement conflict before judging
+The rubric version and selected method versions are frozen in
+the effective packet (no content hashes). Resolve a declared requirement conflict before judging
 that criterion; do not invent a policy to make the packet complete.
 
 Resolve request-relative file paths from the request file's directory (or the
@@ -72,10 +72,10 @@ per-call files:
 | Field | Content |
 |---|---|
 | identity | Same request target and Run/Version/Step, if present |
-| candidate | Complete scoped text, exact source/version/hash; unchanged supplied candidate for evaluate mode |
+| candidate | Complete scoped text, exact source/version; unchanged supplied candidate for evaluate mode |
 | changes | Actual Before/After and local reasons for material edits only |
-| evaluation | Rubric/version/hash, evaluator mode, located findings, initial/final verdicts; see evaluation.md |
-| methods | Selected method, resolved entry/version/hash, execution/skip/block state and output reference |
+| evaluation | Rubric/version, evaluator mode, located findings, initial/final verdicts; see evaluation.md |
+| methods | Selected method, resolved entry/version, execution/skip/block state and output reference |
 | unresolved | Missing input, requirement conflict or out-of-scope fix, with the owning authority |
 | disposition | ready-for-review, needs-work, or blocked; never implicit human acceptance |
 

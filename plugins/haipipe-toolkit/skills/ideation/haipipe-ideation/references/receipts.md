@@ -21,30 +21,29 @@ assessment_binding:
   mode: owning_run | direct
   assessment_id: "unique id within the owning Result or direct invocation"
   owning_run: "bNN.jNN.tNN/rNN | null"
-  # For mode=owning_run, evaluator, criterion and input hashes are inherited
+  # For mode=owning_run, evaluator, criterion and input list are inherited
   # from Task Result `assessments[assessment_id]`.
   evaluator: null  # required in direct mode: {actor, model_or_build}
   criterion: null  # required in direct mode: {id, version, owner}
-  input: null      # required in direct mode: {subject_hash, manifest_sha256}
+  input: null      # required in direct mode: {subject_card, inputs}
 ```
 
 For a durable assessment, the owning Task Ticket freezes each assessment id,
 evaluator identity (including model/build when agent-run), criterion/rubric id
-and version, exact subject Card hash, and a hash of the sorted input manifest.
+and version, the subject Card path, and the sorted list of inputs consulted.
 The same-stem Task Result indexes that immutable context and the specialist
-receipt path/hash. The specialist receipt records the exact owning Run address
+receipt path. The specialist receipt records the exact owning Run address
 and assessment id; those fields inherit the remaining binding from that Run's
 Result. This is a Task-owned evaluation Step, not a new Ideation Run.
 
 For a direct or one-off assessment, set `mode: direct` and `owning_run: null`;
-include the evaluator, criterion id/version/owner, exact Idea Card version or
-content hash, and `manifest_sha256` over all evidence and contracts consulted.
-For inline input, hash the exact received text/attachments and list them in the
-manifest. Encode the manifest as a compact UTF-8 JSON array of
-`[stable_locator, "sha256:<content hash>"]` pairs, sorted lexicographically by
-locator, with no byte-order mark; `manifest_sha256` is SHA-256 of those exact
-bytes. Use repo-relative paths for workspace files, canonical URLs plus access
-dates for external sources, and `inline:<ordinal>` for inline content. If the
+include the evaluator, criterion id/version/owner, the subject Idea Card path,
+and an `inputs` list naming all evidence and contracts consulted, sorted by
+locator. Use repo-relative paths for workspace files, canonical URLs plus
+access dates for external sources, and `inline:<ordinal>` for inline content
+(keep the received text/attachments beside the receipt). No content hash is
+written: an assessment is stale when a listed input's modification time or
+version is newer than the receipt. If the
 exact inputs cannot be identified, mark the evaluation
 provisional/undetermined; do not invent a version. Return these fields inline
 even when no durable file is requested. Saving a direct result uses a new
@@ -60,7 +59,6 @@ review_resolution:
   raw_reviews:
     - assessment_id: "..."
       receipt: "immutable reviewer receipt path or null for inline review"
-      sha256: "sha256:<exact receipt bytes> or null for inline review"
       raw_judgment: "exact structured result when no receipt file exists"
   resolver: "person:<identifier> | null"
   rationale: "why the reviews agree or how the conflicting evidence was handled"
@@ -105,10 +103,8 @@ status: ok
 paper_projection:
   source_packet: projection/paper-ideation-sync.yaml
   source_revision: 4
-  source_hash: "sha256:<sync packet hash>"
   page_path: "Paper-.../A1-Story/Story00-ideation/...md"
   surface: working | release | delivery
-  output_hash: "sha256:<surface output hash>"
   created_at: "ISO-8601"
 ```
 
@@ -118,9 +114,9 @@ the standard dispatch receipt and its `paper_projection` extension. The adapter
 reads that receipt on the next sync and records the corresponding state; Page
 never edits the semantic packet directly. A `working` extension does not imply
 `release` or `delivery`. A release extension must consume the same
-revision/source hash as the working surface, and a delivery extension must
-identify the released source. Replaying the same source revision and hash is
-idempotent and does not allocate an `rpNN` Page Run.
+revision as the working surface, and a delivery extension must identify the
+released revision. Replaying the same source revision is idempotent and does
+not allocate an `rpNN` Page Run.
 
 ## Discovery search request/return
 
@@ -174,7 +170,6 @@ ideation_task: bNN.jNN.tNN
 direction_card: cards/direction.yaml
 source:
   sync_revision: 2
-  source_hash: "sha256:<reviewed semantic source>"
 by: "person:<identifier>"
 at: "2026-09-20T12:00:00-04:00"
 reason: "The person's bounded portfolio decision"
@@ -261,9 +256,8 @@ ready selected subset. --gate test still checks completion of the whole Test.
    An early defer/abandon does not require creating an absent Venue Fit Card;
    selected cards always require their complete fit artifact.
    Machine recommendation/recommended_target stay independent.
-4. Refresh only these human projections in the sync/P0 view. They are excluded
-   from the semantic source fingerprint; they do not change the evidence
-   revision that the person reviewed. Evidence or recommendation changes do
+4. Refresh only these human projections in the sync/P0 view. They do not
+   advance `sync_revision`, the evidence revision that the person reviewed. Evidence or recommendation changes do
    advance that revision and require a new decision before a new handoff.
 5. Any mismatch is HOLD with the stale projection named. Never choose a value
    by file modification time. This describes G0 intended targets; later Story
@@ -275,7 +269,7 @@ absence from selected_cards does not invent a per-card decision. Archive the
 unchanged original before migration, and carry forward only explicitly
 attributable answers. Missing scope or decisions require clarification.
 Legacy shape alone cannot authorize a new ready handoff: it must satisfy the
-same selected-card/target joins and supply the actual sync revision/hash.
+same selected-card/target joins and supply the actual sync revision.
 
 ## Paper P0 handoff (version 3)
 
@@ -290,7 +284,6 @@ source:
   evidence_bundle: bundle/evidence-bundle.yaml
   paper_ideation_sync: projection/paper-ideation-sync.yaml
   sync_revision: 2
-  source_hash: "sha256:<reviewed semantic source>"
   selection_receipt: workflow/selections/s01.yaml
 selected_ideas:
   - card: cards/i01_idea.yaml
@@ -313,7 +306,7 @@ created_at: "2026-09-20T12:05:00-04:00"
 ~~~
 
 The handoff uses the selection id and pins its immutable snapshot plus the
-current I2 semantic sync revision/hash. Version-3 selection and handoff require
+current I2 semantic sync revision. Version-3 selection and handoff require
 a version-2 sync with an existing P0 Page and a current working projection
 backed by its Page dispatch receipt. A legacy version-1 current flag alone
 cannot establish this; Content release and delivery may still be stale.

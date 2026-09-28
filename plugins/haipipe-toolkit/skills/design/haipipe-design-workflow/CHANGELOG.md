@@ -1,6 +1,12 @@
 # haipipe-design-workflow · version history
 
-0.4.0 current · 260920 (version unchanged at 0.4.0)
+0.4.0 current · 260928 · No content hashes (JL 260928) (version unchanged at 0.4.0; the Design family version is frozen)
+- Commission, Generate and Verify run records, decisions and runtime receipts
+  name files by path only; no `sha256`, `ticket_sha256` or hash-bound render.
+- A queued run is out of date when a file it names is newer than its run record
+  (file time); "Queue again" replaces it as before.
+
+0.4.0 · 260920 (version unchanged at 0.4.0)
 - Define Workflow first as a list of actual Runs. Commission/Generate/Verify
   are current Run types; route graphs describe relationships and Delivery is
   the read-only projection after independent Verify passes.

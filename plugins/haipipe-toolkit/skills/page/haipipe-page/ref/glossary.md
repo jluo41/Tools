@@ -46,7 +46,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   generated Board index or Page. `<DOMAIN>/b/<board-slug>[/<page-id>]`;
   its resolver is `servers/haipipe-board/home.py`.
 - **plan**, also **the outline file** — the SHAPE of a page, co-developed with
-  candidate prose; human approval licenses later published Content. `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
+  candidate prose; human approval licenses later published Content. `<page>/draft/<stem>-draft-v<G>.<S>[.<E>].md` (before 0.118: `<page>/outline/<stem>-outline-...`)
 - **Draft Space** — the reader-facing projection of the selected Markdown
   plan: Structure list plus Table, Reading, Scratch, and Revise views. The selected
   Outline Markdown contains both the plan and each Draft; Page/Run
@@ -93,7 +93,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   Evidence Result. The Page may inspect its identity and Result pointer, but
   does not copy or symlink the external Run or protected payload.
 - **Local Input** — one immutable envelope containing the Evidence Item
-  contract, exact Supporting Result paths and hashes, and any governed
+  contract, exact Supporting Result paths and Run ids, and any governed
   page-local static sources allowed by SURVEY. It is frozen by LAND.
 - **local Evidence Item Run** — the current Page `RE` that converts the
   Page-owned input into a focal ready VALUE/CITE/DISPLAY Result. DISPLAY is
@@ -111,11 +111,12 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 - **display unit**, often shortened to **unit** — ONE picture and everything
   needed to rebuild it. LAND supplies its Page-owned directory directly to the
   renderer; the governed DISPLAY Result envelope points to the unit and records
-  its source Run, resolved Result path, and hashes. CHECK administers its later
+  its source Run and resolved Result path. CHECK administers its later
   human `accepted:` gate. One per 🖼 mark.
   `<resolved-result>/payload/<unit>/` holding the renderer payload and preview.
-- **intake** — the unit's FROZEN inputs plus their sha256 hashes, so a moved
-  source file is caught rather than silently redrawn. `<unit>/intake/`
+- **intake** — the unit's FROZEN inputs with their source paths; a source file
+  saved after the intake (newer file time) is caught rather than silently
+  redrawn. `<unit>/intake/`
 - **bibex entry** — one citation file or source-metadata projection.
   `<resolved-result>/payload/<citation>` or the named Supporting Result. The
   person's CITE verification is `Verified:` on the authored Evidence Item row,

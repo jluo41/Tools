@@ -20,13 +20,13 @@ available, or approval has not arrived, record `analysis: deferred` or
 ## Input
 
 The Task reads the closed Page Run's immutable Version journal and records its
-exact input hash. It may read the Page-local Context and the accepted planning
+exact input path and Version number. It may read the Page-local Context and the accepted planning
 slice needed to interpret feedback. It must not read an open future Run as if
 that Run were part of the closed decision.
 
 ```text
 closed Page Run
-  └── results/<page-run>/v001.md · SHA-256 <frozen>
+  └── results/<page-run>/v001.md · closed <yymmdd HHMM>
           │
           ▼
 post-run analysis Task · native rNN identity
@@ -75,6 +75,6 @@ route; analysis never applies that change on its own.
 ## Failure and continuation
 
 Analysis failure is separate from Page Run closure. Mark the analysis Task
-`failed` or `Held`, preserve its input hash, and keep the closed Page Run
+`failed` or `Held`, preserve its input path and Version, and keep the closed Page Run
 closed. A later retry must create a new analysis Task or an explicitly recorded
 retry Result; it must not rewrite the closed Page Run.

@@ -1,5 +1,141 @@
+## 0.120.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- ⛔ Hard rule under the title (AGENTS.md rule 9): a version is its number and date; staleness is
+  file time or `git diff`; no sha256 is written, checked, compared or pinned.
+- Intake: `page.toml` no longer records `input_sha256` (`src/page_workspace.py::create_page`);
+  `page.py setup <file>` recognizes its own destination by the imported copy's name.
+  `input_preservation` compares the imported copy with the supplied original byte for byte, or,
+  without it, passes when the copy was not saved after `page.toml` (file time).
+- Setup Result (`src/page_setup.py`, `src/page_setup_check.py`): `runtime.yaml` inputs are paths
+  only, `report.md` drops the Input SHA-256 line, `checks.json` artifacts carry `path` + `saved`
+  (`yymmdd HHMM`), the static-delivery check compares copied bytes directly, and the Draft
+  coverage check no longer compares a `bullet-sha256`.
+- Static export marker `.haipipe-page-export` is `haipipe-page-export/v3`: `schema` + `source`,
+  no `source_sha256`. The example Page's delivery was rebuilt by `page.py build`.
+- Lifecycle auditor (`src/page_lifecycle.py`): `version_before`, `version_after`,
+  `checked_version` and `final_version` are one-line version labels (`v1.5 260928 1241`); the
+  `<source_sha256>:<render_sha256>` format and the `snapshot-version-mismatch` check are gone.
+  `audit_artifacts` no longer recomputes hashes; it reports `render-stale` when the Page source
+  was saved after its render. Old receipts' `source_sha256` / `render_sha256` keys are ignored.
+- Stage Contract (`src/stage_contract.py`): stale when an explicit source was saved after the
+  page (file time). `contract_saved()` returns that time; `contract_digest` is a deprecated alias
+  of it for `haipipe-board/cli/stage.py`. `src/page_parse.py` reads and ignores an old
+  `contract-source-hash:` line.
+- Migration (`src/draft_migration.py`, `src/layout_check.py`): `pinned_hashes` / `is_pinned` are
+  gone; no file is sealed by a receipt's hash any more. Only `results/` keeps its words.
+- Docs (`ref/glossary.md`, `ref/standalone.md`, `ref/page-checklist.md`, `ref/page-run-families.md`,
+  `ref/user-check-packet.md`, `fn/check-page-folder.md`, SKILL.md): Local Input, display intake,
+  RE records and setup audits name paths, Run ids, versions and saved times, never hashes.
+- Tests: `test_page_workspace.py`, `test_outline_feedback.py`, `test_plan_layout.py` and
+  `haipipe-board/tests/test_page_lifecycle.py` assert the absence of hashes and the file-time checks.
+
+## 0.119.0 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+- Run bookends (JL 260928): while a Page Writing Run is open only the Draft file changes; the
+  Run's records, its one log entry, decision threads and evidence notes are written once at the
+  close; Content adoption and the RD lanes (web → LaTeX → Word) follow only when the person asks.
+  Pointer in §🏃 Page Run families; the contract is `haipipe-page-workflow` 0.65.0,
+  `ref/interactive-writing-run.md` §🔖.
+- `page.py adopt <page> [--dry-run]` (`src/page_adopt.py`, asked by JL through the
+  S-MISQ-Main-5-Results session): the adoption step is code, not a hand edit. It rewrites each
+  `## Content` paragraph in Draft order, one `<!-- realizes: C.P.B -->` line per Draft (a multi-line
+  or `$$` Draft keeps its lines; one address tagged on several lines is one sentence), keeps the
+  apparatus and review marks under their sentence, drops and names those of a cut sentence, leaves
+  `[open …]` / `[block …]` marker Drafts off the Page, and leaves every unchanged paragraph byte for
+  byte. It refuses when the paragraph sets differ, or when an add, cut or move would cross untagged
+  material. Paper-AgreeablePrescriptionDiscretion dry run: 10 Sections already equal, Conclusion
+  1 rewrite, Appendix C 1 marker left off, Abstract refused (Draft `C2.P2` vs Page `C2.P1`),
+  Appendix A refused (six Drafts to place among untagged prompt blocks); Results shows zero changes.
+- The Space table names the Evidence Space's fourth tab, Supporting Runs (haipipe-workbench-page 0.92.0).
+- `adopt` also writes each sentence's evidence lines (JL 260928), a fourth lane `> Supporting Run:` among
+  them: `> Supporting Run: b03j02t01r04 · r04_D_reg_VisitLBP_1stPair_agre_af14d_ols · Execution · E12-VALUE-…`.
+  They come from the Bullet's `Evidence:` / `Answered:` / `Drawn:` items, the ledger's bound Result, its
+  `Supporting Runs` line and the run registry (`src/evidence_lines.py`); a `>` line naming no item stays, a
+  deferred item gets none. Before, an agent typed them: Results matched the Draft on 19 of 24, Empirical
+  Strategy had 0 of 14. The board renderer (`body.py`, ⚙️) and `check.py` know the new lane; md2tex and
+  md2docx already drop it from deliverables. Dry run over the MISQ paper: 13 Sections adopt, Abstract refused.
+- `src/item_table.py::short_name`: an Evidence Item's one short name, `E<type><NN>` (`Edisplay13`); `wall_label`
+  now builds on it (`Evalue03.AdjustedFx`, was `E3V.AdjustedFx`).
+- Sentence labels may be a range: `- B3 · S3-S4 · …` (also `S3–S4`, `S3 to S4`). Before, the reader
+  kept `S3-S4 ·` inside the Draft text, so the Conclusion's sync check reported a false difference.
+
 ## 0.118.0 · 2026-09-26
 
+- The Page workbench address is `/_board/draft` (was `/_board/outline`, asked by JL); `/w`
+  and every emitted link, fetch and test use it, and the old address still answers so built
+  pages and bookmarks keep working.
+- `draft-layout` on a Board or Task tree migrates every Page in it (`draft_layout_tree`), a Task
+  Page with no plan only gets `draft/`, and `outline/` paths naming a migrated plan folder are
+  rewritten inside each Page and around it (`sweep_outline_paths`; `_archive/` outside a Page
+  keeps its layout). `check-page-folder` no longer mistakes `outline/outline.md` for a Page. A Page with neither `outline/`
+  nor `draft/` (a Task with no plan or record yet) is not applicable for the plan-folder rule,
+  not behind. First use: 150 Task Pages in LLMRec, PhyReview-Pipeline and PhyTrait-Landscape
+  migrated with one `draft-layout <tasks-dir> --sort-runs` each; health and the task-tree check
+  unchanged before and after.
+- After a cold run of `check-page-folder` by a fresh agent: `draft-layout` also moves process
+  records into `draft/records/`, sweeps links between Pages once a whole Board has moved, and its
+  `--dry-run` counts path rewrites; printed fix commands are pasteable paths; `health` names the
+  real plan folder; a new rule reports retired Outline evidence, so `health` and
+  `check-page-folder` agree.
+- `draft-layout --archive-evidence` moves retired Outline evidence to
+  `draft/_archive/legacy-outline-evidence/` and repoints every citation inside the Page (LaTeX
+  includes too); sealed `results/` are never edited by any sweep. `fn/check-page-folder.md`
+  gains "In any SPACE": scan `examples`, migrate one repo at a time, verify, rebuild, commit.
+- Whole-SPACE run (Physician-SPACE, 15 roots, 140 Pages, plus the 16 venue desk Pages and
+  `pages-example/haipipe-page-guide` in this skill): 837 of 859 Pages latest afterwards, every
+  `results/` file byte-identical. It showed three gaps, now closed: a `display/` lane stays
+  while any unit has no DISPLAY Result (the paper delivery still reads it; new rule "display
+  units are DISPLAY Results", and `health` says the same); an Evidence item of another kind
+  (`SCHEMA`, `RECEIPT`) leaves its Evidence Markdown ungrouped instead of stopping the run, and
+  a tree run reports a refusing Page and moves the rest; relative symlinks inside an archived
+  lane keep their targets. The "In any SPACE" commands use a shell function, since zsh does
+  not split `$PAGE`.
+- A fresh reviewer of that run found data loss and stale paths, now fixed in the tool and
+  repaired in the data: the three-section writer dropped lines that were neither a heading nor
+  a Bullet (7 plans; now kept in Scratch via `canonical_extras`, and `_lost_lines` refuses any
+  loss); a plan with no Bullets is left as it is (3 reverted); legacy `vN` became `vN.1`
+  instead of `v0.<N+1>` (76 renamed); `materials/` is a live lane, not retired (3 restored);
+  moved tickets using `$(cd "$script_dir/.." && pwd)` climbed one level short (8 fixed);
+  `../runs/<ticket>` citations resolve against their file (10 fixed); records moved into
+  `records/` keep their relative paths (`relink_moved`; 50 paths in 28 records); the sweep
+  rewrites Python `/ "outline"` joins, follows citations into the evidence archive, and leaves
+  "outline/content" prose alone (30 prose lines restored). `health` and `check-page-folder` read
+  the same rules. New Pages start on the layout: `page.py setup` writes
+  `draft/<stem>-draft-v0.1.md` in three sections and imports into `draft/evidence/materials/`;
+  readers of `outline-version:` also read `draft-version:`; the workbench keeps a draft plan's
+  own header when it opens a working copy.
+- A second fresh reviewer and dry-runs in DrFirst, REACH and WellDoc (about 1,640 Pages behind)
+  showed plan shapes and readers the first run had not met, now handled: Bullets written
+  straight under `## C<n>` sit in `### C<n>.P1` instead of being dropped (10 plans refused);
+  a 0.117 `## Scratch` registry becomes section-2 note blocks (2 refused); "outline/content."
+  at the end of a sentence is prose, not a path; a retired item that code elsewhere in the
+  Project still reads (a paper builder joining `f"{stem}-evidence.md"`) stays live, with the
+  new rule "no script reads retired evidence"; the pre-0.117 `pagex/` binding lane at the Page
+  root is archived with its links made real copies (21 DrFirst Pages), and a linked Face
+  inside `pagex/` is no longer counted as a Page; the archive of a Page with no plan goes to
+  `draft/`, not a new `outline/`; `setup` writes a `status:` line. The migration agents then
+  found three more, also fixed: a file name starting with a Task id (`outline/t01_x-files.md`)
+  was read as prose and never rewritten; a multi-line `supersedes:` field left its second line
+  behind; a Result card `results/<run>/<run>.md` was counted as a Page; `--sort-runs` sorted Design
+  Run tickets (`rd01_commission_item01.yaml`) as Page Delivery Runs, which would have hidden them from
+  the Design workbench (they stay flat now); generated `board/` views no longer count as readers.
+  A third fresh reviewer then found two more, fixed and repaired: the path sweep rewrote 20
+  Design Run tickets whose sha256 their sealed Result pins (restored from backup; a file whose
+  hash any receipt or manifest in the Page pins is now sealed like `results/`, and the checker
+  skips it too), and a Board rebuild emptied two discovery Boards that never declared
+  `board-kind: discovery-block`. Guards tightened on its advice: repeated lines are counted,
+  Bullet review lines are compared, a division title and an `approved:` line must survive,
+  every plan check runs before `outline/` is renamed (a refused Page is left untouched),
+  `plan_dir` defaults to `draft/` for a Page with no plan folder, the reader scan covers the
+  whole Project (a paper submodule included) and names the exact `-evidence.md`, and a
+  paragraph heading of another division no longer counts as a missing paragraph.
+- `check-page-folder` (`fn/check-page-folder.md`, `src/layout_check.py`, `page.py
+  check-page-folder <page | board>`): is each Page Folder on the latest layout, rule by rule
+  with the skill version that introduced it and the command that fixes it; exit 1 when any
+  Page is behind. Page runs (`rp-`, `re-`, `rd`) are checked for Space folders; Task Runs
+  (`rNN_`) stay flat. `run_folders` now sorts every `re-*` run (Discovery too) into
+  `evidence-run/`.
 - Draft Markdown: the plan can be one three-section file, `## 1 · Structure · Bullet Point
   Table` (a `### Structure Overview`, then each Bullet's Point and plan lines), `## 2 · Scratch`
   and `## 3 · Draft` (the sentences), all on one `C.P`/`B` skeleton. `src/plan_layout.py`:
@@ -25,8 +161,37 @@
 - Workbench: a Runs panel under each Space's content (`servers/workbench-page/runs_panel.py`):
   run types from the Run cards' new `🔘 BUTTON` lines, the selected run with Rerun, a prompt to
   copy (`💬 PROMPT`), its process and its result files; a selected paragraph or an item filter
-  narrows it; it folds to one line; the new Page bar has Focus (key F), readiness, and the
-  Context and Check prompts. Labels name the real plan folder.
+  narrows it; it folds to one line. Labels name the real plan folder.
+- Workbench Spaces as designed (`studio/page-workbench-design.excalidraw`,
+  `servers/workbench-page/space_views.py`): three Spaces (Draft, Evidence, Delivery; no Run
+  Space tab and no Page bar above them), each with a `Reads` line naming its file. Draft: a
+  folded `Structure` line; no page-count head, jump line, or evidence ids (JL 260927).
+  Evidence: Citations / Displays / Values tabs over the Evidence Markdown's sections, views
+  All items (ID, item, used by, state), Card (the evidence cards, focused on the chosen item)
+  and Source. Delivery: Web / LaTeX / Word / Slides tabs over `delivery/<format>/`, views
+  Preview, Artifacts and Checks. The Runs panel is a column on the right of the content that stays in view, shows only the
+  run types of the current view or tab (`🔘 BUTTON … · views …`), opens on a waiting run or
+  the view's own type, names its `runs/` folders, and folds to a thin strip. Delivery
+  buttons are Build (per format tab) and Check; Evidence buttons are Bind / update citation,
+  Build figure / table, Bind / update value, and Supporting runs.
+- Whole-board migration (Paper-AgreeablePrescriptionDiscretion, 17 Pages): `draft-layout` also
+  groups a flat Evidence Markdown into `## Citations`, `## Displays`, `## Values` (each item
+  block moves unchanged; `group_evidence`). Readers that named `<page>/outline` now go through
+  `plan_dir`: `record_path` resolves an `outline` argument to `draft/`; the board CLIs
+  (context-record, outline-pass, requirement, skillpage, check), the board host's discussion
+  write, Studio chat, the Folder view, the paper workbench (plans, Evidence Markdown, and run
+  tickets in Space folders) and the paper build engine (`plan_home`, draft plan versions,
+  legacy display units) all read `draft/` and still read `outline/` on older Pages.
+- Concise workbench (JL 260927: "as concise as possible"): no Page bar, no ⧉ copy-prompt chips
+  (Draft, Evidence cards, Delivery checks; the Runs panel holds every prompt), no paragraph
+  evidence ids, no hint or explanation lines, no Sources row, no Scratch/Revise notes, no run
+  sub-line or "Saved in" footer, no run-id strip when a tab has one run, and a Runs header that
+  says only "Runs". Runs show full names (`run-structure-01`, `run-paragraph-15`, `run-citation-25`,
+  `run-latex-01`; `display_name`) while files keep their short ids, shown on hover. The Runs
+  panel is a column on the right that stays in view, and each view or tab lists only its own
+  run types (`· views` on every Draft, Evidence and Delivery button); older `pj..t..r..`
+  evidence runs join the tab and item they serve (`run_tabs`). Every evidence run is named by
+  its item: the first `run-value-E25`, later ones `run-value-E25-2` (`_name_by_item`).
 - Run cards: `🔘 BUTTON` and `💬 PROMPT` lines on every card, and two new cards,
   `Page.auto-writing` (`rp-auto-NN`) and `Page.evidence-embed` (`rp-embed-NN`); the Run Space
   accepts both names.

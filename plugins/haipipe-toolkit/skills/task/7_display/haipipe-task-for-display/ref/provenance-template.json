@@ -8,7 +8,6 @@
   },
   "output": {
     "artifact": "$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/source_data.csv",
-    "sha256": "<sha256-of-source_data.csv>",
     "row_count": 0,
     "approved_for_display_intake": true,
     "contains_raw_or_phi": false
@@ -16,7 +15,6 @@
   "derived_from": [
     {
       "artifact": "<upstream-task-result-or-report>",
-      "sha256": "<upstream-artifact-sha256>",
       "role": "source-result",
       "run": "bNNjNNtNNrNN"
     }

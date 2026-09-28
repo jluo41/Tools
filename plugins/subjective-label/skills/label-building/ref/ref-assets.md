@@ -14,13 +14,8 @@ Human-readable Markdown files are rendered views and never a second source of tr
 ├── register.md                       the seven regions × open / covered / risky
 ├── gates/
 │   ├── p0-contract/receipt.json       immutable P0 import/checksum receipt
-│   └── g0/receipt.json                human meaning confirmation + G0 binding
-├── runs/
-│   └── rlNN_<operation>_<target>.yaml              authored Run Ticket
-├── results/
-│   └── rlNN_<operation>_<target>/
-│       ├── runtime.yaml              lifecycle and attempt trail
-│       └── result.yaml               safe pointers to canonical domain Results
+│   ├── g0/receipt.json                human meaning confirmation + G0 binding
+│   └── meaning-revisions/<seq>.json   each human-decided wording change (definition-discussion)
 ├── corpus/
 │   ├── manifest.json
 │   ├── items.jsonl                   eligible development rows only (§7)
@@ -112,6 +107,21 @@ Human-readable Markdown files are rendered views and never a second source of tr
         └── report.md
 ```
 
+`{project_dir}` is the Page's `labeling/` folder. The job's Runs sit in the
+Page folder beside it, never inside it; every path in a Run receipt is relative
+to the Page, so a job file reads `labeling/corpus/items.jsonl`:
+
+```text
+<Page>/
+├── labeling/                         {project_dir}, the tree above
+├── runs/
+│   └── rlNN_<operation>_<target>.yaml    authored Run Ticket
+└── results/
+    └── rlNN_<operation>_<target>/
+        ├── runtime.yaml              lifecycle and attempt trail
+        └── result.yaml               safe pointers to canonical domain Results
+```
+
 ## 2. Canonical versus rendered artifacts
 
 Canonical files contain ids, versions, checksums, fields, and event records.
@@ -131,7 +141,7 @@ Rendered files may be regenerated and never confer gold or close a state.
 ## 2a. Labeling Run dialect
 
 The project root is one Level-3 Labeling job. Every allocated Level-4 Run uses
-one generic envelope:
+one generic envelope, in the Page folder beside `labeling/`:
 
 ```text
 runs/<RUNNAME>.yaml
@@ -141,7 +151,7 @@ results/<RUNNAME>/result.yaml
 
 The envelope points to canonical artifacts produced or consumed by its Run
 Spec; it does not copy them or become semantic authority. P0-P5 are
-compatibility capability tags for the 25 operation kinds: bounded contract
+compatibility capability tags for the 26 operation kinds: bounded contract
 work, calibration, handoff, prediction and scoring, production, audit, and
 materialization. Round, Test, Scan, and Audit are grouping episodes, not extra
 Runs. Item events, tool calls, and retries under unchanged frozen inputs stay
@@ -211,7 +221,7 @@ and the audit-arm metric it should move, before the first item is shown.
 `prelabels/<executor>.jsonl` holds one executor's immutable sealed rows (none in
 round 1). `sessions/` is append-only. Its `events.jsonl` holds the
 hash-chained show, first, lock, reveal, and final events per item; the field
-list is in `../skills/label-building-workflow/SKILL.md` §JUDGE. Policy proposals
+list is in `../../label-building-workflow/SKILL.md` §JUDGE. Policy proposals
 and backward-impact candidates also belong under `sessions/` once LEARN is
 built. `human_final.jsonl`
 is the per-item final decision with its change type. `checkpoint.json` joins
@@ -370,6 +380,7 @@ The final report states provenance shares, weighted error and interval, protecte
 | Session human records, `sessions/events.jsonl` | `engine/calibration.py`, recording the identified human's input from the chat, the Board write door, or the Strong Calibration Agent |
 | `cache/reveal/` | `engine/calibration.py`; regenerable |
 | `exposure/group_examples.jsonl` | `engine/embedding_build.py` (`group_examples`, `item_text`); append-only, never rebuilt |
+| label wording in `config.yaml`, `gates/meaning-revisions/<seq>.json` | `engine/definition_discussion.py close` through `job.revise_meanings`, only from the identified human's decisions and only before any item is judged |
 | `rounds/round_NN/sessions/feedback.jsonl` | `engine/calibration.py add_feedback`; notes from the chat about an item (author human or model), append-only, never a label |
 | eligible `population_status` rows and protected ID/hash manifest | `engine/fence_source.py`, before the job exists |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |

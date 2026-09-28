@@ -34,6 +34,8 @@ P0_FILES = (
     "policy/versions/G_00/manifest.yaml",
 )
 REGIONS = ("H", "L", "N", "HL", "LN", "HN", "HLN")
+MEANING_REVISIONS = "gates/meaning-revisions"  # one JSON per human-decided change to the label meanings
+MEANING_REVISION_SCHEMA = "subjective-label-meaning-revision/v1"
 POLICY_COMPONENTS = (
     "guideline.md",
     "boundaries.yaml",
@@ -149,6 +151,52 @@ def _unconfirmed_config_bytes(config: dict) -> bytes:
     return yaml_bytes(original)
 
 
+def meaning_revisions(job_root: Path) -> list[dict]:
+    """Every recorded change to the label meanings, oldest first (see ``revise_meanings``)."""
+    base = Path(job_root) / MEANING_REVISIONS
+    if not base.is_dir() or base.is_symlink():
+        return []
+    rows = [load_mapping(path) for path in base.glob("*.json") if not path.is_symlink()]
+    return sorted(rows, key=lambda row: int(row.get("seq") or 0))
+
+
+def _contract_config(config: dict, revisions: list[dict]) -> dict:
+    """The config as the P0 contract wrote it: the label meanings before the first revision."""
+    if not revisions:
+        return config
+    original = copy.deepcopy(config)
+    labels = original.get("labels")
+    if isinstance(labels, dict):
+        labels["meanings"] = copy.deepcopy(revisions[0].get("before"))
+    return original
+
+
+def _revision_chain_errors(config: dict, revisions: list[dict]) -> list[str]:
+    """Each revision starts where the last one ended, and config.yaml holds the last one's wording."""
+    errors = []
+    for index, revision in enumerate(revisions, start=1):
+        if revision.get("schema") != MEANING_REVISION_SCHEMA or revision.get("seq") != index:
+            errors.append(f"meaning revision {index}: malformed or out of sequence")
+        elif index > 1 and revision.get("before") != revisions[index - 2].get("after"):
+            errors.append(f"meaning revision {index}: does not start from revision {index - 1}")
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    if revisions and labels.get("meanings") != revisions[-1].get("after"):
+        errors.append("label meanings in config.yaml differ from the last meaning revision")
+    return errors
+
+
+def _judged_items(job_root: Path) -> list[str]:
+    """Items that already have a first or final answer, in any round."""
+    judged = []
+    for events in sorted((Path(job_root) / "rounds").glob("round_*/sessions/events.jsonl")):
+        for line in events.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                event = json.loads(line)
+                if event.get("kind") in {"first", "final"}:
+                    judged.append(f'{events.parents[1].name}:{event.get("item_id")}')
+    return sorted(set(judged))
+
+
 def find_protected_manifest(sealed_dir: Path) -> Path:
     matches = sorted(
         path
@@ -161,6 +209,24 @@ def find_protected_manifest(sealed_dir: Path) -> Path:
             f"found {[path.name for path in matches]}"
         )
     return matches[0]
+
+
+def page_root(job_root: Path) -> Path:
+    """The Page folder around labeling/; it holds the job's runs/ and results/."""
+    return Path(job_root).parent
+
+
+def runs_dir(job_root: Path) -> Path:
+    return page_root(job_root) / "runs"
+
+
+def results_dir(job_root: Path) -> Path:
+    return page_root(job_root) / "results"
+
+
+def page_path(job_root: Path, rel: str) -> str:
+    """A labeling/ file as a Run receipt names it: relative to the Page."""
+    return f"{Path(job_root).name}/{rel}"
 
 
 def validate_page_lane(page_file: Path, job_root: Path) -> Path:
@@ -711,12 +777,12 @@ def create_contract(
         "episode": "contract",
         "target": "job-v1",
         "commission": {
-            "path": "gates/p0-contract/receipt.json",
+            "path": page_path(job_root, "gates/p0-contract/receipt.json"),
             "sha256": sha256_bytes(json_bytes(receipt)),
         },
         "inputs": [
             {
-                "path": "corpus/items.jsonl",
+                "path": page_path(job_root, "corpus/items.jsonl"),
                 "sha256": items_checksum,
             }
         ],
@@ -751,7 +817,7 @@ def create_contract(
         "outcome": "P0 contract landed; human meaning confirmation remains open",
         "artifacts": [
             {
-                "path": "gates/p0-contract/receipt.json",
+                "path": page_path(job_root, "gates/p0-contract/receipt.json"),
                 "sha256": sha256_bytes(json_bytes(receipt)),
             }
         ],
@@ -791,9 +857,9 @@ def create_contract(
         job_root / "policy" / "current": b"G_00\n",
         job_root / "policy" / "versions" / "G_00" / "manifest.yaml": policy_manifest_data,
         job_root / "gates" / "p0-contract" / "receipt.json": json_bytes(receipt),
-        job_root / "runs" / f"{run_name}.yaml": yaml_bytes(run_ticket),
-        job_root / "results" / run_name / "runtime.yaml": yaml_bytes(run_runtime),
-        job_root / "results" / run_name / "result.yaml": yaml_bytes(run_result),
+        runs_dir(job_root) / f"{run_name}.yaml": yaml_bytes(run_ticket),
+        results_dir(job_root) / run_name / "runtime.yaml": yaml_bytes(run_runtime),
+        results_dir(job_root) / run_name / "result.yaml": yaml_bytes(run_result),
         job_root / "REPORT.md": report,
         job_root / ".state.json": json_bytes(state),
     }
@@ -803,7 +869,7 @@ def create_contract(
     created: list[str] = []
     for path, data in artifacts.items():
         if write_once(path, data):
-            created.append(path.relative_to(job_root).as_posix())
+            created.append(path.relative_to(page_root(job_root)).as_posix())
     for rel in ("cache/embeddings", "rounds", "handoff", "evaluation", "production", "audit"):
         (job_root / rel).mkdir(parents=True, exist_ok=True)
 
@@ -958,7 +1024,7 @@ def confirm_meaning(
     updated: list[str] = []
     if not already_semantic:
         expected_config_checksum = (
-            sha256_file(config_path) if prior_meaning_bound
+            sha256_file(config_path) if prior_meaning_bound or meaning_revisions(job_root)
             else str(initial_checksums.get("config.yaml") or "")
         )
         if _replace_exact(
@@ -989,6 +1055,97 @@ def confirm_meaning(
         "updated_count": len(updated),
         "next_action": "propose round_01 card",
     }
+
+
+def revise_meanings(
+    *,
+    job_root: Path,
+    human_id: str,
+    meanings: dict,
+    run: str,
+    revised_at: str,
+) -> dict:
+    """Record one human-decided change to the label meanings, before any item is judged.
+
+    The P0 contract froze the meanings it was given (for S-Label-4, an AI draft).
+    A closed ``definition-discussion`` Run is the one sanctioned way to change
+    them: the revision keeps before, after and the deciding Run, retires the old
+    meaning confirmation and G0 receipt (the receipt is archived), and so the
+    human confirms the new meanings (G0) again.  ``human_id`` is checked against
+    the configuration; it is not authenticated.
+    """
+    job_root = job_root.resolve()
+    before_state = status(job_root)
+    if before_state["missing"] or before_state["p0_integrity_errors"]:
+        raise RuntimeError(f"P0 contract integrity must pass first: {before_state['p0_integrity_errors']}")
+    if before_state["hold"]:
+        raise RuntimeError(f"HOLD · {before_state['hold_reason']}")
+    config_path = job_root / "config.yaml"
+    config = load_mapping(config_path)
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    if not human_id or authority.get("human_id") != human_id:
+        raise RuntimeError("caller-supplied human_id must match the configured semantic authority")
+    judged = _judged_items(job_root)
+    if judged:
+        raise RuntimeError(
+            "the meanings can change only before any item is judged; already judged: " + ", ".join(judged[:5])
+        )
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    values = [str(v) for v in labels.get("values") or []]
+    current = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
+    if set(meanings) != set(values) or any(not str(meanings[v] or "").strip() for v in values):
+        raise RuntimeError(f"give one meaning for each label: {values}")
+    after = {v: " ".join(str(meanings[v]).split()) for v in values}
+    if after == current:
+        return {"job_root": str(job_root), "changed": False, "updated_files": [],
+                "next_action": before_state["next_action"]}
+
+    revisions = meaning_revisions(job_root)
+    new_config = copy.deepcopy(config)
+    new_config["labels"]["meanings"] = after
+    new_authority = new_config.setdefault("authority", {})
+    retired = new_authority.get("meaning_receipt")
+    new_authority["meaning_confirmed"] = False
+    new_authority["meaning_receipt"] = None
+    new_data = yaml_bytes(new_config)
+    g0_path = job_root / "gates" / "g0" / "receipt.json"
+    record = {
+        "schema": MEANING_REVISION_SCHEMA,
+        "seq": len(revisions) + 1,
+        "run": run,
+        "human_id": human_id,
+        "identity_assurance": "caller_attested_not_authenticated",
+        "revised_at": revised_at,
+        "before": copy.deepcopy(current),
+        "after": after,
+        "config_before_checksum": sha256_file(config_path),
+        "config_after_checksum": sha256_bytes(new_data),
+        "retired_meaning_receipt": retired,
+        "retired_g0_receipt_checksum": sha256_file(g0_path) if g0_path.is_file() else None,
+    }
+    p0_receipt = load_mapping(job_root / "gates" / "p0-contract" / "receipt.json")
+    anchor = str((p0_receipt.get("p0_artifact_checksums") or {}).get("config.yaml") or "")
+    rebuilt = sha256_bytes(_unconfirmed_config_bytes(_contract_config(new_config, [*revisions, record])))
+    if rebuilt != anchor:  # prove the P0 anchor still holds before a byte is written
+        raise RuntimeError("the revised config would not rebuild the P0 contract's config.yaml")
+
+    updated: list[str] = []
+    revision_path = job_root / MEANING_REVISIONS / f'{record["seq"]:03d}.json'
+    write_once(revision_path, (json.dumps(record, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
+    updated.append(revision_path.relative_to(job_root).as_posix())
+    if g0_path.is_file():
+        prior = g0_path.read_bytes()
+        archive = job_root / "gates" / "g0" / "history" / f"{sha256_bytes(prior)}.json"
+        write_once(archive, prior)
+        g0_path.unlink()
+        updated.extend([archive.relative_to(job_root).as_posix(), "gates/g0/receipt.json (retired)"])
+    _replace_exact(config_path, record["config_before_checksum"], new_data)
+    updated.append("config.yaml")
+    after_state = status(job_root)
+    if not after_state["p0_contract_integrity_valid"]:
+        raise RuntimeError(f"meaning revision left P0 invalid: {after_state['p0_integrity_errors']}")
+    return {"job_root": str(job_root), "changed": True, "revision": revision_path.relative_to(job_root).as_posix(),
+            "updated_files": updated, "next_action": after_state["next_action"]}
 
 
 def _component_path(policy_dir: Path, name: object) -> Path | None:
@@ -1026,6 +1183,14 @@ def status(job_root: Path) -> dict:
     except (OSError, ValueError, TypeError):
         meaning_is_bound = False
     hold, hold_reason = authority_hold(config) if config else (False, "")
+    revisions: list[dict] = []
+    if config:
+        try:
+            revisions = meaning_revisions(job_root)
+        except (OSError, ValueError, TypeError) as error:
+            p0_integrity_errors.append(f"meaning revisions unreadable: {error}")
+        else:
+            p0_integrity_errors.extend(_revision_chain_errors(config, revisions))
 
     exclusion_asserted = False
     g0_receipt_valid = False
@@ -1096,8 +1261,8 @@ def status(job_root: Path) -> dict:
                 elif not component.is_file() or sha256_file(component) != str(expected):
                     p0_integrity_errors.append(f"G_00 component checksum mismatch: {name}")
 
-        # The immutable P0 receipt is always the anchor.  After confirmation
-        # the only permitted P0 change is config.yaml's meaning fields.
+        # The immutable P0 receipt is always the anchor.  The only permitted P0
+        # changes are config.yaml's confirmation fields and recorded meaning revisions.
         if not p0_receipt_path.is_file():
             p0_integrity_errors.append("P0 contract receipt missing")
         else:
@@ -1110,8 +1275,8 @@ def status(job_root: Path) -> dict:
             else:
                 for rel in P0_FILES:
                     expected = str(p0_checksums.get(rel) or "")
-                    if rel == "config.yaml" and meaning_is_bound:
-                        actual = sha256_bytes(_unconfirmed_config_bytes(config))
+                    if rel == "config.yaml" and (meaning_is_bound or revisions):
+                        actual = sha256_bytes(_unconfirmed_config_bytes(_contract_config(config, revisions)))
                     else:
                         actual = sha256_file(job_root / rel)
                     if not expected or actual != expected:
@@ -1196,6 +1361,7 @@ def status(job_root: Path) -> dict:
         "hold_reason": hold_reason,
         "meaning_confirmed": meaning_confirmed,
         "meaning_receipt_valid": meaning_is_valid,
+        "meaning_revisions": len(revisions),
         "g0_receipt_valid": g0_receipt_valid,
         "g0_passed": g0_ready,
         "p0_contract_integrity_valid": p0_contract_integrity_valid,

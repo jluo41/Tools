@@ -1,5 +1,6 @@
 """Insight instance identities and item tables through the real Board engine."""
 import importlib.util
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -45,10 +46,15 @@ class InsightIntegrationTest(unittest.TestCase):
         self.assertEqual("", it.compact_global_run("study/patient-a#r01_description"))
         self.assertEqual((False, 1), it._valid_supporting("Insight · reuse · r01_description"))
 
-    def test_bad_source_hash_prevents_ready_registry_result(self):
-        (self.a / "outline/evidence/materials/snapshot-01.yaml").write_text("changed: true\n")
+    def test_changed_source_is_flagged_by_file_time_not_hash(self):
+        # No content hashes (JL 260928): a source saved after the Run's input
+        # record is flagged by file time on the item table.
+        data = self.a / "outline/evidence/materials/snapshot-01.yaml"
+        data.write_text("changed: true\n")
+        later = (self.exec_a / "input.yaml").stat().st_mtime + 60
+        os.utime(data, (later, later))
+        self.assertIn("source file newer than input", render_items(self.page))
         registry = it.run_registry(str(self.root))
-        self.assertEqual("rerun", registry["study/patient-a#r01_description@v001"]["status"])
         self.assertEqual("complete", registry["study/patient-b#r01_description@v001"]["status"])
 
     def test_real_outline_renders_item_table_without_inventing_run_for_open_item(self):

@@ -201,9 +201,9 @@ touch SPACE configuration. Never print credentials or edit machine-local
 **Human decisions.**
 Routing may update factual Aim `Now:` lines and append typed log records. When
 it has inspected the evidence, it may move an Aim among the allowed statuses
-and records the reason in `outline/<stem>-log.md`. It may never decide for the
+and records the reason in `outline/records/<stem>-log.md`. It may never decide for the
 person or change a page-level human gate. A proposal receives a Board-wide
-`D<nn>` thread in `outline/<stem>-discussion.md`; when it blocks an Aim, that
+`D<nn>` thread in `outline/records/<stem>-discussion.md`; when it blocks an Aim, that
 Aim's `Now:` points to the thread and the live ask is mirrored under
 `Aims › Decision Now` when that owner declares this native/legacy surface.
 New generic Pages keep targets and decisions in the owner's backstage records;

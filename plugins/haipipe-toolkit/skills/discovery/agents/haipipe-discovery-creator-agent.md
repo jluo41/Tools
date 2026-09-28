@@ -35,7 +35,7 @@ Create both Faces of one Task Page:
 
 ~~~text
 discoveries/bNN_<block>/jNN_<job>/tNN_<task>/
-Page Face: tNN_<task>.md, shared outline/ process and selected outline/evidence lanes
+Page Face: tNN_<task>.md, shared draft/ process and selected draft/evidence lanes
 Task Face: discovery.yaml, optional scripts, runs, results
 ~~~
 
@@ -136,7 +136,7 @@ outside that inventory and must satisfy the Page release barrier before CONTENT.
 When useful, D1 may write one
 optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
 D1 SYNTHESIZE asks `haipipe-workbench-page/ref/evidence/citations.md` to build
-the deterministic citation aggregate under `outline/evidence/bibex/`. The
+the deterministic citation aggregate under `draft/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
 not replace the owning Result. After Page `04 CHECK`, rebuild and strictly
 check the Board so its generated status and navigation are current before D1

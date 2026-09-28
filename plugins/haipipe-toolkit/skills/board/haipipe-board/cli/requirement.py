@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write `outline/<stem>-requirement.md`: everything this page must OBEY.
+"""Write `outline/records/<stem>-requirement.md`: everything this page must OBEY.
 
 The generated block resolves venue records from the division the Page names;
 the authored block keeps page-owned writing records. The generator replaces
@@ -35,6 +35,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent          # haipipe-board/
 SKILLS = HERE.parent.parent                             # skills/
+sys.path.insert(0, str(HERE))
+from src.outline_version import plan_dir, record_path  # noqa: E402
 BEGIN, END = "# --- requirement:begin (generated) ---", "# --- requirement:end ---"
 WBEGIN, WEND = "# --- writing:begin (authored) ---", "# --- writing:end ---"
 
@@ -265,8 +267,9 @@ def main():
         board, pages = a.target.parents[2], [a.target]
     n = 0
     for pg in sorted(pages):
-        out = pg.parent / "outline" / f"{pg.stem}-requirement.md"
-        legacy = pg.parent / "outline" / f"{pg.stem}-writing.md"
+        out = record_path(pg.parent / "outline", pg.stem, "requirement")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        legacy = plan_dir(pg.parent) / f"{pg.stem}-writing.md"
         made = build(
             pg,
             board,

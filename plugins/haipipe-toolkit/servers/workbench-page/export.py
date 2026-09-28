@@ -305,6 +305,14 @@ class ExportMixin:
                 continue
             payload = document.get("payload") or {}
             ref = payload.get("bibliography") if isinstance(payload, dict) else None
+            if (not isinstance(ref, str) or not ref) and isinstance(payload, dict) and payload.get("sources"):
+                # the older paper-local CITE shape (pj…): no payload .bib of its own, but each
+                # source names its key and the Supporting Result it comes from
+                for key, entry in self._supporting_bibliography(manifest, document).items():
+                    if key in entries and entries[key].strip() != entry.strip():
+                        raise EvidenceSelectionError(f"Selected CITE Results conflict on bibliography key {key}")
+                    entries[key] = entry
+                continue
             if not isinstance(ref, str) or not ref:
                 raise EvidenceSelectionError(f"{manifest}: CITE payload.bibliography is missing")
             if ref.startswith("<resolved-result>/"):
@@ -338,17 +346,47 @@ class ExportMixin:
             bib.write_text(text, encoding="utf-8")
         return bib
 
+    def _supporting_bibliography(self, manifest, document):
+        """The entries an older CITE Result cites, each taken by its exact key from the
+        one-entry `.bib` of a Supporting Result the Result itself names. A key found in
+        none of them is refused by name: no paper-wide seed Bib, no key renaming."""
+        from src.item_table import repo_root
+        keys = [str(s.get("cite", "")).strip().lstrip("@").strip()
+                for s in (document.get("payload") or {}).get("sources", []) if isinstance(s, dict)]
+        keys = [k for k in dict.fromkeys(keys) if k]
+        if not keys:
+            raise EvidenceSelectionError(f"{manifest}: CITE payload.bibliography is missing")
+        root = repo_root(manifest.parent).resolve()
+        found = {}
+        for support in document.get("supporting_results") or []:
+            rel = support.get("result") if isinstance(support, dict) else None
+            folder = (root / rel).resolve() if isinstance(rel, str) and rel else None
+            if folder is None or not folder.is_dir():
+                continue
+            try:
+                folder.relative_to(root)
+            except ValueError:
+                raise EvidenceSelectionError(f"{manifest}: a Supporting Result leaves the repository") from None
+            for bib in sorted(folder.glob("*.bib")):
+                for key, entry in self._bib_entries(bib.read_text(encoding="utf-8", errors="replace")).items():
+                    found.setdefault(key, entry)
+        missing = [k for k in keys if k not in found]
+        if missing:
+            raise EvidenceSelectionError(
+                f"{manifest}: cited key(s) {', '.join(missing)} are in none of its Supporting Results' "
+                "Bib; give the Result a payload.bibliography, or cite the Supporting Result's own key")
+        return {k: found[k] for k in keys}
+
     def _evidence_receipt(self, page_src, out_dir):
-        """Record selection provenance separately from conversion success."""
-        import hashlib
+        """Record selection provenance separately from conversion success.
+
+        Paths only, no content hashes (JL 260928): staleness is file time or `git diff`."""
         manifests = selected_results(page_src)
         record = {
-            "schema_version": 1,
+            "schema_version": 2,
             "profile": "legacy-migration" if legacy_profile(page_src) else "current-ledger",
             "source": page_src.name,
-            "source_sha256": hashlib.sha256(page_src.read_bytes()).hexdigest(),
-            "results": [{"path": path.relative_to(page_src.parent).as_posix(),
-                         "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+            "results": [{"path": path.relative_to(page_src.parent).as_posix()}
                         for path in manifests],
         }
         (out_dir / "evidence-selection.json").write_text(
@@ -424,26 +462,21 @@ class ExportMixin:
             return match
         return None
 
-    @staticmethod
-    def _sentence_boundary_after(body, start):
-        """Return the end of the sentence containing a display reference.
+    # a paragraph ends at a blank line, or where a heading or another float begins
+    _PARAGRAPH_END = re.compile(
+        r"\n[ \t]*(?:\n|(?=\\(?:(?:sub)*section|paragraph)\*?\{|\\begin\{(?:table|figure)\}))")
 
-        Page prose is stored one sentence per source line, but the manuscript
-        exporters join those lines into a paragraph. Placing a display at the
-        next paragraph break therefore left a table after all of the results
-        it was meant to organize. Decimal values are skipped so ``9.34`` and
-        ``0.001`` do not look like sentence endings.
+    @classmethod
+    def _paragraph_end_after(cls, body, start):
+        """Return the end of the paragraph containing a display reference.
+
+        A float follows the paragraph that first cites it and never splits one
+        (MISQ's first-reference rule; the S-MISQ-Main-5-Results session, 260928).
+        Placing it after the citing SENTENCE cut the paragraph in two: its
+        remaining sentences printed after the float as a new, orphaned paragraph.
         """
-        for i in range(max(0, start), len(body)):
-            if body[i] not in ".!?":
-                continue
-            if body[i] == "." and i + 1 < len(body) and body[i + 1].isdigit():
-                continue
-            if i and body[i - 1] == "\\":
-                continue
-            if i + 1 == len(body) or body[i + 1].isspace():
-                return i + 1
-        return None
+        match = cls._PARAGRAPH_END.search(body, start)
+        return match.start() if match else len(body)
 
     def _run(self, cmd, timeout, cwd=None, env=None):
         try:
@@ -479,12 +512,24 @@ class ExportMixin:
                "border:1px solid var(--line);background:var(--card);"
                "color:var(--fg);border-radius:6px;padding:4px 10px;"
                "font:500 12px -apple-system,sans-serif\">🔄 rebuild</button>")
+        # The Word comments carry a person's name, so the Word rebuild ASKS who
+        # is annotating (md2docx: "The caller is expected to ASK ... rather than
+        # assume"). The answer is remembered in this browser only.
+        ask = ("""
+  var KEY = 'haipipe-word-author', prev = '';
+  try { prev = localStorage.getItem(KEY) || ''; } catch (e) {}
+  var who = window.prompt('Name to show on the Word comments (leave empty for haipipe):', prev);
+  if (who === null) return;
+  who = who.trim();
+  try { localStorage.setItem(KEY, who); } catch (e) {}
+  if (who) body.author = who;""" if route == "word" else "")
         script = ("""<script>
 document.getElementById('rebuild').onclick = function () {
-  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  var b = this, body = {path: %s, file: %s};%s
+  b.disabled = true; b.textContent = '⏳ rebuilding…';
   fetch('/_board/%s', {method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({path: %s, file: %s})})
+    body: JSON.stringify(body)})
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (j.ok) { location.reload(); return; }
@@ -494,8 +539,8 @@ document.getElementById('rebuild').onclick = function () {
     .catch(function (e) { alert('⚠ ' + e);
       b.disabled = false; b.textContent = '🔄 rebuild'; });
 };
-</script>""" % (route, json.dumps(p.get("path") or ""),
-                json.dumps(p.get("file") or "")))
+</script>""" % (json.dumps(p.get("path") or ""),
+                json.dumps(p.get("file") or ""), ask, route))
         return btn, script
 
     # ---- POST /_board/latex ------------------------------------------
@@ -555,14 +600,14 @@ document.getElementById('rebuild').onclick = function () {
         # THE PAGE'S OWN EVIDENCE PRINTS (JL 260816: "both word and latex
         # didn't include the display?"): a unit the prose cites by short id
         # (QPf5's in-sentence citation) is embedded as a real float after the
-        # citing paragraph — MISQ's first-reference rule, the same one md2tex
+        # citing paragraph, never inside it — MISQ's first-reference rule, the same one md2tex
         # applies to \ref — re-aimed at the unit's WINNING asset so the
         # wrapper master needs no tikz or renderer package knowledge.
         if units:
             body = tex.read_text(encoding="utf-8")
             # Insert from the last first-reference toward the first. If one
-            # sentence cites Display2 and then Display4, reverse source-order
-            # placement preserves the sentence's evidence order.
+            # paragraph cites Display2 and then Display4, both follow it, and
+            # reverse source-order placement keeps them in citation order.
             ranked = []
             for short, u in units:
                 mention = self._first_unit_mention(body, u)
@@ -619,10 +664,7 @@ document.getElementById('rebuild').onclick = function () {
                     continue          # ⬜ no winning render yet: nothing to print
                 m = self._first_unit_mention(body, u)
                 if m:
-                    at = self._sentence_boundary_after(body, m.end())
-                    if at is None:
-                        at = body.find("\n\n", m.end())
-                        at = len(body) if at < 0 else at
+                    at = self._paragraph_end_after(body, m.end())
                     before, after = body[:at].rstrip(), body[at:].lstrip()
                     body = (before + "\n\n" + block +
                             ("\n\n" + after if after else "\n"))
@@ -872,6 +914,12 @@ document.getElementById('rebuild').onclick = function () {
         if err:
             return None, err
         p = {**p, **self._canon_ctx(board, p)}   # the view bakes p; make it canonical
+        # WHO THE COMMENTS ARE BY (JL 260928: "change the name to Junjie Luo ...
+        # you can ask for user to enter their name"). The 🔄 rebuild asks and
+        # sends it; without a name md2docx keeps its `haipipe` default.
+        author = str(p.get("author") or "").strip()
+        if len(author) > 80 or any(ord(c) < 32 for c in author):
+            return None, "the comment author must be one short line"
         stem = page_src.stem
         docx = out_dir / (stem + ".docx")
         # THE PAGE'S OWN BIB COMES FIRST, the same preference the LaTeX export
@@ -982,6 +1030,8 @@ document.getElementById('rebuild').onclick = function () {
                "-o", str(docx), "--join-paragraphs",
                "--keep-fences",
                "--document-title", self._page_title(page_src)]
+        if author:
+            cmd += ["--author", author]
         selected_display_dir = None
         if units:
             # the unit index for the page address, and the Display comment

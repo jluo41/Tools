@@ -108,15 +108,16 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
     assert (dest / "gold/cumulative.jsonl").read_bytes() == b""
     assert not any((dest / "rounds").iterdir())
     run = "rl01_corpus-contract_job-v1"
-    assert (dest / "runs" / f"{run}.yaml").is_file()
-    assert (dest / "results" / run / "runtime.yaml").is_file()
-    assert (dest / "results" / run / "result.yaml").is_file()
-    runtime = yaml.safe_load((dest / "results" / run / "runtime.yaml").read_text())
+    assert (dest.parent / "runs" / f"{run}.yaml").is_file()
+    assert (dest.parent / "results" / run / "runtime.yaml").is_file()
+    assert (dest.parent / "results" / run / "result.yaml").is_file()
+    runtime = yaml.safe_load((dest.parent / "results" / run / "runtime.yaml").read_text())
     assert runtime["run"] == run
     assert runtime["status"] == "complete"
     assert runtime["operation"] == "corpus-contract"
+    assert runtime["ticket"] == f"runs/{run}.yaml"  # receipt paths are relative to the Page
     assert runtime["inputs"] == [
-        {"path": "corpus/items.jsonl", "sha256": job.sha256_bytes(
+        {"path": "labeling/corpus/items.jsonl", "sha256": job.sha256_bytes(
             (dest / "corpus/items.jsonl").read_bytes())}
     ]
     assert runtime["started_at"] == "2026-09-01T00:00:00-04:00"

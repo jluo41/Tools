@@ -25,8 +25,8 @@ owner. This migration does not introduce a parallel `folder-kind:` system.
 This adapter follows the current canonical Page Workflow, Page Run families,
 and interactive-writing contract. On upstream changes, compare ownership,
 loading order, IDs, release and Result boundaries before adopting them. The
-2026-09-13 hash pin is retired because those sources changed; a hash alone
-cannot establish compatibility. The Paper update record documents the checks.
+compatibility check compares those contracts and the upstream skill versions;
+no content hash is pinned (JL 260928). The Paper update record documents the checks.
 
 ## 2. Paper and Page routing
 
@@ -107,8 +107,8 @@ Content division map or the Page's visual lane.
 The Paper Ideation Page is a generated projection consumer. Its semantic source
 is `projection/paper-ideation-sync.yaml`, owned by `haipipe-ideation`; the Page
 does not copy Result Cards, create a second portfolio, or write an I3 decision.
-The sync packet identifies a `sync_revision`, `source_hash`, and
-`projection.change_class`:
+The sync packet identifies a `sync_revision` and a
+`projection.change_class` (no content hash):
 
 | Change class | Page route | Page Run |
 |---|---|---|
@@ -118,8 +118,8 @@ The sync packet identifies a `sync_revision`, `source_hash`, and
 
 Each successful surface transition writes the normal Page controller receipt under
 the Page's `workflow/` receipt lane. Its Paper-specific `paper_projection`
-extension names the source packet, consumed revision/hash, Page path, surface
-(`working`, `release`, or `delivery`), output hash, and timestamp. The three
+extension names the source packet, consumed revision, Page path, surface
+(`working`, `release`, or `delivery`), and timestamp. The three
 surfaces are independent:
 
 ```text

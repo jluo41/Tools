@@ -30,7 +30,7 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 | `structure.<page>` | Page Structure RP / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
 | `write.<page>.<scope>` | Page Writing RP / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
 | `evidence.<page>.<item>` | Page Evidence RE / Page evidence owner + selected worker | one VALUE/CITE/DISPLAY item; frozen Local Input and 0..N Supporting Results | agent or hybrid / make and verify typed Result | decided item + required inputs → accepted typed Result | EMBED control → dependent write/deliver; failure → repair or HOLD |
-| `deliver.<page>.<format>` | Page Delivery RD / `haipipe-workbench-page` | one released Page version and delivery target | agent / render one target | native release barrier → artifact/hash/build receipt | Page CHECK control → compile dependency; failure → repair/HOLD |
+| `deliver.<page>.<format>` | Page Delivery RD / `haipipe-workbench-page` | one released Page version and delivery target | agent / render one target | native release barrier → artifact/build receipt | Page CHECK control → compile dependency; failure → repair/HOLD |
 | `compile.<paper>.<build>` | `paper.compile` / `haipipe-paper-assemble` | exact compile-order, Section fragments/bindings, config/profile | agent / assemble one manuscript build | valid safe config + explicit build request → truthful manifest and declared outputs or failure | G4 evaluates readiness; feedback → response; build outcome → CLOSE |
 | `response.<round>` | `paper.response` / `haipipe-paper-round` | one frozen feedback batch/base build, ledger, checked returned versions | hybrid / compose one response package | named batch → covered concerns, frozen answer build and human response/close receipt | required repairs → affected owner Specs; incomplete → HOLD; G5 → CLOSE |
 
@@ -83,13 +83,15 @@ its native Ticket refer to the same work; index it once with aliases.
 
 A commissioned compile uses the neutral folder-local executable dialect:
 `<paper>/delivery/runs/<rNN_compile-slug>.sh` pairs with
-`<paper>/delivery/results/<rNN_compile-slug>/`. Its Ticket freezes config hash,
-source versions and engine/profile references, and invokes the existing
-`delivery/build.py` wrapper. The Result records outcome and exact paths/hashes,
+`<paper>/delivery/results/<rNN_compile-slug>/`. Its Ticket freezes the config
+path, source versions and engine/profile references, and invokes the existing
+`delivery/build.py` wrapper. The Result records outcome and exact paths,
 including a byte-for-byte snapshot of the build manifest. That snapshot is
 historical evidence; `delivery/build-manifest.json` remains the sole current
-delivery receipt. Recheck the frozen config/source hashes before execution;
-if they changed, replan rather than silently compiling a different target.
+delivery receipt. No content hash is written or compared (JL 260928). Before
+execution, recheck the frozen source versions and whether the config or a
+source file is newer than the Ticket (file time or `git diff`); if they
+changed, replan rather than silently compiling a different target.
 The mechanical builder does not allocate a Run on its own. A legacy bare
 build manifest is delivery evidence, not proof that a new Spec was executed.
 
@@ -116,7 +118,7 @@ Nonterminal routes name their next Spec or HOLD condition; terminal work
 defaults to CLOSE. Preserve the previous definition when dependencies change.
 
 Each actual `runs` entry binds `spec_id`, full owner path/native id,
-Ticket/Result/receipt locations, frozen type/target, status and input hashes.
+Ticket/Result/receipt locations, frozen type/target, status and input paths/versions.
 Mark reused accepted Results as `participation: reused`; resume existing work
 as `managed`. Planned nodes stay in the definition/frontier without invented
 instance ids. Control-only work may truthfully have `runs: []`.

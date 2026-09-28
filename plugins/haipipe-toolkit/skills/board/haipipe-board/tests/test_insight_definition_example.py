@@ -26,6 +26,9 @@ class DefinitionExampleTest(unittest.TestCase):
             for dependency in row["depends_on"]:
                 source = runs[dependency]
                 self.assertEqual("reused", source["participation"])
-                self.assertIn({"path": source["result"], "hash": source["result_hash"]}, row["inputs"])
+                self.assertIn(source["result"], [ref["path"] for ref in row["inputs"]])
+            # Inputs are named by path and version, never by content hash (JL 260928).
+            for ref in row["inputs"]:
+                self.assertFalse({"hash", "sha256"} & set(ref), ref)
         for entry in runtime["frontier"]:
             self.assertEqual(specs[entry["run_spec_id"]]["target"], entry["target"])

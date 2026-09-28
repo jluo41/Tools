@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.3.2"
-  last_updated: "2026-09-20"
+  version: "1.3.3"
+  last_updated: "2026-09-28"
   workflow: haipipe-insight-workflow
   folder_kind: question
   primary_face: page
@@ -70,7 +70,7 @@ Aim. No preferred answer is admissible.
 
 A pre-climbed external-parent bridge is still an ordinary Wisdom question. Its
 QW row additionally records the Task Insight instance, item, execution version,
-RF id, and Result path/hash
+RF id, and Result path
 being evaluated plus the one local Wisdom W Folder that will contextualize it. The
 borrowed RF is evidence for the question, not its Application answer.
 
@@ -89,7 +89,7 @@ Classify the minimum rung that can answer the ask; identify each eligible
 selected cell; update the Queue from Page CLOSE plus Run and GI control receipts; preserve
 partial-final reasons; and propagate reopening when a cited parent changes.
 The register pen writes queue state; target Folders write receipts in their own
-`outline/<stem>-log.md`.
+`outline/records/<stem>-log.md`.
 
 For the pre-climbed external-parent bridge, verify the five assertions owned by
 `haipipe-insight-workflow`, write the exact item Result/RF packet and local W Folder on

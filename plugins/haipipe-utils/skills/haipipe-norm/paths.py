@@ -23,7 +23,7 @@ import os
 import pathlib
 
 __all__ = ["space_root", "store", "external_store", "source_store",
-           "raw_data_store", "find_asset"]
+           "raw_data_store", "find_asset", "lock_file", "lock_key_column"]
 
 _MARKERS = ("pyproject.toml", "code")
 
@@ -35,12 +35,20 @@ def space_root(start=None) -> pathlib.Path:
     so the number of levels up is not a constant worth counting, and it changes
     the moment a file moves.
     """
-    start = pathlib.Path(start or __file__).resolve()
-    for p in [start, *start.parents]:
-        if (p / _MARKERS[0]).exists() and (p / _MARKERS[1]).is_dir():
-            return p
+    # Tools is often a symlink into a SPACE (WellDoc-SPACE/Tools -> ../Tools-SPACE).
+    # .resolve() follows it out of the SPACE, so walk the path as imported first,
+    # then the resolved one, then the working directory a ticket runs from.
+    if start:
+        starts = [pathlib.Path(start).resolve()]
+    else:
+        starts = [pathlib.Path(os.path.abspath(__file__)), pathlib.Path(__file__).resolve(),
+                  pathlib.Path.cwd()]
+    for s in starts:
+        for p in [s, *s.parents]:
+            if (p / _MARKERS[0]).exists() and (p / _MARKERS[1]).is_dir():
+                return p
     raise RuntimeError(
-        f"no SPACE root above {start}: want an ancestor with both "
+        f"no SPACE root above {starts[0]}: want an ancestor with both "
         f"{_MARKERS[0]} and {_MARKERS[1]}/")
 
 
@@ -83,3 +91,72 @@ def find_asset(rel, env_var=None, kind="EXTERNAL", start=None) -> pathlib.Path:
             return pathlib.Path(explicit).resolve()
     hit = store(kind, start) / rel
     return hit.resolve()
+
+
+# ── the event lock ────────────────────────────────────────────────────────────
+# The four describe-* services read their tables through one lock, the same
+# file a WellDoc SourceFn pins (b51_externalstore/j49_external_locks). A service
+# asks for an asset; the lock names the version; the version card names the file
+# and its sha256, which is checked once per process. No lock, or an asset the
+# lock does not pin, returns None and the caller keeps its old path.
+
+DEFAULT_LOCK = "EventNormV2"
+_LOCK_CACHE = {}
+
+
+def _sha256(path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def lock_file(asset, filename=None, lock=None, start=None):
+    """The file of `asset` that the event lock pins, checksum verified, or None.
+
+    lock      lock name; default $EVENTNORM_LOCK, else DEFAULT_LOCK. "none" turns
+              the lock off and every caller falls back to its flat folder.
+    filename  a file in the version folder; default the version's table.
+    """
+    name = lock or os.environ.get("EVENTNORM_LOCK", DEFAULT_LOCK)
+    if name.lower() == "none":
+        return None
+    key = (name, asset, filename, str(start))
+    if key in _LOCK_CACHE:
+        return _LOCK_CACHE[key]
+    import yaml
+    try:
+        root = external_store(start)
+    except RuntimeError:
+        return None
+    lock_path = root / "_locks" / f"{name}.yaml"
+    pins = (yaml.safe_load(lock_path.read_text()) or {}).get("assets", {}) if lock_path.exists() else {}
+    if asset not in pins:
+        _LOCK_CACHE[key] = None
+        return None
+    folder = root / asset / str(pins[asset])
+    card = yaml.safe_load((folder / "version.yaml").read_text())
+    fname = filename or card["table"]
+    path = folder / fname
+    expected = (card.get("sha256") or {}).get(fname)
+    if expected and _sha256(path) != expected:
+        raise RuntimeError(f"{asset}/{pins[asset]}/{fname}: sha256 does not match version.yaml; "
+                           f"the pinned file changed after it was published")
+    _LOCK_CACHE[key] = path
+    return path
+
+
+def lock_key_column(asset, lock=None, start=None):
+    """The key column of the table `lock_file` returns (DrFirst's `<key>_original`)."""
+    import yaml
+    p = lock_file(asset, lock=lock, start=start)
+    if p is None:
+        return None
+    return yaml.safe_load((p.parent / "version.yaml").read_text())["key_column"]
+
+
+def load_lock_paths():
+    """Import this module from a service without relying on PYTHONPATH."""
+    return lock_file, lock_key_column

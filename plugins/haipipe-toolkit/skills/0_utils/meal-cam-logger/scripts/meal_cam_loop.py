@@ -202,7 +202,6 @@ def render_session_file(path: Path,
         )
         if ep.label_model:
             line += (f"model={ep.label_model} · rubric={ep.label_rubric} · "
-                     f"input_sha256={ep.label_input_sha256} · "
                      f"judged_at={ep.label_judged_at} · ")
             source = ("service_failure" if ep.label_status == "service_error"
                       else "vision_model_inference")

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.3] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: the judge checks the bound report files by content, not by file hashes.
+
 ## [0.1.2] — 2026-09-20
 
 - Require a complete declared dimension set; reject malformed scores and severities instead of silently downgrading them.

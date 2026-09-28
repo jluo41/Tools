@@ -2,12 +2,12 @@
 """📄 Paper Workbench · view audit: drive every Space view in REAL headless Chrome.
 
 Wire green is not UI green. This opens `/_board/paper` for one or more paper
-boards on a running board server, walks all twenty `#<space>/<view>` routes at
-a given window width, and reports layout defects as text:
+boards on a running board server, walks every `#<space>/<tab>/<view>` route of
+the four Spaces at a given window width, and reports layout defects as text:
 
   page overflow · an element past the right edge · clipped text (ellipsis or
-  hidden overflow on a leaf) · type under 11.5px · a view or panel still
-  visible while another is active
+  hidden overflow on a leaf) · type under 11.5px · a pane or Space still
+  visible while another is active · a Runs panel missing beside the content
 
 It writes nothing to the board. With --shots DIR it also saves one full-height
 PNG per view. Needs `websocket-client` and a local Chrome.
@@ -32,11 +32,13 @@ import urllib.request
 import websocket
 
 CHROME = os.environ.get("CHROME_BIN", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-VIEWS = [("setup", "folders"), ("setup", "sessions"),
-         ("ideation", "pool"), ("ideation", "evidence"), ("ideation", "admission"),
-         ("story", "spine"), ("story", "questions"), ("story", "tasks"), ("story", "sections"), ("story", "evidence"),
-         ("run", "page"), ("run", "evidence"), ("run", "supporting"), ("run", "gates"), ("run", "workflow"),
-         ("delivery", "manuscript"), ("delivery", "sections"), ("delivery", "displays"), ("delivery", "checks"), ("delivery", "rounds")]
+VIEWS = [("ideation", ""),
+         ("story", "spine"), ("story", "questions"), ("story", "roadmap"),
+         ("sections", "main/table"), ("sections", "main/narrative"), ("sections", "main/evidence"),
+         ("sections", "appendix/table"), ("sections", "appendix/narrative"), ("sections", "appendix/evidence"),
+         ("delivery", "latex/preview"), ("delivery", "latex/artifacts"), ("delivery", "latex/checks"),
+         ("delivery", "word/preview"), ("delivery", "word/artifacts"), ("delivery", "word/checks"),
+         ("delivery", "rounds")]
 
 AUDIT = r"""
 (() => {
@@ -44,18 +46,25 @@ AUDIT = r"""
   const vis = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
   const tag = el => el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).join('.') : '');
   const panel = document.querySelector('.panel[data-space="' + S + '"]');
-  const view = panel && panel.querySelector('.view[data-view="' + V + '"]');
+  const panes = panel ? [...panel.querySelectorAll('.space-pane')].filter(vis) : [];
+  const view = panes[0] || null, runs = panel && panel.querySelector('.runs-panel');
   const out = {exists: !!view, shown: !!(view && vis(view)), docOverflow: document.documentElement.scrollWidth - vw,
-               height: document.documentElement.scrollHeight, leaks: 0, wide: [], clipped: [], tiny: 0, tinyEx: [], chars: 0};
+               height: document.documentElement.scrollHeight, leaks: 0, wide: [], clipped: [], tiny: 0, tinyEx: [], chars: 0,
+               runs: !!(runs && vis(runs) && runs.getBoundingClientRect().left > view.getBoundingClientRect().left)};
   if (!view) return out;
-  out.leaks = [...document.querySelectorAll('.view')].filter(v => v !== view && vis(v)).length
-            + [...document.querySelectorAll('.panel')].filter(p => p !== panel && vis(p)).length;
+  out.leaks = (panes.length - 1) + [...document.querySelectorAll('.panel')].filter(p => p !== panel && vis(p)).length;
   out.chars = view.innerText.length;
   const seenW = new Set(), seenC = new Set();
-  for (const el of view.querySelectorAll('*')) {
+  for (const el of panel.querySelectorAll('*')) {
     if (!vis(el)) continue;
     const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
-    if (r.right > vw + 1) { const t = tag(el); if (!seenW.has(t)) { seenW.add(t); out.wide.push(t + ' right=' + Math.round(r.right)); } }
+    // inside a scroller that itself fits on screen, it is scrolled content, not overflow
+    let sc = el.parentElement, scrolled = false;
+    for (; sc && sc !== panel; sc = sc.parentElement) {
+      const o = getComputedStyle(sc).overflowX;
+      if ((o === 'auto' || o === 'scroll' || o === 'hidden') && sc.getBoundingClientRect().right <= vw + 1) { scrolled = true; break; }
+    }
+    if (!scrolled && r.right > vw + 1) { const t = tag(el); if (!seenW.has(t)) { seenW.add(t); out.wide.push(t + ' right=' + Math.round(r.right)); } }
     const leaf = el.children.length === 0 && el.textContent.trim().length > 0;
     if (leaf && !el.title && (cs.overflowX === 'hidden' || cs.textOverflow === 'ellipsis') && el.scrollWidth > el.clientWidth + 1) {
       const t = tag(el); if (!seenC.has(t)) { seenC.add(t); out.clipped.push(t + ': ' + el.textContent.trim().slice(0, 60)); }
@@ -126,11 +135,11 @@ def main():
             time.sleep(0.6)
             print("=== %s @ %dpx" % (rel.rsplit("/", 1)[-1], a.width))
             for space, view in VIEWS:
-                c.ev("location.hash = '#%s/%s'" % (space, view))
+                c.ev("location.hash = '#%s'" % "/".join(x for x in (space, view) if x))
                 time.sleep(0.35)
                 r = c.ev(AUDIT % (json.dumps(space), json.dumps(view)))
                 if not r or not r.get("exists"):
-                    print("%-9s %-11s (view not on this paper)" % (space, view))
+                    print("%-9s %-18s (view not on this paper)" % (space, view))
                     continue
                 flags = []
                 if not r["shown"]:
@@ -138,7 +147,9 @@ def main():
                 if r["docOverflow"] > 1:
                     flags.append("page overflows by %dpx" % r["docOverflow"])
                 if r["leaks"]:
-                    flags.append("%d other view/panel visible" % r["leaks"])
+                    flags.append("%d other pane/Space visible" % r["leaks"])
+                if not r["runs"]:
+                    flags.append("no Runs panel on the right")
                 if r["wide"]:
                     flags.append("past right edge: " + "; ".join(r["wide"]))
                 if r["nClipped"]:
@@ -146,11 +157,11 @@ def main():
                 if r["tiny"]:
                     flags.append("tiny type x%d e.g. %s" % (r["tiny"], " | ".join(r["tinyEx"])))
                 flagged += bool(flags)
-                print("%-9s %-11s h=%-6d chars=%-7d %s" % (space, view, r["height"], r["chars"], "OK" if not flags else "⚠ " + " ‖ ".join(flags)))
+                print("%-9s %-18s h=%-6d chars=%-7d %s" % (space, view or "-", r["height"], r["chars"], "OK" if not flags else "⚠ " + " ‖ ".join(flags)))
                 if a.shots:
                     shot = c.call("Page.captureScreenshot", format="png", captureBeyondViewport=True,
                                   clip={"x": 0, "y": 0, "width": a.width, "height": min(int(r["height"]), 9000), "scale": 1})
-                    with open(os.path.join(a.shots, "%s-%s-%s.png" % (rel.rsplit("/", 1)[-1], space, view)), "wb") as f:
+                    with open(os.path.join(a.shots, "%s-%s-%s.png" % (rel.rsplit("/", 1)[-1], space, view.replace("/", "-") or "all")), "wb") as f:
                         f.write(base64.b64decode(shot["data"]))
     finally:
         proc.terminate()

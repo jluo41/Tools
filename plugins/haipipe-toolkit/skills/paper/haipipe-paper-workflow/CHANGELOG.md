@@ -1,3 +1,14 @@
+## 1.5.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- `ref/run-workflow.md`: a compile Ticket freezes the config path and source versions; staleness before execution is file time or `git diff`. Runtime `runs` entries and Delivery receipts carry paths and versions, not input or artifact hashes.
+
+## 1.5.0 · 2026-09-27
+
+- `ref/run-cards.md`: one `🔘 BUTTON` + `💬 PROMPT` per Paper Run type, the buttons the
+  Paper Workbench's Runs panels show in each Space (Idea review, Story revise, Claim review,
+  Task review, Supporting runs, Narrative review, the Section's Draft / Evidence / Delivery
+  runs, Build, Check, Response). A button only copies its prompt.
+
 ## 1.4.0 · 2026-09-21
 
 - Route the final G4 pass through the Paper submission-readiness overlay,

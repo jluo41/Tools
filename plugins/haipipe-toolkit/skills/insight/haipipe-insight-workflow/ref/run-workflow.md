@@ -23,7 +23,7 @@ existing owners and identity grammars:
 | `evidence.<page>.<item>` | `haipipe-page-evidence`; Page RE lineage plus its native Ticket address | one decided VALUE/CITE/DISPLAY item and frozen Local Input | typed accepted Result + native receipt, required verification satisfied | one per commissioned make-item; ready → dependent writing/delivery, failure → HOLD or declared retry |
 | `structure.<page>` | shared Page writing owner; `rp-struct-NN` | explicitly commissioned whole-Page map, Shape and Survey target | accepted structure Result + receipt | only when commissioned; close → selected writing targets/evidence obligations |
 | `write.<page>.<scope>` | shared Page writing owner; `rp-sec-NN` or `rp-para-NN_<target>` | one selected section/paragraph goal, exact parent rows and ready evidence | accepted writing Result + receipt | 0..N selected scopes; owner-defined SELF/NEW_VERSION/CLOSE/NEW_RUN routes |
-| `deliver.<page>.<target>` | shared Page delivery owner; RD lineage/native Ticket | one released Page delivery target | current artifact, hashes and build receipt | 0..N declared targets; close → Page CHECK control, failure → repair or HOLD |
+| `deliver.<page>.<target>` | shared Page delivery owner; RD lineage/native Ticket | one released Page delivery target | current artifact and build receipt | 0..N declared targets; close → Page CHECK control, failure → repair or HOLD |
 
 The exact Run Type, actor, worker and storage dialect come from the selected
 owner, never from a Folder-kind label. A derivation or robustness computation
@@ -34,7 +34,7 @@ RE/RD lineage and its underlying native Ticket identify the same work, so use
 one inventory row with aliases, never two Runs.
 
 An existing accepted Result is a dependency reference. Index it with
-`participation: reused` and its exact version/hash; do not allocate or execute
+`participation: reused` and its exact version; do not allocate or execute
 it again. An open matching Run resumes through its owner and is indexed with
 `participation: managed`. Proposed work has a Spec and target, but no invented
 Run id before the owner creates its Ticket and receipt.
@@ -92,7 +92,7 @@ run_specs:
     target: {page: <exact-Page-path>, paragraph: P01, goal: <frozen-existing-goal>}
     actor: hybrid
     action: resume-selected-writing
-    inputs: [{path: <exact-local-Evidence-Result>, hash: <sha256>}]
+    inputs: [{path: <exact-local-Evidence-Result>, version: <vNNN>}]
     depends_on: [<full-reused-Evidence-Run-address>]
     entry: {mode: automatic, predicate: exact-required-evidence-current}
     exit: {mode: hybrid, predicate: native-writing-acceptance-and-dependencies}
@@ -133,7 +133,6 @@ workflow_version: "1.3.2"
 workflow_runtime_id: <board-unique-execution-id>
 status: running
 definition_ref: definition-v001.yaml
-definition_hash: <sha256>
 requested_answer_targets:
   - {question: QI3, partition: B, page: <board-relative-Page-path>}
 requested_controls: []
@@ -145,7 +144,6 @@ runs:
     target: <accepted-Evidence-item>
     status: complete
     result: <exact-local-Evidence-Result>
-    result_hash: <sha256>
     receipt: <exact-native-Evidence-receipt>
   - run_id: <full-existing-Writing-Run-address>
     run_spec_id: write.BI01.P01
@@ -154,7 +152,7 @@ runs:
     participation: managed
     target: {page: <exact-Page-path>, paragraph: P01, goal: <frozen-existing-goal>}
     consumers: [{question: QI3, partition: B}]
-    inputs: [{path: <exact-local-Evidence-Result>, hash: <sha256>}]
+    inputs: [{path: <exact-local-Evidence-Result>, version: <vNNN>}]
     depends_on: [<full-reused-Evidence-Run-address>]
     status: running
     ticket: <existing-native-Writing-Ticket>
@@ -179,7 +177,7 @@ Every managed `run_spec_id` and frontier Spec must resolve in the frozen
 definition. In this example `write.BI01.P01` is the only managed Spec. The
 accepted Evidence row is an external dependency with `participation: reused`;
 it has no new Spec, Ticket allocation, or frontier entry in this execution.
-Its id and Result/hash resolve the Writing Spec's exact dependency and input.
+Its id and Result path resolve the Writing Spec's exact dependency and input.
 
 Native receipts own Run state; the runtime projects them and stores their
 addresses. Run-owned gate/route entries use the shared `control` shape and
@@ -192,12 +190,12 @@ key: GI6
 target: {question: QW2, partition: F}
 status: passed
 authority: haipipe-insight-question
-evidence: [<exact-Page-version-and-hash>, <person-signature-source>]
+evidence: [<exact-Page-path-and-version>, <person-signature-source>]
 receipt: <register>/outline/<register-stem>-log.md#<record-id>
 ```
 
 Each dated control receipt records `workflow_runtime_id`, target, assertion,
-outcome, actor, exact supporting paths/versions/hashes, and resulting action.
+outcome, actor, exact supporting paths/versions, and resulting action.
 If it consumed a Run, include that native id and receipt. A GI receipt does
 not replace the Run receipt; the runtime is only an index of both. For 🟡 final,
 preserve the two reciprocal register/answering-Page receipts and quote the
@@ -254,7 +252,7 @@ replacement work through the owner's new-Run/new-version rules. Fixed-goal
 interactive writing retains its native Version/Step semantics. For a late
 partition, reopen X and all verdict-conditioned W bindings, preserve unrelated
 D/I/K Results, and require a new person signature when any signed handoff payload changes,
-including source/verdict versions or hashes even when counsel wording is unchanged.
+including source/verdict versions even when counsel wording is unchanged.
 A signature is reusable only for the exact unchanged signed payload whose
 dependencies remain current; old signatures remain historical. A Run
 retry under the same frozen contract follows the owner and is not counted twice.

@@ -3,7 +3,7 @@ name: haipipe-end-endpointset
 description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package from Stage 5 to 6, local inference smoke test, structural review, and dashboard. Per-Fn-type design/review lives in haipipe-end specialists; deployment lives in haipipe-end-deploy specialists."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -140,13 +140,13 @@ _WorkSpace/6-EndpointStore/{endpoint_name}/
 ```
 
 When SourceFn/Input2SrcFn uses external data, the artifact also contains an
-immutable `external/` snapshot. `manifest.json` records its release, checksums,
-and Source vector schema/order versions. Packaging fails when those identities
+immutable `external/` snapshot. `manifest.json` records its release and
+Source vector schema/order versions. Packaging fails when those identities
 are absent or a parity fixture cannot reproduce the training ProcessDF contract.
 Under the asset model (`../../1_data/haipipe-data-external/ref/asset-model.md`)
 `external/` holds only the asset versions the SourceFn's lock names (plus
 their `asset.yaml`), never a whole release and never `@raw/`; `manifest.json`
-records the lock name, each asset's version and sha256, and which assets
+records the lock name, each asset's version, and which assets
 serve from a live provider (`providers.serve`) with their `max_staleness`.
 A hard-coded list of external files inside the endpoint code is legacy.
 (Canonical layout: `../haipipe-end/ref/0-overview.md` "Stage 6 (output)" — do not restate elsewhere.)

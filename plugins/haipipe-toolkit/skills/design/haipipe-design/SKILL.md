@@ -8,7 +8,7 @@ description: >-
   never implementation, distribution, experimentation, or measurement.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-20"
+  last_updated: "2026-09-28"
   folder_owner: canonical
   folder_kind: design
   primary_face: page
@@ -35,7 +35,7 @@ field-test repairs do not authorize a version upgrade. The two Design workbenche
 A **Design Item** is one design target with its own acceptance rules: one
 message, one UI card, one candidate pool. It is what a person asks for,
 judges, and hands off; a Design Folder holds one or many. Items are registered,
-goal and rules only, in `outline/<stem>-design-items.md`:
+goal and rules only, in `draft/<stem>-design-items.md` (`outline/` on a Page not yet moved to layout 0.118):
 
 ```text
 ## ITEM01 · Send the salience wording unchanged
@@ -56,7 +56,7 @@ acceptance:
 ```
 
 `evidence` paths are relative to the Design Folder (the folder holding
-`<stem>.md`), not to the register file under `outline/`. A line is
+`<stem>.md`), not to the register file under `draft/`. A line is
 `role · path` (or `role  path`); the roles are `evidence`, `handoff`,
 `inspiration`, `reference`, and `avoid` (`base` and `feedback` are written by
 revise runs). On screen a `handoff` reads "signed insight".
@@ -72,7 +72,7 @@ it; `challenge` or `theory-driven` mode needs both `expected` and
 `falsified`; `brainstorm` goes with stance `explore` or `generate` and carries
 neither. A Commission pins its config (the goal sentence, stance, basis, mode,
 expected, falsified, the compiled criteria, and the raw rule text) and the
-item's evidence files with sha256; it does not pin the Brief version or venue
+item's evidence files by path; it does not pin the Brief version or venue
 packs. Generate and Verify inherit the released design fields and evidence list,
 deriving only `review_mode` and the operation's permitted `mode` as specified in
 `haipipe-design-unit/references/unit-contract.md`, so an
@@ -204,7 +204,7 @@ Use `2-Design/Design-<NN>-<audience>-<job>-<venue>/`, where each part is the fir
 ```text
 Design-<NN>-<audience>-<job>-<venue>/
 ├── <stem>.md                           # always: the Page (new-folder writes it)
-├── outline/
+├── draft/
 │   ├── <stem>-design-items.md          # always: Design Item register · goal and rules only
 │   ├── feedback/<run>.md               # when used: the feedback a revise Generate was queued with
 │   ├── <stem>-draft-request.md         # when used: an open request for the agent to draft items
@@ -231,7 +231,7 @@ Design-<NN>-<audience>-<job>-<venue>/
 
 `new-folder` writes only the Page and the register; everything else appears
 when the step that writes it runs. Commission decisions live in
-`results/rdNN_commission_*/decision.yaml`, never under `outline/`. Every
+`results/rdNN_commission_*/decision.yaml`, never under `draft/`. Every
 Design Run keeps the same stem across run record and Result. Completed Results
 and decisions are immutable. Workers render inside their own Result. The presenter
 reads those pictures without copying or modifying them; Delivery shows only the
@@ -244,7 +244,7 @@ The Commission Run names the Design Item it serves (`item: ITEM<NN>`) and
 pins its config (the goal sentence, stance, basis, mode, expected, falsified,
 the compiled criteria, the raw rule text, unit shape/count, and
 `max_iterations: 2`, the worker's budget inside one Generate run) and the
-item's evidence files, each with sha256. It does not pin the Brief version,
+item's evidence files, each by path. It does not pin the Brief version,
 the board's `reads:`, or venue packs. The config carries one `design_intent`:
 
 ```yaml
@@ -267,11 +267,12 @@ Design Runs judge design quality only.
 ## Evidence and Page interlock
 
 Keep signed handoff, factual evidence, inspiration, and design intent distinct.
-Pin the exact authority/source path and hash. A Page `rp-*` Run is never Design
+Name the exact authority/source path and version. A Page `rp-*` Run is never Design
 evidence or Design authority.
 
-The Verify Result records the exact draft hash and independent review; the
-insight pins live on the Commission and on each Generate and Verify run record.
+The Verify Result records the exact draft path and independent review; the
+insight references live on the Commission and on each Generate and Verify run
+record. No content hashes (JL 260928): staleness is file time or `git diff`.
 The Verify-passed candidate is the Folder's Design handoff consumed by Page
 CHECK. Page CHECK verifies the projection; it does not ask the same candidate
 decision again.

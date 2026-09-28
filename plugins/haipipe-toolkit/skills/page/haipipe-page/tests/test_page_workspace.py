@@ -1,6 +1,6 @@
-import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -15,7 +15,7 @@ from src.page_setup import run_setup, setup_markdown_page
 from src.plan_shape import canonical_plan
 from src.page_setup_check import validate_setup
 from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
-from live.outline_preview import bullet_token, read_drafts
+from live.outline_preview import read_drafts
 from src.plan_shape import iter_plan_bullets
 
 
@@ -37,9 +37,10 @@ def test_import_edit_build_portable(tmp_path):
     assert 'id="static-workspace"' in output.read_text()
     assert (output.parent / rel).read_text() == page.content.read_text()
     marker = json.loads((output.parent / ".haipipe-page-export").read_text())
-    assert marker["schema"] == "haipipe-page-export/v2"
+    assert marker["schema"] == "haipipe-page-export/v3"
     assert marker["source"] == page.source.relative_to(page.folder).as_posix()
-    assert marker["source_sha256"] == hashlib.sha256(page.source.read_bytes()).hexdigest()
+    assert "sha256" not in json.dumps(marker)            # no content hashes (JL 260928)
+    assert "sha256" not in (page.folder / "page.toml").read_text()
     relocated = tmp_path / "relocated"
     shutil.copytree(page.folder, relocated)
     assert "Edited sentence." in render_page(load_page(relocated))
@@ -56,7 +57,7 @@ def test_html_and_static_assets_preserved(tmp_path):
     html = render_page(page)
     assert 'sandbox="allow-scripts"' in html
     output = build_page(page)
-    assert (output.parent / "outline/evidence/materials/assets/theme.css").exists()
+    assert (output.parent / "draft/evidence/materials/assets/theme.css").exists()
 
 
 def test_scope_and_overwrite_guards(tmp_path):
@@ -91,8 +92,8 @@ def test_markdown_asset_rebase(tmp_path):
     (tmp_path / "data.csv").write_text("x\n1\n")
     page = create_page(original, tmp_path / "page")
     markup = render_page(page)
-    assert 'src="outline/evidence/materials/image.svg"' in markup
-    assert 'href="outline/evidence/materials/data.csv"' in markup
+    assert 'src="draft/evidence/materials/image.svg"' in markup
+    assert 'href="draft/evidence/materials/data.csv"' in markup
 
 
 def test_imported_markdown_cannot_embed_external_files_or_execute_links(tmp_path):
@@ -127,7 +128,7 @@ def test_render_revalidates_attachment_and_private_lanes(tmp_path):
     page.source.write_text(face.replace("## Content", "## Content\n\n![[studio/private.txt]]\n"))
     assert "SYNTHETIC_PRIVATE_MARKER" not in render_page(page)
     (page.folder / ".hidden.txt").write_text("SYNTHETIC_PRIVATE_MARKER")
-    page.source.write_text(face.replace("outline/evidence/materials/input.txt", ".hidden.txt"))
+    page.source.write_text(face.replace("draft/evidence/materials/input.txt", ".hidden.txt"))
     with pytest.raises(ValueError):
         render_page(page)
 
@@ -251,8 +252,8 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert result == {
         "title": "A Useful Argument", "divisions": 2, "paragraphs": 3,
         "bullets": 3, "source_sentences": 4,
-        "plan": "outline/argument-page-outline-v0.1.md",
-        "draft": "outline/argument-page-outline-v0.1.md", "run": "r01_page-setup",
+        "plan": "draft/argument-page-draft-v0.1.md",
+        "draft": "draft/argument-page-draft-v0.1.md", "run": "r01_page-setup",
         "delivery": "delivery/web/index.html", "mode": "create-semantic-records",
         "checks": {"pass": 10, "missing": 0, "deferred": 4, "untested": 2, "n/a": 1},
         "blocking_gate": "pass",
@@ -273,15 +274,18 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "It can unexpectedly undo settled choices" in blocks[0]["head"]
     assert "[Example]" in plan.read_text(encoding="utf-8")
     assert "[Requirement]" in plan.read_text(encoding="utf-8")
-    assert (page.folder / "outline/records/argument-page-context.md").is_file()
-    assert (page.folder / "outline/records/argument-page-files.md").is_file()
+    assert (page.folder / "draft/records/argument-page-context.md").is_file()
+    assert (page.folder / "draft/records/argument-page-files.md").is_file()
     assert (page.folder / "results/r01_page-setup/report.md").is_file()
     audit = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
     assert audit["blocking_gate"] == "pass"
     for name in ("page_face", "content", "shape", "content_draft", "static_delivery"):
         artifact = audit["artifacts"][name]
         path = page.folder / artifact["path"]
-        assert artifact["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+        assert path.is_file() and re.fullmatch(r"\d{6} \d{4}", artifact["saved"])
+        assert "sha256" not in artifact
+    assert "sha256" not in (page.folder / "results/r01_page-setup/runtime.yaml").read_text()
+    assert "SHA-256" not in (page.folder / "results/r01_page-setup/report.md").read_text()
     assert {item["id"] for item in audit["checks"]} == {
         "source_configuration", "input_preservation", "opening", "outline_structure",
         "paragraph_global_order",
@@ -297,7 +301,9 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "<summary>When revisions lose context</summary>" in markup
     assert "Consider a narrow sentence edit" in markup
     # setup writes drafted Bullets Draft-first: the sentence on the dash line, the point in `Point:`
-    assert "\n  Point: [" in (page.folder / result["draft"]).read_text(encoding="utf-8")
+    from src.plan_layout import is_sectioned, to_canonical
+    written = (page.folder / result["draft"]).read_text(encoding="utf-8")
+    assert is_sectioned(written) and "\n  Point: [" in to_canonical(written)  # born on the 0.118 layout
     assert "A Useful Argument" in build_page(page).read_text(encoding="utf-8")
 
 
@@ -311,7 +317,7 @@ def test_address_migration_preserves_drafts_and_makes_paragraphs_global(tmp_path
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     plan.write_text(plan.read_text().replace("C2.P2", "C2.P1"), encoding="utf-8")
 
     result = migrate_global_paragraphs(page)
@@ -329,17 +335,17 @@ def test_migrate_legacy_preview_into_outline_is_content_preserving(tmp_path):
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     records = read_drafts(page.source)
     plan.write_text(
         "\n".join(line for line in canonical_plan(plan.read_text()).splitlines()
                   if not line.startswith("  Draft:")) + "\n"
     )
-    legacy = page.folder / "outline/page-preview.md"
+    legacy = page.folder / "draft/page-preview.md"
     record = records["C1.P1.B1"]
     legacy.write_text(
         "# page · Content preview\n\nPlanning draft for discussion.\n\n"
-        f"## C1.P1.B1\nplan: v0.1\nbullet-sha256: {record['bullet-sha256']}\n\n"
+        "## C1.P1.B1\nplan: v0.1\nbullet-sha256: abc\n\n"   # an old record's leftover field is ignored
         f"{record['text']}\n",
         encoding="utf-8",
     )
@@ -349,7 +355,7 @@ def test_migrate_legacy_preview_into_outline_is_content_preserving(tmp_path):
     assert result["migrated"] == 1
     assert read_drafts(page.source)["C1.P1.B1"]["text"] == record["text"]
     assert not legacy.exists()
-    assert (page.folder / "outline/_archive/legacy-outline-preview/page-preview.md").is_file()
+    assert (page.folder / "draft/_archive/legacy-outline-preview/page-preview.md").is_file()
 
 
 def test_setup_never_clips_a_long_reader_move_to_a_word_limit(tmp_path):
@@ -416,7 +422,7 @@ def test_setup_resume_builds_without_replacing_shape(tmp_path):
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     before = plan.read_bytes()
     result = run_setup(page)
     assert result["mode"] == "resume-and-build"
@@ -436,7 +442,7 @@ def test_setup_resume_preserves_recorded_source_count_after_preview_normalizatio
     page = create_page(original, tmp_path / "page")
     created = setup_markdown_page(page)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     plan.write_text(
         plan.read_text(encoding="utf-8").replace(
             "Detailed edition · Cartoon edition · Compare both series",
@@ -461,7 +467,7 @@ def test_setup_resume_rebinds_reviewed_head_without_changing_draft(tmp_path):
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     before = read_drafts(page.source)["C1.P1.B1"]["text"]
     plan.write_text(
         plan.read_text().replace(
@@ -477,7 +483,7 @@ def test_setup_resume_rebinds_reviewed_head_without_changing_draft(tmp_path):
 
     assert result["blocking_gate"] == "pass"
     assert rebound["text"] == before
-    assert rebound["bullet-sha256"] == bullet_token(block)
+    assert "bullet-sha256" not in rebound and block["address"] == "C1.P1.B1"
 
 
 def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing(tmp_path):
@@ -488,7 +494,7 @@ def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page, input_file=original)
     page = load_page(page.folder)
-    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan = page.folder / "draft/page-draft-v0.1.md"
     plan.write_text(
         "\n".join(line for line in canonical_plan(plan.read_text()).splitlines()
                   if not line.startswith("  Draft:")) + "\n"
@@ -506,7 +512,7 @@ def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing
     assert draft["blocking"] is True
 
 
-def test_force_setup_allows_intentional_content_edit_without_recertifying_intake_hash(tmp_path):
+def test_force_setup_allows_intentional_content_edit_without_recertifying_the_original(tmp_path):
     original = tmp_path / "argument.md"
     original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
     page = create_page(original, tmp_path / "page")

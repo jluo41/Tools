@@ -200,7 +200,7 @@ const templateRule = isTemplateBased
         `3. Check the Task Folder run spine (config + Ticket + Result + notebook)\n` +
         `4. Check that scripts/config/<run>.yaml has all constants from the script\n`
     ) +
-    `\nReturn CODE_REVIEW.md sidecar content with the reviewed git state, exact file hashes, and overall verdict for the orchestrator to persist in the Task Folder.\n` +
+    `\nReturn CODE_REVIEW.md sidecar content with the reviewed git state, the reviewed file paths, and overall verdict for the orchestrator to persist in the Task Folder.\n` +
     `Return verdict: pass, warn, revise (with feedback for creator), or fail (stop).`,
     { label: `build:review:${attempt}`, phase: 'Build', agentType: 'haipipe-task-reviewer-agent', schema: REVIEWER_RESULT }
   )

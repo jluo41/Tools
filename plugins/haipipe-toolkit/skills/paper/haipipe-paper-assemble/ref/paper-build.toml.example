@@ -34,3 +34,4 @@ manifest = "build-manifest.json"
 # main_text_word_limit = 4000
 # include_references = true
 # include_supplement = true
+# appendix_float_numbering = "per-appendix"   # Table A1 … B1 …: floats restart in each lettered appendix (LaTeX and Word); default "continuous"

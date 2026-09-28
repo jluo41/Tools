@@ -3,6 +3,10 @@ haipipe-display-figure — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.3] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: Step 1 confirms the declared snapshot file exists; no hash check.
+
 ## [0.2.2] — 2026-09-04 — Caller-supplied destination
 
 - Remove the paper-only output path from the generic renderer.

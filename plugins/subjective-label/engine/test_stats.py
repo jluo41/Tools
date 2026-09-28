@@ -345,12 +345,13 @@ def test_page_plugin_field_does_not_cross_newline_and_outcome_is_bounded(tmp_pat
     page = tmp_path / "S-Label-9-demo.md"
     page.write_text("# demo\n")
     root = tmp_path / "labeling"
-    (root / "runs").mkdir(parents=True)
-    (root / "runs" / "rl-01.yaml").write_text("phase: P1\ntarget:\n  name: nested\n")
-    (root / "results" / "rl-01").mkdir(parents=True)
-    (root / "results" / "rl-01" / "runtime.yaml").write_text("status: complete\n")
+    root.mkdir()
+    (tmp_path / "runs").mkdir(parents=True)
+    (tmp_path / "runs" / "rl-01.yaml").write_text("phase: P1\ntarget:\n  name: nested\n")
+    (tmp_path / "results" / "rl-01").mkdir(parents=True)
+    (tmp_path / "results" / "rl-01" / "runtime.yaml").write_text("status: complete\n")
     long_outcome = "<script>alert(1)</script> " + "x" * 400
-    (root / "results" / "rl-01" / "result.yaml").write_text(f"outcome: {long_outcome}\n")
+    (tmp_path / "results" / "rl-01" / "result.yaml").write_text(f"outcome: {long_outcome}\n")
 
     rows = page_plugin._runs(root)
     assert rows[0]["target"] == "—"

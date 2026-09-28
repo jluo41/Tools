@@ -57,9 +57,9 @@ One fit card belongs to one Idea Card:
 Each immutable assessor snapshot uses this shape with its own non-null
 `assessment_binding`. The current Fit Card is a projection: copy that binding
 only when one assessment supports the projection; when multiple judgments
-contribute, keep the field null, list every raw snapshot and exact-byte hash in
-`assessment_receipts`, and point `review_resolution` to the resolution receipt
-and hash. Those links preserve reviewer identity, rubric version and frozen
+contribute, keep the field null, list every raw snapshot path in
+`assessment_receipts`, and point `review_resolution` to the resolution receipt.
+Those links preserve reviewer identity, rubric version and frozen
 inputs without implying a single reviewer authored the combined result.
 
 ```yaml
@@ -71,8 +71,7 @@ assessment_binding: null  # one raw assessment's binding; null when several are 
 assessment_receipts:
   - assessment_id: "e01"
     receipt: "workflow/venue-fit/i01_<timestamp>.yaml"
-    sha256: "sha256:<exact receipt bytes>"
-review_resolution: null  # {receipt, sha256} for multiple judgments; null for one
+review_resolution: null  # {receipt} for multiple judgments; null for one
 broad_screen:
   status: complete | pending
   field: "..."

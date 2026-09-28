@@ -1,3 +1,7 @@
+## 1.1.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- The sync packet is identified by `sync_revision` alone; the Page receipt records packet path, consumed revision, surface and timestamp. No `source_hash` or output hash (matches haipipe-ideation 0.7.1).
+
 ## 1.1.0 · 2026-09-22
 
 - An Idea IS the research question it asks (JL 260922: "I don't need 8 ideas, I want to

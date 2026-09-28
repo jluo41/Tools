@@ -3,6 +3,10 @@ haipipe-display-table — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.2] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: Step 1 confirms the snapshot file exists; no hash check.
+
 ## [0.2.1] — 2026-07-27 — Caller-owned wrapper semantics
 
 - Emits only `assets/table-body.tex`; Paper supplies the caption/label/placement wrapper.

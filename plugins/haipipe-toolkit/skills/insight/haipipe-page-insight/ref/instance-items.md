@@ -13,14 +13,14 @@ I01-<topic-instance>/
     ├── v001/
     │   ├── binding.yaml        immutable allocation: goal, base R, datasets
     │   ├── input.yaml          finalized evidence envelope; absent while waiting
-    │   ├── runtime.yaml        status, checkpoints, hashes
+    │   ├── runtime.yaml        status, checkpoints, attempts
     │   └── result.yaml         checked DIKW Result and RF records
     └── v002/                   later execution, preserves v001
 ```
 
 Neither item nor version is a new Board/Group/Page level. Large upstream Task
-output may live in a declared instance-owned store. Keep pointers and hashes
-here, not a duplicate raw bank.
+output may live in a declared instance-owned store. Keep pointers and versions
+here, not a duplicate raw bank. Records carry no content hashes (JL 260928).
 
 Local Page Evidence or Execution dependencies may coexist in `runs/` and
 `results/` under their own distinct ticket stems and family receipts. They
@@ -42,7 +42,7 @@ execution id is:
 sms/patient-a-study#ri01_description@v001
 ```
 
-Full id, Result path, Result hash, and base-R pointer travel together across
+Full id, Result path, and base-R pointer travel together across
 Folders. A new dataset binding allocates a new RI even when it points to the
 same R. Changing the base R, question, target, or acceptance also allocates a
 new RI. A retry of the same frozen contract appends an attempt under the same
@@ -63,13 +63,11 @@ datasets:
   - id: patient-a
     version: snapshot-01
     manifest: outline/evidence/materials/dataset-manifest.yaml
-    sha256: <manifest-sha256>
 items:
   - run: ri01_description
     base_run:
       id: r01_description
       ticket: runs/r01_description.sh
-      sha256: <base-ticket-sha256>
     question: What patterns and limits does the observed response funnel show?
     target: wisdom
     datasets: [patient-a@snapshot-01]
@@ -78,11 +76,11 @@ items:
 ```
 
 Paths are relative to the instance unless absolute. Dataset manifests name
-immutable snapshots or files, schema, window, filters, and content hashes or
-immutable database snapshot ids. A manifest hash alone does not freeze a
+immutable snapshots or files, schema, window, filters, and snapshot versions or
+immutable database snapshot ids. A manifest alone does not freeze a
 mutable database. Freeze the queried data scope too. Keep credentials and raw
-patient rows out of research manifests. A byte-identical relocated source may
-use an explicit hash-preserving mapping; a changed snapshot cannot.
+patient rows out of research manifests. A relocated source keeps its version
+through an explicit path mapping; a changed snapshot gets a new version.
 
 `datasets` is an append-only inventory of named versions. Each item declares
 the versions it currently intends to use. A comparison item may declare
@@ -92,7 +90,7 @@ several datasets. Shared Task code needs no central patient roster.
 
 Allocation writes `binding.yaml` with schema `haipipe.insight-binding/v1`,
 `instance`, `run`, `base_run`, `question`, `target`, `expected`, `acceptance`, and
-full dataset bindings. Its hash goes on the planned runtime as `binding_sha256`.
+full dataset bindings. The planned runtime sits beside it.
 It has no evidence checkpoint yet. Gather evidence in a separate working packet;
 do not edit the allocation when producer or local Evidence Results arrive.
 
@@ -108,7 +106,6 @@ version: v001
 base_run:
   id: r01_description
   ticket: runs/r01_description.sh
-  sha256: <base-ticket-sha256>
 question: What patterns and limits does the observed response funnel show?
 target: wisdom
 acceptance: Every pattern is supported; rival explanations remain visible
@@ -116,15 +113,11 @@ datasets:
   - id: patient-a
     version: snapshot-01
     manifest: outline/evidence/materials/dataset-manifest.yaml
-    sha256: <manifest-sha256>
 supporting_results:
   - run: <full-producing-execution-id>
     path: <accepted-result-envelope>
-    sha256: <result-sha256>
     ticket: <exact-producing-Ticket>
-    ticket_sha256: <ticket-sha256>
     receipt: <exact-complete-producing-receipt>
-    receipt_sha256: <receipt-sha256>
 recipe_calls: []
 local_sources: []
 # With no supporting_results: local_evidence_reason explains the local evidence.
@@ -132,12 +125,12 @@ local_sources: []
 
 The `evidence_contract` marker selects the new receipt-bound validation rules.
 `freeze` always emits it; an unknown marker is invalid. Existing frozen packets
-without the marker are read under their earlier evidence dialect, whether or
-not they have allocation binding hashes. Do not add a marker by rewriting old
+without the marker are read under their earlier evidence dialect. Any hash
+field left in an older record is ignored. Do not add a marker by rewriting old
 bytes; use the next explicit execution version for a revised contract.
 
-Every new Supporting Result binding includes its native Ticket/hash and
-receipt/hash, including reused support with `recipe_calls: []`. The receipt
+Every new Supporting Result binding includes its native Ticket and
+receipt, including reused support with `recipe_calls: []`. The receipt
 must name that same full Run identity and an accepted terminal status. Frozen
 historical packets retain their recorded dialect. `freeze` checks these
 structural bindings and receipt status; the source owner and local Evidence
@@ -160,9 +153,6 @@ execution: sms/patient-a-study#ri01_description@v001
 family: insight
 operation: item
 status: complete
-binding_sha256: <binding-yaml-sha256>
-input_sha256: <input-yaml-sha256>
-result_sha256: <result-yaml-sha256>
 checkpoints:
   frozen: {at: <timestamp>, receipt: input.yaml}
   evidence: {at: <timestamp>, receipt: evidence-check.md}
@@ -183,18 +173,18 @@ schema: haipipe.insight-review/v1
 author: <actual-author-session-or-person>
 reviewer: <different-independent-reviewer-session-or-person>
 verdict: pass
-input_sha256: <frozen-input-file-hash>
-candidate_sha256: <candidate_digest-from-insight_items.py>
+execution: sms/patient-a-study#ri01_description@v001
 checked: [source fidelity, DIKW trace, rivals and boundaries]
 ```
 
-`candidate_digest(result)` hashes canonical sorted compact UTF-8 JSON of the
-Result mapping excluding `review`, avoiding a circular review link. The
-reviewer checks this exact candidate and input. Changed content requires a
-new review. Receipt identity is an auditable assertion, not cryptographic
-proof of independence; a caller cannot self-certify a scientific review by
-filling these fields. Use a genuinely independent reviewer and preserve its
-review record. The checker only validates the receipt structure and binding.
+The review receipt lives in the execution directory and names that same
+execution; its location and `execution` bind it to this version's candidate and
+frozen input. Changed content after review needs a new review and, when
+published, the next version; staleness is file time or `git diff`, never a
+hash. Receipt identity is an auditable assertion, not proof of independence; a
+caller cannot self-certify a scientific review by filling these fields. Use a
+genuinely independent reviewer and preserve its review record. The checker
+only validates the receipt structure and binding.
 
 The DIKW shape:
 
@@ -222,7 +212,7 @@ RF:
 
 `source:0` addresses `supporting_results[0]`; `dataset:0` may support dataset
 inventory observations, not new statistics computed in the Page. Optional
-`local_sources` use `local:0` and the same path/hash binding grammar. Rows cite
+`local_sources` use `local:0` and the same path binding grammar. Rows cite
 the immediately preceding rung. RF cites the declared target rung when the
 item stops below Wisdom; only Wisdom-targeted RF can use the I1/I5 bridge.
 Accepted Results contain every rung through the target. An insufficient or
@@ -238,15 +228,13 @@ insight_run: ri01_description
 base_run:
   id: r01_description
   ticket: runs/r01_description.sh
-  sha256: <base-ticket-sha256>
 version: v001
 finding: RF1
 result: <consumer-resolved-result.yaml>
-sha256: <result-sha256>
 ```
 
 The consumer states how the bounded finding supports its decision. Resolve
-the exact Result, hash, item-level acceptance, DIKW trace, and source versions.
+the exact Result, version, item-level acceptance, DIKW trace, and source versions.
 Never resolve `latest`, accept all items because the Page is complete, or
 substitute a sibling patient's Result. Existing citations remain pinned when
 v002 appears; affected current-use bindings are stale until the consumer
@@ -280,8 +268,11 @@ validates the materialized contract.
 checkpoint, outcome, and last accepted findings. A proposed item does not
 become a completed Run without a ticket and receipt. A higher incomplete
 version shows current work without hiding the last accepted historical one.
+When a bound source file (base ticket, dataset manifest, Supporting Result,
+local source) is newer than the frozen input or allocation, the row says
+`source file newer than input`; this file-time note never fails the check.
 The checker cannot judge scientific correctness or provide a human signature.
-It also cannot detect a coordinated rewrite of all payloads and their hashes
-without a trusted prior publication record. The execution owner must preserve
+It also cannot detect an in-place edit of a published payload; use `git diff`
+against the published commit. The execution owner must preserve
 published versions in append-only/version-controlled storage and allocate new
 versions under a lock when multiple callers commission the same item.

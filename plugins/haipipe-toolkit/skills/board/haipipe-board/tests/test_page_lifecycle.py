@@ -1,4 +1,4 @@
-import hashlib
+import os
 import re
 import tempfile
 import unittest
@@ -11,11 +11,10 @@ HERE = Path(__file__).resolve().parent.parent
 
 
 def version(label):
-    if ":" in label:
+    """A Page version is its number and date (JL 260928: no content hashes)."""
+    if " " in label:
         return label
-    source = hashlib.sha256(f"source:{label}".encode()).hexdigest()
-    render = hashlib.sha256(f"render:{label}".encode()).hexdigest()
-    return f"{source}:{render}"
+    return f"{label} 260928 1241"
 
 
 def producer(
@@ -32,7 +31,6 @@ def producer(
 ):
     before = version(before)
     after = version(after)
-    source_sha256, render_sha256 = after.split(":")
     return {
         "step": step,
         "round": round,
@@ -44,8 +42,6 @@ def producer(
         "version_before": before,
         "version_after": after,
         "checked_version": "",
-        "source_sha256": source_sha256,
-        "render_sha256": render_sha256,
         "mechanical_errors": 0,
         "mechanical_warnings": 0,
         "verdict": "",
@@ -75,7 +71,6 @@ def check(
     if verdict is None:
         verdict = "pass" if route == "CLOSE" else "revise"
     checked_version = version(checked_version)
-    source_sha256, render_sha256 = checked_version.split(":")
     return {
         "step": step,
         "round": round,
@@ -87,8 +82,6 @@ def check(
         "version_before": checked_version,
         "version_after": checked_version,
         "checked_version": checked_version,
-        "source_sha256": source_sha256,
-        "render_sha256": render_sha256,
         "mechanical_errors": 0,
         "mechanical_warnings": 0,
         "verdict": verdict,
@@ -416,14 +409,19 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run([receipt], final_version="v2")
         self.assertIn("checked-version-mismatch", self.codes(value))
 
-    def test_symbolic_version_is_rejected(self):
+    def test_multiline_version_is_rejected(self):
         receipt = check(1, "v1")
-        receipt["version_before"] = "source-v1:render-v1"
-        receipt["version_after"] = "source-v1:render-v1"
-        receipt["checked_version"] = "source-v1:render-v1"
-        value = run([receipt], final_version="source-v1:render-v1")
+        receipt["version_before"] = "v1\n260928 1241"
+        receipt["version_after"] = "v1\n260928 1241"
+        receipt["checked_version"] = "v1\n260928 1241"
+        value = run([receipt], final_version="v1\n260928 1241")
         self.assertIn("invalid-version-format", self.codes(value))
         self.assertIn("invalid-final-version-format", self.codes(value))
+
+    def test_leftover_hash_fields_in_an_old_receipt_are_ignored(self):
+        receipt = check(1, "v1")
+        receipt.update({"source_sha256": "a" * 64, "render_sha256": "b" * 64})
+        self.assertClean(run([receipt]))
 
     def test_builder_must_be_separate_from_producer_and_judge(self):
         producer_receipt = producer(
@@ -525,7 +523,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run([receipt], status="blocked")
         self.assertIn("max-rounds-exceeded", self.codes(value))
 
-    def test_artifact_verification_recomputes_source_and_render_hashes(self):
+    def test_artifact_verification_reads_file_times_not_hashes(self):
         with tempfile.TemporaryDirectory() as temporary:
             board = Path(temporary)
             page = board / "QF1-page.md"
@@ -533,16 +531,14 @@ class PageLifecycleAuditTest(unittest.TestCase):
             rendered.parent.mkdir(parents=True)
             page.write_text("# exact source\n", encoding="utf-8")
             rendered.write_text("<h1>exact render</h1>\n", encoding="utf-8")
-            actual = (
-                f"{hashlib.sha256(page.read_bytes()).hexdigest()}:"
-                f"{hashlib.sha256(rendered.read_bytes()).hexdigest()}"
-            )
-            value = run([check(1, actual)], final_version=actual)
+            os.utime(page, (1_000, 1_000))
+            os.utime(rendered, (2_000, 2_000))
+            value = run([check(1, "v1")])
             value.update({"board": str(board), "page": str(page)})
             self.assertEqual([], audit_artifacts(value))
-            page.write_text("# changed source\n", encoding="utf-8")
+            os.utime(page, (3_000, 3_000))  # the source was saved after its render
             self.assertEqual(
-                {"artifact-version-mismatch"},
+                {"render-stale"},
                 {finding.code for finding in audit_artifacts(value)},
             )
 
@@ -645,7 +641,8 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIn("max_steps", self.script)
         self.assertIn("max_rounds", self.script)
         self.assertIn("checked_version", self.script)
-        self.assertIn("version_id exactly as <source_sha256>:<render_sha256>", self.script)
+        self.assertIn("version_id exactly as <version> <yymmdd HHMM>", self.script)
+        self.assertNotIn("sha256", self.script.lower())
 
     def test_workflow_uses_routes_not_a_fixed_run_sequence(self):
         self.assertIn("let current = startRun", self.script)

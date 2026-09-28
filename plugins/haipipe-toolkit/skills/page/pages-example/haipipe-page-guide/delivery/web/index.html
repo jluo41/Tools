@@ -1807,7 +1807,7 @@ table.bstat{border-collapse:collapse;font:12px ui-monospace,Menlo,monospace;
 
 /* 🪜 THE WORKFLOW LAYOUT · INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在
    最左边，放在最左边的 index…跟具体的内容分开"). SHARED BY BOTH MEMBERS of the 🪜
-   menu — 🏷 Labeling's ladder and 📄 Page phases' loop — because the ruling is about
+   menu — 🏷 Labeling's ladder and 📄 Page Runs' loop — because the ruling is about
    what a workflow surface IS, not about one of them.
 
    WHAT IT REPLACED, IN BOTH. A horizontal strip, one cell per step, each cell
@@ -1861,7 +1861,7 @@ table.bstat{border-collapse:collapse;font:12px ui-monospace,Menlo,monospace;
   #wfpanel, #pfpanel { max-height: 72vh; padding: 12px 12px 16px; }
 }
 
-/* 📄 Page phases · what only the LOOP member needs. */
+/* 📄 Page Runs · what only the LOOP member needs. */
 .pf-run {
   border-top: 1px dashed var(--line, #d8d8d8);
   padding-top: 10px; margin-top: 10px;
@@ -1953,7 +1953,7 @@ body.standalone .chatbtn,body.standalone .schatbar{display:none!important}
 <pre class="asc">Page Folder
 ├── page.toml         source registration
 ├── Page.md           Opening · Content · Aims
-├── outline/          plan · context · evidence
+├── draft/          plan · context · evidence
 └── delivery/web/     generated reading site</pre>
 <div class="ph">1.1 · Source and delivery</div>
 <div class="pj">Identify the files to change and the files to rebuild.</div>
@@ -2018,7 +2018,7 @@ Adopted Content → refreshed delivery</pre>
 <p class="pnew">A request to revise Opening sets the editing boundary; it does not authorize rewriting the rest of the Page. </p>
 <p>During planning, the Outline workspace pairs each planned point with candidate prose for discussion. </p>
 <p>A Writing Run preserves the goal and feedback history through Versions and Steps, while accepted wording is adopted into Content through the Page workflow. </p>
-<p>Those records do not imply that a browser button executes an agent, and accepting one passage does not accept the whole Page.</p></div></details></details></section></main><p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p><footer class="page-footer">Page Folder · source-owned · Board optional</footer></div><aside class="page-workbench-pane live-only" id="page-workbench-pane" aria-label="Page workbenches" hidden><div class="page-workbench-tabs" id="page-workbench-tabs" role="tablist"></div><div class="page-workbench-frames" id="page-workbench-frames"></div></aside></div><script type="application/json" id="page-workbench-config">{"page": "haipipe-page-guide.md", "default": "outline", "workbenches": [{"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces", "order": 10, "url": "/_board/outline?path=%2F\u0026file=haipipe-page-guide.md\u0026lens=div"}, {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page", "order": 40, "url": "/_board/delivery?path=%2F\u0026file=haipipe-page-guide.md"}, {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness", "order": 50, "url": "/_board/folderstat?path=%2F\u0026file=haipipe-page-guide.md"}]}</script><script>/* Native details remain usable without script, including static exports. */
+<p>Those records do not imply that a browser button executes an agent, and accepting one passage does not accept the whole Page.</p></div></details></details></section></main><p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p><footer class="page-footer">Page Folder · source-owned · Board optional</footer></div><aside class="page-workbench-pane live-only" id="page-workbench-pane" aria-label="Page workbenches" hidden><div class="page-workbench-tabs" id="page-workbench-tabs" role="tablist"></div><div class="page-workbench-frames" id="page-workbench-frames"></div></aside></div><script type="application/json" id="page-workbench-config">{"page": "haipipe-page-guide.md", "default": "outline", "workbenches": [{"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces", "order": 10, "url": "/_board/draft?path=%2F\u0026file=haipipe-page-guide.md\u0026lens=div"}, {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page", "order": 40, "url": "/_board/delivery?path=%2F\u0026file=haipipe-page-guide.md"}, {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness", "order": 50, "url": "/_board/folderstat?path=%2F\u0026file=haipipe-page-guide.md"}]}</script><script>/* Native details remain usable without script, including static exports. */
 document.addEventListener('click', event => {
   const button = event.target.closest('.secall');
   if (!button) return;
@@ -2157,7 +2157,7 @@ document.addEventListener('click', event => {
     if (!pane.hidden) { state.visible = false; paint(); }
   });
   document.addEventListener('click', function (event) {
-    var link = event.target.closest && event.target.closest('a[href^="/_board/outline"]');
+    var link = event.target.closest && event.target.closest('a[href^="/_board/draft"],a[href^="/_board/outline"]');
     if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault(); openWorkbench('outline', link.href);
   });

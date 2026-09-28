@@ -12,8 +12,8 @@ description: >-
   before and after, what changed, track changes, review the revision, accept
   or reject changes, /haipipe-page-revise.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-22"
+  version: "0.3.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,7 +26,7 @@ the ledger format is `ref/change-ledger.md`; the identity grammar is
 
 ```text
 identity   rp-revise-NN_<target>     target: C1 · C1.P1 · P03-P05 · or `page`
-inputs     text A and text B, frozen by SHA-256: two Versions of one writing
+inputs     text A and text B, named by path and version: two Versions of one writing
            Run, an accepted Version and a delegated paragraph Result, or two
            built Page versions (their delivery manifests)
 result     results/rp-revise-NN_<target>/  runtime.yaml · working.md · v001.md
@@ -65,11 +65,11 @@ person typed), `###### Decision` `accept`, and `###### Preference status`
 naming the direct edit. Run Space renders the cards red/green. The Run stays
 `running` until the person closes it; adding or removing points is not a
 Revise edit but a Structure change. Server: `servers/workbench-page/
-outline_revise.py`, POST `/_board/outline` with `action: revise`.
+outline_revise.py`, POST `/_board/draft` with `action: revise`.
 
 ## 🔁 The compare door · two frozen texts
 
-1. **Commission.** Name the target and the two texts by path and hash. The
+1. **Commission.** Name the target and the two texts by path and version number. The
    usual pair is the current accepted Version and the newest candidate of the
    same writing Run; other legal pairs are an accepted Version against a
    delegated `paragraph.md`, or two built Page versions by their

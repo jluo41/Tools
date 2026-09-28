@@ -279,10 +279,11 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
         content = self._bounded(content.relative_to(self.root).as_posix())
         if target == content:
             return True
-        materials = self.root / 'outline/evidence/materials'
-        if not content.is_relative_to(materials) or not target.is_relative_to(materials):
-            return False
-        return target in page_workspace.dependency_files(content, materials)
+        for plan in ('draft', 'outline'):  # 0.118 plan folder, then the legacy one
+            materials = self.root / plan / 'evidence/materials'
+            if content.is_relative_to(materials) and target.is_relative_to(materials):
+                return target in page_workspace.dependency_files(content, materials)
+        return False
 
     def _static(self, path):
         if path in {'/_page/assets/workspace.js', '/_page/assets/workspace.css'}:
@@ -354,7 +355,8 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
             if parsed.path == '/w' or parsed.path.startswith('/w/'):
                 return self._workbench_short(parsed)
             route = parsed.path.replace('/_page/', '/_board/', 1)
-            views = {'/_board/outline': self.outline_view,
+            views = {'/_board/draft': self.outline_view,
+                     '/_board/outline': self.outline_view,
                      '/_board/evidence': self.evidence_tab_view,
                      '/_board/value': self.value_view,
                      '/_board/runs': self.runs_view,
@@ -372,7 +374,7 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
     # `/w[/<tab>]` · the short workbench address of the one Page this server
     # hosts, the standalone twin of the Board host's `/w/<board>/<page>/<tab>`.
     # Path-only Location: the browser keeps the DOMAIN it came in on.
-    WORKBENCH_TABS = {'': 'outline', 'outline': 'outline', 'page': 'outline',
+    WORKBENCH_TABS = {'': 'draft', 'draft': 'draft', 'outline': 'draft', 'page': 'draft',
                       'runs': 'runs', 'run': 'runs', 'delivery': 'delivery',
                       'folder': 'folderstat', 'folderstat': 'folderstat',
                       'evidence': 'evidence', 'value': 'value', 'labeling': 'labeling'}
@@ -426,7 +428,8 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
                 if path == '/_page/source':
                     return self._error(403, 'The Page website is read-only; edit Page source outside the reader')
                 route = path.replace('/_page/', '/_board/', 1)
-                workbenches = {'/_board/outline': self.plug_outline,
+                workbenches = {'/_board/draft': self.plug_outline,
+                           '/_board/outline': self.plug_outline,
                            '/_board/evidence': self.plug_evidence,
                            '/_board/value': self.plug_value,
                            '/_board/runs': self.plug_runs,

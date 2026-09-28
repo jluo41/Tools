@@ -179,14 +179,20 @@ def _insight_bindings(page_src: Path, server_root: Path, names: list[str] | None
 
 # ---------------------------------------------------------------- register --
 
+def plan_folder(folder: Path) -> Path:
+    """A Design Page's plan folder: ``draft/`` since Page layout 0.118, else the older ``outline/``."""
+    draft = folder / "draft"
+    return draft if draft.is_dir() or not (folder / "outline").is_dir() else folder / "outline"
+
+
 def _register(folder: Path, stem: str) -> tuple[list[dict], Path]:
-    """Parse ``outline/<stem>-design-items.md``: one block per Design Item.
+    """Parse ``draft/<stem>-design-items.md`` (``outline/`` before 0.118): one block per Design Item.
 
     The register is the bet and its rules (type, audience, job, goal,
     stance, basis, mode, expected, falsified, evidence, acceptance).  State is
     never read from it; it is derived from the Runs that name the item.
     """
-    path = folder / "outline" / f"{stem}-design-items.md"
+    path = plan_folder(folder) / f"{stem}-design-items.md"
     items: list[dict] = []
     current = None
     for line in _read(path).splitlines():
@@ -264,8 +270,7 @@ def _load_runs(folder: Path) -> list[dict]:
         for ref in result.get("artifacts") or []:
             if isinstance(ref, dict) and ref.get("path"):
                 path = result_dir / str(ref["path"])
-                artifacts.append({"path": path, "text": _read(path).strip(),
-                                  "sha256": str(ref.get("sha256") or "")})
+                artifacts.append({"path": path, "text": _read(path).strip()})
         inputs = []
         for ref in ticket.get("inputs") or []:
             if isinstance(ref, dict) and ref.get("path") and ref.get("role"):
@@ -551,7 +556,7 @@ def _verified_design(item: dict) -> dict | None:
     if candidate is None:
         return None
     # A completion receipt describes a past event; Delivery must still bind
-    # the exact reviewed bytes. Recheck the two Results before exporting them.
+    # the reviewed files. Recheck the two Results before exporting them.
     try:
         gate = _unit_gate()
         for run in (candidate, verify):
@@ -564,8 +569,7 @@ def _verified_design(item: dict) -> dict | None:
     except (OSError, ImportError, AttributeError, TypeError, KeyError) as exc:
         raise ValueError(f"Delivery records check unavailable: {exc}") from exc
     art = candidate["artifacts"][0]
-    return {"run": candidate["id"], "text": art["text"], "sha256": art["sha256"],
-            "verification": verify["id"]}
+    return {"run": candidate["id"], "text": art["text"], "verification": verify["id"]}
 
 
 _LEVEL_WORD = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
@@ -693,7 +697,8 @@ def _renders(folder: Path, runs: list[dict]) -> dict[str, list[dict]]:
     for run in runs:
         if run["kind"] != "generate" or run["status"] != "complete":
             continue
-        manifest = _yaml(run["result_dir"] / "result.yaml")
+        result_path = run["result_dir"] / "result.yaml"
+        manifest = _yaml(result_path)
         if "render_manifest" not in manifest:
             continue
         # An invalid current manifest must not silently fall back to an old picture.
@@ -701,9 +706,11 @@ def _renders(folder: Path, runs: list[dict]) -> dict[str, list[dict]]:
             item_rows[:] = [row for row in item_rows if row.get("candidate") != run["id"]]
         try:
             gate = gate or _unit_gate()
+            # Same rule as the records check: a file newer than result.yaml is stale (file time, no hash).
             subjects = {path: run["id"] for _, path in
-                        gate.artifact_records(run["result_dir"], manifest.get("artifacts"))}
-            for row in gate.render_records(run["result_dir"], manifest, subjects, run["item"]):
+                        gate.artifact_records(run["result_dir"], manifest.get("artifacts"), record=result_path)}
+            for row in gate.render_records(run["result_dir"], manifest, subjects, run["item"],
+                                           record=result_path):
                 out.setdefault(run["item"], []).append(
                     {**row, "picture": row["path"].suffix.lower() in _PICTURE})
         except (OSError, ValueError, TypeError, KeyError, ImportError, AttributeError):
@@ -767,8 +774,7 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
         latest = next((r for r in reversed(item["runs"])
                        if r["kind"] == "generate" and r["artifacts"] and r["status"] == "complete"), None)
         item["latest"] = ({"run": latest["id"], "text": latest["artifacts"][0]["text"],
-                           "sha256": latest["artifacts"][0]["sha256"], "status": latest["status"],
-                           "verdict": latest["verdict"]} if latest else None)
+                           "status": latest["status"], "verdict": latest["verdict"]} if latest else None)
         # A passed Verify is the delivery gate.  Keep the old projection for
         # callers that still inspect it, but never use it as a new workflow.
         try:
@@ -873,10 +879,6 @@ def _href(root: Path, path: Path | None, label: str) -> str:
     return f'<a href="{_escape(href)}"><code>{_escape(label)}</code></a>'
 
 
-def _short(sha: str) -> str:
-    return sha[:12] if sha else ""
-
-
 def _whole_word(word: str, flags: int = 0) -> re.Pattern:
     """The word standing alone, never a piece of a hyphenated compound."""
     return re.compile(rf"(?<![\w-]){word}(?![\w-])", flags)
@@ -943,8 +945,7 @@ def _artifact_details(run: dict) -> str:
     if not run["artifacts"]:
         return ""
     art = run["artifacts"][0]
-    return (f'<details><summary>draft text</summary><pre class=text>{_escape(art["text"])}</pre>'
-            f'<div class=mut>sha256 <code>{_escape(_short(art["sha256"]))}</code></div></details>')
+    return f'<details><summary>draft text</summary><pre class=text>{_escape(art["text"])}</pre></details>'
 
 
 def _revise_of(run: dict) -> tuple[str, str]:
@@ -1014,7 +1015,7 @@ _DESIGN_RUN_GUIDE = {
         "name": "Generate", "type": "Design.generate", "actor": "agent",
         "purpose": "Create or revise the commissioned design and check it against every released rule.",
         "worker": "haipipe-design-unit · through haipipe-designer-agent",
-        "requires": "A released Commission, frozen config and current input hashes. A revision also needs its exact base and feedback; no second open Run for the item.",
+        "requires": "A released Commission, frozen config and inputs not edited since the run record was written. A revision also needs its exact base and feedback; no second open Run for the item.",
     },
     "verify": {
         "name": "Verify", "type": "Design.verify", "actor": "independent agent",
@@ -1098,11 +1099,11 @@ def design_chat_prompt(snapshot: dict, item: dict) -> str:
         "Run records, release decision, frozen config and exact inputs before acting; the copied state may be stale.\n"
         "Keep the human Commission gate: do not create, infer or change a release/hold decision. "
         "If the exact release or another prerequisite is missing, report the blocker and stop.\n"
-        "First look for an existing matching Run for this item, operation, frozen config and target hashes. "
+        "First look for an existing matching Run for this item, operation, frozen config and target Results. "
         "Reuse a compatible planned Run and its identity; do not queue or allocate a duplicate. If it is already running, "
         "report its Run id/status and stop without starting another worker. If the requested work already completed, "
         "report its receipt instead of repeating it. Incompatible, stale, blocked, unresolved or ambiguous records require owner resolution; "
-        "do not repin, replace or supersede them from this request.\n"
+        "do not requeue, replace or supersede them from this request.\n"
         "Only when no compatible open Run exists and the recorded next queue action is still allowed, use the Design "
         "owner's native queue action once. A dispatch-existing request may only reuse the recorded open_matching_run id. "
         "Do not choose a different next operation if the item's state changed. For a queued revision, read its frozen base and "
@@ -1482,13 +1483,11 @@ def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: 
     if item.get("ready"):
         ready = item["ready"]
         text, note = ready["text"], (f'ready for Delivery · <code>{_escape(ready["run"])}</code> · '
-                                     f'verified by <code>{_escape(ready["verification"])}</code> · '
-                                     f'sha256 <code>{_escape(_short(ready["sha256"]))}</code>')
+                                     f'verified by <code>{_escape(ready["verification"])}</code>')
     elif item["latest"]:
         lat = item["latest"]
         verdict = f' · {lat["verdict"]}' if lat["verdict"] and lat["status"] == "complete" else ""
-        text, note = lat["text"], (f'latest draft · <code>{_escape(lat["run"])}</code> · {_escape(lat["status"])}{_escape(verdict)}'
-                                   f' · sha256 <code>{_escape(_short(lat["sha256"]))}</code>')
+        text, note = lat["text"], (f'latest draft · <code>{_escape(lat["run"])}</code> · {_escape(lat["status"])}{_escape(verdict)}')
     else:
         text, note = "", "no draft yet"
     picture = design_picture(root, item)

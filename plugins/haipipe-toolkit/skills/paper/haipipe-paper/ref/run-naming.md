@@ -44,7 +44,7 @@ result: results/re-cite-01_prescribing-variation/
 ```
 
 Resolve the Ticket dialect from the shared Page/Run owner; the placeholders
-are not allocations. Frozen inputs/hashes, worker, status and acceptance remain
+are not allocations. Frozen inputs, worker, status and acceptance remain
 required by that owner. The Page's accepted DISPLAY unit is reached through
 its Result, such as `results/re-display-01_<slug>/payload/Display1-<slug>/`.
 
@@ -73,7 +73,7 @@ owner based only on the prefix. Resolve the original Ticket/Result/receipt;
 missing ownership or acceptance is an explicit gap.
 
 New Page Evidence uses typed RE. No bulk rename or duplicate execution is
-needed. An accepted historical Result may be reused by exact path/hash when
+needed. An accepted historical Result may be reused by exact path and version when
 its contract still meets the present requirement. If genuinely new work is
 commissioned, allocate the current native identity and record `supersedes`
 only when it actually replaces the old target/result; a reuse pointer does

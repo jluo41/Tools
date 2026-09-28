@@ -5,14 +5,14 @@ description: >-
   answer on line 1, then sections whose numbered one-line scan points state the
   takeaways, with plain prose paragraphs underneath carrying the detail. A section
   whose work changed files ends with those files, one short line each saying what
-  changed; a closing file section appears only for leftovers git shows. This is
-  a reference spec and does not self-activate. Trigger: response format, reply
+  changed. The last section is always the summary and next steps; there is no
+  file section. This is a reference spec and does not self-activate. Trigger: response format, reply
   format, outline format, bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-09-26"
+  version: "0.7.0"
+  last_updated: "2026-09-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -136,12 +136,18 @@ Sections
 - **Header shape** — `## [emoji] Short Headline`, one emoji, then a 2 to 5 word
   headline in title case. Not kebab-case; write it like a headline a human scans.
 - **Emoji palette**, suggestive and not fixed — 🧩 short answer · 🎯 recommendation ·
-  ⚠️ caveat or risk · 🛠️ how-to · 📋 summary · 🔍 findings · ✅ done ·
-  🙋 question for you · 📁 leftover file changes (only if any) ·
+  ⚠️ caveat or risk · 🛠️ how-to · 📋 summary and next (the last section) ·
+  🔍 findings · ✅ done · 🙋 question for you ·
   👀 (a mark on a file line: read this one) · 🧪 experiment ·
   💡 idea · 📊 results · 🚧 in progress.
 - **How many** — 2 to 5 for a typical reply, ordered most important first. One
   section is fine for a small reply. A trivial reply can be the answer line alone.
+- **The last section is the summary and next steps** (JL 260927) — every
+  substantive reply ends with `## 📋 Summary and Next`: its scan points say where
+  things stand now and what comes next, most important first; its prose holds the
+  detail. It is the section a reader who skipped everything else reads, so it
+  carries the real state and the real next step, never a list of files. A question
+  for the user belongs here too, as the next step it blocks.
 - **Honest headlines** — the headline names what is under it. Never pad to hit a count.
 
 When a code block is still allowed
@@ -183,7 +189,7 @@ can be while still saying what changed.
 2. **Name, where, change**: ``- `name` (where): change``, the change in 8 words or fewer.
 3. **👀 means read it**: add `Check:` and what to confirm, 8 words or fewer.
 4. **Outputs too**: a notebook or result goes under the section that made it.
-5. **End only for leftovers**: `📁 File Changes` appears only if git shows unclaimed files.
+5. **No file section**: a leftover is one sentence in the closing section, never a section.
 
 A file line is ONE line; if it wraps, cut it. `name` is the file name, or the
 shortest path that is unique in the reply; never an absolute path. When the reader
@@ -209,12 +215,11 @@ git status --short
 git -C <submodule> status --short      # if a submodule such as Tools/ was touched
 ```
 
-Every path git shows for this turn must sit in some section's file lines. Only
-what no section claims goes into a closing `## 📁 File Changes`, one short line
-each: a side effect (`_WorkSpace/...` written or deleted), or ⚠️ anything NOT
-git-ignored that must not be committed. When nothing is left over, there is no
-closing section at all. Other sessions' changes are mentioned only when they could
-end up in a commit by mistake.
+Every path git shows for this turn must sit in some section's file lines. What no
+section claims (a side effect such as `_WorkSpace/...` written or deleted, or
+another session's file that could end up in a commit by mistake) is one sentence in
+the prose of the closing `## 📋 Summary and Next`. There is no `📁 File Changes`
+section (JL 260927): a reply ends on where things stand and what comes next.
 
 Example
 -------
@@ -240,11 +245,12 @@ no readings. It now skips them, and the rebuild picked that up.
 - 👀 `builder_x.py` (`build_cases`): skip days with zero readings. Check: skip before window cut
 - `fn_case/x.py`: regenerated from the builder
 
-## 🙋 What I Need From You
-1. **Pick the model**: Bedrock (BAA-covered), or a local in-VPC model
+## 📋 Summary and Next
+1. **Now**: empty days no longer make cases; the CaseSet is rebuilt
+2. **Next**: pick the model, Bedrock (BAA-covered) or a local in-VPC model
 
-## 📁 File Changes
-- `_WorkSpace/3-CaseStore/x/@v0002/`: rebuilt by the builder (git-ignored)
+The rebuild wrote `_WorkSpace/3-CaseStore/x/@v0002/`, which git ignores. Once the
+model is picked, the training Run can start from this CaseSet.
 ```
 
 ## 📎 "Show me" means in the reply (JL 260904)

@@ -14,7 +14,6 @@ D page names in the store.
 from __future__ import annotations
 
 import html
-import hashlib
 import re
 import uuid
 from datetime import date, datetime, timedelta
@@ -1114,7 +1113,6 @@ def _workflow_runtimes(board: Path) -> list[dict]:
                 raise ValueError("resource_controls must be control records")
             record.update({"status": data.get("status", "not recorded"),
                            "definition": data.get("definition_ref", "not recorded"),
-                           "definition_hash": data.get("definition_hash", ""),
                            "requested_answer_targets": data.get("requested_answer_targets", []),
                            "runs": runs, "frontier": frontier,
                            "resource_controls": resource_controls})
@@ -2137,17 +2135,16 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
         runtime = {"schema": "haipipe.workflow-runtime/v1", "workflow_id": "haipipe-insight-workflow",
                    "workflow_version": "1.3.1", "workflow_runtime_id": runtime_id,
                    "definition_ref": "definition-v001.yaml",
-                   "definition_hash": hashlib.sha256(definition_text.encode()).hexdigest(),
                    "status": "planned", "requested_answer_targets": [], "requested_controls": [request],
                    "runs": [], "control": {"gates": [], "routes": []},
                    "resource_controls": [], "frontier": [], "output": {"acceptance": "pending"}}
     record_id = f"registration-{qid.lower()}-{uuid.uuid4().hex[:12]}"
-    log = path.parent / "outline" / f"{path.stem}-log.md"
+    from src.outline_version import record_path
+    log = record_path(path.parent / "outline", path.stem, "log")
     receipt = f"{log.relative_to(board_root).as_posix()}#{record_id}"
     control = {"key": "registration", "target": {"question": qid, "partitions": partitions},
                "status": "passed", "authority": "haipipe-insight-question", "actor": actor,
-               "evidence": [{"path": path.relative_to(board_root).as_posix(),
-                             "sha256": hashlib.sha256(updated.encode()).hexdigest()}], "receipt": receipt}
+               "evidence": [{"path": path.relative_to(board_root).as_posix()}], "receipt": receipt}
     stamp = datetime.now().astimezone().isoformat(timespec="seconds")
     record = {"workflow_runtime_id": runtime_id, "at": stamp, **control,
               "assertion": "neutral question row and requested open cells registered",

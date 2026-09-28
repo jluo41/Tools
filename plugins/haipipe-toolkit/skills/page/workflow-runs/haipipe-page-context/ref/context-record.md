@@ -24,7 +24,7 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Audience**: <intended reader>
 - **Covered here**: <scope>
 - **Covered elsewhere**: <bounded related addresses or none>
-- **Sources**: <path#locator; version/hash>
+- **Sources**: <path#locator; version/date>
 
 ### CTX3 · Policy, structure, and style
 - **Status**: resolved | missing | conflicting
@@ -32,13 +32,13 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Expected structure**: <exact skill/path#locator>
 - **Narrative/style policy**: <exact skill/path#locator or none>
 - **Requirements**: outline/records/<stem>-requirement.md#<record ids> or none
-- **Sources**: <every governing authority and version/hash>
+- **Sources**: <every governing authority and version/date>
 
 ### CTX4 · Related information
 - **Status**: resolved | missing | conflicting | not-applicable
 - **Rows**: <F ids and one-hop related Page scopes>
 - **Packet**: <pagecontext.py invocation or durable packet path>
-- **Sources**: <exact Page fragments and version/hash>
+- **Sources**: <exact Page fragments and version/date>
 
 ### CTX5 · Feedback and open decisions
 - **Status**: resolved | missing | conflicting | not-applicable
@@ -53,7 +53,7 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Evidence Items**: <count and state tally or none>
 - **Run receipts**: <relevant current receipts or none>
 - **Next authority**: OUTLINE | CONTEXT | HOLD
-- **Sources**: <paths and version/hash>
+- **Sources**: <paths and version/date>
 ```
 
 Rules:

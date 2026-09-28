@@ -10,8 +10,8 @@ description: >-
   Context record, outline context, collect page requirements,
   /haipipe-page-context.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-22"
+  version: "0.4.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md
 ---
 
@@ -129,9 +129,9 @@ Resolve the five facts later Runs need:
 ## ③ Freeze
 
 Write `outline/records/<stem>-context.md` using `ref/context-record.md`. Every source
-row carries a repository-relative path, role, and freshness fact. Use a
-SHA-256 when stable bytes matter; use a durable version/receipt identifier
-when the source owns its own version grammar.
+row carries a repository-relative path, role, and freshness fact: the source's
+own version number and date when it has one, otherwise its saved time (file
+time or last `git` commit). Never a content hash (JL 260928).
 
 The record may summarize a rule for orientation, but the path remains the
 authority. It must clearly separate:
@@ -140,7 +140,7 @@ authority. It must clearly separate:
 resolved      safe for the next Run to use
 missing       required source absent or unreadable
 conflicting   two authorities disagree
-stale         source changed after this context record
+stale         source changed after this context record (newer file time or `git diff`)
 not-applicable deliberately absent under the resolved Page contract
 ```
 
@@ -170,7 +170,7 @@ context: outline/records/<stem>-context.md
 sources: n resolved · n missing · n conflicting · n stale
 identity: <Folder kind> · <Folder owner> · <Page Face owner or none>
 artifacts: ["outline/records/<stem>-context.md"]
-evidence: [<authority paths and version/hash facts>]
+evidence: [<authority paths and version/date facts>]
 route: OUTLINE | CONTEXT | HOLD
 next_cycle: SHAPE | PREPARE       # omit when route is HOLD
 reason: <why the context is usable or what prevents it>

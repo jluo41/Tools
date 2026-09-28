@@ -3,6 +3,15 @@ display — Changelog
 
 Family-level changes. Skill implementation history stays in each skill's own CHANGELOG.
 
+## 2026-09-28 · No content hashes (JL 260928)
+
+AGENTS.md rule 9: a display intake records where its snapshot came from and
+when it was frozen (`snapshot.materialized_at`), never a `sha256`; a local
+canonical artifact newer than the snapshot means the snapshot is stale.
+`haipipe-display` 0.3.6 (shared `ref/`), `haipipe-display-table` 0.2.2,
+`haipipe-display-figure` 0.2.3 and `haipipe-display-unit-agent` 0.1.1 follow.
+`figure-to-svg` finds a byte-identical prior source with `cmp -s`, not MD5.
+
 ## 2026-09-20 · Figure review evidence and tolerances
 
 `figure-to-svg` now requires matched source/replica render context, dimensions,

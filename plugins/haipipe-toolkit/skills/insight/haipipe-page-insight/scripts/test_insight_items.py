@@ -3,6 +3,7 @@ from contextlib import redirect_stdout, redirect_stderr
 import copy
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -21,7 +22,7 @@ def fixture(root, patient="patient-a", *, add_open=True):
     folder = root / patient
     data = folder / "outline/evidence/materials/snapshot-01.yaml"
     write(data, {"snapshot": "immutable-01", "subject": patient, "tables": ["messages", "events"]})
-    ds = {"id": patient, "version": "snapshot-01", "manifest": str(data), "sha256": app.digest(data)}
+    ds = {"id": patient, "version": "snapshot-01", "manifest": str(data)}
     item = {"run": "r01_description", "question": "What tables are available?", "target": "wisdom",
             "datasets": [f"{patient}@snapshot-01"], "expected": "Sourced inventory and boundaries",
             "acceptance": "All inventory claims trace to the frozen manifest"}
@@ -52,12 +53,11 @@ def fixture(root, patient="patient-a", *, add_open=True):
     write(directory / "result.yaml", result)
     write(directory / "review.yaml", {"schema": "haipipe.insight-review/v1", "verdict": "pass",
           "author": "fixture-author", "reviewer": "fixture-reviewer", "checked": ["synthetic parser fixture only"],
-          "candidate_sha256": app.candidate_digest(result), "input_sha256": app.digest(directory / "input.yaml")})
+          "execution": ident})
     (directory / "review.md").write_text("Nonclinical parser fixture; not a scientific review.\n")
     (directory / "evidence.md").write_text("Manifest identity and table inventory checked.\n")
     runtime = {"schema": "haipipe.insight-runtime/v1", "execution": ident, "family": "insight",
-               "operation": "item", "status": "complete", "input_sha256": app.digest(directory / "input.yaml"),
-               "result_sha256": app.digest(directory / "result.yaml"), "attempts": [{"attempt": 1, "status": "complete"}],
+               "operation": "item", "status": "complete", "attempts": [{"attempt": 1, "status": "complete"}],
                "checkpoints": {key: {"at": "2026-09-07T12:00:00Z", "receipt": receipt}
                                for key, receipt in zip(app.STAGES, ("input.yaml", "evidence.md", "review.yaml", "result.yaml"))}}
     write(directory / "runtime.yaml", runtime)
@@ -69,8 +69,7 @@ def ri_fixture(root, patient="patient-c"):
     folder = root / patient
     data = folder / "outline/evidence/materials/snapshot-01.yaml"
     write(data, {"snapshot": "immutable-01", "subject": patient, "tables": ["events"]})
-    dataset = {"id": patient, "version": "snapshot-01", "manifest": str(data),
-               "sha256": app.digest(data)}
+    dataset = {"id": patient, "version": "snapshot-01", "manifest": str(data)}
     write(folder / "workflow/insight.yaml", {
         "schema": "haipipe.insight-instance/v1", "instance": f"study/{patient}",
         "topic": "Rebound a reusable analysis to new data", "datasets": [dataset], "items": []})
@@ -94,19 +93,11 @@ class InsightItemsTest(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def mutate_result(self, edit, reseal=True):
+    def mutate_result(self, edit):
         path = self.execution / "result.yaml"
         result = app.read_yaml(path)
         edit(result)
         write(path, result)
-        if reseal:
-            review_path = self.execution / "review.yaml"
-            review = app.read_yaml(review_path)
-            review["candidate_sha256"] = app.candidate_digest(result)
-            write(review_path, review)
-            runtime = app.read_yaml(self.execution / "runtime.yaml")
-            runtime["result_sha256"] = app.digest(path)
-            write(self.execution / "runtime.yaml", runtime)
 
     def faults(self):
         return app.inspect(self.folder)[2]
@@ -126,7 +117,8 @@ class InsightItemsTest(unittest.TestCase):
         self.assertEqual(0, status)
         packet = json.loads(output.getvalue())
         self.assertEqual(manifest["instance"], packet["instance"])
-        self.assertEqual(app.digest(self.execution / "result.yaml"), packet["sha256"])
+        self.assertEqual(str((self.execution / "result.yaml").resolve()), packet["result"])
+        self.assertFalse(any(app.is_hash_key(key) for key in packet))
 
     def test_patient_instances_share_item_name_without_identity_collision(self):
         other, _ = fixture(self.root, "patient-b")
@@ -135,18 +127,37 @@ class InsightItemsTest(unittest.TestCase):
         self.assertEqual([], a[2] + b[2])
         self.assertNotEqual(a[1][0]["versions"][0]["execution"], b[1][0]["versions"][0]["execution"])
 
-    def test_wrong_patient_result_is_rejected_even_with_resealed_hash(self):
+    def test_wrong_patient_result_is_rejected(self):
         self.mutate_result(lambda r: r.update(execution="study/patient-b#r01_description@v001"))
         self.assertTrue(any("Result execution identity mismatch" in e for e in self.faults()))
 
-    def test_modified_result_payload_breaks_pinned_hash(self):
-        self.mutate_result(lambda r: r["RF"][0].update(text="Different finding"), reseal=False)
-        self.assertTrue(any("Result hash mismatch" in e for e in self.faults()))
+    def test_edited_result_needs_no_reseal(self):
+        self.mutate_result(lambda r: r["RF"][0].update(text="Different finding"))
+        self.assertEqual([], self.faults())
 
-    def test_changed_dataset_in_place_is_detected(self):
+    def test_leftover_hash_fields_in_old_records_are_ignored(self):
+        path = self.folder / "workflow/insight.yaml"
+        manifest = app.read_yaml(path)
+        manifest["datasets"][0]["sha256"] = "0" * 64
+        write(path, manifest)
+        runtime = app.read_yaml(self.execution / "runtime.yaml")
+        runtime.update(input_sha256="0" * 64, result_sha256="0" * 64)
+        write(self.execution / "runtime.yaml", runtime)
+        review = app.read_yaml(self.execution / "review.yaml")
+        review.pop("execution")
+        review["candidate_sha256"] = "0" * 64
+        write(self.execution / "review.yaml", review)
+        self.assertEqual([], self.faults())
+
+    def test_changed_dataset_in_place_shows_by_file_time(self):
         data = self.folder / "outline/evidence/materials/snapshot-01.yaml"
         write(data, {"snapshot": "actually-new-data"})
-        self.assertTrue(any("hash mismatch" in e for e in self.faults()))
+        later = (self.execution / "input.yaml").stat().st_mtime + 60
+        os.utime(data, (later, later))
+        _, rows, errors = app.inspect(self.folder)
+        self.assertEqual([], errors)
+        self.assertEqual([str(data)], rows[0]["versions"][0]["newer"])
+        self.assertIn("source file newer than input", app.table(rows))
 
     def test_result_without_ticket_is_orphaned(self):
         (self.folder / "runs/r01_description.sh").unlink()
@@ -174,7 +185,7 @@ class InsightItemsTest(unittest.TestCase):
         self.assertTrue(any("passing review" in e for e in self.faults()))
 
     def test_new_version_does_not_hide_accepted_historical_result(self):
-        before = app.digest(self.execution / "result.yaml")
+        before = (self.execution / "result.yaml").read_bytes()
         newer = self.execution.parent / "v002"
         runtime = {"schema": "haipipe.insight-runtime/v1", "execution": "study/patient-a#r01_description@v002",
                    "family": "insight", "operation": "item", "status": "planned", "checkpoints": {},
@@ -185,14 +196,14 @@ class InsightItemsTest(unittest.TestCase):
         rendered = app.table(rows)
         self.assertIn("@v002", rendered)
         self.assertIn("@v001 / RF1", rendered)
-        self.assertEqual(before, app.digest(self.execution / "result.yaml"))
+        self.assertEqual(before, (self.execution / "result.yaml").read_bytes())
 
     def test_new_snapshot_marks_old_binding_stale_without_destroying_result(self):
         path = self.folder / "workflow/insight.yaml"
         manifest = app.read_yaml(path)
         data = self.folder / "outline/evidence/materials/snapshot-02.yaml"
         write(data, {"snapshot": "immutable-02"})
-        manifest["datasets"].append({"id": "patient-a", "version": "snapshot-02", "manifest": str(data), "sha256": app.digest(data)})
+        manifest["datasets"].append({"id": "patient-a", "version": "snapshot-02", "manifest": str(data)})
         manifest["items"][0]["datasets"] = ["patient-a@snapshot-02"]
         write(path, manifest)
         _, rows, errors = app.inspect(self.folder)
@@ -202,25 +213,17 @@ class InsightItemsTest(unittest.TestCase):
     def test_bare_local_support_id_is_rejected(self):
         path = self.execution / "input.yaml"
         frozen = app.read_yaml(path)
-        frozen["supporting_results"] = [{"run": "r01", "path": str(self.execution / "review.md"),
-                                          "sha256": app.digest(self.execution / "review.md")}]
+        frozen["supporting_results"] = [{"run": "r01", "path": str(self.execution / "review.md")}]
         write(path, frozen)
-        runtime = app.read_yaml(self.execution / "runtime.yaml")
-        runtime["input_sha256"] = app.digest(path)
-        write(self.execution / "runtime.yaml", runtime)
         self.assertTrue(any("unqualified Supporting Run" in e for e in self.faults()))
 
-    def test_wrong_patient_support_is_rejected_even_with_correct_file_hash(self):
+    def test_wrong_patient_support_is_rejected(self):
         _, other = fixture(self.root, "patient-b")
         path = self.execution / "input.yaml"
         frozen = app.read_yaml(path)
         frozen["supporting_results"] = [{"run": "study/patient-c#r01_description@v001",
-                                          "path": str(other / "result.yaml"),
-                                          "sha256": app.digest(other / "result.yaml")}]
+                                          "path": str(other / "result.yaml")}]
         write(path, frozen)
-        runtime = app.read_yaml(self.execution / "runtime.yaml")
-        runtime["input_sha256"] = app.digest(path)
-        write(self.execution / "runtime.yaml", runtime)
         self.assertTrue(any("Supporting Result execution identity mismatch" in e for e in self.faults()))
 
     def test_escaped_review_path_cannot_qualify(self):
@@ -258,12 +261,12 @@ class InsightItemsTest(unittest.TestCase):
             self.assertEqual(0, app.main(["cite", str(self.folder), "--item", "r01_description", "--version", "v001", "--finding", "RF1", "--historical"]))
         self.assertEqual("historical-needs-recheck", json.loads(output.getvalue())["applicability"])
 
-    def test_review_must_bind_exact_candidate(self):
+    def test_review_must_name_this_execution(self):
         path = self.execution / "review.yaml"
         review = app.read_yaml(path)
-        review["candidate_sha256"] = "0" * 64
+        review["execution"] = "study/patient-a#r01_description@v002"
         write(path, review)
-        self.assertTrue(any("exact candidate" in e for e in self.faults()))
+        self.assertTrue(any("review names a different execution" in e for e in self.faults()))
 
     def test_self_review_is_rejected(self):
         path = self.execution / "review.yaml"
@@ -287,13 +290,13 @@ class InsightItemsTest(unittest.TestCase):
 
     def test_second_dataset_gets_new_ri_without_overwriting_base_r(self):
         folder, base, first = ri_fixture(self.root, "patient-d")
-        before = app.digest(base)
+        before = base.read_bytes()
         manifest_path = folder / "workflow/insight.yaml"
         manifest = app.read_yaml(manifest_path)
         data = folder / "outline/evidence/materials/snapshot-02.yaml"
         write(data, {"snapshot": "immutable-02", "subject": "patient-e"})
         manifest["datasets"].append({"id": "patient-e", "version": "snapshot-02",
-                                     "manifest": str(data), "sha256": app.digest(data)})
+                                     "manifest": str(data)})
         write(manifest_path, manifest)
         second = app.bind_insight_run(
             folder, base_run="r01_description", base_ticket="runs/r01_description.sh",
@@ -303,15 +306,28 @@ class InsightItemsTest(unittest.TestCase):
             acceptance="Every claim traces to the second dataset")
         self.assertEqual("ri01_description", first["insight_run"])
         self.assertEqual("ri02_description", second["insight_run"])
-        self.assertEqual(before, app.digest(base))
+        self.assertEqual(before, base.read_bytes())
         self.assertNotEqual(first["execution"], second["execution"])
         self.assertEqual([], app.inspect(folder)[2])
 
-    def test_changed_base_r_ticket_stales_ri_binding(self):
-        folder, base, _ = ri_fixture(self.root, "patient-f")
+    def test_changed_base_r_ticket_shows_by_file_time(self):
+        folder, base, packet = ri_fixture(self.root, "patient-f")
         base.write_text("#!/bin/sh\n# changed normal Run\nexit 0\n", encoding="utf-8")
-        self.assertTrue(any("base_run" in fault and "hash mismatch" in fault
-                            for fault in app.inspect(folder)[2]))
+        later = Path(packet["binding"]).stat().st_mtime + 60
+        os.utime(base, (later, later))
+        _, rows, errors = app.inspect(folder)
+        self.assertEqual([], errors)
+        self.assertEqual(["runs/r01_description.sh"], rows[0]["versions"][0]["newer"])
+
+    def test_bind_and_freeze_write_no_hash_fields(self):
+        folder, _, packet = ri_fixture(self.root, "plain-records")
+        output = app.freeze_insight_input(folder, run=packet["insight_run"], version="v001",
+                                          evidence={"local_evidence_reason": "Inventory only"})
+        for path in (packet["ticket"], packet["binding"], output["input"], output["runtime"],
+                     folder / "workflow/insight.yaml"):
+            text = Path(path).read_text(encoding="utf-8")
+            self.assertNotIn("sha256", text)
+            self.assertNotIn("hash", text)
 
     def ready_evidence(self, folder, packet):
         producer = self.root / "producer"
@@ -326,16 +342,14 @@ class InsightItemsTest(unittest.TestCase):
         local = folder / "outline/evidence/materials/local-result.yaml"
         write(local, {"type": "VALUE", "status": "accepted", "value": 7})
         call = {"recipe_id": "support/compute", "owner": str(producer),
-                "entry": str(ticket), "entry_sha256": app.digest(ticket), "code_version": "synthetic-v1",
+                "entry": str(ticket), "code_version": "synthetic-v1",
                 "parameters": {"input_manifest": "snapshot-01.yaml", "output_root": str(result.parent)},
                 "parameter_contract": "synthetic-v1", "producer_execution": ident,
                 "consumer_insight_execution": packet["execution"],
-                "producer_ticket": str(ticket), "producer_ticket_sha256": app.digest(ticket),
-                "receipt": str(receipt), "receipt_sha256": app.digest(receipt)}
-        return {"supporting_results": [{"run": ident, "path": str(result), "sha256": app.digest(result),
-                                         "ticket": str(ticket), "ticket_sha256": app.digest(ticket),
-                                         "receipt": str(receipt), "receipt_sha256": app.digest(receipt)}],
-                "local_sources": [{"path": str(local), "sha256": app.digest(local)}],
+                "producer_ticket": str(ticket), "receipt": str(receipt)}
+        return {"supporting_results": [{"run": ident, "path": str(result),
+                                         "ticket": str(ticket), "receipt": str(receipt)}],
+                "local_sources": [{"path": str(local)}],
                 "recipe_calls": [call]}
 
     def test_bind_does_not_freeze_empty_interpretation_input(self):
@@ -401,13 +415,11 @@ class InsightItemsTest(unittest.TestCase):
         receipt = app.read_yaml(receipt_path)
         receipt["status"] = "running"
         write(receipt_path, receipt)
-        source["receipt_sha256"] = app.digest(receipt_path)
         with self.assertRaisesRegex(ValueError, "Supporting receipt is not complete"):
             app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
         self.assertFalse((Path(packet["runtime"]).parent / "input.yaml").exists())
         receipt["status"] = "complete"
         write(receipt_path, receipt)
-        source["receipt_sha256"] = app.digest(receipt_path)
         app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
         self.assertEqual([], app.inspect(folder)[2])
 
@@ -418,11 +430,10 @@ class InsightItemsTest(unittest.TestCase):
         source = evidence["supporting_results"][0]
         old = app.read_yaml(packet["binding"])
         old.update(schema="haipipe.insight-input/v2", version="v001", recipe_calls=[],
-                   supporting_results=[{key: source[key] for key in ("run", "path", "sha256")}])
+                   supporting_results=[{key: source[key] for key in ("run", "path")}])
         write(directory / "input.yaml", old)
         runtime = app.read_yaml(packet["runtime"])
-        runtime.update(input_sha256=app.digest(directory / "input.yaml"),
-                       checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
+        runtime.update(checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
         write(directory / "runtime.yaml", runtime)
         before = {p.name: p.read_bytes() for p in directory.iterdir()}
         self.assertEqual([], app.inspect(folder)[2])
@@ -452,9 +463,7 @@ class InsightItemsTest(unittest.TestCase):
         old.update(schema="haipipe.insight-input/v2", version="v001", supporting_results=[], recipe_calls=[])
         write(directory / "input.yaml", old)
         runtime = app.read_yaml(packet["runtime"])
-        runtime.pop("binding_sha256")
-        runtime.update(input_sha256=app.digest(directory / "input.yaml"),
-                       checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
+        runtime.update(checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
         write(directory / "runtime.yaml", runtime)
         Path(packet["binding"]).unlink()
         before = {p.name: p.read_bytes() for p in directory.iterdir()}
@@ -472,7 +481,7 @@ class InsightItemsTest(unittest.TestCase):
         binding = app.read_yaml(packet["binding"])
         binding["question"] = "different goal"
         write(Path(packet["binding"]), binding)
-        with self.assertRaisesRegex(ValueError, "hash changed"):
+        with self.assertRaisesRegex(ValueError, "question differs from RI"):
             app.freeze_insight_input(folder, run=packet["insight_run"], version="v001",
                                      evidence={"local_evidence_reason": "Inventory only"})
 

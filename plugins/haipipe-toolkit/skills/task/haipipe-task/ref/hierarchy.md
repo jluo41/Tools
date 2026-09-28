@@ -158,14 +158,17 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   t01_coverage_matrix`, only with 2+ datasets. `b02` and `b03` need none,
   because each dataset Job's materialize Run counts its own records or cases.
 - Source Blocks follow `haipipe-task-for-data` § SourceFn Block pattern.
-- An external-store Block is auxiliary (`b51`-`b59`) and keeps the same two
-  Job ranges (JL 260923). Topic Jobs `j01_asset_<asset>` to `j48` hold one
-  asset each, with Tasks `t01_contract`, `t02_build_<Version>` (or
-  `t02_freeze_<SDate>` for a feature-store or API pull), `t03_validate`, and
-  `t04_parity` for live-serving assets. `j49_external_locks` spans every
-  asset, as `b01/j49_procdf_coverage` spans every dataset. A legacy
-  release-wide folder is a dated frozen thing, so it takes the `j5N` range
-  (`j51_release_260104R4`, audit only). Layout and rules:
+- An external-store Block is auxiliary (`b51`-`b59`). Topic Jobs
+  `j01_ext_<topic>` to `j47` each hold a group of related assets, one Task per
+  asset (`tNN_<asset>`), whose Runs are `r01_contract`,
+  `rNN_build_<Version>` (or `rNN_freeze_<SDate>` for a feature-store or API
+  pull), `rNN_validate_<Version>`, and `rNN_parity` for live-serving assets;
+  each topic Job ends in `t99_<topic>_gallery` (`t99_food_gallery`; the name
+  says what it shows, JL 260926). `j48_external_base` holds the
+  framework's unit tests, and `j49_external_locks` spans every asset, as
+  `b01/j49_procdf_coverage` spans every dataset. The audit of a legacy
+  release-wide folder lives read-only in
+  `tasks/_legacy/b51_release_<tag>_<yymmdd>/`. Layout and rules:
   `haipipe-data-external/ref/asset-model.md` § Build Block.
 
 ## Job = submittable unit
@@ -194,7 +197,7 @@ Task-owned code always lives in that Task's `scripts/` lane.
 ```text
 tNN_<task>/
 ├── tNN_<task>.md                Page opened by a reader
-├── outline/                     Page context, evidence, reading, open threads
+├── draft/                       Page plan <stem>-draft-v<G>.<S>.md, records/, previous/
 ├── workflow/                    P-B-E-R intent and evidence
 ├── scripts/
 │   ├── <worker>.py              one pipeline
@@ -306,7 +309,7 @@ siblings after deletion.
   mirrored store. Historical Job-level `results/<task>/<run>/` remains
   readable through its recorded resolver.
 - Model weights, large arrays, raw tables, and other heavy artifacts live in
-  `_WorkSpace/`; the Result stores pointers and checksums.
+  `_WorkSpace/`; the Result stores pointers to them.
 
 ## Batch placement
 
@@ -322,7 +325,7 @@ batcher must reference at least two Task Folders.
 ## Page closure
 
 The Task Folder's `workflow/` lane is its machine-facing lifecycle record.
-Its `outline/` lane and same-stem Markdown file are the human-facing record.
+Its `draft/` lane and same-stem Markdown file are the human-facing record.
 Report completion does not settle the Folder by itself. Closure requires:
 
 - terminal P-B-E-R receipts;
@@ -356,7 +359,7 @@ deliberately broken scratch copy before trusting a zero-finding run.
 - Current generated Results use `$OUTPUT_ROOT/<task>/results/`, never
   `scripts/`; this lies inside the authored Task Folder only in self-serving
   mode. A Page-authorized display unit may use the destination specified by
-  the Page evidence/display contract, with its path and hashes in the Task
+  the Page evidence/display contract, with its path in the Task
   Result envelope; `result.yaml` and `runtime.yaml` stay in the Task store.
 - A Task never contains `src/`; a Job never contains `scripts/`.
 - The documentation surface is `board.md`, the Task Page, and `diagram/`, not a

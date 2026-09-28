@@ -503,7 +503,8 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
                                                           "dtype": entry.get("dtype") or "float32",
                                                           "in_catalog": bool(entry)},
                     "preprocessing": PREPROCESSING, "groups": GROUP_METHOD, "settings": settings},
-        inputs=[{"path": "corpus/items.jsonl", "sha256": job.sha256_file(job_root / "corpus" / "items.jsonl")}],
+        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl"),
+                 "sha256": job.sha256_file(job_root / "corpus" / "items.jsonl")}],
         worker={"kind": "cli", "name": "subjective-label.engine.embedding_build:build"},
         acceptance="every eligible item embedded once; no sealed item read; no label written",
     )
@@ -533,7 +534,7 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
             "length": round(float(np.linalg.norm(example_vector)), 4),
         }
     except Exception as error:
-        runtime_path = job_root / "results" / run / "runtime.yaml"
+        runtime_path = job.results_dir(job_root) / run / "runtime.yaml"
         runtime = job.load_mapping(runtime_path)
         runtime.update({"status": "failed", "finished_at": _now(),
                         "failure": f"{type(error).__name__}: {error}"[:500]})
@@ -585,7 +586,7 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
     rel = f"cache/embeddings/{version}"
     cal._write_run(job_root, run, status="complete", started_at=started, finished_at=_now(),
                    outcome=f"{len(eligible)} items embedded ({n_sealed} held-back test items left out); {k} groups",
-                   artifacts=[{"path": f"{rel}/{f}", "sha256": job.sha256_file(out / f)}
+                   artifacts=[{"path": job.page_path(job_root, f"{rel}/{f}"), "sha256": job.sha256_file(out / f)}
                               for f in ["manifest.json", *files]],
                    **ticket_common)
     return {"version": version, "run": run, "built": True, "manifest": manifest}
@@ -814,8 +815,8 @@ def build_status(job_root: Path) -> list[dict]:
     for entry in models:
         version = entry["version"]
         folder = base / version
-        runs = sorted((job_root / "results").glob(f"rl*_embedding-build_{version}/runtime.yaml")) \
-            if (job_root / "results").is_dir() else []
+        runs = sorted(job.results_dir(job_root).glob(f"rl*_embedding-build_{version}/runtime.yaml")) \
+            if job.results_dir(job_root).is_dir() else []
         runtime = job.load_mapping(runs[-1]) if runs else {}
         mark = _marker(folder)
         if version in built:
@@ -829,7 +830,8 @@ def build_status(job_root: Path) -> list[dict]:
         else:
             state = "none"
         run = (built.get(version) or {}).get("run") or runtime.get("run")
-        ticket = job.load_mapping(job_root / "runs" / f"{run}.yaml") if run and (job_root / "runs" / f"{run}.yaml").is_file() else {}
+        ticket_path = job.runs_dir(job_root) / f"{run}.yaml"
+        ticket = job.load_mapping(ticket_path) if run and ticket_path.is_file() else {}
         rows.append({**entry, "state": state, "settings_summary": settings_summary(entry.get("settings")),
                      "run": run, "started": who_started(ticket.get("commission")) if run else None,
                      "failure": runtime.get("failure") if state in {"failed", "stopped"} else None,

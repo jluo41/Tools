@@ -116,7 +116,7 @@ Card cite: @Key == Bib key
 ~~~
 
 Trigger provenance and canonical Subject identity both survive in runtime.
-Only complete Results enter outline/evidence/bibex/<task>.bib.
+Only complete Results enter draft/evidence/bibex/<task>.bib.
 
 ## Return
 

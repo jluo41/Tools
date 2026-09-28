@@ -17,7 +17,7 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 ├── result.yaml                   typed DISPLAY Result envelope
 └── payload/<unit>/                one renderer payload; no Outline Evidence copy
     ├── intake/
-    │   ├── manifest.yaml          frozen input and source hashes
+    │   ├── manifest.yaml          frozen input and source paths
     │   └── inputs/                 approved display-safe snapshots
     ├── recipe/                    renderer-owned recipe and receipts
     ├── README.md                  claim, caption, provenance, acceptance status
@@ -80,10 +80,10 @@ Input through this path:
 
 ```text
   Supporting Execution/Discovery Result(s)
-        │  LAND validates source · run · sha256 · aggregate: true
+        │  LAND validates source · run · aggregate: true
         ▼
   one frozen Evidence Item Local Input
-        │  ① INTAKE reads/copies it and records the SAME sha256
+        │  ① INTAKE reads/copies it and records the SAME source paths
         ▼
   <resolved-result>/payload/<unit>/intake/inputs/<file>
         │  ② RENDER reads the frozen copy at run time
@@ -94,8 +94,8 @@ Input through this path:
 **The unit never reaches into the workspace a second time.** Supporting Results
 already crossed the wall and the Local Input froze their provenance. A unit
 that re-pulls a source is a second, unwitnessed pull. `intake/manifest.yaml`
-names the Evidence Item, Supporting Result ids/paths, and hashes. If any source
-hash moves, the intake is stale and `accepted:` drops back to ⬜.
+names the Evidence Item and Supporting Result ids/paths. If any source file is
+newer than the intake (file time), the intake is stale and `accepted:` drops back to ⬜.
 
 **A DATA-driven unit may only be created once the Results supporting it are
 valid.** Its `intake/` freezes from the Evidence Item's Local Input, which does
@@ -119,14 +119,14 @@ the reverse.
 **A unit names its provenance authority.** LAND passes this Page-owned unit
 directory directly to the renderer. The governed Result envelope and the
 unit's `intake/manifest.yaml`/README record the source local Run id, resolved
-Result path, unit pointer, and hashes. The Result does not first hold a duplicate
+Result path, and unit pointer. The Result does not first hold a duplicate
 render payload that must be copied here; the unit is still not a second
 independently authored Result.
 
 In a consumer-serving canonical Task, a PHI-safe unit admitted by LAND remains
 at this Page address as the narrow Page-authority exception. Its governed
 `result.yaml` and `runtime.yaml` stay under
-`$OUTPUT_ROOT/results/<task>/<RUNNAME>/` and point to/hash the unit. This does
+`$OUTPUT_ROOT/results/<task>/<RUNNAME>/` and point to the unit. This does
 not authorize any other generated output inside the Job.
 
 ## 🖼 Evidence segment · the strip that shows everything and writes nothing

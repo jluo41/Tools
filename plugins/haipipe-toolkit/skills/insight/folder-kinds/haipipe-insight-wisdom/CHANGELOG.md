@@ -1,5 +1,10 @@
 # haipipe-insight-wisdom · version history
 
+## 1.4.1 — 2026-09-28 · No content hashes (JL 260928)
+
+- A bridge parent and the exported handoff are named by path, Page version, signature and GI6
+  receipt; no content hash.
+
 ## 1.4.0 — 2026-09-20
 
 - Carry the Knowledge evidence basis into signed counsel; define the

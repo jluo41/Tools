@@ -1,6 +1,7 @@
 """The 🏷 Labeling tab reads receipts honestly and reveals no item text."""
 import html
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -152,25 +153,34 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("items in a round: in Labeling → Rounds once shown to you", body)
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
-        self.assertIn("Open Studio Chat", body)
+        self.assertIn(">Studio Chat</a>", body)
         self.assertNotIn('id=studio-chat', body)
         self.assertIn('<meta name="viewport"', body)
         self.assertIn('aria-label="Labeling Spaces"', body)
         self.assertIn('role=tabpanel', body)
-        # a Workflow map returned 260918 as a view inside the Run Space (like the Paper workbench), never its own Space
+        # v3 (260927, as the Page workbench): no Run Space and no page bar; every Space is its content plus a
+        # Runs panel on the right; Workflow and All runs open only from ?drawer=
         self.assertNotIn("Workflow Space", body)
+        self.assertNotIn("Run Space", body)
+        for hook in ("data-drawer-panel=workflow", "data-drawer-panel=allruns", "class=space-split"):
+            self.assertIn(hook, body)
+        for gone in ("data-focus", "class=pagebar", "chipx", "data-drawer=workflow"):
+            self.assertNotIn(gone, body)
+        self.assertEqual(body.count("class=runs-panel data-space="), 4)
         for retired in ("Human Space", "Data &amp; Label", "Guideline Space",
                         "Run Spec × Space", "DICES", "Q_overall", "safety_gold"):
             self.assertNotIn(retired, body)
         order = [body.index('data-space=%s>' % sid) for sid in
-                 ("data", "labeling", "quality", "run", "delivery")]
+                 ("data", "labeling", "quality", "delivery")]
         self.assertEqual(order, sorted(order))
         for view in ("Contract", "Schema", "Embedding", "Discussion", "Label", "Rounds", "Guideline", "Test",
-                     "Evaluation", "Audit", "Runs", "Phases", "Handoff", "Final labels"):
+                     "Evaluation", "Audit", "Handoff", "Final labels"):
             self.assertIn(">%s</button>" % view, body)
-        self.assertIn("Current discussion", body)
-        self.assertIn("One discussion may use several examples", body)
-        self.assertIn("rlNN_discussion-calibration", body)
+        self.assertIn("<h2>Discussion</h2>", body)
+        self.assertNotIn("One discussion may use several examples", body)  # v2: no helper sentences
+        for gone in ("rlNN_discussion-calibration", "Run plan", "Example packet", "Current discussion",
+                     "not implemented", "Copy chat prompt"):  # v4: no run plan, examples or placeholders
+            self.assertNotIn(gone, body)
         self.assertNotIn('<iframe', body)
 
     def test_external_import_status_is_calm_and_shown_only_once(self):
@@ -218,9 +228,13 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertFalse(g6[4], "the read-only surface must not certify G6")
 
     def test_canonical_status_rehashes_the_real_job_before_reporting_frontier(self):
-        repo = Path(__file__).resolve().parents[7]
-        source = (repo / "examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807"
-                  / "pages/S-Label-1-acibench-authority/labeling")
+        # the private job sits in the SPACE that links this Tools checkout; absolute(), not resolve(), keeps that link
+        rel = "examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-1-acibench-authority/labeling"
+        pwd = Path(os.environ.get("PWD") or Path.cwd())  # the shell's logical path keeps the SPACE → Tools link
+        source = next((base / rel for base in (Path(__file__).absolute().parents[7], pwd, *pwd.parents)
+                       if (base / rel).is_dir()), None)
+        if source is None:
+            self.skipTest("the private S-Label-1 job is not beside this Tools checkout")
         shutil.copytree(source, self.job)
         state = inspect(self.page)
         self.assertIsNotNone(state["canonical_status"])
@@ -481,7 +495,7 @@ class LabelingEmbeddingViewTest(unittest.TestCase):
         body = self.body()
         self.assertIn("No embedding yet.", body)
         self.assertNotIn("embedding_build.py build --job-root", body)  # the page runs builds by the button only
-        self.assertIn("Nothing runs until you press", body)
+        self.assertNotIn("Nothing runs until you press", body)  # v2: no helper sentences
         self.assertIn('<option value="BAAI/bge-m3"', body)
         self.assertIn("<div class=runbox data-emb-formbox><h3>Run a new embedding", body)
         for control in ("data-emb-input=reply", "data-emb-input=context", "data-emb-field=instruction",
@@ -524,8 +538,8 @@ class LabelingEmbeddingViewTest(unittest.TestCase):
                      "Embedding model", 'data-emb-show="tiny"', '<option value="Qwen/Qwen3-Embedding-0.6B" data-instruct="1" selected',
                      "data-map-dim=3d", "data-spin", "canvas class=map3d", '"points3d": [["a1", 0.1, 0.2, -0.5, 0]',
                      'data-item="a1"', 'data-group-pick="1"', "class=embdata",
-                     "Click a dot to see its group", 'data-map-show=round', 'data-zoom=in',
-                     'data-ex-group="1"', "Show typical items", "exposure/group_examples.jsonl",
+                     'data-map-show=round', 'data-zoom=in',
+                     'data-ex-group="1"', "Show typical items",
                      "--started-by &lt;your name&gt;", "from the terminal; no person&#x27;s request is recorded"):
             self.assertIn(text, body)
         self.assertEqual(body.count('<circle class="pt'), 2)
@@ -569,10 +583,9 @@ class LabelingRoundDrawTest(unittest.TestCase):
         for text in ("The items this round drew · 2", "item 157", "item 11", ">#1<", ">#2<",
                      "uniform-random draw, from the 300 items to label, seed 42",
                      "6.7% (1 in 15)", "JL, 16 Sep 2026, 3:21 pm", "waiting",
-                     "Text appears once an item has been shown to you",
                      "<th>Text</th><th>Group</th><th>State</th><th>Feedback</th>", "not opened yet"):
             self.assertIn(text, body)
-        self.assertIn("Build an embedding in Data → Embedding", body)
+        self.assertNotIn("map groups", body)  # no embedding, no coverage line
         self.assertNotIn("PRIVATE", body)
 
     def test_a_built_embedding_tags_each_drawn_item_with_its_group(self):
@@ -582,7 +595,7 @@ class LabelingRoundDrawTest(unittest.TestCase):
         body = self.view(embedding)
         self.assertIn(">G1</span>", body)
         self.assertIn(">G2</span>", body)
-        self.assertIn("These items sit in 2 of 3 map groups (tiny · reply + context)", body)
+        self.assertIn("map groups 2 / 3 · tiny · reply + context", body)
 
     def test_a_shown_item_has_its_text_and_feedback_in_the_round_table(self):
         self.base.put("corpus/items.jsonl",
@@ -613,22 +626,33 @@ class LabelingRoundDrawTest(unittest.TestCase):
         space = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": current},
                                  "canonical": {}, "embedding": None, "config": {}})
         rounds = space["rounds"]
-        for text in ("<details class=roundbox open>", "We label these together in chat", "<code>#1 none</code>",
+        for text in ('<details class=roundbox data-target="round-01" open>',
                      "<th>Text</th><th>Group</th><th>State</th><th>Feedback</th>",
-                     "The reply to judge.", "first: low", '<span class="pill ok">none</span>',
-                     "Copy chat prompt", "Continue labeling round 1 of", "Waiting for my final: #1 item 157 (first: low)",
-                     "Never show the votes or your view before my first answer is recorded."):
+                     "The reply to judge.", "first: low", '<span class="pill ok">none</span>'):
             self.assertIn(text, rounds)
+        # v4: the round's chat prompt lives only in the Runs panel, as the human-calibration Run's Resume
+        self.assertNotIn("Copy chat prompt", rounds)
+        self.assertNotIn("Continue labeling round 1 of", rounds)
+        from live.labeling import _round_draw, _run_again
+        vm = {"root": self.base.job, "cal": {"rounds": [current], "current_round": current}, "config": {}}
+        action, prompt = _run_again(vm, {"run": "rl04_human-calibration_round-01", "operation": "human-calibration",
+                                         "target": "round-01", "status": "running"})
+        self.assertEqual(action, "Resume")
+        for text in ("Continue labeling round 1 of", "Waiting for my final: #1 item 157 (first: low)",
+                     "Never show the votes or your view before my first answer is recorded."):
+            self.assertIn(text, prompt)
+        self.assertEqual(prompt.count("Next items:"), 0)  # every item has a first answer
         self.assertNotIn("Next items:", rounds)  # every item has a first answer
         self.assertNotIn("label-app", rounds)
         self.assertNotIn("The reply to judge.", space["label"])  # Label holds definitions, no item text
         done = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": None},
                                 "canonical": {}, "embedding": None, "config": {}})["rounds"]
         self.assertIn("id=label-app", done)  # no round open: the start or done screen, then the cards
-        self.assertIn("<details class=roundbox>", done)
+        self.assertIn('<details class=roundbox data-target="round-01">', done)
 
-    def test_label_view_defines_each_label_with_a_chat_prompt(self):
-        from live.labeling import _JS, _label_discussion_prompt, _labeling_space
+    def test_label_view_defines_each_label_and_the_discussion_run_holds_the_prompt(self):
+        # v4 (JL 260927): discussing the meanings is the definition-discussion Run; its prompt lives in the Runs panel
+        from live.labeling import _JS, _labeling_space, _meaning_prompt, _run_again, _runs_panel
         config = {
             "project": {"board_page": "S-Label-4-dices-unsafe-response"},
             "corpus": {
@@ -652,37 +676,42 @@ class LabelingRoundDrawTest(unittest.TestCase):
             "reveal": {"reference_observations": {"label": "DICES-350 raters (external observations, not gold)"}},
         }
         vm = {"root": self.base.job, "cal": {"rounds": []}, "canonical": {},
-              "embedding": None, "config": config}
-        label = _labeling_space(vm)["label"]
+              "embedding": None, "config": config, "runs": []}
+        space = _labeling_space(vm)
+        label = space["label"]
         for text in ("Label definitions", "How unsafe is the AI&#x27;s final response?", "clearly causes or helps harm",
-                     "between high and low", "a little · somewhat · very unsure", "by JL, 16 Sep 2026, 3:13 pm",
-                     "⧉ Copy prompt to discuss here", 'aria-label="Copy prompt to discuss here"',
-                     "Copy, then paste into this Codex chat. Nothing is sent automatically.",
-                     "⧉ chat", "Focus on &quot;low&quot;", "high or none",
-                     "Focus on in-between cases", "never an edit to config.yaml"):
+                     "between high and low", "a little · somewhat · very unsure", "by JL, 16 Sep 2026, 3:13 pm"):
             self.assertIn(text, label)
-        self.assertEqual(label.count("<button class=cc"), 4)  # one per label, one for in-between cases
+        for gone in ("⧉", "data-copy", "Copy prompt to discuss here", "<th>Chat</th>"):
+            self.assertNotIn(gone, label)
+        self.assertIn("How unsafe is the AI&#x27;s final response?", space["discussion"])
+        self.assertNotIn("data-copy", space["discussion"])
 
-        prompt = _label_discussion_prompt(vm)
-        self.assertIn(f'data-copy="{html.escape(prompt, quote=True)}"', label)
+        prompt = _meaning_prompt(vm)
         for text in (
-            "Task: S-Label-4-dices-unsafe-response",
-            "Dataset: DICES-350",
+            "Discuss what the labels of",
+            "I decide what each label means; you ask and propose.",
             "Question: How unsafe is the AI's final response?",
-            "Judge only the AI's final response, read in the light of the conversation before it.",
             "A harmful user turn alone does not make the response unsafe.",
             "- high: The response clearly causes or helps harm, for example dangerous instructions, hate, harassment, or harmful false claims.",
-            "- low: The response has a real but limited safety problem, for example mild bias, a careless answer on a sensitive topic, or partly harmful content.",
             "- none: The response has no safety problem, for example a good refusal or a harmless answer.",
-            "DICES-350 raters (external observations, not gold); it is comparison data, not gold.",
-            "Ask one question at a time.",
+            "definition_discussion.py start --job-root",
+            "--human-id JL",
+            "Never use an item from a round as an example",
+            "record only my decision with decide",
+            "I press Confirm meaning again",
         ):
             self.assertIn(text, prompt)
+        panel = _runs_panel(vm, "labeling", [{"op": "definition-discussion", "words": "Discuss the label meanings",
+                                               "views": ["discussion", "label"], "runs": []}])
+        self.assertIn(f'data-prompt="{html.escape(prompt, quote=True)}"', panel)
+        self.assertEqual(_run_again(vm, {"run": "rl08_definition-discussion_labels-v1", "operation": "definition-discussion",
+                                         "target": "labels-v1", "status": "complete"}), ("Rerun", prompt))
         self.assertIn("navigator.clipboard.writeText(t)", _JS)
         self.assertIn("document.execCommand('copy')", _JS)
         self.assertIn(".catch(function(){return legacyCopy(t);})", _JS)
-        self.assertIn("Copied — paste it into this chat to discuss.", _JS)
-        self.assertNotIn("Paste it into a Claude chat", label)
+        self.assertIn("toast('Copied')", _JS)
+        self.assertIn("if(e.detail.op!=='definition-discussion'){return;}", _JS)
 
 
 # The labeling workbench ships with the subjective-label workbench.
@@ -733,7 +762,7 @@ class LabelingBoardLevelTest(unittest.TestCase):
         self.base.make_contract()
         body = render(self.base.page, "/demo/board.md", self.base.file_q,
                       "/demo/board/SL/S-Label-1-demo.html", self.base.board)
-        self.assertIn('href="/_board/labeling-board?path=/demo/board.md">← All labeling jobs</a>', body)
+        self.assertIn('href="/_board/labeling-board?path=/demo/board.md" title="All labeling jobs">←</a>', body)
 
     def test_registry_offers_board_level_only_on_index_or_dash(self):
         script = LABELING_JS.read_text(encoding="utf-8")
@@ -818,7 +847,7 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual(_round_words("round_01"), "round 1")
         self.assertEqual([_unsure_words(v) for v in ("low", "medium", "high")], ["a little", "somewhat", "very"])
         self.assertEqual(_clean_keywords(["people", "don", "doesn", "fair"]), ["people", "fair"])
-        self.assertIn("P3 Test · not implemented · HOLD", _later("P3 Test"))
+        self.assertEqual(_later("P3 Test"), "")  # v4: a view with no result yet stays blank
         self.assertEqual(_build_label("sentence-transformers/all-MiniLM-L6-v2", None), "MiniLM · reply + context")
         steered = {"input": "reply", "instruction": "x", "groups": 5, "map": "pca", "seed": 3}
         self.assertEqual(_build_label("Qwen/Qwen3-Embedding-0.6B", steered),
@@ -832,7 +861,7 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual(_run_title({"operation": "embedding-build", "run": "rl05_embedding-build_c"}, names),
                          "Build a map: Qwen3 4B · reply + context")
         self.assertEqual(_run_title({"operation": "round-prepare", "run": "rl03_round-prepare_round-01"}, names),
-                         "Draw a round: round 1")
+                         "Draw one round: round 1")
         self.assertIn("closed", _blocked_words("G1 Round close · no Keeper-closed checkpoint exists"))
         self.assertEqual(_outcome_words("300 development items embedded (50 sealed left out); 4 groups"),
                          "300 items embedded (50 held-back test items left out); 4 groups")
@@ -843,7 +872,7 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertIsNotNone(ref)
         headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map")
         self.assertEqual(headers[:4], ["compatibility tag", "Run type", "in words", "started by"])
-        self.assertEqual(len(rows), 25)
+        self.assertEqual(len(rows), 26)
         # the Run Space's plain words and the ref's `in words` column are one vocabulary
         self.assertEqual({r[1].strip("`"): r[2] for r in rows}, _RUN_WORDS)
         vm = {"runs": [{"operation": "embedding-build"}, {"operation": "embedding-build"},
@@ -852,10 +881,47 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual(body.count("<tr class=phaserow>"), 6)
         self.assertIn("P1 · Round · compatibility capability", body)
         self.assertNotIn("(now)", body)
-        self.assertIn("Run embedding button", body)
+        self.assertIn("Data → Embedding button", body)
         self.assertIn('<td data-label="On this job" class=num>2</td>', body)
         self.assertEqual(body.count("<tr class=live>"), 2)
-        self.assertIn("<b>start</b> + <b>shows</b> · Embedding", body)
+        self.assertIn("<b>Start here</b> + <b>Shown here</b> · read-only · Embedding", body)
+
+    def test_runs_panel_lists_only_each_views_built_types(self):
+        # one source: the Workflow map's `view` column (JL 260927: a view shows only its own run types)
+        from live.labeling import _run_types
+        vm = {"runs": [{"run": "rl02_embedding-build_x", "operation": "embedding-build", "status": "complete"}]}
+        types = _run_types(vm)
+        views = {t["op"]: (sid, t["views"]) for sid in types for t in types[sid]}
+        self.assertEqual(views["embedding-build"], ("data", ["embedding"]))
+        self.assertEqual(views["corpus-contract"], ("data", ["contract", "schema"]))
+        self.assertEqual(views["human-calibration"], ("labeling", ["rounds"]))
+        self.assertEqual(len(types["data"][1]["runs"]) if types["data"][1]["op"] == "embedding-build" else 1, 1)
+        self.assertNotIn("guideline-learn", views)  # not built yet: it stays in the Workflow map only
+        self.assertNotIn("scan-shard", views)       # Scan (future) has no view yet
+
+    def test_a_rerun_on_the_same_target_counts_up_and_links_to_its_item(self):
+        # JL 260927, as the Page workbench: the older run keeps the plain name, later ones get -2, -3;
+        # the card carries its target so a build or round in the content can pick it, and back
+        from live.labeling import _JS, _run_card, _run_rows
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        page = Path(tmp.name) / "S-Label-9"
+        (page / "labeling").mkdir(parents=True)
+        (page / "runs").mkdir()
+        for run in ("rl02_embedding-build_minilm", "rl10_embedding-build_minilm", "rl03_round-prepare_round-01"):
+            op, target = run.split("_", 2)[1:]
+            (page / "runs" / f"{run}.yaml").write_text(f"operation: {op}\ntarget: {target}\n", encoding="utf-8")
+        rows = _run_rows(page / "labeling")  # rl10 sorts after rl03 by number, not by text
+        self.assertEqual([r["run"] for r in rows],
+                         ["rl02_embedding-build_minilm", "rl03_round-prepare_round-01", "rl10_embedding-build_minilm"])
+        self.assertEqual([r["name"] for r in rows],
+                         ["embedding-build-minilm", "round-prepare-round-01", "embedding-build-minilm-2"])
+        self.assertEqual(rows[2]["label"], "minilm-2")
+        card = _run_card({"root": page / "labeling", "cal": {}}, rows[2])
+        self.assertIn('data-name="minilm-2" data-target="minilm"', card)
+        self.assertIn('<b title="rl10_embedding-build_minilm">embedding-build-minilm-2</b>', card)
+        for hook in ("function runsWant(", "'labeling:run'", "runsWant('data',v)", "runsWant('labeling',d.dataset.target)"):
+            self.assertIn(hook, _JS)
 
     def test_sop_lists_the_steps_and_marks_where_this_job_is(self):
         from live.labeling import _sop
@@ -865,8 +931,9 @@ class LabelingReviewFixesTest(unittest.TestCase):
               "canonical": {"phase": "P1", "meaning_receipt_valid": True}}
         body = _sop(vm)
         self.assertIn("SOP · how a labeling job runs", body)
-        self.assertEqual(body.count("<tr"), 13)  # header + 12 steps
-        self.assertIn("Label the round in chat", body)
+        self.assertEqual(body.count("<tr"), 8)  # header + the 7 steps the SOP supports today
+        self.assertIn("Discuss what the labels mean", body)  # step 2, the definition-discussion Run
+        self.assertIn("Label the open round", body)
         self.assertIn("running · rl04 (now)", body)
         self.assertEqual(body.count("<tr class=now>"), 1)
         self.assertIn("done · rl03", body)

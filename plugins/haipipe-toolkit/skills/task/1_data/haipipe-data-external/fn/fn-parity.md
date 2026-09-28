@@ -6,7 +6,7 @@ API): the same keys through the frozen local version and the live provider
 must return the same fields. This is what keeps training and serving from
 drifting (`ref/asset-model.md` § Providers and environments).
 
-Runs as a b51 Task: `j0N_asset_<asset>/t04_parity/`.
+Runs as a Run of the asset's b51 Task: `j0N_ext_<topic>/tNN_<asset>/runs/rNN_parity.sh`.
 
 ---
 

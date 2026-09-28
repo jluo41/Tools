@@ -6,7 +6,7 @@ Turns a feature-store or third-party API answer into an immutable
 (`ref/asset-model.md` § Record and replay). Training never calls the live
 provider; this is the only door from live data into training.
 
-Runs as a b51 Task: `j0N_asset_<asset>/t02_freeze_S<yyyymmdd>/`.
+Runs as a Run of the asset's b51 Task: `j0N_ext_<topic>/tNN_<asset>/runs/rNN_freeze_S<yyyymmdd>.sh`.
 
 ---
 
@@ -70,8 +70,7 @@ version: S20260923
 ValidFromDT: 2026-09-23          # call date, or the event_time cutoff for FS pulls
 RefPeriod: "<provider> as of 2026-09-23"
 source: "feature_store:<group>@<event_time cutoff>"   # or "third_party_api:<vendor>/<api_version>"
-builder: "b51/j0N_asset_<asset>/t02_freeze_S20260923/runs/r01_freeze.sh"
-sha256: {...}
+builder: b51/j0N_ext_<topic>/tNN_<asset>/runs/rNN_freeze_S20260923.sh
 ```
 
 Row values are never printed; report shape, key coverage, and the written path.
@@ -81,6 +80,6 @@ Row values are never printed; report shape, key coverage, and the written path.
 Step 4: Hand off
 ----------------
 
-- Run `t03_validate` on the new version.
+- Run the Task's `rNN_validate_<Version>` on the new version.
 - Run `fn-parity` if the asset serves live.
 - Add the version to a lock (`fn-lock`) only after both pass.

@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.3"
+  version: "0.5.4"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -274,7 +274,7 @@ Extraction Run procedure:
 The run-script template is `ref/run-databricks-sh-template.sh`: conversion is a Step inside the extraction Run.
 Its successful exit means notebook preparation only; the Run remains blocked awaiting external execution.
 Read `../../haipipe-task/ref/databricks-execution.md` before the upload/run handoff.
-Bind the external job/run id, config hash, cluster logs, output manifest, and Result checks to the same bNNjNNtNNrNN receipt.
+Bind the external job/run id, config path, cluster logs, output manifest, and Result checks to the same bNNjNNtNNrNN receipt.
 No separate converter Run is allocated by default. Only actual cluster completion plus the Result gate can close extraction.
 On timeout preserve the external run id and report still-running; inspect it before any retry.
 

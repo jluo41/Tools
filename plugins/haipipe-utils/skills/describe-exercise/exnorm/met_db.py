@@ -31,8 +31,13 @@ def load(path=None) -> List[Dict]:
     thousands of activities against one load."""
     p = str(path or DEFAULT_BANK)
     try:
-        with open(p, newline="", encoding="utf-8") as fh:
-            rows = list(csv.DictReader(fh))
+        if p.endswith(".parquet"):               # the ext_pa_compendium table: key column activity_code_original
+            import pandas as pd
+            rows = (pd.read_parquet(p).rename(columns={"activity_code_original": "activity_code"})
+                    .astype({"activity_code": str}).to_dict("records"))
+        else:
+            with open(p, newline="", encoding="utf-8") as fh:
+                rows = list(csv.DictReader(fh))
     except FileNotFoundError:
         raise FileNotFoundError(
             f"PA Compendium not found at {p}. Set EXNORM_DB, or see "

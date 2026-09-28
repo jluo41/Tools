@@ -33,7 +33,7 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Status**: resolved
 - **Rows**: 6 Files rows
 - **Packet**: `cli/pagecontext.py haipipe-page-guide.md --run context`
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/outline/records/haipipe-page-guide-files.md` · sha256:540fafa93cab
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/records/haipipe-page-guide-files.md` · sha256:540fafa93cab
 
 ### CTX5 · Feedback and open decisions
 - **Status**: not-applicable
@@ -44,8 +44,8 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 
 ### CTX6 · Planning and evidence readiness
 - **Status**: resolved
-- **Plan**: `outline/haipipe-page-guide-outline-v0.1.md` · v0.1 · approved: ⬜
+- **Plan**: `draft/previous/haipipe-page-guide-outline-v0.1.md` · v0.1 · approved: ⬜
 - **Evidence Items**: none
 - **Run receipts**: none
 - **Next authority**: OUTLINE
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/outline/haipipe-page-guide-outline-v0.1.md` · sha256:84b7771f76db
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/previous/haipipe-page-guide-outline-v0.1.md` · sha256:84b7771f76db

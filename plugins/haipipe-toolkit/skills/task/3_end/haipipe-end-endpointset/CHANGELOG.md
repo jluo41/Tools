@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.2] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `manifest.json` records the external release, lock name and asset versions, with no checksums or `sha256`; `fn/fn-1-package.md` and `fn/fn-review.md` check the release, not checksums.
+
 ## [0.2.1] — 2026-09-23
 
 - External snapshot follows the asset model: package only the lock's asset versions (+ asset.yaml), record lock, versions, sha256, and live-serving assets with `max_staleness` in `manifest.json`.

@@ -13,6 +13,7 @@ from typing import Iterable
 
 OPERATION_KINDS = (
     "corpus-contract",
+    "definition-discussion",
     "discovery-search",
     "guideline-seed",
     "test-reserve",
@@ -72,6 +73,7 @@ def plan_runs(
     guideline_seed_count: int = 1,
     test_reserve_count: int = 1,
     embedding_build_count: int = 1,
+    definition_discussion_count: int = 1,
 ) -> list[PlannedRun]:
     weak_counts = tuple(round_weak)
     for name, value in (
@@ -81,6 +83,7 @@ def plan_runs(
         ("guideline_seed_count", guideline_seed_count),
         ("test_reserve_count", test_reserve_count),
         ("embedding_build_count", embedding_build_count),
+        ("definition_discussion_count", definition_discussion_count),
         *((f"round_weak[{index}]", value) for index, value in enumerate(weak_counts)),
     ):
         if value < 0:
@@ -94,6 +97,8 @@ def plan_runs(
 
     rows: list[tuple[str, str, str, str]] = []
     _append(rows, "P0", "corpus-contract", "contract", "job-v1")
+    for index in range(1, definition_discussion_count + 1):
+        _append(rows, "P0", "definition-discussion", "meaning", f"labels-v{index}")
     for index in range(1, discovery + 1):
         _append(rows, "P0", "discovery-search", "contract", f"query-{index:02d}")
     for index in range(1, guideline_seed_count + 1):
@@ -230,6 +235,12 @@ def main() -> int:
         default=1,
         help="commissioned embedding-build Runs E (default: 1, set 0 when omitted)",
     )
+    plan.add_argument(
+        "--definition-discussions",
+        type=int,
+        default=1,
+        help="definition-discussion Runs M before G0 (default: 1, set 0 when omitted)",
+    )
     plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     args = parser.parse_args()
 
@@ -242,6 +253,7 @@ def main() -> int:
             guideline_seed_count=args.guideline_seeds,
             test_reserve_count=args.test_reservations,
             embedding_build_count=args.embedding_builds,
+            definition_discussion_count=args.definition_discussions,
         )
     except ValueError as exc:
         parser.error(str(exc))

@@ -120,14 +120,14 @@ def audit(root: Path) -> dict[str, object]:
                 "no owner:, page-type:, or folder-kind: declaration",
             )
 
-        if not (page_dir / "outline").is_dir():
+        if not ((page_dir / "draft").is_dir() or (page_dir / "outline").is_dir()):
             _finding(
                 findings,
                 "error",
                 "missing-outline",
                 source,
                 root,
-                "Page source has no outline/ record folder",
+                "Page source has no draft/ (or older outline/) record folder",
             )
 
         if not (page_dir / "workflow").is_dir():
@@ -151,7 +151,9 @@ def audit(root: Path) -> dict[str, object]:
                     root,
                     "Section Page has no story-row: binding",
                 )
-            elif "+" not in story_row and "sha256:" not in story_row:
+            elif "+" not in story_row:
+                # The binding is "<row> + <Story version>". A content hash is
+                # not a version (JL 260928), so a hash-only binding still warns.
                 _finding(
                     findings,
                     "warning",

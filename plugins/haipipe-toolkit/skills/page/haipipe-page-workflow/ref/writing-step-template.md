@@ -1,5 +1,8 @@
 # Writing Run records · copy only the records needed now
 
+These records are written once, at the Run's close, from the conversation
+(Run bookends in `interactive-writing-run.md`); during the Run only the Draft
+file changes. The chat reply skeleton at the end of this file is used every turn.
 Paths follow `interactive-writing-run.md` and the Folder owner's Run dialect.
 Replace every placeholder with an actual value or explicit `not supplied`.
 Record messages verbatim in fenced blocks; use a longer fence when the message
@@ -42,7 +45,7 @@ writing:
 
 Resolve the actual target, baseline, plan/evidence, requirements and original
 feedback using `../../../writing/haipipe-writing/ref/writing-request.md`.
-Freeze selected method entries/versions/hashes and rubric hash in this Ticket's
+Freeze selected method entries/versions and the rubric version in this Ticket's
 effective input packet; a Step references it and records any host-authorized
 input change. Do not copy prose-worker fields into a pure Structure/Scratch Run.
 
@@ -55,7 +58,7 @@ directory or separate input/result files for them.
 Run: <run>
 Version: v001
 State: open
-Prior Version: none, or <closed vNNN.md · SHA-256>
+Prior Version: none, or <closed vNNN.md · closed yymmdd HHMM>
 ```
 
 ## Step s001
@@ -64,7 +67,7 @@ A Step is a complete scoped cycle, not merely one chat turn. For a
 Section-level Run, record the candidate draft, review/rating, diagnosis,
 revision, and post-revision review/diagnosis before `### Saved result`.
 Use `../../../writing/haipipe-writing/ref/evaluation.md` for the compact
-`#### Writing evaluation` record: actual candidate/hash, rubric, reviewer mode,
+`#### Writing evaluation` record: actual candidate, rubric, reviewer mode,
 coverage, methods/status, criterion rows, initial/final findings, revision
 budget and remaining issues. Store it in this Step's review before Saved result;
 do not create per-evaluator files or Runs. If no revision is needed, record one
@@ -78,15 +81,15 @@ Source: <chat/message id if available; otherwise not supplied>
 Reviewed output: <prior Step in this Version, closed prior Version, or initial state>
 Mode: local-edit | paragraph-rewrite | structure
 Scope: <exact editable targets; proposed extra work kept separate>
-Base: <source paths and hashes immediately before edits>
-Protected: <accepted and other out-of-scope targets + saved text/hash>
+Base: <source paths and versions (number, saved yymmdd HHMM) immediately before edits>
+Protected: <accepted and other out-of-scope targets + saved text>
 ```
 
 #### Reviewed baseline
 
 <For the first edit of existing prose, preserve the full selected paragraphs
 and affected planning text here. Later Steps may cite the immutable earlier
-result containing that exact text. A hash of a mutable file alone is not a
+result containing that exact text. A path or version number of a mutable file alone is not a
 recoverable baseline. Record any external edit before rebasing onto it.>
 
 #### Original request
@@ -116,7 +119,7 @@ Contributors: <stable identities, or not supplied>
 ### Saved result
 
 ```text
-Source after save: <current paths and hashes>
+Source after save: <current paths and versions (number, saved yymmdd HHMM)>
 State: waiting-for-feedback
 ```
 
@@ -183,7 +186,7 @@ reference the earlier Step carrying the current map.>
 - Human acceptance: <none, or exact scoped quote + actor + reviewed identity>
 - Foreground surface: <Draft Space refreshed from the selected Outline; no Content/delivery write>
 - Dependencies: <evidence owed, Task Run ids, delivery deferred to Page release, next question>
-- Post-run analysis: <none while open; after explicit close, queued/running/complete Task Run id and input hash>
+- Post-run analysis: <none while open; after explicit close, queued/running/complete Task Run id and input Version>
 
 ## Reader-facing response after the Step save
 
@@ -230,7 +233,7 @@ State: waiting-for-feedback
 Review window: <targets>
 Latest Version/Step: <vNNN.md#step-sNNN>
 Effective decisions: <rulings with source Step references>
-Accepted targets: <target → exact Step/text hash → human quote/source>
+Accepted targets: <target → exact Step/text → human quote/source>
 Open feedback: <ids; agent-applied is not human-accepted>
 Next: <what the human/agent does next>
 ```
@@ -251,9 +254,9 @@ seals the Version before any post-run analysis Task is launched.
 - Planning/evidence snapshot: <settled Bullets plus each `none` or ready bound CITE/VALUE/DISPLAY Result>
 - Evidence closure: <all ready and bound; otherwise do not close the Page Run>
 - Delivery: deferred until all Page Runs and required evidence Task Results complete
-- Post-run analysis: <one output-only Task Run reads the sealed Version hash; it does not block the next Page Run>
-- Sealed scope: <all Step ids in this Version and external source hashes>
-- Continuation: <v002.md starts from the closed v001.md hash; never edits v001.md>
+- Post-run analysis: <one output-only Task Run reads the sealed Version by number; it does not block the next Page Run>
+- Sealed scope: <all Step ids in this Version and external source versions (number, date)>
+- Continuation: <v002.md names the closed v001.md as its prior Version; never edits v001.md>
 
 ## runtime.yaml · current projection, not human-decision authority
 
@@ -270,7 +273,6 @@ status: waiting-for-feedback
 version: v001
 step: s001
 version_file: <Result path>/v001.md
-version_sha256: <current actual SHA-256; update after each append>
 worker:
   kind: skill
   name: haipipe-writing
@@ -281,7 +283,6 @@ failure: null
 analysis:
   status: deferred
   task_run: null
-  input_sha256: null
   result: null
 ```
 

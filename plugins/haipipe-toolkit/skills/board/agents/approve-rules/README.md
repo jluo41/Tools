@@ -16,7 +16,7 @@ authority          rule + checker            trained/authorized reviewer  named 
 ```
 
 The machine may claim deterministic pass/fail only when the predicate is
-recomputed from the pinned input with a declared checker. A semantic rule may
+recomputed from the named input version with a declared checker. A semantic rule may
 be assessed by a reviewer, but the record must name the frozen criterion,
 observed evidence, limits and any unresolved disagreement; `checked: auto` does
 not turn it into a mechanical proof. A human preference or release decision
@@ -59,7 +59,7 @@ R10; corrected here 260821, where the single-field shape below had survived the
 ruling that retired it).
 
 ```text
-checked: ✅ auto · deterministic <YYMMDD> · <input hash> R1-R<n> pass
+checked: ✅ auto · deterministic <YYMMDD> · <input version> R1-R<n> pass
 checked: ✅ auto · semantic <YYMMDD> · <criterion id> · <evidence> · pass|finding|not-verifiable
 checked: ⬜ auto · <date> · <criterion id> · <evidence> · R4 fails: <the exact rule>
 ```

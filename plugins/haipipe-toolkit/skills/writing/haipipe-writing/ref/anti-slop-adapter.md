@@ -71,7 +71,7 @@ with id anti-slop. Freeze one effective packet; report conflicting selections:
 anti_slop:
   adapter: haipipe-writing/anti-slop
   rules: ref/anti-slop-rules.json
-  rules_sha256: <hash>
+  rules_version: <version in anti-slop-rules.json>
   selected_reference: references/<one-source-name> | not-specified
   mode: audit
   ignore_quotes: false
@@ -96,7 +96,7 @@ results/<RUNNAME>/
 └── runtime.yaml
 ```
 
-`anti-slop.json` records the adapter, rules version/hash, input paragraph hash,
+`anti-slop.json` records the adapter, rules version, input paragraph path,
 score, confidence, statistics, and exact findings. The report must not contain
 the full prompt, private evidence, or raw corpus. `trace.md` adds:
 
@@ -104,10 +104,10 @@ the full prompt, private evidence, or raw corpus. `trace.md` adds:
 ## Anti-slop audit
 
 - Adapter: haipipe-writing/anti-slop · <version>
-- Rules: <path> · <version/hash>
+- Rules: <path> · <version>
 - Selected reference: <one source or not specified>
-- Input: paragraph.md · <sha256>
-- Report: anti-slop.json · <sha256>
+- Input: paragraph.md
+- Report: anti-slop.json
 - Findings: <count> · score <n>/100 · confidence <low|medium|high>
 - Decision: <kept / bounded revision / routed upstream>
 - Fact comparison: <not applicable / pass / review required>

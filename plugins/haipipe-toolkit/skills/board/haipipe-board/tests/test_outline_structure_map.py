@@ -70,7 +70,8 @@ class StructureCardTest(unittest.TestCase):
     def test_card_is_plain_text_with_a_box_behind_it(self):
         self.plan.write_text(PLAN, encoding="utf-8")
         body = render("S-test", parse_outline(PAGE), self.page, path_q="/Board/board.md", file_q="S-test.md")
-        self.assertIn('<details class="card structure-card" open aria-label="Structure">', body)
+        self.assertIn('<details class="card structure-card" aria-label="Structure">', body)
+        self.assertNotIn('structure-nav', body)  # JL 260927: the folded line says only "Structure"
         self.assertIn('<pre class="structure-text" data-structure-edit tabindex="0">%s</pre>' % TEXT, body)
         self.assertIn('<form class="structure-form" hidden data-path="/Board/board.md" data-file="S-test.md"', body)
         self.assertIn('<textarea name="text" class="structure-box"', body)
@@ -78,7 +79,7 @@ class StructureCardTest(unittest.TestCase):
         self.assertIn("addEventListener('beforeunload'", body)
         self.assertIn("S-test-outline-v1.2.md", body)
         self.assertLess(body.index('class="card structure-card"'), body.index("Physician behavior varies"))
-        self.assertIn(">⧉ run-structure<", body)
+        self.assertNotIn("⧉", body)  # JL 260927: prompts live in the Runs panel, no copy chips
         for absent in ("Mermaid", "flowchart", "structure-list", "structure-index"):
             self.assertNotIn(absent, body)
 
@@ -89,10 +90,9 @@ class StructureCardTest(unittest.TestCase):
         self.assertNotIn('<form class="structure-form"', body)
         self.assertNotIn("window.__structureEdit", body)
 
-    def test_no_outline_means_only_the_run_structure_button(self):
+    def test_no_outline_means_no_structure_card(self):
         top = _structure_map(self.page)
-        self.assertIn(">⧉ run-structure<", top)
-        self.assertNotIn("structure-card", top)
+        self.assertEqual(top, "")
         body = render("S-test", parse_outline(PAGE), self.page)
         self.assertNotIn('<details class="card structure-card"', body)
 

@@ -85,14 +85,14 @@ control:
       status: pending | passed | held | failed
       mode: automatic | human | agent | hybrid
       authority: <person or declared predicate>
-      evidence: [<path@hash>, ...]
+      evidence: [<path>, ...]
       run_receipt: <resolved Run receipt path>
   routes:
     - from_run_id: <owner-native-run-id>
       decision: <next-run-spec | HOLD | CLOSE>
       mode: automatic | human | agent | hybrid
       reason: <why this route was selected>
-      evidence: [<path@hash>, ...]
+      evidence: [<path>, ...]
       run_receipt: <resolved Run receipt path>
 
 frontier:

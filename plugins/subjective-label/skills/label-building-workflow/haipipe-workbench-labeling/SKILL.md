@@ -5,13 +5,14 @@ description: >-
   standalone Page Folder. An optional page-local labeling/ folder holds the
   canonical subjective-label job. Two levels: a Board-level view lists every
   labeling job on the Board (zoom out), and a click opens that Page's surface
-  with five Spaces (Data, Labeling, Quality, Run, Delivery) and one write door,
+  with four Spaces (Data, Labeling, Quality, Delivery), each with its content on
+  the left and a Runs panel on the right, and one write door,
   POST /_board/labeling/act, for exactly ten engine-checked actions (zoom in).
   Studio Chat opens separately. Use when designing, opening, diagnosing, or
   implementing the labeling plugin, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-09-22"
+  version: "0.22.0"
+  last_updated: "2026-09-26"
 ---
 
 # /haipipe-workbench-labeling · one job, one folder, one operated surface
@@ -24,26 +25,28 @@ appears beside one Page.
 ```text
 one page folder
 ├── <stem>.md                    what the Page says
-└── labeling/                    the job itself · canonical
-    ├── config.yaml · corpus/ · policy/ · rounds/ · gold/ · handoff/
-    ├── test/ · evaluation/ · production/ · audit/
-    ├── gates/                      P0 contract + G0 receipts
-    ├── runs/ · results/            Level-4 `rlNN` operation envelopes
-    ├── cache/                      embeddings/ · reveal/ · derived, never authority
-    └── REPORT.md · .state.json  rendered/cache only; receipts win
+├── labeling/                    the job itself · canonical
+│   ├── config.yaml · corpus/ · policy/ · rounds/ · gold/ · handoff/
+│   ├── test/ · evaluation/ · production/ · audit/
+│   ├── gates/                      P0 contract + G0 receipts
+│   ├── cache/                      embeddings/ · reveal/ · derived, never authority
+│   └── REPORT.md · .state.json  rendered/cache only; receipts win
+├── runs/                        Level-4 `rlNN` Tickets, beside labeling/
+└── results/                     one folder per Ticket, same name
 
 🏷 Board level · GET /_board/labeling-board?path=<board.md>
 all jobs   one card per Page that owns labeling/ · jobs that wait for you first
            click a card → the Page level below · "← All labeling jobs" comes back
 
-🏷 Page level · five Spaces, each with its views
+🏷 Page level · the title, the Space tabs (+ Studio Chat), then one Space
 Data       Contract · Schema · Embedding
-Labeling   Label · Rounds · Guideline
+Labeling   Discussion · Label · Rounds · Guideline
 Quality    Test · Evaluation · Audit
-Run        Runs · Phases · Workflow map
 Delivery   Handoff · Final labels
-
-header     Next: <one line> · Open Studio Chat (separate tab)
+Runs       the right side of every Space, at every width: the current view's Run types
+           with counts · the selected Run (Resume/Rerun, ▸ Prompt + Copy, Running process,
+           Results); ▸/◂ folds it to a strip
+drawers    ?drawer=workflow (Phases · SOP · Workflow map) · ?drawer=allruns; no button
 write      POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
            · build_embedding (catalog models only, runs in the background) · embedding_status (read)
            · embedding_item (read: one item's group and nearest items, never text)
@@ -58,7 +61,7 @@ own host    python plugins/subjective-label/servers/_host/serve.py --root <folde
 Board tab   python plugins/haipipe-toolkit/servers/_host/serve.py --root <folder>
             🏷 is one tab among the others; same routes, same write door
 addresses   <DOMAIN>/w/<board-slug>                    every labeling job on the Board
-            <DOMAIN>/w/<board-slug>/<page-id>/labeling one job, five Spaces
+            <DOMAIN>/w/<board-slug>/<page-id>/labeling one job, four Spaces
 ```
 
 `<DOMAIN>` is whichever origin the server printed at startup (loopback, the
@@ -76,16 +79,16 @@ adapter (`_board_pages`) and nothing else of the Board grammar, and the
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with five Spaces and their views. The current adapter keeps P0-P5 as compatibility capability tags in `Run → Phases` and the one-line `Next:` header; they are not Workflow nodes, Run owners, or Route authority. Studio Chat opens in its own tab |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with four Spaces, each its views on the left and a Runs panel on the right. The current adapter keeps P0-P5 as compatibility capability tags in the Workflow drawer's Phases card (`?drawer=workflow`); they are not Workflow nodes, Run owners, or Route authority. Studio Chat opens in its own tab |
 | WRITER | `subjective-label-workflow` defines the Run Spec graph and Routes; the Building/Scanning guides document operation order. Their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
-| BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group, never an item's text); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
+| BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
 
 ## 🔭 Two levels: Board and Page
 
 | level | where it opens | what it shows | writes |
 |---|---|---|---|
 | Board | the Board index, and the `S-Label-Dash` control Page | one card per Page whose `labeling/` has a `config.yaml`: target, question, data, step badge, progress, next step; Pages with no job listed below | none |
-| Page | any real job Page | the five Spaces; label definitions in `Labeling → Label`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
+| Page | any real job Page | the four Spaces and their Runs panels; label definitions in `Labeling → Label`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
 
 A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
 the Page level in the same pane. The Page header's `← All labeling jobs` link
@@ -113,19 +116,43 @@ opens the Board-level view instead.
 ## 🖼 Surface law
 
 The surface uses one location word: **Space**. In this plugin, "Space" and
-"Workspace" are the same concept. There are five Spaces, in this order:
-`Data`, `Labeling`, `Quality`, `Run`, `Delivery`. `Guideline` is a view inside
-`Labeling`, not a Space of its own. The older Human tab is gone.
-`Run → Workflow map` shows the SOP (the steps a job walks, who does each, and
-where this job is) above the Workflow map (every Run type × Space), both
-projected from `ref/ref-space-mapping.md`. The current adapter shows P0-P5 in
-`Run → Phases` and the `Next:` header as compatibility capability tags. This
-projection and the legacy Space choice do not own Runs or authorize allocation,
-closure, or Workflow Routes.
+"Workspace" are the same concept. There are four Spaces, in this order:
+`Data`, `Labeling`, `Quality`, `Delivery`. `Guideline` is a view inside
+`Labeling`, not a Space of its own. There is no Run Space and no page bar
+(v3, 260927, as the Page workbench): the page is its title, the Space tabs with
+`Studio Chat` at the end of the row, then one Space. Each Space is its content
+on the left and its Runs panel on the right at every width; the panel stays in
+view while the page scrolls. Two drawers have no button and open only from the
+URL: `?drawer=workflow` shows the Phases card (P0-P5 as compatibility capability
+tags), the SOP and the Workflow map, both projected from
+`ref/ref-space-mapping.md`; `?drawer=allruns` lists every Ticket; Esc closes
+them. This projection does not own Runs or authorize allocation, closure, or
+Workflow Routes.
+
+The page carries content and the controls that act on it, never hints, crumbs,
+status chips or explanation sentences (JL 260927: "as concise as possible").
+A Runs panel lists only the current view's Run types, from the Workflow map's
+`view` column, each with this job's count. Types the map marks `not built yet`
+stay in the map only; a view with no type says `No runs yet.` Below the types
+sits the selected Run: its name (`human-calibration-round-01`, the file id on
+hover), its state, `Resume` (an open Run, same rlNN) or `Rerun` (a closed one,
+new rlNN), a folded `▸ Prompt` whose `Copy` works while folded, Running process
+and Results. `+ New Run` shows an open prompt for the selected type. Every button
+only copies a prompt; none starts a Run. `▸/◂` folds the panel to a thin strip,
+remembered per Space in this browser.
+
+The content and its Runs pick each other (v4, as the Page workbench's Card ↔
+Runs): showing a build in `Data → Embedding` selects that build's
+`embedding-build` Run, and picking the Run shows the build; opening a round in
+`Labeling → Rounds` selects its Run, and picking a round's Run opens and outlines
+that round. The link is the Run's `target` (the build version, `round-01`). A
+rerun on the same target keeps the older Run's plain name and counts up
+(`embedding-build-minilm`, then `embedding-build-minilm-2`), ordered by rlNN
+number. An empty slot stays blank: no `—`, no `not implemented · HOLD` line.
 
 Treat the map as the Run Type catalogue, not the job's Run inventory. Today it
 shows the friendly operation name/type, where its action or result belongs,
-the output path, and a per-type count. `Run → Runs` is the actual inventory:
+the output path, and a per-type count. The Runs panels and `?drawer=allruns` are the actual inventory:
 one row per allocated Ticket with its runtime status and outcome. Do not infer
 a Run or status from the catalogue row or count. The current matrix does not
 render bounded target, owner/worker Skills, actor/prerequisites, or a link to a
@@ -145,7 +172,7 @@ and label these later Run Types `not built yet`.
 
 The roster table (views, first question, canonical sources), the rule for
 which Space opens first, and the item-text rule live in
-`../../../ref/ref-space-mapping.md`. The current adapter uses the legacy tag to
+`../../label-building/ref/ref-space-mapping.md`. The current adapter uses the legacy tag to
 choose a presentation Space (P0 opens `Data`, P1 opens `Labeling`); that is
 not the Workflow Route. A `?space=&view=` URL wins, then the browser's saved
 choice.
@@ -181,7 +208,7 @@ real only when the owning workflow writer lands its canonical event under
 
 On a standalone host, `engine/page_plugin.py` is still the older read-only
 presenter. It keeps its own older tab names, has no write door, and has not
-moved to the five Spaces yet. It names the current Codex task as transport and
+moved to the Spaces yet. It names the current Codex task as transport and
 offers a copyable next-action prompt derived from canonical status. The Page
 host keeps `labeling/` private from Source editing and static downloads.
 
@@ -257,11 +284,18 @@ has passed (for the four P1 actions), the event order holds, and sealed
 custody holds (a sealed item is never drawn, shown, or revealed). A refusal
 returns HTTP 409 with the engine's reason; a malformed value returns HTTP 400.
 
-There is still no approve, freeze, reveal-all, final-for-all, or run button.
+There is still no approve, freeze, reveal-all, or final-for-all button, and no
+generic run button: `Run embedding` and `Start round 1` are the only buttons that
+start work, each through its own checked door action.
 A new action ships only when its writer and authority check exist end to end.
 
-The `Copy chat prompt` controls in Labeling → Label and the open Rounds card
-copy text only. The round prompt currently includes the job folder, question
+Prompts live only in the Runs panels (v4): `+ New Run` and `Resume` of
+`definition-discussion` (Labeling → Discussion and Label) and `Resume` of the
+open round's `human-calibration` Run copy text only. Labeling → Label shows the
+definitions with no copy button, and Labeling → Discussion shows each
+discussion's labels before and after (a changed wording in green, `kept`
+otherwise) and its open questions; picking a discussion Run in the panel shows
+that one. The round prompt currently includes the job folder, question
 and label names, round progress, pending first answers, the next items, and
 the JUDGE-by-chat instructions. It does not start a Run or write a judgment;
 the chat must call the permitted calibration actions. Offer a copy control
@@ -284,10 +318,12 @@ clipboard-only setup prompt.
 One Labeling job allocates Level-4 Runs for the bounded commissions in its
 Workflow Run Spec list. Existing Tickets may retain a P0-P5 compatibility
 tag. A Run is named `rlNN_<operation>_<target>` (`rl` = Run of Labeling). Its Ticket is
-`labeling/runs/<run>.yaml` and its Result folder is `labeling/results/<run>/`
-(`runtime.yaml`, then `result.yaml` when complete). Legacy `rNN_labeling-*`
-envelopes remain readable without aliases. The 25 operation kinds and the
-count law live in `../../../ref/ref-run.md`. Round, Test, Scan, and Audit are
+`<Page>/runs/<run>.yaml` and its Result folder is `<Page>/results/<run>/`
+(`runtime.yaml`, then `result.yaml` when complete), beside `labeling/`, not
+inside it. Receipt paths are relative to the Page, so a round input reads
+`labeling/rounds/round_01/manifest.yaml`. Legacy `rNN_labeling-*`
+envelopes remain readable without aliases. The 26 operation kinds and the
+count law live in `../../label-building/ref/ref-run.md`. Round, Test, Scan, and Audit are
 episodes that group Runs; they add no row.
 
 The browser allocates a Run only as a side effect of an engine call.
@@ -296,11 +332,11 @@ The browser allocates a Run only as a side effect of an engine call.
 `final` completes it. `engine/job.py create` (not the browser) writes
 `rl01_corpus-contract_job-v1`.
 
-`Run → Runs` lists one row per Ticket with its runtime status and outcome.
+`?drawer=allruns` lists one row per Ticket with its runtime status and outcome; each Space's Runs panel shows the same Tickets by view and type.
 `haipipe-workbench-page/ref/run-space.md` presents the same envelopes read-only under a `Labeling`
 filter and creates no parallel status, Result, or control. A Run row may
 deep-link here at the same Run address. There is never an approve, freeze,
-reveal, final, or run button in Run Space.
+reveal, final, or run button in a Runs panel; Resume, Rerun and Copy only copy a prompt.
 
 ## 🔁 Operate or implement
 
@@ -320,11 +356,12 @@ When implementing or changing the plugin, keep these pieces aligned:
 ```text
 roster       haipipe-plugin/ref/roster.md · labeling/ row first
 registry     plugins/subjective-label/servers/workbench-labeling/assets/js/10-drawer/60-workbench-labeling.js · one tab registration
-surface      Board `plugins/subjective-label/servers/workbench-labeling/labeling.py` · five Spaces, Label definitions, Rounds tables, `LabelingMixin`
+surface      Board `plugins/subjective-label/servers/workbench-labeling/labeling.py` · four Spaces + Runs panels, Label definitions, Rounds tables, `LabelingMixin`
              standalone `engine/page_plugin.py` · older read-only presenter
 routes       Board `servers/_host/serve.py` · GET `/_board/labeling` (page)
              POST `/_board/labeling` (tab URL) · POST `/_board/labeling/act` (write door)
-engine       `engine/job.py` · status, confirm_meaning
+engine       `engine/job.py` · status, confirm_meaning, revise_meanings
+             `engine/definition_discussion.py` · start, say, decide, close, state
              `engine/embedding_build.py` · CATALOG, build (P0 embedding-build Run), builds,
              build_status, start_background_build
              `engine/calibration.py` · release_round, open_item, record_first,
@@ -333,6 +370,7 @@ skill        this file · storage/surface/writer/boundary law
 tests        Board `tests/test_labeling.py` · LabelingSurfaceTest,
              LabelingWriteDoorTest, LabelingRegistrationTest
              `engine/test_calibration.py` · fence, confirm, round 1, chain, reveal
+             `engine/test_definition_discussion.py` · revision, re-confirm, judged refusal
              `engine/test_embedding_build.py` · sealed left out, no-op rebuild, failed Run
              Board LabelingEmbeddingViewTest · recipe, example, map, groups
 ```
@@ -350,16 +388,15 @@ second job root, and no write lands outside the folded lane.
 
 ## 📂 Files
 
-- `../../../ref/ref-assets.md` · full job tree and canonical/rendered split
-- `../../../ref/ref-run.md` · 25 Labeling Run operations, resolver, count law,
+- `../../label-building/ref/ref-assets.md` · full job tree and canonical/rendered split
+- `../../label-building/ref/ref-run.md` · 26 Labeling Run operations, resolver, count law,
   gates, and safe presentation boundary
-- `../../../ref/ref-space-mapping.md` · the five-Space roster, the opening
+- `../../label-building/ref/ref-space-mapping.md` · the four-Space roster, the opening
   Space, the item-text rule, and the write door in one page
-- `../../../ref/ref-config.md` · meaning text, round 1, and reveal settings the
+- `../../label-building/ref/ref-config.md` · meaning text, round 1, and reveal settings the
   surface reads
-- `../../../ref/ref-label-handoff.md` · the only Building → Scanning crossing
-- `../../label-building-workflow/SKILL.md` · P0 fence/create/confirm and P1
+- `../../label-building/ref/ref-label-handoff.md` · the only Building → Scanning crossing
+- `../../label-building-workflow/SKILL.md` · P0 fence/create/discuss/confirm and P1
   CARD, PREPARE, JUDGE order, including the events file
 - `../../subjective-label-workflow/SKILL.md` · P0-P5, G0-G6, receipt chain
-- `../../page-types/haipipe-page-for-labeling/SKILL.md` · Job Page contract
 - the Board-engine paths in the implementation list above

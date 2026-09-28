@@ -131,7 +131,7 @@ as it reads after that save, in Bullet order and including unchanged sentences.
 Render the chat copy through the same reader-facing projection as the live
 `Read paragraph`: preserve ordinary manuscript citations, but replace every
 raw pending placeholder such as `[E05-VALUE-headline-association pending]`
-with its compact parenthetical wall label such as `(E05V.Headline)`. Never put
+with its compact parenthetical wall label such as `(Evalue05.Headline)`. Never put
 the full technical Evidence id, pending-status prose, chip, or card inside the
 paragraph handed to the person; those details belong in Evidence Space.
 Changed sentences, a diff, or a summary may accompany the paragraph but may

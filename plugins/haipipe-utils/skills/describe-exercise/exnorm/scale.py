@@ -87,15 +87,40 @@ def _find_bank() -> Path:
 DEFAULT_SCALE_BANK = _find_bank()
 
 
+def _pinned_frame():
+    """The two pinned scale tables in the bank's own shape (kind, key, factor, n, as_of),
+    or None when the lock pins neither. Device: ext_exercise_scale_device; person and
+    person_activity: ext_exercise_scale_person, whose as_of is its version's ValidFromDT."""
+    from ._lock import lock_file
+    import pandas as pd
+    import yaml
+    dev, per = lock_file("ext_exercise_scale_device"), lock_file("ext_exercise_scale_person")
+    if dev is None and per is None:
+        return None
+    parts = []
+    if dev is not None:
+        d = pd.read_parquet(dev)
+        parts.append(pd.DataFrame({"kind": DEVICE, "key": d["EntrySourceID_original"].astype(str),
+                                   "factor": d["factor"], "n": d["n"], "as_of": d["as_of"].astype(str)}))
+    if per is not None:
+        d = pd.read_parquet(per)
+        valid_from = str(yaml.safe_load((per.parent / "version.yaml").read_text())["ValidFromDT"])
+        parts.append(pd.DataFrame({"kind": d["tier"], "key": d["ScaleKey_original"].astype(str),
+                                   "factor": d["factor"], "n": d["n"], "as_of": valid_from}))
+    return pd.concat(parts, ignore_index=True)
+
+
 @functools.lru_cache(maxsize=8)
 def load(path=None) -> dict:
     """{(kind, key): (factor, n, as_of)}. An absent bank is NOT an error -- it
     is a deployment that has not built one, and the floor still works."""
-    p = Path(path or DEFAULT_SCALE_BANK)
-    if not p.exists():
-        return {}
     import pandas as pd
-    d = pd.read_parquet(p)
+    d = _pinned_frame() if path is None and not os.environ.get("EXNORM_SCALE_DB") else None
+    if d is None:
+        p = Path(path or DEFAULT_SCALE_BANK)
+        if not p.exists():
+            return {}
+        d = pd.read_parquet(p)
     out = {}
     for r in d.itertuples(index=False):
         f = float(r.factor)

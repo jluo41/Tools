@@ -65,7 +65,7 @@ class ResolveWorkbenchTest(unittest.TestCase):
             root, _ = fixture(tmp)
             url, why = resolve_workbench(root, "topic", "QA1")
             self.assertEqual(why, "ok")
-            self.assertEqual(url, "/_board/outline?path=unit/diagram/01-topic-260722/"
+            self.assertEqual(url, "/_board/draft?path=unit/diagram/01-topic-260722/"
                                   "1-QA-design/QA1-question.md&file=1-QA-design/QA1-question.md")
             url, _ = resolve_workbench(root, "topic", "QA1-question", "runs")
             self.assertTrue(url.startswith("/_board/runs?path="))
@@ -109,7 +109,7 @@ class ResolveWorkbenchTest(unittest.TestCase):
             self.assertEqual(board_workbench_route(board), "insight-board")
 
     def test_every_tab_word_maps_to_a_real_get_route(self):
-        served = {"outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
+        served = {"draft", "runs", "pageruns", "delivery", "folderstat", "evidence",
                   "value", "design", "insight", "labeling"}
         self.assertEqual(set(WORKBENCH_TABS.values()), served)
 
@@ -184,10 +184,10 @@ class OnlyHostTest(unittest.TestCase):
                      "/_board/labeling/act"):
             self.assertTrue(route_allowed(path, only), path)
         for path in ("/_shell", "/_events", "/_term/abc", "/_board/terms", "/_board/chat",
-                     "/_board/outline?path=x&file=y", "/_board/structure", "/_board/write",
+                     "/_board/draft?path=x&file=y", "/_board/structure", "/_board/write",
                      "/_board/design-board?path=x", "/_excalidraw"):
             self.assertFalse(route_allowed(path, only), path)
-        self.assertTrue(route_allowed("/_board/outline?path=x", frozenset({"page"})))
+        self.assertTrue(route_allowed("/_board/draft?path=x", frozenset({"page"})))
         self.assertTrue(route_allowed("/_board/terms", frozenset()), "no --only means everything")
 
     def test_every_workbench_folder_has_a_route_row(self):

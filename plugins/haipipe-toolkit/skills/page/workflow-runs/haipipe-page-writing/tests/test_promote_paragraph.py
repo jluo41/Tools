@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import hashlib
+import datetime as dt
 import importlib.util
+import os
 import sys
 import tempfile
 import unittest
@@ -21,8 +22,14 @@ sys.modules[SPEC.name] = promote_paragraph
 SPEC.loader.exec_module(promote_paragraph)
 
 
-def sha256(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
+def now_iso() -> str:
+    return dt.datetime.now(dt.timezone.utc).isoformat()
+
+
+def push_mtime(path: Path, seconds: float) -> None:
+    """Move a file's saved time forward, independent of the file-system clock tick."""
+    later = path.stat().st_mtime + seconds
+    os.utime(path, (later, later))
 
 
 class PromoteParagraphTest(unittest.TestCase):
@@ -36,6 +43,7 @@ class PromoteParagraphTest(unittest.TestCase):
         status: str = "complete",
         result_ref: str = ".",
         trace_extra: str = "Style verdict: pass",
+        page_input: dict | None = None,
     ) -> Path:
         results_root = root / "results"
         results_root.mkdir(exist_ok=True)
@@ -56,11 +64,9 @@ class PromoteParagraphTest(unittest.TestCase):
             "ticket": "runs/r01.md",
             "result": result_ref,
             "inputs": [
-                {
-                    "role": "page-source",
-                    "path": page.name,
-                    "sha256": sha256(page.read_bytes()),
-                }
+                page_input
+                if page_input is not None
+                else {"role": "page-source", "path": page.name, "read_at": now_iso()}
             ],
             "worker": "haipipe-page-writing",
             "status": status,
@@ -104,9 +110,10 @@ class PromoteParagraphTest(unittest.TestCase):
                 (result / "runtime.yaml").read_text(encoding="utf-8")
             )
             self.assertEqual(runtime["promotion"]["status"], "promoted")
-            self.assertEqual(
-                runtime["promotion"]["page_after_sha256"], sha256(page.read_bytes())
-            )
+            self.assertIn("promoted_at", runtime["promotion"])
+            # No content hash is written anywhere (JL 260928).
+            self.assertNotIn("sha256", (result / "runtime.yaml").read_text(encoding="utf-8"))
+            self.assertFalse(any("sha256" in key for key in outcome))
 
             repeated = promote_paragraph.promote(page, result)
             self.assertEqual(repeated["status"], "already-promoted")
@@ -175,6 +182,7 @@ class PromoteParagraphTest(unittest.TestCase):
             page.write_text(
                 "## Content\n\n### 1\n\nConcurrent edit.\n", encoding="utf-8"
             )
+            push_mtime(page, 5)  # saved after the Run read it
 
             with self.assertRaisesRegex(
                 promote_paragraph.PromotionError, "stale promotion"
@@ -205,6 +213,79 @@ class PromoteParagraphTest(unittest.TestCase):
                 ):
                     promote_paragraph.promote(page, result)
             self.assertIn("Concurrent edit.", page.read_text(encoding="utf-8"))
+
+    def test_old_record_sha256_is_ignored_and_started_at_is_the_read_time(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            page = root / "page.md"
+            page.write_text("## Content\n\n### 1\n\nOriginal.\n", encoding="utf-8")
+            result = self.make_result(
+                root,
+                page,
+                "C1.P1",
+                "Replacement.",
+                page_input={"role": "page-source", "path": page.name, "sha256": "not-a-hash"},
+            )
+            runtime_path = result / "runtime.yaml"
+            runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+            runtime["started_at"] = now_iso()
+            runtime["promotion"] = {"status": "applying", "page_before_sha256": "stale"}
+            runtime_path.write_text(yaml.safe_dump(runtime, sort_keys=False), encoding="utf-8")
+
+            outcome = promote_paragraph.promote(page, result)
+
+            self.assertEqual(outcome["status"], "promoted")
+            self.assertIn("Replacement.", page.read_text(encoding="utf-8"))
+            promotion = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))["promotion"]
+            self.assertFalse(any("sha256" in key for key in promotion))
+
+    def test_missing_read_time_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            page = root / "page.md"
+            page.write_text("## Content\n\n### 1\n\nOriginal.\n", encoding="utf-8")
+            result = self.make_result(
+                root, page, "C1.P1", "Replacement.",
+                page_input={"role": "page-source", "path": page.name},
+            )
+
+            with self.assertRaisesRegex(promote_paragraph.PromotionError, "read_at"):
+                promote_paragraph.promote(page, result)
+            self.assertIn("Original.", page.read_text(encoding="utf-8"))
+
+    def test_workspace_stamp_read_time_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            page = root / "page.md"
+            page.write_text("## Content\n\n### 1\n\nOriginal.\n", encoding="utf-8")
+            stamp = dt.datetime.now().strftime("%y%m%d %H%M")
+            result = self.make_result(
+                root, page, "C1.P1", "Replacement.",
+                page_input={"role": "page-source", "path": page.name, "read_at": stamp},
+            )
+
+            self.assertEqual(promote_paragraph.promote(page, result)["status"], "promoted")
+
+    def test_interrupted_promotion_is_recovered_by_text(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            page = root / "page.md"
+            page.write_text("## Content\n\n### 1\n\nOriginal.\n", encoding="utf-8")
+            result = self.make_result(root, page, "C1.P1", "Replacement.")
+            runtime_path = result / "runtime.yaml"
+            runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+            runtime["promotion"] = {"status": "applying", "target": "C1.P1"}
+            runtime_path.write_text(yaml.safe_dump(runtime, sort_keys=False), encoding="utf-8")
+            # The Page write landed before the process stopped.
+            page.write_text("## Content\n\n### 1\n\nReplacement.\n", encoding="utf-8")
+            push_mtime(page, 5)
+
+            outcome = promote_paragraph.promote(page, result)
+
+            self.assertEqual(outcome["status"], "promoted")
+            self.assertTrue(outcome["recovered"])
+            promotion = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))["promotion"]
+            self.assertEqual(promotion["status"], "promoted")
 
     def test_fenced_heading_is_not_a_paragraph_address(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

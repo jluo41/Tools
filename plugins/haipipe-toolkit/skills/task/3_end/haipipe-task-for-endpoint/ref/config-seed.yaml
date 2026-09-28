@@ -43,7 +43,6 @@ Input2SrcFn: "<Input2SrcFnName>"
 # =============================================================================
 external_contract:
   release: "@<release>"
-  checksum: "<release-checksum>"
   source_schema_version: "<version>"
   vector_order_versions: {}
 

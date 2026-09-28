@@ -118,7 +118,7 @@ an item uses is hidden. When no design rests on a signed insight, a red line
 says so at the top.
 
 **Run Space** answers "who is the programme waiting on, and what ran last?"
-First the queue: every item that waits, the person's rows first (`JL · queue the review`),
+First the queue: every item that waits, the person's rows first (`you · queue the review`),
 then the agent's (`agent · verify`). Then every Run across folders, newest
 first, with folder, original Run ID, Run type, actor and mode, status, outcome.
 The queue names the next action; it does not allocate a Run. Historical
@@ -130,13 +130,13 @@ records check across folders.
 folder (its title, linked to the folder's Delivery Space), then one table,
 one row per item: item (id, linked to its card, and title) · design (the
 exact draft whose independent Verify passed; failed or unverified drafts are
-never listed). Hashes and receipts stay in Run Space. A folder of
+never listed). Receipts stay in Run Space. A folder of
 screens shows as a picture gallery instead of the table. A declined item
 leaves the list and is folded under "Declined, kept for the record · N". At
 the top, **↓ Download all designs**: `GET /_board/design-bundle?path=<board.md>`
 returns a csv with one row per ready item, columns `line, who,
-their_job, venue, folder, item, title, state, text, draft_run, sha256,
-render`. Every row has `state=ready` and identifies the exact verified draft.
+their_job, venue, folder, item, title, state, text, draft_run,
+render` (no hash column, JL 260928). Every row has `state=ready` and identifies the exact verified draft.
 If the candidate or its review records no longer validate against the current
 files, the item shows `records invalid` and is excluded from ready counts and CSV.
 This is a design handoff, not authorization to send; downstream owners decide
@@ -168,7 +168,7 @@ For example, submit `{"row":"R3"}` for the row whose `id` is `R3`:
 ```text
 2-Design/Design-NN-<audience>-<job>-<venue>/
 ├── Design-NN-….md                          the page (below)
-└── outline/Design-NN-…-design-items.md     empty register with its header
+└── draft/Design-NN-…-design-items.md     empty register with its header
 ```
 
 The page passes the board checker from the start: `folder-kind: design`,

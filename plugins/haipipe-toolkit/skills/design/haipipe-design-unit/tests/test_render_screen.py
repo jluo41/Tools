@@ -112,8 +112,7 @@ class RenderBoundaryTest(unittest.TestCase):
         row = json.loads(self.manifest.read_text())[0]
         self.assertEqual(row["source"], "../content/screen.html")
         self.assertEqual(row["render"], "screen-v1.png")
-        self.assertEqual(row["sha256"], renderer.sha(self.html))
-        self.assertEqual(row["render_sha256"], renderer.sha(self.png))
+        self.assertFalse(any("sha" in key or "hash" in key for key in row))
         self.assertEqual(row["measured"]["viewport_width"], 390)
         self.assertEqual(runtime.read_text(), "status: running\n")
         self.assertFalse((self.root / "delivery").exists())

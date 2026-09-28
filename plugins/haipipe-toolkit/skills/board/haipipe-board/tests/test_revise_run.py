@@ -36,8 +36,8 @@ class ReviseRunTest(unittest.TestCase):
         return result
 
     LEDGER = (
-        "#### Inputs\n- Before: results/rp-para-01_P03/v002.md · sha256 aaa\n"
-        "- After: results/rp-para-01_P03/v003.md · sha256 bbb\n\n"
+        "#### Inputs\n- Before: results/rp-para-01_P03/v002.md · closed 260928 1241\n"
+        "- After: results/rp-para-01_P03/v003.md · closed 260928 1302\n\n"
         "#### Track changes\n\n##### R01 · wording\n\n###### Before\n\n"
         "The effect was very large.\n\n###### After\n\nThe effect was large (95% CI 0.3 to 0.9).\n\n"
         "###### Why\n\nAnswers F02: hedge with the interval.\n\n###### Decision\n\naccept\n"

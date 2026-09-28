@@ -1,3 +1,7 @@
+## 0.1.4 · 2026-09-28 · No content hashes (JL 260928)
+
+- `assessment_receipts` and `review_resolution` list receipt paths only; no exact-byte SHA-256.
+
 ## 0.1.3 · 2026-09-22
 
 - Moved to the family root beside the door: every skill we wrote sits flat, the numbered folders hold vendored originals only. Links to `../haipipe-ideation/` repointed (2).

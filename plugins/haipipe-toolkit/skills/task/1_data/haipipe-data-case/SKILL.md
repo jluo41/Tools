@@ -3,8 +3,8 @@ name: haipipe-data-case
 description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.3"
-  last_updated: "2026-09-25"
+  version: "0.3.4"
+  last_updated: "2026-09-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -103,7 +103,10 @@ Facts, not labels (REACH PD2D, JL 260923):
     record: every row from the case date on as `{n_events, days, values}` in
     `<CaseFn>--val` (days 0 to 7300; `values` only when the record has a value
     column). The window starts one day early (`DistStartToPredDT: -1440`) so
-    day 0 is never lost. An event CaseFn decides nothing. The label (within 1 year, 2 years, time to event) is a
+    day 0 is never lost. It is named `<Feature><Window>` like every CaseFn:
+    project prefix + the record without its `REACH` prefix + the window
+    (`REACHSignalDiabPresentA1c`, `Af20Y` -> `REACHPD2DSignalDiabPresentA1cAf20Y`).
+    An event CaseFn decides nothing. The label (within 1 year, 2 years, time to event) is a
     rule over those lists and lives in b10 (`/haipipe-data-aidata`), so a new
     outcome is a new label Fn, never a new CaseSet.
   - No clinical threshold here: a signal table already says present, absent

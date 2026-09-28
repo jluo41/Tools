@@ -3,8 +3,8 @@ name: haipipe-data-aidata
 description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-25"
+  version: "0.2.2"
+  last_updated: "2026-09-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -105,8 +105,8 @@ Labels live here (REACH PD2D, JL 260923):
   - The split runs BEFORE the output transform, so the SplitFn
     (`j02_splitfn_<name>`) calls the named label Fn's `label_of` to tag
     `label_status`; the Selection rules then drop censored or no_followup
-    cases. The label rule exists in one Fn only. PD2D's split years (train
-    1990-2020, test 2021+) are a default until JL sets them.
+    cases. The label rule exists in one Fn only. PD2D's split years (JL 260924):
+    train 2015-2022, test 2023-2025 (2023-2024 for the 2-year label).
   - An AIDataSet version is a Run of `j5N_<aidataset>_aidata/
     t01_aidatastore_materialize/` (one per label x CaseSet, e.g.
     `r01_diabaf1y`, `r04_diabaf1y_allvisit`); the Job's

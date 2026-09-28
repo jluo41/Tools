@@ -10,8 +10,8 @@ description: >-
   evidence, evidence Run, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.29.0"
-  last_updated: "2026-09-25"
+  version: "0.30.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -127,13 +127,13 @@ PAGE RUN     one typed `re-value-NN_<slug>`, `re-display-NN_<slug>`, or
              `re-cite-NN_<slug>` identity for this item's Page lineage
 TICKET       Folder dialect selected by haipipe-run; full owner-native Run id when execution is Task-backed
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
-             Run ids, receipt hashes, and any governed page-local source pointers
+             Run ids, receipt paths, and any governed page-local source pointers
 WORKER       haipipe-workbench-page owns VALUE/CITE/DISPLAY payload rules;
              DISPLAY may dispatch a renderer craft beneath that one workbench
 RESULT       runtime receipt + typed evidence-item result + safe artifact pointers; bind the matching typed RE id
 ACCEPT       every SHAPE acceptance check passes; provenance resolves; aggregate only
 PROMOTION    LAND binds Result to item; EMBED binds it to the next outline version
-REOPEN       changed support Result/hash or item contract makes the binding stale
+REOPEN       a support Result saved after the binding (newer file time) or a changed item contract makes it stale
 ```
 
 Resolve every physical Result through the Ticket's governed store contract.
@@ -156,7 +156,7 @@ target: E01-VALUE-adjusted-effect
 Before declaring evidence missing, search the Folder owner's current Result
 store, governed `_WorkSpace` stores, and explicit `old/` directories. A
 recovered prior output is a **provisional Supporting Result binding**, not a
-new action: record its exact path and hash, use it when it satisfies the
+new action: record its exact path and Run id, use it when it satisfies the
 current contract, and mark it stale automatically when a newer canonical
 Result for the same target lands.
 
@@ -181,11 +181,11 @@ For every item whose `Decide` is `☑ make`:
 4. **Require valid Supporting Results.** Trust no claimed `complete` without
    the owning worker's Result gate and runtime receipt. Preserve truthful
    failed or blocked receipts; do not invent `none` or ask a `person` action.
-   A recovered old Result may be bound provisionally with its hash when it
+   A recovered old Result may be bound provisionally by its path when it
    passes the present acceptance contract; a later canonical Result with the
    same target supersedes that binding and reopens LAND or EMBED as needed.
 5. **Freeze one Local Input.** Materialize the SURVEY plan as one immutable
-   envelope containing exact Supporting Result pointers/hashes plus any named
+   envelope containing exact Supporting Result pointers (paths, Run ids) plus any named
    pre-existing governed page-local artifacts. Cross-Folder evidence must
    arrive through a Supporting Run Result; Related Pages in the off-stage Context record
    do not become evidence automatically. Zero supports is valid only when the
@@ -251,7 +251,7 @@ commission Discovery work without a special citation route.
 
 The common Result envelope is `<resolved-result>/result.yaml`. It names item
 id, type, local Run id, frozen input, Supporting Run ids, governed local-source
-hashes, payload paths, acceptance checks, and provenance. Its sibling
+paths, payload paths, acceptance checks, and provenance. Its sibling
 `runtime.yaml` owns execution lifecycle facts. `haipipe-workbench-page` owns
 the exact common keys and typed payload extensions:
 
@@ -283,8 +283,8 @@ payload stays at its Supporting Run's own Result path. Never introduce
 DISPLAY is the umbrella Result type for a table, figure, or algorithm block.
 Conceptual diagrams and AI illustrations are cited as ordinary figures. LAND may render a concrete unit and mark the local Result
 ready when the Evidence Item's `Acceptance` checks pass. The governed Result
-envelope records the source local Run id, resolved Result path, unit pointer,
-and hashes; it does not require an intermediate `outline/evidence/display/`
+envelope records the source local Run id, resolved Result path, and unit
+pointer; it does not require an intermediate `outline/evidence/display/`
 copy that is later moved into the Page. The lowercase human `accepted:`
 decision on the display unit is separate and is administered later by CHECK;
 it is not a LAND or EMBED prerequisite.

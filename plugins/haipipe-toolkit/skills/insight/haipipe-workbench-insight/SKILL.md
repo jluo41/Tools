@@ -10,8 +10,8 @@ description: >-
   board tab, insight workbench, show the register, which cell answers this
   page, insight gates, /haipipe-workbench-insight.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-22"
+  version: "0.1.1"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

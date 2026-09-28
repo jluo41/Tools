@@ -5,7 +5,7 @@ and 4c. The SHAPE is general and the NOTATION is not, which is the same split as
 `change-record.md`: one discipline, one dialect per host.
 
 The board half of this is NOT this file's to define. `page/haipipe-sentence`
-owns the lanes and the evidence card, and `QB4 §3.3.3` names all eight lanes and
+owns the lanes and the evidence card, and `QB4 §3.3.3` names all nine lanes and
 states the paper mapping. This file carries the discipline; those carry the grammar.
 
 The first pass over this phase concluded there was nothing general in it. That
@@ -67,7 +67,7 @@ A board sentence carries the hole as a TYPED LANE under it; a manuscript carries
 it as a placeholder inside the sentence. Same fact, two hosts.
 
 ```
-🗂 board     one of the eight typed lanes, owned by an Aim id or a Decision Now row
+🗂 board     one of the nine typed lanes, owned by an Aim id or a Decision Now row
              ⚠️ > Check:  and  🔎 > Q-consumer:  are holes by definition
              a lane that states what it FOUND is not a hole:
                 ✅ > Value: 9.1 months · CC · 260801        filled

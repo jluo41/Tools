@@ -4,7 +4,7 @@ The manifest selects a Page Face and optional imported content. Imported bytes
 remain the content authority; HTML is generated, never edited in place.
 """
 from dataclasses import dataclass
-from hashlib import sha256
+from hashlib import sha256  # internal: the web editor's compare-and-save token only
 from html import escape
 from html.parser import HTMLParser
 import json
@@ -39,7 +39,7 @@ class PageContext:
 
 
 class SourceConflictError(ValueError):
-    """An on-disk edit invalidated the browser's loaded source hash."""
+    """An on-disk edit invalidated the browser's loaded compare-and-save token."""
 
 
 def confined(folder, relative):
@@ -175,16 +175,15 @@ def create_page(input_file, destination, title=None):
     destination.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".page-create-", dir=destination.parent))
     try:
-        materials = stage / "outline/evidence/materials"
+        materials = stage / "draft/evidence/materials"
         for file in files:
             target = materials / file.relative_to(original.parent)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(file, target)
-        content = (Path("outline/evidence/materials") / original.name).as_posix()
+        content = (Path("draft/evidence/materials") / original.name).as_posix()
         source = slug + ".md"
         manifest = (f'version = 1\nsource = {json.dumps(source, ensure_ascii=False)}\n'
-                    f'content = {json.dumps(content, ensure_ascii=False)}\ntitle = {json.dumps(title, ensure_ascii=False)}\n'
-                    f'input_sha256 = "{sha256(original.read_bytes()).hexdigest()}"\n')
+                    f'content = {json.dumps(content, ensure_ascii=False)}\ntitle = {json.dumps(title, ensure_ascii=False)}\n')
         (stage / "page.toml").write_text(manifest, encoding="utf-8")
         face = (f"# {title}\nstate: 🟡\nowner: unassigned\nsource-content: {content}\n\n"
                 f"## Opening\n\nWorking Page for {original.name}. Edit the imported copy on disk; the original file is unchanged.\n\n"
@@ -234,7 +233,8 @@ def save_source(context, relative, text, expected_sha256):
         raise ValueError("Source exceeds the 2 MiB editor limit")
     path = confined(context.folder, relative)
     # Match the shared Outline lock: a raw edit cannot race its own structured
-    # operation. External editors are detected via content hashes.
+    # operation. External editors are detected by the compare-and-save token, which
+    # lives only in the browser form and is never written to a record.
     from live.outline_preview import page_lock
     with LOCK, page_lock(context.source):
         current = read_source(context, relative)
@@ -297,7 +297,7 @@ def render_page(context):
     query = urlencode({"path": "/", "file": context.source.name})
     workbenches = [
         {"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces",
-         "order": 10, "url": f"/_board/outline?{query}&lens=div"},
+         "order": 10, "url": f"/_board/draft?{query}&lens=div"},
         {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page",
          "order": 40, "url": f"/_board/delivery?{query}"},
         {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness",
@@ -373,9 +373,8 @@ def build_page(context, output=None):
     confined(output, "index.html").write_text(markup, encoding="utf-8")
     source_relative = context.source.relative_to(context.folder).as_posix()
     marker = {
-        "schema": "haipipe-page-export/v2",
+        "schema": "haipipe-page-export/v3",
         "source": source_relative,
-        "source_sha256": sha256(context.source.read_bytes()).hexdigest(),
     }
     (output / ".haipipe-page-export").write_text(
         json.dumps(marker, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

@@ -41,14 +41,14 @@ Do not occupy an existing server port or replace an unrelated listener.
 my-page/
   page.toml                          portable registration, no absolute paths
   my-page.md                         Page Face / Opening / Content
-  outline/evidence/materials/
+  draft/evidence/materials/
     input.html                       editable imported copy, original bytes
     assets/...                       copied static local dependencies
   delivery/web/                      generated static reading export
 ```
 
-`page.toml` version 1 declares `source`, optional `content`, `title`, and the
-original input hash. Its `content` must match the Face's `source-content:`.
+`page.toml` version 1 declares `source`, optional `content`, and `title`; it
+records no content hash (JL 260928). Its `content` must match the Face's `source-content:`.
 The Page renderer inserts that content directly: no duplicated editable prose.
 For an imported HTML file, edit HTML/CSS/JS under materials; edit the Face for
 Opening/Content. Requirements and targets stay in backstage records. HTML is
@@ -71,8 +71,8 @@ application deployment system.
 `setup` accepts imported Markdown. In one step it runs the safe import and then
 populates the Page's real working records: source-specific Opening,
 backstage requirements/targets,
-`outline/<stem>-outline-v0.1.md`, matching reader-move
-`outline/<stem>-outline-v<G>.<S>[.<E>].md` with embedded Drafts,
+`draft/<stem>-draft-v0.1.md` in three sections, matching reader-move
+`draft/<stem>-draft-v<G>.<S>[.<E>].md` with embedded Drafts,
 Context/Files projections, and a completed
 `rNN_page-setup` Task Run with a Result report. The Shape is intentionally
 `approved: ⬜`; automatic setup cannot impersonate human review. Its semantic
@@ -92,8 +92,8 @@ failure records a failed Run and makes the command fail. Semantic-role and
 Bullet-only argument judgment, Aim achievement, human Shape/Content acceptance,
 and unrequested hosting remain visibly
 `deferred`, `untested`, or `n/a`; setup never converts them into automatic
-passes. The machine audit fingerprints the checked Face, Content, Shape,
-Content Draft, and static delivery. After correcting a generated role or Draft,
+passes. The machine audit records the path and saved time of the checked Face,
+Content, Shape, Content Draft, and static delivery. After correcting a generated role or Draft,
 run `setup <existing-page-folder>` again—not only `build`—so a new setup Task
 Run validates the changed records and refreshes both the delivery and audit.
 The setup command already builds `delivery/web/index.html`. Do not invoke a

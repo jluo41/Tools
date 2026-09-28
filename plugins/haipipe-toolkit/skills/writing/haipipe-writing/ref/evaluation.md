@@ -6,7 +6,7 @@ adapters. Evaluate the actual candidate version, not an imagined improved one.
 
 ## Bounded cycle
 
-1. Identify the candidate, recoverable baseline, rubric/version/hash, relevant
+1. Identify the candidate, recoverable baseline, rubric/version, relevant
    requirements and review coverage. Label the actual reviewer and mode:
    self, external, or independent. Loading an external skill in the writer's
    context is still self-review.
@@ -40,13 +40,13 @@ already retained by the host. Larger selected-tool output can be linked.
 ```markdown
 #### Writing evaluation
 
-- Candidate: <initial/final source or journal locator, version and SHA-256>
+- Candidate: <initial/final source or journal locator and version>
 - Baseline: <recoverable prior text/record, or first draft>
-- Rubric: haipipe-writing/base-v1 · <actual content hash>
+- Rubric: haipipe-writing/base-v1
 - Requirements: <resolved source identities>
 - Reviewer: <actual actor> · <self/external/independent>
 - Coverage: <targets and criteria checked; explicit unreviewed scope>
-- Methods: <id, entry/version/hash, status/output; or none selected>
+- Methods: <id, entry/version, status/output; or none selected>
 
 | Pass/candidate | Criterion/source | Target/quote | Verdict | Evidence/reason | Smallest fix / owner |
 |---|---|---|---|---|---|

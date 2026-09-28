@@ -3,7 +3,7 @@ name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -93,7 +93,6 @@ deployment_config:
 # Required when SourceFn/Input2SrcFn uses external data
 external_contract:
   release: "@<release>"
-  checksum: "<release-checksum>"
   source_schema_version: "<version>"
   vector_order_versions: {}
 ```
@@ -115,7 +114,7 @@ Pipeline flow (c_endpoint_nb.py steps)
 ```
 
 Packaging also verifies the training SourceFn versus serving Input2SrcFn
-ProcessDF parity and records the external release/checksum plus Source vector
+ProcessDF parity and records the external release plus Source vector
 schema/order versions in `manifest.json`.
 
 Output structure:

@@ -141,7 +141,7 @@ asset_name = f"{raw_data_name}/@{SourceFnName}"
 ```
 
 **When to Use**:
-- New caching strategies (e.g., content-hash-based invalidation)
+- New caching strategies (e.g., modification-time-based invalidation)
 - Schema validation logic changes
 - New remote storage backends (S3, GCS, Databricks)
 - SourceSet serialization format changes

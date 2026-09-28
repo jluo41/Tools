@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
 import json
 import os
 import sys
@@ -49,8 +48,6 @@ def _jsonable(value: Any) -> Any:
     return str(value)
 
 
-def _sha256(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _write_text(path: Path, text: str) -> None:
@@ -140,8 +137,6 @@ def _base(args: argparse.Namespace, prompt: str, system: str, model: str, config
         "receipt_dir": str(out_dir),
         "web_mode": args.web,
         "max_turns": args.max_turns,
-        "prompt_sha256": _sha256(prompt),
-        "system_prompt_sha256": _sha256(system),
         "permission_note": "Shared mode keeps the bridge permission policy conservative; use Claude CLI or VS Code for interactive approvals and full tool control.",
     }
 

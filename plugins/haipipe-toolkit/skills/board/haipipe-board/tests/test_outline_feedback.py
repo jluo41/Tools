@@ -83,7 +83,7 @@ class DraftSpaceFeedbackTest(unittest.TestCase):
             result, error = handler.plug_outline({'action': action, 'path': '/board.md', 'file': 'S-test/S-test.md'})
             if action == 'comment-preview':
                 self.assertIsNone(error)      # unknown legacy action: URL registration only
-                self.assertEqual(result, {'url': '/_board/outline?path=/board.md&file=S-test/S-test.md'})
+                self.assertEqual(result, {'url': '/_board/draft?path=/board.md&file=S-test/S-test.md'})
             else:
                 self.assertIsNone(result)
                 self.assertIn('read-only', error)

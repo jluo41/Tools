@@ -1,3 +1,9 @@
+## 0.4.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- A Context source's freshness fact is its own version number and date, or its saved time (file
+  time or last `git` commit); never a SHA-256. `ref/context-record.md` Sources read
+  `version/date`. Stale means the source changed after the record (newer file time or `git diff`).
+
 ## 0.3.0 · 2026-09-22
 
 - Moved to `skills/page/workflow-runs/`; the description leads with the Run (`Page.context`) and

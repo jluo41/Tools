@@ -7,8 +7,8 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.4"
-  last_updated: "2026-09-20"
+  version: "0.9.5"
+  last_updated: "2026-09-28"
   page_ruling: none
   group-token: "S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>"
   outline:
@@ -21,6 +21,8 @@ metadata:
 ---
 
 # /haipipe-paper-section · execute one Story Section Narrative row
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the Section's `delivery/latex/` and `delivery/word/` files: fix the Page, its Draft or the exporter, then rebuild.
 
 For a Section Page update, load `haipipe-page`, `haipipe-page-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, this PageType and
@@ -68,7 +70,7 @@ Prose never outranks a changed Section Narrative row or binding desk rule.
 The rendered Section Opening is exactly one paragraph: the question and the
 minimum orientation needed to enter the manuscript unit. It has no reader
 drawer. Page-owned prose rules live in
-`outline/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
+`outline/records/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
 `Applies`, and `Source`, after the generated venue `V<n>` block. The Outline
 workbench exposes both through one `📏 Requirement` lens for CONTEXT, OUTLINE,
 CONTENT, and CHECK. A Section Page carries no `### Writing Style` block.
@@ -114,13 +116,13 @@ these native Runs, without a wrapper Section Run.
 
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
 compiles its own deliverable through the page-level delivery workbench,
-`delivery/latex/<page>-complete.tex` with its `-complete.bib` and `.pdf`,
+`delivery/latex/<page>-master.tex` compiled to `<page>.pdf`, with its Bib at `selected-bibliography/<page>.bib`,
 wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
 `\input`s; its `\includegraphics` paths resolve to its own accepted display units
 (`results/<re-run>/payload/Display<n>-<slug>/assets/figure.pdf`; the stable Page id
 owns the unit independently of printed section order; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
 retired, JL 260908) and its citation keys to
-its own `-complete.bib`. The paper's `delivery/latex/` is regenerated FROM these
+its own `selected-bibliography/<page>.bib`. The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
 into this page and the paper folder is rebuilt whole. The old desk room
 (`<N>-<desk><year>/sections/*.tex`) is not a current source of record.

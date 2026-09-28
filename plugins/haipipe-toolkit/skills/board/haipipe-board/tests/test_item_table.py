@@ -186,26 +186,26 @@ class ItemTableTest(unittest.TestCase):
                 "E03-VALUE-primary-association", "VALUE",
                 "the complete primary association and benchmark", "LBPEffect",
             ),
-            "E3V.LBPEffect",
+            "Evalue03.LBPEffect",
         )
         self.assertEqual(
             it.wall_label(
                 "E02-CITE-guideline", "CITE", "guideline source", "Guideline"
             ),
-            "E2C.Guideline",
+            "Ecite02.Guideline",
         )
         self.assertEqual(
             it.wall_label(
                 "E08-DISPLAY-table", "DISPLAY", "sequence table", "SeqTable"
             ),
-            "E8D.SeqTable",
+            "Edisplay08.SeqTable",
         )
         self.assertEqual(
             it.wall_label(
                 "E09-VALUE-legacy", "VALUE",
                 "an extremely long legacy evidence item name",
             ),
-            "E9V.AnExtremelyL",
+            "Evalue09.AnExtremelyL",
         )
 
     def test_global_run_addresses_accept_dotted_input_and_keep_compact_key(self):

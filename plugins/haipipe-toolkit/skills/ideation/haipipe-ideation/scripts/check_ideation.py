@@ -120,10 +120,10 @@ class GateCheck(SelectionChecks):
             self.fail("unsupported-version", path, "paper-ideation-sync version must be 1 or 2")
             return
 
-        self.require_keys(sync, ["source_hash", "projection"], path)
-        source_hash = sync.get("source_hash")
-        if not isinstance(source_hash, str) or not source_hash.strip():
-            self.fail("invalid-hash", path, "source_hash must be a non-empty string")
+        # A semantic source is identified by sync_revision alone. No content
+        # hash is written or compared (JL 260928); a leftover source_hash in an
+        # old packet is ignored.
+        self.require_keys(sync, ["projection"], path)
 
         projection = sync.get("projection")
         if not isinstance(projection, dict):
@@ -169,7 +169,7 @@ class GateCheck(SelectionChecks):
             if not isinstance(surface, dict):
                 self.fail("invalid-shape", path, f"paper_page.{name} must be a mapping")
                 continue
-            self.require_present(surface, ["state", "revision", "source_hash", "receipt"], path, f"paper_page.{name}")
+            self.require_present(surface, ["state", "revision", "receipt"], path, f"paper_page.{name}")
             state = surface.get("state")
             if state not in allowed_states:
                 self.fail("invalid-state", path, f"paper_page.{name}.state is invalid")
@@ -181,12 +181,11 @@ class GateCheck(SelectionChecks):
                     self.fail("revision-ahead", path, f"paper_page.{name}.revision cannot exceed sync_revision")
             if self.nonempty(surface.get("receipt")):
                 self.require_unit_path(surface.get("receipt"), path, f"paper_page.{name} receipt")
-                if surface_revision is not None and self.nonempty(surface.get("source_hash")):
+                if surface_revision is not None:
                     self.check_projection_receipt(
                         surface.get("receipt"),
                         name,
                         surface_revision,
-                        surface.get("source_hash"),
                         page.get("path"),
                         path,
                     )
@@ -196,15 +195,13 @@ class GateCheck(SelectionChecks):
                     self.fail("broken-path", path, "a current projection requires its physical Paper Page")
                 if not valid_revision or surface_revision != revision:
                     self.fail("projection-stale", path, f"paper_page.{name}.current must equal sync_revision")
-                if surface.get("source_hash") != source_hash:
-                    self.fail("hash-drift", path, f"paper_page.{name}.current must match sync source_hash")
                 if not self.nonempty(surface.get("receipt")):
                     self.fail("receipt-missing", path, f"paper_page.{name}.current requires a Page-owned receipt")
             elif state == "not-requested":
-                if any(self.nonempty(surface.get(field)) for field in ("revision", "source_hash", "receipt")):
-                    self.fail("surface-drift", path, f"paper_page.{name}.not-requested must have null revision/hash/receipt")
+                if any(self.nonempty(surface.get(field)) for field in ("revision", "receipt")):
+                    self.fail("surface-drift", path, f"paper_page.{name}.not-requested must have null revision/receipt")
             elif state == "stale" and valid_revision:
-                if surface_revision == revision and surface.get("source_hash") == source_hash:
+                if surface_revision == revision:
                     self.fail("surface-drift", path, f"paper_page.{name}.stale cannot match the current semantic source")
 
         working = surfaces["working"]
@@ -213,12 +210,12 @@ class GateCheck(SelectionChecks):
         if isinstance(release, dict) and release.get("state") == "current":
             if not isinstance(working, dict) or working.get("state") != "current":
                 self.fail("release-ahead", path, "current release requires current working projection")
-            elif release.get("revision") != working.get("revision") or release.get("source_hash") != working.get("source_hash"):
+            elif release.get("revision") != working.get("revision"):
                 self.fail("release-drift", path, "current release must consume the current working source")
         if isinstance(delivery, dict) and delivery.get("state") == "current":
             if not isinstance(release, dict) or release.get("state") != "current":
                 self.fail("delivery-ahead", path, "current delivery requires current release")
-            elif delivery.get("revision") != release.get("revision") or delivery.get("source_hash") != release.get("source_hash"):
+            elif delivery.get("revision") != release.get("revision"):
                 self.fail("delivery-drift", path, "current delivery must identify the current released source")
         if page_state == "missing" and any(
             isinstance(surface, dict) and surface.get("state") == "current"
@@ -235,7 +232,6 @@ class GateCheck(SelectionChecks):
         raw: Any,
         surface_name: str,
         revision: Any,
-        source_hash: Any,
         page_path: Any,
         owner: Path,
     ) -> None:
@@ -257,10 +253,8 @@ class GateCheck(SelectionChecks):
             [
                 "source_packet",
                 "source_revision",
-                "source_hash",
                 "page_path",
                 "surface",
-                "output_hash",
                 "created_at",
             ],
             receipt_path,
@@ -272,8 +266,6 @@ class GateCheck(SelectionChecks):
             self.fail("receipt-drift", receipt_path, "paper_projection must name the canonical sync packet")
         if projection.get("source_revision") != revision:
             self.fail("receipt-drift", receipt_path, "paper_projection source_revision must match the surface revision")
-        if projection.get("source_hash") != source_hash:
-            self.fail("receipt-drift", receipt_path, "paper_projection source_hash must match the surface source")
         if projection.get("page_path") != page_path:
             self.fail("receipt-drift", receipt_path, "paper_projection page_path must match paper_page.path")
         if projection.get("surface") != surface_name:

@@ -9,7 +9,7 @@ description: >-
   A-User-Store, sample patient.
 argument-hint: "[command] [args...]"
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-07-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -130,9 +130,10 @@ Build Logic (what `build` does)
 
 Given `{dataset, individual_id}`, `fn/build_sample_individuals.py`:
 
-1. Resolves the configured global SourceSet and RecSet and fingerprints the spec,
-   builder, and input inventory (absolute path, size, mtime_ns, ctime_ns).
-2. Reuses a cache only when that fingerprint and its recorded output inventory match.
+1. Resolves the configured global SourceSet and RecSet and reads the file times
+   (modification and status change) of the builder and every input file and folder.
+2. Reuses a cache only when the recorded `build_spec` equals the current spec, no
+   input is newer than the recorded `inputs_read_at`, and the output inventory matches.
    `--force` rebuilds when timestamps are unreliable or an explicit refresh is wanted.
 3. Builds in a staging directory beside Subject-<id>. Ohio raw files are copied;
    MIMIC raw data stays pointer-only, and unavailable proprietary raw data is not invented.
@@ -146,8 +147,9 @@ Given `{dataset, individual_id}`, `fn/build_sample_individuals.py`:
    unrelated files outside the managed Store directories are preserved.
 
 Use `--workspace <path-to-_WorkSpace>` to select the builder's Store root.
-Input fingerprints use filesystem metadata to avoid rereading entire global datasets;
-these are cache invalidation signatures, not cryptographic content attestations.
+Staleness uses file times to avoid rereading entire global datasets. The manifest
+records no content hash; a leftover hash field in an older manifest is ignored and
+that folder rebuilds once.
 
 manifest.yaml schema
 --------------------
@@ -163,8 +165,8 @@ source_set: "OhioT1DM_v0"
 rec_set: "OhioT1DM_v0RecSet"
 built_at: "2026-04-20T14:30:00"
 built_by: "build_sample_individuals.py v0.5"
-input_fingerprint: "<sha256-of-spec-builder-and-stat-inventory>"
-fingerprint_method: "sha256(config+builder+path/size/mtime_ns/ctime_ns)"
+build_spec: {}      # dataset, source_set, rec_set, pid_column, pid_values, raw paths
+inputs_read_at: "2026-04-20T14:29:58.120000"   # build start; a newer input means stale
 output_inventory: {}  # populated with generated relative paths, sizes and mtimes
 build_args:
   individual_id_filter: ["559"]
@@ -180,7 +182,7 @@ A single script (`fn/build_sample_individuals.py`) owns this:
   1. Read sample config (which datasets, which individual IDs, N per dataset).
   2. For each (dataset, individual_id):
      a. Steps 1-5 from Build Logic.
-     b. Reuse only if input fingerprint and output inventory match.
+     b. Reuse only if the spec matches, no input is newer, and the output inventory matches.
   3. Emit a build report (what was built, what was skipped, any errors).
 
 Do NOT hand-edit per-individual folders.

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.1] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/0-overview.md`: `manifest.json` records the external release, not a checksum.
+
 ## [0.1.2] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.2.0; older entries below keep their original numbers).

@@ -68,7 +68,7 @@ when t04 exists and reports.
 
 SURVEY maps the page-serving full Run id under the VALUE Evidence Item's
 `Supporting Runs`. LAND validates its `values.yaml`, freezes the selected row
-and hash in the item's one Local Input, executes the one local Page Evidence
+in the item's one Local Input, executes the one local Page Evidence
 Item Run, and binds the resulting ready VALUE `result.yaml`. EMBED appends the
 Evidence Item id and owner-native local Run id beneath the target Bullet. A
 later drifted supporting value reopens that binding through the same graph;

@@ -11,7 +11,6 @@ judges a candidate, or marks a Run complete on the agent's behalf.
 """
 from __future__ import annotations
 
-import hashlib
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -49,10 +48,6 @@ def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def _dump(path: Path, obj) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.safe_dump(obj, sort_keys=False, allow_unicode=True), encoding="utf-8")
@@ -69,7 +64,7 @@ def _load(path: Path) -> dict:
 def _ref(folder: Path, path: Path) -> dict:
     rel = path.resolve().relative_to(folder.resolve()) if folder.resolve() in path.resolve().parents \
         else Path(_relative(folder, path))
-    return {"path": rel.as_posix(), "sha256": _digest(path)}
+    return {"path": rel.as_posix()}  # a path, never a content hash (JL 260928)
 
 
 def _relative(folder: Path, path: Path) -> str:
@@ -89,8 +84,14 @@ def _next_run(folder: Path) -> int:
     return max(numbers, default=0) + 1
 
 
+def plan_folder(folder: Path) -> Path:
+    """A Design Page's plan folder: ``draft/`` since Page layout 0.118, else the older ``outline/``."""
+    draft = folder / "draft"
+    return draft if draft.is_dir() or not (folder / "outline").is_dir() else folder / "outline"
+
+
 def _register_path(folder: Path, stem: str) -> Path:
-    return folder / "outline" / f"{stem}-design-items.md"
+    return plan_folder(folder) / f"{stem}-design-items.md"
 
 
 # --------------------------------------------------------------- register --
@@ -289,7 +290,7 @@ def split_evidence(line: str) -> tuple[str, str]:
 
 
 def _evidence_inputs(folder: Path, evidence: list[str]) -> tuple[list[dict], list[str]]:
-    """Resolve register evidence lines (`role · path`) into hashed Ticket inputs."""
+    """Resolve register evidence lines (`role · path`) into Ticket inputs."""
     inputs, missing = [], []
     for line in evidence:
         role, ref = split_evidence(line)
@@ -333,7 +334,7 @@ def _human_runtime(folder: Path, run: str, run_type: str, operation: str, item: 
         "family": "design", "target": target,
         "actor": {"mode": "human", "owner": actor}, "action": decision,
         "status": "complete", "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-        "ticket_sha256": _digest(ticket_path), "inputs": inputs,
+        "inputs": inputs,
         "entry_gate": {"status": "passed", "assertion": "decision recorded by a named person"},
         "exit_gate": {"status": "passed", "assertion": "decision names its inputs"},
         "route": route, "terminal_outcome": decision,
@@ -366,7 +367,7 @@ def commission(folder: Path, stem: str, item: dict, actor: str, words: str,
         "actor": {"mode": "human", "owner": actor},
         "action": "release or hold the frozen commission", "inputs": all_inputs,
         "entry_gate": "the Design Item is registered",
-        "exit_gate": {"mode": "human", "assertion": "decision names the exact config hash"},
+        "exit_gate": {"mode": "human", "assertion": "decision names the exact config file"},
         "routes": {"release": "generate", "hold": "HOLD"},
         "result": f"results/{run}/", "receipt": f"results/{run}/runtime.yaml",
     })
@@ -437,7 +438,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         # A passed review is ready for Delivery.  If a later brief change needs
         # a new candidate, the normal revise path may queue it again; there is
         # no separate adoption decision in the Design workflow.
-        note = folder / "outline" / "feedback" / f"{run}.md"
+        note = plan_folder(folder) / "feedback" / f"{run}.md"
         note.parent.mkdir(parents=True, exist_ok=True)
         note.write_text(f"# feedback for {run}\n\nbase: {base['id']}\n\n{feedback.strip()}\n",
                         encoding="utf-8")
@@ -462,7 +463,6 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         "run": run, "family": "design", "operation": "generate", "item": item["id"],
         "target": item.get("title"), "status": "planned",
         "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-        "ticket_sha256": _digest(ticket_path),
         "inputs": [_ref(folder, config_path), _ref(folder, approval)] + inputs + extra_inputs,
         "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": "designer-context-pending"},
         "queued_at": _now(),
@@ -503,7 +503,6 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
         "run": run, "family": "design", "operation": "verify", "item": item["id"],
         "target": item.get("title"), "status": "planned",
         "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-        "ticket_sha256": _digest(ticket_path),
         "inputs": [_ref(folder, config_path), _ref(folder, approval)] + inputs + [target],
         "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": "reviewer-context-pending"},
         "queued_at": _now(),
@@ -568,15 +567,22 @@ def adopt(folder: Path, stem: str, item: dict, runs: list[dict], decision: str,
 # ------------------------------------------------------------ stale queue --
 
 def stale_inputs(folder: Path, run: str) -> list[str]:
-    """The files a queued run pinned that changed (or vanished) since it was queued."""
-    ticket = _load(folder / "runs" / f"{run}.yaml")
-    refs = [ticket.get("config"), (ticket.get("approval") or {}).get("record")]
-    refs += list(ticket.get("inputs") or []) + list(ticket.get("targets") or [])
+    """The files a queued run names that changed (or vanished) since it was queued.
+
+    Staleness is file time: an input or target modified after the run's Ticket
+    was written. Never a content hash (JL 260928). The config and approval are
+    frozen copies written with the Ticket, so only their absence counts; the
+    same rule as the records check (``check_unit.context``)."""
+    ticket_path = folder / "runs" / f"{run}.yaml"
+    ticket = _load(ticket_path)
+    queued = ticket_path.stat().st_mtime if ticket_path.is_file() else 0.0
+    frozen = [ticket.get("config"), (ticket.get("approval") or {}).get("record")]
+    named = list(ticket.get("inputs") or []) + list(ticket.get("targets") or [])
     changed = []
-    for ref in refs:
+    for ref, timed in [(r, False) for r in frozen] + [(r, True) for r in named]:
         if isinstance(ref, dict) and ref.get("path"):
             path = (folder / str(ref["path"])).resolve()
-            if not path.is_file() or _digest(path) != ref.get("sha256"):
+            if not path.is_file() or (timed and path.stat().st_mtime > queued):
                 changed.append(Path(str(ref["path"])).name)
     return changed
 
@@ -593,7 +599,7 @@ def supersede(folder: Path, run: str, reason: str) -> dict:
 
 
 def requeue(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
-    """Queue again: replace an item's out-of-date queued run with a fresh one that pins today's files.
+    """Queue again: replace an item's out-of-date queued run with a fresh one that names today's files.
 
     A person asks for this on the page after an insight page changed under a queued
     run (audit H3); the old run is kept as superseded, with the files that changed."""
@@ -620,7 +626,7 @@ def requeue(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
 # ------------------------------------------------------------ batch + queue --
 
 def name_worker(folder: Path, run: str, actor: str) -> dict:
-    """Name the real worker on a planned run record before dispatch, and re-pin the receipt."""
+    """Name the real worker on a planned run record before dispatch, and mark the receipt running."""
     ticket_path = folder / "runs" / f"{run}.yaml"
     runtime_path = folder / "results" / run / "runtime.yaml"
     if not ticket_path.is_file() or not runtime_path.is_file():
@@ -632,7 +638,7 @@ def name_worker(folder: Path, run: str, actor: str) -> dict:
     ticket["actor"] = actor
     _dump(ticket_path, ticket)
     runtime.setdefault("worker", {})["actor"] = actor
-    runtime["ticket_sha256"] = _digest(ticket_path)
+    runtime.pop("ticket_sha256", None)  # a leftover hash field is dropped, never refreshed
     runtime["status"] = "running"
     runtime["started_at"] = _now()
     _dump(runtime_path, runtime)
@@ -656,7 +662,7 @@ def release_worker(folder: Path, run: str) -> dict:
     ticket["actor"] = pending
     _dump(ticket_path, ticket)
     runtime.setdefault("worker", {})["actor"] = pending
-    runtime["ticket_sha256"] = _digest(ticket_path)
+    runtime.pop("ticket_sha256", None)  # a leftover hash field is dropped, never refreshed
     runtime["status"] = "planned"
     runtime.pop("started_at", None)
     runtime.setdefault("lost_workers", []).append({"actor": lost, "at": _now(), "why": "left no result"})
@@ -745,7 +751,7 @@ def counsel_rules(text: str) -> list[str]:
 
 
 def draft_request_path(folder: Path, stem: str) -> Path:
-    return folder / "outline" / f"{stem}-draft-request.md"
+    return plan_folder(folder) / f"{stem}-draft-request.md"
 
 
 def request_draft(folder: Path, stem: str, goal: dict, insight_rows: list[dict], missing: int,

@@ -51,13 +51,17 @@ rl03_embedding-build_all-minilm-l6-v2
 rl04_round-prepare_round-01
 ```
 
-Every allocated Run has one control envelope:
+Every allocated Run has one control envelope, in the Page folder beside
+`labeling/` (never inside it):
 
 ```text
 runs/<RUNNAME>.yaml                    authored Ticket; the only execution door
 results/<RUNNAME>/runtime.yaml         lifecycle and attempt trail
 results/<RUNNAME>/result.yaml          terminal safe receipt and artifact pointers
 ```
+
+Every path inside the envelope is relative to the Page, so a Labeling
+artifact carries its folder: `labeling/corpus/items.jsonl`.
 
 The envelope does not copy or replace canonical Labeling artifacts. The Ticket
 binds its Run Spec commission, such as a released Card or frozen registry. The
@@ -77,7 +81,7 @@ phase: P3                          # compatibility capability tag only
 operation: executor-predict
 episode: test_01
 target: {executor: executor-a, test: test-v1}
-commission: {path: evaluation/registry.yaml, sha256: <hex>}
+commission: {path: labeling/evaluation/registry.yaml, sha256: <hex>}
 inputs: []
 worker: {kind: api, name: <declared worker>}
 acceptance: <named operation gate below>
@@ -89,7 +93,7 @@ envelope with missing canonical outputs is truthful non-success, never `Done`.
 Existing `rNN_labeling-*` envelopes remain readable migration history. Never
 rename or alias them; every newly allocated Labeling Run uses `rlNN`.
 
-## 3. The 25 Labeling operation kinds
+## 3. The 26 Labeling operation kinds
 
 The table names each Labeling Run Type and its minimum canonical Result. A
 Result envelope may bind more files required by the Run Spec's entry/exit
@@ -98,6 +102,7 @@ gates. Its P0-P5 value is compatibility metadata, not Workflow ownership.
 | capability tag (compatibility only) | Run Type / operation | cardinality | bounded target | minimum canonical Result |
 |---|---|---:|---|---|
 | P0 | `corpus-contract` | 1 | one imported, fenced job snapshot | `gates/p0-contract/receipt.json` |
+| P0 | `definition-discussion` | M (optional) | one human discussion of the label meanings, before any item is judged | `results/<RUNNAME>/ledger.yaml`; changed wording adds `gates/meaning-revisions/<seq>.json` |
 | P0 | `discovery-search` | D | one bounded external-evidence query | `discovery/search_<n>/result.json` |
 | P0 | `guideline-seed` | G (optional) | one initial policy candidate per commissioned Run | `policy/versions/G_00/manifest.yaml` |
 | P0 | `test-reserve` | T (optional) | one sealed-test reservation frame per commissioned Run | `test/sealed/status.json` |
@@ -123,7 +128,8 @@ gates. Its P0-P5 value is compatibility metadata, not Workflow ownership.
 | P5 | `audit-analyze` | 1 | one audit sample with human gold | findings and `receipt.json` |
 | P5 | `dstar-materialize` | 1 | one passing or accepted-limit audit | `corpus/final/D_star.jsonl` and manifest |
 
-`D` is the number of bounded discovery queries, `N` the number of calibration
+`D` is the number of bounded discovery queries, `M` the number of definition
+discussions before G0, `N` the number of calibration
 rounds, `W_r` the number of weak executors in round `r`, `K` the number of
 qualification candidates including the baseline, and `S` the number of
 production shards.
@@ -131,12 +137,12 @@ production shards.
 The expected happy-path instance count is:
 
 ```text
-planned Runs = D + G + T + E + sum(W_r) + 5N + 2K + S + 12
+planned Runs = D + M + G + T + E + sum(W_r) + 5N + 2K + S + 12
 ```
 
-`G`, `T`, and `E` may each be zero when that independent Run Type is not
-commissioned. For `D=2`, `G=T=E=1`, `N=3`, `W=[0,2,2]`, `K=3`, and `S=1`, the planned
-count is `43`. This is a plan, not an inventory claim. The actual count is the number of
+`M`, `G`, `T`, and `E` may each be zero when that independent Run Type is not
+commissioned. For `D=2`, `M=G=T=E=1`, `N=3`, `W=[0,2,2]`, `K=3`, and `S=1`, the planned
+count is `44`. This is a plan, not an inventory claim. The actual count is the number of
 allocated Run envelopes with a valid runtime receipt. Repairs, rescans,
 semantic reopens, materially changed inputs, and superseding candidates add
 Runs. Retries under an unchanged Ticket add attempts to the same Run.

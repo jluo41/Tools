@@ -4,13 +4,21 @@ haipipe External: Asset Model
 The one reference for how external data is described, versioned, served, and
 attached. Other skills point here instead of restating it.
 
-**Status (JL, 260923).** The model below is adopted. The framework code
-(`code/haipipe/external_base/`) is not built yet. Until it is, SourceFns keep
-the v4 attach helpers (`attach_external_fields`, `<field>_ids`,
-`<field>_matched`, `external_release`) and legacy `@{tag}` releases stay
-readable. Signatures in § Lookup interface are the target contract; the
-returned column names are provisional until the reference implementation
-(DrFirst `b51/j01_asset_zip3`) lands.
+**Status (260926).** The model below is adopted and built. The framework
+code `code/haipipe/external_base/` (`ExternalAsset`, `ExternalLock`,
+`write_dependency`, `normalize_keys`) landed in code commit 27b1525. Only the
+`local_external_store` provider answers today; `feature_store`,
+`third_party_api` and `local_service` are named and fail with a clear
+message until built. Reference implementation: DrFirst-SPACE
+`examples-1-data/Project-Data-DrFirst-Raw2AIData/tasks/b51_A_externalstore/`
+(18 assets, lock `OptTimeR1v1`) and SourceFn `SMSParquetFTExt_v260923`.
+SourceFns not yet moved keep the v4 attach helpers (`attach_external_fields`,
+`<field>_ids`, `<field>_matched`, `external_release`), and legacy `@{tag}`
+releases stay readable until nothing reads them.
+
+Asset names carry the `ext_` prefix (`ext_npi`, `ext_zip3`,
+`ext_npi_engagement`); `load_contract` refuses any other name. Legacy
+`@{tag}` folders keep their bare names (`npi`, `zip3`).
 
 ---
 
@@ -36,7 +44,7 @@ ExternalStore layout (topic-wise)
 
 ```
 _WorkSpace/ExternalStore/
-  <asset>/                      one folder per topic, e.g. npi, zip3, npi_engagement
+  <asset>/                      one folder per topic, e.g. ext_npi, ext_zip3, ext_npi_engagement
     asset.yaml                  the contract
     @raw/                       vendor or API landings for this asset (local only)
     <version>/                  one built version or one frozen snapshot
@@ -59,7 +67,7 @@ snapshot date    S20260104        (engagement builds and frozen API/FS pulls)
 
 ```yaml
 # <asset>/asset.yaml
-asset: npi
+asset: ext_npi
 contract_version: 1
 family: dimension               # dimension | engagement
 key: {name: NPI, kind: npi}     # kind: zip3 | zip5 | npi | ndc | ncpdp | patient_id
@@ -76,7 +84,7 @@ serve:                          # only when providers.serve is live
 
 ```yaml
 # a multi-step asset: the key the cohort has is not the key the provider uses
-asset: patient_engagement
+asset: ext_patient_engagement
 family: engagement
 key: {name: patient_id, kind: patient_id}
 chain:                          # hops run in order; each hop's output keys the next
@@ -89,26 +97,26 @@ providers: {train: local_external_store, serve: feature_store}
 
 ```yaml
 # <asset>/<version>/version.yaml
-asset: npi
+asset: ext_npi
 version: NPPES202507
-ValidFromDT: 2025-07-15         # when this data became available to us
+ValidFromDT: 2025-07-14         # when this data became available to us
 ValidToDT: null
 RefPeriod: "NPPES 2025-07"      # what period it describes (label only)
-source: "@raw/NPPES_Data_Dissemination_July_2025"
-builder: "b51/j03_asset_npi/t02_build_NPPES202507/runs/r01_build.sh"
-sha256: {df_npi_demo_id.parquet: "..."}
+source: ["ext_npi/@raw/NPPES_Data_Dissemination_July_2025/npidata_pfile_20050523-20250713.csv"]
+builder: b51/j03_ext_npi/t01_npi/runs/r03_build_NPPES202507.sh   # the ticket that built it
 ```
 
 ```yaml
 # _locks/OptTimeR1v1.yaml
 lock: OptTimeR1v1
-assets: {zip3: "2025", npi: NPPES202507, npi_engagement: S20260104}
+assets: {ext_zip3: "2025", ext_npi: NPPES202507, ext_npi_engagement: S20250520}
 ```
 
 A version folder is immutable and self-contained, so it zips cleanly for
 transport (endpoint package, S3 share). Unzip before reading; parquet is not
-read efficiently from inside a zip, and `sha256` verifies the result. An
-endpoint packages only the versions its lock names, never `@raw/`.
+read efficiently from inside a zip. An endpoint packages only the versions its
+lock names, never `@raw/`. `version.yaml` carries no content hash; a reader
+ignores a leftover `sha256` field in an older version.
 
 ---
 
@@ -141,6 +149,28 @@ cohort's key (patient_id -> global_patient_id -> engagement), asset.yaml lists
 the hops. The lookup runs them in order, applies `obs_dt` at every hop, and a
 miss at any hop is a miss for the row (`_matched=False`). A frozen version
 stores the final answer per original key, so training replays one table.
+
+**A raw ID is translated first (dialect).** A dialect is a raw ID that only
+one company can read (a WellDoc medication id `612997`, a vendor's exercise
+code number). Words are never dialect: a label such as `Just Carbs` or
+`Walking` is already plain words, even when one app coined it, and goes to the
+service as it is. When a cohort writes an event as a raw ID, the SourceFn
+translates it before the answers lookup, through that company's own catalog,
+pinned like any other asset (WellDoc's `ext_med_lexicon`: id -> drug name and
+NDC). The answers asset (`ext_<noun>_resolved`) is keyed by the translated
+words. An ID the catalog lacks cannot be translated: its key stays the ID, the
+service is still asked it and answers MISS (describe-medication's own id lookup
+reads the same catalog), and the gallery shows it. Both lookups go through one
+lock. WellDoc b51 translates only the medication id so far
+(`ext_medication_resolved` and `ext_insulin_resolved` S20260927, lock
+EventNormV3, JL 260927); vendor exercise code numbers are raw IDs too, but still
+go to describe-exercise, which reads them with its own code books.
+
+A dialect belongs to one company's own codes. When the raw key is already a
+public code in its standard form (ZIP, NPI, NDC, NCPDP), there is no dialect
+asset: `normalize_keys` checks the format and the lookup reads the public table
+directly. DrFirst b51 is that case: its raw NDC is 11 digits, NPI 10, NCPDP 7,
+and its patient ZIP is already a 3-digit prefix.
 
 Feature-store history
 ---------------------
@@ -184,9 +214,8 @@ for the first request, 4.0 GB per worker). Stage the bundle this way:
 - **Only the fields training used.** The training SourceSet's
   `external-dependency.json` lists, per asset, its lock, pinned version and
   every lookup's fields. Keep the key plus the union of those fields. The
-  shipped `asset.yaml` lists only them. The shipped `version.yaml` has the
-  trimmed table's `sha256`, with the original `sha256` and the kept columns
-  under `trimmed_from`, so the loader's checks run unchanged. Stop if the
+  shipped `asset.yaml` lists only them. The shipped `version.yaml` names the
+  original version and the kept columns under `trimmed_from`. Stop if the
   dependency's lock or version differs from the bundle's.
 - **Pre-keyed.** For a number-like key (zip3, zip5, npi, ndc, ncpdp), store
   `__key__` = `haipipe.external_base.keys.normalize_keys(key, kind)` as int64,
@@ -211,7 +240,7 @@ Loading at serving:
   1.3 GB each on 8 GB).
 
 Reference implementation: DrFirst-SPACE
-`examples-3-model/Project-ExpModel-OptTime/tasks/b03_C_optimal_timing_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`
+`examples-3-model/Project-ExpModel-OptTime/tasks/b31_C_model_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`
 (`--dependency` trims and pre-keys) and
 `t02_input2src_ext/scripts/build_input2src_extv260924.py` (asset cache and
 `Warmup`).
@@ -256,8 +285,8 @@ Key rule (PHI)
 
 ---
 
-Lookup interface (target contract)
-==================================
+Lookup interface
+================
 
 Words: the lookup returns external FIELDS (Source-stage values), not features.
 Features are CaseFn outputs; the feature vector is the AIData model input.
@@ -265,17 +294,17 @@ Features are CaseFn outputs; the feature vector is the AIData model input.
 ```python
 from haipipe.external_base import ExternalAsset, ExternalLock
 
-npi  = ExternalAsset('npi', version='NPPES202507', env='train')
-lock = ExternalLock('OptTimeR1v1')              # optional: versions from _locks/
-npi  = lock.asset('npi', env='train')
+npi  = ExternalAsset('ext_npi', version='NPPES202507', env='train')
+lock = ExternalLock('OptTimeR1v1', SPACE)       # optional: versions from _locks/
+npi  = lock.asset('ext_npi', env='train')
 
 f = npi.lookup(keys=df_rx['prescriber_npi'],    # normalized by key kind
                obs_dt=df_rx['DT'],              # per row; 'now' at serving
                fields=['Specialty', 'Credential'],
-               encode='raw')                    # 'raw' values | 'ids' vocab ids
+               encode='raw')                    # 'ids' vocab ids (default) | 'raw' tokens
 
 # f: same index and order as df_rx, one row per input row
-# Specialty | Credential | _matched | _snapshot_dt | _ref_period | _release
+# Specialty | Credential | _matched | _snapshot_dt | _ref_period | _version | _future_snapshot
 ```
 
 The lookup guarantees:
@@ -300,7 +329,7 @@ Explicit, one block per asset, every field assigned by name:
 
 ```python
 def enrich_Rx(df_rx, lock, env):
-    npi = lock.asset('npi', env=env).lookup(
+    npi = lock.asset('ext_npi', env=env).lookup(
         keys=df_rx['prescriber_npi'], obs_dt=df_rx['DT'],
         fields=['Specialty', 'Credential'])
     df_rx['npi_specialty']  = npi['Specialty']
@@ -340,23 +369,39 @@ Build Block (b51)
 =================
 
 External assets are built in an auxiliary Block (`b51`-`b59`, see
-`haipipe-task/ref/hierarchy.md`). Same Job ranges as the data Blocks:
+`haipipe-task/ref/hierarchy.md`). One topic Job per group of related assets
+(usually one key kind), one Task per asset, and the asset's contract, builds
+and validations are Runs of that Task:
 
 ```
 b51_<name>_externalstore/
-  src/                          shared builders + config-defaults.yaml
-  j01_asset_<asset>/ ...        topic Jobs j01-j48, one per asset
-    t01_contract/               writes asset.yaml                          (every provider)
-    t02_build_<Version>/        local: build from @raw                     (one Task per version)
-    t02_freeze_<SDate>/         feature store / API: freeze a pull
-    t03_validate/               schema, key coverage, ValidFromDT, leak dates
-    t04_parity/                 frozen vs live, same keys                  (live providers only)
-  j49_external_locks/           t01_lock_<LockName>: spans every asset
-  j51_release_<tag>/            a legacy frozen release, audit only (dated frozen thing = j5N range)
+  src/                          shared builders, contract writer, validator, gallery_lib,
+                                run_task.sh, new_asset_task.py, config-defaults.yaml
+  j01_ext_<topic>/ ...          topic Jobs j01-j47, e.g. j01_ext_zip3, j03_ext_npi
+    tNN_<asset>/                one Task per asset (tNN_npi builds ext_npi)
+      runs/r01_contract.sh            writes asset.yaml                    (every provider)
+      runs/rNN_build_<Version>.sh     local: one immutable version from @raw
+      runs/rNN_freeze_<SDate>.sh      feature store / API: freeze a pull
+      runs/rNN_validate_<Version>.sh  schema, keys, ValidFromDT, legacy agreement, coverage
+      runs/rNN_parity.sh              frozen vs live, same keys            (live providers only)
+    t99_<topic>_gallery/        one notebook that uses each asset of the Job the way
+                                the SourceFn does, and checks it (t99_food_gallery)
+  j48_external_base/            t01_unit_tests: tests of code/haipipe/external_base/
+  j49_external_locks/           t01_lock_<LockName>, t99_lock_gallery: span every asset
+tasks/_legacy/b51_release_<tag>_<yymmdd>/   audit of a legacy @{tag} release, read-only
 ```
 
-Suggested topic numbering: dimensions `j01`-`j09`, engagement `j11`-`j19`,
-feature-store assets `j21`-`j29`, third-party assets `j31`-`j39`.
+A new version is a new Run in the asset's existing Task, never a new Task.
+Scaffold a new asset Task with `src/new_asset_task.py`, then add its section
+to the Job's gallery. DrFirst numbering: `j01_ext_zip3`, `j02_ext_zip5`,
+`j03_ext_npi`, `j04_ext_ndc`, `j05_ext_ncpdp`, `j06_ext_engagement`; give
+feature-store and third-party topics the next free numbers.
+
+The validator compares `ValidFromDT` with each raw file's modification date
+when `valid_from_basis` is `download` (the default). A raw file copied to
+another machine gets a new date, so land it with its date kept (`cp -p`, or
+an APFS clone `cp -c -p` for large files) and restore the landing date the
+last validate receipt recorded if a sync changed it.
 
 ---
 

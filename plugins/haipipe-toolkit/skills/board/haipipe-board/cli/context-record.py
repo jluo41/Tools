@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write `outline/<stem>-context.md`: the CONTEXT/PREPARE snapshot of a Page.
+"""Write `outline/records/<stem>-context.md`: the CONTEXT/PREPARE snapshot of a Page.
 
     python3 cli/context-record.py <page.md>          one page
     python3 cli/context-record.py --all <board-dir>  every page on the board
@@ -28,7 +28,6 @@ rule. `Next authority` is OUTLINE only when no required row is missing.
 """
 import argparse
 import datetime
-import hashlib
 import re
 import sys
 from pathlib import Path
@@ -38,10 +37,11 @@ SKILLS = HERE.parent.parent                             # skills/
 sys.path.insert(0, str(HERE))
 
 from src import item_table                              # noqa: E402
+from src.outline_version import record_path             # noqa: E402
 from src.folder_contract import (resolved_folder_kind,
                                  folder_identity_path,
                                  resolve as resolve_folder_contract)  # noqa: E402
-from src.outline_version import latest_outline, version_tag  # noqa: E402
+from src.outline_version import latest_outline, plan_dir, version_tag  # noqa: E402
 
 
 def owners(kind):
@@ -83,11 +83,16 @@ def fm(text, key):
     return m.group(1).strip() if m else ""
 
 
-def digest(path: Path) -> str:
-    """Short content hash, the freshness fact for a stable-bytes source."""
+def modified(path: Path) -> str:
+    """The freshness fact for a source: its file modification time.
+
+    No content hash (JL 260928): a source is newer than this record when its
+    file time is later than the record's, and `git diff` says what moved.
+    """
     if not path.is_file():
         return "absent"
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    stamp = datetime.datetime.fromtimestamp(path.stat().st_mtime)
+    return "saved " + stamp.strftime("%y%m%d %H%M")
 
 
 def src(root: Path, path: Path) -> str:
@@ -95,7 +100,7 @@ def src(root: Path, path: Path) -> str:
         rel = path.resolve().relative_to(root.resolve()).as_posix()
     except ValueError:
         rel = path.as_posix()
-    return f"`{rel}` · {digest(path)}"
+    return f"`{rel}` · {modified(path)}"
 
 
 def opening(text: str) -> tuple[str, str]:
@@ -135,7 +140,7 @@ def build(page_md: Path, board: Path) -> str:
     board = board.resolve()              # path has none, and the Run registry
     stem = page_md.stem                  # would silently read back empty
     text = page_md.read_text(encoding="utf-8", errors="replace")
-    o = page_md.parent / "outline"
+    o = plan_dir(page_md.parent)
     root = item_table.repo_root(page_md.parent)
     missing = []
 
@@ -181,7 +186,7 @@ def build(page_md: Path, board: Path) -> str:
     ], [src(root, page_md)])
 
     # ── CTX3 policy, structure, style ────────────────────────────────────
-    req = o / f"{stem}-requirement.md"
+    req = record_path(o, stem, "requirement")
     v_ids, w_ids = record_ids(req, "V"), record_ids(req, "W")
     structure = fm(text, "structure-source")
     division = fm(text, "structure-division")
@@ -207,14 +212,14 @@ def build(page_md: Path, board: Path) -> str:
                     f"{style} · Story §8 Section Narrative (haipipe-paper-story)" if style
                     else "haipipe-page + haipipe-board/ref/writing-rules.md" if base_page else NONE),
                    ("Requirements",
-                    f"`outline/{req.name}` · {len(v_ids)} V · {len(w_ids)} W"
+                    f"`{req.relative_to(page_md.parent).as_posix()}` · {len(v_ids)} V · {len(w_ids)} W"
                     if req.is_file() else "none generated"),
                ], ctx3_sources)
     if kind == "section" and not structure:
         missing.append("CTX3")
 
     # ── CTX4 related information ─────────────────────────────────────────
-    files_rec = o / f"{stem}-files.md"
+    files_rec = record_path(o, stem, "files")
     f_ids = record_ids(files_rec, "F")
     requires = fm(text, "requires")
     ctx4 = row("CTX4 · Related information",
@@ -225,8 +230,8 @@ def build(page_md: Path, board: Path) -> str:
                ], [src(root, files_rec)] if files_rec.is_file() else [])
 
     # ── CTX5 feedback and open decisions ─────────────────────────────────
-    fb = o / f"{stem}-feedback.md"
-    disc = o / f"{stem}-discussion.md"
+    fb = record_path(o, stem, "feedback")
+    disc = record_path(o, stem, "discussion")
     fb_status = fm(fb.read_text(encoding="utf-8", errors="replace"), "status") if fb.is_file() else ""
     d_ids = record_ids(disc, "D")
     ctx5_sources = [src(root, p) for p in (fb, disc) if p.is_file()]
@@ -235,7 +240,7 @@ def build(page_md: Path, board: Path) -> str:
                    ("Feedback", fb_status or "no feedback record"),
                    ("Discussion", f"{len(d_ids)} open: {', '.join(d_ids)}" if d_ids else NONE),
                    ("Human decisions",
-                    f"`outline/{fb.name}` and each plan's `approved:` row"
+                    f"`{fb.relative_to(page_md.parent).as_posix()}` and each plan's `approved:` row"
                     if fb.is_file() else "each plan's `approved:` row"),
                ], ctx5_sources)
 
@@ -254,7 +259,7 @@ def build(page_md: Path, board: Path) -> str:
     nxt = "OUTLINE" if not missing else "CONTEXT"
     ctx6 = row("CTX6 · Planning and evidence readiness",
                "resolved" if plan else "not-applicable", [
-                   ("Plan", f"`outline/{plan.name}` · v{ver} · approved: {approved or '⬜'}"
+                   ("Plan", f"`{plan.relative_to(page_md.parent).as_posix()}` · v{ver} · approved: {approved or '⬜'}"
                     if plan else "no plan on disk"),
                    ("Evidence Items", tally),
                    ("Run receipts", f"{len(receipts)} under `_runs/page/{stem}/`"
@@ -286,7 +291,8 @@ def main():
         board, pages = a.target.parents[2], [a.target]
     n = 0
     for pg in pages:
-        out = pg.parent / "outline" / f"{pg.stem}-context.md"
+        out = record_path(pg.parent / "outline", pg.stem, "context")
+        out.parent.mkdir(parents=True, exist_ok=True)
         out.parent.mkdir(exist_ok=True)
         out.write_text(build(pg, board), encoding="utf-8")
         n += 1

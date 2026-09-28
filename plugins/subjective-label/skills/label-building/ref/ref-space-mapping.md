@@ -3,7 +3,7 @@
 This is the orientation contract for the Board Labeling surface of
 `haipipe-workbench-labeling` (`plugins/subjective-label/servers/workbench-labeling/labeling.py`). It uses one location word:
 **Space = Workspace** (one concept). The current adapter retains P0-P5 in the
-`Run → Phases` view and `Next:` header as compatibility capability tags. They
+Workflow drawer's Phases card (`?drawer=workflow`) as compatibility capability tags. They
 are not Workflow nodes, Run owners, or routing authority. The adapter may use
 them to choose a presentation Space only; Run eligibility and Routes come from
 the shared Run Spec graph and native Run receipts.
@@ -23,40 +23,52 @@ level.
 | 1 | **Data** | Contract · Schema · Embedding | What is one item, what do the labels mean, is that meaning confirmed, and how does an item become a vector? | `config.yaml` · `corpus/manifest.json` · `corpus/imported_label_summary.json` · `test/sealed/status.json` · `gates/g0/receipt.json` · `cache/embeddings/<version>/manifest.json` |
 | 2 | **Labeling** | Label · Rounds · Guideline | What does each label mean, which items does each round label in chat, and what does the guideline say now? | `config.yaml` (Label) · `rounds/round_NN/human_batch.jsonl` · `rounds/round_NN/sessions/events.jsonl` · `corpus/items.jsonl` (Rounds only) · `policy/current` · `policy/versions/<G>/guideline.md` |
 | 3 | **Quality** | Test · Evaluation · Audit | Is the sealed test safe, and what evidence qualifies an executor and the final corpus? | `test/sealed/status.json` · `test/final/lock.json` · `evaluation/registry.yaml` · `audit/final_*/` |
-| 4 | **Run** | Runs · Phases · Workflow map | Which `rlNN` Runs exist, which gate blocks the job, and which Space does what for each Run type? | `runs/*.yaml` · `results/*/runtime.yaml` · `results/*/result.yaml` · `engine/job.py status()` · this file's `## Workflow map` |
-| 5 | **Delivery** | Handoff · Final labels | What can a reader receive? | `handoff/label-v1.yaml` · `corpus/final/D_star.jsonl` |
+| 4 | **Delivery** | Handoff · Final labels | What can a reader receive? | `handoff/label-v1.yaml` · `corpus/final/D_star.jsonl` |
 
 All paths are relative to the Page's `labeling/` folder, except the engine
-call. Guideline is a view inside Labeling. The older Human tab is gone; the
-Workflow map, with the SOP above it, is a view inside the Run Space.
+call. Guideline is a view inside Labeling. The older Human tab and the Run
+Space are gone, and so is the page bar (v3, 260927). Runs live in three places:
+
+| where | what it shows | sources |
+|---|---|---|
+| the **Runs panel**, right of every Space | the current view's built Run types with counts, then the selected Run (Resume/Rerun, folded Prompt + Copy, Running process, Results) | `../runs/*.yaml` · `../results/*/runtime.yaml` · `../results/*/result.yaml` · this file's Workflow map `view` column |
+| `?drawer=workflow` (no button) | Phases (P0-P5 compatibility tags), then the SOP, then the Workflow map | `engine/job.py status()` · this file's `## SOP` and `## Workflow map` |
+| `?drawer=allruns` (no button) | one row per Ticket: what ran, state, result | `../runs/*.yaml` · `../results/*/runtime.yaml` |
+
+`../runs/` and `../results/` sit in the Page folder beside `labeling/`. The
+Workflow map's `view` column decides which view's Runs panel lists a type; a
+type not built yet stays in the map only.
 
 ## SOP
 
 This is the supported first-use path in the current build. It ends after round 1:
 guideline learning, measurement, round closure, round 2+, handoff, executor
 evaluation, production scanning, audit, and D* materialization do not have
-workers yet. Do not treat the 25-row Workflow map as a promise that those
+workers yet. Do not treat the 26-row Workflow map as a promise that those
 operations can be run. `Run type` names the Run written by a step
 (`—` means no Run; `gate G0` is a human confirmation, not a Run).
 
 | step | what happens | you do | the chat or engine does | where | Run type |
 |---|---|---|---|---|---|
 | 1 | Create one labeling job | On a real Page, give Studio Chat `/subjective-label`, the source corpus and target, and identify the semantic human and sealed-test custodian (one person may hold both roles) | Fences the source before development reads, imports the corpus and held-back test, records the initial guideline, and writes the first Run | Studio Chat → Data · Contract | `corpus-contract` |
-| 2 | Confirm what the labels mean | The configured human reviews the question and definitions, then presses Confirm meaning and attests as that human | Checks the contract, records the G0 receipt, and makes round 1 eligible; the local Board records the supplied id but does not authenticate identity | Data · Contract | gate G0 |
-| 3 | Build a map (optional) | After the P0 files pass integrity checks and the job is not on HOLD, choose a model and press Run embedding; G0 is not required | Builds the requested embedding and shows its map and groups | Data · Embedding | `embedding-build` |
-| 4 | Release round 1 | After G0 passes, choose the batch size and press Start round 1 | Draws eligible items only and writes the prepared-round Run | Labeling · Rounds | `round-prepare` |
-| 5 | Label the open round | Copy the prompt for this open round, paste it into Studio Chat in this repository, and give your first answer and final label for each item | Opens each item through the calibration writer; records first, lock, reveal, and final in order. The human-calibration Run starts when the first item is opened | Labeling · Rounds + Studio Chat | `human-calibration` |
-| 6 | Stop after round 1 is judged | Check the round and Run inventory. Do not try to release round 2 | Preserves the judgments and stops at the missing Checkpoint Keeper; no gold is promoted and the guideline remains G_00 | Labeling · Rounds · Run → Runs | `round-close` |
+| 2 | Discuss what the labels mean | Copy `+ New Run` (or `Resume`) from the Runs panel of Labeling → Discussion into Studio Chat, then settle each label: keep its wording or give your own | Asks one question at a time, proposes wording and made-up edge cases (never a round item), and records only your decisions; closing writes the ledger and, if any wording changed, one meaning revision that retires the old G0 | Labeling · Discussion + Studio Chat | `definition-discussion` |
+| 3 | Confirm what the labels mean | The configured human reviews the question and definitions, then presses Confirm meaning and attests as that human | Checks the contract, records the G0 receipt, and makes round 1 eligible; the local Board records the supplied id but does not authenticate identity | Data · Contract | gate G0 |
+| 4 | Build a map (optional) | After the P0 files pass integrity checks and the job is not on HOLD, choose a model and press Run embedding; G0 is not required | Builds the requested embedding and shows its map and groups | Data · Embedding | `embedding-build` |
+| 5 | Release round 1 | After G0 passes, choose the batch size and press Start round 1 | Draws eligible items only and writes the prepared-round Run | Labeling · Rounds | `round-prepare` |
+| 6 | Label the open round | Copy `Resume` on this round's `human-calibration` Run in the Runs panel, paste it into Studio Chat in this repository, and give your first answer and final label for each item | Opens each item through the calibration writer; records first, lock, reveal, and final in order. The human-calibration Run starts when the first item is opened | Labeling · Rounds + Studio Chat | `human-calibration` |
+| 7 | Stop after round 1 is judged | Check the round and Run inventory. Do not try to release round 2 | Preserves the judgments and stops at the missing Checkpoint Keeper; no gold is promoted and the guideline remains G_00 | Labeling · Rounds · All runs | `round-close` |
 
-The actual Tickets and their runtime status/outcome are in `Run → Runs`.
+The actual Tickets and their runtime status/outcome are in the Runs panels and `?drawer=allruns`.
 The Workflow map below is a Run Type catalogue, not a list of work that has
 already happened. A displayed count is not a substitute for the matching
 Ticket or its status.
 
 ## Workflow map
 
-One row per Run Type (the 25 operation kinds in `ref-run.md` §3), with one
-column per artifact Space. The table is deliberately a definition, not an
+One row per Run Type (the 26 operation kinds in `ref-run.md` §3), with one
+column per artifact Space. The `view` column names the Space view whose Runs
+panel lists the type (the labeling workbench reads it; a view shows only its own
+types). `Scan (future)` has no view yet, so those types show only here. The table is deliberately a definition, not an
 inventory: it must never imply that a Run exists just because its type has a
 row. Use these action words consistently:
 
@@ -77,40 +89,41 @@ row. Use these action words consistently:
 
 The Board currently projects the plain name and Run Type, `started by`, the
 four artifact-Space cells, output path, and a per-type count. The count is only
-a count. The separate `Run → Runs` inventory reads allocated Tickets and
+a count. The separate Runs panels and `?drawer=allruns` read allocated Tickets and
 runtime receipts and is the source for each actual Run's id, status, and
 outcome. Never synthesize a matching Run/status from a catalogue row. The
 current presenter does not yet show owner/worker Skills, bounded target,
 prerequisites, or a matching Ticket/status inside this matrix; those need a
 host-adapter change before the map can claim to render them.
 
-| compatibility tag | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to |
-|---|---|---|---|---|---|---|---|---|
-| P0 | `corpus-contract` | Set up the job | Chat command · in Studio Chat, invoke `/subjective-label`; no page control | Shown here · read-only · Contract and Schema after setup | — | Shown here · read-only · held-back count only | — | `gates/p0-contract/receipt.json` |
-| P0 | `discovery-search` | Search outside evidence | not built yet | — | — | — | — | `discovery/search_<n>/result.json` |
-| P0 | `guideline-seed` | Draft a guideline candidate | not built yet | — | Shown here · read-only · G_00 is created by corpus-contract, not this Run | — | — | `policy/versions/G_00/` |
-| P0 | `test-reserve` | Hold back test items | not built yet | Shown here · read-only · setup's held-back count | — | Shown here · read-only · sealed-test status | — | `test/sealed/status.json` |
-| P0 | `embedding-build` | Build a map | Start here · Data → Embedding button; explicit human model choice; P0 integrity valid and no HOLD; G0 not required | Start here + Shown here · read-only · Embedding | Shown here · read-only · map groups in Rounds | — | — | `cache/embeddings/<version>/` |
-| P1 | `round-prepare` | Draw one round | Start here · Start round 1 after G0 passes; the identified human releases it | — | Start here + Shown here · read-only · Rounds | — | — | `rounds/round_NN/` |
-| P1 | `weak-prelabel` | Pre-label one prepared round | not built yet | — | — | — | — | `rounds/round_NN/prelabels/` |
-| P1 | `human-calibration` | You label one round | Copy request → paste and send · only for a released open round with items left; first item open starts the Run | — | Shown here · read-only · Rounds; actual Ticket/status is in Runs | — | — | `rounds/round_NN/sessions/events.jsonl` |
-| P1 | `guideline-learn` | Draft a guideline from accepted judgments | not built yet | — | Not built · no policy-draft result is produced or shown | — | — | `rounds/round_NN/policy_draft/` |
-| P1 | `round-measure` | Measure one completed judgment set | not built yet | — | Not built · no round metrics are produced or shown | — | — | `rounds/round_NN/metrics.json` |
-| P1 | `round-close` | Close a measured round | not built yet | — | Not built · no checkpoint or guideline promotion is produced | — | — | `rounds/round_NN/checkpoint.json` |
-| P2 | `handoff-freeze` | Freeze a stopped labeling lineage | not built yet | — | — | — | Not built · Handoff result has no writer | `handoff/label-v1.yaml` |
-| P3 | `test-gold-lock` | Lock blind answers for the final test | not built yet | — | — | Not built · no final test lock is produced | — | `test/final/lock.json` |
-| P3 | `executor-predict` | Have one registered model predict the test | not built yet | — | — | Not built · no predictions are produced | — | `evaluation/predictions/` |
-| P3 | `executor-score` | Score one closed set of predictions | not built yet | — | — | Not built · no scorecards are produced | — | `evaluation/scorecards/` |
-| P3 | `executor-select` | Select from the complete scorecard set | not built yet | — | — | Not built · no selection is produced | — | `evaluation/summary.md` |
-| P4 | `scan-preflight` | Check one frozen production plan | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/preflight.json` |
-| P4 | `scan-shard` | Label one frozen corpus shard | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/` |
-| P4 | `risk-route` | Route risky production items to review | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/risk_queue.jsonl` |
-| P4 | `human-review` | Review one frozen production risk queue | not built yet | — | — | Not built · future Quality/Scan review; not calibration Rounds | — | `production/run_<n>/human_final.jsonl` |
-| P4 | `reconcile` | Reconcile reviewed items into a candidate corpus | not built yet | — | — | Not built · candidate result belongs to future Quality/Scan; it is not D* | — | `production/run_<n>/run_report.md` |
-| P5 | `audit-sample` | Draw from one frozen audit design | not built yet | — | — | Not built · no audit sample is produced | — | `audit/final_<n>/sample.jsonl` |
-| P5 | `audit-human-gold` | Blind-label one audit sample | not built yet | — | — | Not built · Quality/Audit only; not calibration Rounds | — | `audit/final_<n>/human_gold.jsonl` |
-| P5 | `audit-analyze` | Analyze one completed audit sample | not built yet | — | — | Not built · no audit receipt is produced | — | `audit/final_<n>/receipt.json` |
-| P5 | `dstar-materialize` | Publish an accepted audited corpus | not built yet | — | — | — | Not built · D* requires the later audit path | `corpus/final/D_star.jsonl` |
+| compatibility tag | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to | view |
+|---|---|---|---|---|---|---|---|---|---|
+| P0 | `corpus-contract` | Set up the job | Chat command · in Studio Chat, invoke `/subjective-label`; no page control | Shown here · read-only · Contract and Schema after setup | — | Shown here · read-only · held-back count only | — | `gates/p0-contract/receipt.json` | Data · Contract, Schema |
+| P0 | `definition-discussion` | Discuss the label meanings | Copy request → paste and send · `+ New Run` or `Resume` in the Runs panel of Labeling → Discussion or Label; the chat records only the human's stated decisions; only before any item is judged | Shown here · read-only · Contract shows the new meanings to confirm again | Start here + Shown here · read-only · Discussion shows each label before and after | — | — | `results/<run>/ledger.yaml` · `gates/meaning-revisions/<seq>.json` | Labeling · Discussion, Label |
+| P0 | `discovery-search` | Search outside evidence | not built yet | — | — | — | — | `discovery/search_<n>/result.json` | Labeling · Label |
+| P0 | `guideline-seed` | Draft a guideline candidate | not built yet | — | Shown here · read-only · G_00 is created by corpus-contract, not this Run | — | — | `policy/versions/G_00/` | Labeling · Guideline |
+| P0 | `test-reserve` | Hold back test items | not built yet | Shown here · read-only · setup's held-back count | — | Shown here · read-only · sealed-test status | — | `test/sealed/status.json` | Quality · Test |
+| P0 | `embedding-build` | Build a map | Start here · Data → Embedding button; explicit human model choice; P0 integrity valid and no HOLD; G0 not required | Start here + Shown here · read-only · Embedding | Shown here · read-only · map groups in Rounds | — | — | `cache/embeddings/<version>/` | Data · Embedding |
+| P1 | `round-prepare` | Draw one round | Start here · Start round 1 after G0 passes; the identified human releases it | — | Start here + Shown here · read-only · Rounds | — | — | `rounds/round_NN/` | Labeling · Rounds |
+| P1 | `weak-prelabel` | Pre-label one prepared round | not built yet | — | — | — | — | `rounds/round_NN/prelabels/` | Labeling · Rounds |
+| P1 | `human-calibration` | You label one round | Copy request → paste and send · only for a released open round with items left; first item open starts the Run | — | Shown here · read-only · Rounds; actual Ticket/status is in Runs | — | — | `rounds/round_NN/sessions/events.jsonl` | Labeling · Rounds |
+| P1 | `guideline-learn` | Draft a guideline from accepted judgments | not built yet | — | Not built · no policy-draft result is produced or shown | — | — | `rounds/round_NN/policy_draft/` | Labeling · Guideline |
+| P1 | `round-measure` | Measure one completed judgment set | not built yet | — | Not built · no round metrics are produced or shown | — | — | `rounds/round_NN/metrics.json` | Labeling · Rounds |
+| P1 | `round-close` | Close a measured round | not built yet | — | Not built · no checkpoint or guideline promotion is produced | — | — | `rounds/round_NN/checkpoint.json` | Labeling · Rounds |
+| P2 | `handoff-freeze` | Freeze a stopped labeling lineage | not built yet | — | — | — | Not built · Handoff result has no writer | `handoff/label-v1.yaml` | Delivery · Handoff |
+| P3 | `test-gold-lock` | Lock blind answers for the final test | not built yet | — | — | Not built · no final test lock is produced | — | `test/final/lock.json` | Quality · Test |
+| P3 | `executor-predict` | Have one registered model predict the test | not built yet | — | — | Not built · no predictions are produced | — | `evaluation/predictions/` | Quality · Evaluation |
+| P3 | `executor-score` | Score one closed set of predictions | not built yet | — | — | Not built · no scorecards are produced | — | `evaluation/scorecards/` | Quality · Evaluation |
+| P3 | `executor-select` | Select from the complete scorecard set | not built yet | — | — | Not built · no selection is produced | — | `evaluation/summary.md` | Quality · Evaluation |
+| P4 | `scan-preflight` | Check one frozen production plan | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/preflight.json` | Quality · Scan (future) |
+| P4 | `scan-shard` | Label one frozen corpus shard | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/` | Quality · Scan (future) |
+| P4 | `risk-route` | Route risky production items to review | not built yet | — | — | Not built · future Scan view is not in current Quality navigation | — | `production/run_<n>/risk_queue.jsonl` | Quality · Scan (future) |
+| P4 | `human-review` | Review one frozen production risk queue | not built yet | — | — | Not built · future Quality/Scan review; not calibration Rounds | — | `production/run_<n>/human_final.jsonl` | Quality · Scan (future) |
+| P4 | `reconcile` | Reconcile reviewed items into a candidate corpus | not built yet | — | — | Not built · candidate result belongs to future Quality/Scan; it is not D* | — | `production/run_<n>/run_report.md` | Quality · Scan (future) |
+| P5 | `audit-sample` | Draw from one frozen audit design | not built yet | — | — | Not built · no audit sample is produced | — | `audit/final_<n>/sample.jsonl` | Quality · Audit |
+| P5 | `audit-human-gold` | Blind-label one audit sample | not built yet | — | — | Not built · Quality/Audit only; not calibration Rounds | — | `audit/final_<n>/human_gold.jsonl` | Quality · Audit |
+| P5 | `audit-analyze` | Analyze one completed audit sample | not built yet | — | — | Not built · no audit receipt is produced | — | `audit/final_<n>/receipt.json` | Quality · Audit |
+| P5 | `dstar-materialize` | Publish an accepted audited corpus | not built yet | — | — | — | Not built · D* requires the later audit path | `corpus/final/D_star.jsonl` | Delivery · Final labels |
 
 ### Run ownership and card fields
 
@@ -168,10 +181,10 @@ it, checked in this order (the first match wins):
 
 1. no `labeling/` job yet → `Data`
 2. HOLD → `Data`
-3. an integrity error → `Run`
+3. an integrity error → `Data`
 4. compatibility tag P0 → `Data` (presentation only)
 5. compatibility tag P1 → `Labeling` (presentation only)
-6. any later compatibility tag → `Run` (presentation only)
+6. any later compatibility tag → `Data` (presentation only)
 
 A `?space=&view=` URL wins. Next comes the browser's saved choice, keyed by
 Board source plus Page file. Only then does the next-step Space apply. An
@@ -202,19 +215,21 @@ item is never drawn, shown, or revealed.
 `Confirm meaning` button (`confirm_meaning`). `Labeling → Rounds` holds
 `release_round` (`Start round 1`); `open_item`, `first`, and `final` stay in the
 door but have no page button, since answers come from the chat. The
-`Copy chat prompt` and `⧉ chat` buttons in `Labeling → Label` (the label
-definitions) and `Labeling → Rounds` (the open round) only copy text. `Data → Embedding`
+`definition-discussion` Run's `+ New Run` and `Resume` (Labeling → Discussion
+and Label) and the open round's `Resume` only copy text; the discussion writes
+through `engine/definition_discussion.py` in chat, never through the door. `Data → Embedding`
 holds five: `build_embedding`, `embedding_status`, `embedding_item`,
-`group_examples`, `embedding_item_text`. Quality, Run, and Delivery have no
-write control. The checks behind each action are the
+`group_examples`, `embedding_item_text`. Quality and Delivery have no
+write control, and a Runs panel only copies prompts. The checks behind each action are the
 write-and-authority law in
 `../../label-building-workflow/haipipe-workbench-labeling/SKILL.md`.
 
 ## Projection law
 
-The five Spaces are views over one page-local `labeling/` folder, not storage
+The four Spaces are views over one page-local `labeling/` folder, not storage
 folders. A Run is `rlNN_<operation>_<target>`, with its Ticket at
-`labeling/runs/<run>.yaml` and its Result at `labeling/results/<run>/`. The 25
+`<Page>/runs/<run>.yaml` and its Result at `<Page>/results/<run>/`, beside
+`labeling/`. Receipt paths are relative to the Page. The 26
 operation kinds and the count law are in `ref-run.md`. A round is an episode
 that groups Runs. Each item judgment is an event inside the
 `rlNN_human-calibration_round-NN` Run, never a Run of its own.

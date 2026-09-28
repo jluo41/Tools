@@ -55,7 +55,7 @@ allocate a new Run and record `supersedes:` in its runtime receipt; never
 silently overwrite history.
 
 Before allocating, compare canonical Subject identity plus the frozen question,
-instrument hashes, intent, and acceptance contract with existing runtimes. An
+instrument versions, intent, and acceptance contract with existing runtimes. An
 unchanged duplicate Trigger reuses the existing Run/Result and allocates no new
 `rNN`; return or log the existing link without rewriting the Run's frozen
 inputs. Resume or retry that Run only while those identity fields remain
@@ -80,9 +80,9 @@ This profile is the executable detail for the `d1.acquire` row in
 ALLOWED    paper-analysis · source-analysis
 TARGET     exactly one resolved canonical Subject
 TICKET     executable runs/<RUNNAME>.sh, authored by the Discovery creator
-INPUTS     Task Page question/type, frozen candidate-rule version/hash, Trigger
-           provenance, canonical Subject identity, and hashes of any reusable
-           instrument
+INPUTS     Task Page question/type, frozen candidate-rule version, Trigger
+           provenance, canonical Subject identity, and the path and version of
+           any reusable instrument
 WORKER     the selected search/read/analyzer skill, CLI, API, or declared agent
 RESULT     Result Card · facts.md · one-entry Bib · runtime.yaml; optional PDF/raw/trigger
 ACCEPT     exact stem pair, executable Ticket, truthful runtime, complete artifacts,
@@ -106,7 +106,7 @@ does not receive its own Run identity.
 <task>/
 ├── <task>.md                          Page Face: article synthesis
 ├── discovery.yaml                     Task Face manifest
-├── outline/                           Page planning + Evidence Workspace
+├── draft/                           Page planning + Evidence Workspace
 │   └── evidence/
 │       └── bibex/<task>.bib            DERIVED union of completed Result bibs
 ├── scripts/                           optional reusable instrument
@@ -247,16 +247,16 @@ analysis:
     by: "agent:<name>/<model>/<session-id>"
     criteria_version: "paper-source-v2"
     at: "2026-09-01T12:10:00-04:00"
-    input_snapshot:
+    input_snapshot:  # only when this source is outside the Run
       uri: "https://example.org/article.pdf"
-      sha256: "sha256:<hex-digest>" # only when this source is outside the Run
+      accessed: "2026-09-01"
 ```
 
 The enclosing `run`, readable/compact addresses, `subject`, and source-access
 manifest are the owning input record; the judgment does not need to duplicate
 that identity. If the evaluator used material outside this Run's frozen
-Subject and captured artifacts, add its URI and SHA-256 in the assessment
-block. For an appraisal using `paper-analyzer`, set `criteria_version` to the
+Subject and captured artifacts, add its URI and access date in the assessment
+block (no content hash). For an appraisal using `paper-analyzer`, set `criteria_version` to the
 exact `paper-analyzer@<version>`; the Run's own identity remains the input
 link. Keep prior assessment receipts when criteria or inputs change; a
 material Discovery re-analysis receives a superseding Run.
@@ -358,7 +358,7 @@ results/*/*.bib
       -> deduplicate exact entries
       -> reject key/DOI conflicts
       -> stable sort by Bib key
-outline/evidence/bibex/<task>.bib
+draft/evidence/bibex/<task>.bib
 ```
 
 Only `status: complete` Results enter the union. Verification or correction
@@ -379,7 +379,7 @@ Evidence and Bibex workbenches are compatibility redirects, not authorities.
 
 Discovery's `rNN` subset of the shared `runs/` ↔ `results/` lanes remains the
 primary analysis receipt. Page-owned `rpNN` records/results are governed by the
-Page workflow and are not part of the Discovery inventory. `outline/evidence/`
+Page workflow and are not part of the Discovery inventory. `draft/evidence/`
 is the shared Page Evidence Workspace: it records derived citation material,
 but it does not replace or duplicate a Paper/Source Result. A root `<task>/evidence/`
 lane is invalid for new or current v6 work.

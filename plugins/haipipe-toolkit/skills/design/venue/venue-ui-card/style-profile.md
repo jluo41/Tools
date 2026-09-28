@@ -41,7 +41,7 @@ Drafting guide for in-app card/widget artifacts.
 3. Max 2 action buttons. Primary action left, secondary right.
 4. Show sample data and name the source with `data-bind`; do not claim live integration.
 5. A wireframe may guide drafting. Visual checks require the actual HTML screen
-   rendered into the current Result, with picture/manifest hashes pinned.
+   rendered into the current Result, with the picture and manifest named in it.
 
 
 ## Audience pairing
@@ -62,6 +62,6 @@ audience=dev         → interface spec, data binding, events
 [ ] Body provides enough context to act
 [ ] CTA is specific (not "Learn More")
 [ ] Data sources specified for live elements
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

@@ -6,8 +6,8 @@ description: >-
   named Data rows, without making a claim. Trigger: insight information,
   derive pattern, folder-kind information, /haipipe-insight-information.
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-09-20"
+  version: "1.3.1"
+  last_updated: "2026-09-28"
   workflow: haipipe-insight-workflow
   folder_kind: information
   primary_face: page
@@ -40,7 +40,7 @@ does not belong here. Covariates are cuts on Information, not partition groups.
 
 ## Input
 
-One registered QI ask; exact version/hash-pinned D rows (or mirrored I rows for
+One registered QI ask; exact version-pinned D rows (or mirrored I rows for
 an X contrast); unit/window; derivation formula; and relevant
 null/contradictory observations. Actual values underneath those rows remain
 bound through their Page evidence graphs.
@@ -83,7 +83,7 @@ Folder's GI conditions still govern citation and register settlement.
 ## Gate and Closure
 
 GI3 passes only after Page CHECK/CLOSE, when every I row has exact
-path/version/hash-pinned parents and repeatable derivation, the parents'
+path/version-pinned parents and repeatable derivation, the parents'
 evidence remains current, nulls are visible, and no strength, cause, or
 recommendation is asserted.
 

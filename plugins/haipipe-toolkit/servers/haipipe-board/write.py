@@ -382,7 +382,7 @@ class WriteMixin:
         """Write a free discussion thought to the Page's active dialect.
 
         Folded Pages own open questions as board-wide ``D<nn>`` records in
-        ``outline/<stem>-discussion.md``.  Legacy flat Pages retain their
+        ``outline/records/<stem>-discussion.md``.  Legacy flat Pages retain their
         historical ``## Discussion`` section writer below.
         """
         # A SENTENCE comment is written `> Comment WHO …` since 260802. The
@@ -392,15 +392,18 @@ class WriteMixin:
         # its `> JL:` / `>> CC0726:` thread grammar is a different thing.
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
         thought = (p.get("text") or "").strip()
-        outline = f.parent / "outline"
+        from src.outline_version import plan_dir
+        outline = plan_dir(f.parent)
         if f.parent.name == f.stem and outline.is_dir():
             if not thought:
                 return None, "想法是空的"
-            discussion = outline / f"{f.stem}-discussion.md"
+            from src.outline_version import record_path
+            discussion = record_path(outline, f.stem, "discussion")
             board = next((parent for parent in f.parents
                           if (parent / "board.md").is_file()), f.parent)
             seen = []
-            for record in board.rglob("outline/*.md"):
+            for record in [*board.rglob("outline/*.md"), *board.rglob("outline/records/*.md"),
+                           *board.rglob("draft/*.md"), *board.rglob("draft/records/*.md")]:
                 if not (record.name.endswith("-discussion.md")
                         or record.name.endswith("-log.md")):
                     continue
@@ -427,6 +430,7 @@ class WriteMixin:
                 "- **We lean**: No default; this needs a person’s ruling.\n"
                 f"- **Decide**: JL · opened {time.strftime('%y%m%d')}"
             )
+            discussion.parent.mkdir(parents=True, exist_ok=True)
             discussion.write_text(current + "\n\n" + block + "\n", encoding="utf-8")
             return {"discussion": discussion.name, "thread": f"D{did}"}, None
 

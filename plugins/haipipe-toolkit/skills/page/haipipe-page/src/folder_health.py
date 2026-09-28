@@ -66,17 +66,27 @@ def check_layout(folder: Path, stem: str, out: list):
              if not VERSIONED.search(p.name)]
     if loose:
         out.append(Finding(WARN, "layout",
-                           f"process records outside outline/{RECORDS}/: {', '.join(sorted(loose))} "
+                           f"process records outside {outline.name}/{RECORDS}/: {', '.join(sorted(loose))} "
                            f"(page.py outline-tidy moves them)"))
     # `outline/evidence/bibex/` is still written by the Page export (src/common.py
     # evidence_lane_dir), so only the other retired lanes and files are flagged.
+    # A `display/` lane whose units have no DISPLAY Result yet is still read by the
+    # paper delivery, so it is reported apart and archived only after those Results exist.
+    from .layout_check import LIVE_LANES, unconverted_display_units
+    unconverted = unconverted_display_units(folder)
     retired = sorted(p.name for p in (outline / "evidence").iterdir()
-                     if p.name != "bibex") if (outline / "evidence").is_dir() else []
+                     if p.name not in LIVE_LANES and not (p.name == "display" and unconverted)) \
+        if (outline / "evidence").is_dir() else []
     retired += sorted(p.name for p in outline.glob("*-evidence.md"))
     if retired:
         out.append(Finding(WARN, "layout",
-                           f"retired Outline evidence still in outline/: {', '.join(retired)}; "
+                           f"retired Outline evidence still in {outline.name}/: {', '.join(retired)}; "
                            "archive it under _archive/legacy-outline-evidence/"))
+    if unconverted:
+        out.append(Finding(WARN, "layout",
+                           f"{len(unconverted)} legacy display unit(s) in {outline.name}/evidence/display/ "
+                           f"have no DISPLAY Result yet ({', '.join(unconverted[:3])}); make each a Result at "
+                           "results/<re-run>/payload/<unit>/, then archive the lane"))
     return latest_outline(outline, stem)
 
 
@@ -196,7 +206,7 @@ def check_evidence(folder: Path, stem: str, plan_text: str, out: list):
     used = sorted(set(EVIDENCE_ID.findall(plan_text)))
     if used and not items_file.is_file():
         out.append(Finding(FAIL, "evidence", f"plan names {len(used)} Evidence Item(s) but "
-                           f"outline/{items_file.name} is missing"))
+                           f"{items_file.parent.name}/{items_file.name} is missing"))
     elif used:
         declared = set(ITEM_HEAD.findall(items_file.read_text(encoding="utf-8")))
         missing = [e for e in used if e not in declared]

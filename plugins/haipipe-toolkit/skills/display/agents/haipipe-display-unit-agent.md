@@ -11,7 +11,7 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-17"
   summary: "First contract. One agent per 🖼 bullet, because a unit is exactly one bullet's worth of work and fanning out per bullet is what makes the render step parallel."
   changelog: "./CHANGELOG.md"
@@ -47,7 +47,7 @@ kind          intake comes from                        refuse when
 ──────────────────────────────────────────────────────────────────────────────
 📊 table      the Evidence Item's admitted Local Input  required Results or the
 📈 figure     → freeze the approved summary into        Local Input are absent,
-              intake/inputs/ and record its hash        ambiguous, or stale
+              intake/inputs/ and record its source      ambiguous, or stale
 📐 diagram    the approved spec or narrative context,   approved composition
 ✒️ tex        frozen in intake/inputs/ with provenance  or declared input is absent
 🎨 illustr.   and permitted-use notes
@@ -58,7 +58,7 @@ exist yet must not be created: an empty folder is litter, and a folder that
 exists reads as declared work. Return `HOLD` naming the missing admitted input or Result.
 
 🚫 **Never reach into the workspace for a number.** The caller already admitted
-the Evidence Item's Local Input and recorded source, Run, and hashes; a second
+the Evidence Item's Local Input and recorded source, Run, and path; a second
 disagree with it (`page/haipipe-workbench-page/ref/evidence/displays.md` §❄️).
 
 🚫 **Never type a value into a recipe.** The recipe READS the frozen intake at
@@ -90,7 +90,7 @@ claim:        what this picture ASSERTS, in one sentence a reader could
               disagree with. "The coefficient is not stable across the ladder"
               is a claim. "Shows the ladder" is a label.
 caption-job:  what the caption must make possible
-intake:       the path, the card, and the sha256
+intake:       the path, the card, and when it was frozen
 fragility:    what would make this picture WRONG, and whether disk would say so
 renderer:     the exact rebuild command
 picked:       every candidate, including the ones that were wrong and why
@@ -128,7 +128,7 @@ unit: <caller-supplied unit directory>
 page_result: <page>/results/<re-run>/result.yaml  # Page units only
 serves: C<n>.P<n>.B<n>
 kind: <kind> · renderer: <skill>
-intake: <source> · sha256 <hash> · from declared Local Input or approved brief
+intake: <source> · frozen <materialized_at> · from declared Local Input or approved brief
 claim: <one sentence>
 rendered: assets/<file> · preview.pdf | candidate:<id> · candidates/<file> · inspected preview | HOLD: <missing input/path; state>
 looked_at: yes|no          🚫 `no` is a HOLD, not a pass

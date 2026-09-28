@@ -62,6 +62,7 @@ def _short_safe(value: str, limit: int = 160) -> str:
 
 
 def _runs(root: Path) -> list[dict[str, str]]:
+    root = root.parent  # runs/ and results/ sit in the Page folder, beside labeling/
     tickets = root / "runs"
     results = root / "results"
     ids = set()

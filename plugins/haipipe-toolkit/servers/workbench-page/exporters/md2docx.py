@@ -444,6 +444,10 @@ def detex(s):
     s = re.sub(r"\^\{?(\*+)\}?", r"\1", s)
     s = re.sub(r"\^\{?([0-9])\}?", lambda m: SUPER[int(m.group(1))], s)
     s = s.replace("~", " ").replace("--", "\u2013").replace("\\&", "&")
+    # BibTeX's line-break hint takes a NUMBER: plainnat writes
+    # `376\penalty0 (7):\penalty0 663--673`. The catch-all below removed only
+    # `\penalty` and every reference shipped as "3760 (7):0 663–673" (JL 260928).
+    s = re.sub(r"\\penalty\s*(?:-?\d+|\\@M)\s*", " ", s)
     s = re.sub(r"\\[a-zA-Z]+\s*", "", s)
     s = s.replace("{", "").replace("}", "").replace("\\", "")
     return re.sub(r"\s+", " ", s).strip()
@@ -603,6 +607,8 @@ class Inline:
         self.bbl, self.displays = bbl, displays
         self.num = numbering          # {'table': n, 'figure': n, label -> label}
         self.report = report
+        self.prose_refs = []          # units a SENTENCE has cited, in order: only these are placed
+        self._captioning = False
 
     def _cite(self, m):
         keys = [k.strip() for k in m.group(1).split(",") if k.strip()]
@@ -645,6 +651,8 @@ class Inline:
             self.pending.append(("Display", f"\\ref{{{label}}} resolves to no unit; it compiles to ??"))
             return f"[{label}]"
         n = self.num.assign(rec)
+        if not self._captioning and rec["unit"] not in self.prose_refs:
+            self.prose_refs.append(rec["unit"])
         self.pending.append(("Display", f"{rec['unit']} · kind={rec['kind']} · label={label}"))
         # THE AUTHOR WRITES THE WORD, \ref SUPPLIES THE NUMBER. That is LaTeX's
         # own division of labour, so prose reads `Table~\ref{tab:x}` and emitting
@@ -708,7 +716,11 @@ class Inline:
         forward-references a later float still names the number the body will
         give it."""
         self.pending = []            # a caption raises no evidence card
-        out = self.REF.sub(self._ref, tex)
+        self._captioning = True      # ...and never places a display (only a sentence does)
+        try:
+            out = self.REF.sub(self._ref, tex)
+        finally:
+            self._captioning = False
         self.pending = []
         return detex(out)
 
@@ -1374,8 +1386,21 @@ def main():
         d.title(a.document_title)
 
     placed, npara, skipped, held = set(), 0, {}, {}
-    for page in pages:
-        blocks, nfenced = parse_page(page, keep_fences=a.keep_fences)
+    parsed = [(page, parse_page(page, keep_fences=a.keep_fences)) for page in pages]
+    # A display's number is the order of its first citation in a SENTENCE, across all
+    # pages, the order LaTeX prints the floats in. Read ahead, so a caption or note that
+    # names a later table already gives it the number the body will (S-MISQ-Main-5-
+    # Results 260928: a caption's \ref numbered and placed the pooled table early).
+    prose_cited = set()
+    for _page, (blocks, _nfenced) in parsed:
+        for b in blocks:
+            if b[0] == "p":
+                for m in Inline.REF.finditer(b[1]):
+                    rec = disp.by_label.get(m.group(1))
+                    if rec:
+                        num.assign(rec)
+                        prose_cited.add(rec["unit"])
+    for page, (blocks, nfenced) in parsed:
         if nfenced and not a.keep_fences:
             report.append(("fenced-sketch-skipped",
                            f"{os.path.basename(page)}: {nfenced} ``` block(s) in "
@@ -1402,44 +1427,21 @@ def main():
             d.para_with_comments(" ".join(parts), lanes)
             buf.clear()
 
-        for b in blocks:
-            if b[0] == "skipped-lane":
-                skipped[b[1]] = skipped.get(b[1], 0) + 1
-                continue
-            if b[0] == "pbreak":
-                flush()
-                continue
-            if b[0] == "fence":
-                flush()
-                d.code("\n".join(b[1]))
-                continue
-            if b[0] == "h":
-                flush()
-                d.heading(b[1], b[2])
-                continue
-            npara += 1
-            rendered, auto = inline.render(b[1])
-            sl = auto + [(k, v) for k, v in b[3]]
-            for k, _v in sl:
-                if k not in lanes:
-                    held[k] = held.get(k, 0) + 1
-            sl = [(k, v) for k, v in sl if k in lanes]
-            if a.join_paragraphs:
-                buf.append((rendered, sl))
-            else:
-                d.para_with_comments(rendered, sl)
-
-            if a.no_displays:
-                continue
-            for unit, n in list(num.given.items()):
-                if unit in placed:
-                    continue
+        def place_due(final=False):
+            """The displays this paragraph cited, after the whole paragraph, in citation
+            order: a float never splits a paragraph (S-MISQ-Main-5-Results, 260928; the
+            LaTeX export follows the same rule)."""
+            flush()
+            due = [u for u in inline.prose_refs if u not in placed]
+            if final:                                  # cited only in a caption or note
+                due += [u for u in num.given if u not in placed and u not in prose_cited and u not in due]
+            for unit in due:
+                n = num.given[unit]
                 rec = disp.by_unit[unit]
                 if rec["kind"] == "table":
                     parsed = parse_table_body(rec["body"])
                     if parsed:
                         rows, align = parsed
-                        flush()                            # a float follows the ¶
                         d.table(rows, align=align,
                                 caption="Table %d. %s" % (
                                     n, inline.caption(rec["caption"]) or unit))
@@ -1456,7 +1458,6 @@ def main():
                                   os.path.join(os.path.dirname(out), ".media"),
                                   report) if rec.get("pdf") else None)
                     if img:
-                        flush()
                         d.image(img, caption="Figure %d. %s" % (
                             n, inline.caption(rec["caption"]) or unit))
                     else:
@@ -1464,6 +1465,42 @@ def main():
                                        f"{unit} has neither figure.png nor a "
                                        f"rasterizable figure.pdf"))
                     placed.add(unit)
+
+        for b in blocks:
+            if b[0] == "skipped-lane":
+                skipped[b[1]] = skipped.get(b[1], 0) + 1
+                continue
+            if b[0] == "pbreak":
+                if not a.no_displays:
+                    place_due()
+                flush()
+                continue
+            if b[0] == "fence":
+                if not a.no_displays:
+                    place_due()
+                flush()
+                d.code("\n".join(b[1]))
+                continue
+            if b[0] == "h":
+                if not a.no_displays:
+                    place_due()
+                flush()
+                d.heading(b[1], b[2])
+                continue
+            npara += 1
+            rendered, auto = inline.render(b[1])
+            sl = auto + [(k, v) for k, v in b[3]]
+            for k, _v in sl:
+                if k not in lanes:
+                    held[k] = held.get(k, 0) + 1
+            sl = [(k, v) for k, v in sl if k in lanes]
+            if a.join_paragraphs:
+                buf.append((rendered, sl))
+            else:
+                d.para_with_comments(rendered, sl)
+            # its displays wait for the paragraph's end (a blank line, a heading, a fence)
+        if not a.no_displays:
+            place_due(final=True)
         flush()
 
     if inline.cited:

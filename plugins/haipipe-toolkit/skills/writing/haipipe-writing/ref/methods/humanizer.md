@@ -1,7 +1,7 @@
 # Humanizer (blader) · evaluation adapter
 
 Provider: the vendored `humanizer` skill at `../../../2_evaluate/humanizer/`
-(blader/humanizer 3.0.0, MIT). Resolve entry, version and hash via
+(blader/humanizer 3.0.0, MIT). Resolve entry and version via
 [the adapter contract](../method-adapter-contract.md). This adapter carries the
 HAI integration rules only; the skill's twenty-five patterns are its own.
 
@@ -24,5 +24,5 @@ this bounded request:
 
 Normalize each finding to the base rubric in [evaluation.md](../evaluation.md);
 a finding that names no span is dropped. Findings are input to the owning Run's
-review, never an automatic edit. Record the resolved entry, version and hash in
+review, never an automatic edit. Record the resolved entry and version in
 the method trace as the contract requires.

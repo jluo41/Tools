@@ -81,14 +81,14 @@ or source metadata. They do not, alone, establish relevance, study quality, or
 support for a claim.
 
 Keep one admission-decision receipt per screened candidate in the Task source
-map. Each receipt names the frozen rule version/hash, candidate disposition
+map. Each receipt names the frozen rule version, candidate disposition
 and rationale, evaluator, and timestamp. Link admitted candidates to their full
 readable/compact Run identity. For excluded or unresolved candidates, retain
-the exact result record that was screened by URI and SHA-256; these candidates
+the exact result record that was screened by its saved URI; these candidates
 have no owning Run. Task outcome and any applicable confidence judgment link to the single
-`discovery.yaml#report.assessment` receipt, which lists hashes of the frozen
-scope, closed Page, and candidate decision set, plus all considered Run
-identities.
+`discovery.yaml#report.assessment` receipt, which lists who judged, the
+criteria version, the time, and all considered Run identities. No content hash
+is written; the receipt is stale when the Page changes after it (file time).
 
 ## Topic source index
 

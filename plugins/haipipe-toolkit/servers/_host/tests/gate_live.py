@@ -2,7 +2,8 @@
 """Response-identical gate for a serve.py refactor.
 
 Drives a real server against a THROWAWAY copy of one Board and records, per run:
-  · every response (status, length, sha256 of the normalized body, a short head)
+  · every response (status, length, the normalized body itself, a short head;
+    no content hash, JL 260928)
     for a fixed script of GET / HEAD / POST requests over the reader routes,
     the static asset bundle, and every workbench route;
   · the normalized bytes of every .md / .html / .css / .js in the fixture afterwards.
@@ -21,7 +22,6 @@ allowed to differ between two runs (clocks, uuids, terminal keys, filesystem
 timestamps); each rule is narrow and named so a real change cannot hide behind one.
 """
 import argparse
-import hashlib
 import json
 import re
 import shutil
@@ -73,8 +73,7 @@ def call(base, path, payload=None, method=None):
     except Exception as e:
         return {"code": -1, "err": type(e).__name__ + ": " + str(e)[:120]}
     txt = norm(body.decode("utf-8", "replace"))
-    return {"code": code, "len": len(txt), "sha": hashlib.sha256(txt.encode()).hexdigest(),
-            "head": txt[:300]}
+    return {"code": code, "len": len(txt), "body": txt, "head": txt[:300]}
 
 
 def script(base, fx_name, page_rel):
@@ -102,8 +101,8 @@ def script(base, fx_name, page_rel):
                   "paper", "design", "design-board", "design-bundle", "insight-board", "insight",
                   "labeling-board", "labeling"):
         g(route, f"/_board/{route}?{q}")
-    g("outline no file", f"/_board/outline?path={page_url}")
-    g("outline derived file", f"/_board/outline?path=/{fx_name}/{page_rel}")
+    g("outline no file", f"/_board/draft?path={page_url}")
+    g("outline derived file", f"/_board/draft?path=/{fx_name}/{page_rel}")
     # `/w/` · the short workbench address (302 → the long route; urllib follows)
     slug = fx_name.split("-", 1)[1].rsplit("-", 1)[0] if fx_name.count("-") >= 2 else fx_name
     stem = Path(page_rel).stem.split("-")[0]
@@ -131,7 +130,7 @@ def script(base, fx_name, page_rel):
     post("probe", "/_board/probe", {"path": page_url, "file": page_rel})
     post("retired comment", "/_board/comment", {"path": page_url, "file": page_rel, "text": "x"})
     post("bad route", "/_board/nosuchthing", {"path": page_url})
-    post("bad file", "/_board/outline", {"path": page_url, "file": "../../etc/passwd"})
+    post("bad file", "/_board/draft", {"path": page_url, "file": "../../etc/passwd"})
     post("structure addgroup", "/_board/structure",
          {"path": page_url, "op": "add_group", "title": "Gate probe group"})
     g("board index after", board_url)
@@ -143,8 +142,21 @@ def fixture_state(root):
     for p in sorted(root.rglob("*")):
         if p.is_file() and p.suffix in (".md", ".html", ".css", ".js") and "__pycache__" not in p.parts:
             txt = norm(p.read_text(encoding="utf-8", errors="replace"))
-            st[str(p.relative_to(root))] = hashlib.sha256(txt.encode()).hexdigest()
+            st[str(p.relative_to(root))] = txt
     return st
+
+
+def first_difference(a, b):
+    """Where two recorded responses first disagree, as two short excerpts."""
+    a, b = a or {}, b or {}
+    if a.get("code") != b.get("code") or "body" not in a or "body" not in b:
+        meta = lambda r: {k: v for k, v in r.items() if k not in ("body", "head")}
+        return f"  before: {json.dumps(meta(a))}\n  after:  {json.dumps(meta(b))}"
+    x, y = a["body"], b["body"]
+    i = next((n for n, (p, q) in enumerate(zip(x, y)) if p != q), min(len(x), len(y)))
+    lo = max(0, i - 120)
+    return (f"  first difference at character {i}\n"
+            f"  before: {x[lo:i + 240]!r}\n  after:  {y[lo:i + 240]!r}")
 
 
 def run(serve, fixture, page_rel, save, diff_against, workdir):
@@ -197,7 +209,7 @@ def run(serve, fixture, page_rel, save, diff_against, workdir):
             a, b = old["responses"].get(k), res["responses"].get(k)
             if a != b:
                 bad += 1
-                print(f"\nDIFF response [{k}]\n  before: {json.dumps(a)[:500]}\n  after:  {json.dumps(b)[:500]}")
+                print(f"\nDIFF response [{k}]\n{first_difference(a, b)}")
         for k in sorted(set(old["files"]) | set(res["files"])):
             if old["files"].get(k) != res["files"].get(k):
                 bad += 1

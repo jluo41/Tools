@@ -130,11 +130,11 @@ Per part, build the inventory that everything downstream reads — panels, text,
 ## Step 2 — Regenerate the icons (codex image-gen)
 
 **Reuse before regenerate.** Image-gen calls are the most expensive step, so first check whether
-this exact figure was processed before: checksum the source (`md5 -q <source.png>`) and look for
-prior `*_regenerated/` runs of the same figure (workspace folders, earlier versions — a renamed
-file with the same checksum counts). If a prior run's sliced icons exist for an **identical**
-source, reuse them and **tell the user explicitly** ("Step 2 skipped — reusing N icons from
-<path>, source checksums match"). Silent reuse looks like a broken pipeline; reuse on a source
+this exact figure was processed before: look for prior `*_regenerated/` runs of the same figure
+(workspace folders, earlier versions) and compare their source with this one byte for byte
+(`cmp -s <source.png> <prior-source.png>`; a renamed identical file counts). If a prior run's
+sliced icons exist for an **identical** source, reuse them and **tell the user explicitly**
+("Step 2 skipped: reusing N icons from <path>, sources are byte-identical"). Silent reuse looks like a broken pipeline; reuse on a source
 that actually changed produces stale icons. Any icon the prior run got wrong still goes through
 fresh regeneration.
 

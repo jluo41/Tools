@@ -23,7 +23,7 @@ from urllib.parse import quote
 from src.common import evidence_run_dirs
 from src.outline_version import plan_dir
 from src.evidence_labels import parse_result_labels
-from src.item_table import (readable_global_run, readable_paper_route,
+from src.item_table import (readable_global_run, readable_paper_route, short_name,
                             readable_task, wall_label)
 
 _CSS = """
@@ -766,7 +766,7 @@ def _run_detail(run: dict[str, object]) -> str:
 def _run_binding_card(record: dict[str, object]) -> str:
     evidence_id = str(record["id"])
     identity = re.match(r"^(E\d+)(?:-([A-Z]+))?(?:-(.*))?$", evidence_id)
-    short_id = identity.group(1) if identity else evidence_id
+    short_id = short_name(evidence_id) if identity else evidence_id
     type_ = identity.group(2) if identity and identity.group(2) else ""
     slug = identity.group(3) if identity and identity.group(3) else ""
     short_title = slug.replace("-", " ") if slug else str(record["title"])
@@ -1472,6 +1472,9 @@ def _evidence_inventory(page_src: pathlib.Path,
     for record in projected:
         item_id = str(record.get("id", "")).strip()
         item = ledger.get(item_id, {})
+        if not str(record.get("address") or "").strip() and str(item.get("target") or "").strip():
+            # The Result names no Bullet; the Evidence Markdown's Target does.
+            record["address"] = str(item["target"]).strip()
         fields = record.setdefault("fields", {})
         fields.update({
             "item expected": str(item.get("expected", "")).strip(),
@@ -1722,11 +1725,8 @@ def _evidence_copy_prompt(record: dict[str, object], page_src: pathlib.Path,
 
 
 def _copy_prompt_button(prompt: str) -> str:
-    label = "Copy prompt to chat"
-    return ('<button type="button" class="run-prompt-copy" aria-label="%s" title="%s" '
-            'data-run-prompt="%s">⧉ %s</button>' % (
-                html.escape(label, quote=True), html.escape(label, quote=True),
-                html.escape(prompt, quote=True), html.escape(label)))
+    """No ⧉ chip here: the Runs panel beside each Space holds every prompt (JL 260927)."""
+    return ""
 
 
 def _label_details(labels: object) -> str:
@@ -2038,7 +2038,7 @@ def _safe_preview_file(candidate: pathlib.Path, page_home: pathlib.Path) -> path
         # it is not consulted as a legacy Evidence source.
         if any(part.startswith(".") for part in relative.parts):
             return None
-        if len(relative.parts) >= 2 and relative.parts[:2] == ("outline", "evidence"):
+        if len(relative.parts) >= 2 and relative.parts[:2] in (("outline", "evidence"), ("draft", "evidence")):
             return None
         return resolved
     except (OSError, RuntimeError, ValueError):
@@ -2369,12 +2369,13 @@ def _evidence_sections(records: list[dict[str, object]],
                 '<span class=evidence-kind>%s</span>'
                 '<span class=evidence-summary-main><span class=evidence-summary-line>'
                 '<span class=evidence-label>%s</span><span class=evidence-title>%s</span></span></span>'
-                '<code class=evidence-bullet>%s</code>'
+                '%s'
                 '<span class="evidence-status %s">%s</span></summary>'
                 '<div class=evidence-detail>%s</div></details>' % (
                     html.escape(focus, quote=True), safe_item, safe_kind,
                     safe_kind, html.escape(label), html.escape(display_title),
-                    html.escape(address or "—"), html.escape(status_token, quote=True),
+                    ('<code class=evidence-bullet>%s</code>' % html.escape(address)) if address else "",
+                    html.escape(status_token, quote=True),
                     html.escape(status), detail,
                 )
             )

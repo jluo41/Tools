@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.2] — 2026-09-26
+
+- PD2D split years stated as JL set them (train 2015-2022, test 2023-2025; 2023-2024 for the 2-year label), replacing the 1990-2020 / 2021+ placeholder.
+
 ## [0.2.1] — 2026-09-25
 
 - AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).

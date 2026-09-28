@@ -93,11 +93,9 @@ Each dispatch appends one ordered receipt:
   "role": "judge",
   "builder_actor": "fresh-page-builder",
   "status": "ok",
-  "version_before": "source-sha256:render-sha256",
-  "version_after": "source-sha256:render-sha256",
-  "checked_version": "source-sha256:render-sha256",
-  "source_sha256": "64-lowercase-hex-characters",
-  "render_sha256": "64-lowercase-hex-characters",
+  "version_before": "v1.5 260928 1241",
+  "version_after": "v1.5 260928 1241",
+  "checked_version": "v1.5 260928 1241",
   "mechanical_errors": 0,
   "mechanical_warnings": 0,
   "verdict": "revise",
@@ -119,7 +117,7 @@ Interpretation:
 - `cycle` records the internal controller action;
 - `route` records the actual next dispatch or terminal outcome;
 - `reason`, evidence, findings, and Gate pointer explain the decision;
-- version hashes make the built Page identity auditable;
+- the version number and saved time make the built Page identity auditable;
 - this receipt does not mint a Page Run.
 
 ## Required receipt invariants
@@ -135,15 +133,16 @@ Interpretation:
 | `builder_actor` | non-empty and separate where required |
 | `role` | producer except CHECK judge |
 | `status` | blocked/failed must HOLD |
-| version fields | lowercase SHA-256 source/render pair with continuity |
+| version fields | `<version number> <yymmdd HHMM>` of the Page source, with continuity; no content hash |
 | CHECK identity | before, after, and checked version identical |
 | verdict | pass may CLOSE/HOLD; revise routes to an owning worker |
 | reason | non-empty authority/route explanation |
 | artifacts/evidence/findings | JSON lists |
 | human Gate | shape matches packet; required CLOSE needs durable evidence |
 
-Only the exact source/render identity observed by a fresh CHECK may CLOSE.
-Any content edit creates a new version and invalidates that CHECK.
+Only the exact version a fresh CHECK read may CLOSE. Any content edit creates a
+new version and invalidates that CHECK; a Page source or render saved after
+the CHECK receipt (newer file time) is a new version.
 
 ## Dispatch routes
 
@@ -171,8 +170,8 @@ Runtime and owner-native Run according to the current graph.
 ```text
 controller  records legal route/frontier; edits no Page prose
 producer    performs one bounded dispatch action
-builder     builds/checks/hashes; no semantic acceptance
-judge       fresh CHECK over immutable source/render identity
+builder     builds/checks; no semantic acceptance
+judge       fresh CHECK over one exact Page version
 human       supplies person-reserved Gates or bounded decision Runs
 ```
 
@@ -205,7 +204,8 @@ Audit it with:
 python3 <toolkit>/skills/board/haipipe-board/cli/pageflow.py audit <receipt.json>
 ```
 
-The auditor recomputes source/render hashes. Store `page` board-relative; an
+The auditor compares the recorded version with the Page's current version
+number and file times. Store `page` board-relative; an
 absolute/stale path is a defect even if a unique filename fallback permits
 inspection. Mechanical error counts are Page-scoped, not Board-scoped.
 

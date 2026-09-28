@@ -17,7 +17,7 @@ Every Save does two things under the page lock:
    the Step-template `#### Track changes` shape, one card per changed Bullet,
    Decision `accept` because the person typed it. Run Space renders it.
 
-Nothing here touches Page Content; adopting Drafts stays at the release boundary.
+Nothing here touches Page Content; `page.py adopt` copies the Drafts into it when the person asks.
 """
 from __future__ import annotations
 
@@ -184,7 +184,7 @@ _ASSETS = r'''<style>
   var form=e.target.closest&&e.target.closest('form.revise-form');if(!form)return;e.preventDefault();
   if(!dirty(form)){status(form,'No changes to save.');return;}
   var body=payload(form),save=form.querySelector('[data-revise-save]');if(save)save.disabled=true;status(form,'Saving…');
-  fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  fetch('/_board/draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||'Unable to save');return j;});})
    .then(function(j){var b=box(form);b.value=j.text;b.defaultValue=j.text;b.dataset.bullets=JSON.stringify(j.bullets||[]);(j.changed||[]).forEach(reflect);
      var why=form.querySelector('.revise-why');if(why)why.value='';mark(form);
@@ -273,7 +273,7 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
         "#### Summary\n"
         "%d sentence%s changed in %s.\n\n"
         "#### Track changes\n\n%s"
-        % (step, display, stamp, "outline/" + plan.name, target, display,
+        % (step, display, stamp, plan.parent.name + "/" + plan.name, target, display,
            len(changes), "s"[:len(changes) != 1], display, cards)
     )
     if not text:
@@ -394,7 +394,6 @@ def save_revise(page_src: Path, payload: dict, *, read_only: bool = False) -> tu
         for item in changed:
             records[item["address"]] = {**records.get(item["address"], {}),
                                         "plan": version_tag(plan),
-                                        "bullet-sha256": bullet_token(blocks[item["address"]]),
                                         "text": item["after"]}
         write_drafts(page_src, records)
         fresh = read_drafts(page_src)

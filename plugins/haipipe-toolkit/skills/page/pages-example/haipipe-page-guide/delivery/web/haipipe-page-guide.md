@@ -19,7 +19,7 @@ This Page explains how to create and revise that workspace, how its workbenches 
 Page Folder
 ├── page.toml         source registration
 ├── Page.md           Opening · Content · Aims
-├── outline/          plan · context · evidence
+├── draft/          plan · context · evidence
 └── delivery/web/     generated reading site
 ```
 

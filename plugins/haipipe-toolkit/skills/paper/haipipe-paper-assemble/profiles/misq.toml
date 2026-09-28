@@ -48,6 +48,15 @@ author_placeholder = "[AUTHOR NAMES: first, middle, and last names]"
 displays_position = "inline"     # v0728, the file MISQ received, interleaves its tables with the prose
 main_table_prefix = "Table "
 main_figure_prefix = "Figure "
+table_header_fill = ""           # no colour behind table headers: the official-format file and v0728 have none (JL 260928 "why the header is with color?")
+# ── the Word layout of the co-author's official-format file (delivery/word-feedback/, JL 260928
+#    "does this really following the MISQ word template?"), measured from its styles.xml/document.xml ──
+front_matter = "title-abstract-keywords"   # page 1 = Title style, centred ABSTRACT, abstract, Keywords; break before INTRODUCTION
+abstract_line_spacing = 1.0      # abstract and keywords single-spaced (w:line=240); the body stays double
+heading_align = "center"         # Heading 1 and Heading 2 are centred
+caption_plain = true             # captions bold, upright, black (the Caption style), not italic grey
+table_borders = "horizontal"     # top, bottom and row rules; no vertical lines
+table_font_size = 8              # table cells 8 pt (w:sz 16)
 
 
 [latex]
@@ -55,6 +64,7 @@ spacing = "double"          # double-spaced throughout, references included
 bibstyle = "apalike"        # closest stock author-date style; MISQ's own .bst is not shipped, journal names print as the .bib gives them
 displays = "inline"         # "inline": at first reference, for review · "end": every float on its own page after the text (endfloat), for production
 appendix_newpage = true     # lettered appendices after the references, each on a new page
-title_page = "separate"     # blind copy: the title alone on page 1
-abstract_page = true        # the abstract (and keywords) alone on its own page
+title_page = "inline"       # page 1 = title, abstract and keywords, as in the official-format file (JL 260928); was "separate"
+abstract_page = true        # \clearpage after the abstract (and keywords), so the first section starts page 2
+acknowledgments = false     # blind copy: no Acknowledgments section; funding and thanks go in the separate title-page file (JL 260928)
 running_head = false        # no running head on the blind copy; the DRAFT word still prints while the build is a draft

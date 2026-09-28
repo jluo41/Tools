@@ -17,7 +17,7 @@ type: VALUE
 page_run: re-value-01_effect
 run: re-execution-01
 status: ready
-provenance: results/re-value-01_effect/payload.json#sha256
+provenance: results/re-value-01_effect/payload.json#effect
 labels:
   - token: "$V_effect$"
     kind: VALUE
@@ -156,7 +156,7 @@ def test_outline_preview_embeds_visible_value_and_hidden_authored_token():
                 "page_run": "re-value-01_effect",
                 "result": "results/re-value-01_effect/result.yaml",
                 "target": "payload.effect",
-                "provenance": "results/re-value-01_effect/payload.json#sha256",
+                "provenance": "results/re-value-01_effect/payload.json#effect",
             }
         }
     )
@@ -164,7 +164,7 @@ def test_outline_preview_embeds_visible_value_and_hidden_authored_token():
     assert "$V_effect$" in html
     assert "re-value-01_effect" in html
     assert "payload.effect" in html
-    assert "payload.json#sha256" in html
+    assert "payload.json#effect" in html
     assert "missing-evidence-token" not in html
 
 

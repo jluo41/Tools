@@ -1,3 +1,30 @@
+## 0.66.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- Controller receipts (`ref/page-run-contract.md`): `version_before`, `version_after` and
+  `checked_version` are `<version number> <yymmdd HHMM>` (e.g. `v1.5 260928 1241`);
+  `source_sha256`/`render_sha256` are gone. A source or render saved after CHECK read it (newer
+  file time) is a new version. The auditor compares version numbers and file times.
+- Writing Run templates (`ref/writing-step-template.md`, `ref/interactive-writing-run.md`,
+  `ref/post-run-analysis.md`): `Prior Version`, `Base`, `Source after save`, acceptance, closure
+  and continuation name files by path, Version number and saved time. `runtime.yaml` loses
+  `version_sha256` and `analysis.input_sha256`.
+- The fast feedback Step runs one narrow scope check, not a hash/scope check; the builder role
+  builds and checks only.
+
+## 0.65.0 · 2026-09-28
+
+- Run bookends (JL 260928: "in the middle, we focus on the content"; "don't change the log in the
+  middle way, during the run"). A chat-driven writing Run has two bookends the person calls. During
+  it, only the Draft file (`draft/<stem>-draft-v<N>.md`) changes. At the close, one pass writes the
+  Run ticket, the Version journal (a Step per completed cycle, feedback verbatim, Track changes),
+  `working.md`, `runtime.yaml`, ONE log entry, decision threads and evidence notes, from the
+  conversation. Adoption into Page Content and the web → LaTeX → Word lanes follow only when the
+  person asks; a lane blocked by its own gate reports the blocker. The person decides when the Run
+  is over; owed evidence is named at the close and blocks LaTeX/Word, not the close. Codified from
+  the MISQ Section sessions' practice (Introduction rp-sec-07, Empirical Strategy rp-sec-05, Theory
+  rp-sec-16, Literature Review). `ref/interactive-writing-run.md` §🔖 is the contract; its per-turn
+  Step, Rapid feedback and Fast foreground rules now write the Draft only.
+
 ## 0.64.1 · 2026-09-22
 
 - Docs: no Mermaid map or `.mmd` deliverable anywhere in the Run list; the structure is the

@@ -3,8 +3,8 @@
  * The retired version of this file was a bottom workflow inferred from
  * `## States` and offered /label-* commands.  The 0.6 family made canonical
  * receipts authoritative and retired those commands, so this file now owns
- * only the registry row.  plugins/subjective-label/servers/workbench-labeling/labeling.py owns the page: five Spaces (Data,
- * Labeling, Quality, Run, Delivery) and the keyboard Label screen, whose writes
+ * only the registry row.  plugins/subjective-label/servers/workbench-labeling/labeling.py owns the page: four Spaces (Data,
+ * Labeling, Quality, Delivery), a Runs panel under each, and header drawers, whose writes
  * go through POST /_board/labeling/act to the subjective-label engine.  Studio
  * Chat opens separately from its header and is never a permanent bottom panel.
  */

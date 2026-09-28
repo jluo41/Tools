@@ -1,3 +1,7 @@
+## 0.9.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- The sixteen desk `materials/MANIFEST.md` files drop the `sha256-16` column (class, kw, chars, file remain; URL lines re-aligned). QBv7's Content no longer says the MANIFEST carries a checksum. The generated `bank/board/` still needs a rebuild to pick that sentence up.
+
 ## 0.9.0 · 2026-09-20
 
 - Define consumer preflight and honest partial contracts, including matching Page CHECK receipts. Supply current seven-role templates and both profile examples; route legacy bank content as historical reference and use current Page workspaces.

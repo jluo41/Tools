@@ -113,7 +113,7 @@ candidate packet before any Run is opened.
    creation-time requirement. PDF and captured Trigger text are optional.
 6. CHECK the Run/Result spine. Hand completed Results to D1 SYNTHESIZE; the
    Outline workbench's citation contract owns the deterministic Task Page Bib
-   aggregation under `outline/evidence/bibex/`.
+   aggregation under `draft/evidence/bibex/`.
 7. During `03 CONTENT / WRITE` for source-map/source-reading, update the root Page:
    source-map emphasizes coverage and readable source units; source-reading
    synthesizes what selected sources say. Both keep Result links and never

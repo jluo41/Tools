@@ -8,12 +8,14 @@ description: >-
   pdf, build the docx, rebuild delivery, delivery receipt, stale delivery,
   /haipipe-page-delivery.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-22"
+  version: "0.2.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-page-delivery · one target, one version, one receipt
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every artifact and build record a Delivery Run writes under `delivery/<lane>/`: fix the Page source or the exporter, then run the build again.
 
 **LOAD `../../haipipe-page-workflow/SKILL.md` FIRST.** This file owns the
 Delivery Run's delta: when one may be commissioned, what it binds, what it
@@ -34,7 +36,7 @@ actor      agent or automatic; the deck is the one authored exception
 After the content and evidence release barrier is open: the planned Page Runs
 are closed and the release decision exists (`haipipe-page-writing`,
 `../../haipipe-page/ref/release-decisions.md`). One RD binds one source Page
-version, by path and SHA-256, to one target lane. Rebuilding the same target
+version, by path and version number, to one target lane. Rebuilding the same target
 from the same contract is another attempt in the same RD lineage; a different
 target or a materially different source version is a different RD. RD never
 reopens or rewrites an RE, and never edits the Page source.
@@ -46,11 +48,11 @@ reopens or rewrites an RE, and never edits the Page source.
    through `/_board/latex` and `/_board/word` (the `exporters/` scripts,
    deterministic, safe to run on click); slides only on the explicit ✨ press
    (`claude -p`, minutes, money); render through the owning Design contract.
-3. **Receipt.** `delivery/<lane>/build-manifest.json` with the source hash,
-   artifact hashes, and diagnostics; `runtime.yaml` records status and the
-   exact attempt.
-4. **Show.** The Delivery Workspace compares source and artifacts and reports
-   `pass`, `stale`, `unverified`, or `not-built` per lane. A build receipt is
+3. **Receipt.** `delivery/<lane>/build-manifest.json` with the source path and
+   version, the artifact paths, and diagnostics, never a content hash (JL
+   260928); `runtime.yaml` records status and the exact attempt.
+4. **Show.** The Delivery Workspace compares source and artifacts by file time
+   and reports `pass`, `stale`, or `not-built` per lane. A build receipt is
    delivery evidence, not a whole-Page acceptance; `haipipe-page-check` is the
    only human whole-Page close gate.
 

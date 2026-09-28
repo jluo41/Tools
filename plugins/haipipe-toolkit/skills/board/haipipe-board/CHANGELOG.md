@@ -1,3 +1,38 @@
+## 1.1.3 · 2026-09-28
+
+- **No content hashes (JL 260928).** No tool here writes, pins or compares a content hash any
+  more (AGENTS.md rule 9). A version is its number and date; staleness is file modification time.
+- `cli/stage.py` stops writing `contract-source-hash:` and the `sha256=` marker attribute, and no
+  longer imports `contract_digest`; `sync` drops a leftover `contract-source-hash:` line. Staleness
+  is `stage_contract.contract_status` (source saved after the page).
+- `checks/intake.py` compares each frozen copy with its live source directly (byte-equal is
+  `match`, else `CHANGED` when the source was saved after the copy). An old `sha256:` row is read
+  and ignored; the `COPY ROTTED` and `NOT PINNED` verdicts are gone.
+- `cli/skillpage.py` markers carry the unit path only; `check` compares the derived fact lines the
+  page shows (name, version, date, tools, summary) with the unit. `legacy/meetingpage.py` markers
+  carry the note path only; `sync` re-renders and compares the spans. Old 16-hex markers still parse.
+- `cli/context-record.py` names each source by path plus saved time (`saved yymmdd HHMM`).
+- `cli/asset-manifest.py` writes size and build time, not `sha256`, and matches a promoted asset by
+  direct byte comparison. `cli/build-displays.py` prints the float size, not a hash.
+- `cli/design_queue.py` briefs no longer ask to pin sha256; `build.py --json` drops
+  `contract_source_hash`.
+- `ref/page-lifecycle.workflow.js`: snapshots return `version_id` as `<version> <yymmdd HHMM>` and
+  check the render is not older than the source; receipts carry no `source_sha256`/`render_sha256`.
+  `ref/insight-space-mapping.md` names the definition by its versioned file.
+- Host `servers/_host/tests/gate_live.py` records normalized bodies instead of their sha256 and
+  prints the first differing character; `checks/run.py` wording follows.
+- Tests and fixtures (`fixture_design_v2.py`, `fixtures/page_lifecycle/happy.json`, design,
+  insight, revise and stage tests) write and assert no hashes.
+
+## 1.1.2 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+
+## 1.1.1 · 2026-09-27
+
+- `cli/build.py` skips a dangling `*.md` link in its marker scan instead of stopping the build.
+- The Design Board test expects a new Design Folder's register in `draft/` (Page layout 0.118).
+
 ## 1.1.0 · 2026-09-22
 
 - No more "phase": `cli/pagephase.py` is `cli/pageprogress.py` (the progress strip: which Run is
@@ -326,7 +361,7 @@
 
 ## 0.169.0 · 2026-09-06
 
-- Make compact Outline Evidence chips (for example `E2V.DesignCounts`) open
+- Make compact Outline Evidence chips (for example `Evalue02.DesignCounts`) open
   the existing Outline workbench at Evidence Workspace → Evidences with the exact
   item card focused, scrolled into view, and highlighted, replacing the
   Page-level native popover. The chip keeps its label, status colour,

@@ -26,7 +26,7 @@ Step 2 — Collect the contract
 - Task name: normally `t01_display_input_summary`.
 - Run name: `r01_<kind>_<slug>`.
 - Display kind: `figure | table | diagram | illustration`.
-- Source Runs: full Run ids plus resolved Result paths and hashes.
+- Source Runs: full Run ids plus resolved Result paths.
 - Summary parameters: selected columns, grouping, filters, and unit of analysis.
 - Output contract: `source_data.csv` plus `provenance.json`.
 
@@ -65,13 +65,13 @@ RUN_FAMILY="Execution"
 RUN_OPERATION="display-input"
 RUN_TARGET="<kind>-<slug>"
 REQUIRED_RESULTS=("source_data.csv" "provenance.json")
-RUN_INPUTS=("<resolved-source-1>|<sha256>" "<resolved-source-2>|<sha256>")
+RUN_INPUTS=("<resolved-source-1>" "<resolved-source-2>")
 ```
 
 The generic file-existence gate is necessary but not sufficient.
 Extend `result_gate()` to require `provenance.json` to declare
 `approved_for_display_intake: true`,
-`contains_raw_or_phi: false`, and hashes matching `source_data.csv`.
+`contains_raw_or_phi: false`, and a `row_count` matching `source_data.csv`.
 
 Resolve the planned Result at
 `$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/`.
@@ -94,7 +94,7 @@ $OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/
 ```
 
 `provenance.json` follows `ref/provenance-template.json`.
-It records the producing Task and Run, output hash, upstream artifacts,
+It records the producing Task and Run, output path and row count, upstream artifacts,
 selection and filter logic, and the two display-safety assertions.
 A Page consumer sends this aggregate through its one page-serving collection
 Job; LAND freezes the selected page-service Result into the Evidence Item's
@@ -109,7 +109,7 @@ Step 6 — Validate and report
 - Run `bash -n` on the Ticket.
 - Run the Task-tree checker on the touched tree.
 - Confirm config/Ticket stems match and every source Run resolves.
-- Confirm the planned receipt contains the neutral Run fields and config hash.
+- Confirm the planned receipt contains the neutral Run fields and config path.
 - Confirm no protected or heavy artifact is planned under `results/`.
 
 ```text
@@ -130,4 +130,4 @@ MUST NOT
 - Create a general README.
 - Mark the planned receipt complete or bypass the provenance gate.
 
-For every derived_from entry, carry the same full Run id, exact artifact path, and SHA-256 from source_runs; fail if a declared hash differs.
+For every derived_from entry, carry the same full Run id and exact artifact path from source_runs; fail if a declared artifact is missing.

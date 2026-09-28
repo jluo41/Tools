@@ -70,6 +70,6 @@ audience=partner     → professional, collaborative tone
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)
 [ ] Data tables/figures have captions
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

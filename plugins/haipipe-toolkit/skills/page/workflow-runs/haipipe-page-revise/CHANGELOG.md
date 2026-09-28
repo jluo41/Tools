@@ -1,3 +1,9 @@
+## 0.3.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- The compare door names its two texts by path and version number, not SHA-256. The change
+  ledger's `Inputs` read `vNNN.md · closed|saved yymmdd HHMM`; an input saved after the ledger
+  began (newer file time) is a new Revise Run.
+
 ## 0.2.0 · 2026-09-22
 
 - The direct door: the person edits Draft sentences in Draft Space → Revise; each Save is one

@@ -74,7 +74,7 @@ Read `../../ref/ref-label-handoff.md` whenever creating, validating, or
 consuming the crossing.
 
 Read `../../ref/ref-run.md` whenever allocating, resuming, presenting, or
-auditing a Labeling Run. It defines 25 independently closable operation kinds
+auditing a Labeling Run. It defines 26 independently closable operation kinds
 across P0-P5. Round, Test, Scan, and Audit are grouping episodes, not extra
 Runs. A human gate event is not a Run by itself; a bounded human-work operation
 such as `human-calibration` or `audit-human-gold` may be one.

@@ -28,7 +28,7 @@ Every Scanning Run binds the exact Label Handoff checksum in its Ticket.
 
 ## Run allocation
 
-Read `../../ref/ref-run.md` before allocating. P3-P5 use these Runs:
+Read `../label-building/ref/ref-run.md` before allocating. P3-P5 use these Runs:
 
 ```text
 P3 (compat tag)  test-gold-lock → executor-predict* → executor-score* → executor-select
@@ -38,8 +38,8 @@ P5 (compat tag)  audit-sample → audit-human-gold → audit-analyze → dstar-m
 
 The registry, production manifest, and audit design commission an episode;
 they do not create umbrella Test, Scan, or Audit Runs. Write every operation's
-Ticket to `runs/<RUNNAME>.yaml` and its runtime/Result envelope to
-`results/<RUNNAME>/`. Point the Result at canonical artifacts without copying
+Ticket to `<Page>/runs/<RUNNAME>.yaml` and its runtime/Result envelope to
+`<Page>/results/<RUNNAME>/`, beside `labeling/`. Point the Result at canonical artifacts without copying
 protected data. Parallelize only the starred Runs after their prerequisite
 closes.
 
@@ -128,8 +128,8 @@ derive either Route from a compatibility tag.
 ## Receipts this machine writes
 
 ```text
-runs/<RUNNAME>.yaml            one authored operation Ticket
-results/<RUNNAME>/             runtime.yaml + safe result.yaml for that operation
+<Page>/runs/<RUNNAME>.yaml     one authored operation Ticket, beside labeling/
+<Page>/results/<RUNNAME>/      runtime.yaml + safe result.yaml for that operation
 evaluation/registry.yaml       input bound by test-gold-lock; G3 is its compatibility predicate
 test/final/lock.json           GOLD locked; SCORE may start
 evaluation/summary.md          executor-select Run Result: qualified route or none

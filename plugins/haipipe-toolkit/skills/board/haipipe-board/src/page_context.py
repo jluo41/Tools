@@ -115,9 +115,10 @@ def _aim_group_source(text, canon, group_id):
 
 
 def files_record_path(source_path):
-    """outline/<stem>-files.md beside the page, where `## Files` lives since 260831."""
+    """outline/records/<stem>-files.md beside the page, where `## Files` lives since 260831."""
     p = Path(source_path)
-    return p.parent / "outline" / f"{p.stem}-files.md"
+    from .outline_version import record_path
+    return record_path(p.parent / "outline", p.stem, "files")
 
 
 def related_source(source_path, text):

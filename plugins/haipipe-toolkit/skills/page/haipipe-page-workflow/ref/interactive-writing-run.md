@@ -9,6 +9,53 @@ For the fused Structure Run, also load `structure-run.md`: SHAPE and SURVEY
 are cycles of one `rp-struct-01`, including when several people participate.
 For the rationale, see `../../../../../docs/page-writing-philosophy.md`.
 
+## 🔖 Run bookends · the Draft changes during a Run; records wait for its close
+
+JL 260928, in the Section sessions of a paper: "if I am editing the Section,
+here I say a run is start ... When I say a run is over, then you start to do the
+summary and recording the results ... in the middle, we focus on the content";
+"don't change the log in the middle way, during the run, do it until we
+finished the run." A chat-driven writing Run (`rp-struct`, `rp-sec`, `rp-para`)
+has two bookends the person calls, and this section overrides every per-turn
+recording instruction later in this file:
+
+```text
+OPEN     the person starts the Run          name it once: Run id, target, Draft file; write nothing else
+MIDDLE   every feedback turn                edit ONLY the Draft file (Draft prose + dependent Bullets)
+CLOSE    the person says the Run is over    self-review when asked, then write the Run's records once
+AFTER    the person asks for delivery       adopt the Draft into Page Content, then web → LaTeX → Word
+```
+
+**Middle.** The only file that changes is the Draft file:
+`draft/<stem>-draft-v<N>.md` (`outline/<stem>-outline-v*.md` in the older
+layout). Untouched until the close: Page Content in `<stem>.md`,
+`results/<run>/` (`vNNN.md`, `working.md`, `runtime.yaml`), `runs/` tickets,
+`draft/records/` log, context, discussion and feedback records, evidence-item
+notes, receipts, and `delivery/`. A ruling routed from another session while
+the Run is open is applied to the Draft the same way and recorded at the close.
+The conversation is the mid-Run record: each reply quotes the feedback it acts
+on and shows the changed passage, so the close can write both verbatim. The
+Section's Claude session or Codex thread, named in the page header, persists
+that conversation; a session that ends before the close leaves it for the next
+session to read and close.
+
+**Close.** One pass, in this order, then report what was written:
+
+1. the Run ticket in `runs/` and the Version journal `results/<run>/vNNN.md`: one `## Step` per completed cycle, each with verbatim `### Human feedback`, `### Saved result` and Track changes cards, then `## Version closure` with the person's closing words and the session id as the source;
+2. `working.md` and `runtime.yaml`, with real start and finish timestamps;
+3. ONE entry for the whole Run in `draft/records/<stem>-log.md`;
+4. decision threads closed or opened, evidence-item notes, and superseded Runs marked.
+
+**After.** Only when the person asks: adopt the closed Draft into Page Content,
+then run the delivery lanes, web page first, then LaTeX, then Word. A lane that
+its own gate blocks (for example strict evidence selection) reports the blocker
+and stops; nothing is forced.
+
+A feedback turn that arrives with no Run open opens one: name it once and
+follow the same bookends. Scratch (`Finish Scratch`) and Revise (each `Save`)
+are button-driven: the person's press is the record, so they keep their own
+save behavior.
+
 ## Identity and ownership
 
 | Object | Meaning | When it changes |
@@ -125,8 +172,9 @@ DNA or anti-slop packet selects its adapter once. Resolve only selected methods
 under `../../../writing/haipipe-writing/ref/method-adapter-contract.md`.
 
 Writing returns candidate, actual changes, evaluation, method trace and
-unresolved findings. The host saves the candidate under the existing source
-writer/concurrency rules and stores its review in the same Version/Step.
+unresolved findings. The host saves the candidate into the Draft file under
+the existing source writer/concurrency rules; its review goes into the
+Version/Step written at the Run's close.
 Evaluation follows `../../../writing/haipipe-writing/ref/evaluation.md`:
 draft → review → at most one authorized revision pass by default → final
 review. The Run may declare another bounded budget. A local wording Step
@@ -186,8 +234,8 @@ is not a Draft-space composer.
 For ordinary wording feedback, finish one Step in under two minutes when the
 current Run records are available. Read only `working.md`, the latest saved
 result tail, the exact target paragraph slice, its dependent Bullet, and the
-frozen Structure description. Write the Step journal, the required resume
-projections, and the candidate preview only when its presenter needs it. Make
+frozen Structure description. Under the Run bookends, write only the Draft
+file; the Step journal and resume projections are written once at the close. Make
 one bounded patch and one narrow check, then return the packet. Do not start or
 wait for a sub-agent, reread the whole Page or Version, update wording-only
 plan metadata, run an outline pass, build, export, test broadly, verify the
@@ -197,7 +245,7 @@ return one named blocker instead of scanning the repository.
 `working.md` holds current Version/Step, review window, pending feedback,
 effective decisions with source Step ids, accepted paragraph identities, open
 evidence dependencies, and next action. It is a resumable view, not the only
-history. `runtime.yaml` retains the neutral Run receipt's identity, input hashes,
+history. `runtime.yaml` retains the neutral Run receipt's identity, input paths,
 worker and real start/finish timestamps (unfinished/unknown timestamps are null),
 and projects `family`, `operation`, `interaction`, `target`, `ticket`, `result`,
 `status`, `version`, `step`. Use `ready`, `running`,
@@ -206,15 +254,14 @@ mean failure. Do not depend on a continuously running model process.
 
 One Version is one append-only Markdown journal. Every completed Step is a
 `## Step sNNN` section in that same file and contains both `### Human feedback`
-and `### Saved result`. Save the Human feedback subsection before editing,
-then append the Saved result only after the scoped draft/review/diagnose/revise
-cycle and narrow validation succeed. A partial clarification or an unfinished
-self-revision remains a pending Step, not a new Run.
-Completed Step sections are immutable: a correction appends a new Step that
-references the earlier one. If interrupted, leave the current Step visibly
-pending and project the Run as `Held`, never as `Waiting`. Interrupted or
-partial work is described honestly in `working.md`; compare actual files
-before resuming.
+and `### Saved result`. The journal is written at the Run's close from the
+conversation (Run bookends): one Step per completed draft/review/diagnose/revise
+cycle, in order. A partial clarification or an unfinished self-revision at the
+close is written as a pending Step, not a new Run.
+Once written, Step sections are immutable: a later correction appends a new
+Step that references the earlier one. A session that stops before the close
+writes nothing; its persisted conversation is the record the next session
+reads to resume or close the Run. Compare actual files before resuming.
 
 ## Each turn
 
@@ -226,10 +273,10 @@ before resuming.
    Before the first edit of existing prose, retain the full target text and
    relevant planning slice in the initial input. Later Steps may reference the
    preceding immutable result; an external change needs its own new baseline.
-2. **Capture the human.** Start the current Step in `vNNN.md`, then save its
-   `### Human feedback` subsection with the original request and each feedback
-   item verbatim, selected quote, addressed target, source Version/Step, and
-   reason. Preserve informal language. Agent interpretation is separate. If
+2. **Capture the human.** In the reply, quote the original request and each
+   feedback item verbatim, with the selected quote, addressed target, and
+   reason; at the Run's close these become the Step's `### Human feedback` in
+   `vNNN.md` (Run bookends). Preserve informal language. Agent interpretation is separate. If
    source text is ambiguous, record it and ask only about that item; never
    silently attach it to the nearest sentence. Do not close the Step merely
    because one chat turn was received.
@@ -249,15 +296,16 @@ before resuming.
    requirements when the meaning changes; do not invent Results. Missing
    evidence has named placeholders, never a fabricated claim presented as
    supported.
-4. **Save the completed Step.** Save the candidate in
-   selected `outline/<stem>-outline-v*.md`, update only its dependent Bullets in the working
-   Shape, and preserve comment/annotation records. Recheck the narrow base and
+4. **Save the completed Step.** Save the candidate in the Draft file
+   (`draft/<stem>-draft-v<N>.md`; `outline/<stem>-outline-v*.md` in the older
+   layout), update only its dependent Bullets in the working Shape, and
+   preserve comment/annotation records. Recheck the narrow base and
    protected targets before writing; on concurrent drift, stop and rebase.
-   Update an Evidence requirement only when this Step changes what the
-   paragraph must cite, measure, or show. Append the complete candidate,
-   affected planning snapshot, review/rating, diagnosis, narrow checks, and
-   each feedback disposition to the same Step's `### Saved result`. Update
-   `working.md` and `runtime.yaml`.
+   That Draft write is the only write during the Run. The candidate,
+   affected planning snapshot, review/rating, diagnosis, narrow checks, each
+   feedback disposition, a changed Evidence requirement, and the Track
+   changes cards below go into the Step's `### Saved result` at the close,
+   with `working.md` and `runtime.yaml` (Run bookends).
    For every material wording change, add one `#### Track changes` card with
    clean Before and After text, a short local change label in the card heading,
    and a concise Why. Do not infer a broader preference in the foreground Step.
@@ -281,8 +329,8 @@ before resuming.
    citation, value, or figure requirement. End with the verified Draft Space,
    Evidence Space, and Current Run links, with nothing after
    them. Show an updated structure list only when the logic changed. Do not polish a second
-   chat-only version or wait for optional exports. Set `waiting-for-feedback`
-   and finish the turn.
+   chat-only version or wait for optional exports. Finish the turn; the Run
+   is waiting for feedback, with no status write until the close.
 
 When a person enters, continues, resumes, or asks to review an open Run before
 giving new feedback, return the packet's pre-Step review format instead. Show
@@ -308,8 +356,9 @@ The Paper Round-generated `<stem>-feedback.md` is not this chat inbox.
 ## Acceptance, closure, continuation
 
 Acceptance always records **who, exact words, target, source Version/Step and
-accepted text/hash**. Capture acceptance as a new input/result Step even when
-no prose changes. Do not append a tick to an already completed result.
+accepted text**. Acceptance is its own Step even when no prose changes;
+like every Step it is written at the Run's close (Run bookends). Do not append
+a tick to an already completed result.
 “Continue,” “try again,” or “looks better” does not approve
 the whole Run, Shape or Page. An explicit “P01 is settled; revise P02” accepts P01
 only. Keep accepted P01 byte-for-byte unchanged while revising P02. Reopen P01
@@ -326,31 +375,37 @@ journal. A Section-level Step may therefore complete its full
 draft/review/rating/diagnose/revise cycle while the Section Run remains open
 for another Step. The RP Run closes only after its final candidate/report is
 shown and the person explicitly closes that Run (or chooses the next scope).
-Every commissioned target must be accepted or explicitly removed, its Bullets
-must be settled, and every Evidence obligation must be explicit and ready
-(`none` or a bound CITE, VALUE, or DISPLAY Result) before Run closure.
+The person decides when the Run is over. Every commissioned target must be
+accepted or explicitly removed and its Bullets settled; every Evidence
+obligation is named in the closure record as `none`, bound, or still owed. An
+owed item stays owed on the Page's evidence items, and its gate blocks the
+later LaTeX and Word lanes, not the close.
 
 Run closure seals the current Version before any post-run analysis Task is
 launched. Closing a Version alone does not silently mint a new Run.
 
 Append `## Version closure` to the same `vNNN.md`, including `### Human close`,
 the final complete passage/map and plan/evidence snapshot pointers. After
-closure, the whole Version file is immutable. The next Version records the
-closed `vNNN.md` hash before any new Step. If accepted wording still has named
-evidence owed, record the acceptance but keep the Page Run open; commission or
-resume the owner-native Task Run and return for evidence review. Do not mark the
-Page Run complete while factual support, citation, value, or figure output is
-unresolved. Whole-Page `CHECK/CLOSE` is a separate later authority.
+closure, the whole Version file is immutable. The next Version names the
+closed `vNNN.md` (its number and close date) before any new Step. Accepted wording whose named
+evidence is still owed is recorded as accepted with the owed items listed;
+commission or resume the owner-native Task Run for them. Do not call factual
+support, citation, value, or figure output resolved while it is owed.
+Whole-Page `CHECK/CLOSE` is a separate later authority.
 
-Closing a Page Run does not modify `<page>.md` or `delivery/`. The Page release
-barrier opens only when the required structure/Bullet RP Runs, Section RP Runs,
-paragraph RP Runs, and every required evidence Task Result are complete and
-bound. CONTENT
-then applies all accepted candidates in one Page-level pass, integrates the
-ready evidence, and generates web, LaTeX, and Word once before CHECK.
+Closing a Page Run does not by itself modify `<page>.md` or `delivery/`. When
+the person asks right after the close (the practiced sequence: "close this run,
+and then go to the run-delivery"), adopt the closed Draft into Page Content and
+run the lanes web page → LaTeX → Word; each lane's own gate (strict evidence
+selection for LaTeX and Word) decides whether it builds, and a blocked lane
+reports its blocker. Without that request, the Page release barrier holds until
+the required structure/Bullet RP Runs, Section RP Runs, paragraph RP Runs, and
+every required evidence Task Result are complete and bound; CONTENT then applies all accepted
+candidates in one Page-level pass and generates web, LaTeX, and Word once
+before CHECK.
 
 After Version closure, continue the same fixed goal by creating `v002.md`,
-pointing to the hash of closed `v001.md`, and recording what is being reopened.
+naming closed `v001.md` as its prior Version, and recording what is being reopened.
 Never reopen by editing `v001.md`. Within an open Version, append another
 Step only when it completes the next scoped cycle. A new Claude/Codex chat can
 resume the same Run, but a later independently commissioned Section
@@ -368,19 +423,19 @@ minutes; this is a record-first operating budget, not a service-time guarantee.
 
 - Reuse stable context already loaded in the session. Do not reread the whole
   Page, the whole Version journal, the full skill corpus, or unrelated history.
-- Read only `working.md`, the latest saved-result tail, the exact target
-  sentences, and the dependent Bullet/Evidence slice. If the prior Step already
-  contains the complete passage, reference it as the recoverable baseline.
-- Make one bounded edit transaction: append the new Step, update only affected
-  preview records and dependent Bullets, update `working.md` and
-  `runtime.yaml`, then run one narrow hash/scope check.
+- Read only the exact target sentences in the Draft file and the dependent
+  Bullet/Evidence slice; the conversation so far is the recoverable baseline.
+- Make one bounded edit transaction: change the target sentences and dependent
+  Bullets in the Draft file, then run one narrow scope check. No Step,
+  `working.md` or `runtime.yaml` write until the close (Run bookends).
 - Do not run `outline-pass.py`, a full Page parser, a repository-wide search,
   browser verification, delivery generation, full tests, or a fresh reviewer
   for a local wording change.
-- Keep the saved Step complete but compact. Store the raw feedback, selected
+- Keep the reply complete but compact: the raw feedback, selected
   quote/annotation, complete candidate passage, disposition, and a concise
-  Before/After card. Record only the local reason for the edit; defer feedback
-  categorization and preference inference until the Page Run closes.
+  Before/After, so the close can write the Step from it. Give only the local
+  reason for the edit; defer feedback categorization and preference inference
+  until the Page Run closes.
 - If the feedback changes no plan contract or evidence requirement, do not
   rewrite the Shape or Evidence inventory. If it does, touch only the dependent
   planning slice and record that dependency in the Step.
@@ -392,16 +447,16 @@ implicit background promises.
 At explicit Page Run close, read
 [`post-run-analysis.md`](post-run-analysis.md) and launch one independent
 output-only analysis Task if the supported background mechanism is available.
-That Task reads the closed Version by hash and writes its own Result. It never
+That Task reads the closed Version by its number and writes its own Result. It never
 blocks the next Page Run and never edits the closed journal or Page Content.
 
 ## Fast foreground, bounded background
 
 | Foreground, before replying | Conditional / separately commissioned |
 |---|---|
-| Save raw feedback; read current target and effective rules | Repository-wide history/DNA analysis |
+| Quote raw feedback in the reply; read current target and effective rules | Repository-wide history/DNA analysis |
 | Revise requested text and dependent Bullet only | Discovery, regression, expensive evidence rendering |
-| Save Draft fields + Step; verify narrow source/protected scope | Page Content adoption; web/LaTeX/Word/PDF export |
+| Save Draft fields only; verify narrow source/protected scope | Run records (at close); Page Content adoption; web/LaTeX/Word/PDF export |
 | Read back saved draft; return full passage + direct links | Full tests, browser/export verification, whole-Page review |
 
 Do not run `outline-pass.py` twice, reload every style source, rebuild the full

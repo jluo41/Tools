@@ -1,7 +1,6 @@
 """Read selected Insight work from frozen definitions; never allocate a Run."""
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 
@@ -39,7 +38,7 @@ def reader_name(spec: dict) -> str:
 
 
 def definition(board: Path, runtime: dict) -> dict:
-    """Read only the frozen definition selected and hashed by this Runtime."""
+    """Read only the frozen definition this Runtime names (its version is in the file name)."""
     import yaml
     directory = (board / runtime["path"]).parent.resolve()
     ref = runtime.get("definition")
@@ -48,10 +47,7 @@ def definition(board: Path, runtime: dict) -> dict:
     path = (directory / ref).resolve()
     if not path.is_relative_to(directory):
         raise ValueError("frozen definition must remain inside its Runtime directory")
-    body = path.read_bytes()
-    if hashlib.sha256(body).hexdigest() != runtime.get("definition_hash"):
-        raise ValueError("frozen definition hash is missing or differs from its recorded hash")
-    data = yaml.safe_load(body)
+    data = yaml.safe_load(path.read_bytes())
     if not isinstance(data, dict) or data.get("schema") != "haipipe.insight-definition/v1" \
             or data.get("workflow_id") != "haipipe-insight-workflow":
         raise ValueError("unsupported Insight definition")
@@ -223,7 +219,7 @@ def request_text(snap: dict, projection: dict, item: dict | None = None) -> str:
              "Workflow Skill: haipipe-insight-workflow; entry Skill: haipipe-insight."]
     if item:
         lines += [f'Workflow Runtime: {item["runtime"]["id"]}',
-                  f'Frozen definition: {item["runtime"]["definition"]} · sha256 {item["runtime"].get("definition_hash", "not recorded")}',
+                  f'Frozen definition: {item["runtime"]["definition"]}',
                   f'Spec: {item["spec"]["id"]} · {item["name"]}', f'Canonical Run Type: {item["type"]}',
                   f'Bounded work: {item["purpose"]}', f'Target: {item["target"]}',
                   f'Owner Skill: {item["owner"]}', f'Worker Skill(s): {item["workers"]}', f'Actor: {item["actor"]}',

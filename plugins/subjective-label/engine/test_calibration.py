@@ -162,11 +162,11 @@ def test_full_round_one_flow(tmp_path: Path) -> None:
     assert cal.verify_events(root / "rounds/round_01") == []
     rows = [json.loads(l) for l in (root / "rounds/round_01/human_final.jsonl").read_text().splitlines()]
     assert len(rows) == 4 and rows[0]["final"]["change_type"] in {"correction", "none"}
-    runtime = yaml.safe_load((root / "results" / final["closed_run"] / "runtime.yaml").read_text())
+    runtime = yaml.safe_load((root.parent / "results" / final["closed_run"] / "runtime.yaml").read_text())
     assert runtime["status"] == "complete"
     state = cal.job_state(root)
     assert state["rounds"][0]["state"] == "judged"
-    assert (root / "runs").is_dir() and len(list((root / "runs").glob("rl*.yaml"))) == 3
+    assert (root.parent / "runs").is_dir() and len(list((root.parent / "runs").glob("rl*.yaml"))) == 3
     assert not (root / "gold/cumulative.jsonl").read_text()  # no gold without round-close
 
 

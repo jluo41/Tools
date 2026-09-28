@@ -334,10 +334,10 @@ def _proof_block(rows, note, folder, rel):
             "%s"
             "<details class='pfp'><summary>provenance</summary>"
             "<div>source: <code>%s</code></div>"
-            "<div>pulled: %s</div><div>sha256: <code>%s</code></div>"
+            "<div>pulled: %s</div>"
             "</details></figure>"
             % (_esc(nm), facts, body, _esc(r.get("source", "?")),
-               _esc(r.get("pulled", "?")), _esc(r.get("sha256", "?"))))
+               _esc(r.get("pulled", "?"))))
         if r.get("why"):
             out.append("<div class='why'>%s</div>" % _esc(r["why"]))
     return "".join(out)
@@ -541,7 +541,7 @@ class PlugViewMixin:
     def plug_probe(self, p):
         """Compatibility refusal: Page-local Probe storage is retired."""
         return None, ("Probe is retired. Specify a typed Evidence Item in "
-                      "outline/, map Supporting Runs in SURVEY, and LAND one "
+                      "draft/, map Supporting Runs in SURVEY, and LAND one "
                       "local Result instead.")
 
     def _retired_plug_probe(self, p):

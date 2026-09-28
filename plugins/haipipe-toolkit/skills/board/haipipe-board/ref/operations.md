@@ -79,7 +79,7 @@ use their family owner and Board-level actions. Do not create a Q Page to
 replace an existing native object or reshape its tree with generic tools.
 
 Archive history is written to the Page's
-`outline/<stem>-log.md`, never to a Page-level `## Log`.
+`outline/records/<stem>-log.md`, never to a Page-level `## Log`.
 
 ## Build and check
 
@@ -162,7 +162,7 @@ After substantive work:
 
 1. update the owning source;
 2. update affected Aim ticks and `Now:` facts;
-3. append the reason to `outline/<stem>-log.md`;
+3. append the reason to `outline/records/<stem>-log.md`;
 4. rebuild and check;
 5. inspect the rendered result.
 

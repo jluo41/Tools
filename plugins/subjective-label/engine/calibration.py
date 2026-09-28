@@ -116,8 +116,7 @@ def _schema(config: dict) -> dict:
 
 def _next_run_number(job_root: Path) -> int:
     seen = [0]
-    for folder in ("runs", "results"):
-        base = job_root / folder
+    for base in (job.runs_dir(job_root), job.results_dir(job_root)):
         if not base.is_dir():
             continue
         for path in base.iterdir():
@@ -132,7 +131,7 @@ def _run_name(job_root: Path, operation: str, target: str) -> str:
 
 
 def _find_run(job_root: Path, operation: str, target: str) -> str | None:
-    runs = job_root / "runs"
+    runs = job.runs_dir(job_root)
     if not runs.is_dir():
         return None
     hits = sorted(
@@ -238,7 +237,7 @@ def round_summary(job_root: Path, round_path: Path) -> dict:
     calibration_run = _find_run(job_root, "human-calibration", round_target(t))
     calibration_status = None
     if calibration_run:
-        runtime = job_root / "results" / calibration_run / "runtime.yaml"
+        runtime = job.results_dir(job_root) / calibration_run / "runtime.yaml"
         if runtime.is_file():
             calibration_status = (yaml.safe_load(runtime.read_text(encoding="utf-8")) or {}).get("status")
     if (round_path / "checkpoint.json").is_file():
@@ -430,13 +429,13 @@ def release_round(
     _write_run(
         job_root, run,
         operation="round-prepare", phase="P1", episode=round_dir_name(t), target=round_target(t),
-        commission={"path": f"rounds/{round_dir_name(t)}/card.md", "sha256": job.sha256_bytes(card)},
-        inputs=[{"path": "corpus/items.jsonl", "sha256": items_checksum}],
+        commission={"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/card.md"), "sha256": job.sha256_bytes(card)},
+        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl"), "sha256": items_checksum}],
         worker={"kind": "engine", "name": "subjective-label.engine.calibration:release_round"},
         acceptance="batch frozen with seed and inclusion probability before any show event",
         status="complete", started_at=released_at, finished_at=now_iso(),
         outcome=f"{size} items drawn from {len(pool)} eligible",
-        artifacts=[{"path": f"rounds/{round_dir_name(t)}/{rel}",
+        artifacts=[{"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/{rel}"),
                     "sha256": job.sha256_file(round_path / rel)} for rel in rels],
     )
     return {"round_id": round_dir_name(t), "run": run, "batch_size": size, "pool": len(pool)}
@@ -452,14 +451,14 @@ def _write_run(job_root: Path, run: str, *, operation: str, phase: str, episode:
         "commission": commission, "inputs": inputs, "worker": worker,
         "acceptance": acceptance, "supersedes": None,
     }
-    job.write_once(job_root / "runs" / f"{run}.yaml", job.yaml_bytes(ticket))
+    job.write_once(job.runs_dir(job_root) / f"{run}.yaml", job.yaml_bytes(ticket))
     runtime = {
         "run": run, "family": "labeling", "operation": operation, "target": target,
         "status": status, "ticket": f"runs/{run}.yaml", "result": f"results/{run}/result.yaml",
         "inputs": inputs, "outcome": outcome, "worker": worker,
         "started_at": started_at, "finished_at": finished_at, "supersedes": None, "failure": None,
     }
-    runtime_path = job_root / "results" / run / "runtime.yaml"
+    runtime_path = job.results_dir(job_root) / run / "runtime.yaml"
     runtime_path.parent.mkdir(parents=True, exist_ok=True)
     runtime_path.write_bytes(job.yaml_bytes(runtime))  # lifecycle file: running -> complete
     if status == "complete":
@@ -468,7 +467,7 @@ def _write_run(job_root: Path, run: str, *, operation: str, phase: str, episode:
             "outcome": outcome, "artifacts": artifacts,
             "promotion": {"performed": False, "reason": "only round-close promotes gold and policy"},
         }
-        job.write_once(job_root / "results" / run / "result.yaml", job.yaml_bytes(result))
+        job.write_once(job.results_dir(job_root) / run / "result.yaml", job.yaml_bytes(result))
 
 
 # ── JUDGE ────────────────────────────────────────────────────────────────────
@@ -495,9 +494,9 @@ def _ensure_calibration_run(job_root: Path, round_path: Path, human_id: str) -> 
     _write_run(
         job_root, run,
         operation="human-calibration", phase="P1", episode=round_path.name, target=round_target(t),
-        commission={"path": f"rounds/{round_path.name}/human_batch.jsonl",
+        commission={"path": job.page_path(job_root, f"rounds/{round_path.name}/human_batch.jsonl"),
                     "sha256": job.sha256_file(round_path / "human_batch.jsonl")},
-        inputs=[{"path": f"rounds/{round_path.name}/manifest.yaml",
+        inputs=[{"path": job.page_path(job_root, f"rounds/{round_path.name}/manifest.yaml"),
                  "sha256": job.sha256_file(round_path / "manifest.yaml")}],
         worker={"kind": "human", "name": human_id, "surface": "labeling screen"},
         acceptance="every batch row has a final event; human_final.jsonl rehashes",
@@ -738,19 +737,19 @@ def _close_calibration(job_root: Path, round_path: Path, batch: list[dict], stat
     if readme.is_file():
         text = readme.read_text(encoding="utf-8").replace("state: prepared", "state: judged")
         readme.write_text(text, encoding="utf-8")
-    runtime = yaml.safe_load((job_root / "results" / run / "runtime.yaml").read_text(encoding="utf-8"))
+    runtime = yaml.safe_load((job.results_dir(job_root) / run / "runtime.yaml").read_text(encoding="utf-8"))
     _write_run(
         job_root, run,
         operation="human-calibration", phase="P1", episode=round_path.name,
         target=round_target(_round_index(round_path.name)),
-        commission=yaml.safe_load((job_root / "runs" / f"{run}.yaml").read_text())["commission"],
+        commission=yaml.safe_load((job.runs_dir(job_root) / f"{run}.yaml").read_text())["commission"],
         inputs=runtime["inputs"], worker=runtime["worker"],
         acceptance="every batch row has a final event; human_final.jsonl rehashes",
         status="complete", started_at=runtime["started_at"], finished_at=now_iso(),
         outcome=f"{len(rows)} items judged",
         artifacts=[
-            {"path": f"rounds/{round_path.name}/human_final.jsonl", "sha256": job.sha256_bytes(data)},
-            {"path": f"rounds/{round_path.name}/sessions/events.jsonl",
+            {"path": job.page_path(job_root, f"rounds/{round_path.name}/human_final.jsonl"), "sha256": job.sha256_bytes(data)},
+            {"path": job.page_path(job_root, f"rounds/{round_path.name}/sessions/events.jsonl"),
              "sha256": job.sha256_file(round_path / "sessions" / "events.jsonl")},
         ],
     )

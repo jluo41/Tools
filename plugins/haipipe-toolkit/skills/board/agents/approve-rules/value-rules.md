@@ -13,7 +13,8 @@ R1  THE PROSE NUMBER EQUALS THE RESULT NUMBER. Every value the page states
 R2  THE RESULT RESOLVES. The Local Run and its Result path exist, the Result
     names the Supporting Run(s), and the item points to that exact receipt.
 R3  PROVENANCE IS COMPLETE. Each pulled value names source, run, unit/window,
-    and sha256 (when the source is a file); hashes match the bytes on disk.
+    and the source's version or file date (when the source is a file); the
+    source file is not newer than the Result. No content hash (JL 260928).
 R4  THE RESULT ANSWERS THE ITEM. The Result's scope and fields address the
     Evidence Item specification, not a topic-similar neighbour.
 R5  SERVES NAMES REAL ADDRESSES. Every page/division address in `serves:`

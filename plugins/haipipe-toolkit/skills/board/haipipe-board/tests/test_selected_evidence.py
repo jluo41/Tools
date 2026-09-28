@@ -153,3 +153,27 @@ def test_duplicate_keys_within_one_selected_bib_are_rejected(tmp_path):
     bib.write_text(bib.read_text()+'@article{Current, title={Conflicting source}}\n')
     with pytest.raises(EvidenceSelectionError, match='duplicate keys within'):
         ExportMixin()._selected_bibliography(page, tmp_path)
+
+
+def test_older_cite_takes_each_key_from_its_supporting_result(tmp_path):
+    """A paper-local CITE Result (pj…) has no payload .bib; its sources name their keys and
+    Supporting Results, each holding a one-entry Bib. Exact keys only; a missing one is refused."""
+    import json
+    page, manifest, ledger = fixture(tmp_path, 'CITE')
+    (tmp_path / 'pyproject.toml').write_text('')      # the checkout root repo_root() finds
+    (tmp_path / 'code').mkdir()
+    support = tmp_path / 'discoveries' / 'b01' / 'results' / 'r01_liu2021'
+    support.mkdir(parents=True)
+    (support / 'r01_liu2021.bib').write_text('@article{Liu_2021, title={Assessing the Unacquainted}, year={2021}}\n')
+    document = {'item': 'E01-CITE-example', 'type': 'CITE', 'page_run': 're-selected', 'status': 'complete',
+                'supporting_results': [{'run': 'b01j01t01r01', 'result': 'discoveries/b01/results/r01_liu2021'}],
+                'payload': {'sources': [{'cite': '@Liu_2021', 'identity': 'doi:10.25300/MISQ/2021/14375'}]}}
+    manifest.write_text(json.dumps(document))
+    out = tmp_path / 'delivery'
+    out.mkdir()
+    bib = ExportMixin()._selected_bibliography(page, out)
+    assert bib.read_text() == '@article{Liu_2021, title={Assessing the Unacquainted}, year={2021}}\n'
+    document['payload']['sources'].append({'cite': '@liu2021assessing'})   # same paper, another key
+    manifest.write_text(json.dumps(document))
+    with pytest.raises(EvidenceSelectionError, match='liu2021assessing are in none of its Supporting Results'):
+        ExportMixin()._selected_bibliography(page, out)

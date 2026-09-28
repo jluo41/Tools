@@ -476,7 +476,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     """
     plan_text = canonical_plan(plan_text)
     current_grammar = bool(
-        re.search(r"(?m)^outline-version:\s*v\d+\.\d+(?:\.\d+)?\s*$", plan_text)
+        re.search(r"(?m)^(?:outline|draft)-version:\s*v\d+\.\d+(?:\.\d+)?\s*$", plan_text)
         or re.search(r"(?m)^\s*Evidence:", plan_text)
     )
     if current_grammar:
@@ -890,7 +890,7 @@ def split_embedded_draft(continuation):
 # writer emits the Draft-first shape for every drafted Bullet.
 
 _POINT_LINE = re.compile(r"^Point:\s*(.*)$", re.I)
-_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]?\s*·\s*)")
+_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]?(?:\s*(?:-|–|to)\s*S\d+[a-z]?)?\s*·\s*)")  # S7, S26a, or a range S3-S4
 _BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·\s*)(.*)$")
 
 

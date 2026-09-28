@@ -13,8 +13,8 @@ description: >-
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-22"
+  version: "0.7.1"
+  last_updated: "2026-09-28"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -326,9 +326,9 @@ portfolio, evidence store, or selection authority.
 
 `sync_revision` is the current semantic revision of the Ideation unit. It is
 not a promise that the P0 Page's adopted Markdown or delivery has already been
-rewritten. The sync packet also carries a `source_hash` and a
-`projection.change_class`; the hash identifies the exact semantic source and
-the change class selects the narrowest Page route. A P0 update has three
+rewritten. The sync packet also carries a `projection.change_class`, which
+selects the narrowest Page route; the revision number alone identifies the
+semantic source (no content hash). A P0 update has three
 independently reportable surfaces:
 
 ```text

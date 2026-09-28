@@ -172,8 +172,8 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
   colorblind-safe: encode the key contrast with position, shape, or weight, never with hue alone.
   No title baked inside the image; the title lives only in the caller-owned `\caption{}` in
   `float.tex`.
-- **Refuse rather than guess.** Stop when the brief is incomplete, the named intake source is
-  missing, its snapshot hash does not match, or a numeric display has no verified aggregate.
+- **Refuse rather than guess.** Stop when the brief is incomplete, the named intake source or its
+  snapshot file is missing, the snapshot is stale, or a numeric display has no verified aggregate.
   Do not search for data, invent it, or guess placement.
 
 ## Sibling renderers

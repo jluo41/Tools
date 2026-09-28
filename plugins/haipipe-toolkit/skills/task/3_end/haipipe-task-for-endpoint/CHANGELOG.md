@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `external_contract` has no `checksum` field (`SKILL.md`, `fn/scaffold.md`, `ref/config-seed.yaml`).
+
 ## [0.2.5] — 2026-09-04
 
 - Scaffold new Task Pages with `folder-kind: task` under canonical

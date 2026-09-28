@@ -16,7 +16,7 @@ and acceptance rules for this commission.
 |---|---|---|---|---|---|---|
 | source(subject) | Discovery / owning Discovery Folder | Agent analyzes one canonical source needed for a named claim or official venue fact | Frozen search question; source identity; existing Results first | Search/admit/read/verify using Discovery workers; individual queries and model calls are Steps | Agent gate: verified same-stem Result/Bib/runtime, or truthful inaccessible/insufficient outcome | Accepted Result → portfolio; unavailable → portfolio with HOLD; N missing independently reusable Subjects |
 | pilot(question) | Execution / owning Task Folder | Agent answers one bounded minimum-experiment question | Frozen design, data and acceptance rule; relevant source Results | Execute the pilot and classify its outcome; tools/retries are Steps | Agent gate: Task Result/runtime answering the question as positive/negative, or truthful non-success | Result → portfolio; blocked → portfolio with HOLD; K authorized missing pilot questions |
-| portfolio(snapshot) | Execution / owning Task Folder | Agent reconciles one direction/evidence snapshot to the requested Ideation deliverable; the named person owns any selection interaction | Direction and admitted card ids; exact existing/new source and pilot Results; current Venue contracts as needed | I1 generation/admission, I2 specialist readings/reconciliation, and requested I3 comparison/decision recording are internal Steps. Stage-specific commissions use only their requested Steps | Hybrid gate for selection: explicit per-card human answer plus mechanical gates, or a durable defer/HOLD outcome. Agent gate for generation/testing only: requested artifact gate or truthful non-success. Task Result indexes semantic artifacts, frozen input hashes and receipts; it does not copy source evidence | CLOSE on the commissioned deliverable or truthful non-success; missing evidence routes to the named source/pilot Specs and resumes under owner rules; one per independently closable direction/snapshot commission |
+| portfolio(snapshot) | Execution / owning Task Folder | Agent reconciles one direction/evidence snapshot to the requested Ideation deliverable; the named person owns any selection interaction | Direction and admitted card ids; exact existing/new source and pilot Results; current Venue contracts as needed | I1 generation/admission, I2 specialist readings/reconciliation, and requested I3 comparison/decision recording are internal Steps. Stage-specific commissions use only their requested Steps | Hybrid gate for selection: explicit per-card human answer plus mechanical gates, or a durable defer/HOLD outcome. Agent gate for generation/testing only: requested artifact gate or truthful non-success. Task Result indexes semantic artifacts, frozen input paths and receipts; it does not copy source evidence | CLOSE on the commissioned deliverable or truthful non-success; missing evidence routes to the named source/pilot Specs and resumes under owner rules; one per independently closable direction/snapshot commission |
 
 The portfolio Run uses the existing Execution family (model/tool work), the
 Task owner's authored Ticket and same-stem Result/runtime grammar. The Task
@@ -42,9 +42,9 @@ reused rather than wrapped in another Run.
   `human | automatic | agent | hybrid` for gate/route modes.
 - For every novelty, pressure, or Fit assessment Step, the Task Ticket freezes
   an `assessment_id`, evaluator (person/agent and exact model/build), criterion
-  owner plus rubric id/version, subject Card hash, and sorted input-manifest
-  hash. The Task Result indexes those exact values and its assessment receipt
-  path/hash. A durable specialist receipt records the full owning Run address
+  owner plus rubric id/version, subject Card path, and sorted input list.
+  The Task Result indexes those exact values and its assessment receipt
+  path. A durable specialist receipt records the full owning Run address
   and `assessment_id`, then inherits the rest from that Result as specified in
   `receipts.md`; it does not create a child Run. A direct/one-off specialist
   call has no owning Run and carries the complete binding inline or in its own

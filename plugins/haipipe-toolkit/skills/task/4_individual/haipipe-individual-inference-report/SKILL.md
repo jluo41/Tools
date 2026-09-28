@@ -9,7 +9,7 @@ description: >-
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -87,7 +87,7 @@ forecast.json   selected endpoint response
 report.json     structured Report payload
 report.txt      reader text
 response.xml    raw LLM report response
-meta.json       telemetry and forecast/report hash binding
+meta.json       telemetry and forecast/report evidence binding
 ```
 
 ---
@@ -183,7 +183,7 @@ Reuses
 
 `make_report_cli.py` accepts `--workspace-root` and `--platform`; select the deployed
 wire pair even for a local wrapper. `meta.json` binds forecast.json and report.json
-hashes and selected model/window indices. `forecast.json` is required for independent
+by file name plus the selected model/window indices. `forecast.json` is required for independent
 forecast fact-checking; it follows the same project data policy as the report.
 Patient actions are limited to explanation, care-team contact and a supplied existing
 clinician plan. Do not derive new treatment, exercise, food or hydration instructions

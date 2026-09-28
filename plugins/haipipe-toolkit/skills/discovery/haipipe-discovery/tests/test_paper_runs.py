@@ -346,7 +346,7 @@ def add_report(
     canonical = (
         evidence_bib
         if evidence_bib is not None
-        else f"outline/evidence/bibex/{topic.name}.bib"
+        else f"draft/evidence/bibex/{topic.name}.bib"
     )
     text = manifest.read_text(encoding="utf-8").replace(
         "status: planned", f"status: {status}"
@@ -781,7 +781,7 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertEqual(["Demo2026"], [entry.key for entry in entries])
             self.assertIn("@article{Demo2026", paper_runs.aggregate_bib(entries))
             self.assertEqual(
-                topic / "outline" / "evidence" / "bibex" / "t01_demo_topic.bib",
+                topic / "draft" / "evidence" / "bibex" / "t01_demo_topic.bib",
                 paper_runs.default_bib_path(topic),
             )
             self.assertEqual(0, paper_runs.command_build_bib(topic, None, True))

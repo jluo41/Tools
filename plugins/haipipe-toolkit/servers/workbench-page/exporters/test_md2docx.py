@@ -72,6 +72,11 @@ Outcome & 1 & 2 \\
         self.assertEqual(rows[0][1][0], "(1) Basic")
         self.assertEqual(rows[0][2][0], "(2) +Phys.")
 
+    def test_detex_drops_bibtex_penalty_number(self):
+        ref = r"\emph{New England Journal of Medicine}, 376\penalty0 (7):\penalty0 663--673, 2017."
+        self.assertEqual(md2docx.detex(ref),
+                         "New England Journal of Medicine, 376 (7): 663–673, 2017.")
+
     def test_table_alignment_ignores_tex_modifier_commands(self):
         spec = (r"@{}>{\raggedright\arraybackslash}p{3.45cm}"
                 r"*{6}{>{\centering\arraybackslash}X}@{}")
@@ -80,3 +85,91 @@ Outcome & 1 & 2 \\
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DisplayPlacementTests(unittest.TestCase):
+    def test_a_table_follows_the_whole_paragraph_that_first_cites_it(self):
+        """S-MISQ-Main-5-Results 260928: a table placed after the citing SENTENCE cut the
+        paragraph in two; the rest printed after the table as an orphaned paragraph."""
+        import subprocess, sys, zipfile
+        source = """# Example · §1 Results
+
+## Content
+
+### 1 · Results
+
+#### P1. Estimates
+
+Table \\ref{tab:x} reports the estimates. <!-- realizes: C1.P1.B1 -->
+The second sentence reads them. <!-- realizes: C1.P1.B2 -->
+
+#### P2. Next
+
+A later paragraph. <!-- realizes: C1.P2.B1 -->
+
+## Aims
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "Example.md"
+            page.write_text(source)
+            unit = root / "units" / "Display1-x"
+            (unit / "assets").mkdir(parents=True)
+            (unit / "float.tex").write_text(r"\begin{table}[H]\caption{Estimates}\label{tab:x}\end{table}")
+            (unit / "assets" / "table-body.tex").write_text("Outcome & Estimate \\\\\nMME & 9.34 \\\\\n")
+            out = root / "Example.docx"
+            for join in (["--join-paragraphs"], []):
+                run = subprocess.run([sys.executable, str(Path(md2docx.__file__)), str(page), "-o", str(out),
+                                      "--paper-root", str(root), "--display-root", str(root / "units")] + join,
+                                     capture_output=True, text=True)
+                self.assertEqual(run.returncode, 0, run.stderr[-800:])
+                xml = zipfile.ZipFile(out).read("word/document.xml").decode("utf-8")
+                self.assertIn("<w:tbl>", xml, join)
+                self.assertLess(xml.index("The second sentence reads them."), xml.index("<w:tbl>"), join)
+                self.assertLess(xml.index("<w:tbl>"), xml.index("A later paragraph."), join)
+
+    def test_a_ref_in_a_caption_never_places_or_numbers_a_table_early(self):
+        """S-MISQ-Main-5-Results 260928: Table 1's caption named the pooled table, which
+        Word then placed (and numbered 2) right after P1, and the pooled table's note pulled
+        two more tables ahead of the prose that cites them. Only a sentence places a display;
+        numbers follow the first citation in prose, as the LaTeX floats do."""
+        import subprocess, sys, zipfile
+        source = """# Example · §1 Results
+
+## Content
+
+### 1 · Results
+
+#### P1. Sample
+
+Table \\ref{tab:a} describes the sample. <!-- realizes: C1.P1.B1 -->
+
+#### P2. Estimates
+
+Table \\ref{tab:b} reports one model. <!-- realizes: C1.P2.B1 -->
+Table \\ref{tab:c} pools them. <!-- realizes: C1.P2.B2 -->
+
+## Aims
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "Example.md"
+            page.write_text(source)
+            captions = {"a": r"Sample, the pooled rows of Table~\ref{tab:c}",
+                        "b": "One model", "c": r"Pooled, see also Table~\ref{tab:b}"}
+            for key, caption in captions.items():
+                unit = root / "units" / ("Display-" + key)
+                (unit / "assets").mkdir(parents=True)
+                (unit / "float.tex").write_text(r"\begin{table}[H]\caption{%s}\label{tab:%s}\end{table}" % (caption, key))
+                (unit / "assets" / "table-body.tex").write_text("Row & %s \\\\\n" % key.upper())
+            out = root / "Example.docx"
+            run = subprocess.run([sys.executable, str(Path(md2docx.__file__)), str(page), "-o", str(out),
+                                  "--paper-root", str(root), "--display-root", str(root / "units"),
+                                  "--join-paragraphs"], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr[-800:])
+            xml = zipfile.ZipFile(out).read("word/document.xml").decode("utf-8")
+            at = {k: xml.index("Table %d. %s" % (n, captions[k].split(",")[0])) for k, n in (("a", 1), ("b", 2), ("c", 3))}
+            self.assertLess(at["a"], xml.index("reports one model"))            # A after P1, before P2
+            self.assertLess(xml.index("pools them"), at["b"])                    # B and C after all of P2
+            self.assertLess(at["b"], at["c"])
+            self.assertIn("pooled rows of Table 3", xml.replace("Table 3", "Table 3"))   # forward number

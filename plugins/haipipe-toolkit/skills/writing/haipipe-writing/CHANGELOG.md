@@ -1,3 +1,12 @@
+## 0.22.2 · 2026-09-28 · No content hashes (JL 260928)
+
+- Method, rubric, profile and anti-slop records carry path and version, never a content hash: `sha256` catalog override, `profile_hash`, `rules_sha256` and the input/report hashes in `trace.md` are removed. The anti-slop catalog entry's `version` is `skill-version` instead of `content-hash`.
+
+## 0.22.1 · 2026-09-28
+
+- A ninth typed lane, `> Supporting Run:` (⚙️): the Task or Discovery Run behind a sentence's
+  evidence, written by `page.py adopt` (haipipe-page 0.119.0). Lane counts and lists updated.
+
 ## 0.22.0 · 2026-09-22
 
 - The external skills this worker calls are vendored beside it in numbered

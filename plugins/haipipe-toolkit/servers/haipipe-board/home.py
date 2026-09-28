@@ -277,7 +277,7 @@ def board_by_slug(root: Path, slug: str) -> Path | None:
 # Only routes that take `path=` + `file=` for one Page belong here; Studio's
 # drawing is an Excalidraw pane with its own address and stays out.
 WORKBENCH_TABS = {
-    "": "outline", "outline": "outline", "page": "outline",
+    "": "draft", "draft": "draft", "outline": "draft", "page": "draft",
     "runs": "runs", "run": "runs", "pageruns": "pageruns",
     "delivery": "delivery", "folder": "folderstat", "folderstat": "folderstat",
     "evidence": "evidence", "value": "value",

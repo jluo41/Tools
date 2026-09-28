@@ -27,8 +27,8 @@ ls _WorkSpace/ExternalStore/<asset>/
 cat _WorkSpace/ExternalStore/<asset>/<version>/version.yaml
 ```
 
-- The version must have a passing `t03_validate` Run.
-- A live-serving asset also needs a passing `t04_parity` Run.
+- The version must have a passing `rNN_validate_<Version>` Run.
+- A live-serving asset also needs a passing `rNN_parity` Run.
 - Check every cohort the SourceFn serves: for temporal assets
   (`leak_policy: strict`), a version whose `ValidFromDT` is after the cohort's
   observation window leaves those rows unmatched. State which cohorts are

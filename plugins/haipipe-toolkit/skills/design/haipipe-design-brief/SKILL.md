@@ -7,7 +7,7 @@ description: >-
   application brief, folder-kind brief, /haipipe-design-brief.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-20"
+  last_updated: "2026-09-28"
   folder_owner: canonical
   folder_kind: brief
   primary_face: page
@@ -99,7 +99,7 @@ core inputs; and release the list of designs. Do not answer a need locally.
 
 ## Workbenches
 
-- exact signed-W path/Page-version/content-hash/signature/GI6 receipt required
+- exact signed-W path/Page-version/signature/GI6 receipt required
   for evidence-first birth or accepted core inputs; PageX is invalid;
 - `outline` required;
 - upstream execution forbidden: missing insight is raised to the InsightBoard;

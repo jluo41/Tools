@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-09-22"
+  version: "0.17.2"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md
 ---
 
@@ -157,7 +157,7 @@ discoveries/
         └── t01_<task_noun>_<qualifier>/  Task = article-shaped Page Folder
             ├── t01_<task_noun>_<qualifier>.md
             ├── discovery.yaml
-            ├── outline/                           Page process + Evidence Workspace
+            ├── draft/                           Page process + Evidence Workspace
             │   └── evidence/
             │       └── bibex/t01_<...>.bib        derived CITE aggregate
             ├── workflow/                          namespaced D1 + Page-phase receipts
@@ -250,7 +250,7 @@ separate Bibex workbench.
    licenses a full-text readout.
 6. Internal API, CLI, worker, and skill calls are receipt detail, never Runs.
 7. The Task Page Evidence Bib is a deterministic union of completed Result Bibs
-   at `outline/evidence/bibex/<task>.bib`. It is derived; correction lands in
+   at `draft/evidence/bibex/<task>.bib`. It is derived; correction lands in
    the Result Bib first. Every included Result records its person-verification
    receipt in `runtime.yaml` under `bib.verification`.
 8. sources.md and notes.md are legacy/derived indexes, not authority for new
@@ -287,8 +287,8 @@ and `landscape.md` are optional typed Task-side synthesis records; they never
 replace the Page or become Runs. Full article grammar and permitted
 `type`/`role` normalization: `ref/page-types.md`.
 
-Page-local evidence follows the shared Page contract: use `outline/evidence/`,
-especially `outline/evidence/bibex/` and the generated Outline Evidence
+Page-local evidence follows the shared Page contract: use `draft/evidence/`,
+especially `draft/evidence/bibex/` and the generated Outline Evidence
 Workspace. Discovery Paper/Source Results remain in `results/` and are not
 copied into that workspace. The derived aggregate Bib is a projection, not a
 typed CITE Evidence Item. The D1 root Page uses direct Result/Card/cite lineage
@@ -336,8 +336,8 @@ but every new address must pass the explicit b/j/t/r naming gate.
 Resolve or allocate the next immutable `bNN_`, `jNN_`, and `tNN_` segments.
 Each name uses a concrete noun plus distinguishing qualifier. Scaffold the Task
 Page's two Faces and only the lanes the workflow needs. The Page filename
-equals the Task folder stem. Scaffold the shared `outline/` process records as
-the Page is used; create `outline/evidence/` lanes only when the Evidence
+equals the Task folder stem. Scaffold the shared `draft/` process records as
+the Page is used; create `draft/evidence/` lanes only when the Evidence
 Workspace needs them. Do not scaffold empty scripts/, runs/, or results/
 merely for symmetry, and never create a root `<task>/evidence/` lane.
 
@@ -432,7 +432,7 @@ python scripts/paper_runs.py check <task>
 
 After the shared Page workflow has produced and CHECKed the root Task Page,
 use `haipipe-workbench-page/ref/evidence/citations.md` to validate the derived
-aggregate under `outline/evidence/bibex/`, append
+aggregate under `draft/evidence/bibex/`, append
 `discovery.yaml report:`, reconcile its Run counts and canonical `evidence_bib`
 path with the inventory, reconcile Page/Aims state, set the truthful terminal
 status, and append project log events. The checker reports Result-level

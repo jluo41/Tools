@@ -15,6 +15,11 @@ $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 The stem is always `rNN_<noun>_<qualifier>` and matches across all four
 projections. Shared Task config omits the `rNN_` prefix.
 
+The notebook is generated: the Ticket converts the `# %%` worker `.py` and
+executes it. Never edit a notebook, by hand, by find-and-replace, or by a
+script that rewrites it after the run. To change what it shows (code, prose,
+an output, a path), change the `.py` and rerun the Ticket (JL 260927).
+
 ## Worker output
 
 The Ticket exports `RESULT_DIR`. A worker must require it and never construct
@@ -32,6 +37,34 @@ results_dir = Path(os.environ["RESULT_DIR"])
 Cross-Task inputs resolve from an explicit store-aware base and name an exact
 upstream Task/Run Result. Never infer a cohort or silently substitute a local
 path.
+
+## Paths
+
+Nothing a Run writes to disk may hold an absolute path. The user name and the
+checkout folder change per machine (`/Users/<name>/Desktop/<SPACE>/...`), so an
+absolute path breaks on the next machine and shows the user name (JL 260927).
+
+- Write every path relative to the SPACE root, the folder that holds `env.sh`
+  (for example `examples-2-lm/Proj10-LLM-Baseline/tasks/...`). This covers
+  configs, Tickets, the `config` parameter papermill writes into the notebook,
+  anything a worker prints, `runtime.yaml`, `metrics.json`, and reports.
+- Preferred: the Ticket injects the config SPACE-relative
+  (`-p config "$(space_rel "$CONFIG")"`), and the worker turns it back into a
+  real path by walking up from its working folder to `env.sh`:
+
+  ```python
+  SPACE = next(p for p in (Path.cwd(), *Path.cwd().parents) if (p / "env.sh").exists())
+  config = str(SPACE / config)      # SPACE-relative becomes real; an absolute path stays as it is
+  ```
+
+- Start the notebook kernel in the Task folder (`papermill --cwd <task>`),
+  never in the SPACE root. The root holds `code/__init__.py`, which hides
+  Python's standard `code` module; ipykernel then dies with
+  `Kernel died before replying to kernel_info`.
+- Never edit the notebook to fix a path (JL 260927): it is generated from the
+  worker `.py`, so the fix goes in the `.py` (or in how the Ticket injects the
+  config), then the Ticket reruns. `ref/run-sh-template.sh` only warns: when
+  the executed notebook or a Result file still shows `<SPACE root>/`.
 
 ## Required config metadata
 
@@ -81,8 +114,8 @@ Every Run records:
 seed or deterministic policy
 git SHA and dirty state
 Ticket path and arguments
-config path and SHA-256
-all additional input paths and hashes
+config path
+all additional input paths
 host, start, finish, exit code
 declared Result gate outcome
 ```

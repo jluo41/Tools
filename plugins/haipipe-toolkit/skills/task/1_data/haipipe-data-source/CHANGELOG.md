@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.3] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/concepts.md`: the manifest memory rule reads table facts from the parquet footer and no longer describes a file MD5.
+
 ## [0.3.2] — 2026-09-24
 
 - Generated SourceFns may live in `code/haifn/fn_source/<fn_version>/` (Run config `fn_version:`); the version names the `ProcName_to_ProcDf` shape. `templates/config.yaml` shows the optional `fn_version:`.

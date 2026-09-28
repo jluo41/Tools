@@ -65,6 +65,10 @@ def _find_bank() -> Path:
     explicit = os.environ.get("FOODNORM_OBSERVED_DB")
     if explicit:
         return Path(explicit)
+    from ._lock import lock_file              # the pinned ext_foodbank_observed, when a lock pins it
+    pinned = lock_file("ext_foodbank_observed")
+    if pinned is not None:
+        return pinned
     rel = Path("foodbank_observed") / "observed_food.parquet"
     roots = []
     store = os.environ.get("LOCAL_EXTERNAL_STORE")
@@ -100,8 +104,9 @@ def load(path=None) -> Dict[str, Dict]:
         return {}
     df = pd.read_parquet(p)
     out = {}
+    key = "key" if "key" in df.columns else "food_name_original"   # the flat file / the ext_ asset table
     for rec in df.to_dict("records"):
-        out[rec["key"]] = rec
+        out[rec[key]] = rec
     return out
 
 

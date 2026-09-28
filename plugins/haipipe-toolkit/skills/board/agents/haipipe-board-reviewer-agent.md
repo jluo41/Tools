@@ -9,8 +9,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.10.2"
-  last_updated: "2026-09-20"
+  version: "0.10.3"
+  last_updated: "2026-09-28"
   summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded workflow-pass loop."
   changelog: "./CHANGELOG.md"
 ---
@@ -61,7 +61,7 @@ Own:
 - Voice and page-specificity of changed Openings when read consecutively in
   Board order.
 - Consistency among page-level `state:`, `## Aims` plus their `Now:` lines,
-  and `outline/<stem>-log.md`.
+  and `outline/records/<stem>-log.md`.
 - Stale or contradictory claims visible in the Board and the files it links.
 - Page and group ownership clarity when `board.md` changed.
 
@@ -95,10 +95,12 @@ The writer owns every repair and may ask for another fresh review afterward.
    worst pages, and how many pages are clean. Report that score, because a
    list of findings says nothing about whether the board is improving, and a
    page at zero is the one the others should be made to look like.
-   When the assignment supplies an expected version, compute SHA-256 for the
-   target Markdown and its current rendered HTML and join them as
-   `<source>:<render>`. If it differs, return `blocked` with route HOLD. Never
-   rebuild to make the expected and observed versions agree.
+   When the assignment supplies an expected version, read the target Page's
+   version number and the saved time of its Markdown and rendered HTML. If the
+   version differs, or either file was saved after that version (newer file
+   time), return `blocked` with route HOLD. Never compute or compare a content
+   hash (JL 260928), and never rebuild to make the expected and observed
+   versions agree.
 5. Cold-read the scoped pages using `ref/writing-rules.md`. Quote unreadable
    sentences, list undefined terms at first use, and name missing premises.
 6. Resolve applicable requirements in the order defined by
@@ -163,7 +165,7 @@ route:    one route legal from CHECK; the table lives in
           board. Filter check.py's output to lines whose first field is this
           page's file name.
 reason:   <why this route owns the next authority>
-checked_version: <source-sha256>:<render-sha256>
+checked_version: <Page version number and saved time, e.g. v1.5 260928 1241>
 reopens_promise: true | false
 board:    <path>
 scope:    <page ids/paths reviewed>

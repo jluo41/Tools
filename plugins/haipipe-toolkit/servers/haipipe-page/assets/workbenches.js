@@ -122,7 +122,7 @@
     if (!pane.hidden) { state.visible = false; paint(); }
   });
   document.addEventListener('click', function (event) {
-    var link = event.target.closest && event.target.closest('a[href^="/_board/outline"]');
+    var link = event.target.closest && event.target.closest('a[href^="/_board/draft"],a[href^="/_board/outline"]');
     if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault(); openWorkbench('outline', link.href);
   });

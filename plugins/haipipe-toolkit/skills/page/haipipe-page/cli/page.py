@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Create, inspect, build and serve a Page Folder without a Board."""
 import argparse
-from hashlib import sha256
 import json
 from pathlib import Path
 import re
@@ -131,16 +130,34 @@ def main(argv=None):
         "draft-layout",
         help="Move a Page to draft/ with a three-section Draft Markdown (0.118)",
     )
-    layout.add_argument("page", type=Path, help="Page Folder or Page Face .md")
+    layout.add_argument("page", type=Path,
+                        help="Page Folder, Page Face .md, or a Board/Task group folder (every Page in it)")
     layout.add_argument("--sort-runs", action="store_true",
                         help="Also move each ticket in runs/ into its Space folder")
+    layout.add_argument("--archive-evidence", action="store_true",
+                        help="Also move retired Outline evidence to draft/_archive/legacy-outline-evidence/")
     layout.add_argument("--dry-run", action="store_true")
+    layout_check = commands.add_parser(
+        "check-page-folder",
+        help="Is each Page Folder on the latest layout of this skill? Exit 1 if any is behind",
+    )
+    layout_check.add_argument("targets", type=Path, nargs="+",
+                              help="Page Folders, Page Faces, or a Board/group folder (checks every Page in it)")
+    layout_check.add_argument("--json", action="store_true")
     health = commands.add_parser(
         "health",
         help="Check that each Page Folder agrees with itself; exit 1 on any FAIL",
     )
     health.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     health.add_argument("--json", action="store_true")
+    adopt = commands.add_parser(
+        "adopt",
+        help="Write the current Draft's sentences into the Page's Content, in Draft order; "
+             "refuse when the paragraphs do not match",
+    )
+    adopt.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
+    adopt.add_argument("--plan", type=Path, help="Draft Markdown to adopt (default: the current one)")
+    adopt.add_argument("--dry-run", action="store_true", help="Print the diff; write nothing")
     for command in ("inspect", "build", "serve"):
         sub = commands.add_parser(command)
         sub.add_argument("page", type=Path)
@@ -189,10 +206,11 @@ def main(argv=None):
                             raise ValueError("An existing Page keeps its current title; edit its Page Face explicitly")
                         context = load_page(destination)
                         manifest = destination / "page.toml"
-                        if not manifest.is_file() or (
-                            f'input_sha256 = "{sha256(target.read_bytes()).hexdigest()}"'
-                            not in manifest.read_text(encoding="utf-8")
-                        ):
+                        # The Page names its imported copy; no intake hash (JL 260928).
+                        declared = re.search(r'(?m)^content\s*=\s*"([^"]+)"',
+                                             manifest.read_text(encoding="utf-8")) \
+                            if manifest.is_file() else None
+                        if not declared or Path(declared[1]).name != target.name:
                             raise ValueError("Destination exists but is not the Page created from this file")
                     else:
                         context = create_page(target, destination, args.title)
@@ -209,9 +227,35 @@ def main(argv=None):
             print(json.dumps(outline_tidy(args.page, dry_run=args.dry_run), indent=2))
             return
         elif args.command == "draft-layout":
-            from src.draft_migration import draft_layout
-            print(json.dumps(draft_layout(args.page, sort_runs=args.sort_runs,
-                                          dry_run=args.dry_run), indent=2, ensure_ascii=False))
+            from src.draft_migration import draft_layout, draft_layout_tree
+            target = args.page.expanduser().resolve()
+            one = target.is_file() or (target / f"{target.name}.md").is_file()
+            run = draft_layout if one else draft_layout_tree
+            print(json.dumps(run(target, sort_runs=args.sort_runs, dry_run=args.dry_run,
+                                 archive_evidence=args.archive_evidence),
+                             indent=2, ensure_ascii=False))
+            return
+        elif args.command == "check-page-folder":
+            from src.layout_check import check_page_folder, pages_in, render
+            pages = [page for target in args.targets for page in pages_in(target)]
+            if not pages:
+                raise ValueError("no Page Folder found under " + ", ".join(map(str, args.targets)))
+            reports = [check_page_folder(page) for page in pages]
+            if args.json:
+                print(json.dumps(reports, indent=2, ensure_ascii=False))
+            elif len(reports) == 1:
+                print(render(reports[0]))
+            else:
+                for report in reports:
+                    behind = [r for r in report["rules"] if r["state"] == "BEHIND"]
+                    print("%s %s%s" % ("✅" if not behind else "⚠️", report["page"],
+                                       "" if not behind else "  · behind: " + "; ".join(
+                                           "%s → %s" % (r["rule"], r["fix"]) for r in behind)))
+                n = sum(1 for r in reports if r["verdict"] == "behind")
+                print("\n%d Page(s) · %d on the latest layout %s · %d behind"
+                      % (len(reports), len(reports) - n, reports[0]["layout"], n))
+            if any(report["verdict"] == "behind" for report in reports):
+                sys.exit(1)
             return
         elif args.command == "health":
             from src.folder_health import FAIL, folder_health, render
@@ -221,6 +265,13 @@ def main(argv=None):
             else:
                 print("\n\n".join(render(report) for report in reports))
             if any(report["verdict"] == FAIL for report in reports):
+                sys.exit(1)
+            return
+        elif args.command == "adopt":
+            from src.page_adopt import render, run
+            reports = [run(page, plan=args.plan, dry_run=args.dry_run) for page in args.pages]
+            print("\n\n".join(render(report) for report in reports))
+            if any(report["refused"] for report in reports):
                 sys.exit(1)
             return
         elif args.command == "migrate-drafts":

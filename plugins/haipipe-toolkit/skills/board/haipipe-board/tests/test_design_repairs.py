@@ -1,5 +1,6 @@
 """Behavioral regressions for the Design contract and presenter repair."""
 import json
+import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -7,7 +8,7 @@ from tempfile import TemporaryDirectory
 from live import design_actions as acts
 from live.design import design_snapshot, perform_action, render_design, _render_for
 from live.designboard import bundle_rows, design_board_snapshot, render_design_board
-from tests.fixture_design_v2 import FolderBuilder, ItemSpec, audit, digest
+from tests.fixture_design_v2 import FolderBuilder, ItemSpec, audit
 from tests.test_design_workbench import legacy_fixture, v2_fixture
 
 
@@ -25,6 +26,12 @@ def spec(stage="generated", **fields):
     return ItemSpec(**values)
 
 
+def later(path, seconds=5):
+    """Move a file's modification time clearly past every record written before it."""
+    stamp = path.stat().st_mtime + seconds
+    os.utime(path, (stamp, stamp))
+
+
 def files(folder):
     return {str(p.relative_to(folder)): p.read_bytes() for p in folder.rglob("*") if p.is_file()}
 
@@ -37,10 +44,11 @@ def pin_render(folder, run):
     image.parent.mkdir()
     image.write_bytes(b"synthetic image bytes")
     index = image.parent / "manifest.json"
+    assert source.is_file()
     index.write_text(json.dumps([{
         "item": "ITEM01", "candidate": run, "version": 1,
-        "source": "../" + manifest["artifacts"][0]["path"], "sha256": digest(source),
-        "render": image.name, "render_sha256": digest(image)}]))
+        "source": "../" + manifest["artifacts"][0]["path"],
+        "render": image.name}]))                 # paths only, no content hashes (JL 260928)
     manifest["render_manifest"] = acts._ref(out, index)
     acts._dump(out / "result.yaml", manifest)
     return image
@@ -54,7 +62,10 @@ class DesignRepairsTest(unittest.TestCase):
         self.assertIsNone(_render_for(rows, "rd03_generate_item01"))
 
     def test_changed_verified_bytes_are_removed_from_page_board_and_csv(self):
-        for changed in ("artifact", "checks", "result", "config", "render"):
+        # Staleness is file time (JL 260928). The frozen config copy is checked for
+        # existence only (haipipe-design-unit `check_unit.context`), so a config
+        # edit after Verify is not one of the changes that void a verified design.
+        for changed in ("artifact", "checks", "result", "render"):
             with self.subTest(changed=changed), TemporaryDirectory() as td:
                 board, page, runs = v2_fixture(Path(td), specs=[spec("verified")])
                 generated = page.parent / "results" / runs["ITEM01"]["generate"]
@@ -62,24 +73,26 @@ class DesignRepairsTest(unittest.TestCase):
                 out = acts._load(generated / "result.yaml")
                 if changed == "render":
                     image = pin_render(page.parent, runs["ITEM01"]["generate"])
-                    # Updating a completed target manifest alone invalidates its Verify pin.
+                    # Updating a completed target manifest alone invalidates its Verify.
                     self.assertIsNotNone(image)
+                    later((generated / "result.yaml"))
                 else:
                     target = {"artifact": generated / out["artifacts"][0]["path"],
-                              "checks": verified / "checks.yaml", "result": verified / "result.yaml",
-                              "config": page.parent / "scripts/config" / (runs["ITEM01"]["verify"] + ".yaml")}[changed]
+                              "checks": verified / "checks.yaml", "result": verified / "result.yaml"}[changed]
                     if changed == "result":
                         result = acts._load(target)
                         result["producer"] = "different-reviewer"
                         acts._dump(target, result)
                     else:
                         target.write_text(target.read_text() + "\n# changed after Verify\n")
+                        later(target)
                 snapshot = design_snapshot(page, board)
                 item = snapshot["items"][0]
                 self.assertIsNone(item["ready"])
                 self.assertEqual(item["state"], "records invalid")
                 self.assertTrue(snapshot["audit"])
-                self.assertIn("inspect recorded candidate", item["waiting"])
+                # plain words since 0.11.3 (JL 260921): no name, no "candidate"
+                self.assertIn("you · the records for this item do not line up", item["waiting"])
                 self.assertNotIn("data-action=queue-verify", render_design(snapshot, "design"))
                 projected = design_board_snapshot(board, board)
                 self.assertEqual(projected["totals"]["ready"], 0)
@@ -96,7 +109,9 @@ class DesignRepairsTest(unittest.TestCase):
                 self.assertIn(old, rendered)
                 self.assertIn("Adopt (historical)", rendered)
                 self.assertNotIn(old.replace("_adopt_", "_delivery_"), rendered)
-            self.assertIn(f'title="{old}"', render_design(snapshot, "design"))
+            # The card's strip of Run chips, which carried the id as a hover title, is gone
+            # (JL 260921); the id still survives in every view, asserted just above.
+            self.assertNotIn("class=steps", render_design(snapshot, "design"))
             item = snapshot["items"][0]
             with self.assertRaisesRegex(acts.ActionError, "retired"):
                 acts.adopt(page.parent, page.stem, item, item["runs"], "adopt", "JL", "again")
@@ -149,7 +164,9 @@ class DesignRepairsTest(unittest.TestCase):
                 item = snapshot["items"][0]
                 self.assertEqual(item["state"], "blocked")
                 self.assertIn(run, item["waiting"])
-                self.assertIn("JL", item["waiting"])
+                # the line names who acts as "you", never a person (JL 260921)
+                self.assertIn("you · resolve", item["waiting"])
+                self.assertNotIn("JL", item["waiting"])
                 card = render_design(snapshot, "design")
                 self.assertIn("missing allowed source", card)
                 self.assertNotIn("data-action=commission-release", card)
@@ -232,6 +249,11 @@ class DesignRepairsTest(unittest.TestCase):
             self.assertEqual(rows[0]["draft_run"], generated)
             self.assertEqual(rows[0]["state"], "ready")
             self.assertFalse((page.parent / "delivery").exists())
+            later = picture.stat().st_mtime + 5       # the tamper lands after the Result
             picture.write_bytes(b"tampered picture")
+            os.utime(picture, (later, later))
             self.assertIsNone(design_snapshot(page, board)["items"][0]["render"])
-            self.assertIn("hash mismatch", " ".join(audit(page.parent)))
+            # Staleness is file time, never a content hash (JL 260928).
+            self.assertIn("stale: screen.png changed after result.yaml was written",
+                          " ".join(audit(page.parent)))
+            self.assertNotIn("hash", " ".join(audit(page.parent)))

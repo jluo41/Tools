@@ -12,7 +12,7 @@ stays read-only toward other pages. Rows are DERIVED and VERBATIM: the head,
 the ids, the Round's own `Feedback:` and `Work:` sentences, and the full
 concern of each parent R-row (0.17.4; head-only rows lost the substance, JL
 260831). `landed:` is the page's pen and survives a re-run.
-The register is outline/<stem>-feedback.md, one file grouped by Round (haipipe-workbench-page 0.17.0).
+The register is outline/records/<stem>-feedback.md, one file grouped by Round (haipipe-workbench-page 0.17.0).
 """
 import argparse, re, sys
 from datetime import date

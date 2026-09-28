@@ -1,3 +1,14 @@
+## No content hashes (JL 260928) · 2026-09-28
+
+- A Page version is its number and saved time (`v1.5 260928 1241`), never a
+  source:render SHA-256 pair. Reviewer 0.10.3 reads that label and checks the
+  rendered HTML is not older than the Markdown; auditor 0.4.3 returns
+  `final_version` in the same form.
+- Approver 0.3.2: `approve-rules/value-rules.md` R3 names a source's version or
+  file date and requires it not be newer than the Result; the `checked:` line
+  names `<input version>`; deterministic rules recompute from the named artifact
+  version, not a pinned hash.
+
 ## Board Run and gate alignment · 2026-09-20
 
 - Approver 0.3.1 records the rule result without granting workflow release.

@@ -97,7 +97,6 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         "requires": "",
         "style_from": "",
         "provides": "",
-        "contract_source_hash": "",
         "source_content": "",
     }
     while i < len(lines) and not lines[i].startswith("## "):
@@ -105,7 +104,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
             r"^(state|owner|method|route|page-type|folder-kind|task|task-type|session|requires|style-from|provides|contract-source-hash|source-content):\s*(.*)$",
             lines[i].strip(),
         )
-        if m:
+        if m and m.group(1) != "contract-source-hash":  # an old page's leftover hash line: read, ignored
             meta[m.group(1).replace("-", "_")] = m.group(2).strip()
         i += 1
     for line in frontmatter:
@@ -113,7 +112,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
             r"^(state|owner|method|route|page-type|folder-kind|task|task-type|session|requires|style-from|provides|contract-source-hash|source-content):\s*(.*)$",
             line.strip(),
         )
-        if m:
+        if m and m.group(1) != "contract-source-hash":  # an old page's leftover hash line: read, ignored
             meta[m.group(1).replace("-", "_")] = m.group(2).strip()
     # Author notes are dropped ONCE, here, so every downstream renderer sees clean
     # text. Doing it per-renderer was the old shape and it missed paths: a comment

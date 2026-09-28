@@ -25,7 +25,7 @@ source of facts or a second planning system.
 ```text
 Writing DNA Distiller   corpus → metadata + layered DNA + Writing-DNA.md
         │
-        ▼ frozen profile/version/hash
+        ▼ frozen profile/version
 HAI Paragraph Run       outline + evidence + neighbors → one paragraph
         │
         ▼
@@ -66,7 +66,7 @@ writing_dna:
     structure: <path>/structure-patterns.md
     cognitive: <path>/cognitive-framework.md
     visual: <path>/visual-style-guide.md
-  profile_hash: <sha256 or host identity>
+  profile_version: <version or distillation date>
   exemplars:
     - <raw article path/version>
     - <raw article path/version>
@@ -215,7 +215,7 @@ after the plan-to-sentence table:
 - Profile: <profile_id>
 - Producer/source: <writing-dna-skill and path>
 - Profile status: full | partial
-- Profile hash: <hash>
+- Profile version: <version or distillation date>
 - Distilled artifacts read: <five paths, versions, or not specified>
 - Raw exemplars read: <selected paths and selection reason>
 - Raw exemplar shortfall: <0, or count not available>
@@ -246,7 +246,7 @@ A DNA-aware paragraph Result is ready only when:
   the Result is an explicit upstream block;
 - no fact, quotation, citation, number, or example came from the DNA corpus;
 - the paragraph's form follows the Page Face and venue contract;
-- the profile identity, version/hash, artifacts, and exemplars are recoverable;
+- the profile identity, version, artifacts, and exemplars are recoverable;
 - conflicts are recorded rather than silently resolved by fluent prose;
 - the paragraph still hands the approved understanding to its next neighbor.
 

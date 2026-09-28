@@ -173,7 +173,7 @@ class DesignBoardWritesTest(unittest.TestCase):
             self.assertIn("Which prescription review SMS design should we make for young male, age 35 or under?", text)
             self.assertRegex(text, r"(?m)^state: 🔴 OPEN · ")
             self.assertRegex(text, r"(?m)^owner: \S")
-            self.assertTrue((page.parent / "outline" / f'{out["folder"]}-design-items.md').is_file())
+            self.assertTrue((page.parent / "draft" / f'{out["folder"]}-design-items.md').is_file())
             # Sparse native Boards still gain the promised presentation entry.
             board_text = (board / "board.md").read_text(encoding="utf-8")
             self.assertIn("## Pages\n" + page.relative_to(board).as_posix(), board_text)
@@ -289,9 +289,9 @@ class BundleTest(unittest.TestCase):
             row = rows[0]
             self.assertEqual((row["line"], row["venue"], row["item"]), ("R1", "sms", "ITEM01"))
             self.assertTrue(row["text"].startswith("Hi, it's Dr. {NAME}'s office."))
-            self.assertEqual(len(row["sha256"]), 64)
+            self.assertNotIn("sha256", row)          # no content hashes (JL 260928)
             csv_text = bundle_csv(snap)
-            self.assertTrue(csv_text.startswith("line,who,their_job,venue,folder,item,title,state,text,draft_run,sha256,render"))
+            self.assertTrue(csv_text.startswith("line,who,their_job,venue,folder,item,title,state,text,draft_run,render"))
             self.assertIn(",ready,", csv_text)
             self.assertIn("Download all designs · 1 · csv", render_design_board(snap, "delivery"))
             self.assertNotIn("Download all designs", render_design_board(design_board_snapshot(board, Path(td), static=True), "delivery"))

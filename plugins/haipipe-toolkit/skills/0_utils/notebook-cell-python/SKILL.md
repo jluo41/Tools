@@ -7,7 +7,7 @@ description: >-
   a notebook, or for .py to .ipynb conversion and Jupytext-style cells.
 allowed-tools: Bash, Read, Write, Edit
 metadata:
-  version: "0.3.0"
+  version: "0.4.3"
   last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -94,7 +94,7 @@ Cell markers:
 ```
   # %%                code cell
   # %% Section name   code cell with label
-  # %% [markdown]     markdown cell (ASCII diagrams, headers)
+  # %% [markdown]     markdown cell (a heading, prose, a fenced diagram)
 ```
 
 Authoring rules:
@@ -102,17 +102,34 @@ Authoring rules:
   1. **Run from repo root.** Scripts assume `cwd = repo root` and use
      relative paths (`_WorkSpace/...`, `examples/...`). Invoked as
      `python <task-path>/<N>-<topic>.py` from the repo root.
-  2. **ASCII-heavy markdown.** Diagrams not paragraphs. Box chars
-     `┌─┐│└─┘`, section markers `─§ ① ──`. See cross-ref below.
+  2. **Real sections, fenced diagrams.** A section starts with a Markdown
+     heading in its own markdown cell: `# # Title` once, `# ## 1. Step`
+     per section, `# ### Part` inside one. Number sections 1, 2, 3 in
+     plain digits, never circled ① ② ③ (JL 260927). Jupyter lists headings
+     in the notebook outline and lets a reader collapse and jump to them; a
+     text marker such as `─§ ① ──` is not a section (JL 260927). Prose under a
+     heading is plain Markdown, backticks allowed. Only an ASCII diagram or
+     column-aligned text goes in a txt fence (`# ```txt` ... `# ````),
+     because Jupyter joins unfenced lines and breaks the boxes.
   3. **Self-documenting.** Top docstring: one-line purpose, input,
      output. First `# %% [markdown]` cell: title block + mini pipeline.
-  4. **No magic, no IPython.** Pure Python — must work as a `python`
-     invocation, not just inside Jupyter.
+  4. **Tables with display().** Show a DataFrame with `display()`, which
+     renders a real table, never `print(df.to_string())`. No other
+     IPython magic: the script must still run as a plain `python`
+     invocation, where `display()` falls back to text.
   5. **Print progress markers.** `print('=' * 80)` between steps.
      Each cell ends with a one-line `✓` confirmation when done.
   6. **Side effects to disk.** CSVs/PNGs go to the explicit `RUN_DIR`
      provided by the caller/helper. For direct execution, choose a fresh
      output directory first; do not silently reuse a shared fallback.
+  7. **Reader-facing notebooks hide their code.** A gallery or a card that a
+     person reads for its outputs puts `# notebook: hide-code` right after
+     the top docstring. The converter then marks every code cell hidden
+     (`jupyter.source_hidden`) when it creates the notebook; Jupyter and VS
+     Code show the outputs, and a click opens the code. Never collapse cells
+     by rewriting the executed notebook (JL 260927). Such a notebook also
+     leaves the top docstring out: it is written for whoever edits the .py,
+     so the notebook opens on its own `#` title (JL 260928).
 
 
 ---
@@ -127,10 +144,11 @@ Tree:      ├ └ │ ─
 Double:    ═ ║ ╔ ╗ ╚ ╝
 ```
 
-For ASCII diagrams in `# %% [markdown]` cells, follow the
+For an ASCII diagram in a `# %% [markdown]` cell, put the diagram (not
+the heading or the prose) in a txt fence (rule 2), and follow the
 `diagram-ascii` style at
-`plugins/haipipe-toolkit/skills/0_utils/diagram-ascii/SKILL.md`: box
-characters above and section markers like `─§ ① ──` for cell headers.
+`plugins/haipipe-toolkit/skills/0_utils/diagram-ascii/SKILL.md` for box
+characters. Section headers are Markdown headings, never `─§` markers.
 Emoji are optional; use them only when they improve scanability and keep
 labels readable in plain-text and assistive-technology contexts.
 
@@ -140,7 +158,7 @@ labels readable in plain-text and assistive-technology contexts.
 Standard Skeleton (Claude follows this when writing .py files)
 ================================================================
 
-```python
+````python
 """
 N-topic.py — One-line purpose.
 
@@ -149,19 +167,22 @@ Output: $RUN_DIR (provided by run_notebook.py)
 """
 
 # %% [markdown]
-# ┌──────────────────────────────────────────────────────────────┐
-# │   N-topic   ←→   short title                                 │
-# └──────────────────────────────────────────────────────────────┘
+# # N-topic · short title
 #
+# One or two sentences: what this notebook shows.
+#
+# ```txt
 #    input ──► step ──► step ──► output
 #                                   │
 #                                   ▼
 #                             $RUN_DIR
+# ```
 
 # %% Setup
 import os
 from pathlib import Path
 import pandas as pd
+from IPython.display import display
 # ... other imports ...
 
 OUT = Path(os.environ['RUN_DIR'])
@@ -172,15 +193,17 @@ print(f'Output: {OUT}')
 print('=' * 80)
 
 # %% [markdown]
-# ─§ ① Step one ─────────────────────────────────────────────────
+# ## 1. Step one
+#
+# What this step answers, in one sentence.
 
 # %% Step one
 result = ...
-print(result.to_string())
+display(result)
 result.to_csv(OUT / 'step_one.csv', index=False)
 
 # %% [markdown]
-# ─§ ② Step two ─────────────────────────────────────────────────
+# ## 2. Step two
 
 # %% Step two
 # ...
@@ -188,7 +211,7 @@ result.to_csv(OUT / 'step_one.csv', index=False)
 # %% Done
 print()
 print(f'✓ Wrote: {OUT}')
-```
+````
 
 
 ---

@@ -56,7 +56,7 @@ assessment:
     run_readable: ""
     run_compact: ""
     snapshot_uri: ""
-    snapshot_sha256: ""
+    snapshot_accessed: ""
 ---
 
 # {title}

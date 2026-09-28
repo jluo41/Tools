@@ -232,7 +232,7 @@ has a receipt.
 
 ## Episodes
 
-- **Episode #1:** 12:04:32–12:05:17 · 4 bites · model=claude-sonnet-4-6 · rubric=visible-food-v1 · input_sha256=<frame hash> · judged_at=<UTC timestamp> · label_source=vision_model_inference · label_status=identified · labels=["salad"]
+- **Episode #1:** 12:04:32–12:05:17 · 4 bites · model=claude-sonnet-4-6 · rubric=visible-food-v1 · judged_at=<UTC timestamp> · label_source=vision_model_inference · label_status=identified · labels=["salad"]
 - **Episode #2:** 12:09:20 · 1 bite · label_status=uncertain · labels=[]
 ```
 

@@ -11,8 +11,8 @@ description: >-
   create, refresh, read, or check a Paper Ideation Page; route idea generation,
   novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-22"
+  version: "1.1.1"
+  last_updated: "2026-09-28"
   group-token: "Story00"
   outline:
     mode: grammar
@@ -84,14 +84,14 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
 - `kind: paper-ideation-handoff` is the selected-state adapter. It points to
   the latest sync plus the sole I3 selection receipt and selected Idea-target
   routes. It does not create a second portfolio or decision.
-- Material Generate or Test changes increment `sync_revision`, add the exact
-  `source_hash`, classify the change as `state`, `portfolio`, or `structure`,
+- Material Generate or Test changes increment `sync_revision` (the only source
+  identity; no content hash), classify the change as `state`, `portfolio`, or `structure`,
   and route the packet through the current `haipipe-page` update boundary. A
   `state` change refreshes the generated working projection. A `portfolio`
   change refreshes it by stable `idea_id` and checks whether the authored shell
   is affected. A `structure` change stops at the Page OUTLINE/SHAPE workflow
   when a shape decision is needed. The Page workflow receipt records the
-  packet path, consumed revision/hash, projection surface, and output hash; a
+  packet path, consumed revision, projection surface, and timestamp; a
   mismatched working revision is stale, not current. The Paper-specific
   `paper_projection` extension lives inside the normal Page controller receipt. The
   adapter reads that Page-owned receipt and remains the only writer of the sync
@@ -116,7 +116,7 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
 Keep the semantic source and three Page surfaces visible whenever the Ideation portfolio changes:
 
 ```text
-Ideation source       cards + sync packet                 revision + source hash
+Ideation source       cards + sync packet                 sync revision
 working Ideation view       Outline/preview/Bullet Workspace    working receipt
 released Ideation view      adopted Content                     release receipt
 delivery              generated output                    delivery receipt
@@ -236,7 +236,7 @@ remains a brief completion contract:
 The Paper Workbench (`haipipe-workbench-paper`, Ideation Space) reads this
 contract: its Idea Card leads with the Research Question, drops the handle to
 the subline, and folds the outline's writing Bullets away; a card without a
-question shows `no Research Question written yet`.
+question leads with its title (the screen adds no hint, JL 260927).
 
 Do not promote Data, Preliminary Results, Novelty Check, Feedback, Display,
 States, Files, Log, or Discussion into additional top-level Page sections.

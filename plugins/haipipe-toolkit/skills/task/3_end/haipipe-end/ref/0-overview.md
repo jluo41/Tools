@@ -175,7 +175,7 @@ _WorkSpace/6-EndpointStore/{endpoint_name}/
 └── manifest.json              <- Config + lineage chain
 ```
 
-`manifest.json` records the external release/checksum plus every Source vector
+`manifest.json` records the external release plus every Source vector
 schema/order version required by Input2SrcFn. `external/` is an immutable copy
 of that approved release; serving never falls through to a host-level latest
 release or a live API.

@@ -10,8 +10,8 @@ description: >-
   engagement snapshot, vendor data.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-24"
+  version: "0.3.3"
+  last_updated: "2026-09-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -139,19 +139,20 @@ ExternalStore layout (for orientation)
 
 ```
 _WorkSpace/ExternalStore/
-+-- <asset>/                             <- one folder per topic (npi, zip3, npi_engagement)
++-- <asset>/                             <- one folder per topic (ext_npi, ext_zip3, ext_npi_engagement)
 |   +-- asset.yaml                       <- contract: key, fields, family, providers
 |   +-- @raw/                            <- vendor/API landings for this asset
 |   +-- <version>/                       <- built version or frozen snapshot
 |       +-- df_<asset>_id.parquet, column_to_<asset>_li.pkl, README.md
-|       +-- version.yaml                 <- ValidFromDT, RefPeriod, builder, sha256
+|       +-- version.yaml                 <- ValidFromDT, RefPeriod, builder
 +-- _locks/<LockName>.yaml               <- asset -> version pins used by a SourceFn
 +-- @{tag}/                              <- LEGACY release-wide folder (e.g. @260104R4), read-only
 +-- @raw/, @inference/                   <- legacy shared landings / payload samples
 ```
 
-Full model: `ref/asset-model.md`. Builders live in the auxiliary `b51` Block
-(`j0N_asset_<asset>/t02_build_<Version>/`). Legacy workspaces keep
+Full model: `ref/asset-model.md`. Builders live in the auxiliary `b51` Block:
+one topic Job per group of assets, one Task per asset, each version a Run
+(`j0N_ext_<topic>/tNN_<asset>/runs/rNN_build_<Version>.sh`). Legacy workspaces keep
 `code-dev/0-EXTERNAL/e{N}_build_external_*.py` (WellDoc-SPACE) writing into
 `@{tag}/`; do not add new assets there.
 

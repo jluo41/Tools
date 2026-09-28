@@ -42,7 +42,8 @@ and scoped self-review. Runtime worker metadata is not a model launcher.
 Use this structure, replacing sample values with current addressed inputs.
 The Ticket is a frozen commission derived from Context and Outline, not a
 second plan. Retain the referenced content in versioned storage or the Ticket
-when its source is mutable; a hash without recoverable content is not enough.
+when its source is mutable. Name each input by path, version number and date,
+never by a content hash (JL 260928).
 
 ```markdown
 ---
@@ -63,21 +64,21 @@ writing:
 ---
 
 ## Inputs
-- Context: <record path, version/hash; resolved requirements and style policy>
-- Plan: <approved version/hash; C1.P2 job and B1..Bn>
-- Evidence: <each Bullet's folded Item → full Local Run → Result path/hash>
-- Current prose: <Page version/hash and this paragraph's prior text, if any>
+- Context: <record path, version and date; resolved requirements and style policy>
+- Plan: <approved version and date; C1.P2 job and B1..Bn>
+- Evidence: <each Bullet's folded Item → full Local Run → Result path>
+- Current prose: <Page saved time and this paragraph's prior text, if any>
 - SHAPE Draft: <selected outline/<stem>-outline-v*.md addressed Draft field and
-  frozen text/hash, or absent; candidate prose, not accepted Content>
+  its text, or absent; candidate prose, not accepted Content>
 - Continuity: <whole argument reference, previous accepted paragraph/version,
   next paragraph's approved job; use an explicit boundary for first/last>
 - Narrative Decision: <Page Outline decision id/scope/summary/source for this
   paragraph's organization, or not specified>
 - Style examples: <approved excerpt references/version, or not specified>
-- Writing DNA: <frozen adapter packet with profile id/status/hash, five artifact
+- Writing DNA: <frozen adapter packet with profile id/status/version, five artifact
   refs, selected exemplars, target and shortfall count, and reason; or not
   applicable>
-- Anti-slop audit: <HAI adapter version, rules path/hash, one selected
+- Anti-slop audit: <HAI adapter version, rules path, one selected
   reference from Tools/references/anti-ai-writing-skills.md, and threshold if
   any; or not applicable>
 - Feedback/Decisions: <applicable record ids, attribution and exact ruling>
@@ -122,7 +123,7 @@ Return one paragraph with the owner's sentence/trace notation and keep the
 content map and style decisions recoverable in `trace.md`.
 
 Apply the shared base rubric to this candidate and the declared requirements.
-Save located findings, candidate/rubric hashes and actual reviewer/method
+Save located findings, candidate/rubric versions and actual reviewer/method
 identities in the trace. In draft/revise mode, make up to the configured number
 of in-scope revision passes, then review the final candidate again. Evaluate
 mode makes no edits. Return remaining issues at budget exhaustion or missing
@@ -143,7 +144,7 @@ record `not specified`; a Decision conflict routes to OUTLINE. Confirm the
 approved claim strength is supported by the bound Evidence Results; otherwise
 record an upstream block.
 Make the Writing DNA profile identity,
-version/hash, artifacts, exemplars, applied observations, and conflicts
+version, artifacts, exemplars, applied observations, and conflicts
 recoverable in the trace. No unsupported final-mode placeholders.
 When anti-slop is selected, keep its report beside the Result and treat its
 score as diagnostic only; it is not an acceptance gate.
@@ -198,7 +199,7 @@ records using the owner's tools; those annotations are not reader prose.
 
 `trace.md` contains:
 
-| Plan address | Sentence locator | Evidence Item → Local Result/hash | Finding |
+| Plan address | Sentence locator | Evidence Item → Local Result path | Finding |
 |---|---|---|---|
 | C1.P2.B1 | sentence 1 | exact bound Result, or declared none | covered / gap |
 
@@ -223,7 +224,7 @@ For a DNA-aware Run, add:
 ```markdown
 ## Style application
 
-- Profile: <profile_id, status, and hash>
+- Profile: <profile_id, status, and version>
 - Producer/source: <writing-dna-skill and profile path or reference>
 - Distilled artifacts read: <integrated, language, structure, cognitive, visual>
 - Raw exemplars read: <paths and why they match this paragraph>
@@ -240,8 +241,9 @@ the table unless the Page Face owner declares a different source notation. Do
 not infer an omitted word budget or sentence count; record `not specified`.
 
 `runtime.yaml` follows `haipipe-run`: `run`, `family: page`,
-`operation: paragraph-writing`, `target`, `ticket`, resolved `result`, frozen
-`inputs` paths/hashes, worker, status, timestamps, attempts/failure and
+`operation: paragraph-writing`, `target`, `ticket`, resolved `result`,
+`inputs` paths with the time each was read (`read_at`), worker, status,
+timestamps, attempts/failure and
 `supersedes` when applicable. Create it as `planned` when allocating the Run;
 unfinished and failed work must remain visible. Mark `complete` only after
 the paragraph and trace pass the declared Result gate, never just because a
@@ -251,8 +253,9 @@ CONTENT separately promotes only the addressed paragraph. Resolve it from the
 owner's structural/sentence addresses, never a cached byte offset or a global
 text replacement. Verify its current text and consumed context before writing;
 hold on concurrent overlapping edits. Preserve sibling paragraphs and signed
-records. The CONTENT receipt records Run/Result hash, paragraph address, and
-Page before/after identity; Result completion alone is not promotion or CHECK.
+records. The CONTENT receipt records the Run/Result path, paragraph address, and
+the Page's saved time before and after; Result completion alone is not
+promotion or CHECK.
 
 The bundled promoter implements this write path:
 
@@ -274,26 +277,32 @@ status: complete
 inputs:
   - role: page-source
     path: page.md
-    sha256: <hash read before the Run>
+    read_at: <ISO 8601 time the Run read the Page, e.g. 2026-09-28T12:41:05Z>
 ```
+
+Without `read_at`, the Run's `started_at` is the read time. No content hash is
+written or compared (JL 260928); an older record's `sha256` keys are ignored.
 
 The promoter then:
 
-1. locks the Page promotion path and recomputes the current Page hash;
+1. locks the Page promotion path and reads the current Page;
 2. resolves `## Content`, its direct `###` divisions, and either explicit
    `####` paragraph headings or blank-line prose blocks;
-3. checks the Result target, trace, candidate grammar, frozen hash, and source
-   span, refusing stale or annotation-bearing/structural writes;
+3. checks the Result target, trace, candidate grammar, and source span, and
+   refuses a stale Page (saved after `read_at`) or annotation-bearing/structural
+   writes;
 4. records `promotion.status: applying`, atomically replaces only that span,
-   verifies the resulting hash and target text, then records
-   `promotion.status: promoted` with the before/after hashes and locator.
+   reads the Page back and compares the target text, then records
+   `promotion.status: promoted` with `page_read_at`, the locator, `started_at`
+   and `promoted_at`.
 
 `paragraph.md` and `trace.md` remain the accepted Result; `anti-slop.json`, when
 selected, is a diagnostic companion. Only the Run's `runtime.yaml` receives
 the promotion lifecycle receipt. If a process stops after the
-`applying` receipt, a later invocation recovers it only when the planned Page
-hash and Result hash still agree. If the Page changed, promotion stops and a
-new Run or explicit re-freeze is required. Promotion is not CHECK: the Page
+`applying` receipt, a later invocation finalizes it when the addressed Page
+paragraph already reads as `paragraph.md`. If the Page was saved after the Run
+read it, promotion stops and a new Run or a new `read_at` after re-reading the
+Page is required. Promotion is not CHECK: the Page
 receipt still records the promoted Run, and the independent check gate judges
 the resulting Page identity.
 

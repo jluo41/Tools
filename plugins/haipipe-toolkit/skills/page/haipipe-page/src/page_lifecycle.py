@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -77,7 +76,11 @@ def _trace_token(value: Any, legacy_probe: bool = False) -> Any:
     return "evidence" if legacy_probe and str(token).upper() == "PROBE" else token
 
 
-SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+# A Page version is its number and date, e.g. `v1.5 260928 1241` (JL 260928: no
+# content hashes). The auditor reads each label as recorded and compares labels; it never
+# recomputes one from file bytes. Leftover `source_sha256`/`render_sha256` keys in older
+# receipts are ignored.
+VERSION_FORMAT = "<version> <yymmdd HHMM>, e.g. v1.5 260928 1241"
 
 
 @dataclass(frozen=True)
@@ -101,23 +104,20 @@ def _gate(receipt: dict[str, Any]) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
-def _version_parts(value: str) -> tuple[str, str] | None:
-    parts = value.split(":")
-    if len(parts) != 2 or not all(SHA256_RE.fullmatch(part) for part in parts):
+def _version_label(value: str) -> str | None:
+    """A version label is one nonempty line; None when it is not."""
+    label = value.strip()
+    if not label or "\n" in label or "\r" in label:
         return None
-    return parts[0], parts[1]
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    return label
 
 
 def audit_artifacts(run: dict[str, Any], base_dir: Path | None = None) -> list[Finding]:
-    """Recompute the final Page identity from source and rendered files."""
+    """Check the Page source and its render exist, and the render is not older.
+
+    Staleness is file time (JL 260928): a Page source saved after its rendered HTML
+    means the render no longer shows the current Page.
+    """
 
     board_raw = str(run.get("board", "")).strip()
     page_raw = str(run.get("page", "")).strip()
@@ -208,14 +208,13 @@ def audit_artifacts(run: dict[str, Any], base_dir: Path | None = None) -> list[F
             )
         ]
 
-    actual = f"{_sha256(page)}:{_sha256(rendered[0])}"
-    declared = str(run.get("final_version", "")).strip()
-    if actual != declared:
+    if page.stat().st_mtime > rendered[0].stat().st_mtime:
         findings.append(
             _finding(
-                "artifact-version-mismatch",
+                "render-stale",
                 "run",
-                f"current source/render identity {actual} differs from final_version {declared}",
+                f"{page.name} was saved after its render {rendered[0].name}; rebuild the Board "
+                f"before judging final_version {str(run.get('final_version', '')).strip()}",
             )
         )
     return findings
@@ -368,8 +367,6 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         before = str(receipt.get("version_before", "")).strip()
         after = str(receipt.get("version_after", "")).strip()
         checked = str(receipt.get("checked_version", "")).strip()
-        source_sha256 = str(receipt.get("source_sha256", "")).strip()
-        render_sha256 = str(receipt.get("render_sha256", "")).strip()
         reopens = receipt.get("reopens_promise") is True
 
         if receipt.get("step") != index + 1:
@@ -434,31 +431,15 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 _finding("missing-version", index, "version_before and version_after are required")
             )
         else:
-            if _version_parts(before) is None:
-                findings.append(
-                    _finding(
-                        "invalid-version-format",
-                        index,
-                        "version_before must be <source_sha256>:<render_sha256>",
+            for field, value in (("version_before", before), ("version_after", after)):
+                if _version_label(value) is None:
+                    findings.append(
+                        _finding(
+                            "invalid-version-format",
+                            index,
+                            f"{field} must be one line: {VERSION_FORMAT}",
+                        )
                     )
-                )
-            after_parts = _version_parts(after)
-            if after_parts is None:
-                findings.append(
-                    _finding(
-                        "invalid-version-format",
-                        index,
-                        "version_after must be <source_sha256>:<render_sha256>",
-                    )
-                )
-            elif after_parts != (source_sha256, render_sha256):
-                findings.append(
-                    _finding(
-                        "snapshot-version-mismatch",
-                        index,
-                        "version_after must equal source_sha256:render_sha256",
-                    )
-                )
         for field in ("mechanical_errors", "mechanical_warnings"):
             value = receipt.get(field)
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
@@ -503,12 +484,12 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                         "version_before/version_after/checked_version",
                     )
                 )
-            elif _version_parts(checked) is None:
+            elif _version_label(checked) is None:
                 findings.append(
                     _finding(
                         "invalid-version-format",
                         index,
-                        "checked_version must be <source_sha256>:<render_sha256>",
+                        f"checked_version must be one line: {VERSION_FORMAT}",
                     )
                 )
             if role == "judge" and actor and builder and actor == builder:
@@ -713,12 +694,12 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
     final_version = str(run.get("final_version", "")).strip()
     if not final_version:
         findings.append(_finding("missing-final-version", "run", "final_version is required"))
-    elif _version_parts(final_version) is None:
+    elif _version_label(final_version) is None:
         findings.append(
             _finding(
                 "invalid-final-version-format",
                 "run",
-                "final_version must be <source_sha256>:<render_sha256>",
+                f"final_version must be one line: {VERSION_FORMAT}",
             )
         )
     if final_route == "CLOSE" and final_version:

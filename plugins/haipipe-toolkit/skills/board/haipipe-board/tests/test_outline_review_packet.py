@@ -126,7 +126,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
             # column; the complete Evidence item still belongs to Evidence
             # Space.
             self.assertIn("E01-VALUE-review-cohort-counts", body)
-            self.assertIn("E1V.ReviewCohort", body)
+            self.assertIn("Evalue01.ReviewCohort", body)
             self.assertIn('class=point-evidence', body)
             self.assertNotIn('class=point-evidence-label', body)
             self.assertNotIn('<div class=point-evidence', body)
@@ -197,7 +197,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertIn("/^C\\d+\\.P\\d+\\.B\\d+$/.test(id)", rendered)
             self.assertIn('id="bullet-C1-P1-B1" class=point-group data-point="C1.P1.B1"', rendered)
             self.assertIn(
-                'href="/_board/outline?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'
+                'href="/_board/draft?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'
                 'SM00-abstract.md&amp;lens=div&amp;focus=C1.P1.B1" '
                 'data-outline-lens="div" data-outline-focus="C1.P1.B1"',
                 rendered,

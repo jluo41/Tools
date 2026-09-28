@@ -1,4 +1,27 @@
+## 1.5.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- Run receipts carry no content hashes (AGENTS.md rule 9): `ref/run-sh-template.sh` no longer writes `config_sha256`, `contract_sha256` or a per-input `sha256`. `RUN_INPUTS` entries are plain paths; an older `path|<hash>` entry is read as its path and the hash is ignored.
+- A retry's changed-contract check uses file modification time: the Ticket, config, worker or a declared input newer than the prior receipt, or different `settings.ticket_args`, blocks the retry. A planned receipt blocks dispatch when its config is newer than the receipt.
+- `ref/runtime-yaml-schema.md`, `ref/authoring-conventions.md`, `ref/task-structure.md`, `ref/hierarchy.md`, `ref/task-page.md`, `ref/databricks-execution.md`, `fn/audit.md`, `ref/task-lifecycle.workflow.js`, `fn/run.md` and `SKILL.md`: no hash fields, pins or hash checks; a Result is bound by full Run id and path.
+
+## 1.4.6 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+
 # Changelog
+
+## 1.4.5 — 2026-09-27
+
+- Task Folders use `draft/` (Page skill 0.118) for the plan and its records; `page.py check-page-folder` and `page.py draft-layout` check and migrate existing Tasks.
+
+## 1.4.4 — 2026-09-27
+
+- Task types: `description` routes to the new `haipipe-task-for-description` (one Table Card per stored table: grain, column meanings, values, gotchas). `ref/run-sh-template.sh` writes the receipt `cmd` SPACE-relative (`space_rel`) and warns when the executed notebook or a Result file still shows an absolute path; it never edits the notebook, whose paths are fixed in the worker `.py` (JL 260927).
+- `ref/authoring-conventions.md` § One Run, four projections: the notebook is generated from the worker `.py`; never edit it (by hand, find-and-replace, or a post-run rewrite); change the `.py` and rerun the Ticket (JL 260927).
+
+## 1.4.3 — 2026-09-27
+
+- `ref/authoring-conventions.md` § Paths (JL 260927): nothing a Run writes may hold an absolute path; paths are SPACE-relative (relative to the folder with `env.sh`), the worker resolves them by walking up to `env.sh`, and the notebook kernel starts in the Task folder because the SPACE root's `code/__init__.py` hides Python's `code` module and kills ipykernel.
 
 ## 1.4.2 — 2026-09-25
 

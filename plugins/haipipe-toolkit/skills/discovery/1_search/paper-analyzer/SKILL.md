@@ -2,8 +2,8 @@
 name: paper-analyzer
 description: Use when deeply analyzing a single paper and producing structured notes on claims, methods, figures, evaluation, strengths, limitations, and related work.
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-09-22"
+  version: "0.2.3"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/Boom5426/Nature-Paper-Skills@44cff42
@@ -82,7 +82,7 @@ states in its Evidence-grounded assessment section. Before changing it to
 `agent:<name>/<model>/<session-id>`), the exact rubric version, and an ISO 8601
 timestamp with timezone. Link the evidence to a full readable/compact owning
 Discovery Run when available; for a standalone analysis, record the exact
-source snapshot URI and SHA-256 instead. Preserve the old receipt if the
+source snapshot URI and its access date instead (no content hash). Preserve the old receipt if the
 assessment is repeated under a changed rubric or input.
 
 ## Step 4: Generate a draft note

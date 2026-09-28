@@ -7,8 +7,8 @@ description: >-
   person-signed handoff settlement. Use to run, resume, or inspect an
   InsightBoard, answer its registered questions, or report blocked work.
 metadata:
-  version: "1.3.2"
-  last_updated: "2026-09-20"
+  version: "1.3.3"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -151,10 +151,10 @@ GI2  observations citable   the D Page reached CHECK/CLOSE; every value is bound
                           frozen Local Input → ready typed local Result. The latter
                           owes no Supporting Run; Data owns both acceptance branches
 GI3  derivation citable   the I Page reached CHECK/CLOSE and derives only from
-                          exact version/hash-pinned D parent rows (X contrast:
+                          exact version-pinned D parent rows (X contrast:
                           mirrored I rows, the one exception)
 GI4  parent/verdict ready   the local K Page reached CHECK/CLOSE and cites exact
-                          version/hash-pinned I parent rows · OR the pre-climbed
+                          version-pinned I parent rows · OR the pre-climbed
                           external-parent bridge passes all five bridge assertions ·
                           on partition-major the X group's current POOL, SPLIT, or
                           UNDETERMINED verdict cites the predeclared shared thresholds
@@ -221,10 +221,10 @@ Run receipts remain in their owners' stores. The Runtime indexes rather than
 duplicates their authority. `ref/run-workflow.md` defines the envelope.
 
 A GI/resource update leaves one dated control receipt in the granting Folder's
-`outline/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
+`outline/records/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
 MT00 records GI0 and partition registration; Question registers record GI1 and
 GI6; answer Folders record GI2-GI4; Wisdom records GI5. Include the runtime id,
-exact target, evidence/version/hash, assertion, actor, outcome and next action.
+exact target, evidence/version, assertion, actor, outcome and next action.
 For GI5/GI6 and Design eligibility, use [`ref/handoff-record.md`](ref/handoff-record.md).
 Link any consumed native Run receipt; the Folder log cannot replace it.
 

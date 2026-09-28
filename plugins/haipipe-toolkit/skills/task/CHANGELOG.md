@@ -4,6 +4,26 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-28 - No content hashes (JL 260928)
+------------------------------------------
+
+AGENTS.md rule 9: no sha256 or other content hash is written, checked,
+compared or pinned in a Task record. Run receipts (`haipipe-task` 1.5.0,
+`haipipe-task-for-raw` 0.5.4) record paths only, and a retry's changed-contract
+check uses file modification time. Display-input provenance
+(`haipipe-task-for-display` 0.3.4), external `version.yaml`
+(`haipipe-data-external` 0.3.3), endpoint `manifest.json`
+(`haipipe-end-endpointset` 0.2.2, `haipipe-task-for-endpoint` 0.3.1,
+`haipipe-end` 0.2.1), the per-individual `manifest.yaml`
+(`haipipe-individual` 0.1.2) and the report `meta.json` binding
+(`haipipe-individual-inference` 0.1.2, `-report` 0.1.2, `-judge` 0.1.3) drop
+their hash fields. Wording follows in `haipipe-page-task` 0.1.2,
+`haipipe-task-for-page` 0.4.1, `haipipe-task-for-stata` 0.3.1,
+`haipipe-workflow` 0.3.2, `haipipe-data-source` 0.3.3, `haipipe-data` 0.3.5,
+`haipipe-task-gpu-training` 0.2.1, `haipipe-task-llm-engine`, and the task
+agents 3.2.1. Pipeline-internal hashes stay: duplicate-row counting, cache
+file names and pseudonymized keys.
+
 2026-09-23 — External asset model and the b51 Block (JL)
 ---------------------------------------------------------
 

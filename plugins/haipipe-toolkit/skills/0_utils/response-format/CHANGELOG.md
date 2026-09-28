@@ -1,6 +1,10 @@
 response-format — Changelog
 ===========================
 
+## [0.7.0] — 2026-09-27
+
+- The last section of every substantive reply is `## 📋 Summary and Next`: where things stand and what comes next (JL 260927).
+- No `📁 File Changes` section any more: a leftover (a side effect, another session's file that could slip into a commit) is one sentence in the closing section's prose.
 
 ## [0.6.1] - 2026-09-26
 

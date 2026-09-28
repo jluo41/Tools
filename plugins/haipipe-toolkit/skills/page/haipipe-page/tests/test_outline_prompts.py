@@ -80,19 +80,16 @@ def test_new_run_prompt_and_structure_entry_without_mermaid(tmp_path):
     assert 'Run: none yet' in prompt
     assert 'rp-struct-NN' in prompt
     top = _structure_map(page)
-    assert 'aria-label="Copy run-structure prompt"' in top
-    assert '>⧉ run-structure<' in top
+    assert '⧉' not in top  # JL 260927: the Runs panel holds the prompt; no copy chip
     assert 'structure-card' in top and 'Second paragraph' in top
     assert 'Mermaid' not in top
 
 
-def test_readonly_draft_has_copy_buttons_and_escaped_payload(tmp_path):
+def test_readonly_draft_has_no_copy_chips_and_escaped_text(tmp_path):
     page = page_fixture(tmp_path)
     rendered = plan_card(page, read_only=True, minimal=True)
-    assert rendered.count('aria-label="Copy run-section prompt"') == 2
-    assert rendered.count('aria-label="Copy run-paragraph prompt"') == 2
-    assert '>⧉ run-section<' in rendered and '>⧉ run-paragraph<' in rendered
-    assert '&lt;angle&gt; &amp; &quot;quotes&quot;' in rendered
+    assert '⧉' not in rendered and 'run-prompt-copy' not in rendered
+    assert '&lt;angle&gt;' in rendered and '<angle>' not in rendered
     assert 'action: feedback' not in rendered
 
 

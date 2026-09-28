@@ -1,6 +1,24 @@
 # haipipe-design-unit · version history
 
-## 0.4.0 current · 2026-09-20 (version unchanged at 0.4.0)
+## 0.4.1 current · 2026-09-28 · No content hashes (JL 260928) (version unchanged at 0.4.1; the Design family version is frozen)
+
+- Tickets, Results, runtime receipts and render manifests name files by path only;
+  `check_unit.py` no longer writes, compares or requires a `sha256`, and ignores any
+  hash field left in an older record.
+- Staleness is file time: an open run is stale when one of its inputs or targets is
+  newer than the Ticket; a Result is stale when a file it names is newer than its
+  `result.yaml`; a closed Verify is stale when its target Result is newer than its own
+  `result.yaml`. Config and approval are checked for existence only (checkout-safe).
+- `render_screen.py` writes no source or picture hash into the manifest.
+- Fixed a test that still expected the pre-0.4.0 "failing criteria" message.
+
+## 0.4.1 · 2026-09-27
+
+- `check_unit.py` finds a pinned input a ticket names under `outline/` in the Folder's `draft/`
+  (Page layout 0.118 renamed the folder); the hash check is unchanged, so a moved file still has
+  to be byte-identical.
+
+## 0.4.0 · 2026-09-20 (version unchanged at 0.4.0)
 
 - One Ticket produces one Result; current caller duties end at independent
   Verify and ready Delivery. Historical Adopt receipts remain audit-only.

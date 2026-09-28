@@ -4,15 +4,19 @@ description: >-
   The one door for planning, writing, and revising a paper as a graph of Board
   Pages. Routes Ideation, Story, Section and Round Pages through the shared
   Page lifecycle; Discovery and Task owners execute the external work lane.
-  Use for paper setup, status, drafting, complete-paper assembly, compiling,
-  or review rounds.
+  Use for paper setup, status, drafting, a Claude and Codex session per Section,
+  complete-paper assembly, compiling, or review rounds.
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-09-21"
+  version: "1.4.1"
+  last_updated: "2026-09-28"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). For a paper that is its `delivery/` folder and every Page's `delivery/<lane>/`: fix the Page or the build code, then rebuild.
+>
+> ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check or pin a hash.
 
 `haipipe-paper` is the Paper-family router. It does not implement the Page
 workflow and it does not replace the specialist Page Type contracts.
@@ -101,6 +105,7 @@ Resolve the paper root and target Page before changing anything.
 | release work, inspect execution progress, accept a receipt, or release a Section | `haipipe-paper-workflow` plus the exact Discovery/Task/Section owner; use Story for the resulting paper meaning |
 | inspect or record a target venue | `haipipe-paper-venue` (shared reference library) |
 | write or revise one manuscript/appendix unit | `haipipe-paper-section` |
+| give each Section Page its own session, or message the Section sessions | `/haipipe-paper sessions`: [`ref/section-sessions.md`](ref/section-sessions.md) and `scripts/create_section_sessions.py` |
 | triage or answer one feedback/review cycle | `haipipe-paper-round` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-page-workflow` |
@@ -119,6 +124,9 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper story [paper] [controller-label]
 /haipipe-paper venue <target> [controller-label]
 /haipipe-paper section <section-id> [controller-label]
+/haipipe-paper sessions [paper]        a named Claude session + Codex thread per
+                                       Section (one for the Appendix), once C8
+                                       fixes the Sections
 /haipipe-paper round <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G4
                                        fails is watermarked DRAFT in its receipt
@@ -162,6 +170,31 @@ Read [`ref/paper-structure.md`](ref/paper-structure.md) for the folder layout,
 group and Section naming, compile-order markers, Task boundary, delivery law
 and migration rules. The Paper router only resolves the structure owner; it does
 not maintain a second naming or migration contract.
+
+## 🧑‍💻 Section sessions
+
+Once the Story's C8 compile order fixes the Sections, `/haipipe-paper sessions`
+gives each Main Section Page, and the Appendix group as one unit, a named Claude
+session and a named Codex thread (`<Short>-<unit>`, `<Short>-<unit>-Codex`),
+pairs them, records both ids in the page header (`session:`, `codex-session:`),
+and stops the Claude session after a read-only first turn so `/resume` can open
+it. Plan first (no `--apply`), then create. Read
+[`ref/section-sessions.md`](ref/section-sessions.md) for units, the scope rules
+each session starts with, and how to message a session afterwards.
+
+**A Section Run has two bookends (JL 260928).** In a Section session the author
+says when a writing Run starts and when it is over. In between, only the
+Section's Draft file changes: no log line, receipt, `results/` write, Page
+Content or delivery. Rulings routed from another session go into the Draft the
+same way. At the close the session writes the Run's records and one log entry
+at once. When the author asks, it then adopts the Draft into Page Content and
+runs the Section's delivery lanes: web page, then LaTeX, then Word.
+`haipipe-paper-assemble` reads only what those lanes export, and it takes a
+Section's approval from its newest draft version: while a Run works on a new,
+unapproved version, the build lists that Section as not ready and prints only
+its numbered placeholder, unless `paper-build.toml` sets
+`draft_includes_unready = true`, which prints the Section's last export in a
+DRAFT build. Contract: `haipipe-page-workflow/ref/interactive-writing-run.md` §🔖.
 
 ## 📦 Assembly and delivery
 

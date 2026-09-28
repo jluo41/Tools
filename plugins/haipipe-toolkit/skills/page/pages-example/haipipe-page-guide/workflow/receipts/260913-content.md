@@ -6,7 +6,7 @@ context: haipipe-page-guide
 actor: Codex main session
 role: producer
 decision: User instruction: “Okay I agree and go ahead to the content and delivery.”
-plan: outline/haipipe-page-guide-outline-v0.1.md · current historical Shape; no duplicate approved tick required for this interactive Page
+plan: draft/previous/haipipe-page-guide-outline-v0.1.md · current historical Shape; no duplicate approved tick required for this interactive Page
 
 ## Writing adopted
 
@@ -22,7 +22,7 @@ The accepted P01–P06 candidates were adopted into the Page Markdown source. Th
 
 - All Page bullets have an explicit `Evidence: none` contract.
 - No Task Result is owed by this Content pass.
-- The historical `approved: ⬜` field in `outline/haipipe-page-guide-outline-v0.1.md` did not block this pass because the user supplied the direct CONTENT instruction.
+- The historical `approved: ⬜` field in `draft/previous/haipipe-page-guide-outline-v0.1.md` did not block this pass because the user supplied the direct CONTENT instruction.
 
 ## Delivery
 

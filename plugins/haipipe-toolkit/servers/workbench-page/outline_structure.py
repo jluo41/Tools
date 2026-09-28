@@ -127,16 +127,16 @@ def structure_card_html(page_src: Path, *, read_only: bool = False,
         '<button type="button" class="structure-cancel" data-structure-cancel>Cancel</button>'
         '<span class="structure-status" role="status" aria-live="polite"></span></div></form>'
         % (_e(path_q), _e(file_q), _e(text)))
-    hint = "" if read_only else '<span class="structure-hint">click to edit</span>'
+    hint = "" if read_only else '<span class="structure-hint"></span>'  # save feedback only
     edit = "" if read_only else ' data-structure-edit tabindex="0"'
     shown = ('<div class="structure-text structure-overview"%s data-text="%s">%s</div>'
              % (edit, _e(text), overview_html(entries)) if entries else
              '<pre class="structure-text"%s>%s</pre>' % (edit, _e(text)))
     return (
-        '<details class="card structure-card" open aria-label="Structure">'
-        '<summary class="structure-heading"><span>Structure</span>%s<code>%s</code></summary>'
+        '<details class="card structure-card" aria-label="Structure">'
+        '<summary class="structure-heading"><span>Structure</span>%s</summary>'
         '<div class="structure-body">%s%s</div></details>'
-        % (hint, _e(plan.parent.name + "/" + plan.name), shown, editor)
+        % (hint, shown, editor)
     )
 
 
@@ -153,9 +153,9 @@ def overview_html(entries: list[str]) -> str:
         if entry:
             address, rest = entry.group(1), (entry.group(2) or "").strip()
             if "." not in address:
-                title, _, note = rest.partition(" · ")
-                out.append('<div class=sov-division><span class=sov-addr>%s</span><b>%s</b>'
-                           '<span class=sov-mut>%s</span></div>' % (_e(address), _e(title), _e(note)))
+                title = rest.partition(" · ")[0]  # counts or notes after the title stay in the Markdown
+                out.append('<div class=sov-division><span class=sov-addr>%s</span><b>%s</b></div>'
+                           % (_e(address), _e(title)))
                 current = None
                 continue
             current = [('<div class=sov-title><span class=sov-addr>%s</span><b>%s</b></div>'
@@ -453,7 +453,7 @@ STRUCTURE_JS = r'''<script>
   var c=card(form),status=form.querySelector('.structure-status'),params=new URLSearchParams(location.search);
   var body={action:'structure',path:form.dataset.path||params.get('path')||'',file:form.dataset.file||params.get('file')||'',text:form.querySelector('.structure-box').value};
   status.textContent='Saving…';status.classList.remove('err');
-  fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  fetch('/_board/draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||'Unable to save');return j;});})
    .then(function(j){var shown=c.querySelector('.structure-text');if(shown.dataset.text!==undefined){if(j.changed){location.reload();return;}shown.dataset.text=j.text;}else{shown.textContent=j.text;}close(c);
      if(j.changed){var s=c.querySelector('.structure-hint');if(s)s.textContent='saved · '+j.summary+' · reload to refresh the table';}})

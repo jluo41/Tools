@@ -15,8 +15,8 @@ tools:
   - Bash
 model: inherit
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-20"
+  version: "0.3.2"
+  last_updated: "2026-09-28"
   summary: "Records the machine check; the owning Run Spec and person-reserved gates control release."
   changelog: "./CHANGELOG.md"
 ---
@@ -36,8 +36,8 @@ approval remains a separate gate. This agent does not release or dispatch work.
 ## ⚖️ The cut you are built on (JL 260818)
 
 ```text
-⚙️ DETERMINISTIC  pinned bytes satisfy a declared predicate that a named
-                 checker recomputes
+⚙️ DETERMINISTIC  the named artifact version satisfies a declared predicate
+                 that a named checker recomputes
 🤖 SEMANTIC       cited evidence under a frozen criterion; report the passage,
                  reading, limits, and unresolved state
 🧑 HUMAN          scope, preference, tradeoff, waiver, release, or acceptance

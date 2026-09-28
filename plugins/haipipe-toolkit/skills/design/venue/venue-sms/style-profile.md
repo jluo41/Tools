@@ -72,7 +72,7 @@ The tone-by-audience rows above are the full tone rules for this venue.
 [ ] Opt-out present
 [ ] No jargon (if patient)
 [ ] Personalization variables are available in the data pipeline
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 [ ] Tone matches audience profile
 ```
@@ -81,7 +81,7 @@ The tone-by-audience rows above are the full tone rules for this venue.
 ## Recorded identity
 
 The register names `ITEM01`; its Generate Ticket names, for example,
-`rd02_generate_item01`. The paired Result lists `content/sms.txt` and its sha256.
+`rd02_generate_item01`. The paired Result lists `content/sms.txt` by path.
 The released Commission config owns stance, design intent and acceptance rules;
 `runtime.yaml` records Run lifecycle, and the Item state is derived from Runs.
 These identifiers belong in records, not recipient copy. Independent Verify pass

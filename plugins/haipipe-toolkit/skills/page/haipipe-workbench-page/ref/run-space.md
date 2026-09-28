@@ -203,7 +203,7 @@ show the substantive saved Result first; put the current review input,
 interpretation, and Next action behind one collapsed Review context; keep
 earlier Results collapsed as semantic history; and keep repository paths and
 record internals in a separate collapsed Technical details region. Do not put
-frontmatter, hashes, Goal/Scope/Version metadata, or complete journal dumps in
+frontmatter, Goal/Scope/Version metadata, or complete journal dumps in
 the default reading path.
 Historical prose and code blocks must wrap without widening the phone viewport.
 For `rp-struct-01`, open the Result with the Page's Structure text (the same
@@ -302,7 +302,7 @@ placeholder Runs.
 Opening any local or supporting card follows one order: substantive **Result**
 first, then optional Review context or member context, then earlier Results,
 then collapsed technical details. This makes the output—not its metadata—the
-first thing a reader sees. Paths, hashes, frontmatter, Goal/Scope/Version
+first thing a reader sees. Paths, frontmatter, Goal/Scope/Version
 fields, commands, logs, actors, and output trees stay out of the default path.
 Do not link directly to raw files or trigger downloads from Run Space.
 
@@ -323,7 +323,7 @@ short activity/target; opening the card reads its safe Markdown prompt,
 `paragraph.md`, and `trace.md` as Result context. A missing receipt or missing
 required output is Held. Writing Results are prose, not Evidence Items.
 
-For Labeling rows, show safe identities, checksums, gate summaries, and counts
+For Labeling rows, show safe identities, gate summaries, and counts
 only. Never render sealed ids, protected text, raw judgments, or a second
 approve/freeze/reveal/final/run control. A row may deep-link to the same Run in
 the Labeling workbench; only the subjective-label workflow may operate it.

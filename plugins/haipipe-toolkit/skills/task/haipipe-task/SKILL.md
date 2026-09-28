@@ -11,8 +11,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.4.2"
-  last_updated: "2026-09-25"
+  version: "1.5.0"
+  last_updated: "2026-09-28"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -25,6 +25,8 @@ metadata:
 
 # haipipe-task
 
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means Run tickets a `scripts/gen_*.py` writes and every file a Run's code writes into `results/`: fix the generator or the Run's script, then rerun it.
+
 `haipipe-task` owns one executable hierarchy and one lifecycle:
 
 ```text
@@ -36,7 +38,7 @@ Project
             ├── src/                       code shared by two or more Tasks
             ├── tNN_<task>/                Task Folder = Page Folder = Board Page
             │   ├── tNN_<task>.md          reader-facing Page
-            │   ├── outline/               human-facing Page record
+            │   ├── draft/                 Page plan <stem>-draft-v<G>.<S>.md, records/, previous/
             │   ├── workflow/              Plan/Report receipts
             │   ├── scripts/
             │   │   ├── <worker>.py
@@ -176,7 +178,7 @@ Tickets remain in the Task Folder. `CODE_REVIEW.md` stays with the Task code.
 The one Page-authority exception is a PHI-safe DISPLAY unit admitted by LAND
 at the caller-authorized destination in the Page evidence/display contract.
 Its Result envelope and receipt still live under
-`$OUTPUT_ROOT/<task>/results/<run>/` and record the unit path and hashes.
+`$OUTPUT_ROOT/<task>/results/<run>/` and record the unit path.
 
 ## Question and Insight routing
 
@@ -196,6 +198,7 @@ never executes a producing Folder invisibly.
 type        specialist                         related Skill
 data        haipipe-task-for-data              haipipe-data
 raw         haipipe-task-for-raw               haipipe-data-raw
+description haipipe-task-for-description       haipipe-data-raw (one Table Card per stored table)
 algo        haipipe-task-for-algo              haipipe-nn-algo
 fit         haipipe-task-for-fit               haipipe-nn-tuner + instance + fit-owned GPU companions
 eval        haipipe-task-for-eval              project-local evaluation

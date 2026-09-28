@@ -19,7 +19,7 @@ kind: files · authored · sources and retained materials have distinct roles
 - **Role**: contract
 
 ### F5 · Earlier custom HTML draft
-- **Path**: Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/outline/evidence/materials/guide.html
+- **Path**: Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/evidence/materials/guide.html
 - **Role**: archive
 
 ### F6 · Page workflow

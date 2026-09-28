@@ -58,18 +58,19 @@ def _spread(v, n, name):
     return v
 
 
-def _normalize_local(items, doses=None, payloads=None, **kw) -> List[Dict]:
+def _normalize_local(items, doses=None, payloads=None, ndcs=None, **kw) -> List[Dict]:
     n = len(items)
     ds = _spread(doses, n, "doses")
     ps = _spread(payloads, n, "payloads")
+    ns = _spread(ndcs, n, "ndcs")
     cache, out = {}, []
     for i, raw in enumerate(items):
         # The dose is part of the key only because a sentinel dose changes the
         # TYPE of the row, not merely its value.
-        key = (str(raw), str(ps[i]), str(ds[i]) if ds[i] in (-1, 255, 999) else "")
+        key = (str(raw), str(ps[i]), str(ds[i]) if ds[i] in (-1, 255, 999) else "", str(ns[i] or ""))
         if key not in cache:
             item = parse(raw, ds[i], ps[i])
-            cache[key] = (item,) + resolve(item)
+            cache[key] = (item,) + resolve(item, ns[i])
         item, hit, conf, src, ndc = cache[key]
         # Re-parse only when this row's own dose differs from the cached one.
         if item.dose != _f(ds[i]) and item.kind not in ("sentinel",):
@@ -86,7 +87,7 @@ def _f(x):
     return None if v != v else v
 
 
-def _normalize_http(items, doses=None, payloads=None, url=None, timeout=None, **kw):
+def _normalize_http(items, doses=None, payloads=None, ndcs=None, url=None, timeout=None, **kw):
     import requests
     base = (url or DEFAULT_URL).rstrip("/")
     payload = {"items": list(items)}
@@ -94,6 +95,8 @@ def _normalize_http(items, doses=None, payloads=None, url=None, timeout=None, **
         payload["doses"] = doses if isinstance(doses, (int, float, str)) else list(doses)
     if payloads is not None:
         payload["payloads"] = payloads if isinstance(payloads, str) else list(payloads)
+    if ndcs is not None:
+        payload["ndcs"] = ndcs if isinstance(ndcs, str) else list(ndcs)
     r = requests.post(f"{base}/normalize/batch", json=payload,
                       timeout=int(timeout or os.environ.get("MEDNORM_TIMEOUT", "600")))
     r.raise_for_status()
@@ -105,8 +108,12 @@ TRANSPORTS = {"local": _normalize_local, "http": _normalize_http}
 
 def normalize(items: Sequence[str], doses: Scalarish = None,
               payloads: Scalarish = None, transport: Optional[str] = None,
-              **kw) -> List[Dict]:
+              ndcs: Scalarish = None, **kw) -> List[Dict]:
     """Batch, order-preserving, one result per input, duplicates resolved once.
+
+    ndcs: an optional national drug code per item, for a caller that has
+    already translated its own ids into a plain name and NDC (a dialect step);
+    the NDC is tried before the name.
 
     Every result carries the same 12 keys (constants.FIELDS) whether it hit or
     missed, so a caller never branches on shape -- only on MedConf.
@@ -114,4 +121,4 @@ def normalize(items: Sequence[str], doses: Scalarish = None,
     t = transport or DEFAULT_TRANSPORT
     if t not in TRANSPORTS:
         raise ValueError(f"unknown transport {t!r}; have {sorted(TRANSPORTS)}")
-    return TRANSPORTS[t](list(items), doses=doses, payloads=payloads, **kw)
+    return TRANSPORTS[t](list(items), doses=doses, payloads=payloads, ndcs=ndcs, **kw)

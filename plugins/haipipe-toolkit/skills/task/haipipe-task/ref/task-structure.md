@@ -16,7 +16,7 @@ tasks/
         ├── sbatch/
         ├── tNN_<task>/
         │   ├── tNN_<task>.md
-        │   ├── outline/
+        │   ├── draft/                    Page plan <stem>-draft-v<G>.<S>.md, records/, previous/
         │   ├── workflow/
         │   ├── scripts/
         │   │   ├── <worker>.py
@@ -37,6 +37,17 @@ tasks/
 ```
 
 `Task Folder = Page Folder`. Do not create a second Page container for it.
+
+`draft/` is the Page's plan folder (Page skill 0.118; older Pages call it
+`outline/`, which tools still read through `src/outline_version.py::plan_dir`
+when no `draft/` exists). It holds the current plan
+`<stem>-draft-v<G>.<S>.md` with three sections (`## 1 · Structure`,
+`## 2 · Scratch`, `## 3 · Draft`), `records/` for process records such as
+`<stem>-log.md`, and `previous/` for older plan versions. For an existing
+Task or a whole `tasks/` tree, `page.py check-page-folder <task-folder | tasks-dir>`
+says whether each Page is on the latest layout and names the fix, and
+`page.py draft-layout <task-folder | tasks-dir> --sort-runs` migrates it
+(both under `<toolkit>/skills/page/haipipe-page/cli/`).
 
 Because a Task Folder is a Board Page, it may hold the Page-owned `studio/`
 lane, whose storage and writer belong to `haipipe-workbench-studio`. A Task never
@@ -72,11 +83,14 @@ material: no worker, ticket, config or Result lives there.
 
 - Name: `tNN_<noun>_<qualifier>`.
 - Must contain a same-stem Markdown Page.
-- Must contain `scripts/`, `scripts/config/`, `runs/`, `workflow/`, and
-  `outline/`.
+- Must contain `scripts/`, `scripts/config/`, `runs/`, and `workflow/`;
+  `draft/` appears with the Task's first plan or record (page tools create it).
 - `scripts/` holds Task-owned workers and helpers.
 - `scripts/config/` holds shared Task settings plus one config per Run.
-- `runs/` holds one Ticket per Run.
+- `runs/` holds one Ticket per Run. Task Run Tickets `runs/rNN_<run>.sh` stay
+  flat; only Page Runs (names starting `rp-`, `re-`, `rd`) are sorted into
+  `runs/<space>/` (`draft-manual-run/`, `draft-auto-run/`, `evidence-run/`,
+  `supporting-run/`, `delivery-run/`). `results/<run>/` stays flat.
 - Task `sbatch/` may coordinate only this Task's Tickets.
 - Must not contain `src/` or root `config/`. Generated `results/` and
   `notebooks/` DO live here, one level under the Task (JL 260909).
@@ -100,8 +114,8 @@ config. A Ticket does not loop over sibling Tickets; orchestration belongs in
 ## Results and notebooks
 
 Light Results include metrics, logs, reports, small data extracts, and display
-files. Heavy artifacts go to `_WorkSpace/` and are represented by pointers and
-hashes in the Result.
+files. Heavy artifacts go to `_WorkSpace/` and are represented by pointers in
+the Result.
 
 The worker receives `RESULT_DIR` and must write there. It must not construct a
 Task-local output path. The Ticket creates and updates `runtime.yaml`
@@ -128,7 +142,7 @@ is selected by `_meta.notebook: full | thin | off` in the Run config.
 ## Documentation
 
 - Block overview: `board.md` and optional `diagram/`.
-- Task explanation: same-stem Task Page plus `outline/`.
+- Task explanation: same-stem Task Page plus `draft/`.
 - Job-specific operational detail: optional `diagram/`.
 - Generated status pages are rebuilt from the tree; do not hand-copy an
   inventory that can drift.

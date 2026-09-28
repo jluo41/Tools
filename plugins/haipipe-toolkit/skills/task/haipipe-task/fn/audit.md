@@ -39,7 +39,7 @@ $OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
 $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb   when notebook policy is not off
 ```
 
-Check exact stem equality, `rNN_` grammar, receipt fields, config hash, Ticket
+Check exact stem equality, `rNN_` grammar, receipt fields, config path, Ticket
 path, Result path, terminal status, and required Result artifacts. A Result
 directory without `runtime.yaml` is always a finding.
 

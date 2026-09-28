@@ -8,8 +8,8 @@ description: >-
   edit this sentence, card on these words, sentence address,
   /haipipe-sentence.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-20"
+  version: "0.6.1"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -146,7 +146,7 @@ A `>` line under a sentence is a LANE: a signed, dated remark that belongs to th
 ```
 > Comment JL …   the human's lane · decisions and corrections live here
 > ✎ ~old~ *new* · WHO · YYMMDD HHMM   the change record
-> Citation: · > Value: · > Display: …  the typed lanes, named by what they attach
+> Citation: · > Value: · > Display: · > Supporting Run: …  the typed lanes, named by what they attach
 > Card the words: what to show   the ONE lane that renders INSIDE the sentence
 >> CC{MMDD}: the worker's dated reply lane, nested under what it answers
 ```

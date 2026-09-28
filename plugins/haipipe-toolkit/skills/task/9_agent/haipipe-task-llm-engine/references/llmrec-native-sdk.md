@@ -30,7 +30,7 @@ B: combined search and recommendation
    different fresh session + live web → ranked physicians, target seven
 ```
 
-The A1 card is a pointer with identity and hashes. It must not duplicate the raw
+The A1 card is a pointer with identity and paths. It must not duplicate the raw
 prompt, response, or tool trace. A2 resumes the SDK rollout; it does not receive
 a pasted copy of A1 as a replacement for session memory.
 
@@ -83,7 +83,7 @@ for the call only, and never copy it into the isolated SDK home or artifacts.
 
 ## Recovery
 
-- Existing artifacts are immutable and resumable by identity and hash.
+- Existing artifacts are immutable and resumable by identity.
 - An `inflight` or `needs_recovery` journal means the provider might already have
   accepted the call. Inspect the provider rollout before any manual repair.
 - Do not delete or rewrite artifacts to force a rerun.

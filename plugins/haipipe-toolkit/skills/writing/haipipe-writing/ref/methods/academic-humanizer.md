@@ -1,7 +1,7 @@
 # Academic humanizer · evaluation adapter
 
 Provider: an available academic-humanizer external skill, normally
-AIScientists-Dev/academic-humanizer. Resolve the actual entry/version/hash via
+AIScientists-Dev/academic-humanizer. Resolve the actual entry/version via
 [the adapter contract](../method-adapter-contract.md). A catalog entry is not
 proof of installation. This adapter contains HAI integration rules, not a
 vendored replacement for that skill. Provenance: [method-attribution.md](../method-attribution.md).

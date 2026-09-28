@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -31,15 +30,40 @@ BINDING_FIELDS = ("instance", "run", "base_run", "question", "target", "expected
                   "acceptance", "datasets")
 
 
-def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def is_hash_key(key):
+    """A content-hash field left in an older record (JL 260928: no hashes)."""
+    key = str(key)
+    return key in {"sha256", "hash"} or key.endswith(("_sha256", "_hash"))
 
 
-def candidate_digest(result):
-    """Bind review to the exact payload without a circular review-file hash."""
-    candidate = {k: v for k, v in result.items() if k != "review"}
-    return hashlib.sha256(json.dumps(candidate, sort_keys=True, ensure_ascii=False,
-                                     separators=(",", ":")).encode()).hexdigest()
+def plain(value):
+    """Drop leftover hash fields so older records compare by their real fields."""
+    if isinstance(value, dict):
+        return {k: plain(v) for k, v in value.items() if not is_hash_key(k)}
+    if isinstance(value, list):
+        return [plain(v) for v in value]
+    return value
+
+
+def newer_sources(root, bound, record):
+    """Staleness by file time: bound sources modified after the record was written.
+
+    A reading aid only; it never fails the audit, since a copy or checkout
+    can also move a file's time.
+    """
+    paths = [(bound.get("base_run") or {}).get("ticket")]
+    paths += [d.get("manifest") for d in bound.get("datasets", []) if isinstance(d, dict)]
+    for key in ("supporting_results", "local_sources"):
+        paths += [s.get("path") for s in bound.get(key, []) if isinstance(s, dict)]
+    newer = []
+    for value in paths:
+        try:
+            path = resolve(root, value)
+            if path.stat().st_mtime > Path(record).stat().st_mtime:
+                newer.append(str(value))
+        except (OSError, ValueError, TypeError):
+            continue
+    return newer
 
 
 def read_yaml(path):
@@ -72,7 +96,7 @@ def validate_base_run(root, record, errors, label):
     if not isinstance(record, dict):
         errors.append(f"{label}: base_run must be a mapping")
         return
-    required(record, ("id", "ticket", "sha256"), errors, f"{label}/base_run")
+    required(record, ("id", "ticket"), errors, f"{label}/base_run")
     ident = str(record.get("id", ""))
     if not BASE_RUN.fullmatch(ident):
         errors.append(f"{label}: invalid base Run id {ident}")
@@ -98,7 +122,7 @@ def validate_insight_ticket(root, item, ticket, errors):
         if record.get("run") != run:
             errors.append(f"{run}: Insight Run ticket identity mismatch")
         for key in ("base_run", "datasets", "question", "target", "expected", "acceptance"):
-            if record.get(key) != item.get(key):
+            if plain(record.get(key)) != plain(item.get(key)):
                 errors.append(f"{run}: Insight Run ticket differs from manifest field {key}")
     except (OSError, ValueError, TypeError, yaml.YAMLError) as exc:
         errors.append(f"{run}: invalid Insight Run ticket: {exc}")
@@ -111,15 +135,15 @@ def required(record, keys, errors, label):
 
 
 def binding(root, record, errors, label, key="path"):
+    """A bound source must exist; its version is its id, never a content hash."""
     try:
         path = resolve(root, record.get(key))
         if not path.is_file():
             raise ValueError(f"missing file {path}")
-        sha = record.get("sha256", "")
-        if not re.fullmatch(r"[0-9a-f]{64}", str(sha)) or digest(path) != sha:
-            raise ValueError(f"hash mismatch {path}")
+        return path
     except (ValueError, OSError, TypeError) as exc:
         errors.append(f"{label}: {exc}")
+    return None
 
 
 def local_receipt(directory, value, errors, label):
@@ -138,7 +162,7 @@ def validate_evidence(root, frozen, errors, ident, *, new_input=False):
             raise ValueError(f"{key} must be a list")
     supports = frozen.get("supporting_results", [])
     for source in supports:
-        required(source, ("run", "path", "sha256"), errors, ident)
+        required(source, ("run", "path"), errors, ident)
         source_id = str(source.get("run", ""))
         if not (re.fullmatch(r"b\d+j\d+t\d+r\d+", source_id)
                 or re.fullmatch(r"pj\d+t\d+r\d+", source_id)
@@ -148,9 +172,9 @@ def validate_evidence(root, frozen, errors, ident, *, new_input=False):
             errors.append(f"{ident}: an RI cannot be its own Supporting Run")
         binding(root, source, errors, ident)
         if new_input:
-            required(source, ("ticket", "ticket_sha256", "receipt", "receipt_sha256"), errors, ident)
+            required(source, ("ticket", "receipt"), errors, ident)
             for key in ("ticket", "receipt"):
-                binding(root, {"path": source.get(key), "sha256": source.get(key + "_sha256")}, errors, ident)
+                binding(root, source, errors, ident, key)
             if source.get("receipt"):
                 upstream_receipt = read_yaml(resolve(root, source["receipt"]))
                 if source_id not in (upstream_receipt.get("execution"), upstream_receipt.get("run_id"), upstream_receipt.get("run")):
@@ -172,9 +196,9 @@ def validate_evidence(root, frozen, errors, ident, *, new_input=False):
         if not frozen.get("local_sources") and not frozen.get("datasets"):
             errors.append(f"{ident}: no governed evidence for zero-support input")
     for call in frozen.get("recipe_calls", []):
-        required(call, ("recipe_id", "owner", "entry", "entry_sha256", "code_version",
+        required(call, ("recipe_id", "owner", "entry", "code_version",
                         "parameters", "parameter_contract", "receipt"), errors, ident)
-        binding(root, {"path": call.get("entry"), "sha256": call.get("entry_sha256")}, errors, ident)
+        binding(root, call, errors, ident, "entry")
         required(call.get("parameters", {}), ("input_manifest", "output_root"), errors, ident)
         if not new_input and "producer_execution" not in call:
             # Existing frozen packets retain their recorded dialect. New
@@ -182,15 +206,14 @@ def validate_evidence(root, frozen, errors, ident, *, new_input=False):
             required(call, ("execution",), errors, ident)
             continue
         required(call, ("producer_execution", "consumer_insight_execution",
-                        "producer_ticket", "producer_ticket_sha256", "receipt_sha256"), errors, ident)
+                        "producer_ticket"), errors, ident)
         producer = call.get("producer_execution")
         if producer == ident or call.get("consumer_insight_execution") != ident:
             errors.append(f"{ident}: recipe producer and consumer identities must be distinct and exact")
         if producer not in {source.get("run") for source in supports}:
             errors.append(f"{ident}: recipe producer has no accepted Supporting Result binding")
-        binding(root, {"path": call.get("producer_ticket"),
-                       "sha256": call.get("producer_ticket_sha256")}, errors, ident)
-        binding(root, {"path": call.get("receipt"), "sha256": call.get("receipt_sha256")}, errors, ident)
+        binding(root, call, errors, ident, "producer_ticket")
+        binding(root, call, errors, ident, "receipt")
         receipt = read_yaml(resolve(root, call.get("receipt")))
         if producer not in (receipt.get("execution"), receipt.get("run_id"), receipt.get("run")):
             errors.append(f"{ident}: producing receipt identity mismatch")
@@ -245,7 +268,7 @@ def execution(root, manifest, item, directory):
     run, version = item["run"], directory.name
     ident = full_id(manifest["instance"], run, version)
     info = {"execution": ident, "version": version, "checkpoint": "planned",
-            "status": "invalid", "outcome": "", "findings": [], "stale": False}
+            "status": "invalid", "outcome": "", "findings": [], "stale": False, "newer": []}
     try:
         runtime = read_yaml(directory / "runtime.yaml")
         if runtime.get("schema") != "haipipe.insight-runtime/v1":
@@ -284,12 +307,10 @@ def execution(root, manifest, item, directory):
             allocated = read_yaml(binding_path)
             if allocated.get("schema") != "haipipe.insight-binding/v1":
                 errors.append(f"{ident}: invalid allocation binding schema")
-            if runtime.get("binding_sha256") != digest(binding_path):
-                errors.append(f"{ident}: allocation binding hash mismatch")
             if allocated.get("instance") != manifest["instance"] or allocated.get("run") != run:
                 errors.append(f"{ident}: allocation binding identity mismatch")
             for key in ("base_run", "question", "target", "expected", "acceptance"):
-                if allocated.get(key) != item.get(key):
+                if plain(allocated.get(key)) != plain(item.get(key)):
                     errors.append(f"{ident}: allocation binding differs from RI {key}")
             if [f"{d.get('id')}@{d.get('version')}" for d in allocated.get("datasets", [])] != item.get("datasets"):
                 errors.append(f"{ident}: allocation dataset binding differs from RI")
@@ -304,17 +325,16 @@ def execution(root, manifest, item, directory):
             if INSIGHT_RUN.fullmatch(run):
                 if frozen.get("schema") != "haipipe.insight-input/v2":
                     errors.append(f"{ident}: RI execution requires input schema v2")
-                if frozen.get("base_run") != item.get("base_run"):
+                if plain(frozen.get("base_run")) != plain(item.get("base_run")):
                     errors.append(f"{ident}: frozen base Run differs from RI binding")
                 validate_base_run(root, frozen.get("base_run"), errors, ident)
-            if runtime.get("input_sha256") != digest(directory / "input.yaml"):
-                errors.append(f"{ident}: frozen input hash mismatch")
-            if binding_path.exists() and any(frozen.get(key) != allocated.get(key) for key in BINDING_FIELDS):
+            if binding_path.exists() and any(plain(frozen.get(key)) != plain(allocated.get(key))
+                                             for key in BINDING_FIELDS):
                 errors.append(f"{ident}: frozen input differs from allocation binding")
             known = {f"{d['id']}@{d['version']}": d for d in manifest.get("datasets", [])}
             for data in frozen.get("datasets", []):
                 key = f"{data.get('id')}@{data.get('version')}"
-                if key not in known or data != known[key]:
+                if key not in known or plain(data) != plain(known[key]):
                     errors.append(f"{ident}: unknown or changed dataset binding {key}")
                 binding(root, data, errors, f"{ident}/{key}", "manifest")
             evidence_contract = frozen.get("evidence_contract")
@@ -326,6 +346,9 @@ def execution(root, manifest, item, directory):
             used = {f"{d.get('id')}@{d.get('version')}" for d in frozen.get("datasets", [])}
             info["stale"] = intended != used or any(frozen.get(k) != item.get(k)
                                                    for k in ("question", "target", "acceptance"))
+            info["newer"] = newer_sources(root, frozen, directory / "input.yaml")
+        elif binding_path.exists():
+            info["newer"] = newer_sources(root, allocated, binding_path)
         path = directory / "result.yaml"
         if path.exists():
             result = read_yaml(path)
@@ -335,8 +358,6 @@ def execution(root, manifest, item, directory):
                 errors.append(f"{ident}: Result execution identity mismatch")
             if not frozen or result.get("target") != frozen.get("target"):
                 errors.append(f"{ident}: Result target differs from frozen input")
-            if runtime.get("result_sha256") != digest(path):
-                errors.append(f"{ident}: Result hash mismatch")
             outcome = result.get("outcome")
             info["outcome"] = outcome
             if outcome not in {"accepted", "insufficient", "rejected"}:
@@ -353,8 +374,8 @@ def execution(root, manifest, item, directory):
                 required(receipt, ("author", "reviewer", "checked"), errors, ident)
                 if receipt.get("author") == receipt.get("reviewer"):
                     errors.append(f"{ident}: reviewer must differ from author")
-                if receipt.get("candidate_sha256") != candidate_digest(result) or receipt.get("input_sha256") != runtime.get("input_sha256"):
-                    errors.append(f"{ident}: review does not bind exact candidate and input")
+                if receipt.get("execution") not in (None, ident):
+                    errors.append(f"{ident}: review names a different execution")
                 if status != "complete" or set(STAGES) - set(checkpoints):
                     errors.append(f"{ident}: accepted Result lacks completed checkpoints")
                 info["findings"] = [r["id"] for r in result.get("RF", [])]
@@ -383,7 +404,7 @@ def inspect(root, selected=None, version=None):
         errors.append("invalid instance id")
     seen_data = set()
     for data in manifest.get("datasets", []):
-        required(data, ("id", "version", "manifest", "sha256"), errors, "dataset")
+        required(data, ("id", "version", "manifest"), errors, "dataset")
         key = f"{data.get('id')}@{data.get('version')}"
         if key in seen_data:
             errors.append(f"duplicate dataset version {key}")
@@ -461,6 +482,8 @@ def table_rows(rows):
         state = current.get("outcome") or current.get("status", "not run")
         if current.get("stale"):
             state += " (input binding stale)"
+        if current.get("newer"):
+            state += " (source file newer than input)"
         if current and not current.get("valid"):
             state = "invalid"
         base = item.get("base_run", {})
@@ -530,8 +553,7 @@ def bind_insight_run(root, *, base_run, base_ticket, datasets, stem, question,
     numbers = [int(match.group(1)) for item in manifest.get("items", [])
                if (match := re.match(r"ri(\d+)_", str(item.get("run", ""))))]
     run = f"ri{max(numbers, default=0) + 1:02d}_{stem}"
-    base = {"id": base_run, "ticket": _stored_path(root, ticket_path),
-            "sha256": digest(ticket_path)}
+    base = {"id": base_run, "ticket": _stored_path(root, ticket_path)}
     item = {"run": run, "base_run": base, "question": question, "target": target,
             "datasets": list(datasets), "expected": expected, "acceptance": acceptance}
     ticket = {"schema": "haipipe.insight-run/v1", **item}
@@ -540,7 +562,7 @@ def bind_insight_run(root, *, base_run, base_ticket, datasets, stem, question,
               "run": run, "base_run": base,
               "question": question, "target": target, "expected": expected,
               "acceptance": acceptance,
-              "datasets": [inventory[key] for key in datasets]}
+              "datasets": [plain(inventory[key]) for key in datasets]}
     run_ticket = root / "runs" / f"{run}.yaml"
     directory = root / "results" / run / version
     if run_ticket.exists() or directory.exists():
@@ -552,7 +574,6 @@ def bind_insight_run(root, *, base_run, base_ticket, datasets, stem, question,
     runtime = {"schema": "haipipe.insight-runtime/v1",
                "execution": full_id(manifest["instance"], run, version),
                "family": "insight", "operation": "item", "status": "planned",
-               "binding_sha256": digest(directory / "binding.yaml"),
                "checkpoints": {},
                "attempts": [{"attempt": 1, "status": "planned"}]}
     _write_yaml(directory / "runtime.yaml", runtime)
@@ -605,17 +626,15 @@ def freeze_insight_input(root, *, run, version, evidence):
         runtime = {"schema": "haipipe.insight-runtime/v1", "execution": ident,
                    "family": "insight", "operation": "item", "status": "planned",
                    "checkpoints": {}, "attempts": [{"attempt": 1, "status": "planned"}]}
-    # Recover the immutable allocation from its binding file, or from a
-    # hash-verified old frozen input. No missing input is silently synthesized.
+    # Recover the allocation from its binding file, or from an old frozen
+    # input. No missing input is silently synthesized.
     source_dir = directory if (directory / "binding.yaml").is_file() else versions[-1]
-    source_runtime = read_yaml(source_dir / "runtime.yaml")
     source = source_dir / "binding.yaml"
-    hash_key = "binding_sha256"
     if not source.is_file():
-        source, hash_key = source_dir / "input.yaml", "input_sha256"
-    if not source.is_file() or source_runtime.get(hash_key) != digest(source):
-        raise ValueError("allocation source is missing or its hash changed")
-    original = read_yaml(source)
+        source = source_dir / "input.yaml"
+    if not source.is_file():
+        raise ValueError("allocation source is missing")
+    original = plain(read_yaml(source))
     allocated = {"schema": "haipipe.insight-binding/v1",
                  **{key: original.get(key) for key in BINDING_FIELDS}}
     if allocated["instance"] != manifest["instance"] or allocated["run"] != run:
@@ -627,12 +646,12 @@ def freeze_insight_input(root, *, run, version, evidence):
     if [f"{d['id']}@{d['version']}" for d in allocated["datasets"]] != item.get("datasets"):
         faults.append("allocation datasets differ from RI; commission a new RI")
     for data in allocated["datasets"]:
-        if inventory.get(f"{data['id']}@{data['version']}") != data:
+        if plain(inventory.get(f"{data['id']}@{data['version']}")) != data:
             faults.append("dataset inventory changed after allocation")
         binding(root, data, faults, ident, "manifest")
     frozen = {**allocated, "schema": "haipipe.insight-input/v2", "version": version,
               "evidence_contract": EVIDENCE_CONTRACT,
-              "supporting_results": [], "recipe_calls": [], **evidence}
+              "supporting_results": [], "recipe_calls": [], **plain(evidence)}
     validate_evidence(root, frozen, faults, ident, new_input=True)
     if faults:
         raise ValueError("; ".join(faults))
@@ -642,13 +661,12 @@ def freeze_insight_input(root, *, run, version, evidence):
         stream.write(yaml.safe_dump(frozen, sort_keys=False, allow_unicode=True))
     if not (directory / "binding.yaml").exists():
         _write_yaml(directory / "binding.yaml", allocated)
-    runtime["binding_sha256"] = digest(directory / "binding.yaml")
-    runtime["input_sha256"] = digest(directory / "input.yaml")
+    runtime = plain(runtime)
     runtime["checkpoints"] = {"frozen": {
         "at": datetime.now().astimezone().isoformat(timespec="seconds"), "receipt": "input.yaml"}}
     _write_yaml(directory / "runtime.yaml", runtime)
     return {"execution": ident, "input": str(directory / "input.yaml"),
-            "input_sha256": runtime["input_sha256"], "runtime": str(directory / "runtime.yaml")}
+            "runtime": str(directory / "runtime.yaml")}
 
 
 def main(argv=None):
@@ -709,7 +727,7 @@ def main(argv=None):
                               "base_run": selected_item.get("base_run"),
                               "version": args.version, "finding": args.finding,
                               "applicability": "historical-needs-recheck" if args.historical else "current-binding-matches",
-                              "result": str(path), "sha256": digest(path)}, indent=2))
+                              "result": str(path)}, indent=2))
         for error in errors:
             print(error, file=sys.stderr)
         if args.command == "check":

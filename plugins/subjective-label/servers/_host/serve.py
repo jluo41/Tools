@@ -6,7 +6,7 @@
 
 This process has its own port, DOMAIN, and auth file, so annotators on a
 tailnet reach `<DOMAIN>/w/<board>` (every labeling job on a Board) and
-`<DOMAIN>/w/<board>/<page>/labeling` (one job, five Spaces, one write door)
+`<DOMAIN>/w/<board>/<page>/labeling` (one job, four Spaces, one write door)
 without the terminal, the chat, or any Board write route: those answer 404.
 
 It does not copy the host. It runs the shared haipipe host library,

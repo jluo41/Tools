@@ -63,7 +63,7 @@ def test_render_has_one_box_per_paragraph_prefilled_with_the_draft(tmp_path):
     page_html = render('Page', parse_outline(page.read_text()), page, draft_mode='revise')
     assert 'data-draft-mode=revise' in page_html
     assert '<button type=button class="draft-mode-tab on" data-draft-mode=revise>Revise</button>' in page_html
-    assert 'Revise · Page.interactive-writing.revise' in page_html
+    assert 'Page.interactive-writing.revise' not in page_html  # no explanation note (JL 260927)
 
 
 def test_read_only_host_shows_a_disabled_box_without_save(tmp_path):

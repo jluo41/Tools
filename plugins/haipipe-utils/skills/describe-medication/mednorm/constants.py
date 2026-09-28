@@ -26,8 +26,13 @@ def _find(rel):
     return (Path("_WorkSpace/ExternalStore") / rel).resolve()
 
 
-BANK = _find(Path("medbank") / "fda_ndc_product.parquet")   # FDA, external
-LEXICON = _find(Path("medbank") / "med_lexicon.parquet")    # ours
+def _pinned(asset):
+    from ._lock import lock_file                  # the pinned ext_ table, when a lock pins it
+    return None if os.environ.get("MEDNORM_DB") else lock_file(asset)
+
+
+BANK = _pinned("ext_fda_ndc") or _find(Path("medbank") / "fda_ndc_product.parquet")      # FDA, external
+LEXICON = _pinned("ext_med_lexicon") or _find(Path("medbank") / "med_lexicon.parquet")   # ours
 
 # --------------------------------------------------------- what a row IS -----
 # Rule 2 of haipipe-norm: TYPE, DO NOT DELETE.

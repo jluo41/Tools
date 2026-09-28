@@ -84,8 +84,8 @@ All four address-bearing levels use
 Page Face                              Task Face
 ---------                              ---------
 tNN_<task>.md                         discovery.yaml
-outline/                               scripts/ (optional instrument)
-outline/evidence/bibex/tNN_<task>.bib  runs/
+draft/                               scripts/ (optional instrument)
+draft/evidence/bibex/tNN_<task>.bib  runs/
 (derived union of complete Result Bibs)    results/
 typed Page synthesis                   runtime receipts
 ```
@@ -192,7 +192,7 @@ complete Result entering the aggregate must be verified before D1 CLOSE can clai
 is reserved for completed, verified admissible evidence that cannot establish
 the substantive answer.
 
-`outline/evidence/supporting-runs/` is pointer-only lineage for a Page Evidence
+`draft/evidence/supporting-runs/` is pointer-only lineage for a Page Evidence
 Item that the approved Outline explicitly declares. The derived aggregate Bib
 does not create such an item by itself. Discovery's own Paper/Source Runs remain
 the local `runs/` ↔ `results/` inventory; a consumer does not create a second

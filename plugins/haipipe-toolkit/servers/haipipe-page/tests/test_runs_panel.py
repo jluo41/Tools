@@ -11,7 +11,7 @@ PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "page" / "haipipe-page"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR.parent / "workbench-page"))
 
-from runs_panel import page_bar_html, panel_html, row_space, run_types  # noqa: E402
+from runs_panel import panel_html, row_space, run_types  # noqa: E402
 
 
 class RunsPanelTest(unittest.TestCase):
@@ -36,10 +36,18 @@ class RunsPanelTest(unittest.TestCase):
         types = run_types()
         labels = {(t["space"], t["label"]) for t in types}
         for wanted in [("Draft", "Paragraph revise"), ("Draft", "Evidence embed"),
-                       ("Draft", "Auto write"), ("Evidence", "Citation"),
-                       ("Delivery", "LaTeX"), ("Page", "Check")]:
+                       ("Draft", "Auto write"), ("Evidence", "Bind / update citation"),
+                       ("Delivery", "Build"), ("Delivery", "Check"), ("Page", "Check")]:
             self.assertIn(wanted, labels)
         self.assertTrue(all(t["prompt"] for t in types))
+        views = {t["label"]: t["views"] for t in types}
+        self.assertEqual(views["Structure revise"], "table")
+        # Each view lists only its own run types (JL 260927).
+        self.assertEqual(views["Paragraph revise"], "revise")
+        self.assertEqual(views["Scratch"], "scratch")
+        self.assertEqual(views["Auto write"], "reading")
+        self.assertEqual(views["Bind / update value"], "values")
+        self.assertTrue(all(t["views"] for t in run_types() if t["space"] != "Page"))
 
     def test_runs_sort_into_their_space_and_type(self):
         self.assertEqual(row_space(self.rows[0]), "draft")
@@ -47,15 +55,28 @@ class RunsPanelTest(unittest.TestCase):
         html = panel_html(self.page, "draft", self.rows, run_types(), plan_name="draft/Sample-draft-v1.1.md")
         self.assertIn('data-run="rp-para-02_P02"', html)
         self.assertIn('data-targets="C1.P2"', html)
-        self.assertIn("1 run · 1 waiting for you", html)
+        self.assertIn('data-name="run-paragraph-02"', html)  # the full name, not rp-para
         self.assertIn("revise Sample C1.P2", html)
         self.assertNotIn("rd01_latex", html)
 
-    def test_page_bar_counts_waiting_runs_and_offers_page_runs(self):
-        bar = page_bar_html(self.page, run_types(), self.rows, plan_name="draft/x.md", readiness="ready")
-        self.assertIn("Runs · 1 waiting", bar)
-        self.assertIn("Check run", bar)
-        self.assertIn("pagebar-focus", bar)
+    def test_delivery_builds_follow_their_format_tab(self):
+        html = panel_html(self.page, "delivery", self.rows, run_types(), plan_name="draft/x.md")
+        self.assertIn('data-run="rd01_latex"', html)
+        self.assertIn('data-views="latex"', html)
+        self.assertNotIn("rp-para-02_P02", html)
+
+
+    def test_evidence_runs_are_named_by_the_item_they_serve(self):
+        folder = self.page.parent / "runs" / "evidence-run"
+        folder.mkdir()
+        ticket = folder / "re-value-02_value-dose.md"
+        ticket.write_text("---\nrun: re-value-02_value-dose\nitem: E25-VALUE-dose\n---\n", encoding="utf-8")
+        rows = [{"global_id": "re-value-02_value-dose", "ticket": str(ticket), "status": "Done"},
+                {"global_id": "pj02t25r01_dose", "ticket": str(folder / "pj02t25r01_dose.sh"), "status": "Done"}]
+        html = panel_html(self.page, "evidence", rows, run_types(), plan_name="draft/x.md",
+                          run_tabs={"pj02t25r01": {"tab": "values", "item": "E25", "target": "C1.P5.B2"}})
+        self.assertIn('data-name="run-Evalue25"', html)    # the older run comes first
+        self.assertIn('data-name="run-Evalue25-2"', html)  # a later run for the same item
 
 
 if __name__ == "__main__":

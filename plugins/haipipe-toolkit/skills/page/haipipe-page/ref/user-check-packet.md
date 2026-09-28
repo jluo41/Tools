@@ -22,7 +22,7 @@ Select the routine writing packet below for a feedback Step. The four-surface
 packet is for formal review/delivery. For that formal packet, the main response
 contains these four user-check surfaces plus the read-only Delivery Workspace
 consistency receipt. Detailed
-source paths, logs, manifests, hashes, and Run receipts stay in the durable
+source paths, logs, manifests, and Run receipts stay in the durable
 records and may be mentioned only when they explain a missing or stale surface.
 
 When a person says enter, continue, resume, or review an open Page Run before

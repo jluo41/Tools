@@ -207,13 +207,13 @@ and the Run still fails.
 
 For cluster execution, `runtime.yaml` records `status`, the Run, the end time,
 the counts written (with the `min_cell` applied), and where available the
-Databricks Run id, workspace path, cluster identity, config hash, source git
+Databricks Run id, workspace path, cluster identity, config path, source git
 SHA, and Result-gate verdict.
 
 ## Memory discipline
 
 - Read Parquet metadata for row/schema checks instead of loading large tables.
-- Stream checksums.
+- Stream large files; never read one whole into memory.
 - Chunk large source tables and write a success marker for resumability.
 - Keep inline execution sequential on a shared Spark session.
 

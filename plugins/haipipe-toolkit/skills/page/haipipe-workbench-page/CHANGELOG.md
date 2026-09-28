@@ -1,3 +1,68 @@
+## 0.93.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- Evidence Result envelopes (`ref/item-table.md`, `ref/evidence/values.md`, `displays.md`,
+  `pagex.md`, `ref/evidence-bundle.md`, `ref/record-shape.md`): `input`, `supporting_results`,
+  `local_sources`, `provenance` and `Local Input` name paths and Run ids only; no `sha256` field,
+  no `#<sha256>` suffix. A DISPLAY intake is stale when a source file is newer than it.
+- Delivery Space (`ref/delivery.md`, `ref/space-mapping.md`): each lane is current, stale or not
+  built by file time against the Page; no source or artifact hash.
+- Run Space (`ref/run-space.md`) no longer lists hashes or checksums among the details it hides.
+- `servers/workbench-page`: `export.py` writes `evidence-selection.json` v2 with paths only;
+  `outline_feedback.py` writes no `version_sha256` / `input_sha256` in a Writing Run's
+  `runtime.yaml` (an older file's sha256 keys are dropped on rewrite) and names `Prior Version`
+  and `Base` by file name and saved time; `outline_preview.py` / `outline_revise.py` keep no
+  `bullet-sha256` in Draft records; `plugview.py` no longer shows a probe proof's sha256;
+  `delivery.py`'s prompt says "saved source version", not "fingerprint".
+
+## 0.92.0 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+- Export (`servers/workbench-page/export.py`): an older paper-local CITE Result (`pj…`, or a `re-cite`
+  without `payload.bibliography`) now yields its Bib: each `payload.sources[].cite` key is taken exactly
+  from the one-entry `.bib` of a Supporting Result the Result names. A key found in none is refused by
+  name (no paper-wide seed Bib, no key renaming). Paper-AgreeablePrescriptionDiscretion: 143 of 175 such
+  keys resolve; the other 32 are 11 keys spelled differently from their Discovery Result
+  (`liu2021assessing` vs `Liu_2021`) or with no Discovery Result (`luo2026mapping`).
+- Runs panel (`runs_panel.py`, shared with the Paper Workbench): a type's count follows the selected
+  target and view; the panel opens on a type with runs there; `panel_markup` is the reusable half of
+  `panel_html`; a row may carry its own selection keys (`_keys`) and view filter (`_views`).
+- The Page workbench route is `/_board/draft` (was `/_board/outline`, which still answers).
+- A display float follows the PARAGRAPH that first cites it, never the sentence (S-MISQ-Main-5-Results,
+  260928): after the citing sentence, the rest of the paragraph printed after the table as an orphaned
+  paragraph. LaTeX (`export.py` `_paragraph_end_after`: the next blank line, heading or float) and Word
+  (`md2docx.py` `place_due`: at the paragraph's end, in both `--join-paragraphs` and one-sentence modes)
+  follow one rule; two tables cited in one paragraph follow it in citation order. Tests:
+  `test_display_is_inserted_after_the_paragraph_that_first_cites_it`,
+  `test_a_table_follows_the_whole_paragraph_that_first_cites_it` (fails on the old code).
+- Word (`md2docx.py`): only a citation in PROSE places and numbers a display (S-MISQ-Main-5-Results,
+  260928). A `\ref` inside a caption or note ("the pooled sample of Table 4") had counted as a first
+  citation, so Table 4 printed and took its number before Tables 2 and 3. Numbers now follow the order
+  prose first cites the displays (a pre-scan of every paragraph); a caption's forward `\ref` resolves to
+  that number; a display cited only from a caption or note prints at the end of its page. Test:
+  `test_a_ref_in_a_caption_never_places_or_numbers_a_table_early` (fails on the old code).
+- Evidence Space has a fourth tab, Supporting Runs (JL 260928): the Runs every item's `Supporting Runs`
+  line names, as Execution/Discovery > Block > Job > Task > Run, each Run with chips for the items it
+  feeds; the Evidence Runs panel gains a `Supporting runs` type on that tab, and the panel's leftover
+  bucket is now `Other` (it had been mislabelled `Supporting runs`).
+  The tree reads like a file tree (JL 260928, "make it look more beautiful"): guide lines between levels,
+  the level prefix (`b03` `j02` `t01` `r04`) in the accent colour, a status dot, rows without boxes, and
+  one outlined type pill per kind followed by the item numbers (`DISPLAY E13 E14 · VALUE E01 E02`), so
+  the busiest Run fits on one line.
+- Delivery Space decides current or stale by file time alone (JL 260928, AGENTS.md rule 9: no hashes):
+  a lane is current when its built files (`index.html`, `<page>.pdf`/`.tex`, `<page>.docx`) are at least as
+  new as the Page, and the web copy reads the same as the Page. No `build-manifest.json` is needed, the
+  `unverified` state is gone, and the screen shows "Page saved <time>" instead of a SHA-256 line.
+  Paper-AgreeablePrescriptionDiscretion: 12 Sections read 3 current; Appendix D and F show real staleness.
+- One short name for an Evidence Item on every surface (JL 260928): `Evalue01`, `Ecite25`, `Edisplay13`
+  (`src/item_table.py::short_name`). The Evidence table's ID column, the Supporting Runs tree, the Runs
+  panel (`run-Edisplay13`, was `run-display-E13`), the Run-binding cards and the Draft chips
+  (`Edisplay13.CohortTbl`, was `E13D.CohortTbl`) all use it; the stored id `E13-DISPLAY-cohort-overview`
+  and its number are unchanged, so no ledger, Result or sealed receipt moves. `item-table.md` states it.
+- An older Paper-local run (`pj05t01r01`) named by an Evidence Run ticket's `legacy_run:` line joins that
+  item's tab (`space_views.run_tabs`). Empirical Strategy's two display runs sat in `Other`, so its Displays
+  tab looked as if the displays had no run; now Build figure / table lists 4 and `Other` holds 1 (was 16).
+- A Run card with no local Result says "no result yet"; it had listed the working folder's files.
+
 ## 0.91.0 · 2026-09-25
 
 - The Draft writer (`servers/workbench-page/outline_preview.py`) saves drafted Bullets
@@ -261,7 +326,7 @@
 ## 0.57.0 · 2026-09-11
 
 - Simplify pending-Evidence references in draft prose from styled status chips
-  to ordinary parenthetical labels such as `(E33C.SystemStakes)`; retain the
+  to ordinary parenthetical labels such as `(Ecite33.SystemStakes)`; retain the
   full placeholder in the source/editor and status/link details in the Bullet
   column.
 

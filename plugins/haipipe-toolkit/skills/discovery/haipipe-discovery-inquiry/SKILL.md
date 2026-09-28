@@ -116,7 +116,7 @@ linked legacy files already satisfy Result-backed synthesis.
 
 The shared Outline workbench owns the plan, candidate preview, requirement records,
 feedback, and nested Evidence Workspace. Discovery does not put writing rules
-in a `## Writing Style` section. `outline/<stem>-logic.mmd` is the derived Page
+in a `## Writing Style` section. `draft/<stem>-logic.mmd` is the derived Page
 structure reviewed by `rp00_mermaid-structure`; paragraph Page Runs begin at
 `rp01` only after that structure and the Page-global `P01..PN` order close.
 
@@ -128,14 +128,14 @@ ACQUIRE admits and analyzes canonical Subjects; SYNTHESIZE dispatches the
 shared Page workflow and may write an optional Task-side typed record; CLOSE
 updates only the Task report/status after the Page has passed CHECK.
 
-The Page process folder is shared with every Page: `outline/` holds planning
-material and, when the inquiry needs citation material, `outline/evidence/`
+The Page process folder is shared with every Page: `draft/` holds planning
+material and, when the inquiry needs citation material, `draft/evidence/`
 holds the derived Bib. The D1 root Page uses direct Result/Card/cite lineage
 and does not create a local typed Evidence Item for its own Results.
 Discovery's own analysis receipts remain the local `rNN` subset of the shared
 `runs/` ↔ `results/` lanes. Page-owned `rpNN` records may coexist in those
 folders, but are not Discovery inventory and are validated by the Page
-workflow. Do not copy Discovery Results into `outline/evidence/` or create a
+workflow. Do not copy Discovery Results into `draft/evidence/` or create a
 second local Evidence Run merely to repackage a paper.
 
 ### Run Profile
@@ -205,7 +205,7 @@ establish the substantive answer. Neither receipt may claim `ok`.
 ## Handoff
 
 Consumers receive the root Page, exact Result/Card links, cite keys, the
-derived `outline/evidence/bibex/<task>.bib`, disagreements, and unresolved
+derived `draft/evidence/bibex/<task>.bib`, disagreements, and unresolved
 limits. A consumer never treats a legacy source index as a Result receipt.
 
 ## Files

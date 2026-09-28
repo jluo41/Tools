@@ -12,7 +12,7 @@ _meta:
   output: |
     $OUTPUT_ROOT/<task>/results/<run>/{source_data.csv, provenance.json}
   provenance: |
-    provenance.json records task holder, run, upstream artifacts, selection logic, output hash,
+    provenance.json records task holder, run, upstream artifacts, selection logic, output row count,
     and `approved_for_display_intake: true` only when this CSV is safe to snapshot into a paper.
 
 
@@ -22,11 +22,10 @@ _meta:
 
 display_kind: figure                    # intended consumer: figure | table | diagram | illustration
 
-source_runs:                            # full Run ids + exact artifact hashes
+source_runs:                            # full Run ids + exact artifact paths
   - run: b01j01t01r01
     result: <resolved-upstream-result>
     artifact: <resolved-upstream-result>/<file>
-    sha256: <sha256-of-that-artifact>
 
 summary_params:                         # this task's responsibility: facts, not visual styling
   columns: [model_size, split, mae, ci95]

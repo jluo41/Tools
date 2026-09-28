@@ -1,3 +1,7 @@
+## 0.9.5 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+
 ## 0.9.4 · 2026-09-20
 
 - Align local typed RE, RP writing and RD delivery with current owners. Preserve stable Section IDs and legacy receipt identities; use the canonical Paper Workflow without a wrapper Section Run.

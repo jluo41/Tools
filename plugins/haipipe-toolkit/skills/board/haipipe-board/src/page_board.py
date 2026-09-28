@@ -24,6 +24,23 @@ from .page_stage import render_doc_slide
 # to mention this as well"). A reader who knows how the groups connect but not
 # which folder holds the engine still cannot act, so the heading names folders
 # first and pages second.
+def board_rel(board_dir):
+    """The board folder as the page names it: relative to the repo root.
+
+    It is a label (the sidebar's storage key, a paper note's source), and an
+    absolute path would carry the user name and checkout folder, which differ
+    per machine.
+    """
+    if not board_dir:
+        return ""
+    path = Path(board_dir).resolve()
+    root = server_root(path)
+    try:
+        return path.relative_to(root.resolve()).as_posix() if root else path.name
+    except ValueError:
+        return path.name
+
+
 def server_root(board_dir):
     """The folder `/_excalidraw/?board=<rel>` paths are relative to.
 
@@ -804,7 +821,7 @@ def render(meta, qs):
                       # chip panels last: they are top-layer, so DOM position
                       # is free, and out here they are never inside a <summary>
                       popcards="\n".join(bd.CARDS),
-                      boarddir=esc(meta.get("dir", "")),
+                      boarddir=esc(board_rel(meta.get("dir", ""))),
                       board_paper=esc(meta.get("board_paper", "")),
                       board_dialect=esc(meta.get("dialect", "")),
                       bsession=esc(meta.get("session", "")))
@@ -920,7 +937,6 @@ def to_json(meta, qs, warn):
                     requires=q.get("requires", ""),
                     style_from=q.get("style_from", ""),
                     provides=q.get("provides", ""),
-                    contract_source_hash=q.get("contract_source_hash", ""),
                     files=q.get("files", []),
                     done=progress["closed"], total=progress["total"],
                     aims={k: progress[k] for k in
@@ -1342,7 +1358,7 @@ def render_tree(meta, qs, out_dir, only=None):
             # Board that declares no `excalidraw:`, which is how 🖌 Draw stays
             # out of the menu rather than offering a surface that cannot open.
             xcal=esc((meta.get("excalidraw") or "").strip().rstrip("/")),
-            boarddir=esc(meta.get("dir", "")),
+            boarddir=esc(board_rel(meta.get("dir", ""))),
             board_paper=esc(meta.get("board_paper", "")),
                       board_dialect=esc(meta.get("dialect", "")),
             bsession=esc(meta.get("session", "")))

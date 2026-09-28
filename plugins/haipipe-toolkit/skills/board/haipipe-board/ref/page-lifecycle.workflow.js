@@ -178,13 +178,11 @@ const PRODUCER_RESULT = {
 
 const SNAPSHOT_RESULT = {
   type: 'object',
-  required: ['actor', 'status', 'version_id', 'source_sha256', 'render_sha256', 'mechanical_errors', 'mechanical_warnings', 'evidence'],
+  required: ['actor', 'status', 'version_id', 'mechanical_errors', 'mechanical_warnings', 'evidence'],
   properties: {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['ok', 'failed'] },
     version_id: { type: 'string' },
-    source_sha256: { type: 'string' },
-    render_sha256: { type: 'string' },
     mechanical_errors: { type: 'number' },
     mechanical_warnings: { type: 'number' },
     evidence: { type: 'array', items: { type: 'string' } },
@@ -229,9 +227,11 @@ async function snapshot(label) {
     `   unreachable for every page whenever any OTHER page has an error.\n` +
     `   Use: python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board> | grep '^<page-file-name>'\n` +
     `   Report the exact matching lines in findings, and 0 when there are none.\n` +
-    `3. Locate the rendered HTML for this Page.\n` +
-    `4. Compute SHA-256 for the Markdown source and rendered HTML.\n` +
-    `5. Return version_id exactly as <source_sha256>:<render_sha256>.\n` +
+    `3. Locate the rendered HTML for this Page. If the Markdown source was saved after it\n` +
+    `   (file modification time), return status failed with that finding.\n` +
+    `4. Read the Page's version number (for example v1.5) and the Markdown source's saved time.\n` +
+    `5. Return version_id exactly as <version> <yymmdd HHMM>, e.g. v1.5 260928 1241.\n` +
+    `   Never compute or return a content hash.\n` +
     `Do not change the Page, board.md, another source file, or a human gate.`,
     { label: `snapshot:${label}`, phase: 'Snapshot', schema: SNAPSHOT_RESULT }
   )
@@ -296,7 +296,7 @@ for (let step = 1; step <= maxSteps; step++) {
       `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\nExpected version: ${currentVersion.version_id}\n` +
       `Intent: ${intent}\nMode: ${mode}\nHuman gate: ${JSON.stringify(humanGate)}\n\n` +
       `Load the canonical chain: haipipe-page, haipipe-page-workflow, haipipe-page-check, the Folder-owning workflow, the exact Page Type, then its family checker. ` +
-      `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
+      `Run the Board's read-only checker, read the same version label (the Page's version number and the source's saved time, <version> <yymmdd HHMM>), confirm the rendered HTML is not older than the source, and HOLD if either differs from the expected version. Never compute a content hash. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
       `Do not edit, rebuild, or cure a finding. Route to CLOSE, context, structure, evidence, writing, or HOLD, and name next_cycle when routing to a Page Run. ` +
       `CLOSE requires verdict=pass and durable evidence for every required human gate.`,
@@ -324,8 +324,6 @@ for (let step = 1; step <= maxSteps; step++) {
         version_before: currentVersion.version_id,
         version_after: currentVersion.version_id,
         checked_version: currentVersion.version_id,
-        source_sha256: currentVersion.source_sha256,
-        render_sha256: currentVersion.render_sha256,
         mechanical_errors: currentVersion.mechanical_errors,
         mechanical_warnings: currentVersion.mechanical_warnings,
         verdict: 'blocked',
@@ -410,8 +408,6 @@ for (let step = 1; step <= maxSteps; step++) {
       version_before: currentVersion.version_id,
       version_after: currentVersion.version_id,
       checked_version: review.checked_version,
-      source_sha256: currentVersion.source_sha256,
-      render_sha256: currentVersion.render_sha256,
       mechanical_errors: currentVersion.mechanical_errors,
       mechanical_warnings: currentVersion.mechanical_warnings,
       verdict,
@@ -479,8 +475,6 @@ for (let step = 1; step <= maxSteps; step++) {
       version_before: currentVersion.version_id,
       version_after: currentVersion.version_id,
       checked_version: '',
-      source_sha256: currentVersion.source_sha256,
-      render_sha256: currentVersion.render_sha256,
       mechanical_errors: currentVersion.mechanical_errors,
       mechanical_warnings: currentVersion.mechanical_warnings,
       verdict: '',
@@ -554,8 +548,6 @@ for (let step = 1; step <= maxSteps; step++) {
     version_before: before,
     version_after: afterSnapshot.version_id,
     checked_version: '',
-    source_sha256: afterSnapshot.source_sha256,
-    render_sha256: afterSnapshot.render_sha256,
     mechanical_errors: afterSnapshot.mechanical_errors,
     mechanical_warnings: afterSnapshot.mechanical_warnings,
     verdict: '',

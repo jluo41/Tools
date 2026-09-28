@@ -99,8 +99,8 @@ and close checkpoints.
 ~~~text
 Page Face                              Task Face
 tNN_<task>.md                         discovery.yaml
-outline/                               scripts/ optional
-outline/evidence/bibex/tNN_<task>.bib  runs/
+draft/                               scripts/ optional
+draft/evidence/bibex/tNN_<task>.bib  runs/
 (CITE lane owned by Outline)           results/
 topic-level synthesis                  runtime receipts
 ~~~
@@ -187,7 +187,7 @@ runtime.yaml
 PDF, raw extraction, and captured Trigger are optional. Result Card cite key
 and Bib key are identical. `haipipe-workbench-page/ref/evidence/citations.md`
 owns the deterministic derived union of complete Result Bibs; conflicts
-hard-fail. The nested `outline/evidence/supporting-runs/` lane is pointer-only
+hard-fail. The nested `draft/evidence/supporting-runs/` lane is pointer-only
 lineage for Page Evidence Items, not a second Discovery Run inventory.
 
 ## Synthesis

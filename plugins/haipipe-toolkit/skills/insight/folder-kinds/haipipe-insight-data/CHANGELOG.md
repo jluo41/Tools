@@ -1,5 +1,9 @@
 # haipipe-insight-data · version history
 
+## 1.3.2 — 2026-09-28 · No content hashes (JL 260928)
+
+- Governed static sources are pinned by path and version in Local Input, never by content hash.
+
 ## 1.3.1 — 2026-09-20
 
 - Align GI2 with the governed static local source branch: ready typed local Evidence is required, but a Supporting Run is not invented.

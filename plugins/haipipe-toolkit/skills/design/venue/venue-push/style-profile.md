@@ -39,6 +39,6 @@ Body:  Refill lapse risk detected. Tap to review panel.
 [ ] Body ≤ 100 chars
 [ ] Deep link target specified
 [ ] Tone matches audience
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

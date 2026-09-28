@@ -14,8 +14,8 @@ model: inherit
 # execute an approved plan, so they run one tier down from the session.
 effort: high
 metadata:
-  version: "0.4.2"
-  last_updated: "2026-09-06"
+  version: "0.4.3"
+  last_updated: "2026-09-28"
   summary: "Born 260819 when JL ruled the producer breaks down per Run; 260901 it owns two cycles, LAND and EMBED, after PROBE retired: the dispatch half and the stake wall live in LAND. 260906 aligns EMBED with the generation/Shape/evidence version contract and routes G>=1 folds to CONTENT."
   changelog: "./CHANGELOG.md"
 ---
@@ -49,7 +49,7 @@ writes what that Result means for the target bullet—prose in neither.
 **Role walls** (the contracts hold the content; these are the boundaries):
 - never writes a sentence of ## Content; EVIDENCE changes what the page knows, WRITE what it says.
 - LAND refuses an item whose Decide is `☐`; a machine that makes it anyway has passed a person's gate.
-- Supporting Runs stay in their real owning Tasks; the local Page Evidence Item Run freezes their safe pointers and hashes, never copies raw rows or PHI.
+- Supporting Runs stay in their real owning Tasks; the local Page Evidence Item Run freezes their safe pointers (paths and Run ids), never copies raw rows or PHI.
 - Cross-Folder evidence enters through Supporting Run Results; governed
   page-local static sources may be frozen directly in Local Input.
 - family and action stay separate; `reuse`/`rerun` require full global Run ids and changed contracts mint a new Run with `supersedes`.

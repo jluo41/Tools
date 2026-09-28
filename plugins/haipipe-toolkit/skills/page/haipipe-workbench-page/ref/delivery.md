@@ -68,13 +68,12 @@ machine-readable delivery evidence, not a whole-Page acceptance decision:
 ## 🔍 Delivery Workspace · consistency projection
 
 `/_board/delivery?path=…&file=…&workspace=1` (standalone and Board-hosted) is a
-GET-only projection Outline embeds. It compares the current Page Markdown with
-each saved lane: source path and SHA-256, the web Markdown mirror,
-manifest-declared artifact hashes, and artifact freshness. Each lane shows
-`pass`, `stale`, `unverified`, or `not-built` with the exact reason and path.
-It reads `delivery/build-manifest.json`, any lane manifest,
-`delivery/web/.haipipe-page-export`, and saved artifacts; it never rebuilds or
-edits them. The active lane entries copy a context-bound request to chat;
+GET-only projection Outline embeds. It compares each lane's built files with
+the current Page Markdown by file time alone (JL 260928: no content hashes, no
+build record needed): a lane is `pass` when its files are at least as new as
+the Page, `stale` when one is older, `not-built` when it has none. The web
+lane's Markdown copy must also read the same as the Page. Each lane shows the
+exact reason, file and build time. It never rebuilds or edits a file. The active lane entries copy a context-bound request to chat;
 copying never sends, starts, builds, or writes.
 
 ## 📂 Files

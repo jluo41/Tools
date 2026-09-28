@@ -71,7 +71,7 @@ run_specs:
   - section: Validate
     label: validate:provenance
     required: true
-    prompt: Record task holder, run, upstream artifacts, selected columns, filters, checksums, and the
+    prompt: Record task holder, run, upstream artifacts, selected columns, filters, row count, and the
       display-safety assertion in provenance.json.
     files_in: []
     files_out: []

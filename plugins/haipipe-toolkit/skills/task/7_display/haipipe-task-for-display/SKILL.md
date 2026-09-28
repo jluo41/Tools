@@ -8,7 +8,7 @@ description: >-
   task-type=display.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.3"
+  version: "0.3.4"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -30,14 +30,14 @@ Every successful Run writes:
 
 ```text
 $OUTPUT_ROOT/<task>/results/<run>/source_data.csv   small display-safe aggregate
-$OUTPUT_ROOT/<task>/results/<run>/provenance.json   Task, Run, sources, selection, and SHA-256
+$OUTPUT_ROOT/<task>/results/<run>/provenance.json   Task, Run, sources, selection, and row count
 ```
 
 `provenance.json` follows `ref/provenance-template.json`.
 It must declare `approved_for_display_intake: true` and `contains_raw_or_phi: false` before a
 paper Display stage may snapshot the CSV.
-The snapshot manifest repeats the task holder and artifact hash so the paper can be audited even
-when the task folder is remote or later changes.
+The snapshot manifest repeats the task holder, Run, and artifact path so the paper can be audited
+even when the task folder is remote or later changes.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).

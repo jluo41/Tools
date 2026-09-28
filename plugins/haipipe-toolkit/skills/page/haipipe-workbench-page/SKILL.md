@@ -13,12 +13,14 @@ description: >-
   status, delivery tab, LaTeX, Word, slide deck, folder tab, stale workbench,
   /haipipe-workbench-page.
 metadata:
-  version: "0.91.0"
-  last_updated: "2026-09-25"
+  version: "0.93.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-workbench-page · three minimal Spaces, two more tabs
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the workbench views and the `delivery/` artifacts its export doors write (`*-view.html`, `.tex`, `.pdf`, `.docx`, build records): fix `servers/workbench-page/` or the Page source, then rebuild.
 
 Within workbench-facing language, `Space` is the canonical name for a user-facing
 workspace surface. `Workspace` remains only as a compatibility term for old
@@ -35,7 +37,7 @@ Delivery Space separately as a read-only source-to-artifact view:
 
 ```text
 Draft Space          Structure + paragraph table + compact Evidence routes
-Evidence Space       Value + Display + Citation sections with collapsed Result cards
+Evidence Space       Citations · Displays · Values · Supporting Runs (Block > Job > Task > Run tree)
 Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
@@ -51,7 +53,8 @@ server printed at startup. The server redirects that short address to the
 canonical long route and composes `path=` and `file=` itself; a tab word
 (`/runs`, `/delivery`, `/folder`, `/evidence`, `/value`) opens that tab, and a
 query such as `?run=<exact-run-id>` or `&view=scratch` rides along. The long
-`/_board/outline?path=…&file=…` form stays valid (and `file=` may be omitted),
+`/_board/draft?path=…&file=…` form stays valid (and `file=` may be omitted; the
+old `/_board/outline` address still answers),
 but a hand-built long URL is never returned unfetched: follow the redirect and
 read one real value off the response first.
 
@@ -400,7 +403,7 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
 
 ```text
 🧭 Draft Space            default · Structure + Table | Reading | Scratch | Revise
-   Evidence Space         Value + Display + Citation · collapsed Result cards
+   Evidence Space         Citations · Displays · Values · Supporting Runs tree
 Run Space              Page Writing + Page Evidence + Supporting Runs
 ```
 
@@ -650,6 +653,18 @@ referenced from the RE manifest without copying. Legacy
 are not read, merged, or used to fill missing rows. Move them to
 `_archive/legacy-outline-evidence/` before the Page enters the v4 surface.
 
+The fourth tab, **Supporting Runs** (JL 260928), shows the work the items stand
+on. It reads each current item's `Supporting Runs` line
+(`Execution · reuse · b03j02t01r04; …`), resolves every address through the run
+registry (`live.runs.supporting_task_runs`), and draws one tree: Execution or
+Discovery (`task/`, `discoveries/`) > Block > Job > Task > Run, each Run by its
+ticket name with its state and one chip per Evidence Item it feeds (`E13 display`).
+A chip opens that item on its own tab; a Run selected in the tree narrows the
+Runs panel, whose `Supporting runs` type lists the same Runs with their Result
+files. An address the registry does not know shows under `Not found`. The tab
+offers All items (the tree) and Source (the `Supporting Runs` lines); a
+Supporting Run's owner stays its Task or Discovery folder, never this Page.
+
 ## ✍️ Who writes what
 
 ```text
@@ -670,7 +685,7 @@ log             every Run and the page chat, append only    never (authored)
 skills          authored list in outline/skill/<stem>.md      no served surface (skill map workbench retired 260921)
 ```
 
-`POST /_board/outline` keeps the shell's `tab: {url, write}` registration
+`POST /_board/draft` keeps the shell's `tab: {url, write}` registration
 contract. It performs no Table/Reading Draft write; the only narrow write is
 `action: scratch`, which updates the selected Outline's `## Scratch` registry
 and its paired Scratch Run receipt. Legacy `edit-bullet`, `append-bullet`, and
@@ -682,7 +697,7 @@ recorded through the active Page Run, not a second POST queue.
 Every rendered Bullet owns one stable direct route:
 
 ```text
-/_board/outline?path=<board-or-page-root>&file=<page.md>&lens=div&focus=C<n>.P<m>.B<k>
+/_board/draft?path=<board-or-page-root>&file=<page.md>&lens=div&focus=C<n>.P<m>.B<k>
 ```
 
 `lens=div` selects Draft Space and the human-readable `focus` address

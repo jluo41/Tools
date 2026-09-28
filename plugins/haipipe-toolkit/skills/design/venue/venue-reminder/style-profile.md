@@ -35,6 +35,6 @@ v3: You're doing great with your routine. One more
 [ ] Each ≤ 200 chars
 [ ] Motivation varies across variants
 [ ] Tone is supportive, not nagging
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

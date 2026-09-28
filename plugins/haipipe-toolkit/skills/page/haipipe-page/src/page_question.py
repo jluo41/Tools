@@ -290,7 +290,7 @@ def _outline_grid(page_src):
         page_file = page_src.resolve().relative_to(board_root).as_posix()
     except ValueError:
         page_file = page_src.name
-    outline_url = "/_board/outline?path=%s&amp;file=%s" % (
+    outline_url = "/_board/draft?path=%s&amp;file=%s" % (
         quote(board_source, safe="/"), quote(page_file, safe="/"),
     )
 

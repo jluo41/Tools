@@ -49,7 +49,7 @@ Concept    Pipeline Term              Location
 ---------  -------------------------  ------------------------------------------
 Pantry     ExternalStore              _WorkSpace/ExternalStore/<asset>/<version>/
 Label      asset.yaml                 _WorkSpace/ExternalStore/<asset>/asset.yaml
-Recipe     build script               b51 Block: j0N_asset_<asset>/t02_build_<Version>/scripts/
+Recipe     build script               b51 Block: j0N_ext_<topic>/tNN_<asset>/scripts/ (Run rNN_build_<Version>)
                                       (legacy: code-dev/0-EXTERNAL/e{N}_build_external_*.py)
 Order      lock                       _WorkSpace/ExternalStore/_locks/<LockName>.yaml
 Output     ExternalAsset triplet      df_{asset}_id.parquet +
@@ -138,7 +138,7 @@ Current model (`ref/asset-model.md`): each ASSET is versioned on its own.
 ```
 _WorkSpace/ExternalStore/
   <asset>/<version>/         e.g. npi/NPPES202507, npi_engagement/S20260104
-    version.yaml             ValidFromDT, ValidToDT, RefPeriod, source, builder, sha256
+    version.yaml             ValidFromDT, ValidToDT, RefPeriod, source, builder
   _locks/<LockName>.yaml     asset -> version pins for one SourceFn
 ```
 
@@ -195,7 +195,7 @@ SourceFn is the attachment boundary. It looks up each asset explicitly and
 assigns every field by name (`ref/asset-model.md` § SourceFn pattern):
 
 ```python
-npi = lock.asset('npi', env='train').lookup(
+npi = lock.asset('ext_npi', env='train').lookup(
     keys=df_rx['prescriber_npi'], obs_dt=df_rx['DT'], fields=['Specialty'])
 df_rx['npi_specialty'] = npi['Specialty']
 df_rx['npi_matched']   = npi['_matched']
@@ -290,7 +290,7 @@ Key File Locations
 
 ```
 Asset model:          ref/asset-model.md                              <- authority
-Builder scripts:      b51 Block, j0N_asset_<asset>/t02_build_<Version>/scripts/
+Builder scripts:      b51 Block, j0N_ext_<topic>/tNN_<asset>/scripts/ (Run rNN_build_<Version>)
                       (legacy: code-dev/0-EXTERNAL/e{N}_build_external_*.py)
 Shared build helpers: b51 Block src/ (build_vocabulary, convert_to_ids, generate_readme)
 Asset contract:       _WorkSpace/ExternalStore/<asset>/asset.yaml

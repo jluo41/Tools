@@ -1,7 +1,7 @@
 # Lesson 19: Reuse prior-run artifacts on identical sources — but say so
 
 ## The Problem
-A "new" figure (`Figure1-v0701-v4.png`) was actually byte-identical (same MD5) to a previously
+A "new" figure (`Figure1-v0701-v4.png`) was actually byte-identical to a previously
 processed one (`Figure1-v0701-v3.png`) — only the filename and folder differed. The run correctly
 reused the prior run's 37 regenerated + sliced icons, skipping ~10 codex image-gen calls.
 
@@ -12,15 +12,16 @@ icon 呢"). The reuse was invisible: nothing announced that Step 2 had been sati
 previous run.
 
 ## The Solution
-Before regenerating, checksum the source and search for prior `*_regenerated/` runs of the same
-figure (renamed copies count — compare checksums, not filenames). On an identical match, reuse
-the sliced icons and announce it explicitly: "Step 2 skipped — reusing N icons from <path>,
-source checksums match." On a changed source, regenerate (at least the affected parts).
+Before regenerating, search for prior `*_regenerated/` runs of the same figure and compare each
+prior source with this one byte for byte (`cmp -s`; renamed copies count, so compare bytes, not
+filenames). On an identical match, reuse the sliced icons and announce it explicitly: "Step 2
+skipped: reusing N icons from <path>, sources are byte-identical." On a changed source,
+regenerate (at least the affected parts).
 
 ## Why It Works
 Image-gen is the most expensive, slowest step; identical input ⇒ identical valid output, so reuse
 is pure savings. But an invisible skip is indistinguishable from a silent failure — the
-announcement is what converts "broken?" into "smart". Checksums, not filenames: version-suffixed
+announcement is what converts "broken?" into "smart". Bytes, not filenames: version-suffixed
 copies of the same file are common.
 
 ## When to Apply

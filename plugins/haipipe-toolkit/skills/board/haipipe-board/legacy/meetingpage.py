@@ -31,7 +31,6 @@ prose_only=True)` skips managed spans, and "fixing" a quotation falsifies it.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import re
 import sys
 from pathlib import Path
@@ -52,15 +51,13 @@ def end_of(part):
     return f"<!-- haipipe:meeting:{part}:end -->"
 
 
-# The marker carries the hash of what was imported AND the note it came from,
-# so a sync can find its own source without reading rendered content — the
-# lesson skillpage.py learned when its `![[...]]` embed disappeared.
+# The marker carries the note it came from, so a sync can find its own source
+# without reading rendered content: the lesson skillpage.py learned when its
+# `![[...]]` embed disappeared. No content hash (JL 260928): sync re-renders
+# the spans and compares them with the page. An older marker's 16-hex hash
+# before the note path is skipped, never compared.
 MARKER = re.compile(r"^" + re.escape(start_of("head")) +
-                    r"\s+([0-9a-f]{16})(?:\s+(\S+))?", re.M)
-
-
-def digest(txt):
-    return hashlib.sha256(txt.encode("utf-8")).hexdigest()[:16]
+                    r"(?:\s+[0-9a-f]{16}(?=\s))?(?:\s+(?!-->)(\S+))?", re.M)
 
 
 def rel(board, target):
@@ -139,7 +136,7 @@ def bullets(txt):
 
 
 # ── the managed halves ────────────────────────────────────────────────────
-def head_block(board, note, note_path, stamp):
+def head_block(board, note, note_path):
     tldr = [l.strip() for l in note.get("s:tl;dr", "").split("\n") if l.strip()]
     fm = note["fm"]
     meta = [f"`{fm.get('created', '?')}`"]
@@ -149,16 +146,16 @@ def head_block(board, note, note_path, stamp):
         meta.append(f"{n} chapters")
     meta.append(f"recorded by `{fm.get('source', 'echo-meeting')}`")
     return "\n".join(
-        [f"{start_of('head')} {stamp} {rel(board, note_path)} -->"]
+        [f"{start_of('head')} {rel(board, note_path)} -->"]
         + tldr
         + ["", " · ".join(meta), end_of("head")])
 
 
-def diagram_block(note, stamp):
+def diagram_block(note):
     fig = note.get("s:diagram", "").strip()
     if not fig.startswith("```"):
         fig = "```text\n" + (fig or "no diagram in the summary") + "\n```"
-    return "\n".join([f"{start_of('diagram')} {stamp} -->", fig, end_of("diagram")])
+    return "\n".join([f"{start_of('diagram')} -->", fig, end_of("diagram")])
 
 
 def exchange(body):
@@ -178,8 +175,8 @@ def exchange(body):
     return "\n".join(out).strip("\n")
 
 
-def body_block(note, stamp):
-    rows = [f"{start_of('body')} {stamp} -->"]
+def body_block(note):
+    rows = [f"{start_of('body')} -->"]
     if kp := bullets(note.get("s:key points", "")):
         rows += ["### Key points", ""] + [f"- {x}" for x in kp] + [""]
     if dec := bullets(note.get("s:decisions", "")):
@@ -249,7 +246,6 @@ Nothing has been routed onto the Q pages yet, so this page is the whole record s
 
 
 def render(board, note, note_path, stamp_date):
-    stamp = digest(note_path.read_text(encoding="utf-8"))
     actions = checkboxes(note.get("s:action items", ""))
     quests = bullets(note.get("s:open questions", ""))
     rec = ""
@@ -257,9 +253,9 @@ def render(board, note, note_path, stamp_date):
         rec = f"- `{m.group(1)}`\n  The recording the note embeds.\n"
     return STUB.format(
         title=note["title"],
-        head=head_block(board, note, note_path, stamp),
-        diagram=diagram_block(note, stamp),
-        body=body_block(note, stamp),
+        head=head_block(board, note, note_path),
+        diagram=diagram_block(note),
+        body=body_block(note),
         aims="\n".join(
             f"- P{i} · {a}\n  **Done when:** The action is completed or routed to its owning Q page."
             for i, a in enumerate(actions, 1)) or
@@ -340,23 +336,25 @@ def cmd_sync(a):
     m = MARKER.search(txt)
     if not m:
         return f"{rel(board, page)} carries no managed span"
-    note_path = (board / m.group(2)).resolve()
+    if not m.group(1):
+        return f"{rel(board, page)}'s managed span names no source note"
+    note_path = (board / m.group(1)).resolve()
     if not note_path.is_file():
-        return f"the source note is gone: {m.group(2)}"
+        return f"the source note is gone: {m.group(1)}"
     note = read_note(note_path)
-    stamp = digest(note_path.read_text(encoding="utf-8"))
-    if stamp == m.group(1):
-        print(f"= {rel(board, page)}  (note unchanged)")
-        return None
-    blocks = {"head": head_block(board, note, note_path, stamp),
-              "diagram": diagram_block(note, stamp),
-              "body": body_block(note, stamp)}
+    blocks = {"head": head_block(board, note, note_path),
+              "diagram": diagram_block(note),
+              "body": body_block(note)}
+    before = txt
     for part, new in blocks.items():
         pat = re.compile(re.escape(start_of(part)) + r".*?" +
                          re.escape(end_of(part)), re.S)
         if not pat.search(txt):
             return f"{rel(board, page)} is missing the {part} span"
         txt = pat.sub(lambda _m: new, txt, count=1)
+    if txt == before:
+        print(f"= {rel(board, page)}  (note unchanged)")
+        return None
     page.write_text(txt, encoding="utf-8")
     print(f"✅ {rel(board, page)}  (3 spans refreshed; Items and Decision Now untouched)")
     return None

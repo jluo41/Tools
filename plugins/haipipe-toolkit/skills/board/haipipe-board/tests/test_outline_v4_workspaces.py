@@ -67,13 +67,17 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def test_outline_has_only_the_four_requested_workspaces(self):
+    def test_outline_has_three_spaces_and_all_runs(self):
         body = render_outline(
             "S-Test", parse_outline(self.page.read_text(encoding="utf-8")),
             self.page, self.folder, "/board.md", "S-Test/S-Test.md",
         )
-        for name in ("Draft Space", "Evidence Space", "Run Space", "Delivery Space"):
+        # Page 0.118: runs sit under each Space.
+        for name in ("Draft Space", "Evidence Space", "Delivery Space"):
             self.assertEqual(body.count(">" + name + "</button>"), 1)
+        self.assertNotIn(">Run Space</button>", body)
+        self.assertNotIn("class=pagebar", body)  # JL 260927: no Page bar
+        self.assertIn("lens-run", body)          # old ?lens=run links still open the run list
         self.assertIn("lens-delivery", body)
         self.assertIn("workspace=1", body)
         for removed in ("Context Workspace", "Page Records", "What is left", "Page details"):

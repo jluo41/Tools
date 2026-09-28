@@ -52,7 +52,7 @@ bNN_<block>/
         ├── runs/r01_base.sh
         ├── results/
         ├── notebooks/
-        ├── outline/
+        ├── draft/
         └── workflow/
 ```
 

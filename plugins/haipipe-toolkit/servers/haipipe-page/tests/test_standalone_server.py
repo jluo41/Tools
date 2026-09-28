@@ -217,25 +217,33 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertNotIn(b'PROTECTED_SENTINEL', source)
 
     def test_outline_registration_and_response_contract(self):
-        code, _, body = self.request('POST', '/_board/outline', {'file': self.source.name})
+        code, _, body = self.request('POST', '/_board/draft', {'file': self.source.name})
         self.assertEqual(code, 200, body)
         result = json.loads(body)
         self.assertTrue(result['ok'])
         self.assertEqual(result['url'], result['tab']['url'])
-        self.assertIn('/_board/outline?', result['url'])
+        self.assertIn('/_board/draft?', result['url'])
         # The shared writer's result remains available in both UI shapes.
         with patch('standalone_server.OutlineMixin.plug_outline',
                    return_value=({'version': 'v1', 'saved': True}, None)):
-            result = json.loads(self.request('POST', '/_board/outline',
+            result = json.loads(self.request('POST', '/_board/draft',
                                             {'file': self.source.name})[2])
             self.assertEqual(result['version'], result['tab']['version'])
+
+    def test_old_outline_address_still_answers(self):
+        code, _, body = self.request('POST', '/_board/outline', {'file': self.source.name})
+        self.assertEqual(code, 200, body)
+        self.assertIn('/_board/draft?', json.loads(body)['url'])
+        code, headers, _ = self.request(path='/w')
+        self.assertEqual(code, 302)
+        self.assertTrue(headers['Location'].startswith('/_board/draft?'))
 
     def test_target_never_selects_another_page(self):
         (self.folder / 'Q2-other.md').write_text('Other page')
         for file in ('Q2-other.md', '../Q1-example.md', '/etc/passwd'):
-            code, _, _ = self.request('POST', '/_board/outline', {'file': file})
+            code, _, _ = self.request('POST', '/_board/draft', {'file': file})
             self.assertEqual(code, 400)
-        code, _, _ = self.request('POST', '/_board/outline',
+        code, _, _ = self.request('POST', '/_board/draft',
                                   {'file': self.source.name, 'path': '/../elsewhere/'})
         self.assertEqual(code, 400)
 
@@ -375,7 +383,7 @@ class StandaloneServerTests(unittest.TestCase):
         outside.write_text('outside secret')
         (self.folder / 'escape.html').symlink_to(outside)
         for path in ('/escape.html', '/_page/source?file=escape.html',
-                     '/_board/outline?file=' + self.source.name, '/'):
+                     '/_board/draft?file=' + self.source.name, '/'):
             code, _, body = self.request(path=path)
             self.assertIn(code, (400, 404))
             self.assertNotIn(b'outside secret', body)
@@ -425,7 +433,7 @@ class StandaloneServerTests(unittest.TestCase):
         for name in ('outline', 'runs', 'delivery', 'folderstat'):
             self.assertEqual(self.request(path=f'/_board/{name}?file={self.source.name}')[0], 200)
         self.assertEqual(self.request('POST', '/_page/source', self.source_payload())[0], 403)
-        self.assertEqual(self.request('POST', '/_board/outline', {'file': self.source.name})[0], 403)
+        self.assertEqual(self.request('POST', '/_board/draft', {'file': self.source.name})[0], 403)
 
     def test_public_origin_and_cookie_security(self):
         self.start(token='test-token', public_url='https://page.example')
@@ -447,7 +455,7 @@ class StandaloneServerTests(unittest.TestCase):
             '  Evidence: none · internal definition\n')
         self.source.write_text(self.source.read_text().replace(
             'Example content.', 'Example content. <!-- realizes: C1.P1.B1 -->'))
-        route = '/_board/outline?path=%2F&file=Q1-example.md&lens=div&focus=C1.P1.B1'
+        route = '/_board/draft?path=%2F&file=Q1-example.md&lens=div&focus=C1.P1.B1'
         writable = self.request(path=route)[2].decode()
         # Scratch is the only bounded Draft write lane. Its forms are hidden
         # outside Scratch Mode and write the registry/Run receipt, never prose.
@@ -475,7 +483,7 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertIn('class=preview-copy', markup)
         for control in ('<textarea', '<form', 'Save draft', 'Save comment', 'Edit draft for'):
             self.assertNotIn(control, markup)
-        self.assertEqual(self.request('POST', '/_board/outline',
+        self.assertEqual(self.request('POST', '/_board/draft',
                                      {'action': 'edit-preview'})[0], 403)
 
     def test_malformed_posts_and_unsupported_features(self):

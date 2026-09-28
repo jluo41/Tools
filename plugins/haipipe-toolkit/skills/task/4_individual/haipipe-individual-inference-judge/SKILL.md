@@ -9,7 +9,7 @@ description: >-
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.2"
+  version: "0.1.3"
   last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -185,7 +185,8 @@ Future
 ## Bound forecast evidence
 
 The CLI reads report.json, forecast.json and meta.json from the same report directory.
-It verifies both file hashes and the recorded selected window before sending raw
+It checks the bound files by content (report.json equals the report, and the
+recomputed forecast matches the recorded selected window) before sending raw
 forecast context plus deterministic summary/threshold comparisons to the judge.
 A mismatched bundle raises before any model call. A legacy bundle without evidence
 binding remains `unavailable`; it may be judged for readability/summary consistency,

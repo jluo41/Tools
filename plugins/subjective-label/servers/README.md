@@ -20,7 +20,7 @@ bind reaches it, the configured origin) and the short routes:
 
 ```
 <DOMAIN>/w/<board>                      every labeling job on that Board
-<DOMAIN>/w/<board>/<page>/labeling      one job: five Spaces and POST /_board/labeling/act
+<DOMAIN>/w/<board>/<page>/labeling      one job: four Spaces and POST /_board/labeling/act
 ```
 
 `<board>` is the Board folder's slug (`job-mini-board` for `job-mini-board-260830`)

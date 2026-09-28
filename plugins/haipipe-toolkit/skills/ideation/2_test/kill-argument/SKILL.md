@@ -5,12 +5,12 @@ argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, mcp__codex__codex
 metadata:
   version: "upstream-unversioned"
-  last_updated: "2026-09-22"
+  last_updated: "2026-09-28"
   # version history of the haipipe copy: ./CHANGELOG.md
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
     vendored_on: "2026-09-22"
-    local_changes: none to SKILL.md body; see ./CHANGELOG.md
+    local_changes: audited_input_hashes replaced by audited_inputs (no content hashes); see ./CHANGELOG.md
 ---
 
 # Kill Argument Exercise: Adversarial Attack-Defense Review
@@ -317,12 +317,12 @@ ARIS Audit Artifact Schema (`shared-references/assurance-contract.md`):
   "verdict": "PASS | WARN | FAIL | NOT_APPLICABLE | BLOCKED | ERROR",
   "reason_code": "<see verdict mapping below>",
   "summary": "<one-line summary, ~80 chars>",
-  "audited_input_hashes": {
-    "main.tex":                          "sha256:<...>",
-    "sec/0.abstract.tex":                "sha256:<...>",
-    "sec/<each-section>.tex":            "sha256:<...>",
-    "references.bib":                    "sha256:<...>",
-    "main.pdf":                          "sha256:<...>"
+  "audited_inputs": {
+    "main.tex":                          "<modified, ISO-8601>",
+    "sec/0.abstract.tex":                "<modified, ISO-8601>",
+    "sec/<each-section>.tex":            "<modified, ISO-8601>",
+    "references.bib":                    "<modified, ISO-8601>",
+    "main.pdf":                          "<modified, ISO-8601>"
   },
   "trace_path": ".aris/traces/kill-argument/<date>_run<NN>/",
   "thread_id": "<defense threadId — primary; attack threadId in details>",
@@ -355,11 +355,12 @@ ARIS Audit Artifact Schema (`shared-references/assurance-contract.md`):
 }
 ```
 
-**Hash inputs** (`audited_input_hashes`): use paper-relative paths,
-`sha256` of every `.tex` consumed plus `references.bib` and the
-compiled `main.pdf` if it exists. The verifier rehashes these on
-`verify_paper_audits.sh` and flags `STALE` if the user edited the
-paper after running the audit.
+**Audited inputs** (`audited_inputs`): use paper-relative paths of
+every `.tex` consumed plus `references.bib` and the compiled
+`main.pdf` if it exists, each with its modification time. The audit
+is `STALE` when any listed file is newer than `generated_at` (file
+time or `git diff`). No content hash is written (haipipe local
+change, JL 260928).
 
 **Verdict mapping** (every (counts, severity) tuple must hit exactly one row):
 

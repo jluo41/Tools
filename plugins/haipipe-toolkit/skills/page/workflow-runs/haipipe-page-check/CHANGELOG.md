@@ -1,3 +1,9 @@
+## 0.13.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- `checked_version` is the Page version number and saved time (e.g. `v1.5 260928 1241`), not a
+  source/render SHA-256 pair. A source or render saved after CHECK read it routes to HOLD. The
+  rubric is named by version only.
+
 ## 0.12.0 · 2026-09-22
 
 - Moved to `skills/page/workflow-runs/`; the description leads with the gate (`Page.check`).

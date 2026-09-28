@@ -10,7 +10,6 @@ status: complete
 version: v001
 step: s011
 version_file: results/rp-struct-01/v001.md
-version_sha256: 94c41e5d0a5641909ace8cb478f011ccba88552cd69458fd22c33b73dbca7b2e
 worker:
   kind: skill
   name: haipipe-writing

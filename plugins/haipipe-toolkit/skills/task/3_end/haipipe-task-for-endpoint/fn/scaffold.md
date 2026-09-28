@@ -63,8 +63,8 @@ Fill:
 - Target endpoint block (`endpoint_name`, `endpoint_version`).
 - The 5 Fn names.
 - `deployment_config` (platform: local | databricks | sagemaker).
-- `external_contract` when enrichment is used: release, checksum, Source
-  schema version, and vector order versions.
+- `external_contract` when enrichment is used: release, Source schema
+  version, and vector order versions.
 
 
 Step 5 — Run-script

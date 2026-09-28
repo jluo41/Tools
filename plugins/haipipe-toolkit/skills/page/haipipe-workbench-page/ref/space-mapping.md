@@ -36,7 +36,7 @@ additional folders:
 | SHAPE + SURVEY → Structure RP | Draft Space | `outline/*-outline-v*.md`, `*-evidence-items.md` |
 | LAND → typed RE and Supporting Runs | Run Space + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
 | EMBED → evidence interpretation within the owning Run | Draft Space + Evidence Space | current Outline candidate plus selected Result label bindings |
-| CHECK → independent controller judgment | Draft + Evidence + Run + Delivery Spaces | exact candidate, plan, selected Results, acceptance records, receipts, and artifact hashes |
+| CHECK → independent controller judgment | Draft + Evidence + Run + Delivery Spaces | exact candidate, plan, selected Results, acceptance records, receipts, and artifact versions |
 
 The workbench documents define the protocol. Each Page stores only its current
 plan, process records, Run tickets, Results, and receipts. The browser never
@@ -135,7 +135,7 @@ the runtime never reads the retired archive.
 | Draft Space | Structure list + Table / Reading / Scratch / Revise views | selected `outline/*-outline-v*.md` (including embedded Draft fields and `## Scratch` registry), and Results metadata | Table/Reading: none; Scratch: `action: scratch` writes the selected Outline registry plus its paired Run receipt; Revise: `action: revise` writes changed Draft fields plus the paragraph's Revise Run ledger; Structure: `action: structure` rewrites C/P headings |
 | Evidence Space | typed `Displays`, `Citations`, and `Values` sections; each item is a collapsed Result-first card | `results/**/result.yaml` and payload metadata | Evidence/Run workflow or producer writes Results; Space is read-only |
 | Run Space | RP, RE, RD, Supporting Runs | `runs/`, paired `results/`, delivery receipts, external Run registry and `supporting_results` references | owning workflow/CLI writes tickets and Results; Space is read-only |
-| Delivery Space | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, lane `build-manifest.json` files, artifact hashes and mtimes | none in the Space; delivery builders write artifacts and manifests |
+| Delivery Space | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, built lane files and their mtimes | none in the Space; delivery builders write artifacts and manifests |
 
 ### Draft Space
 

@@ -7,8 +7,8 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.7.3"
-  last_updated: "2026-09-20"
+  version: "0.7.4"
+  last_updated: "2026-09-28"
   group-token: "RD"
   outline:
     mode: fixed
@@ -108,9 +108,9 @@ Paper-<Slug>/
 `sent/` and `released/` contain the exact output set declared by the paper-root
 `delivery/paper-build.toml`. If a paper declares an online supplement, its PDF
 and DOCX belong in both snapshots; do not freeze only the main manuscript.
-The Round page records each snapshot's relative path, manifest hash, and
-creation event. A missing declared output is a failed freeze, not a silently
-partial Round.
+The Round page records each snapshot's relative path, its
+`build-manifest.json` `built` time, and creation event (no content hash).
+A missing declared output is a failed freeze, not a silently partial Round.
 
 `response/` is not another manuscript source or evidence lane. It is the
 immutable upload-facing response package, cut only after the response content
@@ -122,7 +122,7 @@ A professor's pass, a coauthor pass, and a desk decision are all Rounds of the
 same shape; the folder name says which. The next Round normally starts by
 copying this Round's `released/` into its `sent/`. If an intervening rebuild
 changes the manuscript, that new build is the next Round's base and its
-different manifest hash is recorded explicitly; never silently reuse an older
+different `built` time is recorded explicitly; never silently reuse an older
 snapshot. The last Round's `released/` is the accepted manuscript, so nothing
 dangles. Root `delivery/` stays the factory; `sent/` and `released/` are copies
 cut from it, never edited. Store supplied letters or memos in `feedback/` — a
@@ -164,8 +164,9 @@ Bc-MISQ-Round/      RD01-MISQ-feedback-20260825/
 - A Round may record a Run or Result relation as `round: RD<NN>`; that relation
   does not move evidence/execution into the Paper Board or mint a new Run.
 
-At intake, record the frozen base manifest hash; mark the answering build and
-hash `pending` until they exist. Both exact hashes are required for closure.
+At intake, record the frozen base build (snapshot path and manifest `built`
+time); mark the answering build `pending` until it exists. Both exact builds
+are required for closure.
 The root `delivery/` remains the mutable factory, while all Round snapshots
 are immutable.
 
@@ -196,7 +197,7 @@ CONTEXT  freeze identity + inventory sent/feedback
 OUTLINE  atomize concerns + propose routes (no silent disposition)
 EVIDENCE record only the bounded support needed to answer or verify a concern
 CONTENT  record human decisions, owning-page returns, and response paragraphs
-CHECK    verify coverage, hashes, response trace, deferred handoffs, approval
+CHECK    verify coverage, snapshot builds, response trace, deferred handoffs, approval
 ```
 
 ## 📐 Required Content roles
@@ -207,8 +208,8 @@ remain unambiguous.
 ```text
 1  Round Identity and Intake
    identity block · what was sent (`sent/`: exact output set, path, date,
-   recipient, manifest hash) · what came back (`feedback/`: source inventory
-   and hashes) · scope · due date
+   recipient, manifest `built` time) · what came back (`feedback/`: source
+   inventory and received dates) · scope · due date
 
 2  Feedback Coverage Ledger
    one row per atomic concern; every received point appears exactly once
@@ -227,7 +228,7 @@ remain unambiguous.
 
 7  Close Receipt and Handoff
    ledger totals · the released build (`released/`: exact output set, path,
-   manifest hash) · response artifact or explicit internal no-response record ·
+   manifest `built` time) · response artifact or explicit internal no-response record ·
    deferred items · next Round · approved-by · approved-at · approval record
 ```
 
@@ -300,7 +301,7 @@ telling becomes a human-approved C8 candidate row; it does not create a
 foreign Section or let the Round write a second manuscript.
 
 **Where a routed concern LANDS on its owner** (260831): the owning page's
-`outline/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
+`outline/records/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
 during its own OUTLINE pass (`haipipe-page-structure` ⓪ COLLECT). This page never
 writes into another page's folder, and it never dispatches an agent at its
 targets: it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands
@@ -330,7 +331,7 @@ ledger item may say `applied` only after the owning Page names a checked version
 ## 🃏 Evidence and delivery boundary
 
 The Round does not own an Evidence/Execution lane. Its Context and ledger may
-point to an accepted Result, a source hash, or a checked Page version, but it
+point to an accepted Result, a source path, or a checked Page version, but it
 does not create new evidence/execution Runs or typed evidence items during
 triage. A separately commissioned response session follows `response.<round>`;
 ordinary Page writing keeps its native RP contract.
@@ -352,10 +353,10 @@ identified base build into `sent/` under the existing human authorization.
 For closure, first check the ledger, response and candidate answering build;
 this preliminary review does not close the Round. After the person approves
 that response/build and authorizes closure, freeze it into `released/`, record
-its exact manifest hash, then perform the final Round CHECK/G5 closure against
+its snapshot path and manifest `built` time, then perform the final Round CHECK/G5 closure against
 both frozen snapshots. Reuse the recorded approval if those exact artifacts
 are unchanged; a changed response/build needs a new matching decision.
-The Round records paths/hashes and never edits generated manuscript prose.
+The Round records paths and build times and never edits generated manuscript prose.
 
 ## ✍️ Response contract
 
@@ -384,7 +385,7 @@ answered Decision Now row with the human's words. It may not manufacture the
 decision or mark the Round closed from ledger counts alone.
 
 Gate G5 (the per-round gate) leaves its receipt row under `outline/` and a
-linked summary in Role 7, stating the gate, assertion results, snapshot hashes,
+linked summary in Role 7, stating the gate, assertion results, snapshot paths,
 and who approved the response receipt.
 
 ## ✅ Closing checks
@@ -396,7 +397,7 @@ Close only through CHECK when:
 - every item has a terminal disposition with inspectable support;
 - every applied change names the owning Page and its checked after-version;
 - `sent/` and `released/` each contain the complete declared delivery output
-  set, and both manifest hashes are recorded;
+  set, and both snapshot paths and `built` times are recorded;
 - every external response paragraph maps back to ledger items;
 - the revised paper build and external response artifact, when required, are
   regenerated and recorded; an internal Round records the explicit no-response

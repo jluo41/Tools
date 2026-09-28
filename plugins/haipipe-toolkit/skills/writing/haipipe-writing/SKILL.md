@@ -8,8 +8,8 @@ description: >-
   academic voice, humanize, writing feedback and prose evaluation.
   Page owns planning, Run state and acceptance. Trigger: /haipipe-writing.
 metadata:
-  version: "0.22.0"
-  last_updated: "2026-09-22"
+  version: "0.22.2"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -75,7 +75,7 @@ uses the same contract.
 Roles are writer, style and evaluator. External skills provide candidates,
 style choices or findings under the shared scope/preservation rules; they
 cannot change authoritative plans, Evidence, Page acceptance or delivery.
-Freeze the actual entry/version/hash in the host's effective packet. A required
+Freeze the actual entry and version in the host's effective packet (no content hash). A required
 unavailable method blocks; an optional one is visibly skipped. No method is
 selected by default. An explicitly supplied DNA or anti-slop packet selects
 its existing adapter once.
@@ -408,10 +408,10 @@ label and host timestamp explicitly when generating a record.
 ## 🔗 6 · It plugs into an apparatus that already exists
 
 A `>` line under a sentence belongs to that sentence. `page/haipipe-sentence`
-owns that contract, and `QB4 §3.3.3` names its three kinds: eight ⚑ typed lanes, a
+owns that contract, and `QB4 §3.3.3` names its three kinds: nine ⚑ typed lanes, a
 💬 comment, and the ✎ change record this skill writes.
 
-**This skill owns one lane out of ten, and none of the machinery around it.**
+**This skill owns one lane out of eleven, and none of the machinery around it.**
 The lanes, the evidence card, and the archive-and-restore lifecycle are not
 redefined here. Three of their rules bind it directly:
 

@@ -91,7 +91,7 @@ Own when `operation: create-page`:
 - Durable targets and completion facts in the Page owner's backstage records;
   a new generic reading Page uses Opening and Content, without adding Aims.
 - Your Folder's first `### YYMMDD HHMM · ...` record in
-  `outline/<stem>-log.md`.
+  `outline/records/<stem>-log.md`.
 
 Own when `operation: revise-opening`:
 

@@ -28,12 +28,22 @@ import pandas as pd
 
 from foodnorm import enrich_food_to_nutrition, TRUSTED
 
-LEXICON = (Path(os.environ.get("LOCAL_EXTERNAL_STORE")
-                if os.environ.get("LOCAL_EXTERNAL_STORE", "").startswith("/") else
-                next(a for a in Path(__file__).resolve().parents
-                     if (a / "pyproject.toml").exists() and (a / "code").is_dir())
-                / os.environ.get("LOCAL_EXTERNAL_STORE", "_WorkSpace/ExternalStore"))
-           / "@v1215/foodnorm/food_lexicon.parquet")
+def _flat_lexicon():
+    """The legacy @v1215 copy, found without assuming Tools sits inside the SPACE
+    (WellDoc-SPACE/Tools is a link to ../Tools-SPACE, so the resolved path has no SPACE above it)."""
+    store = os.environ.get("LOCAL_EXTERNAL_STORE", "_WorkSpace/ExternalStore")
+    if store.startswith("/"):
+        base = Path(store)
+    else:
+        here = Path(__file__)
+        candidates = [*here.absolute().parents, *here.resolve().parents, Path.cwd()]
+        root = next((a for a in candidates if (a / "pyproject.toml").exists() and (a / "code").is_dir()), Path.cwd())
+        base = root / store
+    return base / "@v1215/foodnorm/food_lexicon.parquet"
+
+
+from foodnorm._lock import lock_file                    # noqa: E402  the pinned ext_food_lexicon first
+LEXICON = lock_file("ext_food_lexicon") or _flat_lexicon()
 
 
 def show_lexicon():
@@ -43,7 +53,7 @@ def show_lexicon():
               f"Build it: python code/scripts/haibuilder/0-external/e12_build_external_foodnorm.py")
         return 1
 
-    lex = pd.read_parquet(LEXICON)
+    lex = pd.read_parquet(LEXICON).rename(columns={"component_original": "component"})
     total = lex.n_mentions.sum()
     by_q = lex.groupby("quality").agg(components=("component", "size"),
                                       mentions=("n_mentions", "sum"))

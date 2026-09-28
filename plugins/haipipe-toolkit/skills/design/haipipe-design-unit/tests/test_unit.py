@@ -1,6 +1,7 @@
 """Behavioral gates over real synthetic artifacts, not prose/heading matches."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -31,10 +32,14 @@ class DesignUnitGateTest(unittest.TestCase):
         return self.write(path, yaml.safe_dump(obj, sort_keys=False, allow_unicode=True))
 
     def ref(self, path, root=None):
-        return {"path": str(path.relative_to(root or self.owner)),
-                "sha256": gate.digest(path)}
+        return {"path": str(path.relative_to(root or self.owner))}
 
-    def ticket(self, number=1, operation="generate", targets=None, updates=None):
+    def touch_later(self, path, than):
+        """Give ``path`` a file time after ``than`` (a later edit, whatever the clock resolution)."""
+        later = Path(than).stat().st_mtime + 60
+        os.utime(path, (later, later))
+
+    def ticket(self, number=1, operation="generate", targets=None, updates=None, inputs=None):
         name = f"rd{number:02}_{operation}_sms"
         config = {"goal": "Synthetic fixture", "kind": "sms", "mode": "compose",
                   "basis": "brief-only", "unit": {"shape": "single", "count": 1},
@@ -53,15 +58,14 @@ class DesignUnitGateTest(unittest.TestCase):
                 "worker": "haipipe-design-unit", "actor": "producer" if operation == "generate" else "reviewer",
                 "target": "One synthetic SMS", "config": self.ref(cp),
                 "approval": {"actor": "synthetic-test-person", "record": self.ref(self.approval)},
-                "inputs": [], "targets": targets or []}
+                "inputs": inputs or [], "targets": targets or []}
         ticket = self.dump(self.owner / "runs" / (name + ".yaml"), data)
         out = self.owner / "results" / name
         self.dump(out / "runtime.yaml", {
             "run": name, "family": "design", "operation": operation,
             "target": data["target"], "status": "planned",
             "ticket": "runs/" + ticket.name, "result": "results/" + name + "/",
-            "ticket_sha256": gate.digest(ticket),
-            "inputs": [data["config"], data["approval"]["record"]] + data["targets"],
+            "inputs": [data["config"], data["approval"]["record"]] + data["inputs"] + data["targets"],
             "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": data["actor"]}})
         return ticket
 
@@ -87,8 +91,7 @@ class DesignUnitGateTest(unittest.TestCase):
         result = self.dump(out / "result.yaml", {
             "schema": gate.RESULT_SCHEMA, "run": data["run"],
             "operation": data["operation"], "target": data["target"],
-            "producer": data["actor"], "ticket_sha256": gate.digest(ticket),
-            "config_sha256": data["config"]["sha256"], "artifacts": artifacts,
+            "producer": data["actor"], "artifacts": artifacts,
             "checks": self.ref(check_path, out), "targets": data["targets"],
             "verdict": verdict})
         if not gate.validate(ticket, result):
@@ -122,7 +125,7 @@ class DesignUnitGateTest(unittest.TestCase):
     def test_known_broken_actual_content_is_rejected(self):
         ticket = self.ticket()
         result = self.result(ticket, "Missing required confirmation link")
-        self.assert_bad(ticket, result, "failing criteria")
+        self.assert_bad(ticket, result, "every criterion to pass")
 
     def test_dishonest_pass_does_not_override_actual_bytes(self):
         ticket = self.ticket()
@@ -133,17 +136,69 @@ class DesignUnitGateTest(unittest.TestCase):
         self.dump(result, manifest)
         self.assert_bad(ticket, result, "actual artifact")
 
-    def test_mutated_content_rejected_even_when_manifest_unchanged(self):
+    def test_content_edited_after_result_is_stale(self):
         ticket = self.ticket()
         result = self.result(ticket)
-        self.write(result.parent / "content" / "sms.txt", "Changed")
-        self.assert_bad(ticket, result, "hash mismatch")
+        content = self.write(result.parent / "content" / "sms.txt", "Changed")
+        self.touch_later(content, result)
+        self.assert_bad(ticket, result, "changed after result.yaml was written")
 
-    def test_stale_config_rejected(self):
+    def insight(self):
+        source = self.write(self.owner / "inputs" / "insight.md", "Signed insight\n")
+        return source, [{"role": "evidence", **self.ref(source)}]
+
+    def test_input_edited_after_ticket_is_stale(self):
+        source, inputs = self.insight()
+        ticket = self.ticket(inputs=inputs)
+        self.assertEqual(gate.validate(ticket), [])
+        self.write(source, "Signed insight, edited\n")
+        self.touch_later(source, ticket)
+        self.assert_bad(ticket, message="changed after rd01_generate_sms.yaml was written")
+        self.assertIn("changed after", " ".join(gate.audit_folder(self.owner)))
+
+    def test_frozen_config_is_not_held_to_file_time(self):
+        # A fresh checkout writes scripts/ after runs/; a later file time alone is not a change.
         ticket = self.ticket()
         cp = self.owner / gate.document(ticket)["config"]["path"]
-        self.write(cp, cp.read_text() + "\n# changed\n")
-        self.assert_bad(ticket, message="hash mismatch")
+        self.touch_later(cp, ticket)
+        self.assertEqual(gate.validate(ticket), [])
+        self.assertEqual(gate.audit_folder(self.owner), [])
+
+    def test_closed_run_is_history_not_held_to_file_time(self):
+        source, inputs = self.insight()
+        ticket = self.ticket(inputs=inputs)
+        self.result(ticket)
+        self.touch_later(source, ticket)
+        self.assertEqual(gate.audit_folder(self.owner), [])
+
+    def test_target_changed_after_closed_verify_is_stale(self):
+        generate = self.ticket()
+        generated = self.result(generate)
+        verify = self.ticket(2, "verify", [self.ref(generated)])
+        verified = self.result(verify)
+        self.assertEqual(gate.audit_folder(self.owner), [])
+        manifest = gate.document(generated)
+        manifest["note"] = "edited after the independent review"
+        self.dump(generated, manifest)
+        self.touch_later(generated, verified)
+        self.assertIn("changed after result.yaml was written", " ".join(gate.audit_folder(self.owner)))
+
+    def test_leftover_hash_fields_are_ignored(self):
+        ticket = self.ticket()
+        result = self.result(ticket)
+        data = gate.document(ticket)
+        data["config"]["sha256"] = "0" * 64
+        self.dump(ticket, data)
+        manifest = gate.document(result)
+        manifest.update(ticket_sha256="0" * 64, config_sha256="0" * 64)
+        self.dump(result, manifest)
+        runtime_path = result.parent / "runtime.yaml"
+        runtime = gate.document(runtime_path)
+        runtime["ticket_sha256"] = "0" * 64
+        runtime["inputs"] = [{**r, "sha256": "0" * 64} for r in runtime["inputs"]]
+        self.dump(runtime_path, runtime)
+        self.assertEqual(gate.validate(ticket, result, historical=True), [])
+        self.assertEqual(gate.audit_folder(self.owner), [])
 
     def test_missing_human_record_does_not_pass(self):
         ticket = self.ticket()
@@ -216,11 +271,12 @@ class DesignUnitGateTest(unittest.TestCase):
         self.dump(ticket, obj)
         self.assert_bad(ticket, message="equals producer")
 
-    def test_verify_detects_mutated_target_payload(self):
+    def test_verify_detects_target_payload_edited_later(self):
         du = self.result(self.ticket())
         ticket = self.ticket(2, "verify", [self.ref(du)])
-        self.write(du.parent / "content" / "sms.txt", "tampered")
-        self.assert_bad(ticket, message="hash mismatch")
+        content = self.write(du.parent / "content" / "sms.txt", "tampered")
+        self.touch_later(content, du)
+        self.assert_bad(ticket, message="changed after result.yaml was written")
 
     def test_verify_rejects_target_with_forged_run_pairing(self):
         du = self.result(self.ticket())
@@ -239,7 +295,7 @@ class DesignUnitGateTest(unittest.TestCase):
         ticket = self.ticket(2, "verify", [self.ref(du)])
         result = self.result(ticket)
         obj = gate.document(result)
-        obj["artifacts"] = [{"path": "content/replacement.txt", "sha256": "0" * 64}]
+        obj["artifacts"] = [{"path": "content/replacement.txt"}]
         self.dump(result, obj)
         self.assert_bad(ticket, result, "replacement")
 
@@ -247,7 +303,7 @@ class DesignUnitGateTest(unittest.TestCase):
         ticket = self.ticket()
         result = self.result(ticket)
         obj = gate.document(result)
-        obj["artifacts"] = [{"path": "../../outside.txt", "sha256": "0" * 64}]
+        obj["artifacts"] = [{"path": "../../outside.txt"}]
         self.dump(result, obj)
         self.assert_bad(ticket, result, "escapes")
 
@@ -388,12 +444,10 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assertIn("identity mismatch", " ".join(gate.audit_folder(self.owner)))
 
     def add_render(self, result, source, candidate, **changes):
-        import os
         picture = self.write(result.parent / "render" / "screen.png", "synthetic picture bytes")
         path = result.parent / "render" / "manifest.json"
         row = {"item": "ITEM01", "candidate": candidate, "version": 1,
-               "source": os.path.relpath(source, path.parent), "sha256": gate.digest(source),
-               "render": picture.name, "render_sha256": gate.digest(picture)}
+               "source": os.path.relpath(source, path.parent), "render": picture.name}
         row.update(changes)
         self.write(path, json.dumps([row]))
         manifest = gate.document(result)
@@ -409,7 +463,7 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assertEqual(len(gate.document(result)["artifacts"]), 1)
         self.assertEqual(gate.audit_folder(self.owner), [])
 
-    def test_render_picture_and_manifest_are_both_hash_bound(self):
+    def test_render_picture_and_manifest_edited_later_are_stale(self):
         for changed in ("picture", "manifest"):
             with self.subTest(changed=changed):
                 ticket = self.ticket()
@@ -417,15 +471,16 @@ class DesignUnitGateTest(unittest.TestCase):
                 manifest, picture = self.add_render(result, result.parent / "content/sms.txt", ticket.stem)
                 target = picture if changed == "picture" else manifest
                 self.write(target, target.read_text() + " ")
-                self.assert_bad(ticket, result, "hash mismatch")
+                self.touch_later(target, result)
+                self.assert_bad(ticket, result, "changed after result.yaml was written")
 
     def test_render_rejects_wrong_source_candidate_and_version(self):
         ticket = self.ticket()
         result = self.result(ticket)
         outside = self.write(self.owner / "uncommissioned.html", "not a commissioned artifact")
         for source, candidate, changes, diagnostic in (
-                (outside, ticket.stem, {}, "not a pinned content artifact"),
-                (result.parent / "content/sms.txt", "rd99_generate_other", {}, "not a pinned content artifact"),
+                (outside, ticket.stem, {}, "not a commissioned content artifact"),
+                (result.parent / "content/sms.txt", "rd99_generate_other", {}, "not a commissioned content artifact"),
                 (result.parent / "content/sms.txt", ticket.stem, {"version": 0}, "positive integer")):
             with self.subTest(diagnostic=diagnostic, candidate=candidate):
                 self.add_render(result, source, candidate, **changes)
@@ -436,7 +491,7 @@ class DesignUnitGateTest(unittest.TestCase):
         result = self.result(ticket)
         outside = self.write(self.owner / "outside.png", "outside picture")
         self.add_render(result, result.parent / "content/sms.txt", ticket.stem,
-                        render="../../../outside.png", render_sha256=gate.digest(outside))
+                        render="../../../outside.png")
         self.assert_bad(ticket, result, "escapes Result")
 
     def test_render_requires_matching_item_when_ticket_names_one(self):
@@ -460,13 +515,20 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assertEqual(gate.document(verified)["artifacts"], [])
         self.assertEqual(before, {str(p): p.read_bytes() for p in generated.parent.rglob("*") if p.is_file()})
 
-    def test_verify_checks_target_render_integrity(self):
+    def test_verify_checks_target_render_file_time(self):
         generate = self.ticket()
         generated = self.result(generate)
         _, picture = self.add_render(generated, generated.parent / "content/sms.txt", generate.stem)
         verify = self.ticket(2, "verify", [self.ref(generated, self.owner)])
-        self.write(picture, "changed after the target Result was pinned")
-        self.assert_bad(verify, message="hash mismatch")
+        self.write(picture, "changed after the target Result was written")
+        self.touch_later(picture, generated)
+        self.assert_bad(verify, message="changed after result.yaml was written")
+
+    def test_records_written_here_carry_no_hash(self):
+        ticket = self.ticket()
+        result = self.result(ticket)
+        for path in (ticket, result, result.parent / "runtime.yaml"):
+            self.assertNotIn("sha256", path.read_text())
 
 
 if __name__ == "__main__":

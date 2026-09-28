@@ -9,7 +9,6 @@ because the parsers exist for that board's exact formatting.
 from __future__ import annotations
 
 import unittest
-import hashlib
 import os
 import yaml
 from unittest.mock import patch
@@ -82,19 +81,22 @@ def board_fixture(root: Path) -> Path:
 
 
 def current_handoff_fixture(board: Path, extra_dependency: Path | None = None):
-    """Synthetic owner receipts; no real person approval or scientific claim."""
+    """Synthetic owner receipts; no real person approval or scientific claim.
+
+    References are paths (and a version for the Page), never content hashes
+    (JL 260928); staleness is file time.
+    """
     source = board / "1-F-full/FW01-what-to-send/FW01-what-to-send.md"
     folder = source.parent
 
     def pin(path):
-        return {"path": os.path.relpath(path, folder), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        return {"path": os.path.relpath(path, folder)}
 
     def log_record(path, anchor, data):
         body = "```yaml\n" + yaml.safe_dump(data, sort_keys=False, allow_unicode=True) + "```"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"# Log\n\n### {anchor}\n\n{body}\n", encoding="utf-8")
-        return {"path": os.path.relpath(path, folder) + "#" + anchor,
-                "sha256": hashlib.sha256(body.encode()).hexdigest()}
+        return {"path": os.path.relpath(path, folder) + "#" + anchor}
 
     page_pin = {**pin(source), "version": "v001"}
     dependencies = [pin(board / "0-MT-meta/MT00-meta/MT00-meta.md"),
@@ -406,7 +408,7 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             path.unlink()
             self.assertIn("QD1", board_snapshot(board, Path(td))["question_ids"])
 
-    def test_current_handoff_requires_exact_receipts_and_dependency_bytes(self):
+    def test_current_handoff_requires_exact_receipts_and_unchanged_dependencies(self):
         with TemporaryDirectory() as td:
             root = Path(td)
             board = board_fixture(root)
@@ -416,8 +418,11 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             snap = board_snapshot(board, root)
             self.assertTrue(snap["handoffs"][0]["bindable"])
             self.assertIn("1 Wisdom page ready for design", render_insight_board(snap, "delivery", "QW1", "F"))
-            # A change outside the board also invalidates the cached eligibility.
+            # A change outside the board also invalidates the cached eligibility:
+            # the dependency is now newer than the signed receipt (file time).
+            later = external.stat().st_mtime + 5
             external.write_text("version: 2\n")
+            os.utime(external, (later, later))
             snap = board_snapshot(board, root)
             self.assertFalse(snap["handoffs"][0]["bindable"])
             self.assertTrue(snap["handoffs"][0]["signed"])

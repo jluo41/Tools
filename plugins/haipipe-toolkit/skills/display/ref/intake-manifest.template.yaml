@@ -18,10 +18,8 @@ sources:
       run: results/<run-id>
       artifact: tasks/CNN_display/<NN>_summary_export/results/<run-id>/source_data.csv
       provenance: tasks/CNN_display/<NN>_summary_export/results/<run-id>/provenance.json
-      sha256: "<canonical-artifact-sha256>"
     snapshot:
       path: inputs/source_data.csv
-      sha256: "<snapshot-sha256>"
       materialized_at: "YYYY-MM-DDTHH:MM:SSZ"
       materialized_by: "GPT-5.6 Terra"
 
@@ -35,9 +33,7 @@ sources:
   #     location: local
   #     holder: 0-lifecycle/2-venue/S-Venue-2-narrative.md
   #     artifact: 0-lifecycle/2-venue/S-Venue-2-narrative.md
-  #     sha256: "<context-sha256>"
   #   snapshot:
   #     path: narrative-context.md
-  #     sha256: "<snapshot-sha256>"
   #     materialized_at: "YYYY-MM-DDTHH:MM:SSZ"
   #     materialized_by: "GPT-5.6 Terra"

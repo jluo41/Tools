@@ -3,6 +3,10 @@ paper-analyzer — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.2.3 · 2026-09-28 · No content hashes (JL 260928)
+
+- `scripts/generate_note.py` writes `snapshot_accessed` instead of `snapshot_sha256`; a standalone analysis records the snapshot URI and access date (local change to the vendored copy).
+
 ## 0.2.2 · 2026-09-22
 
 - Stamped as a vendored original: LICENSE copied from nature-paper-skills, `metadata.haipipe.vendored_from` = `https://github.com/Boom5426/Nature-Paper-Skills@44cff42`. The numbered folder now holds vendored originals only; the Search, Review and Synthesize skills we wrote sit at the family root.

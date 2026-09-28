@@ -5,14 +5,15 @@ fn-3-design-chef: Scaffold a new external builder
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Topic layout (0.3.0, `ref/asset-model.md` § Build Block): scaffold a new b51
-topic Job `j0N_asset_<asset>/` with `t01_contract/` (writes
-`ExternalStore/<asset>/asset.yaml`), `t02_build_<Version>/` (the builder,
-writing one immutable `<asset>/<Version>/` with `version.yaml`), and
-`t03_validate/`; add `t04_parity/` if the asset serves live. Shared helpers
-(`build_vocabulary`, `convert_to_ids`, `generate_readme`) live once in the
-Block's `src/`, not copied into each builder. Start the builder from the
-closest existing one.
+Topic layout (0.3.2, `ref/asset-model.md` § Build Block): scaffold a new
+asset Task `tNN_<asset>/` in its b51 topic Job `j0N_ext_<topic>/` with
+`src/new_asset_task.py`. Its Runs: `r01_contract` (writes
+`ExternalStore/ext_<asset>/asset.yaml`), `r02_build_<Version>` (the builder,
+writing one immutable `ext_<asset>/<Version>/` with `version.yaml`), and
+`r03_validate_<Version>`; add `rNN_parity` if the asset serves live. Then add
+the asset to the Job's `t99_<topic>_gallery`. Shared helpers (`build_vocabulary`,
+`convert_to_ids`, `generate_readme`) live once in the Block's `src/`, not
+copied into each builder. Start the builder from the closest existing one.
 
 Legacy workspaces: the steps below create `e{N+1}_build_external_<asset>.py`
 under `code-dev/0-EXTERNAL/` writing into a release-wide `@{tag}` folder.

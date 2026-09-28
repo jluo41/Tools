@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.4] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `provenance.json`, `ref/config-seed.yaml` and `fn/scaffold.md` carry no `sha256`; `RUN_INPUTS` lists plain source paths; the result gate checks `row_count` against `source_data.csv`. This replaces the 0.3.3 path/hash binding.
+
 ## [0.3.3] — 2026-09-04
 
 - Bind every source Run Result path/hash into the Ticket's `RUN_INPUTS` so the

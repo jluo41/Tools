@@ -65,7 +65,7 @@ Content, and Aims. Its Content makes four promises, with headings chosen for the
 subject rather than copied mechanically. Each Discovery Content division may
 carry its own captioned face diagram; a whole-Page diagram is not a fifth
 on-stage section. Do not author `## Outline`, `## Diagram`, or `## Writing Style`;
-the plan, Mermaid structure, and writing requirements live in `outline/`.
+the plan, Mermaid structure, and writing requirements live in `draft/`.
 
 The root Page writes `folder-kind: discovery`. It does not write
 `page-type: task`: Discovery owns both Folder faces, while the empirical

@@ -1,5 +1,9 @@
 # haipipe-insight-knowledge · version history
 
+## 1.4.1 — 2026-09-28 · No content hashes (JL 260928)
+
+- I-row parents are pinned by path and version, never by content hash.
+
 ## 1.4.0 — 2026-09-20
 
 - Define evidence-bound STRONG/MODERATE/WEAK criteria and required label

@@ -56,7 +56,7 @@ class CurrentStatus(BaseModel):
 
 
 class ForecastSummary(BaseModel):
-    """Compact summary of the model's forecast (raw forecast lives in forecast.json, bound by hashes in meta.json)."""
+    """Compact summary of the model's forecast (raw forecast lives in forecast.json, bound by meta.json)."""
     horizon_minutes: int            # e.g. 120
     n_windows: int                  # e.g. 45
     pred_min: float

@@ -23,7 +23,6 @@ current Draft), `accept` (the person accepts the current wording).
 from __future__ import annotations
 
 import datetime as dt
-import hashlib
 import html
 import re
 import secrets
@@ -51,8 +50,9 @@ def _now() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%y%m%d %H%M UTC")
 
 
-def _sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _saved(path: Path) -> str:
+    """A file's version is its name and saved time, never a content hash (JL 260928)."""
+    return dt.datetime.fromtimestamp(path.stat().st_mtime).strftime("%y%m%d %H%M")
 
 
 def _read(path: Path) -> str:
@@ -448,7 +448,7 @@ FEEDBACK_JS = r"""
     button.disabled = true;
     status.textContent = 'Saving…';
     try {
-      var response = await fetch('/_board/outline', {
+      var response = await fetch('/_board/draft', {
         method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
       });
       var result = await response.json();
@@ -571,17 +571,18 @@ def _write_runtime(row: dict, page: Path, version: str, step: str, vfile: Path,
         text = (
             "run: %s\nfamily: page\noperation: interactive-writing\ninteraction: human-feedback\n"
             "target: %s\nparagraphs: %s\nticket: %s\nresult: %s\n"
-            "status: ready\nversion: %s\nstep: s000\nversion_file: %s/%s.md\nversion_sha256: null\n"
+            "status: ready\nversion: %s\nstep: s000\nversion_file: %s/%s.md\n"
             "worker:\n  kind: skill\n  name: haipipe-writing\n"
             "started_at: null\nfinished_at: null\nsupersedes: null\nfailure: null\n"
-            "analysis:\n  status: deferred\n  task_run: null\n  input_sha256: null\n  result: null\n"
+            "analysis:\n  status: deferred\n  task_run: null\n  result: null\n"
             % (row["id"], row.get("target", ""), row.get("paragraphs", ""),
                ticket_rel(page.parent, row["id"]), rel_result, version, rel_result, version))
     text = _set_yaml_key(text, "status", "waiting-for-feedback")
     text = _set_yaml_key(text, "version", version)
     text = _set_yaml_key(text, "step", step)
     text = _set_yaml_key(text, "version_file", "%s/%s" % (rel_result, vfile.name))
-    text = _set_yaml_key(text, "version_sha256", _sha(vfile))
+    # An older runtime.yaml may still carry sha256 keys; they are dropped, never rewritten.
+    text = re.sub(r"(?m)^[ \t]*[A-Za-z_]*sha256:[^\n]*\n?", "", text)
     text = _set_yaml_key(text, "finished_at", "null")
     if prior_file is not None:
         text = _set_yaml_key(text, "supersedes", "%s/%s" % (rel_result, prior_file.name))
@@ -650,7 +651,7 @@ def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: 
         % (paragraph, para["p"], run_id, page.stem, run_id, run_id,
            para["p"], paragraph, para.get("brief") or "no brief in the plan", run_id,
            para["p"], paragraph, para.get("brief") or "no brief in the plan", page.name,
-           para["p"], paragraph, "outline/%s" % plan.name if plan else "the current plan",
+           para["p"], paragraph, "%s/%s" % (plan.parent.name, plan.name) if plan else "the current plan",
            para["p"], para["p"], author, now),
         encoding="utf-8")
     results = page.parent / "results" / run_id
@@ -718,8 +719,8 @@ def save_feedback(page: Path, payload: dict, read_only: bool = False):
         target = bullet or paragraph
         plan = plan_path(page)
         base = "; ".join(filter(None, [
-            ("outline/%s SHA-256 %s" % (plan.name, _sha(plan))) if plan else "",
-            "%s SHA-256 %s" % (page.name, _sha(page)) if page.is_file() else "",
+            ("%s/%s saved %s" % (plan.parent.name, plan.name, _saved(plan))) if plan else "",
+            "%s saved %s" % (page.name, _saved(page)) if page.is_file() else "",
         ]))
         reopen = mode == "reopen" or (current is not None and
                                       re.search(r"^##[ \t]+Version closure", _read(current), re.M))
@@ -735,7 +736,7 @@ def save_feedback(page: Path, payload: dict, read_only: bool = False):
             vfile = results / ("%s.md" % version)
             prior_step = row.get("step") or ("s%03d" % max(_step_numbers(_read(current)) or [0]))
             text = _version_header(
-                row["id"], version, "%s · SHA-256 %s" % (current.name, _sha(current)),
+                row["id"], version, current.name,
                 "Reopened by: Draft Space feedback composer · %s · %s · kind %s · target %s\n"
                 "Protected: the accepted text of this Run's paragraphs stays byte-for-byte until a "
                 "completed Step changes it" % (author, now, kind, target))

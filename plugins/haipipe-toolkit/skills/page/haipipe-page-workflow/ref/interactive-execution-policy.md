@@ -25,7 +25,7 @@ The default action is record-first and lightweight:
   slice, its dependent Bullets, and the frozen Structure description;
 - save the verbatim feedback, the complete candidate, affected planning text,
   `working.md`, and `runtime.yaml`;
-- perform one bounded file patch and one narrow hash, scope, or evidence check;
+- perform one bounded file patch and one narrow scope or evidence check;
 - return the review packet and stop for the person's next decision.
 
 Do not silently add a build, export, browser session, full-page reread, broad
@@ -65,8 +65,8 @@ Proceed?
 
 ## Post-run analysis
 
-After a Page Run closes, prepare one analysis proposal from the immutable
-Version hash. Do not dispatch it automatically when it is heavy. Ask for
+After a Page Run closes, prepare one analysis proposal from the closed
+Version (its number and close date). Do not dispatch it automatically when it is heavy. Ask for
 approval using the same packet, then launch it as an output-only Task Run if
 approved. The next Page Run may start immediately, and analysis never edits a
 closed Version, accepted prose, Shape, shared policy, or delivery.

@@ -43,7 +43,7 @@ criteria:
   maps to an accepted source in the released inputs; no load-bearing gap remains hidden.
 
 The allowed input scope stays inside board `reads:`. Design freezes signed Wisdom handoffs and
-other explicitly allowed sources by exact path/version/hash; it never opens
+other explicitly allowed sources by exact path/version; it never opens
 D/I/K pages or raw Task results to manufacture support and never creates a new
 PageX lane. If the bar cannot be met, the Run returns a named gap or hold; it
 does not substitute “common knowledge” or open a private ask session.

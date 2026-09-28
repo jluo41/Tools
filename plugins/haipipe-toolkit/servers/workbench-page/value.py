@@ -7,7 +7,7 @@ nobody used looked exactly like one everybody did.
 
 NO STORAGE and NO WRITER, by contract
 (`haipipe-workbench-page/ref/evidence/values.md` §🧊): the number
-lives in `evidence/probe/PP<NN>/proof/` with its source, run and sha256. This module reads
+lives in `evidence/probe/PP<NN>/proof/` with its source and run. This module reads
 `card.md`'s `## Values` block and the page's own prose, and joins them.
 """
 from __future__ import annotations

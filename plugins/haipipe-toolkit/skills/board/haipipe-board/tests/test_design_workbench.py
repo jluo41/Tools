@@ -171,7 +171,7 @@ class DesignItemsTest(unittest.TestCase):
             ready = snapshot["items"][0]["ready"]
             self.assertEqual(ready["run"], runs["ITEM01"]["generate"])
             self.assertEqual(ready["verification"], runs["ITEM01"]["verify"])
-            self.assertEqual(len(ready["sha256"]), 64)
+            self.assertNotIn("sha256", ready)        # no content hashes (JL 260928)
             rendered = render_design(snapshot, "delivery").split('data-space="delivery">', 1)[1]
             # Delivery Space lists only designs whose independent Verify passed.
             self.assertIn("<tr><th>item</th><th>design</th></tr>", rendered)

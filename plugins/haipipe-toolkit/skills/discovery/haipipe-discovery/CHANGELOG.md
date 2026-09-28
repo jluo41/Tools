@@ -8,6 +8,14 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.17.2 · 2026-09-28 · No content hashes (JL 260928)
+
+- `ref/discovery-yaml-schema.md`, `ref/paper-run-contract.md`, `ref/source-format.md`: the candidate rule is identified by `candidate_rule_version` and `candidate_rule_frozen_at`; `candidate_rule_sha256`, `candidate_decisions_sha256`, candidate-snapshot `sha256`, and the `report.assessment` scope/page/decision snapshot hashes are removed. An outside source is recorded by URI and access date; instruments by path and version. A closing assessment is stale when the Page or `discovery.yaml` changes after `assessed_at`.
+
+## 0.17.1 · 2026-09-27
+
+- Page layout 0.118: a Discovery Task Page's plan folder is `draft/`, so its derived Bib is `draft/evidence/bibex/<task>.bib`. `paper_runs.default_bib_path` uses `draft/` (an unmigrated Page with only `outline/` keeps it); the family's docs, agent briefs and test fixtures now name `draft/`.
+
 ## 0.17.0 · 2026-09-22
 
 - Family layout: every skill we wrote (door, inquiry controller, search, review, synthesize) sits flat at the family root; `1_search/` and `2_review/` hold vendored originals only, each stamped with LICENSE and `metadata.haipipe.vendored_from` (nine from ARIS @0472e53, two from nature-paper-skills @44cff42). `3_synthesize/` and `workflow-phases/` are gone. `ref/external-skill-map.md` lists the vendored table and the call-or-read rule.

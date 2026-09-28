@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import hashlib
 import json
 import os
 import re
@@ -278,7 +277,6 @@ def _base_receipt(
         "config_dir": str(config_dir) if config_dir else None,
         "working_directory": str(cwd),
         "receipt_dir": str(out_dir),
-        "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
         "permission_note": (
             "Native CLI mode intentionally inherits the provider CLI's configured "
             "skills, tools, model, approvals, and network permissions."

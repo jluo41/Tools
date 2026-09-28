@@ -1,6 +1,6 @@
-"""🏷 Labeling · five Spaces over one page-local labeling/ job, plus one write door.
+"""🏷 Labeling · four Spaces over one page-local labeling/ job, a Runs panel under each, plus one write door.
 
-Data · Labeling · Quality · Run · Delivery are views over canonical files; the
+Data · Labeling · Quality · Delivery are views over canonical files; the
 overview never renders item text and never upgrades an observed file to a
 passed gate.  Labeling → Label holds the label definitions.  Round item text
 appears only in Labeling → Rounds, and only for items already shown to the
@@ -613,6 +613,25 @@ def _calibration_module():
     return module
 
 
+@lru_cache(maxsize=1)
+def _definition_module():
+    """Load the definition-discussion Run writer (``definition_discussion.state``)."""
+    job_module = _canonical_job_module()
+    if job_module is None:
+        return None
+    candidate = Path(job_module.__file__).with_name("definition_discussion.py")
+    if not candidate.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location(
+        "haipipe_subjective_label_definition_for_board", candidate
+    )
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def _embedding_module():
     """Load the subjective-label embedding reader (``embedding_build.latest``)."""
     job_module = _canonical_job_module()
@@ -635,7 +654,6 @@ SPACES = (
     ("data", "Data", (("contract", "Contract"), ("schema", "Schema"), ("embedding", "Embedding"))),
     ("labeling", "Labeling", (("discussion", "Discussion"), ("label", "Label"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
     ("quality", "Quality", (("test", "Test"), ("evaluation", "Evaluation"), ("audit", "Audit"))),
-    ("run", "Run", (("runs", "Runs"), ("phases", "Phases"), ("workflow", "Workflow map"))),
     ("delivery", "Delivery", (("handoff", "Handoff"), ("final", "Final labels"))),
 )
 
@@ -655,22 +673,41 @@ def _load_mapping(path: Path) -> dict:
 def _run_rows(root: Path) -> list[dict]:
     """One row per authored Ticket, with the runtime status beside it."""
     rows = []
-    runs = root / "runs"
+    runs = root.parent / "runs"  # the Page folder holds runs/ and results/, beside labeling/
     if not runs.is_dir():
         return rows
     for ticket in sorted(runs.glob("*.yaml")):
         data = _load_mapping(ticket)
-        runtime = _load_mapping(root / "results" / ticket.stem / "runtime.yaml")
-        result = (root / "results" / ticket.stem / "result.yaml").is_file()
+        runtime = _load_mapping(root.parent / "results" / ticket.stem / "runtime.yaml")
+        result = (root.parent / "results" / ticket.stem / "result.yaml").is_file()
         status = str(runtime.get("status") or ("no runtime" if not runtime else "unknown"))
         if status == "complete" and not result:
             status = "complete · result.yaml missing"
+        result_data = _load_mapping(root.parent / "results" / ticket.stem / "result.yaml") if result else {}
+        commission = data.get("commission") if isinstance(data.get("commission"), dict) else {}
+        worker = runtime.get("worker") or data.get("worker")
+        worker = worker if isinstance(worker, dict) else {}
         rows.append({
             "run": ticket.stem,
             "operation": str(data.get("operation") or "?"),
+            "target": str(data.get("target") or runtime.get("target") or ""),
             "status": status,
             "outcome": str(runtime.get("outcome") or "")[:160],
+            "started_at": str(runtime.get("started_at") or ""),
+            "finished_at": str(runtime.get("finished_at") or ""),
+            "started_by": str(commission.get("started_by") or worker.get("name") or ""),
+            "worker_kind": str(worker.get("kind") or ""),
+            "artifacts": [str(a["path"]) for a in result_data.get("artifacts") or []
+                          if isinstance(a, dict) and a.get("path")][:4],
         })
+    rows.sort(key=lambda r: (int(m.group(1)) if (m := re.match(r"rl(\d+)_", r["run"])) else 0, r["run"]))
+    seen: dict[tuple[str, str], int] = {}
+    for r in rows:  # a rerun on the same target keeps the older run's plain name and counts up: -2, -3
+        key = (r["operation"], r["target"] or r["run"])
+        seen[key] = seen.get(key, 0) + 1
+        suffix = f"-{seen[key]}" if seen[key] > 1 else ""
+        r["name"] = _run_name(r["run"]) + suffix
+        r["label"] = (r["target"] or _run_name(r["run"])) + suffix
     return rows
 
 
@@ -721,13 +758,8 @@ def _import_source_name(config: dict) -> str:
 
 
 def _later(phase: str) -> str:
-    """Describe capability state without implying a completed lifecycle step."""
-    code = phase.partition(" ")[0]
-    if code == "P0":
-        message = f"{phase} · no sealed-custody record is available"
-    else:
-        message = f"{phase} · not implemented · HOLD"
-    return f'<p class=mut>{_esc(message)}.</p>'
+    """A view whose result does not exist yet stays blank (JL 260927: no placeholder lines)."""
+    return ""
 
 
 def _when(value) -> str:
@@ -809,7 +841,7 @@ def _next_step(vm: dict) -> tuple[str, str]:
     if not root.exists():
         return "No labeling job on this Page yet. Ask Claude in Studio Chat to start one (/subjective-label).", "data"
     if state["canonical_integrity_errors"]:
-        return "Repair needed: " + state["canonical_integrity_errors"][0], "run"
+        return "Repair needed: " + state["canonical_integrity_errors"][0], "data"
     if _imported_reference_only(vm):
         source = _import_source_name(vm["config"])
         return (
@@ -833,7 +865,7 @@ def _next_step(vm: dict) -> tuple[str, str]:
             return (f"{_round_words(rounds[-1]['round_id']).capitalize()} is fully labeled. Next: learn the guideline and "
                     "close the round (Checkpoint Keeper, not built yet)."), "labeling"
         return "Start round 1 to begin labeling.", "labeling"
-    return state["next_action"], "run"
+    return state["next_action"], "data"
 
 
 def _data_space(vm: dict) -> dict[str, str]:
@@ -852,11 +884,11 @@ def _data_space(vm: dict) -> dict[str, str]:
         n_dev = n_items - n_sealed
 
     corpus = _card("Data", "".join([
-        _row("source", _esc(source.get("name") or (config.get("corpus") or {}).get("source") or "not recorded")),
-        _row("items", _esc(n_items if n_items is not None else "not counted")),
-        _row("to label", _esc(n_dev if n_dev is not None else "not counted")),
+        _row("source", _esc(source.get("name") or (config.get("corpus") or {}).get("source") or "")),
+        _row("items", _esc(n_items)),
+        _row("to label", _esc(n_dev)),
         _row("held back", _esc(f"{n_sealed} items for the final test; you never see them" if n_sealed is not None else "none")),
-        _row("one item is", _esc((config.get("corpus") or {}).get("population") or "not described")),
+        _row("one item is", _esc((config.get("corpus") or {}).get("population") or "")),
         _row("embedding", _embedding_summary(vm.get("embedding"))),
     ]))
     question = construct.get("question") or construct.get("seed") or ""
@@ -879,8 +911,7 @@ def _data_space(vm: dict) -> dict[str, str]:
                      '<p class=mut>No one can confirm a meaning or label on this job.</p>')
     elif canonical and canonical.get("meaning_receipt_valid") and canonical.get("g0_receipt_valid"):
         receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
-        gate = _card("Meaning confirmed ✓", f'<p class=ok>Caller attested as {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}.</p>'
-                     '<p class=mut>The Board records this assertion but does not authenticate the caller\'s identity.</p>')
+        gate = _card("Meaning confirmed ✓", f'<p class=ok>Caller attested as {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}.</p>')
     elif canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
         region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
         gate = _card("Confirm the meaning", (
@@ -896,10 +927,11 @@ def _data_space(vm: dict) -> dict[str, str]:
     else:
         gate = _card("Meaning", f'<p class=mut>{_esc(state["first_failed"])}</p>')
 
+    context_field = manifest.get("context_field") or (config.get("corpus") or {}).get("context_field")
     schema_rows = [
         _row("item id field", f"<code>{_esc(manifest.get('id_field') or (config.get('corpus') or {}).get('id_field') or 'item_id')}</code>"),
         _row("text field", f"<code>{_esc(manifest.get('text_field') or (config.get('corpus') or {}).get('text_field') or 'text')}</code>"),
-        _row("context field", f"<code>{_esc(manifest.get('context_field') or (config.get('corpus') or {}).get('context_field') or '—')}</code>"),
+        _row("context field", f"<code>{_esc(context_field)}</code>" if context_field else ""),
         _row("where you read it", "items in a round: in Labeling → Rounds once shown to you; "
                                   "other items: on request in Data → Embedding (logged)", "mut"),
     ]
@@ -919,7 +951,7 @@ def _data_space(vm: dict) -> dict[str, str]:
             _row("from", _esc(reveal.get("label"))),
             _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
             _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
-        ]) + '<p class=mut>These are other people\'s ratings, shown to compare with yours; they are never the answer.</p>')
+        ]))
     return {
         "contract": label + corpus + gate,
         "schema": schema,
@@ -950,11 +982,11 @@ def _thousands(value) -> str:
 def _embedding_summary(emb: dict | None) -> str:
     builds = (emb or {}).get("builds") or []
     if not builds:
-        return '<span class=mut>not built · choose a model in the Embedding view</span>'
+        return '<span class=mut>not built</span>'
     labels = _unique_labels([(b["manifest"]["version"], b["manifest"]["model"]["id"], b["manifest"].get("settings"))
                              for b in builds])
     names = "<br>".join(_esc(labels[b["manifest"]["version"]]) for b in builds)
-    return f'{names}<br><span class=mut>{len(builds)} built; open them in Data → Embedding</span>'
+    return f'{names}<br><span class=mut>{len(builds)} built</span>'
 
 
 def _item_marks(root: Path) -> dict[str, dict]:
@@ -1068,12 +1100,12 @@ def _embedding_view(vm: dict) -> str:
     row_names = _unique_labels([(r["version"], r["id"], r.get("settings")) for r in status if (r.get("state") or "none") != "none"])
     for r in sorted(status, key=lambda r: order.get(r["version"], len(order))):
         state = r.get("state") or "none"
-        if state == "none":
+        if state in {"none", "built"}:  # a finished build is listed in the Runs panel; only builds that need you stay here
             continue
         cls, text = _STATE_PILL.get(state, ("mut", state))
         button = (f'<button class=ghost type=button data-emb-show="{_esc(r["version"])}">Show</button>'
                   if state == "built" else "")
-        started, started_cls = _started_text(r.get("started")) if r.get("started") else ("not recorded", "mut")
+        started, started_cls = _started_text(r.get("started")) if r.get("started") else ("", "")
         problem = ""
         if state in {"failed", "stopped"}:
             detail = " · ".join([str(r.get("failure") or "the build process ended early"), *(r.get("log_tail") or [])])
@@ -1093,9 +1125,8 @@ def _embedding_view(vm: dict) -> str:
         f'<div class="card{"" if builds else " focus"}"><h2>Embedding model<span class=tally>{len(builds)} built</span></h2>'
         + (f'<div class=line><span class=lbl>Showing</span>{chips}</div>' if builds else
            '<p>No embedding yet.</p>')
-        + '<p class=mut>Nothing runs until you press <b>Run embedding</b>. Each run keeps its own folder.</p>'
         + f'<div class=runbox data-emb-formbox><h3>Run a new embedding</h3>{form}</div>'
-        + (f'<details><summary>Runs on this job · {len(tried)}</summary>{runs_table}</details>' if tried else "")
+        + runs_table
         + '</div>'
     )
     started = {r["version"]: r.get("started") for r in status}
@@ -1227,8 +1258,7 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
     recipe = (
         f'<div class="card"><h2>From item to vector<span class=tally>{_esc(model_name)} · {_esc(_thousands(dim))} numbers</span></h2>'
         f'{recipe_rows}'
-        f'<p class=mut>The {_esc(pop.get("sealed_excluded", 0))} held-back test items are never embedded. '
-        'A vector only says which items are near each other; it never sets a label.</p></div>'
+        f'<p class=mut>held back, not embedded: {_esc(pop.get("sealed_excluded", 0))}</p></div>'
     )
 
     ex = m.get("example") or {}
@@ -1322,11 +1352,7 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
         + f'<div class="legend group">{group_legend}</div>'
         f'<div class="legend label">{label_legend}</div>'
         '<div class=pick data-pick hidden></div>'
-        f'<ul class="mut notes"><li>Click a dot to see its group and the most similar items; click a group to light it up.'
-        f'{" In 3D, drag to turn the cloud or press Spin." if has3d else ""}</li>'
-        f'<li>A dark ring means a round picked it for you to label ({_esc(drawn)} picked, {_esc(done)} labeled).</li>'
-        f'<li>Only distance matters: {_esc(_thousands(dim))} numbers are squeezed into 2{" (3 in 3D)" if has3d else ""} with '
-        f'{_esc(_MAP_NAMES.get(str((m.get("map") or {}).get("method")), "t-SNE"))}, so the axes mean nothing.</li></ul>'
+        f'<p class=mut>◯ picked {_esc(drawn)} · labeled {_esc(done)}</p>'
         f'<script type=application/json class=embdata>{_script_json(pane_data)}</script></div>'
     )
 
@@ -1353,11 +1379,7 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
         + clarity
         + '<div class=scroll><table class=grptable><thead><tr><th>Group</th><th>Keywords</th><th>Items</th>'
         '<th>Picked</th><th>Labeled</th></tr></thead><tbody>' + "".join(records) + '</tbody></table></div>'
-        '<ul class="mut notes"><li>Click a row to light that group up on the map.</li>'
-        '<li>Keywords are words more common in the group than overall; in item text they are highlighted.</li>'
-        '<li><b>Show typical items</b> shows the items most similar to the group\'s centre. Items waiting in a round '
-        'stay hidden until you label them; each item shown is logged in <code>exposure/group_examples.jsonl</code>.</li>'
-        '<li>Groups never choose which items you label.</li></ul></div>'
+        '</div>'
     )
 
     files = ", ".join(f'<code>{_esc(f.get("path"))}</code>' for f in m.get("files") or [])
@@ -1376,7 +1398,7 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
         _row("groups", f'k = {_esc(groups.get("k"))}, set in the run settings' if settings.get("groups") else
                        f'k = {_esc(groups.get("k"))}, the best of k = {_esc(min(scores, key=int) if scores else "?")} '
                        f'to {_esc(max(scores, key=int) if scores else "?")} by silhouette'),
-        _row("rebuild", f'<code>{_esc(command)}</code> <span class=mut>(same settings and corpus: no change)</span>'),
+        _row("rebuild", f'<code>{_esc(command)}</code>'),
     ]))
     who = (emb.get("started") or {}).get("person")
     built_line = f'built {_when(m.get("created_at"))}' + (f' by {who}' if who else "")
@@ -1505,7 +1527,7 @@ def _items_table(draw: dict, groups: dict, keywords: dict) -> str:
                             f'<div class=convo>{_turns_html(item["context"])}</div></details>' if item.get("context") else ""))
         notes_cell = "".join(
             f'<div class=fb><b>{"Model" if n.get("author") == "model" else "You"}</b> {_esc(n.get("text"))}</div>'
-            for n in item.get("feedback") or []) or '<span class=mut>—</span>'
+            for n in item.get("feedback") or [])
         records.append(
             f'<tr><td class=num>#{_esc((item.get("order") or 0) + 1)}</td><td class=nowrap>item {_esc(item["item_id"])}</td>'
             f'<td>{text_cell}</td><td>{group_tag}</td><td>{pill}</td><td>{notes_cell}</td></tr>'
@@ -1557,108 +1579,53 @@ def _chat_prompt(vm: dict, current: dict, draw: dict) -> str:
     return "\n".join(lines)
 
 
-def _definition_prompt(vm: dict, focus: str | None = None) -> str:
-    """The text to paste into a Claude chat to define the labels better; it writes nothing."""
+def _meaning_prompt(vm: dict, run: str | None = None) -> str:
+    """The definition-discussion prompt: start a new discussion, or resume ``run``. It writes nothing itself."""
     config = vm.get("config") or {}
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
-    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
-    uncertainty = config.get("uncertainty") if isinstance(config.get("uncertainty"), dict) else {}
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    human = authority.get("human_id") or "me"
     values = [str(v) for v in labels.get("values") or []]
     meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
-    region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
-    between = [str(r) for r in regions.get("values") or [] if len(str(r)) > 1]
+    where = _job_where(vm)
+    tool = f"python Tools/plugins/subjective-label/engine/definition_discussion.py {{command}} --job-root {where} --human-id {human}"
     lines = [
-        f'Help me define the labels of {vm["root"].parent.name} better. I am {authority.get("human_id") or "the labeler"}, '
-        "the person who decides what they mean.",
-        f"Job folder: {_job_where(vm)}",
+        f"Discuss what the labels of {vm['root'].parent.name} mean with me ({human}), one label at a time. "
+        "I decide what each label means; you ask and propose.",
+        f"Job folder: {where}",
         f'Question: {construct.get("question") or construct.get("name") or ""}',
     ]
     rule = " ".join(str(x) for x in (construct.get("seed"), construct.get("scope")) if x)
     if rule:
         lines.append(f"Rule: {rule}")
     lines.append("Labels now:")
-    lines += [f"- {v}: {meanings.get(v) or 'no meaning written yet'}" for v in values]
-    if between:
-        lines.append("In-between cases: " + "; ".join(f"{r} = {region_meanings.get(r) or r}" for r in between))
-    if uncertainty.get("levels"):
-        lines.append("How sure: " + " · ".join(_unsure_words(v) for v in uncertainty["levels"]) + " unsure. "
-                     + str(uncertainty.get("meaning") or ""))
-    current = vm["root"] / "policy" / "current"
-    policy = current.read_text(encoding="utf-8").strip() if current.is_file() else ""
-    if policy:
-        lines.append(f"Guideline: policy/versions/{policy}/guideline.md")
-    lines.append("")
-    if focus in values:
-        i = values.index(focus)
-        near = [v for v in (values[i - 1] if i else None, values[i + 1] if i + 1 < len(values) else None) if v]
-        lines.append(f'Focus on "{focus}". Ask me, one question at a time, what makes a reply {focus} and not '
-                     f'{" or ".join(near) or "another label"}. Propose clearer wording, one example, and one counterexample.')
-    elif focus == "between":
-        lines.append("Focus on in-between cases. Ask me how to handle a reply that fits two labels, "
-                     "and propose one boundary test for each pair.")
+    lines += [f"- {v}: {meanings.get(v) or ''}" for v in values]
+    module = _definition_module()
+    state = module.state(vm["root"], run) if (module and run) else None
+    if state:
+        settled = [f'{r["label"]} ({r["decision"]})' for r in state["labels"] if r["decision"]]
+        lines.append(f"Run: {run} (open). Settled: {', '.join(settled) or 'none yet'}. "
+                     f"Open: {', '.join(state['open']) or 'none'}.")
     else:
-        lines.append("Ask me questions, one at a time, to find where these definitions are unclear. "
-                     "Propose clearer wording, one change at a time.")
+        lines.append("Start the Run: " + tool.format(command="start"))
     lines += [
-        "Write nothing until I approve. The meanings in config.yaml are confirmed (G0), so an approved change "
-        "becomes a guideline patch in policy_draft/ for the LEARN step (/label-building-workflow), never an edit to config.yaml.",
-        "Do not say how you would label any round item before my first answer for it is recorded.",
+        "",
+        "How (engine/definition_discussion.py):",
+        "1. Take the next open label. Ask me one question at a time: what makes a response this label and not "
+        "its neighbour? Propose clearer wording, one made-up example, and one made-up counterexample.",
+        "2. Never use an item from a round as an example, and never say how you would label one.",
+        "3. Keep the talk with say: --author model for your questions and proposals, --author human for my words.",
+        "4. When I settle a label, record only my decision with decide: --keep, or --meaning with my wording, "
+        "plus --reason in my words.",
+        "5. When every label is settled, run close (add --open-question for anything we left open). "
+        "If a wording changed, I press Confirm meaning again in Data > Contract.",
     ]
     return "\n".join(lines)
 
 
-def _label_discussion_prompt(vm: dict) -> str:
-    """A full, copyable brief for discussing this task in the user's chat."""
-    config = vm.get("config") or {}
-    project = config.get("project") if isinstance(config.get("project"), dict) else {}
-    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
-    source = corpus.get("source") if isinstance(corpus.get("source"), dict) else {}
-    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
-    reveal = config.get("reveal") if isinstance(config.get("reveal"), dict) else {}
-    reference = reveal.get("reference_observations")
-    reference = reference if isinstance(reference, dict) else {}
-    meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
-    task = project.get("board_page") or vm["root"].parent.name
-    dataset = source.get("name") or corpus.get("source_name") or "the configured corpus"
-    question = construct.get("question") or construct.get("name") or "the label question"
-    lines = [
-        "I want to discuss this labeling task with you, not label the whole dataset.",
-        f"Task: {task}",
-        f"Dataset: {dataset}",
-    ]
-    if corpus.get("population"):
-        lines.append(f"Example unit: {corpus['population']}")
-    lines.append(f"Question: {question}")
-    if construct.get("seed"):
-        lines.append(f"Judging instruction: {construct['seed']}")
-    if construct.get("scope"):
-        lines.append(f"Scope: {construct['scope']}")
-    lines.append("Current labels and meanings:")
-    lines.extend(
-        f"- {value}: {meanings.get(value) or 'no meaning written yet'}"
-        for value in labels.get("values") or []
-    )
-    if reference.get("label"):
-        lines.append(
-            f"Reference only: {reference['label']}; it is comparison data, not gold."
-        )
-    lines.extend([
-        "Please help me discuss whether these definitions and boundaries are clear. "
-        "Ask one question at a time. If I paste an example, discuss how the current "
-        "definitions apply; do not record a label or change the labels, data, or guideline.",
-    ])
-    return "\n".join(str(line) for line in lines)
-
-
-def _chat_icon(prompt: str, title: str) -> str:
-    return f'<button class=cc type=button title="{_esc(title)}" data-copy="{_esc(prompt)}">⧉ chat</button>'
-
-
 def _label_definitions(vm: dict) -> str:
-    """Labeling → Label: what each label means, with chat prompts to define them better."""
+    """Labeling → Label: what each label means; discussing them is the definition-discussion Run."""
     config = vm.get("config") or {}
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
@@ -1675,182 +1642,70 @@ def _label_definitions(vm: dict) -> str:
     confirmed = (f'by {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}'
                  if receipt.get("confirmed_at") else "not yet (Data → Contract)")
     rows = "".join(
-        f'<tr><td class=nowrap><b>{_esc(v)}</b></td><td>{_esc(meanings.get(v) or "no meaning written yet")}</td>'
-        f'<td>{_chat_icon(_definition_prompt(vm, v), f"Copy a chat prompt about {v}")}</td></tr>' for v in values)
+        f'<tr><td class=nowrap><b>{_esc(v)}</b></td><td>{_esc(meanings.get(v) or "")}</td></tr>' for v in values)
     between_rows = "".join(
         f'<tr><td class=nowrap><code>{_esc(r)}</code></td><td>{_esc(region_meanings.get(r) or "")}</td></tr>'
         for r in between)
     return _card("Label definitions", "".join([
         _row("question", _esc(construct.get("question") or construct.get("name") or "")),
-        '<div class=chatcopy><button class=primary type=button '
-        'aria-label="Copy prompt to discuss here" title="Copy this prompt for your Codex chat" '
-        f'data-copy="{_esc(_label_discussion_prompt(vm))}">⧉ Copy prompt to discuss here</button>'
-        '<span class=mut>Copy, then paste into this Codex chat. Nothing is sent automatically.</span></div>',
         _row("judge", _esc(construct.get("seed"))) if construct.get("seed") else "",
         _row("scope", _esc(construct.get("scope"))) if construct.get("scope") else "",
         _row("confirmed", confirmed),
-        '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>What it means</th><th>Chat</th></tr></thead>'
+        '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>What it means</th></tr></thead>'
         f'<tbody>{rows}</tbody></table></div>',
-        (f'<h3 class=sub>In-between cases {_chat_icon(_definition_prompt(vm, "between"), "Copy a chat prompt about in-between cases")}</h3>'
+        ('<h3 class=sub>In-between cases</h3>'
          '<div class=scroll><table class=defs><thead><tr><th>Case</th><th>What it means</th></tr></thead>'
          f'<tbody>{between_rows}</tbody></table></div>') if between else "",
         (f'<p class=mut>How sure: {_esc(" · ".join(_unsure_words(v) for v in uncertainty["levels"]))} unsure. '
          f'{_esc(uncertainty.get("meaning") or "")}</p>') if uncertainty.get("levels") else "",
-        '<p class=mut>A change agreed in chat becomes a guideline patch for the LEARN step; '
-        'these confirmed meanings stay as they are until then.</p>',
     ]))
 
 
-def _discussion_prompt(vm: dict) -> str:
-    """Safe, human-facing brief for one discussion; it never includes item text."""
-    config = vm.get("config") or {}
-    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
-    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
-    mode = str(authority.get("mode") or "")
-    question = construct.get("question") or construct.get("seed") or construct.get("name") or "the label meaning"
-    if mode == "external_annotation_import":
-        question = "How should we interpret the released source labels without changing their meaning?"
-    values = [str(v) for v in labels.get("values") or []]
-    lines = [
-        f"Help me run one human-AI discussion for {vm['root'].parent.name}.",
-        f"Discussion question: {question}",
-        "Goal: use a small set of representative, boundary, and counterexample cases to clarify the meaning.",
-        "Do not make a label decision before I have described what I notice.",
-        "Ask one question at a time. After each answer, summarize the boundary you heard and ask whether it is right.",
-        "At the end, propose one smallest guideline change, two reusable examples, and one unresolved question.",
-        f"Label values currently visible: {' · '.join(values) if values else 'not defined'}.",
-    ]
-    if mode == "external_annotation_import":
-        lines += [
-            "This is an external annotation import. Treat source values as observations, not local human gold.",
-            "Do not write policy/current, gold, or a checkpoint from this discussion.",
-        ]
-    else:
-        lines.append("Any accepted semantic change must go through the guideline-learn and human gate; do not edit config.yaml in chat.")
-    return "\n".join(lines)
-
-
 def _discussion_view(vm: dict) -> str:
-    """The discussion-first entry view for Labeling Space.
+    """The discussion question, then each definition-discussion Run: every label before and after.
 
-    This is intentionally a projection only: it plans a discussion and explains
-    the future Run envelope without allocating a Run or promoting a label.
+    Starting or resuming a discussion is the Runs panel's `+ New Run` / `Resume` (JL 260927); this view
+    shows what the discussions decided. The newest shows; picking a run in the panel shows that one.
     """
     config = vm.get("config") or {}
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
-    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
-    mode = str(authority.get("mode") or "")
-    hold = bool((vm.get("state") or {}).get("authority_hold"))
-    cal = vm.get("cal") or {}
-    current = cal.get("current_round") or {}
-    question = construct.get("question") or construct.get("seed") or construct.get("name") or "Define the label meaning"
-    if mode == "external_annotation_import":
-        question = "How should we read the released DICES-350 safety labels without changing their meaning?"
-        why = ("This page contains external rater observations. The first discussion is about separating "
-               "source meanings, uncertainty, and expert reference—not about creating new local gold.")
-        action = "Copy discussion brief"
-        status = "Read-only discussion"
-    elif current:
-        why = "Continue the current discussion and record the decisions that should shape the next guideline version."
-        action = "Continue discussion"
-        status = "Discussion in progress"
-    else:
-        why = ("Start with a small case set. The purpose is to discover the semantic boundary before asking a person "
-               "to label a larger batch.")
-        action = "Copy discussion brief"
-        status = "Ready to discuss"
-
-    values = [str(v) for v in labels.get("values") or []]
-    value_text = " · ".join(values) if values else "label values not written yet"
-    cases = [
-        ("01", "Representative", "A clear case that makes the current meaning concrete."),
-        ("02", "Boundary", "A case where two readings are plausible and the rule needs a test."),
-        ("03", "Counterexample", "A case that looks similar on the surface but should receive a different reading."),
-    ]
-    if mode == "external_annotation_import":
-        cases[0] = ("01", "Source meaning", "What does the released Yes / No observation actually say?" )
-        cases[1] = ("02", "Uncertainty", "Why does Unsure remain different from No or NONE?" )
-        cases[2] = ("03", "Separate field", "How should degree of harm stay separate from overall safety?" )
-
-    case_html = "".join(
-        f'<article class=casecard><div class=caseid>Example {num}</div>'
-        f'<h3>{_esc(kind)}</h3><p>{_esc(desc)}</p>'
-        '<p class="mut">The item is opened in the discussion chat when you choose it.</p></article>'
-        for num, kind, desc in cases
-    )
-    flow = "".join(
-        f'<div class="flowstep {"now" if i == 1 else ""}"><b>{i}</b><strong>{_esc(title)}</strong><span>{_esc(desc)}</span></div>'
-        for i, (title, desc) in enumerate((
-            ("Choose the question", "name the uncertainty we want to resolve"),
-            ("Discuss examples", "human speaks first; AI asks and compares"),
-            ("Save decisions", "record the boundary and unresolved cases"),
-            ("Learn the guideline", "draft the smallest rule change"),
-        ), 1)
-    )
-    planned = [
-        ("rlNN_round-prepare", "freeze the question and example packet", "planned"),
-        ("rlNN_discussion-calibration", "the human-AI discussion", "main discussion"),
-        ("rlNN_guideline-learn", "turn accepted discussion into a rule proposal", "after discussion"),
-        ("rlNN_round-close", "close the round or name the next question", "checkpoint"),
-    ]
-    run_html = "".join(
-        f'<div class=runplan><code>{_esc(name)}</code><span>{_esc(desc)}</span><em>{_esc(state)}</em></div>'
-        for name, desc, state in planned
-    )
-    guard = ("This imported page can discuss the source, but it cannot create local gold or change the guideline."
-             if hold else "A discussion draft is not a label. The configured semantic authority must review and explicitly attest before a semantic change is recorded. This Board does not authenticate the caller.")
-    brief = _discussion_prompt(vm)
-    return "".join([
-        _card("Current discussion", (
-            f'<div class=discstatus><span class=pill acc>{_esc(status)}</span>'
-            f'<span class=mut>{_esc(value_text)}</span></div>'
-            f'<h3 class=discquestion>{_esc(question)}</h3>'
-            f'<p class=lead>{_esc(why)}</p>'
-            '<div class=actions><button class=primary type=button '
-            f'data-copy="{_esc(brief)}">{_esc(action)}</button>'
-            '<span class=msg role=status data-discussion-msg></span></div>'
-            '<p class=mut>Copy this brief into Studio Chat to start the conversation. The chat is the conversation; this page keeps the plan and receipt.</p>'
-        ), "focus"),
-        _card("How this works", f'<div class=flow>{flow}</div>'
-              '<p class=mut>One discussion may use several examples. The examples are events inside one Run; they are not separate Runs.</p>'),
-        _card("Example packet", '<p class=lead>Start small: one clear case, one boundary case, and one counterexample.</p>'
-              f'<div class=casegrid>{case_html}</div>'),
-        _card("What gets recorded", "".join([
-            _row("discussion question", _esc(question)),
-            _row("examples", "3 discussion cases · representative · boundary · counterexample"),
-            _row("human input", "what you noticed, what changed your mind, and what remains unresolved"),
-            _row("AI output", "a proposed rule patch and reusable examples; never automatic gold"),
-            _row("next", "accept the patch, continue the discussion, or open a new round"),
-            f'<p class=warn>{_esc(guard)}</p>',
-        ])),
-        _card("Run plan", '<p class=mut>These are the planned envelopes for the discussion. They are not allocated Tickets yet.</p>'
-              f'<div class=runplans>{run_html}</div>'
-              '<p class=mut>Use Run Space to audit the envelopes after a real operation starts.</p>'),
-    ])
+    question = construct.get("question") or construct.get("seed") or construct.get("name") or ""
+    module = _definition_module()
+    runs = [r for r in vm.get("runs") or [] if r["operation"] == "definition-discussion"]
+    records = []
+    for i, run in enumerate(reversed(runs)):  # newest first, shown
+        try:
+            state = module.state(vm["root"], run["run"]) if module else None
+        except (OSError, ValueError, KeyError):
+            state = None
+        if not state:
+            continue
+        rows = "".join(
+            f'<tr><td class=nowrap><b>{_esc(r["label"])}</b></td><td>{_esc(r["before"])}</td>'
+            f'<td class="{"changed" if r["decision"] == "change" else "mut"}">'
+            f'{_esc(r["after"] if r["decision"] == "change" else ("kept" if r["decision"] else ""))}</td>'
+            f'<td>{_esc(r["reason"])}</td></tr>' for r in state["labels"])
+        questions = "".join(f"<li>{_esc(q)}</li>" for q in state["open_questions"])
+        records.append(
+            f'<div class=discrec data-target="{_esc(run.get("target") or "")}"{" hidden" if i else ""}>'
+            '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>Before</th><th>After</th>'
+            f'<th>Why</th></tr></thead><tbody>{rows}</tbody></table></div>'
+            + (f'<h3 class=sub>Still open</h3><ul>{questions}</ul>' if questions else "") + '</div>')
+    return _card("Discussion", f'<h3 class=discquestion>{_esc(question)}</h3>' + "".join(records), "focus")
 
 
 def _rounds_view(vm: dict) -> str:
     cal, root = vm["cal"] or {}, vm["root"]
     rounds = cal.get("rounds") or []
     if not rounds:
-        return _card("Rounds", "<p class=mut>No round has started yet. "
-                               "Round 1 picks items at random from the items to label.</p>")
+        return _card("Rounds", "<p class=mut>No round yet.</p>")
     groups, keywords, model_name = _map_groups(vm)
     current = cal.get("current_round") or {}
     labeling_now = bool(current) and not (vm.get("canonical") or {}).get("hold")
     cards = []
     for r in reversed(rounds):
         draw = _round_draw(root, r["round_id"])
-        chat = ""
-        if labeling_now and r["round_id"] == current.get("round_id"):
-            chat = ('<p>We label these together in chat. Tell me your label for an item, for example '
-                    '<code>#1 none</code>; I record it and this table updates.</p>'
-                    '<div class=chatcopy><button class=primary type=button '
-                    f'data-copy="{_esc(_chat_prompt(vm, current, draw))}">Copy chat prompt</button>'
-                    '<span class=mut>Paste it into a Claude chat in this repo to go on labeling.</span></div>'
-                    f'<details class=ctx><summary>the prompt</summary><pre class=prompt>{_esc(_chat_prompt(vm, current, draw))}</pre></details>')
+        is_current = labeling_now and r["round_id"] == current.get("round_id")
         manifest, card = draw["manifest"], draw["card"]
         drew = manifest.get("draw") if isinstance(manifest.get("draw"), dict) else {}
         pool = manifest.get("development_pool_size")
@@ -1871,21 +1726,15 @@ def _rounds_view(vm: dict) -> str:
         coverage = ""
         if groups and seen_groups:
             total_groups = len({g for g in groups.values() if g is not None})
-            coverage = (f'<p class=mut>These items sit in {len(seen_groups)} of {total_groups} map groups '
-                        f'({_esc(model_name)}). Groups did not choose them: the draw is random.</p>')
-        elif not groups:
-            coverage = ('<p class=mut>Build an embedding in Data → Embedding to see where these items sit '
-                        'on the map.</p>')
+            coverage = f'<p class=mut>map groups {len(seen_groups)} / {total_groups} · {_esc(model_name)}</p>'
         started_at = _when(card.get("released_at")) if card.get("released_at") else ""
         cards.append(
-            f'<details class=roundbox{" open" if chat else ""}><summary><b>{_esc(_round_words(r["round_id"]).capitalize())}</b>'
+            f'<details class=roundbox data-target="{_esc(str(r["round_id"]).replace("_", "-"))}"{" open" if is_current else ""}><summary><b>{_esc(_round_words(r["round_id"]).capitalize())}</b>'
             f'<span>{_esc(r["finals"])} of {_esc(r["batch_size"])} labeled</span>'
             f'<span class=mut>{_esc(state_words)}{" · started " + _esc(started_at) if started_at else ""}</span></summary>'
             f'{"".join(rows)}'
             f'<h3 class=sub>The items this round drew · {len(draw["items"])}</h3>'
-            f'{chat}{_items_table(draw, groups, keywords)}'
-            '<p class=mut>Text appears once an item has been shown to you. State shows your first answer, '
-            'then your final label; Feedback holds the notes from our chat.</p>'
+            f'{_items_table(draw, groups, keywords)}'
             f'{coverage}</details>'
         )
     return "".join(cards)
@@ -1947,8 +1796,7 @@ def _labeling_space(vm: dict) -> dict[str, str]:
     guideline = root / "policy" / "versions" / policy / "guideline.md" if policy else None
     if guideline and guideline.is_file():
         text = guideline.read_text(encoding="utf-8", errors="replace")[:20000]
-        guide = _card(f"Guideline {policy}", f'<div class=guide>{_guideline_html(text)}</div>'
-                      f'<p class=mut>From <code>policy/versions/{_esc(policy)}/guideline.md</code>.</p>')
+        guide = _card(f"Guideline {policy}", f'<div class=guide>{_guideline_html(text)}</div>')
     else:
         guide = _card("Guideline", "<p class=mut>No guideline version is readable yet.</p>")
     return {"discussion": _discussion_view(vm), "label": label, "rounds": rounds_html, "guideline": guide}
@@ -1964,7 +1812,7 @@ def _quality_space(vm: dict) -> dict[str, str]:
             _row("keeper", _esc(sealed.get("custodian"))),
             _row("state", _esc({"reserved-and-unexposed": "kept aside, never shown"}.get(str(sealed.get("status")), sealed.get("status")))),
             _row("locked for scoring", "yes" if (root / "test" / "final" / "lock.json").is_file() else "not yet"),
-        ]) + '<p class=mut>These items are never drawn into a round, shown, or used for the comparison.</p>')
+        ]))
     else:
         test = _later("P0 Contract")
     evaluation = (_card("Evaluation", _row("registry", "present")) if (root / "evaluation" / "registry.yaml").is_file()
@@ -1975,28 +1823,37 @@ def _quality_space(vm: dict) -> dict[str, str]:
 
 
 _RUN_WORDS = {  # the same words as the `in words` column of ref-space-mapping.md's Workflow map
-    "corpus-contract": "Set up the job", "discovery-search": "Search outside evidence",
-    "guideline-seed": "Draft the guideline", "test-reserve": "Hold back test items",
-    "embedding-build": "Build a map", "round-prepare": "Draw a round", "weak-prelabel": "Weak models pre-label",
-    "human-calibration": "You label a round", "guideline-learn": "Learn the guideline",
-    "round-measure": "Measure a round", "round-close": "Close a round", "handoff-freeze": "Freeze the labels",
-    "test-gold-lock": "Lock the test answers", "executor-predict": "A labeling model predicts the test",
-    "executor-score": "Score a labeling model", "executor-select": "Pick the labeling model",
-    "scan-preflight": "Check before labeling the corpus", "scan-shard": "Label one part of the corpus",
-    "risk-route": "Send risky items to you", "human-review": "You review risky items",
-    "reconcile": "Combine into final labels", "audit-sample": "Draw an audit sample",
-    "audit-human-gold": "You label the audit sample", "audit-analyze": "Analyze the audit",
-    "dstar-materialize": "Publish the final labeled corpus",
+    "corpus-contract": "Set up the job", "definition-discussion": "Discuss the label meanings",
+    "discovery-search": "Search outside evidence",
+    "guideline-seed": "Draft a guideline candidate", "test-reserve": "Hold back test items",
+    "embedding-build": "Build a map", "round-prepare": "Draw one round",
+    "weak-prelabel": "Pre-label one prepared round", "human-calibration": "You label one round",
+    "guideline-learn": "Draft a guideline from accepted judgments",
+    "round-measure": "Measure one completed judgment set", "round-close": "Close a measured round",
+    "handoff-freeze": "Freeze a stopped labeling lineage", "test-gold-lock": "Lock blind answers for the final test",
+    "executor-predict": "Have one registered model predict the test",
+    "executor-score": "Score one closed set of predictions",
+    "executor-select": "Select from the complete scorecard set", "scan-preflight": "Check one frozen production plan",
+    "scan-shard": "Label one frozen corpus shard", "risk-route": "Route risky production items to review",
+    "human-review": "Review one frozen production risk queue",
+    "reconcile": "Reconcile reviewed items into a candidate corpus",
+    "audit-sample": "Draw from one frozen audit design", "audit-human-gold": "Blind-label one audit sample",
+    "audit-analyze": "Analyze one completed audit sample", "dstar-materialize": "Publish an accepted audited corpus",
 }
 
 
+
 def _space_mapping_ref() -> Path | None:
-    """subjective-label/ref/ref-space-mapping.md, found next to the engine the Board already loads."""
+    """skills/label-building/ref/ref-space-mapping.md, found next to the engine the Board already loads."""
     job_module = _canonical_job_module()
     if job_module is None:
         return None
-    path = Path(job_module.__file__).resolve().parents[1] / "ref" / "ref-space-mapping.md"
-    return path if path.is_file() else None
+    plugin = Path(job_module.__file__).resolve().parents[1]
+    for path in (plugin / "skills" / "label-building" / "ref" / "ref-space-mapping.md",
+                 plugin / "ref" / "ref-space-mapping.md"):
+        if path.is_file():
+            return path
+    return None
 
 
 def _md_table(text: str, heading: str) -> tuple[list[str], list[list[str]]]:
@@ -2057,17 +1914,13 @@ def _workflow_map(vm: dict) -> str:
             *(f'<td data-label="{sp}"{" class=empty" if cell(sp.lower()) in ("", "—") else ""}>'
               f'{_wf_cell(cell(sp.lower()))}</td>' for sp in spaces),
             f'<td data-label="{labels[-2]}">{_md_inline(cell("writes to"))}</td>',
-            f'<td data-label="{labels[-1]}" class=num>{n if n else "<span class=mut>—</span>"}</td>',
+            f'<td data-label="{labels[-1]}" class=num>{n or ""}</td>',
         ]
         body.append(f'<tr{" class=live" if n else ""}>{"".join(tds)}</tr>')
     table = ('<div class=scroll><table class=wfmap><thead><tr>'
              + "".join(f"<th>{_esc(h)}</th>" for h in labels)
              + "</tr></thead><tbody>" + "".join(body) + "</tbody></table></div>")
-    return _card("Workflow map", (
-        '<ul class="mut notes"><li>One row per Run type, one column per Space. <b>start</b>: a button there starts it; '
-        '<b>shows</b>: its result is read there. Every Run is also listed in Runs.</li>'
-        '<li>"not built yet" means no program can run it today. "On this job" counts the Runs this job already has.</li>'
-        f'<li>A definition, not an inventory. Source: <code>{_esc(_repo_relative(ref))}</code>.</li></ul>' + table))
+    return _card("Workflow map", table)
 
 
 def _sop_state(op: str, vm: dict, runs_by_op: dict, not_built: set) -> str:
@@ -2075,7 +1928,7 @@ def _sop_state(op: str, vm: dict, runs_by_op: dict, not_built: set) -> str:
     if op == "gate G0":
         return "done" if (vm.get("canonical") or {}).get("meaning_receipt_valid") else "not yet"
     if op in ("", "—"):
-        return "—"
+        return ""
     runs = runs_by_op.get(op) or []
     running = [r for r in runs if r["status"] == "running"]
     if running:
@@ -2126,10 +1979,7 @@ def _sop(vm: dict) -> str:
     table = ('<div class=scroll><table class="wfmap sop"><thead><tr>'
              + "".join(f"<th>{_esc(h)}</th>" for h in labels)
              + "</tr></thead><tbody>" + "".join(body) + "</tbody></table></div>")
-    return _card("SOP · how a labeling job runs", (
-        '<ul class="mut notes"><li>The steps one labeling job walks, in order, and who does each one. '
-        'The Workflow map below lists every Run type; this is the path.</li>'
-        f'<li>"This job" is read from this job\'s Runs. Source: <code>{_esc(_repo_relative(ref))}</code>.</li></ul>' + table))
+    return _card("SOP · how a labeling job runs", table)
 
 
 def _group_clarity(groups: dict) -> str:
@@ -2143,17 +1993,15 @@ def _group_clarity(groups: dict) -> str:
     elif best >= 0.25:
         words, cls = "some separation", "mut"
     else:
-        words, cls = "weak. The items do not really fall into separate groups", "warn"
-    return (f'<p class="{cls}">How clear are these groups: {_esc(words)} '
-            f'<span class=mut>(score {best:.2f}; above 0.5 would be clear, below 0.25 is weak). '
-            f'Use them to browse and to check coverage, not as categories.</span></p>')
+        words, cls = "weak", "warn"
+    return f'<p class="{cls}">groups: {_esc(words)} <span class=mut>(score {best:.2f})</span></p>'
 
 
 def _wf_cell(text: str) -> str:
-    """'start + shows · Embedding' with the verbs bold; '—' greyed."""
+    """'start + shows · Embedding' with the verbs bold; '—' (nothing in this Space) is left blank."""
     text = str(text or "").strip()
     if text in {"", "—"}:
-        return "<span class=mut>—</span>"
+        return ""
     verbs, _, where = text.partition(" · ")
     verbs_html = " + ".join(f"<b>{_esc(v.strip())}</b>" for v in verbs.split("+"))
     return verbs_html + (f" · {_md_inline(where)}" if where else "")
@@ -2195,25 +2043,29 @@ def _blocked_words(text: str) -> str:
     return text
 
 
-def _run_space(vm: dict) -> dict[str, str]:
-    runs, state = vm["runs"], vm["state"]
+def _run_table(vm: dict) -> str:
+    """Every Run on this Page: what ran, its state, its result."""
+    runs = vm["runs"]
+    if not runs:
+        return ""
     builds = ((vm.get("embedding") or {}).get("builds")) or []
     build_names = _unique_labels([(b["manifest"]["version"], b["manifest"]["model"]["id"], b["manifest"].get("settings"))
                                   for b in builds])
-    if runs:
-        rows = "".join(
-            '<tr>'
-            f'<td><b>{_esc(_run_title(r, build_names))}</b>'
-            f'<div class=mut><code>{_esc(r["run"])}</code></div></td>'
-            f'<td class="{"ok" if r["status"] == "complete" else "warn"}">{_esc(_STATUS_WORDS.get(str(r["status"]), str(r["status"])))}</td>'
-            f'<td class=mut>{_esc(_outcome_words(r["outcome"]))}</td></tr>'
-            for r in runs
-        )
-        table = ('<div class=scroll><table class=runs><thead><tr><th>What ran</th><th>State</th>'
-                 f'<th>Result</th></tr></thead><tbody>{rows}</tbody></table></div>')
-    else:
-        table = "<p class=mut>No Run ticket yet.</p>"
-    canonical = vm["canonical"] or {}
+    rows = "".join(
+        '<tr>'
+        f'<td><b>{_esc(_run_title(r, build_names))}</b>'
+        f'<div class=mut><code>{_esc(r["run"])}</code></div></td>'
+        f'<td class="{"ok" if r["status"] == "complete" else "warn"}">{_esc(_STATUS_WORDS.get(str(r["status"]), str(r["status"])))}</td>'
+        f'<td class=mut>{_esc(_outcome_words(r["outcome"]))}</td></tr>'
+        for r in runs
+    )
+    return ('<div class=scroll><table class=runs><thead><tr><th>What ran</th><th>State</th>'
+            f'<th>Result</th></tr></thead><tbody>{rows}</tbody></table></div>')
+
+
+def _drawers(vm: dict) -> dict[str, str]:
+    """Workflow (Phases, SOP, map) and All runs; no button opens them, only ?drawer=workflow|allruns."""
+    state, canonical = vm["state"], vm["canonical"] or {}
     capability_rows = []
     for pid, name in PHASES:
         if pid == "P0":
@@ -2221,12 +2073,121 @@ def _run_space(vm: dict) -> dict[str, str]:
         elif pid == "P1":
             status = "partial · G0 passed" if canonical.get("g0_passed") else "partial · blocked by G0"
         else:
-            status = "not implemented · HOLD"
+            status = ""
         capability_rows.append(_row(f"{pid} · {name}", _esc(status)))
-    phases = _card("Compatibility capabilities · not lifecycle progress", "".join(capability_rows)
+    phases = _card("Phases", "".join(capability_rows)
                    + _row("waiting for", _esc(_blocked_words(state["first_failed"])))
-                   + f'<p class=mut>Code: <code>{_esc(state["first_failed"])}</code></p>')
-    return {"runs": _card("Runs", table), "phases": phases, "workflow": _sop(vm) + _workflow_map(vm)}
+                   + _row("code", f'<code>{_esc(state["first_failed"])}</code>'))
+    return {"workflow": phases + _sop(vm) + _workflow_map(vm),
+            "allruns": _card("All runs", _run_table(vm))}
+
+
+def _run_types(vm: dict) -> dict[str, list[dict]]:
+    """Each Space's built Run types and the views that list them, from the Workflow map's `view` column.
+
+    A view shows only its own types (JL 260927). A type the map marks `not built yet` stays in the map
+    only, unless this job already has a Run of it; a type with no view yet (`Scan (future)`) shows nowhere.
+    """
+    ref = _space_mapping_ref()
+    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map") if ref else ([], [])
+    col = {h.lower(): i for i, h in enumerate(headers)}
+    runs_by_op: dict[str, list[dict]] = {}
+    for r in vm["runs"]:
+        runs_by_op.setdefault(str(r["operation"]), []).append(r)
+    space_ids = {name: sid for sid, name, _ in SPACES}
+    view_ids = {sid: {vname: vid for vid, vname in views} for sid, _, views in SPACES}
+    out: dict[str, list[dict]] = {sid: [] for sid, _, _ in SPACES}
+    for cells in rows:
+        def cell(name, c=cells):
+            return c[col[name]].strip() if name in col and col[name] < len(c) else ""
+        op = cell("run type").strip("`")
+        space_name, _, view_names = cell("view").partition(" · ")
+        sid = space_ids.get(space_name.strip())
+        views = [view_ids[sid][v.strip()] for v in view_names.split(",") if sid and v.strip() in view_ids[sid]]
+        if not op or not views or (cell("started by") == "not built yet" and op not in runs_by_op):
+            continue
+        out[sid].append({"op": op, "words": cell("in words") or _RUN_WORDS.get(op, op),
+                         "views": views, "runs": runs_by_op.get(op, [])})
+    return out
+
+
+def _run_name(run_id: str) -> str:
+    """`rl04_human-calibration_round-01` → `human-calibration-round-01`; the file id shows on hover."""
+    return re.sub(r"^rl\d+_", "", run_id).replace("_", "-")
+
+
+def _run_ask(vm: dict, run: dict) -> str:
+    """The Run's prompt: what it did and where its Ticket and Result are."""
+    words = _RUN_WORDS.get(run["operation"], run["operation"])
+    return (f"{words}{' · ' + run['target'] if run.get('target') else ''} on the labeling job at {_job_where(vm)}. "
+            f"Run {run['run']} · Ticket: runs/{run['run']}.yaml · Result: results/{run['run']}/")
+
+
+def _run_again(vm: dict, run: dict) -> tuple[str, str]:
+    """Resume an open Run (same rlNN) or Rerun a closed one (a new rlNN); both only copy a prompt."""
+    where = _job_where(vm)
+    if run["operation"] == "definition-discussion":
+        return ("Resume", _meaning_prompt(vm, run["run"])) if run["status"] == "running" else ("Rerun", _meaning_prompt(vm))
+    if run["status"] == "running":
+        current = (vm.get("cal") or {}).get("current_round") or {}
+        if run["operation"] == "human-calibration" and current.get("round_id"):
+            return "Resume", _chat_prompt(vm, current, _round_draw(vm["root"], current["round_id"]))
+        return "Resume", (f"Resume Run {run['run']} on the labeling job at {where} through /subjective-label. "
+                          "Keep the same rlNN.")
+    return "Rerun", (f"Start a new {run['operation']} Run{' for target ' + run['target'] if run.get('target') else ''} on the labeling job "
+                     f"at {where} through /subjective-label. It gets a new rlNN; {run['run']} stays as it is.")
+
+
+def _run_card(vm: dict, run: dict) -> str:
+    action, again = _run_again(vm, run)
+    ask = _run_ask(vm, run)
+    status = str(run["status"])
+    words = _STATUS_WORDS.get(status, status)
+    times = " → ".join(x for x in (_when(run.get("started_at")), _when(run.get("finished_at"))) if x)
+    process = " · ".join(x for x in (times, _outcome_words(run.get("outcome"))) if x)
+    files = "".join(f"<li><code>{_esc(p)}</code></li>" for p in run.get("artifacts") or [])
+    return (
+        f'<article class=run-card data-op="{_esc(run["operation"])}" data-run="{_esc(run["run"])}" '
+        f'data-name="{_esc(run["label"])}" data-target="{_esc(run.get("target") or "")}" hidden>'
+        f'<header><b title="{_esc(run["run"])}">{_esc(run["name"])}</b>'
+        f'<span class="run-state st-{_esc(status.split(" ")[0])}">{_esc(words)}</span>'
+        f'<button type=button class=run-copy data-copy="{_esc(again)}">{action}</button></header>'
+        '<details class=run-prompt-box><summary>Prompt '
+        f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>'
+        f'<pre class=run-prompt>{_esc(ask)}</pre></details>'
+        f'<h4>Running process</h4><div class=run-process>{_esc(process)}</div>'
+        f'<h4>Results</h4><div class=run-results><code>results/{_esc(run["run"])}/</code>'
+        f'{f"<ul>{files}</ul>" if files else ""}</div>'
+        '</article>'
+    )
+
+
+def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
+    """One Space's Runs panel, on the right: the current view's Run types, then the selected Run."""
+    where = _job_where(vm)
+    buttons, cards = [], []
+    for t in types:
+        runs = list(reversed(t["runs"]))  # newest first
+        waiting = sum(1 for r in runs if r["status"] == "running" and r.get("worker_kind") == "human")
+        prompt = (_meaning_prompt(vm) if t["op"] == "definition-discussion" else
+                  f"Start a new {t['op']} Run on the labeling job at {where} through /subjective-label. Target: ")
+        buttons.append(
+            f'<button type=button class=run-type data-op="{_esc(t["op"])}" data-views="{_esc(" ".join(t["views"]))}" '
+            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" title="{_esc(t["op"])}">'
+            f'{_esc(t["words"])} <span class=run-count>{len(runs)}</span></button>')
+        cards.extend(_run_card(vm, r) for r in runs)
+    return (
+        f'<section class=runs-panel data-space={sid}>'
+        '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Runs</b></div>'
+        f'<div class=runs-body><div class=runs-types>{"".join(buttons)}'
+        '<button type=button class="run-type run-new">+ New Run</button></div>'
+        f'<div class=runs-detail><div class=run-list hidden></div>{"".join(cards)}'
+        '<article class="run-card run-card-new" hidden><header><b>New run</b></header>'
+        '<details class=run-prompt-box open><summary>Prompt '
+        '<button type=button class=run-copy data-copy="">Copy</button></summary>'
+        '<pre class=run-prompt></pre></details></article>'
+        '<div class=run-empty hidden>No runs yet.</div></div></div></section>'
+    )
 
 
 def _delivery_space(vm: dict) -> dict[str, str]:
@@ -2257,8 +2218,10 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
 
     panels = {
         "data": _data_space(vm), "labeling": _labeling_space(vm),
-        "quality": _quality_space(vm), "run": _run_space(vm), "delivery": _delivery_space(vm),
+        "quality": _quality_space(vm), "delivery": _delivery_space(vm),
     }
+    types = _run_types(vm)
+    drawers = _drawers(vm)
     space_buttons = "".join(
         f'<button class=space type=button role=tab id=tab-{sid} aria-controls=panel-{sid} '
         f'aria-selected=false data-space={sid}>{_esc(name)} Space</button>'
@@ -2276,7 +2239,8 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
         )
         sections.append(
             f'<section class=panel id=panel-{sid} role=tabpanel aria-labelledby=tab-{sid} data-space={sid} hidden>'
-            f'<div class=views role=group><span class=vlabel>View</span>{chips}</div>{panes}</section>'
+            f'<div class=space-split><div class=space-main><div class=views role=group>{chips}</div>{panes}</div>'
+            f'{_runs_panel(vm, sid, types[sid])}</div></section>'
         )
 
     cal = vm["cal"] or {}
@@ -2286,6 +2250,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
         "identity": f"{path_q}|{file_q}",
         "human_id": authority.get("human_id") or "",
         "hold": hold,
+        "next": next_line,
         "phase": canonical.get("phase") if canonical else None,
         "g0_open": bool(canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation"),
         "default_space": next_space,
@@ -2300,14 +2265,13 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>Labeling · {_esc(page_src.stem)}</title><style>{_CSS}</style></head><body>'
-        '<header>'
-        f'<h1>🏷 {_esc(title)}</h1>'
-        f'<div class=planmeta><a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}">← All labeling jobs</a>'
-        f'<span class=sep>·</span><span>{_esc(page_src.stem)}</span>'
-        f'<span class=sep>·</span><a href="{_esc(chat_url)}" target=_blank rel=noopener>Open Studio Chat</a></div>'
-        f'<p class="lead next{" hold" if hold and not _imported_reference_only(vm) else ""}"><b>Next:</b> {_esc(next_line)}</p>'
-        '</header>'
-        f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}</nav>'
+        f'<h1 class=pagetitle title="{_esc(next_line)}">'
+        f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>'
+        f' 🏷 {_esc(title)}</h1>'
+        f'<section class=drawer data-drawer-panel=workflow hidden>{drawers["workflow"]}</section>'
+        f'<section class=drawer data-drawer-panel=allruns hidden>{drawers["allruns"]}</section>'
+        f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}'
+        f'<a class="space chatlink" href="{_esc(chat_url)}" target=_blank rel=noopener>Studio Chat</a></nav>'
         + "".join(sections) +
         f'<script type=application/json id=labeling-boot>{_script_json(boot)}</script>'
         f'<script>{_JS}</script></body></html>'
@@ -2409,6 +2373,8 @@ details.roundbox>summary{display:flex;gap:12px;align-items:baseline;flex-wrap:wr
  font:14.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:none;letter-spacing:0;color:var(--fg)}
 details.roundbox>summary .mut{font-size:13px}
 details.roundbox[open]>summary{margin-bottom:6px}
+details.roundbox.on{border-color:var(--acc)}
+.discrec td.changed{color:var(--ok)}
 h3.sub{font-size:13px;margin:12px 0 2px}
 table.items{width:auto;max-width:100%}
 table.items td,table.items th{padding:3px 10px}
@@ -2431,7 +2397,6 @@ table.wfmap td code{font-size:11.5px}
 .stepline{font-size:14.5px;margin:2px 0 8px}
 .step{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:7px;padding:3px 9px;color:var(--mut);background:var(--card)}
 .step.on{border-color:var(--acc);color:var(--acc)}.step.past{color:var(--ok)}
-.discstatus{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 7px}
 .discquestion{font-size:20px;line-height:1.3;margin:9px 0 5px;max-width:42em}
 .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 4px}
 .flowstep{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:var(--card);min-height:86px}
@@ -2439,21 +2404,9 @@ table.wfmap td code{font-size:11.5px}
 .flowstep strong{font-size:13px;line-height:1.3}.flowstep span{font-size:12px;line-height:1.35;color:var(--mut)}
 .flowstep.now{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 7%,var(--card))}
 .flowstep.now b,.flowstep.now strong{color:var(--acc)}
-.casegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:8px}
-.casecard{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--soft)}
-.caseid{font:600 10px ui-monospace,Menlo,monospace;color:var(--acc);text-transform:uppercase;letter-spacing:.05em}
-.casecard h3{font-size:14px;margin:2px 0 3px}.casecard p{font-size:13px;line-height:1.4;margin:3px 0}
-.runplans{border-top:1px solid var(--line);margin-top:7px}
-.runplan{display:grid;grid-template-columns:16em minmax(0,1fr) max-content;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
-.runplan code{color:var(--acc)}.runplan span{color:var(--fg)}.runplan em{font-style:normal;color:var(--mut);font-size:12px;white-space:nowrap}
 /* conversation turns, option rows, chips */
 table.sop tr.now td{background:var(--soft)} table.sop tr.now td:last-child{color:var(--acc);font-weight:600}
 table.sop tr.done td:last-child{color:var(--ok)}
-.chatcopy{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 6px}
-.cc{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;background:var(--card);
- color:var(--acc);padding:1px 7px;cursor:pointer;white-space:nowrap;vertical-align:middle}
-.cc:hover{border-color:var(--acc)}
-h3 .cc{margin-left:6px}
 table.defs{width:auto;max-width:100%}
 table.defs td:nth-child(2){min-width:16em;max-width:44em}
 #cc-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--fg);color:var(--bg);
@@ -2531,8 +2484,7 @@ button.leg .kw{opacity:.75}
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--mut)}
 .mapwrap[data-color=group] .legend.label,.mapwrap[data-color=label] .legend.group{display:none}
 @media(max-width:560px){body{padding:12px}.rr,.turn{grid-template-columns:1fr;gap:0}
- .discquestion{font-size:18px}.flow,.casegrid{grid-template-columns:1fr}.flowstep{min-height:0}
- .runplan{grid-template-columns:1fr;gap:2px}.runplan em{white-space:normal}
+ .discquestion{font-size:18px}.flow{grid-template-columns:1fr}.flowstep{min-height:0}
  table.runs thead,table.runtable thead{display:none}
  table.runs tr,table.runtable tr{display:block;border-bottom:1px solid var(--line)}
  table.runs tbody tr:last-child,table.runtable tbody tr:last-child{border-bottom:0}
@@ -2555,6 +2507,56 @@ button.leg .kw{opacity:.75}
 """
 
 
+_CSS += """/* v3 (JL 260927, as the Page workbench): no page bar; each Space is its content on the left and its
+   Runs panel on the right at every width. The panel stays in view while the page scrolls; folded, it
+   is a thin strip. A view lists only its own Run types. */
+.pagetitle{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.pagetitle .back{text-decoration:none;font-weight:700}
+.spaces .chatlink{margin-left:auto;text-decoration:none}
+.drawer{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0 0;background:var(--card)}
+.space-split{display:flex;align-items:flex-start;gap:16px}
+.space-main{flex:1 1 auto;min-width:0}
+.runs-panel{flex:0 0 clamp(260px,30vw,600px);position:sticky;top:8px;max-height:calc(100vh - 16px);
+ display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.runs-panel button{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;background:var(--card);color:var(--fg)}
+.runs-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;font:13px/1.4 system-ui,sans-serif}
+.runs-bar .runs-fold{padding:0 7px}
+.runs-body{overflow:auto;min-height:0;display:flex;flex-direction:column;gap:10px;padding:0 12px 12px}
+.runs-types{display:flex;flex-wrap:wrap;gap:6px}
+.run-type{display:flex;gap:8px;align-items:center}
+.run-type.on{border-color:var(--acc)!important;color:var(--acc)!important}
+.run-type .run-count{color:var(--mut);font-weight:500}
+.run-new{border-style:dashed!important}
+.runs-detail{border:1px solid var(--line);border-radius:9px;padding:10px 12px;min-width:0}
+.run-list{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;margin-bottom:8px;padding-bottom:2px}
+.run-list button{flex:none;font:500 11px ui-monospace,Menlo,monospace!important;padding:1px 6px!important}
+.run-list button.on{border-color:var(--acc);color:var(--acc)}
+.run-card header{display:flex;align-items:center;gap:8px}
+.run-card header b{font-size:13px;overflow-wrap:anywhere}
+.run-card header .run-copy{margin-left:auto}
+.run-prompt-box{margin:0}
+.run-prompt-box>summary{display:flex;align-items:center;gap:6px;margin:10px 0 4px;padding:0;cursor:pointer;list-style:none;
+ font:600 12px system-ui,sans-serif;text-transform:none;letter-spacing:normal;color:var(--fg)}
+.run-prompt-box>summary::-webkit-details-marker{display:none}
+.run-prompt-box>summary:before{content:"▸";color:var(--acc);width:10px}
+.run-prompt-box[open]>summary:before{content:"▾"}
+.run-prompt-box>summary .run-copy{margin-left:auto}
+.run-card h4{margin:10px 0 4px;font:600 12px system-ui,sans-serif}
+.run-process{color:var(--mut);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.run-prompt{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:7px 9px;border-radius:7px;max-height:40vh;overflow:auto;
+ background:var(--soft);font:12px/1.5 ui-monospace,Menlo,monospace}
+.run-results{font-size:12px;overflow-wrap:anywhere}.run-results ul{margin:4px 0 0;padding-left:18px}
+.run-state{font:600 10.5px/1.4 system-ui,sans-serif;border-radius:5px;padding:1px 6px;border:1px solid var(--line);color:var(--mut)}
+.run-state.st-running{color:var(--ok);border-color:var(--ok)}
+.run-state.st-failed{color:var(--warn);border-color:var(--warn)}
+.run-empty{color:var(--mut);font-size:12px}
+.runs-panel.folded{flex-basis:42px;cursor:pointer}
+.runs-panel.folded .runs-body{display:none}
+.runs-panel.folded .runs-bar{writing-mode:vertical-rl;padding:10px 9px;gap:10px}
+"""
+
+
 _JS = r"""
 (function(){'use strict';
 var boot=JSON.parse(document.getElementById('labeling-boot').textContent);
@@ -2569,6 +2571,7 @@ function select(space,view,remember){
  $$('.panel').forEach(function(p){p.hidden=p.dataset.space!==space;});
  $$('.chip').forEach(function(c){if(c.dataset.space===space){c.classList.toggle('on',c.dataset.view===view);}});
  $$('.pane').forEach(function(p){p.hidden=!(p.dataset.space===space&&p.dataset.view===view);});
+ runsFor(space,view);
  if(remember){try{localStorage.setItem(key,JSON.stringify({space:space,view:view}));}catch(e){}
   try{var u=new URL(location.href);u.searchParams.set('space',space);u.searchParams.set('view',view);history.replaceState(null,'',u.toString());}catch(e){}}
  current={space:space,view:view};
@@ -2578,6 +2581,65 @@ $$('.space').forEach(function(b){b.addEventListener('click',function(){select(b.
  b.addEventListener('keydown',function(e){var ids=Object.keys(spaces),i=ids.indexOf(b.dataset.space);
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();var n=ids[(i+(e.key==='ArrowRight'?1:ids.length-1))%ids.length];select(n,null,true);$('#tab-'+n).focus();}});});
 $$('.chip').forEach(function(c){c.addEventListener('click',function(){select(c.dataset.space,c.dataset.view,true);});});
+/* ── Runs panel, right of each Space: a view lists only its own Run types; pick a type, then a run ── */
+function runsRender(p){
+ var on=$('.run-type.on',p),newMode=on&&on.classList.contains('run-new'),list=$('.run-list',p),empty=$('.run-empty',p);
+ $$('.run-card',p).forEach(function(c){c.hidden=true;});list.innerHTML='';list.hidden=true;empty.hidden=true;
+ var op=newMode?p.dataset.lastOp:(on?on.dataset.op:'');
+ if(newMode){var src=$('.run-type[data-op="'+op+'"]',p),card=$('.run-card-new',p),text=src?src.dataset.prompt:'';
+  $('.run-prompt',card).textContent=text;$('.run-copy',card).dataset.copy=text;card.hidden=false;return;}
+ p.dataset.lastOp=op||'';
+ var cards=op?$$('.run-card[data-op="'+op+'"]',p):[];
+ if(!cards.length){empty.hidden=false;return;}
+ var first=cards.filter(function(c){return c.dataset.target&&c.dataset.target===p.dataset.want;})[0]||cards[0];
+ function show(c){cards.forEach(function(x){x.hidden=x!==c;});}
+ cards.forEach(function(c){var b=document.createElement('button');b.type='button';b.textContent=c.dataset.name;b.title=c.dataset.run;
+  b.addEventListener('click',function(){show(c);$$('button',list).forEach(function(x){x.classList.toggle('on',x===b);});
+   p.dataset.want=c.dataset.target||'';
+   document.dispatchEvent(new CustomEvent('labeling:run',{detail:{space:p.dataset.space,op:c.dataset.op,target:c.dataset.target||''}}));});
+  if(c===first){b.classList.add('on');}list.appendChild(b);});
+ list.hidden=cards.length<2;show(first);}
+/* the content picks its run: a build or a round selects the matching run in the panel (as the Page's Card ↔ Runs) */
+function runsWant(space,target){var p=$('.runs-panel[data-space="'+space+'"]');if(!p||!target){return;}
+ var shown=$$('.run-card[data-op]',p).filter(function(c){return !c.hidden;})[0];
+ p.dataset.want=target;if(shown&&shown.dataset.target===target){return;}
+ function has(b){return b&&!b.hidden&&b.dataset.op&&$$('.run-card[data-op="'+b.dataset.op+'"]',p).some(function(c){return c.dataset.target===target;});}
+ var on=$('.run-type.on',p);
+ if(on&&!on.classList.contains('run-new')&&!has(on)){var alt=$$('.run-type[data-op]',p).filter(has)[0];
+  if(alt){$$('.run-type',p).forEach(function(x){x.classList.toggle('on',x===alt);});}}
+ if($('.run-type.on',p)){runsRender(p);}}
+function runsFor(space,view){var p=$('.runs-panel[data-space="'+space+'"]');if(!p){return;}
+ var best=null;
+ $$('.run-type[data-op]',p).forEach(function(b){b.hidden=(b.dataset.views||'').split(' ').indexOf(view)<0;
+  if(!b.hidden&&(!best||+b.dataset.waiting>+best.dataset.waiting)){best=b;}});
+ $('.run-new',p).hidden=!best;
+ $$('.run-type',p).forEach(function(b){b.classList.toggle('on',b===best);});
+ runsRender(p);}
+$$('.runs-panel').forEach(function(p){
+ $$('.run-type',p).forEach(function(b){b.addEventListener('click',function(){
+  $$('.run-type',p).forEach(function(x){x.classList.toggle('on',x===b);});runsRender(p);
+  var c=$$('.run-card[data-op]',p).filter(function(x){return !x.hidden;})[0];
+  if(c&&c.dataset.target){document.dispatchEvent(new CustomEvent('labeling:run',{detail:{space:p.dataset.space,op:c.dataset.op,target:c.dataset.target}}));}});});
+ var fold=$('.runs-fold',p),foldKey='labeling-runs-fold:'+p.dataset.space;
+ function setFold(on,remember){p.classList.toggle('folded',on);fold.textContent=on?'◂':'▸';
+  if(remember){try{localStorage.setItem(foldKey,on?'1':'0');}catch(e){}}}
+ fold.addEventListener('click',function(ev){ev.stopPropagation();setFold(!p.classList.contains('folded'),true);});
+ $('.runs-bar',p).addEventListener('click',function(){if(p.classList.contains('folded')){setFold(false,true);}});
+ try{if(localStorage.getItem(foldKey)==='1'){setFold(true,false);}}catch(e){}});
+function roundLight(target){$$('details.roundbox').forEach(function(d){d.classList.toggle('on',d.dataset.target===target);});}
+$$('details.roundbox').forEach(function(d){d.addEventListener('toggle',function(){
+ if(d.open){roundLight(d.dataset.target);runsWant('labeling',d.dataset.target);}});});
+document.addEventListener('labeling:run',function(e){var d=$$('details.roundbox').filter(function(x){return x.dataset.target===e.detail.target;})[0];
+ if(!d){return;}d.open=true;roundLight(d.dataset.target);if(d.getBoundingClientRect().top>innerHeight||d.getBoundingClientRect().bottom<0){d.scrollIntoView({block:'start'});}});
+document.addEventListener('labeling:run',function(e){if(e.detail.op!=='definition-discussion'){return;}
+ var recs=$$('.discrec');if(!recs.some(function(r){return r.dataset.target===e.detail.target;})){return;}
+ recs.forEach(function(r){r.hidden=r.dataset.target!==e.detail.target;});});
+/* a Copy inside a folded Prompt summary copies without opening it */
+document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('summary [data-copy]')){ev.preventDefault();}},true);
+/* Workflow (Phases, SOP, map) and All runs open only from ?drawer=workflow|allruns; Esc closes */
+(function(){var d=null;try{d=new URLSearchParams(location.search).get('drawer');}catch(e){}
+ $$('[data-drawer-panel]').forEach(function(x){x.hidden=x.dataset.drawerPanel!==d;});})();
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){$$('[data-drawer-panel]').forEach(function(x){x.hidden=true;});}});
 $$('[data-map-color]').forEach(function(b){b.addEventListener('click',function(){var w=b.closest('.mapwrap');
  w.dataset.color=b.dataset.mapColor;$$('[data-map-color]',w).forEach(function(x){x.classList.toggle('on',x===b);});});});
 /* ── embedding map: pick a dot, light a group, zoom and pan ── */
@@ -2644,9 +2706,7 @@ $$('.embpane').forEach(function(pane){
   function more(){var b=$('[data-ex-more]',list);if(b){b.disabled=true;b.textContent='Loading…';}
    act('group_examples',{version:data.version,group_index:Number(g),k:3,offset:offset}).then(function(j){var r=j.result;
     if(b){b.remove();}
-    if(offset===0&&r.hidden_waiting){list.insertAdjacentHTML('beforeend','<p class=mut>'+r.hidden_waiting+' item'+(r.hidden_waiting>1?'s':'')+
-     ' of this group wait'+(r.hidden_waiting>1?'':'s')+' in '+esc(r.hidden_rounds.map(roundWords).join(', '))+' and '+(r.hidden_waiting>1?'are':'is')+
-     ' not shown, so you first read them in Labeling → Rounds.</p>');}
+    if(offset===0&&r.hidden_waiting){list.insertAdjacentHTML('beforeend','<p class=mut>hidden, waiting in '+esc(r.hidden_rounds.map(roundWords).join(', '))+': '+r.hidden_waiting+'</p>');}
     if(offset===0&&!r.examples.length){list.insertAdjacentHTML('beforeend','<p class=mut>No item of this group can be shown yet.</p>');}
     list.insertAdjacentHTML('beforeend',r.examples.map(function(e){return exItem(e,words);}).join(''));
     offset+=r.examples.length;
@@ -2681,9 +2741,8 @@ $$('.embpane').forEach(function(pane){
        '<i class=dot style="background:'+((data.groups[String(n.group)]||{}).color||'var(--mut)')+'"></i>item '+esc(n.item_id)+' · '+n.similarity.toFixed(2)+
        (data.marks[n.item_id]&&data.marks[n.item_id].final?' · '+esc(data.marks[n.item_id].final):'')+'</button>';}).join('')+'</span></div></div>'+
     '<div class=pktext data-pick-text>'+(data.marks[r.item_id]&&!data.marks[r.item_id].final
-      ?'<p class=mut>This item waits in '+esc(roundWords(data.marks[r.item_id].round))+'; its text appears in Labeling → Rounds.</p>'
-      :'<button class="pill tog" type=button data-pick-show>Show its text</button>')+'</div>'+
-    '<p class=mut>The number is similarity, from 0 (unrelated) to 1 (the same). Similar means similar words and topic, not the same label. The flat map can still draw similar items far apart. In item text, grey marks are the group\'s keywords.</p>';
+      ?'<p class=mut>waits in '+esc(roundWords(data.marks[r.item_id].round))+'</p>'
+      :'<button class="pill tog" type=button data-pick-show>Show its text</button>')+'</div>';
    $('[data-pick-close]',pick).addEventListener('click',function(){clearPick();pick.hidden=true;});
    var show=$('[data-pick-show]',pick);if(show){show.addEventListener('click',function(){show.disabled=true;show.textContent='Loading…';
     act('embedding_item_text',{version:data.version,item_id:r.item_id}).then(function(t){
@@ -2762,12 +2821,14 @@ $$('.embpane').forEach(function(pane){
   if(!panes.some(function(p){return p.dataset.emb===v;})){v=panes[panes.length-1].dataset.emb;}
   panes.forEach(function(p){p.hidden=p.dataset.emb!==v;});
   $$('.pill.tog[data-emb-show]').forEach(function(b){b.classList.toggle('on',b.dataset.embShow===v);});
+  runsWant('data',v);
   if(remember){try{var u=new URL(location.href);u.searchParams.set('emb',v);history.replaceState(null,'',u.toString());}catch(e){}}
  }
  var want=null;try{want=new URLSearchParams(location.search).get('emb');}catch(e){}
  showEmb(want,false);
  $$('[data-emb-show]').forEach(function(b){b.addEventListener('click',function(){showEmb(b.dataset.embShow,true);
   if(!b.classList.contains('tog')){var d=b.closest('details');if(d){d.open=false;}var pane=$('.embpane:not([hidden])');if(pane){pane.scrollIntoView({block:'start'});}}});});
+ document.addEventListener('labeling:run',function(e){if(e.detail.op==='embedding-build'){showEmb(e.detail.target,true);}});
  var timer=null,form=$('[data-emb-form]'),runBtn=$('[data-emb-run]'),runMsg=$('[data-emb-form] [data-emb-msg]');
  var info={};try{info=JSON.parse($('.embcatalog').textContent);}catch(e){}
  var choice={input_mode:'reply_context',map_method:'tsne'};
@@ -2843,7 +2904,7 @@ function copyText(t){
  if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(t).catch(function(){return legacyCopy(t);});}
  return legacyCopy(t);}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b){return;}
- copyText(b.dataset.copy).then(function(){toast('Copied — paste it into this chat to discuss.');},function(){toast('Copy failed. Check clipboard access and try again.',true);});});
+ copyText(b.dataset.copy).then(function(){toast('Copied');},function(){toast('Copy failed. Check clipboard access and try again.',true);});});
 var app=$('#label-app');
 var AI_NAMES=/^(lamda|assistant|bot|chatbot|ai|model|system|gpt|chatgpt|claude|bard|gemini|agent)$/i;
 function who(tag){return AI_NAMES.test(String(tag||'').trim())?'AI':String(tag||'');}
@@ -2851,7 +2912,7 @@ function roundWords(id){var m=String(id||'').match(/^round_0*(\d+)$/);return m?'
 function message(html){app.innerHTML='<div class=card>'+html+'</div>';}
 function load(){
  if(!app){return;}
- if(boot.hold){message('<p class=warn>This job is read-only.</p><p class=mut>'+esc($('.next')?$('.next').textContent:'')+'</p>');return;}
+ if(boot.hold){message('<p class=warn>Read-only · '+esc(boot.next||'')+'</p>');return;}
  if(boot.phase!=='P1'){
   if(boot.g0_open){message('<p><b>Step 1 first:</b> confirm what the labels mean.</p><div class=actions><button class=primary type=button id=go-confirm>Go to Confirm meaning</button></div>');
    $('#go-confirm').addEventListener('click',function(){select('data','contract',true);});}
@@ -2859,7 +2920,7 @@ function load(){
   return;}
  var cur=boot.current_round, rounds=boot.rounds||[];
  if(!cur&&rounds.length&&rounds[rounds.length-1].state==='judged'){
-  var r=rounds[rounds.length-1];message('<p class=ok>'+esc(r.round_id)+' is done: '+r.finals+' of '+r.batch_size+' labeled.</p><p class=mut>Next the guideline is learned from your answers and the round is closed by the Checkpoint Keeper. That step is not built yet, so a new round cannot start.</p>');return;}
+  var r=rounds[rounds.length-1];message('<p class=ok>'+esc(r.round_id)+' is done: '+r.finals+' of '+r.batch_size+' labeled.</p>');return;}
  if(!cur){
   var sizes=[10,20,30,50];if(sizes.indexOf(boot.batch_default)<0){sizes.push(boot.batch_default);sizes.sort(function(a,b){return a-b;});}
   message('<h2>Start round 1</h2><p>Round 1 picks items at random from the items to label. Held-back test items are never picked.</p>'+
@@ -3007,7 +3068,7 @@ def render_board(board_dir: Path, path_q: str) -> str:
     if data["empty"]:
         empty = ('<p class=mut>Pages with no labeling job yet: '
                  + ", ".join(_esc(e["id"]) for e in data["empty"])
-                 + '. Ask Claude in Studio Chat to start one (/subjective-label).</p>')
+                 + '</p>')
     name = Path(board_dir).name
     tally = f'{len(waiting)} waiting · {len(jobs)} jobs'
     return (
@@ -3017,9 +3078,7 @@ def render_board(board_dir: Path, path_q: str) -> str:
         '<h1>🏷 Labeling · all jobs</h1>'
         f'<p class="lead next"><b>Next:</b> {_esc(headline)}</p>'
         f'<div class=card style="margin-top:10px"><h2>Labeling jobs<span class=tally>{_esc(tally)}</span></h2>'
-        f'<p class=mut>Board folder: <code>{_esc(name)}</code></p>'
         f'{groups}</div>{empty}'
-        '<p class=mut>Click a job to open it. Inside a job, "← All labeling jobs" brings you back here.</p>'
         '</body></html>'
     )
 
@@ -3032,7 +3091,7 @@ a.rec:hover,a.rec:focus-visible{background:color-mix(in srgb,var(--acc) 6%,var(-
 
 
 class LabelingMixin:
-    """The 🏷 tab: five Spaces over one labeling/ lane, plus the labeling writer door."""
+    """The 🏷 tab: four Spaces over one labeling/ lane, plus the labeling writer door."""
 
     def labeling_view(self, head_only=False):
         q = parse_qs(urlparse(self.path).query)

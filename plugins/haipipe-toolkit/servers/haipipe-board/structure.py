@@ -210,8 +210,9 @@ def structure_op(board, p):
             dest_home = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}"
         stamp = dt.datetime.now().strftime("%y%m%d %H%M")
         log_dir = (source_home or f.parent) / "outline"
-        log_file = log_dir / f"{f.stem}-log.md"
-        log_dir.mkdir(parents=True, exist_ok=True)
+        from src.outline_version import record_path
+        log_file = record_path(log_dir, f.stem, "log")
+        log_file.parent.mkdir(parents=True, exist_ok=True)
         record = f"### {stamp} · Archived from the Board index\n"
         if log_file.is_file():
             old = log_file.read_text(encoding="utf-8")

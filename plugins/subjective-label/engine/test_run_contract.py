@@ -27,10 +27,10 @@ def _catalog_module():
 
 def test_labeling_run_dialect_declares_exact_operation_catalog_and_envelope():
     catalog = _catalog_module()
-    contract = _read(PLUGIN_ROOT / "ref" / "ref-run.md")
+    contract = _read(PLUGIN_ROOT / "skills" / "label-building" / "ref" / "ref-run.md")
 
-    assert len(catalog.OPERATION_KINDS) == 25
-    assert len(set(catalog.OPERATION_KINDS)) == 25
+    assert len(catalog.OPERATION_KINDS) == 26
+    assert len(set(catalog.OPERATION_KINDS)) == 26
     for operation in catalog.OPERATION_KINDS:
         assert f"`{operation}`" in contract
 
@@ -47,13 +47,13 @@ def test_labeling_run_dialect_declares_exact_operation_catalog_and_envelope():
     assert "actual count is the number of" in contract
 
 
-def test_happy_path_formula_plans_43_runs_with_expected_phase_counts():
+def test_happy_path_formula_plans_44_runs_with_expected_phase_counts():
     catalog = _catalog_module()
     runs = catalog.plan_runs(discovery=2, round_weak=(0, 2, 2), executors=3, shards=1)
 
-    assert len(runs) == 43
+    assert len(runs) == 44
     assert Counter(run.phase for run in runs) == {
-        "P0": 6,
+        "P0": 7,
         "P1": 19,
         "P2": 1,
         "P3": 8,
@@ -68,7 +68,8 @@ def test_happy_path_formula_plans_43_runs_with_expected_phase_counts():
     addresses = [run.run for run in runs]
     assert len(addresses) == len(set(addresses))
     assert addresses[0].startswith("rl01_corpus-contract_")
-    assert addresses[-1].startswith("rl43_dstar-materialize_")
+    assert addresses[1] == "rl02_definition-discussion_labels-v1"
+    assert addresses[-1].startswith("rl44_dstar-materialize_")
 
 
 def test_planner_cli_executes_the_documented_example():
@@ -99,10 +100,10 @@ def test_planner_cli_executes_the_documented_example():
         for line in completed.stdout.splitlines()
         if line.split() and line.split()[0] in {"P0", "P1", "P2", "P3", "P4", "P5"}
     }
-    assert tag_counts == {"P0": 6, "P1": 19, "P2": 1, "P3": 8, "P4": 5, "P5": 4}
+    assert tag_counts == {"P0": 7, "P1": 19, "P2": 1, "P3": 8, "P4": 5, "P5": 4}
     total_line = next(line for line in completed.stdout.splitlines() if line.startswith("TOTAL"))
-    assert total_line.split() == ["TOTAL", "43"]
-    assert "rl43_dstar-materialize_d-star-v1" in completed.stdout
+    assert total_line.split() == ["TOTAL", "44"]
+    assert "rl44_dstar-materialize_d-star-v1" in completed.stdout
 
 
 def test_optional_p0_run_counts_can_be_zero_and_match_formula():
@@ -115,15 +116,17 @@ def test_optional_p0_run_counts_can_be_zero_and_match_formula():
         guideline_seed_count=0,
         test_reserve_count=0,
         embedding_build_count=0,
+        definition_discussion_count=0,
     )
 
     assert len(runs) == 40
     assert not {
+        "definition-discussion",
         "guideline-seed",
         "test-reserve",
         "embedding-build",
     }.intersection(run.operation for run in runs)
-    assert len(runs) == 2 + 0 + 0 + 0 + 4 + 5 * 3 + 2 * 3 + 1 + 12
+    assert len(runs) == 2 + 0 + 0 + 0 + 0 + 4 + 5 * 3 + 2 * 3 + 1 + 12
 
 
 def test_planner_cli_accepts_zero_optional_p0_counts():
@@ -146,6 +149,8 @@ def test_planner_cli_accepts_zero_optional_p0_counts():
             "0",
             "--embedding-builds",
             "0",
+            "--definition-discussions",
+            "0",
             "--json",
         ],
         check=True,
@@ -161,6 +166,7 @@ def test_planner_cli_accepts_zero_optional_p0_counts():
     assert "guideline-seed" not in operations
     assert "test-reserve" not in operations
     assert "embedding-build" not in operations
+    assert "definition-discussion" not in operations
 
 
 def test_labeling_run_ids_use_the_native_rl_namespace():

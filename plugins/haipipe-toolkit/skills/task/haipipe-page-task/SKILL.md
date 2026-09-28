@@ -8,7 +8,7 @@ description: >-
   not for P-B-E-R execution or raw-data analysis.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-09-08"
   parent: haipipe-task
   scope: Task Page Face
@@ -56,7 +56,7 @@ For a worklist or coverage Task, the normal display inventory is:
 2. source-tier or field-composition table/figure;
 3. exact expected-versus-observed and terminal-status display;
 4. provenance/matching/release-boundary diagram;
-5. hash, duplicate, or residual table when those facts affect the reading.
+5. duplicate or residual table when those facts affect the reading.
 
 The inventory is adapted to the Task's actual question and Results. It is
 never permission to invent a count or to draw a decorative chart.
@@ -95,9 +95,10 @@ claims that the Page is complete.
 
 ## 📦 Unit contract · one display is one inspectable folder
 
-Every Page display unit lives at:
+Every Page display unit lives in its typed DISPLAY Result
+(`haipipe-workbench-page/ref/evidence/displays.md`):
 
-    <task>/outline/evidence/display/<stem>-Display<N>-<slug>/
+    <task>/results/<re-run>/payload/<stem>-Display<N>-<slug>/
 
 Use the shared display-unit-output-contract and display-intake-contract. A new
 unit normally contains:
@@ -137,7 +138,7 @@ approved Evidence graph:
 The renderer reads only the frozen intake snapshot. It never searches raw
 Results, chooses rows from an arbitrary CSV, or types a number into float.tex.
 The intake manifest records the producing holder, full Run id, canonical
-artifact, provenance, and matching hashes. A changed source reopens the
+artifact, and provenance. A source newer than its snapshot reopens the
 display and its acceptance; it never gets silently patched in place.
 
 Concept diagrams may have no numeric input, but any real count printed inside

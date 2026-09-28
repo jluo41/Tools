@@ -257,7 +257,7 @@ class OutlinePreviewTest(unittest.TestCase):
             if source != prose:
                 result, _ = self.save(source, result['record_token'])
             card = plan_card(self.page)
-            self.assertIn('(E33C.SystemStakes)', card)
+            self.assertIn('(Ecite33.SystemStakes)', card)
             self.assertNotIn('class="evtag warn preview-evidence"', card)
             resting = re.findall(r'<div class=preview-copy>(.*?)</div>', card)
             self.assertTrue(resting)

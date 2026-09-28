@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.4] — 2026-09-26
+
+- Facts, not labels: an event CaseFn is named `<Feature><Window>` like every CaseFn (`REACHPD2DSignalDiabPresentA1cAf20Y`, was `REACHPD2DEventDiabPresentA1c`); REACH PD2D renamed its 11 and its generator refuses a name without its window.
+
 ## [0.3.3] — 2026-09-25
 
 - AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).

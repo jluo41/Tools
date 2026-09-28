@@ -1,5 +1,9 @@
 # haipipe-display · Changelog
 
+## 0.3.6 · 2026-09-28 · No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/display-intake-contract.md`, `ref/intake-manifest.template.yaml` and `ref/display-unit-output-contract.md` drop `origin.sha256` and `snapshot.sha256`; `snapshot.materialized_at` is required, and a local canonical artifact newer than it means the snapshot is stale.
+
 ## 0.3.5 · 2026-09-08
 - Third naming pass (JL 260908): under a Paper Section page the unit is `Display<n>-<slug>`; the page id carries the index. Same in ref/display-unit-output-contract.md and ref/display-intake-contract.md.
 

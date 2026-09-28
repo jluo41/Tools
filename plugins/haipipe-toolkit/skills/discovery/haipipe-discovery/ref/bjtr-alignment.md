@@ -32,7 +32,7 @@ discoveries/                                  bank; no address segment
         └── t03_circadian-review/             Task Page = one article question
             ├── t03_circadian-review.md       Page Face
             ├── discovery.yaml                Task Face manifest
-            ├── outline/                      Page process and derived evidence
+            ├── draft/                        Page process and derived evidence
             ├── scripts/                      optional reusable instrument
             ├── runs/
             │   └── r01_smith2024_clock.sh    executable Run ticket

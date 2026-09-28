@@ -882,7 +882,9 @@ def default_bib_path(topic: Path) -> Path:
         page = _field(manifest.read_text(encoding="utf-8"), PAGE_FIELD_RE)
         if page:
             stem = Path(page).stem
-    return topic / "outline" / "evidence" / "bibex" / f"{stem}.bib"
+    # The Page's plan folder: draft/ since page 0.118, outline/ on an unmigrated Page.
+    home = "outline" if (topic / "outline").is_dir() and not (topic / "draft").is_dir() else "draft"
+    return topic / home / "evidence" / "bibex" / f"{stem}.bib"
 
 
 def atomic_write(path: Path, text: str) -> None:

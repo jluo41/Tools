@@ -9,7 +9,7 @@ accepted Ticket/Result schema; v1 is rejected.
 A Run is `<owner>/runs/<rdNN_generate|verify_slug>.yaml`, paired with
 `<owner>/results/<same-stem>/`. Resolve Ticket references from the owner and
 Result-local references from the Result directory. Every reference names one
-regular file plus lowercase SHA-256. Never dispatch YAML through bash.
+regular file by path; no content hash (JL 260928). Never dispatch YAML through bash.
 
 ```yaml
 schema: haipipe.design-ticket/v2
@@ -19,11 +19,11 @@ item: ITEM01            # the Design Item this Run serves (register id)
 worker: haipipe-design-unit
 actor: designer-context-01
 target: Send the salience wording unchanged
-config: {path: scripts/config/rd02_generate_item01.yaml, sha256: <hash>}
+config: {path: scripts/config/rd02_generate_item01.yaml}
 approval:
   actor: <person>
-  record: {path: results/rd01_commission_item01/decision.yaml, sha256: <hash>}
-inputs: []  # role + path + sha256; optional real upstream run_id
+  record: {path: results/rd01_commission_item01/decision.yaml}
+inputs: []  # role + path; optional real upstream run_id
 targets: [] # verify only: exact generation result.yaml refs
 ```
 
@@ -85,7 +85,7 @@ The Design workbench writes this config when a person releases the Commission,
 and each downstream Run inherits its design fields. Only `review_mode` and the
 operation's permitted `mode` are derived: Generate uses `self`, Verify uses
 `independent`; a revise uses `revise` unless the frozen stance is `challenge`,
-which stays in `challenge` mode. The caller pins the derived config's own hash.
+which stays in `challenge` mode. The caller names the derived config file.
 Goal, intent, basis, unit, criteria, acceptance and iteration budget stay frozen;
 a later register edit never reaches this item's drafts. `goal` is the item's goal sentence (the same text
 as `design_intent.move`), not its title. `max_iterations` is the budget inside
@@ -101,8 +101,8 @@ stance `challenge` requires challenge mode), an alternative effect, and a
 distinguishing/failure condition. See `modes.md`.
 
 `unit.shape` is single, sequence, or set; positive `count` is the number of
-content artifacts. Each member has a stable Result-local path/hash. Choosing a
-subset later references those exact bytes. Modes are compose, revise,
+content artifacts. Each member has a stable Result-local path. Choosing a
+subset later references those exact files. Modes are compose, revise,
 brainstorm, theory-driven, challenge. Basis is brief-only or evidence-informed.
 A revise Ticket requires base + feedback; evidence-informed requires evidence
 or handoff. Generate uses self review; verify uses independent review.
@@ -138,19 +138,19 @@ run: rd02_generate_item01
 operation: generate
 target: Send the salience wording unchanged
 producer: designer-context-01
-ticket_sha256: <ticket-hash>
-config_sha256: <same-config-hash-as-ticket>
 verdict: pass
 artifacts:
-  - {path: content/sms.txt, sha256: <hash>}
-checks: {path: checks.yaml, sha256: <hash>}
+  - {path: content/sms.txt}
+checks: {path: checks.yaml}
 targets: []
 # Optional visual evidence, separate from the commissioned content count:
-# render_manifest: {path: render/manifest.json, sha256: <hash>}
+# render_manifest: {path: render/manifest.json}
 ```
 
 Ticket and Result schema versions must match. Verify has no replacement
-artifacts and reproduces target refs exactly. Optional review prose may live in
+artifacts and reproduces target paths exactly. Every file the Result names
+(content, checks, render) must not be newer than `result.yaml`; a later edit
+reads as stale by file time. Optional review prose may live in
 `review.md`; structured coverage remains in `checks.yaml`:
 
 ```yaml
@@ -180,14 +180,14 @@ bytes. It cannot prove subjective judgment or human authorization.
 ### Optional render evidence
 
 Workers write PNGs and measurements only inside their own Result. When rendering,
-pin `render_manifest` in `result.yaml`. The manifest is a nonempty JSON list;
+name `render_manifest` in `result.yaml`. The manifest is a nonempty JSON list;
 each row has `item`, `candidate` (the source Generate Run), positive `version`,
-`source` (relative to the manifest), source `sha256`, `render` (picture relative
-to the manifest) and `render_sha256`, plus the renderer's measurements.
-The source must be a commissioned content artifact of this Generate or a pinned
+`source` (relative to the manifest), and `render` (picture relative to the
+manifest), plus the renderer's measurements.
+The source must be a commissioned content artifact of this Generate or a named
 target artifact of this Verify. Pictures and manifest stay inside this Result's
-`render/`; their hashes are checked without adding to `unit.count` or the
-artifact × criterion grid. Pin these files before completing the Result.
+`render/`; they are checked by path and file time without adding to `unit.count`
+or the artifact × criterion grid. Write these files before completing the Result.
 The presenter reads Generate render evidence directly; Delivery lists it only
 after independent Verify passes. A Verify may render into its own Result but
 never add a picture to a completed Generate Result.
@@ -195,8 +195,8 @@ never add a picture to a completed Generate Result.
 ## Lifecycle
 
 Allocation creates caller-owned `runtime.yaml` with run/family/operation/target,
-planned status, Ticket/Result addresses, complete input manifest, worker actor,
-and Ticket hash. Running adds start time. Terminal adds finish time and a reason
+planned status, Ticket/Result addresses, complete input manifest (paths), and
+worker actor. Running adds start time. Terminal adds finish time and a reason
 for failed/blocked work. The worker never writes runtime.
 
 Generate completes only when every required check passes; a draft that fails
@@ -224,12 +224,16 @@ python3 scripts/check_unit.py --folder <Design Folder>
 ```
 
 `--folder` audits every run in the folder. An open run (planned, running)
-must match its pins exactly. A closed run (complete, failed, blocked) reads
-inputs that live outside the Design Folder, such as Insight pages, as
-history, so their later edits do not void it; inputs inside the folder
-(config, approval, targets, artifacts) stay exact. A `superseded` run (a
-queued run replaced after a pinned file changed) needs a reason in `failure`
-and no result. Commission decisions, and explicitly supported historical
+is stale when one of its `inputs` or `targets` is newer than the Ticket. A
+closed run (complete, failed, blocked) reads its inputs as history, so their
+later edits do not void it; a closed Verify is still stale when a target
+Result is newer than its own `result.yaml`, and every Result's files are held
+to that Result's `result.yaml`. The config and approval record are frozen
+copies written with the Ticket and are checked for existence only, so a fresh
+checkout (which writes `scripts/` after `runs/` and `results/`) never reads as
+stale. A `superseded` run (a queued run
+replaced after a named file changed) needs a reason in `failure` and no
+result. Any hash field left in an older record is ignored. Commission decisions, and explicitly supported historical
 `rdNN_adopt_*` decisions, are checked for pairing and a recorded decision.
 Historical Adopt records retain their real ids; no current writer creates them.
 Messages use folder-relative paths and plain words

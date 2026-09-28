@@ -20,7 +20,7 @@ Level-skipping is a CHECK routing failure, with exactly two exceptions, both ins
 The pre-climbed external-parent bridge is not a third skip: the selected Task
 Insight `riNN` item's accepted Result CHECK-closes the complete
 `D→I→K→W→RF` chain. Its packet carries the RI execution id, the base-R pointer,
-dataset binding, Result path/hash, and RF id; a bare `rNN` cannot identify the
+dataset binding, Result path, and RF id; a bare `rNN` cannot identify the
 rebound data execution. Historical items-v1 `#rNN@vNNN` packets remain
 readable under their recorded contract.
 Open sibling items do not invalidate that Result. GI4

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.1] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/stata-dialect.md` says the receipt records config, script and input paths, not hashes.
+
 ## [0.3.0] - 2026-08-29
 
 `ref/stata-dialect.md`: the multi-line brace rule now covers EVERY `if` in a

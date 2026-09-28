@@ -28,7 +28,7 @@ tasks/bNN_<block>/
     ├── src/                               shared by two or more Tasks
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/
         ├── scripts/
         │   ├── <worker>.py

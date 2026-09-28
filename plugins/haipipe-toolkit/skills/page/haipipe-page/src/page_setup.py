@@ -9,14 +9,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from hashlib import sha256
 import json
 from pathlib import Path
 import re
-import tomllib
 
-from live.outline_preview import bullet_token, read_drafts
+from live.outline_preview import read_drafts
 from .outline_version import plan_dir
+from .plan_layout import to_sectioned
 from src.plan_shape import iter_plan_bullets, render_bullet
 
 
@@ -294,8 +293,8 @@ def _face(title: str, content: str, divisions: tuple[DraftDivision, ...]) -> str
 def _plan(stem: str, divisions: tuple[DraftDivision, ...], date: str) -> str:
     first, last = divisions[0].title, divisions[-1].title
     out = [
-        f"# {stem} · outline v0.1", "outline-version: v0.1", "supersedes: none",
-        f"date: {date}", "approved: ⬜",
+        f"# {stem} · draft v0.1", "draft-version: v0.1", "supersedes: none",
+        f"date: {date}", "approved: ⬜", "status: working · set up from the imported file, OUTLINE pending",
         f"arc: The document moves from {first} through its working argument to {last}.", "",
     ]
     paragraph_number = 0
@@ -347,7 +346,7 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
         f"- **Path:** {page.content.relative_to(page.folder).as_posix()}\n"
         "- **Role:** imported Markdown and the one content authority for the article.\n\n"
         "### F3 · Shape and Content Draft\n"
-        f"- **Path:** outline/{stem}-outline-v0.1.md\n"
+        f"- **Path:** draft/{stem}-draft-v0.1.md\n"
         "- **Role:** reader moves and matching Draft prose awaiting review.\n"
     )
     from src.outline_version import record_path
@@ -357,7 +356,6 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
 
 
 def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences: int,
-               input_hash: str,
                *, mode: str, delivery: str, audit) -> str:
     runs = page.folder / "runs"
     results = page.folder / "results"
@@ -381,8 +379,8 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
     )
     now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     content = (page.content or page.source).relative_to(page.folder).as_posix()
-    plan = f"outline/{page.source.stem}-outline-v0.1.md"
-    outline = f"outline/{page.source.stem}-outline-v0.1.md"
+    plan = f"draft/{page.source.stem}-draft-v0.1.md"
+    outline = f"draft/{page.source.stem}-draft-v0.1.md"
     check = ("every Outline Bullet has embedded Draft prose and an explicit evidence decision"
              if bullets else "Page build completed; no Shape records were claimed")
     status = "complete" if audit.blocking_passed else "failed"
@@ -390,7 +388,6 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
               else "Resumed and rebuilt Page")
     outcome = (f"{action}: {divisions} sections and {bullets} reader-move Bullets; "
                f"mechanical gate {'passed' if audit.blocking_passed else 'failed'}")
-    content_hash = sha256((page.folder / content).read_bytes()).hexdigest()
     failure = (None if audit.blocking_passed
                else "blocking setup checklist failed; see report.md")
     (result / "runtime.yaml").write_text(
@@ -398,7 +395,7 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
         f"mode: {mode}\n"
         f"target: {page.source.name}\nticket: runs/{run}.md\nresult: results/{run}\n"
         f"outcome: {json.dumps(outcome)}\n"
-        f"inputs:\n  - path: {json.dumps(content)}\n    sha256: {content_hash}\n"
+        f"inputs:\n  - path: {json.dumps(content)}\n"
         f"status: {status}\nstarted_at: {now}\nfinished_at: {now}\n"
         "worker:\n  kind: skill\n  name: haipipe-page\n"
         f"supersedes: null\nfailure: {json.dumps(failure)}\n",
@@ -407,7 +404,6 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
     audit.write_json(result / "checks.json")
     (result / "report.md").write_text(
         f"# Page setup Result · {title}\n\n"
-        f"- Input SHA-256: `{input_hash}`\n"
         f"- Page Face: `{page.source.name}`\n"
         f"- Content source: `{content}`\n"
         f"- Shape: `{plan}` ({'present' if (page.folder / plan).is_file() else 'not initialized'}).\n"
@@ -419,7 +415,7 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
         f"- Mode: {mode}.\n"
         f"- Run status: **{status}**.\n"
         "- Human gate: Shape/content acceptance remains open.\n\n"
-        "Audited artifact fingerprints are recorded in `checks.json`; rerun setup after changing a checked artifact.\n\n"
+        "Audited artifact paths and saved times are recorded in `checks.json`; rerun setup after changing a checked artifact.\n\n"
         "## Setup checklist\n\n"
         f"{audit.markdown()}\n",
         encoding="utf-8",
@@ -432,8 +428,9 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
     if page.content is None or page.content.suffix.lower() not in {".md", ".markdown"}:
         raise ValueError("Automatic semantic setup currently requires imported Markdown content")
     existing = page.source.read_text(encoding="utf-8")
-    plan_glob = list((plan_dir(page.folder)).glob(f"{page.source.stem}-outline-v*.md")) \
-        if (plan_dir(page.folder)).is_dir() else []
+    plan_glob = [p for home in ("draft", "outline") if (page.folder / home).is_dir()
+                 for kind in ("draft", "outline")
+                 for p in (page.folder / home).glob(f"{page.source.stem}-{kind}-v*.md")]
     is_scaffold = "Working Page for " in existing or SETUP_MARKER in existing
     fresh_intake = "Working Page for " in existing and not plan_glob
     if (not is_scaffold or plan_glob) and not force:
@@ -452,12 +449,15 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
     )
     date = datetime.now().strftime("%y%m%d")
     outline = plan_dir(page.folder)
+    if outline.name == "outline" and not outline.is_dir():
+        outline = page.folder / "draft"  # a new Page starts on the 0.118 layout
     outline.mkdir(exist_ok=True)
-    plan = outline / f"{page.source.stem}-outline-v0.1.md"
+    plan = outline / f"{page.source.stem}-draft-v0.1.md"
     if force:
-        for old in outline.glob(f"{page.source.stem}-outline-v*.md"):
-            old.unlink()
-    plan.write_text(_plan(page.source.stem, divisions, date), encoding="utf-8")
+        for kind in ("draft", "outline"):
+            for old in outline.glob(f"{page.source.stem}-{kind}-v*.md"):
+                old.unlink()
+    plan.write_text(to_sectioned(_plan(page.source.stem, divisions, date)), encoding="utf-8")
 
     blocks = list(iter_plan_bullets(plan.read_text(encoding="utf-8")))
     drafts = [bullet.draft for division in divisions for paragraph in division.paragraphs
@@ -468,18 +468,15 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
                            encoding="utf-8")
     _replace_manifest_title(page.folder / "page.toml", title)
     _context_files(page, title, divisions, bullet_count, source_sentence_count, date)
-    input_hash = tomllib.loads((page.folder / "page.toml").read_text(encoding="utf-8")).get(
-        "input_sha256", sha256(page.content.read_bytes()).hexdigest())
     from src.page_workspace import build_page, load_page
     current = load_page(page.folder)
     delivery_path = build_page(current)
     delivery = delivery_path.relative_to(current.folder).as_posix()
     from src.page_setup_check import validate_setup
     audit = validate_setup(current, plan=plan, delivery=delivery_path,
-                           mode="create-semantic-records", input_hash=input_hash,
+                           mode="create-semantic-records",
                            input_file=input_file, strict_input=fresh_intake)
     run = _setup_run(current, title, len(divisions), bullet_count, source_sentence_count,
-                     input_hash,
                      mode="create-semantic-records", delivery=delivery, audit=audit)
     if not audit.blocking_passed:
         raise ValueError(f"setup validation failed; inspect results/{run}/report.md")
@@ -487,7 +484,7 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
             "paragraphs": sum(len(d.paragraphs) for d in divisions),
             "bullets": bullet_count, "source_sentences": source_sentence_count,
             "plan": plan.relative_to(page.folder).as_posix(),
-            "draft": f"outline/{page.source.stem}-outline-v0.1.md", "run": run,
+            "draft": f"draft/{page.source.stem}-draft-v0.1.md", "run": run,
             "delivery": delivery, "mode": "create-semantic-records",
             "checks": audit.as_dict()["summary"], "blocking_gate": "pass"}
 
@@ -511,17 +508,13 @@ def _existing_setup(page, *, input_file: Path | None = None):
         # address. Setup rebinds that exact map; structural changes still fail
         # coverage and require explicit preview reconciliation.
     source_sentences = _recorded_source_sentence_count(plan_text, drafts)
-    manifest = tomllib.loads((page.folder / "page.toml").read_text(encoding="utf-8")) \
-        if (page.folder / "page.toml").is_file() else {}
-    input_hash = manifest.get(
-        "input_sha256", sha256((page.content or page.source).read_bytes()).hexdigest())
     delivery_path = build_page(page)
     delivery = delivery_path.relative_to(page.folder).as_posix()
     from src.page_setup_check import validate_setup
     audit = validate_setup(page, plan=plan, delivery=delivery_path,
-                           mode="resume-and-build", input_hash=input_hash,
+                           mode="resume-and-build",
                            input_file=input_file)
-    run = _setup_run(page, page.title, divisions, bullets, source_sentences, input_hash,
+    run = _setup_run(page, page.title, divisions, bullets, source_sentences,
                      mode="resume-and-build", delivery=delivery, audit=audit)
     if not audit.blocking_passed:
         raise ValueError(f"setup validation failed; inspect results/{run}/report.md")

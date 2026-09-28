@@ -6,8 +6,8 @@ description: >-
   message, sequence, candidate set, or UI unit; not for Board management,
   Commission decisions, shipping, or measurement.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-20"
+  version: "0.4.1"
+  last_updated: "2026-09-28"
 ---
 
 # /haipipe-design-unit · one Ticket, one inspectable Result
@@ -42,8 +42,8 @@ Resolve checker paths from this skill's directory, not the Design Folder.
 Validate with `python3 scripts/check_unit.py --ticket <ticket>`. Read the
 ticket's exact config and source files. Missing, stale, contradictory, or
 unapproved inputs return a named hold diagnostic: say what is wrong and write no Result,
-so the caller puts the run back in the queue (a stale pin is replaced by the
-person's "Queue again"). This diagnostic is not a human Commission HOLD decision.
+so the caller puts the run back in the queue (a run whose input file is newer
+than its Ticket is replaced by the person's "Queue again"). This diagnostic is not a human Commission HOLD decision.
 Never discover replacement evidence,
 execute an upstream producer, or infer approval. A brief-only commission is
 legal when explicitly configured and cannot claim measured effectiveness.
@@ -63,7 +63,7 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    stop before writing the Result and return the missing criterion to the
    Commission owner. For
    revision, read the exact base and the feedback file
-   (`outline/feedback/<run>.md`) but do not edit the base.
+   (`draft/feedback/<run>.md`) but do not edit the base.
 3. Produce the selected mode's content in service of the frozen move. Treat
    evidence, inspiration, reference material, and avoid lists according to
    their roles. An intuition or forecast is not an observed finding. Do not
@@ -83,9 +83,9 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    `python3 scripts/render_screen.py --result-dir <result>
    --html <result>/content/screen.html --png <result>/render/screen-v<N>.png
    --manifest <result>/render/manifest.json --item <ITEM> --candidate <run>
-   --version <N>`. Pin that manifest in `result.yaml` as `render_manifest`;
-   it binds the source artifact and picture hashes without adding a content
-   artifact or Run. Rendering requires PyYAML, Playwright's Python package, and
+   --version <N>`. Name that manifest in `result.yaml` as `render_manifest`;
+   it names the source artifact and picture by path (never a hash) without
+   adding a content artifact or Run. Rendering requires PyYAML, Playwright's Python package, and
    local Chrome/Chromium (`CHROME` may name its binary); it uses an explicit
    viewport with page scripts disabled and no network. The script reports what
    a browser sees (actual viewport, horizontal and vertical overflow, smallest tap target, weakest text contrast, weakest control
@@ -94,7 +94,7 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    into or chooses from is a real form control (`input`, `select`,
    `textarea`), never a styled `div`: a div that looks like a field is not
    counted as a tap target and its edge is never measured. A changed screen is
-   a new version; a pinned picture is never overwritten.
+   a new version; a written picture is never overwritten.
 5. Iterate within the config's `max_iterations` (the workbench writes 2; it is
    the budget inside this one Generate run, and nothing counts revise runs
    across an item). Preserve useful alternatives and check
@@ -112,12 +112,11 @@ the caller and goes back to Generate; the person queues a revise.
 
 ## Verify
 
-Read each target Generate Result's pinned result manifest and its hash-bound
-artifacts. Do not rewrite the targets, their checks, runtime, Page, or
+Read each target Generate Result's `result.yaml` and the artifacts it names. Do not rewrite the targets, their checks, runtime, Page, or
 decision record. The verification output directory must be disjoint from
 every target. If a fresh render is needed, read the target HTML and use
 `--result-dir <verify-result>` with PNG/manifest paths inside that Verify Result;
-`--candidate` remains the target Generate Run. Pin the local render manifest.
+`--candidate` remains the target Generate Run. Name the local render manifest.
 
 Write a separate check for every target artifact × criterion pair, with
 `pass | fail | unresolved`, observed evidence, and actionable findings. An

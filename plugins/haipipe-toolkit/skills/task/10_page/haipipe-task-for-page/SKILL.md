@@ -14,7 +14,7 @@ description: >-
   reorganize the pages by run, each run one division.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   last_updated: "2026-09-19"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -23,7 +23,7 @@ metadata:
 
 Load `haipipe-task` first (the hierarchy, the four lifecycle commands, and Run/Result law); this
 file owns the delta for `task-type: page`. The consumer side is a typed row in
-`outline/<stem>-evidence-items.md`; SURVEY maps this job's full Run id as a
+`draft/<stem>-evidence-items.md`; SURVEY maps this job's full Run id as a
 Supporting Run and LAND consumes its Result. This job never edits the Page,
 because it stands on the executor side of the wall.
 
@@ -39,7 +39,7 @@ READS    a frozen consumer-neutral input batch (expected payload + acceptance,
 WRITES   its own job only: plan.yaml · scripts/<collector>.py ·
          scripts/config/rNN · $OUTPUT_ROOT/<task>/results/<run>/values.yaml · runtime/report receipts ·
          workflow/proposals.md
-NEVER    a consumer/ file or any stake · the page or its outline/ · a sibling
+NEVER    a consumer/ file or any stake · the page or its draft/ · a sibling
          job's folder · a value it computed nowhere (GATE-3: a name that does
          not resolve must raise)
 EXITS    Report: every question answered in values.yaml + its Run/Result receipt, or carried as
@@ -51,7 +51,7 @@ EXITS    Report: every question answered in values.yaml + its Run/Result receipt
 ```text
 project or owning family                          any Folder's Page Face
 tasks/                                           <page>/
-└── b<NN>_page_service/         one service      ├── outline/<stem>-evidence-items.md
+└── b<NN>_page_service/         one service      ├── draft/<stem>-evidence-items.md
     ├── j01_values_<pageA>/     block per project│     E<NN>-VALUE-<slug> · Supporting Runs
     │   ├── t01_collect_values/                  ├── runs/<owner-native-Run-Ticket>
     │   │   ├── t01_collect_values.md            └── results/<owner-native-Run>/
@@ -166,7 +166,7 @@ Build    scripts/collect_values.py + scripts/config/r<NN>_<batch>.yaml: one entr
 Execute  bash runs/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
          family `Execution`, operation `collect-page-values`, target `<batch>`, and
          `REQUIRED_RESULTS=("values.yaml")`
-         `RUN_INPUTS` pins every upstream Result path/hash named by the batch.
+         `RUN_INPUTS` declares every upstream Result path named by the batch.
          → values.yaml + per-question artifacts
          The generic Run scaffolder writes the complete `status: planned`
          runtime receipt before this Ticket may launch.

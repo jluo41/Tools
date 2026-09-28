@@ -21,10 +21,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import tempfile
+import time
 import datetime as dt
 import shutil
 import sys
@@ -233,26 +233,51 @@ def prune_empty_dirs(root: Path) -> int:
     return removed
 
 
-def input_fingerprint(spec: dict) -> str:
-    """Hash config, builder and filesystem inventory (path/size/mtime_ns/ctime_ns).
+SPEC_FIELDS = ("dataset", "dataset_tag", "source_set", "rec_set",
+               "pid_column", "pid_values", "raw_copy")
 
-    Stat fingerprints avoid reading every global parquet on a cache lookup.
+
+def spec_record(spec: dict) -> dict:
+    """The build settings a reusable cache must share with the current spec."""
+    record = {key: spec.get(key) for key in SPEC_FIELDS}
+    record["raw_paths"] = [str(p) for p in spec.get("raw_paths", [])]
+    return json.loads(json.dumps(record, default=str))
+
+
+def newest_input_time(spec: dict) -> float:
+    """Latest file time over the builder, the global Source/Rec sets and raw inputs.
+
+    Each path counts its modification and status-change time, and directories count
+    too, so an edited, added, removed or replaced file is newer than the last build.
+    Reading stat() avoids rereading every global parquet on a cache lookup.
     Use --force when inputs come from a filesystem without reliable timestamps.
     """
     roots = [WORKSPACE / "1-SourceStore" / spec["source_set"],
              WORKSPACE / "2-RecStore" / spec["rec_set"]]
     if not roots[0].is_dir():
         raise FileNotFoundError(f"Source set missing: {roots[0]}")
-    paths = []
+    newest = 0.0
+    paths = [Path(__file__)]
     for root in roots + [Path(p) for p in spec.get("raw_paths", [])]:
-        files = sorted(root.rglob("*")) if root.is_dir() else [root]
-        for path in files:
-            if path.is_file():
-                st = path.stat()
-                paths.append((str(path.resolve()), st.st_size, st.st_mtime_ns, st.st_ctime_ns))
-    payload = {"spec": spec, "files": paths,
-               "builder": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
-    return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
+        if root.is_dir():
+            paths.append(root)
+            paths.extend(root.rglob("*"))
+        elif root.exists():
+            paths.append(root)
+    for path in paths:
+        st = path.stat()
+        newest = max(newest, st.st_mtime, st.st_ctime)
+    return newest
+
+
+def _epoch(value) -> float | None:
+    """Read a recorded ISO time back as epoch seconds; None when absent or unreadable."""
+    if isinstance(value, dt.datetime):
+        return value.timestamp()
+    try:
+        return dt.datetime.fromisoformat(str(value)).timestamp()
+    except ValueError:
+        return None
 
 
 def output_inventory(folder: Path) -> dict:
@@ -278,13 +303,17 @@ def build_individual(spec: dict, *, force: bool = False) -> dict:
     try:
         if backup.exists():
             raise RuntimeError(f"Unresolved previous build at {backup}; inspect it before retrying")
-        fingerprint = input_fingerprint(spec)
         manifest_path = folder / "manifest.yaml"
         if manifest_path.exists() and not force:
+            # A manifest from an older builder lacks these fields and simply rebuilds;
+            # any leftover hash field in it is ignored.
             existing = yaml.safe_load(manifest_path.read_text()) or {}
-            if (existing.get("input_fingerprint") == fingerprint and
-                    existing.get("output_inventory") == output_inventory(folder)):
+            read_at = _epoch(existing.get("inputs_read_at"))
+            if (existing.get("build_spec") == spec_record(spec) and read_at is not None
+                    and newest_input_time(spec) <= read_at
+                    and existing.get("output_inventory") == output_inventory(folder)):
                 return {"status": "skipped_fresh", "folder": str(folder)}
+        started = time.time()
         staging = Path(tempfile.mkdtemp(prefix=f".{folder.name}.build-", dir=group_dir))
         # Preserve caller-owned files outside the builder's managed projections.
         if folder.exists():
@@ -296,8 +325,8 @@ def build_individual(spec: dict, *, force: bool = False) -> dict:
                     shutil.copytree(item, dest, symlinks=True)
                 else:
                     shutil.copy2(item, dest, follow_symlinks=False)
-        result = _build_into(spec, staging, fingerprint)
-        if input_fingerprint(spec) != fingerprint:
+        result = _build_into(spec, staging, started)
+        if newest_input_time(spec) > started:
             raise RuntimeError("Inputs changed during build; previous cache retained")
         if folder.exists():
             folder.rename(backup)
@@ -318,7 +347,7 @@ def build_individual(spec: dict, *, force: bool = False) -> dict:
         lock.unlink(missing_ok=True)
 
 
-def _build_into(spec: dict, folder: Path, fingerprint: str) -> dict:
+def _build_into(spec: dict, folder: Path, started: float) -> dict:
     manifest_path = folder / "manifest.yaml"
     # 0-RawDataStore: flat — just the raw file names, no cohort/train/test nesting
     raw_out = folder / "0-RawDataStore"
@@ -392,8 +421,8 @@ def _build_into(spec: dict, folder: Path, fingerprint: str) -> dict:
         "pid_values": spec["pid_values"],
         "built_at": dt.datetime.now().isoformat(timespec="seconds"),
         "built_by": BUILDER_VERSION,
-        "input_fingerprint": fingerprint,
-        "fingerprint_method": "sha256(config+builder+path/size/mtime_ns/ctime_ns)",
+        "build_spec": spec_record(spec),
+        "inputs_read_at": dt.datetime.fromtimestamp(started).isoformat(timespec="microseconds"),
         "output_inventory": output_inventory(folder),
         "build_args": {
             "raw_files_copied": raw_files_copied,
@@ -422,7 +451,7 @@ def main():
     ap.add_argument("individual_ids", nargs="*")
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--all", action="store_true")
-    ap.add_argument("--force", action="store_true", help="rebuild even when input fingerprints match")
+    ap.add_argument("--force", action="store_true", help="rebuild even when no input is newer than the last build")
     ap.add_argument("--workspace", default="_WorkSpace", help="path to the project _WorkSpace directory")
     args = ap.parse_args()
 

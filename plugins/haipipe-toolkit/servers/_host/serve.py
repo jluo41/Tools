@@ -21,7 +21,8 @@ The explicit workbench workspaces keep their own APIs:
     POST /_board/stop      {path, file}                -> ask that turn to stop
     POST /_board/term      {path, file}                -> start a ttyd for that question
     POST /_board/release   {path, file}                -> hand the session back
-    POST /_board/outline   {path, file}                -> live Outline URL;
+    POST /_board/draft     {path, file}                -> live Draft URL (the old
+                            /_board/outline address still answers);
                             action=edit-bullet|append-bullet edits Markdown
                             through the bounded Shape editor
     POST /_board/design    {path, file}                -> live Design Folder URL;
@@ -299,7 +300,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/folderstat":
             # 📂 the page-folder's live status (never stored, so never stale)
             return self.folderstat_view()
-        if self.path.split("?", 1)[0] == "/_board/outline":
+        if self.path.split("?", 1)[0] in ("/_board/draft", "/_board/outline"):
             # 🧭 the page re-read per division (QPf12), same live contract
             return self.outline_view()
         if self.path.split("?", 1)[0] == "/_board/paper":
@@ -413,7 +414,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.head_pane()
         if self.path.split("?", 1)[0] == "/_board/folderstat":
             return self.folderstat_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/outline":
+        if self.path.split("?", 1)[0] in ("/_board/draft", "/_board/outline"):
             return self.outline_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/paper":
             return self.paper_view(head_only=True)
@@ -633,7 +634,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.plug_folderstat(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/outline":     # 🧭 the same live twin (QPf12)
+        if self.path in ("/_board/draft", "/_board/outline"):  # 🧭 the same live twin (QPf12)
             res, err = self.plug_outline(p)
             if not err and (res or {}).get("version") and p.get("action") != "edit-preview":
                 # A Bullet write changed the Markdown Shape: rebuild so the

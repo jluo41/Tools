@@ -3,6 +3,16 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### workbench-paper: four Spaces, Runs beside each · 2026-09-27
+
+- The Paper Workbench now uses the Page workbench's grammar (JL 260927): Ideation · Story ·
+  Sections · Delivery, each with tabs and views, the content left and its own Runs panel right,
+  buttons from `haipipe-paper-workflow/ref/run-cards.md` (new). The Setup and Run Spaces, the
+  Workflow map, backend Markdown cards and copy-to-chat are gone. Design drawn in
+  `servers/workbench-paper/studio/paper-workbench-design.excalidraw` (`haipipe-workbench-paper`
+  0.7.0, `haipipe-paper-workflow` 1.5.0).
+- Runs panel (shared): counts follow the selection and the panel opens on a type that has runs.
+
 ### page: Draft-first Bullets and outline/previous/ · 2026-09-25
 
 - A drafted Bullet puts its Draft on the dash line and its planned point in `Point:`, so the
@@ -11,6 +21,9 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   `haipipe-workbench-page` 0.91.0).
 - `outline/` keeps one current plan; superseded versions move to `outline/previous/`
   (`page.py outline-tidy <page>`; `haipipe-page-structure` 0.49.0, `haipipe-page-evidence` 0.29.0).
+- The six process records move to `outline/records/`; `outline/` keeps only the current plan and
+  the Evidence Item contract. Board, Studio, Insight and page readers resolve records through
+  `record_path`, which still finds flat records in unmigrated Pages.
 
 ### paper-ideation: an Idea is a research question · 2026-09-22
 

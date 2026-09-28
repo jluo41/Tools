@@ -54,7 +54,7 @@ extra Run or independent lifecycle unit.
 Pick, seal, judge, learn, measure, and decide are steps or verbs inside one
 Round; GOLD and SCORE are the two steps inside Test. "Another round" is a route.
 
-A Round is a UNIT on disk (`ref/ref-assets.md` §3): `card.md` (the wager a
+A Round is a UNIT on disk (`skills/label-building/ref/ref-assets.md` §3): `card.md` (the wager a
 person releases), `README.md`, `manifest.yaml`, `evidence.md`, `prospect.md`,
 the event files, `checkpoint.json`, and a rendered `view/`. Every policy version
 carries a rendered `cheatsheet.md` and `gallery.md`; the project keeps a
@@ -78,7 +78,7 @@ exact handoff checksum and cannot edit Building artifacts.
 | `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
 | `/subjective-label-workflow` | `subjective-label-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
 | `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
-| `/haipipe-workbench-labeling` | `skills/label-building-workflow/haipipe-workbench-labeling/` | the 🏷 Labeling lane beside a Page: five Spaces and one write door |
+| `/haipipe-workbench-labeling` | `skills/label-building-workflow/haipipe-workbench-labeling/` | the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and one write door |
 
 Retired names route through the umbrella: `/label-init` and `/label-round` go
 to `/label-building`; `/label-evaluate` and `/label-complete` go to
@@ -94,23 +94,19 @@ subjective-label/
 │   ├── label-building/ · label-building-workflow/
 │   ├── label-scanning/ · label-scanning-workflow/
 │   ├── subjective-label-workflow/
-│   ├── page-types/haipipe-page-for-labeling/
-│   └── label-building-workflow/haipipe-workbench-labeling/  🏷 Labeling contract: five Spaces + one write door
+│   ├── label-building/ref/            authority, artifact, Run, and Space contracts (ref-*.md)
+│   └── label-building-workflow/haipipe-workbench-labeling/  🏷 Labeling contract: four Spaces + one write door
 ├── servers/                             _host/serve.py (own host: the shared haipipe host with --only labeling)
 │                                        + workbench-labeling/ (the served 🏷 face; see servers/README.md)
 ├── agents/                              bounded execution roles
-├── engine/                              P0/P1 writers + partial legacy-era primitives
-├── ref/                                 authority, artifact, and handoff contracts
-├── pages/                               S-Label-1-labeling-lab, a standalone trial Page
-├── fixtures/                            job-mini (mock job) + its rendered board
-├── field-tests/                         field-test expectations and settlements
-├── personas/                            reader lenses (skeptic, close reader, ...)
-└── diagram/                             design history and rendered board
+└── engine/                              P0/P1 writers + partial legacy-era primitives
 ```
 
 `engine/` now holds real writers for the start of Building:
 `fence_source.py` (build a fenced source), `job.py` (P0 contract, status, and
-meaning confirmation), `calibration.py` (round_01 card, random draw, and judge
+meaning confirmation), `definition_discussion.py` (the human settles each
+label's wording before G0; a change is one recorded meaning revision),
+`calibration.py` (round_01 card, random draw, and judge
 events), and `gates.py` (`label.py`, `embed.py`, `sample.py`, and
 `classify.py` refuse a v2 job before G0). The rest are partial legacy-era
 primitives. A skill must return `HOLD` when the current seal, keeper, writer,

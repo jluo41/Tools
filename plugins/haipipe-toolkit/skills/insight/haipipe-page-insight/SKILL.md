@@ -8,8 +8,8 @@ description: >-
   checkpoints, shared Task analysis calls, and exact RI/result citations. Application
   InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-09-21"
+  version: "1.3.0"
+  last_updated: "2026-09-28"
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -81,7 +81,7 @@ lane with `family: insight`; it does not create a third Page lane.
 The RI relation is immutable:
 
 ```text
-RI identity = base R ticket id + base ticket hash + dataset snapshot(s)
+RI identity = base R ticket id + dataset snapshot(s)
               + question + DIKW target + acceptance
 ```
 
@@ -204,7 +204,7 @@ version.
 ## Handoff
 
 A consumer selects an accepted finding by **instance + item + execution
-version + RF id**, with its Result path and hash. The parent Page URL is
+version + RF id**, with its Result path. The parent Page URL is
 navigation, not the evidence address. Use `ref/instance-items.md` for the
 portable reference packet and historical single-chain aliases.
 
@@ -226,7 +226,7 @@ do not block this bridge. An explicit no-answer cannot satisfy the bridge.
   seals the interpretation input once. Revisions use the next explicit version.
 - `scripts/insight_items.py check <folder>` validates manifests, R→RI binding,
   ticket/Result
-  pairing, immutable execution identities, source hashes, checkpoints, DIKW
+  pairing, immutable execution identities, source files, checkpoints, DIKW
   references, and accepted finding addresses. It is a structural/provenance
   check, not independent scientific review.
 - `scripts/insight_items.py table <folder>` returns one row per declared

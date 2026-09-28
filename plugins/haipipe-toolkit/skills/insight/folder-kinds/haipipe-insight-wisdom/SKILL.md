@@ -6,8 +6,8 @@ description: >-
   is the only evidence a DesignBoard may bind. Trigger: insight wisdom,
   counsel, design handoff, folder-kind wisdom, /haipipe-insight-wisdom.
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-09-20"
+  version: "1.4.1"
+  last_updated: "2026-09-28"
   workflow: haipipe-insight-workflow
   folder_kind: wisdom
   primary_face: page
@@ -42,7 +42,7 @@ button text, send timing, variants, or another Design artifact.
 One registered QW ask; Application audience/context/decision; source versions;
 and unresolved gaps. Its epistemic parent is either named local K rows with
 strength, rivals, and boundary, or one exact
-`Task Insight instance/item@execution-version/RF<n>` plus Result path/hash,
+`Task Insight instance/item@execution-version/RF<n>` plus Result path,
 accepted by the workflow's pre-climbed
 external-parent assertion. The second form is evidence input, not a handoff.
 
@@ -115,7 +115,7 @@ does not perform or rename it.
 ## Handoff
 
 Export only the signed Design Handoff. A DesignBoard freezes its exact
-path/Page-version/content-hash, signature, and GI6 settlement receipt as input
+path/Page-version, signature, and GI6 settlement receipt as input
 and never re-derives from D/I/K Folders. It creates no PageX lane or synthetic
 Run. A deferring W Folder exports only a
 pointer to the template handoff. A Task RF never crosses this boundary directly:

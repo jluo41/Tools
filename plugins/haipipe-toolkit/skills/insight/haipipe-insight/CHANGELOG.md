@@ -1,5 +1,10 @@
 # haipipe-insight · version history
 
+## 1.6.3 — 2026-09-28 · No content hashes (JL 260928)
+
+- `PARENTS` rows, Task RF packets and the Design handoff reference name path and version, never a
+  content hash; leftover hash fields in older records are ignored.
+
 ## 1.6.2 — 2026-09-20
 
 - Publish the Knowledge strength rubric and the evidence-supported

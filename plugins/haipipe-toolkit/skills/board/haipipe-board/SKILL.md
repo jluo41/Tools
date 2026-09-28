@@ -7,12 +7,14 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-22"
+  version: "1.1.3"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-board · operate one Board
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the `board/` site: fix the Board's Pages or `cli/build.py` and its assets, then rebuild.
 
 A Board is one source folder and one generated site. Its declared kind decides
 how child work objects become Groups and Pages. Markdown is authoritative;
@@ -183,7 +185,7 @@ to one Page or to `board.md`. In the same round:
 1. update the owning source;
 2. update targets and completion facts in the Page owner's declared records
    when their truth changed; existing native/legacy Aims use their `Now:` fields;
-3. write the dated process record under `outline/<stem>-log.md`;
+3. write the dated process record under `outline/records/<stem>-log.md`;
 4. rebuild the Board;
 5. run the checker and inspect the rendered result.
 

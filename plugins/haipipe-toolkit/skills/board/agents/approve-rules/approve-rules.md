@@ -15,8 +15,8 @@ approve the plan's direction.
 Each rule has a judgment class even when this legacy list does not yet encode
 it per row:
 
-- **deterministic**: exact structure/string/hash/predicate recomputed from the
-  pinned artifact by a named checker;
+- **deterministic**: exact structure/string/predicate recomputed from the
+  named artifact version by a named checker;
 - **semantic**: a reviewer compares cited evidence to a frozen criterion and
   records the relevant passage, finding, and uncertainty; a fresh context can
   improve independence but does not make the reading mechanically certain;

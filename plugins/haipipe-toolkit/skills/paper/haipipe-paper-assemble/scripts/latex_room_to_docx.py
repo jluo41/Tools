@@ -9,7 +9,6 @@ can serve multiple paper rooms. No DOCX is used as an input.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -112,6 +111,9 @@ class Display:
     rows: list[list[str]] | None = None
     image_ref: str = ""
     image_path: Path | None = None
+    note: str = ""          # the float's \begin{flushleft} note, printed under a Word table (0.8.4)
+    spans: list[list[int]] | None = None   # \multicolumn spans aligned with rows (0.8.4)
+    header_rows: int = 1                   # rows above the first \midrule (0.8.4)
 
 
 @dataclass
@@ -181,7 +183,14 @@ def unwrap_command(text: str, command: str, arg_count: int, keep: int = -1) -> s
 
 
 def strip_comments(text: str) -> str:
-    return re.sub(r"(?m)(?<!\\)%[^\n]*", "", text)
+    # A % inside a verbatim block is printed text (a prompt), not a TeX comment (0.8.4).
+    out, pos = [], 0
+    for match in VERBATIM_PATTERN.finditer(text):
+        out.append(re.sub(r"(?m)(?<!\\)%[^\n]*", "", text[pos:match.start()]))
+        out.append(match.group(0))
+        pos = match.end()
+    out.append(re.sub(r"(?m)(?<!\\)%[^\n]*", "", text[pos:]))
+    return "".join(out)
 
 
 def resolve_input(reference: str, current_base: Path) -> Path | None:
@@ -324,6 +333,26 @@ def citation_text(match: re.Match[str]) -> str:
     return "[" + ",".join(str(CITATION_NUMBERS[k]) for k in present) + "]"
 
 
+TEX_SYMBOLS = {
+    **dict(zip(
+        "alpha beta gamma delta epsilon varepsilon zeta eta theta vartheta iota kappa lambda mu nu xi pi rho "
+        "sigma tau upsilon phi varphi chi psi omega".split(),
+        "α β γ δ ϵ ε ζ η θ ϑ ι κ λ μ ν ξ π ρ σ τ υ ϕ φ χ ψ ω".split(),
+    )),
+    **dict(zip(
+        "Gamma Delta Theta Lambda Xi Pi Sigma Upsilon Phi Psi Omega".split(),
+        "Γ Δ Θ Λ Ξ Π Σ Υ Φ Ψ Ω".split(),
+    )),
+    "geq": "≥", "ge": "≥", "leq": "≤", "le": "≤", "neq": "≠", "ne": "≠", "approx": "≈",
+    "sim": "~", "times": "×", "pm": "±", "cdot": "·", "in": "∈", "infty": "∞",
+    "to": "→", "rightarrow": "→", "leftarrow": "←", "prime": "′", "sum": "Σ",
+    "log": "log", "exp": "exp", "ln": "ln", "min": "min", "max": "max",
+    "degree": "°", "textendash": "–", "textemdash": "—", "ast": "*", "star": "*",
+    "dagger": "†", "ddagger": "‡", "ldots": "...", "dots": "...", "cdots": "...",
+}
+TEX_SYMBOL = re.compile(r"\\(" + "|".join(sorted(TEX_SYMBOLS, key=len, reverse=True)) + r")(?![A-Za-z])")
+
+
 def latex_to_text(value: str) -> str:
     value = value or ""
     value = re.sub(r"\\cite(?:p|t)?(?:\[[^\]]*\])?\{([^}]+)\}", citation_text, value)
@@ -376,14 +405,14 @@ def latex_to_text(value: str) -> str:
     value = re.sub(r"\\c\{([^{}]*)\}", r"\1", value)
     value = re.sub(r"\^\s*\{([^{}]*)\}", r"\1", value)
 
+    # Symbols match as whole command names, so \mu never eats the front of a
+    # longer command. A name missing here is DROPPED by the generic stripper
+    # below; that is how a table header printed "HDLD ( pp)" for "HDLD (\Delta pp)".
+    value = TEX_SYMBOL.sub(lambda m: TEX_SYMBOLS[m.group(1)], value)
     replacements = {
         "~": " ", r"\&": "&", r"\%": "%", r"\_": "_", r"\#": "#",
-        r"\ ": " ", r"\,": " ", r"\;": " ", r"\!": " ", r"\ldots": "...", r"\dots": "...",
-        r"\beta": "β", r"\alpha": "α", r"\gamma": "γ", r"\lambda": "λ", r"\rho": "ρ",
-        r"\mu": "μ", r"\sigma": "σ", r"\geq": "≥", r"\leq": "≤", r"\approx": "≈",
-        r"\times": "×", r"\pm": "±", r"\degree": "°", r"\textendash": "–",
-        r"\textemdash": "—", r"\ast": "*", r"\dagger": "†", r"\ddagger": "‡",
-        r"\star": "*", "``": '"', "''": '"', "---": "—", "--": "–",
+        r"\ ": " ", r"\,": " ", r"\;": " ", r"\!": " ",
+        "``": '"', "''": '"', "---": "—", "--": "–",
     }
     for old, new in replacements.items():
         value = value.replace(old, new)
@@ -403,7 +432,9 @@ def register_labels(text: str) -> None:
 
     counters = {"table": 0, "figure": 0}
     pattern = re.compile(r"\\begin\{(figure\*?|table\*?)\}.*?\\end\{\1\}", re.S)
-    for match in pattern.finditer(text):
+    appendix = re.search(r"\\appendix\b", text) if per_appendix_numbering() else None
+    main_part = text[:appendix.start()] if appendix else text
+    for match in pattern.finditer(main_part):
         kind = "figure" if match.group(1).startswith("figure") else "table"
         label = extract_command(match.group(0), "label")
         if not label:
@@ -411,6 +442,30 @@ def register_labels(text: str) -> None:
         counters[kind] += 1
         REF_NUMBERS[label] = str(counters[kind])
         REF_TEXT[label] = f"{kind.title()} {counters[kind]}"
+    if appendix is None:
+        return
+    # 0.8.2: after \appendix every numbered \section is a lettered appendix, and its
+    # floats restart at 1 under that letter, exactly as the LaTeX lane's \counterwithin*.
+    token = re.compile(r"\\section\s*\{|\\begin\{(figure\*?|table\*?)\}.*?\\end\{\1\}", re.S)
+    letter, local = -1, {"table": 0, "figure": 0}
+    for match in token.finditer(text[appendix.end():]):
+        if match.group(1) is None:
+            letter, local = letter + 1, {"table": 0, "figure": 0}
+            continue
+        kind = "figure" if match.group(1).startswith("figure") else "table"
+        label = extract_command(match.group(0), "label")
+        if not label:
+            continue
+        local[kind] += 1
+        number = f"{chr(ord('A') + max(letter, 0))}{local[kind]}"
+        REF_NUMBERS[label] = number
+        REF_TEXT[label] = f"{kind.title()} {number}"
+
+
+def per_appendix_numbering() -> bool:
+    """0.8.2: `appendix_float_numbering = "per-appendix"` numbers appendix floats
+    Table A1 … B1 …, restarting in each lettered appendix (the MISQ convention)."""
+    return str(PROFILE_CONFIG.get("appendix_float_numbering", "continuous")).lower() == "per-appendix"
 
 
 def find_asset(reference: str) -> Path | None:
@@ -506,18 +561,74 @@ def parse_table_rows(block: str) -> list[list[str]]:
         r"\\(?:toprule|midrule|bottomrule|hline|addlinespace(?:\[[^\]]*\])?|cline\{[^}]*\}|cmidrule(?:\([^)]*\))?\{[^}]*\})",
         "", body,
     )
+    rows, _spans = _rows_and_spans(body)
+    return rows
+
+
+def _rows_and_spans(body: str) -> tuple[list[list[str]], list[list[int]]]:
+    """Cell texts and, aligned with them, each cell's column span: a \\multicolumn{n}
+    start cell carries n, the n-1 cells it covers carry 0, every other cell 1."""
     rows: list[list[str]] = []
+    spans: list[list[int]] = []
     for raw in _split_depth0(body, "\\\\"):
         raw = raw.strip()
         if not raw or re.fullmatch(r"(?:\\\w+\s*)+", raw):    # rule-only leftovers
             continue
         cells: list[str] = []
+        row_spans: list[int] = []
         for cell in _split_depth0(raw, "&"):
-            cells.extend(_expand_cell(cell))
+            expanded = _expand_cell(cell)
+            cells.extend(expanded)
+            row_spans.extend([len(expanded)] + [0] * (len(expanded) - 1))
         if any(cells):
             rows.append(cells)
+            spans.append(row_spans)
     width = max((len(row) for row in rows), default=0)
-    return [row + [""] * (width - len(row)) for row in rows]
+    return ([row + [""] * (width - len(row)) for row in rows],
+            [s + [1] * (width - len(s)) for s in spans])
+
+
+_RULES = re.compile(
+    r"\\(?:toprule|midrule|bottomrule|hline|addlinespace(?:\[[^\]]*\])?|cline\{[^}]*\}|cmidrule(?:\([^)]*\))?\{[^}]*\})")
+
+
+def _tabular_raw_body(block: str) -> str | None:
+    """The first tabular-like environment's body, rules still in place."""
+    m = TABULAR_BEGIN.search(block)
+    if m is None:
+        return None
+    env, pos = m.group(1), m.end()
+    opt = re.match(r"\s*\[[^\]]*\]", block[pos:])
+    if opt: pos += opt.end()
+    if env in ("tabularx", "tabular*"):
+        g = parse_group_at(block, pos)
+        if g is None: return None
+        pos = g[1]
+    g = parse_group_at(block, pos)
+    if g is None: return None
+    pos = g[1]
+    end = re.compile(r"\\end\{" + re.escape(env) + r"\}").search(block, pos)
+    return block[pos:end.start()] if end else block[pos:]
+
+
+def parse_table_spans(block: str) -> list[list[int]]:
+    """Column spans aligned with parse_table_rows(block) (0.8.4)."""
+    body = _tabular_raw_body(block)
+    return [] if body is None else _rows_and_spans(_RULES.sub("", body))[1]
+
+
+def count_header_rows(block: str) -> int:
+    """Rows above the first \\midrule: the table's header, repeated on every page in Word (0.8.4).
+    Before, only row 0 repeated, so a continued table showed "Section 3 classification" and
+    lost its column names (JL 260928 screenshot)."""
+    body = _tabular_raw_body(block)
+    if body is None:
+        return 1
+    mid = re.search(r"\\midrule|\\hline", body)
+    if mid is None:
+        return 1
+    head_rows, _ = _rows_and_spans(_RULES.sub("", body[:mid.start()]))
+    return max(1, len(head_rows))
 
 
 def parse_display(block: str) -> Display:
@@ -535,13 +646,21 @@ def parse_display(block: str) -> Display:
             image_ref=image_ref,
             image_path=find_asset(image_ref) if image_ref else None,
         )
-    return Display(kind="table", block=block, caption=latex_to_text(caption), label=label, rows=parse_table_rows(block))
+    # A table note sits after the tabular in \begin{flushleft}...\end{flushleft}; the PDF
+    # printed it and Word dropped it until 0.8.4 (JL 260928, MISQ official format has "Note." paragraphs).
+    notes = re.findall(r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}", block, re.S)
+    note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
+    return Display(kind="table", block=block, caption=latex_to_text(caption), label=label,
+                   rows=parse_table_rows(block), note=note, spans=parse_table_spans(block),
+                   header_rows=count_header_rows(block))
 
 
 DISPLAY_PATTERN = re.compile(r"\\begin\{(figure\*?|table\*?)\}.*?\\end\{\1\}", re.S)
 LIST_PATTERN = re.compile(r"\\begin\{(itemize|enumerate)\}.*?\\end\{\1\}", re.S)
 CENTER_PATTERN = re.compile(r"\\begin\{center\}.*?\\end\{center\}", re.S)
-TOKEN_PATTERN = re.compile(r"@@(?:DISPLAY|LIST)\d+@@")
+TOKEN_PATTERN = re.compile(r"@@(?:DISPLAY|LIST|CODE)\d+@@")
+# verbatim-like blocks keep their lines exactly; group 2 is the body (0.8.4)
+VERBATIM_PATTERN = re.compile(r"\\begin\{(verbatim\*?|Verbatim|lstlisting)\}(?:\[[^\]]*\])?[ \t]*\n?(.*?)\\end\{\1\}", re.S)
 
 
 def list_items(block: str) -> list[str]:
@@ -550,6 +669,17 @@ def list_items(block: str) -> list[str]:
 
 
 def parse_events(text: str) -> tuple[list[Event], list[Display]]:
+    blocks: dict[str, tuple[str, str]] = {}
+
+    # First, before any other rewrite: a verbatim block is printed exactly as written
+    # (JL 260928 appendix screenshot: the published prompt reached Word as double-spaced
+    # prose, lines joined and the word "verbatim" printed).
+    def store_code(match: re.Match[str]) -> str:
+        token = f"@@CODE{len(blocks)}@@"
+        blocks[token] = ("code", match.group(2))
+        return "\n" + token + "\n"
+
+    text = VERBATIM_PATTERN.sub(store_code, text)
     text = re.sub(r"\\(?:clearpage|newpage|pagebreak)\b", "\n", text)
     text = re.sub(r"\\(?:maketitle|thispagestyle|pagestyle)\s*(?:\{[^}]*\})?", "", text)
     text = re.sub(r"\\(?:bibliographystyle|bibliography)\s*(?:\{[^}]*\})?", "", text)
@@ -557,7 +687,6 @@ def parse_events(text: str) -> tuple[list[Event], list[Display]]:
     # manuscript prose and must not leak into a Word projection.
     text = re.sub(r"(?m)^\s*\\(?:setcounter|renewcommand)\b.*$", "", text)
     text = re.sub(r"\\(?:begin|end)\{(?:document|abstract)\}", "", text)
-    blocks: dict[str, tuple[str, str]] = {}
     displays: list[Display] = []
     lists: list[list[str]] = []
 
@@ -592,18 +721,29 @@ def parse_events(text: str) -> tuple[list[Event], list[Display]]:
         value = re.sub(r"\\appendix\b", "", value)
         value = re.sub(r"\\(?:begin|end)\{(?:center|table\*?|figure\*?)\}", "", value)
         for paragraph in re.split(r"\n\s*\n+", value):
-            paragraph = latex_to_text(paragraph)
-            if paragraph:
-                ordered.append(Event("text", paragraph))
+            # 0.8.4: a display equation becomes its own "math" event (a native Word equation);
+            # inline $…$ is kept as a @@MATHn@@ token so add_rich_text can write it as OMML.
+            pos = 0
+            for match in DISPLAY_MATH.finditer(paragraph):
+                before = latex_to_text(mark_emphasis(protect_math(paragraph[pos:match.start()], MATH_STORE)))
+                if before:
+                    ordered.append(Event("text", before))
+                ordered.append(Event("math", match.group(1) or match.group(2) or match.group(4) or ""))
+                pos = match.end()
+            rest = latex_to_text(mark_emphasis(protect_math(paragraph[pos:], MATH_STORE)))
+            if rest:
+                ordered.append(Event("text", rest))
 
     def add_before_tokens(value: str) -> None:
-        parts = re.split(r"(@@(?:DISPLAY|LIST)\d+@@)", value)
+        parts = re.split(r"(@@(?:DISPLAY|LIST|CODE)\d+@@)", value)
         for part in parts:
             if not part:
                 continue
             if part in blocks:
                 kind, block = blocks[part]
-                if kind == "list":
+                if kind == "code":
+                    ordered.append(Event("code", block))
+                elif kind == "list":
                     ordered.append(Event("list", list_items(block)))
                 else:
                     display = parse_display(block)
@@ -664,14 +804,24 @@ def configure_document(doc: Document, *, body_size: float = 12, line_spacing: fl
         style.paragraph_format.line_spacing = 1.0 if name == "Caption" else line_spacing
         style.paragraph_format.space_before = Pt(0)
         style.paragraph_format.space_after = Pt(0)
+    # python-docx's built-in Title style is dark blue with a blue rule under it; no venue asks
+    # for that (the MISQ official-format Title is black, bold, no border; JL 260928 screenshot).
+    title_style = doc.styles["Title"]
+    title_style.font.color.rgb = RGBColor(0, 0, 0)
+    title_style.font.bold = True
+    title_ppr = title_style._element.get_or_add_pPr()
+    for border in title_ppr.findall(qn("w:pBdr")):
+        title_ppr.remove(border)
     for name, size, before in (("Heading 1", body_size, 10), ("Heading 2", body_size, 6), ("Heading 3", body_size, 4)):
         style = doc.styles[name]
         style.font.bold = True
         style.font.color.rgb = RGBColor(0, 0, 0)
         style.paragraph_format.space_before = Pt(before)
         style.paragraph_format.keep_with_next = True
-    doc.styles["Caption"].font.italic = True
-    doc.styles["Caption"].font.color.rgb = RGBColor(68, 68, 68)
+    # MISQ's official-format captions are bold, upright and black (caption_plain = true)
+    plain_caption = bool(PROFILE_CONFIG.get("caption_plain", False))
+    doc.styles["Caption"].font.italic = not plain_caption
+    doc.styles["Caption"].font.color.rgb = RGBColor(0, 0, 0) if plain_caption else RGBColor(68, 68, 68)
     doc.styles["Caption"].paragraph_format.space_before = Pt(4)
     doc.styles["Caption"].paragraph_format.space_after = Pt(6)
     doc.styles["List Bullet"].paragraph_format.left_indent = Inches(0.25)
@@ -692,14 +842,156 @@ def set_line_numbering(section) -> None:
     existing.set(qn("w:restart"), "newPage" if bool(PROFILE_CONFIG.get("restart_line_numbers_each_page", False)) else "continuous")
 
 
-def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, align=None, style: str = "Normal") -> None:
+# ── math: LaTeX → MathML (latex2mathml) → Word OMML, so equations are native Word equations ──
+# 0.8.4 (JL 260928 screenshot "The equation is not in the good format"): the Word lane flattened
+# $$ Y_{ijc}^{(o)} = \beta_c^{(o)} H_j + … $$ into "Y_ijc(o) = β_c(o) H_j + …" and dropped \varepsilon.
+MATH_TOKEN = re.compile(r"@@MATH(\d+)@@")
+MATH_STORE: list[tuple[str, bool]] = []      # inline math pulled out of body paragraphs, by token index
+DISPLAY_MATH = re.compile(r"\$\$(.+?)\$\$|\\\[(.+?)\\\]|\\begin\{(equation|align)\*?\}(.+?)\\end\{\3\*?\}", re.S)
+INLINE_MATH = re.compile(r"(?<![\\$])\$([^$]+?)\$(?!\$)")
+_M = "http://schemas.openxmlformats.org/officeDocument/2006/math"
+_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def _xml_escape(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _mathml_to_omml(node) -> str:
+    """A small MathML → OMML writer for the constructs latex2mathml emits for paper equations."""
+    tag = node.tag.split("}")[-1]
+    kids = list(node)
+    inner = lambda n: "".join(_mathml_to_omml(k) for k in n) if len(n) else _mathml_to_omml_leaf(n)
+    if tag in ("math", "mrow", "mstyle", "semantics", "mpadded", "mphantom"):
+        return "".join(_mathml_to_omml(k) for k in kids)
+    if tag in ("mi", "mn", "mo", "mtext", "ms"):
+        return _mathml_to_omml_leaf(node)
+    if tag == "mspace":
+        return '<m:r><m:t xml:space="preserve"> </m:t></m:r>'
+    if tag == "msub" and len(kids) == 2:
+        return f"<m:sSub><m:e>{inner(kids[0])}</m:e><m:sub>{inner(kids[1])}</m:sub></m:sSub>"
+    if tag == "msup" and len(kids) == 2:
+        return f"<m:sSup><m:e>{inner(kids[0])}</m:e><m:sup>{inner(kids[1])}</m:sup></m:sSup>"
+    if tag == "msubsup" and len(kids) == 3:
+        return (f"<m:sSubSup><m:e>{inner(kids[0])}</m:e><m:sub>{inner(kids[1])}</m:sub>"
+                f"<m:sup>{inner(kids[2])}</m:sup></m:sSubSup>")
+    if tag == "mfrac" and len(kids) == 2:
+        return f"<m:f><m:num>{inner(kids[0])}</m:num><m:den>{inner(kids[1])}</m:den></m:f>"
+    if tag in ("munder", "mover", "munderover") and kids:
+        return "".join(_mathml_to_omml(k) for k in kids)
+    return "".join(_mathml_to_omml(k) for k in kids) or _mathml_to_omml_leaf(node)
+
+
+def _mathml_to_omml_leaf(node) -> str:
+    text = (node.text or "")
+    if not text:
+        return ""
+    variant = node.get("mathvariant", "")
+    tag = node.tag.split("}")[-1]
+    sty = {"bold": "b", "bold-italic": "bi", "normal": "p"}.get(variant, "p" if tag in ("mn", "mo", "mtext") else "")
+    rpr = f'<m:rPr><m:sty m:val="{sty}"/></m:rPr>' if sty else ""
+    return f'<m:r>{rpr}<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t xml:space="preserve">{_xml_escape(text)}</m:t></m:r>'
+
+
+def latex_to_omml(latex: str):
+    """An <m:oMath> element for one LaTeX math string, or None when it cannot be converted."""
+    try:
+        from latex2mathml.converter import convert
+        from lxml import etree
+        from docx.oxml import parse_xml
+        mathml = etree.fromstring(convert(latex.strip()).encode("utf-8"))
+        body = _mathml_to_omml(mathml)
+        if not body:
+            return None
+        return parse_xml(f'<m:oMath xmlns:m="{_M}" xmlns:w="{_W}">{body}</m:oMath>')
+    except Exception:
+        return None
+
+
+def protect_math(value: str, store: list[tuple[str, bool]]) -> str:
+    """Swap every inline $…$ for a @@MATHn@@ token before latex_to_text flattens it."""
+    def keep(match):
+        store.append((match.group(1), False))
+        return f"@@MATH{len(store) - 1}@@"
+    return INLINE_MATH.sub(keep, value)
+
+
+def add_math_paragraph(doc: Document, latex: str, *, size: float = 12) -> None:
+    """A display equation, centred on its own line; plain text if it cannot be converted."""
+    omath = latex_to_omml(latex)
+    if omath is None:
+        add_text(doc, latex_to_text("$" + latex + "$"), size=size, align=WD_ALIGN_PARAGRAPH.CENTER)
+        return
+    from docx.oxml import parse_xml
+    paragraph = doc.add_paragraph(style="Normal")
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph.paragraph_format.line_spacing = 1.5
+    paragraph.paragraph_format.space_before = Pt(6)
+    paragraph.paragraph_format.space_after = Pt(6)
+    para = parse_xml(f'<m:oMathPara xmlns:m="{_M}"/>')
+    para.append(omath)
+    paragraph._p.append(para)
+
+
+# \textbf / \textit / \emph survive latex_to_text as these marker characters (neither word
+# characters nor whitespace), so add_rich_text prints them bold or italic (0.8.4, JL 260928
+# appendix screenshot: "Agreeableness specification" lost its bold; 11 \textit were plain).
+EMPHASIS_MARKS = {"textbf": ("\x02", "\x03"), "textit": ("\x04", "\x05"), "emph": ("\x04", "\x05")}
+EMPHASIS_SWITCH = {"\x02": ("bold", True), "\x03": ("bold", False), "\x04": ("italic", True), "\x05": ("italic", False)}
+RICH_PART = re.compile(r"(@@MATH\d+@@|[\x02-\x05])")
+
+
+def mark_emphasis(value: str) -> str:
+    pattern = re.compile(r"\\(textbf|textit|emph)\s*(?=\{)")
+    while (match := pattern.search(value)) is not None:
+        group = parse_group_at(value, match.end())
+        if group is None:
+            return value
+        inner, end = group
+        on, off = EMPHASIS_MARKS[match.group(1)]
+        value = value[:match.start()] + on + inner + off + value[end:]
+    return value
+
+
+def add_rich_text(doc: Document, text: str, maths: list[tuple[str, bool]], *, size: float = 12,
+                  line_spacing: float = 2.0, before: float = 0, after: float = 0) -> None:
+    """A body paragraph whose @@MATHn@@ tokens become inline Word equations and whose
+    emphasis marks become bold or italic runs."""
+    if not RICH_PART.search(text):
+        add_text(doc, text, size=size, line_spacing=line_spacing, before=before, after=after)
+        return
+    paragraph = doc.add_paragraph(style="Normal")
+    paragraph.paragraph_format.line_spacing = line_spacing
+    paragraph.paragraph_format.space_before = Pt(before)
+    paragraph.paragraph_format.space_after = Pt(after)
+    state = {"bold": False, "italic": False}
+    for part in RICH_PART.split(text):
+        if not part:
+            continue
+        if part in EMPHASIS_SWITCH:
+            key, on = EMPHASIS_SWITCH[part]
+            state[key] = on
+        elif (match := MATH_TOKEN.fullmatch(part)) is not None:
+            latex = maths[int(match.group(1))][0] if int(match.group(1)) < len(maths) else ""
+            omath = latex_to_omml(latex)
+            if omath is None:
+                set_font(paragraph.add_run(latex_to_text("$" + latex + "$")), size=size)
+            else:
+                paragraph._p.append(omath)
+        else:
+            set_font(paragraph.add_run(part), size=size,
+                     bold=True if state["bold"] else None, italic=True if state["italic"] else None)
+
+
+def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, align=None, style: str = "Normal",
+             line_spacing: float = 2.0, before: float = 0, after: float = 0) -> None:
     if not text:
         return
     paragraph = doc.add_paragraph(style=style)
     paragraph.alignment = align
-    paragraph.paragraph_format.line_spacing = 2.0
-    paragraph.paragraph_format.space_before = Pt(0)
-    paragraph.paragraph_format.space_after = Pt(0)
+    paragraph.paragraph_format.line_spacing = line_spacing
+    paragraph.paragraph_format.space_before = Pt(before)
+    paragraph.paragraph_format.space_after = Pt(after)
     run = paragraph.add_run(text)
     action = "[AUTHOR ACTION REQUIRED" in text or "[TODO:" in text or "[not independently verified]" in text
     set_font(run, size=size, bold=bold, color="C00000" if action else None)
@@ -711,6 +1003,8 @@ def add_heading(doc: Document, text: str, level: int = 1, *, upper: bool = True)
     heading_style = str(PROFILE_CONFIG.get("heading_style", "heading")).lower()
     style = "Normal" if heading_style == "normal" else f"Heading {min(level, 3)}"
     paragraph = doc.add_paragraph(style=style)
+    if str(PROFILE_CONFIG.get("heading_align", "left")).lower() == "center":   # MISQ centres its headings
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.keep_with_next = bool(PROFILE_CONFIG.get("headings_keep_with_next", True))
     paragraph.paragraph_format.line_spacing = 2.0
     # An explicit before-space keeps LibreOffice's DOCX renderer from visually
@@ -752,7 +1046,7 @@ def set_cell_margins(cell, top: int = 80, start: int = 120, bottom: int = 80, en
         node.set(qn("w:type"), "dxa")
 
 
-def set_table_geometry(table, widths: list[int]) -> None:
+def set_table_geometry(table, widths: list[int], *, margin: int = 120) -> None:
     table.autofit = False
     table.alignment = WD_TABLE_ALIGNMENT.LEFT
     total = sum(widths)
@@ -790,8 +1084,14 @@ def set_table_geometry(table, widths: list[int]) -> None:
                 tc_pr.append(tc_w)
             tc_w.set(qn("w:w"), str(widths[min(index, len(widths) - 1)]))
             tc_w.set(qn("w:type"), "dxa")
-            set_cell_margins(cell)
+            set_cell_margins(cell, top=80 if margin >= 120 else 40, start=margin, bottom=80 if margin >= 120 else 40, end=margin)
             cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+
+
+def cant_split(row) -> None:
+    tr_pr = row._tr.get_or_add_trPr()
+    if tr_pr.find(qn("w:cantSplit")) is None:
+        tr_pr.append(OxmlElement("w:cantSplit"))
 
 
 def mark_header_row(row) -> None:
@@ -809,11 +1109,19 @@ def add_table(doc: Document, display: Display, title: str = "", *, compact: bool
         add_text(doc, caption.strip(), size=10 if compact else 11, bold=True, style="Caption")
     if not rows:
         return
-    widths = [max(900, 9360 // len(rows[0]))] * len(rows[0])
-    widths[-1] += 9360 - sum(widths)
+    cell_size = float(PROFILE_CONFIG.get("table_font_size", 8 if compact else 8.5))
+    widths = column_widths(rows, display.spans, font_pt=cell_size)
     table = doc.add_table(rows=len(rows), cols=len(rows[0]))
     table.style = "Table Grid"
-    set_table_geometry(table, widths)
+    set_table_geometry(table, widths, margin=60)
+    if sum(widths) > 9360:                     # a wide table runs into both margins evenly
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table._tbl.tblPr.find(qn("w:tblInd")).set(qn("w:w"), "0")
+    if str(PROFILE_CONFIG.get("table_borders", "grid")).lower() == "horizontal":
+        set_horizontal_borders(table)   # MISQ official format: top, bottom and row rules, no vertical lines
+    header_fill = str(PROFILE_CONFIG.get("table_header_fill", "F2F4F7")).strip()
+    heads = min(max(1, display.header_rows), len(rows))
+    keep_together = len(rows) <= 25            # a short table moves to the next page whole
     for row_index, row in enumerate(rows):
         for col_index, value in enumerate(row):
             cell = table.cell(row_index, col_index)
@@ -821,13 +1129,147 @@ def add_table(doc: Document, display: Display, title: str = "", *, compact: bool
             paragraph = cell.paragraphs[0]
             paragraph.paragraph_format.line_spacing = 1.0
             paragraph.paragraph_format.space_after = Pt(0)
+            paragraph.paragraph_format.keep_with_next = keep_together and row_index < len(rows) - 1
             run = paragraph.add_run(value)
-            set_font(run, size=8 if compact else 8.5, bold=(row_index == 0))
-            if row_index == 0:
-                set_cell_shading(cell, "F2F4F7")
-        if row_index == 0:
-            mark_header_row(table.rows[row_index])
-    doc.add_paragraph().paragraph_format.space_after = Pt(2)
+            set_font(run, size=cell_size, bold=(row_index < heads))
+            if row_index < heads and header_fill:   # profile key; "" = no fill (MISQ)
+                set_cell_shading(cell, header_fill)
+        if row_index < heads:
+            mark_header_row(table.rows[row_index])   # every header row repeats on a new page
+        cant_split(table.rows[row_index])          # a row never breaks across pages
+    merge_spanned_cells(table, display.spans or [], len(rows[0]))
+    if display.note:
+        add_rich_text(doc, display.note, MATH_STORE, size=9, line_spacing=1.0, before=3, after=8)
+    else:
+        doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+
+def column_widths(rows: list[list[str]], spans: list[list[int]] | None, total: int = 9360,
+                  minimum: int = 450, *, font_pt: float = 8.0, pad: int = 120, max_total: int = 10400) -> list[int]:
+    """Column widths in twips, measured from each column's own text.
+
+    Before 0.8.4 every column got max(900, total // n), so a 13-column table asked for
+    11,700 twips on a 9,360-twip line and the last column got the negative remainder
+    ("Low%" one letter per line); an even split then still broke "0.207" and "High%"
+    (JL 260928 screenshots). Now a column is never narrower than its longest unbreakable
+    token (a number, "94.56%") plus the cell padding; spare room goes to the columns whose
+    text would otherwise wrap; and a table that cannot fit the line may run up to
+    `max_total` (the official MISQ Table 1 is 10,049 twips), centred by the caller.
+    A \\multicolumn header cell does not size a column.
+    """
+    char = font_pt * 20 * 0.55 * 1.1          # twips per character: Times ≈ 0.55 em, +10% for bold heads
+    ncol = len(rows[0])
+    need = [0.0] * ncol                       # longest word: must not break
+    want = [0.0] * ncol                       # whole cell on one line (capped at 28 chars)
+    for r, row in enumerate(rows):
+        for c, text in enumerate(row):
+            span = spans[r][c] if spans and r < len(spans) and c < len(spans[r]) else 1
+            if span != 1 or not text.strip():
+                continue
+            # Word may break a name after a letter-hyphen ("Gemini-2.5-|flash-|lite"), never inside a number
+            pieces = [piece for word in text.split() for piece in re.split(r"(?<=[A-Za-z]-)", word) if piece]
+            longest = max((len(piece) for piece in pieces), default=0)
+            need[c] = max(need[c], longest * char + pad)
+            want[c] = max(want[c], min(len(text), 28) * char + pad)
+    need = [max(float(minimum), n) for n in need]
+    want = [max(w, n) for w, n in zip(want, need)]
+    line = float(total)
+    if sum(want) <= total:                    # everything fits on one line: share the slack
+        widths = [w * total / sum(want) for w in want]
+    elif sum(need) <= total:                  # words fit: give the slack to cells that would wrap
+        extra = [w - n for w, n in zip(want, need)]
+        slack = total - sum(need)
+        widths = [n + slack * e / sum(extra) for n, e in zip(need, extra)]
+    else:                                     # even the words overflow: widen into the margins
+        line = min(sum(need), float(max_total))
+        widths = [n * line / sum(need) for n in need]
+    widths = [int(w) for w in widths]
+    widths[widths.index(max(widths))] += int(round(line)) - sum(widths)   # rounding goes to the widest column
+    return widths
+
+
+def merge_spanned_cells(table, spans: list[list[int]], ncol: int) -> None:
+    """Merge each \\multicolumn{n} cell across its n columns and centre it (0.8.4); before,
+    a group header such as "LM-as-a-Judge" sat in one narrow cell beside three empty ones."""
+    for r, row_spans in enumerate(spans):
+        if r >= len(table.rows):
+            break
+        for c, span in enumerate(row_spans):
+            if span > 1 and c + span - 1 < ncol:
+                merged = table.cell(r, c).merge(table.cell(r, c + span - 1))
+                for paragraph in list(merged.paragraphs)[1:]:
+                    if not paragraph.text.strip():
+                        paragraph._element.getparent().remove(paragraph._element)
+                for paragraph in merged.paragraphs:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+
+def set_horizontal_borders(table) -> None:
+    """Replace the grid with horizontal rules only: top, bottom and between rows."""
+    tbl_pr = table._tbl.tblPr
+    borders = tbl_pr.find(qn("w:tblBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tblBorders")
+        tbl_pr.append(borders)
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        element = borders.find(qn(f"w:{edge}"))
+        if element is None:
+            element = OxmlElement(f"w:{edge}")
+            borders.append(element)
+        vertical = edge in ("left", "right", "insideV")
+        element.set(qn("w:val"), "nil" if vertical else "single")
+        if not vertical:
+            element.set(qn("w:sz"), "4")
+            element.set(qn("w:space"), "0")
+            element.set(qn("w:color"), "000000")
+
+
+CODE_FONT = "Courier New"
+CODE_BOX_MARK = "verbatim"
+
+
+def add_code_block(doc: Document, body: str, *, size: float = 9) -> None:
+    """A verbatim block (a published prompt) as a framed one-cell box: one paragraph per
+    source line, typewriter font, single-spaced, indentation kept, and a long line wraps
+    with a two-character hanging indent, as fvextra's breaklines does in the PDF (0.8.4)."""
+    lines = body.expandtabs(4).strip("\n").split("\n")
+    table = doc.add_table(rows=1, cols=1)
+    set_table_geometry(table, [9360], margin=120)
+    table._tbl.tblPr.find(qn("w:tblInd")).set(qn("w:w"), "0")
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right"):
+        element = OxmlElement(f"w:{edge}")
+        for key, val in (("val", "single"), ("sz", "4"), ("space", "0"), ("color", "000000")):
+            element.set(qn(f"w:{key}"), val)
+        borders.append(element)
+    tbl_pr = table._tbl.tblPr
+    old = tbl_pr.find(qn("w:tblBorders"))
+    if old is not None:
+        tbl_pr.remove(old)
+    later = next((c for c in tbl_pr if c.tag in {qn("w:shd"), qn("w:tblLayout"), qn("w:tblCellMar"), qn("w:tblLook")}), None)
+    if later is not None:
+        later.addprevious(borders)          # CT_TblPr order: tblBorders before shd/tblLayout/tblCellMar/tblLook
+    else:
+        tbl_pr.append(borders)
+    marker = OxmlElement("w:tblDescription")   # last in CT_TblPr; docx_table_count skips these boxes
+    marker.set(qn("w:val"), CODE_BOX_MARK)
+    tbl_pr.append(marker)
+    cell = table.cell(0, 0)
+    char = size * 20 * 0.6                      # Courier advances 0.6 em per character, in twips
+    for index, line in enumerate(lines):
+        paragraph = cell.paragraphs[0] if index == 0 else cell.add_paragraph()
+        text = line.rstrip()
+        lead = len(text) - len(text.lstrip(" "))
+        fmt = paragraph.paragraph_format
+        fmt.space_before = fmt.space_after = Pt(0)
+        fmt.line_spacing = 1.0
+        fmt.left_indent = Pt((lead + 2) * char / 20)
+        fmt.first_line_indent = Pt(-2 * char / 20)
+        run = paragraph.add_run(text.lstrip(" ") or " ")
+        set_font(run, CODE_FONT, size=size)
+    spacer = doc.add_paragraph()
+    spacer.paragraph_format.space_after = Pt(6)
+    spacer.paragraph_format.line_spacing = 1.0
 
 
 def ensure_asset(display: Display, name: str) -> Path | None:
@@ -886,10 +1328,18 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                 # caps, so "Appendix A." was nowhere in the .docx while the LaTeX PDF and
                 # the co-author's official-format file both carry it (JL 260908).
                 title = f"{PROFILE_CONFIG.get('appendix_word', 'Appendix')} {chr(ord('A') + letter)}. {title}"
+                if per_appendix_numbering():   # 0.8.2: Table B1 … restarts under each appendix letter
+                    counters = {"table": 0, "figure": 0}
+                    prefixes = {"table": f"{PROFILE_CONFIG.get('main_table_prefix', 'Table ')}{chr(ord('A') + letter)}",
+                                "figure": f"{PROFILE_CONFIG.get('main_figure_prefix', 'Figure ')}{chr(ord('A') + letter)}"}
                 letter += 1
             add_heading(doc, title, event.level, upper=not (appendix_letters and event.level == 1))
         elif event.kind == "text":
-            add_text(doc, str(event.value), size=11 if compact else 12)
+            add_rich_text(doc, str(event.value), MATH_STORE, size=11 if compact else 12)
+        elif event.kind == "math":
+            add_math_paragraph(doc, str(event.value), size=11 if compact else 12)
+        elif event.kind == "code":
+            add_code_block(doc, str(event.value))
         elif event.kind == "list":
             for item in event.value:  # type: ignore[union-attr]
                 add_bullet(doc, str(item))
@@ -912,10 +1362,17 @@ def add_abstract(doc: Document, block: str) -> None:
     if not labels:
         add_text(doc, latex_to_text(block))
         return
+    # Unlabelled prose before the first label (an MISQ abstract, then "Keywords:")
+    # is the abstract itself; before 0.8.4 it was dropped and only the Keywords printed.
+    lead = block[:labels[0].start()]
+    spacing = float(PROFILE_CONFIG.get("abstract_line_spacing", 2.0))   # MISQ: single-spaced abstract and keywords
+    if latex_to_text(lead).strip():
+        add_text(doc, latex_to_text(lead), line_spacing=spacing)
     for index, match in enumerate(labels):
         end = labels[index + 1].start() if index + 1 < len(labels) else len(block)
         paragraph = doc.add_paragraph(style="Normal")
-        paragraph.paragraph_format.line_spacing = 2.0
+        paragraph.paragraph_format.line_spacing = spacing
+        paragraph.paragraph_format.space_before = Pt(8 if spacing < 2 else 0)
         paragraph.paragraph_format.space_after = Pt(0)
         label_run = paragraph.add_run(latex_to_text(match.group(1)) + " ")
         body_run = paragraph.add_run(latex_to_text(block[match.end():end]))
@@ -944,7 +1401,10 @@ def add_title_page(doc: Document, title: str, running_title: str, word_count: in
     unchanged.
     """
     known = {
-        "title":       lambda: add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER),
+        "title":       lambda: (add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+                                         style="Title", line_spacing=1.0, before=48, after=36)
+                            if _front_matter_on_one_page() else
+                            add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)),
         "running":     lambda: add_text(doc, f"Running title: {running_title}", align=WD_ALIGN_PARAGRAPH.CENTER),
         "author":      lambda: add_text(doc, author or str(PROFILE_CONFIG.get(
                            "author_placeholder", "[AUTHOR NAMES: first, middle, and last names]")),
@@ -977,7 +1437,14 @@ def add_title_page(doc: Document, title: str, running_title: str, word_count: in
         action_fields = []
     for field in action_fields:
         add_text(doc, str(field), align=WD_ALIGN_PARAGRAPH.CENTER)
-    doc.add_page_break()
+    if not _front_matter_on_one_page():   # MISQ: the abstract shares page 1; the break comes after it
+        doc.add_page_break()
+
+
+def _front_matter_on_one_page() -> bool:
+    """profile front_matter = "title-abstract-keywords": title, abstract and keywords on page 1,
+    then a page break before the first section (the MISQ official-format file, JL 260928)."""
+    return str(PROFILE_CONFIG.get("front_matter", "title-page")).lower() == "title-abstract-keywords"
 
 
 def labelled_blocks(doc: Document, heading: str, block: str) -> None:
@@ -1175,7 +1642,8 @@ def word_count(events: Iterable[Event]) -> int:
     for event in events:
         if event.kind in {"text", "list"}:
             values = event.value if event.kind == "list" else [event.value]
-            words.extend(re.findall(r"\b[\w%]+(?:[–-][\w%]+)?\b", " ".join(str(v) for v in values)))
+            words.extend(re.findall(r"\b[\w%]+(?:[–-][\w%]+)?\b",
+                                    MATH_TOKEN.sub(" ", " ".join(str(v) for v in values))))
     return len(words)
 
 
@@ -1261,28 +1729,15 @@ def source_manifest() -> dict[str, object]:
     lock_path = evidence_lock_path()
     if lock_path and lock_path.exists():
         paths.append(lock_path)
-    files = []
-    for path in paths:
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        files.append({"path": str(path.relative_to(ROOT)), "sha256": digest})
-    config_hash = hashlib.sha256(CONFIG_PATH.read_bytes()).hexdigest() if CONFIG_PATH.exists() else None
+    # 0.8.4 (JL 260928 "Why we have the sha256? remove that, waste my tokens"): the manifest lists
+    # its inputs by path only; nothing ever read the 74 hashes it used to carry.
+    files = [str(path.relative_to(ROOT)) for path in paths]
     profile_path = PROFILE_ROOT / f"{PROFILE_NAME}.toml" if PROFILE_NAME else None
-    profile_hash = (
-        hashlib.sha256(profile_path.read_bytes()).hexdigest()
-        if profile_path and profile_path.exists() else None
-    )
-    output_paths = [MAIN_PATH, SUPP_PATH, MAIN_PDF_PATH, SUPP_PDF_PATH]
-    output_hashes = {
-        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in output_paths if path.exists()
-    }
     return {
         "engine": "haipipe-paper-assemble/latex_room_to_docx-0.2.1",
         "builder": "haipipe-paper-assemble/scripts/latex_room_to_docx.py",
         "config": str(CONFIG_PATH.relative_to(ROOT)) if CONFIG_PATH.exists() else None,
-        "config_sha256": config_hash,
         "profile": str(profile_path.relative_to(SKILL_ROOT)) if profile_path and profile_path.exists() else None,
-        "profile_sha256": profile_hash,
         "venue_profile": PROFILE_CONFIG.get("venue_profile", BUILD_CONFIG.get("paper", {}).get("venue_profile")),
         "source_of_record": str(MASTER.relative_to(ROOT)),
         "outputs": [
@@ -1293,7 +1748,6 @@ def source_manifest() -> dict[str, object]:
             str(DRAFT_SECTION_ROOM.relative_to(ROOT)),
             str(MANIFEST_PATH.relative_to(ROOT)),
         ],
-        "output_sha256": output_hashes,
         "files": files,
     }
 
@@ -1346,7 +1800,11 @@ def write_common_receipts(main_events: list[Event], main_displays: list[Display]
             (path.name, path.stem.replace("_", " ").title())
             for path in sorted(SECTION_DIR.glob("*.tex"))
         ]
-    write_section_snapshots(section_specs, running_title)
+    # 0.8.4 (JL 260928: "why it is not the same to each section's word? and no references"): the
+    # snapshots are a second, reference-less copy of what each Section Page already delivers in
+    # its own delivery/word/; section_snapshots = "" switches them off.
+    if str(OUTPUT_CONFIG.get("section_snapshots", "draft-sections")).strip():
+        write_section_snapshots(section_specs, running_title)
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     manifest = source_manifest()
     manifest["evidence"] = evidence
@@ -1458,11 +1916,13 @@ def build() -> tuple[Path, Path]:
     ack_match = re.search(r"\\section\*?\s*\{" + re.escape(backmatter_heading) + r"\}", body)
     bib_match = re.search(r"\\bibliographystyle\s*\{", body)
     appendix_match = re.search(r"\\appendix\b", body)
-    if ack_match is None or bib_match is None or appendix_match is None:
-        raise RuntimeError("Master manuscript is missing acknowledgments, bibliography, or appendix boundary")
-
-    main_text = body[abstract_match.end():ack_match.start()]
-    back_text = body[ack_match.start():bib_match.start()]
+    if bib_match is None or appendix_match is None:
+        raise RuntimeError("Master manuscript is missing the bibliography or appendix boundary")
+    # 0.8.4: a blind copy (profile [latex] acknowledgments = false) has no back-matter section;
+    # the main text then runs to the bibliography.
+    main_end = ack_match.start() if ack_match is not None else bib_match.start()
+    main_text = body[abstract_match.end():main_end]
+    back_text = body[main_end:bib_match.start()]
     supplement_text = body[appendix_match.end():]
     main_events, main_displays = parse_events(main_text)
     back_events, _ = parse_events(back_text)
@@ -1480,6 +1940,8 @@ def build() -> tuple[Path, Path]:
     configure_document(main_doc)
     add_title_page(main_doc, title, running_title, word_count(main_events), len(main_tables), len(main_figures), author)
     add_abstract(main_doc, abstract)
+    if _front_matter_on_one_page():
+        main_doc.add_page_break()
     # An empty heading is a defect, not a section: the MISQ build printed
     # "ARTICLE HIGHLIGHTS" with nothing under it, because the heading was
     # unconditional and only the bullets came from the body (JL 260908).
@@ -1556,10 +2018,12 @@ def build() -> tuple[Path, Path]:
 
 
 def docx_table_count(path: Path) -> int:
-    """how many real tables (<w:tbl>) a .docx carries; the Word-side truth."""
+    """how many real tables (<w:tbl>) a .docx carries; the Word-side truth. A verbatim
+    box is a one-cell table too, so it is marked and not counted (0.8.4)."""
     import zipfile
     with zipfile.ZipFile(path) as z:
-        return z.read("word/document.xml").decode("utf-8", "replace").count("<w:tbl>")
+        xml = z.read("word/document.xml").decode("utf-8", "replace")
+    return xml.count("<w:tbl>") - xml.count(f'<w:tblDescription w:val="{CODE_BOX_MARK}"/>')
 
 
 def record_tables_rendered(report: dict) -> None:

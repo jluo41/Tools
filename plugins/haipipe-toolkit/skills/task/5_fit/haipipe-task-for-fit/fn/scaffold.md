@@ -38,7 +38,7 @@ tasks/bNN_<block>/
     ├── src/                         shared code + config-defaults.yaml
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── outline/
+        ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
         ├── scripts/config/rNN_<run>.yaml

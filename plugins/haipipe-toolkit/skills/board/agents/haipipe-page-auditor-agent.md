@@ -11,8 +11,8 @@ tools:
   - Workflow
 model: inherit
 metadata:
-  version: "0.4.2"
-  last_updated: "2026-09-20"
+  version: "0.4.3"
+  last_updated: "2026-09-28"
   summary: "Packet and receipt keeper for a Workflow Runtime/pass; child Runs remain defined by owner Run Specs."
   changelog: "./CHANGELOG.md"
 ---
@@ -148,7 +148,7 @@ page: <path>
 receipt: <_runs/page/...json path>
 audit: pass | fail
 terminal_route: CLOSE | HOLD
-final_version: <source:render sha256 identity>
+final_version: <Page version number and saved time, e.g. v1.5 260928 1241>
 rounds: <count>
 steps: <count>
 edges: <ordered controller-coordinate→route list>

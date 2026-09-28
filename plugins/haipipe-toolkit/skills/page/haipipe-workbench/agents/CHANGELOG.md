@@ -1,3 +1,7 @@
+## haipipe-page-evidence-agent 0.4.3 · 2026-09-28 · No content hashes (JL 260928)
+
+- The local Page Evidence Item Run freezes Supporting Results by path and Run id, never by hash.
+
 ## haipipe-page-writing-agent 0.3.0 · 2026-09-11
 
 - Adopt accepted interactive Writing Results without redrafting or allocating a replacement Run per paragraph; preserve formal phase/independent CHECK boundaries.

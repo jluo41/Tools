@@ -7,8 +7,8 @@ description: >-
   observations the board must cite once. Trigger: insight data, observations,
   Data, folder-kind data, legacy page-type data, /haipipe-insight-data.
 metadata:
-  version: "1.3.1"
-  last_updated: "2026-09-20"
+  version: "1.3.2"
+  last_updated: "2026-09-28"
   workflow: haipipe-insight-workflow
   folder_kind: data
   primary_face: task
@@ -59,7 +59,7 @@ For a produced source, resolve its status through the source Folder's native
 Run/Result receipt. Its accepted Supporting Result enters the shared Page graph:
 Supporting Run Result → frozen Local Input → local Page Evidence Run → typed
 VALUE/CITE/DISPLAY Result. For governed static local sources, start with their
-exact path/version/hash in frozen Local Input and perform the required typed
+exact path/version in frozen Local Input and perform the required typed
 local Evidence work; there is no external producer to allocate.
 For every value coming from a Task or Discovery Folder, verify the named
 Supporting Run, coverage, and runtime receipt; transcribe only reproducible
@@ -101,7 +101,7 @@ Folder's GI conditions still govern citation and register settlement.
 GI2 passes only after Page CHECK/CLOSE, when every D value is bound by path to
 either (a) an accepted Supporting Result for cross-Folder computation, frozen
 Local Input and ready typed local Result, or (b) a governed page-local static
-source pinned by path/version/hash in Local Input and a ready typed local
+source pinned by path/version in Local Input and a ready typed local
 Evidence Result with the owed VALUE/CITE/DISPLAY verification. Branch (b) has
 zero Supporting Runs and states why external computation is unnecessary;
 unit/window and coverage are explicit, gaps are visible, and no interpretation

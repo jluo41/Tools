@@ -28,7 +28,7 @@ sys.path.insert(0, str(SKILL_DIR / "src"))
 from build_payload import DEFAULT_MODEL as DEFAULT_ENDPOINT_MODEL, build_payload, build_payload_summary  # noqa: E402
 from client import call_predict, slice_last_window  # noqa: E402
 from compose_report import compose_report  # noqa: E402
-from forecast_evidence import file_sha256, forecast_facts
+from forecast_evidence import forecast_facts  # noqa: E402
 from load_patient import load_patient_ctx, summarize_ctx, resolve_workspace_root  # noqa: E402
 from persona_loader import load_persona  # noqa: E402
 
@@ -116,8 +116,8 @@ def main() -> int:
                 "endpoint_model": args.endpoint_model,
                 "source_observation": ctx_summary.get("cgm_window"),
                 "evidence_binding": {
-                    "forecast_sha256": file_sha256(out_dir / "forecast.json"),
-                    "report_sha256": file_sha256(out_dir / "report.json"),
+                    "forecast": "forecast.json",
+                    "report": "report.json",
                     "selection": facts["selection"],
                 },
                 "individual_id": ctx_summary["individual_id"],

@@ -11,12 +11,16 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.117.0"
-  last_updated: "2026-09-25"
+  version: "0.120.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-page · one shape every page keeps
+
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `build-manifest.json`, `evidence-selection.json`) and the `## Content` sentences and evidence lines `cli/page.py adopt` writes: change the Draft or the Evidence Markdown, then adopt and rebuild.
+
+> ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date (`v1.5 260928 1241`); staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Page, Result, receipt, ledger or manifest.
 
 This is the executable door for ONE PAGE, with or without a Board. Say
 `haipipe-page <file>`, `make this HTML file a Page Folder`,
@@ -87,6 +91,25 @@ Page Evidence RE · re-value-NN_<slug> · re-display-NN_<slug> · re-cite-NN_<sl
 RD         rdNN_<target> · one web/LaTeX/Word/slide/render delivery target
 Supporting native rNN/riNN/rlNN/global identity · Task/Discovery grouping
 ```
+
+**Run bookends (JL 260928).** A Page Writing Run has two bookends the person
+calls. While it is open, only the Draft file (`draft/<stem>-draft-v<N>.md`)
+changes. The Run's records (ticket, Version journal, `working.md`,
+`runtime.yaml`), its one log entry, decision threads and evidence notes are
+written once when the person says the Run is over. Page Content adoption and
+the RD lanes (web → LaTeX → Word) follow only when the person asks. Contract:
+`../haipipe-page-workflow/ref/interactive-writing-run.md` §🔖. Adoption is one
+command, `cli/page.py adopt <page> [--dry-run]` (`src/page_adopt.py`): it writes
+the current Draft's `## 3 · Draft` sentences into `## Content` in Draft order,
+each on its `realizes:` line, writes each sentence's evidence lines (`> Value:`,
+`> Citation:`, `> Display:`, `> Supporting Run:`; `src/evidence_lines.py`) from the
+Bullet's `Evidence:` / `Answered:` / `Drawn:` items and the Evidence Markdown's
+bound Result and Supporting Runs, keeps every `>` line that names no Evidence Item
+(a hand note, a review mark), drops and names those of a cut sentence, leaves a Draft still
+marked `[open …]` or `[block …]` off the Page, and refuses (writing nothing) when
+the Draft's paragraphs and the Page's differ or when a sentence would have to be
+added, cut or moved across untagged material (a fenced block, a list). Afterwards
+`health` sync passes.
 
 This is a projection, not a second Run registry. `RP`, `RE`, and `RD` counters
 are independent, and all are distinct from native `rNN`/`riNN`/`rlNN`
@@ -249,8 +272,10 @@ python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <existing-page-fold
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-addresses <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-drafts <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py outline-tidy <page.md | page-folder> [--dry-run]
-python3 <toolkit>/skills/page/haipipe-page/cli/page.py draft-layout <page-folder> [--sort-runs] [--dry-run]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py draft-layout <page-folder | board | tasks-dir> [--sort-runs] [--archive-evidence] [--dry-run]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py health <page-folder>... [--json]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py adopt <page-folder>... [--plan <draft.md>] [--dry-run]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py check-page-folder <page-folder | board-folder>... [--json]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py build <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py serve <page-folder>
@@ -270,7 +295,7 @@ Result checklist (`checks.json` and `report.md`), and `delivery/web/index.html`.
 Setup fails when a blocking mechanical check is missing; semantic judgment and
 human acceptance stay visibly deferred/untested. If role or Draft inspection
 changes a checked artifact, rerun `setup <existing-page-folder>` so a new Task
-Run fingerprints and validates the current records; `build` alone does not
+Run validates the current records; `build` alone does not
 refresh the audit. Start `serve` only when the user
 explicitly asks for a hosted/live URL; a request for a built website is
 satisfied by the static delivery and does not authorize an indefinite foreground
@@ -319,7 +344,7 @@ resulting wording through the normal Page workflow.
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft
 projection beside each Bullet during SHAPE. The selected
-`outline/<stem>-outline-v<G>.<S>[.<E>].md` is the sole Draft authority: each
+`draft/<stem>-draft-v<G>.<S>[.<E>].md` (legacy `outline/<stem>-outline-...`) is the sole Draft authority: each
 Bullet stores its planning fields and Draft candidate in that same file.
 The candidate may exist before Shape approval and becomes exact adoption input
 for CONTENT when explicitly accepted. The Page/Run Workflow is the writer of
@@ -405,7 +430,7 @@ lifecycle owner.
 New Page Evidence is an `RE` Page ticket plus a bound Result. A Folder-local
 Result is stored as `results/<re-run>/result.yaml`; a Task-backed Result stays
 at the owner dialect's resolved output path, and the RE records that path and
-hash. One Evidence Item has one current RE lineage and one current Result/Card
+Run id. One Evidence Item has one current RE lineage and one current Result/Card
 projection; that Result may expose many stable labels such as
 `$V_xxx$`, `\figure{D_xxx}`, `\table{D_xxx}`, `\algorithm{D_xxx}`, and
 `\cite{C_xxx}`. The hidden
@@ -463,15 +488,17 @@ The Structure Overview declares each division, then gives each paragraph a
 title line, its sentences and job, and the question that leads to the next:
 
 ```text
-- C1 · Introduction · six paragraphs, thirty-three sentences
+- C1 · Introduction
 - C1.P1 · Physician prescribing behavior
   → S1 to S6 · quality and spending · comparable decisions · opioid example
   → C1.P2: Could interpersonal dispositions help explain variation?
 ```
 
-In the workbench the Structure card shows these entries, and clicking it edits
-them as text: renaming or reordering a `C1.P1` line moves its headings in all
-three sections, and the `→` lines are saved into the overview.
+In the workbench the Structure card opens from its folded `Structure` line and
+shows these entries (a division shows its title only); clicking them edits them
+as text: renaming or reordering a `C1.P1`
+line moves its headings in all three sections, and the `→` lines are saved
+into the overview.
 
 `src/plan_layout.py` folds the Draft section back into the Draft-first plan
 for every reader (`canonical_plan` calls `to_canonical`), and every workbench
@@ -488,20 +515,55 @@ older Pages; `latest_outline` and `retire_superseded` read both `-draft-v` and
 (`src/run_folders.py`); `results/` stays flat and the Run Space pairs
 `runs/<folder>/<run>` with `results/<run>/`.
 
-The workbench shows each Space's runs under its content: run types on the left
-(the `🔘 BUTTON` lines of `haipipe-page-workflow/ref/run-cards.md`), the
-selected run on the right with Rerun, a prompt to copy, its process and its
-results. Selecting a paragraph or filtering by item (`E40`) narrows the panel;
-a panel folds to one line, and the Page bar's Focus (key F) hides every panel.
-The Page bar also shows the plan file, Drafts on the Page and Evidence
-readiness, and the Page-level Context and Check prompts. Buttons copy prompts;
+The workbench has three Spaces, each tab one part of a file, each Space with a
+`Reads` line naming that file (`servers/workbench-page/space_views.py`):
+
+```text
+Draft      Table ## 1 · Scratch ## 2 · Reading, Revise ## 3 of the Draft Markdown
+Evidence   Citations · Displays · Values = the ## sections of <stem>-evidence-items.md;
+           views All items (ID · item · used by · state) · Card · Source
+           Supporting Runs = every item's `Supporting Runs` line as a tree
+           (Execution/Discovery > Block > Job > Task > Run, each Run with the
+           items it feeds); views All items (the tree) · Source (those lines)
+Delivery   Web · LaTeX · Word · Slides = delivery/<format>/;
+           views Preview · Artifacts · Checks (read only)
+```
+
+Each Space's Runs panel is a column on the right of its content that stays in
+view while the page scrolls (JL 260927): run types on top (the `🔘 BUTTON`
+lines of `haipipe-page-workflow/ref/run-cards.md`; each view or tab lists only
+its own types through their `· views`: Table · Structure revise, Evidence
+embed; Reading · Auto write; Scratch · Scratch; Revise · Section and
+Paragraph revise; each Evidence tab its own kind, older `pj..t..r..` runs
+joining the item they serve; Delivery Preview and Artifacts · Build, Checks ·
+Check, with the format tab picking that format's builds), the selected run
+below them with Rerun, a
+prompt to copy, its process and its results, and the `runs/` folders it saves
+in. Selecting a paragraph or an item row (`E40`) narrows the panel; a panel
+folds to one line. There is no Page bar above the Spaces (JL 260927: "I don't
+need this"); the Check prompt lives in the Delivery panel, and an old
+`?lens=run` link still opens the page-wide run list. Buttons copy prompts;
 they never start a run by themselves.
 
-`page.py draft-layout <page> [--sort-runs]` moves a Page to this layout: it
+`page.py check-page-folder <page | board>` says whether each Page is on this
+layout and names the fix for every rule it misses (`fn/check-page-folder.md`;
+the rules live in `src/layout_check.py`).
+
+`page.py draft-layout <page | board | tasks-dir> [--sort-runs]` moves a Page, or
+every Page under a Board or Task tree, to this layout (a Task Page with no plan
+yet only gets `draft/`): it
 renames `outline/` to `draft/`, writes the three-section plan as the next
-version (refusing if any Bullet would change), and with `--sort-runs` moves
+version (refusing if any Bullet would change), groups the Evidence Markdown
+into `## Citations`, `## Displays` and `## Values` (refusing if any item block
+would change), and with `--sort-runs` moves
 each ticket into its Space folder, fixes moved scripts' paths, and repoints
-`runs/<name>` citations.
+`runs/<name>` citations. It then rewrites `outline/` paths that name a migrated
+Page's plan folder, inside each Page and in the files around them
+(`sweep_outline_paths`; `_archive/` outside a Page keeps its layout). With
+`--archive-evidence` it moves retired Evidence lanes to
+`draft/_archive/legacy-outline-evidence/`, except a `display/` lane whose units
+have no DISPLAY Result yet. A Page it refuses in a tree run is reported and the
+other Pages still move. Sealed `results/` are never edited.
 
 ## 🧬 One owner claims the Page Face
 
@@ -628,7 +690,7 @@ Page carries a frozen, style-only packet into CONTENT; it does not copy the
 corpus into the Page, create a second Outline, or treat DNA as Evidence.
 
 ```text
-CONTEXT/PREPARE  resolve policy + profile id/status/hash
+CONTEXT/PREPARE  resolve policy + profile id/status/version
 OUTLINE/SHAPE    freeze the reader job, Bullet order, claim contract, and any
                  declared paragraph-level Narrative Decision
 EVIDENCE         land and fold factual Results; DNA has no evidence authority
@@ -1039,6 +1101,7 @@ haipipe-page/
 ├── SKILL.md            this contract
 ├── fn/serve.md         host one Page Folder and route Board hosting
 ├── fn/runs.md          propose Page Runs needing human interaction
+├── fn/check-page-folder.md  is a Page Folder on the latest layout? names the fix
 ├── ref/page-checklist.md  configuration, four-section and delivery acceptance
 ├── ref/page-run-families.md  RP/RE/RD and Evidence Item/Result/Card/Label contract
 ├── ref/glossary.md     every word this family uses, with the path it names

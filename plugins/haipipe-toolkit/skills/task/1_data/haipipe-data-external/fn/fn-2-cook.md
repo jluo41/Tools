@@ -5,13 +5,13 @@ fn-2-cook: Run an external builder script
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Topic layout (0.3.0, `ref/asset-model.md`): a build is one b51 Task,
-`j0N_asset_<asset>/t02_build_<Version>/`, whose Run writes ONE new immutable
+Topic layout (0.3.2, `ref/asset-model.md`): a build is one Run of the asset's
+b51 Task, `j0N_ext_<topic>/tNN_<asset>/runs/rNN_build_<Version>.sh`; it writes ONE new immutable
 folder `_WorkSpace/ExternalStore/<asset>/<Version>/` with the asset triplet
-and `version.yaml` (ValidFromDT, RefPeriod, source, builder, sha256). It
+and `version.yaml` (ValidFromDT, RefPeriod, source, builder). It
 never overwrites an existing version; a changed build is a new version name.
 Engagement builds name their data cutoff in the Run config and set
-`ValidFromDT` from it. Then run `t03_validate`.
+`ValidFromDT` from it. Then run the Task's `rNN_validate_<Version>`.
 
 The steps below describe the legacy form: one
 `e{N}_build_external_<asset>.py` writing the asset triplet under the active

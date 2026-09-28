@@ -145,7 +145,6 @@ class IdeationGateTest(unittest.TestCase):
                 },
                 "stage": stage,
                 "sync_revision": 1,
-                "source_hash": "sha256:fixture",
                 "paper_page": {
                     "state": "missing",
                     "path": None,
@@ -214,10 +213,8 @@ class IdeationGateTest(unittest.TestCase):
                 "paper_projection": {
                     "source_packet": "projection/paper-ideation-sync.yaml",
                     "source_revision": 2,
-                    "source_hash": "sha256:sync-v2",
                     "page_path": "Paper/A1-Story/Story00-ideation/Story00-ideation.md",
                     "surface": "working",
-                    "output_hash": "sha256:working-v2",
                     "created_at": "2026-09-13T10:00:00-04:00",
                 },
             },
@@ -232,10 +229,8 @@ class IdeationGateTest(unittest.TestCase):
                 "paper_projection": {
                     "source_packet": "projection/paper-ideation-sync.yaml",
                     "source_revision": 1,
-                    "source_hash": "sha256:sync-v1",
                     "page_path": "Paper/A1-Story/Story00-ideation/Story00-ideation.md",
                     "surface": "release",
-                    "output_hash": "sha256:release-v1",
                     "created_at": "2026-09-12T10:00:00-04:00",
                 },
             },
@@ -254,7 +249,6 @@ class IdeationGateTest(unittest.TestCase):
                 },
                 "stage": "I1",
                 "sync_revision": 2,
-                "source_hash": "sha256:sync-v2",
                 "projection": {
                     "change_class": "state",
                     "affected_idea_ids": ["i01"],
@@ -266,19 +260,16 @@ class IdeationGateTest(unittest.TestCase):
                     "working": {
                         "state": "current",
                         "revision": 2,
-                        "source_hash": "sha256:sync-v2",
                         "receipt": "Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml",
                     },
                     "release": {
                         "state": "stale",
                         "revision": 1,
-                        "source_hash": "sha256:sync-v1",
                         "receipt": "Paper/A1-Story/Story00-ideation/workflow/receipts/release-v1.yaml",
                     },
                     "delivery": {
                         "state": "not-requested",
                         "revision": None,
-                        "source_hash": None,
                         "receipt": None,
                     },
                 },
@@ -559,7 +550,7 @@ class IdeationGateTest(unittest.TestCase):
         receipt = {
             "version": 3, "kind": "ideation-selection", "id": "s01",
             "snapshot": "workflow/selections/s01.yaml",
-            "source": {"sync_revision": 2, "source_hash": "sha256:sync-v2"},
+            "source": {"sync_revision": 2},
             "by": "person:test", "at": "2026-09-20T12:00:00-04:00", "reason": "Explicit answers",
             "reviewed_cards": [], "candidates": [], "selected_cards": [], "story_routes": [], "target_routes": [],
         }
@@ -827,12 +818,12 @@ class IdeationGateTest(unittest.TestCase):
         old_selection = (self.unit / "workflow/selections/s01.yaml").read_bytes()
         old_handoff = (self.unit / "handoff/history/s01.yaml").read_bytes()
         sync = self.read("projection/paper-ideation-sync.yaml")
-        sync.update(sync_revision=3, source_hash="sha256:revised")
+        sync.update(sync_revision=3)
         self.write("projection/paper-ideation-sync.yaml", sync)
         self.assert_gate("handoff", False, "sync-stale")
         receipt = self.read("workflow/selection.yaml")
         receipt.update(id="s02", snapshot="workflow/selections/s02.yaml",
-                       source={"sync_revision": 3, "source_hash": "sha256:revised"})
+                       source={"sync_revision": 3})
         self.save_selection(receipt)
         card = self.read("cards/i01_idea.yaml")
         card["decision_ref"] = receipt["snapshot"]
@@ -841,9 +832,9 @@ class IdeationGateTest(unittest.TestCase):
         fit["human_target"]["selection_receipt"] = receipt["snapshot"]
         self.write("cards/venue-fit/i01_venue-fit.yaml", fit)
         sync["ideas"][0]["decision_ref"] = receipt["snapshot"]
-        sync["paper_page"]["working"].update(revision=3, source_hash="sha256:revised")
+        sync["paper_page"]["working"].update(revision=3)
         working = self.read("Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml")
-        working["paper_projection"].update(source_revision=3, source_hash="sha256:revised")
+        working["paper_projection"].update(source_revision=3)
         self.write("Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml", working)
         self.write("projection/paper-ideation-sync.yaml", sync)
         handoff = self.read("handoff/paper-ideation.yaml")
@@ -922,6 +913,20 @@ class IdeationGateTest(unittest.TestCase):
         result = self.run_gate("sync")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_sync_v2_ignores_leftover_hash_fields(self) -> None:
+        # Old records may still carry source_hash/output_hash; the gate
+        # neither requires nor compares them (no content hashes, JL 260928).
+        self.write_sync_v2()
+        value = self.read("projection/paper-ideation-sync.yaml")
+        value["source_hash"] = "sha256:stale-leftover"
+        value["paper_page"]["working"]["source_hash"] = "sha256:other-leftover"
+        self.write("projection/paper-ideation-sync.yaml", value)
+        receipt = self.read("Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml")
+        receipt["paper_projection"]["output_hash"] = "sha256:leftover"
+        self.write("Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml", receipt)
+        result = self.run_gate("sync")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_sync_v2_rejects_delivery_without_current_release(self) -> None:
         self.write_sync_v2()
         path = self.unit / "projection/paper-ideation-sync.yaml"
@@ -929,7 +934,6 @@ class IdeationGateTest(unittest.TestCase):
         value["paper_page"]["delivery"] = {
             "state": "current",
             "revision": 2,
-            "source_hash": "sha256:sync-v2",
             "receipt": "projection/receipts/delivery.yaml",
         }
         self.write("projection/paper-ideation-sync.yaml", value)
@@ -951,7 +955,7 @@ class IdeationGateTest(unittest.TestCase):
         self.write_sync_v2()
         receipt = self.unit / "Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml"
         value = yaml.safe_load(receipt.read_text(encoding="utf-8"))
-        value["paper_projection"]["source_hash"] = "sha256:other-source"
+        value["paper_projection"]["source_revision"] = 1
         self.write("Paper/A1-Story/Story00-ideation/workflow/receipts/working.yaml", value)
         result = self.run_gate("sync")
         self.assertEqual(result.returncode, 1)
@@ -1028,7 +1032,7 @@ class IdeationGateTest(unittest.TestCase):
                     "evidence_bundle": "bundle/evidence-bundle.yaml",
                     "paper_ideation_sync": "projection/paper-ideation-sync.yaml",
                     "selection_receipt": "workflow/selection.yaml",
-                    "sync_revision": 1, "source_hash": "sha256:fixture",
+                    "sync_revision": 1,
                 },
                 "selected_ideas": [
                     {

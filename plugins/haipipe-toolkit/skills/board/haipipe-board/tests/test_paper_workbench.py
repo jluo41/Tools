@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""📄 Paper Workbench: live, storage-less, one paper Board → five Spaces.
+"""📄 Paper Workbench: live, storage-less, one paper Board → four Spaces.
 
 The teeth: no per-paper file is needed (the old console/ folder must not be
 read), a P0 board with a plan but no Content still lists its ideas, one Codex
-session row per Section Page and none for Ideation/Story, gates come from
-named files, and the Workflow map is projected from the skill's ref table.
+session per Section Page and none for Ideation/Story, gates come from named
+files, and every Space carries its own Runs panel beside the content (JL 260927).
 """
 import sys
 import json
@@ -15,7 +15,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
-from live.paper import collect, render_paper, session_rows, task_home, folder_map  # noqa: E402
+from live.paper import collect, paper_run_types, render_paper, section_rows, session_rows, task_home  # noqa: E402
 
 BOARD = """# Paper-Test · paper board
 spine: one idea, told to a desk
@@ -239,11 +239,9 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIsNotNone(s["sections"][0]["rel"])
             self.assertIsNone(s["sections"][1]["rel"])
             self.assertEqual(s["order"], ["S-DESK-Main-1-Introduction", "S-DESK-Main-2-Results"])
-            # Run: tickets joined to results by stem
-            runs = {r["run"]: r for r in d["runs"]}
-            self.assertEqual(runs["rp-struct-01"]["result"], "Run + Result")
-            self.assertEqual(runs["rp-para-02_P01"]["result"], "Run exists · Result missing")
-            self.assertEqual(runs["rp-para-02_P01"]["kind"], "Page Writing · paragraph")
+            # Supporting runs: the Evidence Items' citations, as a Block › Job › Task › Run tree
+            self.assertIn("b01", d["supporting"]["Execution"])
+            self.assertIn("b01", d["supporting"]["Discovery"])
             # Gates read files, never percentages
             gates = dict((g, v) for g, _n, v in d["gates"])
             self.assertTrue(gates["G0"].startswith("⬜ open"))
@@ -307,7 +305,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual(d["disc"]["tree"][0]["jobs"][0]["tasks"][0]["outcome"], "supports")
             shutil.rmtree(board / "delivery")
             page = render_paper(board, root, "/papers/Paper-Test/board.md")
-            self.assertIn("no delivery/ yet · G4 open", page)
+            self.assertIn("No delivery/ yet.", page)
             self.assertIn('data-space="delivery"', page)
 
     def test_a_row_with_two_addresses_resolves_both(self):
@@ -322,160 +320,133 @@ class PaperWorkbenchTest(unittest.TestCase):
             none = task_home(d, ["T2", "a robustness check", "alt spec"])
             self.assertEqual((none["state"], none["all"]), ("no address yet", []))        # a row id like T2 is not an address
 
+    def test_roster_headings_with_a_description_or_no_folder(self):
+        from live.paper import board_pages
+        groups = board_pages("## Pages\n\n### Story · the idea pool and the blueprint\n\nStory00-ideation.md\n\n"
+                             "### JAMA-Main · Ba-JAMA-IM-Main · reader-ordered units\n\nS-JAMA-IM-Main-1-Introduction.md\n")
+        self.assertEqual([(g["folder"], g["stems"]) for g in groups],
+                         [("", ["Story00-ideation"]), ("Ba-JAMA-IM-Main", ["S-JAMA-IM-Main-1-Introduction"])])
+        with tempfile.TemporaryDirectory() as tmp:
+            b = make_board(Path(tmp))
+            from live.paper import page_file
+            self.assertEqual(str(page_file(b, "", "StoryA-desk-idea")), "A1-Story/StoryA-desk-idea/StoryA-desk-idea.md")
+
+    def test_c8_rows_written_as_records(self):
+        from live.paper import section_records
+        recs = section_records("#### 8.2 · What each section must do\n\n"
+                               "**S-JAMA-IM-Main-Abstract (0) · the whole paper in 350 words**\n"
+                               "- **Reader question**: what are the question and the result?\n"
+                               "- **Moves**: 1 Key Points · 2 abstract\n\n"
+                               "**S-JAMA-IM-Main-1-Introduction (1) · why it matters now**\n"
+                               "- **Reader question**: why does this deserve a study?\n"
+                               "#### 8.3 · Display allocation\n- **Not a field**: of any record\n")
+        self.assertEqual([(r["id"], r["target"], r["question"]) for r in recs],
+                         [("S-JAMA-IM-Main-Abstract", "0", "What are the question and the result?"),
+                          ("S-JAMA-IM-Main-1-Introduction", "1", "Why does this deserve a study?")])
+        self.assertEqual(recs[0]["heads"], ["Section", "Reader question", "One job", "Moves"])
+        self.assertEqual(recs[0]["cells"][2:], ["the whole paper in 350 words", "1 Key Points · 2 abstract"])
+        self.assertEqual(recs[1]["heads"], ["Section", "Reader question", "One job"])   # a later heading ends the record
+
+    def test_run_cards_give_every_space_its_buttons(self):
+        kinds = paper_run_types()
+        self.assertEqual(sorted(kinds), ["delivery", "ideation", "sections", "story"])
+        self.assertEqual([k["label"] for k in kinds["story"]],
+                         ["Story revise", "Claim review", "Task review", "Supporting runs"])
+        self.assertTrue(all(k["prompt"] for ks in kinds.values() for k in ks))   # each button copies a prompt
+        self.assertEqual(kinds["delivery"][-1]["views"], "rounds")
+
+    def test_sections_follow_the_compile_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            b = make_board(root)
+            d = collect(b, "/papers/Paper-Test/board.md")
+            d["root"] = root
+            d["sessions"] = session_rows(d)
+            rows = section_rows(d)
+            self.assertEqual([r["id"] for r in rows], ["S-DESK-Main-1-Introduction", "S-DESK-Main-2-Results"])
+            self.assertEqual((rows[0]["num"], rows[0]["name"], rows[0]["state"]), ("1", "Introduction", "DRAFT"))
+            self.assertEqual(rows[1]["state"], "not set up")               # a C8 row with no Section Page yet
+            self.assertEqual(rows[0]["session"]["pair"], "paper-desk-introduction")
+
     def test_render_needs_no_console_and_links_back_to_outline(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             b = make_board(root)
             page = render_paper(b, root, "/papers/Paper-Test/board.md")
             self.assertNotIn("GHOST", page)
-            self.assertNotIn("console/index.html", page)                    # the ghost console/ is a folder on disk, never a workbench store
-            self.assertIn("📁 console/", page)                               # so the real folder tree shows it, marked not in the map
-            self.assertIn("not in the map", page)
-            self.assertIn(" page(s)</span>", page)
-            self.assertIn("backend Markdown:", page)
-            self.assertEqual(page.count("backend Markdown<span"), 5)         # one footer per Space, naming its files
-            self.assertIn("papers/Paper-Test/A1-Story/Story00-ideation/Story00-ideation.md", page)
-            self.assertIn("papers/Paper-Test/delivery/build-manifest.json", page)
-            for chip in ("Setup Space", "Ideation Space", "Story Space", "Run Space", "Delivery Space"):
-                self.assertIn(chip, page)
-            self.assertIn("/_board/outline?path=%2Fpapers%2FPaper-Test%2Fboard.md&amp;file=A1-Story%2FStory00-ideation%2FStory00-ideation.md&amp;lens=div", page)
-            self.assertIn("&amp;lens=run&amp;run=rp-struct-01", page)
-            self.assertNotIn("lens=div&amp;lens=run", page)
-            self.assertIn("paper-desk-introduction", page)
-            # Idea Cards: collapsed <details>, like Outline's Evidence cards
+            self.assertNotIn("console/", page)                              # the ghost console/ is never read
+            # four Spaces, each with its Runs panel on the right; the old Setup and Run Spaces are gone
+            for space in ("ideation", "story", "sections", "delivery"):
+                self.assertIn('<div class="panel space-split" data-space="%s">' % space, page)
+                self.assertIn('<section class=runs-panel data-space="%s"' % space, page)
+            for gone in ("Setup Space", "Run Space", "backend Markdown", "copy to chat", "⧉", "Workflow map",
+                         "no Research Question written yet"):
+                self.assertNotIn(gone, page)
+            self.assertNotIn("fetch(", page)                                   # the page makes no request of its own
+            # Ideation: collapsed Idea Cards; opening one selects it for the Runs panel
             self.assertEqual(page.count('<details class="item-card" id="idea-'), 2)
-            self.assertNotIn('<details class="item-card" id="idea-i01" open', page)
+            self.assertIn('id="idea-i01" data-key="i1"', page)
             self.assertIn('<span class="item-label">First idea</span>', page)
-            self.assertIn("Freeze a denominator", page)          # bullet head in the detail
-            self.assertIn("writing plan · ", page)               # plan Bullets are collapsed, never the lead
-            self.assertIn("no Research Question written yet", page)   # a plan-only idea says so on its subline
-            self.assertIn("closest prior work", page)            # bound evidence item
-            self.assertIn('id="idea-i02"', page)
-            # Story Space card lists
-            self.assertIn('id="claim-E1"', page)
-            self.assertIn("It holds beyond the rating", page)
-            self.assertIn("Does it hold?", page)                       # the RQ card's question; its claim is nested
-            self.assertIn("rclaim-01_beyond-rating", page)              # judgment Run joined by target
-            self.assertIn("waiting-for-feedback · s002", page)
-            self.assertIn('id="task-T1"', page)
-            self.assertIn("b01 ✓", page); self.assertIn("j01 ✓", page); self.assertIn("t01 ✓", page)
-            self.assertIn('id="task-T2"', page)
-            self.assertIn("no address yet", page)
-            # Task home tree: one card per block, both Task shapes read off the folder
-            self.assertIn('id="block-b01"', page)
-            self.assertIn("b01_block", page)
-            self.assertIn("1 job(s) · 1 task(s) · 1 ticket(s) · 1 job(s) not claimed", page)   # T1's b01.j01.t01 claims j01 only
-            self.assertIn("not this paper's: j02_flat", page)
-            self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is named, never expanded
-            self.assertIn("the joined cohort table", page)                 # develops: typed on the page
-            self.assertIn("1 tk · done 1", page)                           # receipt folded to done
-            self.assertIn("C7 addresses b01j01t01", page)
-            # Discovery needs join the Discovery home by address; D2 names none
-            self.assertIn('id="disc-b01j01"', page)
-            self.assertIn("j01_landscape_inquiry", page)
-            self.assertIn("Does prior work already link the trait to prescribing?", page)
-            self.assertIn("supports · medium", page)
-            self.assertIn("no address yet", page)
-            self.assertIn("t01_prior_work", page)
-            self.assertIn("discoveries%2Fb01_evidence_board%2Fboard.md", page)   # Outline link into the Discovery Board
-            self.assertIn('id="section-S-DESK-Main-2-Results"', page)
-            self.assertIn('class="sec-row" id="section-S-DESK-Main-2-Results"', page)   # one line per Section
-            self.assertIn('id="hero-E01-DISPLAY-hero-figure"', page)   # hero: a Main-page DISPLAY
-            self.assertNotIn('id="hero-E02-CITE-prior"', page)         # not hero: a CITE
-            self.assertIn("Research Questions", page)
-            self.assertNotIn("Claims &amp; Hypothesis", page)
-            # the RQ is the card; its claim is nested inside it, in document order
-            self.assertIn('id="rq-RQ1"', page)
-            self.assertLess(page.index('id="rq-RQ1"'), page.index('id="claim-E1"'))
-            self.assertIn('data-ref="C3 · RQ1"', page)
-            self.assertIn('data-view="questions"', page)
-            # Spine carries the Story's Identity face, its subsection, and the Pitch
+            self.assertIn("Freeze a denominator", page)                      # bullet head in the detail
+            self.assertIn("<summary>Writing plan</summary>", page)            # plan Bullets are collapsed, never the lead
+            self.assertIn("closest prior work", page)                        # bound evidence item
+            # Story › Spine: the Story's Identity face, its subsection, and the Pitch
+            self.assertIn('<div class="card spine-card" data-key="C1">', page)
             self.assertIn("<b>Working Title</b><span>Traits and Prescribing</span>", page)
             self.assertIn("tests whether a text-inferred trait predicts prescribing beyond the rating", page)
             self.assertIn("This paper tests whether a review-inferred trait predicts prescribing.", page)
             self.assertIn("Review text may carry a signal the star rating does not show.", page)
-            self.assertIn("Task Roadmap", page)
-            self.assertIn("Workflow map", page)
-            # the map joined to the folder tree: each Run-Type names its folder on THIS board, each slot resolves
-            mapping = folder_map(collect(b, "/papers/Paper-Test/board.md"))
-            self.assertIn("paper.section.route", mapping["by_runtype"])
-            self.assertIn("Ba-DESK-Main/", mapping["by_runtype"]["paper.section.route"])
-            self.assertIn("folder on this board", page)
-            self.assertIn("A1-Story/StoryA-desk-idea/", page)                 # the story slot resolved
-            self.assertIn("Ba-DESK-Main/", page)
-            self.assertIn("Bb-DESK-Appendix/", page)                          # pattern shown as missing
-            self.assertIn("the project homes · Task home · Discovery home", page)   # the homes box, outside the paper folder
-            self.assertIn("the Task home · 1 block(s)", page)                 # the real tree: the claimed block and its jobs
-            self.assertIn("📁 b01_block/", page)
-            self.assertIn("📁 j01_job/", page)
-            self.assertIn("📁 StoryA-desk-idea/", page)
-            self.assertIn('<ul class="tree">', page)                           # a real nested tree, not a table
-            self.assertIn("structure.<page>", mapping["by_runtype"])
-            self.assertIn("A1-Story/StoryA-desk-idea/", mapping["by_runtype"]["structure.<page>"])
-            self.assertIn('<span class="tn-note">outline/ ', page)             # a page folder's row: its counts, the page named once (by the folder)
-            # the tree is complete and bare: every folder opens to its files; no holds text, no explanation table
-            self.assertIn("📁 runs/", page)
-            self.assertIn("r01_first.sh", page)
-            self.assertIn("📁 r01_first/", page)
-            self.assertIn("runtime.yaml", page)
-            self.assertNotIn('class="tn-holds"', page)
-            self.assertNotIn("tn-explain", page)
-            # copy to chat: every card and Spine division cites the Markdown it was read from; nothing is written
-            self.assertIn('data-board="papers/Paper-Test/board.md"', page)
-            self.assertIn('data-src="papers/Paper-Test/A1-Story/StoryA-desk-idea/StoryA-desk-idea.md" data-ref="C5 · E1"', page)
-            self.assertIn('data-ref="C7 · T1"', page)
-            self.assertIn('data-ref="C1 · Identity"', page)
-            self.assertIn('data-src="tasks/b01_block" data-ref="b01"', page)
-            self.assertIn("copy to chat", page)
-            self.assertNotIn("fetch(", page)                                   # the page makes no request of its own
-            # Run Space: three run types, Supporting Runs as a Block › Job › Task › Run tree
-            self.assertLess(page.index('data-space="run">Run Space'), page.index('data-space="delivery">Delivery Space'))
-            self.assertIn('id="pruns-S-DESK-Main-1-Introduction"', page)       # Page Runs: rp-struct-01 + rp-para-02_P01
-            self.assertIn("1 of 2 with a Result", page)
-            self.assertIn('id="eruns-S-DESK-Main-1-Introduction"', page)       # Evidence Runs: E01 joined to its Local Run
-            self.assertIn("re-display-01_hero", page)
-            self.assertIn("complete · s003", page)
-            self.assertIn("1 of 2 item(s) have a Local Run", page)             # E02 names none, and must not
-            self.assertIn("OldNum <span class=\"mut\">· retired</span>", page)   # inherit the retired #### block under it
-            self.assertIn("1 retired item(s)", page)
-            self.assertIn('id="sup-exec-b01"', page)                           # Supporting: Execution tree
-            self.assertIn("r01_first", page)                                   # the ticket the address resolves to
-            self.assertIn("✗ no r09 ticket on disk", page)                     # cited, not on disk
-            self.assertIn('id="sup-disc-b01"', page)                           # Supporting: Discovery tree
-            self.assertIn("r01_smith2020", page)
-            self.assertIn("HeroFig", page)                                     # used by: the item's Label
-            # Delivery Space: manuscript, compile order, displays, checks, rounds
-            self.assertIn('data-space="delivery"', page)
-            self.assertIn("Delivery Space", page)
-            self.assertIn("Traits and Prescribing", page)                   # paper-build.toml title
-            self.assertIn("venue Test Quarterly", page)
-            self.assertIn("DRAFT · built 2026-09-09T10:49:47", page)
-            self.assertIn("delivery/latex/Paper-Test-draft.pdf", page)
+            # Story › Questions: the RQ is the card; its claim is nested inside it
+            self.assertIn('id="rq-RQ1" data-key="RQ1"', page)
+            self.assertIn('id="claim-E1" data-key="E1"', page)
+            self.assertLess(page.index('id="rq-RQ1"'), page.index('id="claim-E1"'))
+            self.assertIn("It holds beyond the rating", page)
+            self.assertIn("Does it hold?", page)
+            # Story › Roadmap: C7 and C6 rows, the Task home and the Discovery home
+            self.assertIn('id="task-T1" data-key="T1"', page)
+            self.assertIn("b01 ✓", page); self.assertIn("j01 ✓", page); self.assertIn("t01 ✓", page)
+            self.assertIn('id="task-T2"', page)
+            self.assertIn("no address yet", page)
+            self.assertIn('id="need-D1" data-key="D1"', page)
+            self.assertIn('id="block-b01"', page)
+            self.assertIn("not this paper's: j02_flat", page)
+            self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is named, never expanded
+            self.assertIn("the joined cohort table", page)                 # develops: typed on the page
+            self.assertIn("1 tk · done 1", page)                           # receipt folded to done
+            self.assertIn('id="disc-b01j01"', page)
+            self.assertIn("Does prior work already link the trait to prescribing?", page)
+            self.assertIn("supports · medium", page)
+            self.assertIn("discoveries%2Fb01_evidence_board%2Fboard.md", page)   # link into the Discovery Board
+            # Story Runs: the judgment run joined by its target, named in full
+            self.assertIn('data-name="run-claim-01"', page)
+            self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bE1\b[^"]*"')
+            self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bRQ1\b')
+            self.assertIn('data-label="Supporting runs"', page)
+            self.assertIn('data-run="b01.j01.t01.r01"', page)                 # a cited Task run, keyed to the rows covering it
+            # Sections: one row per C8 row in compile order; a row opens its Page workbench
+            self.assertIn('<div class="sec-row" data-key="S-DESK-Main-1-Introduction"', page)
+            self.assertIn("/_board/draft?path=%2Fpapers%2FPaper-Test%2Fboard.md&amp;file=Ba-DESK-Main%2FS-DESK-Main-1-Introduction%2FS-DESK-Main-1-Introduction.md&amp;lens=div", page)
+            self.assertIn('data-key="S-DESK-Main-2-Results"', page)
+            self.assertIn("not set up", page)
+            self.assertIn("Why now?", page)                                  # the C8 row's reader question
+            self.assertIn("paper-desk-introduction", page)                   # its Codex session
+            self.assertIn('id="hero-E01-DISPLAY-hero-figure" data-key="S-DESK-Main-1-Introduction:E01" data-part="main"', page)
+            self.assertNotIn('id="hero-E02-CITE-prior"', page)         # not hero: a CITE
+            self.assertIn('data-run="rp-struct-01" data-name="run-structure-01"', page)   # the Section's own runs
+            self.assertIn('data-run="re-display-01_hero"', page)
+            # Delivery: formats, views, checks, rounds
+            self.assertIn('data-src="/papers/Paper-Test/delivery/latex/Paper-Test-draft.pdf"', page)
             self.assertIn("⬜ not built", page)                              # the supplement named but absent
             self.assertIn("delivery/word-feedback/Paper-Test-coauthor.docx", page)
-            self.assertIn("1200 words · no declared limit", page)
-            self.assertIn("1 of 2 ready · not ready: S-DESK-Main-2-Results", page)
-            self.assertIn("S-DESK-Main-2-Results ✗ not minted", page)       # in the compile order, no page yet
-            self.assertIn("delivery/build.py", page)
-            self.assertIn("v1.0 ✅ JL 260906", page)                        # outline version + approval on the page row
+            self.assertIn("1200 words", page)
+            self.assertIn("1 of 2 · not ready: S-DESK-Main-2-Results", page)
             self.assertIn("fragment may be stale", page)
             self.assertIn("fig:hero", page)
             self.assertIn("bib key smith2020 differs between two pages", page)
             self.assertIn("citations resolved", page)
-            self.assertIn("no Round yet", page)
-            self.assertIn("no venue-page Links row", page)
-            # Setup speaks the paper's own names: the desk is DESK, delivery/ is not a setup row
-            self.assertIn("Ba-DESK-Main/", page)
-            self.assertIn("Bb-DESK-Appendix/", page)
-            self.assertIn("Bc-DESK-Round/", page)
-            self.assertNotIn("B?-", page)
-            setup_panel = page[page.index('data-space="setup"'):page.index('data-space="ideation"')]
-            self.assertNotIn("Ba-&lt;desk&gt;", setup_panel)              # Setup names the desk; the Folder tree shows the pattern beside the real name
-            self.assertNotIn("<td><span class=\"path\">delivery/</span></td>", page)
-            # the Outline type scale, not the old console's
-            self.assertIn("h1{font-size:17px", page)
-            self.assertNotIn("font-size:29px", page)
-
+            self.assertIn('data-name="run-compile-260909"', page)            # the last build, as a run
+            self.assertIn("No round yet.", page)
+            self.assertIn('data-tab="rounds" data-label="Rounds" data-noviews', page)
 
 if __name__ == "__main__":
     unittest.main()

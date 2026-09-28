@@ -4,6 +4,10 @@ haipipe-workflow — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.3.2] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/workflow-runtime.md` gate and route `evidence` lists plain paths, not `path@hash`.
+
 ## [0.3.1] — 2026-09-15
 
 - Replace Phase/Step workflow authority with a directed Run Spec graph.

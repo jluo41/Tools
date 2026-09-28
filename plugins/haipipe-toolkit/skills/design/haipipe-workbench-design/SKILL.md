@@ -15,8 +15,8 @@ description: >-
   skills. Trigger: design workbench, design tab, design items, design folder,
   goal space, insight space, /haipipe-workbench-design.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-22"
+  version: "0.12.2"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -274,7 +274,7 @@ sense: each Design Item names the insights it rests on (the register's
 `evidence:` lines, `role · path`), and the Space shows for each one the
 page by its label and title (linked to the Insight view), its role in plain
 words (a `handoff` reads "signed insight"), who signed it and when, what it
-says, and whether a run record has pinned it by hash. What it says is the
+says, and whether a run record names it. What it says is the
 `FINDING` and `CONSEQUENCE` lines of its Design Handoff block; without them,
 the page's first Opening line when that line states something, else the page
 title. An opening question is never shown as what a page says. An item built
@@ -292,7 +292,7 @@ item". With `?item=ITEM02` the Space shows that item only, under a line
 
 **Run Space** is one timeline table per item. A Generate or Verify row folds
 its `checks.yaml` (rule · status · why), each check named by its rule in
-words, never by `r03`, and, for Generate, the draft text and its sha256. A
+words, never by `r03`, and, for Generate, the draft text. A
 revise Generate reads `Generate · revise of rdNN` with its feedback quoted. A
 run that failed shows its `failure:` in red; a Verify whose verdict is fail
 is red too, with its checks unfolded; a superseded run is grey with its
@@ -304,16 +304,16 @@ live and never cured.
 **Delivery Space** is a quick handoff of what is ready: one table, one row per
 item whose independent Verify passed, `item` (id, linked to its card, and
 title) · `design` (the text as the recipient sees it; an SMS shows its `link`
-mark, as sent). A design that has not passed Verify is not listed yet. Hashes,
-receipts, and the audit trail stay in Run Space; item reasoning stays in
+mark, as sent). A design that has not passed Verify is not listed yet.
+Receipts and the audit trail stay in Run Space; item reasoning stays in
 Design Space. A retired historical item remains folded under its record.
 
 A **screen** (a UI design) is read as its picture. When
-the Generate Result pins `render_manifest` for a picture of the exact draft an item
+the Generate Result names `render_manifest` for a picture of the exact draft an item
 shows (`candidate` = that Generate run), the Design Space card puts the
 picture on the left, with the HTML one click away, and Delivery Space shows
 the folder's ready screens as a picture gallery instead of the table. The presenter
-checks manifest, source and image hashes. Existing `delivery/render/manifest.json`
+checks that the manifest, source and image exist and are not newer than the Result. Existing `delivery/render/manifest.json`
 is a legacy fallback only when that candidate has no Result-local manifest. A picture of
 an older draft is never shown for a newer one. An acceptance rule with the
 word render, rendered or rendering (for example "judged on the render") and
@@ -322,7 +322,7 @@ no quoted phrase compiles to a `visual` check.
 ## The register
 
 The register holds the goal, its evidence, and its rules, never its state. It
-lives under `outline/` at `outline/<stem>-design-items.md`, one block per item:
+lives under `draft/` at `draft/<stem>-design-items.md`, one block per item:
 
 ```text
 ## ITEM01 · Send the salience wording unchanged
@@ -363,7 +363,7 @@ rest with one sentence.
 register says `goal` where the config says `move`, and the config's own `goal`
 is the same goal sentence). The Commission pins its config (goal sentence,
 stance, basis, mode, expected, falsified, the compiled criteria, and the raw
-rule text) and the item's evidence files with sha256. It does not pin the
+rule text) and the item's evidence files by path. It does not pin the
 Brief version or venue packs. Generate and Verify inherit the released design fields and
 evidence list, deriving only review_mode and the permitted operation mode, so an edit to the register after release reaches only a new
 Commission, which means a new item (at most one release per item). The card then
@@ -405,10 +405,11 @@ waits on, is in `ref/space-mapping.md`.
 
 Beside the state the tab always says **who is waited on**. `agent` is waited
 on only while a run is queued or running (`agent · generate`,
-`agent · verify`, `agent · running`). Otherwise it names the person with the
-step: `JL · commission`, `JL · release or hold`, `JL · queue the draft`,
-`JL · queue the review`, `JL · queue a revise`, `JL · queue the review again`,
-`JL · queue again`, or `JL · queue the revise`; a ready item waits on no one.
+`agent · verify`, `agent · running`). Otherwise it says **you** with the
+step, never a person's name: `you · commission`, `you · release or hold`,
+`you · queue the draft`, `you · queue the review`, `you · queue a revise`,
+`you · queue the review again`, or `you · queue again`; a ready item waits on
+no one.
 A person releases the Commission and clicks the queue buttons; an agent runs
 only what is queued. The only budget is
 `max_iterations: 2` inside each Generate run; nothing counts revise runs
@@ -419,9 +420,9 @@ across an item.
 ```text
 0-BR-brief/*/BR00-brief.md              the line that names this folder (Goal Space)
 board.md  reads:                        the Insight board (Goal Space, Insight Space)
-outline/<stem>-design-items.md          the register (goal, evidence, rules)
-outline/feedback/<run>.md               the feedback a revise Generate was queued with
-outline/<stem>-draft-request.md         an open request for the agent to draft items
+draft/<stem>-design-items.md          the register (goal, evidence, rules)
+draft/feedback/<run>.md               the feedback a revise Generate was queued with
+draft/<stem>-draft-request.md         an open request for the agent to draft items
 runs/rdNN_<operation>_<slug>.yaml       run record: item, target, actor, config ref, pinned inputs
 scripts/config/<run>.yaml               goal, design_intent, criteria, the rule text, unit
 results/<run>/runtime.yaml              status, actor/worker, times, route, failure
@@ -458,17 +459,17 @@ waited on:
 
 | Item state | Button | Writes |
 | --- | --- | --- |
-| not commissioned · commission open · commission held | Release commission · Hold (name + words) | `rdNN_commission_*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, pinned with sha256. At most one release per item: a second Release is refused; releasing after hold creates a new Commission Run and preserves the old decision |
+| not commissioned · commission open · commission held | Release commission · Hold (name + words) | `rdNN_commission_*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, named by path. At most one release per item: a second Release is refused; releasing after hold creates a new Commission Run and preserves the old decision |
 | commissioned · revise requested | Queue Generate · agent | planned `rdNN_generate_*` run record, a copy of the released config, and a receipt for `haipipe-designer-agent` |
 | generated · verify invalid | Queue Verify · independent agent | planned `rdNN_verify_*` run record targeting the complete Generate Result; refused when that draft already has a completed valid independent review |
-| generate failed · verify failed | Queue revise · agent (feedback) | planned Generate run record with `base` + `feedback` inputs, the feedback saved at `outline/feedback/<run>.md` (a challenge bet stays in challenge mode); refused for a draft that passed its review |
+| generate failed · verify failed | Queue revise · agent (feedback) | planned Generate run record with `base` + `feedback` inputs, the feedback saved at `draft/feedback/<run>.md` (a challenge bet stays in challenge mode); refused for a draft that passed its review |
 | queued run out of date | Queue again with today's insight files | the old queued run marked `superseded` (reason: the files that changed) and a fresh run that pins today's bytes; a revise keeps its base and feedback |
 | blocked | named Run, reason and repair owner; no Commission button | the caller resolves the input/record problem through the Design workflow before work resumes |
 | records invalid | recorded candidate/review mismatch and repair owner; no queue button | inspect the records check; preserve recorded versions, and use a new Run for changed content |
 | ready | ready for Delivery | no decision Run; the passed Verify pins the exact candidate for handoff |
 | generate queued · verify queued · generating · verifying | none ("queued for the agent") | — |
 | any | New Design Item | one block appended to the register, after the binding check above |
-| register short of the Brief's count | Ask the agent to draft the missing N (Goal Space) | `outline/<stem>-draft-request.md`: the goal, the insights with FINDING / CONSEQUENCE / DO / DO NOT lines, and how many items to draft. The queue runner only lists open requests; a Claude session appends the items with `add_item` and removes the file |
+| register short of the Brief's count | Ask the agent to draft the missing N (Goal Space) | `draft/<stem>-draft-request.md`: the goal, the insights with FINDING / CONSEQUENCE / DO / DO NOT lines, and how many items to draft. The queue runner only lists open requests; a Claude session appends the items with `add_item` and removes the file |
 
 The independent Verify is the Delivery gate. A passed candidate is ready
 without another human decision; a failed draft or failed review can still be
@@ -509,20 +510,22 @@ truthfully:
 3. **Review verdict fail**: complete, route generate; the person queues a revise.
 4. **Review verdict pass**: complete, route delivery; the exact candidate is ready.
 
-A review that failed the check shows as `verify invalid · JL · queue the
-review again`, distinct from a draft that failed review, `verify failed · JL ·
+A review that failed the check shows as `verify invalid · you · queue the
+review again`, distinct from a draft that failed review, `verify failed · you ·
 queue a revise`. There is no HOLD route from the agent side: HOLD is a
 person's decision at Commission. Delivery is not a second decision gate; it
 is the read-only handoff of a passed Verify.
 Every action re-runs the records check and returns its findings with the
 receipt. Refusals come back as one plain sentence under the button.
 
-The records check (`check_unit.py --folder`) holds an open run to its pins
-exactly. A closed run (complete, failed, blocked) reads inputs that live
-outside the Design Folder, such as Insight pages, as history, so a later edit
-to an Insight page does not void it; inputs inside the folder (config,
-approval, targets, artifacts) stay exact. A superseded run needs a reason and
-no result.
+The records check (`check_unit.py --folder`) calls an open run stale when one
+of its inputs or targets is newer than the run record (file time; no content
+hashes, JL 260928). A closed run (complete, failed, blocked) reads its inputs
+as history, so a later edit to an Insight page does not void it; a closed
+Verify is still stale when its target Result is newer than its own
+`result.yaml`, and Result files must not be newer than their `result.yaml`.
+The frozen config and approval are checked for existence only. A superseded
+run needs a reason and no result.
 
 ## Running the queue without a session
 
@@ -591,7 +594,7 @@ From one tab, without opening a file, the reader can answer:
    and pinned, what is still missing, and what else the board offers.
 5. For each item: which Run is it at, who acted, when, with what outcome, and
    who is it waiting on now?
-6. Which exact draft (hash) is ready for Delivery, verified by whom, and does
+6. Which exact draft (run and path) is ready for Delivery, verified by whom, and does
    the records check pass on the folder as it stands? (Run Space)
 7. At a glance, what designs do we have? (Delivery Space)
 

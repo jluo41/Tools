@@ -233,6 +233,25 @@ A member's benchmark is therefore small, and lives at
 symlink pointing back. Code in git, data in the store, one copy of each.
 
 
+THE EVENT LOCK: WHERE A MEMBER'S TABLES COME FROM
+--------------------------------------------------------------------------------
+
+Every table a member reads is a versioned ext_ asset in the workspace ExternalStore,
+built, validated and pinned in `examples-1-data/Proj01-CGM-RawData/tasks/b51_externalstore`
+(the diabetes event external store). A member finds a table through the lock, not a
+hard-coded folder:
+
+    paths.py lock_file(asset, filename=None)   the pinned file, sha256 checked
+    <noun>norm/_lock.py                        loads paths.py beside the skill; no PYTHONPATH
+
+The lock is `$EVENTNORM_LOCK` (default `EventNormV2`); `EVENTNORM_LOCK=none`, or a
+lock that does not pin the asset, falls back to the old flat folder. Each member's
+answers are also frozen there as `ext_<noun>_resolved`, one row per distinct request
+in the WellDoc Source tables, so a SourceFn looks an answer up and never calls a
+member during a build. After changing a member or its tables, freeze a new version
+and write a new lock; that Block's parity Runs say whether anything moved.
+
+
 ADDING A MEMBER
 --------------------------------------------------------------------------------
 

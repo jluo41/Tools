@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, check gate, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-22"
+  version: "0.13.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -294,7 +294,7 @@ When called by RUN, read `../../haipipe-page-workflow/ref/page-run-contract.md` 
 return its common Run receipt. CHECK's receipt must additionally state:
 
 ```text
-checked_version    source SHA-256 joined to rendered HTML SHA-256
+checked_version    the Page version number and saved time, e.g. v1.5 260928 1241
 verdict            pass | revise | blocked
 findings           exact defects or none
 evidence           visible support for every pass claim
@@ -306,7 +306,9 @@ human_gate         required, status, and durable evidence
 ```
 
 `checked_version` must equal both version fields and CHECK must not edit either
-artifact. A mismatch means concurrent or hidden mutation and routes to HOLD.
+artifact. A mismatch, or a source or render saved after CHECK read it (newer
+file time), means concurrent or hidden mutation and routes to HOLD. Never
+compute, pin, or compare a content hash (JL 260928).
 The actor that produced a version may not be its CHECK actor. A changed version
 after CONTENT receives another CHECK; an earlier pass never transfers.
 Only `verdict: pass` may route to CLOSE, and a required human gate without
@@ -325,7 +327,7 @@ Use the shared **Mechanics, Function, Evidence, Readability** criteria and four
 verdicts from
 `../../../writing/haipipe-writing/ref/evaluation-rubric.md`.
 That is the base prose rubric used by both Writing self-review and this
-independent CHECK. Its version/hash and the actual checked artifact/version
+independent CHECK. Its version and the actual checked artifact/version
 belong in the receipt. Add Page-specific mechanics from check.py, required
 source/render consistency, Aims and visible artifact evidence under this
 contract. Judge Readability for the intended reader using a fresh context.

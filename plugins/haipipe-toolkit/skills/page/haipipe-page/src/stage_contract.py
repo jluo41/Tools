@@ -3,8 +3,12 @@
 This module is intentionally independent of the board parser. The parser calls
 ``contract_status`` after it has assembled the page map; ``stage.py`` calls the
 other helpers when it explicitly creates or synchronizes a stage.
+
+No content hashes (JL 260928): a Stage Contract is stale when one of its explicit
+sources was saved after the page that carries it. A leftover `contract-source-hash:`
+line on an older page is ignored.
 """
-import hashlib
+from datetime import datetime
 import re
 from pathlib import Path
 
@@ -30,21 +34,23 @@ def _resolve(board, token, by_id):
     return None, None
 
 
-def contract_digest(board, page, by_id):
-    """Hash only explicit contract sources, never the destination page."""
-    h = hashlib.sha256()
-    for kind, value in (("requires", page.get("requires", "")),
-                        ("style-from", page.get("style_from", ""))):
+def _sources(board, page, by_id):
+    """The explicit contract sources that resolve, never the destination page."""
+    found = []
+    for value in (page.get("requires", ""), page.get("style_from", "")):
         for token in refs(value):
             path, _ = _resolve(Path(board), token, by_id)
-            h.update(f"{kind}:{token}\0".encode("utf-8"))
             if path:
-                h.update(path.resolve().as_posix().encode("utf-8"))
-                h.update(b"\0")
-                h.update(path.read_bytes())
-            else:
-                h.update(b"<missing>")
-    return h.hexdigest()[:16]
+                found.append(path)
+    return found
+
+
+def contract_saved(board, page, by_id):
+    """When the newest explicit contract source was saved, as `yymmdd HHMM` ("" if none)."""
+    times = [path.stat().st_mtime for path in _sources(board, page, by_id)]
+    return datetime.fromtimestamp(max(times)).strftime("%y%m%d %H%M") if times else ""
+
+
 
 
 def contract_status(board, page, by_id):
@@ -60,14 +66,15 @@ def contract_status(board, page, by_id):
                 return f"{page['id']} Stage Contract source not found: {token}"
     source = Path(board) / page.get("file", "")
     text = source.read_text(encoding="utf-8") if source.is_file() else ""
-    saved = page.get("contract_source_hash", "")
-    current = contract_digest(board, page, by_id)
-    if START not in text or END not in text or not saved:
+    if START not in text or END not in text:
         return f"{page['id']} has dependencies but its Stage Contract has not been synchronized"
-    if saved != current:
+    newer = [path for path in _sources(board, page, by_id)
+             if path.stat().st_mtime > source.stat().st_mtime]
+    if newer:
         return (
             f"{page['id']} Stage Contract is stale "
-            f"(saved {saved}, current {current}); run stage.py sync"
+            f"({newer[0].name} saved {contract_saved(board, page, by_id)}, after the page); "
+            "run stage.py sync"
         )
     return ""
 

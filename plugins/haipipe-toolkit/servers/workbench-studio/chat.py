@@ -30,7 +30,7 @@ from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from host_paths import HOST as HOST_DIR   # servers/_host (status.py lives there)
 from .structure import page_id_of
 from src.common import outline_lane_dirs, studio_lane_dir
-from src.outline_version import latest_outline
+from src.outline_version import latest_outline, plan_dir, record_path
 from server_config import load_server_config, server_config_dir
 
 
@@ -491,7 +491,7 @@ def page_folder_context(f, root):
             out.append(f"  · {field}: {page_type}  (load {page_skill} before shaping anything)")
     except Exception:
         pass
-    o = d / "outline"
+    o = plan_dir(d)
     if o.is_dir():
         parts = []
         plan = latest_outline(o, stem)
@@ -499,11 +499,11 @@ def page_folder_context(f, root):
             pt = plan.read_text(encoding="utf-8", errors="ignore")
             tick = "✅" if re.search(r"(?m)^approved:\s*✅", pt) else "⬜"
             parts.append(f"plan {plan.name[len(stem)+1:-3]} approved {tick}")
-        disc = o / f"{stem}-discussion.md"
+        disc = record_path(o, stem, "discussion")
         if disc.is_file():
             n = len(re.findall(r"(?m)^### D\d+", disc.read_text(encoding="utf-8", errors="ignore")))
             parts.append(f"{n} open D<nn> thread(s)")
-        fb = o / f"{stem}-feedback.md"
+        fb = record_path(o, stem, "feedback")
         if fb.is_file():
             m = re.search(r"(?m)^status:\s*(.+)$", fb.read_text(encoding="utf-8", errors="ignore"))
             if m: parts.append("feedback " + m.group(1).strip())
@@ -511,7 +511,7 @@ def page_folder_context(f, root):
         if ev.is_file():
             m = re.search(r"(?m)^plan:.*?(owed \d+ · landed \d+ · accepted \d+)", ev.read_text(encoding="utf-8", errors="ignore"))
             if m: parts.append("evidence " + m.group(1))
-        names = [k for k in ("requirement", "discussion", "feedback", "evidence", "files", "log") if (o / f"{stem}-{k}.md").is_file()]
+        names = [k for k in ("requirement", "discussion", "feedback", "evidence", "files", "log") if record_path(o, stem, k).is_file()]
         out.append("  · outline/: " + (" · ".join(parts) if parts else "no plan yet") + f"  [files: {', '.join(names) or 'none'}]")
     out.extend(_scratch_context(f, root))
     try:                                   # the progress strip, from disk (src/page_progress.py)
@@ -524,7 +524,7 @@ def page_folder_context(f, root):
             ("skill", "skills this page is written with (load the one a message needs)"),):
         dirs = outline_lane_dirs(d, lane)
         lst = ((dirs[0] / f"{stem}.md") if dirs
-               else d / "outline" / lane / f"{stem}.md")
+               else plan_dir(d) / lane / f"{stem}.md")
         if lst.is_file():
             rows = [ln[2:].strip() for ln in lst.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.startswith("- ")]
             if rows:
@@ -563,7 +563,7 @@ def _scratch_context(f, root):
     if not records:
         return []
     try:
-        plan = latest_outline(Path(f).parent / "outline", Path(f).stem)
+        plan = latest_outline(plan_dir(Path(f).parent), Path(f).stem)
         plan_rel = str(plan.resolve().relative_to(Path(root).resolve())) if plan else "selected Outline"
     except (OSError, ValueError, RuntimeError):
         plan_rel = "selected Outline"
@@ -734,7 +734,7 @@ BOARD_RULES_BODY = """The board folder given below holds `board.md` (title · `s
 yours: which page to act on next, the ## Pages order, grouping and group intros,
 cross-page consistency. Deep work inside one page belongs to that page's own chat
 and follows haipipe-workbench-studio/ref/chat.md §🗺. Never hand-edit board/ (generated). Every page
-you change gets one record at the top of its outline/<stem>-log.md:
+you change gets one record at the top of its outline/records/<stem>-log.md:
 `### YYMMDD HHMM · chat: <what changed>`. Preserve every signed `> Comment` and `> ✎`
 line beneath the sentence it concerns.
 

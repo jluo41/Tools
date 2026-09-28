@@ -196,14 +196,16 @@ uses `🔴`, `🟡`, `✅`, or `⏸️` and is a different field.
 
 ```text
 <page>/outline/
-├── <stem>-context.md
-├── <stem>-outline-v<G>.<S>[.<E>].md
+├── <stem>-outline-v<G>.<S>[.<E>].md   the one current plan
 ├── <stem>-evidence-items.md
-├── <stem>-requirement.md
-├── <stem>-feedback.md
-├── <stem>-discussion.md
-├── <stem>-files.md
-└── <stem>-log.md
+├── records/
+│   ├── <stem>-context.md
+│   ├── <stem>-requirement.md
+│   ├── <stem>-feedback.md
+│   ├── <stem>-discussion.md
+│   ├── <stem>-files.md
+│   └── <stem>-log.md
+└── previous/                          superseded plan versions
 ```
 
 The Outline workbench owns their schemas. Writers append or regenerate the

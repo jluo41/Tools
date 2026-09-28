@@ -1,6 +1,11 @@
 # haipipe-design-brief · version history
 
-## 0.4.0 current · 2026-09-20 (version unchanged at 0.4.0)
+## 0.4.0 current · 2026-09-28 · No content hashes (JL 260928) (version unchanged at 0.4.0; the Design family version is frozen)
+
+- A signed Wisdom handoff is named by path, Page version, signature and GI6
+  receipt; no content hash.
+
+## 0.4.0 · 2026-09-20 (version unchanged at 0.4.0)
 
 - List all eight supplied venue guides so the four earlier examples cannot be
   mistaken for a restricted venue enum. Fresh-context portfolio validation

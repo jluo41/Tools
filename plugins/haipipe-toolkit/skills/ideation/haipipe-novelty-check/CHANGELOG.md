@@ -1,3 +1,7 @@
+## 0.1.6 · 2026-09-28 · No content hashes (JL 260928)
+
+- Direct-mode `assessment_binding.input` is `{subject_card, inputs}` (paths), not `subject_hash`/`manifest_sha256` (haipipe-ideation 0.7.1).
+
 ## 0.1.5 · 2026-09-22
 
 - Moved to the family root beside the door: every skill we wrote sits flat, the numbered folders hold vendored originals only. Links to `../haipipe-ideation/` repointed (1).

@@ -3,7 +3,7 @@ name: haipipe-data-source
 description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, maps Raw Data plus pinned ExternalStore assets into stable ProcessName-to-ProcessDF tables, and inspects 1-SourceStore. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.2"
+  version: "0.3.3"
   last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

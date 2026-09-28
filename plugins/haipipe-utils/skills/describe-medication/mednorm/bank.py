@@ -65,7 +65,10 @@ def ndc_candidates(ndc):
 
 @functools.lru_cache(maxsize=2)
 def _fda():
-    df = pd.read_parquet(BANK)
+    df = pd.read_parquet(BANK).rename(columns={      # the ext_fda_ndc table back to FDA's own names
+        "ndc9_original": "ndc9", "Ingredient": "NONPROPRIETARYNAME", "BrandName": "PROPRIETARYNAME",
+        "PharmClass": "PHARM_CLASSES", "DosageForm": "DOSAGEFORMNAME", "Route": "ROUTENAME",
+        "Substance": "SUBSTANCENAME"})
     by_ndc, by_gen, by_brand = {}, {}, {}
     for r in df.itertuples(index=False):
         rec = {
@@ -89,7 +92,7 @@ def _fda():
 
 @functools.lru_cache(maxsize=2)
 def _lexicon() -> Dict[str, Dict]:
-    df = pd.read_parquet(LEXICON)
+    df = pd.read_parquet(LEXICON).rename(columns={"MedicationID_original": "MedicationID"})
     return {str(int(r.MedicationID)): {"MedicationName": r.MedicationName,
                                        "NDC": r.NDC}
             for r in df.itertuples(index=False)}

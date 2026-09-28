@@ -36,6 +36,6 @@ Panel 1: Summary KPIs (top row, 3 cards)
 [ ] KPI cards have current, trend, target
 [ ] Drill-down paths specified
 [ ] Refresh cadence noted
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

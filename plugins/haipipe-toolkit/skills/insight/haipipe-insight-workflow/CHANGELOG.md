@@ -1,5 +1,11 @@
 # haipipe-insight-workflow · version history
 
+## 1.3.3 — 2026-09-28 · No content hashes (JL 260928)
+
+- The handoff index, GI5/GI6 receipts, Runtime and control records name paths and versions only;
+  no `sha256`, `definition_hash` or `result_hash`. The Insight viewer reports a handoff stale when the
+  signed Page or a whole-file dependency is newer than the GI5 receipt (file time).
+
 ## 1.3.2 — 2026-09-20
 
 - Require the pooling verdict to cite the predeclared shared threshold source

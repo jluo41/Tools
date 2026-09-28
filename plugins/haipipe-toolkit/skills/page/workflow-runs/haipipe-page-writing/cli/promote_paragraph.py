@@ -11,9 +11,11 @@ Usage::
 
 The Result directory must contain ``paragraph.md``, ``trace.md`` and
 ``runtime.yaml``.  ``runtime.yaml`` must report a complete Page paragraph Run
-and pin the Page source hash that was read before the Run started.  Promotion
-is idempotent after a successful write and records its own nested lifecycle
-object in ``runtime.yaml``.
+and record when the Run read the Page source (the page-source input's
+``read_at``, else the Run's ``started_at``).  The Page is stale when its file
+time is newer than that moment; no content hash is written or compared
+(JL 260928).  Promotion is idempotent after a successful write and records its
+own nested lifecycle object in ``runtime.yaml``.
 """
 
 from __future__ import annotations
@@ -34,7 +36,7 @@ import yaml
 
 try:
     import fcntl
-except ImportError:  # pragma: no cover - Windows fallback keeps the hash gate
+except ImportError:  # pragma: no cover - Windows fallback keeps the file-time gate
     fcntl = None
 
 
@@ -45,7 +47,7 @@ DIVISION_RE = re.compile(r"^### (?!#)")
 PARAGRAPH_HEADING_RE = re.compile(r"^#### (?!#)")
 FENCE_RE = re.compile(r"^\s*```")
 COMMENT_RE = re.compile(r"^\s*<!--.*-->\s*$")
-SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+PAGE_ROLES = {"page", "page-source", "source-page", "current-page"}
 
 
 class PromotionError(RuntimeError):
@@ -71,14 +73,6 @@ class ParagraphSpan:
             "line_start": start,
             "line_end": end,
         }
-
-
-def _sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def _sha256_file(path: Path) -> str:
-    return _sha256_bytes(path.read_bytes())
 
 
 def _page_newline(data: bytes) -> str:
@@ -382,45 +376,81 @@ def _check_source_span(lines: list[str], span: ParagraphSpan) -> None:
             )
 
 
-def _page_input_hash(runtime: dict[str, Any], page: Path, runtime_path: Path) -> str:
+def _parse_time(raw: Any) -> tuple[dt.datetime, dt.timedelta]:
+    """Parse a recorded time and return it with its precision.
+
+    Accepts ISO 8601 (``2026-09-28T12:41:05Z``; naive values are local time) and
+    the workspace stamp ``yymmdd HHMM`` (``260928 1241``, local time).
+    """
+    if isinstance(raw, dt.datetime):
+        value, text = raw, raw.isoformat()
+    else:
+        text = str(raw).strip()
+        stamp = re.fullmatch(r"(\d{6})[ T_-]?(\d{4})", text)
+        if stamp:
+            value = dt.datetime.strptime(stamp.group(1) + stamp.group(2), "%y%m%d%H%M")
+            return value.astimezone(), dt.timedelta(minutes=1)
+        try:
+            value = dt.datetime.fromisoformat(text.replace("Z", "+00:00").replace("z", "+00:00"))
+        except ValueError as exc:
+            raise PromotionError(
+                f"cannot read the recorded Page read time {raw!r}; use ISO 8601 "
+                "(2026-09-28T12:41:05Z) or yymmdd HHMM"
+            ) from exc
+    if value.tzinfo is None:
+        value = value.astimezone()
+    clock = text.split("T", 1)[-1] if "T" in text else text.split(" ", 1)[-1]
+    if value.microsecond or re.search(r"\d\d:\d\d:\d\d[.,]\d", clock):
+        step = dt.timedelta(microseconds=1)
+    elif re.search(r"\d\d:\d\d:\d\d", clock):
+        step = dt.timedelta(seconds=1)
+    else:
+        step = dt.timedelta(minutes=1)
+    return value, step
+
+
+def _page_read_at(runtime: dict[str, Any], page: Path, runtime_path: Path) -> tuple[dt.datetime, dt.timedelta]:
+    """When the Run read the Page source: the page-source input's ``read_at``,
+    else the Run's ``started_at``.  Leftover ``*sha256`` keys from older records
+    are ignored, never required (JL 260928)."""
     candidates: list[Any] = []
-    for key in ("page_before_sha256", "source_page_sha256"):
-        if runtime.get(key):
-            candidates.append(runtime[key])
     inputs = runtime.get("inputs")
     if isinstance(inputs, dict):
         inputs = [inputs]
     if isinstance(inputs, list):
         for item in inputs:
-            if not isinstance(item, dict):
+            if not isinstance(item, dict) or not item.get("read_at"):
                 continue
             role = str(item.get("role", "")).lower()
             raw_path = item.get("path")
-            if role in {"page", "page-source", "source-page", "current-page"}:
-                if item.get("sha256"):
-                    candidates.append(item["sha256"])
-                continue
-            if raw_path and _path_matches(raw_path, page, runtime_path.parent):
-                if item.get("sha256"):
-                    candidates.append(item["sha256"])
+            if role in PAGE_ROLES or (raw_path and _path_matches(raw_path, page, runtime_path.parent)):
+                candidates.append(item["read_at"])
+    if not candidates and runtime.get("started_at"):
+        candidates.append(runtime["started_at"])
     if not candidates:
         raise PromotionError(
-            "runtime.yaml does not pin the Page source hash; add an inputs entry "
-            "with role: page-source, path: <page.md>, and sha256 before promotion"
+            "runtime.yaml does not record when the Run read the Page; add read_at "
+            "(ISO 8601 time) to its role: page-source input, or set started_at"
         )
-    values = []
-    for candidate in candidates:
-        value = str(candidate).strip().lower()
-        if not SHA256_RE.fullmatch(value):
-            raise PromotionError(f"invalid pinned Page sha256 {candidate!r}")
-        values.append(value)
-    distinct = sorted(set(values))
-    if len(distinct) != 1:
-        raise PromotionError(
-            "runtime.yaml contains conflicting frozen Page hashes; re-freeze the "
-            "Run inputs before promotion"
-        )
-    return distinct[0]
+    # Several recorded reads: the earliest is the strictest staleness test.
+    return min((_parse_time(value) for value in candidates), key=lambda pair: pair[0])
+
+
+def _page_changed_since(page: Path, read_at: tuple[dt.datetime, dt.timedelta]) -> bool:
+    """File time, compared at the precision the read time was recorded with."""
+    moment, step = read_at
+    saved = dt.datetime.fromtimestamp(page.stat().st_mtime, tz=dt.timezone.utc)
+    epoch = dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc)
+    return (saved - epoch) // step > (moment - epoch) // step
+
+
+def _saved(path: Path) -> str:
+    return dt.datetime.fromtimestamp(path.stat().st_mtime).strftime("%y%m%d %H%M")
+
+
+def _without_hashes(mapping: dict[str, Any]) -> dict[str, Any]:
+    """Drop leftover content-hash keys an older promotion receipt may carry."""
+    return {key: value for key, value in mapping.items() if "sha256" not in str(key).lower()}
 
 
 def _path_matches(raw_path: Any, page: Path, base: Path) -> bool:
@@ -483,9 +513,10 @@ def _validate_runtime(
 @contextmanager
 def _page_lock(page: Path):
     """Serialize promotions targeting one Page source on POSIX hosts."""
-    if fcntl is None:  # pragma: no cover - the optimistic hash gate still applies
+    if fcntl is None:  # pragma: no cover - the file-time gate still applies
         yield
         return
+    # A temp lock-file name only; never written to a record or compared.
     lock_key = hashlib.sha256(str(page).encode("utf-8")).hexdigest()
     lock_path = Path(tempfile.gettempdir()) / f"haipipe-page-promotion-{lock_key}.lock"
     try:
@@ -558,7 +589,7 @@ def _promote_locked(
     target: str | None = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Run the optimistic/hash-checked promotion while the Page lock is held."""
+    """Run the file-time-checked promotion while the Page lock is held."""
     if not page.is_file():
         raise PromotionError(f"Page source is not a file: {page}")
     if not result_dir.is_dir():
@@ -600,19 +631,17 @@ def _promote_locked(
 
     candidate = _candidate_lines(paragraph_path)
     page_bytes = page.read_bytes()
-    page_hash_before = _sha256_bytes(page_bytes)
-    expected_page_hash = _page_input_hash(runtime, page, runtime_path)
+    read_at = _page_read_at(runtime, page, runtime_path)
 
     promotion = runtime.get("promotion")
     if promotion is not None and not isinstance(promotion, dict):
         raise PromotionError("runtime.yaml promotion must be a mapping when present")
-    promotion = dict(promotion or {})
+    promotion = _without_hashes(dict(promotion or {}))
     promotion_status = str(promotion.get("status", "")).lower()
     if promotion_status not in {"", "applying", "promoted"}:
         raise PromotionError(
             f"runtime.yaml has unsupported promotion status {promotion.get('status')!r}"
         )
-    result_hash = _sha256_file(paragraph_path)
 
     try:
         page_text = page_bytes.decode("utf-8")
@@ -622,60 +651,30 @@ def _promote_locked(
     lines = page_text.splitlines()
 
     if promotion_status == "promoted":
-        recorded_result_hash = str(promotion.get("result_sha256", "")).lower()
-        if recorded_result_hash and recorded_result_hash != result_hash:
-            raise PromotionError(
-                "runtime.yaml says this Result was promoted, but paragraph.md has "
-                "changed; keep the accepted Result immutable and create a new Run"
-            )
-        after_hash = str(promotion.get("page_after_sha256", "")).lower()
-        if after_hash != page_hash_before:
-            raise PromotionError(
-                "runtime.yaml says this Result was promoted, but the Page source "
-                "hash no longer matches its promotion receipt"
-            )
+        # Idempotent by text: the addressed paragraph must still read as
+        # paragraph.md.  An edited paragraph.md or Page paragraph fails here.
         span = find_paragraph(lines, resolved_target)
         if lines[span.body_start : span.body_end] != candidate:
             raise PromotionError(
                 "runtime.yaml says this Result was promoted, but the addressed "
-                "Page paragraph differs from paragraph.md"
+                "Page paragraph differs from paragraph.md; keep the accepted Result "
+                "immutable and create a new Run"
             )
         return {
             "status": "already-promoted",
             "target": resolved_target,
             "page": str(page),
             "result": str(result_dir),
-            "result_sha256": result_hash,
-            "page_before_sha256": page_hash_before,
-            "page_after_sha256": after_hash,
+            "page_saved": _saved(page),
             "source_locator": promotion.get("source_locator"),
         }
 
     if promotion_status == "applying":
-        recorded_result_hash = str(promotion.get("result_sha256", "")).lower()
-        if recorded_result_hash and recorded_result_hash != result_hash:
-            raise PromotionError(
-                "an interrupted promotion references a different paragraph Result; "
-                "refusing recovery"
-            )
-        recorded_before_hash = str(
-            promotion.get("page_before_sha256", expected_page_hash)
-        ).lower()
-        if recorded_before_hash != expected_page_hash:
-            raise PromotionError(
-                "an interrupted promotion has a different frozen Page hash; "
-                "re-freeze the Run before recovery"
-            )
-        planned = str(promotion.get("planned_page_after_sha256", "")).lower()
-        if planned and planned == page_hash_before:
-            span = find_paragraph(lines, resolved_target)
-            if lines[span.body_start : span.body_end] != candidate:
-                raise PromotionError(
-                    "an interrupted promotion found a different paragraph at the "
-                    "target; refusing recovery"
-                )
+        # An interrupted write is recovered by text: if the addressed paragraph
+        # already reads as paragraph.md, the Page write landed; finalize it.
+        span = find_paragraph(lines, resolved_target)
+        if lines[span.body_start : span.body_end] == candidate:
             promotion["status"] = "promoted"
-            promotion["page_after_sha256"] = page_hash_before
             promotion["promoted_at"] = _now()
             runtime["promotion"] = promotion
             if not dry_run:
@@ -691,18 +690,17 @@ def _promote_locked(
                 "target": resolved_target,
                 "page": str(page),
                 "result": str(result_dir),
-                "result_sha256": result_hash,
-                "page_before_sha256": promotion.get("page_before_sha256"),
-                "page_after_sha256": page_hash_before,
+                "page_saved": _saved(page),
                 "source_locator": promotion.get("source_locator"),
                 "recovered": True,
             }
 
-    if page_hash_before != expected_page_hash:
+    if _page_changed_since(page, read_at):
         raise PromotionError(
-            "Page source changed after the Run was frozen; refusing stale promotion "
-            f"(expected {expected_page_hash}, found {page_hash_before}). "
-            "Create a new Run or explicitly re-freeze its inputs."
+            "Page source changed after the Run read it; refusing stale promotion "
+            f"(Run read it {read_at[0].astimezone().strftime('%y%m%d %H:%M:%S')}, "
+            f"Page saved {dt.datetime.fromtimestamp(page.stat().st_mtime).strftime('%y%m%d %H:%M:%S')}). "
+            "Create a new Run, or record a new read_at after re-reading the Page."
         )
 
     span = find_paragraph(lines, resolved_target)
@@ -725,16 +723,13 @@ def _promote_locked(
     if had_final_newline:
         new_text += newline
     new_bytes = new_text.encode("utf-8")
-    page_hash_after = _sha256_bytes(new_bytes)
 
     receipt = {
         "status": "applying",
         "target": resolved_target,
         "page": str(page),
         "result": str(result_dir),
-        "result_sha256": result_hash,
-        "page_before_sha256": page_hash_before,
-        "planned_page_after_sha256": page_hash_after,
+        "page_read_at": read_at[0].isoformat(),
         "source_locator": span.locator,
         "started_at": _now(),
     }
@@ -743,9 +738,6 @@ def _promote_locked(
         "target": resolved_target,
         "page": str(page),
         "result": str(result_dir),
-        "result_sha256": result_hash,
-        "page_before_sha256": page_hash_before,
-        "page_after_sha256": page_hash_after,
         "source_locator": span.locator,
         "replaced_line_count": len(old_body),
         "new_line_count": len(candidate),
@@ -756,8 +748,8 @@ def _promote_locked(
     runtime["promotion"] = receipt
     try:
         _atomic_write(runtime_path, _dump_runtime(runtime))
-        latest_page_hash = _sha256_file(page)
-        if latest_page_hash != page_hash_before:
+        # In-memory byte comparison under the lock, not a recorded hash.
+        if page.read_bytes() != page_bytes:
             raise PromotionError(
                 "Page source changed during promotion preparation; the applying "
                 "receipt was retained and the stale write was refused"
@@ -771,10 +763,9 @@ def _promote_locked(
             "inspect runtime.yaml and retry the same Run"
         ) from exc
 
-    verify_hash = _sha256_file(page)
-    if verify_hash != page_hash_after:
+    if page.read_bytes() != new_bytes:
         raise PromotionError(
-            "Page write verification failed: source hash differs from the planned "
+            "Page write verification failed: the saved Page differs from the planned "
             "promotion result"
         )
     verify_lines = page.read_text(encoding="utf-8").splitlines()
@@ -785,7 +776,6 @@ def _promote_locked(
         )
 
     receipt["status"] = "promoted"
-    receipt["page_after_sha256"] = verify_hash
     receipt["promoted_at"] = _now()
     runtime["promotion"] = receipt
     try:
@@ -795,6 +785,7 @@ def _promote_locked(
             "Page content was written and verified, but the final promotion "
             "receipt could not be saved; retry the same command to recover it"
         ) from exc
+    outcome["page_saved"] = _saved(page)
     return outcome
 
 
@@ -833,9 +824,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(outcome, ensure_ascii=False, sort_keys=True))
     else:
+        saved = outcome.get("page_saved")
         print(
-            f"{outcome['status']}: {outcome['target']} → {outcome['page']} "
-            f"(Page {outcome['page_before_sha256']} → {outcome['page_after_sha256']})"
+            f"{outcome['status']}: {outcome['target']} → {outcome['page']}"
+            + (f" (Page saved {saved})" if saved else "")
         )
     return 0
 

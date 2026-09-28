@@ -324,9 +324,9 @@ The pattern:
 
 Two related memory rules already in the framework (don't undo them):
 
-  - The manifest step fingerprints tables from the parquet FOOTER
-    (row count, schema) + a streaming file-byte MD5 — it must never load
-    the table as a DataFrame (code/haipipe/source_base/source_pipeline.py).
+  - The manifest step reads table facts from the parquet FOOTER
+    (row count, schema); it must never load the table as a DataFrame
+    (code/haipipe/source_base/source_pipeline.py).
   - Freed pandas memory is not always returned to the OS (glibc retention);
     a sequence of near-limit loads can creep into OOM even when each load
     individually "fits". Chunking is the fix, not bigger gc.

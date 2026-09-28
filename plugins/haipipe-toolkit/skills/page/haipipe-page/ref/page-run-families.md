@@ -229,8 +229,8 @@ delivery/<lane>/
 ```
 
 The Folder dialect may place the executable owner-native Ticket and canonical
-Result elsewhere. The RE records that full owner-native id, Result path, and
-hash; it never copies or renames an upstream Result to imitate Page-local
+Result elsewhere. The RE records that full owner-native id and Result path;
+it never copies or renames an upstream Result to imitate Page-local
 storage.
 
 ## Boundaries

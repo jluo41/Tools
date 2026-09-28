@@ -17,7 +17,7 @@ to imitate a local dialect.
 | Current Job-backed Task | `<job>/<task>/runs/<run>.sh` | `$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml` |
 | Page interaction / delivery | `<page>/runs/<native-run>.md` | resolved `results/<native-run>/`; exact profile controls journals and build pointers |
 | Design | `<design>/runs/rdNN_<operation>_<slug>.yaml` | `<design>/results/<same-stem>/runtime.yaml` |
-| Labeling | `<job>/runs/rlNN_<operation>_<target>.yaml` | `<job>/results/<same-stem>/runtime.yaml`; domain artifacts referenced |
+| Labeling | `<page>/runs/rlNN_<operation>_<target>.yaml`, beside `<page>/labeling/` | `<page>/results/<same-stem>/runtime.yaml`; domain artifacts referenced as `labeling/...` |
 | Insight RI | `<instance>/runs/riNN_<slug>.yaml` | `<instance>/results/<ri>/vNNN/{input,runtime,result}.yaml` |
 
 The current Task [runner contract](../../../task/haipipe-task/fn/run.md) and

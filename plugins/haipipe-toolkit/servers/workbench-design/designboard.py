@@ -19,7 +19,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 from live.design import (
-    _declared_insight_boards, _handoff_says, _insight_bindings, _read, _short, _signal_line,
+    _declared_insight_boards, _handoff_says, _insight_bindings, _read, _signal_line,
     brief_page, brief_rows, design_chat_action, design_chat_copy, design_chat_copy_script, design_chat_prompt,
     design_next_run, design_picture, design_run_guide, design_snapshot, design_title, insight_caption,
     is_task_header, name_refs, plain_words, shown_design, venue_word,
@@ -501,7 +501,7 @@ def bundle_rows(snapshot: dict) -> list[dict]:
             "line": line.get("id", ""), "who": line.get("audience") or i.get("audience", ""),
             "their_job": line.get("job") or i.get("job", ""), "venue": line.get("venue") or i.get("type", ""),
             "folder": i["folder"], "item": i["id"], "title": i["title"], "state": i["state"], "text": design["text"],
-            "draft_run": design["run"], "sha256": design["sha256"],
+            "draft_run": design["run"],
             "render": i["render"]["render"] if i.get("render") else "",
         })
     return rows
@@ -511,7 +511,7 @@ def bundle_csv(snapshot: dict) -> str:
     import csv
     import io
     out = io.StringIO()
-    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "sha256", "render"]
+    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "render"]
     writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in bundle_rows(snapshot):
@@ -684,13 +684,13 @@ def new_folder(board_root: Path, row_id: str) -> dict:
     (folder / f"{name}.md").write_text(
         f"# {title}\nfolder-kind: design\nstate: 🔴 OPEN · no design registered yet\nowner: {_owner(board_root)}\n\n"
         f"## Opening\n\n{ask}\n\nListed in the Brief's design tasks.\n\n"
-        f"## Outline\n\nDesign Items are registered in `outline/{name}-design-items.md`; their drafts,\n"
+        f"## Outline\n\nDesign Items are registered in `draft/{name}-design-items.md`; their drafts,\n"
         "verifications are `rdNN_*` Runs; a passed Verify is ready for Delivery.\n\n## Content\n\nDraft wording lives in "
         "immutable Design Run Results, never here.\n\n## Aims\n\n### A1 · Every registered item reaches a "
         "truthful terminal decision\n\n- ⬜ A1.1 · pass Verify so the item is ready for Delivery.\n",
         encoding="utf-8")
-    (folder / "outline").mkdir()
-    (folder / "outline" / f"{name}-design-items.md").write_text(
+    (folder / "draft").mkdir()
+    (folder / "draft" / f"{name}-design-items.md").write_text(
         f"# {title} · Design Items\n\nOne block per design target: the goal, its evidence, and its acceptance rules.\n"
         "Runs name an item through `item:`; state is derived from those Runs, never typed here.\n",
         encoding="utf-8")

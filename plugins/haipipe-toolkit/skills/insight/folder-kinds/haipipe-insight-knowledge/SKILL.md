@@ -6,8 +6,8 @@ description: >-
   derived from named Information rows and never advising. Trigger: insight
   knowledge, claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-09-20"
+  version: "1.4.1"
+  last_updated: "2026-09-28"
   workflow: haipipe-insight-workflow
   folder_kind: knowledge
   primary_face: page
@@ -40,7 +40,7 @@ context has crossed into Wisdom.
 
 ## Input
 
-One registered QK ask; exact path/version/hash-pinned I-row parents; candidate proposition; strength
+One registered QK ask; exact path/version-pinned I-row parents; candidate proposition; strength
 reason; rival explanations and their disposition; population/window/unit
 boundary.
 
@@ -110,7 +110,7 @@ Folder's GI conditions still govern citation and register settlement.
 ## Gate and Closure
 
 GI4 passes only after Page CHECK/CLOSE, when every K row names exact
-path/version/hash-pinned parents, strength/reason, unresolved rivals, and
+path/version-pinned parents, strength/reason, unresolved rivals, and
 boundary, and contains no recommendation. A pooling verdict also
 states exactly `POOL`, `SPLIT`, or `UNDETERMINED` as an exchangeability claim.
 The verdict names the predeclared shared-threshold source/version, compared

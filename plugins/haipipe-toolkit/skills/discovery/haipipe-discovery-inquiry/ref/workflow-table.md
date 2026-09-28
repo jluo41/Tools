@@ -112,7 +112,7 @@ table at `haipipe-page-workflow/ref/workflow-table.md`.
 
 | Page controller Step | Discovery use | Page-owned writes | Page Runs selected | Cross-workflow handoff |
 |---|---|---|---|---|
-| 00 CONTEXT / PREPARE | Resolve D1 Folder owner, manifest, type promise, Results, requirements, and policies into fresh context. | outline/<stem>-context.md only. | none | A stale/missing manifest routes to d1.scope or d1.prepare. |
+| 00 CONTEXT / PREPARE | Resolve D1 Folder owner, manifest, type promise, Results, requirements, and policies into fresh context. | draft/records/<stem>-context.md only. | none | A stale/missing manifest routes to d1.scope or d1.prepare. |
 | 01A OUTLINE / SHAPE | Shape the four-role article and declare exact Discovery Result/cite support for each checkable claim. | Plan, division intents, Aim promises, and direct Result/cite bindings; the Page's Mermaid structure and global paragraph order are reviewed in the Page-owned `rp00_mermaid-structure` interaction when selected. | no D1 Run; Page may allocate `rp00_mermaid-structure` only through the shared Page workflow | A changed evidence population routes to D1 ACQUIRE. |
 | 01B OUTLINE / SURVEY | Decide whether existing Discovery Results suffice or D1 must acquire more. The D1 root Page does not create a redundant local Evidence Item graph. | Direct Result/cite routes and new Discovery requests. | none | new Discovery hands off to d1.acquire; completed Results return to SHAPE. |
 | 02A EVIDENCE / LAND | Skipped in the D1 root Folder because its admitted Paper/Source Results are already the authoritative evidence objects. | none | none | A consumer Page that needs a typed Evidence Item owns its separate local Page Run in the consumer Folder. |

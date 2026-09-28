@@ -11,7 +11,7 @@ This file governs Page prose. `board-form.md` owns structure;
 - Give counts, paths, versions, or named evidence instead of “basically done.”
 - Remove scaffolding phrases that could fit another Page after swapping nouns.
 - Keep history, attribution, and retirement stories in
-  `outline/<stem>-log.md`, not current Page prose.
+  `outline/records/<stem>-log.md`, not current Page prose.
 
 ## Keep each section in one role
 
@@ -87,7 +87,7 @@ Headings, diagrams, machinery, and ruling tables are not prose realization units
 ```
 
 The tick and `Now:` describe the same current state. Keep only the latest fact;
-record transition reasons in `outline/<stem>-log.md`. Use `Plan` only when an
+record transition reasons in `outline/records/<stem>-log.md`. Use `Plan` only when an
 immediate route is worth preserving.
 
 A blocking human choice belongs under `### Decision Now`. Give each option its

@@ -2,7 +2,7 @@
 
     runs/draft-manual-run/   Structure revise · Scratch · Section and Paragraph revise
     runs/draft-auto-run/     Auto write · Evidence embed · scripted drafting
-    runs/evidence-run/       Citation · Value · Display
+    runs/evidence-run/       Citation · Value · Display · Discovery (every re-*)
     runs/supporting-run/     generated index of the Block > Job > Task runs elsewhere
     runs/delivery-run/       Web · LaTeX · Word · Slides builds
 
@@ -20,8 +20,11 @@ SPACE = {"draft-manual-run": "draft", "draft-auto-run": "draft", "evidence-run":
 _KINDS = (
     (re.compile(r"^rp-(?:struct|sec|para|scratch|revise)-\d", re.I), "draft-manual-run"),
     (re.compile(r"^rp-(?:auto|embed)-\d", re.I), "draft-auto-run"),
-    (re.compile(r"^(?:re-(?:cite|value|display)-\d|p[._]?j\d+[._]?t\d+[._]?r\d+)", re.I), "evidence-run"),
-    (re.compile(r"^rd\d", re.I), "delivery-run"),
+    (re.compile(r"^(?:re-[a-z]+-\d|p[._]?j\d+[._]?t\d+[._]?r\d+)", re.I), "evidence-run"),
+    # Page Delivery Runs (`rd01_web`, `rd00_content`). A Design Run ticket
+    # (`rd01_commission_item01.yaml`, haipipe-design-unit) shares the prefix but stays in flat
+    # `runs/`, where the Design workbench and check_unit.py read it.
+    (re.compile(r"^rd\d+(?!\d|_(?:commission|generate|verify|adopt|revise|reject)(?:_|$))", re.I), "delivery-run"),
 )
 
 

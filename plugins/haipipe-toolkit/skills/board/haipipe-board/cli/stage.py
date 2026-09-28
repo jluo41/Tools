@@ -20,7 +20,7 @@ sys.path.insert(0, str(HERE))
 
 from src.parse import parse_dir, split_sections  # noqa: E402
 from src.stage_contract import (END, START, STYLE_END, STYLE_START,  # noqa: E402
-                                contract_digest, contract_status,
+                                contract_status,
                                 managed_span, managed_style_span, refs, replace_managed,
                                 replace_managed_style)
 
@@ -128,9 +128,11 @@ def source_line(board, token, by_id, purpose):
 
 
 def render_block(board, page, by_id):
-    digest = contract_digest(board, page, by_id)
+    # No content hash in the marker or the page header (JL 260928): staleness is
+    # the source files' modification time against the page's, read by
+    # ``contract_status``.
     lines = [
-        f"{START} sha256={digest} -->",
+        f"{START} -->",
         "### Required Inputs",
     ]
     required = refs(page.get("requires", ""))
@@ -152,12 +154,12 @@ def render_block(board, page, by_id):
         "     Refresh with stage.py sync; build.py never edits Markdown. -->",
         END,
     ])
-    return "\n".join(lines), digest
+    return "\n".join(lines)
 
 
-def render_style_block(board, page, by_id, digest):
+def render_style_block(board, page, by_id):
     """Materialize ``style-from`` rules in the page's own Writing Style section."""
-    lines = [f"{STYLE_START} sha256={digest} -->"]
+    lines = [f"{STYLE_START} -->"]
     styles = refs(page.get("style_from", ""))
     if styles:
         for token in styles:
@@ -189,21 +191,15 @@ def render_style_block(board, page, by_id, digest):
     return "\n".join(lines)
 
 
-def update_hash(text, digest):
-    line = f"contract-source-hash: {digest}"
-    text = re.sub(r"^contract-source-hash:.*\n?", "", text, flags=re.M)
-    section = re.search(r"^##\s+", text, re.M)
-    if not section:
-        return text.rstrip() + "\n" + line + "\n"
-    prefix = text[:section.start()].rstrip()
-    suffix = text[section.start():].lstrip()
-    return prefix + "\n" + line + "\n\n" + suffix
+def drop_retired_hash(text):
+    """Remove a leftover ``contract-source-hash:`` header line (retired 260928)."""
+    return re.sub(r"^contract-source-hash:.*\n?", "", text, flags=re.M)
 
 
 def sync_face(board, page, by_id):
     path = board / page["file"]
-    block, digest = render_block(board, page, by_id)
-    style_block = render_style_block(board, page, by_id, digest)
+    block = render_block(board, page, by_id)
+    style_block = render_style_block(board, page, by_id)
     text = path.read_text(encoding="utf-8")
     text = replace_managed(text, block)
     # Existing stage Pages may own the former top-level style section. Keep
@@ -211,7 +207,7 @@ def sync_face(board, page, by_id):
     # on a current Page.
     if managed_style_span(text) or re.search(r"^## Writing Style\s*$", text, re.M):
         text = replace_managed_style(text, style_block)
-    text = update_hash(text, digest)
+    text = drop_retired_hash(text)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
     return path
 

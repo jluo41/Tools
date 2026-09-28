@@ -70,8 +70,9 @@ recipe/              never a source of truth for values
 ```
 
 For a numeric display, every `role: values` source MUST contain all of
-`origin.holder`, `origin.artifact`, `origin.provenance`, `origin.sha256`, `snapshot.path`, and
-`snapshot.sha256`.
+`origin.holder`, `origin.artifact`, `origin.provenance`, `snapshot.path`, and
+`snapshot.materialized_at`. The manifest records no content hash; a reader ignores a
+leftover `sha256` field in an older manifest.
 The snapshot must be an aggregate that is safe to keep in the paper folder.
 
 For a concept display with no verified numeric labels, omit `role: values`.
@@ -92,7 +93,7 @@ tasks/<holder>/results/<run>/source_data.csv
         ├── task keeps the canonical aggregate and provenance.json
         ▼
 <caller-supplied-unit>/intake/
-        ├── manifest.yaml records holder, run, artifact, hashes, and purpose
+        ├── manifest.yaml records holder, run, artifact, snapshot time, and purpose
         └── inputs/source_data.csv is the frozen render input
 ```
 
@@ -131,9 +132,9 @@ task deliverable: a named, display-ready aggregate.
 It is not acceptable for a renderer to silently select rows from an arbitrary
 upstream CSV.
 
-The task's `provenance.json` must identify the producing holder and run, the aggregate's SHA-256,
-the upstream artifacts, selection logic, and an explicit display-safety assertion.
-The Intake manifest repeats the holder, run, canonical artifact, and snapshot hash rather than
+The task's `provenance.json` must identify the producing holder and run, the aggregate's row
+count, the upstream artifacts, selection logic, and an explicit display-safety assertion.
+The Intake manifest repeats the holder, run, canonical artifact, and snapshot time rather than
 assuming that a renderer will discover them from task files.
 
 ## Updating an intake
@@ -142,7 +143,7 @@ Snapshots are immutable evidence inputs.
 When the producing task is rerun or the selected rows change:
 
 1. materialize a new snapshot;
-2. update `origin.run`, hashes, and the purpose in `manifest.yaml`;
+2. update `origin.run`, `snapshot.materialized_at`, and the purpose in `manifest.yaml`;
 3. retain the prior snapshot or record its successor in `versions/`;
 4. rerun the recipe and promote a candidate through the normal review path.
 
@@ -160,14 +161,15 @@ Renderer           reads the intake, writes recipe/candidate/asset files, and re
 ```
 
 A renderer MUST refuse a numeric render when the values input lacks a task
-holder, canonical artifact, or matching snapshot hash.
+holder, canonical artifact, or snapshot file, or when the snapshot is stale.
 It MUST also refuse a snapshot containing raw or disallowed sensitive data.
 Candidate rendering must not mutate `intake/`.
 
 ## Minimum verification
 
 - `manifest.yaml` parses and names the unit's display id.
-- Every snapshot path exists and its hash matches the manifest.
+- Every snapshot path exists. A local canonical artifact newer (file modification time) than
+  `snapshot.materialized_at` means the snapshot is stale.
 - Every numeric visual element traces to a `role: values` source.
 - Every values source points to a task holder, run when applicable, and canonical artifact.
 - `recipe/` reads only declared intake inputs for values.

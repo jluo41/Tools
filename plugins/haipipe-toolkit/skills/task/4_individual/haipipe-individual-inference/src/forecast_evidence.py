@@ -1,15 +1,10 @@
 """Bind report evidence and compare the selected forecast without an LLM."""
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from pathlib import Path
 from statistics import mean
-
-
-def file_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def forecast_facts(forecast: dict) -> dict:
@@ -35,7 +30,12 @@ def forecast_facts(forecast: dict) -> dict:
 
 
 def load_ground_truth(report_dir: Path, report: dict, *, report_path: Path | None = None) -> dict:
-    """Missing legacy evidence stays unavailable; a mismatched bundle fails closed."""
+    """Missing legacy evidence stays unavailable; a mismatched bundle fails closed.
+
+    The binding is checked by content: the report file must equal the report object,
+    and the forecast recomputed from forecast.json must give the bound selection and
+    the report's summary values. A leftover hash field in an older binding is ignored.
+    """
     forecast_path, meta_path = report_dir / "forecast.json", report_dir / "meta.json"
     if not meta_path.is_file():
         return {"status": "unavailable", "reason": "meta.json missing"}
@@ -48,11 +48,8 @@ def load_ground_truth(report_dir: Path, report: dict, *, report_path: Path | Non
     if not forecast_path.is_file():
         raise ValueError("Bound forecast.json is missing")
     actual_report_path = report_path or report_dir / "report.json"
-    for name, path in (("forecast", forecast_path), ("report", actual_report_path)):
-        if not path.is_file():
-            raise ValueError(f"Bound {name} file is missing")
-        if file_sha256(path) != binding.get(f"{name}_sha256"):
-            raise ValueError(f"{name}.json differs from the report evidence binding")
+    if not actual_report_path.is_file():
+        raise ValueError("Bound report file is missing")
     if json.loads(actual_report_path.read_text()) != report:
         raise ValueError("Report object differs from its bound file")
     forecast = json.loads(forecast_path.read_text())

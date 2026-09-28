@@ -32,7 +32,6 @@ The stage directory defaults to the working directory, so the old habit of
 running it from inside the stage still works. `src/display_unit.py` holds the anchor
 rules and says why they are arguments rather than `__file__`.
 """
-import hashlib
 import re
 import sys
 from pathlib import Path
@@ -86,9 +85,9 @@ def plan(unit):
     if assets.is_dir():
         for a in sorted(assets.iterdir()):
             # README.md in assets/ is the provenance manifest, which belongs to
-            # the workspace. Shipping it would put a second hash record in the
-            # deliverable, disagreeing with the workspace one the moment either
-            # side moves.
+            # the workspace. Shipping it would put a second provenance record in
+            # the deliverable, disagreeing with the workspace one the moment
+            # either side moves.
             if not a.is_file() or a.name == "README.md" or a.name.startswith("."):
                 continue
             out[f"{unit.name}/assets/{a.name}"] = a.read_bytes()
@@ -131,9 +130,9 @@ def build(check_only=False):
         if not p.is_file() or p.read_bytes() != blob:
             p.write_bytes(blob)
     for u in units():
-        h = hashlib.sha256(want[f"{u.name}/float.tex"]).hexdigest()[:16]
+        size = len(want[f"{u.name}/float.tex"])
         n = sum(1 for k in want if k.startswith(f"{u.name}/assets/"))
-        print(f"  {u.name:<44} float {h}  ·  {n} asset(s)")
+        print(f"  {u.name:<44} float {size} bytes  ·  {n} asset(s)")
     print(f"\n✅ built {OUT_REL}/ from {WS_REL}/ "
           f"({len(units())} units, {len(want)} files"
           f"{f', {len(removed)} removed' if removed else ''})")

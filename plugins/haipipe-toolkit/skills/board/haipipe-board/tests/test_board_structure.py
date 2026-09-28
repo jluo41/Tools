@@ -80,7 +80,7 @@ class BoardStructureTest(unittest.TestCase):
             archived = board / result["to"]
             self.assertTrue(archived.is_file())
             self.assertTrue((archived.parent / "studio" / "note.md").is_file())
-            log = archived.parent / "outline" / "QA1-old-log.md"
+            log = archived.parent / "draft" / "records" / "QA1-old-log.md"
             self.assertIn("Archived from the Board index", log.read_text(encoding="utf-8"))
             self.assertNotIn("QA1-old.md", (board / "board.md").read_text(encoding="utf-8"))
 

@@ -9,7 +9,7 @@ description: >-
 argument-hint: "--individual <id_or_path> [--endpoint-url URL] [--json]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-07-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

@@ -26,7 +26,8 @@ Three behaviors this engine guarantees, each with a tooth in tests/:
      order, and compares with what each unit's README declares  display_register()
 """
 from __future__ import annotations
-import hashlib, json, os, re, shutil, subprocess, sys, tomllib
+import hashlib, json, os, re, shutil, subprocess, sys, tempfile, time, tomllib
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
@@ -76,6 +77,8 @@ def validate_build_config(config, delivery):
         if source == delivery or source == room or source.is_relative_to(room) or room.is_relative_to(source):
             raise ValueError(f"generated room overlaps a source input: {source}")
     for key, value in config["outputs"].items():
+        if value == "":
+            continue   # an empty optional output is switched off (0.8.4: section_snapshots = "")
         target = child(delivery, value, f"[outputs] {key}")
         if target in {delivery / "paper-build.toml", delivery / "build.py"}:
             raise ValueError(f"[outputs] {key} would overwrite build configuration/code")
@@ -148,7 +151,10 @@ LATEX_DISPLAYS = str(_L.get("displays", "inline"))            # inline · end (e
 LATEX_APPENDIX_NEWPAGE = bool(_L.get("appendix_newpage", False))
 LATEX_TITLE_PAGE = str(_L.get("title_page", "inline"))        # inline · separate (blind title page alone)
 LATEX_ABSTRACT_PAGE = bool(_L.get("abstract_page", False))    # abstract (+ keywords) alone on its page
+LATEX_ACKNOWLEDGMENTS = bool(_L.get("acknowledgments", True))  # false = a blind copy prints no Acknowledgments section (0.8.4)
 LATEX_RUNNING_HEAD = bool(_L.get("running_head", True))       # False: header carries only the DRAFT word while drafting
+# 0.8.2 · "per-appendix": floats restart in each lettered appendix (Table B1, C1 …); the Word lane reads the same key
+APPENDIX_PER_LETTER = str(PROFILE.get("appendix_float_numbering", "continuous")).lower() == "per-appendix"
 
 # ── document-wide placement state (0.7.0) ────────────────────────────────────
 # A display prints ONCE in the whole document, not once per fragment: a page
@@ -175,14 +181,21 @@ def prescan_embedded(pages):
 
 # ── order ─────────────────────────────────────────────────────────────────────
 ORDER_BLOCK = re.compile(r"<!--\s*haipipe:compile-order:start\s*-->(.*?)<!--\s*haipipe:compile-order:end\s*-->", re.S)
-OUTLINE_VERSION = re.compile(r"-outline-v([0-9]+(?:\.[0-9]+)*)\.md$")
+OUTLINE_VERSION = re.compile(r"-(?:outline|draft)-v([0-9]+(?:\.[0-9]+)*)\.md$")
+
+
+def plan_home(page_dir: Path) -> Path:
+    """A Page's plan folder: `draft/` (Page 0.118), else the older `outline/`."""
+    draft = page_dir / "draft"
+    return draft if draft.is_dir() else page_dir / "outline"
 
 def outline_key(path: Path):
     match = OUTLINE_VERSION.search(path.name)
     return tuple(int(part) for part in match.group(1).split(".")) if match else ()
 
 def latest_outline(group: Path, pid: str):
-    candidates = list((group / pid / "outline").glob(f"{pid}-outline-v*.md"))
+    home = plan_home(group / pid)
+    candidates = [*home.glob(f"{pid}-outline-v*.md"), *home.glob(f"{pid}-draft-v*.md")]
     superseded = set()
     for plan in candidates:
         header = re.split(r"(?m)^##\s", plan.read_text(encoding="utf-8"), maxsplit=1)[0]
@@ -232,7 +245,6 @@ def read_order():
     source = f"compile-order block · {src.relative_to(ROOT)}"
     return main, appx, source
 
-def sha(p: Path): return hashlib.sha256(p.read_bytes()).hexdigest()[:16]
 
 
 def _yaml_scalar(value: str) -> str:
@@ -246,6 +258,24 @@ def _yaml_scalar(value: str) -> str:
 def _result_field(text: str, key: str) -> str:
     match = re.search(rf"(?m)^{re.escape(key)}:[ \t]*(.*?)\s*$", text)
     return _yaml_scalar(match.group(1)) if match else ""
+
+
+def _result_text(text: str) -> str:
+    """0.8.2: a result.yaml written in JSON form (valid YAML) is read like the YAML form.
+    The field readers below match `key: value` lines, so a JSON Result was invisible:
+    its unit was never placed and its page-relative \\input broke the master (AgreeableRx 260928)."""
+    s = text.lstrip()
+    if not s.startswith("{"):
+        return text
+    try:
+        d = json.loads(s)
+    except ValueError:
+        return text
+    lines = [f"{k}: {d[k]}" for k in ("item", "type", "status", "run") if isinstance(d.get(k), str)]
+    payload = d.get("payload") if isinstance(d.get("payload"), dict) else {}
+    if isinstance(payload.get("unit"), str):
+        lines += ["payload:", f"  unit: {payload['unit']}"]
+    return "\n".join(lines) + "\n"
 
 
 def _page_result_display_unit(page_dir: Path, manifest: Path, text: str):
@@ -309,6 +339,7 @@ def page_display_units(page_dir: Path):
             try:
                 manifest.resolve().relative_to(result_root.resolve())
                 text = manifest.read_text(encoding="utf-8", errors="replace")
+                text = _result_text(text)
             except (OSError, ValueError):
                 continue
             item = _result_field(text, "item")
@@ -344,7 +375,7 @@ def page_display_units(page_dir: Path):
             key=lambda p: p.as_posix(),
         )
 
-    legacy = page_dir / "outline" / "evidence" / "display"
+    legacy = plan_home(page_dir) / "evidence" / "display"
     return sorted((p for p in legacy.glob("*/") if p.is_dir()), key=lambda p: p.name) if legacy.is_dir() else []
 
 
@@ -367,7 +398,7 @@ def purge_retired_delivery_receipts(value):
 def inspect(pid: str, group: Path):
     d = group / pid
     frag = d / "delivery" / "latex" / f"{pid}.tex"
-    pdfs = [d / "delivery" / "latex" / f"{pid}-complete.pdf", d / "delivery" / "latex" / f"{pid}.pdf"]
+    pdfs = [d / "delivery" / "latex" / f"{pid}.pdf"]      # the Page export's compiled wrapper
     units = page_display_units(d)
     reasons = []
     if not d.exists(): reasons.append("page folder missing")
@@ -377,13 +408,12 @@ def inspect(pid: str, group: Path):
         plan_text = plan.read_text(encoding="utf-8", errors="replace")
         header = re.split(r"(?m)^##\s", plan_text, maxsplit=1)[0]
         approvals = re.findall(r"(?m)^approved:[ \t]*(.*)$", header)
-        declarations = re.findall(r"(?m)^outline-version:[ \t]*(.*)$", header)
+        declarations = re.findall(r"(?m)^(?:outline|draft)-version:[ \t]*(.*)$", header)
         version = "v" + ".".join(str(part) for part in outline_key(plan))
         outline = {
             "path": str(plan.relative_to(ROOT)), "version": version,
             "approval": approvals[0].strip() if len(approvals) == 1 else None,
-            "sha256": hashlib.sha256(plan.read_bytes()).hexdigest(),
-        }
+        }   # 0.8.4 (JL 260928): no content hashes; a version is its number, staleness is mtime
         if declarations and (len(declarations) != 1 or declarations[0].strip() != version):
             reasons.append(f"outline version does not match {plan.name}")
     if plan is None or not outline_key(plan) or outline_key(plan)[0] < 1:
@@ -433,7 +463,7 @@ def inspect(pid: str, group: Path):
         warnings.append("fragment may be stale: the page .md is newer than delivery/latex/<page>.tex; rerun the LaTeX lane")
     return {"id": pid, "dir": d, "fragment": frag, "units": units, "cited_units": cited,
             "ready": not reasons, "reasons": reasons, "warnings": warnings,
-            "sha256": sha(frag) if frag.exists() else None, "outline": outline}
+            "outline": outline}
 
 
 def unit_state(u: Path) -> str:
@@ -503,7 +533,7 @@ def page_unit_reference(p, raw_path: str):
     units = {u.name: u for u in p.get("units", [])}
     for i, part in enumerate(parts):
         unit_i = None
-        if parts[i:i + 3] == ["outline", "evidence", "display"]:
+        if parts[i:i + 3] in (["outline", "evidence", "display"], ["draft", "evidence", "display"]):
             unit_i = i + 3
         elif part == "results" and i + 3 < len(parts) and parts[i + 2] == "payload":
             unit_i = i + 3
@@ -550,6 +580,23 @@ def copy_unit(u: Path) -> str:
         (dst / "float.tex").write_text(t, encoding="utf-8")
     return key
 
+_GRAPHIC_EXT = ("", ".pdf", ".png", ".jpg", ".jpeg", ".eps")
+
+
+def from_master(p, path: str, exts=("", ".tex")):
+    """A target written relative to the Page's own delivery/latex/, rewritten to resolve
+    from the master's folder (latexmk runs in LATEX); None when it does not resolve from
+    the Page, so an engine-written or already-master-relative path is left alone."""
+    if not path or path.startswith(("/", "\\", "~")) or re.match(r"^[A-Za-z]:", path) or "\\" in path.strip("\\"):
+        return None
+    target = os.path.normpath(os.path.join(p["fragment"].parent, path))
+    if not any(os.path.isfile(target + ext) for ext in exts):
+        return None
+    if "_archive" in Path(path).parts:
+        BUILD_WARNINGS.append(f"{p['id']}: the fragment reads {path}, a retired _archive lane; bind it to a current Result")
+    return os.path.relpath(target, os.path.normpath(LATEX)).replace(os.sep, "/")
+
+
 def place_fragment(p, dest_dir: Path, labels, unresolved):
     """copy the fragment, retarget its \\input paths, return the list of floats to \\input after it"""
     t = p["fragment"].read_text(encoding="utf-8", errors="replace")
@@ -566,7 +613,8 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             if target.endswith(".tex"):
                 target = target[:-4]
             return rf"\input{{displays/{key}/{target}}}"
-        return m.group(0)
+        moved = from_master(p, path)            # any other page-relative \input: resolve it from the master
+        return rf"\input{{{moved}}}" if moved else m.group(0)
     t = re.sub(r"\\input\{([^}]+)\}", fix_input, t)
     def fix_graphic(m):
         found = page_unit_reference(p, m.group(2))
@@ -574,7 +622,8 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             src, _tail = found
             key = copy_unit(src)
             return rf"\includegraphics{m.group(1) or ''}{{displays/{key}/figure.pdf}}"
-        return m.group(0)
+        moved = from_master(p, m.group(2), _GRAPHIC_EXT)
+        return rf"\includegraphics{m.group(1) or ''}{{{moved}}}" if moved else m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
     # JL 260915: an Abstract page that already opens its own abstract environment is kept as written,
     # so a block the desk prints right after the abstract (Diabetes Care's Article Highlights) can share the page
@@ -607,6 +656,81 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
     return floats
 
 # ── bibliography ─────────────────────────────────────────────────────────────
+def page_bib(p):
+    """The Bib a Page's own LaTeX delivery cites: the export freezes it from the Page's
+    selected, verified CITE Results at `delivery/latex/selected-bibliography/<page>.bib`."""
+    return p["dir"] / "delivery" / "latex" / "selected-bibliography" / f"{p['id']}.bib"
+
+
+def _missing_bib(p):
+    return (f"{p['id']}: cited Page has no delivery/latex/selected-bibliography/{p['id']}.bib; "
+            "regenerate its Page delivery from accepted CITE Results")
+
+
+def require_page_bibs(pages):
+    """Each printed Page that cites must carry its derived Bib (`page_bib`)."""
+    for p in pages:
+        if not p.get("included", p.get("ready", True)):
+            continue
+        fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
+        if (not page_bib(p).is_file() and fragment.is_file()
+                and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8"))):
+            raise RuntimeError(_missing_bib(p))
+
+
+_URL_FIELDS = {"url", "doi", "eprint", "howpublished"}
+
+
+_ACRONYM = re.compile(r"(?<![\w\\-])([\w-]*[A-Z][\w-]*[A-Z][\w-]*)(?![\w-])")
+
+
+def protect_title_acronyms(title: str) -> str:
+    """Brace every title word with two or more capitals (LLMs, CDC, GPT-4, BMJ) that is not
+    already braced, so a style that lowercases titles (apalike) keeps it: the reference list
+    printed "Online Reviews with llms" (0.8.4, Results CHECK 260928). Braced text is left alone."""
+    out, depth, seg = [], 0, []
+    for ch in title:
+        if ch == "{":
+            if depth == 0:
+                out.append(_ACRONYM.sub(r"{\1}", "".join(seg))); seg = []
+            depth += 1; out.append(ch)
+        elif ch == "}" and depth:
+            depth -= 1; out.append(ch)
+        elif depth:
+            out.append(ch)
+        else:
+            seg.append(ch)
+    out.append(_ACRONYM.sub(r"{\1}", "".join(seg)))
+    return "".join(out)
+
+
+def latex_safe_entry(entry: str):
+    r"""One Bib entry with every `&` LaTeX can typeset: `&amp;` (an HTML entity a Discovery
+    Bib copied from a web page), a doubled `\\&`, or a bare `&` becomes `\&`; inside a
+    url/doi field `&amp;` becomes a plain `&`. Returns (entry, what was fixed or "")."""
+    out, fixed, i = [], set(), 0
+    for m in re.finditer(r"(\w+)\s*=\s*\{", entry):
+        if m.start() < i:
+            continue
+        start = m.end(); depth, j = 1, m.end()
+        while j < len(entry) and depth:
+            depth += {"{": 1, "}": -1}.get(entry[j], 0)
+            j += 1
+        value = entry[start:j - 1]
+        if m.group(1).lower() in _URL_FIELDS:
+            new = value.replace("&amp;", "&")
+        else:
+            new = re.sub(r"(?<!\\)&", r"\\&", value.replace("&amp;", "&").replace("\\\\&", "&"))
+        if new != value:
+            fixed.add("&amp;" if "&amp;" in value else "&")
+        if m.group(1).lower() == "title":
+            new = protect_title_acronyms(new)   # presentation, not a source defect: no warning
+        out.append(entry[i:start] + new)
+        i = j - 1
+    out.append(entry[i:])
+    return "".join(out), " and ".join(sorted(fixed))
+
+
 def merge_bib(pages):
     seen, out, bodies = set(), [], {}
     for p in pages:
@@ -615,11 +739,11 @@ def merge_bib(pages):
         # Merge the same derived bibliography used by this Page's LaTeX delivery.
         # Citation authority remains its accepted CITE Results. Never read the
         # retired Outline/flat bibex lanes or substitute a paper-wide seed Bib.
-        b = p["dir"] / "delivery" / "latex" / f"{p['id']}-complete.bib"
+        b = page_bib(p)
         if not b.is_file():
             fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
             if fragment.is_file() and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8")):
-                raise RuntimeError(f"{p['id']}: cited Page has no delivery/latex/{p['id']}-complete.bib; regenerate its Page delivery from accepted CITE Results")
+                raise RuntimeError(_missing_bib(p))
         for b in [b] if b.is_file() else []:
             txt = b.read_text(encoding="utf-8", errors="replace")
             for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", txt):
@@ -630,7 +754,9 @@ def merge_bib(pages):
                     elif txt[j] == "}":
                         depth -= 1
                         if depth == 0: break
-                body = txt[start:j+1]
+                body, fixed = latex_safe_entry(txt[start:j+1])
+                if fixed:
+                    BUILD_WARNINGS.append(f"bib key {key} ({p['id']}): {fixed} written as LaTeX; fix the source Bib")
                 norm = re.sub(r"\s+", " ", body).strip()
                 if key not in seen:
                     seen.add(key); out.append(body); bodies[key] = (norm, p["id"])
@@ -638,7 +764,7 @@ def merge_bib(pages):
                     # same key, different entry: the first page's version is printed, the
                     # other page's citation data silently disappears unless someone is told
                     BUILD_WARNINGS.append(f"bib key {key} differs between {bodies[key][1]} and {p['id']}; {bodies[key][1]}'s entry kept")
-    BIB.write_text(f"% merged by {ENGINE_TAG} from each Page's delivery/latex/<page>-complete.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
+    BIB.write_text(f"% merged by {ENGINE_TAG} from each Page's delivery/latex/selected-bibliography/<page>.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
     return len(out)
 
 # ── master ───────────────────────────────────────────────────────────────────
@@ -673,6 +799,9 @@ def write_master(main, appx, status, ready_n, total_n):
 \usepackage{{graphicx,booktabs,tabularx,multirow,amsmath,amssymb,setspace,caption,float,xcolor}}
 \usepackage[hidelinks]{{hyperref}}
 \usepackage{{fancyhdr}}
+% a verbatim block (a published prompt) is single-spaced, framed, and wraps inside the margin (0.8.4)
+\usepackage{{fvextra}}
+\RecustomVerbatimEnvironment{{verbatim}}{{Verbatim}}{{breaklines,breaksymbolleft={{}},breakindent=2ex,fontsize=\small,baselinestretch=1,frame=single,framesep=6pt}}
 {endfloat}
 \providecommand{{\displayroot}}{{displays/}}
 {paper_preamble}
@@ -704,11 +833,17 @@ def write_master(main, appx, status, ready_n, total_n):
         else:
             body.append(_stub(p))
         body.append("")
-    tail = ["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", "",
-            "\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
+    # 0.8.4 (JL 260928): the draft line below is process text in the deliverable; a blind copy (MISQ) carries
+    # no acknowledgments at all, since funding and thanks would unblind it; they go in the separate title-page file.
+    tail = (["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", ""]
+            if LATEX_ACKNOWLEDGMENTS else [])
+    tail += ["\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
     if JAMA:   # JAMA supplements number their floats eTable 1… / eFigure 1…, restarting after the references
         tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
                  "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
+    elif APPENDIX_PER_LETTER:   # 0.8.2: Table B1, B2 … restart in every lettered appendix (MISQ convention)
+        tail += ["\\counterwithin*{table}{section}\\renewcommand{\\thetable}{\\thesection\\arabic{table}}",
+                 "\\counterwithin*{figure}{section}\\renewcommand{\\thefigure}{\\thesection\\arabic{figure}}", ""]
     for p, floats in appx:
         if LATEX_APPENDIX_NEWPAGE: tail.append(r"\clearpage")      # each lettered appendix on a new page
         if p.get("included", p["ready"]):
@@ -778,7 +913,8 @@ def declared_number(unit):
     if not hits and name:
         # Read the retired Outline lane only for papers that have not migrated
         # their DISPLAY Results yet.
-        hits = list(ROOT.glob(f"B*/{page}/outline/evidence/display/{name}/README.md"))
+        hits = [hit for home in ("draft", "outline")
+                for hit in ROOT.glob(f"B*/{page}/{home}/evidence/display/{name}/README.md")]
     if not hits: return None
     block = re.search(r"^## Placement\s*(.*?)(?=^## |\Z)",
                       hits[0].read_text(encoding="utf-8", errors="replace"), re.S | re.M)
@@ -985,7 +1121,7 @@ def display_register(main, appx, extra_findings=()):
                     sorted(q for q in ROOT.glob("B*-*-Appendix/*/") if q.is_dir() and not q.name.startswith(("_", "."))):
         page = page_dir.name
         if not page.startswith("S-"): continue
-        disp = page_dir / "outline" / "evidence" / "display"
+        disp = plan_home(page_dir) / "evidence" / "display"
         for unit_dir in sorted(u for u in disp.glob("*/") if u.is_dir()) if disp.exists() else []:
             unit = unit_dir.name; key = f"{page}/{unit}"
             if not re.fullmatch(r"Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
@@ -1056,14 +1192,15 @@ def build():
     G_APP = rel(CFG["pages"]["appendix"]) if CFG["pages"].get("appendix") else None   # 0.7.0: appendix group optional
     if appx_ids and G_APP is None:
         raise RuntimeError("the compile-order block lists appendix Sections but paper-build.toml [pages] declares no appendix group")
-    if LATEX.exists(): shutil.rmtree(LATEX)
-    for d in (SEC, APP, DISP): d.mkdir(parents=True, exist_ok=True)
     main = [inspect(i, G_MAIN) for i in main_ids]
     appx = [inspect(i, G_APP) for i in appx_ids] if G_APP else []
     pages = main + appx
-    labels = label_index(pages); unresolved = []
     for p in pages:   # 0.6.1: a DRAFT may print an unready page's fragment when the paper opts in
         p["included"] = p["ready"] or (DRAFT_INCLUDES_UNREADY and p["fragment"].exists())
+    require_page_bibs(pages)  # refuse before the last good delivery/latex/ is removed
+    if LATEX.exists(): shutil.rmtree(LATEX)
+    for d in (SEC, APP, DISP): d.mkdir(parents=True, exist_ok=True)
+    labels = label_index(pages); unresolved = []
     prescan_embedded(pages)
     main_f = [(p, place_fragment(p, SEC, labels, unresolved) if p["included"] else []) for p in main]
     appx_f = [(p, place_fragment(p, APP, labels, unresolved) if p["included"] else []) for p in appx]
@@ -1096,7 +1233,7 @@ def build():
     manifest.update({
         "built": datetime.now().isoformat(timespec="seconds"), "engine": ENGINE_TAG,
         "status": status, "order": {"main": main_ids, "appendix": appx_ids}, "order_source": order_source,
-        "pages": [{"id": p["id"], "ready": p["ready"], "reasons": p["reasons"], "warnings": p.get("warnings", []), "fragment_sha256": p["sha256"],
+        "pages": [{"id": p["id"], "ready": p["ready"], "reasons": p["reasons"], "warnings": p.get("warnings", []),
                    "outline": p["outline"],
                    "fragment": str(p["fragment"].relative_to(ROOT)) if p["fragment"].exists() else None} for p in pages],
         "submission_readiness": submission_readiness,
@@ -1190,12 +1327,62 @@ def freeze(kind: str, rd: str):
         else:
             shutil.copy2(src, target)
         print(f"  → {dst.relative_to(ROOT)}/{target.name} ({key})")
-    print(f"{kind}/ frozen for {rounds[0].name} · hash {sha(dst / Path(OUT['manifest']).name)}")
+    print(f"{kind}/ frozen for {rounds[0].name}")
+
+def lock_path() -> Path:
+    """The build lock of this delivery/: one per folder, outside the repository."""
+    digest = hashlib.sha1(str(HERE.resolve()).encode("utf-8")).hexdigest()[:12]
+    return Path(tempfile.gettempdir()) / f"haipipe-paper-build-{digest}.lock"
+
+
+@contextmanager
+def delivery_lock(wait: float = 600):
+    """One build at a time per delivery/ (Paper-AgreeableRxDiscretion 260928: two builds ran
+    in one delivery/ and one regenerated latex/ under the other, which then failed with 79
+    undefined citations). An OS lock, released when the process ends even on a crash, on a
+    file in the system temp folder named by this delivery/ path, so the paper repo gets no
+    lock file; a second build says who holds it, waits up to `wait` seconds, then stops."""
+    path = lock_path()
+    handle = open(path, "a+", encoding="utf-8")
+    try:
+        import fcntl
+        def lock(): fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        def unlock(): fcntl.flock(handle, fcntl.LOCK_UN)
+    except ImportError:                                   # Windows
+        import msvcrt
+        def lock(): handle.seek(0); msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        def unlock(): handle.seek(0); msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    start, told = time.monotonic(), False
+    while True:
+        try:
+            lock()
+            break
+        except OSError:
+            handle.seek(0)
+            holder = handle.read().strip() or "another build"
+            if time.monotonic() - start >= wait:
+                handle.close()
+                sys.exit(f"delivery/ is busy: {holder} holds its build lock; try again when it finishes")
+            if not told:
+                print(f"waiting: {holder} holds the delivery/ build lock")
+                told = True
+            time.sleep(2)
+    handle.seek(0); handle.truncate()
+    handle.write(f"build pid {os.getpid()} started {datetime.now():%Y-%m-%d %H:%M:%S}\n"); handle.flush()
+    try:
+        yield
+    finally:
+        handle.seek(0); handle.truncate(); handle.flush()
+        unlock()
+        handle.close()
+
 
 def main(argv=None):
     a = list(sys.argv[1:] if argv is None else argv)
-    if not a or a[0] == "build": build()
-    elif a[0] in {"send", "release"} and len(a) == 2: freeze("sent" if a[0] == "send" else "released", a[1])
+    if not a or a[0] == "build":
+        with delivery_lock(): build()
+    elif a[0] in {"send", "release"} and len(a) == 2:
+        with delivery_lock(): freeze("sent" if a[0] == "send" else "released", a[1])
     else: sys.exit(__doc__)
 
 if __name__ == "__main__":

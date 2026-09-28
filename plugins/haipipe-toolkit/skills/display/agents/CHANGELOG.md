@@ -4,6 +4,10 @@ haipipe-display-unit-agent · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions
 match the agent's frontmatter `version:`. Newest first.
 
+## 0.1.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- AGENTS.md rule 9: the intake row and receipt record the source and when it was frozen (`materialized_at`), not a `sha256`.
+
 ## 0.1.0 — 2026-08-17
 
 First contract, on JL's 260817 question "我们怎么让它能够自动去产生这些图片呢?

@@ -7,7 +7,7 @@ description: >-
   benchmarks.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-09-21"
 ---
 
@@ -58,8 +58,8 @@ checkpoint path, GPU preflight, start/end times, exit code, final metrics,
 and one of `complete`, `failed`, `blocked`, or `cancelled`.
 
 Heavy checkpoints belong in the model-instance/checkpoint store, not inside a
-small `results/` directory. The Result must contain pointers and hashes so a
-later evaluation can identify the exact weights.
+small `results/` directory. The Result must contain pointers (checkpoint path
+and step) so a later evaluation can identify the exact weights.
 
 ## Lifecycle
 
@@ -87,7 +87,7 @@ code without a readable checkpoint and metrics receipt is incomplete.
   claiming an exact resume. If only model weights are restored, record it as
   a warm start, not a resume.
 - Do not overwrite a healthy checkpoint with a newer partially written file;
-  use an atomic temporary path and a completion marker or hash.
+  use an atomic temporary path and a completion marker.
 - A resumed attempt gets its own log and receipt and links to the parent
   receipt. It must not erase the failed or interrupted attempt.
 
@@ -112,7 +112,7 @@ unowned process to make a card available.
 ## Minimum audit before reporting success
 
 - dataset, config, seed, environment, and GPU set are recorded;
-- the final checkpoint can be loaded and its hash is recorded;
+- the final checkpoint can be loaded and its path and step are recorded;
 - metrics cover the declared train/validation/test data splits;
 - no partial or resumed attempt is mislabeled as the original Run;
 - the queue log records fallback, resume, preemption, and teardown events;

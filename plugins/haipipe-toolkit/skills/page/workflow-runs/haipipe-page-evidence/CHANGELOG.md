@@ -1,3 +1,10 @@
+## 0.30.0 · 2026-09-28 · No content hashes (JL 260928)
+
+- LAND freezes the Local Input from Supporting Result paths, Run ids and receipt paths; a
+  recovered old Result binds provisionally by path. REOPEN fires when a support Result is saved
+  after the binding (newer file time) or the item contract changes. The Result envelope records
+  paths, never hashes.
+
 ## 0.29.0 · 2026-09-25
 
 - EMBED moves the source plan into `outline/previous/` when it writes `v<G>.<S>.<E+1>`.

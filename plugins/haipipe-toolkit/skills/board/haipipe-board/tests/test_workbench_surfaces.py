@@ -91,7 +91,7 @@ class WorkbenchSurfaceTest(unittest.TestCase):
         legacy = page_home / "skill"
         legacy.mkdir(parents=True)
         self.assertEqual(outline_lane_dir(page_home, "skill"),
-                         page_home / "outline" / "skill")
+                         page_home / "draft" / "skill")  # no plan folder yet: draft/ (0.118)
         self.assertEqual(outline_lane_dirs(page_home, "skill"), [legacy])
 
         canonical = page_home / "outline" / "skill"
@@ -115,7 +115,7 @@ class WorkbenchSurfaceTest(unittest.TestCase):
         source, out, _board, err = Fake()._export_target({}, "skill")
         self.assertIsNone(err)
         self.assertEqual(source, page)
-        self.assertEqual(out, page_home / "outline" / "skill")
+        self.assertEqual(out, page_home / "draft" / "skill")
         self.assertTrue(out.is_dir())
 
     def test_studio_writer_is_nested_while_flat_lane_remains_readable(self):
@@ -179,7 +179,7 @@ class WorkbenchSurfaceTest(unittest.TestCase):
         self.assertIsNone(err)
         self.assertEqual(result["thread"], "D1")
         self.assertEqual(page.read_text(encoding="utf-8"), original)
-        discussion = outline / "S-Test-discussion.md"
+        discussion = outline / "records" / "S-Test-discussion.md"
         self.assertIn("### D1 · Should this stay in one workspace?",
                       discussion.read_text(encoding="utf-8"))
 
@@ -329,16 +329,24 @@ class WordTitleTest(unittest.TestCase):
         self.assertIsNone(fake._first_unit_mention(body, hidden))
         self.assertIsNone(fake._first_unit_mention(body, fenced))
 
-    def test_display_is_inserted_after_the_first_reference_sentence(self):
+    def test_display_is_inserted_after_the_paragraph_that_first_cites_it(self):
+        """A float never splits a paragraph (S-MISQ-Main-5-Results, 260928): after the
+        citing sentence, the paragraph's remaining sentences printed as an orphan."""
         fake = ExportMixin()
-        body = r"Intro. Table \ref{tab:qv2} organizes the estimates. Follow-up."
+        body = ("Intro. Table \\ref{tab:qv2} organizes the estimates. Table \\ref{tab:qv3} then tests them.\n\n"
+                "Next paragraph.\n\\subsection{Later}\nMore.")
         display = {"aliases": [r"\ref{tab:qv2}"]}
         mention = fake._first_unit_mention(body, display)
 
         self.assertIsNotNone(mention)
-        boundary = fake._sentence_boundary_after(body, mention.end())
+        boundary = fake._paragraph_end_after(body, mention.end())
         self.assertEqual(body[:boundary],
-                         r"Intro. Table \ref{tab:qv2} organizes the estimates.")
+                         r"Intro. Table \ref{tab:qv2} organizes the estimates. Table \ref{tab:qv3} then tests them.")
+        later = fake._first_unit_mention(body, {"aliases": ["Next"]})
+        self.assertEqual(body[:fake._paragraph_end_after(body, later.end())].split("\n\n")[-1],
+                         "Next paragraph.")                    # a heading also ends a paragraph
+        last = body.rindex("More")
+        self.assertEqual(fake._paragraph_end_after(body, last), len(body))
 
     def test_word_parser_reads_tabularx_without_leaking_tex_scaffolding(self):
         writer = (

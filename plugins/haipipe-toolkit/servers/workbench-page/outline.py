@@ -54,7 +54,8 @@ from live.outline_scratch import (read_scratch, save_scratch,
                                   scratch_assets_html, scratch_control_html,
                                   scratch_flag_html, scratch_heading_attr)
 from src.evidence_labels import collect_result_labels, resolve_inline_labels
-from live.outline_prompts import RunPrompts, assets_html as prompt_assets_html
+from live.space_views import (SPACE_CSS, SPACE_JS, delivery_space_html,
+                              draft_reads_html, evidence_space_html, run_tabs)
 from live.outline_structure import (structure_card_html, save_structure,
                                     STRUCTURE_CSS, STRUCTURE_JS)
 from live.outline_revise import (save_revise, revise_rows_html,
@@ -489,6 +490,7 @@ object.evfig{{height:32vh}}
  min-height:180px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
 {structure_css}
 {runs_css}
+{space_css}
 .source-map{{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 10px;color:var(--mut);
  font:11px/1.45 ui-monospace,Menlo,monospace}}
 .source-map code{{font-size:11px;color:var(--fg)}}
@@ -534,15 +536,16 @@ object.evfig{{height:32vh}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
 <h1>📃 {title}</h1>
-<div class=mut>Page level · <code>{page_stem}</code>{board_link}</div>
-{page_bar}
+{board_link}
 <div class=spaces>
  <button class="space on" data-space=bullet data-default=div>Draft Space</button>
  <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
- <button class=space data-space=run data-default=run>Run Space</button>
  <button class=space data-space=delivery data-default=delivery>Delivery Space</button>
 </div>
-<div class="lens show draft-lens" id=lens-div data-draft-mode={draft_mode}>
+<div class="lens show draft-lens space-split" id=lens-div data-draft-mode={draft_mode}>
+ <div class=space-main>
+ {structure}
+ {draft_reads}
  <div class=draft-mode-switcher role=group aria-label="Draft view">
   <span class=draft-mode-label>View</span>
   <button type=button class="draft-mode-tab{table_on}" data-draft-mode=table>Table</button>
@@ -550,17 +553,14 @@ code{{font:12px ui-monospace,Menlo,monospace}}
   <button type=button class="draft-mode-tab{scratch_on}" data-draft-mode=scratch>Scratch</button>
   <button type=button class="draft-mode-tab{revise_on}" data-draft-mode=revise>Revise</button>
  </div>
- <div class=scratch-run-note><b>Scratch · Page.interactive-writing.scratch</b> · rough thinking for one Section or paragraph group. <b>Start here</b> after the selected Outline exists; actor: human, who owns Scratch notes and manually-triggered Finish. Notes autosave while typing. Owner Skill: haipipe-page-workflow; Finish uses the local summarizer, not a separate worker Skill. A current target Run and status appear beside its heading. Scratch does not edit Draft prose.</div>
- <div class=revise-run-note><b>Revise · Page.interactive-writing.revise</b> · edit the Draft sentences of one paragraph in place, one box per Bullet, one Save per paragraph. Each Save writes the Outline Drafts and appends a change ledger Step to that paragraph's <code>rp-revise-NN_&lt;C.P&gt;</code> Run (Run Space → Page Writing → Revise). Merging or splitting sentences belongs to run-structure.</div>
  {by_div}
+ </div>
  {runs_draft}
 </div>
-<div class=lens id=lens-evidence><iframe class=workspace-frame
- title="Evidence Space" data-src="{evidence_url}"></iframe>{runs_evidence}</div>
+<div class="lens space-split" id=lens-evidence><div class=space-main>{evidence_space}</div>{runs_evidence}</div>
 <div class=lens id=lens-run><iframe class=workspace-frame
  title="Run Space" data-src="{run_url}"></iframe></div>
-<div class=lens id=lens-delivery><iframe class=workspace-frame
- title="Delivery Space" data-src="{delivery_url}"></iframe>{runs_delivery}</div>
+<div class="lens space-split" id=lens-delivery><div class=space-main>{delivery_space}</div>{runs_delivery}</div>
 <script>
 var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',workspace:'evidence'}};
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
@@ -591,7 +591,7 @@ function showLens(c){{
     var lens=document.getElementById('lens-'+c.dataset.lens);
     lens.classList.add('show');
     if(c.dataset.lens==='evidence'||c.dataset.lens==='run'||c.dataset.lens==='delivery'){{
-      var frame=lens.querySelector('iframe'),src=workspaceSource(frame,c.dataset.lens);
+      var frame=lens.querySelector('iframe.workspace-frame'),src=workspaceSource(frame,c.dataset.lens);
       if(src)frame.setAttribute('src',src);
     }} else {{
       var nested=lens.querySelector('iframe');
@@ -612,11 +612,12 @@ function activateLens(name){{
     if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
       lens.classList.add('show');
       if(name==='evidence'||name==='run'||name==='delivery'){{
-        var frame=lens.querySelector('iframe'),src=workspaceSource(frame,name);
+        var frame=lens.querySelector('iframe.workspace-frame'),src=workspaceSource(frame,name);
         if(src)frame.setAttribute('src',src);
       }}
     }}
   }}
+  document.dispatchEvent(new CustomEvent('lens-shown',{{detail:{{name:name,focus:requestedFocus}}}}));
 }}
 document.querySelectorAll('.lens-chip').forEach(function(c){{
   c.addEventListener('click',function(){{activateLens(c.dataset.lens);}});
@@ -711,6 +712,7 @@ if(requestedFocus&&requested==='div')setTimeout(function(){{
   focusRecord(requestedFocus);}},0);
 </script>
 <script>{runs_js}</script>
+<script>{space_js}</script>
 </body></html>"""
 
 
@@ -945,10 +947,9 @@ def _structure_map(page_src, root=None, path_q="", file_q="", read_only=False):
     """
     if page_src is None:
         return ""
-    prompt = RunPrompts(page_src, root, path_q, file_q).button("structure")
-    toolbar = prompt_assets_html() + '<div class="structure-prompt">' + prompt + '</div>'
+    # No copy-prompt chip above the card: the Runs panel holds every prompt (JL 260927).
     card = structure_card_html(page_src, read_only=read_only, path_q=path_q, file_q=file_q)
-    return toolbar + card + ("" if read_only or not card else STRUCTURE_JS)
+    return card + ("" if read_only or not card else STRUCTURE_JS)
 
 
 def _opening_preview_card(page_src, path_q="", file_q="", evidence_bindings=None):
@@ -969,7 +970,7 @@ def _opening_preview_card(page_src, path_q="", file_q="", evidence_bindings=None
     if not prose:
         return ""
 
-    outline_url = ("/_board/outline?path=%s&file=%s" %
+    outline_url = ("/_board/draft?path=%s&file=%s" %
                    (quote(path_q), quote(file_q))) if path_q and file_q else ""
     permalink = _e(("%s&lens=div&focus=c0-p1-opening" % outline_url)
                    if outline_url else "#c0-p1-opening")
@@ -1178,12 +1179,13 @@ def _replace_header(text, key, value):
 def _working_plan_text(text, old_tag, new_tag, action, paragraph, bullet):
     """Turn an approved plan into an explicitly unapproved working Shape."""
     text = re.sub(
-        r"(?m)^(#.*?\boutline\s+)v\d+(?:\.\d+){0,2}(.*)$",
+        r"(?m)^(#.*?\b(?:outline|draft)\s+)v\d+(?:\.\d+){0,2}(.*)$",
         lambda m: "%sv%s%s" % (m.group(1), new_tag[1:], m.group(2)),
         text,
         count=1,
     )
-    text = _replace_header(text, "outline-version", new_tag)
+    key = "draft-version" if re.search(r"(?m)^draft-version:", text) else "outline-version"
+    text = _replace_header(text, key, new_tag)
     text = _replace_header(
         text, "supersedes",
         "%s · working Shape copy created by the Outline Bullet editor" % old_tag,
@@ -2049,10 +2051,9 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     f, ver = _latest_plan(page_src)
     if f is None:
         return ""
-    outline_url = ("/_board/outline?path=%s&file=%s" % (quote(path_q), quote(file_q))
+    outline_url = ("/_board/draft?path=%s&file=%s" % (quote(path_q), quote(file_q))
                    if path_q and file_q else "")
     txt = canonical_plan(f.read_text(encoding="utf-8", errors="replace"))
-    prompts = RunPrompts(page_src, root, path_q, file_q)
     # The Page paragraph index is global across Content divisions. The
     # historical Shape kept per-division P numbers, so translate those local
     # addresses only in this live presentation layer: source prose, Evidence
@@ -2177,7 +2178,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         rows.append(
             '<details class="paragraph-group" open data-paragraph="%s" id="group-%s">'
             '<summary class="prow"%s><span class=addr>%s</span>'
-            '<span class=mut>%s</span>%s%s%s</summary>'
+            '<span class=mut>%s</span>%s%s</summary>'
             '<div class=paragraph-scratch>%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
@@ -2189,7 +2190,6 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                                     read_only=read_only),
                _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
-               prompts.button("paragraph", current_paragraph),
                _scratch_run_meta(scratch_latest.get(("paragraph", current_paragraph))),
                scratch_flag_html("paragraph", current_paragraph,
                                  scratch_latest.get(("paragraph", current_paragraph)),
@@ -2226,13 +2226,12 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
             rows.append('<div class="row division-title"%s title="%s" id="division-C%d">'
-                        '<span class="addr sec">C%d</span><b>%s</b>%s%s%s</div>'
+                        '<span class="addr sec">C%d</span><b>%s</b>%s%s</div>'
                         '<div class=section-scratch>%s</div>'
                         % (scratch_heading_attr("section", current_section,
                                                 read_only=read_only),
                            _e(division_title), cn, cn,
                            _e(division_title.split(" · ")[0]),
-                           prompts.button("section", current_section),
                            _scratch_run_meta(scratch_latest.get(("section", current_section))),
                            scratch_flag_html("section", current_section,
                                              scratch_latest.get(("section", current_section)),
@@ -2582,14 +2581,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                             '<span class=mut> — evidence nobody is using, or a '
                             'citation that got lost</span></div>' % (emo, _e(k)))
 
-    source_map = (
-        '<details class=source-details>'
-        '<summary>Sources</summary>'
-        '<div class=source-map aria-label="Draft Space sources">'
-        '<span>Plan <code>%s/%s</code></span>'
-        '<span>Draft <code>%s/%s</code></span>'
-        '</div></details>' % (_e(f.parent.name), _e(f.name), _e(f.parent.name), _e(f.name))
-    )
+    source_map = ""  # the Draft Space's Reads line names the plan (JL 260927: concise)
     if minimal:
         return '<div class="card plan-card minimal-plan">%s%s</div>' % (
             source_map, "".join(rows)
@@ -2955,6 +2947,11 @@ _BOARD_LEVEL_ROUTES = {
 }
 
 
+def _board_line(link):
+    """The Board-level link on its own line under the title, or nothing (standalone)."""
+    return '<div class=mut>%s</div>' % link.replace(' \u00b7 ', '', 1) if link else ""
+
+
 def board_level_link(page_src, root):
     """`· ↑ Board level 📄` when this page's board has a board-level surface.
 
@@ -2998,7 +2995,7 @@ def board_level_link(page_src, root):
 
 
 def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False,
-           draft_mode="table"):
+           draft_mode="table", asset_base=None):
     """-> the full html page: both lenses rendered, chips toggle."""
     if draft_mode not in {"table", "reading", "scratch", "revise"}:
         draft_mode = "table"
@@ -3048,7 +3045,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
                       minimal=True)
             if page_src is not None else "")
     structure = _structure_map(page_src, root, path_q, file_q, read_only=read_only)
-    by_div = structure + plan
+    by_div = plan
 
     todo = [a for a in o["aims"] if not a["done"]]
     done = [a for a in o["aims"] if a["done"]]
@@ -3072,8 +3069,9 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
         delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         page_stem=_e(page_src.stem if page_src is not None else "standalone"),
-                        board_link=board_level_link(page_src, root),
+                        board_link=_board_line(board_level_link(page_src, root)),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
+                        structure=structure,
                         draft_mode=draft_mode,
                         table_on=table_on,
                         reading_on=reading_on,
@@ -3083,41 +3081,52 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
                         evidence_url=html.escape(evidence_url, quote=True),
                         run_url=html.escape(run_url, quote=True),
                         delivery_url=html.escape(delivery_url, quote=True),
-                        **_runs_parts(page_src))
+                        **_runs_parts(page_src, evidence_url=evidence_url,
+                                      delivery_url=delivery_url, path_q=path_q,
+                                      file_q=file_q, asset_base=asset_base))
 
 
-def _runs_parts(page_src):
-    """The Page bar and one Runs panel per Space (Page 0.118); blank without a Page."""
-    blank = {"page_bar": "", "runs_draft": "", "runs_evidence": "", "runs_delivery": "",
-             "runs_css": "", "runs_js": ""}
+def _runs_parts(page_src, *, evidence_url="", delivery_url="", path_q="", file_q="",
+                asset_base=None):
+    """The three Spaces' own parts and one Runs panel per Space (Page 0.118)."""
+    blank = {"runs_draft": "", "runs_evidence": "", "runs_delivery": "",
+             "runs_css": "", "runs_js": "", "space_css": "", "space_js": "",
+             "draft_reads": "", "evidence_space": "", "delivery_space": ""}
     if page_src is None:
         return blank
     from live.runs import local_runs
-    from live.runs_panel import (PANEL_CSS, PANEL_JS, page_bar_html, panel_html, readiness,
-                                 run_types)
+    from live.runs_panel import PANEL_CSS, PANEL_JS, panel_html, run_types
     try:
         rows = local_runs(page_src)
     except Exception:  # a broken ticket must not blank the Draft Space
         rows = []
     types = run_types()
+    try:
+        from live.runs import supporting_task_runs
+        supporting = supporting_task_runs(page_src)
+    except Exception:  # an unreadable registry must not blank the Evidence Space
+        supporting = []
     plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     plan_name = ("%s/%s" % (plan.parent.name, plan.name)) if plan else "no plan yet"
-    item_filter = '<input class=runs-filter placeholder="E40 or C1.P1.B2" aria-label="Filter runs">'
     return {
-        "page_bar": page_bar_html(page_src, types, rows, plan_name=plan_name,
-                                  readiness=readiness(page_src)),
         "runs_draft": panel_html(page_src, "draft", rows, types, plan_name=plan_name),
         "runs_evidence": panel_html(page_src, "evidence", rows, types, plan_name=plan_name,
-                                    extra=item_filter),
+                                    run_tabs=run_tabs(page_src), supporting=supporting),
         "runs_delivery": panel_html(page_src, "delivery", rows, types, plan_name=plan_name),
         "runs_css": PANEL_CSS,
         "runs_js": PANEL_JS,
+        "space_css": SPACE_CSS,
+        "space_js": SPACE_JS,
+        "draft_reads": draft_reads_html(page_src),
+        "evidence_space": evidence_space_html(page_src, card_url=evidence_url, supporting=supporting),
+        "delivery_space": delivery_space_html(page_src, checks_url=delivery_url, path_q=path_q,
+                                              file_q=file_q, asset_base=asset_base),
     }
 
 
 class OutlineMixin:
 
-    # ---- GET/HEAD /_board/outline?path=…&file=… ------------------------
+    # ---- GET/HEAD /_board/draft?path=…&file=… ------------------------
     def outline_view(self, head_only=False):
         q = parse_qs(urlparse(self.path).query)
         p = {"path": (q.get("path") or [""])[0],
@@ -3145,7 +3154,8 @@ class OutlineMixin:
             draft_mode = "table"
         page = render(page_src.stem, o, page_src, self.root, p["path"], p["file"],
                       read_only=getattr(self.server, "read_only", False),
-                      draft_mode=draft_mode)
+                      draft_mode=draft_mode,
+                      asset_base=getattr(self, "delivery_asset_base", None))
         return self._outline_send(page.encode("utf-8"), 200, head_only)
 
     def _outline_send(self, body, code, head_only):
@@ -3157,7 +3167,7 @@ class OutlineMixin:
         if not head_only:
             self.wfile.write(body)
 
-    # ---- POST /_board/outline — the shell's write() twin ---------------
+    # ---- POST /_board/draft — the shell's write() twin ---------------
     def plug_outline(self, p):
         """Register the live tab; Scratch, Revise and Structure are its Draft writes.
 
@@ -3190,6 +3200,6 @@ class OutlineMixin:
             return None, ("Draft Space is read-only for Bullets; sentences are edited in the "
                           "Revise view, structure through run-structure")
         paragraph = p.get("paragraph")
-        url = ("/_board/outline?path=%s&file=%s"
+        url = ("/_board/draft?path=%s&file=%s"
                % (quote(p.get("path") or ""), quote(p.get("file") or "")))
         return {"url": url}, None

@@ -28,12 +28,12 @@
   function outlineUrl(page) {
     var f = pageFile(page);
     if (!f) return '';
-    return '/_board/outline?path=' + encodeURIComponent(board())
+    return '/_board/draft?path=' + encodeURIComponent(board())
          + '&file=' + encodeURIComponent(f);
   }
 
   function write(page, cb, err) {
-    fetch('/_board/outline', {
+    fetch('/_board/draft', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: board(), file: pageFile(page) })
     }).then(function (r) { return r.json(); })
@@ -67,7 +67,7 @@
     event.preventDefault();
     /* This link is not Page navigation.  The later generic same-site router
        would otherwise also consume the same click, swap the Page frame to the
-       /_board/outline response, and make the shell re-aim Outline at its
+       /_board/draft response, and make the shell re-aim Outline at its
        default URL.  That second route erases lens/focus/run on both touch and
        mouse input. */
     event.stopImmediatePropagation();

@@ -34,7 +34,7 @@ identity.
 ```text
 Supporting Runs  0..N  Execution and/or Discovery
                          ↓ validated Results
-Local Input        1    frozen Result paths + hashes + governed local sources
+Local Input        1    frozen Result paths + governed local sources
                          ↓
 Local Run          1    Page · Evidence Item
                          ↓
@@ -62,11 +62,9 @@ type: VALUE
 status: complete
 input:
   path: <resolved-result>/input.yaml
-  sha256: <64-hex>
 supporting_results:
   - run: b01j02t03r04
     result: <supporting-result>/result.yaml
-    sha256: <64-hex>
 local_sources: []
 payload:
   estimate: 9.34
@@ -78,8 +76,7 @@ provenance:
   supporting_results:
     - run: b01j02t03r04
       result: tasks/.../results/r04_.../result.yaml
-      sha256: <64-hex>
-  local_input: results/r01_.../input.yaml#<sha256>
+  local_input: results/r01_.../input.yaml
 acceptance:
   passed: true
   recomputed: true

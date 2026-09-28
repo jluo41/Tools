@@ -308,7 +308,7 @@ class SelectionChecks:
     def check_sync_binding(self, source: Any, owner: Path, *, require_projection: bool = False) -> None:
         sync = self.load("projection/paper-ideation-sync.yaml")
         if not isinstance(source, dict) or sync is None:
-            self.fail("sync-binding", owner, "source must pin the current sync revision/hash")
+            self.fail("sync-binding", owner, "source must name the current sync revision")
             return
         if sync.get("stage") != "I2" or sync.get("sync_status") != "current":
             self.fail("sync-stale", owner, "selection/handoff requires current I2 working sync")
@@ -317,9 +317,10 @@ class SelectionChecks:
             working = page.get("working", {}) if isinstance(page, dict) else {}
             if sync.get("version") != 2 or not isinstance(working, dict) or working.get("state") != "current":
                 self.fail("sync-stale", owner, "v3 decisions require a v2 sync with a current working projection")
-        for key in ("sync_revision", "source_hash"):
-            if not self.nonempty(source.get(key)) or source.get(key) != sync.get(key):
-                self.fail("sync-stale", owner, f"source.{key} differs from current sync")
+        # The revision number is the source identity; no content hash is
+        # compared (JL 260928), and a leftover source_hash is ignored.
+        if not self.nonempty(source.get("sync_revision")) or source.get("sync_revision") != sync.get("sync_revision"):
+            self.fail("sync-stale", owner, "source.sync_revision differs from current sync")
 
     def check_handoff(self) -> None:
         self.check_select()
@@ -355,7 +356,7 @@ class SelectionChecks:
                 if not self.same_path(source.get(field), expected):
                     self.fail("source-drift", path, f"source.{field} must identify {expected}")
             # Legacy receipts remain readable, but cannot authorize a new ready
-            # handoff until the revision/hash actually consumed is supplied.
+            # handoff until the revision actually consumed is supplied.
             self.check_sync_binding(source, path, require_projection=handoff.get("version") == 3)
         rows = self.card_map(handoff.get("selected_ideas"), path, "selected_ideas")
         if not rows or set(rows) != set(self.selected_decisions):

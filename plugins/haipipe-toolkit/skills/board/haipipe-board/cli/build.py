@@ -157,7 +157,7 @@ if __name__ == "__main__":
         # must not learn what a paper is (the dialect stays deletable, QBc5).
         _hits = sum(
             _meant_markers(f.read_text(encoding="utf-8", errors="ignore"))
-            for f in sorted(target.glob("**/*.md"))
+            for f in sorted(target.glob("**/*.md")) if f.is_file()  # a dangling link is not a page
         ) if target.is_dir() else _meant_markers(target.read_text(encoding="utf-8", errors="ignore"))
         if _hits:
             print(f"⚠️  {_hits} marker(s) found and NO `dialect:` declared, so they render as")

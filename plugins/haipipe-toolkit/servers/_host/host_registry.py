@@ -53,7 +53,7 @@ def asset_roots(kind):
 # `/b/` and `/w/` addresses, static Board pages, and nothing else: no terminal,
 # no chat, no Board write route. Keep a workbench's row next to its folder.
 WORKBENCH_ROUTES = {
-    "page": frozenset({"outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
+    "page": frozenset({"draft", "outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
                        "value", "display", "probe", "latex", "word", "bibex", "bibex-entry",
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
     "paper": frozenset({"paper"}),

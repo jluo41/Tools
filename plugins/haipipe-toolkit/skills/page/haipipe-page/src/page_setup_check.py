@@ -7,13 +7,13 @@ visible as deferred or untested checks instead of being reported as passes.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from hashlib import sha256
+from datetime import datetime
 from html import escape
 import json
 from pathlib import Path
 import re
 
-from live.outline_preview import bullet_token, read_drafts
+from live.outline_preview import read_drafts
 from src.page_workspace import dependency_files, load_page
 from src.plan_shape import iter_plan_bullets, paragraph_order_findings
 
@@ -108,28 +108,32 @@ def _configuration(page, face: str) -> SetupCheck:
                   "No independently loadable Page Face with explicit state and owner was found.")
 
 
-def _input_preservation(page, input_hash: str, input_file: Path | None,
-                        strict: bool) -> SetupCheck:
+def _input_preservation(page, input_file: Path | None, strict: bool) -> SetupCheck:
+    """Is the imported copy still the intake bytes?
+
+    No intake hash is recorded (JL 260928: no content hashes). With the supplied
+    original, compare the two files byte for byte; without it, use file time: the
+    copy is unchanged when it was not saved after the Page registration `page.toml`.
+    """
     content = page.content or page.source
-    imported_ok = content.is_file() and sha256(content.read_bytes()).hexdigest() == input_hash
-    original_ok = True
-    original_note = "External original was not available during this Folder resume."
-    if input_file is not None:
-        original_ok = input_file.is_file() and sha256(input_file.read_bytes()).hexdigest() == input_hash
-        original_note = "The supplied original still matches the recorded intake hash."
-    if imported_ok and original_ok:
-        return SetupCheck(
-            "input_preservation", "Input preservation", "pass",
-            f"The imported editable copy matches `{input_hash}`. {original_note}", strict,
-        )
+    manifest = page.folder / "page.toml"
+    if input_file is not None and input_file.is_file():
+        same = content.is_file() and content.read_bytes() == input_file.read_bytes()
+        note = f"The imported editable copy reads the same as `{input_file.name}`."
+    else:
+        same = (content.is_file() and manifest.is_file()
+                and content.stat().st_mtime <= manifest.stat().st_mtime)
+        note = "The imported editable copy has not been saved since intake (file time)."
+    if same:
+        return SetupCheck("input_preservation", "Input preservation", "pass", note, strict)
     if strict:
         return SetupCheck(
             "input_preservation", "Input preservation", "missing",
-            "The original or imported editable copy no longer matches the intake hash.", True,
+            "The imported editable copy changed after intake.", True,
         )
     return SetupCheck(
         "input_preservation", "Input preservation", "untested",
-        "The editable source differs from the intake hash; this may be an intentional later edit, so resume does not certify original-byte preservation.",
+        "The editable source changed after intake; this may be an intentional later edit, so resume does not certify original-byte preservation.",
     )
 
 
@@ -157,7 +161,8 @@ def _plan_and_drafts(
             SetupCheck("semantic_role_syntax", "Semantic role syntax", status, detail, expect_shape),
             SetupCheck("bullet_head_readability", "Bullet-head readability", status, detail, expect_shape),
         )
-    text = plan.read_text(encoding="utf-8")
+    from .plan_layout import to_canonical
+    text = to_canonical(plan.read_text(encoding="utf-8"))  # a three-section plan reads as one
     blocks = list(iter_plan_bullets(text))
     divisions = re.findall(r"(?m)^## C(\d+)\s*·\s*(.+?)\s*$", text)
     paragraphs = re.findall(r"(?m)^### C\d+\.P\d+\s*·", text)
@@ -178,7 +183,6 @@ def _plan_and_drafts(
     mapping_ok = len(drafts) == len(blocks) and all(
         block["address"] in drafts
         and drafts[block["address"]].get("text", "").strip()
-        and drafts[block["address"]].get("bullet-sha256") == bullet_token(block)
         for block in blocks
     )
     if not drafts and not expect_shape:
@@ -189,7 +193,7 @@ def _plan_and_drafts(
     else:
         mapping = _check(
             "content_draft_mapping", "Bullet ↔ Content Draft", mapping_ok,
-            f"All {len(blocks)} Bullets have nonempty, fingerprint-current Content Draft records.",
+            f"All {len(blocks)} Bullets have nonempty Content Draft records.",
             "Content Draft coverage is missing, empty, extra, or stale against the current Shape.",
             blocking=expect_shape or bool(drafts),
         )
@@ -296,8 +300,7 @@ def _delivery(page, delivery: Path) -> SetupCheck:
     expected = dependency_files(page.content or page.source, page.folder)
     copied = all(
         (delivery.parent / item.relative_to(page.folder)).is_file()
-        and sha256((delivery.parent / item.relative_to(page.folder)).read_bytes()).digest()
-        == sha256(item.read_bytes()).digest()
+        and (delivery.parent / item.relative_to(page.folder)).read_bytes() == item.read_bytes()
         for item in expected
     )
     ok = bool(markup and marker.is_file() and "<main id=\"reading\"" in markup
@@ -323,13 +326,13 @@ def _artifacts(page, plan: Path | None, delivery: Path) -> dict[str, dict[str, s
             continue
         records[name] = {
             "path": path.relative_to(page.folder).as_posix(),
-            "sha256": sha256(path.read_bytes()).hexdigest(),
+            "saved": datetime.fromtimestamp(path.stat().st_mtime).strftime("%y%m%d %H%M"),
         }
     return records
 
 
 def validate_setup(page, *, plan: Path | None, delivery: Path, mode: str,
-                   input_hash: str, input_file: Path | None = None,
+                   input_file: Path | None = None,
                    strict_input: bool = False) -> SetupAudit:
     """Evaluate every setup checklist category without claiming editorial approval."""
     face = page.source.read_text(encoding="utf-8")
@@ -341,7 +344,7 @@ def validate_setup(page, *, plan: Path | None, delivery: Path, mode: str,
     )
     checks = [
         _configuration(page, face),
-        _input_preservation(page, input_hash, input_file, strict=strict_input),
+        _input_preservation(page, input_file, strict=strict_input),
         _opening(face, page.title),
         outline,
         paragraph_order,

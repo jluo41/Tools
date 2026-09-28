@@ -12,6 +12,8 @@ from src.outline_version import plan_dir, latest_outline, version_tag
 
 
 def digest(text):
+    """Internal only: a lock-file name and the browser's compare-and-save tokens.
+    Never written to a record or shown (JL 260928: no content hashes in records)."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
@@ -47,7 +49,6 @@ def read_drafts(page):
             continue
         records[block["address"]] = {
             "plan": version_tag(path),
-            "bullet-sha256": bullet_token(block),
             "text": block.get("draft", ""),
             "reviews": block.get("reviews", ""),
         }
@@ -185,6 +186,7 @@ def write_previews(page, records):
 
 
 def bullet_token(block):
+    """Compare-and-save token for one Bullet (like an HTTP ETag); lives only in the browser form."""
     return digest(block["body"])
 
 
@@ -277,8 +279,7 @@ def save_preview(page, address, text, expected_bullet, expected_record):
         records = read_drafts(page)
         if expected_record != record_token(records.get(address)):
             return None, "This draft changed in another editor; reload before saving"
-        records[address] = {**records.get(address, {}), "plan": version_tag(plan),
-                            "bullet-sha256": expected_bullet, "text": text}
+        records[address] = {**records.get(address, {}), "plan": version_tag(plan), "text": text}
         write_drafts(page, records)
         return {"address": address, "text": text, "record_token": record_token(records[address]),
                 "version": version_tag(plan), "outline": str(path)}, None

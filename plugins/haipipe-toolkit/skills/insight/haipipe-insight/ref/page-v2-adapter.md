@@ -59,7 +59,7 @@ the evidence graph underneath those parents. Use one Folder-owned `PARENTS` row
 beside each I/K/W finding:
 
 ```text
-PARENTS  <exact Page path>@<Page version>#sha256:<hash> · <row-id>[, <row-id>...]
+PARENTS  <exact Page path>@<Page version> · <row-id>[, <row-id>...]
 ```
 
 The child additionally records its own operation (`DERIVATION`, claim test, or
@@ -77,14 +77,14 @@ A rung change allocates the destination register's next legal id, with reciproca
 id into a Knowledge register or carry its completed cells into the successor.
 
 For a Task-side Insight RF bridge, the Supporting Run pins the exact
-instance/item/execution-version/Result path/hash, while `PARENTS` names the
+instance/item/execution-version/Result path, while `PARENTS` names the
 exact D/I/K/W/RF rows inside that Result. The local Wisdom Page still owns
 applicability, counsel, forbidden overreach, `serves:`, and the human signature.
 
 ## Cross-board handoff
 
 A signed W handoff is a frozen Application input, not a synthetic Run and not a
-new PageX lane. Design pins the exact handoff path, Page version, content hash,
+new PageX lane. Design records the exact handoff path, Page version,
 signature, and the Question GI6 settlement receipt in its Context/Evidence input. It
 may consume the handoff but may not reopen upstream computation from Design.
 Record current eligibility using [handoff-record.md](../../haipipe-insight-workflow/ref/handoff-record.md);
@@ -101,7 +101,8 @@ reopened work follows these rules:
   than flipping them backward;
 - migrate an old PageX evidence edge to an accepted Supporting Run Result, or
   to a governed Local Input only when it is genuinely page-local static input;
-- never select `latest`; preserve exact historical path/version/hash;
+- never select `latest`; preserve exact historical path/version; ignore any
+  hash field left in an older record (JL 260928: no content hashes);
 - the requirement for a person signature applies immediately and is never
   grandfathered; current eligibility still requires exact payload/dependency
   pins and GI5/GI6 owner records.

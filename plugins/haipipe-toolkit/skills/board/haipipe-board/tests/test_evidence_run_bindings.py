@@ -249,7 +249,7 @@ kind: evidence-runs · derived
 """
         html = _run_binding_cards(binding)
         self.assertIn('id="run-E02-VALUE-linked-design-counts"', html)
-        self.assertIn('<code class=runmap-eid>E02</code>', html)
+        self.assertIn('<code class=runmap-eid>Evalue02</code>', html)
         self.assertIn('linked design counts', html)
         self.assertIn('class=runmap-type>VALUE</span>', html)
         self.assertNotIn('href="/examples/Project/task/runs/r01.ps1"', html)
@@ -419,7 +419,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
         self.assertEqual(html.count("class=evcard"), 1)
         self.assertIn('id="run-E01-VALUE-lbp-main-effect"', html)
-        self.assertIn('title="E01-VALUE-lbp-main-effect">E1V.LBPEffect</code>', html)
+        self.assertIn('title="E01-VALUE-lbp-main-effect">Evalue01.LBPEffect</code>', html)
         self.assertIn('<b>Supporting runs</b>', html)
         self.assertNotIn('href="/examples/Project/tasks/T1/runs/r01.ps1"', html)
         self.assertIn('Run &amp; Result paths', html)
@@ -603,8 +603,8 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertIn('data-run-address="b03.j01.t01.r01"', html)
         self.assertIn('data-run-kind="supporting"', html)
         self.assertIn('data-run-kind="local"', html)
-        self.assertIn('E1V.Counts', html)
-        self.assertIn('E2V.LBPEffect', html)
+        self.assertIn('Evalue01.Counts', html)
+        self.assertIn('Evalue02.LBPEffect', html)
         self.assertIn('<b>Run</b><code class=repo-path>/task/runs/r01_data.ps1</code>', html)
         self.assertNotIn('href="/task/runs/r01_data.ps1"', html)
 

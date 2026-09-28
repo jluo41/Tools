@@ -47,6 +47,7 @@ from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
+from src.outline_version import plan_dir, plan_files, record_path  # noqa: E402
 from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
                         aim_ids, aim_progress, board_kind, group_stem,
                         page_files, registered_page_source)
@@ -101,9 +102,9 @@ CONSTRUCTS = [
     ("paragraph heading",    "div.ph",             r'<div class="ph"',            r"^#### "),
     ("job line",             "div.pj",             r'<div class="pj"',            r"^\([^)]+\)\s*$"),
     ("group title",          "div.gt > span.gi",   r'<div class="gt"',            r"(?m)^\*\*[^*\n]+\*\*\s*\n[-*] "),
-    ("sentence apparatus",   "details.sent",       r'<details class="sent"',      r"^> (?:Citation|Value|Display|Check|Q-consumer|Link|Source|Note):"),
-    ("sentence badge",       "span.sbadge",        r'class="sbadge"',             r"^> (?:Citation|Value|Display|Check|Q-consumer|Link|Source|Note):"),
-    ("typed lane",           "div.lane",           r'<div class="lane"',          r"^> (?:Citation|Value|Display|Check|Q-consumer|Link|Source|Note):"),
+    ("sentence apparatus",   "details.sent",       r'<details class="sent"',      r"^> (?:Citation|Value|Display|Supporting Run|Check|Q-consumer|Link|Source|Note):"),
+    ("sentence badge",       "span.sbadge",        r'class="sbadge"',             r"^> (?:Citation|Value|Display|Supporting Run|Check|Q-consumer|Link|Source|Note):"),
+    ("typed lane",           "div.lane",           r'<div class="lane"',          r"^> (?:Citation|Value|Display|Supporting Run|Check|Q-consumer|Link|Source|Note):"),
     ("item with detail",     "details.it.row",     r'<details class="it row"',    r"(?m)^- (?:\[[ xX]\] )?.+\n {2,}\S"),
     ("aim count",            "n/m in the heading", r'\d+/\d+',
      r"(?m)^-\s+(?:⬜|🔨|🧠|✅|❄️|🟡|🟠|⏸️)\s+(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*)\s+·"),
@@ -912,7 +913,7 @@ RETIRED_SECTIONS = {
     # ("`retired-section` reports it") described behaviour the table did not
     # have. 1,026 lines of a retired section passed silently on the MISQ paper
     # board for eleven days (JL 260830).
-    "Files": "moved to `outline/<stem>-files.md` (JL 260831, QPf12 row 3): one "
+    "Files": "moved to `outline/records/<stem>-files.md` (JL 260831, QPf12 row 3): one "
              "`### F<n> · <what it is for>` record per file with `Path` and `Role`; a "
              "Related Board Page is a record with `Role: related` and its row verbatim under it",
     "States": "merged into `## Aims` (260819): one Aim row carries its tick, "
@@ -1199,11 +1200,11 @@ def check_canvas_frames(text, name, rep, board_dir=None):
 
 
 def _files_record_text(path):
-    """The page's outline/<stem>-files.md, with each `- **Path**: `x`` row
+    """The page's outline/records/<stem>-files.md, with each `- **Path**: `x`` row
     rewritten as a bare `- `x`` row so the Files path checks read it unchanged."""
     if not path:
         return ""
-    p = Path(path); f = plan_dir(p.parent) / f"{p.stem}-files.md"
+    p = Path(path); f = record_path(plan_dir(p.parent), p.stem, "files")
     if not f.is_file():
         return ""
     t = f.read_text(encoding="utf-8", errors="replace")
@@ -1222,7 +1223,7 @@ def check_file_paths(text, name, rep, board_dir=None, path=None):
     repo root, because a Files row may point at any of the three.
     """
     block = section_text(text, "Files") or ""
-    # Since 260831 the file map lives in outline/<stem>-files.md (JL, QPf12 row 3);
+    # Since 260831 the file map lives in outline/records/<stem>-files.md (JL, QPf12 row 3);
     # its `- **Path**: `x`` rows are checked with the same teeth as a page's rows.
     block = block + "\n" + _files_record_text(path)
     roots = [HERE, HERE.parent]
@@ -1310,7 +1311,7 @@ def check_comment_form(text, name, rep):
         # `Card` joins the named lanes (JL 260802). Without it, `> Card SPAN
         # of words: …` matched the bare-initials shape as author "C", so every
         # span card on the board reported itself as a legacy comment.
-        if m and not re.match(r"^>\s*(Citation|Value|Display|Check|Q-consumer|"
+        if m and not re.match(r"^>\s*(Citation|Value|Display|Supporting Run|Check|Q-consumer|"
                               r"Link|Source|Note|Comment|Card)\b", ln, re.I):
             rep.add(WARN, "old-comment-form", f"{name} · Content",
                     f"`> {m.group(1)}:` is the legacy sentence-comment form; "
@@ -1360,13 +1361,13 @@ def check_generated_block(text, name, rep, path=None):
     if not blocks:
         return
     # The Log may live on the page OR, since haipipe-workbench-page 0.16.0, in
-    # `outline/<stem>-log.md`. Reading only the page made this check lose its
+    # `outline/records/<stem>-log.md`. Reading only the page made this check lose its
     # input the moment a page migrated: `latest` went "" for ever and a stale
     # form block could never be reported again. A finding count dropping because
     # a check lost its input is worse than the finding (field test, JL 260830).
     log = section_text(text, "Log")
     if path is not None:
-        side = plan_dir(path.parent) / f"{path.stem}-log.md"
+        side = record_path(plan_dir(path.parent), path.stem, "log")
         if side.exists():
             log += "\n" + side.read_text(encoding="utf-8", errors="replace")
     latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
@@ -1432,7 +1433,7 @@ def check_evidence_file(path, name, rep):
 
 
 def check_discussion_file(path, name, rep):
-    """`outline/<stem>-discussion.md` holds OPEN questions only (haipipe-workbench-
+    """`outline/records/<stem>-discussion.md` holds OPEN questions only (haipipe-workbench-
     outline 0.18.0, JL 260831: "the solved one go to logs, and only leave the
     one we have not solved"). A thread that is settled, decided or dropped has
     moved: its ruling is one `### YYMMDD · D<nn> …` record in `-log.md`. A
@@ -1440,7 +1441,7 @@ def check_discussion_file(path, name, rep):
     is the one nobody could read."""
     if path is None:
         return
-    f = plan_dir(path.parent) / f"{path.stem}-discussion.md"
+    f = record_path(plan_dir(path.parent), path.stem, "discussion")
     if not f.exists():
         return
     text = f.read_text(encoding="utf-8", errors="replace")
@@ -1451,12 +1452,12 @@ def check_discussion_file(path, name, rep):
                 or re.search(r"(?m)^\s*status:\s*✅", body):
             rep.add(WARN, "discussion-settled-thread", name,
                     f"thread `{m.group(1)}` is settled and still in `outline/{f.name}`; the discussion "
-                    f"holds open questions only, so its ruling belongs in `outline/{path.stem}-log.md` "
+                    f"holds open questions only, so its ruling belongs in `outline/records/{path.stem}-log.md` "
                     f"as one dated record (haipipe-workbench-page 0.18.0)")
 
 
 def check_requirement_file(text, path, name, rep):
-    """`outline/<stem>-requirement.md` holds a generated venue V block and an
+    """`outline/records/<stem>-requirement.md` holds a generated venue V block and an
     authored page-writing W block. `cli/requirement.py` refreshes only V. A
     Section that binds a venue division and has no file shows no 📏 chip; a V
     block without its GENERATED line has lost its ownership boundary."""
@@ -1464,7 +1465,7 @@ def check_requirement_file(text, path, name, rep):
         return
     if not re.search(r"(?m)^structure-source:\s*\S", text[:3000]):
         return
-    f = plan_dir(path.parent) / f"{path.stem}-requirement.md"
+    f = record_path(plan_dir(path.parent), path.stem, "requirement")
     if not f.exists():
         rep.add(WARN, "requirement-missing", name,
                 f"this page binds a venue division and `outline/{f.name}` "
@@ -1504,14 +1505,14 @@ def check_section_writing_requirements(text, path, name, rep):
     if re.search(r"(?m)^#{2,3}\s+Writing Style\b", text):
         rep.add(WARN, "section-writing-in-page", name,
                 "a manuscript Section stores writing rules in "
-                f"`outline/{path.stem}-requirement.md` as W<n> records; remove the Page's "
+                f"`outline/records/{path.stem}-requirement.md` as W<n> records; remove the Page's "
                 "`Writing Style` block after migrating each instruction to a W<n> record")
     retired = plan_dir(path.parent) / f"{path.stem}-writing.md"
     if retired.exists():
         rep.add(WARN, "writing-file-retired", name,
                 f"`outline/{retired.name}` is a redundant sidecar; move its W<n> "
-                f"records into `outline/{path.stem}-requirement.md`")
-    f = plan_dir(path.parent) / f"{path.stem}-requirement.md"
+                f"records into `outline/records/{path.stem}-requirement.md`")
+    f = record_path(plan_dir(path.parent), path.stem, "requirement")
     if not f.exists():
         # check_requirement_file already reports the missing shared file.
         return
@@ -2009,6 +2010,7 @@ def check_design_family(d, rep):
         retired = set(d.rglob("design/DU*"))
         retired.update(d.rglob("evidence/pagex"))
         retired.update(d.rglob("outline/evidence/pagex"))
+        retired.update(d.rglob("draft/evidence/pagex"))
         for phase_file in d.rglob("workflow/phase.yaml"):
             text = phase_file.read_text(encoding="utf-8", errors="replace")
             if re.search(r"(?m)^\s*phase:\s*D[0-5]\b", text) or re.search(
@@ -2155,8 +2157,7 @@ def check_insight_family(d, rep):
                     rep.add(ERROR, "partial-final-ghost-page", name,
                             f"`🟡 {pid} final` cites a page this board does not hold")
                 else:
-                    log_path = (plan_dir(cited.parent) /
-                                f"{cited.stem}-log.md")
+                    log_path = record_path(plan_dir(cited.parent), cited.stem, "log")
                     log = (log_path.read_text(encoding="utf-8", errors="replace")
                            if log_path.is_file() else "")
                     # WARN, not ERROR, deliberately: a missing receipt is
@@ -2171,7 +2172,7 @@ def check_insight_family(d, rep):
                                for line in heads):
                         rep.add(WARN, "partial-final-no-page-receipt", name,
                                 f"`{qid}` leans on a sentence in {pid} and {pid}'s "
-                                f"`outline/{cited.stem}-log.md` does not record "
+                                f"`outline/records/{cited.stem}-log.md` does not record "
                                 "it: the flip leaves TWO receipts "
                                 "(insight-workflow §Marks), because a citation "
                                 "invisible from the cited end cannot carry "

@@ -97,7 +97,7 @@ without copying that decision into the bundle.
 An item's evidence obligation is ready only when it has a ready local Result:
 
 - every declared Supporting Result passes its owning Run gate;
-- one frozen Local Input records those sources and hashes;
+- one frozen Local Input records those sources by path;
 - exactly one current typed Page `RE` lineage emits an accepted VALUE, CITE, or
   DISPLAY Result; its read-only Card and zero-to-many Labels are derived from
   that Result. DISPLAY uses `D_` for tables, figures, and algorithm blocks;

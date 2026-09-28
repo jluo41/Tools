@@ -19,7 +19,7 @@ task: .
      own Data or Method? The closed role order is Introduction, Concept,
      Landscape, Data, Method, Result, Conclusion. At least one Result is
      required; Conclusion is page-level, exactly once, and always last.
-     The rendered Outline is generated from outline/<stem>-outline-v<N>.md;
+     The rendered Outline is generated from draft/<stem>-draft-v<G>.<S>.md;
      do not author a second ## Outline section here. Each prose paragraph
      realizes exactly one plan Bullet and ends on its final source line with
      the HTML-comment backlink specified in ref/task-page.md. -->
@@ -29,8 +29,8 @@ task: .
      meaningful), and one method/provenance/boundary diagram. Every Data or
      Result division needs the display its reader move requires. The inline
      Division map below is only a sketch; the final display is a governed
-     unit under outline/evidence/display/ with intake, recipe, asset, and
-     preview.pdf. -->
+     unit in a typed DISPLAY Result, results/<re-run>/payload/<unit>/, with
+     intake, recipe, asset, and preview.pdf. -->
 
 ### 1 · Introduction · <what this Folder was run to settle and what the report claims>
 <!-- Every division begins with one captioned face diagram that previews this
@@ -92,5 +92,5 @@ next run       <full planned Run id, or "none: the question is closed">
   **Now:** <current fact, with the owning Run or Page address when relevant>
 
 ## Law
-<!-- Dated phase, rerun, and gate history lives in outline/<stem>-log.md.
-     Task machinery is indexed through outline/<stem>-files.md. -->
+<!-- Dated phase, rerun, and gate history lives in draft/records/<stem>-log.md.
+     Task machinery is indexed through draft/records/<stem>-files.md. -->

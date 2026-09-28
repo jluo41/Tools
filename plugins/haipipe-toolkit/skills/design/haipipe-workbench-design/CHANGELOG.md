@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.12.2 · 2026-09-28 · No content hashes (JL 260928)
+
+- The Design buttons write run records, decisions and receipts that name files by path
+  only: no `sha256` on inputs, no `ticket_sha256` on receipts.
+- Run Space and Design Space no longer show a draft's sha256; the design bundle csv
+  drops its `sha256` column.
+- "Queue again" finds an out-of-date queued run by file time: a file it names is newer
+  than its run record. The presenter holds render pictures to the Result's file time.
+
+## 0.12.1 · 2026-09-27
+
+- The Design workbench reads a Design Folder's register, feedback and draft request from `draft/`
+  (Page layout 0.118) and falls back to `outline/` on a Folder not yet moved; a new Design Folder
+  starts with `draft/`. Design Run tickets `rdNN_<operation>_*` stay in flat `runs/`: the Page
+  migration no longer sorts them as Page Delivery Runs. The Design skill docs name `draft/`.
+
 ## 0.12.0 · 2026-09-22
 
 - Renamed with the vocabulary: `plugin` now means only a Claude Code plugin

@@ -100,7 +100,7 @@ Writing Style` block in the product `<page>.md` and no separate writing file.
 records `CTX1` to `CTX6` resolve identity, purpose/scope,
 policy/structure/style, related information, feedback/decisions, and
 planning/evidence readiness. It summarizes for orientation but every rule
-points to its source authority and version/hash. Regenerate it whole; never
+points to its source authority and version (number and date). Regenerate it whole; never
 hand-edit it or place a human gate in it.
 
 **Evidence Items** is the authored table (`ref/item-table.md`): one record per
@@ -113,7 +113,7 @@ not derive it from the full item name. SURVEY writes `Supporting Runs` (zero
 or more Execution/Discovery plans), exactly one `Local Input` envelope plan,
 exactly one `Local Run` (`Page · Evidence Item`), and leaves `Decide` for a
 person. LAND validates every Supporting Result, appends allocated global Run
-ids, freezes the input pointer/hash, binds the local `→ <Result>`, and presents
+ids, freezes the input pointer, binds the local `→ <Result>`, and presents
 the CITE payload so a person may sign that item's `Verified` gate.
 Cross-Folder evidence enters through Supporting Run Results. No Status word is
 ever typed here.

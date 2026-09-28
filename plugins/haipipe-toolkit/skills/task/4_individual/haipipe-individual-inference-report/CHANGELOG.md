@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.2] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `meta.json` `evidence_binding` names `forecast.json` and `report.json` plus the selection, with no hashes (`scripts/make_report_cli.py`, `SKILL.md`, `src/report_schema.py`).
+
 ## [0.1.1] — 2026-09-20
 
 - Defined a deterministic four-way forecast trend rule and require the report model to follow it.

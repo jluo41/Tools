@@ -7,8 +7,8 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-09-21"
+  version: "1.5.1"
+  last_updated: "2026-09-28"
 ---
 
 # /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
@@ -30,6 +30,8 @@ Read [ref/run-workflow.md](ref/run-workflow.md) before planning, dispatch,
 resume or status: it owns the Spec templates, identities, controls, Runtime
 storage and completion rules. Page containers and G0–G5 gates do not become
 Runs; Steps and Versions remain internal to a bounded Run.
+[ref/run-cards.md](ref/run-cards.md) is the compact card per Run: the button and
+prompt each Paper Workbench Space shows in its Runs panel.
 
 Paper Pages hold the idea portfolio, prospective Story, manuscript Sections,
 Venue reference and feedback Round. Discovery and Task remain external work
@@ -204,7 +206,7 @@ target, or selection. These are authoring/execution records, not additional
 Story Content divisions. The
 Section Page records its own Page lifecycle and CHECK. Compile writes its
 build manifest and render receipt. The Round records G5 and the frozen build
-hashes. The Paper-side G3 release is not a substitute for Page release or
+paths and `built` times. The Paper-side G3 release is not a substitute for Page release or
 CHECK; G4 may consume a Section only after the current Page release/CHECK
 contract is satisfied. There is no separate child control-page receipt store.
 

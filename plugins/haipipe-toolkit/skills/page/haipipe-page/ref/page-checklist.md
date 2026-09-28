@@ -31,7 +31,7 @@ declared Page owner before applying its additional requirements.
       paths; its optional `content` agrees with the Face's `source-content:`.
 - [ ] Imported content has one editable copy inside the Folder. On intake,
       compare its bytes with the input and confirm the original was not changed.
-      Subsequent intentional edits need not match the original intake hash.
+      Subsequent intentional edits need not match the original input.
 - [ ] Required local assets resolve inside the package. Name network resources
       and unbundled dynamic/backend dependencies: a standalone Page runtime does
       not imply the imported content is offline-capable or a packaged web app.

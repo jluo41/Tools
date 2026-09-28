@@ -317,7 +317,7 @@ def run_progress(page_md, board=None):
                 and not item.get("verification_signed")):
             cite_verification.append({
                 "item": item_id,
-                "where": f"outline/{page_md.stem}-evidence-items.md",
+                "where": f"{plan_dir(page_md.parent).name}/{page_md.stem}-evidence-items.md",
                 "checked": None,
             })
     ic = items["counts"] if items else {}
@@ -402,7 +402,7 @@ def owed_ledger(st):
     # ① the plan. Owed from the moment an outline file exists.
     o = st["outline"]
     if not o["approved"]:
-        out.append(row("approved", rel(o["file"]) if o["file"] else "outline/ (none yet)",
+        out.append(row("approved", rel(o["file"]) if o["file"] else "draft/ (none yet)",
                        f"v{o['version']}" if o["file"] else "no outline written yet",
                        o["checked"]))
 

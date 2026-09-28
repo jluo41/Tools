@@ -3,7 +3,7 @@ name: haipipe-display-figure
 description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-display-table."
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -81,7 +81,7 @@ inside that Run.
 ### Step 1: Read the Unit Brief and Intake
 
 Read the unit `README.md` for the claim, audience, caption intent, and target section.
-Then read `intake/manifest.yaml` and verify the declared snapshot hash before plotting.
+Then read `intake/manifest.yaml` and confirm the declared snapshot file exists before plotting.
 The Display stage, not this renderer, already decided the figure plan and form.
 
 If the manifest has no `role: values` source, stop and route a concept visual to the diagram or

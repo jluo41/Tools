@@ -10,7 +10,6 @@ status: complete
 version: v001
 step: s003
 version_file: results/rp-para-02_P02/v001.md
-version_sha256: e44e9e787f7926625700a754ae7602ef7f251c44ba0edaab788e3828dfccd360
 worker:
   kind: skill
   name: haipipe-writing

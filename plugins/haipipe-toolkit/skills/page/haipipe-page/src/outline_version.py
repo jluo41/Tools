@@ -7,6 +7,7 @@ change requires Content reconciliation through its gates; unapproved working
 edits do not publish Content. Integer-only ``v5`` files remain readable legacy input;
 no new current plan may use that form.
 """
+import os
 import re
 from pathlib import Path
 
@@ -26,10 +27,10 @@ def plan_dir(page_folder) -> Path:
     for older readers.
     """
     page_folder = Path(page_folder)
-    draft = page_folder / "draft"
-    if draft.is_dir() and not draft.is_symlink():
-        return draft
-    return page_folder / "outline"
+    draft, outline = page_folder / "draft", page_folder / "outline"
+    if outline.is_dir() and not (draft.is_dir() and not draft.is_symlink()):
+        return outline  # a Page not yet moved keeps reading its outline/
+    return draft  # since 0.118, and where a Page with no plan folder writes its first one
 
 
 def version_tag(path: Path) -> str:
@@ -177,12 +178,17 @@ RECORD_KINDS = ("context", "requirement", "discussion", "feedback", "files", "lo
 
 
 def record_path(outline_dir: Path, stem: str, kind: str) -> Path:
-    """Return `outline/records/<stem>-<kind>.md`, or the old flat file while it exists.
+    """Return `<plan folder>/records/<stem>-<kind>.md`, or the old flat file while it exists.
+
+    A `<page>/outline` argument resolves through `plan_dir`, so it lands in
+    `draft/` on a Page that has one.
 
     New records are always created under `records/`; a caller that writes must
     create the parent folder.
     """
     outline_dir = Path(outline_dir)
+    if outline_dir.name == "outline":  # callers written before 0.118 name `<page>/outline`
+        outline_dir = plan_dir(outline_dir.parent)
     new = outline_dir / RECORDS / f"{stem}-{kind}.md"
     old = outline_dir / f"{stem}-{kind}.md"
     return old if old.is_file() and not new.is_file() else new
@@ -199,8 +205,40 @@ def retire_records(outline_dir: Path) -> list[Path]:
                 continue
             target.parent.mkdir(exist_ok=True)
             old.rename(target)
+            relink_moved(target, outline_dir)
             moved.append(target)
     return moved
+
+
+_RELATIVE = re.compile(r"(?P<open>\]\(|`)(?P<path>(?:\.{1,2}/)[^)`\s#]*|[\w.-]+/[^)`\s#]*)(?=[)#`])")
+
+
+def relink_moved(path: Path, old_dir: Path) -> int:
+    """Keep a moved Markdown file's relative paths on the files they named.
+
+    A path starting `./` or `../` (in a link or in backticks), or a plain link
+    target, is re-pointed when it resolved from `old_dir` and no longer
+    resolves from the file's new folder. Folder-relative names in backticks
+    (`draft/...`) are a naming convention, not a link, and stay.
+    """
+    path, old_dir = Path(path), Path(old_dir)
+    text = path.read_text(encoding="utf-8", errors="replace")
+    count = [0]
+
+    def swap(match):
+        rel = match.group("path")
+        explicit = rel.startswith(("./", "../"))
+        if not explicit and match.group("open") == "`":
+            return match.group(0)
+        if (path.parent / rel).exists() or not (old_dir / rel).exists():
+            return match.group(0)
+        count[0] += 1
+        return match.group("open") + os.path.relpath(old_dir / rel, path.parent)
+
+    new = _RELATIVE.sub(swap, text)
+    if count[0]:
+        path.write_text(new, encoding="utf-8")
+    return count[0]
 
 
 def find_version(outline_dir: Path, name: str) -> Path | None:

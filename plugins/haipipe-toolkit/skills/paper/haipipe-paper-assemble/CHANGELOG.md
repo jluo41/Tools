@@ -1,3 +1,116 @@
+## 0.8.4 · 2026-09-28
+
+- ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.
+- Word lane: an abstract that ends with a bold label (`\noindent\textbf{Keywords:}`, the MISQ shape) lost its
+  prose, because `add_abstract` printed only from the first label on; Word showed the Abstract heading and then
+  Keywords (JL 260928: "why I don't have the abstract"). The unlabelled lead is now printed first. The PDF was
+  never affected. Test: `test_abstract_prose_before_a_keywords_label_reaches_word`.
+- Word lane: the table header fill was hard-coded `F2F4F7` for every venue. It is now the profile key
+  `table_header_fill` (default unchanged); `profiles/misq.toml` sets it to `""`, matching the co-author's official
+  MISQ file and the v0728 submission, which have no cell fill (JL 260928: "why the header is with color?").
+  Test: `test_table_header_fill_follows_the_profile`.
+- MISQ follows the co-author's official-format Word file (`delivery/word-feedback/`, measured from its styles.xml and
+  document.xml; JL 260928: "Title abstract and keywords should be in the first page" and "does this really following
+  the MISQ word template?"). New profile keys, all defaulting to the old behaviour: `front_matter =
+  "title-abstract-keywords"` (page 1 = Title style, centred ABSTRACT, single-spaced abstract and Keywords, then a page
+  break), `abstract_line_spacing`, `heading_align = "center"`, `caption_plain` (bold upright black captions),
+  `table_borders = "horizontal"` (no vertical lines) and `table_font_size = 8`. Word tables now print the float's
+  `\begin{flushleft}` note under the table (the PDF always did). The MISQ LaTeX lane uses `title_page = "inline"`, so
+  the PDF's page 1 also carries the title, abstract and keywords. Test:
+  `test_misq_official_layout_front_page_tables_and_notes`.
+- Word title: python-docx's built-in Title style is dark blue with a blue rule under it; the style is now black with
+  no border for every venue (JL 260928 screenshot: "is this following the MISQ template with the underline and color?").
+- Word tables (JL 260928 "The table is just not good"): every column got max(900, 9360/n) twips, so a 13-column table
+  overflowed the line and its last column went negative ("Low%" one letter per line). `column_widths()` now sizes
+  each column to its own content (row labels at least 10 characters), sums exactly to the line, and keeps every
+  column at 450 twips or more. `\multicolumn` group headers are merged across their columns and centred
+  (`merge_spanned_cells()`, spans from `parse_table_spans()`), as in the official-format file. Test:
+  `test_wide_table_fits_the_line_and_group_headers_merge`.
+- Word tables, second pass (JL 260928 screenshots: "0.207" printed as "0.20/7", "RMSE" as "RMS/E", and "Why I have
+  this?" on a table split across a page): widths now measure the longest unbreakable piece of each column at the
+  table's font size (a hyphen is a break point, so a model name does not claim the whole line), give that piece
+  room first, and may run up to 10,400 twips into the margins, centred, when the line cannot hold it. Cell padding
+  is 60 twips. Every header row above the first `\midrule` repeats on a continued page (`count_header_rows()`),
+  no row splits across a page (`w:cantSplit`), and a table of 25 rows or fewer is kept on one page.
+- Word equations (JL 260928: "The equation is not in the good format as well"): `$$…$$`, `\[…\]`, `equation` and
+  inline `$…$` were flattened to text ("Y_ijc(o) = β_c(o) H_j + … + _ijc(o)", ε lost). They now go LaTeX → MathML
+  (`latex2mathml`) → OMML (`_mathml_to_omml()`) and print as native Word equations, display ones centred; text is
+  the fallback only when a formula cannot convert. Test: `test_equations_become_word_equations_and_header_rows_repeat`.
+- Word text: `latex_to_text()` knew ten Greek letters, so `\Delta` in a table header was dropped by the generic
+  command stripper and printed "HDLD ( pp)". `TEX_SYMBOLS` now covers the Greek alphabet and the common relations,
+  matched as whole command names (`\mu` no longer eats the front of `\multicolumn`). Test:
+  `test_math_symbols_in_table_cells_survive`.
+- Verbatim blocks (JL 260928 appendix screenshot, "the appendix here seems not that good in the format"): the published
+  prompt in `\begin{verbatim}` reached Word as double-spaced prose with its lines joined and the word "verbatim"
+  printed, and in the PDF its long lines ran off the right edge. Word: `VERBATIM_PATTERN` lifts the block out before
+  any other parsing, `strip_comments` keeps a `%` inside it, and `add_code_block()` prints a framed one-cell box, one
+  paragraph per source line, Courier New 9 pt, single-spaced, indentation kept, a two-character hanging indent on a
+  wrapped line; the box carries `w:tblDescription="verbatim"` so `docx_table_count` does not count it as a table.
+  LaTeX: the master loads `fvextra` and makes `verbatim` single-spaced, `\small`, framed, and wrapping at spaces.
+  Test: `test_verbatim_prompt_is_a_framed_box_line_by_line`.
+- Word prose and table notes print `\textbf` bold and `\textit`/`\emph` italic (`mark_emphasis()`); they were plain, so
+  "Agreeableness specification" lost its bold and every table's italic "Note." was upright. Test:
+  `test_bold_and_italic_reach_word_prose`.
+- Blind copy has no acknowledgments: every build printed "[Acknowledgments, funding and disclosures are written at
+  submission; this build is a draft.]", process text in the deliverable, and on a blind MISQ copy the section itself
+  would unblind the authors. New `[latex] acknowledgments` key (default true); `profiles/misq.toml` sets it false. The
+  Word lane used that heading as the end of the main text; it now falls back to the bibliography. Test:
+  `test_blind_copy_without_acknowledgments_still_converts`.
+- Title acronyms keep their capitals: apalike lowercases titles, so the reference list printed "Online Reviews with
+  llms". The bib merge now braces every title word with two or more capitals (`protect_title_acronyms()`); braced text
+  is left alone and no warning is raised.
+- `draft-sections/` can be switched off (`[outputs] section_snapshots = ""`), JL 260928: "why it is not the same to each
+  section's word? and no references". Those files were a second, reference-less copy of each Section Page's own Word
+  file. Test: `test_section_snapshots_can_be_switched_off`.
+- No content hashes (JL 260928: "Why we have the sha256? remove that, waste my tokens"): `build-manifest.json` carried
+  74 sha256 values that nothing read. It now lists inputs by path only; a version is its number and date, and a stale
+  fragment is still found by file time. SKILL.md no longer asks for hashes either: the outline record, evidence lock,
+  Round snapshots and the stale-build audit use paths, versions and the manifest's `built` time. Assemble tests: 64 pass.
+
+## 0.8.3 · 2026-09-28
+
+- The build merges the Bib the Page export actually writes, `delivery/latex/selected-bibliography/<page>.bib`.
+  Since the 09-20 export refactor no Page writes `<page>-complete.bib`, so a full build merged a stale
+  09-13 copy for the Introduction and stopped at Literature Review. The page-PDF readiness check no
+  longer accepts a stale `<page>-complete.pdf` either. Flagged by the S-MISQ-Main-5-Results session.
+- SKILL.md and haipipe-paper-section name the current Page delivery files: `<page>.tex` (fragment),
+  `<page>-master.tex` → `<page>.pdf` (standalone), `selected-bibliography/<page>.bib`.
+- A fragment's page-relative `\input{…}` / `\includegraphics{…}` that is not a display unit is rewritten
+  to resolve from the master's folder (`from_master`), with a warning when it reads a retired `_archive`
+  lane. Before, it was copied into `sections/` unchanged and latexmk stopped at `File ../../… not found`
+  (Paper-AgreeableRxDiscretion session, 260928). Test: `test_page_relative_inputs_resolve_from_the_master`.
+- `merge_bib` writes every `&` for LaTeX (`latex_safe_entry`): `&amp;` copied from a web page, a doubled
+  `\\&`, or a bare `&` becomes `\&`; inside url/doi `&amp;` becomes `&`; one warning names the key and
+  Page. `Sinnenberg_2017` (`MDM Policy &amp; Practice`) had stopped BibTeX. Test:
+  `test_html_ampersand_in_a_merged_bib_is_written_for_latex`. A scratch copy of the MISQ paper now
+  builds: 63 pages, PDF and Word.
+- One build at a time per `delivery/` (`delivery_lock`, around `build` and `send`/`release`): two builds in
+  one folder had regenerated `latex/` under each other (79 undefined citations). A second build prints
+  who holds the lock, waits up to 10 minutes, then stops. The lock is an OS file lock, released even on a
+  crash, on a file in the system temp folder named by the `delivery/` path, so no paper repo gains a
+  lock file. Test: `test_one_build_at_a_time_per_delivery_folder`; two real builds started 1 s apart on a
+  scratch copy ran one after the other, both clean.
+
+## 0.8.2 · 2026-09-28
+
+- New profile key `appendix_float_numbering = "per-appendix"`: appendix tables and figures restart in
+  each lettered appendix (Table A1 … Table B1 …), the MISQ convention. The LaTeX lane writes
+  `\counterwithin*{table}{section}` with `\thetable = \thesection\arabic{table}` after `\appendix`; the Word lane
+  numbers captions AND in-text `\ref`s the same way (before, Word captions said "Table A7" while the text
+  that cited them used one running counter across the whole paper). Default stays "continuous".
+  Test: `test_per_appendix_numbering_restarts_under_each_letter`.
+- A DISPLAY `result.yaml` written in JSON form (valid YAML) is now read like the YAML form (`_result_text`).
+  Before, the line readers missed it: the unit was never placed, the fragment kept its page-relative
+  `\input{../../results/...}`, and latexmk stopped (AgreeableRx §5, 260928). Test: `test_json_form_display_result_is_found`,
+  failing before the fix.
+
+## 0.8.1 · 2026-09-27
+
+- A build refused for a cited Page without `delivery/latex/<page>-complete.bib` no longer deletes the
+  last good `delivery/latex/` first: `require_page_bibs` runs before the folder is cleared (a DrFirst
+  paper lost `master.pdf`, `master.tex` and `reference.bib` to a refused build, restored from backup).
+  The plan header reader accepts `draft-version:` beside `outline-version:` (Page layout 0.118).
+
 ## 0.8.0 · 2026-09-20
 
 - Validate required config and generated paths before mutation; correct the canonical config example. Bind commissioned builds to the compile Spec. Merge Page delivery bibliographies, preserve stable Section identities and label MISQ thresholds as local guidance. Add path/bibliography regression coverage.

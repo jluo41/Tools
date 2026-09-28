@@ -1,5 +1,4 @@
 {
-  "schema": "haipipe-page-export/v2",
-  "source": "haipipe-page-guide.md",
-  "source_sha256": "40a8123c54960b6813cb706f500bcfea106a91e78a0021ccf7f8010eadd017da"
+  "schema": "haipipe-page-export/v3",
+  "source": "haipipe-page-guide.md"
 }

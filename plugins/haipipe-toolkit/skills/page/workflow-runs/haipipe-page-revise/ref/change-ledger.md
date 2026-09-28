@@ -15,8 +15,8 @@ Compare v002 (accepted) with v003 (candidate) of rp-para-01_P03.
 ### Saved result
 
 #### Inputs
-- Before: results/rp-para-01_P03/v002.md · sha256 <hash>
-- After:  results/rp-para-01_P03/v003.md · sha256 <hash>
+- Before: results/rp-para-01_P03/v002.md · closed 260928 1241
+- After:  results/rp-para-01_P03/v003.md · saved 260928 1307
 - Target: C1.P3
 
 #### Track changes
@@ -76,7 +76,7 @@ Drafts already sit where the writing Run adopts them.
   `Held` by the reviewer, not accepted by default.
 - **Inferred preference** is optional and always a candidate; `Preference
   status` is `candidate`, `confirmed` (the person said so), or `rejected`.
-- **Inputs are frozen.** Both hashes are recorded before the first row; a
-  changed input is a new Revise Run.
+- **Inputs are frozen.** Both paths and versions are recorded before the first
+  row; an input saved after that (newer file time) is a new Revise Run.
 - **Handoff** names the writing Run and the Version that received the accepted
   text, or says `none` when every row was rejected.

@@ -61,7 +61,7 @@ methods:
     entry:
       kind: python
       path: ../cli/anti_slop.py
-    version: content-hash
+    version: skill-version        # the haipipe-writing SKILL.md version; rules carry their own version
     availability: bundled
     adapter: anti-slop-adapter.md
     inputs: [candidate]

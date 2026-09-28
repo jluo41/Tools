@@ -454,11 +454,12 @@ def registered_page_source(folder):
         if not isinstance(content, str) or "\\" in content:
             return None
         parts = content.split("/")
-        if (parts[:3] != ["outline", "evidence", "materials"]
+        # Imports live in the plan folder's materials lane: draft/ since 0.118, outline/ before.
+        if (parts[:3] not in (["draft", "evidence", "materials"], ["outline", "evidence", "materials"])
                 or len(parts) < 4 or any(p in {"", ".", ".."} for p in parts)):
             return None
         material = folder / content
-        material.resolve().relative_to((root / "outline/evidence/materials").resolve())
+        material.resolve().relative_to((root / parts[0] / "evidence/materials").resolve())
         material.resolve().relative_to(root)
         if material.is_file():
             return source

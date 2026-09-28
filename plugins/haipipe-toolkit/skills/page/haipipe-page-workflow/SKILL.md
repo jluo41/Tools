@@ -11,8 +11,8 @@ description: >-
   workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.64.1"
-  last_updated: "2026-09-22"
+  version: "0.66.0"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md
 ---
 
@@ -103,11 +103,18 @@ second semantic authority beside the Workflow and its Run Specs.
 
 ## ⚡ Fast feedback Step is the default
 
+**Run bookends (JL 260928).** The person opens a writing Run and later says it
+is over. In between, only the Draft file changes; the Run journal, `working.md`,
+`runtime.yaml`, tickets, log entry, evidence notes and receipts are written once
+at the close, from the conversation. Adopting the Draft into Page Content and
+the web → LaTeX → Word delivery lanes follow only when the person asks. The
+contract is the first section of `ref/interactive-writing-run.md`.
+
 For wording feedback on an open Page Run, do not execute the full workflow
-chain again. Use the already loaded context, read only the current Run resume
-view, latest Version tail, named paragraph slice, dependent Bullet, and frozen
-Structure description. Make one bounded patch, update only the required Run
-projections and candidate preview, perform one narrow check, and return. Aim
+chain again. Use the already loaded context, read only the named paragraph
+slice in the Draft file, its dependent Bullet, and the frozen Structure
+description. Make one bounded patch to the Draft, perform one narrow check, and
+return. Aim
 to finish under two minutes. No sub-agent, broad reread, plan rewrite,
 outline pass, build, export, browser check, full test suite, or post-run
 analysis belongs in this path. A wording-only Step never edits the Page source,
@@ -224,7 +231,7 @@ Track Changes card.
 For ordinary follow-up wording feedback, use the rapid foreground budget:
 reuse stable context already loaded in the session, read only `working.md`, the
 latest saved-result tail, the exact target slice, and its dependent Bullet, then
-make one bounded file patch and one narrow hash/scope check. Do not reread the
+make one bounded file patch and one narrow scope check. Do not reread the
 whole Page or Version, run `outline-pass.py`, rebuild the Board, run full tests,
 verify the browser, or generate delivery before returning the current Step.
 Keep the Step record complete but compact; broader preference synthesis and
@@ -354,7 +361,7 @@ projection of actual Run units. Controller operations are listed separately belo
 | rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section or whole paragraph group in the current Outline grammar; no B/symbol target | human | person manually triggers Finish Scratch; AI returns a non-empty Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | structure / SCRATCH |
 | rp-sec-NN | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | structure / SHAPE and writing / WRITE |
 | rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | structure / SHAPE and writing / WRITE |
-| rp-revise-NN_<target> | page.interactive-writing.revise | compare two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) and settle every change | fresh agent / human, never the writer of the candidate | entry requires both inputs by path and hash; exit requires every ledger row decided | SELF / next Step, CLOSE / hand accepted text to the writing Run as NEW_VERSION, NEW_RUN, HOLD | 0..N per target | Run Space Revise card; Draft Space read-only | REVISE |
+| rp-revise-NN_<target> | page.interactive-writing.revise | compare two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) and settle every change | fresh agent / human, never the writer of the candidate | entry requires both inputs by path and version number; exit requires every ledger row decided | SELF / next Step, CLOSE / hand accepted text to the writing Run as NEW_VERSION, NEW_RUN, HOLD | 0..N per target | Run Space Revise card; Draft Space read-only | REVISE |
 | re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | evidence / LAND+EMBED |
 | rdNN_<target> | page.delivery | one declared web, LaTeX, Word, or render delivery target | agent / automatic | entry open; exit requires build receipt and current artifact | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | one per declared delivery target | delivery projection and build receipt | writing / WRITE |
 
@@ -520,7 +527,7 @@ OUTLINE   haipipe-page-structure-agent    producer
 EVIDENCE  haipipe-page-evidence-agent   producer
 CONTENT   haipipe-page-writing-agent    producer
 CHECK     haipipe-page-check-agent      fresh read-only judge
-builder   separate mechanical actor     build/check/hash only
+builder   separate mechanical actor     build/check only
 human     only the declared person-reserved decisions
 ```
 

@@ -39,7 +39,7 @@ compatibility capability tags only and do not create an independent frontier.
 
 ## Run allocation
 
-Read `../../ref/ref-run.md` before allocating. This machine may allocate:
+Read `../label-building/ref/ref-run.md` before allocating. This machine may allocate:
 
 ```text
 P0 (compat tag)  corpus-contract · discovery-search* · guideline-seed · test-reserve · embedding-build
@@ -48,8 +48,8 @@ P1 (compat tag)  round-prepare · weak-prelabel* · human-calibration · guideli
 P2 (compat tag)  handoff-freeze
 ```
 
-Write each Ticket to `runs/<RUNNAME>.yaml` and its runtime/Result envelope to
-`results/<RUNNAME>/`. Point the Result at the canonical domain files named
+Write each Ticket to `<Page>/runs/<RUNNAME>.yaml` and its runtime/Result envelope to
+`<Page>/results/<RUNNAME>/`, beside `labeling/`. Point the Result at the canonical domain files named
 below; never copy them. One round folder is an episode, not a Run. While its
 Card is merely proposed, it has no allocated `round-prepare` Run. Card release
 commissions that operation; subsequent operations allocate only when their own
@@ -60,6 +60,7 @@ inputs freeze. Work exactly one non-parallel operation per dispatch.
 ```text
 pre-job      build the fenced source                             → engine/fence_source.py, no Run
 first Run    import fenced corpus, initial policy, reservation  → corpus-contract
+optional    the human settles each label's wording, in chat     → definition-discussion
 optional    bounded external-evidence query, if commissioned   → discovery-search*
 optional    revise the inspectable policy, if commissioned     → guideline-seed
 optional    supersede the sealed frame under custody           → test-reserve
@@ -91,6 +92,24 @@ corpus checksum creates a new job; a materially changed query, seed,
 reservation frame, or embedder receives a new Run only under the owner
 contract.
 
+`definition-discussion` (`engine/definition_discussion.py`) is how the
+identified human owns the label wording instead of confirming a draft (JL
+260927: S-Label-4's first wording was written by the AI). The chat opens the
+Run with `start`, keeps the talk with `say` (author `model` for its questions
+and proposals, `human` for the person's words), records only the person's
+stated decision per label with `decide` (`--keep`, or `--meaning` plus
+`--reason`), and ends with `close`. The model never picks a meaning and never
+uses a round item as an example. `close` writes `results/<run>/ledger.yaml`
+(each label before, after, and why, plus open questions). When any wording
+changed, it calls `job.revise_meanings`, the one sanctioned change to the P0
+meanings: it writes `gates/meaning-revisions/<seq>.json` (before, after, the
+deciding Run, the retired meaning receipt), archives the G0 receipt to
+`gates/g0/history/`, and resets the confirmation, so the person presses
+Confirm meaning again. `status` rebuilds the contract-time `config.yaml`
+through the revision chain, so the P0 anchor still verifies while any
+unrecorded edit is caught. Both refuse once any item has a first or final
+answer; after that, a change is a guideline patch for `guideline-learn`.
+
 The fenced source that `create` imports is built by `engine/fence_source.py`.
 A fenced source is a corpus snapshot whose sealed test is reserved before any
 development read. The tool does the test-reserve work before the job exists,
@@ -107,7 +126,7 @@ only. The custodian retains any raw source separately; the engine does not
 provide a sealed-text release reader. `test/sealed/status.json` records the
 custodian, frame rule, seed, strata, checksum, and access policy. The tool
 renders G_00 `guideline.md` and `cheatsheet.md` from the config meanings (see
-`../../ref/ref-config.md` §3a). Like `create`, it is additive: an existing
+`../label-building/ref/ref-config.md` §3a). Like `create`, it is additive: an existing
 different file is refused.
 
 ```bash
@@ -388,8 +407,8 @@ on disk.
 **By chat** (JL 260918): the person reads the round in `Labeling → Rounds`
 (the open round's item table: #, Item, Text, Group, State, Feedback; text appears
 once the item has been shown, and the chat shows an item with `open_item`) and
-talks the items through in chat; the view's `Copy chat prompt` button gives
-the text that starts or resumes that chat. The chat records
+talks the items through in chat; `Resume` on the round's `human-calibration`
+Run in the Runs panel copies the text that starts or resumes that chat. The chat records
 only answers the person states: `record_first` for a first answer (then shows
 the comparison), `record_final` for keep or change, and `add_feedback` for a
 note about an item (`sessions/feedback.jsonl`, author human or model, never a
@@ -405,7 +424,7 @@ identity authentication:
    call allocates `rlNN_human-calibration_round-01` with `status: running`.
 2. `record_first` needs a `show` and no earlier `first`. It appends `first`,
    `lock`, and `reveal` in one call. The reveal payload comes from config
-   `reveal.reference_observations` (`../../ref/ref-config.md` §3a) and is marked
+   `reveal.reference_observations` (`../label-building/ref/ref-config.md` §3a) and is marked
    `not_gold: true`; with no such block it is `kind: none`.
 3. `record_final` needs `lock` and `reveal` and no earlier `final`. A final
    whose class or region differs from the first needs a change type other than
@@ -490,8 +509,8 @@ the Keeper or Custodian is absent, `label-building` §Ends at the handoff rules
 
 ```text
 card.md released:        the person's release of the batch (before round-prepare)
-runs/<RUNNAME>.yaml      one authored operation Ticket
-results/<RUNNAME>/       runtime.yaml + safe result.yaml for that operation
+<Page>/runs/<RUNNAME>.yaml   one authored operation Ticket, beside labeling/
+<Page>/results/<RUNNAME>/    runtime.yaml + safe result.yaml for that operation
 sessions/events.jsonl    item-level, append-only, hash-chained, the resume source
 human_final.jsonl        one row per batch item, written when the last final lands
 checkpoint.json          the round receipt; the only artifact that promotes gold and policy

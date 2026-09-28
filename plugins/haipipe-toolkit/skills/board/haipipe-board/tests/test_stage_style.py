@@ -22,8 +22,10 @@ class StageStyleOwnershipTest(unittest.TestCase):
             )
             page = {"requires": "", "style_from": "STYLE.md"}
 
-            contract, digest = render_block(board, page, {})
-            style = render_style_block(board, page, {}, digest)
+            contract = render_block(board, page, {})
+            style = render_style_block(board, page, {})
+            # No content hash in the managed markers (JL 260928).
+            self.assertNotIn("sha256", contract + style)
 
             self.assertIn("### Venue", contract)
             self.assertIn("English only. One sentence per line.", contract)
@@ -81,6 +83,8 @@ class StageStyleOwnershipTest(unittest.TestCase):
             self.assertIn("### Venue", contract_section)
             self.assertNotIn("### Writing Style", contract_section)
             self.assertIn("### Provides\nOutput.", contract_section)
+            self.assertNotIn("contract-source-hash", synced)
+            self.assertNotIn("sha256", synced)
 
     def test_sync_does_not_create_a_page_writing_style_section(self):
         with tempfile.TemporaryDirectory() as tmp:

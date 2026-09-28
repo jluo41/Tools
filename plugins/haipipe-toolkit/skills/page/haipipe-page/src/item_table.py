@@ -378,6 +378,23 @@ def run_registry(root_text: str) -> dict[str, dict[str, str]]:
     return records
 
 
+_SHORT_KIND = {"VALUE": "value", "CITE": "cite", "DISPLAY": "display", "TABLE": "display"}
+
+
+def short_name(item_id: str, item_type: str = "") -> str:
+    """The one short name of an Evidence Item (JL 260928): `E13-DISPLAY-cohort-overview`
+    → `Edisplay13`, `E25-CITE-…` → `Ecite25`, `E01-VALUE-…` → `Evalue01`.
+
+    Only what people read changes. The stored id keeps its form and its number, which
+    stays unique across the Page's types: sealed Results carry it (`item:`), and the
+    export refuses a Result whose item disagrees with the ledger. `E13` plus a type
+    also works (`short_name("E13", "DISPLAY")`); an id with no known type is returned as is.
+    """
+    match = re.match(r"^E(\d+)(?:-([A-Z]+))?", item_id or "")
+    kind = _SHORT_KIND.get((item_type or (match.group(2) if match else "") or "").upper())
+    return "E%s%s" % (kind, match.group(1)) if match and kind else (item_id or "")
+
+
 def wall_label(item_id: str, item_type: str, name: str, label: str = "") -> str:
     """Return a bounded visual identity; authored ids remain unchanged.
 
@@ -385,11 +402,6 @@ def wall_label(item_id: str, item_type: str, name: str, label: str = "") -> str:
     ASCII alphanumeric characters.  The derived fallback keeps legacy ledgers
     readable without allowing their full names to widen the Outline grid.
     """
-    number = re.match(r"^E0*(\d+)", item_id)
-    short_number = "E%s" % (number.group(1) if number else item_id)
-    short_type = {"VALUE": "V", "CITE": "C", "DISPLAY": "D"}.get(
-        item_type, item_type[:1]
-    )
     authored = (label or "").strip()
     if _WALL_NAME_RE.fullmatch(authored):
         compact_name = authored
@@ -400,7 +412,7 @@ def wall_label(item_id: str, item_type: str, name: str, label: str = "") -> str:
             for word in words
         ) or "Item"
         compact_name = derived[:12]
-    return "%s%s.%s" % (short_number, short_type, compact_name)
+    return "%s.%s" % (short_name(item_id, item_type), compact_name)
 
 
 def repo_root(start: Path) -> Path:

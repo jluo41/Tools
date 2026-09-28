@@ -12,8 +12,8 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.6.2"
-  last_updated: "2026-09-20"
+  version: "1.6.3"
+  last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -275,7 +275,7 @@ binds directly to D, I, or K.
 A signed Design Handoff is an insight decision, not a design: it names finding,
 strength plus its Knowledge-grounded evidence basis, boundary, source versions,
 design consequence and forbidden overreach, and never message copy. Design
-consumes its exact frozen path/version/hash and GI6 settlement receipt under
+consumes its exact frozen path/version and GI6 settlement receipt under
 `ref/page-v2-adapter.md`; it does not create a new PageX lane or synthetic Run.
 The read-only binding projection uses
 [`handoff-record.md`](../haipipe-insight-workflow/ref/handoff-record.md).

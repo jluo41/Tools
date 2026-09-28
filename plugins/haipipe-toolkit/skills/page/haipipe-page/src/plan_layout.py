@@ -31,7 +31,7 @@ DIVISION_HEAD = re.compile(r"^## (C\d+)\b\s*(?:·\s*(.*))?$")
 DIVISION_LINE = re.compile(r"^- (C\d+) · (.+)$")
 BULLET = re.compile(
     r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+)\s*·\s*)"
-    r"(?P<tag>S\d+[a-z]?\s*·\s*)?(?P<text>.*)$"
+    r"(?P<tag>S\d+[a-z]?(?:\s*(?:-|–|to)\s*S\d+[a-z]?)?\s*·\s*)?(?P<text>.*)$"
 )
 
 
@@ -149,12 +149,12 @@ def _canonical_blocks(canonical: str):
 
     lines = canonical.split("\n")
     header, divisions, paragraphs, tail = [], [], [], []
-    i, seen_division = 0, False
+    i, seen_division, paragraph_seen = 0, False, False
     while i < len(lines):
         line = lines[i]
         division = DIVISION_HEAD.match(line)
         if division:
-            seen_division = True
+            seen_division, paragraph_seen = True, False
             divisions.append((division.group(1), (division.group(2) or "").strip()))
             i += 1
             continue
@@ -168,9 +168,16 @@ def _canonical_blocks(canonical: str):
         paragraph = PARAGRAPH.match(line)
         if paragraph:
             paragraphs.append((line, paragraph.group(1), []))
+            paragraph_seen = True
             i += 1
             continue
-        if BULLET.match(line) and paragraphs:
+        if BULLET.match(line):
+            if not paragraph_seen:
+                # A Bullet straight under `## C<n>`, before any paragraph heading, sits in
+                # paragraph P1 (plan_shape.iter_plan_bullets numbers it so).
+                this = divisions[-1][0]
+                paragraphs.append(("### %s.P1" % this, "%s.P1" % this, []))
+                paragraph_seen = True
             j = i + 1
             while j < len(lines) and lines[j].startswith("  "):
                 j += 1
@@ -179,6 +186,54 @@ def _canonical_blocks(canonical: str):
             continue
         i += 1
     return header, divisions, paragraphs, tail
+
+
+def canonical_extras(canonical: str) -> tuple[dict, dict]:
+    """Lines of a Draft-first plan that are neither a heading nor a Bullet block.
+
+    -> ({division: lines}, {paragraph address: lines}). A note under a paragraph
+    (`%% …`, `- Note: …`, a JL remark) belongs to that paragraph; a line before a
+    division's first paragraph, or under a heading that is not `### C<n>.P<m>`
+    (`### Cut · …`, `### Survey`), belongs to the division, heading included.
+    The three-section layout has no place for them in sections 1 and 3, so the
+    migration writer keeps them in section 2 (Scratch) under the same target.
+    """
+    lines = canonical.split("\n")
+    by_division, by_paragraph = {}, {}
+    division = paragraph = None
+    in_block = False  # under a `###` heading that is not a paragraph (`### Cut · …`)
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        head = DIVISION_HEAD.match(line)
+        if head:
+            division, paragraph, in_block = head.group(1), None, False
+            i += 1
+            continue
+        if division is None:
+            i += 1
+            continue
+        if line.startswith("## "):
+            break  # the tail is kept as it is
+        match = PARAGRAPH.match(line)
+        if match:
+            paragraph, in_block = match.group(1), False
+            i += 1
+            continue
+        if BULLET.match(line) and (paragraph or not in_block):
+            # a Bullet straight under `## C<n>` is a Bullet of C<n>.P1, not a note
+            i += 1
+            while i < len(lines) and lines[i].startswith("  "):
+                i += 1
+            continue
+        if line.startswith("### "):
+            paragraph, in_block = None, True  # a block that is not a paragraph belongs to the division
+        target = by_paragraph.setdefault(paragraph, []) if paragraph else by_division.setdefault(division, [])
+        target.append(line)
+        i += 1
+    trim = lambda block: _trim(block[next((k for k, x in enumerate(block) if x.strip()), len(block)):])
+    return ({k: trim(v) for k, v in by_division.items() if trim(v)},
+            {k: trim(v) for k, v in by_paragraph.items() if trim(v)})
 
 
 def from_canonical(original: str, canonical: str) -> str:
@@ -201,8 +256,7 @@ def from_canonical(original: str, canonical: str) -> str:
             if words:
                 draft.append(prefix + tag + words[0])
                 draft += ["  " + x if x else "  " for x in words[1:]]
-    if tail and re.match(r"^## Scratch\s*$", tail[0]):
-        tail = []  # a legacy Scratch registry never enters the three-section file
+    _notes, tail, _rewritten = legacy_scratch(tail)  # its notes went to section 2 (to_sectioned)
     # A renamed paragraph keeps one name everywhere: its overview line and its
     # Scratch heading follow the heading the edited plan now carries.
     new_heads = {address: heading for heading, address, _b in paragraphs}
@@ -253,22 +307,97 @@ def to_sectioned(canonical: str, *, scratch: dict | None = None,
     """Lay a Draft-first plan out in three sections (the migration writer).
 
     `overview` defaults to `overview_entries`; `scratch` maps a paragraph
-    address to note lines.
+    address to note lines. Lines that are neither a heading nor a Bullet
+    (`canonical_extras`) go to Scratch under their paragraph or division, so
+    no word of the plan is lost.
     """
     header, divisions, paragraphs, tail = _canonical_blocks(canonical)
     if overview is None:
         overview = overview_entries(divisions, paragraphs)
+    by_division, by_paragraph = canonical_extras(canonical)
+    legacy, tail, _rewritten = legacy_scratch(tail)
+    scratch = {k: list(v) for k, v in (scratch or {}).items()}
+    for target, lines in legacy.items():
+        scratch.setdefault(target, []).extend(lines)
+    notes, placed = [], set()
+    listed = [d for d, _t in divisions]
+    for division in listed + sorted({a.split(".")[0] for _h, a, _b in paragraphs} - set(listed)):
+        if by_division.get(division) or scratch.get(division):
+            title = dict(divisions).get(division, "")
+            notes += ["", "### %s · %s" % (division, title) if title else "### " + division]
+            notes += scratch.get(division, []) + by_division.get(division, [])
+            placed.add(division)
+        for h, a, _b in paragraphs:
+            if a.split(".")[0] == division:
+                notes += ["", h] + scratch.get(a, []) + by_paragraph.get(a, [])
+                placed.add(a)
+    for target in sorted(set(scratch) - placed):  # a note whose target the plan no longer has
+        notes += ["", "### " + target] + scratch[target]
     skeleton = "\n".join(
         ["## 1 · Structure · Bullet Point Table", "", "### Structure Overview", ""]
         + overview
         + ["", "## 2 · Scratch · What to write here", ""]
-        + sum((["", h] + (scratch or {}).get(a, []) for h, a, _b in paragraphs), [])
+        + notes
         + ["", "## 3 · Draft · Reading and Revise", ""]
     )
     body = "\n".join(_trim(header)) + "\n\n" + skeleton + "\n"
     if tail:
         body += "\n" + "\n".join(tail)
     return from_canonical(body, canonical)
+
+
+LEGACY_RECORD = re.compile(r"^### (?P<run>rp-scratch-\d+_\S+) · (?P<scope>\w+) · (?P<target>C\d+(?:\.P\d+)?)\s*$")
+LEGACY_FIELD = re.compile(r"^- (Scope|Target|Status|Started|Updated|Run|Notes|Summary):")
+
+
+def legacy_scratch(tail: list[str]) -> tuple[dict, list[str], set]:
+    """The 0.117 `## Scratch` registry in a plan's tail, for the three-section layout.
+
+    -> ({target: section-2 lines}, the tail without the registry, the registry lines
+    that were rewritten). Each record becomes the block `write_scratch` writes: the
+    Run marker, the Notes words, and one `> Summary:` line. Its Scope, Target,
+    Started, Updated and Run fields are not copied: the Scratch Run's ticket and
+    Result under runs/ and results/ hold them.
+    """
+    start = next((k for k, line in enumerate(tail) if re.match(r"^## Scratch\s*$", line)), None)
+    if start is None:
+        return {}, tail, set()
+    end = next((k for k in range(start + 1, len(tail)) if tail[k].startswith("## ")), len(tail))
+    body, rest = tail[start + 1:end], tail[:start] + tail[end:]
+    records, rewritten, record, field = [], {"## Scratch"}, None, None
+    for line in body:
+        head = LEGACY_RECORD.match(line)
+        if head:
+            record = dict(head.groupdict(), status="open", Notes=[], Summary=[])
+            records.append(record)
+            rewritten.add(line.strip())
+            field = None
+            continue
+        if record is None:
+            if line.strip():
+                return {}, tail, set()  # words before the first record: not a registry
+            continue
+        name = LEGACY_FIELD.match(line)
+        if name:
+            rewritten.add(line.strip())
+            if name.group(1) == "Status":
+                record["status"] = line.split(":", 1)[1].strip() or "open"
+            field = name.group(1) if name.group(1) in ("Notes", "Summary") else None
+            continue
+        if field and (line.startswith("  ") or not line.strip()):
+            record[field].append(line[2:] if line.startswith("  ") else line)
+            continue
+        field = None
+        record["Notes"].append(line)
+    notes = {}
+    for r in records:
+        words = _trim(r["Notes"])
+        words = words[next((k for k, x in enumerate(words) if x.strip()), len(words)):]
+        summary = " ".join(" ".join(r["Summary"]).split())
+        rewritten |= {x.strip() for x in r["Summary"] if x.strip()}
+        block = ["<!-- %s · %s · %s -->" % (r["run"], r["scope"], r["status"])] + words
+        notes.setdefault(r["target"], []).extend(block + (["> Summary: " + summary] if summary else []))
+    return notes, rest, rewritten
 
 
 # ── Scratch notes in section 2 ──────────────────────────────────────────────

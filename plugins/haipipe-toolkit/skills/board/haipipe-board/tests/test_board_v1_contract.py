@@ -74,7 +74,7 @@ class BoardV1ContractTest(unittest.TestCase):
         self.assertIn("rp00_mermaid-structure", normalized_board)
         self.assertIn("rpNN_pNN[-pNN]", normalized_board)
         self.assertNotIn("prNN", normalized_board)
-        self.assertIn("outline/<stem>-discussion.md", routing)
+        self.assertIn("outline/records/<stem>-discussion.md", routing)
         self.assertIn("Aims › Decision Now", routing)
         self.assertNotIn("inside `## States`", routing)
         self.assertNotIn("a Log line · a State entry", routing)

@@ -141,7 +141,7 @@ class OutlineBulletEditingTest(unittest.TestCase):
         self.assertIn('<form class="structure-form" hidden', rendered)
         self.assertIn('id="group-C1-P1"', rendered)
         self.assertIn("outline/S-page-outline-v1.1.md", rendered)
-        self.assertIn(">⧉ run-structure<", rendered)
+        self.assertNotIn("⧉", rendered)
         self.assertNotIn("Mermaid", rendered)
         self.assertNotIn("logic-card", rendered)
 
@@ -159,7 +159,7 @@ class OutlineBulletEditingTest(unittest.TestCase):
                 root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
             )
 
-        self.assertIn('<details class="card structure-card" open aria-label="Structure">', rendered)
+        self.assertIn('<details class="card structure-card" aria-label="Structure">', rendered)
         self.assertIn("Establish the point", rendered)
         self.assertNotIn("review now", rendered)
 
@@ -338,7 +338,7 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
                               file_q="S-page/S-page.md")
             self.assertNotIn("form[data-bullet-write]", rendered)
             self.assertNotIn("data-bullet-edit", rendered)
-            self.assertNotIn("fetch('/_board/outline',{method:'POST'", rendered)
+            self.assertNotIn("fetch('/_board/draft',{method:'POST'", rendered)
             self.assertNotIn("location.reload()", rendered)
             self.assertIn("details.paragraph-group>summary", rendered)
 
@@ -353,7 +353,7 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
 
             result, err = Surface().plug_outline({"path": "/Board/board.md", "file": "S-page/S-page.md"})
             self.assertIsNone(err)
-            self.assertEqual(result, {"url": "/_board/outline?path=/Board/board.md&file=S-page/S-page.md"})
+            self.assertEqual(result, {"url": "/_board/draft?path=/Board/board.md&file=S-page/S-page.md"})
             before = (page.parent / "outline" / "S-page-outline-v0.3.md").read_bytes()
             result, err = Surface().plug_outline({
                 "path": "/Board/board.md", "file": "S-page/S-page.md",

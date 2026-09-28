@@ -47,8 +47,8 @@ Extract the `inference_functions` block:
 ```
 
 When external enrichment is used, also require an immutable external release
-identifier, checksums, and Source vector schema/order versions in the manifest.
-Confirm that the packaged `external/` directory matches those values exactly.
+identifier and Source vector schema/order versions in the manifest. Confirm
+that the packaged `external/` directory holds exactly that release.
 
 Then read each file listed.
 

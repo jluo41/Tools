@@ -78,7 +78,7 @@ Current Task execution requires `$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml`
 The Task controller/scaffolder writes planned status before dispatch, running
 before execution, and complete only after checking required logs, snapshots,
 summary and domain outputs. It uses the same Run identity, config/script/input
-hashes, timestamps, exit status, Result paths and failure fields as the shared
+paths, timestamps, exit status, Result paths and failure fields as the shared
 Task receipt. See `../../../haipipe-task/ref/run-sh-template.sh` for the fields.
 Stata keeps per-step logs as its engine evidence; it has no notebook requirement.
 The controller cites those logs in the receipt and `notebook` may be null.

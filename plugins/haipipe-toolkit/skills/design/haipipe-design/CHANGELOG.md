@@ -2,7 +2,11 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
-- 0.4.0 current, 260920 (version unchanged at 0.4.0): repair the Design contract.
+- 0.4.0 current, 260928 (version unchanged at 0.4.0; the Design family version is frozen): No content hashes (JL 260928).
+  - A Commission names its config and evidence files by path; the Verify Result
+    names the exact draft by path. No `sha256` is written, pinned or compared;
+    staleness is file time or `git diff`.
+- 0.4.0, 260920 (version unchanged at 0.4.0): repair the Design contract.
   - Workflow is a list of Runs; current Run types are Commission, Generate and
     Verify. Delivery is a projection after independent Verify passes.
   - Count every Commission decision, including held records before one release;

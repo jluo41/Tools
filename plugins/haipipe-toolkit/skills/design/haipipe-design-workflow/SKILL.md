@@ -7,7 +7,7 @@ description: >-
   coordinates with but never impersonates the Page workflow.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-20"
+  last_updated: "2026-09-28"
 ---
 
 # /haipipe-design-workflow · a list of Design Runs
@@ -79,7 +79,7 @@ group by that id:
 
 | Run or projection | Design Space | Insight Space | Run Space | Delivery Space |
 |---|---|---|---|---|
-| Commission | the item's goal and acceptance rules it pins; a warning when the register changed after release | the insights the Commission run record pins by hash | release/hold row: person, time, words, route | — |
+| Commission | the item's goal and acceptance rules it pins; a warning when the register changed after release | the insights the Commission run record names | release/hold row: person, time, words, route | — |
 | Generate | the latest draft that passed the records check, and its self-check marks | — | row: agent, time, verdict n/m, folded checks and draft text; `Generate · revise of rdNN` with its feedback | listed only after Verify passes |
 | Verify | the rule marks of the draft it reviewed | — | row: independent reviewer, time, verdict n/m, folded checks; red when it fails | — |
 | Delivery | ready state and exact Verify-passed candidate | — | the Verify row remains the authority | the ready draft's text is listed for handoff |
@@ -89,12 +89,12 @@ Folder holds. It cannot mint, rename, copy, or recount.
 
 ## Commission Run
 
-The Design Item register lives under `outline/` (`outline/<stem>-design-items.md`); the Commission freezes one of its blocks.
+The Design Item register lives under `draft/` (`draft/<stem>-design-items.md`); the Commission freezes one of its blocks.
 
 The caller authors `rdNN_commission_<slug>.yaml` for the Design Item it serves
 (`item: ITEM<NN>`). It pins its config (the goal sentence, stance, basis, mode,
 expected, falsified, the compiled criteria, the raw rule text, unit, and
-`max_iterations`) and the item's evidence files, each with sha256; it does not
+`max_iterations`) and the item's evidence files, by path; it does not
 pin the Brief version or venue packs. The named person records `release` or
 `hold` in the paired decision Result. Only `release` routes to Generate. One
 release per item: a second Release is refused. A held Commission is complete;
@@ -117,8 +117,8 @@ renderer/model calls, revisions under the same frozen target, and self-checks
 are Steps of this Run.
 
 A draft changes only through a new Generate Run: a revise pins the base draft
-and a feedback file (`outline/feedback/<run>.md`). A queued run whose pinned
-file changed is never re-pinned in place: "Queue again with today's insight
+and a feedback file (`draft/feedback/<run>.md`). A queued run whose named
+file is newer than its run record is never rewritten in place: "Queue again with today's insight
 files" marks it `superseded`, with the changed files as its reason, and
 queues a fresh run; a revise keeps its base and feedback. A worker that dies
 without a Result is put back in the queue under the same Run, with the lost
@@ -126,7 +126,7 @@ worker named on the receipt.
 
 ## Verify Runs
 
-Allocate `rdNN_verify_<slug>.yaml` over exact generation Result hashes and
+Allocate `rdNN_verify_<slug>.yaml` over exact generation Result paths and
 criteria. Use a genuinely fresh reviewer context. A verification Run returns a
 complete pass/fail/unresolved judgment and never edits the candidate. A
 generation self-check is not independent verification. A draft that already
@@ -148,9 +148,9 @@ Result, and the run goes back to the queue.
 
 Delivery is not a decision Run. When the latest independent Verify is complete
 with verdict `pass`, the exact generation candidate it targeted becomes
-`ready`. The presenter exposes its text, hash, generating Run, and verifying
+`ready`. The presenter exposes its text, generating Run, and verifying
 Run as a read-only handoff. The presenter reads the candidate's Result-local
-`render/manifest.json` and hash-bound picture. Existing `delivery/render/`
+`render/manifest.json` and the picture it names. Existing `delivery/render/`
 manifests remain legacy display sources. Neither replaces the Verify Result,
 adds an approval step, or authorizes a worker to write outside its Result.
 

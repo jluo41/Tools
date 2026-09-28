@@ -11,7 +11,7 @@ and `haipipe-page-workflow` supplies CONTEXT through CHECK.
 ```text
 Task Folder
 ├── Task Face   workflow/ · scripts/ · runs/ · generated Results
-└── Page Face   <task>.md · outline/ · readable interpretation
+└── Page Face   <task>.md · draft/ · readable interpretation
 ```
 
 The Page and Task faces name the same `bNNjNNtNN` object. A new Task Page
@@ -48,7 +48,7 @@ Task PLAN/ALLOCATE/BUILD/EXECUTE/REPORT
   allocates the next native rNN and returns a validated Result
           ↓
 Page LAND/EMBED
-  binds full Run id + Result path + fingerprint into Evidence and reading
+  binds full Run id + Result path into Evidence and reading
           ↓
 Page CONTENT/CHECK
   adopts accepted text and releases the checked Page once all gates pass
@@ -129,7 +129,7 @@ false.
 Each Content division begins with one captioned face diagram that previews the
 division's argument. Do not create a separate Page-level `## Diagram` section.
 The shared Page renderer generates `## Outline` from
-`outline/<stem>-outline-v<N>.md`; the authored Page must not duplicate it.
+`draft/<stem>-draft-v<G>.<S>.md`; the authored Page must not duplicate it.
 
 For a data-bearing or empirical Task Page, the face diagram is only one part
 of the visual contract. SHAPE also plans at least one exact-audit table, one
@@ -190,13 +190,13 @@ consumer-owned mirrored Job root in consumer-serving mode. The Ticket remains
 under the Task's `runs/` in both modes; the Page does not copy the Result back
 into the Task Folder.
 
-Every shown number names the full Run that produced it. Bind by path and
-fingerprint; never paste a regenerating result as an untraceable value. A
+Every shown number names the full Run that produced it. Bind by full Run id
+and Result path; never paste a regenerating result as an untraceable value. A
 page-local static source may enter the frozen Local Input. A cross-Folder fact
 must enter through a Supporting Run Result.
 
 The Run overview belongs to `haipipe-workbench-page/ref/run-space.md`; the evidence state belongs
-to `outline/<stem>-evidence-items.md` and `outline/evidence/`. Neither becomes
+to `draft/<stem>-evidence-items.md` and the Evidence Results it binds. Neither becomes
 a Content division.
 
 ## Reading and closure
@@ -226,7 +226,7 @@ human_gate:
   evidence: ["<task>.md#reading-current"]
 ```
 
-The CHECK receipt's immutable Page version/hash binds that pointer to the exact
+The CHECK receipt's Page version number binds that pointer to the exact
 rows judged. `R<NN>` ids never renumber. When a Verdict Result changes, keep
 the row id, update its Run binding if needed, and reset its Ruling to
 `⬜ unread`.
@@ -243,7 +243,7 @@ Use this closure equation rather than treating either face as sufficient:
 ```text
 task_ready   = terminal P-B-E-R + every required Task Result current
 page_ready   = every planned Page Run closed
-               + every required Task Result bound by id/path/fingerprint
+               + every required Task Result bound by id/path
                + accepted Content adopted and released
                + CHECK receipt and READING rows current
 folder_closed = task_ready AND page_ready

@@ -12,7 +12,7 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "3.1.0"
+  version: "3.2.1"
   last_updated: "2026-09-08"
   summary: "Task creator for explicit Plan/Build/Execute/Report and Run/Result lineage."
 ---
@@ -64,7 +64,7 @@ directory and `runtime.yaml`, sets status transitions truthfully, and records:
 
 ```text
 family, operation, full readable + compact BJTR address
-input paths/hashes, config, script, start/end, exit status
+input paths, config, script, start/end, exit status
 declared Result artifacts and any blocked/unresolved reason
 ```
 

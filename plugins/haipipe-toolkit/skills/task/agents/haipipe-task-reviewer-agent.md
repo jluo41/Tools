@@ -7,7 +7,7 @@ tools:
   - Glob
 model: inherit
 metadata:
-  version: "3.1.0"
+  version: "3.2.1"
   last_updated: "2026-09-08"
   summary: "Independent Task reviewer for IPO, runtime truth, and Supporting/Local Run handoff."
 ---
@@ -85,4 +85,4 @@ command exited zero. A consumer may cite the returned Result directly or place
 its Run id in the Page Evidence Workspace as a Supporting Run.
 
 Return review sidecar content to the orchestrator; the reviewer remains read-only.
-The orchestrator persists it verbatim with reviewed input hashes before execution.
+The orchestrator persists it verbatim with the reviewed input paths before execution.

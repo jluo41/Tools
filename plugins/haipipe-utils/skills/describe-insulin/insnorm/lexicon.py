@@ -23,6 +23,11 @@ def _candidate_paths():
         p = Path(explicit).expanduser()
         yield p / "med_lexicon.parquet" if p.is_dir() else p
 
+    from ._lock import lock_file                  # the pinned ext_med_lexicon, when a lock pins it
+    pinned = lock_file("ext_med_lexicon")
+    if pinned is not None:
+        yield pinned
+
     # Honour the medication skill's existing external-store setting too.  It
     # is the same MedicationID namespace and avoids a second configuration for
     # callers that run both halves of the chain.
@@ -74,7 +79,7 @@ def _entries() -> Dict[str, str]:
     except Exception:
         return {}
 
-    id_col = next((c for c in ("MedicationID", "unit") if c in frame), None)
+    id_col = next((c for c in ("MedicationID", "MedicationID_original", "unit") if c in frame), None)
     name_col = next((c for c in ("MedicationName", "unit_text") if c in frame), None)
     if id_col is None or name_col is None:
         return {}

@@ -10,7 +10,6 @@ so the presenter is exercised on contract-valid bytes, never on stubs.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import shutil
@@ -27,10 +26,6 @@ UNIT_CHECKER = SKILLS / "design" / "haipipe-design-unit" / "scripts" / "check_un
 
 STAGES = ("commissioned", "generate-failed", "generated", "verified", "adopted", "declined")
 HANDOFF_REL = "../../../DesignWorkbench-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md"
-
-
-def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def stamp(minutes: int) -> str:
@@ -83,7 +78,7 @@ class FolderBuilder:
     def ref(self, path: Path, root: Path | None = None) -> dict:
         root = (root or self.folder).resolve()
         rel = os.path.relpath(path.resolve(), root)
-        return {"path": Path(rel).as_posix(), "sha256": digest(path)}
+        return {"path": Path(rel).as_posix()}      # a path, never a content hash (JL 260928)
 
     def next_run(self, operation: str, slug: str) -> str:
         self.counter += 1
@@ -96,7 +91,7 @@ class FolderBuilder:
             path = (self.folder / rel).resolve()
             if not path.is_file():
                 raise FileNotFoundError(f"{spec.id}: evidence file missing: {rel}")
-            rows.append({"role": role, "path": rel, "sha256": digest(path)})
+            rows.append({"role": role, "path": rel})
         return rows
 
     # -- decision Runs (human) ---------------------------------------------
@@ -110,11 +105,11 @@ class FolderBuilder:
             "actor": {"mode": "human", "owner": spec.human},
             "action": "release or hold the frozen commission", "inputs": inputs,
             "entry_gate": "the Design Item is registered",
-            "exit_gate": {"mode": "human", "assertion": "decision names the exact config hash"},
+            "exit_gate": {"mode": "human", "assertion": "decision names the exact config file"},
             "routes": {"release": "generate", "hold": "HOLD"},
             "result": f"results/{run}/", "receipt": f"results/{run}/runtime.yaml",
         }
-        ticket_path = self.dump(f"runs/{run}.yaml", ticket)
+        self.dump(f"runs/{run}.yaml", ticket)
         self.dump(f"results/{run}/decision.yaml", {
             "run": run, "item": spec.id, "decision": decision, "actor": spec.human,
             "words": (f"Release {spec.id}: {spec.goal}" if decision == "release" else f"Hold {spec.id}"),
@@ -125,7 +120,7 @@ class FolderBuilder:
             "item": spec.id, "family": "design", "target": spec.title,
             "actor": {"mode": "human", "owner": spec.human}, "action": decision,
             "status": "complete", "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-            "ticket_sha256": digest(ticket_path), "inputs": inputs,
+            "inputs": inputs,
             "entry_gate": {"status": "passed", "assertion": "the Design Item is registered"},
             "exit_gate": {"status": "passed", "assertion": "decision recorded"},
             "route": "generate" if decision == "release" else "HOLD",
@@ -150,11 +145,11 @@ class FolderBuilder:
             "verification": [{"run": ver_run, **self.ref(ver_result)}],
             "preview": self.ref(preview),
             "entry_gate": "independent verify passed",
-            "exit_gate": {"mode": "human", "assertion": "decision names candidate hash"},
+            "exit_gate": {"mode": "human", "assertion": "decision names the exact candidate"},
             "routes": {"adopt": "CLOSE", "decline": "CLOSE", "revise": "generate", "hold": "HOLD"},
             "result": f"results/{run}/", "receipt": f"results/{run}/runtime.yaml",
         }
-        ticket_path = self.dump(f"runs/{run}.yaml", ticket)
+        self.dump(f"runs/{run}.yaml", ticket)
         self.dump(f"results/{run}/decision.yaml", {
             "run": run, "item": spec.id, "decision": decision, "actor": spec.human,
             "words": spec.words or f"{decision.title()} {spec.id} v1",
@@ -167,7 +162,7 @@ class FolderBuilder:
             "item": spec.id, "family": "design", "target": ticket["target"],
             "actor": {"mode": "human", "owner": spec.human}, "action": decision,
             "status": "complete", "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-            "ticket_sha256": digest(ticket_path), "inputs": inputs,
+            "inputs": inputs,
             "entry_gate": {"status": "passed", "assertion": "independent verify passed"},
             "exit_gate": {"status": "passed", "assertion": "decision recorded"},
             "route": "CLOSE" if decision in ("adopt", "decline") else decision,
@@ -203,7 +198,6 @@ class FolderBuilder:
             "run": run, "family": "design", "operation": operation, "item": spec.id,
             "target": spec.title, "status": "planned",
             "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
-            "ticket_sha256": digest(ticket),
             "inputs": [data["config"], data["approval"]["record"]] + inputs + targets,
             "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": actor},
         })
@@ -242,7 +236,7 @@ class FolderBuilder:
     def generate(self, spec: ItemSpec, approval: Path) -> tuple[str, Path]:
         run = self.next_run("generate", spec.slug)
         config_path = self.config(spec, run, "self")
-        ticket = self.worker_ticket(spec, run, "generate", spec.designer, config_path, approval, [])
+        self.worker_ticket(spec, run, "generate", spec.designer, config_path, approval, [])
         out = self.folder / "results" / run
         artifact = self.write(f"results/{run}/content/{spec.kind}.txt", spec.content)
         checks = [{"target": f"content/{spec.kind}.txt", "criterion": c["id"],
@@ -254,7 +248,6 @@ class FolderBuilder:
         self.dump(f"results/{run}/result.yaml", {
             "schema": "haipipe.design-result/v2", "run": run, "operation": "generate",
             "target": spec.title, "producer": spec.designer,
-            "ticket_sha256": digest(ticket), "config_sha256": self.ref(config_path)["sha256"],
             "artifacts": [self.ref(artifact, out)], "checks": self.ref(check_path, out),
             "targets": [], "verdict": verdict,
         })
@@ -271,7 +264,7 @@ class FolderBuilder:
         run = self.next_run("verify", spec.slug)
         config_path = self.config(spec, run, "independent")
         targets = [self.ref(gen_result)]
-        ticket = self.worker_ticket(spec, run, "verify", spec.reviewer, config_path, approval, targets)
+        self.worker_ticket(spec, run, "verify", spec.reviewer, config_path, approval, targets)
         out = self.folder / "results" / run
         text = (gen_result.parent / "content" / f"{spec.kind}.txt").read_text(encoding="utf-8")
         checks = [{"target": f"{targets[0]['path']}::content/{spec.kind}.txt",
@@ -283,7 +276,6 @@ class FolderBuilder:
         self.dump(f"results/{run}/result.yaml", {
             "schema": "haipipe.design-result/v2", "run": run, "operation": "verify",
             "target": spec.title, "producer": spec.reviewer,
-            "ticket_sha256": digest(ticket), "config_sha256": self.ref(config_path)["sha256"],
             "artifacts": [], "checks": self.ref(check_path, out), "targets": targets,
             "verdict": verdict,
         })
@@ -313,7 +305,7 @@ class FolderBuilder:
         manifest = self.folder / "delivery" / "render" / "manifest.json"
         entries = json.loads(manifest.read_text()) if manifest.is_file() else []
         entries.append({"item": spec.id, "render": preview.name, "candidate": gen_run,
-                        "sha256": digest(preview), "version": 1})
+                        "version": 1})
         self.write("delivery/render/manifest.json", json.dumps(entries, indent=2))
         decision = "adopt" if spec.stage == "adopted" else "decline"
         record["adopt"] = self.adopt(spec, gen_run, ver_run, decision, preview)
@@ -363,7 +355,7 @@ def build_design_folder(folder: Path, stem: str, title: str, opening: str,
 
 
 def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
-    """Synthetic owner receipts for the current exact-hash handoff contract."""
+    """Synthetic owner receipts for the handoff contract: paths and versions, no hashes."""
     folder = page.parent
     board = folder.parent.parent
     register = board / "0-MT-meta/MT04-question-wisdom/MT04-question-wisdom.md"
@@ -377,15 +369,14 @@ def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
     workflow.mkdir(exist_ok=True)
     dependency = workflow / "synthetic-evidence.txt"
     dependency.write_text("Synthetic accepted evidence for isolated tests only.\n", encoding="utf-8")
-    pin = {"path": page.name, "version": "fixture-v1", "sha256": digest(page)}
-    dependencies = [{"path": "workflow/synthetic-evidence.txt", "sha256": digest(dependency)}]
+    pin = {"path": page.name, "version": "fixture-v1"}
+    dependencies = [{"path": "workflow/synthetic-evidence.txt"}]
     def receipt(path, anchor, payload):
         import os
         body = "```yaml\n" + yaml.safe_dump(payload, sort_keys=False) + "```"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"# Synthetic owner log\n\n### {anchor}\n\n{body}\n", encoding="utf-8")
-        return {"path": os.path.relpath(path, folder) + "#" + anchor,
-                "sha256": hashlib.sha256(body.encode()).hexdigest()}
+        return {"path": os.path.relpath(path, folder) + "#" + anchor}
 
     signed = receipt(folder / "outline" / f"{page.stem}-log.md", "signed-fixture", {
         "key": "GI5", "status": "passed", "actor": "synthetic-owner",

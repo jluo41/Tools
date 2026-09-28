@@ -4,7 +4,7 @@ description: "Render a publication-quality LaTeX table from an aggregated data f
 argument-hint: "[table-spec-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-07-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -92,7 +92,7 @@ inside that Run.
 Read `<unit-dir>/README.md` for the claim this table must defend,
 the target section, and the caption intent.
 Read `intake/manifest.yaml`, then its declared snapshot path.
-Confirm the snapshot holds *aggregated* results, not row-level PHI, and that its hash matches.
+Confirm the snapshot file exists and holds *aggregated* results, not row-level PHI.
 
 ### Step 2: Infer the Table Type
 

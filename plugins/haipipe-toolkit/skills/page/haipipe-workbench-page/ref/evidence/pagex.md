@@ -14,7 +14,7 @@ Cross-Folder evidentiary material
   → Supporting Run · full bNNjNNtNNrNN id · accepted Result
 
 Governed static material already owned by this Page
-  → Local Input · exact path + frozen hash
+  → Local Input · exact path
 ```
 
 ## Migrate one legacy binding
@@ -28,7 +28,7 @@ For every existing `PageX Bindings` value:
    owning Execution/Discovery Run and write that Result under `Supporting
    Runs` with its full global id.
 4. If it is immutable, governed material already inside the Page boundary,
-   name it in `Local Input` with its hash.
+   name it in `Local Input` with its path.
 5. Remove `PageX Bindings` from the current Evidence Item record on its next
    SURVEY pass. Never delete historical files or receipts merely to modernize
    the current graph.

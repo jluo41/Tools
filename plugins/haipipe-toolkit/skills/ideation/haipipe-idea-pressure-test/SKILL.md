@@ -7,8 +7,8 @@ description: >-
   be tested; it keeps scientific novelty separate from design credibility.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.5"
-  last_updated: "2026-09-22"
+  version: "0.1.6"
+  last_updated: "2026-09-28"
   capability_family: "2_test"
 ---
 
@@ -105,7 +105,7 @@ assessment_binding:
   owning_run: "bNN.jNN.tNN/rNN | null"
   evaluator: null  # direct mode: {actor: person/ID or agent/ID, model_or_build: ...}
   criterion: null  # direct mode: {id: haipipe-idea-pressure-test, version: "0.1.4", owner: haipipe-idea-pressure-test}
-  input: null      # direct mode: {subject_hash: "sha256:...", manifest_sha256: "sha256:..."}
+  input: null      # direct mode: {subject_card: "cards/<idea>.yaml", inputs: ["<sorted locators>"]}
 chain:
   claim: "central falsifiable claim"
   mechanism: "proposed mechanism"
@@ -144,7 +144,7 @@ created_at: "ISO-8601"
 ```
 
 Each evaluator writes a new immutable raw receipt with its own
-`assessment_binding`. For `owning_run`, the evaluator, rubric and input hashes
+`assessment_binding`. For `owning_run`, the evaluator, rubric and input list
 are inherited through `owning_run` + `assessment_id` from the Task Result. For
 `direct`, fill the three direct-mode fields from the shared contract in
 `references/receipts.md`. If multiple reviewers assess the same frozen inputs,

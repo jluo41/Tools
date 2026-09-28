@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.4] - 2026-09-28 - No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `ref/run-databricks-sh-template.sh` no longer writes `config_sha256` or a per-input `sha256`; `RUN_INPUTS` entries are plain paths. The Databricks handoff binds the config path, not a config hash.
+
 ## [0.5.3] — 2026-09-27
 
 - `b00` names the Table Card Task (`tNN_describe_<table>`, skill `haipipe-task-for-description`) and its Block-level column dictionary. `ref/run-databricks-sh-template.sh` writes the receipt `cmd` SPACE-relative.

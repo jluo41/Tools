@@ -1,5 +1,9 @@
 # CHANGELOG · haipipe-task-for-page
 
+## 0.4.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- AGENTS.md rule 9: `RUN_INPUTS` declares upstream Result paths with no hash pin; `ref/specimen-page-values.md` freezes the selected row without a hash.
+
 ## 0.4.0 · 2026-09-19
 
 Add the per-Page reorganization job: one subagent per Discovery Page folder

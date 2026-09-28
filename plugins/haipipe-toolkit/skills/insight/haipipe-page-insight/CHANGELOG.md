@@ -1,3 +1,11 @@
+## 1.3.0 — 2026-09-28 · No content hashes (JL 260928)
+
+- `insight_items.py` writes, requires and compares no content hash: `bind` and `freeze` records carry
+  paths and versions only (no `sha256`, `binding_sha256`, `input_sha256`, `result_sha256`), `cite`
+  returns the Result path, and a review receipt names its `execution` instead of `candidate_sha256`.
+- Any hash field left in an older record is ignored. A bound source file newer than the frozen input
+  or allocation shows `source file newer than input` in the table (file time); it never fails `check`.
+
 ## 1.2.1 — 2026-09-21
 
 - Move the Task-side topic/data Page contract under the Insight family at

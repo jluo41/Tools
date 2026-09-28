@@ -43,6 +43,6 @@ Weekly Panel Review
 [ ] Each item starts with action verb
 [ ] Each item has clear done/not-done state
 [ ] Order is logical (if sequential)
-[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Item id, released Commission, allowed inputs and Result artifact paths resolve
 [ ] Any render manifest binds the exact source and picture inside its Result
 ```

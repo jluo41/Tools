@@ -270,13 +270,20 @@ def test_reader_document_carries_no_reasons_and_no_build_counts(paper):
     assert "pages ready" not in master and "built 20" not in master
 
 
+def _bib(page_dir, stem):
+    """Where the Page export freezes its selected Bib, which the build merges."""
+    path = page_dir / "delivery" / "latex" / "selected-bibliography" / (stem + ".bib")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def test_bib_key_collision_is_warned(paper):
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text("@article{k1, title={One}, year={2020}}\n")
+    _bib(intro, "S-T-Main-1-Intro").write_text("@article{k1, title={One}, year={2020}}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{k1}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text("@article{k1, title={One, revised}, year={2021}}\n")
+    _bib(methods, "S-T-Main-2-Methods").write_text("@article{k1, title={One, revised}, year={2021}}\n")
     _assemble(m)
     assert any("bib key k1 differs" in w for w in m.BUILD_WARNINGS)
     assert m.BIB.read_text().count("@article{k1") == 1
@@ -288,13 +295,13 @@ def test_one_work_under_two_keys_is_a_finding_when_both_are_cited(paper):
     m = paper
     doi = "10.1257/pol.20160094"
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
+    _bib(intro, "S-T-Main-1-Intro").write_text(
         "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n" % doi)
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
         "\\section{Introduction}\n\\citep{Author_2018}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{author2018effect}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text(
+    _bib(methods, "S-T-Main-2-Methods").write_text(
         "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % doi)
     reg, _ = _assemble(m)
     hit = [f for f in reg["findings"] if "prints it twice" in f]
@@ -308,13 +315,13 @@ def test_duplicate_work_is_found_when_only_one_twin_carries_a_doi(paper):
     Titles also differ in case and brace protection ({CDC} vs CDC)."""
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
+    _bib(intro, "S-T-Main-1-Intro").write_text(
         "@article{dowell2016cdc, title={{CDC} guideline for prescribing opioids}, author={Dowell, D}, year={2016}}\n")
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
         "\\section{Introduction}\n\\citep{dowell2016cdc}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{Dowell_2016}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text(
+    _bib(methods, "S-T-Main-2-Methods").write_text(
         "@article{Dowell_2016, title={CDC Guideline for Prescribing Opioids}, author={Dowell, Deborah}, "
         "year={2016}, DOI={10.1001/jama.2016.1464}}\n")
     reg, _ = _assemble(m)
@@ -329,7 +336,7 @@ def test_one_work_under_two_keys_is_only_a_warning_when_one_is_cited(paper):
     m = paper
     doi = "10.1257/pol.20160094"
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
+    _bib(intro, "S-T-Main-1-Intro").write_text(
         "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n"
         "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % (doi, doi))
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
@@ -506,7 +513,7 @@ def test_retired_bib_lane_is_never_merged(paper):
     retired = intro / "outline" / "evidence" / "bibex"
     retired.mkdir(parents=True)
     (retired / "old.bib").write_text("@article{retired, title={Retired}}")
-    current = intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib"
+    current = _bib(intro, "S-T-Main-1-Intro")
     current.write_text("@article{current, title={Current}}")
     _assemble(paper)
     assert "@article{current" in paper.BIB.read_text()
@@ -515,7 +522,7 @@ def test_retired_bib_lane_is_never_merged(paper):
 
 def test_cited_page_requires_its_delivery_bib(paper):
     _ready_page(paper, "S-T-Main-2-Methods", 2, "Methods", r"\section{Methods} \citep{k1}")
-    with pytest.raises(RuntimeError, match="complete.bib; regenerate"):
+    with pytest.raises(RuntimeError, match="selected-bibliography/S-T-Main-2-Methods.bib; regenerate"):
         _assemble(paper)
 
 
@@ -525,3 +532,73 @@ def test_excluded_draft_page_does_not_require_a_bibliography(paper):
     _register, master = _assemble(paper)
     assert "[This section is not yet compiled into this build.]" in master
     assert "k1" not in paper.BIB.read_text()
+
+
+def test_json_form_display_result_is_found(paper):
+    """0.8.2 · AgreeableRx 260928: a DISPLAY result.yaml written in JSON form (valid YAML)
+    must bind like the YAML form; before, the line regex missed it, the fragment kept its
+    page-relative \\input, and latexmk stopped with 'File ../../results/... not found'."""
+    page = Path(os.environ["HAIPIPE_PAPER_BUILD_CONFIG"]).parents[1] / "Ba-T-Main" / "S-T-Main-1-Intro"
+    unit = page / "results" / "re-display-01_one" / "payload" / "Display1-json"
+    (unit / "assets").mkdir(parents=True)
+    (unit / "float.tex").write_text("\\begin{table}\\caption{j}\\label{tab:j}\\end{table}\n")
+    (unit / "assets" / "table-body.tex").write_text("x\n")
+    (page / "results" / "re-display-01_one" / "result.yaml").write_text(
+        '{\n  "item": "E01-DISPLAY-one",\n  "type": "DISPLAY",\n  "status": "complete",\n'
+        '  "payload": {\n    "unit": "results/re-display-01_one/payload/Display1-json"\n  }\n}\n')
+    units = paper.page_display_units(page)
+    assert [u.name for u in units] == ["Display1-json"]
+
+
+def test_page_relative_inputs_resolve_from_the_master(paper):
+    """AgreeableRx 260928: a fragment \\input's a body by a path relative to its own Page's
+    delivery/latex/; copied unchanged into sections/, latexmk (run in the paper's latex/)
+    stopped at `File ../../results/... not found`. The placed copy resolves from the master."""
+    m = paper
+    d = _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data",
+                    "\\section{Methods}\n\\input{../../_archive/legacy/table-body}\n"
+                    "\\includegraphics[width=\\linewidth]{../../results/re-x/payload/figure}\n"
+                    "\\input{displays/unknown/float}\n")
+    (d / "_archive" / "legacy").mkdir(parents=True)
+    (d / "_archive" / "legacy" / "table-body.tex").write_text("1 & 2 \\\\\n")
+    (d / "results" / "re-x" / "payload").mkdir(parents=True)
+    (d / "results" / "re-x" / "payload" / "figure.pdf").write_bytes(b"%PDF")
+    _order(m, ["S-T-Main-1-Intro", "S-T-Main-2-Methods"])
+    _assemble(m)
+    placed = (m.SEC / "S-T-Main-2-Methods.tex").read_text()
+    body = Path(m.LATEX, [l for l in placed.splitlines() if "table-body" in l][0].split("{")[1].rstrip("}") + ".tex")
+    assert body.resolve() == (d / "_archive" / "legacy" / "table-body.tex").resolve()
+    graphic = placed.split("\\includegraphics[width=\\linewidth]{")[1].split("}")[0]
+    assert Path(m.LATEX, graphic + ".pdf").resolve() == (d / "results" / "re-x" / "payload" / "figure.pdf").resolve()
+    assert "\\input{displays/unknown/float}" in placed          # not resolvable from the Page: left alone
+    assert any("retired _archive lane" in w for w in m.BUILD_WARNINGS)
+
+
+def test_html_ampersand_in_a_merged_bib_is_written_for_latex(paper):
+    """AgreeableRx 260928: `journal={MDM Policy &amp; Practice}` from a Discovery Bib reached
+    the .bbl and stopped LaTeX (`Misplaced alignment tab character &`)."""
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    _bib(intro, "S-T-Main-1-Intro").write_text(
+        "@article{Sinnenberg_2017, journal={MDM Policy &amp; Practice}, "
+        "url={https://x.org/a?b=1&amp;c=2}, year={2017}}\n")
+    _assemble(m)
+    merged = m.BIB.read_text()
+    assert "journal={MDM Policy \\& Practice}" in merged and "&amp;" not in merged
+    assert "url={https://x.org/a?b=1&c=2}" in merged
+    assert any("bib key Sinnenberg_2017" in w and "&amp;" in w for w in m.BUILD_WARNINGS)
+
+
+def test_one_build_at_a_time_per_delivery_folder(paper):
+    """Paper-AgreeableRxDiscretion 260928: a second build regenerated latex/ under a running
+    one. The second now waits for the lock and, past its wait, stops without touching anything."""
+    m = paper
+    with m.delivery_lock():
+        assert "build pid" in m.lock_path().read_text()
+        with pytest.raises(SystemExit, match="delivery/ is busy: build pid"):
+            with m.delivery_lock(wait=0):
+                pass
+    with m.delivery_lock(wait=0):                 # released on exit, so the next build proceeds
+        pass
+    assert m.lock_path().read_text() == ""
+    assert not (m.HERE / ".build.lock").exists()             # nothing lands in the paper repo

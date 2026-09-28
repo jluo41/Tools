@@ -26,8 +26,7 @@ config or source arbitrary shell code into the calling process.
 recipe_id: <full-task-address>/description
 owner: <task-folder-path>
 entry: <declared-parameterized-task-ticket>
-entry_sha256: <ticket-hash>
-code_version: <git-sha-plus-dirty-diff-hash-or-code-content-hash>
+code_version: <code-version-number-or-git-commit>
 parameters:
   input_manifest: <versioned-dataset-manifest>
   output_root: <instance-owned-supporting-result-store>
@@ -36,15 +35,13 @@ parameter_contract: <declared-interface-path-and-version>
 producer_execution: <full-native-producing-Run-address>
 consumer_insight_execution: <instance>#<riNN>@<version>
 producer_ticket: <exact-native-producing-ticket-path>
-producer_ticket_sha256: <ticket-sha256>
 receipt: <exact-upstream-runtime-receipt-path>
-receipt_sha256: <receipt-sha256>
 ```
 
 The adapter maps these fields to real worker flags/environment/config. Unknown
 keys and unresolved dataset fields fail visibly. Validate the effective input
 and output in the producing receipt; never fall back to test data. Freeze the
-effective config and recipe/code hashes before work. Output location alone is
+effective config and recipe/code version before work. Output location alone is
 not execution identity. The producing execution is distinct from the consumer
 RI; its own Ticket and receipt name that producing identity. The frozen receipt
 must report `execution`, `run_id`, or `run`, matching `producer_execution`, with
@@ -52,8 +49,8 @@ accepted terminal `status: complete | accepted | passed`. Adapt a native dialect
 at its owner when needed; do not rewrite a completed receipt to impersonate RI.
 The same producer must occur in `supporting_results`. Reused accepted support
 needs no new recipe call, but the consumer still needs its own RI allocation.
-Every support, reused or newly produced, binds its native `ticket`,
-`ticket_sha256`, `receipt`, and `receipt_sha256` alongside the Result path/hash.
+Every support, reused or newly produced, binds its native `ticket` and
+`receipt` alongside the Result path.
 The same identity and terminal-receipt checks apply when `recipe_calls: []`.
 
 ## Execution sequence
@@ -73,7 +70,7 @@ The same identity and terminal-receipt checks apply when `recipe_calls: []`.
 5. Assemble a separate evidence packet containing `supporting_results`,
    `local_sources`, and completed `recipe_calls`. Finalize the interpretation
    input with `insight_items.py freeze <instance> --item <ri> --version v001
-   --evidence <packet.yaml>`. It validates current hashes and copies the
+   --evidence <packet.yaml>`. It checks the bound files exist and copies the
    allocated binding into `input.yaml`, then records the frozen checkpoint.
 6. Execute DIKW interpretation, obtain independent review, and publish the
    versioned RI Result. RI owns this interpretation; reusable numerical output

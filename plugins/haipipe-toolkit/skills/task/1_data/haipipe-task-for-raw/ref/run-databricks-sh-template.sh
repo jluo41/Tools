@@ -9,7 +9,7 @@ RUN_FAMILY="Execution"
 RUN_OPERATION="raw-extraction"
 RUN_TARGET="declared-raw-extraction"
 REQUIRED_RESULTS=("manifest.json")
-# Additional frozen inputs: "path|sha256". Relative paths resolve from Job.
+# Additional declared inputs: "path". Relative paths resolve from Job.
 RUN_INPUTS=()
 
 # Extend when file existence is not the complete acceptance test.
@@ -98,8 +98,6 @@ ADDRESS_READABLE="${BP}.${JP}.${TP}.${RP}"
 
 GIT_SHA="$(git -C "$JOB_FOLDER" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 GIT_DIRTY=$([ -n "$(git -C "$JOB_FOLDER" status --porcelain 2>/dev/null)" ] && echo true || echo false)
-CONFIG_SHA256="$(shasum -a 256 "$CONFIG" 2>/dev/null | awk '{print $1}')"
-CONFIG_SHA256="${CONFIG_SHA256:-unknown}"
 HOST="$(hostname)/$(whoami)"
 # Receipts and notebooks carry SPACE-relative paths: the user name and the
 # checkout folder differ per machine, so an absolute path is wrong on the next one.
@@ -124,24 +122,14 @@ RESOLVED_RUN_INPUTS=()
 # bash 3.2, which is what macOS ships, treats "${arr[@]}" of an EMPTY array as
 # unbound under `set -u` and aborts. The [@]+ form is empty-safe on 3.2 and on 5.
 for input_spec in "${RUN_INPUTS[@]+"${RUN_INPUTS[@]}"}"; do
-  input_path="${input_spec%%|*}"
-  if [ "$input_path" = "$input_spec" ]; then input_sha=auto; else input_sha="${input_spec#*|}"; fi
-  if [ "$input_sha" = auto ]; then
-    case "$input_path" in /*) input_abs="$input_path" ;; *) input_abs="$JOB_FOLDER/$input_path" ;; esac
-    input_sha="$(shasum -a 256 "$input_abs" 2>/dev/null | awk '{print $1}')"
-    input_sha="${input_sha:-unresolved}"
-  fi
-  RESOLVED_RUN_INPUTS+=("${input_path}|${input_sha}")
+  # An older Ticket may still carry "path|<hash>"; only the path is read.
+  RESOLVED_RUN_INPUTS+=("${input_spec%%|*}")
 done
 
 emit_inputs_yaml() {
   printf "  - path: '%s'\n" "$(_yaml_sq "$CONFIG_REL")"
-  printf "    sha256: '%s'\n" "$CONFIG_SHA256"
-  for input_spec in "${RESOLVED_RUN_INPUTS[@]+"${RESOLVED_RUN_INPUTS[@]}"}"; do
-    input_path="${input_spec%%|*}"
-    input_sha="${input_spec#*|}"
+  for input_path in "${RESOLVED_RUN_INPUTS[@]+"${RESOLVED_RUN_INPUTS[@]}"}"; do
     printf "  - path: '%s'\n" "$(_yaml_sq "$input_path")"
-    printf "    sha256: '%s'\n" "$(_yaml_sq "$input_sha")"
   done
 }
 
@@ -200,7 +188,6 @@ address: $ADDRESS
 address_readable: $ADDRESS_READABLE
 project: $PROJECT
 config_file: $CONFIG_REL
-config_sha256: $CONFIG_SHA256
 settings:
   config_file: $CONFIG_REL
   ticket_args: $TICKET_ARGS_JSON
@@ -224,7 +211,7 @@ fi
 write_receipt blocked null null awaiting-external-execution null notebook-prepared
 printf '%s\n' "Notebook prepared: $NOTEBOOK_OUT" \
   "Run $ADDRESS awaits Databricks execution under the same identity." \
-  "Follow haipipe-task/ref/databricks-execution.md; bind config hash, cluster run id, logs and output manifest." \
+  "Follow haipipe-task/ref/databricks-execution.md; bind the config path, cluster run id, logs and output manifest." \
   "Pattern 1: sync only permitted outputs. Pattern 2: raw/row-level data remains on the Volume." \
   "Finalize the execution receipt only after the declared Result gate passes."
 exit 0

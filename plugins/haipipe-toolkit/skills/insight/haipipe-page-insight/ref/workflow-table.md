@@ -14,7 +14,7 @@ the shared Page workflow; execution uses `haipipe-run`.
 | Bind | RI: which R and new dataset? | Item, normal R ticket, snapshots, recipe contracts | `riNN` YAML Ticket, immutable `v001/binding.yaml`, planned runtime; explicit upstream calls | Missing R, parameter support, or snapshot: hold this item |
 | Evidence | Execution: are sources ready? | Supporting/local Evidence Runs | `freeze` seals `input.yaml` from ready supporting/local Results | `frozen` then `evidence` receipts |
 | Reason | Item: what does evidence establish? | Frozen input and evidence | D/I/K/W/RF candidate, contradictions, limits | Independent CHECK receipt, `reasoned` |
-| Publish | Item: what may others reuse? | Candidate and CHECK | Immutable Result/hash; accepted or reasoned non-answer | Accepted RF gets `published`; non-answer closes without RF |
+| Publish | Item: what may others reuse? | Candidate and CHECK | Immutable versioned Result; accepted or reasoned non-answer | Accepted RF gets `published`; non-answer closes without RF |
 | Synthesize | Page: what do completed items collectively say? | Exact accepted item Results | Current Page synthesis and RF index | Shared Page CHECK; open siblings visible |
 
 “Breakpoint” means a resumable checkpoint receipt, not a debugger stop, new

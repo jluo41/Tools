@@ -115,7 +115,7 @@ Examples:
 > current Task. When an upstream paper is load-bearing for this Page, ask the
 > dispatcher to admit a local `paper-analysis` Run with an explicit upstream
 > Result reference; only that local completed Result Bib enters the current
-> `outline/evidence/bibex/` aggregate. A non-paper upstream source may use
+> `draft/evidence/bibex/` aggregate. A non-paper upstream source may use
 > `source-analysis` when its Subject kind requires it.
 
 > **Prior-work grounding lens**: When the Discovery type asks what is already

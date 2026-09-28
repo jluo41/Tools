@@ -1,3 +1,7 @@
+## 0.7.4 · 2026-09-28 · No content hashes (JL 260928)
+
+- A Round records each `sent/` and `released/` snapshot by path and its `build-manifest.json` `built` time, not a manifest hash; CHECK verifies snapshot builds, and received feedback is inventoried with received dates.
+
 ## 0.7.3 · 2026-09-20
 
 - Define Round-local blocking/material/editorial severity anchors and preserve source severity separately.

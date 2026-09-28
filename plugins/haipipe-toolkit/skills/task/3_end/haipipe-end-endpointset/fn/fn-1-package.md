@@ -179,7 +179,7 @@ ls _WorkSpace/6-EndpointStore/{endpoint_name}/examples/example_000_{uuid}/
 
 cat _WorkSpace/6-EndpointStore/{endpoint_name}/manifest.json | python -m json.tool
 # Check: endpoint_name, endpoint_version, inference_functions, created_at
-# If external enrichment is used, also check external release/checksum and
+# If external enrichment is used, also check the external release and
 # Source vector schema/order versions; verify external/ is the same release.
 ```
 

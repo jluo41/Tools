@@ -159,13 +159,13 @@ class BasePageContextTest(unittest.TestCase):
             check=False,
         )
         self.assertEqual(0, completed.returncode, completed.stderr)
-        record = self.folder / "outline" / "standalone-context.md"
+        record = self.folder / "draft" / "records" / "standalone-context.md"
         result = record.read_text(encoding="utf-8")
         self.assertIn("**Folder kind**: base Page", result)
         self.assertIn("**Next authority**: OUTLINE", result)
         self.assertEqual(original, self.page.read_bytes())
         self.assertEqual(
-            {"standalone.md", "outline/standalone-context.md"},
+            {"standalone.md", "draft/records/standalone-context.md"},
             {p.relative_to(self.folder).as_posix()
              for p in self.folder.rglob("*") if p.is_file()},
         )

@@ -1,5 +1,9 @@
 # haipipe-insight-information · version history
 
+## 1.3.1 — 2026-09-28 · No content hashes (JL 260928)
+
+- D-row parents are pinned by path and version, never by content hash.
+
 ## 1.3.0 — 2026-09-20
 
 - Move the resource owner to `insight/folder-kinds/` and remove Phase metadata.

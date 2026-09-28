@@ -23,10 +23,11 @@ The version rides after the emoji as readable detail, which the renderer and
 checker already allow.
 
 The source contract remains authoritative. Managed spans make any derived copy
-auditable; ``check`` reports drift.
+auditable; ``check`` reports drift by comparing the derived facts the page shows
+(name, version, last shipped date, tools, summary) with the unit's own front
+matter. No content hash is written or compared (JL 260928).
 """
 import argparse
-import hashlib
 import re
 import shutil
 import sys
@@ -39,6 +40,7 @@ sys.path.insert(0, str(HERE))
 # `Skill-<unit>-<slug>.md`, which starts with S. page_files carries both eras,
 # so older boards with Q-Skill-* pages keep syncing.
 from src.common import page_files  # noqa: E402
+from src.outline_version import plan_dir  # noqa: E402
 
 # Both current projections live inside Content. Historical Pages may still
 # carry a third managed log span; sync leaves it untouched.
@@ -58,11 +60,13 @@ END = end_of("body")
 # The marker only counts at the start of a line. QC5, the page that RULES this
 # mechanism, quotes the marker inside its own prose; a plain substring test read
 # that as a managed block and reported the ruling page as a broken skill page.
-# The marker carries the hash AND the skill folder. `sync` used to recover the
-# folder from the page's `![[…/SKILL.md]]` line, which vanished the moment the
-# skill file became real subsections instead of an embed. A machine span should
-# not depend on rendered content to know its own source.
-MARKER = re.compile(r"^" + re.escape(START) + r"\s+([0-9a-f]{16})(?:\s+(\S+))?", re.M)
+# The marker carries the skill folder. `sync` used to recover the folder from
+# the page's `![[…/SKILL.md]]` line, which vanished the moment the skill file
+# became real subsections instead of an embed. A machine span should not depend
+# on rendered content to know its own source. An older marker also carried a
+# 16-hex content hash before the folder; it is skipped, never compared.
+MARKER = re.compile(r"^" + re.escape(START)
+                    + r"(?:\s+[0-9a-f]{16}(?=\s))?(?:\s+(?!-->)(\S+))?", re.M)
 SKIP = {"__pycache__", ".git", "node_modules"}
 DOC = {".md", ".txt"}
 
@@ -164,20 +168,23 @@ def tools_of(fm):
     return fm.get("allowed-tools") or fm.get("tools") or ""
 
 
-def digest(target):
-    """Hash the DERIVED facts only, so prose edits never look like drift."""
-    h = hashlib.sha256()
-    fm = frontmatter(unit(target)[0])
-    for k in ("name", "version", "last_updated", "summary"):
-        h.update(f"{k}={fm.get(k, '')}\0".encode("utf-8"))
-    # Hashed through tools_of, so an agent gaining Write registers as drift.
-    # Reading `allowed-tools` alone, every agent hashed the same empty string
-    # and its tool list could change with the page none the wiser. The hash
-    # KEY keeps the old spelling on purpose: renaming it would have re-hashed
-    # all 119 scalar skills too, and a hundred pages going stale at once is how
-    # a real drift report gets scrolled past.
-    h.update(f"allowed-tools={tools_of(fm)}\0".encode("utf-8"))
-    return h.hexdigest()[:16]
+def facts(fm, name, base):
+    """The DERIVED fact lines the page shows, so prose edits never look like drift.
+
+    `check` compares exactly these lines with the page, so staleness means a
+    reader-visible fact moved: the version, the date, the summary, or the
+    tools. Tools are read through tools_of, so an agent gaining Write registers
+    as drift; reading `allowed-tools` alone, every agent showed the same empty
+    list and its tool list could change with the page none the wiser.
+    """
+    rows = [f"**{fm.get('name', name)}** · `{fm.get('version', '?')}`"
+            f" · last shipped {fm.get('last_updated', '?')}",
+            "",
+            f"- folder   `{base}/`",
+            f"- tools    {tools_of(fm) or 'not declared'}"]
+    if fm.get("summary"):
+        rows.append(f"- summary  {fm['summary']}")
+    return rows
 
 
 def rel(board, target):
@@ -278,8 +285,8 @@ def tree_block(board, skill_dir):
     as an older page needing repair every time.
     """
     if not Path(skill_dir).is_dir():
-        return "\n".join([f"{start_of('tree')} {digest(skill_dir)} "
-                           f"{rel(board, Path(skill_dir))} -->", "", end_of("tree")])
+        return "\n".join([f"{start_of('tree')} {rel(board, Path(skill_dir))} -->",
+                           "", end_of("tree")])
     rows = walk(skill_dir)
     width = max((len("  " * d + n) for d, n, _ in rows), default=0)
     width = min(max(width, 18), 34)
@@ -302,7 +309,7 @@ def tree_block(board, skill_dir):
     # caption. (JL 260802, reading Skill-0: "for the diagram, it doesn't follow
     # the Rule in QB4".)
     return "\n".join([
-        f"{start_of('tree')} {digest(skill_dir)} {rel(board, skill_dir)} -->",
+        f"{start_of('tree')} {rel(board, skill_dir)} -->",
         "",
         f"**What `{skill_dir.name}` ships**: every file in the folder, "
         f"with the one-line purpose each one states for itself.",
@@ -427,17 +434,7 @@ def block(board, skill_dir):
     defn, _clog, folder = unit(skill_dir)
     fm = frontmatter(defn)
     base = rel(board, skill_dir)
-    rows = [
-        f"{START} {digest(skill_dir)} {base} -->",
-        "",
-        f"**{fm.get('name', skill_dir.name)}** · `{fm.get('version', '?')}`"
-        f" · last shipped {fm.get('last_updated', '?')}",
-        "",
-        f"- folder   `{base}/`",
-        f"- tools    {tools_of(fm) or 'not declared'}",
-    ]
-    if fm.get("summary"):
-        rows.append(f"- summary  {fm['summary']}")
+    rows = [f"{START} {base} -->", ""] + facts(fm, skill_dir.name, base)
     # NOTE: `|source` mode, not rendered (found the hard way on the FIRST page).
     # Embedding `haipipe-board`'s own SKILL.md rendered its documentation of
     # board syntax AS board syntax: `[写法](路径)`, written there to show what a
@@ -457,7 +454,8 @@ def block(board, skill_dir):
     #
     # This is a COPY, which the board normally refuses. It is safe here for the
     # same reason `stage.py`'s contract block is: it lives inside a managed span
-    # whose hash `check` verifies, so drift is reported rather than possible.
+    # whose derived facts `check` compares with the unit, so drift is reported
+    # rather than possible.
     rows += [""] + skill_sections(skill_dir)
 
     # ── every OTHER file in the skill: DESCRIBED, not embedded ──────────
@@ -575,7 +573,7 @@ def resolve_token(board, token):
 def skill_of(board, page):
     """Recover the skill folder from the page's own managed marker."""
     m = MARKER.search(page.read_text(encoding="utf-8"))
-    return resolve_token(board, m.group(2)) if m and m.group(2) else None
+    return resolve_token(board, m.group(1)) if m and m.group(1) else None
 
 
 def group_home(board, group):
@@ -782,10 +780,10 @@ def cmd_plug(a):
         return (f"{page.name} is not a folded page; a workbench needs the page "
                 f"to own its folder first (QB3)")
     unit_name = src.stem if src.is_file() else src.name
-    dst = page.parent / "outline" / "skill" / unit_name
+    dst = plan_dir(page.parent) / "skill" / unit_name
     n = snapshot(src, dst)
     retitle(page, src, unit_name)
-    print(f"🧩 {page.stem} · outline/skill/{unit_name}/ · {n} files (SKILL.md renamed)")
+    print(f"🧩 {page.stem} · {dst.parent.parent.name}/skill/{unit_name}/ · {n} files (SKILL.md renamed)")
     return None
 
 
@@ -830,14 +828,16 @@ def cmd_check(a):
         if not has_block(page):
             continue
         text = page.read_text(encoding="utf-8")
-        saved = re.search(MARKER, text)
         skill_dir = skill_of(board, page)
         if not skill_dir or not unit(skill_dir)[0].is_file():
             print(f"❌ {page.name}: source missing"); bad += 1; continue
-        now = digest(skill_dir)
-        if not saved or saved.group(1) != now:
-            was = saved.group(1) if saved else "none"
-            print(f"❌ {page.name}: stale (saved {was}, current {now}) "
+        i, j = _span_at_line_start(text, START), _span_at_line_start(text, END)
+        shown = set(text[i:j].split("\n")) if 0 <= i < j else set()
+        now = facts(frontmatter(unit(skill_dir)[0]), skill_dir.name,
+                    rel(board, skill_dir))
+        moved = [ln for ln in now if ln and ln not in shown]
+        if moved:
+            print(f"❌ {page.name}: stale (now: {moved[0]}) "
                   f"-> skillpage.py sync {board} {page_id_of(page.name)}")
             bad += 1
         else:

@@ -919,9 +919,11 @@ GT_ICON = re.compile("^([" + _EMO + "]"
                      r"\s+(.+)$")
 
 
-LANE = re.compile(r"^>+\s*(Citation|Value|Display|Check|Q-consumer|Link|Source|Note)"
+LANE = re.compile(r"^>+\s*(Citation|Value|Display|Supporting Run|Check|Q-consumer|Link|Source|Note)"
                   r"\s*[:：]\s*(.*)$", re.I)
-LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "check": "⚠️",
+# `Supporting Run` (JL 260928): the Task or Discovery Run behind the sentence's evidence;
+# `page.py adopt` writes it with the other three (src/evidence_lines.py).
+LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "supporting run": "⚙️", "check": "⚠️",
              "q-consumer": "🔎", "link": "🔗", "source": "📄", "note": "📝"}
 
 # ── 🪪 a card on a SPAN of words (JL 260802, ruled on QB5) ──────────────────
