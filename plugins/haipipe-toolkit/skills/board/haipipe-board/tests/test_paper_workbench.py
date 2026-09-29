@@ -431,13 +431,18 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("Does it hold?", page)
             # Story › Roadmap: each C7 / C6 question with the folder that answers it (JL 260928)
             self.assertIn('id="task-T1" data-key="T1"', page)
-            # JL 260929: an opened question shows its BJTR folder first, open; its row text is folded
-            self.assertIn('<details class="item-card" open id="block-b01"', page)
+            # JL 260929: an opened question shows its B → J → T folders first as ONE flat table
+            # (block and job are header rows, never cards inside cards); its row text is folded
+            t1 = page[page.index('id="task-T1"'):page.index('id="task-T2"')]
+            self.assertIn('<table class="grid bjt">', t1)
+            self.assertIn('<tr class="bjt-b">', t1)
+            self.assertIn('<tr class="bjt-j">', t1)
+            self.assertEqual(t1.count('<details class="item-card"'), 1)    # the question card only
             self.assertIn('<details class="row-details"><summary>Details</summary>', page)
             self.assertIn('id="task-T2"', page)
             self.assertIn("no folder yet", page)
             self.assertIn('id="need-D1" data-key="D1"', page)
-            self.assertIn('id="block-b01"', page)
+            self.assertIn('<tr class="bjt-b"><td colspan="5"><span class="item-kind">b01</span>', page)
             self.assertIn("not this paper's: j02_flat", page)
             self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is named, never expanded
             self.assertIn("the joined cohort table", page)                 # develops: typed on the page

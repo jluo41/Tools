@@ -1488,10 +1488,8 @@ def _task_cards(d, s):
         home = task_home(d, c)
         # JL 260929: the BJTR folders are what matters; the row's own text is folded under Details
         rows = _fields(s["tt_h"], c, {0, 1} | _skip_cols(s["tt_h"], "folder", "q"))
-        folders, _ = (_block_cards(d, [x["address"].replace(".", "") for x in home["all"]], open_jobs=True)
-                      if home["all"] else ([], []))
-        body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
-                else '<div class="space-empty">No folder yet.</div>')
+        table = _bjt_table(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ""
+        body = table or '<div class="space-empty">No folder yet.</div>'
         cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "",
                            esc(" · ".join(x["address"] for x in home["all"])), home["state"],
                            _status_cls(home["state"]), rows, key=tid, body=body, fold=True))
@@ -1541,62 +1539,78 @@ def _claimed(addr, scope):
     return any(a.startswith(addr) or addr.startswith(a) for a in scope)
 
 
-def _block_cards(d, scope, open_jobs=False):
-    """One collapsed card per bNN block in `scope`; open = one card per job in `scope`, each
-    holding a task table of the tasks in `scope` (a question that names one task shows that
-    task only). `open_jobs` opens the job cards (inside a question, the jobs it names are what
-    the person came to see). Jobs outside the paper's own claim are named once, muted, never
-    expanded."""
-    cards, skipped = [], []
+def _receipts(tasks):
+    out = {}
+    for t in tasks:
+        for k, v in t["receipts"].items():
+            out[k] = out.get(k, 0) + v
+    return out
+
+
+def _scoped_blocks(d, scope):
+    """(block, its jobs in `scope` with their tasks in `scope`, jobs outside the paper's claim)."""
     claim = paper_scope(d)
     for blk in d["blocks"]["tree"]:
         if scope and not _claimed(blk["addr"], scope):
-            skipped.append(blk["name"])
             continue
         jobs = [dict(j, tasks=[t for t in j["tasks"] if not scope or _claimed(t["addr"], scope)])
                 for j in blk["jobs"] if not scope or _claimed(j["addr"], scope)]
-        other = [j for j in blk["jobs"] if not _claimed(j["addr"], claim)]
-        n_tasks = sum(len(j["tasks"]) for j in jobs)
-        n_tk = sum(t["tickets"] for j in jobs for t in j["tasks"])
-        state = {}
+        yield blk, jobs, [j for j in blk["jobs"] if not _claimed(j["addr"], claim)]
+
+
+def _bjt_table(d, scope, block_rows=True):
+    """Block → Job → Task as ONE table (JL 260929: "套这么多感觉跟棺材一样"): the block and each
+    job are a full-width header row, its tasks plain rows under it, so the three levels read by
+    indent, not by boxes inside boxes. Jobs outside the paper's own claim are named once, muted."""
+    trs = []
+    pill = lambda a: '<span class="item-kind">%s</span>' % esc(a)
+    for blk, jobs, other in _scoped_blocks(d, scope):
+        if block_rows:
+            tasks = [t for j in jobs for t in j["tasks"]]
+            board = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
+            trs.append('<tr class="bjt-b"><td colspan="5">%s <b>%s</b> <span class="mut">· %d job(s) · %d task(s) · %s</span> %s</td></tr>'
+                       % (pill(blk["addr"]), esc(blk["name"]), len(jobs), len(tasks), esc(_fmt_state(_receipts(tasks))), board))
         for j in jobs:
-            for t in j["tasks"]:
-                for k, v in t["receipts"].items():
-                    state[k] = state.get(k, 0) + v
-        rows, job_cards = [], []
-        for j in jobs:
-            js = {}
-            for t in j["tasks"]:
-                for k, v in t["receipts"].items():
-                    js[k] = js.get(k, 0) + v
-            trs = []
+            jurl = _tree_url(d, j["dir"])
+            trs.append('<tr class="bjt-j"><td colspan="5">%s <b>%s</b> <span class="mut">· %d task(s) · %d ticket(s) · %s</span> %s</td></tr>'
+                       % (pill(j["addr"][3:]), esc(j["name"]), len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]),
+                          esc(_fmt_state(_receipts(j["tasks"]))), ('<a href="%s">folder</a>' % esc(jurl)) if jurl else ""))
+            if not j["tasks"]:
+                trs.append('<tr class="bjt-t"><td colspan="5" class="mut">no tNN_ task under this job</td></tr>')
             for t in j["tasks"]:
                 url = _tree_url(d, t["page"] or t["dir"])
                 name = ('<a href="%s">%s</a>' % (esc(url), esc(t["name"]))) if url and t["page"] else esc(t["name"])
                 dev = esc(t["develops"]) if t["develops"] else '<span class="mut">?</span>'
                 if t["develops"] and t["develops_src"] != "page":
                     dev = '<i title="from %s, not typed on the page">%s</i>' % (esc(t["develops_src"]), dev)
-                trs.append(('<span class="idtag">%s</span>' % esc(t["addr"]), name, dev,
-                            esc("%d tk · %s" % (t["tickets"], _fmt_state(t["receipts"]))) if (t["tickets"] or t["receipts"]) else '<span class="mut">—</span>',
-                            esc(t["state"]) if t["state"] else '<span class="mut">%s</span>' % ("no state: line" if t["page"] else "no page")))
-            # JL 260929: Block → Job → Task, each its own level; a job is a card holding its task table
-            table = _table(["addr", "task", "develops", "runs", "state"], trs) or _empty("no tNN_ task under this job")
-            jsub = "%d task(s) · %d ticket(s) · %s" % (len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]), j["shape"])
-            jurl = _tree_url(d, j["dir"])
-            job_cards.append(_srcd(d, j["dir"], j["addr"], _card(
-                "job-" + j["addr"], j["addr"][3:], j["name"], esc(jsub),
-                ('<a href="%s">folder</a>' % esc(jurl)) if jurl else "", _fmt_state(js),
-                "ok" if js.get("done") and len(js) == 1 else ("warn" if js else "mut"), [], body=table)))
-        if job_cards:
-            rows.append(("", '<div class="item-cards">%s</div>' % "".join(_open_cards(job_cards) if open_jobs else job_cards)))
+                runs = (esc("%d tk · %s" % (t["tickets"], _fmt_state(t["receipts"]))) if (t["tickets"] or t["receipts"])
+                        else '<span class="mut">—</span>')
+                state = esc(t["state"]) if t["state"] else '<span class="mut">%s</span>' % ("no state: line" if t["page"] else "no page")
+                trs.append('<tr class="bjt-t"><td><span class="idtag">%s</span></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+                           % (esc(t["addr"]), name, dev, runs, state))
         if other:
-            rows.append(("not claimed", '<span class="mut">%d other job(s) in this block, not this paper\'s: %s</span>'
-                         % (len(other), esc(" · ".join(j["name"] for j in other)))))
+            trs.append('<tr class="bjt-o"><td colspan="5" class="mut">not claimed · not this paper\'s: %s</td></tr>'
+                       % esc(" · ".join(j["name"] for j in other)))
+    if not trs:
+        return ""
+    head = "".join("<th>%s</th>" % h for h in ("addr", "task", "develops", "runs", "state"))
+    return '<table class="grid bjt"><tr>%s</tr>%s</table>' % (head, "".join(trs))
+
+
+def _block_cards(d, scope):
+    """One collapsed card per bNN block in `scope`; open = the block's one Job → Task table
+    (`_bjt_table` without its block row: the card header is the block)."""
+    cards, skipped = [], [b["name"] for b in d["blocks"]["tree"] if scope and not _claimed(b["addr"], scope)]
+    for blk, jobs, other in _scoped_blocks(d, scope):
+        tasks = [t for j in jobs for t in j["tasks"]]
+        state = _receipts(tasks)
         where = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
-        sub = "%d job(s) · %d task(s) · %d ticket(s)" % (len(jobs), n_tasks, n_tk) + (
+        sub = "%d job(s) · %d task(s) · %d ticket(s)" % (len(jobs), len(tasks), sum(t["tickets"] for t in tasks)) + (
             (" · %d job(s) not claimed" % len(other)) if other else "")
+        body = _bjt_table(d, [a for a in scope if a.startswith(blk["addr"])] or [blk["addr"]], block_rows=False)
         cards.append(_srcd(d, blk["dir"], blk["addr"], _card("block-" + blk["addr"], blk["addr"], blk["name"], esc(sub),
-                           where, _fmt_state(state), "ok" if state.get("done") and len(state) == 1 else ("warn" if state else "mut"), rows)))
+                           where, _fmt_state(state), "ok" if state.get("done") and len(state) == 1 else ("warn" if state else "mut"),
+                           [], body=body or _empty("no job in this block"))))
     return cards, skipped
 
 
@@ -2344,6 +2358,10 @@ table.grid th{{text-align:left;background:var(--soft);font:600 11.5px -apple-sys
 table.grid td{{padding:9px 11px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}}
 table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid tr:last-child td{{border-bottom:0}}
 .idtag,.path{{font:500 12.5px ui-monospace,Menlo,monospace;color:var(--mut)}} .path{{overflow-wrap:anywhere}}
+table.bjt tr.bjt-b td{{background:var(--soft);padding:10px 11px}}
+table.bjt tr.bjt-j td{{padding:9px 11px 9px 26px}}
+table.bjt tr.bjt-t td:first-child{{padding-left:44px}} table.bjt tr.bjt-o td{{font-size:13px}}
+table.bjt .item-kind{{margin-right:4px}}
 code{{font:12.5px ui-monospace,Menlo,monospace}}
 .sec-list{{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}}
 .sec-row{{display:grid;grid-template-columns:2.4em minmax(0,1fr) 4.5em 12em 4.5em;gap:10px;align-items:baseline;
