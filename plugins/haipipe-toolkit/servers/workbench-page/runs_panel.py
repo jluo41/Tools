@@ -372,7 +372,7 @@ def panel_markup(space: str, kinds: list[dict], buckets: list[list[dict]], *, ba
         '<details class=run-prompt-box open><summary>Prompt '
         '<button type=button class=run-copy data-copy="">Copy</button></summary>'
         '<pre class=run-prompt></pre></details></article>'
-        '<div class=run-empty hidden>No runs yet.</div>'
+        '<div class=run-empty hidden>No runs yet.<p class=run-skill hidden></p></div>'
         '</div></div></section>'
         % (_e(space), waiting, _e(whole), extra, buttons, cards))
 
@@ -452,6 +452,9 @@ PANEL_JS = r"""
  function inView(el,view){var v=(el.dataset.views||'').trim();return !v||!view||v.split(' ').indexOf(view)>=0;}
  function typeShown(el,p){var v=(el.dataset.views||'').trim();if(!v)return true;
   var names=v.split(' ');return names.indexOf(p.dataset.view||'')>=0||names.indexOf(p.dataset.mode||'')>=0;}
+ function skillLine(sk,src){if(!sk)return;var names=(src&&src.dataset.skills||'').split(' · ').filter(Boolean);
+  sk.innerHTML=names.length?'Skill '+names.map(function(n){return '<code>'+n.replace(/[<>&"]/g,'')+'</code>';}).join(' · '):'';
+  sk.hidden=!names.length;}
  function typeLabel(p,type){var b=p.querySelector('.run-type[data-type="'+type+'"]');return b?b.dataset.label:'';}
  function render(p){
   var on=p.querySelector('.run-type.on'),newMode=on&&on.classList.contains('run-new');
@@ -469,12 +472,13 @@ PANEL_JS = r"""
    var src=p.querySelector('.run-type[data-type="'+type+'"]'),card=p.querySelector('.run-card-new');
    var what=target||(p.dataset.space==='delivery'?p.dataset.viewLabel:'')||p.dataset.whole||'the whole page';
    card.querySelector('.run-prompt').textContent=(src?src.dataset.prompt:'').replace(/\{target\}/g,what);
-   var sk=card.querySelector('.run-skill'),names=(src&&src.dataset.skills||'').split(' · ').filter(Boolean);
-   sk.innerHTML=names.length?'Skill '+names.map(function(n){return '<code>'+n.replace(/[<>&"]/g,'')+'</code>';}).join(' · '):'';sk.hidden=!names.length;
+   skillLine(card.querySelector('.run-skill'),src);
    card.hidden=false;return;
   }
   p.dataset.lastType=type;
-  if(!cards.length){p.querySelector('.run-empty').hidden=false;return;}
+  /* a type with no run yet still names the skill that does its work (JL 260929) */
+  if(!cards.length){var em=p.querySelector('.run-empty');
+   skillLine(em.querySelector('.run-skill'),p.querySelector('.run-type[data-type="'+type+'"]'));em.hidden=false;return;}
   function showCard(c){cards.forEach(function(x){x.hidden=true;});c.hidden=false;
 }
   cards.forEach(function(c,i){var b=document.createElement('button');b.type='button';b.textContent=c.dataset.name||c.dataset.run;b.title=c.dataset.run;

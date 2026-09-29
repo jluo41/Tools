@@ -93,6 +93,8 @@ def validate_build_config(config, delivery):
 ENGINE_DIR = Path(globals().get("__engine_dir__") or Path(__file__).resolve().parent)
 DOCX_ENGINE = ENGINE_DIR / "latex_room_to_docx.py"
 COVER_LETTER = ENGINE_DIR / "cover_letter.py"            # 0.9.0: run-delivery-coverletter
+# the Page workbench's renderer: a PDF drawn from the .docx package itself, so a reader can see the Word output
+DOCX2PDF = ENGINE_DIR.parents[3] / "servers" / "workbench-page" / "exporters" / "docx2pdf.py"
 def _engine_version():
     skill = ENGINE_DIR.parent / "SKILL.md"
     if skill.exists():
@@ -1376,6 +1378,17 @@ def build():
         env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(HERE / "paper-build.toml"))
         r = _run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
         docx_rc, docx_err = r.returncode, (r.stderr or r.stdout)[-1500:]
+    # JL 260929 "for the word, why we cannot preview it": each .docx gets its PDF twin beside it,
+    # <stem>.pdf, drawn from the package the Word lane just wrote; the Paper Workbench's Word Preview shows it
+    twins = {}
+    if DOCX2PDF.exists():
+        for key in ("main_docx", "supplement_docx"):
+            docx = rel(OUT[key]) if OUT.get(key) else None
+            if docx is not None and docx.suffix == ".docx" and docx.is_file():
+                twin = docx.with_suffix(".pdf")
+                r = _run([sys.executable, str(DOCX2PDF), str(docx), "-o", str(twin)], cwd=HERE,
+                         capture_output=True, text=True, timeout=300)
+                twins[key] = str(twin.relative_to(HERE)) if getattr(r, "returncode", 1) == 0 and twin.is_file() else None
     # 0.9.0 (JL 260929): the submission cover letter, words from the Round page, facts from this build
     cover = None
     if COVER_LETTER.exists() and isinstance(CFG.get("coverletter"), dict):
@@ -1406,7 +1419,8 @@ def build():
                           "appendix_newpage": LATEX_APPENDIX_NEWPAGE, "title_page": LATEX_TITLE_PAGE,
                           "abstract_page": LATEX_ABSTRACT_PAGE, "running_head": LATEX_RUNNING_HEAD},
         "outputs": {"pdf": OUT["main_pdf"] if main_pdf.exists() else None,
-                    "docx": OUT["main_docx"] if rel(OUT["main_docx"]).exists() else None},
+                    "docx": OUT["main_docx"] if rel(OUT["main_docx"]).exists() else None,
+                    "docx_pdf": twins.get("main_docx"), "supplement_docx_pdf": twins.get("supplement_docx")},
     })
     for key in ("supplement_pdf", "combined_pdf"):   # 0.9.1: the paper-owned documents and their length
         if key in printed:

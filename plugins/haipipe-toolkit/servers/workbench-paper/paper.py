@@ -2247,8 +2247,18 @@ def _preview_html(d, suffix):
     main = next((o for o in outs if "main" in o["what"]), outs[0])
     if suffix == ".pdf":
         return '<iframe class="space-frame" title="%s" data-src="%s"></iframe>' % (esc(main["rel"]), esc(_tree_url(d, main["path"])))
+    # JL 260929 "for the word, why we cannot preview it": the paper build draws a PDF twin of each .docx
+    # beside it (<stem>.pdf, from the package itself); Preview shows it under one line naming the .docx
+    twin = Path(main["path"]).with_suffix(".pdf")
+    if twin.is_file():
+        stale = twin.stat().st_mtime < Path(main["path"]).stat().st_mtime
+        return ('<p class="mut">%s · %s · %s%s</p><iframe class="space-frame" title="%s" data-src="%s"></iframe>'
+                % (_file_link(d, main["path"], main["rel"]), esc(main["size"]), esc(main["stamp"]),
+                   " · the preview is older than the .docx; rebuild" if stale else "",
+                   esc(main["rel"]), esc(_tree_url(d, twin))))
     return _kv([("file", _file_link(d, main["path"], main["rel"])), ("size", esc(main["size"])),
-                ("written", esc(main["stamp"]))], "spine-row")
+                ("written", esc(main["stamp"])),
+                ("preview", '<span class="mut">none yet: the next paper build draws it</span>')], "spine-row")
 
 
 def _artifacts_html(d, suffix):
