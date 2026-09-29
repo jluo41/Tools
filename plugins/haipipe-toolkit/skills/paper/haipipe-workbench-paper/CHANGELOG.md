@@ -1,5 +1,9 @@
 # CHANGELOG · haipipe-workbench-paper
 
+## 0.9.1 · 2026-09-29 · Each Appendix page shows its own pair
+
+- `servers/workbench-paper/paper.py`: Sections › Narrative finds a page's call-peer pair by its `session:` and `codex-session:` ids together first. The Appendix pages share one Claude session and each keeps its own Codex thread, so the Claude id alone gave every Appendix page the last pair registered (Paper-CGMtoHbA1c showed `CGM2HbA1c-Appendix-C` three times). Tests: `test_paper_workbench.py`, 12 pass.
+
 ## 0.9.0 · 2026-09-29 · The cover letter in Delivery; the Roadmap tree
 
 - An opened T or D question shows its BJTR folders first, already open (JL 260929: "I want to make the bjtr be the most important things"); the row's own text (design, contrast, result form, branches, depends on, feeds) folds under a closed Details line; the Task home rows that repeated the folders are gone.

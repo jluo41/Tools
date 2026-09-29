@@ -240,6 +240,8 @@ def _pairs_for(root_cwd):
         out[name] = rec
         if claude:                             # exact id key: the page's own session: line
             out["claude:" + claude] = rec
+            if rec["codex"]:                   # an Appendix shares one Claude session across pages
+                out["pair:%s:%s" % (claude, rec["codex"])] = rec
     return out
 
 
@@ -259,7 +261,10 @@ def session_rows(d):
         plan = "paper-%s-%s" % (desk, title)
         sid = scalar(p.get("text", ""), "session")
         cx = scalar(p.get("text", ""), "codex-session")
-        hit = ((pairs.get("claude:" + sid) if sid else None)
+        # the page's own (session, codex-session) pair first: Appendix pages share one Claude
+        # session and each keeps its own Codex thread, so the Claude id alone picks the last pair
+        hit = ((pairs.get("pair:%s:%s" % (sid, cx)) if sid and cx else None)
+               or (pairs.get("claude:" + sid) if sid else None)
                or pairs.get(plan) or pairs.get(p["stem"].lower()))
         state = []
         if sid:
