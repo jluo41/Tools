@@ -128,8 +128,8 @@ false.
 
 Each Content division begins with one captioned face diagram that previews the
 division's argument. Do not create a separate Page-level `## Diagram` section.
-The shared Page renderer generates `## Outline` from
-`draft/<stem>-draft-v<G>.<S>.md`; the authored Page must not duplicate it.
+The plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline
+table in Draft Space; the Page has no `## Outline` section, so never author one.
 
 For a data-bearing or empirical Task Page, the face diagram is only one part
 of the visual contract. SHAPE also plans at least one exact-audit table, one

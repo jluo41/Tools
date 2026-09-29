@@ -1,3 +1,7 @@
+## 1.8.1 · 2026-09-29 · A Task Page has no `## Outline` (JL 260929)
+
+- `ref/task-page.md` and `ref/task-page-template.md` no longer say the renderer generates `## Outline`: since haipipe-page 0.121 the plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline table in Draft Space, and a Task Page has no `## Outline` section. The word Outline stays where haipipe-page keeps it: the OUTLINE workflow stage, the Outline table, and the `outline:` grammar key.
+
 ## 1.8.0 · 2026-09-29 · Reviews carry no commit id (JL 260929)
 
 - Review gate: `CODE_REVIEW.md` carries no `git_sha`; a Ticket checks only that the review exists and its verdict is pass or warn, so a commit never blocks a Run. The template drops the stale-review check; `fn/audit.md` drops `stale_review`; `fn/run.md` and authoring-conventions say so.

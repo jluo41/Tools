@@ -19,8 +19,8 @@ task: .
      own Data or Method? The closed role order is Introduction, Concept,
      Landscape, Data, Method, Result, Conclusion. At least one Result is
      required; Conclusion is page-level, exactly once, and always last.
-     The rendered Outline is generated from draft/<stem>-draft-v<G>.<S>.md;
-     do not author a second ## Outline section here. Each prose paragraph
+     The plan lives in draft/<stem>-draft-v<G>.<S>.md (Draft Space shows it
+     as the Outline table); never author a ## Outline section. Each prose paragraph
      realizes exactly one plan Bullet and ends on its final source line with
      the HTML-comment backlink specified in ref/task-page.md. -->
 <!-- A data-bearing Task Page is not prose-only. Before CONTENT, SHAPE must
