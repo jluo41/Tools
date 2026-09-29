@@ -227,6 +227,10 @@ def main():
                     "--print-to-pdf=" + os.path.abspath(out),
                     "file://" + os.path.abspath(tmp)],
                    capture_output=True)
+    try:                       # the intermediate is only for the print; leave nothing beside the output
+        os.remove(tmp)
+    except OSError:
+        pass
     print("✅ %s" % out)
     print("   %d paragraphs · %d tables · %d image(s) · %d evidence card(s) printed"
           % (sum(1 for x in html_parts if x.startswith("<p")),
