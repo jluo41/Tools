@@ -1488,11 +1488,11 @@ def _task_cards(d, s):
         home = task_home(d, c)
         # JL 260929: the BJTR folders are what matters; the row's own text is folded under Details
         rows = _fields(s["tt_h"], c, {0, 1} | _skip_cols(s["tt_h"], "folder", "q"))
-        table = _bjt_table(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ""
+        table = _bjt_tree(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ""
         body = table or '<div class="space-empty">No folder yet.</div>'
-        cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "",
-                           esc(" · ".join(x["address"] for x in home["all"])), home["state"],
-                           _status_cls(home["state"]), rows, key=tid, body=body, fold=True))
+        # JL 260929: no address or "allocated · 2/2 levels exist" in the header; the folders say it
+        cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "", "", "", "mut",
+                           rows, key=tid, body=body, fold=True))
     return cards
 
 
@@ -1558,25 +1558,20 @@ def _scoped_blocks(d, scope):
         yield blk, jobs, [j for j in blk["jobs"] if not _claimed(j["addr"], claim)]
 
 
-def _bjt_table(d, scope, block_rows=True):
-    """Block → Job → Task as ONE table (JL 260929: "套这么多感觉跟棺材一样"): the block and each
-    job are a full-width header row, its tasks plain rows under it, so the three levels read by
-    indent, not by boxes inside boxes. Jobs outside the paper's own claim are named once, muted."""
-    trs = []
+def _bjt_tree(d, scope, block_rows=True):
+    """Block → Job → Task as folds with no boxes (JL 260929: "套这么多感觉跟棺材一样", then "我想让它
+    能够合上去"): the block and each job are a borderless fold (arrow · pill · name · counts), opened by
+    default, indented one step; a job opens to its one task table. Jobs outside the paper's own
+    claim are named once, muted."""
+    out = []
     pill = lambda a: '<span class="item-kind">%s</span>' % esc(a)
+    head = "".join("<th>%s</th>" % h for h in ("addr", "task", "develops", "runs", "state"))
+    fold = lambda cls, summary, body: ('<details class="%s" open><summary><span class="bjt-chev">›</span>%s</summary>%s</details>'
+                                       % (cls, summary, body))
     for blk, jobs, other in _scoped_blocks(d, scope):
-        if block_rows:
-            tasks = [t for j in jobs for t in j["tasks"]]
-            board = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
-            trs.append('<tr class="bjt-b"><td colspan="5">%s <b>%s</b> <span class="mut">· %d job(s) · %d task(s) · %s</span> %s</td></tr>'
-                       % (pill(blk["addr"]), esc(blk["name"]), len(jobs), len(tasks), esc(_fmt_state(_receipts(tasks))), board))
+        inner = []
         for j in jobs:
-            jurl = _tree_url(d, j["dir"])
-            trs.append('<tr class="bjt-j"><td colspan="5">%s <b>%s</b> <span class="mut">· %d task(s) · %d ticket(s) · %s</span> %s</td></tr>'
-                       % (pill(j["addr"][3:]), esc(j["name"]), len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]),
-                          esc(_fmt_state(_receipts(j["tasks"]))), ('<a href="%s">folder</a>' % esc(jurl)) if jurl else ""))
-            if not j["tasks"]:
-                trs.append('<tr class="bjt-t"><td colspan="5" class="mut">no tNN_ task under this job</td></tr>')
+            trs = []
             for t in j["tasks"]:
                 url = _tree_url(d, t["page"] or t["dir"])
                 name = ('<a href="%s">%s</a>' % (esc(url), esc(t["name"]))) if url and t["page"] else esc(t["name"])
@@ -1586,20 +1581,32 @@ def _bjt_table(d, scope, block_rows=True):
                 runs = (esc("%d tk · %s" % (t["tickets"], _fmt_state(t["receipts"]))) if (t["tickets"] or t["receipts"])
                         else '<span class="mut">—</span>')
                 state = esc(t["state"]) if t["state"] else '<span class="mut">%s</span>' % ("no state: line" if t["page"] else "no page")
-                trs.append('<tr class="bjt-t"><td><span class="idtag">%s</span></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+                trs.append('<tr><td><span class="idtag">%s</span></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
                            % (esc(t["addr"]), name, dev, runs, state))
+            body = ('<table class="grid bjt-t"><tr>%s</tr>%s</table>' % (head, "".join(trs)) if trs
+                    else '<div class="bjt-o mut">no tNN_ task under this job</div>')
+            jurl = _tree_url(d, j["dir"])
+            inner.append(fold("bjt-j", '%s <b>%s</b> <span class="mut">· %d task(s) · %d ticket(s) · %s</span> %s'
+                              % (pill(j["addr"][3:]), esc(j["name"]), len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]),
+                                 esc(_fmt_state(_receipts(j["tasks"]))), ('<a href="%s">folder</a>' % esc(jurl)) if jurl else ""),
+                              body))
         if other:
-            trs.append('<tr class="bjt-o"><td colspan="5" class="mut">not claimed · not this paper\'s: %s</td></tr>'
-                       % esc(" · ".join(j["name"] for j in other)))
-    if not trs:
-        return ""
-    head = "".join("<th>%s</th>" % h for h in ("addr", "task", "develops", "runs", "state"))
-    return '<table class="grid bjt"><tr>%s</tr>%s</table>' % (head, "".join(trs))
+            inner.append('<div class="bjt-o mut">not claimed · not this paper\'s: %s</div>'
+                         % esc(" · ".join(j["name"] for j in other)))
+        if block_rows:
+            tasks = [t for j in jobs for t in j["tasks"]]
+            board = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
+            out.append(fold("bjt-b", '%s <b>%s</b> <span class="mut">· %d job(s) · %d task(s) · %s</span> %s'
+                            % (pill(blk["addr"]), esc(blk["name"]), len(jobs), len(tasks),
+                               esc(_fmt_state(_receipts(tasks))), board), "".join(inner)))
+        else:
+            out += inner
+    return '<div class="bjt">%s</div>' % "".join(out) if out else ""
 
 
 def _block_cards(d, scope):
     """One collapsed card per bNN block in `scope`; open = the block's one Job → Task table
-    (`_bjt_table` without its block row: the card header is the block)."""
+    (`_bjt_tree` without its block fold: the card header is the block)."""
     cards, skipped = [], [b["name"] for b in d["blocks"]["tree"] if scope and not _claimed(b["addr"], scope)]
     for blk, jobs, other in _scoped_blocks(d, scope):
         tasks = [t for j in jobs for t in j["tasks"]]
@@ -1607,7 +1614,7 @@ def _block_cards(d, scope):
         where = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
         sub = "%d job(s) · %d task(s) · %d ticket(s)" % (len(jobs), len(tasks), sum(t["tickets"] for t in tasks)) + (
             (" · %d job(s) not claimed" % len(other)) if other else "")
-        body = _bjt_table(d, [a for a in scope if a.startswith(blk["addr"])] or [blk["addr"]], block_rows=False)
+        body = _bjt_tree(d, [a for a in scope if a.startswith(blk["addr"])] or [blk["addr"]], block_rows=False)
         cards.append(_srcd(d, blk["dir"], blk["addr"], _card("block-" + blk["addr"], blk["addr"], blk["name"], esc(sub),
                            where, _fmt_state(state), "ok" if state.get("done") and len(state) == 1 else ("warn" if state else "mut"),
                            [], body=body or _empty("no job in this block"))))
@@ -2034,9 +2041,8 @@ def _dd_cards(d, s):
         folders, _ = _disc_cards(d, addrs, _disc_feeds(d)) if addrs else ([], [])
         body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
                 else '<div class="space-empty">No folder yet.</div>')
-        state = "→ " + " · ".join(addrs) if addrs else "no folder yet"
-        cards.append(_card("need-" + c[0], c[0], c[1] if len(c) > 1 else "", "", "", state,
-                           "ok" if addrs else "mut", rows, key=c[0], body=body, fold=True))
+        cards.append(_card("need-" + c[0], c[0], c[1] if len(c) > 1 else "", "", "", "", "mut",
+                           rows, key=c[0], body=body, fold=True))
     return cards
 
 
@@ -2358,10 +2364,12 @@ table.grid th{{text-align:left;background:var(--soft);font:600 11.5px -apple-sys
 table.grid td{{padding:9px 11px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}}
 table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid tr:last-child td{{border-bottom:0}}
 .idtag,.path{{font:500 12.5px ui-monospace,Menlo,monospace;color:var(--mut)}} .path{{overflow-wrap:anywhere}}
-table.bjt tr.bjt-b td{{background:var(--soft);padding:10px 11px}}
-table.bjt tr.bjt-j td{{padding:9px 11px 9px 26px}}
-table.bjt tr.bjt-t td:first-child{{padding-left:44px}} table.bjt tr.bjt-o td{{font-size:13px}}
-table.bjt .item-kind{{margin-right:4px}}
+.bjt details>summary{{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:6px 2px;line-height:1.5}}
+.bjt details>summary::-webkit-details-marker{{display:none}} .bjt summary b{{font-weight:650}}
+.bjt-chev{{color:var(--mut);display:inline-block;width:1em;text-align:center;transition:transform .12s ease}}
+.bjt details[open]>summary>.bjt-chev{{transform:rotate(90deg)}}
+.bjt-j,.bjt-b>.bjt-o{{margin-left:22px}} .bjt>.bjt-j,.bjt>.bjt-o{{margin-left:0}}
+table.grid.bjt-t{{width:calc(100% - 22px);margin:2px 0 10px 22px}} .bjt-o{{font-size:13px;padding:4px 2px}}
 code{{font:12.5px ui-monospace,Menlo,monospace}}
 .sec-list{{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}}
 .sec-row{{display:grid;grid-template-columns:2.4em minmax(0,1fr) 4.5em 12em 4.5em;gap:10px;align-items:baseline;
