@@ -212,8 +212,12 @@ Roadmap     question first (JL 260928): Task questions, one card per C7 T row
 ```
 
 Task home rules: the Task home is `examples/<Project>/tasks/` (or `task/`, or
-board.md `task-home:`); a block card opens to its claimed jobs, each a table
-addr · task · develops · runs · state read off the folder in both shapes. The
+board.md `task-home:`); Block → Job → Task are three nested cards (JL 260929): a
+block card opens to one card per claimed job (open inside a question card), and a
+job card holds its table addr · task · develops · runs · state read off the folder
+in both shapes. Write every C7 address in full, one per job or task
+(`Task: b01.j01, b01.j02.`, `b01.j05.t02–t03`): a bare `j02` after a comma is not
+an address. The
 claim = board.md `blocks: b03 b04 b02.j01` + every address on a C7 row. Address
 grammar: lowercase two-digit `bNN[.jNN[.tNN[.rNN]]]` (a row id such as `B2` is
 not an address); end the row's design cell with `Task: b03.j02.`, as C6 ends its

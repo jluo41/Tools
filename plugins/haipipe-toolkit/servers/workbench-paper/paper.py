@@ -1488,7 +1488,8 @@ def _task_cards(d, s):
         home = task_home(d, c)
         # JL 260929: the BJTR folders are what matters; the row's own text is folded under Details
         rows = _fields(s["tt_h"], c, {0, 1} | _skip_cols(s["tt_h"], "folder", "q"))
-        folders, _ = _block_cards(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ([], [])
+        folders, _ = (_block_cards(d, [x["address"].replace(".", "") for x in home["all"]], open_jobs=True)
+                      if home["all"] else ([], []))
         body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
                 else '<div class="space-empty">No folder yet.</div>')
         cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "",
@@ -1540,10 +1541,12 @@ def _claimed(addr, scope):
     return any(a.startswith(addr) or addr.startswith(a) for a in scope)
 
 
-def _block_cards(d, scope):
-    """One collapsed card per bNN block in `scope`; open = its jobs in `scope`, each a
-    task table of the tasks in `scope` (a question that names one task shows that task
-    only). Jobs outside the paper's own claim are named once, muted, never expanded."""
+def _block_cards(d, scope, open_jobs=False):
+    """One collapsed card per bNN block in `scope`; open = one card per job in `scope`, each
+    holding a task table of the tasks in `scope` (a question that names one task shows that
+    task only). `open_jobs` opens the job cards (inside a question, the jobs it names are what
+    the person came to see). Jobs outside the paper's own claim are named once, muted, never
+    expanded."""
     cards, skipped = [], []
     claim = paper_scope(d)
     for blk in d["blocks"]["tree"]:
@@ -1560,15 +1563,12 @@ def _block_cards(d, scope):
             for t in j["tasks"]:
                 for k, v in t["receipts"].items():
                     state[k] = state.get(k, 0) + v
-        rows = []
+        rows, job_cards = [], []
         for j in jobs:
             js = {}
             for t in j["tasks"]:
                 for k, v in t["receipts"].items():
                     js[k] = js.get(k, 0) + v
-            head = '<span class="idtag">%s</span> %s <span class="mut">· %d task(s) · %d ticket(s) · %s · %s</span>' % (
-                esc(j["addr"]), esc(j["name"]), len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]),
-                esc(_fmt_state(js)), esc(j["shape"]))
             trs = []
             for t in j["tasks"]:
                 url = _tree_url(d, t["page"] or t["dir"])
@@ -1579,7 +1579,16 @@ def _block_cards(d, scope):
                 trs.append(('<span class="idtag">%s</span>' % esc(t["addr"]), name, dev,
                             esc("%d tk · %s" % (t["tickets"], _fmt_state(t["receipts"]))) if (t["tickets"] or t["receipts"]) else '<span class="mut">—</span>',
                             esc(t["state"]) if t["state"] else '<span class="mut">%s</span>' % ("no state: line" if t["page"] else "no page")))
-            rows.append((j["addr"], head + (_table(["addr", "task", "develops", "runs", "state"], trs) or _empty("no tNN_ task under this job"))))
+            # JL 260929: Block → Job → Task, each its own level; a job is a card holding its task table
+            table = _table(["addr", "task", "develops", "runs", "state"], trs) or _empty("no tNN_ task under this job")
+            jsub = "%d task(s) · %d ticket(s) · %s" % (len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]), j["shape"])
+            jurl = _tree_url(d, j["dir"])
+            job_cards.append(_srcd(d, j["dir"], j["addr"], _card(
+                "job-" + j["addr"], j["addr"][3:], j["name"], esc(jsub),
+                ('<a href="%s">folder</a>' % esc(jurl)) if jurl else "", _fmt_state(js),
+                "ok" if js.get("done") and len(js) == 1 else ("warn" if js else "mut"), [], body=table)))
+        if job_cards:
+            rows.append(("", '<div class="item-cards">%s</div>' % "".join(_open_cards(job_cards) if open_jobs else job_cards)))
         if other:
             rows.append(("not claimed", '<span class="mut">%d other job(s) in this block, not this paper\'s: %s</span>'
                          % (len(other), esc(" · ".join(j["name"] for j in other)))))
