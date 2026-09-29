@@ -1,3 +1,7 @@
+## 0.121.1 · 2026-09-29 · run-names keeps the run's own day
+
+- `src/run_rename.py::_day`: with no `started_at` or dated stem, the day is the oldest file time of the ticket and its Result, not the ticket's alone. `draft-layout --sort-runs` rewrites tickets, so on Paper-CGMtoHbA1c every Scratch Run from 0919 to 0921 was named `run-scratch-0929-…`; `results/` is never edited, so its files keep the real day.
+
 ## 0.121.0 · 2026-09-29 · Readable run names, flat runs/, records at the two ends (JL 260928)
 
 - Delivery Runs follow the readable grammar: `run-delivery-webpage` · `-latex` · `-word` (`run_names.delivery_name`), tickets in the flat `runs/`. `page.py run-names` keeps older numbered builds (`rdNN_<lane>`) as history and writes each built lane's Delivery Run ticket (`page_export.built_lanes`, `docx_author` keeps the last Word comment author). This SKILL documents the names (`run-<kind>-<MMDD>-<slug>`), `open-run` / `close-run` / `run-names`, and the flat `runs/`; `ref/page-run-families.md` is rewritten to the new names (the older short tokens are listed as still read).
