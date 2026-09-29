@@ -86,11 +86,30 @@ def record_prefix(paper, prefix):
 
 
 def codex_live(tid):
+    return codex_name(tid) is not None
+
+
+def codex_name(tid):
+    """The thread's latest name in the Codex session index, "" when unnamed, None when absent."""
     index = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "session_index.jsonl"
     try:
-        return f'"{tid}"' in index.read_text(encoding="utf-8", errors="replace")
+        text = index.read_text(encoding="utf-8", errors="replace")
     except OSError:
-        return False
+        return None
+    name = None
+    for line in text.splitlines():
+        if f'"{tid}"' in line:
+            try:
+                name = json.loads(line).get("thread_name") or ""
+            except ValueError:
+                name = name or ""
+    return name
+
+
+def appendix_pair(unit_name, page_id):
+    """`<Short>-Appendix-<letter>` for `S-<desk>-Appendix-<letter>-<slug>`, else `<Short>-Appendix-<page id>`."""
+    m = re.search(r"-Appendix-([A-Z])(?:-|$)", page_id)
+    return f"{unit_name}-{m.group(1) if m else page_id}"
 
 
 def paired_codex(root, sid):
@@ -409,7 +428,7 @@ def main():
         x_live = per_page or (bool(tid) and codex_live(tid))
         mk_claude = "claude" in providers and (a.replace or not c_live)
         mk_codex = "codex" in providers and key not in mapped and (a.replace or not x_live)
-        plan.append((unit, sid, tid, mk_claude, mk_codex))
+        plan.append((unit, sid, tid, mk_claude, mk_codex, per_page))
         note = "" if key == "Appendix" or key in order else "  (not in compile order)"
         pages_line = "".join(f"\n   · {pid}{'' if pid in order else '  (not in compile order)'}"
                              for pid, _ in unit["pages"]) if key == "Appendix" else ""
@@ -433,7 +452,7 @@ def main():
     deadline_for = lambda: time.time() + a.wait
     shorts, threads, codex = [], [], None
     try:
-        for unit, sid, tid, mk_claude, mk_codex in plan:
+        for unit, sid, tid, mk_claude, mk_codex, per_page in plan:
             key = unit["key"]
             name, prompt = f"{a.prefix}-{key}", first_prompt(root, paper, unit, story)
             if mk_claude:
@@ -458,6 +477,13 @@ def main():
             if sid and tid and (mk_claude or mk_codex or key in mapped):
                 register_pair(root, name, sid, name, tid, tname)
                 print(f"pair    {name} · claude {sid[:8]} ↔ codex {tid[:8]}")
+            elif sid and per_page and mk_claude and key not in mapped:
+                # an Appendix keeping one older Codex thread per page: one pair per page
+                for pid, md in unit["pages"]:
+                    ptid = header_value(md, "codex-session")
+                    pair = appendix_pair(name, pid)
+                    register_pair(root, pair, sid, name, ptid, codex_name(ptid) or "")
+                    print(f"pair    {pair} · claude {sid[:8]} ↔ codex {ptid[:8]}")
         deadline = deadline_for()
         if codex and threads:
             busy = codex.wait_turns(threads, deadline)

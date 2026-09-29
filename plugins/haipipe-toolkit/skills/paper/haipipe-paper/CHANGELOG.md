@@ -1,3 +1,7 @@
+## 1.4.3 · 2026-09-29 · Per-page Appendix pairs
+
+- `scripts/create_section_sessions.py`: an Appendix that keeps one older Codex thread per page now gets one call-peer pair per page, `<Short>-Appendix-<letter>`, with the new Appendix Claude session, as `ref/section-sessions.md` already said; before, it got no pair at all. `codex_name()` reads the thread's name from the Codex session index for the pair. Found on Paper-CGMtoHbA1c (three pairs registered by hand); checked on a stubbed two-appendix paper.
+
 ## 1.4.2 · 2026-09-28 · Keep existing Codex threads (JL 260928)
 
 - `ref/page-integration.md`, `ref/run-naming.md`: a Page Delivery Run is one fixed Run per lane (`run_delivery_<lane>`), not `rdNN_<target>`; `RD<NN>` stays the Round Page id (JL 260928).
