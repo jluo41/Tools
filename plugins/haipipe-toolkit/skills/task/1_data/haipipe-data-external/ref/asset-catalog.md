@@ -11,18 +11,18 @@ Schemas live in each asset's auto-generated README; this file carries only what 
 Always discover at runtime. Topic layout (`ref/asset-model.md`):
 
 ```bash
-ls _WorkSpace/ExternalStore/                         # assets + _locks/ + legacy @{tag}/
+ls _WorkSpace/ExternalStore/                         # assets + _releases/ + legacy @{tag}/
 cat _WorkSpace/ExternalStore/{asset}/asset.yaml       # contract: key, fields, family, providers
 ls _WorkSpace/ExternalStore/{asset}/                  # versions
 cat _WorkSpace/ExternalStore/{asset}/{version}/version.yaml
 cat _WorkSpace/ExternalStore/{asset}/{version}/README.md
 ```
 
-Legacy release-wide folders:
+Legacy whole-store snapshots:
 
 ```bash
-echo $EXTERNAL_VERSION                                # active legacy release (env.sh)
-ls _WorkSpace/ExternalStore/$EXTERNAL_VERSION/        # assets in that release
+echo $EXTERNAL_VERSION                                # active legacy snapshot (env.sh)
+ls _WorkSpace/ExternalStore/$EXTERNAL_VERSION/        # assets in that snapshot
 cat _WorkSpace/ExternalStore/$EXTERNAL_VERSION/{asset}/README.md
 ```
 

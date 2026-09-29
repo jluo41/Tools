@@ -130,20 +130,20 @@ External-data contract (model: `../haipipe-data-external/ref/asset-model.md`):
   STATUS: `code/haipipe/external_base/` is NOT built yet. Check
   (`ls code/haipipe/external_base`) before writing a lookup block; if absent,
   use the v4 attach helpers (`<field>_ids`, `<field>_matched`,
-  `external_release`) against a pinned legacy `@{tag}` release. The rules
+  `external_release`) against a pinned legacy `@{tag}` snapshot. The rules
   below are the target and apply once it exists.
   SourceFn is the only place external fields enter the pipeline (ZIP, NPI,
   NDC, NCPDP, engagement, feature-store, third-party assets).
   - One explicit lookup block per asset, every field assigned by name:
-    `lock.asset('npi', env=env).lookup(keys=..., obs_dt=df['DT'], fields=[...])`
+    `release.asset('npi', env=env).lookup(keys=..., obs_dt=df['DT'], fields=[...])`
     then `df['npi_specialty'] = f['Specialty']`. No generic attach loop.
   - `obs_dt` is each row's time; temporal assets attach only to tables with a
     row time, and a one-row-per-patient table uses the first observation time.
-  - Versions come from a lock (`ExternalStore/_locks/<LockName>.yaml`) named by
+  - Versions come from a release (`ExternalStore/_releases/<ReleaseName>.yaml`) named by
     the builder; every new column is listed in `ProcName_to_columns`.
   - Put the blocks in one plain `enrich_<table>()` per table so Input2SrcFn
     reuses them with `env='serve'`, `obs_dt='now'`.
-  - Write `external-dependency.json` beside the SourceSet (lock, versions,
+  - Write `external-dependency.json` beside the SourceSet (release, versions,
     provider, match rate, leak-dropped count).
   - Emit scalar, list, or fixed-order vector fields as stable data
     representations; declare dtype, ordering, and missing behavior.

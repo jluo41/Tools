@@ -5,16 +5,16 @@ The one reference for how external data is described, versioned, served, and
 attached. Other skills point here instead of restating it.
 
 **Status (260926).** The model below is adopted and built. The framework
-code `code/haipipe/external_base/` (`ExternalAsset`, `ExternalLock`,
+code `code/haipipe/external_base/` (`ExternalAsset`, `ExternalRelease`,
 `write_dependency`, `normalize_keys`) landed in code commit 27b1525. Only the
 `local_external_store` provider answers today; `feature_store`,
 `third_party_api` and `local_service` are named and fail with a clear
 message until built. Reference implementation: DrFirst-SPACE
 `examples-1-data/Project-Data-DrFirst-Raw2AIData/tasks/b51_A_externalstore/`
-(18 assets, lock `OptTimeR1v1`) and SourceFn `SMSParquetFTExt_v260923`.
+(18 assets, release `OptTimeR1v1`) and SourceFn `SMSParquetFTExt_v260923`.
 SourceFns not yet moved keep the v4 attach helpers (`attach_external_fields`,
 `<field>_ids`, `<field>_matched`, `external_release`), and legacy `@{tag}`
-releases stay readable until nothing reads them.
+snapshots stay readable until nothing reads them.
 
 Asset names carry the `ext_` prefix (`ext_npi`, `ext_zip3`,
 `ext_npi_engagement`); `load_contract` refuses any other name. Legacy
@@ -52,9 +52,9 @@ _WorkSpace/ExternalStore/
       column_to_<asset>_li.pkl  vocabulary (index 0 _unknown, 1 _mask)
       README.md
       version.yaml
-  _locks/
-    <LockName>.yaml             which version of each asset a SourceFn uses
-  @<tag>/                       LEGACY release-wide folder (e.g. @260104R4); read-only
+  _releases/
+    <ReleaseName>.yaml          which version of each asset a SourceFn uses
+  @<tag>/                       LEGACY whole-store snapshot (e.g. @260104R4); read-only
 ```
 
 Version names say what the data is:
@@ -107,15 +107,15 @@ builder: b51/j03_ext_npi/t01_npi/runs/r03_build_NPPES202507.sh   # the ticket th
 ```
 
 ```yaml
-# _locks/OptTimeR1v1.yaml
-lock: OptTimeR1v1
+# _releases/OptTimeR1v1.yaml
+release: OptTimeR1v1
 assets: {ext_zip3: "2025", ext_npi: NPPES202507, ext_npi_engagement: S20250520}
 ```
 
 A version folder is immutable and self-contained, so it zips cleanly for
 transport (endpoint package, S3 share). Unzip before reading; parquet is not
 read efficiently from inside a zip. An endpoint packages only the versions its
-lock names, never `@raw/`. `version.yaml` carries no content hash; a reader
+release names, never `@raw/`. `version.yaml` carries no content hash; a reader
 ignores a leftover `sha256` field in an older version.
 
 ---
@@ -161,10 +161,10 @@ NDC; `ext_exercise_codebook`: a vendor's code -> activity words). The answers as
 words. An ID the catalog lacks cannot be translated: its key stays the ID, the
 service is still asked it and answers MISS (describe-medication's own id lookup
 reads the same catalog), and the gallery shows it. Both lookups go through one
-lock, and a gallery types every row by its words after the translation (a
+release, and a gallery types every row by its words after the translation (a
 translated code is typed like the words it became). WellDoc b51 does both kinds
 (`ext_medication_resolved` and `ext_insulin_resolved` S20260927,
-`ext_exercise_resolved` S20260928, lock EventNormV3, JL 260927 and 260928).
+`ext_exercise_resolved` S20260928, release EventNormV3, JL 260927 and 260928).
 
 A dialect belongs to one company's own codes. When the raw key is already a
 public code in its standard form (ZIP, NPI, NDC, NCPDP), there is no dialect
@@ -204,19 +204,19 @@ Serving: the endpoint bundle (local_external_store)
 ---------------------------------------------------
 
 An endpoint that serves pinned local versions ships them in its package
-(`external/`), and the same `ExternalLock` resolves them there. Full tables
+(`external/`), and the same `ExternalRelease` resolves them there. Full tables
 make the container slow to start and heavy per worker (DrFirst OptTime: 17 s
 for the first request, 4.0 GB per worker). Stage the bundle this way:
 
-- **Only the lock.** Copy `_locks/<lock>.yaml`, and for each pinned asset its
+- **Only the release.** Copy `_releases/<release>.yaml`, and for each pinned asset its
   `asset.yaml` and `<version>/`. An asset the SourceFn never looked up is not
   shipped.
 - **Only the fields training used.** The training SourceSet's
-  `external-dependency.json` lists, per asset, its lock, pinned version and
+  `external-dependency.json` lists, per asset, its release, pinned version and
   every lookup's fields. Keep the key plus the union of those fields. The
   shipped `asset.yaml` lists only them. The shipped `version.yaml` names the
   original version and the kept columns under `trimmed_from`. Stop if the
-  dependency's lock or version differs from the bundle's.
+  dependency's release or version differs from the bundle's.
 - **Pre-keyed.** For a number-like key (zip3, zip5, npi, ndc, ncpdp), store
   `__key__` = `haipipe.external_base.keys.normalize_keys(key, kind)` as int64,
   with invalid keys dropped and the first row per key kept (what the loader
@@ -228,7 +228,7 @@ for the first request, 4.0 GB per worker). Stage the bundle this way:
 
 Loading at serving:
 
-- **Once per process, never per request.** `lock.asset()` builds a new
+- **Once per process, never per request.** `release.asset()` builds a new
   provider on every call, so the Input2SrcFn keeps one `ExternalAsset` per
   `(asset, env)` for the life of the process.
 - **At container start.** The Input2SrcFn exports `Warmup(SPACE)`, which runs
@@ -292,11 +292,11 @@ Words: the lookup returns external FIELDS (Source-stage values), not features.
 Features are CaseFn outputs; the feature vector is the AIData model input.
 
 ```python
-from haipipe.external_base import ExternalAsset, ExternalLock
+from haipipe.external_base import ExternalAsset, ExternalRelease
 
 npi  = ExternalAsset('ext_npi', version='NPPES202507', env='train')
-lock = ExternalLock('OptTimeR1v1', SPACE)       # optional: versions from _locks/
-npi  = lock.asset('ext_npi', env='train')
+release = ExternalRelease('OptTimeR1v1', SPACE)       # optional: versions from _releases/
+npi  = release.asset('ext_npi', env='train')
 
 f = npi.lookup(keys=df_rx['prescriber_npi'],    # normalized by key kind
                obs_dt=df_rx['DT'],              # per row; 'now' at serving
@@ -328,8 +328,8 @@ SourceFn pattern
 Explicit, one block per asset, every field assigned by name:
 
 ```python
-def enrich_Rx(df_rx, lock, env):
-    npi = lock.asset('ext_npi', env=env).lookup(
+def enrich_Rx(df_rx, release, env):
+    npi = release.asset('ext_npi', env=env).lookup(
         keys=df_rx['prescriber_npi'], obs_dt=df_rx['DT'],
         fields=['Specialty', 'Credential'])
     df_rx['npi_specialty']  = npi['Specialty']
@@ -345,7 +345,7 @@ def enrich_Rx(df_rx, lock, env):
 - One plain `enrich_<table>()` per table is shared by the SourceFn (`train`)
   and `Input2SrcFn` (`serve`, `obs_dt='now'`), so the two cannot drift.
 - Every new column is listed in `ProcName_to_columns`.
-- The SourceFn writes `external-dependency.json` beside the SourceSet: lock,
+- The SourceFn writes `external-dependency.json` beside the SourceSet: release,
   asset versions, provider, match rate, and leak-dropped count per asset.
 
 ---
@@ -387,8 +387,8 @@ b51_<name>_externalstore/
     t99_<topic>_gallery/        one notebook that uses each asset of the Job the way
                                 the SourceFn does, and checks it (t99_food_gallery)
   j48_external_base/            t01_unit_tests: tests of code/haipipe/external_base/
-  j49_external_locks/           t01_lock_<LockName>, t99_lock_gallery: span every asset
-tasks/_legacy/b51_release_<tag>_<yymmdd>/   audit of a legacy @{tag} release, read-only
+  j49_external_releases/           t01_release_<ReleaseName>, t99_release_gallery: span every asset
+tasks/_legacy/b51_snapshot_<tag>_<yymmdd>/   audit of a legacy @{tag} snapshot, read-only
 ```
 
 A new version is a new Run in the asset's existing Task, never a new Task.
@@ -405,11 +405,11 @@ last validate receipt recorded if a sync changed it.
 
 ---
 
-Legacy releases
-===============
+Legacy snapshots
+================
 
 `@{YYMMDD}R{N}` folders (e.g. `@260104R4`) are frozen, undocumented bundles of
-many assets. Do not build new locks or `version.yaml` files on top of them.
+many assets. Do not build new releases or `version.yaml` files on top of them.
 Rebuild each asset from `@raw/` with a documented builder, compare against the
 legacy asset once, and retire the legacy folder when no SourceFn or CaseFn
 reads it.

@@ -23,7 +23,7 @@ import os
 import pathlib
 
 __all__ = ["space_root", "store", "external_store", "source_store",
-           "raw_data_store", "find_asset", "lock_file", "lock_key_column"]
+           "raw_data_store", "find_asset", "release_file", "release_key_column"]
 
 _MARKERS = ("pyproject.toml", "code")
 
@@ -93,15 +93,15 @@ def find_asset(rel, env_var=None, kind="EXTERNAL", start=None) -> pathlib.Path:
     return hit.resolve()
 
 
-# ── the event lock ────────────────────────────────────────────────────────────
-# The four describe-* services read their tables through one lock, the same
-# file a WellDoc SourceFn pins (b51_externalstore/j49_external_locks). A service
-# asks for an asset; the lock names the version; the version card names the file
-# and its sha256, which is checked once per process. No lock, or an asset the
-# lock does not pin, returns None and the caller keeps its old path.
+# ── the event release ─────────────────────────────────────────────────────────
+# The four describe-* services read their tables through one release, the same
+# file a WellDoc SourceFn pins (b51_externalstore/j49_external_releases). A service
+# asks for an asset; the release names the version; the version card names the file
+# and its sha256, which is checked once per process. No release, or an asset the
+# release does not pin, returns None and the caller keeps its old path.
 
-DEFAULT_LOCK = "EventNormV2"
-_LOCK_CACHE = {}
+DEFAULT_RELEASE = "EventNormV3"                 # the release WellDocDataExtV260927 reads
+_RELEASE_CACHE = {}
 
 
 def _sha256(path) -> str:
@@ -113,28 +113,30 @@ def _sha256(path) -> str:
     return h.hexdigest()
 
 
-def lock_file(asset, filename=None, lock=None, start=None):
-    """The file of `asset` that the event lock pins, checksum verified, or None.
+def release_file(asset, filename=None, release=None, start=None):
+    """The file of `asset` that the event release pins, checksum verified, or None.
 
-    lock      lock name; default $EVENTNORM_LOCK, else DEFAULT_LOCK. "none" turns
-              the lock off and every caller falls back to its flat folder.
+    release   release name; default $EVENTNORM_RELEASE, else DEFAULT_RELEASE. "none" turns
+              the release off and every caller falls back to its flat folder.
     filename  a file in the version folder; default the version's table.
     """
-    name = lock or os.environ.get("EVENTNORM_LOCK", DEFAULT_LOCK)
+    name = release or os.environ.get("EVENTNORM_RELEASE", DEFAULT_RELEASE)
     if name.lower() == "none":
         return None
     key = (name, asset, filename, str(start))
-    if key in _LOCK_CACHE:
-        return _LOCK_CACHE[key]
+    if key in _RELEASE_CACHE:
+        return _RELEASE_CACHE[key]
     import yaml
     try:
         root = external_store(start)
     except RuntimeError:
         return None
-    lock_path = root / "_locks" / f"{name}.yaml"
-    pins = (yaml.safe_load(lock_path.read_text()) or {}).get("assets", {}) if lock_path.exists() else {}
+    release_path = root / "_releases" / f"{name}.yaml"
+    if not release_path.exists():                  # a store not moved yet (Lambda) keeps _locks/
+        release_path = root / "_locks" / f"{name}.yaml"
+    pins = (yaml.safe_load(release_path.read_text()) or {}).get("assets", {}) if release_path.exists() else {}
     if asset not in pins:
-        _LOCK_CACHE[key] = None
+        _RELEASE_CACHE[key] = None
         return None
     folder = root / asset / str(pins[asset])
     card = yaml.safe_load((folder / "version.yaml").read_text())
@@ -144,19 +146,19 @@ def lock_file(asset, filename=None, lock=None, start=None):
     if expected and _sha256(path) != expected:
         raise RuntimeError(f"{asset}/{pins[asset]}/{fname}: sha256 does not match version.yaml; "
                            f"the pinned file changed after it was published")
-    _LOCK_CACHE[key] = path
+    _RELEASE_CACHE[key] = path
     return path
 
 
-def lock_key_column(asset, lock=None, start=None):
-    """The key column of the table `lock_file` returns (DrFirst's `<key>_original`)."""
+def release_key_column(asset, release=None, start=None):
+    """The key column of the table `release_file` returns (DrFirst's `<key>_original`)."""
     import yaml
-    p = lock_file(asset, lock=lock, start=start)
+    p = release_file(asset, release=release, start=start)
     if p is None:
         return None
     return yaml.safe_load((p.parent / "version.yaml").read_text())["key_column"]
 
 
-def load_lock_paths():
+def load_release_paths():
     """Import this module from a service without relying on PYTHONPATH."""
-    return lock_file, lock_key_column
+    return release_file, release_key_column

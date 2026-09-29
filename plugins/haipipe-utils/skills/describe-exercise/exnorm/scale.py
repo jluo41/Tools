@@ -89,12 +89,12 @@ DEFAULT_SCALE_BANK = _find_bank()
 
 def _pinned_frame():
     """The two pinned scale tables in the bank's own shape (kind, key, factor, n, as_of),
-    or None when the lock pins neither. Device: ext_exercise_scale_device; person and
+    or None when the release pins neither. Device: ext_exercise_scale_device; person and
     person_activity: ext_exercise_scale_person, whose as_of is its version's ValidFromDT."""
-    from ._lock import lock_file
+    from ._release import release_file
     import pandas as pd
     import yaml
-    dev, per = lock_file("ext_exercise_scale_device"), lock_file("ext_exercise_scale_person")
+    dev, per = release_file("ext_exercise_scale_device"), release_file("ext_exercise_scale_person")
     if dev is None and per is None:
         return None
     parts = []

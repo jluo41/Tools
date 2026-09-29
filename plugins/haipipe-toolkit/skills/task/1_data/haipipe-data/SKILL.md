@@ -37,7 +37,7 @@ haipipe-data-source     Stage 1: SourceFn, 1-SourceStore
 haipipe-data-record     Stage 2: HumanFn, RecordFn, 2-RecStore
 haipipe-data-case       Stage 3: TriggerFn, CaseFn, 3-CaseStore
 haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
-haipipe-data-external   External assets (ZIP/NPI/NDC/NCPDP/engagement, feature store, APIs): contract, build/freeze/lock/parity, lookup preview, ExternalStore
+haipipe-data-external   External assets (ZIP/NPI/NDC/NCPDP/engagement, feature store, APIs): contract, build/freeze/release/parity, lookup preview, ExternalStore
 haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, all stores
 ```
 
@@ -125,7 +125,7 @@ RecordFn, TriggerFn, record, record-centered          -> record
 CaseFn, case, cohort, sampling, trigger event         -> case
 TfmFn, SplitFn, AIData, tensor, split, model input    -> aidata
 external, NDC, NPI, reference data, join external     -> external
-asset, asset.yaml, lock, feature store, vendor API    -> external
+asset, asset.yaml, release, feature store, vendor API    -> external
 obs_dt, ValidFromDT, snapshot version, backfill       -> external
 remote, rclone, gdrive, sync, pull, push              -> remote
 ```
@@ -162,7 +162,7 @@ explain, what is, why, how does               -> explain (umbrella inline)
 understand, frame, lifecycle, walk through    -> understand (raw-only)
 hand off, handoff, downstream contract        -> hand-off (raw-only)
 freeze, snapshot a pull, freeze feature store -> freeze   (external-only)
-lock, pin versions, lock file                 -> lock     (external-only)
+release, pin versions, release file                 -> release     (external-only)
 parity, frozen vs live                        -> parity   (external-only)
 join, preview join, lookup preview            -> join     (external-only)
 refresh, rebuild stale                        -> refresh  (external-only)

@@ -27,7 +27,7 @@ Rules baked in:
     `hai-remote-sync --dry-run` -- no direct `aws s3 ls` calls.
   - ExternalStore in the topic layout (`../haipipe-data-external/ref/
     asset-model.md`) moves per asset: `--path ExternalStore/<asset>` (its
-    `asset.yaml` and versions) and `--path ExternalStore/_locks`. A version
+    `asset.yaml` and versions) and `--path ExternalStore/_releases`. A version
     is immutable: a push never replaces a remote version that differs;
     stop and report. `<asset>/@raw/` landings are large and pushed only
     when asked.

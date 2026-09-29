@@ -211,7 +211,7 @@ def process_Source_to_Processed(
 
 **Register in Config**:
 ```yaml
-external_version: "@<release>"   # required when the SourceFn uses ExternalStore
+external_version: "@<tag>"   # required when the SourceFn uses ExternalStore
 SourceArgs:
   SourceFnName: OhioT1DMxmlv250302
 ```
@@ -225,7 +225,7 @@ Before building, inventory every raw name. Give each raw name its own analysis
 Task when it owns a distinct ProcessDF output contract. Then build the shared
 SourceFn and run the complete HAI pipeline in separate Tasks.
 
-For each external scalar/list/vector field, lock:
+For each external scalar/list/vector field, pin down:
 
 ```
 join key + ProcessName | dtype | element ordering | missing behavior/mask

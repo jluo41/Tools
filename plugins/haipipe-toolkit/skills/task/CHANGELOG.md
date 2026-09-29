@@ -29,13 +29,13 @@ file names and pseudonymized keys.
 
 `hierarchy.md`: an external-store Block (`b51`-`b59`) uses the same Job
 ranges: `j01`-`j48` one Job per asset (`t01_contract`, `t02_build_<Version>`
-or `t02_freeze_<SDate>`, `t03_validate`, `t04_parity`), `j49_external_locks`,
-and a legacy release as `j51_release_<tag>`. `haipipe-data-external` 0.3.0
-(new `ref/asset-model.md`; `freeze`, `lock`, `parity`), `haipipe-data-source`
+or `t02_freeze_<SDate>`, `t03_validate`, `t04_parity`), `j49_external_releases`,
+and a legacy snapshot as `j51_snapshot_<tag>`. `haipipe-data-external` 0.3.0
+(new `ref/asset-model.md`; `freeze`, `release`, `parity`), `haipipe-data-source`
 0.3.1 and `haipipe-data-case` 0.3.1 (external fields enter only through an
 explicit SourceFn lookup), `haipipe-data` 0.3.1 (overview principle 7),
 `haipipe-task-for-data` 0.8.3 (Source Tasks use the asset model),
-`haipipe-end-endpointset` 0.2.1 (package only the lock's versions) and
+`haipipe-end-endpointset` 0.2.1 (package only the release's versions) and
 `haipipe-end-input2src` 0.3.1 (same `enrich_<table>()` at serving, fallback,
 staleness, response logging), `haipipe-data-remote` 0.1.4 (per-asset sync).
 `haipipe-task-for-data` 0.8.3 also requires workers to read `RUN_CONFIG` and

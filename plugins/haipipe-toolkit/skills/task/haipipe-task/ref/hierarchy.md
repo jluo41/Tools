@@ -165,9 +165,9 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   pull), `rNN_validate_<Version>`, and `rNN_parity` for live-serving assets;
   each topic Job ends in `t99_<topic>_gallery` (`t99_food_gallery`; the name
   says what it shows, JL 260926). `j48_external_base` holds the
-  framework's unit tests, and `j49_external_locks` spans every asset, as
+  framework's unit tests, and `j49_external_releases` spans every asset, as
   `b01/j49_procdf_coverage` spans every dataset. The audit of a legacy
-  release-wide folder lives read-only in
+  whole-store snapshot lives read-only in
   `tasks/_legacy/b51_release_<tag>_<yymmdd>/`. Layout and rules:
   `haipipe-data-external/ref/asset-model.md` § Build Block.
 

@@ -65,8 +65,8 @@ def _find_bank() -> Path:
     explicit = os.environ.get("FOODNORM_OBSERVED_DB")
     if explicit:
         return Path(explicit)
-    from ._lock import lock_file              # the pinned ext_foodbank_observed, when a lock pins it
-    pinned = lock_file("ext_foodbank_observed")
+    from ._release import release_file              # the pinned ext_foodbank_observed, when a release pins it
+    pinned = release_file("ext_foodbank_observed")
     if pinned is not None:
         return pinned
     rel = Path("foodbank_observed") / "observed_food.parquet"

@@ -56,8 +56,8 @@ def _pinned_pk():
     """PK from the pinned ext_insulin_pk table, in pk_table.PK's own tuple shape, or None.
     The table is built FROM pk_table.py (b51 j04 t01), so reading it here makes the
     service answer from the published version; the build keeps reading the code."""
-    from ._lock import lock_file
-    path = lock_file("ext_insulin_pk")
+    from ._release import release_file
+    path = release_file("ext_insulin_pk")
     if path is None:
         return None
     import pandas as pd

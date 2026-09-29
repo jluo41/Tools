@@ -16,7 +16,7 @@ the asset to the Job's `t99_<topic>_gallery`. Shared helpers (`build_vocabulary`
 copied into each builder. Start the builder from the closest existing one.
 
 Legacy workspaces: the steps below create `e{N+1}_build_external_<asset>.py`
-under `code-dev/0-EXTERNAL/` writing into a release-wide `@{tag}` folder.
+under `code-dev/0-EXTERNAL/` writing into a whole-store `@{tag}` snapshot.
 
 ---
 
@@ -115,7 +115,7 @@ Delegate to `cook`:
 
   /haipipe-data-external cook {slug}
 
-Verify the asset triplet appears in the active release.
+Verify the asset triplet appears in the active snapshot.
 
 ---
 

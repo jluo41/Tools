@@ -34,7 +34,7 @@ Args:
 --on <column>      optional: cohort column to join on
                    (defaults: see asset-catalog Common Cohort Columns)
 --columns <list>   optional: subset of external columns to include
---version @{tag}   optional: pin external release
+--version @{tag}   optional: pin an external snapshot
 ```
 
 If `--table` is omitted, scan the set's parquets for one that contains a column matching the asset's expected join key (per catalog table).
@@ -101,7 +101,7 @@ Step 5: Render the preview
 ---------------------------
 
 ```
-Join preview: {asset} (release {version}) -> {set_path}/{table}.parquet
+Join preview: {asset} (snapshot {version}) -> {set_path}/{table}.parquet
 
   cohort column:     {table}.{left_col}     ({len(left_keys):,} unique)
   external key:      {right_col}             ({len(right_keys):,} unique)

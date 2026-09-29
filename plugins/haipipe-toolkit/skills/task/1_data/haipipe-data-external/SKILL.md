@@ -2,16 +2,16 @@
 name: haipipe-data-external
 description: >-
   External-reference specialist: owns the asset model (asset.yaml contract,
-  per-asset versions, locks, providers, obs_dt time rule), builds/freezes/
+  per-asset versions, releases, providers, obs_dt time rule), builds/freezes/
   validates assets in the b51 Block, inspects ExternalStore, and previews
   lookups into Source sets. Called by /haipipe-data. Trigger: external,
-  ExternalStore, asset, lookup, freeze, lock, parity, feature store,
+  ExternalStore, asset, lookup, freeze, release, parity, feature store,
   third-party API, NPPES, ADI, NPI lookup, NDC lookup, NCPDP, zip5, zip3,
   engagement snapshot, vendor data.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.3"
-  last_updated: "2026-09-26"
+  version: "0.3.4"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,7 +20,7 @@ Skill: haipipe-data-external
 
 External-reference specialist.
 Owns the ExternalStore layer and the asset model: `ref/asset-model.md` is
-the single reference for contracts, versions, locks, providers, the obs_dt
+the single reference for contracts, versions, releases, providers, the obs_dt
 time rule, the lookup interface, and the b51 build Block. Read it first.
 
 Externals are versioned reference assets (dimension lookups + engagement snapshots) that feed SourceFn.
@@ -38,7 +38,7 @@ Two asset families live under ExternalStore:
               patient_engagement)
 
   Function axis:  dashboard | load | cook | design-chef | review | join | refresh
-                  | freeze | lock | parity
+                  | freeze | release | parity
 
 ---
 
@@ -55,7 +55,7 @@ Commands
 /haipipe-data-external join <asset> --to <set>    -> preview joining into a Source/Record set
 /haipipe-data-external refresh [asset...]         -> rebuild stale assets (raw newer than output)
 /haipipe-data-external freeze <asset>             -> freeze a feature-store/API pull as <asset>/S<date>/
-/haipipe-data-external lock <LockName>            -> write _locks/<LockName>.yaml (asset -> version)
+/haipipe-data-external release <ReleaseName>      -> write _releases/<ReleaseName>.yaml (asset -> version)
 /haipipe-data-external parity <asset>             -> frozen version vs live provider, same keys
 ```
 
@@ -63,7 +63,7 @@ Optional flags:
 
 ```
 --version <version>  pin one asset's version (topic layout), e.g. NPPES202507
---version @{tag}     legacy: pin a release-wide folder such as @260104R4
+--version @{tag}     legacy: pin a whole-store snapshot such as @260104R4
 ```
 
 ---
@@ -93,7 +93,7 @@ join           ref/concepts.md +
                  ref/concepts.md                 fn/fn-join.md
 refresh        ref/concepts.md                   fn/fn-refresh.md
 freeze         ref/asset-model.md                fn/fn-freeze.md
-lock           ref/asset-model.md                fn/fn-lock.md
+release           ref/asset-model.md                fn/fn-release.md
 parity         ref/asset-model.md                fn/fn-parity.md
 (no fn arg)    ref/concepts.md                   (ref-only mode)
 ```
@@ -113,8 +113,8 @@ Step 0: Read the cross-stage overview FIRST:
 Step 1: Parse args after `/haipipe-data-external`.
 Extract:
           function  in { dashboard, load, cook, design-chef, review,
-                          join, refresh, freeze, lock, parity, (none) }
-          extras    asset name, --to <set>, --version <version|@tag>, lock name
+                          join, refresh, freeze, release, parity, (none) }
+          extras    asset name, --to <set>, --version <version|@tag>, release name
         If no args -> dashboard.
 
 Step 2: Read THIS skill's `ref/asset-model.md`, then `ref/concepts.md`
@@ -145,8 +145,8 @@ _WorkSpace/ExternalStore/
 |   +-- <version>/                       <- built version or frozen snapshot
 |       +-- df_<asset>_id.parquet, column_to_<asset>_li.pkl, README.md
 |       +-- version.yaml                 <- ValidFromDT, RefPeriod, builder
-+-- _locks/<LockName>.yaml               <- asset -> version pins used by a SourceFn
-+-- @{tag}/                              <- LEGACY release-wide folder (e.g. @260104R4), read-only
++-- _releases/<ReleaseName>.yaml         <- asset -> version pins used by a SourceFn
++-- @{tag}/                              <- LEGACY whole-store snapshot (e.g. @260104R4), read-only
 +-- @raw/, @inference/                   <- legacy shared landings / payload samples
 ```
 
@@ -172,15 +172,15 @@ MUST DO / MUST NOT
 - External builders are b51 Task scripts, not generated Fns: there is no
   `code/haifn/fn_external/`. If one ever appears it is generated and
   read-only.
-- NEVER overwrite an existing `<asset>/<version>/` or `@{tag}` release without
+- NEVER overwrite an existing `<asset>/<version>/` or `@{tag}` snapshot without
   explicit user confirmation -- versions are reproducibility anchors.
 - Training reads frozen local versions only; a live provider (feature store,
   third-party API) is reached only with env=serve. Freeze first (`freeze`).
-- An endpoint ships only its lock's versions, trimmed to the fields training
+- An endpoint ships only its release's versions, trimmed to the fields training
   looked up and pre-keyed, and loads them once per worker at warmup
   (`ref/asset-model.md` § Serving: the endpoint bundle).
 - NEVER bind a `patient_id`-keyed asset to `third_party_api` or
   `local_service` (PHI).
 - Every lookup carries `obs_dt`; temporal assets use `leak_policy: strict`.
-- Do not build new locks or version.yaml files on top of a legacy `@{tag}`
+- Do not build new releases or version.yaml files on top of a legacy `@{tag}`
   folder; rebuild the asset from `@raw/` in b51.

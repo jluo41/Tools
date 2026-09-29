@@ -73,7 +73,7 @@ What changed
    `code/haifn/fn_<stage>/<fn_version>/`. A Run config selects it with a
    top-level `fn_version:`, and `haipipe.base.fn_dir()` resolves it
    (`ref/0-overview.md` § Fn Versions).
-2. **External serving bundle.** An endpoint ships only its lock's external
+2. **External serving bundle.** An endpoint ships only its release's external
    versions, trimmed to the fields training looked up and pre-keyed
    (`key_normalized: int64`), and loads them once per worker at warmup
    (`haipipe-data-external/ref/asset-model.md` § Serving: the endpoint bundle).

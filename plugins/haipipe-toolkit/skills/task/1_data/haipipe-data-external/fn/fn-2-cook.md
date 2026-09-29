@@ -15,8 +15,8 @@ Engagement builds name their data cutoff in the Run config and set
 
 The steps below describe the legacy form: one
 `e{N}_build_external_<asset>.py` writing the asset triplet under the active
-release-wide `@{tag}` folder. Use them only in workspaces that still build
-legacy releases.
+whole-store `@{tag}` snapshot. Use them only in workspaces that still build
+legacy snapshots.
 
 ---
 
@@ -40,18 +40,18 @@ Step 2: Pre-flight checks
 --------------------------
 
 ```bash
-# Active release present?
+# Active snapshot present?
 ls -d _WorkSpace/ExternalStore/${EXTERNAL_VERSION} 2>/dev/null || \
     mkdir -p _WorkSpace/ExternalStore/${EXTERNAL_VERSION}
 
-# If asset already exists in this release, warn before overwriting
+# If asset already exists in this snapshot, warn before overwriting
 if [ -d "_WorkSpace/ExternalStore/${EXTERNAL_VERSION}/{asset}" ]; then
-    echo "Asset {asset} already exists in release ${EXTERNAL_VERSION}."
+    echo "Asset {asset} already exists in snapshot ${EXTERNAL_VERSION}."
     echo "Cook will overwrite it. Continue?"
 fi
 ```
 
-NEVER overwrite without explicit user confirmation -- releases are reproducibility anchors.
+NEVER overwrite without explicit user confirmation -- snapshots are reproducibility anchors.
 
 ---
 
@@ -112,7 +112,7 @@ Step 6: Return tail
 ```
 status:    ok | failed
 asset:     {asset}
-release:   {version}
+snapshot:  {version}
 artifacts: [list of files written]
 runtime:   {seconds}
 next:      "/haipipe-data-external review {asset}   (verify schema + coverage)"
@@ -124,6 +124,6 @@ MUST NOT
 ---------
 
 - Do NOT skip the pre-flight raw-input check.
-- Do NOT silently overwrite an existing asset within a release.
+- Do NOT silently overwrite an existing asset within a snapshot.
 - Do NOT modify the builder script during cook -- use `design-chef`
   for changes.

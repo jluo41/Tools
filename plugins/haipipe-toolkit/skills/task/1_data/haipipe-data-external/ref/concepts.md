@@ -6,7 +6,7 @@ Externals are versioned reference assets that SourceFn may attach to cohort data
 They are NOT a layer in series with Source -> Record -> Case -> AIData -- they are a governed input to Source.
 
 **Read first:** `ref/asset-model.md` (JL, 260923) is the authority for
-contracts, per-asset versions, locks, providers, the obs_dt time rule, the
+contracts, per-asset versions, releases, providers, the obs_dt time rule, the
 lookup interface, and the b51 build Block. Where this file disagrees, the
 asset model wins; this file keeps the asset file format and legacy detail.
 
@@ -51,7 +51,7 @@ Pantry     ExternalStore              _WorkSpace/ExternalStore/<asset>/<version>
 Label      asset.yaml                 _WorkSpace/ExternalStore/<asset>/asset.yaml
 Recipe     build script               b51 Block: j0N_ext_<topic>/tNN_<asset>/scripts/ (Run rNN_build_<Version>)
                                       (legacy: code-dev/0-EXTERNAL/e{N}_build_external_*.py)
-Order      lock                       _WorkSpace/ExternalStore/_locks/<LockName>.yaml
+Order      release                    _WorkSpace/ExternalStore/_releases/<ReleaseName>.yaml
 Output     ExternalAsset triplet      df_{asset}_id.parquet +
                                       column_to_{asset}_li.pkl +
                                       README.md (+ version.yaml)
@@ -139,12 +139,12 @@ Current model (`ref/asset-model.md`): each ASSET is versioned on its own.
 _WorkSpace/ExternalStore/
   <asset>/<version>/         e.g. npi/NPPES202507, npi_engagement/S20260104
     version.yaml             ValidFromDT, ValidToDT, RefPeriod, source, builder
-  _locks/<LockName>.yaml     asset -> version pins for one SourceFn
+  _releases/<ReleaseName>.yaml  asset -> version pins for one SourceFn
 ```
 
   - A version is immutable once published. Never overwrite one without
     explicit user confirmation.
-  - A lock replaces the old "one release for everything" default.
+  - A release replaces the old "one `@{tag}` snapshot for everything" default.
   - Lookups choose the version valid at each row's `obs_dt`.
 
 Legacy model: `@{version}/` folders (e.g. `@260104R4`) froze many assets
@@ -175,7 +175,7 @@ gender    = vocabs['Gender'][gender_id]
 ```
 
 `SPACE['LOCAL_EXTERNAL_STORE']` resolves to `_WorkSpace/ExternalStore/{EXTERNAL_VERSION}` (e.g. `_WorkSpace/ExternalStore/@260104R4`).
-Pin a different release by exporting `EXTERNAL_VERSION` before sourcing env.sh.
+Pin a different snapshot by exporting `EXTERNAL_VERSION` before sourcing env.sh.
 
 **Cooking (rebuilding) an asset:**
 
@@ -195,7 +195,7 @@ SourceFn is the attachment boundary. It looks up each asset explicitly and
 assigns every field by name (`ref/asset-model.md` § SourceFn pattern):
 
 ```python
-npi = lock.asset('ext_npi', env='train').lookup(
+npi = release.asset('ext_npi', env='train').lookup(
     keys=df_rx['prescriber_npi'], obs_dt=df_rx['DT'], fields=['Specialty'])
 df_rx['npi_specialty'] = npi['Specialty']
 df_rx['npi_matched']   = npi['_matched']
@@ -227,7 +227,7 @@ ls _WorkSpace/ExternalStore/                          # assets (topic folders) +
 ls _WorkSpace/ExternalStore/<asset>/                  # asset.yaml + versions
 cat _WorkSpace/ExternalStore/<asset>/asset.yaml
 cat _WorkSpace/ExternalStore/<asset>/<version>/version.yaml
-ls _WorkSpace/ExternalStore/_locks/
+ls _WorkSpace/ExternalStore/_releases/
 ls examples*/*/tasks/b51_*/j*_asset_*/                # asset build Jobs
 ```
 
@@ -254,7 +254,7 @@ MUST DO
 
 1. **Activate .venv first**: `source .venv/bin/activate && source env.sh`
 2. **Treat `@{version}/` as immutable** -- never overwrite a published
-   release without explicit user confirmation
+   snapshot without explicit user confirmation
 3. **Use `_original` columns for joins** -- the integer ID column is
    only meaningful with the matching vocabulary
 4. **Distinguish dimension vs engagement** when reasoning about
@@ -295,8 +295,8 @@ Builder scripts:      b51 Block, j0N_ext_<topic>/tNN_<asset>/scripts/ (Run rNN_b
 Shared build helpers: b51 Block src/ (build_vocabulary, convert_to_ids, generate_readme)
 Asset contract:       _WorkSpace/ExternalStore/<asset>/asset.yaml
 Asset versions:       _WorkSpace/ExternalStore/<asset>/<version>/ (+ version.yaml)
-Locks:                _WorkSpace/ExternalStore/_locks/<LockName>.yaml
+Releases:            _WorkSpace/ExternalStore/_releases/<ReleaseName>.yaml
 Raw vendor inputs:    _WorkSpace/ExternalStore/<asset>/@raw/  (legacy: ExternalStore/@raw/)
-Legacy releases:      _WorkSpace/ExternalStore/@{tag}/ ; env var EXTERNAL_VERSION
+Legacy snapshots:     _WorkSpace/ExternalStore/@{tag}/ ; env var EXTERNAL_VERSION
 Inference samples:    _WorkSpace/ExternalStore/@inference/
 ```

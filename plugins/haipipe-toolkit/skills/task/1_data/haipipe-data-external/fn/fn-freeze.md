@@ -82,4 +82,4 @@ Step 4: Hand off
 
 - Run the Task's `rNN_validate_<Version>` on the new version.
 - Run `fn-parity` if the asset serves live.
-- Add the version to a lock (`fn-lock`) only after both pass.
+- Add the version to a release (`fn-release`) only after both pass.

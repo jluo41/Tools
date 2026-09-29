@@ -21,8 +21,8 @@ def _find_bank() -> Path:
     explicit = os.environ.get("EXNORM_DB")
     if explicit:
         return Path(explicit)
-    from ._lock import lock_file                  # the pinned ext_pa_compendium, when a lock pins it
-    pinned = lock_file("ext_pa_compendium")
+    from ._release import release_file                  # the pinned ext_pa_compendium, when a release pins it
+    pinned = release_file("ext_pa_compendium")
     if pinned is not None:
         return pinned
     rel = Path("pa_compendium") / "compendium_2024.csv"

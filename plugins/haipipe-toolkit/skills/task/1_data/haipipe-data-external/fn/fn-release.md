@@ -1,11 +1,11 @@
-fn-lock: Pin asset versions for a SourceFn
-==========================================
+fn-release: Pin asset versions for a SourceFn
+=============================================
 
-Writes `_WorkSpace/ExternalStore/_locks/<LockName>.yaml`: which version of
+Writes `_WorkSpace/ExternalStore/_releases/<ReleaseName>.yaml`: which version of
 each asset one SourceFn uses (`ref/asset-model.md` § ExternalStore layout).
-A lock is a list of pins, like requirements.txt, never a copy of data.
+A release is a list of pins, like requirements.txt, never a copy of data.
 
-Runs as a b51 Task: `j49_external_locks/t01_lock_<LockName>/`.
+Runs as a b51 Task: `j49_external_releases/t01_release_<ReleaseName>/`.
 
 ---
 
@@ -36,25 +36,25 @@ cat _WorkSpace/ExternalStore/<asset>/<version>/version.yaml
 
 ---
 
-Step 3: Write the lock
-----------------------
+Step 3: Write the release
+-------------------------
 
 ```yaml
-lock: OptTimeR1v1
+release: OptTimeR1v1
 written: 2026-09-23
 assets:
   zip3: "2025"
   npi: NPPES202507
   npi_engagement: S20260104
-note: "first lock for the OptTime R1 SourceFn"
+note: "first release for the OptTime R1 SourceFn"
 ```
 
-A published lock is immutable. A change is a new lock name.
+A published release is immutable. A change is a new release name.
 
 ---
 
 Step 4: Record
 --------------
 
-The SourceFn builder names the lock; its `external-dependency.json` repeats
-the lock and the resolved versions per asset.
+The SourceFn builder names the release; its `external-dependency.json` repeats
+the release and the resolved versions per asset.

@@ -27,8 +27,8 @@ def _find(rel):
 
 
 def _pinned(asset):
-    from ._lock import lock_file                  # the pinned ext_ table, when a lock pins it
-    return None if os.environ.get("MEDNORM_DB") else lock_file(asset)
+    from ._release import release_file                  # the pinned ext_ table, when a release pins it
+    return None if os.environ.get("MEDNORM_DB") else release_file(asset)
 
 
 BANK = _pinned("ext_fda_ndc") or _find(Path("medbank") / "fda_ndc_product.parquet")      # FDA, external

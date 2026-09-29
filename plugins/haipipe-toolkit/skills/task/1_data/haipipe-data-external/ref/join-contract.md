@@ -95,10 +95,10 @@ SourceArgs:
 
 Field semantics:
 
-  version          Pin to a specific release for reproducibility.
+  version          Pin to a specific snapshot for reproducibility.
                    Omit to inherit EXTERNAL_VERSION from env.sh.
   asset_path       Relative to _WorkSpace/. Mirrors the resolved
-                   release.
+                   snapshot.
   process_name     Which ProcName in the SourceSet the join applies
                    to. Required when the cohort is multi-table.
   process_column   The left-side join column name.

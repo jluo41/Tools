@@ -23,8 +23,8 @@ def _candidate_paths():
         p = Path(explicit).expanduser()
         yield p / "med_lexicon.parquet" if p.is_dir() else p
 
-    from ._lock import lock_file                  # the pinned ext_med_lexicon, when a lock pins it
-    pinned = lock_file("ext_med_lexicon")
+    from ._release import release_file                  # the pinned ext_med_lexicon, when a release pins it
+    pinned = release_file("ext_med_lexicon")
     if pinned is not None:
         yield pinned
 

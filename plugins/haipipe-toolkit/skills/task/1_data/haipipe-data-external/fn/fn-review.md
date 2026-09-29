@@ -1,7 +1,7 @@
 fn-review: Schema, coverage, and staleness audit
 =================================================
 
-Read-only audit of one asset (or all assets in the active release if no asset name given).
+Read-only audit of one asset (or all assets in the active snapshot if no asset name given).
 Reports:
 
   schema:     mandatory files present, column contract satisfied

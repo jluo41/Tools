@@ -6,8 +6,8 @@ Always confirms before rebuilding.
 
 Topic layout (`ref/asset-model.md`): a refresh never rebuilds in place. Each
 stale asset gets a NEW version (a new `rNN_build_<Version>` or
-`rNN_freeze_<SDate>` Run in the asset's Task), then `rNN_validate_<Version>`, then a NEW lock that pins
-it. Existing versions and locks stay untouched, so every earlier SourceSet
+`rNN_freeze_<SDate>` Run in the asset's Task), then `rNN_validate_<Version>`, then a NEW release that pins
+it. Existing versions and releases stay untouched, so every earlier SourceSet
 still reproduces. For engagement assets the new version names its data
 cutoff; a cutoff inside a cohort's modeled period is refused for that
 cohort (leak).
@@ -17,7 +17,7 @@ cohort (leak).
 Step 1: Resolve scope
 ----------------------
 
-  - `refresh`              -> consider every asset in active release
+  - `refresh`              -> consider every asset in the active snapshot
   - `refresh {asset...}`   -> consider just those listed
 
 ---
@@ -96,6 +96,6 @@ MUST NOT
 ---------
 
 - Do NOT skip Step 3's confirmation prompt.
-- Do NOT publish to a different release than EXTERNAL_VERSION without
+- Do NOT publish to a different snapshot than EXTERNAL_VERSION without
   asking.
 - Do NOT continue past a cook failure without the user's call.

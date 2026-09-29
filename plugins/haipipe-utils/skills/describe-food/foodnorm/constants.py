@@ -64,8 +64,8 @@ _STORE = _external_store()
 _LEGACY_DB = _STORE / "@v1215" / "usda_fdc" / "usda_nutrition.sqlite"
 _FOODBANK_DB = _STORE / "@v1215" / "foodbank" / "foodbank.sqlite"
 def _pinned_bank():
-    from ._lock import lock_file              # the sqlite inside the pinned ext_food_bank version
-    return lock_file("ext_food_bank", "usda_nutrition.sqlite")
+    from ._release import release_file              # the sqlite inside the pinned ext_food_bank version
+    return release_file("ext_food_bank", "usda_nutrition.sqlite")
 
 
 USDA_DB = pathlib.Path(os.environ.get("FOODNORM_DB") or _pinned_bank() or _LEGACY_DB)

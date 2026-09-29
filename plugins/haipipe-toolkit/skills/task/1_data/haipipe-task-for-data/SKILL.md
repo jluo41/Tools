@@ -248,8 +248,8 @@ b01_sourcestore/
 
 Source Tasks attach external data through the asset model
 (`haipipe-data-external/ref/asset-model.md`): an explicit `lookup` per asset
-with `obs_dt`, versions pinned by a lock, and a shared `enrich_<table>()`.
-Their contract records dtype, ordering, missing behavior, and the lock and
+with `obs_dt`, versions pinned by a release, and a shared `enrich_<table>()`.
+Their contract records dtype, ordering, missing behavior, and the release and
 asset versions (`external-dependency.json`). Record/Case tasks consume those
 fields and never reopen ExternalStore. External assets themselves are built,
 frozen, validated, and locked in the auxiliary `b51` Block (§ Build Block of

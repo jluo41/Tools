@@ -1,7 +1,7 @@
 fn-1-load: Load and inspect a built ExternalAsset
 ==================================================
 
-Read-only inspection of one asset under the active (or pinned) release.
+Read-only inspection of one asset under the active (or pinned) snapshot.
 Prints shape, schema, vocabulary sizes, primary-key uniqueness, and a sample row.
 
 ---
@@ -10,7 +10,7 @@ Step 1: Resolve the asset path
 -------------------------------
 
 Topic layout (`ExternalStore/{asset}/asset.yaml` exists): the version is
-`--version`, else the lock's pin when a lock is named, else the version with
+`--version`, else the release's pin when a release is named, else the version with
 the latest `ValidFromDT`. Say which rule chose it.
 
 ```bash
@@ -20,7 +20,7 @@ cat "_WorkSpace/ExternalStore/{asset}/asset.yaml" "$ASSET_DIR/version.yaml"
 ls "$ASSET_DIR"
 ```
 
-Legacy release-wide layout:
+Legacy whole-store snapshot layout:
 
 ```bash
 source .venv/bin/activate && source env.sh
@@ -36,7 +36,7 @@ ASSET_DIR="_WorkSpace/ExternalStore/{tag}/{asset}"
 
 If the directory does not exist, surface a hint:
 
-  "Asset {asset} not in release {version}. Available assets:
+  "Asset {asset} not in snapshot {version}. Available assets:
    $(ls _WorkSpace/ExternalStore/${version})
    To build: /haipipe-data-external cook {asset}"
 
@@ -83,7 +83,7 @@ Step 4: Print the inspection block
 -----------------------------------
 
 ```
-{asset} ({family}, primary_key={PRIMARY_KEY}, release={version})
+{asset} ({family}, primary_key={PRIMARY_KEY}, snapshot={version})
   rows:         {N:,}
   cols:         {C}
   vocab keys:   {V}
@@ -106,7 +106,7 @@ Step 5: Return tail to the orchestrator
 ```
 status:    ok
 asset:     {asset}
-release:   {version}
+snapshot:  {version}
 rows:      {N}
 artifacts: [df_{asset}_id.parquet, column_to_{asset}_li.pkl, README.md]
 next:      "/haipipe-data-external review {asset}   (schema + staleness)"

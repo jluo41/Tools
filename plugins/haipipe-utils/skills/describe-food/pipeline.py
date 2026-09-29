@@ -42,8 +42,8 @@ def _flat_lexicon():
     return base / "@v1215/foodnorm/food_lexicon.parquet"
 
 
-from foodnorm._lock import lock_file                    # noqa: E402  the pinned ext_food_lexicon first
-LEXICON = lock_file("ext_food_lexicon") or _flat_lexicon()
+from foodnorm._release import release_file                    # noqa: E402  the pinned ext_food_lexicon first
+LEXICON = release_file("ext_food_lexicon") or _flat_lexicon()
 
 
 def show_lexicon():
