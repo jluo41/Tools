@@ -142,12 +142,18 @@ small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
 
 1. **What is heavy**: a checkpoint or model, an array, a cache, a row-level table
    beyond a small sample, or any file over 10 MB.
-2. **Where it goes**: the store its stage owns (`$LOCAL_RAW_STORE`,
-   `$LOCAL_SOURCE_STORE`, ... `$LOCAL_MODEL_STORE`), or for a one-off analysis
-   `$LOCAL_WORKSPACE/<Project>/<task>/<run>/`. The worker builds the path from the
-   variable, never from a literal `/Users/...` path.
-3. **What the Result keeps**: a pointer file (for example `artifacts.yaml`) with
-   each heavy file's SPACE-relative or `$VAR/...` path, size and sha256.
+2. **Where it goes**: the Run's own folder, which the Ticket exports as
+   `HEAVY_DIR`:
+   `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`. It mirrors
+   the Run's address below `tasks/` (Task names repeat across Jobs, so Block and
+   Job are part of it). The worker creates it only when it writes there
+   (`os.makedirs(os.environ["HEAVY_DIR"], exist_ok=True)`). `LOCAL_PROJECT_RESULT`
+   may move the root; the default is `_WorkSpace/ProjectResult`. A pipeline asset
+   (a SourceSet, a RecordSet, an ExternalStore version) goes to its stage store
+   (`$LOCAL_SOURCE_STORE`, ...) instead, because other Runs look it up by name.
+3. **What the Result keeps**: `heavy.yaml`, which the Ticket writes after the
+   worker when `HEAVY_DIR` holds files: the folder's SPACE-relative path, then
+   each file's path, bytes and sha256.
 4. **Never in the Task folder**: no copy of a heavy file and no symlink to an
    absolute path or into `_WorkSpace/` (`data/`, `src/cache/`, ...). Such a link
    stores an absolute path (AGENTS.md rule 7) and dangles on every other

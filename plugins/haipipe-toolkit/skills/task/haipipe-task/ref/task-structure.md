@@ -114,8 +114,9 @@ config. A Ticket does not loop over sibling Tickets; orchestration belongs in
 ## Results and notebooks
 
 Light Results include metrics, logs, reports, small data extracts, and display
-files. Heavy artifacts go to `_WorkSpace/` and are represented by pointers in
-the Result.
+files. Heavy artifacts go to the Run's `HEAVY_DIR`
+(`_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`) and are
+represented by the pointer `heavy.yaml` in the Result.
 
 The worker receives `RESULT_DIR` and must write there. It must not construct a
 Task-local output path. The Ticket creates and updates `runtime.yaml`

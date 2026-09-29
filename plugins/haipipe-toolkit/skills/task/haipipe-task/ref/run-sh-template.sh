@@ -82,6 +82,12 @@ RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
 NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
 export RESULT_DIR="$RESULTS_DIR"
+# A Run's heavy output (haipipe-run "A Result is light") gets its own folder under
+# _WorkSpace/ProjectResult, mirroring the Run's address below tasks/. The worker creates it
+# only when it writes there; the Result keeps the pointer (heavy.yaml, written below).
+_PR_ROOT="${LOCAL_PROJECT_RESULT:-_WorkSpace/ProjectResult}"
+case "$_PR_ROOT" in (/*) ;; (*) _PR_ROOT="$REPO_ROOT/$_PR_ROOT" ;; esac
+export HEAVY_DIR="$_PR_ROOT/$(basename "${TASK_FOLDER%%/tasks/*}")/${TASK_FOLDER#*/tasks/}/$RUN_NAME"
 
 NOTEBOOK_MODE="$(grep -E '^\s*notebook:\s*(full|thin|off)\b' "$CONFIG" 2>/dev/null | awk '{print $2}' | head -1)"
 NOTEBOOK_MODE="${NOTEBOOK_MODE:-full}"
@@ -319,6 +325,25 @@ fi
 LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' 2>/dev/null | while read -r l; do case "$(readlink "$l")" in (/*|*_WorkSpace*) echo "$l" ;; esac; done | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
 if [ -n "$LINKS" ]; then
   echo "==> [warn] the Task folder links to an absolute path or into _WorkSpace; read it through its variable: $LINKS" >&2
+fi
+# The Result keeps the pointer to the heavy output: heavy.yaml lists each file, its size and sha256.
+if [ -d "$HEAVY_DIR" ] && [ -n "$(ls -A "$HEAVY_DIR" 2>/dev/null)" ]; then
+  python3 - "$HEAVY_DIR" "$RESULTS_DIR/heavy.yaml" "$REPO_ROOT" <<'PY' || echo "==> [warn] could not write heavy.yaml" >&2
+import hashlib, os, sys
+heavy, out, root = sys.argv[1:4]
+lines = [f"dir: {os.path.relpath(heavy, root)}", "files:"]
+for base, _, names in sorted(os.walk(heavy)):
+    for name in sorted(names):
+        path = os.path.join(base, name)
+        digest = hashlib.sha256()
+        with open(path, 'rb') as f:
+            for chunk in iter(lambda: f.read(1 << 20), b''):
+                digest.update(chunk)
+        lines += [f"  - path: {os.path.relpath(path, heavy)}", f"    bytes: {os.path.getsize(path)}",
+                  f"    sha256: {digest.hexdigest()}"]
+os.makedirs(os.path.dirname(out), exist_ok=True)
+open(out, 'w').write('\n'.join(lines) + '\n')
+PY
 fi
 
 ENDED="$(date -Iseconds)"

@@ -309,7 +309,9 @@ siblings after deletion.
   mirrored store. Historical Job-level `results/<task>/<run>/` remains
   readable through its recorded resolver.
 - Model weights, large arrays, raw tables, and other heavy artifacts live in
-  `_WorkSpace/`; the Result stores pointers to them.
+  the Run's own `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`
+  (`HEAVY_DIR`); the Result stores the pointer `heavy.yaml`
+  ([Artifact placement](authoring-conventions.md#artifact-placement)).
 
 ## Batch placement
 

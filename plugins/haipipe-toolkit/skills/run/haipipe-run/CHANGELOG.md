@@ -1,5 +1,9 @@
 # haipipe-run · CHANGELOG
 
+## 0.30.0 · 2026-09-29 · Heavy output in ProjectResult (JL 260929)
+
+- A Result is light: a Task Run's heavy output has its own folder, `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/` (Ticket `HEAVY_DIR`), with the pointer `heavy.yaml` in the Result; a pipeline asset goes to its stage store.
+
 ## 0.29.0 · 2026-09-29
 
 - Result, evidence, and closure: **A Result is light.** Heavy Run output (model, array, cache, row-level table, any file over 10 MB) lives in the owner's heavy store (`_WorkSpace/` for Task Runs) and the Result keeps a pointer (SPACE-relative or `$VAR/...` path, size, hash); never a copy or a symlink in the Result or its Folder (JL 260929).

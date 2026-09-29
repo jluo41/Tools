@@ -1,3 +1,7 @@
+## 1.7.0 · 2026-09-29 · Heavy output in ProjectResult (JL 260929)
+
+- Artifact placement: a Run's heavy output goes to `HEAVY_DIR` = `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/` (Block and Job included because Task names repeat across Jobs); the Ticket writes `heavy.yaml` (path, bytes, sha256) into the Result; pipeline assets keep their stage stores. `run-sh-template.sh` exports `HEAVY_DIR` and writes the pointer. hierarchy.md and task-structure.md point to it.
+
 ## 1.6.0 · 2026-09-29 · Heavy output in _WorkSpace, checked
 
 - authoring-conventions § Artifact placement: what counts as heavy (model, array, cache, row-level table, any file over 10 MB), which `$LOCAL_*` store it goes to, the pointer the Result keeps (path, size, sha256), no copy or symlink in the Task folder; `run-sh-template.sh` warns on a heavy file or link in the Result and a link in the Task folder. The law itself is haipipe-run's "A Result is light".

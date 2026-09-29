@@ -8,7 +8,7 @@ description: >-
   Paper, and Labeling profiles. Trigger: Run contract, Run catalogue, Run
   ticket, runtime receipt, orphan Result, /haipipe-run.
 metadata:
-  version: "0.29.0"
+  version: "0.30.0"
   last_updated: "2026-09-28"
 ---
 
@@ -160,10 +160,13 @@ call, retry, Result file, consumer, or controller invocation.
 **A Result is light.** It holds the receipt, metrics, small tables, figures,
 reports, and pointers: whatever a reader or a Page needs to see what the Run
 found. A Run's heavy output (a model, an array, a cache, a row-level table
-beyond a small sample, any file over 10 MB) lives in the owner's heavy store
-(`_WorkSpace/` for Task Runs), reached through its variable, and the Result
-records a pointer to it: a SPACE-relative or `$VAR/...` path with its size and
-hash. Never a copy of the heavy file in the Result or its Folder, and never a
+beyond a small sample, any file over 10 MB) lives outside the Result, and the
+Result records a pointer to it: a SPACE-relative path with each file's size and
+hash. A Task Run's heavy output has its own folder,
+`_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`, the Run's
+address below `tasks/` (the Ticket exports it as `HEAVY_DIR`, and writes the
+pointer `heavy.yaml` into the Result); a pipeline asset (a SourceSet, an
+ExternalStore version) goes to its stage store instead. Never a copy of the heavy file in the Result or its Folder, and never a
 symlink to an absolute path or into the heavy store: such a link stores an
 absolute path and dangles on every other machine. A relative link inside the
 repository (a shared `_run.sh`) is fine (JL 260929). How a Task does it: [Artifact placement](../../task/haipipe-task/ref/authoring-conventions.md#artifact-placement).

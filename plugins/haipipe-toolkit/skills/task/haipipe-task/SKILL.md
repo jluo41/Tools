@@ -11,7 +11,7 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   last_updated: "2026-09-28"
   folder_owner: canonical
   folder_kind: task
@@ -299,8 +299,10 @@ Workflow(
   after its declared Result gate passes.
 - A zero process exit without an evidence comparison is a smoke test.
 - A configured name that does not resolve raises and names the missing entry.
-- Heavy artifacts belong in `_WorkSpace/`, never `results/`, and never as a copy
-  or symlink in the Task folder; the Result keeps a pointer
+- Heavy artifacts belong in the Run's `HEAVY_DIR`
+  (`_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`), never in
+  `results/`, and never as a copy or symlink in the Task folder; the Result keeps
+  the pointer `heavy.yaml`
   ([Artifact placement](ref/authoring-conventions.md#artifact-placement)).
 - Do not create lifecycle artifacts at Job or Block level.
 - Do not create `README.md` at Project, Block, Job, or Task roots. Use the Board
