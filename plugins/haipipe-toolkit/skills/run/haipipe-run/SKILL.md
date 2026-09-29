@@ -163,9 +163,10 @@ found. A Run's heavy output (a model, an array, a cache, a row-level table
 beyond a small sample, any file over 10 MB) lives in the owner's heavy store
 (`_WorkSpace/` for Task Runs), reached through its variable, and the Result
 records a pointer to it: a SPACE-relative or `$VAR/...` path with its size and
-hash. Never a copy of the heavy file, and never a symlink, in the Result or its
-Folder: a link stores an absolute path and dangles on every other machine
-(JL 260929). How a Task does it: [Artifact placement](../../task/haipipe-task/ref/authoring-conventions.md#artifact-placement).
+hash. Never a copy of the heavy file in the Result or its Folder, and never a
+symlink to an absolute path or into the heavy store: such a link stores an
+absolute path and dangles on every other machine. A relative link inside the
+repository (a shared `_run.sh`) is fine (JL 260929). How a Task does it: [Artifact placement](../../task/haipipe-task/ref/authoring-conventions.md#artifact-placement).
 
 A Result may be a checked artifact, judgment, decision, or truthful failure.
 The Result gate belongs to its profile. Evidence admission and downstream

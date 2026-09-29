@@ -310,14 +310,15 @@ if grep -rIlq --exclude='0-*.log' -e "$REPO_ROOT/" -e "$REPO_ROOT_PHYS/" "$RESUL
   echo "==> [warn] a Result file holds an absolute SPACE path; write it SPACE-relative" >&2
 fi
 # A Result is light (haipipe-run): flag a file over 10 MB or a link in the Result, and a link in the
-# Task folder; heavy output belongs in _WorkSpace, read through its variable, with a pointer in the Result.
+# Task folder to an absolute path or into _WorkSpace; heavy output belongs in _WorkSpace, read through
+# its variable, with a pointer in the Result. A relative link inside the repo (a shared _run.sh) is fine.
 HEAVY="$(find "$RESULTS_DIR" \( -type f -size +10M -o -type l \) 2>/dev/null | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
 if [ -n "$HEAVY" ]; then
   echo "==> [warn] the Result holds a file over 10 MB or a link; write it to _WorkSpace and keep a pointer: $HEAVY" >&2
 fi
-LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' 2>/dev/null | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
+LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' 2>/dev/null | while read -r l; do case "$(readlink "$l")" in (/*|*_WorkSpace*) echo "$l" ;; esac; done | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
 if [ -n "$LINKS" ]; then
-  echo "==> [warn] the Task folder holds a link; read _WorkSpace through its variable instead: $LINKS" >&2
+  echo "==> [warn] the Task folder links to an absolute path or into _WorkSpace; read it through its variable: $LINKS" >&2
 fi
 
 ENDED="$(date -Iseconds)"

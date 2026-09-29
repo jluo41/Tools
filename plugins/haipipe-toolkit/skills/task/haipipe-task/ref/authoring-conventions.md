@@ -148,12 +148,14 @@ small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
    variable, never from a literal `/Users/...` path.
 3. **What the Result keeps**: a pointer file (for example `artifacts.yaml`) with
    each heavy file's SPACE-relative or `$VAR/...` path, size and sha256.
-4. **Never in the Task folder**: no copy of a heavy file and no symlink into
-   `_WorkSpace/` (`data/`, `src/cache/`, ...). A link stores an absolute path
-   (AGENTS.md rule 7) and dangles on every other machine; read the store
-   through its variable instead.
+4. **Never in the Task folder**: no copy of a heavy file and no symlink to an
+   absolute path or into `_WorkSpace/` (`data/`, `src/cache/`, ...). Such a link
+   stores an absolute path (AGENTS.md rule 7) and dangles on every other
+   machine; read the store through its variable instead. A relative link inside
+   the repository (Tickets sharing one `_run.sh`) is fine.
 5. **Checked**: the Ticket runner warns when a Result holds a file over 10 MB
-   or a link, and when the Task folder holds a link (JL 260929).
+   or a link, and when the Task folder links to an absolute path or into
+   `_WorkSpace/` (JL 260929).
 
 Generated notebooks and Results follow `$OUTPUT_ROOT`. Authored code, config,
 Tickets, Page content, and workflow intent remain in the Task Folder.
