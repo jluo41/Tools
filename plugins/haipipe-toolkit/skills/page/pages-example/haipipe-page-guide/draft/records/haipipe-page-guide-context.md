@@ -11,7 +11,7 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Folder owner**: haipipe-page
 - **Page Face owner**: haipipe-page
 - **Current authority**: CONTEXT
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/haipipe-page-guide.md` · sha256:bd88db7ff40b
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/haipipe-page-guide.md`
 
 ### CTX2 · Purpose and scope
 - **Status**: resolved
@@ -19,7 +19,7 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Audience**: Page reader
 - **Covered here**: see the Page Opening
 - **Covered elsewhere**: Board group descriptions and ordering belong to haipipe-board; workbench implementation details belong to each workbench's own skill.
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/haipipe-page-guide.md` · sha256:bd88db7ff40b
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/haipipe-page-guide.md`
 
 ### CTX3 · Policy, structure, and style
 - **Status**: resolved
@@ -27,13 +27,13 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Expected structure**: haipipe-page contract
 - **Narrative/style policy**: haipipe-page + haipipe-board/ref/writing-rules.md
 - **Requirements**: none generated
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/workflow-runs/haipipe-page-structure/SKILL.md` · sha256:da857afcee3e; `Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/SKILL.md` · sha256:782b65faaadc; `Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/ref/page-template.md` · sha256:062dc4cb7cac; `Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md` · sha256:fc7f04175c61
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/workflow-runs/haipipe-page-structure/SKILL.md`; `Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/SKILL.md`; `Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/ref/page-template.md`; `Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md`
 
 ### CTX4 · Related information
 - **Status**: resolved
 - **Rows**: 6 Files rows
 - **Packet**: `cli/pagecontext.py haipipe-page-guide.md --run context`
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/records/haipipe-page-guide-files.md` · sha256:540fafa93cab
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/records/haipipe-page-guide-files.md`
 
 ### CTX5 · Feedback and open decisions
 - **Status**: not-applicable
@@ -48,4 +48,4 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Evidence Items**: none
 - **Run receipts**: none
 - **Next authority**: OUTLINE
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/previous/haipipe-page-guide-outline-v0.1.md` · sha256:84b7771f76db
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/draft/previous/haipipe-page-guide-outline-v0.1.md`

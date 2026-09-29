@@ -17,7 +17,7 @@ metadata:
 
 # /haipipe-page-writing · adopt agreed text and deliver one Page version
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means adopted `## Content` (written by `cli/page.py adopt` from the Draft) and every delivery artifact: change the Draft, the Evidence Markdown or the exporter, then rerun.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every delivery artifact, and a `## Content` sentence whose Draft `## 3 · Draft` carries it (`cli/page.py adopt` writes it): change the Draft, the Page or the exporter, then rerun.
 
 > ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Result, receipt or runtime.yaml.
 

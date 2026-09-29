@@ -18,7 +18,7 @@ metadata:
 
 # /haipipe-page · one shape every page keeps
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `build-manifest.json`, `evidence-selection.json`) and the `## Content` sentences and evidence lines `cli/page.py adopt` writes: change the Draft or the Evidence Markdown, then adopt and rebuild.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `evidence-selection.json`): change the Page, then rebuild. A request aimed at the Word or PDF text is a Page edit. One more generator: when the Draft's `## 3 · Draft` carries a sentence, `cli/page.py adopt` writes it into `## Content`, so edit it in the Draft and adopt; when it does not, the Page sentence is the source.
 
 > ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date (`v1.5 260928 1241`); staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Page, Result, receipt, ledger or manifest.
 

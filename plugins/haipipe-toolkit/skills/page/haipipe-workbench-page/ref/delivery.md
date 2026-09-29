@@ -58,11 +58,12 @@ they never become manuscript prose.
 Load `../../haipipe-page/ref/page-run-families.md` for the Page Run identity
 contract. Each concrete delivery target/version is an `RD` Page Delivery Run
 (`rdNN_web`, `rdNN_latex`, `rdNN_word`, `rdNN_slide`, `rdNN_render`). An RD
-binds one source Page version to one target lane and records the artifact,
-build diagnostics, and `delivery/<lane>/build-manifest.json`. Rebuilding the
-same target is another attempt in that RD lineage; a different target or a
-materially different source version gets a different RD. The build receipt is
-machine-readable delivery evidence, not a whole-Page acceptance decision:
+binds one source Page version to one target lane; the exporter writes the
+artifact and the Run's `runtime.yaml` keeps status and warnings. No lane
+manifest is written (JL 260928): the built files and their times are the
+record. Rebuilding the same target is another attempt in that RD lineage; a
+different target or a materially different source version gets a different
+RD. A current lane is delivery evidence, not a whole-Page acceptance decision:
 `haipipe-page-check` remains the only human whole-Page close gate.
 
 ## 🔍 Delivery Workspace · consistency projection

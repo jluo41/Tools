@@ -73,7 +73,7 @@ outline_revise.py`, POST `/_board/draft` with `action: revise`.
    usual pair is the current accepted Version and the newest candidate of the
    same writing Run; other legal pairs are an accepted Version against a
    delegated `paragraph.md`, or two built Page versions by their
-   `delivery/<lane>/build-manifest.json`.
+   delivery files (`delivery/web/<page>.md`).
 2. **Compare.** Compute word and punctuation level differences per sentence
    (`haipipe-writing/cli/wdiff.py`; whole-sentence red/green only when a
    sentence is removed or added). One ledger row per material change; pure

@@ -2022,7 +2022,7 @@ def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, s
             "revise",
             "Page.interactive-writing.revise",
             [
-                ("input", "TwoTexts", "results/rp-*/vNNN.md ×2 · or delivery/<lane>/build-manifest.json ×2"),
+                ("input", "TwoTexts", "results/rp-*/vNNN.md ×2 · or delivery/web/<page>.md ×2"),
                 ("—", "—", "—"),
                 ("run", "ChangeLedger", "runs/rp-revise-* + results/rp-revise-*/"),
                 ("—", "—", "—"),
@@ -2055,7 +2055,7 @@ def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, s
                 ("review", "EvidenceBinding", evidence_items),
                 ("action", "EvidenceResult", "results/re-{value,display,cite}-*/result.yaml"),
                 ("run", "EvidenceRun", "runs/re-*.md + results/re-*/"),
-                ("review", "ArtifactDependency", "delivery/**/build-manifest.json"),
+                ("review", "ArtifactDependency", "delivery/<lane>/ built files"),
             ],
         ),
         (

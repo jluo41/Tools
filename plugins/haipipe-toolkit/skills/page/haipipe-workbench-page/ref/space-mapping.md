@@ -66,7 +66,7 @@ Markdown stem.
 | `scratch` | `input · ScratchNote · outline/<stem>-outline-v*.md#Scratch` | `—` | `run · ScratchResult · runs/rp-scratch-* + results/rp-scratch-*/` | `—` |
 | `section-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · SectionWritingRun · runs/rp-sec-* + results/rp-sec-*/` | `read · PageDraft · <stem>.md` |
 | `paragraph-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · ParagraphWritingRun · runs/rp-para-* + results/rp-para-*/` | `read · PageDraft · <stem>.md` |
-| `evidence-item` | `review · EvidenceBinding · outline/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/**/build-manifest.json` |
+| `evidence-item` | `review · EvidenceBinding · outline/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/<lane>/ built files` |
 | `delivery` | `read · PageSource · <stem>.md` | `read · EvidenceResult · results/re-*/result.yaml` | `run · DeliveryRun · runs/rd*.md + results/rd*/` | `write · DeliveryArtifact · delivery/{web,latex,word,render}/` |
 
 Context collection, Content adoption, and whole-Page Check are controller
@@ -196,7 +196,7 @@ Supporting Runs   external/upstream Runs that remain inspectable in place
 RP reads `rp*.md` tickets and their `results/rp*/` journals, including the
 human-first `rp-scratch-NN_<target>` records. RE reads
 Page-owned evidence tickets and their paired Result manifests. RD reads the
-delivery lane's artifacts and `build-manifest.json`. Supporting Runs are
+delivery lane's built files and their times. Supporting Runs are
 assembled from references in an RE Result and the owner-native registry;
 the Page shows the identity and available Result pointer, but does not copy or
 symlink the external ticket, Result, or protected payload.

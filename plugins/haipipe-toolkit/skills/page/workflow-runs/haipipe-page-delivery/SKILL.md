@@ -3,9 +3,10 @@ name: haipipe-page-delivery
 description: >-
   The Delivery Run of a Board Page (`rdNN_<target>`): build one declared
   delivery target (web, LaTeX, Word, slides, render) from one released source
-  version and record the artifact and its build receipt. It never rewrites
-  prose or evidence and never closes the Page. Trigger: delivery run, build the
-  pdf, build the docx, rebuild delivery, delivery receipt, stale delivery,
+  version by running its exporter. The built files are the record: no
+  hand-written receipt or manifest. It never rewrites prose or evidence and
+  never closes the Page. Trigger: delivery run, build the pdf, build the docx,
+  rebuild delivery, stale delivery,
   /haipipe-page-delivery.
 metadata:
   version: "0.2.0"
@@ -13,9 +14,9 @@ metadata:
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-delivery · one target, one version, one receipt
+# /haipipe-page-delivery · one target, one version, one build
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every artifact and build record a Delivery Run writes under `delivery/<lane>/`: fix the Page source or the exporter, then run the build again.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every file under `delivery/<lane>/`: fix the Page source or the exporter, then run the build again.
 
 **LOAD `../../haipipe-page-workflow/SKILL.md` FIRST.** This file owns the
 Delivery Run's delta: when one may be commissioned, what it binds, what it
@@ -26,8 +27,8 @@ the identity grammar is `../../haipipe-page/ref/page-run-families.md`.
 ```text
 identity   rdNN_<target>          target ∈ web · latex · word · slide · render
 ticket     runs/rdNN_<target>.md
-result     results/rdNN_<target>/  runtime.yaml · build receipt
-artifact   delivery/<lane>/…       plus delivery/<lane>/build-manifest.json
+result     results/rdNN_<target>/  runtime.yaml (status, attempt, exporter output)
+artifact   delivery/<lane>/…       written by the exporter only; no manifest
 actor      agent or automatic; the deck is the one authored exception
 ```
 
@@ -43,16 +44,17 @@ reopens or rewrites an RE, and never edits the Page source.
 
 ## 🔁 How it runs
 
-1. **Allocate.** The next `rdNN_<target>`, its ticket, and a planned receipt.
+1. **Allocate.** The next `rdNN_<target>` and its ticket.
 2. **Build.** web through `haipipe-page/cli/page.py build`; LaTeX and Word
    through `/_board/latex` and `/_board/word` (the `exporters/` scripts,
    deterministic, safe to run on click); slides only on the explicit ✨ press
    (`claude -p`, minutes, money); render through the owning Design contract.
-3. **Receipt.** `delivery/<lane>/build-manifest.json` with the source path and
-   version, the artifact paths, and diagnostics, never a content hash (JL
-   260928); `runtime.yaml` records status and the exact attempt.
+3. **Record.** The built files and their file times are the record. Write no
+   `delivery/<lane>/build-manifest.json` and no hash by hand (JL 260928, AGENTS.md
+   rules 6 and 9); `runtime.yaml` records status, the attempt, and the
+   exporter's own warnings.
 4. **Show.** The Delivery Workspace compares source and artifacts by file time
-   and reports `pass`, `stale`, or `not-built` per lane. A build receipt is
+   and reports `pass`, `stale`, or `not-built` per lane. A current lane is
    delivery evidence, not a whole-Page acceptance; `haipipe-page-check` is the
    only human whole-Page close gate.
 
