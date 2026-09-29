@@ -325,6 +325,10 @@ def _archive_root_pagex(folder: Path, home: Path, *, dry_run: bool) -> dict:
 # `results/` keeps its words. Nothing else is sealed: no receipt pins a file by a
 # content hash (JL 260928), so a sweep rewrites every other file.
 SEALED = {"results"}
+# Generated output is never edited, only rebuilt (AGENTS.md: never modify a generated file).
+# A sweep names each generated file that still cites `outline/` so the person reruns its build.
+GENERATED = {"delivery", "board"}
+MAINTAINED = {"paper-build.toml", "build.py", "preamble.tex"}   # inputs that sit beside the outputs
 BINARY = {".png", ".pdf", ".docx", ".xdv", ".jpg", ".jpeg", ".gif", ".zip", ".gz", ".pptx",
           ".xlsx", ".parquet", ".pkl", ".dta", ".aux", ".fls", ".woff", ".woff2", ".ipynb"}
 _OUTLINE = re.compile(r"(?<![\w.-])outline/")
@@ -391,6 +395,7 @@ def sweep_outline_paths(root: Path, pages: list[Path], *, pages_only: bool = Tru
             if len(subs) == 1 and subs[0] in ("previous", "records", LEGACY_EVIDENCE):
                 moved.setdefault(name, {})[fname] = subs[0]
     files = swapped = repointed = 0
+    rebuild = []
 
     scan = pages if pages_only else [root]
     for base in scan:
@@ -401,6 +406,13 @@ def sweep_outline_paths(root: Path, pages: list[Path], *, pages_only: bool = Tru
                 continue
             if SEALED & set(path.parts):
                 continue  # a Result keeps its words
+            if GENERATED & set(rel) and path.name not in MAINTAINED:
+                try:
+                    if _OUTLINE.search(path.read_text(encoding="utf-8")):
+                        rebuild.append("/".join(rel))
+                except (UnicodeDecodeError, OSError):
+                    pass
+                continue  # generated: rebuilt by its own code, never edited here
             owner = next((page for page in by_name.values() if path.is_relative_to(page)), None)
             if not pages_only and (owner is not None or "_archive" in rel):
                 continue  # Page files were swept per Page; archives keep their layout
@@ -446,7 +458,8 @@ def sweep_outline_paths(root: Path, pages: list[Path], *, pages_only: bool = Tru
                 if not dry_run:
                     path.write_text(new, encoding="utf-8")
                 files, swapped, repointed = files + 1, swapped + n, repointed + moves[0]
-    return {"files": files, "outline_to_draft": swapped, "followed_moved_files": repointed}
+    return {"files": files, "outline_to_draft": swapped, "followed_moved_files": repointed,
+            "rebuild_generated": sorted(set(rebuild))}
 
 
 KIND_SECTIONS = (("CITE", "Citations"), ("DISPLAY", "Displays"), ("VALUE", "Values"))

@@ -459,6 +459,22 @@ def test_sweep_keeps_prose_rewrites_python_joins_and_follows_the_archive(tmp_pat
     assert check_page_folder(page)["verdict"] == "latest"
 
 
+def test_sweep_never_edits_generated_files_and_names_them_for_a_rebuild(tmp_path: Path):
+    from src.draft_migration import sweep_outline_paths
+    page = tmp_path / "S-Gen"
+    (page / "draft").mkdir(parents=True)
+    (page / "delivery" / "web").mkdir(parents=True)
+    (page / "S-Gen.md").write_text("# S\nSee outline/S-Gen-log.md\n", encoding="utf-8")
+    html = "<a href='outline/S-Gen-log.md'>log</a>\n"
+    (page / "delivery" / "web" / "index.html").write_text(html, encoding="utf-8")
+    (page / "delivery" / "paper-build.toml").write_text("# reads outline/evidence/bibex\n", encoding="utf-8")
+    out = sweep_outline_paths(tmp_path, [page])
+    assert (page / "delivery" / "web" / "index.html").read_text() == html          # generated: untouched
+    assert out["rebuild_generated"] == ["S-Gen/delivery/web/index.html"]
+    assert "draft/evidence/bibex" in (page / "delivery" / "paper-build.toml").read_text()  # a maintained input
+    assert "See draft/S-Gen-log.md" in (page / "S-Gen.md").read_text()
+
+
 BARE_PLAN = """# Bare-Page · outline v3
 outline-version: v3
 approved: ✅ JL 260828
