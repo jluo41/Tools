@@ -135,9 +135,25 @@ Result to an expectation, invariant, or independently computed reference.
 
 ## Artifact placement
 
+The law is haipipe-run's **A Result is light**; this is how a Task keeps it.
+
 `<task>/results/<run>/` contains light evidence: runtime and metrics files,
-small tables, figures, logs, and pointers. Checkpoints, large arrays, raw
-tables, and other heavy data live in `_WorkSpace/`.
+small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
+
+1. **What is heavy**: a checkpoint or model, an array, a cache, a row-level table
+   beyond a small sample, or any file over 10 MB.
+2. **Where it goes**: the store its stage owns (`$LOCAL_RAW_STORE`,
+   `$LOCAL_SOURCE_STORE`, ... `$LOCAL_MODEL_STORE`), or for a one-off analysis
+   `$LOCAL_WORKSPACE/<Project>/<task>/<run>/`. The worker builds the path from the
+   variable, never from a literal `/Users/...` path.
+3. **What the Result keeps**: a pointer file (for example `artifacts.yaml`) with
+   each heavy file's SPACE-relative or `$VAR/...` path, size and sha256.
+4. **Never in the Task folder**: no copy of a heavy file and no symlink into
+   `_WorkSpace/` (`data/`, `src/cache/`, ...). A link stores an absolute path
+   (AGENTS.md rule 7) and dangles on every other machine; read the store
+   through its variable instead.
+5. **Checked**: the Ticket runner warns when a Result holds a file over 10 MB
+   or a link, and when the Task folder holds a link (JL 260929).
 
 Generated notebooks and Results follow `$OUTPUT_ROOT`. Authored code, config,
 Tickets, Page content, and workflow intent remain in the Task Folder.

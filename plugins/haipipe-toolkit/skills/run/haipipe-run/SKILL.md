@@ -8,7 +8,7 @@ description: >-
   Paper, and Labeling profiles. Trigger: Run contract, Run catalogue, Run
   ticket, runtime receipt, orphan Result, /haipipe-run.
 metadata:
-  version: "0.28.1"
+  version: "0.29.0"
   last_updated: "2026-09-28"
 ---
 
@@ -156,6 +156,16 @@ fit Runs. The eventual inventory has two native Runs, not a row for every
 call, retry, Result file, consumer, or controller invocation.
 
 ## Result, evidence, and closure
+
+**A Result is light.** It holds the receipt, metrics, small tables, figures,
+reports, and pointers: whatever a reader or a Page needs to see what the Run
+found. A Run's heavy output (a model, an array, a cache, a row-level table
+beyond a small sample, any file over 10 MB) lives in the owner's heavy store
+(`_WorkSpace/` for Task Runs), reached through its variable, and the Result
+records a pointer to it: a SPACE-relative or `$VAR/...` path with its size and
+hash. Never a copy of the heavy file, and never a symlink, in the Result or its
+Folder: a link stores an absolute path and dangles on every other machine
+(JL 260929). How a Task does it: [Artifact placement](../../task/haipipe-task/ref/authoring-conventions.md#artifact-placement).
 
 A Result may be a checked artifact, judgment, decision, or truthful failure.
 The Result gate belongs to its profile. Evidence admission and downstream

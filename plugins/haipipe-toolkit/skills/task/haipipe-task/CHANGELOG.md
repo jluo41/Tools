@@ -1,12 +1,16 @@
+## 1.6.0 · 2026-09-29 · Heavy output in _WorkSpace, checked
+
+- authoring-conventions § Artifact placement: what counts as heavy (model, array, cache, row-level table, any file over 10 MB), which `$LOCAL_*` store it goes to, the pointer the Result keeps (path, size, sha256), no copy or symlink in the Task folder; `run-sh-template.sh` warns on a heavy file or link in the Result and a link in the Task folder. The law itself is haipipe-run's "A Result is light".
+
+## 1.5.1 · 2026-09-29 · Generated output and encoded ids (JL 260929)
+
+- authoring-conventions: every generated file (board HTML, TASK-TABLE.md, code/haifn) changes only through its source and generator, and a change is reported by its source; encoded ids are meaningless, not PHI, and never block a commit; before a push check size, secrets and `.pyc`.
+
 ## 1.5.0 · 2026-09-28 · No content hashes (JL 260928)
 
 - Run receipts carry no content hashes (AGENTS.md rule 9): `ref/run-sh-template.sh` no longer writes `config_sha256`, `contract_sha256` or a per-input `sha256`. `RUN_INPUTS` entries are plain paths; an older `path|<hash>` entry is read as its path and the hash is ignored.
 - A retry's changed-contract check uses file modification time: the Ticket, config, worker or a declared input newer than the prior receipt, or different `settings.ticket_args`, blocks the retry. A planned receipt blocks dispatch when its config is newer than the receipt.
 - `ref/runtime-yaml-schema.md`, `ref/authoring-conventions.md`, `ref/task-structure.md`, `ref/hierarchy.md`, `ref/task-page.md`, `ref/databricks-execution.md`, `fn/audit.md`, `ref/task-lifecycle.workflow.js`, `fn/run.md` and `SKILL.md`: no hash fields, pins or hash checks; a Result is bound by full Run id and path.
-
-## [1.5.1] - 2026-09-29 - Generated output and encoded ids (JL 260929)
-
-- authoring-conventions: every generated file (board HTML, TASK-TABLE.md, code/haifn) changes only through its source and generator, and a change is reported by its source; encoded ids are meaningless, not PHI, and never block a commit; before a push check size, secrets and `.pyc`.
 
 ## 1.4.6 · 2026-09-28
 
