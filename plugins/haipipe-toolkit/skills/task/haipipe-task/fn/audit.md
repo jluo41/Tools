@@ -52,7 +52,6 @@ missing_receipt    Result directory exists without runtime.yaml
 missing_result     terminal receipt names a required artifact that is absent
 missing_notebook   expected notebook record is absent
 orphan_result      Result exists without matching config and Ticket
-stale_review       CODE_REVIEW.md does not match current git SHA
 stale_reading      Task Page reading receipt predates a load-bearing Run
 ```
 

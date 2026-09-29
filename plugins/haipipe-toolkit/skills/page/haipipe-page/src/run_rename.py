@@ -97,7 +97,11 @@ def _day(folder: Path, stem: str, ticket_text: str, ticket: Path):
     dated = re.search(r"_(\d{6})$", stem)            # `r03_independent-check_260928`
     if dated:
         return dated.group(1)
-    return dt.date.fromtimestamp(ticket.stat().st_mtime)
+    # Oldest file time of the ticket and its Result: a layout move rewrites the ticket
+    # (so its own time reads as today), but `results/` is never edited.
+    result = folder / "results" / stem
+    files = [ticket] + ([p for p in result.rglob("*") if p.is_file()] if result.is_dir() else [])
+    return dt.date.fromtimestamp(min(p.stat().st_mtime for p in files if p.exists()))
 
 
 def _slug(kind: str, stem: str, ticket_text: str, item: str) -> str:

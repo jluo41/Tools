@@ -109,8 +109,10 @@ _meta:
 
 The creator writes code and config, then stops. The reviewer owns
 `CODE_REVIEW.md` and checks intent against implementation. The Ticket refuses
-launch when that review is absent, failed, or stale unless an explicit skip is
-recorded.
+launch when that review is absent or failed unless an explicit skip is
+recorded. A review carries no commit id: a commit never blocks a Ticket; when
+the code changes, the reviewer updates the review's notes and verdict
+(JL 260929).
 
 After execution, the reviewer verifies Results against the Plan and writes the
 Run audit. The same agent role may perform both gates, but it must start from

@@ -3,7 +3,7 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.5"
+  version: "0.9.0"
   last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -98,8 +98,8 @@ review. Then, before the first Run:
      rename Job/Task strings; grep the old dataset name to zero hits.
   2. Every Task Folder has its same-stem page (`tNN_<task>/tNN_<task>.md`);
      Tickets refuse to run without it.
-  3. Write a fresh `CODE_REVIEW.md` at the current `git_sha`, stating what was
-     diffed against the source Job; a copied review is stale and blocks.
+  3. Write a fresh `CODE_REVIEW.md`, stating what was diffed against the source
+     Job; a copied review says nothing about the new Job's code.
   4. Check config binding (above) for every worker the new Runs use.
   5. Pick the dataset's Fn version. Reuse the old one while the SourceFn's
      `ProcName_to_ProcDf` shape is unchanged; otherwise name a new one

@@ -54,8 +54,8 @@ Before launch:
 
 - confirm config and Ticket stems match;
 - confirm all declared input paths resolve;
-- confirm `CODE_REVIEW.md` is current for the checked-out code, unless the
-  explicit skip flag is present;
+- confirm `CODE_REVIEW.md` exists and its verdict is `pass` (or `warn`), unless
+  the explicit skip flag is present;
 - confirm the Result path belongs to this `<task>/<run>` identity.
 
 Execute the exact Ticket. New Tickets check that no contract file (Ticket,

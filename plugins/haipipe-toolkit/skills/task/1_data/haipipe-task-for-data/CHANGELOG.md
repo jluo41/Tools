@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.9.0] - 2026-09-29 - Reviews carry no commit id (JL 260929)
+
+- A new Job writes a fresh `CODE_REVIEW.md` without a commit id; a copied review says nothing about the new code.
+
 ## [0.8.5] — 2026-09-25
 
 - AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).

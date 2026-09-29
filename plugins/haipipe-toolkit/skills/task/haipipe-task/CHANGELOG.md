@@ -1,3 +1,7 @@
+## 1.8.0 · 2026-09-29 · Reviews carry no commit id (JL 260929)
+
+- Review gate: `CODE_REVIEW.md` carries no `git_sha`; a Ticket checks only that the review exists and its verdict is pass or warn, so a commit never blocks a Run. The template drops the stale-review check; `fn/audit.md` drops `stale_review`; `fn/run.md` and authoring-conventions say so.
+
 ## 1.7.0 · 2026-09-29 · Heavy output in ProjectResult (JL 260929)
 
 - Artifact placement: a Run's heavy output goes to `HEAVY_DIR` = `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/` (Block and Job included because Task names repeat across Jobs); the Ticket writes `heavy.yaml` (path, bytes, sha256) into the Result; pipeline assets keep their stage stores. `run-sh-template.sh` exports `HEAVY_DIR` and writes the pointer. hierarchy.md and task-structure.md point to it.
