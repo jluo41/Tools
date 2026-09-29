@@ -92,7 +92,7 @@
     window.boardWorkbenches.register({
       id: 'outline',
       label: '📃 Page',
-      hint: 'Draft, Evidence, and Run spaces',
+      hint: 'Draft, Evidence, and Delivery spaces',
       menu: 'workbench',
       order: 10,
       /* Every page has prose, so unlike 📂 this applies flat or folded. */

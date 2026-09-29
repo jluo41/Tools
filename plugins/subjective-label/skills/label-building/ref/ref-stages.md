@@ -14,7 +14,7 @@ Workflow Definition: Run Specs + dependencies + allowed Routes + completion rule
   Building Run Specs [P0-P2 compatibility tags]
     corpus-contract → round-prepare → weak-prelabel* → human-calibration
       → guideline-learn → round-measure → round-close → handoff-freeze
-  immutable handoff-freeze Result (Label Handoff checksum)
+  immutable handoff-freeze Result (Label Handoff version)
   Scanning Run Specs [P3-P5 compatibility tags]
     test-gold-lock → executor-predict* → executor-score* → executor-select
       → scan-preflight → scan-shard* → risk-route → human-review → reconcile
@@ -98,7 +98,7 @@ Sessions resume per item. Unresolved is a workflow disposition, never `NONE`.
 
 The Checkpoint Keeper validates every batch disposition, human evidence,
 cumulative gold, policy changes, regression effects, audit/challenge separation,
-coverage, risk, checksums, and the next route.
+coverage, risk, file presence and counts, and the next route.
 
 `round-close` may Route to `handoff-freeze` only when quality, stability,
 coverage, acceptable risk, and human signoff all pass for the configured
@@ -112,7 +112,8 @@ signature, and materialize `handoff/label-v1.yaml`. Read
 `ref-label-handoff.md` for fields and invalidation.
 
 The handoff ends Building and is the only input authority Scanning may consume.
-It carries a protected-manifest checksum, never protected ids or text.
+It carries a protected-manifest reference and its sealed item count, never
+protected ids or text.
 
 ## 8. Test Run Specs (P3 tag)
 

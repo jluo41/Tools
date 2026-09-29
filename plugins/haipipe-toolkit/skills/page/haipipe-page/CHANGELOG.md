@@ -1,5 +1,40 @@
+## 0.121.0 · 2026-09-29 · Readable run names, flat runs/, records at the two ends (JL 260928)
+
+- Delivery Runs follow the readable grammar: `run-delivery-webpage` · `-latex` · `-word` (`run_names.delivery_name`), tickets in the flat `runs/`. `page.py run-names` keeps older numbered builds (`rdNN_<lane>`) as history and writes each built lane's Delivery Run ticket (`page_export.built_lanes`, `docx_author` keeps the last Word comment author). This SKILL documents the names (`run-<kind>-<MMDD>-<slug>`), `open-run` / `close-run` / `run-names`, and the flat `runs/`; `ref/page-run-families.md` is rewritten to the new names (the older short tokens are listed as still read).
+- `src/run_names.py`: one grammar, `run-<kind>-<MMDD>-<slug>` (kind in words: structure, section,
+  paragraph, scratch, revise, auto-write, evidence-embed, context, check, citation, value,
+  display; a taken name gets `-2`) and the fixed `run-delivery-webpage|latex|word`. Older names
+  (`rp-sec-07`, `re-value-07_x`, `pj06t11r01_x`, `rd01_latex`) keep reading through `kind_of`.
+- `src/run_lifecycle.py` + `page.py open-run` / `close-run`: a run writes its one ticket
+  (`runs/<name>.md`, `status: open`) when it opens and `results/<name>/`, the closed ticket and
+  one log line when it closes; in between only the Page's text changes. A Revise run's ticket
+  keeps the text before, so close writes the Before / After ledger.
+- `src/run_rename.py` + `page.py run-names <page> [--dry-run]`: renames a Page's runs once:
+  tickets move to the flat `runs/`, result folders follow, every mention inside the Page is
+  rewritten (not `delivery/`: rerun `page.py export`), short forms (`pj06t14r01`, `rp-para-14`)
+  follow when unambiguous, and a result without a ticket gets one. Trial on copies of
+  S-MISQ-Main-5-Results (46 runs) and S-MISQ-Main-1-Introduction (93): tickets and results pair
+  one to one; `page.py health` gives the same verdicts before and after.
+- `src/run_folders.py`: a readable name always sits in the flat `runs/`; its Space comes from
+  its kind (Context in Draft, Check in Delivery).
+
 ## 0.120.0 · 2026-09-28 · No content hashes (JL 260928)
 
+- `ref/page-run-families.md`: `rp-auto-NN_<target>` (Auto write, owner haipipe-page-writing) and `rp-embed-NN_<target>`
+  (Evidence embed, owner haipipe-page-evidence) get their rows; the RP kind tokens now list `revise`, `auto`, `embed`.
+  The Evidence Markdown path is `draft/<stem>-evidence-items.md` in this SKILL and `src/item_table.py`.
+- ✏️ Fast path at the top of this SKILL: a sentence change is "edit the Draft, `page.py adopt`,
+  `page.py export`" with nothing else loaded and no record typed (JL 260928 field test: one changed word
+  had cost about 20 files read and 5 hand-typed records). `## Content` is generated from the Draft, so a
+  sentence is always edited in the Draft. `page.py adopt` now writes the header line
+  `content: draft v<N> · adopted <yymmdd HHMM>` itself (`src/page_adopt.py::content_line`); `state:`
+  holds only the state word and open items.
+- `page.py export` writes each lane's one Delivery Run ticket, `runs/delivery-run/run_delivery_<lane>.sh` (`src/page_export.py::write_ticket`, placed by `src/run_folders.py`), holding the exact command; rerunning the ticket rebuilds the lane. `ref/page-run-families.md`, `ref/glossary.md`, `ref/release-decisions.md`, `fn/check-page-folder.md` and this SKILL describe RD as one fixed Run per lane (JL 260928). Tests: `tests/test_page_export.py`.
+- `page.py export <page>... [--lane web|latex|word|all] [--author]` (`src/page_export.py`): builds the
+  delivery with no server by running the Board server's own `ExportMixin.export_latex` / `export_word`
+  with the repository root, so a terminal build writes the same `.tex`, view pages and `.docx` parts a
+  click writes (checked on a scratch copy of S-MISQ-Main-7-Conclusion: only the `?t=` cache stamp
+  differs). Test: `tests/test_page_export.py`.
 - ⛔ Hard rule under the title (AGENTS.md rule 9): a version is its number and date; staleness is
   file time or `git diff`; no sha256 is written, checked, compared or pinned.
 - Intake: `page.toml` no longer records `input_sha256` (`src/page_workspace.py::create_page`);

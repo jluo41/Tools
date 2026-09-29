@@ -6,17 +6,21 @@ profile; interactive Pages reuse acceptance of the exact Structure/Writing
 versions and a recorded release instruction.
 
 
-The plan is `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`: what the page WILL say,
-agreed before it says it. This file is the grammar every plan obeys, and the
-one `checks/outline.py`, `src/plan_shape.py` and the 📃 Page tab parse. A Run Spec
+The plan is `<page>/draft/<stem>-draft-v<G>.<S>[.<E>].md` (Page skill 0.118; an
+unmigrated Page still has `outline/<stem>-outline-v…md`): what the page WILL say,
+agreed before it says it. On disk it has three sections, `## 1 · Structure`,
+`## 2 · Scratch` and `## 3 · Draft` (`haipipe-page` SKILL.md § The Draft
+Markdown); `src/plan_layout.py::to_canonical` folds them into the one grammar
+below, which `checks/outline.py`, `src/plan_shape.py` and the Page workbench
+parse, and `from_canonical` writes an edited plan back to the three sections. A Run Spec
 owner loads THIS file, not the workbench skill. The approved example is
 `ref/specimen-section-plan.md`.
 
 ## 1 · The head
 
 ```text
-# <stem> · outline v<G>.<S>[.<E>]
-outline-version: v<G>.<S>[.<E>]
+# <stem> · draft v<G>.<S>[.<E>]        # legacy: `· outline v…`
+draft-version: v<G>.<S>[.<E>]           # legacy: `outline-version:`
 supersedes: <previous exact version> | none
 shape-base: v<G>.<S>                    # required only when E > 0
 date: YYMMDD
@@ -118,15 +122,18 @@ continuation line, `Point:`, and the other fields follow unchanged:
 
 ### One current version; older ones in `previous/`
 
-`outline/` holds exactly one `<stem>-outline-v*.md`: the current plan.
+`draft/` holds exactly one `<stem>-draft-v*.md`: the current plan.
 Whoever writes a new version moves the superseded file into
-`outline/previous/` in the same step (`page.py outline-tidy <page>` does it,
-and never overwrites a file already there). Every reader resolves the current
-plan from `outline/` alone; a named older version is still found under
-`previous/` (`src/outline_version.py::find_version`), and path citations in
-records point at `outline/previous/<file>`. The six process records (context,
-requirement, discussion, feedback, files, log) live in `outline/records/`, so
-`outline/` itself shows only the current plan and the Evidence Item contract.
+`draft/previous/` in the same step, never overwriting a file already there.
+Every reader resolves the current plan from `draft/` alone
+(`src/outline_version.py::plan_dir`, which falls back to a legacy `outline/`);
+a named older version is still found under `previous/`
+(`src/outline_version.py::find_version`), and path citations in records point
+at `draft/previous/<file>`. The six process records (context, requirement,
+discussion, feedback, files, log) live in `draft/records/`, so `draft/` itself
+shows only the current plan and the Evidence Item contract. `page.py
+draft-layout <page>` moves a legacy Page there; `page.py outline-tidy` is the
+older command for a Page still on `outline/`.
 
 ### Reader-facing Point form
 

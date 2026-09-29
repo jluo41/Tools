@@ -79,9 +79,9 @@ Layout written by `engine/embedding_build.py build` (one folder per embedder):
 
 ```text
 {job_root}/cache/embeddings/<version>/
-├── manifest.json     model, encoder steps, input recipe, example, population, checksums
+├── manifest.json     model, encoder steps, input recipe, example, population, file list
 ├── vectors.npy       one length-1 row per development item
-├── rows.jsonl        row, item_id, text_hash, input_sha256, tokens, cut
+├── rows.jsonl        row, item_id, text_hash, tokens, cut
 ├── map.jsonl         item_id, x, y, group (t-SNE or PCA, for the Board map)
 ├── map3d.jsonl       item_id, x, y, z (the rotating 3D view)
 └── groups.json       k-means groups: size, keywords, silhouette by k
@@ -97,10 +97,12 @@ better than its keywords: keywords are words that lift a group's average, so a
 few items with a rare word can supply them while the centre of the group is
 about something else.
 
-Every vector or index row records corpus id, normalized-text checksum, model id and
-version, dimensionality, preprocessing version, creation time, and index row. Changing
-the model or preprocessing creates a new cache namespace; it does not silently rewrite
-the old one.
+Every vector or index row records its item id, its `text_hash` data column, and its
+index row. The manifest records model id and version, dimensionality, preprocessing
+version, and creation time. Changing the model or preprocessing creates a new cache
+namespace; it does not silently rewrite the old one. A version folder with its
+manifest is already built, so asking again is a no-op. That rebuild is refused when
+the embedded ids differ from the current eligible ids.
 
 ## 5. Configuration
 

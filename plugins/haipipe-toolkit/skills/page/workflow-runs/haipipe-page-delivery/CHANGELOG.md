@@ -1,5 +1,13 @@
-## 0.2.0 · 2026-09-28 · No content hashes (JL 260928)
+## 0.2.0 · 2026-09-28 · One fixed Run per lane, no hashes (JL 260928)
 
+- 260929: the fixed names are spelled `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word` (the Page Run naming grammar, `src/run_names.py`); tickets sit in the flat `runs/`.
+- One fixed Delivery Run per lane: `run_delivery_webpage`, `run_delivery_latex`, `run_delivery_word`
+  (JL 260928: "we just need one run, it can be run_delivery_webpage, no need for rd01_web, rd02_web").
+  A rebuild reruns the same Run through `page.py export`, which writes its ticket
+  `runs/run_delivery_<lane>.sh`. No `runtime.yaml`, no attempt number, no RD allocation; the Runs panel
+  shows `Done` while the lane is current and `Ready` when the Page changed. The "load
+  haipipe-page-workflow first" step is gone: a rebuild needs only this file. Older `rdNN_<lane>` Runs
+  stay as history.
 - No lane manifest (JL 260928: "just delete them, it breaks the flow"). No code ever wrote
   `delivery/<lane>/build-manifest.json`, so agents typed it by hand (AGENTS.md rule 6), and the
   Delivery Space no longer reads it. The built files and their times are the record; `runtime.yaml`

@@ -82,10 +82,15 @@ def test_undeclared_evidence_item_fails(tmp_path):
 
 
 def test_missing_header_lines_and_pushed_arc_warn(tmp_path):
-    header = "# Sample-Page · outline v1.1\noutline-version: v1.1\nnote: " + "x" * 1600 + "\narc: late\n"
-    report = folder_health(make(tmp_path, plan=header + BULLET))
+    # a long header is fine (run names grew, 260929); `arc:` below the first `## ` is not
+    long = "# Sample-Page · outline v1.1\noutline-version: v1.1\nnote: " + "x" * 1600 + "\narc: late\n"
+    report = folder_health(make(tmp_path, plan=long + BULLET))
     messages = " ".join(f["message"] for f in report["findings"] if f["check"] == "header")
-    assert "approved:" in messages and "status:" in messages and "1,500" in messages
+    assert "approved:" in messages and "status:" in messages and "arc:" not in messages
+    pushed = "# Sample-Page · outline v1.1\noutline-version: v1.1\n\n## Notes\narc: late\n"
+    report = folder_health(make(tmp_path / "second", plan=pushed + BULLET))
+    messages = " ".join(f["message"] for f in report["findings"] if f["check"] == "header")
+    assert "missing" in messages
 
 
 def test_stale_pending_header_warns_when_page_is_current(tmp_path):

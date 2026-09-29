@@ -253,8 +253,8 @@ and ready (`none` or a bound CITE, VALUE, or DISPLAY Result). Required
 Discovery, citation, figure, or computation work remains a Supporting Run
 feeding an RE and must be ready before the RP becomes complete. CONTENT begins
 only after every planned RP is complete and every required RE Result is bound;
-one Page-level CONTENT pass then adopts all accepted candidates and commissions
-the declared web/LaTeX/Word delivery through one or more `RD` Runs.
+one Page-level CONTENT pass then adopts all accepted candidates and reruns the
+declared web/LaTeX/Word lanes' fixed Delivery Runs (`run-delivery-<lane>`).
 
 SHAPE and SURVEY remain planning cycles inside the one `rp-struct-01`, not one
 Run each. They can be used inside this independently closable interactive Run.
@@ -363,7 +363,7 @@ projection of actual Run units. Controller operations are listed separately belo
 | rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | structure / SHAPE and writing / WRITE |
 | rp-revise-NN_<target> | page.interactive-writing.revise | compare two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) and settle every change | fresh agent / human, never the writer of the candidate | entry requires both inputs by path and version number; exit requires every ledger row decided | SELF / next Step, CLOSE / hand accepted text to the writing Run as NEW_VERSION, NEW_RUN, HOLD | 0..N per target | Run Space Revise card; Draft Space read-only | REVISE |
 | re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | evidence / LAND+EMBED |
-| rdNN_<target> | page.delivery | one declared web, LaTeX, Word, or render delivery target | agent / automatic | entry open; exit requires build receipt and current artifact | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | one per declared delivery target | delivery projection and build receipt | writing / WRITE |
+| run-delivery-<lane> | page.delivery | one lane (webpage, latex, word); one fixed Run per lane, rerun in place | agent / automatic | open any time; Done while the lane's files are at least as new as the Page | SELF (rerun), HOLD | one per lane, never numbered |
 
 ### Controller operations (outside the Run list)
 
@@ -390,7 +390,7 @@ SHAPE        inside shared rp-struct-01; it defines Bullet and Evidence Item con
 SURVEY       inside shared rp-struct-01; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then one Page RE per item
 EMBED        no Run; it interprets ready Results into the plan
-CONTENT      after the Page release barrier, adopts all agreed Writing Results and commissions RD delivery
+CONTENT      after the Page release barrier, adopts all agreed Writing Results and reruns the Delivery Runs
 CHECK        no Run; it is a version gate
 ```
 
@@ -427,7 +427,7 @@ global Supporting Run    b01j02t03r04
 Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
 Page Evidence lineage   re-cite-01_prior-work → owner-native Ticket/Result
-Page Delivery lineage   rd01_web | rd02_latex | rd03_word | rd04_render
+Page Delivery Run       run-delivery-webpage | run-delivery-latex | run-delivery-word (fixed)
 Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
 Delegated writing Task   r06_page-writing_c02-p01
@@ -436,17 +436,17 @@ Section-level writing    rp-sec-01 or rp-sec-02
 Paragraph-level writing  rp-para-01_P03 or rp-para-02_P04-P05
 ```
 
-SURVEY names the real owner/parent for every new local route. The Page's RE or
-RD is the stable Page-local lineage identity; any underlying owner-native
+SURVEY names the real owner/parent for every new local route. The Page's RE is
+the stable Page-local lineage identity; any underlying owner-native
 Ticket/Result keeps its own naming contract. A full address may be reserved
 only when that owner contract permits it; the route remains `new-run` with no
-Ticket. LAND allocates the owner-native Run id and records it under the RE/RD
+Ticket. LAND allocates the owner-native Run id and records it under the RE
 lineage. The interactive workflow creates
 the structure/Bullet Run first, then a Section-level or paragraph-level Page Run
 for each selected writing scope;
 CONTENT consumes its accepted output.
-Those allocations do not consume one another's counters: RP, RE, RD, and Task
-Run `rNN` sequences are independent. Task or Discovery identities are never
+Those allocations do not consume one another's counters: RP, RE, and Task
+Run `rNN` sequences are independent; a Delivery Run has no counter. Task or Discovery identities are never
 rewritten with an `rp`, `re`, or `rd` prefix.
 The single-paragraph delegated profile remains available when explicitly selected.
 

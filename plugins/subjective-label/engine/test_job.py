@@ -24,7 +24,6 @@ def write(path: Path, data: str | bytes) -> None:
 def source_job(root: Path) -> Path:
     src = root / "source"
     items = b'{"item_id":"dev-1","text":"A public development item"}\n'
-    checksum = job.sha256_bytes(items)
     write(
         src / "config.yaml",
         yaml.safe_dump(
@@ -42,8 +41,7 @@ def source_job(root: Path) -> Path:
     write(src / "corpus" / "items.jsonl", items)
     write(
         src / "corpus" / "manifest.json",
-        json.dumps({"n_items": 1, "n_eligible": 1, "n_sealed": 1,
-                    "items_checksum": checksum}) + "\n",
+        json.dumps({"n_items": 1, "n_eligible": 1, "n_sealed": 1}) + "\n",
     )
     protected = (json.dumps({"item_id": "sealed-1", "text_hash": job.sha256_bytes(b"reserved sealed item")}, sort_keys=True) + "\n").encode("utf-8")
     write(src / "test" / "sealed" / "manifest.protected.jsonl", protected)
@@ -57,7 +55,6 @@ def source_job(root: Path) -> Path:
                 "n_items": 1,
                 "frame": {"rule": "split == test"},
                 "access_policy": ["no development read, embed, index, or prelabel"],
-                "protected_manifest_checksum": "sha256:" + job.sha256_bytes(protected),
                 "simulation_only": True,
             }
         ) + "\n",
@@ -116,10 +113,7 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
     assert runtime["status"] == "complete"
     assert runtime["operation"] == "corpus-contract"
     assert runtime["ticket"] == f"runs/{run}.yaml"  # receipt paths are relative to the Page
-    assert runtime["inputs"] == [
-        {"path": "labeling/corpus/items.jsonl", "sha256": job.sha256_bytes(
-            (dest / "corpus/items.jsonl").read_bytes())}
-    ]
+    assert runtime["inputs"] == [{"path": "labeling/corpus/items.jsonl"}]
     assert runtime["started_at"] == "2026-09-01T00:00:00-04:00"
     assert runtime["finished_at"] == runtime["started_at"]
 
@@ -131,6 +125,11 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
         "meaning_confirmed": False,
         "meaning_receipt": None,
     }
+    written = b"".join(path.read_bytes() for path in dest.parent.rglob("*") if path.is_file()
+                       and path.name != "manifest.protected.jsonl" and path.name != "items.jsonl")
+    assert b"checksum" not in written and b"sha256" not in written  # no record pins a hash
+    assert yaml.safe_load((dest / "policy/versions/G_00/manifest.yaml").read_text())["components"] == list(
+        job.POLICY_COMPONENTS)
     state = job.status(dest)
     assert state["phase"] == "P0"
     assert state["p0_contract_integrity_valid"] is True
@@ -172,7 +171,7 @@ def test_create_contract_removes_inline_legacy_sealed_rows_before_page_copy(
     write(src / "test" / "sealed" / "manifest.protected.jsonl", protected)
     source_manifest = json.loads((src / "corpus" / "manifest.json").read_text())
     source_manifest.update({
-        "items_checksum": job.sha256_bytes(source_items),
+        "items_checksum": "sha256:legacy-source-value",  # a legacy field the import drops
         "n_items": 2,
         "n_eligible": 1,
         "n_sealed": 1,
@@ -183,7 +182,7 @@ def test_create_contract_removes_inline_legacy_sealed_rows_before_page_copy(
     sealed_status = job.load_mapping(src / "test" / "sealed" / "status.json")
     sealed_status.update({
         "n_items": 1,
-        "protected_manifest_checksum": "sha256:" + job.sha256_bytes(protected),
+        "protected_manifest_checksum": "sha256:legacy-source-value",
     })
     write(src / "test" / "sealed" / "status.json", job.json_bytes(sealed_status))
 
@@ -212,7 +211,8 @@ def test_create_contract_removes_inline_legacy_sealed_rows_before_page_copy(
     manifest = json.loads((dest / "corpus" / "manifest.json").read_text())
     assert manifest["n_items"] == manifest["n_eligible"] == 1
     assert manifest["n_sealed"] == 1
-    assert manifest["items_checksum"] == job.sha256_bytes(page_items)
+    assert "items_checksum" not in manifest
+    assert "protected_manifest_checksum" not in job.load_mapping(dest / "test" / "sealed" / "status.json")
     protected_rows = [json.loads(line) for line in
                       (dest / "test" / "sealed" / "manifest.protected.jsonl").read_text().splitlines()]
     assert protected_rows == [{
@@ -230,9 +230,6 @@ def test_create_contract_refuses_opaque_seal_without_resolvable_legacy_rows(
     src = source_job(tmp_path)
     opaque = b"opaque encrypted custody\n"
     write(src / "test" / "sealed" / "manifest.protected.jsonl", opaque)
-    sealed_status = job.load_mapping(src / "test" / "sealed" / "status.json")
-    sealed_status["protected_manifest_checksum"] = "sha256:" + job.sha256_bytes(opaque)
-    write(src / "test" / "sealed" / "status.json", job.json_bytes(sealed_status))
     page = page_file(tmp_path)
     dest = page.parent / "labeling"
     try:
@@ -268,7 +265,6 @@ def test_import_manifest_counts_external_sealed_and_excluded_rows(tmp_path: Path
     write(src / "test" / "sealed" / "manifest.protected.jsonl", protected)
     source_manifest = json.loads((src / "corpus" / "manifest.json").read_text())
     source_manifest.update({
-        "items_checksum": job.sha256_bytes(source_items),
         "n_items": 1,
         "n_eligible": 1,
         "n_sealed": 2,
@@ -278,10 +274,7 @@ def test_import_manifest_counts_external_sealed_and_excluded_rows(tmp_path: Path
     })
     write(src / "corpus" / "manifest.json", job.json_bytes(source_manifest))
     sealed_status = job.load_mapping(src / "test" / "sealed" / "status.json")
-    sealed_status.update({
-        "n_items": 2,
-        "protected_manifest_checksum": "sha256:" + job.sha256_bytes(protected),
-    })
+    sealed_status.update({"n_items": 2})
     write(src / "test" / "sealed" / "status.json", job.json_bytes(sealed_status))
 
     page = page_file(tmp_path)
@@ -313,7 +306,6 @@ def test_opaque_legacy_seal_rows_are_rebound_to_id_hash_custody(tmp_path: Path) 
     write(src / "corpus" / "items.jsonl", source_items)
     source_manifest = json.loads((src / "corpus" / "manifest.json").read_text())
     source_manifest.update({
-        "items_checksum": job.sha256_bytes(source_items),
         "n_items": 2,
         "n_eligible": 1,
         "n_sealed": 1,
@@ -325,10 +317,7 @@ def test_opaque_legacy_seal_rows_are_rebound_to_id_hash_custody(tmp_path: Path) 
     write(src / "test" / "sealed" / "manifest.enc-or-protected", opaque)
     (src / "test" / "sealed" / "manifest.protected.jsonl").unlink()
     sealed_status = job.load_mapping(src / "test" / "sealed" / "status.json")
-    sealed_status.update({
-        "n_items": 1,
-        "protected_manifest_checksum": "sha256:" + job.sha256_bytes(opaque),
-    })
+    sealed_status.update({"n_items": 1})
     write(src / "test" / "sealed" / "status.json", job.json_bytes(sealed_status))
 
     page = page_file(tmp_path)
@@ -359,7 +348,8 @@ def test_shipped_mini_fixture_is_a_valid_p0_source_fence() -> None:
     status = job.load_mapping(fixture / "test" / "sealed" / "status.json")
     protected = job.find_protected_manifest(fixture / "test" / "sealed")
 
-    job.validate_source_fence(status, job.sha256_file(protected))
+    assert protected.is_file()
+    job.validate_source_fence(status)
 
 
 def test_create_contract_refuses_changed_destination(tmp_path: Path) -> None:
@@ -383,7 +373,7 @@ def test_create_contract_refuses_changed_destination(tmp_path: Path) -> None:
         raise AssertionError("changed destination was overwritten")
 
 
-def test_status_rehashes_g0_and_requires_meaning_receipt(tmp_path: Path) -> None:
+def test_status_checks_content_and_requires_meaning_receipt(tmp_path: Path) -> None:
     src = source_job(tmp_path)
     page = page_file(tmp_path)
     dest = page.parent / "labeling"
@@ -400,18 +390,23 @@ def test_status_rehashes_g0_and_requires_meaning_receipt(tmp_path: Path) -> None
     cfg = yaml.safe_load((dest / "config.yaml").read_text())
     cfg["authority"]["meaning_confirmed"] = True
     write(dest / "config.yaml", yaml.safe_dump(cfg, sort_keys=False))
-    flipped = job.status(dest)
+    flipped = job.status(dest)  # a flag without a receipt confirms nothing
     assert flipped["phase"] == "P0"
     assert flipped["meaning_receipt_valid"] is False
-    assert flipped["first_blocked_frontier"] == "G0 · contract integrity"
-    assert "P0 authority checksum mismatch: config.yaml" in flipped["integrity_errors"]
+    assert flipped["g0_passed"] is False
+    assert flipped["first_blocked_frontier"] == "G0 · human meaning confirmation"
 
     items = dest / "corpus" / "items.jsonl"
-    write(items, items.read_bytes() + b'{"item_id":"tampered"}\n')
+    original = items.read_bytes()
+    write(items, original + b'{"item_id":"tampered","population_status":"eligible"}\n')
     tampered = job.status(dest)
     assert tampered["phase"] == "P0"
     assert tampered["p0_contract_integrity_valid"] is False
-    assert "corpus items checksum mismatch" in tampered["integrity_errors"]
+    assert ("corpus/items.jsonl has 2 rows but corpus/manifest.json says n_items 1"
+            in tampered["integrity_errors"])
+
+    write(items, original + b'{"tampered":true}\n')
+    assert "corpus/items.jsonl line 2 has no item_id" in job.status(dest)["integrity_errors"]
 
 
 def test_meaning_confirmation_requires_explicit_caller_attestation(tmp_path: Path) -> None:
@@ -463,10 +458,7 @@ def test_old_semantic_receipt_can_be_upgraded_with_explicit_attestation(tmp_path
     old_config = job.yaml_bytes(config)
     write(config_path, old_config)
     g0_path = dest / "gates" / "g0" / "receipt.json"
-    g0 = job.load_mapping(g0_path)
-    g0["meaning_receipt_checksum"] = job.canonical_hash(config["authority"]["meaning_receipt"])
-    g0["p0_artifact_checksums"]["config.yaml"] = job.sha256_bytes(old_config)
-    write(g0_path, job.json_bytes(g0))
+    g0_before = g0_path.read_bytes()
 
     old_state = job.status(dest)
     assert old_state["p0_contract_integrity_valid"] is True
@@ -479,7 +471,9 @@ def test_old_semantic_receipt_can_be_upgraded_with_explicit_attestation(tmp_path
         attest_as_human=True,
     )
     assert upgraded["phase"] == "P1"
-    assert (dest / "gates" / "g0" / "history" / f"{job.sha256_bytes(job.json_bytes(g0))}.json").is_file()
+    archived = list((dest / "gates" / "g0" / "history").glob("*.json"))
+    assert len(archived) == 1 and archived[0].read_bytes() == g0_before
+    assert archived[0].stem[:8].isdigit()  # named by the time it was retired, never by a hash
     assert job.status(dest)["g0_passed"] is True
 
 
@@ -506,7 +500,7 @@ def test_create_contract_requires_direct_matching_labeling_lane(tmp_path: Path) 
             raise AssertionError("noncanonical destination was accepted")
 
 
-def test_status_rehashes_each_p0_authority_artifact(tmp_path: Path) -> None:
+def test_status_requires_each_p0_file_to_parse_and_the_protected_manifest(tmp_path: Path) -> None:
     src = source_job(tmp_path)
     page = page_file(tmp_path)
     dest = page.parent / "labeling"
@@ -520,10 +514,57 @@ def test_status_rehashes_each_p0_authority_artifact(tmp_path: Path) -> None:
         created_at="2026-09-01",
     )
     register = dest / "register.md"
-    write(register, register.read_bytes() + b"tampered\n")
+    write(register, register.read_bytes() + b"a note\n")
+    assert job.status(dest)["p0_contract_integrity_valid"] is True  # an edit is not a hash break
+
+    protected = dest / "test" / "sealed" / "manifest.protected.jsonl"
+    kept = protected.read_bytes()
+    protected.unlink()
     state = job.status(dest)
     assert state["p0_contract_integrity_valid"] is False
-    assert "P0 authority checksum mismatch: register.md" in state["integrity_errors"]
+    assert any("exactly one opaque protected manifest" in e for e in state["integrity_errors"])
+    write(protected, kept)
+
+    manifest = dest / "corpus" / "manifest.json"
+    kept = manifest.read_bytes()
+    write(manifest, b"{not json")
+    state = job.status(dest)
+    assert state["p0_contract_integrity_valid"] is False
+    assert "unreadable manifest.json: JSONDecodeError" in state["integrity_errors"]
+    write(manifest, kept)
+
+    (dest / "policy" / "versions" / "G_00" / "gallery.md").unlink()
+    assert "G_00 component missing: gallery.md" in job.status(dest)["integrity_errors"]
+
+
+def test_an_unrecorded_edit_to_the_meanings_after_confirmation_fails_g0(tmp_path: Path) -> None:
+    src = source_job(tmp_path)
+    page = page_file(tmp_path)
+    dest = page.parent / "labeling"
+    job.create_contract(source_job=src, job_root=dest, page_file=page, job_id="real-job",
+                        target="authority_appeal", human_id="JL", created_at="2026-09-01")
+    job.confirm_meaning(job_root=dest, page_file=page, human_id="JL", confirmed_at="2026-09-01T12:00:00Z",
+                        accept_current_schema=True, attest_as_human=True)
+    assert job.status(dest)["g0_passed"] is True
+    receipt = job.load_mapping(dest / "config.yaml")["authority"]["meaning_receipt"]
+    assert receipt["bindings"]["construct"]["name"] == "authority_appeal"  # a content snapshot, no hash
+    assert receipt["bindings"]["policy_version"] == "G_00"
+
+    config = job.load_mapping(dest / "config.yaml")
+    config["labels"]["meanings"] = {"high": "edited by hand"}
+    write(dest / "config.yaml", job.yaml_bytes(config))
+    state = job.status(dest)
+    assert state["g0_passed"] is False
+    assert state["meaning_receipt_valid"] is False
+    assert state["p0_contract_integrity_valid"] is True
+    assert state["first_blocked_frontier"] == "G0 · human meaning confirmation"
+
+    again = job.confirm_meaning(job_root=dest, page_file=page, human_id="JL",
+                                confirmed_at="2026-09-02T12:00:00Z", accept_current_schema=True,
+                                attest_as_human=True)
+    assert "gates/g0/receipt.json" in again["updated_files"]
+    assert len(list((dest / "gates" / "g0" / "history").glob("*.json"))) == 1
+    assert job.status(dest)["g0_passed"] is True
 
 
 def test_confirm_binds_current_semantics_and_is_idempotent_despite_stale_phase(
@@ -614,9 +655,9 @@ def test_g0_gate_uses_semantic_predicates_and_distinguishes_pending_from_holds(
     else:
         raise AssertionError("unconfirmed G0 must block with a pending reason")
 
-    register = dest / "register.md"
-    original_register = register.read_bytes()
-    write(register, original_register + b"tampered\n")
+    protected = dest / "test" / "sealed" / "manifest.protected.jsonl"
+    original_protected = protected.read_bytes()
+    protected.unlink()
     integrity_hold = job.status(dest)
     assert integrity_hold["p0_contract_integrity_valid"] is False
     try:
@@ -625,7 +666,7 @@ def test_g0_gate_uses_semantic_predicates_and_distinguishes_pending_from_holds(
         assert "HOLD · G0 blocked by P0 contract integrity" in str(error)
     else:
         raise AssertionError("P0 integrity failure must hold dependent work")
-    write(register, original_register)
+    write(protected, original_protected)
 
     job.confirm_meaning(
         job_root=dest,
@@ -723,7 +764,10 @@ def test_status_requires_valid_g0_receipt_after_confirmation(tmp_path: Path) -> 
     write(g0_path, good)
     forged = json.loads(g0_path.read_text())
     forged["status"] = "failed"
-    forged["meaning_receipt_checksum"] = "0" * 64
+    write(g0_path, json.dumps(forged, indent=2, sort_keys=True) + "\n")
+    assert "G0 receipt is invalid or semantically unbound" in job.status(dest)["integrity_errors"]
+    forged["status"] = "passed"
+    forged["bindings"]["labels"] = {"values": ["other"]}  # a snapshot that is not the confirmed one
     write(g0_path, json.dumps(forged, indent=2, sort_keys=True) + "\n")
     invalid = job.status(dest)
     assert invalid["phase"] == "P0"

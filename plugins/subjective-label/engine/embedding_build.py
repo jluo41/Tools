@@ -6,9 +6,9 @@ development item (``population_status: eligible``) once, never a sealed item,
 and writes a versioned namespace:
 
     cache/embeddings/<version>/
-        manifest.json    model, encoder steps, preprocessing, example, population, map, groups, checksums
+        manifest.json    model, encoder steps, preprocessing, example, population, map, groups, files
         vectors.npy      float32, one L2-normalised row per development item
-        rows.jsonl       row, item_id, text_hash, input_sha256, tokens, cut
+        rows.jsonl       row, item_id, text_hash (the corpus data column), tokens, cut
         map.jsonl        item_id, x, y, group   (2D map for the Data Space)
         groups.json      k-means groups: size and keywords, no item text
 
@@ -21,7 +21,9 @@ not verify.  The embedder choice lives on the Run Ticket, so ``config.yaml``
 The person choosing the embedder picks from ``CATALOG`` (open-weight models that
 run locally through sentence-transformers); the Board's write door accepts only
 catalog ids and starts the build in the background.  Each model gets its own
-folder, so building one never changes another.
+folder, so building one never changes another.  A version folder with its
+manifest is built; asking again is a no-op.  No manifest or Run record carries a
+file hash (JL 260928).
 
 CLI
     build    --job-root <labeling> --started-by <person> [--model ID] [--groups K] [--seed 0] ...
@@ -442,8 +444,8 @@ def build(job_root: Path, *, model: str = DEFAULT_MODEL, device: str = "auto",
     version, out = preflight(job_root, model, settings)
     if (out / "manifest.json").is_file():
         existing = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
-        corpus_now = job.sha256_file(job_root / "corpus" / "items.jsonl")
-        if existing.get("population", {}).get("corpus_items_sha256") != corpus_now:
+        embedded = {str(row.get("item_id")) for row in cal._read_jsonl(out / "rows.jsonl")}
+        if embedded != set(cal._eligible_ids(job_root)):
             raise EmbeddingRefused(f"{version} was built from a different corpus; a changed corpus is a new job")
         return {"version": version, "run": existing.get("run"), "built": False, "manifest": existing}
     out.mkdir(parents=True, exist_ok=True)
@@ -503,8 +505,7 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
                                                           "dtype": entry.get("dtype") or "float32",
                                                           "in_catalog": bool(entry)},
                     "preprocessing": PREPROCESSING, "groups": GROUP_METHOD, "settings": settings},
-        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl"),
-                 "sha256": job.sha256_file(job_root / "corpus" / "items.jsonl")}],
+        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl")}],
         worker={"kind": "cli", "name": "subjective-label.engine.embedding_build:build"},
         acceptance="every eligible item embedded once; no sealed item read; no label written",
     )
@@ -542,10 +543,9 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
         raise
 
     np.save(out / "vectors.npy", vectors)
-    rows_out = [{"row": i, "item_id": str(r["item_id"]), "text_hash": r.get("text_hash"),
-                 "input_sha256": job.sha256_bytes(t.encode("utf-8")), "tokens": n,
+    rows_out = [{"row": i, "item_id": str(r["item_id"]), "text_hash": r.get("text_hash"), "tokens": n,
                  "cut": bool(max_tokens and n and n > max_tokens)}
-                for i, (r, t, n) in enumerate(zip(eligible, model_inputs, counts))]
+                for i, (r, n) in enumerate(zip(eligible, counts))]
     (out / "rows.jsonl").write_bytes(cal._jsonl_bytes(rows_out))
     map_rows = [{"item_id": str(r["item_id"]), "x": x, "y": y, "group": g}
                 for r, (x, y), g in zip(eligible, coords, group_of)]
@@ -574,20 +574,18 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
                     "items_cut": sum(1 for row in rows_out if row["cut"]),
                     "longest_tokens": max((n for n in counts if n), default=None)},
         "example": example,
-        "population": {"eligible_embedded": len(eligible), "sealed_excluded": n_sealed,
-                       "corpus_items_sha256": job.sha256_file(job_root / "corpus" / "items.jsonl")},
+        "population": {"eligible_embedded": len(eligible), "sealed_excluded": n_sealed},
         "index": {"kind": "numpy-flat", "metric": "cosine", "file": "vectors.npy", "rows": "rows.jsonl"},
         "map": {"method": settings["map"], "seed": seed, "file": "map.jsonl", "file_3d": MAP3D_FILE},
         "groups": {"method": GROUP_METHOD, "k": k, "seed": seed, "file": "groups.json"},
-        "files": [{"path": f, "sha256": job.sha256_file(out / f)} for f in files],
+        "files": [{"path": f} for f in files],
         "authority": "representation only; no label, region, or gold is written or implied",
     }
     job.write_once(out / "manifest.json", job.json_bytes(manifest))
     rel = f"cache/embeddings/{version}"
     cal._write_run(job_root, run, status="complete", started_at=started, finished_at=_now(),
                    outcome=f"{len(eligible)} items embedded ({n_sealed} held-back test items left out); {k} groups",
-                   artifacts=[{"path": job.page_path(job_root, f"{rel}/{f}"), "sha256": job.sha256_file(out / f)}
-                              for f in ["manifest.json", *files]],
+                   artifacts=[{"path": job.page_path(job_root, f"{rel}/{f}")} for f in ["manifest.json", *files]],
                    **ticket_common)
     return {"version": version, "run": run, "built": True, "manifest": manifest}
 

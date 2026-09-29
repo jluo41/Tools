@@ -105,12 +105,12 @@ def start(job_root: Path, *, human_id: str, channel: str = "claude chat") -> dic
         raise LabelingRefused("config.yaml names no labels to discuss")
     target = f"labels-v{len(_runs(job_root)) + 1}"
     run = cal._run_name(job_root, OPERATION, target)
-    before = job.yaml_bytes({"labels": values, "meanings": meanings, "config_sha256": job.sha256_file(config_path)})
+    before = job.yaml_bytes({"labels": values, "meanings": meanings})
     job.write_once(job.results_dir(job_root) / run / "before.yaml", before)
     cal._write_run(
         job_root, run, operation=OPERATION, phase="P0", episode="meaning", target=target,
-        commission={"path": job.page_path(job_root, "config.yaml"), "sha256": job.sha256_file(config_path)},
-        inputs=[{"path": f"results/{run}/before.yaml", "sha256": job.sha256_bytes(before)}],
+        commission={"path": job.page_path(job_root, "config.yaml")},
+        inputs=[{"path": f"results/{run}/before.yaml"}],
         worker={"kind": "human", "name": human_id, "surface": channel},
         acceptance=ACCEPTANCE, status="running", started_at=cal.now_iso(), finished_at=None,
         outcome="discussing", artifacts=[],
@@ -196,17 +196,16 @@ def close(job_root: Path, run: str, *, human_id: str, open_questions: list[str] 
     ledger = job.yaml_bytes({"run": run, "decided_by": human_id, "labels": rows, "open_questions": questions})
     job.write_once(folder / "ledger.yaml", ledger)
     changed = [r["label"] for r in rows if r["changed"]]
-    artifacts = [{"path": f"results/{run}/ledger.yaml", "sha256": job.sha256_bytes(ledger)}]
+    artifacts = [{"path": f"results/{run}/ledger.yaml"}]
     for name in ("turns.jsonl", "decisions.jsonl"):
         if (folder / name).is_file():
-            artifacts.append({"path": f"results/{run}/{name}", "sha256": job.sha256_file(folder / name)})
+            artifacts.append({"path": f"results/{run}/{name}"})
     revision = None
     if changed:
         revision = job.revise_meanings(job_root=job_root, human_id=human_id, run=run, revised_at=cal.now_iso(),
                                        meanings={r["label"]: r["after"] for r in rows})
-        artifacts.append({"path": job.page_path(job_root, revision["revision"]),
-                          "sha256": job.sha256_file(job_root / revision["revision"])})
-        artifacts.append({"path": job.page_path(job_root, "config.yaml"), "sha256": job.sha256_file(config_path)})
+        artifacts.append({"path": job.page_path(job_root, revision["revision"])})
+        artifacts.append({"path": job.page_path(job_root, "config.yaml")})
     runtime = _runtime(job_root, run)
     ticket = job.load_mapping(job.runs_dir(job_root) / f"{run}.yaml")
     outcome = (f"{len(changed)} of {len(rows)} meanings changed ({', '.join(changed)}); confirm the meaning again"

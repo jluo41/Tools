@@ -196,9 +196,10 @@ as pointers, because that section is the authority.
   Result/Card that may expose many `$V_xxx$`, `\figure{D_xxx}`,
   `\table{D_xxx}`, and `\cite{C_xxx}` Labels. `DISPLAY` uses
   `display_kind: table | figure | algorithm`.
-- **RD / Page Delivery Run** — one Page-local delivery target/version such as
-  web, LaTeX, Word, slides, or render. It records the artifact and build
-  receipt; Page CHECK still owns whole-Page close.
+- **RD / Page Delivery Run** — the one fixed Run of a delivery lane:
+  `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word`. Every
+  rebuild reruns it (`page.py export`); the lane's files are its result, with no
+  receipt. Page CHECK still owns whole-Page close.
 - **Page Run family** — the special Page prefixes `RP`, `RE`, and `RD`. They
   identify Page-local lineage and never rename a Supporting Run or a workflow
   Run receipt. `haipipe-page/ref/page-run-families.md`

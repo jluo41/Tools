@@ -41,7 +41,7 @@ and LM agreement are routing signals. They are not gold labels by themselves.
 Register every candidate route before test predictions are opened:
 
 - component model ids, versions, and families;
-- guideline and wrapper checksums;
+- guideline and wrapper versions;
 - decoding and repeat policy;
 - thresholds and combination rule;
 - abstention and human-escalation rule;

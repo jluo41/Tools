@@ -240,6 +240,13 @@ class WordTitleTest(unittest.TestCase):
             "Full Page Title: OLS, IV, and DID",
         )
 
+    def test_a_leading_page_id_is_not_printed_in_the_title(self):
+        page = self.root / "S-X-Main-7-Conclusion.md"
+        page.write_text("# S-X-Main-7-Conclusion · §7 Conclusion\n\n## Content\nText.\n", encoding="utf-8")
+        self.assertEqual(ExportMixin._page_title(None, page), "§7 Conclusion")
+        page.write_text("# S-X-Main-7-Conclusion\n", encoding="utf-8")
+        self.assertEqual(ExportMixin._page_title(None, page), "S-X-Main-7-Conclusion")
+
     def test_writer_has_a_real_title_style(self):
         writer = (
             Path(__file__).resolve().parents[4]

@@ -66,5 +66,5 @@ change prior gold or only an executor wrapper.
 - Do not merge representative audit estimates with enriched challenge counts.
 - Do not expose predictions before the human-first event.
 
-Return `HOLD` when seals, human-event links, arm membership, or policy checksums cannot be
+Return `HOLD` when seals, human-event links, arm membership, or policy versions cannot be
 verified.

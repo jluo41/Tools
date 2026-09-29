@@ -150,7 +150,7 @@ class LabelingSurfaceTest(unittest.TestCase):
         )
         self.assertNotIn(secret, body)
         self.assertNotIn("sealed-7", body)
-        self.assertIn("items in a round: in Labeling → Rounds once shown to you", body)
+        self.assertNotIn("items in a round: in Labeling → Rounds once shown to you", body)  # a hint, gone (v3)
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
         self.assertIn(">Studio Chat</a>", body)
@@ -173,10 +173,12 @@ class LabelingSurfaceTest(unittest.TestCase):
         order = [body.index('data-space=%s>' % sid) for sid in
                  ("data", "labeling", "quality", "delivery")]
         self.assertEqual(order, sorted(order))
-        for view in ("Contract", "Schema", "Embedding", "Discussion", "Label", "Rounds", "Guideline", "Test",
-                     "Evaluation", "Audit", "Handoff", "Final labels"):
+        # v5 (JL 260928): a view exists only because runs live in it
+        for view in ("Contract", "Embedding", "Definition", "Rounds", "Guideline", "Test",
+                     "Evaluation", "Audit", "Handoff", "Scan", "Final labels"):
             self.assertIn(">%s</button>" % view, body)
-        self.assertIn("<h2>Discussion</h2>", body)
+        for gone in (">Schema</button>", ">Discussion</button>", ">Label</button>"):
+            self.assertNotIn(gone, body)
         self.assertNotIn("One discussion may use several examples", body)  # v2: no helper sentences
         for gone in ("rlNN_discussion-calibration", "Run plan", "Example packet", "Current discussion",
                      "not implemented", "Copy chat prompt"):  # v4: no run plan, examples or placeholders
@@ -227,7 +229,7 @@ class LabelingSurfaceTest(unittest.TestCase):
         g6 = [row for row in state["gate_rows"] if row[0] == "G6"][0]
         self.assertFalse(g6[4], "the read-only surface must not certify G6")
 
-    def test_canonical_status_rehashes_the_real_job_before_reporting_frontier(self):
+    def test_canonical_status_checks_the_real_job_before_reporting_frontier(self):
         # the private job sits in the SPACE that links this Tools checkout; absolute(), not resolve(), keeps that link
         rel = "examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-1-acibench-authority/labeling"
         pwd = Path(os.environ.get("PWD") or Path.cwd())  # the shell's logical path keeps the SPACE → Tools link
@@ -244,7 +246,9 @@ class LabelingSurfaceTest(unittest.TestCase):
         items = self.job / "corpus" / "items.jsonl"
         items.write_bytes(items.read_bytes() + b'{"tampered":true}\n')
         tampered = inspect(self.page)
-        self.assertIn("corpus items checksum mismatch", tampered["canonical_integrity_errors"])
+        # no hash (AGENTS.md rule 9): a row with no item_id is caught by reading the rows
+        self.assertTrue(any("has no item_id" in e for e in tampered["canonical_integrity_errors"]),
+                        tampered["canonical_integrity_errors"])
         self.assertEqual(tampered["phase_i"], 0)
         self.assertIn("G0 Contract integrity", tampered["first_failed"])
 
@@ -644,7 +648,7 @@ class LabelingRoundDrawTest(unittest.TestCase):
         self.assertEqual(prompt.count("Next items:"), 0)  # every item has a first answer
         self.assertNotIn("Next items:", rounds)  # every item has a first answer
         self.assertNotIn("label-app", rounds)
-        self.assertNotIn("The reply to judge.", space["label"])  # Label holds definitions, no item text
+        self.assertNotIn("The reply to judge.", space["definition"])  # Definition holds meanings, no item text
         done = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": None},
                                 "canonical": {}, "embedding": None, "config": {}})["rounds"]
         self.assertIn("id=label-app", done)  # no round open: the start or done screen, then the cards
@@ -678,14 +682,12 @@ class LabelingRoundDrawTest(unittest.TestCase):
         vm = {"root": self.base.job, "cal": {"rounds": []}, "canonical": {},
               "embedding": None, "config": config, "runs": []}
         space = _labeling_space(vm)
-        label = space["label"]
+        label = space["definition"]
         for text in ("Label definitions", "How unsafe is the AI&#x27;s final response?", "clearly causes or helps harm",
                      "between high and low", "a little · somewhat · very unsure", "by JL, 16 Sep 2026, 3:13 pm"):
             self.assertIn(text, label)
         for gone in ("⧉", "data-copy", "Copy prompt to discuss here", "<th>Chat</th>"):
             self.assertNotIn(gone, label)
-        self.assertIn("How unsafe is the AI&#x27;s final response?", space["discussion"])
-        self.assertNotIn("data-copy", space["discussion"])
 
         prompt = _meaning_prompt(vm)
         for text in (
@@ -871,10 +873,11 @@ class LabelingReviewFixesTest(unittest.TestCase):
         ref = _space_mapping_ref()
         self.assertIsNotNone(ref)
         headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map")
-        self.assertEqual(headers[:4], ["compatibility tag", "Run type", "in words", "started by"])
+        self.assertEqual(headers[:5], ["step", "compatibility tag", "Run type", "in words", "started by"])
+        self.assertEqual([int(r[0]) for r in rows], list(range(1, 27)))  # rows in step order
         self.assertEqual(len(rows), 26)
         # the Run Space's plain words and the ref's `in words` column are one vocabulary
-        self.assertEqual({r[1].strip("`"): r[2] for r in rows}, _RUN_WORDS)
+        self.assertEqual({r[2].strip("`"): r[3] for r in rows}, _RUN_WORDS)
         vm = {"runs": [{"operation": "embedding-build"}, {"operation": "embedding-build"},
                        {"operation": "round-prepare"}], "canonical": {"phase": "P1"}}
         body = _workflow_map(vm)
@@ -893,7 +896,13 @@ class LabelingReviewFixesTest(unittest.TestCase):
         types = _run_types(vm)
         views = {t["op"]: (sid, t["views"]) for sid in types for t in types[sid]}
         self.assertEqual(views["embedding-build"], ("data", ["embedding"]))
-        self.assertEqual(views["corpus-contract"], ("data", ["contract", "schema"]))
+        self.assertEqual(views["corpus-contract"], ("data", ["contract"]))
+        self.assertEqual(views["definition-discussion"], ("labeling", ["definition"]))
+        skills = {t["op"]: t["skill"] for sid in types for t in types[sid]}
+        self.assertEqual(skills["corpus-contract"], "subjective-label-contract")
+        self.assertEqual(skills["definition-discussion"], "subjective-label-definition")
+        self.assertEqual(skills["human-calibration"], "subjective-label-rounds")
+        self.assertEqual([t["op"] for t in types["labeling"]][:2], ["definition-discussion", "round-prepare"])
         self.assertEqual(views["human-calibration"], ("labeling", ["rounds"]))
         self.assertEqual(len(types["data"][1]["runs"]) if types["data"][1]["op"] == "embedding-build" else 1, 1)
         self.assertNotIn("guideline-learn", views)  # not built yet: it stays in the Workflow map only
@@ -915,11 +924,11 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual([r["run"] for r in rows],
                          ["rl02_embedding-build_minilm", "rl03_round-prepare_round-01", "rl10_embedding-build_minilm"])
         self.assertEqual([r["name"] for r in rows],
-                         ["embedding-build-minilm", "round-prepare-round-01", "embedding-build-minilm-2"])
+                         ["run-embedding-build-minilm", "run-round-prepare-round-01", "run-embedding-build-minilm-2"])
         self.assertEqual(rows[2]["label"], "minilm-2")
         card = _run_card({"root": page / "labeling", "cal": {}}, rows[2])
         self.assertIn('data-name="minilm-2" data-target="minilm"', card)
-        self.assertIn('<b title="rl10_embedding-build_minilm">embedding-build-minilm-2</b>', card)
+        self.assertIn('<b title="rl10_embedding-build_minilm">run-embedding-build-minilm-2</b>', card)
         for hook in ("function runsWant(", "'labeling:run'", "runsWant('data',v)", "runsWant('labeling',d.dataset.target)"):
             self.assertIn(hook, _JS)
 

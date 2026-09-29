@@ -17,7 +17,7 @@ metadata:
 
 # /haipipe-page-writing · adopt agreed text and deliver one Page version
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every delivery artifact, and a `## Content` sentence whose Draft `## 3 · Draft` carries it (`cli/page.py adopt` writes it): change the Draft, the Page or the exporter, then rerun.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every delivery artifact, and `## Content` itself (`cli/page.py adopt` writes it from the Draft's `## 3 · Draft`): change the Draft or the exporter, then rerun. A one-sentence change is the haipipe-page fast path.
 
 > ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Result, receipt or runtime.yaml.
 
@@ -34,9 +34,9 @@ for profile precedence and reuse of existing human decisions.
 ## 🧭 Run Workflow placement
 
 CONTENT owns the Page release/adoption controller operation. It consumes closed
-writing Results and ready Evidence Results, then materializes the declared RD
-delivery Run Specs. Adoption and pre-check are controller actions; delivery
-builds belong to their commissioned RD Runs. The CONTENT compatibility label
+writing Results and ready Evidence Results, then reruns the declared lanes'
+fixed Delivery Runs (`page.py export`). Adoption and pre-check are controller
+actions; delivery builds belong to those Delivery Runs. The CONTENT compatibility label
 does not create an additional Run or a Step outside an owning Run.
 The Workflow Runtime and the independent CHECK completion gate decide whether
 the Page release can close.

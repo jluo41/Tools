@@ -12,7 +12,7 @@ description: >-
   implementing the labeling plugin, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
   version: "0.22.0"
-  last_updated: "2026-09-26"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-workbench-labeling · one job, one folder, one operated surface
@@ -39,13 +39,13 @@ all jobs   one card per Page that owns labeling/ · jobs that wait for you first
            click a card → the Page level below · "← All labeling jobs" comes back
 
 🏷 Page level · the title, the Space tabs (+ Studio Chat), then one Space
-Data       Contract · Schema · Embedding
-Labeling   Discussion · Label · Rounds · Guideline
+Data       Contract · Embedding
+Labeling   Definition · Rounds · Guideline
 Quality    Test · Evaluation · Audit
-Delivery   Handoff · Final labels
+Delivery   Handoff · Scan · Final labels
 Runs       the right side of every Space, at every width: the current view's Run types
-           with counts · the selected Run (Resume/Rerun, ▸ Prompt + Copy, Running process,
-           Results); ▸/◂ folds it to a strip
+           in step order · the selected Run (its view's one skill, Resume/Rerun, ▸ Prompt +
+           Copy, Running process, Results); ▸/◂ folds it to a strip
 drawers    ?drawer=workflow (Phases · SOP · Workflow map) · ?drawer=allruns; no button
 write      POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
            · build_embedding (catalog models only, runs in the background) · embedding_status (read)
@@ -88,7 +88,7 @@ adapter (`_board_pages`) and nothing else of the Board grammar, and the
 | level | where it opens | what it shows | writes |
 |---|---|---|---|
 | Board | the Board index, and the `S-Label-Dash` control Page | one card per Page whose `labeling/` has a `config.yaml`: target, question, data, step badge, progress, next step; Pages with no job listed below | none |
-| Page | any real job Page | the four Spaces and their Runs panels; label definitions in `Labeling → Label`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
+| Page | any real job Page | the four Spaces and their Runs panels; label definitions and Confirm meaning in `Labeling → Definition`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
 
 A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
 the Page level in the same pane. The Page header's `← All labeling jobs` link
@@ -118,7 +118,10 @@ opens the Board-level view instead.
 The surface uses one location word: **Space**. In this plugin, "Space" and
 "Workspace" are the same concept. There are four Spaces, in this order:
 `Data`, `Labeling`, `Quality`, `Delivery`. `Guideline` is a view inside
-`Labeling`, not a Space of its own. There is no Run Space and no page bar
+`Labeling`, not a Space of its own. A view exists only because Runs live in it
+(JL 260928): Schema merged into Contract, Discussion and Label into Definition,
+and Delivery gained Scan, so each of the 26 Run types sits in exactly one view.
+There is no Run Space and no page bar
 (v3, 260927, as the Page workbench): the page is its title, the Space tabs with
 `Studio Chat` at the end of the row, then one Space. Each Space is its content
 on the left and its Runs panel on the right at every width; the panel stays in
@@ -132,10 +135,12 @@ Workflow Routes.
 The page carries content and the controls that act on it, never hints, crumbs,
 status chips or explanation sentences (JL 260927: "as concise as possible").
 A Runs panel lists only the current view's Run types, from the Workflow map's
-`view` column, each with this job's count. Types the map marks `not built yet`
+`view` column, in its `step` order, each with this job's count. Types the map marks `not built yet`
 stay in the map only; a view with no type says `No runs yet.` Below the types
-sits the selected Run: its name (`human-calibration-round-01`, the file id on
-hover), its state, `Resume` (an open Run, same rlNN) or `Rerun` (a closed one,
+sits the selected Run: its name (`run-human-calibration-round-01`, the file id
+on hover), its state, a `Skill` line naming its view's one skill (from the
+`## View skills` table in `ref/ref-space-mapping.md`; JL 260929: a skill is never
+shared by two views), `Resume` (an open Run, same rlNN) or `Rerun` (a closed one,
 new rlNN), a folded `▸ Prompt` whose `Copy` works while folded, Running process
 and Results. `+ New Run` shows an open prompt for the selected type. Every button
 only copies a prompt; none starts a Run. `▸/◂` folds the panel to a thin strip,
@@ -147,22 +152,21 @@ Runs): showing a build in `Data → Embedding` selects that build's
 `Labeling → Rounds` selects its Run, and picking a round's Run opens and outlines
 that round. The link is the Run's `target` (the build version, `round-01`). A
 rerun on the same target keeps the older Run's plain name and counts up
-(`embedding-build-minilm`, then `embedding-build-minilm-2`), ordered by rlNN
+(`run-embedding-build-minilm`, then `run-embedding-build-minilm-2`), ordered by rlNN
 number. An empty slot stays blank: no `—`, no `not implemented · HOLD` line.
 
 Treat the map as the Run Type catalogue, not the job's Run inventory. Today it
 shows the friendly operation name/type, where its action or result belongs,
 the output path, and a per-type count. The Runs panels and `?drawer=allruns` are the actual inventory:
 one row per allocated Ticket with its runtime status and outcome. Do not infer
-a Run or status from the catalogue row or count. The current matrix does not
-render bounded target, owner/worker Skills, actor/prerequisites, or a link to a
-matching Ticket; `ref/ref-space-mapping.md` records this as a host-adapter
-gap, not as a capability the page already has.
+a Run or status from the catalogue row or count. Each Run card names its
+view's one skill; the matrix does not render bounded target,
+actor/prerequisites, or a link to a matching Ticket.
 
 The supported first-use path is: create the Page-local job in Studio Chat from
 a real Page and eligible source, name the target, semantic human, and
 sealed-test custodian (the human may also be the custodian), confirm meaning
-in Data → Contract as the configured human, optionally build an embedding,
+in Labeling → Definition as the configured human, optionally build an embedding,
 release round 1, and label that round using its copied prompt in Studio Chat.
 The current engine stops after round 1 is fully judged because
 `guideline-learn`, `round-measure`, and `round-close` have no workers.
@@ -244,7 +248,8 @@ write-door action. Chat may inspect and discuss; it cannot cross the gate.
   `test/sealed/status.json:custodian` in the current job. An imported
   `source_fence_attestation.source_custodian` is provenance only: it neither
   replaces that active owner nor independently triggers `HOLD` once the
-  destination reservation has a valid custodian and rehashes.
+  destination reservation has a valid custodian and its protected manifest is
+  present with the declared count.
 - A backward route appends invalidation and creates new lineage; no closed
   checkpoint, handoff, scorecard, production run, or audit is rewritten.
 
@@ -254,7 +259,7 @@ because its writer and its authority check exist end to end:
 
 | action | where it is pressed | engine call |
 |---|---|---|
-| `confirm_meaning` | `Data → Contract` · `Confirm meaning` | `job.confirm_meaning(..., attest_as_human=True, channel="board labeling screen")` |
+| `confirm_meaning` | `Labeling → Definition` · `Confirm meaning` | `job.confirm_meaning(..., attest_as_human=True, channel="board labeling screen")` |
 | `release_round` | `Labeling → Rounds` · `Start round 1` | `calibration.release_round` |
 | `open_item` | no page button since 260919; the chat calls the engine directly | `calibration.open_item` |
 | `first` | no page button since 260919; the chat calls the engine directly | `calibration.record_first` |
@@ -290,21 +295,18 @@ start work, each through its own checked door action.
 A new action ships only when its writer and authority check exist end to end.
 
 Prompts live only in the Runs panels (v4): `+ New Run` and `Resume` of
-`definition-discussion` (Labeling → Discussion and Label) and `Resume` of the
-open round's `human-calibration` Run copy text only. Labeling → Label shows the
-definitions with no copy button, and Labeling → Discussion shows each
-discussion's labels before and after (a changed wording in green, `kept`
-otherwise) and its open questions; picking a discussion Run in the panel shows
-that one. The round prompt currently includes the job folder, question
+`definition-discussion` (Labeling → Definition) and `Resume` of the open
+round's `human-calibration` Run copy text only. Labeling → Definition shows the
+definitions with no copy button, each discussion's labels before and after (a
+changed wording in green, `kept` otherwise) with its open questions, and then
+Confirm meaning; picking a discussion Run in the panel shows that one. The round prompt currently includes the job folder, question
 and label names, round progress, pending first answers, the next items, and
 the JUDGE-by-chat instructions. It does not start a Run or write a judgment;
 the chat must call the permitted calibration actions. Offer a copy control
 only when there is a concrete next interaction, such as continuing an open
 round. A richer per-Run prompt should also bind the Board/Folder/Page, target,
-Run Type, relevant Skills, prerequisite state, matching Ticket/status when
-one exists, and the next allowed action. The repository does not define
-canonical per-Run owner/worker Skill fields today, so the surface must not
-invent those identities.
+Run Type, its view skill, prerequisite state, matching Ticket/status when
+one exists, and the next allowed action.
 The current round prompt still lacks a stable Board/Folder/Page identity, the
 exact target field, the matching Ticket id/status, and an explicit
 prerequisite result, so it does not yet satisfy the full context-card

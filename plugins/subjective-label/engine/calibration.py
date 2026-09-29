@@ -8,8 +8,8 @@ things, in the order ``label-building-workflow`` gives them:
     PREPARE  a random development draw is frozen               rlNN_round-prepare_round-NN
     JUDGE    show → first → lock → reveal → final, per item    rlNN_human-calibration_round-NN
 
-Every judgment is an append-only, hash-chained event in
-``rounds/round_NN/sessions/events.jsonl``.  Nothing here promotes gold or a
+Every judgment is an append-only, sequence-numbered event in
+``rounds/round_NN/sessions/events.jsonl``; no record carries a content hash.  Nothing here promotes gold or a
 policy version: that is ``round-close`` and the Checkpoint Keeper.  A sealed
 item is never drawn, indexed, shown, or revealed.
 """
@@ -39,6 +39,8 @@ _SPEC.loader.exec_module(job)
 EVENT_KINDS = ("show", "first", "lock", "reveal", "final")
 CHANGE_TYPES = ("none", "correction", "clarification", "concept_revision", "unresolved")
 EVENTS_SCHEMA = "subjective-label-calibration-event/v1"
+EVENT_FIELDS = ("schema", "seq", "at", "run", "round_id", "item_id", "kind", "human_id", "session_id", "payload")
+CALIBRATION_ACCEPTANCE = "every batch row has a final event; the event log verifies"
 DEFAULT_BATCH = 20
 MAX_BATCH = 200
 
@@ -356,8 +358,7 @@ def release_round(
 
     drawn = random.Random(draw_seed).sample(pool, size)
     probability = size / len(pool)
-    policy_manifest = job_root / "policy" / "versions" / policy_version / "manifest.yaml"
-    items_checksum = job.sha256_file(job_root / "corpus" / "items.jsonl")
+    n_corpus_rows = len(_corpus_rows(job_root))
     candidate_rows = [
         {
             "round_id": round_dir_name(t), "item_id": item_id, "source_pool": "random",
@@ -382,22 +383,17 @@ def release_round(
         "schema": "subjective-label-round-manifest/v1",
         "round_id": round_dir_name(t),
         "policy_version": policy_version,
-        "policy_manifest_checksum": job.sha256_file(policy_manifest) if policy_manifest.is_file() else None,
-        "corpus_items_checksum": items_checksum,
         "development_pool_size": len(pool),
         "draw": {"method": "uniform-random", "n": size, "seed": draw_seed},
-        "candidate_pool_checksum": job.sha256_bytes(pool_bytes),
-        "human_batch_checksum": job.sha256_bytes(batch_bytes),
-        "card_checksum": job.sha256_bytes(card),
         "prelabels": "none (round 1 has no weak executors)",
     }
     evidence = (
         f"# {round_dir_name(t)} · evidence\n\n"
-        f"- policy {policy_version}: `{manifest['policy_manifest_checksum']}`\n"
-        f"- corpus items: `{items_checksum}`\n"
+        f"- policy: {policy_version}\n"
+        f"- corpus items: {n_corpus_rows} rows in corpus/items.jsonl\n"
         f"- development pool: {len(pool)} eligible items (sealed items excluded by population_status)\n"
         f"- prior gold D_00: empty\n"
-        f"- human batch: `{manifest['human_batch_checksum']}`\n"
+        f"- human batch: {size} items in human_batch.jsonl, seed {draw_seed}\n"
     ).encode("utf-8")
     prospect = (
         f"# {round_dir_name(t)} · prospect\n\n"
@@ -429,16 +425,25 @@ def release_round(
     _write_run(
         job_root, run,
         operation="round-prepare", phase="P1", episode=round_dir_name(t), target=round_target(t),
-        commission={"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/card.md"), "sha256": job.sha256_bytes(card)},
-        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl"), "sha256": items_checksum}],
+        commission={"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/card.md")},
+        inputs=[{"path": job.page_path(job_root, "corpus/items.jsonl")}],
         worker={"kind": "engine", "name": "subjective-label.engine.calibration:release_round"},
         acceptance="batch frozen with seed and inclusion probability before any show event",
         status="complete", started_at=released_at, finished_at=now_iso(),
         outcome=f"{size} items drawn from {len(pool)} eligible",
-        artifacts=[{"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/{rel}"),
-                    "sha256": job.sha256_file(round_path / rel)} for rel in rels],
+        artifacts=[{"path": job.page_path(job_root, f"rounds/{round_dir_name(t)}/{rel}")} for rel in rels],
     )
     return {"round_id": round_dir_name(t), "run": run, "batch_size": size, "pool": len(pool)}
+
+
+def _write_once_mapping(path: Path, value: dict) -> None:
+    """Write one immutable YAML record; an existing one must hold the same values (any formatting)."""
+    if path.is_file() and not path.is_symlink():
+        existing = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if existing == value:
+            return
+        raise RuntimeError(f"refusing to overwrite changed artifact: {path}")
+    job.write_once(path, job.yaml_bytes(value))
 
 
 def _write_run(job_root: Path, run: str, *, operation: str, phase: str, episode: str,
@@ -451,7 +456,7 @@ def _write_run(job_root: Path, run: str, *, operation: str, phase: str, episode:
         "commission": commission, "inputs": inputs, "worker": worker,
         "acceptance": acceptance, "supersedes": None,
     }
-    job.write_once(job.runs_dir(job_root) / f"{run}.yaml", job.yaml_bytes(ticket))
+    _write_once_mapping(job.runs_dir(job_root) / f"{run}.yaml", ticket)
     runtime = {
         "run": run, "family": "labeling", "operation": operation, "target": target,
         "status": status, "ticket": f"runs/{run}.yaml", "result": f"results/{run}/result.yaml",
@@ -467,7 +472,7 @@ def _write_run(job_root: Path, run: str, *, operation: str, phase: str, episode:
             "outcome": outcome, "artifacts": artifacts,
             "promotion": {"performed": False, "reason": "only round-close promotes gold and policy"},
         }
-        job.write_once(job.results_dir(job_root) / run / "result.yaml", job.yaml_bytes(result))
+        _write_once_mapping(job.results_dir(job_root) / run / "result.yaml", result)
 
 
 # ── JUDGE ────────────────────────────────────────────────────────────────────
@@ -494,12 +499,10 @@ def _ensure_calibration_run(job_root: Path, round_path: Path, human_id: str) -> 
     _write_run(
         job_root, run,
         operation="human-calibration", phase="P1", episode=round_path.name, target=round_target(t),
-        commission={"path": job.page_path(job_root, f"rounds/{round_path.name}/human_batch.jsonl"),
-                    "sha256": job.sha256_file(round_path / "human_batch.jsonl")},
-        inputs=[{"path": job.page_path(job_root, f"rounds/{round_path.name}/manifest.yaml"),
-                 "sha256": job.sha256_file(round_path / "manifest.yaml")}],
+        commission={"path": job.page_path(job_root, f"rounds/{round_path.name}/human_batch.jsonl")},
+        inputs=[{"path": job.page_path(job_root, f"rounds/{round_path.name}/manifest.yaml")}],
         worker={"kind": "human", "name": human_id, "surface": "labeling screen"},
-        acceptance="every batch row has a final event; human_final.jsonl rehashes",
+        acceptance=CALIBRATION_ACCEPTANCE,
         status="running", started_at=started, finished_at=None,
         outcome="judging", artifacts=[],
     )
@@ -509,33 +512,56 @@ def _ensure_calibration_run(job_root: Path, round_path: Path, human_id: str) -> 
 def _append_event(round_path: Path, event: dict) -> dict:
     path = round_path / "sessions" / "events.jsonl"
     existing = _read_jsonl(path)
-    prev = existing[-1]["checksum"] if existing else None
     record = {
         "schema": EVENTS_SCHEMA,
         "seq": len(existing) + 1,
         "at": now_iso(),
-        "prev_checksum": prev,
         **event,
     }
-    record["checksum"] = job.canonical_hash({k: v for k, v in record.items() if k != "checksum"})
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, sort_keys=True, ensure_ascii=False) + "\n")
     return record
 
 
+# The kind an item must already have before each event kind may be recorded.
+EVENT_REQUIRES = {"first": "show", "lock": "first", "reveal": "lock", "final": "reveal"}
+
+
 def verify_events(round_path: Path) -> list[str]:
-    """Rehash the chain; return every defect."""
+    """Check the event log by content; return every defect.
+
+    Sequence numbers run 1, 2, 3 with no gap; every event carries the required
+    fields and a known kind; per item, first follows show, lock follows first,
+    reveal follows lock, final follows reveal, and first and final happen once.
+    A lock names its first event by ``first_seq``.  Legacy ``checksum`` and
+    ``prev_checksum`` fields, if present, are ignored.
+    """
     errors = []
-    prev = None
+    kinds_by_item: dict[str, list[str]] = {}
+    first_seq_by_item: dict[str, int] = {}
     for index, record in enumerate(_events(round_path), start=1):
-        body = {k: v for k, v in record.items() if k != "checksum"}
         if record.get("seq") != index:
             errors.append(f"event {index}: sequence gap")
-        if record.get("prev_checksum") != prev:
-            errors.append(f"event {index}: broken chain")
-        if job.canonical_hash(body) != record.get("checksum"):
-            errors.append(f"event {index}: checksum mismatch")
-        prev = record.get("checksum")
+        absent = [field for field in EVENT_FIELDS if field not in record]
+        if absent:
+            errors.append(f"event {index}: missing {', '.join(absent)}")
+            continue
+        kind, item_id = record.get("kind"), str(record.get("item_id"))
+        if kind not in EVENT_KINDS:
+            errors.append(f"event {index}: unknown kind {kind!r}")
+            continue
+        seen = kinds_by_item.setdefault(item_id, [])
+        needed = EVENT_REQUIRES.get(kind)
+        if needed and needed not in seen:
+            errors.append(f"event {index}: {kind} for item {item_id} before any {needed}")
+        if kind in {"first", "final"} and kind in seen:
+            errors.append(f"event {index}: second {kind} for item {item_id}")
+        payload = record.get("payload") if isinstance(record.get("payload"), dict) else {}
+        if kind == "first":
+            first_seq_by_item[item_id] = record.get("seq")
+        if kind == "lock" and "first_seq" in payload and payload["first_seq"] != first_seq_by_item.get(item_id):
+            errors.append(f"event {index}: lock does not name item {item_id}'s first event")
+        seen.append(kind)
     return errors
 
 
@@ -631,7 +657,7 @@ def record_first(job_root: Path, round_id: str, item_id: str, *, human_id: str, 
         first = _append_event(round_path, {**base, "kind": "first",
                                            "payload": {**judgment, "prelabels_visible": False}})
         _append_event(round_path, {**base, "kind": "lock",
-                                   "payload": {"first_checksum": first["checksum"]}})
+                                   "payload": {"first_seq": first["seq"]}})
         comparison = reveal_for(job_root, config, item_id)
         _append_event(round_path, {**base, "kind": "reveal", "payload": comparison})
     return {"first": judgment, "reveal": comparison}
@@ -724,9 +750,8 @@ def _close_calibration(job_root: Path, round_path: Path, batch: list[dict], stat
             "round_id": round_path.name,
             "human_id": final["human_id"],
             "policy_version": policy_version,
-            "first_pass": {"timestamp": first["at"], **{k: v for k, v in first["payload"].items()},
-                           "checksum": first["checksum"]},
-            "final": {"timestamp": final["at"], **final["payload"], "checksum": final["checksum"]},
+            "first_pass": {"timestamp": first["at"], **first["payload"], "seq": first["seq"]},
+            "final": {"timestamp": final["at"], **final["payload"], "seq": final["seq"]},
             "prelabel_comparison": {},
             "reference_comparison": (entry.get("reveal") or {}).get("payload", {}),
             "backward_impact_ids": [],
@@ -738,19 +763,19 @@ def _close_calibration(job_root: Path, round_path: Path, batch: list[dict], stat
         text = readme.read_text(encoding="utf-8").replace("state: prepared", "state: judged")
         readme.write_text(text, encoding="utf-8")
     runtime = yaml.safe_load((job.results_dir(job_root) / run / "runtime.yaml").read_text(encoding="utf-8"))
+    ticket = yaml.safe_load((job.runs_dir(job_root) / f"{run}.yaml").read_text(encoding="utf-8"))
     _write_run(
         job_root, run,
         operation="human-calibration", phase="P1", episode=round_path.name,
         target=round_target(_round_index(round_path.name)),
-        commission=yaml.safe_load((job.runs_dir(job_root) / f"{run}.yaml").read_text())["commission"],
-        inputs=runtime["inputs"], worker=runtime["worker"],
-        acceptance="every batch row has a final event; human_final.jsonl rehashes",
+        commission=ticket["commission"],
+        inputs=ticket["inputs"], worker=ticket["worker"],
+        acceptance=ticket.get("acceptance") or CALIBRATION_ACCEPTANCE,  # the Ticket's own words, as written
         status="complete", started_at=runtime["started_at"], finished_at=now_iso(),
         outcome=f"{len(rows)} items judged",
         artifacts=[
-            {"path": job.page_path(job_root, f"rounds/{round_path.name}/human_final.jsonl"), "sha256": job.sha256_bytes(data)},
-            {"path": job.page_path(job_root, f"rounds/{round_path.name}/sessions/events.jsonl"),
-             "sha256": job.sha256_file(round_path / "sessions" / "events.jsonl")},
+            {"path": job.page_path(job_root, f"rounds/{round_path.name}/human_final.jsonl")},
+            {"path": job.page_path(job_root, f"rounds/{round_path.name}/sessions/events.jsonl")},
         ],
     )
     return run
@@ -777,6 +802,7 @@ def _reference_index(job_root: Path, ref: dict) -> dict:
     # Read the source once, then key and build the index from the same bytes.
     # Size and mtime are not content identities: an in-place replacement can
     # preserve both and otherwise replay a stale reveal into an immutable event.
+    # The hash below only names the cache file; it is never written to a record.
     source_bytes = source.read_bytes()
     corpus_path = job_root / "corpus" / "items.jsonl"
     corpus_bytes = corpus_path.read_bytes() if corpus_path.is_file() else b""
@@ -827,7 +853,7 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     state = sub.add_parser("state", help="derive rounds without writing")
     state.add_argument("--job-root", type=Path, required=True)
-    verify = sub.add_parser("verify", help="rehash one round's event chain")
+    verify = sub.add_parser("verify", help="check one round's event log")
     verify.add_argument("--job-root", type=Path, required=True)
     verify.add_argument("--round", required=True)
     args = parser.parse_args()

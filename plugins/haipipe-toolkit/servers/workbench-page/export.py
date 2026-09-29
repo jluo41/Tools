@@ -46,7 +46,8 @@ from src.page_evidence import (current_display_results,
                                display_result_requires_unit,
                                cited_display_labels,
                                _result_document)
-from src.evidence_selection import selected_results, legacy_profile, EvidenceSelectionError
+from src.evidence_selection import (selected_results, legacy_profile, EvidenceSelectionError,
+                                    draft_delivery, page_head, pending_items)
 
 # The writers are shared by the Word and LaTeX Page workbenches. They live beside
 # those contracts rather than inside a consumer family such as Paper.
@@ -140,11 +141,17 @@ class ExportMixin:
             d = d.parent
 
     def _page_title(self, page_src):
-        """Read the canonical Markdown H1; exports must not lose page identity."""
+        """The reader's title, from the canonical Markdown H1.
+
+        A leading page id (`S-MISQ-Main-7-Conclusion · §7 Conclusion`) is process
+        text in a file a person receives (JL 260928), so the title prints what follows
+        it (`§7 Conclusion`); the file name still carries the page id."""
         for line in page_src.read_text(encoding="utf-8", errors="replace").splitlines():
             match = re.match(r"^#\s+(.+?)\s*$", line)
             if match:
-                return match.group(1)
+                title = match.group(1)
+                rest = re.match(r"^%s\s*(?:·|—|–|:|-)\s*(\S.*)$" % re.escape(page_src.stem), title)
+                return rest.group(1) if rest else title
         return page_src.stem
 
     def _page_units(self, page_src):
@@ -336,15 +343,47 @@ class ExportMixin:
                 if key in entries and entries[key].strip() != entry.strip():
                     raise EvidenceSelectionError(f"Selected CITE Results conflict on bibliography key {key}")
                 entries[key] = entry
-        if not entries:
+        verified = None
+        if entries:
+            target = out_dir / "selected-bibliography"
+            target.mkdir(exist_ok=True)
+            verified = target / (page_src.stem + ".bib")
+            text = "\n\n".join(entries.values()) + "\n"
+            if not verified.is_file() or verified.read_text(encoding="utf-8") != text:
+                verified.write_text(text, encoding="utf-8")
+        return self._draft_bibliography(page_src, out_dir, entries) or verified
+
+    def _draft_bibliography(self, page_src, out_dir, verified):
+        """`delivery: draft` + `draft-bibliography: <bib>`: a Page at SHAPE cites before
+        its CITE Results are verified. The keys its Content cites that no verified CITE
+        Result supplies are copied, by exact key, from that person-written Bib into
+        `draft-bibliography/<page>.bib` beside the verified entries. It is never
+        `selected-bibliography/`, which stays verified-only; the receipt names it."""
+        target = out_dir / "draft-bibliography" / (page_src.stem + ".bib")
+        declared = page_head(page_src, "draft-bibliography")
+        if not (draft_delivery(page_src) and declared):
+            target.unlink(missing_ok=True)
             return None
-        target = out_dir / "selected-bibliography"
-        target.mkdir(exist_ok=True)
-        bib = target / (page_src.stem + ".bib")
-        text = "\n\n".join(entries.values()) + "\n"
-        if not bib.is_file() or bib.read_text(encoding="utf-8") != text:
-            bib.write_text(text, encoding="utf-8")
-        return bib
+        source = (page_src.parent / declared).resolve()
+        if not source.is_file():
+            raise EvidenceSelectionError(f"draft-bibliography not found: {declared}")
+        text = page_src.read_text(encoding="utf-8", errors="replace")
+        keys = []
+        for m in _CITE.finditer(text):
+            keys += [k.strip() for k in m.group(1).split(",") if k.strip() and k.strip() not in keys]
+        missing = [k for k in dict.fromkeys(keys) if k not in verified]
+        if not missing:
+            target.unlink(missing_ok=True)
+            return None
+        pool = self._bib_entries(source.read_text(encoding="utf-8", errors="replace"))
+        absent = [k for k in missing if k not in pool]
+        if absent:
+            raise EvidenceSelectionError(f"cited key(s) {', '.join(absent)} are not in {declared}")
+        target.parent.mkdir(exist_ok=True)
+        body = "\n\n".join(list(verified.values()) + [pool[k] for k in missing]) + "\n"
+        if not target.is_file() or target.read_text(encoding="utf-8") != body:
+            target.write_text(body, encoding="utf-8")
+        return target
 
     def _supporting_bibliography(self, manifest, document):
         """The entries an older CITE Result cites, each taken by its exact key from the
@@ -389,6 +428,16 @@ class ExportMixin:
             "results": [{"path": path.relative_to(page_src.parent).as_posix()}
                         for path in manifests],
         }
+        if draft_delivery(page_src):
+            # a DRAFT delivery says what it left out and where its unverified cites came from
+            record["delivery"] = "draft"
+            record["pending"] = pending_items(page_src)
+            draft_bib = out_dir / "draft-bibliography" / (page_src.stem + ".bib")
+            if draft_bib.is_file():
+                record["draft_bibliography"] = {
+                    "path": draft_bib.relative_to(page_src.parent).as_posix(),
+                    "from": page_head(page_src, "draft-bibliography"),
+                    "verified": False}
         (out_dir / "evidence-selection.json").write_text(
             json.dumps(record, indent=2) + "\n", encoding="utf-8")
 
@@ -706,11 +755,15 @@ document.getElementById('rebuild').onclick = function () {
         elif proot and legacy_profile(page_src):
             bibs = sorted(proot.glob("0-*.bib"))
             bib = bibs[0] if bibs else None
+        # The two rewrites below repair Markdown prose. A `content-format: latex`
+        # Page is already LaTeX: its `\texttt{scikit-learn}` names a library even
+        # when a bib key has the same spelling, so it keeps every character.
+        latex_source = page_head(page_src, "content-format").lower() == "latex"
         # md2tex leaves a handful of mid-paragraph **bold** runs unconverted
         # (found on QPw00: 5 of them printed literal asterisks). Convert them
         # here, OUTSIDE verbatim only, so fences keep their raw text.
         import re as _re
-        body = tex.read_text(encoding="utf-8")
+        body = "" if latex_source else tex.read_text(encoding="utf-8")
         parts = _re.split(r"(\\begin\{verbatim\}.*?\\end\{verbatim\})",
                           body, flags=_re.S)
         for _i in range(0, len(parts), 2):
@@ -730,7 +783,7 @@ document.getElementById('rebuild').onclick = function () {
         # (JL 260820, C4.P8.S2: "reference 为什么没有展现出来"): md2tex renders
         # `key` as \texttt{key}, so no \citep ever fired and bibtex printed
         # nothing. Convert exactly the keys the chosen .bib defines.
-        if bib:
+        if bib and not latex_source:
             import re as _re
             keys = _re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,",
                                bib.read_text(encoding="utf-8",
@@ -794,6 +847,15 @@ document.getElementById('rebuild').onclick = function () {
                 "[breakable,colback=black!4,colframe=black!25,"
                 "boxrule=0.4pt,arc=2pt,left=4pt,right=4pt,top=1pt,bottom=1pt]}",
                 "\\AfterEndEnvironment{verbatim}{\\end{tcolorbox}}"]
+        # `latex-preamble: <file>` in the Page head: packages and macros its LaTeX
+        # Content needs (a migrated manuscript's subcaption, cleveref, \keywords),
+        # read before natbib so the file may pass natbib its options.
+        preamble = page_head(page_src, "latex-preamble")
+        if preamble:
+            pre = (page_src.parent / preamble).resolve()
+            if not pre.is_file():
+                return None, "latex-preamble not found: %s" % preamble
+            head.append("\\input{%s}" % os.path.relpath(pre, out_dir).replace(os.sep, "/"))
         tail = []
         if bib:
             head.append("\\usepackage{natbib}")

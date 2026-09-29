@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-scratch
 description: >-
-  The Scratch Run of a Board Page (`rp-scratch-NN_<target>`): a person's rough
+  The Scratch Run of a Board Page (`run-scratch-<MMDD>-<target>`): a person's rough
   thinking for one Section (`C1`) or whole paragraph group (`C1.P1`), captured
   from Draft Space, saved as often as they like, and closed by a manually
   triggered Finish that asks the AI for a Summary. It edits no Draft prose
@@ -9,8 +9,8 @@ description: >-
   scratch note, rough thinking, finish scratch, scratch summary,
   /haipipe-page-scratch.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-22"
+  version: "0.2.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,11 +23,11 @@ itself is `../../../run/haipipe-run/SKILL.md`; the identity grammar is
 `../../haipipe-page/ref/page-run-families.md`.
 
 ```text
-identity   rp-scratch-NN_<target>       NN from 01 per kind · target C1 or C1.P1
-ticket     runs/rp-scratch-NN_<target>.md
-result     results/rp-scratch-NN_<target>/  working.md · runtime.yaml · v001.md
-surface    Draft Space, the small + at Section or paragraph-group scope
-           (haipipe-workbench-page); Run Space shows the card under Page Writing
+identity   run-scratch-<MMDD>-<target>  target C1 or C1.P1 (older: rp-scratch-NN_<target>)
+ticket     runs/run-scratch-<MMDD>-<target>.md, written at the first note
+result     results/run-scratch-<MMDD>-<target>/  working.md · runtime.yaml · v001.md, written at Finish
+surface    Draft Space › Scratch view: click a Section or paragraph heading
+           (haipipe-workbench-page); the Runs panel lists it under Scratch
 writer     the person, through the Draft Space Scratch editor; the AI writes
            only the closing Summary the person asked for
 ```
@@ -44,19 +44,21 @@ writer of the later Section or Paragraph Run, instead of living only in a chat.
 
 ## 🔁 How it runs
 
-1. **Open.** The person presses `+` at a Section or paragraph-group scope in
-   Draft Space. The server allocates the next `rp-scratch-NN_<target>`, writes
-   the ticket and the Result folder with `runtime.yaml`, `working.md`, and
-   `v001.md`, and returns the card. Scratch may open while `rp-struct-01` is
-   still being settled; it is the one Page Writing Run not gated on Structure.
-2. **Save.** Every Save appends the current note to the same Version journal
-   under `### Human scratch`. Save keeps the Run open and its status `Waiting`.
+Records only at the two ends (JL 260928):
+
+1. **Open.** The person clicks a Section or paragraph heading in the Scratch
+   view and types. The first note opens `run-scratch-<MMDD>-<c1-p2>`: one ticket
+   in `runs/`, nothing in `results/`. Scratch may open while the Structure run
+   is still being settled; it is the one Page Writing Run not gated on Structure.
+2. **Save.** Every autosave changes only the notes under the heading in
+   `## 2 · Scratch` of the Draft Markdown. The Runs panel shows the run Running.
 3. **Finish.** The person manually triggers Finish Scratch. The AI returns a
-   non-empty Summary of the notes, the Summary is written to the journal, and
-   the Run closes. A Finish with an empty Summary does not close the Run.
+   non-empty Summary; that is the close: `results/<run>/` (`v001.md` with the
+   notes and the Summary, `runtime.yaml`, `working.md`) and one log line. A
+   Finish with an empty Summary does not close the Run.
 
 A closed Scratch Run is immutable. A new thought about the same target is a
-new `rp-scratch-NN_<target>`, never a reopened Version.
+new `run-scratch-<MMDD>-<target>` (a second one the same day gets `-2`), never a reopened Version.
 
 ## 🔒 Boundaries
 

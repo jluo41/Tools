@@ -30,7 +30,7 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 | `structure.<page>` | Page Structure RP / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
 | `write.<page>.<scope>` | Page Writing RP / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
 | `evidence.<page>.<item>` | Page Evidence RE / Page evidence owner + selected worker | one VALUE/CITE/DISPLAY item; frozen Local Input and 0..N Supporting Results | agent or hybrid / make and verify typed Result | decided item + required inputs → accepted typed Result | EMBED control → dependent write/deliver; failure → repair or HOLD |
-| `deliver.<page>.<format>` | Page Delivery RD / `haipipe-workbench-page` | one released Page version and delivery target | agent / render one target | native release barrier → artifact/build receipt | Page CHECK control → compile dependency; failure → repair/HOLD |
+| `deliver.<page>.<format>` | Page Delivery Run `run-delivery-<lane>` / `haipipe-page-delivery` | one Page lane (web, LaTeX, Word) | agent / rerun the lane's fixed Run | the lane's files at least as new as the Page | Page CHECK control → compile dependency; failure → repair/HOLD |
 | `compile.<paper>.<build>` | `paper.compile` / `haipipe-paper-assemble` | exact compile-order, Section fragments/bindings, config/profile | agent / assemble one manuscript build | valid safe config + explicit build request → truthful manifest and declared outputs or failure | G4 evaluates readiness; feedback → response; build outcome → CLOSE |
 | `response.<round>` | `paper.response` / `haipipe-paper-round` | one frozen feedback batch/base build, ledger, checked returned versions | hybrid / compose one response package | named batch → covered concerns, frozen answer build and human response/close receipt | required repairs → affected owner Specs; incomplete → HOLD; G5 → CLOSE |
 
@@ -78,7 +78,7 @@ builds.
 Page RP/RE/RD use the current shared grammar. Paper judgments use the declared
 `ridea/rclaim/rtask/rnarra` profile and scoped human closure in
 [Paper naming](../../haipipe-paper/ref/run-naming.md#judgment-result-and-close-rule).
-Supporting Runs stay in Task/Discovery/other native stores. RE/RD lineage and
+Supporting Runs stay in Task/Discovery/other native stores. RE lineage and
 its native Ticket refer to the same work; index it once with aliases.
 
 A commissioned compile uses the neutral folder-local executable dialect:

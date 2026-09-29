@@ -296,7 +296,7 @@ def render_page(context):
                 setattr(grammar, key, value)
     query = urlencode({"path": "/", "file": context.source.name})
     workbenches = [
-        {"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces",
+        {"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Delivery spaces",
          "order": 10, "url": f"/_board/draft?{query}&lens=div"},
         {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page",
          "order": 40, "url": f"/_board/delivery?{query}"},

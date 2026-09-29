@@ -1,9 +1,11 @@
 """Revise view: one box per paragraph, pre-filled with its Draft, edited in place.
 
-Each Save maps the box's lines onto the paragraph's Bullets, writes the changed
-Draft fields into the selected Outline, and extends the paragraph's Revise Run
-with a change ledger Step that Run Space renders as red/green cards. Tokens
-guard against saving from a page rendered before someone else's edit.
+Each Save maps the box's lines onto the paragraph's Bullets and writes the changed
+Draft fields into the selected Outline. The first Save opens the paragraph's
+Revise run (one ticket keeping the text before); later Saves change only the
+Draft; close-run writes the change ledger the All-runs view draws as red/green
+cards (JL 260928: records at the two ends). Tokens guard against saving from a
+page rendered before someone else's edit.
 """
 import json
 import sys
@@ -16,6 +18,8 @@ from live.outline_revise import save_revise, split_sentences, box_text
 from live.runs import local_runs, _page_writing_subspace
 from live.runs import render as render_runs
 from src.plan_shape import iter_plan_bullets
+from src.run_lifecycle import close_run
+import re
 
 PLAN = '''# Plan
 approved: ✅
@@ -79,7 +83,8 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     page = page_fixture(tmp_path)
     result, err = save_revise(page, payload(page, 'C1.P1', 'First draft, sharpened.\nSecond draft.', why='Sharper claim.'))
     assert err is None, err
-    assert result['run'] == 'rp-revise-01_C1.P1' and result['step'] == 's001'
+    run = result['run']
+    assert re.fullmatch(r'run-revise-\d{4}-c1-p1', run) and result['name'] == run
     assert [c['address'] for c in result['changed']] == ['C1.P1.B1']
     assert result['text'] == 'First draft, sharpened.\n\nSecond draft.'
     drafts = read_drafts(page)
@@ -90,16 +95,24 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     # a saved Bullet is written Draft-first; an undrafted one keeps its point on the dash line
     assert '- B1 · First draft, sharpened.\n  Point: [Point] First point\n' in plan and 'approved: ✅' in plan
     assert '- B1 · [Point] Third point\n' in plan and 'Draft:' not in plan
-    ledger = (tmp_path / 'results' / 'rp-revise-01_C1.P1' / 'v001.md').read_text()
+    # while open: one ticket (with the text before), no results/ and no log line
+    ticket = (tmp_path / 'runs' / (run + '.md')).read_text()
+    assert 'status: open' in ticket and 'target: C1.P1' in ticket and 'C1.P1.B1 · First draft.' in ticket
+    assert not (tmp_path / 'results').exists()
+    rows = {row['run_id']: row for row in local_runs(page)}
+    assert rows[run]['status'] == 'Running'
+    assert _page_writing_subspace(rows[run]) == 'Revise'
+    # close: the ledger, the runtime and one log line
+    closed = close_run(page, run)
+    assert closed['changes'] == 1
+    ledger = (tmp_path / 'results' / run / 'v001.md').read_text()
     for needle in ('## Step s001', '#### Track changes', '##### R01 · wording', '###### Before\nFirst draft.\n',
                    '###### After\nFirst draft, sharpened.\n', '###### Why\nSharper claim.\n', '###### Decision\naccept\n'):
         assert needle in ledger, needle
-    runtime = (tmp_path / 'results' / 'rp-revise-01_C1.P1' / 'runtime.yaml').read_text()
-    assert 'mode: revise\n' in runtime and 'status: running\n' in runtime and 'target: C1.P1\n' in runtime
-    assert 'interaction: human-revise' in (tmp_path / 'runs' / 'rp-revise-01_C1.P1.md').read_text()
-    rows = {row['run_id']: row for row in local_runs(page)}
-    assert rows['rp-revise-01_C1.P1']['status'] == 'Running'
-    assert _page_writing_subspace(rows['rp-revise-01_C1.P1']) == 'Revise'
+    runtime = (tmp_path / 'results' / run / 'runtime.yaml').read_text()
+    assert 'mode: revise\n' in runtime and 'status: complete\n' in runtime and 'target: C1.P1\n' in runtime
+    assert 'status: closed' in (tmp_path / 'runs' / (run + '.md')).read_text()
+    assert run + ' closed' in (tmp_path / 'outline' / 'records' / 'Page-log.md').read_text()
     space = render_runs(page, '', '')
     assert 'Revise · C1.P1' in space and 'class=track-card' in space and '<b>Decision</b><br>accept' in space
 
@@ -108,16 +121,21 @@ def test_extra_lines_join_the_last_bullet_and_missing_lines_clear(tmp_path):
     page = page_fixture(tmp_path)
     result, err = save_revise(page, payload(page, 'C1.P1', 'One.\nTwo.\nThree.'))
     assert err is None and [c['address'] for c in result['changed']] == ['C1.P1.B1', 'C1.P1.B2']
+    first = result['run']
     assert read_drafts(page)['C1.P1.B2']['text'] == 'Two. Three.'
     result, err = save_revise(page, payload(page, 'C1.P1', 'Only one now.'))
     assert err is None and read_drafts(page)['C1.P1.B1']['text'] == 'Only one now.'
+    assert result['run'] == first                     # the open run continues
     assert 'C1.P1.B2' not in read_drafts(page)
-    ledger = (tmp_path / 'results' / 'rp-revise-01_C1.P1' / 'v001.md').read_text()
-    assert ledger.count('## Step s') == 2 and '##### R04 · deletion' in ledger and '###### After\n(removed)\n' in ledger
-    # a first sentence for an undrafted paragraph gets its own Run number and a first-draft card
+    close_run(page, first)
+    ledger = (tmp_path / 'results' / first / 'v001.md').read_text()
+    assert '###### Before\nFirst draft.\n\n###### After\nOnly one now.\n' in ledger
+    assert '##### R02 · deletion' in ledger and '###### After\n(removed)\n' in ledger
+    # a first sentence for an undrafted paragraph opens its own run and closes as a first draft
     result, err = save_revise(page, payload(page, 'C1.P2', 'A first sentence.'))
-    assert err is None and result['run'] == 'rp-revise-02_C1.P2'
-    assert '##### R01 · first draft' in (tmp_path / 'results' / 'rp-revise-02_C1.P2' / 'v001.md').read_text()
+    assert err is None and re.fullmatch(r'run-revise-\d{4}-c1-p2', result['run'])
+    close_run(page, result['run'])
+    assert '##### R01 · first draft' in (tmp_path / 'results' / result['run'] / 'v001.md').read_text()
 
 
 def test_stale_tokens_bad_payloads_and_no_op_saves(tmp_path):
@@ -134,7 +152,7 @@ def test_stale_tokens_bad_payloads_and_no_op_saves(tmp_path):
     assert 'prose' in err
     result, err = save_revise(page, payload(page, 'C1.P1', 'Moved on.\nSecond draft.'))
     assert err is None and result['changed'] == [] and result['run'] == ''
-    assert not (tmp_path / 'results' / 'rp-revise-02_C1.P1').exists()
+    assert not (tmp_path / 'results').exists()        # records wait for close
 
 
 def test_post_action_revise_reaches_save_and_edit_actions_point_at_the_view(tmp_path):
@@ -148,7 +166,7 @@ def test_post_action_revise_reaches_save_and_edit_actions_point_at_the_view(tmp_
 
     host = Host()
     body, err = host.plug_outline({'action': 'revise', **payload(page, 'C1.P1', 'Via POST.\nSecond draft.')})
-    assert err is None and body['run'] == 'rp-revise-01_C1.P1'
+    assert err is None and body['run'].startswith('run-revise-')
     assert read_drafts(page)['C1.P1.B1']['text'] == 'Via POST.'
     _, err = host.plug_outline({'action': 'edit-preview'})
     assert 'Revise view' in err
@@ -164,9 +182,10 @@ def test_box_starts_from_page_sentences_when_no_draft_exists(tmp_path):
     result, err = save_revise(page, same)
     assert err is None and result['changed'] == [] and result['text'] == 'Third point, already written on the Page.'
     result, err = save_revise(page, payload(page, 'C1.P2', 'Third point, rewritten on the Page.'))
-    assert err is None and result['run'] == 'rp-revise-01_C1.P2'
+    assert err is None and result['run'].startswith('run-revise-')
     assert read_drafts(page)['C1.P2.B1']['text'] == 'Third point, rewritten on the Page.'
-    ledger = (tmp_path / 'results' / 'rp-revise-01_C1.P2' / 'v001.md').read_text()
+    close_run(page, result['run'])
+    ledger = (tmp_path / 'results' / result['run'] / 'v001.md').read_text()
     assert '##### R01 · wording' in ledger
     assert '###### Before\nThird point, already written on the Page.\n' in ledger
     assert "the Page's own sentence where no Draft existed" in ledger

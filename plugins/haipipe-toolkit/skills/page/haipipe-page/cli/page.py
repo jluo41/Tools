@@ -158,6 +158,34 @@ def main(argv=None):
     adopt.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     adopt.add_argument("--plan", type=Path, help="Draft Markdown to adopt (default: the current one)")
     adopt.add_argument("--dry-run", action="store_true", help="Print the diff; write nothing")
+    export = commands.add_parser(
+        "export",
+        help="Build the Page's delivery (web, LaTeX, Word) with no server, the same files a click writes",
+    )
+    export.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
+    export.add_argument("--lane", choices=("web", "latex", "word", "all"), default="all")
+    export.add_argument("--author", help='Name on the Word comments (papers: "Junjie Luo")')
+    export.add_argument("--root", type=Path,
+                        help="Root the view links assume (default: the repository root, as the Board server)")
+    open_run = commands.add_parser(
+        "open-run", help="Open a Page Run: write its one ticket, runs/run-<kind>-<MMDD>-<slug>.md")
+    open_run.add_argument("page", type=Path)
+    open_run.add_argument("--kind", required=True, help="structure, section, paragraph, scratch, revise, "
+                          "auto-write, evidence-embed, context, check, citation, value or display")
+    open_run.add_argument("--slug", default="", help="two to four words; default: the target or the goal")
+    open_run.add_argument("--target", default="", help="C1, C1.P2, or an Evidence Item id")
+    open_run.add_argument("--goal", default="")
+    open_run.add_argument("--by", default="", help="who opened it (JL, Claude, Codex)")
+    close_run = commands.add_parser(
+        "close-run", help="Close a Page Run: write results/<run>/, mark the ticket closed, log one line")
+    close_run.add_argument("page", type=Path)
+    close_run.add_argument("run")
+    close_run.add_argument("--summary", default="")
+    close_run.add_argument("--by", default="")
+    run_names_cmd = commands.add_parser(
+        "run-names", help="Rename a Page's runs to run-<kind>-<MMDD>-<slug> in a flat runs/, once")
+    run_names_cmd.add_argument("pages", type=Path, nargs="+")
+    run_names_cmd.add_argument("--dry-run", action="store_true", help="Print old → new; change nothing")
     for command in ("inspect", "build", "serve"):
         sub = commands.add_parser(command)
         sub.add_argument("page", type=Path)
@@ -272,6 +300,40 @@ def main(argv=None):
             reports = [run(page, plan=args.plan, dry_run=args.dry_run) for page in args.pages]
             print("\n\n".join(render(report) for report in reports))
             if any(report["refused"] for report in reports):
+                sys.exit(1)
+            return
+        elif args.command == "open-run":
+            from src.run_lifecycle import open_run as _open
+            print(json.dumps(_open(args.page, args.kind, args.slug, target=args.target, goal=args.goal,
+                                   by=args.by), indent=2))
+            return
+        elif args.command == "close-run":
+            from src.run_lifecycle import close_run as _close
+            print(json.dumps(_close(args.page, args.run, summary=args.summary, by=args.by), indent=2))
+            return
+        elif args.command == "run-names":
+            from src.run_rename import apply as _rename, render as _render_rename
+            print("\n\n".join(_render_rename(_rename(page, dry_run=args.dry_run)) for page in args.pages))
+            return
+        elif args.command == "export":
+            from src.page_export import export, write_ticket
+            lanes = ("web", "latex", "word") if args.lane == "all" else (args.lane,)
+            failed = False
+            for page in args.pages:
+                context = load_page(page)
+                for lane in lanes:
+                    write_ticket(context.folder, lane, args.author)
+                results = {}
+                if "web" in lanes:
+                    results["web"] = {"ok": True, "out": str(build_page(context, None))}
+                rest = [lane for lane in lanes if lane != "web"]
+                if rest:
+                    results.update(export(context.folder, rest, author=args.author, root=args.root))
+                failed = failed or not all(r["ok"] for r in results.values())
+                for lane, r in results.items():
+                    shown = r.get("err") or r.get("pdf") or r.get("docx") or r.get("out") or r.get("url")
+                    print("%s %-5s %s  %s" % ("✅" if r["ok"] else "❌", lane, context.source.stem, shown))
+            if failed:
                 sys.exit(1)
             return
         elif args.command == "migrate-drafts":

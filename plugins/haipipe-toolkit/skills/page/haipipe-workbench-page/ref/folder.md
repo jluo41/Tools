@@ -17,13 +17,13 @@ A status has no artifact: written to disk it starts aging the moment it lands, a
 
 ## ⚖️ The one law · staleness is claimed narrowly
 
-Only a DERIVED lane — `delivery/latex` `delivery/word` `outline/evidence/bibex`
+Only a DERIVED lane — `delivery/latex` `delivery/word` `draft/evidence/bibex`
 `delivery/slide` and the legacy `outline/evidence/display` migration folder —
 can be ⚠️ STALE, exactly when its newest file predates the page's `.md`.
 Current Page DISPLAY units live under typed `results/<re-run>/payload/<unit>/`
-and appear in Outline's Evidence Space; their render and human-acceptance gates
+and appear in the workbench's Evidence Space; their render and human-acceptance gates
 follow the DISPLAY Result contract, not this retired folder row.
-Current source material (`studio/draw` `studio/chat` `outline/skill`) is often
+Current source material (`studio/draw` `studio/chat` `draft/skill`) is often
 older than the prose and that is HEALTHY: it gets an age, never a warning. An
 existing Page-local `meeting/` is shown the same way only as legacy input;
 new meeting records belong to `haipipe-project-meeting` at project/SPACE scope.
@@ -31,7 +31,7 @@ Widening the flag to source folders would train readers to ignore it, which is t
 
 ## 📡 Surface · explicit lanes, live on every open
 
-The 📂 tab follows 📤 Delivery in the applicable workbench registry. Run Space is inside Outline. This keeps
+The 📂 tab follows the 📃 Page workbench in the applicable workbench registry. This keeps
 the paper workflow first and the supporting inventory afterward; an explicit
 registry `order` makes the sequence independent of asset filenames. Folder
 still tells a reader "no deck" from "deck built, tab unopened".
@@ -39,8 +39,9 @@ It applies only to a FOLDED page (`<stem>/<stem>.md`); a flat page has no folder
 `GET /_board/folderstat?path=…&file=…` renders one row per material lane — icon
 · exact path · file count and weight · newest age · state (⚠️ STALE / ✅ fresh
 / source material) — plus a ⬜ not-present line for categories the folder lacks.
-`outline/` counts only the process files it directly owns; `outline/skill/`
-and each existing `outline/evidence/<lane>/` are separate rows. Delivery likewise shows
+The plan folder (`draft/`, or `outline/` on a legacy Page) counts only the
+process files it directly owns; its `skill/` and each existing `evidence/<lane>/`
+are separate rows. Delivery likewise shows
 `delivery/latex/`, `delivery/word/`, `delivery/slide/`, and `delivery/render/`.
 No aggregate parent row recursively double-counts the files shown beneath it.
 A row is a door, not just a gauge (JL 260816): clicking it unfolds the folder in place, ▸ turning ▾, and every file is a link that opens the served file itself in a new browser tab, so the status view is also the folder's browser.

@@ -185,7 +185,7 @@ otherwise it remains a Gate/Step in the owning Run.
 
 - RP: fixed-scope human-feedback Structure/Section/paragraph Runs;
 - RE: item-scoped VALUE/CITE/DISPLAY evidence Runs;
-- RD: target-scoped delivery Runs.
+- RD: one fixed delivery Run per lane (`run-delivery-<lane>`), rerun in place.
 
 The Workflow Runtime may coordinate them but never renames, duplicates, or
 recounts them. A Task/Discovery Supporting Run keeps its native identity.

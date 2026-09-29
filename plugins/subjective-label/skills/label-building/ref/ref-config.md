@@ -3,9 +3,9 @@
 `config.yaml` contains tunable and declared project choices plus the immutable
 P0 authority binding. It does not contain observed scores, mutable artifact
 pointers, or per-item decisions. The `authority.meaning_receipt` written at G0
-is a deliberately bound semantic receipt: the canonical `gates/g0/receipt.json`
-rehashes it and closes the gate. It is not a general runtime cache and must
-never be edited in place. The stored `human_id` and caller attestation are not
+is a content snapshot of what the human confirmed. The canonical
+`gates/g0/receipt.json` must match it by value, and together they close the
+gate. It is not a general runtime cache and must never be edited in place. The stored `human_id` and caller attestation are not
 authenticated identity evidence; the CLI and local Board currently have no
 identity provider. Do not treat this receipt as proof of who acted in a
 multi-user or adversarial environment.
@@ -175,15 +175,16 @@ These fields carry the words a person reads. The engine reads them as follows:
 
 | field | read by | shown as |
 |---|---|---|
-| `construct.question` | Board Labeling surface · `engine/fence_source.py` | the one question on `Data → Contract` and at the top of `Labeling → Label` (the label definitions); near the top of the G_00 guideline |
-| `labels.meanings` | Board · `fence_source.py` | a map from each value in `labels.values` to one sentence; shown on `Data → Contract`, under each class button, and in the G_00 guideline |
-| `regions.meanings` | Board · `fence_source.py` | a map from each region to a short phrase; shown on `Data → Contract` before confirmation, as hover text on the boundary buttons, and in the G_00 guideline |
-| `uncertainty.meaning` | Board · `fence_source.py` | one sentence on `Data → Contract` and in the G_00 guideline |
+| `construct.question` | Board Labeling surface · `engine/fence_source.py` | the one question at the top of `Labeling → Definition` (the label definitions); near the top of the G_00 guideline |
+| `labels.meanings` | Board · `fence_source.py` | a map from each value in `labels.values` to one sentence; shown in `Labeling → Definition`, under each class button, and in the G_00 guideline |
+| `regions.meanings` | Board · `fence_source.py` | a map from each region to a short phrase; shown in `Labeling → Definition` before confirmation, as hover text on the boundary buttons, and in the G_00 guideline |
+| `uncertainty.meaning` | Board · `fence_source.py` | one sentence in `Labeling → Definition` and in the G_00 guideline |
 | `corpus.context_field` | Board · `engine/calibration.py` | the earlier turns shown above the item text (default `context_prev`) |
 
-The G0 meaning receipt binds the whole `construct`, `labels`, `regions`, and
-`uncertainty` blocks by checksum. Changing any meaning after G0 breaks that
-receipt: `status` reports an integrity error and the compatibility tag is P0;
+The G0 meaning receipt stores a snapshot of the whole `construct`, `labels`,
+`regions`, and `uncertainty` blocks, plus the unresolved disposition and the
+policy version (`G_00`). `status` compares that snapshot field by field to
+`config.yaml`. Changing any meaning after G0 breaks that receipt: `status` reports an integrity error and the compatibility tag is P0;
 the Workflow still resolves its Run frontier from the declared graph and
 receipts.
 
@@ -252,7 +253,7 @@ Diagnostic enrichment is reported separately from the representative headline sa
   "schema_version": "subjective-label/state-v3",
   "building_frontier": "Contract | Round | Freeze | HOLD",
   "scanning_frontier": "not-runnable | Test | Scan | Audit | complete | HOLD",
-  "handoff_checksum": null,
+  "handoff_version": null,
   "open_round": "round-02",
   "round_step": "prepare | judge | learn | close",
   "closed_policy": "G_1",
@@ -263,7 +264,7 @@ Diagnostic enrichment is reported separately from the representative headline sa
 }
 ```
 
-State points to immutable artifacts by id or checksum and does not duplicate
+State points to immutable artifacts by id or version and does not duplicate
 their contents. The current adapter may expose `phase`/P0-P5 as a compatibility
 projection from domain receipts; when this cache disagrees, the receipts win.
 That projection is not the Workflow frontier or routing authority. Resolve the

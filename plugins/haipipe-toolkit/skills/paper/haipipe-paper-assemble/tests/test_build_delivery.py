@@ -602,3 +602,66 @@ def test_one_build_at_a_time_per_delivery_folder(paper):
         pass
     assert m.lock_path().read_text() == ""
     assert not (m.HERE / ".build.lock").exists()             # nothing lands in the paper repo
+
+
+def _cover_module():
+    path = ENGINE.parent / "cover_letter.py"
+    spec = importlib.util.spec_from_file_location("cover_letter_under_test", path)
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return mod
+
+
+def test_cover_letter_lane_fills_facts_and_checks_the_words(tmp_path, monkeypatch):
+    """0.9.0 (JL 260929 "we should also have a delivery cover letter ... run-delivery-coverletter"): the words
+    come from the submission Round page (its draft until adopted), the facts from code, and every number in
+    the letter must be printed in the manuscript."""
+    cl = _cover_module()
+    root = tmp_path / "Paper-T"; here = root / "delivery"; here.mkdir(parents=True)
+    page_dir = root / "Bc-T-Round" / "RD02-T-submission-20260929"; (page_dir / "draft").mkdir(parents=True)
+    page = page_dir / "RD02-T-submission-20260929.md"
+    page.write_text("# RD02\n\n## Content\n\n### Cover letter\n<!-- words arrive after approval -->\n\n### 2 · Ledger\nnone\n")
+    words = ('We submit "{title}" as a {article_type} in {journal}.\n\n'
+             "Agreeableness is associated with 9.34 more MME, and 12.5 more elsewhere; it leads to more.\n\n"
+             "It is not under review elsewhere.\n")
+    (page_dir / "draft" / "RD02-T-submission-20260929-draft-v1.0.md").write_text("# d\n\n### Cover letter\n\n" + words)
+    monkeypatch.setattr(cl, "pdf_text", lambda p: "Table 3 prints 9.34 MME")
+    monkeypatch.setattr(cl, "pdf_pages", lambda p: 54 if p.name == "m.pdf" else None)
+    ran = []
+    fake = lambda cmd, **kw: ran.append(cmd) or type("R", (), {"returncode": 0})()
+    cfg = {"coverletter": {"round": "RD02", "journal": "MIS Quarterly", "article_type": "Research Article",
+                           "signatory": "A Author", "authors": ["A Author", "B Author"], "affiliation": "", "email": "",
+                           "must_mention": ["npj Digital Medicine"]}}
+    profile = {"page_cap": 55, "cover_letter_must_mention": ["MIS Quarterly", "not under review"]}
+    out = {"cover_letter_pdf": "cover-letter/c.pdf", "cover_letter_docx": "cover-letter/c.docx"}
+    rep = cl.build_cover_letter(cfg, profile, root, here, out, title="Physician Traits", main_pdf=here / "m.pdf",
+                                tables=5, figures=2, run=fake)
+    checks = {c["check"]: c for c in rep["checks"]}
+    assert rep["from"] == "draft" and not rep["ready"]
+    assert checks["numbers match the manuscript"]["detail"] == "12.5"        # 9.34 is in the manuscript, 12.5 is not
+    assert checks["required mentions"]["detail"] == "npj Digital Medicine"
+    assert "leads to" in checks["associational language"]["detail"]
+    assert checks["manuscript within the page cap"]["ok"] and checks["author block complete"]["detail"] == "affiliation, email"
+    tex = (here / "cover-letter" / "c.tex").read_text()
+    assert "``Physician Traits''" in tex and "{title}" not in tex and "Research Article in MIS Quarterly" in tex
+    assert ran and ran[0][0] == "latexmk"
+    from docx import Document
+    text = "\n".join(p.text for p in Document(here / "cover-letter" / "c.docx").paragraphs)
+    assert '"Physician Traits"' in text and "co-authors, B Author" in text and "{journal}" not in text
+    page.write_text(page.read_text().replace("<!-- words arrive after approval -->", words))
+    assert cl.build_cover_letter(cfg, profile, root, here, out, title="T", main_pdf=here / "m.pdf",
+                                 tables=5, figures=2, run=fake)["from"] == "content"
+
+
+def test_send_skips_switched_off_outputs_and_an_absent_supplement(paper, monkeypatch):
+    """0.9.0: `send RD02` refused a MISQ paper: it demanded the supplement a manuscript-with-appendices never
+    produces, and section_snapshots = "" resolved to delivery/ itself."""
+    m = paper
+    (m.HERE / "latex").mkdir(exist_ok=True); (m.HERE / "latex" / "main.pdf").write_bytes(b"%PDF")
+    (m.HERE / "build-manifest.json").write_text("{}"); (m.HERE / "display-register.md").write_text("r\n")
+    monkeypatch.setattr(m, "OUT", {"main_pdf": "latex/main.pdf", "section_snapshots": "",
+                                   "supplement_pdf": "latex/supp.pdf", "manifest": "build-manifest.json"})
+    monkeypatch.setattr(m, "PROFILE", {"appendices": "main"})
+    (m.ROOT / "Bc-T-Round" / "RD09-T-submission-20260929").mkdir(parents=True)
+    m.freeze("sent", "RD09")
+    sent = sorted(p.name for p in (m.ROOT / "Bc-T-Round" / "RD09-T-submission-20260929" / "sent").iterdir())
+    assert sent == ["build-manifest.json", "display-register.md", "main.pdf"]

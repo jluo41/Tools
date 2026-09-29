@@ -1,5 +1,6 @@
 ## 0.20.0 · 2026-09-28 · No content hashes (JL 260928)
 
+- CONTENT reruns the declared lanes' fixed Delivery Runs (`page.py export`) instead of commissioning numbered RD Runs (JL 260928).
 - `cli/promote_paragraph.py` writes and compares no sha256. Staleness is file time: the Page is
   stale when saved after the Run read it (`read_at` on the `page-source` input, else `started_at`).
   Idempotency and interrupted-write recovery compare the addressed paragraph's text.

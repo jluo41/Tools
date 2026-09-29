@@ -11,13 +11,13 @@ Spec bindings and the compile/response profiles.
 |---|---|---|---|
 | Page writing | exact Paper PageType + shared Page writing / `page` | `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]`; Page-native Ticket/Result | structure or bounded prose session; feedback is a Step |
 | Page Evidence | consuming Page's Evidence Item / `page` | `re-value-NN_<slug>`, `re-cite-NN_<slug>`, `re-display-NN_<slug>`; Page RE/native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
-| Page delivery | shared Page delivery owner / `page` | native RD target/version identity and paired receipt | generated Page artifact; does not authorize Page release |
+| Page delivery | shared Page delivery owner / `page` | one fixed Run per lane: `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word`; no receipt | generated Page artifact; does not authorize Page release |
 | Supporting work | Task, Discovery or other declared native owner | full native `rNN`, `rlNN`, or global Ticket/Result address | consumer-neutral computation or inquiry; never renamed for Paper |
 | Paper judgment | Paper Ideation/Story card owner / `paper` | declared judgment grammar below | one fixed idea, proposition, obligation or Section row |
 
 A Page Evidence worker can call Task or Display capabilities. That does not
 turn its local RE into a Task-owned Run. Independently commissioned Supporting
-work remains with its native owner and is a dependency. RE/RD lineage and the
+work remains with its native owner and is a dependency. RE lineage and the
 underlying native Ticket represent one execution and must not be counted twice.
 A local Evidence Result cannot satisfy a human RP writing prerequisite.
 
@@ -25,8 +25,8 @@ A local Evidence Result cannot satisfy a human RP writing prerequisite.
 
 `Ba-<desk>-Main`, `Bb-<desk>-Appendix` and `Bc-<desk>-Round` are shelves.
 Use `paper_lane: main | appendix | round` and the full semantic `page:` beside
-the Run's native identity. `RD<NN>` is a feedback Round Page identifier, not the
-Page Delivery family `rdNN_<target>`. Story/Section/Round Pages are persistent
+the Run's native identity. `RD<NN>` is a feedback Round Page identifier, not a
+Page Delivery Run (`run-delivery-<lane>`). Story/Section/Round Pages are persistent
 containers, not extra Run families or Run-number allocation authorities.
 
 An example Page-local Evidence receipt projection is:

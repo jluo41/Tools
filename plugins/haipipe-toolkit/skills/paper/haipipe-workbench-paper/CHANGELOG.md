@@ -1,7 +1,40 @@
 # CHANGELOG · haipipe-workbench-paper
 
+## 0.9.0 · 2026-09-29 · The cover letter in Delivery; the Roadmap tree
+
+- An opened T or D question shows its BJTR folders first, already open (JL 260929: "I want to make the bjtr be the most important things"); the row's own text (design, contrast, result form, branches, depends on, feeds) folds under a closed Details line; the Task home rows that repeated the folders are gone.
+- Delivery gains a fourth tab, Cover letter (JL 260929: the cover letter is one more delivery item). It
+  reads `build-manifest.json` `cover_letter`, which haipipe-paper-assemble 0.9.0's run-delivery-coverletter
+  writes from the submission Round page's Cover letter division: Preview shows the letter PDF, Artifacts
+  its files, Checks each letter check and whether it is ready, with Open ↗ to the Round page. The fixed
+  run run-delivery-coverletter shows under the `paper.coverletter` card (views cover). The letter no
+  longer repeats in the LaTeX and Word tabs.
+- Story › Roadmap is a tree when the Story has a C6 `Q` table: general question → its T and D rows (by
+  their `Q` column) → their folders; a row with no Q comes last; a range address such as
+  `b03.j02.t01–t03` names each task; selecting a Q filters the Runs panel to its runs.
+- New buttons with skills: Select idea (Ideation, haipipe-ideation-select), Page check (Sections,
+  haipipe-page-check).
+
+## 0.8.0 · 2026-09-28 · Question first; every run names its skill
+
+- Story › Roadmap is question first: a C7 T row or C6 D row card holds the folder that answers it;
+  folders no question names are listed last, down to the task. The separate Task home and Discovery
+  home lists are gone. `no address yet` reads `no folder yet`.
+- The Story's C6 and C7 rows lead with a short plain question and a folder column; B1–B4 became
+  T1–T4 (the header always said T; B was the old Block Board id).
+- Runs panel: every Paper run card has a `🧩 SKILL` line (`paper_run_types` reads it); Supporting
+  runs split into Task runs (haipipe-task) and Discovery runs (haipipe-discovery).
+- Sections › Evidence cards show the item's real state (`Result ready` when its Local Run Result
+  is on disk, instead of `contract only` on every card), type-first names (Evalue03) and its
+  Supporting Runs.
+- `studio/paper-workbench-design.py` now generates `studio/paper-workbench-design.excalidraw`
+  (AGENTS.md rule 6). Part 1 answers the main question: each Space, its sub-spaces, their runs in
+  order, and the skill of each run; it also draws the next step, Q1–Q5 general questions above T
+  and D, and a Delivery › Cover letter sub-space.
+
 ## 0.7.1 · 2026-09-28
 
+- `ref/space-mapping.md`: `deliver.<page>.<format>` reruns the lane's one fixed Delivery Run (`run_delivery_<lane>`); no receipt (JL 260928).
 - The Narrative card's Session row reads the Section Page's own `session:` and
   `codex-session:` lines (written by `/haipipe-paper sessions`) and joins a call-peer pair by
   that exact Claude session id, before the old exact-name lookup. It shows the pair name,

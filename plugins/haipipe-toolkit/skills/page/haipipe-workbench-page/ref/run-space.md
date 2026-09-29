@@ -1,9 +1,13 @@
-# Run Space · Outline's internal read-only Run presenter
+# Run Space · the All-runs view (`lens=run`)
+
+> Since Page 0.118 (JL 260927) the everyday run surface is the **Runs panel** on the right of
+> each Space (`../SKILL.md` § Runs panel). This older, fuller presenter has no button: it opens
+> at `lens=run` from a `?run=<exact run id>` link, and nothing else in the workbench depends on it.
 
 **LOAD `haipipe-workbench`, `../SKILL.md` (`haipipe-workbench-page`), and `haipipe-run`
 FIRST.** This reference is one lane contract of `haipipe-workbench-page`: the
 read-only Run Space presenter. It owns no folder and has no top-level Workbench
-registration. It is mounted inside `📃 Page` as Run Space. `/_board/runs`
+registration. It is mounted inside `📃 Page` at `lens=run`. `/_board/runs`
 remains a compatibility/internal route, not a separate Page tab.
 Result-first cards for Page Writing, Page Evidence, and Supporting Runs are
 projected from a Run Workflow Runtime and its Run Specs, including human
@@ -116,7 +120,7 @@ Never treat a Result folder as a fifth hierarchy level.
 For a paper/Board Page, keep the two questions visibly separate:
 
 ```text
-outline/<stem>-evidence-items.md      Evidence Item → Supporting Runs + Local Run contract
+draft/<stem>-evidence-items.md        Evidence Item → Supporting Runs + Local Run contract
                    authored pointers; may name zero-to-many external runs
 
 runs/             actual page-local Runs only
@@ -347,7 +351,7 @@ Their existence must not add a fourth area, subspace, or extra summary block.
 
 ```text
 STORAGE   none of its own; resolve authored/generated Run projections
-SURFACE   Outline → Run Space: Page Writing · Page Evidence · Supporting Runs
+SURFACE   📃 Page → lens=run: Page Writing · Page Evidence · Supporting Runs
 WRITER    person/chat authors tickets; the ticket writes its paired Result
   BOUNDARY  read-only presenter; no Run Workflow, lifecycle, evidence, or closure authority
 ```

@@ -105,6 +105,10 @@ def test_rewrite_reorder_add_and_cut_keep_apparatus_with_its_sentence(tmp_path):
     assert "Gamma" not in text and "smith2020" not in text
     assert text.endswith("## Aims\n- A1 · done when the Page prints the Draft\n")
     assert [f["level"] for f in sync(folder)] == ["OK"]
+    head = text.split("\n## ", 1)[0].split("\n")
+    assert head[head.index("state: DRAFT") + 1].startswith("content: draft v1.0 · adopted ")   # code keeps the record
+    run(folder)
+    assert sum(l.startswith("content:") for l in (folder / "Q1-demo.md").read_text(encoding="utf-8").split("\n")) == 1
 
 
 def test_a_paragraph_mismatch_is_refused_and_nothing_is_written(tmp_path):

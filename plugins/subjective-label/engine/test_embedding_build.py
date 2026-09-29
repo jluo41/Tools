@@ -43,18 +43,17 @@ def test_build_embeds_only_development_items_before_g0(tmp_path: Path) -> None:
     assert result["built"] is True and result["version"] == "tiny-model-v1"
     folder = root / "cache" / "embeddings" / "tiny-model-v1"
     manifest = json.loads((folder / "manifest.json").read_text())
-    assert manifest["population"] == {
-        "eligible_embedded": 8, "sealed_excluded": 4,
-        "corpus_items_sha256": job.sha256_file(root / "corpus" / "items.jsonl"),
-    }
+    assert manifest["population"] == {"eligible_embedded": 8, "sealed_excluded": 4}
     mapped = [json.loads(l) for l in (folder / "map.jsonl").read_text().splitlines()]
     embedded = [json.loads(l) for l in (folder / "rows.jsonl").read_text().splitlines()]
     assert len(mapped) == len(embedded) == 8
     assert not ({r["item_id"] for r in mapped} | {r["item_id"] for r in embedded}) & sealed
     assert np.load(folder / "vectors.npy").shape == (8, 16)
     assert all(0.0 <= r["x"] <= 1.0 and 0.0 <= r["y"] <= 1.0 for r in mapped)
-    for entry in manifest["files"]:
-        assert job.sha256_file(folder / entry["path"]) == entry["sha256"]
+    assert manifest["files"] == [{"path": f} for f in ("vectors.npy", "rows.jsonl", "map.jsonl",
+                                                        "map3d.jsonl", "groups.json")]
+    assert all((folder / entry["path"]).is_file() for entry in manifest["files"])
+    assert all(set(row) == {"row", "item_id", "text_hash", "tokens", "cut"} for row in embedded)
 
     run = result["run"]
     assert run.startswith("rl02_embedding-build_tiny-model-v1")
@@ -63,6 +62,9 @@ def test_build_embeds_only_development_items_before_g0(tmp_path: Path) -> None:
     assert (root.parent / "results" / run / "result.yaml").is_file()
     ticket = yaml.safe_load((root.parent / "runs" / f"{run}.yaml").read_text())
     assert ticket["phase"] == "P0" and ticket["commission"]["embedder"]["model"] == "org/Tiny-Model_v1"
+    assert ticket["inputs"] == [{"path": "labeling/corpus/items.jsonl"}]
+    result_record = yaml.safe_load((root.parent / "results" / run / "result.yaml").read_text())
+    assert all(set(a) == {"path"} for a in result_record["artifacts"])
 
     state = job.status(root)  # a representation Run never moves the gate or breaks P0
     assert state["phase"] == "P0" and state["integrity_errors"] == []
@@ -79,10 +81,21 @@ def test_rebuild_is_a_no_op(tmp_path: Path) -> None:
 def test_changed_corpus_is_refused(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     items = root / "corpus" / "items.jsonl"
-    items.write_text(items.read_text() + "\n")
-    with pytest.raises(emb.EmbeddingRefused):
+    original = items.read_text()
+    items.write_text(original + json.dumps({"item_id": "extra", "text": "x",
+                                            "population_status": "eligible"}) + "\n")
+    with pytest.raises(emb.EmbeddingRefused, match="P0 files do not verify"):
         emb.build(root, model="org/tiny", encoder=fake_encoder)
     assert not (root / "cache" / "embeddings" / "tiny").exists()
+
+    items.write_text(original)
+    emb.build(root, model="org/tiny", encoder=fake_encoder)
+    rows = [json.loads(line) for line in original.splitlines()]
+    rows[0]["item_id"] = "renamed"  # same counts, different items: P0 passes, the build does not match
+    items.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    assert job.status(root)["p0_contract_integrity_valid"]
+    with pytest.raises(emb.EmbeddingRefused, match="different corpus"):
+        emb.build(root, model="org/tiny", encoder=fake_encoder)
 
 
 def test_failed_encoder_marks_the_run_failed(tmp_path: Path) -> None:
@@ -195,11 +208,11 @@ def test_old_builds_get_a_3d_view_without_touching_vectors(tmp_path: Path) -> No
     root, _ = harness.build_job(tmp_path)
     emb.build(root, model="org/tiny", encoder=fake_encoder)
     folder = root / "cache" / "embeddings" / "tiny"
-    before = job.sha256_file(folder / "vectors.npy")
+    before = (folder / "vectors.npy").read_bytes()
     (folder / "map3d.jsonl").unlink()
     emb.ensure_map3d(root, "tiny")
     assert len((folder / "map3d.jsonl").read_text().splitlines()) == 8
-    assert job.sha256_file(folder / "vectors.npy") == before
+    assert (folder / "vectors.npy").read_bytes() == before
 
 
 def test_group_examples_are_typical_items_and_record_who_saw_them(tmp_path: Path) -> None:

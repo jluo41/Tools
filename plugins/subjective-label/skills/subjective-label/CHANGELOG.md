@@ -1,5 +1,10 @@
 # subjective-label · CHANGELOG
 
+## 0.9.0 · 2026-09-29
+
+Add the VIEW layer: eleven view skills, one per workbench view, never shared
+(JL 260929). A Run card names only its view skill; route a Run request there.
+
 ## 0.7.0 · 2026-09-01
 
 Replace four phase-sized Runs with 25 independently closable P0-P5 operation

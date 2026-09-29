@@ -157,14 +157,14 @@ code number). Words are never dialect: a label such as `Just Carbs` or
 service as it is. When a cohort writes an event as a raw ID, the SourceFn
 translates it before the answers lookup, through that company's own catalog,
 pinned like any other asset (WellDoc's `ext_med_lexicon`: id -> drug name and
-NDC). The answers asset (`ext_<noun>_resolved`) is keyed by the translated
+NDC; `ext_exercise_codebook`: a vendor's code -> activity words). The answers asset (`ext_<noun>_resolved`) is keyed by the translated
 words. An ID the catalog lacks cannot be translated: its key stays the ID, the
 service is still asked it and answers MISS (describe-medication's own id lookup
 reads the same catalog), and the gallery shows it. Both lookups go through one
-lock. WellDoc b51 translates only the medication id so far
-(`ext_medication_resolved` and `ext_insulin_resolved` S20260927, lock
-EventNormV3, JL 260927); vendor exercise code numbers are raw IDs too, but still
-go to describe-exercise, which reads them with its own code books.
+lock, and a gallery types every row by its words after the translation (a
+translated code is typed like the words it became). WellDoc b51 does both kinds
+(`ext_medication_resolved` and `ext_insulin_resolved` S20260927,
+`ext_exercise_resolved` S20260928, lock EventNormV3, JL 260927 and 260928).
 
 A dialect belongs to one company's own codes. When the raw key is already a
 public code in its standard form (ZIP, NPI, NDC, NCPDP), there is no dialect

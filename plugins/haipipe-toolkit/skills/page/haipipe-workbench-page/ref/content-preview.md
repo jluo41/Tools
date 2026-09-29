@@ -7,10 +7,11 @@ through their own Save.
 
 ## Single-file contract
 
-One Page has one selected Outline file:
+One Page has one selected plan file (the Draft Markdown; a legacy Page keeps
+`outline/<stem>-outline-v<version>.md`):
 
 ```text
-outline/<stem>-outline-v<version>.md
+draft/<stem>-draft-v<version>.md
 ```
 
 Each Bullet keeps its planning metadata and its candidate prose together. A
@@ -66,7 +67,7 @@ create the next Outline version and carry its Draft fields forward explicitly.
 
 The old standalone `*-preview.md` format is migration input only. It must be
 embedded into the selected Outline and then moved to the Outline's recoverable
-`outline/_archive/legacy-outline-preview/` lane.
+`draft/_archive/legacy-outline-preview/` lane.
 
 ## Scratch record
 

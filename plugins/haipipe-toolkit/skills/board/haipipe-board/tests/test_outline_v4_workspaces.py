@@ -102,7 +102,7 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
 
     def test_run_workspace_has_p_e_and_external_support(self):
         body = render_runs(self.page, "/board.md", "S-Test/S-Test.md")
-        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Page Writing</button>", body)
         self.assertIn(">Evidence</button>", body)
         self.assertIn(">Supporting Runs</button>", body)
         self.assertIn(">Workflow map</button>", body)

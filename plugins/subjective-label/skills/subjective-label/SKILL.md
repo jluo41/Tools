@@ -10,8 +10,8 @@ description: >-
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
   or /subjective-label.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-20"
+  version: "0.9.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,16 +41,21 @@ Building   "Is this what the human means?"        ends at a signed Label Handoff
 Scanning   "Was that frozen meaning executed?"    ends at audited D*
 ```
 
-Three layers, never mixed:
+Five layers, never mixed:
 
 ```text
 LAW      label-building · label-scanning          who may decide, human gates, verbs, forbidden acts
-ORDER    label-building-workflow · label-scanning-workflow   operation order, internal steps, Run resume
+ORDER    label-building-workflow · label-scanning-workflow   which Run comes next, allocation, receipts
+VIEW     subjective-label-<view> × 11                 one skill per workbench view; a Run's own steps; the only skill a Run card names
 CROSSING subjective-label-workflow               Run Specs, dependencies, gates, Routes, handoff validity, invalidation
 RUN      haipipe-run + ref-run.md                 Level-4 identity, Ticket/Result pairing, receipt, presentation
 ```
 
-A rule that fits two layers goes in the door. P0-P5 and G0-G6 are stable
+The eleven view skills are `subjective-label-contract` and `-embedding` (Data),
+`-definition`, `-rounds` and `-guideline` (Labeling), `-test`, `-evaluation` and
+`-audit` (Quality), and `-handoff`, `-scan` and `-final-labels` (Delivery). Route a
+request about one Run to its view skill; no view skill is used by another view
+(JL 260929). A rule that fits two layers goes in the door. P0-P5 and G0-G6 are stable
 compatibility labels declared in `subjective-label-workflow`; they are not
 independent Workflow units, owners, or route authority.
 
@@ -60,20 +65,20 @@ The only legal crossing is one immutable Label Handoff. It binds:
 
 - the corpus snapshot and target population;
 - label, region, and uncertainty schemas;
-- frozen policy `G*` and calibration gold `D_cal*` checksums;
-- the sealed-test manifest checksum and custody status, never protected ids;
+- frozen policy `G*` and calibration gold `D_cal*` versions;
+- the sealed-test manifest, its item count, and custody status, never protected ids;
 - the human semantic authority and freeze signature;
 - lineage, invalidation status, and creation receipt.
 
-Scanning reads the handoff by checksum. It never reads policy drafts as
-authority and never edits `G*` or `D_cal*`. A semantic change returns to
-Building, mints a new lineage, and invalidates affected scorecards, Runs, and
-claims.
+Scanning reads the handoff by version (for example `label-v1` and its date).
+It never reads policy drafts as authority and never edits `G*` or `D_cal*`. A
+semantic change returns to Building, mints a new lineage, and invalidates
+affected scorecards, Runs, and claims.
 
-Read `../../ref/ref-label-handoff.md` whenever creating, validating, or
+Read `../label-building/ref/ref-label-handoff.md` whenever creating, validating, or
 consuming the crossing.
 
-Read `../../ref/ref-run.md` whenever allocating, resuming, presenting, or
+Read `../label-building/ref/ref-run.md` whenever allocating, resuming, presenting, or
 auditing a Labeling Run. It defines 26 independently closable operation kinds
 across P0-P5. Round, Test, Scan, and Audit are grouping episodes, not extra
 Runs. A human gate event is not a Run by itself; a bounded human-work operation
@@ -100,6 +105,8 @@ scanning | scan           forward to /label-scanning (law), which hands executio
                           to /label-scanning-workflow (order)
 workflow | run | drive    forward to /subjective-label-workflow, which hands the
                           runnable side to its ORDER machine
+one Run | one view        forward to that view's skill (/subjective-label-<view>),
+                          which holds the Run's own steps
 feedback | digest         use the existing family feedback procedures
 ```
 
@@ -144,9 +151,9 @@ consensus. Maintain:
 - `D_cal*`, `G*`, sealed `T*`, executor scorecards, completed `D*`, and full
   provenance.
 
-Read `../../ref/ref-contract.md` for authority and claim rules,
-`../../ref/ref-assets.md` for canonical artifact locations, and
-`../../ref/ref-run.md` for the Labeling Run dialect. Every `../../ref/`
+Read `../label-building/ref/ref-contract.md` for authority and claim rules,
+`../label-building/ref/ref-assets.md` for canonical artifact locations, and
+`../label-building/ref/ref-run.md` for the Labeling Run dialect. Every `../label-building/ref/`
 path is relative to this skill's REAL folder inside the plugin; when the skill
 was loaded through a symlink (`~/.claude/skills/...`), resolve it first.
 

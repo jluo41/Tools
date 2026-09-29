@@ -577,10 +577,19 @@ def project_blocks(d):
             "n_tasks": sum(len(j["tasks"]) for x in tree for j in x["jobs"])}
 
 
+_RANGE_RE = re.compile(r"\b(b\d{2}[.\s_-]?j\d{2}[.\s_-]?)t(\d{2})\s*[–-]\s*t(\d{2})\b")
+
+
+def _expand_ranges(text):
+    """`b03.j02.t01–t05` → `b03.j02.t01 b03.j02.t02 … b03.j02.t05`: a row names a run of tasks once."""
+    return _RANGE_RE.sub(lambda m: " ".join("%st%02d" % (m.group(1), n)
+                                           for n in range(int(m.group(2)), int(m.group(3)) + 1)), text or "")
+
+
 def _addresses(text):
     """`b02.j01 b03 b04` (or b02j01, comma-separated) → ["b02j01", "b03", "b04"]."""
     out = []
-    for m in _ADDR_RE.finditer(text or ""):
+    for m in _ADDR_RE.finditer(_expand_ranges(text)):
         a = "".join(l + n for l, n in zip("bjtr", m.groups()) if n)
         if a not in out:
             out.append(a)
@@ -703,15 +712,15 @@ def task_home(d, cells):
     levels exist under the project's Task home. The first address is the row's
     own keys (address · levels · path · state); `all` lists every one, because a
     row may be answered by more than one job and paper_scope() claims them all.
-    No address → `no address yet`."""
+    No address → `no folder yet`."""
     found_all, seen = [], set()
     for cell in cells:
-        for m in _ADDR_RE.finditer(cell):
+        for m in _ADDR_RE.finditer(_expand_ranges(cell)):
             one = _resolve_address(d, m)
             if one["address"] not in seen:
                 seen.add(one["address"]); found_all.append(one)
     if not found_all:
-        return {"address": "", "levels": [], "path": "", "state": "no address yet", "all": []}
+        return {"address": "", "levels": [], "path": "", "state": "no folder yet", "all": []}
     return dict(found_all[0], all=found_all)
 
 
@@ -749,6 +758,7 @@ def story(d, p):
          "e": table_rows(t, r"E-?\d+(?:\s*\(.*\))?"), "e_h": _table_headers(t, r"E-?\d+(?:\s*\(.*\))?") or [],
          "dd": table_rows(t, r"D\d+"), "dd_h": _table_headers(t, r"D\d+") or [],
          "tt": table_rows(t, r"[TB]\d+"), "tt_h": _table_headers(t, r"[TB]\d+") or [],
+         "qq": table_rows(t, r"Q\d+"), "qq_h": _table_headers(t, r"Q\d+") or [],
          "sections": [], "sec_h": [], "order": []}
     s["sec_h"] = _table_headers(t, SECTION_ROW) or []
     # the Spine is C1 Identity, C2 Pitch, C4 Stakes; matched by title so a legacy numbered
@@ -973,8 +983,29 @@ def _page_items(folder, stem):
                     "expected": f.get("expected", ""),
                     "supporting": _parse_supporting(f.get("supporting runs", "")),
                     "local": _parse_local(f.get("local run", "")),
-                    "status": f.get("status") or f.get("accepted") or f.get("verified") or "contract only"})
+                    "status": _item_status(f, _parse_local(f.get("local run", "")), folder)})
     return out
+
+
+def _item_status(fields, local, folder):
+    """An Evidence Item's state from its own lines. An explicit Status wins; else the
+    Local Run's Result on disk says it is ready (items keep no Status line, so every
+    card used to read "contract only", JL 260928); else a named Local Run is planned."""
+    explicit = fields.get("status") or fields.get("accepted") or fields.get("verified")
+    if explicit:
+        return explicit
+    result = (local.get("result") or "").split()
+    if result and (folder / result[0]).is_file():
+        return "Result ready"
+    if local.get("mode") == "complete":
+        return "Result not found"
+    return "run planned" if local.get("run") or local.get("mode") else "contract only"
+
+
+def item_name(item_id):
+    """`E03-VALUE-lbp-main-effect` → `Evalue03`: type first, never a bare E03 (JL 260928)."""
+    m = re.match(r"E(\d+)-([A-Z]+)", item_id or "")
+    return "E%s%s" % (m.group(2).lower(), m.group(1)) if m else item_id
 
 
 def hero_evidence(d):
@@ -1170,6 +1201,7 @@ def delivery_info(d):
     # outputs: what paper-build.toml [outputs] names, else what sits in latex/ and word/
     named = [(k.split(".", 1)[1], v) for k, v in toml.items() if k.startswith("outputs.") and
              k.split(".", 1)[1] in ("main_pdf", "main_docx", "supplement_pdf", "supplement_docx")]
+    # the cover letter shows on its own Delivery tab (_cover_panes), never beside the manuscript
     if not named:
         named = [("pdf", str(x.relative_to(ddir))) for x in sorted((ddir / "latex").glob("*.pdf")) if (ddir / "latex").is_dir()] + \
                 [("docx", str(x.relative_to(ddir))) for x in sorted((ddir / "word").glob("*.docx")) if (ddir / "word").is_dir()]
@@ -1272,11 +1304,13 @@ def _kv(rows, cls=""):
     return '<div class="kv">%s</div>' % "".join(out) if out else ""
 
 
-def _card(cid, kind, label, sub, where, status, status_cls, rows, key="", attrs=""):
+def _card(cid, kind, label, sub, where, status, status_cls, rows, key="", attrs="", body="", fold=False):
     """One collapsed card, the Evidence-card shape: chevron · kind pill · label
     with a muted subline · where · status; open = label/value rows. `key` is what
     opening the card selects in its Space's Runs panel."""
-    detail = _kv(rows)
+    # `body` leads the opened card; `fold` tucks the label/value rows under a closed Details line
+    detail = body + (('<details class="row-details"><summary>Details</summary>%s</details>' % _kv(rows))
+                     if fold and rows else _kv(rows))
     # say a thing once: a subline that is empty, a dash, or the same words as `where` is dropped
     plain = lambda h: re.sub(r"<[^>]+>", "", h or "").strip()
     subline = "" if plain(sub) in ("", "—") or plain(sub) == plain(where) else '<span class="item-title">%s</span>' % sub
@@ -1321,6 +1355,16 @@ def _status_cls(text):
     if "⚠" in t or "🔨" in t or "PROVISIONAL" in t or "PARTIAL" in t or "WAITING" in t:
         return "warn"
     return "mut"
+
+
+def _open_cards(cards):
+    """The same cards, opened: inside a question its folders are what the person came to see."""
+    return [c.replace('<details class="item-card"', '<details class="item-card" open', 1) for c in cards]
+
+
+def _skip_cols(headers, *names):
+    """Header positions to leave out of a card's Details (shown elsewhere on the card)."""
+    return {i for i, h in enumerate(headers) if h.strip().lower() in names}
 
 
 def _fields(headers, cells, skip):
@@ -1437,15 +1481,43 @@ def _task_cards(d, s):
     for c in s["tt"]:
         tid = c[0]
         home = task_home(d, c)
-        rows = _fields(s["tt_h"], c, {0, 1})
-        for one in home["all"]:                       # a row answered by two jobs shows both
-            rows.append(("Task home", " · ".join(
-                '<span class="%s">%s %s</span>' % ("ok" if path else "warn", esc(l), "✓" if path else "✗")
-                for l, path in one["levels"]) + (('<div class="path">%s</div>' % esc(one["path"])) if one["path"] else "")))
+        # JL 260929: the BJTR folders are what matters; the row's own text is folded under Details
+        rows = _fields(s["tt_h"], c, {0, 1} | _skip_cols(s["tt_h"], "folder", "q"))
+        folders, _ = _block_cards(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ([], [])
+        body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
+                else '<div class="space-empty">No folder yet.</div>')
         cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "",
                            esc(" · ".join(x["address"] for x in home["all"])), home["state"],
-                           _status_cls(home["state"]), rows, key=tid))
+                           _status_cls(home["state"]), rows, key=tid, body=body, fold=True))
     return cards
+
+
+def _named(addr, named):
+    """Is this job address answered by a question row (at job level or below)?"""
+    return any(addr.startswith(a) or a.startswith(addr) for a in named)
+
+
+def _unnamed_cards(d):
+    """The claimed folders that no Task or Discovery question names yet (JL 260928:
+    question first, then its Task and Discovery runs; one list, not two)."""
+    t_named = [a for s in d["story"] for c in s["tt"] for a in _addresses(" ".join(c))]
+    d_named = [a for s in d["story"] for c in s["dd"] for a in _addresses(" ".join(c))]
+    scope, jobs = paper_scope(d), []
+    for blk in d["blocks"]["tree"]:
+        for j in blk["jobs"]:
+            if not _claimed(j["addr"], scope):
+                continue
+            if not _named(j["addr"], t_named):
+                jobs.append(j["addr"])                       # no question names this job
+            else:                                            # a question names some of its tasks
+                jobs += [t["addr"] for t in j["tasks"]
+                         if _claimed(t["addr"], scope) and not _named(t["addr"], t_named)]
+    tasks, _ = _block_cards(d, jobs) if jobs else ([], [])
+    dscope = discovery_scope(d)
+    djobs = [j["addr"] for blk in d["disc"]["tree"] for j in blk["jobs"]
+             if _claimed(j["addr"], dscope) and not _named(j["addr"], d_named)]
+    disc, _ = _disc_cards(d, djobs, _disc_feeds(d)) if djobs else ([], [])
+    return tasks + disc
 
 
 def _tree_url(d, path):
@@ -1464,15 +1536,18 @@ def _claimed(addr, scope):
 
 
 def _block_cards(d, scope):
-    """One collapsed card per claimed bNN block; open = its claimed jobs, each a
-    task table. Unclaimed siblings are named once, muted, never expanded."""
+    """One collapsed card per bNN block in `scope`; open = its jobs in `scope`, each a
+    task table of the tasks in `scope` (a question that names one task shows that task
+    only). Jobs outside the paper's own claim are named once, muted, never expanded."""
     cards, skipped = [], []
+    claim = paper_scope(d)
     for blk in d["blocks"]["tree"]:
         if scope and not _claimed(blk["addr"], scope):
             skipped.append(blk["name"])
             continue
-        jobs = [j for j in blk["jobs"] if not scope or _claimed(j["addr"], scope)]
-        other = [j for j in blk["jobs"] if j not in jobs]
+        jobs = [dict(j, tasks=[t for t in j["tasks"] if not scope or _claimed(t["addr"], scope)])
+                for j in blk["jobs"] if not scope or _claimed(j["addr"], scope)]
+        other = [j for j in blk["jobs"] if not _claimed(j["addr"], claim)]
         n_tasks = sum(len(j["tasks"]) for j in jobs)
         n_tk = sum(t["tickets"] for j in jobs for t in j["tasks"])
         state = {}
@@ -1509,12 +1584,6 @@ def _block_cards(d, scope):
         cards.append(_srcd(d, blk["dir"], blk["addr"], _card("block-" + blk["addr"], blk["addr"], blk["name"], esc(sub),
                            where, _fmt_state(state), "ok" if state.get("done") and len(state) == 1 else ("warn" if state else "mut"), rows)))
     return cards, skipped
-
-
-def _tree_card(d):
-    """The Task home: one card per bNN block this paper claims."""
-    cards, _skipped = _block_cards(d, paper_scope(d))
-    return _cards_card("Task home · %s" % d["blocks"]["label"], cards, "No block yet.")
 
 
 def _disc_link(d, blk, job, task, label):
@@ -1582,8 +1651,8 @@ def _disc_cards(d, scope, feeds):
     return cards, skipped
 
 
-def _disc_card(d):
-    """The Discovery home: one card per inquiry this paper claims."""
+def _disc_feeds(d):
+    """Discovery job address → the C6 rows that name it."""
     feeds = {}
     for s in d.get("story", []):
         for cells in s["dd"]:
@@ -1591,8 +1660,7 @@ def _disc_card(d):
                 hit = _disc_lookup(d, a)
                 if hit and hit[1] is not None:
                     feeds.setdefault(hit[1]["addr"], []).append(cells[0])
-    cards, _skipped = _disc_cards(d, discovery_scope(d), feeds)
-    return _cards_card("Discovery home · %s" % d["disc"]["label"], cards, "No inquiry yet.")
+    return feeds
 
 
 def _hero_cards(d):
@@ -1600,10 +1668,13 @@ def _hero_cards(d):
     for it in d["hero"]:
         short = it["id"].split("-")[0]
         rows = [("Need", esc(it["desc"])), ("Expected", esc(it["expected"] or "—")),
-                ("Bullet", esc(it["target"])),
-                ("Page", _link(d, it["rel"], "Open ↗", lens="evidence", focus=it["id"]))]
+                ("Bullet", esc(it["target"]))]
+        if it["supporting"]:
+            rows.append(("Supporting", "<br>".join(
+                "%s · <code>%s</code>" % (esc(s["owner"]), esc(s["addr"] or s["raw"])) for s in it["supporting"])))
+        rows.append(("Page", _link(d, it["rel"], "Open ↗", lens="evidence", focus=it["id"])))
         cards.append(_card("hero-" + it["id"], it["type"], it["label"] or it["id"],
-                           esc(short + " · " + it["page"]), "", it["status"], _status_cls(it["status"]), rows,
+                           esc(item_name(it["id"]) + " · " + it["page"]), "", it["status"], _status_cls(it["status"]), rows,
                            key="%s:%s" % (it["page"], short), attrs=' data-part="%s"' % it["part"]))
     return cards
 
@@ -1651,7 +1722,7 @@ SPACES = (("ideation", "Ideation Space"), ("story", "Story Space"),
 STORY_TABS = (("spine", "Spine"), ("questions", "Questions"), ("roadmap", "Roadmap"))
 SECTION_TABS = (("main", "Main"), ("appendix", "Appendix"))
 SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "Evidence"))
-DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("rounds", "Rounds"))
+DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("cover", "Cover letter"), ("rounds", "Rounds"))
 DELIVERY_VIEWS = (("preview", "Preview"), ("artifacts", "Artifacts"), ("checks", "Checks"))
 
 _CARDS = SKILLS / "paper" / "haipipe-paper-workflow" / "ref" / "run-cards.md"
@@ -1661,17 +1732,23 @@ _PROMPT = re.compile(r"^💬 PROMPT\s+(?P<prompt>.+?)\s*$")
 
 
 def paper_run_types(path=_CARDS):
-    """The paper's Run cards → {space: [{label, pattern, views, prompt}]} in card
-    order. Each button takes the first `💬 PROMPT` after it; pattern `-` means
-    the button only copies a prompt (its runs live with another owner)."""
+    """The paper's Run cards → {space: [{label, pattern, views, prompt, skills}]} in
+    card order. Each button takes the first `💬 PROMPT` after it and the `🧩 SKILL`
+    line before that prompt; pattern `-` means the button only copies a prompt
+    (its runs live with another owner)."""
     out, pending = {}, []
     for line in read(path).splitlines():
         m = _BUTTON.match(line)
         if m:
             t = {"label": m["label"], "space": m["space"].lower(), "pattern": m["pattern"].strip(),
-                 "views": " ".join((m["views"] or "").split()), "prompt": ""}
+                 "views": " ".join((m["views"] or "").split()), "prompt": "", "skills": []}
             out.setdefault(t["space"], []).append(t)
             pending.append(t)
+            continue
+        m = re.match(r"^🧩 SKILL\s+(.+?)\s*$", line)
+        if m:
+            for t in pending:
+                t["skills"] = [s.strip() for s in m.group(1).split("·") if s.strip()]
             continue
         m = _PROMPT.match(line)
         if m:
@@ -1757,6 +1834,8 @@ def _claim_rq(s):
 def _supporting_rows(d, s, fill):
     """The Task and Discovery runs this paper's Evidence Items cite, as run rows
     keyed by the C7 and C6 rows whose addresses cover them."""
+    q_of = {c[0]: _q_of(s["tt_h"], c) for c in s["tt"]}
+    q_of.update({c[0]: _q_of(s["dd_h"], c) for c in s["dd"]})
     covers = [(c[0], _addresses(" ".join(c))) for c in s["tt"] + s["dd"]]
     rows = []
     for owner in ("Execution", "Discovery"):
@@ -1767,6 +1846,7 @@ def _supporting_rows(d, s, fill):
                         dotted = ".".join(re.findall(r"[bjtr]\d{2}", r["addr"]))
                         ticket = r["tickets"][0][1] if r["tickets"] else None
                         keys = [row for row, addrs in covers if any(r["addr"].startswith(a) for a in addrs)]
+                        keys += sorted({q_of[k] for k in keys if q_of.get(k)})
                         users = sorted({u["page"] + " " + u["item"].split("-")[0] for u in r["users"]})
                         st = (r["status"] or "").lower()
                         rows.append({"run_id": dotted, "global_id": dotted, "ticket": ticket,
@@ -1794,8 +1874,9 @@ def _story_panel(d, kinds):
         rows += _supporting_rows(d, s, fill)
     first = d["story"][0]["stem"] if d["story"] else "the Story"
     fill = {"page": first, "paper": d["board"].name}
-    buckets = _bucket(kinds, rows, lambda r: "Supporting runs" if r.get("_display") and not r.get("ticket") or
-                      str(r.get("target", "")).startswith(("Execution · ", "Discovery · ")) else None)
+    # a supporting run goes under its owner: a Task folder's run or a Discovery folder's run
+    buckets = _bucket(kinds, rows, lambda r: "Discovery runs" if str(r.get("target", "")).startswith("Discovery · ")
+                      else "Task runs" if str(r.get("target", "")).startswith("Execution · ") else None)
     return _panel(d, "story", kinds, buckets, fill, "the Story")
 
 
@@ -1855,6 +1936,13 @@ def _delivery_panel(d, kinds):
         fill = {"page": r["stem"], "paper": d["board"].name}
         for row in _page_runs(d, r):
             rows += [dict(x, _place="Response") for x in _tag([row], [r["stem"]], fill)]
+    cover = _cover(d)
+    if cover is not None:                             # the build's one fixed cover-letter run
+        rows.append({"run_id": "run-delivery-coverletter", "global_id": "run-delivery-coverletter",
+                     "status": "done" if cover.get("ready") else "held", "target": cover.get("round") or "the letter",
+                     "result": ((cover.get("outputs") or {}).get("pdf") or ""), "result_path": dv["dir"],
+                     "goal": "from " + (cover.get("from") or "?"), "_display": "run-delivery-coverletter",
+                     "_place": "Cover letter", "_views": "cover"})
     rows = _tag(rows)
     fill = {"page": d["board"].name, "paper": d["board"].name}
     return _panel(d, "delivery", kinds, _bucket(kinds, rows, lambda r: r.get("_place")), fill, "the manuscript")
@@ -1913,10 +2001,48 @@ def _dd_cards(d, s):
     """One card per C6 row: what the paper must learn, and the inquiry it names."""
     cards = []
     for c in s["dd"]:
-        rows = _fields(s["dd_h"], c, {0, 1})
-        rows.append(("Discovery", _disc_join(d, c) or '<span class="mut">no address yet</span>'))
-        cards.append(_card("need-" + c[0], c[0], c[1] if len(c) > 1 else "", "", "", "", "", rows, key=c[0]))
+        rows = _fields(s["dd_h"], c, {0, 1} | _skip_cols(s["dd_h"], "folder", "q"))
+        addrs = [a for a in _addresses(" ".join(c)) if _disc_lookup(d, a)]
+        folders, _ = _disc_cards(d, addrs, _disc_feeds(d)) if addrs else ([], [])
+        body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
+                else '<div class="space-empty">No folder yet.</div>')
+        state = "→ " + " · ".join(addrs) if addrs else "no folder yet"
+        cards.append(_card("need-" + c[0], c[0], c[1] if len(c) > 1 else "", "", "", state,
+                           "ok" if addrs else "mut", rows, key=c[0], body=body, fold=True))
     return cards
+
+
+def _q_of(headers, row):
+    """The general question a T or D row names in its `Q` column ('' when none)."""
+    i = next((k for k, h in enumerate(headers) if h.strip().upper() == "Q"), None)
+    return row[i].strip() if i is not None and i < len(row) else ""
+
+
+def _question_cards(d, s):
+    """JL 260928: a few general questions; under each, its T and D questions; under each
+    of those, the BJTR folders that answer it. A T or D row with no Q comes last."""
+    tasks = dict(zip((c[0] for c in s["tt"]), _task_cards(d, s)))
+    needs = dict(zip((c[0] for c in s["dd"]), _dd_cards(d, s)))
+    q_of = {c[0]: _q_of(s["tt_h"], c) for c in s["tt"]}
+    q_of.update({c[0]: _q_of(s["dd_h"], c) for c in s["dd"]})
+    has = {c[0]: bool(task_home(d, c)["all"]) for c in s["tt"]}
+    has.update({c[0]: any(_disc_lookup(d, a) for a in _addresses(" ".join(c))) for c in s["dd"]})
+    cards = []
+    for q in s["qq"]:
+        mine = [k for k, v in q_of.items() if v == q[0]]
+        inner = [tasks[k] for k in mine if k in tasks] + [needs[k] for k in mine if k in needs]
+        with_folder = sum(1 for k in mine if has[k])
+        rows = [("Rows", esc(" · ".join(mine) or "none yet"))]
+        if inner:
+            rows.append(("Questions", '<div class="item-cards">%s</div>' % "".join(inner)))
+        rq = " · ".join(q[2:3]) if len(q) > 2 else ""
+        status = "%d of %d with a folder" % (with_folder, len(mine)) if mine else "no T or D yet"
+        cards.append(_card("q-" + q[0], q[0], q[1] if len(q) > 1 else q[0], "", esc(rq), status,
+                           "ok" if mine and with_folder == len(mine) else ("warn" if with_folder else "mut"),
+                           rows, key=q[0]))        # its runs carry Q<n> among their keys
+    loose = [tasks[k] for k, v in q_of.items() if not v and k in tasks] + \
+            [needs[k] for k, v in q_of.items() if not v and k in needs]
+    return cards, loose
 
 
 def render_story(d, kinds):
@@ -1925,12 +2051,24 @@ def render_story(d, kinds):
         return _space("story", "".join(_pane(empty, k) for k, _ in STORY_TABS), _story_panel(d, kinds), STORY_TABS)
     questions = [c for s in d["story"] for c in _rq_cards(d, s)]
     roadmap = []
-    tasks = [c for s in d["story"] for c in _task_cards(d, s)]
-    needs = [c for s in d["story"] for c in _dd_cards(d, s)]
-    roadmap.append('<h3 class="space-h">Task Roadmap</h3>' + _cards(tasks, "No C7 row yet."))
-    if needs:
-        roadmap.append('<h3 class="space-h">Discovery Roadmap</h3>' + _cards(needs, ""))
-    roadmap.append(_tree_card(d) + _disc_card(d))
+    if any(s["qq"] for s in d["story"]):
+        general, loose = [], []
+        for s in d["story"]:
+            g, l = _question_cards(d, s)
+            general += g
+            loose += l
+        roadmap.append('<h3 class="space-h">Questions</h3>' + _cards(general, ""))
+        if loose:
+            roadmap.append('<h3 class="space-h">No general question yet</h3>' + _cards(loose, ""))
+    else:                                            # a Story with no Q table: T and D rows as they are
+        tasks = [c for s in d["story"] for c in _task_cards(d, s)]
+        needs = [c for s in d["story"] for c in _dd_cards(d, s)]
+        roadmap.append('<h3 class="space-h">Task questions</h3>' + _cards(tasks, "No C7 row yet."))
+        if needs:
+            roadmap.append('<h3 class="space-h">Discovery questions</h3>' + _cards(needs, ""))
+    unnamed = _unnamed_cards(d)
+    if unnamed:
+        roadmap.append('<h3 class="space-h">Folders no question names yet</h3>' + _cards(unnamed, ""))
     main = (_pane(_spine_html(d), "spine")
             + _pane(_cards(questions, "No research question yet."), "questions")
             + _pane("".join(roadmap), "roadmap"))
@@ -2108,6 +2246,42 @@ def _round_cards(d):
     return _cards(cards, "No round yet.") + tail
 
 
+def _cover(d):
+    """The cover letter as the paper build recorded it (haipipe-paper-assemble 0.9.0,
+    run-delivery-coverletter): build-manifest.json `cover_letter`, or None."""
+    man = d["delivery"]["manifest"] or {}
+    return man.get("cover_letter") if isinstance(man.get("cover_letter"), dict) else None
+
+
+def _cover_panes(d):
+    """Cover letter tab (JL 260929: one more delivery item). The words live on the submission
+    Round page's Cover letter division; the paper build writes the letter and its checks; this
+    tab only reads that record."""
+    cover = _cover(d)
+    if cover is None:
+        empty = ('<div class="space-empty">No cover letter built yet: add a <code>[coverletter]</code> '
+                 'block to delivery/paper-build.toml and run the build.</div>')
+        return "".join(_pane(empty, "cover", v) for v, _ in DELIVERY_VIEWS)
+    base = d["delivery"]["dir"]
+    outs = {k: (base / v) if v and not Path(v).is_absolute() else (Path(v) if v else None)
+            for k, v in (cover.get("outputs") or {}).items()}
+    src = cover.get("source") or ""
+    head = '<div class="space-h">%s · %s%s</div>' % (
+        esc(cover.get("round") or "letter"), "ready" if cover.get("ready") else "not ready",
+        (" · " + _link(d, src.split("/draft/")[0] + "/" + Path(src.split("/draft/")[0]).name + ".md", "Open ↗",
+                       lens="div")) if src else "")
+    pdf = outs.get("pdf")
+    preview = head + (('<iframe class="space-frame" title="cover letter" data-src="%s"></iframe>'
+                       % esc(_tree_url(d, pdf))) if pdf and pdf.is_file() else '<div class="space-empty">Not built yet.</div>')
+    files = [(_file_link(d, f, f.name), esc(_stamp(f))) for f in outs.values() if f and f.is_file()]
+    artifacts = head + (_table(["file", "written"], files) if files else '<div class="space-empty">Not built yet.</div>')
+    rows = [(esc(c.get("check", "")), '<span class="%s">%s</span>' % ("ok" if c.get("ok") else "warn", "✅" if c.get("ok") else "⚠️"),
+             esc(c.get("detail", ""))) for c in cover.get("checks") or []]
+    checks = head + (_table(["check", "", "detail"], rows) or '<div class="space-empty">No checks recorded.</div>')
+    return (_pane(preview, "cover", "preview") + _pane(artifacts, "cover", "artifacts")
+            + _pane(checks, "cover", "checks"))
+
+
 def render_delivery(d, kinds):
     main = ""
     for tab, suffix in (("latex", ".pdf"), ("word", ".docx")):
@@ -2117,6 +2291,7 @@ def render_delivery(d, kinds):
             continue
         main += (_pane(_preview_html(d, suffix), tab, "preview") + _pane(_artifacts_html(d, suffix), tab, "artifacts")
                  + _pane(_checks_html(d), tab, "checks"))
+    main += _cover_panes(d)
     main += _pane(_round_cards(d), "rounds")
     return _space("delivery", main, _delivery_panel(d, kinds), DELIVERY_TABS, DELIVERY_VIEWS, noviews=("rounds",))
 
@@ -2178,6 +2353,9 @@ code{{font:12.5px ui-monospace,Menlo,monospace}}
 .item-label{{font-weight:650;font-size:15.5px;line-height:1.4}} .item-title{{color:var(--mut);font-size:13.5px}}
 .item-where{{color:var(--mut);font-size:12px;white-space:nowrap}} .item-status{{font-weight:650;font-size:14px;white-space:nowrap}}
 .item-detail{{border-top:1px solid var(--line);padding:10px 12px 13px}}
+.item-detail td .idtag,.item-detail td:first-child{{white-space:nowrap}}
+.row-details{{margin-top:8px}} .row-details>summary{{cursor:pointer;color:var(--mut);font-size:12px;list-style:none}}
+.row-details>summary::before{{content:"▸ "}} .row-details[open]>summary::before{{content:"▾ "}}
 .item-bullets{{margin:0;padding-left:1.1em;font-size:14.5px}} .item-bullets li{{margin:2px 0}}
 .item-bullets b{{font:500 12px ui-monospace,Menlo,monospace;color:var(--mut)}}
 .item-note{{color:var(--mut);font-size:12.5px;line-height:1.45}} .item-sub{{color:var(--mut);font-size:12px;text-transform:uppercase;margin-right:4px}}

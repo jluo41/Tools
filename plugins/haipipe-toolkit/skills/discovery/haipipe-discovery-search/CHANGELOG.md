@@ -3,6 +3,11 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.3 · 2026-09-29
+
+- Step 3 RESOLVE: a title is not an identity. Crossref's top bibliographic hit for a title can be a different paper, so a DOI or arXiv identifier is resolved before any Bib is fetched.
+- Step 5 EXECUTE: fetch the Bib with `paper_bib_fetch.py` instead of composing one from metadata fields. Never script Google Scholar (`403`, and its export omits the DOI); a Scholar or person export enters through `--bib-file --source-url` as `person-export`.
+
 ## 0.7.2 · 2026-09-22
 
 - Moved to the family root beside the door: every skill we wrote sits flat, the numbered folders hold vendored originals only. Relative links lost one `../`.

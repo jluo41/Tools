@@ -7,7 +7,7 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.7.4"
+  version: "0.8.0"
   last_updated: "2026-09-28"
   group-token: "RD"
   outline:
@@ -199,6 +199,16 @@ EVIDENCE record only the bounded support needed to answer or verify a concern
 CONTENT  record human decisions, owning-page returns, and response paragraphs
 CHECK    verify coverage, snapshot builds, response trace, deferred handoffs, approval
 ```
+
+## ✉️ A submission Round carries the cover letter (0.8.0)
+
+A Round that begins with a submission (`RD<NN>-<desk>-submission-<YYYYMMDD>`, round-kind `editor-review`)
+holds the cover letter's words in a `### Cover letter` division of its Content, drafted in the Round's
+`draft/` and adopted after the person's approval like any page. The paper build's
+`run-delivery-coverletter` (haipipe-paper-assemble 0.9.0) fills the facts, renders PDF and DOCX into
+`delivery/cover-letter/`, and `build.py send RD<NN>` freezes the letter with the manuscript into `sent/`.
+The letter never repeats a number the manuscript does not print, and never states a fact the venue page
+or paper-build.toml does not hold.
 
 ## 📐 Required Content roles
 

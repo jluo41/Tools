@@ -4,6 +4,10 @@
 - A retry's changed-contract check uses file modification time: the Ticket, config, worker or a declared input newer than the prior receipt, or different `settings.ticket_args`, blocks the retry. A planned receipt blocks dispatch when its config is newer than the receipt.
 - `ref/runtime-yaml-schema.md`, `ref/authoring-conventions.md`, `ref/task-structure.md`, `ref/hierarchy.md`, `ref/task-page.md`, `ref/databricks-execution.md`, `fn/audit.md`, `ref/task-lifecycle.workflow.js`, `fn/run.md` and `SKILL.md`: no hash fields, pins or hash checks; a Result is bound by full Run id and path.
 
+## [1.5.1] - 2026-09-29 - Generated output and encoded ids (JL 260929)
+
+- authoring-conventions: every generated file (board HTML, TASK-TABLE.md, code/haifn) changes only through its source and generator, and a change is reported by its source; encoded ids are meaningless, not PHI, and never block a commit; before a push check size, secrets and `.pyc`.
+
 ## 1.4.6 · 2026-09-28
 
 - ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.

@@ -51,17 +51,17 @@ independent lifecycle owner. See `subjective-label-workflow` for the graph.
 
 ## Building Run boundary
 
-Building uses the operation catalog in `../../ref/ref-run.md`:
+Building uses the operation catalog in `../label-building/ref/ref-run.md`:
 
 ```text
-P0  corpus-contract · discovery-search* · guideline-seed · test-reserve · embedding-build
+P0  corpus-contract · definition-discussion · discovery-search* · guideline-seed · test-reserve · embedding-build
 P1  round-prepare · weak-prelabel* · human-calibration · guideline-learn
     · round-measure · round-close
 P2  handoff-freeze
 ```
 
 A round folder, `rounds/round_<t>/`, is an episode grouped by one Card and one
-checkpoint (`../../ref/ref-assets.md` §3). It is not an extra umbrella Run.
+checkpoint (`../label-building/ref/ref-assets.md` §3). It is not an extra umbrella Run.
 While the Card is proposed it is planning. Human release makes it the frozen
 commission for `round-prepare`; later operations allocate only when their own
 inputs freeze. P0 human meaning confirmation, Card release, STOP, and the
@@ -99,7 +99,7 @@ release    the human releases each round card                                   
 item       the human creates every first and final judgment                         (P1)
 rule       the human accepts, rejects, or narrows every substantive semantic patch  (P1)
 stop       the human signs off stopping on the checkpoint's evidence                (P1 CLOSE)
-freeze     the human signs the exact G* and D_cal* checksums and the lineage        (P2)
+freeze     the human signs the exact G* and D_cal* versions and the lineage         (P2)
 ```
 
 `stop` and `freeze` are two ticks: stopping approves that no round is owed;

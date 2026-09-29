@@ -1,5 +1,6 @@
 ## 0.66.0 · 2026-09-28 · No content hashes (JL 260928)
 
+- One fixed Delivery Run per lane (JL 260928: "we just need one run, it can be run_delivery_webpage"): `run_delivery_webpage`, `run_delivery_latex`, `run_delivery_word`, rerun in place, never numbered. `ref/run-cards.md` `Page.delivery` card (button `^run_delivery_`), `ref/workflow-table.md`, `ref/page-run-contract.md` and this SKILL (Run Spec row, CONTENT, identity lines) say so; `RD` has no counter.
 - Controller receipts (`ref/page-run-contract.md`): `version_before`, `version_after` and
   `checked_version` are `<version number> <yymmdd HHMM>` (e.g. `v1.5 260928 1241`);
   `source_sha256`/`render_sha256` are gone. A source or render saved after CHECK read it (newer

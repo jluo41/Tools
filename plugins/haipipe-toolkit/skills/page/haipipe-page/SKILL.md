@@ -11,16 +11,39 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.120.0"
-  last_updated: "2026-09-28"
+  version: "0.121.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-page · one shape every page keeps
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `evidence-selection.json`): change the Page, then rebuild. A request aimed at the Word or PDF text is a Page edit. One more generator: when the Draft's `## 3 · Draft` carries a sentence, `cli/page.py adopt` writes it into `## Content`, so edit it in the Draft and adopt; when it does not, the Page sentence is the source.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `evidence-selection.json`): change the source, then rebuild. `## Content` is generated too: `cli/page.py adopt` writes it from the Draft's `## 3 · Draft`, so a sentence is always edited in the Draft (add its line there if the Draft lacks it), never in `## Content`, `.tex` or `.docx`.
 
 > ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date (`v1.5 260928 1241`); staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Page, Result, receipt, ledger or manifest.
+
+## ✏️ Fast path · change a sentence and rebuild
+
+For "change X in the Page / the Word / the PDF" and "rebuild it", load nothing
+else. Three commands, then report the before and after sentence:
+
+```bash
+# 1. edit the sentence in draft/<page>-draft-v<N>.md, section `## 3 · Draft`
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/cli/page.py adopt  <page-folder>   # 2. Content ← Draft; writes `content:`
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/cli/page.py export <page-folder> --author "Junjie Luo"   # 3. web, LaTeX, Word
+```
+
+Code keeps every record here, so an agent types none (JL 260928: agents keep
+text, code keeps records). `adopt` writes the header line `content: draft v<N> ·
+adopted <yymmdd HHMM>`; `export` reruns each lane's one Delivery Run
+(`run-delivery-webpage` · `_latex` · `_word`) and writes its ticket. Do not type
+versions, dates, Run ids or "delivery rebuilt" into `state:` (it holds the state
+word and open items only), do not append to the Draft's `status:` line (the
+person's word), and allocate no new Run, Draft version, receipt or hash. The
+person's request for the change is the ask that the Run bookends rule needs;
+an open Writing Run's close records still wait for the person to end that Run.
+The Page's own files are now current; a paper's full manuscript (`<paper>/delivery/`)
+picks the change up at its next paper build (`delivery/build.py`, `haipipe-paper-assemble`).
 
 This is the executable door for ONE PAGE, with or without a Board. Say
 `haipipe-page <file>`, `make this HTML file a Page Folder`,
@@ -84,20 +107,33 @@ Outline's Run Space presents three semantic areas plus the owner-native
 Supporting group, in both standalone and Board-hosted mode:
 
 ```text
-Page Writing  RP · rp-struct-NN · rp-scratch-NN_<target> · rp-sec-NN · rp-para-NN_Pxx[-Pyy]
-              Structure · Scratch · Section · Paragraph (Review & Modify)
-Page Evidence RE · re-value-NN_<slug> · re-display-NN_<slug> · re-cite-NN_<slug>
-              Value · Display · Citation
-RD         rdNN_<target> · one web/LaTeX/Word/slide/render delivery target
+Page Writing  RP · run-structure- · run-scratch- · run-section- · run-paragraph- · run-revise-
+              · run-auto-write- · run-evidence-embed- · run-context-  (each + <MMDD>-<slug>)
+Page Evidence RE · run-value-<MMDD>-<item slug> · run-display-… · run-citation-…
+Page check       run-check-<MMDD>-<slug>
+RD         run-delivery-webpage · run-delivery-latex · run-delivery-word · one fixed Run per lane, rerun by `page.py export`
 Supporting native rNN/riNN/rlNN/global identity · Task/Discovery grouping
 ```
 
+**Run names (JL 260928: "remove rp-xxx, make it readable").** A Page Run is
+`run-<kind>-<MMDD>-<slug>`: `kind` is a word (structure, section, paragraph,
+scratch, revise, auto-write, evidence-embed, context, check, citation, value,
+display), `MMDD` the day it started (from the clock), `slug` two to four words
+(its purpose, its target such as `c1-p2`, or its Evidence Item's slug); a taken
+name gets `-2`. The three Delivery Runs are fixed and never numbered. Each run is
+one ticket and one result folder with the same name in a flat `runs/`:
+`runs/<name>.md` ↔ `results/<name>/`. The one grammar is `src/run_names.py`.
+Older names (`rp-sec-07`, `re-value-07_x`, `rd01_latex`) still read;
+`page.py run-names <page>` renames a Page's runs once, keeps older numbered
+Delivery builds as history, and writes each built lane's Delivery Run ticket.
+
 **Run bookends (JL 260928).** A Page Writing Run has two bookends the person
-calls. While it is open, only the Draft file (`draft/<stem>-draft-v<N>.md`)
-changes. The Run's records (ticket, Version journal, `working.md`,
-`runtime.yaml`), its one log entry, decision threads and evidence notes are
-written once when the person says the Run is over. Page Content adoption and
-the RD lanes (web → LaTeX → Word) follow only when the person asks. Contract:
+calls. `page.py open-run <page> --kind <kind> [--slug] [--target] [--goal]`
+writes the ticket when it starts; while it is open, only the Draft file
+(`draft/<stem>-draft-v<N>.md`) changes; `page.py close-run <page> <run>
+[--summary]` writes the result folder, its one log entry, decision threads and
+evidence notes once, when the person says the Run is over. Page Content adoption and
+the Delivery Runs (web → LaTeX → Word, `page.py export`) follow only when the person asks. Contract:
 `../haipipe-page-workflow/ref/interactive-writing-run.md` §🔖. Adoption is one
 command, `cli/page.py adopt <page> [--dry-run]` (`src/page_adopt.py`): it writes
 the current Draft's `## 3 · Draft` sentences into `## Content` in Draft order,
@@ -111,32 +147,31 @@ the Draft's paragraphs and the Page's differ or when a sentence would have to be
 added, cut or moved across untagged material (a fenced block, a list). Afterwards
 `health` sync passes.
 
-This is a projection, not a second Run registry. `RP`, `RE`, and `RD` counters
-are independent, and all are distinct from native `rNN`/`riNN`/`rlNN`
+This is a projection, not a second Run registry. Page Run names carry no
+counter (a name is its kind, day and slug), and all are distinct from native `rNN`/`riNN`/`rlNN`
 counters. Execution, Discovery, Insight (`riNN`), Design, and other native
 families retain their identities under Supporting Runs; Page never renames
 them. Supporting members are grouped by parent Task for readability, but the
-external Results remain references and are never copied. `rp-struct-01`,
-`rp-sec-01`, `re-value-01`, `rd01`, and `r01` may coexist; no sequence
-renumbers or consumes another. RP uses explicit kind tokens:
+external Results remain references and are never copied. A Page Run and a
+Task `r01` may coexist; neither renames or consumes the other. RP kinds:
 
 ```text
-rp-struct-NN          Page Structure Run: SHAPE + SURVEY
-rp-scratch-NN_<target> Human Scratch capture at C1 or C1.P1 (Section/paragraph group)
-rp-sec-NN             Section-level writing
-rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
+run-structure-<MMDD>-<slug>   Page Structure Run: SHAPE + SURVEY
+run-scratch-<MMDD>-<target>   Human Scratch capture at C1 or C1.P1 (Section/paragraph group)
+run-section-<MMDD>-<slug>     Section-level writing
+run-paragraph-<MMDD>-<target> Paragraph-level writing (target: p03 or p03-p05)
 ```
 
-`rp-struct-01` is the initial Structure Run and contains both the SHAPE and
+The first `run-structure-…` is the initial Structure Run and contains both the SHAPE and
 SURVEY cycles. It is one shared Ticket/Result even when several people
 participate: record `participants` on the Run and `contributors` on each Step.
-`rp-struct-02` is a later independent structure/Bullet refinement, not a new
+A later `run-structure-…` is an independent structure/Bullet refinement, not a new
 participant or Survey pass. These Runs settle Page direction, coverage and
 non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph
 jobs, typed evidence decisions, and the structure list. After structure closes, Section Runs use
-`rp-sec-NN`; paragraph Runs use `rp-para-NN_Pxx[-Pyy]` and expose their exact
+`run-section-…`; paragraph Runs use `run-paragraph-<MMDD>-p03[-p05]` and expose their exact
 Page-global paragraph target. `RE` uses the focal-result kinds `value`,
-`display`, and `cite`; `DISPLAY` covers table, figure, and algorithm block
+`display`, and `citation`; `DISPLAY` covers table, figure, and algorithm block
 through `display_kind`. One RE Result/Card may expose many `$V_xxx$`,
 `\figure{D_xxx}`, `\table{D_xxx}`, `\algorithm{D_xxx}`, and `\cite{C_xxx}` labels; a
 label is not another Run. The Result root `labels:` manifest is the shared
@@ -176,12 +211,12 @@ output. The Page may point to the needed Task work but never mints or rewrites
 its owner-native identity. Use `/haipipe-page runs <page> [focus]` to propose;
 a direct bounded editing request counts as selecting the matching interaction.
 
-The first structure Run is always `rp-struct-01`, even when imported content
+The first Run of a Page is always a Structure Run (`run-structure-…`), even when imported content
 already suggests a Shape. It iterates until the person explicitly
 closes the Structure, Outline Bullets, and Page-global paragraph index
-`P01..PN`. Later structure/Bullet revisions may use `rp-struct-02`, etc. Only
+`P01..PN`. Later structure/Bullet revisions open another `run-structure-…`. Only
 after the structure contract is closed may `fn/Runs` propose Section-level
-Runs in `rp-sec-NN` or paragraph groups in `rp-para-NN_Pxx[-Pyy]`. Every
+Runs (`run-section-…`) or paragraph groups (`run-paragraph-<MMDD>-p03-p05`). Every
 paragraph Run name
 must expose its exact paragraph number or contiguous range; semantic titles
 stay in Goal instead of lengthening the identity.
@@ -278,6 +313,10 @@ python3 <toolkit>/skills/page/haipipe-page/cli/page.py adopt <page-folder>... [-
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py check-page-folder <page-folder | board-folder>... [--json]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py build <page-folder>
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py export <page-folder>... [--lane web|latex|word|all] [--author "Junjie Luo"]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py open-run <page-folder> --kind <kind> [--slug] [--target] [--goal] [--by]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py close-run <page-folder> <run> [--summary] [--by]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py run-names <page-folder>... [--dry-run]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py serve <page-folder>
 ```
 
@@ -329,7 +368,7 @@ move or replace the Page's source. Board Page group descriptions remain
 Board-owned and are outside this file-intake operation.
 
 Scratch is available as a small human-thinking capture once the selected
-Outline exists. Notes autosave to `rp-scratch-NN_<target>`; the person manually
+Outline exists. Notes autosave to `run-scratch-<MMDD>-<target>`; the person manually
 clicks Finish Scratch, which asks the AI to generate a concise Summary from
 the raw notes and closes the Run only after a non-empty Summary is returned.
 Scratch writes only the selected Outline's `## Scratch` registry plus its
@@ -400,9 +439,8 @@ uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
 │   └── config/    Job code stays one level up in `src/`
-├── runs/          authored RP, RE, and RD tickets; THE ONE execution door, by Space:
-│                  draft-manual-run/ · draft-auto-run/ · evidence-run/ ·
-│                  supporting-run/ (generated BJTR index) · delivery-run/
+├── runs/          one ticket per Page Run, flat: runs/<name>.md ↔ results/<name>/
+│                  (run-<kind>-<MMDD>-<slug>, run-delivery-<lane>); THE ONE execution door
 ├── results/       canonical Page Evidence Results and Folder-local Results.
 │                  A canonical Task Page resolves
 │                  generated output at `$OUTPUT_ROOT/results/<task>/<run>/`
@@ -439,7 +477,7 @@ that needs an independent acceptance or execution lineage becomes another
 Evidence Item/RE. `outline/*-evidence.md` and `outline/evidence/*` are retired
 locations, not runtime inputs. Move them to
 `_archive/legacy-outline-evidence/` before the Page is treated as v4-ready.
-The authored `outline/*-evidence-items.md` file remains the Outline Item
+The authored `draft/*-evidence-items.md` file remains the Outline Item
 contract.
 New cross-Folder evidence enters through Supporting Run references in the `RE`
 Result; the external Ticket and Result stay at their owner and are never copied.
@@ -506,7 +544,7 @@ writer hands its edited plan to `from_canonical`, which rewrites sections 1
 and 3 and keeps the Structure Overview, Scratch notes and any trailing
 section; a renamed paragraph is renamed in all three sections. A Scratch save
 writes the notes under their heading with one hidden marker line
-(`<!-- rp-scratch-NN_C1.P2 · paragraph · open -->`); notes typed by hand are
+(`<!-- run-scratch-0928-c1-p2 · paragraph · open -->`); notes typed by hand are
 read too. No run list, date or history belongs in either Markdown.
 
 `src/outline_version.py::plan_dir` finds `draft/` first and `outline/` on
@@ -656,28 +694,28 @@ check      CHECK             workflow-runs/haipipe-page-check        👤 accept
 The evidence loop law: SHAPE specifies typed Evidence Items; SURVEY
 plans zero-to-many Execution/Discovery Supporting Runs plus exactly one Page
 `RE` lineage per item; LAND produces one ready local Result/Card; EMBED
-interprets it. The ledger is `outline/<stem>-evidence-items.md`
+interprets it. The ledger is `draft/<stem>-evidence-items.md`
 (`haipipe-workbench-page/ref/item-table.md`).
 
 Collaborative writing uses persistent `RP` Runs across one Page under
 `../haipipe-page-workflow/ref/interactive-writing-run.md`.
-`rp-struct-NN` is the Page Structure Run: its SHAPE and SURVEY cycles settle
+A Structure Run (`run-structure-…`) settles, through its SHAPE and SURVEY cycles,
 Structure, Outline Bullets, Point roles, paragraph jobs, and typed
 evidence decisions; it does not write full prose or execute evidence work.
-Several people may contribute Steps to the same `rp-struct-01`; record
+Several people may contribute Steps to the same Structure Run; record
 `participants` and per-Step `contributors` rather than creating one Run per
-person. `rp-sec-NN` covers one named Section drafting/revision session.
-`rp-para-NN_Pxx[-Pyy]` covers one fixed paragraph or contiguous paragraph
+person. A Section Run (`run-section-…`) covers one named Section drafting/revision session.
+A Paragraph Run (`run-paragraph-…`) covers one fixed paragraph or contiguous paragraph
 group. A complete Section draft → review/rating → diagnose → revise cycle is
 one Step inside its Section Run, not a new Run. If the person later
 commissions another independent Section drafting/revision session, allocate a
-new `rp-sec-NN`. For the same paragraph target, reopen the existing Run in a
+new Section Run. For the same paragraph target, reopen the existing Run in a
 new Version unless the target or goal materially changes. Closing one Run
 does not modify Page Content or delivery. After all planned RP Runs and
 required evidence Results are complete, one Page-level CONTENT pass adopts the
-agreed wording. It then commissions one or more `RD` Delivery Runs for the
-declared targets without commissioning an additional delegated Task Run for
-every accepted paragraph. `RD` is a delivery identity, not a second CONTENT or
+agreed wording. It then reruns the fixed Delivery Run of each declared lane
+(`page.py export`) without commissioning an additional delegated Task Run for
+every accepted paragraph. A Delivery Run is a build, not a second CONTENT or
 check gate.
 The historical/explicitly delegated single-paragraph profile remains in
 `haipipe-page-writing/ref/paragraph-run.md`. Neither path adds a workbench.

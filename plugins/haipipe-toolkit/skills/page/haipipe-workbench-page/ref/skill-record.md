@@ -7,7 +7,7 @@ behavior, writer, and human ranking boundary.
 ## 🗂 Storage · MIXED, one ranked list worked through an index
 
 ```text
-<page>/outline/skill/
+<page>/draft/skill/                (a legacy Page: outline/skill/)
 ├── <stem>.md            PRIMARY · the list: one row per skill or
 │                        agent, ORDER = rank
 └── <stem>-skill.html    DERIVED · the 🛠 index of cards, regenerated
@@ -32,14 +32,14 @@ The earlier vocabulary — uses/designs relations, the aligned ✓, drift dates 
 
 The served writer (`POST /_board/skill`, `skill-order`, `skill-entry`) was
 retired with the 🛠 skill map workbench on 2026-09-21. The list is edited in
-`outline/skill/<stem>.md` directly: row order is the rank, a removed name is
+`draft/skill/<stem>.md` directly: row order is the rank, a removed name is
 deleted, a new name is added by hand at the top.
 
 ## 📡 Surface · none served (history below)
 
 The description that follows records the surface the retired workbench
 rendered, so an older Page's `outline/skill/` store still reads correctly. No
-route serves it now; the Outline tab shows no Skills card.
+route serves it now; the Page workbench shows no Skills card.
 
 The Outline workbench embeds the generated index at **Page Records → Skills**:
 one card per skill with a ⠿ drag handle, the skill's version, last_updated, and
@@ -58,4 +58,4 @@ Removed names sit in a quiet fold with ↩ restore; ＋ adds a name by hand, whi
 - (retired 2026-09-21) `live/skillmap.py` and `assets/js/10-drawer/83-workbench-skillmap.js`
   held the three routes, the store writer, the index view, and the skill reader.
 - `../../haipipe-workbench/ref/roster.md`
-  The `outline/skill/` lane row this category owns.
+  The `draft/skill/` lane row this category owns.

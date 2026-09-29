@@ -29,9 +29,9 @@ policy traceability and executor development; it is not the completed corpus `D*
 
 The two sides exchange one signed Label Handoff rather than sharing mutable
 state. It binds the exact corpus snapshot, schema, `G*`, `D_cal*`, sealed-test
-manifest checksum, stopping evidence, lineage, and human freeze signature. It
+manifest and its count, stopping evidence, lineage, and human freeze signature. It
 contains no protected test ids or text. Scanning artifacts bind the handoff
-checksum; a semantic change creates a new Building lineage and invalidates
+version (for example `label-v1` and its date); a semantic change creates a new Building lineage and invalidates
 affected downstream claims.
 
 ## 2. Label, region, and uncertainty

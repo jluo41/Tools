@@ -13,7 +13,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
 ├── REPORT.md
 ├── register.md                       the seven regions × open / covered / risky
 ├── gates/
-│   ├── p0-contract/receipt.json       immutable P0 import/checksum receipt
+│   ├── p0-contract/receipt.json       immutable P0 import receipt
 │   ├── g0/receipt.json                human meaning confirmation + G0 binding
 │   └── meaning-revisions/<seq>.json   each human-decided wording change (definition-discussion)
 ├── corpus/
@@ -48,13 +48,13 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │       ├── card.md                   the wager · first file · proposed → released → landed
 │       ├── README.md                 id · lineage · serves · state · closed:
 │       ├── manifest.yaml             the compiled batch (the unit's spec)
-│       ├── evidence.md               what the round may read, by checksum
+│       ├── evidence.md               what the round may read, by version and count
 │       ├── prospect.md               the forecast, written before judging
 │       ├── candidate_pool.jsonl
 │       ├── prelabels/
 │       ├── human_batch.jsonl
 │       ├── sessions/
-│       │   └── events.jsonl          append-only, hash-chained item events
+│       │   └── events.jsonl          append-only, numbered item events
 │       ├── human_final.jsonl
 │       ├── policy_draft/
 │       ├── metrics.json
@@ -102,7 +102,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
         ├── human_gold.jsonl
         ├── findings.json
         ├── repairs.jsonl
-        ├── receipt.json              the G6 receipt: route, and on pass the D* checksum
+        ├── receipt.json              the G6 receipt: route, and on pass the D* version
         ├── provenance_summary.json
         └── report.md
 ```
@@ -124,7 +124,7 @@ to the Page, so a job file reads `labeling/corpus/items.jsonl`:
 
 ## 2. Canonical versus rendered artifacts
 
-Canonical files contain ids, versions, checksums, fields, and event records.
+Canonical files contain ids, versions, counts, fields, and event records.
 Rendered files summarize them for people.
 
 Required rendered views:
@@ -209,8 +209,8 @@ closed: <keeper> <YYMMDD> · route: another round | freeze | HOLD
 
 `manifest.yaml` freezes `B_t` membership, role, stratum, inclusion probability,
 seed, and blind-access state; it is compiled from the contract's quotas and the
-prior checkpoint's coverage, never invented. `evidence.md` lists, by checksum,
-what the round read: `G_(t-1)`, `D_(t-1)`, the candidate pool, the custody
+prior checkpoint's coverage, never invented. `evidence.md` lists, by version
+and count, what the round read: `G_(t-1)`, `D_(t-1)`, the candidate pool, the custody
 status; a sealed-test id in it voids the round. `prospect.md` states the
 expected disagreement per targeted cell, the rule the evidence should force,
 and the audit-arm metric it should move, before the first item is shown.
@@ -220,18 +220,19 @@ and the audit-arm metric it should move, before the first item is shown.
 `candidate_pool.jsonl` contains `C_t` selection evidence (empty in round 1).
 `prelabels/<executor>.jsonl` holds one executor's immutable sealed rows (none in
 round 1). `sessions/` is append-only. Its `events.jsonl` holds the
-hash-chained show, first, lock, reveal, and final events per item; the field
-list is in `../../label-building-workflow/SKILL.md` §JUDGE. Policy proposals
+numbered show, first, lock, reveal, and final events per item (`seq` 1, 2, 3
+with no gap); the field list is in `../../label-building-workflow/SKILL.md` §JUDGE. Policy proposals
 and backward-impact candidates also belong under `sessions/` once LEARN is
 built. `human_final.jsonl`
-is the per-item final decision with its change type. `checkpoint.json` joins
-every checksum and is the only artifact that promotes human gold and a closed
-policy.
+is the per-item final decision with its change type; its rows point to their
+events by `seq`. `checkpoint.json` joins the round's artifacts by path and is
+the only artifact that promotes human gold and a closed policy.
 
 The reveal payload for an item is read from `cache/reveal/<key>.json`, an index
 built from config `reveal.reference_observations` (`ref-config.md` §3a). The
-key hashes the source path, size, modified time, and that config block. The
-index holds only `eligible` ids and never a sealed id. It is a cache: deleting
+cache file is named from the source path, the source and corpus contents, and
+that config block; the name only finds the cache and is never written to a
+record. The index holds only `eligible` ids and never a sealed id. It is a cache: deleting
 it only forces a rebuild, and it never confers gold. The reveal a human saw is
 kept in the `reveal` event, not in the cache.
 
@@ -256,19 +257,19 @@ It never contains:
 
 Each row links to the human event, policy, round, checkpoint, and any later superseding record.
 
-At calibration stopping, the closed cumulative file is frozen by checksum as `D_cal*`.
+At calibration stopping, the closed cumulative file is frozen by version as `D_cal*`.
 It remains development gold and is not copied or renamed to completed `D*`.
 
 ## 5. Label Handoff
 
 `handoff/label-v1.yaml` is the only authority crossing from Label Building
 to Label Scanning. It binds the corpus snapshot, schema, `G*`, `D_cal*`,
-sealed-test manifest checksum, stopping evidence, lineage, and human freeze
-signature without carrying protected ids or test text. Read
+sealed-test manifest and its count, stopping evidence, lineage, and human
+freeze signature without carrying protected ids or test text. Read
 `ref-label-handoff.md` for the complete contract.
 
-The handoff is immutable after close. Scanning binds its exact checksum rather
-than following `policy/current`; a semantic change creates a new lineage and
+The handoff is immutable after close. Scanning binds its exact version (for
+example `label-v1` and its date) rather than following `policy/current`; a semantic change creates a new lineage and
 invalidation receipt.
 
 ## 6. Annotation policy
@@ -337,9 +338,9 @@ Final human-gold files appear only after authorized release and remain hidden fr
 `registry.yaml` is the single definition of what P3 freezes (the ORDER skill
 points here; `ref-config.md` §4 gives the per-candidate entry schema):
 
-- the bound Label Handoff checksum;
+- the bound Label Handoff version;
 - candidates and model families, each with seen or held-out role;
-- policy and wrapper checksums;
+- policy and wrapper versions;
 - decoding and repeat rules;
 - the minimal-instruction baseline;
 - metrics, quality floors, and the selection rule.

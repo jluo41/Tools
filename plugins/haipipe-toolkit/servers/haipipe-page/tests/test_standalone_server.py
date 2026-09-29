@@ -155,7 +155,7 @@ class StandaloneServerTests(unittest.TestCase):
     def test_runs_view_uses_three_area_contract_without_board(self):
         code, _, body = self.request(path='/_page/runs?file=' + self.source.name)
         self.assertEqual(code, 200, body)
-        self.assertIn(b'Paper Writing', body)
+        self.assertIn(b'Page Writing', body)
         self.assertIn(b'Evidence', body)
         self.assertIn(b'Supporting Runs', body)
         self.assertIn(b'No Structure Run yet', body)

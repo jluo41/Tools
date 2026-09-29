@@ -8,11 +8,18 @@
 
 A Page with none of these folders keeps the flat `runs/`. `results/` stays
 flat either way: the Run Space pairs `runs/<folder>/<run>` with `results/<run>/`.
+
+Since JL 260928 a run named in the readable grammar (`run-section-0927-cleanup`,
+`src/run_names.py`) always sits in the flat `runs/`: one ticket `runs/<name>.md`,
+one folder `results/<name>/`. Its Space comes from its kind, not from a folder;
+`page.py run-names` moves an older Page there once.
 """
 from __future__ import annotations
 
 from pathlib import Path
 import re
+
+from . import run_names
 
 FOLDERS = ("draft-manual-run", "draft-auto-run", "evidence-run", "supporting-run", "delivery-run")
 SPACE = {"draft-manual-run": "draft", "draft-auto-run": "draft", "evidence-run": "evidence",
@@ -33,14 +40,24 @@ def uses_space_folders(page_folder) -> bool:
     return any((runs / name).is_dir() for name in FOLDERS)
 
 
+_FOLDER_OF_SPACE = {"draft": "draft-manual-run", "evidence": "evidence-run", "delivery": "delivery-run"}
+
+
 def folder_for(run_id: str) -> str | None:
     """The Space folder a run id belongs in, or None for other families."""
+    if run_names.is_run_name(run_id):
+        kind = run_names.kind_of(run_id)
+        if kind in {"auto-write", "evidence-embed"}:
+            return "draft-auto-run"
+        return _FOLDER_OF_SPACE.get(run_names.space_of_kind(kind))
     return next((folder for pattern, folder in _KINDS if pattern.match(run_id or "")), None)
 
 
 def ticket_dir(page_folder, run_id: str) -> Path:
     """Where a new run's ticket goes: its Space folder, or flat `runs/` on older Pages."""
     runs = Path(page_folder) / "runs"
+    if run_names.is_run_name(run_id):
+        return runs                      # the readable grammar is always flat
     folder = folder_for(run_id) if uses_space_folders(page_folder) else None
     return runs / folder if folder else runs
 
@@ -56,5 +73,9 @@ def space_of(ticket) -> str:
     for part in path.parts:
         if part in SPACE:
             return SPACE[part]
+    kind = run_names.kind_of(path.stem)
+    if run_names.is_run_name(path.stem) and kind:
+        space = run_names.space_of_kind(kind)
+        return space if space in {"draft", "evidence", "delivery"} else "other"
     folder = folder_for(path.stem)
     return SPACE.get(folder, "other") if folder else "other"

@@ -12,7 +12,7 @@ Newest first.
 
 ## [unreleased] — 2026-09-27
 
-- asset-model § Providers: "A raw ID is translated first": a dialect is a raw ID only one company reads; the SourceFn names it through that company's catalog before the answers lookup, and the answers are keyed by the words. Words such as `Just Carbs` are never dialect (JL 260927, WellDoc b51 lock EventNormV3).
+- asset-model § Providers: "A raw ID is translated first": a dialect is a raw ID only one company reads; the SourceFn names it through that company's catalog before the answers lookup, and the answers are keyed by the words. Words such as `Just Carbs` are never dialect (JL 260927, WellDoc b51 lock EventNormV3; a vendor's exercise code through its code book, and a gallery types a translated code by its words, JL 260928).
 
 ## [0.3.2] — 2026-09-26
 

@@ -14,6 +14,7 @@ Run identity.
 🔀 ROUTE    legal next Run Spec/control outcome
 🧾 RECEIPT  durable terminal record
 🖥 SPACE    Workspace bindings
+🧩 SKILL    the skill(s) the run uses; the Runs panel shows them on each run
 ```
 
 ## `Page.context`
@@ -26,7 +27,8 @@ Run identity.
 🔀 ROUTE    SELF · Page.structure · HOLD
 🧾 RECEIPT  Context record and controller/Run receipt
 🖥 SPACE    Folder inspection; Runtime only when independently commissioned
-🔘 BUTTON   Context · Page · ^rp-context-
+🧩 SKILL    haipipe-page-context
+🔘 BUTTON   Context · Draft · ^(?:rp-context-|run-context-) · views table
 💬 PROMPT   /haipipe-page run {page} from CONTEXT: refresh the Context record of {page}.
 ```
 
@@ -40,8 +42,9 @@ Run identity.
 🔀 ROUTE    SELF/next Step · NEW_VERSION · writing/evidence Run · NEW_RUN · HOLD
 🧾 RECEIPT  runs/rp-struct-01.md + results/rp-struct-01/runtime.yaml + Version journal
 🖥 SPACE    Draft · Evidence · Runtime
-🔘 BUTTON   Structure revise · Draft · ^rp-struct- · views table
-💬 PROMPT   /haipipe-page run {page} rp-struct: revise ## 1 Structure of {plan} (headings, paragraph jobs, Bullet Points); no sentence changes.
+🧩 SKILL    haipipe-page-structure
+🔘 BUTTON   Structure revise · Draft · ^(?:rp-struct-|run-structure-) · views table
+💬 PROMPT   /haipipe-page run {page} run-structure: revise ## 1 Structure of {plan} (headings, paragraph jobs, Bullet Points); no sentence changes.
 ```
 
 ## `Page.interactive-writing.scratch` · `rp-scratch-NN_<target>`
@@ -54,7 +57,8 @@ Run identity.
 🔀 ROUTE    SELF · CLOSE / owning Run Spec · NEW_RUN
 🧾 RECEIPT  selected Outline `## Scratch` registry + paired ticket/result/runtime.yaml
 🖥 SPACE    Draft · Scratch view; Run Space
-🔘 BUTTON   Scratch · Draft · ^rp-scratch- · views scratch
+🧩 SKILL    haipipe-page-scratch
+🔘 BUTTON   Scratch · Draft · ^(?:rp-scratch-|run-scratch-) · views scratch
 💬 PROMPT   /haipipe-page scratch {page} {target}: read my notes under {target} in ## 2 Scratch of {plan} and summarize what to write there.
 ```
 
@@ -72,7 +76,8 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Runtime
-🔘 BUTTON   Section revise · Draft · ^rp-sec-.*\.md$ · views revise
+🧩 SKILL    haipipe-page-writing · haipipe-writing
+🔘 BUTTON   Section revise · Draft · ^(?:rp-sec-.*\.md$|run-section-) · views revise
 💬 PROMPT   /haipipe-page revise {page} {target}: review the whole section in ## 3 Draft of {plan}; keep every Point; show Before / After per paragraph.
 ```
 
@@ -86,12 +91,28 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Evidence · Runtime
-🔘 BUTTON   Paragraph revise · Draft · ^rp-para- · views revise
+🧩 SKILL    haipipe-page-writing · haipipe-writing
+🔘 BUTTON   Paragraph revise · Draft · ^(?:rp-para-|run-paragraph-) · views revise
 💬 PROMPT   /haipipe-page revise {page} {target}: revise the sentences of {target} in ## 3 Draft of {plan}; keep each Point; show Before / After per sentence.
 ```
 
 Ordinary feedback is a Step. Same-target reopening is a Version. Changed goal
 or target is a new Run.
+
+## `Page.revise` · `rp-revise-NN_<target>`
+
+```text
+🎯 TARGET   one target's frozen Before and After texts
+👤 ACTOR    human (a Save in Draft Space → Revise) or agent (compares two texts)
+⚙ ACTION   record every change as a ledger row: Before, After, kind, Why, decision
+🚪 GATE     every difference has a decision
+🔀 ROUTE    SELF/next Step · NEW_RUN · HOLD
+🧾 RECEIPT  change ledger in results/rp-revise-NN_<target>/
+🖥 SPACE    Draft
+🧩 SKILL    haipipe-page-revise
+🔘 BUTTON   Revise edits · Draft · ^(?:rp-revise-|run-revise-) · views revise
+💬 PROMPT   /haipipe-page-revise {page} {target}: read the change ledger of {run} against ## 3 Draft of {plan}; settle every Before / After and say which changes to keep.
+```
 
 ## `Page.evidence-item` · `re-value|cite|display-*`
 
@@ -103,24 +124,27 @@ or target is a new Run.
 🔀 ROUTE    SELF · writing/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  owner-native Ticket/Result + Page RE runtime receipt
 🖥 SPACE    Evidence · Runtime
-🔘 BUTTON   Bind / update citation · Evidence · ^re-cite- · views citations
-🔘 BUTTON   Build figure / table · Evidence · ^re-display- · views displays
-🔘 BUTTON   Bind / update value · Evidence · ^re-value- · views values
+🧩 SKILL    haipipe-page-evidence
+🧩 SKILL    Build figure / table: haipipe-page-evidence · haipipe-display
+🔘 BUTTON   Bind / update citation · Evidence · ^(?:re-cite-|run-citation-) · views citations
+🔘 BUTTON   Build figure / table · Evidence · ^(?:re-display-|run-display-) · views displays
+🔘 BUTTON   Bind / update value · Evidence · ^(?:re-value-|run-value-) · views values
 💬 PROMPT   /haipipe-page evidence {page} {target}: land and verify this evidence item against its Acceptance line in the Evidence Markdown, then bind its Result.
 ```
 
-## `Page.delivery` · `rdNN_<target>`
+## `Page.delivery` · `run-delivery-<lane>`
 
 ```text
-🎯 TARGET   one web, LaTeX, Word, PDF, or render output
+🎯 TARGET   one lane: run-delivery-webpage · run-delivery-latex · run-delivery-word
 👤 ACTOR    agent/system
-⚙ ACTION   adopt exact accepted inputs, build, check, snapshot
-🚪 GATE     artifact is current and build receipt passes
-🔀 ROUTE    SELF · Page.check · NEW_RUN · HOLD
-🧾 RECEIPT  delivery artifact path and build time + runtime/build receipt
-🖥 SPACE    Delivery · Runtime
-🔘 BUTTON   Build · Delivery · ^rd\d+_ · views preview artifacts
-💬 PROMPT   /haipipe-page build {page} {target}: build the {target} output from the accepted Page, then run the consistency checks.
+⚙ ACTION   rerun the lane's one Run: page.py export <page> --lane <lane>
+🚪 GATE     the lane's files are at least as new as the Page
+🔀 ROUTE    SELF · Page.check · HOLD
+🧾 RECEIPT  none typed: the files in delivery/<lane>/ and their file time
+🖥 SPACE    Delivery
+🧩 SKILL    haipipe-page-delivery
+🔘 BUTTON   Build · Delivery · ^run-delivery- · views preview artifacts
+💬 PROMPT   /haipipe-page export {page} {target}: rerun this lane's one Delivery Run (page.py export --lane), then say which files changed. No new Run id, no receipt, no hash.
 ```
 
 ## `Page.auto-writing` · `rp-auto-NN_<target>`
@@ -133,7 +157,8 @@ or target is a new Run.
 🔀 ROUTE    SELF · Page.interactive-writing.paragraph · NEW_VERSION · HOLD
 🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ (versions, rubric, runtime)
 🖥 SPACE    Draft · Runtime
-🔘 BUTTON   Auto write · Draft · ^rp-auto-|^rp-sec-.*\.sh$ · views reading
+🧩 SKILL    haipipe-page-writing · haipipe-writing
+🔘 BUTTON   Auto write · Draft · ^(?:rp-auto-|run-auto-write-)|^rp-sec-.*\.sh$ · views reading
 💬 PROMPT   /haipipe-page auto-write {page} {target}: write the sentences of {target} from its Points, review them against the rubric, rewrite, then show me Before / After.
 ```
 
@@ -148,21 +173,30 @@ or target is a new Run.
 🔀 ROUTE    SELF · NEW_VERSION · Page.interactive-writing.paragraph · HOLD
 🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ + the new plan version
 🖥 SPACE    Draft · Evidence · Runtime
-🔘 BUTTON   Evidence embed · Draft · ^rp-embed- · views table
+🧩 SKILL    haipipe-page-evidence
+🔘 BUTTON   Evidence embed · Draft · ^(?:rp-embed-|run-evidence-embed-) · views table
 💬 PROMPT   /haipipe-page embed {page} {target}: take the accepted evidence for {target} from the Evidence Markdown; write its Answered lines into ## 1 Structure and its citation keys into ## 3 Draft of {plan}; show Before / After; save as an evidence version.
 ```
 
 `🔘 BUTTON` lines are what the workbench shows: `label · Space · ticket
-pattern`, and optionally `· views <names>`. The Space is Draft, Evidence,
-Delivery or Page (a Page-level run; no Space shows it); the pattern matches a run's ticket file name,
-so each Space's Runs panel can count and list the runs behind a button. `views`
-names the Draft views (`table reading scratch revise`), the Evidence tabs
-(`citations displays values`) or the Delivery views (`preview artifacts
-checks`) where the button shows, so each view lists only its own runs (JL
-260927). In Delivery the format tab (Web, LaTeX, Word, Slides) picks the builds
-of that format and fills `{target}`. `💬 PROMPT` is the text a person copies to
-start that run in a Claude or Codex session; the panel fills in `{page}`,
-`{plan}`, `{target}`, `{button}` and `{run}`.
+pattern`, and optionally `· views <names>`. The Space is Draft, Evidence or
+Delivery; the pattern matches a run's ticket file name, so each Space's Runs
+panel can count and list the runs behind a button. Patterns accept the readable
+names (`run-section-0927-cleanup`, `src/run_names.py`) and the older short ones
+(`rp-sec-07`) until every Page has moved (`page.py run-names`). `views` names the
+Draft views (`table reading scratch revise`), the Evidence tabs (`citations
+displays values`) or the Delivery views (`preview artifacts checks`) where the
+button shows, so each view lists only its own runs (JL 260927). In Delivery the
+format tab (Web, LaTeX, Word, Slides) picks the builds of that format and fills
+`{target}`. `🧩 SKILL a · b` names the skills every button of the card uses;
+`🧩 SKILL <button label>: a · b` names one button's. `💬 PROMPT` is the text a
+person copies to start that run in a Claude or Codex session; the panel fills in
+`{page}`, `{plan}`, `{target}`, `{button}` and `{run}`.
+
+The order and the design drawing: `servers/workbench-page/studio/page-workbench-design.excalidraw`
+§ "The runs of a Page". A run opens with `page.py open-run` (one ticket,
+`runs/<name>.md`), changes only the text while it is open, and closes with
+`page.py close-run` when the person says so (`results/<name>/` and one log line).
 
 ## `Page.check`
 
@@ -174,8 +208,8 @@ start that run in a Claude or Codex session; the panel fills in `{page}`,
 🔀 ROUTE    CLOSE · owning Run Spec · HOLD
 🧾 RECEIPT  check Result and Workflow Runtime route record
 🖥 SPACE    read-only Draft · Evidence · Runtime · Delivery
-🔘 BUTTON   Check · Page · ^rp-check-
-🔘 BUTTON   Check · Delivery · ^rp-check- · views checks
+🧩 SKILL    haipipe-page-check
+🔘 BUTTON   Check · Delivery · ^(?:rp-check-|run-check-) · views checks
 💬 PROMPT   /haipipe-page check {page}: judge the current built version read-only and route any finding.
 ```
 

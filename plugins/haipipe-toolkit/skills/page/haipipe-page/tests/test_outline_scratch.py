@@ -124,7 +124,9 @@ class ScratchTest(unittest.TestCase):
         self.assertEqual(result["run"], first)
         result, err = self.save("paragraph", "C1.P1")
         self.assertIsNone(err, err)
-        self.assertEqual(result["run"], "rp-scratch-02_C1.P1")
+        # a new Scratch after a close is a new run: the same day and target get -2
+        self.assertRegex(result["run"], r"^run-scratch-\d{4}-c1-p1-2$")
+        self.assertFalse((self.folder / "results" / result["run"]).exists())   # open: ticket only
 
     def test_draft_renders_one_control_per_current_target_but_read_only_has_none(self):
         card = plan_card(self.page)

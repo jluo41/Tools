@@ -39,6 +39,13 @@
   (`gates/meaning-revisions/<seq>.json`) that retires G0, so Confirm meaning is
   pressed again; `status` rebuilds the P0 anchor through the revision chain.
   Refused once any item is judged. SOP step 2; happy-path plan is 44 Runs.
+- Views exist only where Runs live (JL 260928): Data = Contract (Schema merged)
+  · Embedding; Labeling = Definition (Discussion + Label merged, with Confirm
+  meaning) · Rounds · Guideline; Delivery gains Scan. Run names are
+  `run-<operation>-<target>`; types sort by the Workflow map's new `step` column.
+- One skill per view, never shared (JL 260929): eleven `subjective-label-<view>`
+  skills; each Run card shows `Skill <name>` from the new View skills table.
+- No hash wording (AGENTS.md rule 9); the engine checks content, not checksums.
 - Labeling → Discussion shows each discussion's labels before and after; the
   Label view's ⧉ buttons and the Discussion view's Copy brief are gone, since
   their prompts are now this Run's `+ New Run` and `Resume`.

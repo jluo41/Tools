@@ -1,6 +1,7 @@
 # The record files · one shape, nine kinds
 
-Every file in `<page>/outline/` except the plan is a LIST OF RECORDS, and a
+Every file in `<page>/draft/` except the plan is a LIST OF RECORDS (the six
+process records live in `draft/records/`; a legacy Page keeps `outline/`), and a
 record has one grammar:
 
 ```text
@@ -16,7 +17,7 @@ Every file opens with three lines: `# <stem> · <kind>` · `page: <stem>` ·
 ```text
 file                     answers                  id            labels                              writer                         teeth
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-<stem>-outline-v<G>.<S>[.<E>].md what we AGREED    C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks Shape; evidence inherits it  plan-* (grammar §7)
+<stem>-draft-v<G>.<S>[.<E>].md   what we AGREED    C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks Shape; evidence inherits it  plan-* (grammar §7)
 <stem>-context.md        what later Run Specs MAY CTX1–CTX6     Status · Sources · Next authority   CONTEXT/PREPARE; generated     context-missing · -stale ·
                          rely on                                                                                                    -conflicting
 <stem>-requirement.md    what we MUST obey        V1 V2 V3 V4   V: Rule · Arc · Words · Citations · generator refreshes V; page     requirement-missing ·
@@ -50,8 +51,8 @@ id survives the move. `D<nn>` is BOARD-WIDE: allocate from the highest id
 across every discussion AND log file on the board:
 
 ```bash
-grep -rhoE '^#{3,4} D[0-9]+|· D[0-9]+ (settled|dropped)' <board>/*/*/outline/*-discussion.md \
-  <board>/*/*/outline/*-log.md | grep -oE 'D[0-9]+' | sort -t D -k2 -n -u | tail -1
+grep -rhoE '^#{3,4} D[0-9]+|· D[0-9]+ (settled|dropped)' <board>/*/*/draft/records/*-discussion.md \
+  <board>/*/*/draft/records/*-log.md | grep -oE 'D[0-9]+' | sort -t D -k2 -n -u | tail -1
 ```
 
 Two sessions can mint the same id in the same minute: run the grep
@@ -143,8 +144,8 @@ the path with a real related Page before use):
   exception: regenerate its V block and author its W block; the
   `requirement-hand-edited` tooth fires when the generated marker disappears.
 - Every kind is one flat file carrying the stem; only the plan is
-  many-per-page, by version. No file name contains `outline` except the plan,
-  because the plan globs are `*-outline-*.md`.
+  many-per-page, by version. No other file name contains `draft-v` or `outline-v`,
+  because the plan globs are `*-draft-v*.md` and the legacy `*-outline-*.md`.
 - The renderer (`servers/workbench-page/outline.py _records`) draws every kind the same way: id
   badge, headline, label grid, status pill, a "more" fold; one chip per file
   that exists, with its record count. The lens writes nothing.

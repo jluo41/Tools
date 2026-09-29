@@ -19,6 +19,10 @@ WHAT IT READS, and what it drops (QC5's read-and-drop table)
     \\citep{} \\ref{} kept verbatim: they are already LaTeX
     > lanes DROPPED. In Word they become comments; here they have nowhere to go.
 
+A Page whose head says `content-format: latex` holds LaTeX source in Content
+(a Section migrated from a manuscript): its lines pass through unescaped, one
+LaTeX paragraph per heading block (`build_latex_section`).
+
 REFUSE TO REGRESS, which QC5 demands by name. Sync runs one way, so a page whose
 Content lost a citation would silently empty that section's bibliography. Before
 writing over an existing section the generator counts citations in both and
@@ -258,7 +262,54 @@ def keywords_text_of(page):
     return " ".join(kept).strip()
 
 
+CONTENT_FORMAT = re.compile(r"(?m)^content-format:\s*(\S+)\s*$")
+
+
+def content_format_of(page):
+    """The Page head's `content-format:` (`markdown` when absent).
+
+    `latex` says the Draft sentences ARE LaTeX source: a paper Section migrated
+    from a manuscript keeps its floats, equations and lists as written, so the
+    LaTeX lane must pass them through instead of escaping them as prose."""
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="ignore")
+    m = CONTENT_FORMAT.search(raw.split("\n## ", 1)[0])
+    return m.group(1).lower() if m else "markdown"
+
+
+def build_latex_section(page):
+    """`content-format: latex`: `## Content` is LaTeX source, printed as written.
+
+    Markdown headings (`###`, `####`) and `>` evidence lanes are Page structure,
+    not manuscript, and are dropped; HTML comments (the `realizes:` tags) go
+    too. A heading or a blank line ends a LaTeX paragraph; a `>` lane under a
+    sentence does not. The lines inside a paragraph are kept, one per line,
+    unescaped."""
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="replace")
+    raw = re.sub(r"<!--.*?-->", "", raw, flags=re.S)
+    lines = raw.splitlines()
+    start = next((i for i, l in enumerate(lines) if l.strip() == "## Content"), None)
+    if start is None:
+        raise SystemExit(f"{page}: no ## Content section")
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+    paragraphs, current = [], []
+    for line in lines[start + 1:end]:
+        text = line.rstrip()
+        if text.lstrip().startswith(">"):
+            continue
+        if not text.strip() or text.lstrip().startswith("#"):
+            if current:
+                paragraphs.append(current)
+                current = []
+            continue
+        current.append(text)
+    if current:
+        paragraphs.append(current)
+    return "\n\n".join("\n".join(p) for p in paragraphs) + "\n"
+
+
 def build_section(page, displays, report, keep_fences=False):
+    if content_format_of(page) == "latex":
+        return build_latex_section(page)
     blocks, nfenced = md2docx.parse_page(page, keep_fences=keep_fences)
     declared = section_title_of(page)
     if nfenced and not keep_fences:

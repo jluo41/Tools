@@ -8,8 +8,8 @@ description: >-
   Paper, and Labeling profiles. Trigger: Run contract, Run catalogue, Run
   ticket, runtime receipt, orphan Result, /haipipe-run.
 metadata:
-  version: "0.28.0"
-  last_updated: "2026-09-22"
+  version: "0.28.1"
+  last_updated: "2026-09-28"
 ---
 
 # /haipipe-run · one commission, one identity, preserved history
@@ -170,7 +170,7 @@ and fingerprint. Neither face can close the other's obligations; use the
 [Task/Page closure contract](../../task/haipipe-task/ref/task-page.md).
 RE labels and Cards are projections of one focal Result. Supporting Runs keep
 their native identities. Accepted RP prose does not prove RE evidence ready
-or close whole-Page CHECK. Page RD builds can be Runs; Design Delivery is a
+or close whole-Page CHECK. A Page's delivery builds are one fixed Run per lane (`run-delivery-<lane>`); Design Delivery is a
 read-only projection of exact Generate/Verify Results.
 
 ## Inventory and boundaries

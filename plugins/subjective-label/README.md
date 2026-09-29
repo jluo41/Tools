@@ -8,10 +8,15 @@ corpus under that frozen meaning.
 ```text
 subjective-label                         one user-facing umbrella
 ├── label-building                      Building side LAW: authority, human gates, verbs
-├── label-building-workflow             Building Run Spec guide: order, item resume, Run receipts
+├── label-building-workflow             Building step order, allocation, Run receipts
 ├── label-scanning                      Scanning side LAW
-├── label-scanning-workflow             Scanning Run Spec guide: test lock, risk queue, audit loop
-└── subjective-label-workflow           the Workflow: Run Specs, dependencies, gates, Routes, handoff
+├── label-scanning-workflow             Scanning step order, allocation, Run receipts
+├── subjective-label-workflow           the Workflow: Run Specs, dependencies, gates, Routes, handoff
+└── subjective-label-<view> × 11        one skill per workbench view; each Run's own steps
+    Data      contract · embedding
+    Labeling  definition · rounds · guideline
+    Quality   test · evaluation · audit
+    Delivery  handoff · scan · final-labels
 ```
 
 The split follows one authority boundary:
@@ -63,9 +68,10 @@ carries a rendered `cheatsheet.md` and `gallery.md`; the project keeps a
 ## The Label Handoff
 
 `handoff/label-v1.yaml` is the only legal crossing. It binds corpus, schema,
-`G*`, `D_cal*`, sealed-test manifest checksum, stopping evidence, lineage, and
-human signature. It contains no protected test ids or text. Scanning binds the
-exact handoff checksum and cannot edit Building artifacts.
+`G*`, `D_cal*`, sealed-test manifest and its count, stopping evidence, lineage,
+and human signature. It contains no protected test ids or text. Scanning binds
+the exact handoff version (`label-v1` and its date) and cannot edit Building
+artifacts.
 
 ## Skills
 
@@ -73,10 +79,11 @@ exact handoff checksum and cannot edit Building artifacts.
 |---|---|---|
 | `/subjective-label` | `subjective-label/` | auto-route the job through the family |
 | `/label-building` | `label-building/` | the Building law: Contract, Round, Freeze |
-| `/label-building-workflow` | `label-building-workflow/` | the Building order: fence, contract, card, prepare, judge, learn, close |
+| `/label-building-workflow` | `label-building-workflow/` | the Building step order (steps 1-13), allocation, receipts |
 | `/label-scanning` | `label-scanning/` | the Scanning law: Test, Scan, Audit |
-| `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
+| `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning step order (steps 14-26), allocation, receipts |
 | `/subjective-label-workflow` | `subjective-label-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
+| `/subjective-label-<view>` | `subjective-label-<view>/` (11) | one per workbench view, never shared (JL 260929): the Runs of that view and their own steps; each Run card names it |
 | `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
 | `/haipipe-workbench-labeling` | `skills/label-building-workflow/haipipe-workbench-labeling/` | the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and one write door |
 
@@ -94,6 +101,8 @@ subjective-label/
 │   ├── label-building/ · label-building-workflow/
 │   ├── label-scanning/ · label-scanning-workflow/
 │   ├── subjective-label-workflow/
+│   ├── subjective-label-{contract,embedding,definition,rounds,guideline}/
+│   ├── subjective-label-{test,evaluation,audit,handoff,scan,final-labels}/
 │   ├── label-building/ref/            authority, artifact, Run, and Space contracts (ref-*.md)
 │   └── label-building-workflow/haipipe-workbench-labeling/  🏷 Labeling contract: four Spaces + one write door
 ├── servers/                             _host/serve.py (own host: the shared haipipe host with --only labeling)

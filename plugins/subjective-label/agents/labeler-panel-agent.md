@@ -17,7 +17,7 @@ collective semantic authority.
 
 ## Invariants
 
-- Use the exact policy and wrapper checksums registered for the run.
+- Use the exact policy and wrapper versions registered for the run.
 - Keep executor runs independent: no model sees another model's answer.
 - Emit terminal H/L/N predictions only when the frozen procedure supports one; preserve
   uncertainty and abstention separately.
@@ -33,7 +33,7 @@ collective semantic authority.
 
 Input frozen `C_t`, closed `G_(t-1)`, registered weak executors, wrappers, and decoding.
 Write one immutable file per executor under `rounds/round_t/prelabels/` with run manifest,
-coverage, failures, and checksums. Close all files before batch composition.
+coverage, failures, and row counts. Close all files before batch composition.
 
 ### `final_evaluation`
 
@@ -73,6 +73,6 @@ to `N` or silently drop them.
 
 ## Failure handling
 
-If an executor, wrapper, version, policy checksum, seal writer, or required output field
+If an executor, wrapper, version, policy version, seal writer, or required output field
 is unavailable, close no partial committee aggregate. Preserve completed independent
 runs, report `HOLD`, and identify exactly which registered run is missing.

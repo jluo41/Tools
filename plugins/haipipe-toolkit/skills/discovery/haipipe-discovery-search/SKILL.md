@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical papers/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-09-22"
+  version: "0.7.3"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
 
@@ -97,8 +97,10 @@ candidate packet before any Run is opened.
 3. RESOLVE each kept candidate to one canonical Subject: exact title, authors,
    venue/year, and DOI/arXiv/PubMed/publisher URL. Use Crossref or PubMed as
    identity/index fallbacks, not as a substitute for the preprint/journal
-   coverage law. A secondary post or short link is a Trigger, not automatically
-   the Subject.
+   coverage law. A title is not an identity: Crossref's top bibliographic hit
+   for a title can be a different paper, so resolve a DOI or arXiv identifier
+   before any Bib is fetched. A secondary post or short link is a Trigger, not
+   automatically the Subject.
 4. ADMIT only candidates relevant enough to analyze. For each Subject call the
    Task Page's add operation: allocate the next RUNNAME and create BOTH
    runs/<RUNNAME>.sh and results/<RUNNAME>/runtime.yaml (`family: discovery`,
@@ -110,7 +112,16 @@ candidate packet before any Run is opened.
    the completed runtime receipt. For a paper Subject, the new Result MUST also
    carry `result_contract: paper-source-v2` plus the source-access pair required
    by the Paper Run contract; the compatibility checker does not waive this
-   creation-time requirement. PDF and captured Trigger text are optional.
+   creation-time requirement. Fetch the Bib with
+   `../haipipe-discovery/scripts/paper_bib_fetch.py`, which resolves the entry
+   from Crossref, doi.org, DataCite, arXiv, or a `--publisher-url`, and stamps
+   `bib.source`, `bib.mode: verbatim_copy`, `bib.source_class` and `bib.record`.
+   Always pass `--expected-year`: it is the only guard that catches a different
+   paper reusing the Subject's exact title. Never compose an entry
+   from metadata fields, and never script Google Scholar: it answers `403` and
+   its export omits the DOI. A Scholar or person export enters through
+   `--bib-file --source-url`, recorded as the weaker `person-export` class.
+   PDF and captured Trigger text are optional.
 6. CHECK the Run/Result spine. Hand completed Results to D1 SYNTHESIZE; the
    Outline workbench's citation contract owns the deterministic Task Page Bib
    aggregation under `draft/evidence/bibex/`.

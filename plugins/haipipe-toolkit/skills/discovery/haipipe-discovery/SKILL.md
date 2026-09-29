@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.17.2"
-  last_updated: "2026-09-28"
+  version: "0.18.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
 
@@ -241,7 +241,14 @@ separate Bibex workbench.
    locator state; technical `complete` must never imply that full text or a
    focal claim was verified.
    Runtime must name the Bib source and `mode: verbatim_copy`. Metadata alone
-   is not a supplied BibTeX entry and may not be formatted into one.
+   is not a supplied BibTeX entry and may not be formatted into one. Fetch it
+   with `scripts/paper_bib_fetch.py`: a resolved DOI or arXiv identifier is
+   required first, because Crossref's top hit for a TITLE can be a different
+   paper. Always pass `--expected-year`: a DOI agrees with itself, so a paper
+   reusing the same title otherwise passes every guard. `bib.source_class` is
+   `authoritative-export` for crossref/doi.org/datacite/arxiv/publisher, and
+   `person-export` for a person's own export, including Google Scholar, which
+   no script may fetch.
    `complete` is technical Result completeness; citation verification may
    still be `pending`, but then the Task cannot close as `ok` or
    `inconclusive`.
@@ -394,8 +401,9 @@ A materially changed analysis allocates a new Run with `supersedes:`.
 ### 5. D1 `ACQUIRE` · run each admitted Subject
 
 The ticket sets runtime to running, calls the selected workers, then writes its
-paired Result only. On success write the Card, facts, one-entry Bib, optional
-PDF/raw/trigger, and status complete. After Subject allocation, an analysis,
+paired Result only. On success write the Card, facts, one-entry Bib (through
+`scripts/paper_bib_fetch.py`, identity before entry), optional PDF/raw/trigger,
+and status complete. After Subject allocation, an analysis,
 retrieval, or Bib failure preserves blocked or unresolved plus a reason. Never
 claim complete around missing evidence.
 

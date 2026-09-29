@@ -345,7 +345,7 @@ class WriteSideTest(FeedbackFixture):
             "summary": "This legacy field is ignored.",
         })
         self.assertIsNone(err, err)
-        self.assertEqual(result["run"], "rp-scratch-01_C1.P2")
+        self.assertRegex(result["run"], r"^run-scratch-\d{4}-c1-p2$")
         self.assertEqual(result["version"], "v001")
         self.assertEqual(result["summary"], "AI-generated Scratch summary.")
         self.assertRegex(self.plan.read_text(encoding="utf-8"),
@@ -392,8 +392,8 @@ class StandaloneWireTest(FeedbackFixture):
         self.assertEqual(code, 200, body)
         result = json.loads(body)
         self.assertTrue(result["ok"], result)
-        self.assertEqual(result["run"], "rp-scratch-01_C1.P2")
-        scratch_result = self.folder / "results" / "rp-scratch-01_C1.P2"
+        self.assertRegex(result["run"], r"^run-scratch-\d{4}-c1-p2$")
+        scratch_result = self.folder / "results" / result["run"]
         self.assertTrue((scratch_result / "v001.md").is_file())
         self.assertIn("AI generated the Scratch Summary and the person closed the Run.",
                       (scratch_result / "v001.md").read_text(encoding="utf-8"))

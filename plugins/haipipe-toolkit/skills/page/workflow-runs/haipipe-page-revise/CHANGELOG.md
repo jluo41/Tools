@@ -1,3 +1,10 @@
+## 0.4.0 · 2026-09-29 · Readable name; records at the two ends (JL 260928)
+
+- Identity `run-revise-<MMDD>-<target>` (older `rp-revise-NN_<target>` still reads).
+- The direct door no longer writes `results/` on every Save: the first Save opens the run (one
+  ticket keeping the text before, per Bullet), later Saves change only the Draft, and
+  `page.py close-run` writes the ledger, `runtime.yaml`, `working.md` and one log line.
+
 ## 0.3.0 · 2026-09-28 · No content hashes (JL 260928)
 
 - The compare door names its two texts by path and version number, not SHA-256. The change

@@ -8,14 +8,14 @@ Save the box's lines go back to the paragraph's Bullets in order: line 1 → B1,
 line 2 → B2, … Extra lines join the last Bullet's Draft; missing lines clear
 the Bullets left over. Nothing else in the Outline moves.
 
-Every Save does two things under the page lock:
-
-1. writes the changed Draft fields back into the selected Outline Markdown,
-   guarded by the Bullet and Draft tokens the page was rendered with;
-2. opens or extends the paragraph's Revise Run (`rp-revise-NN_<C.P>`,
-   haipipe-page-revise) with one Step whose Saved result is a change ledger in
-   the Step-template `#### Track changes` shape, one card per changed Bullet,
-   Decision `accept` because the person typed it. Run Space renders it.
+Every Save writes the changed Draft fields back into the selected Outline
+Markdown under the page lock, guarded by the Bullet and Draft tokens the page was
+rendered with. Records only at the two ends (JL 260928): the first Save on a
+paragraph opens its Revise run, `run-revise-<MMDD>-<c1-p2>` (one ticket in
+`runs/`, which keeps the paragraph's text before the Save as its Before); later
+Saves change only the Draft (a Why note is kept in that ticket). `page.py
+close-run` writes the Before / After ledger into `results/<run>/` when the person
+says close (haipipe-page-revise). The Runs panel lists the run under Revise edits.
 
 Nothing here touches Page Content; `page.py adopt` copies the Drafts into it when the person asks.
 """
@@ -30,6 +30,7 @@ from pathlib import Path
 from src.outline_version import plan_dir, latest_outline, version_tag
 from src.run_folders import ticket_dir, ticket_rel
 from src.plan_shape import iter_plan_bullets
+from src.run_lifecycle import find_open, open_run
 from live.outline_preview import (bullet_token, draft_path, page_lock, read_drafts,
                                   reader_prose, record_token, write_drafts)
 
@@ -188,7 +189,7 @@ _ASSETS = r'''<style>
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||'Unable to save');return j;});})
    .then(function(j){var b=box(form);b.value=j.text;b.defaultValue=j.text;b.dataset.bullets=JSON.stringify(j.bullets||[]);(j.changed||[]).forEach(reflect);
      var why=form.querySelector('.revise-why');if(why)why.value='';mark(form);
-     var n=(j.changed||[]).length;status(form,n?'Saved · '+j.run+' · '+j.step+' · '+n+' sentence'+(n===1?'':'s')+' → Run Space':'Nothing changed.');})
+     var n=(j.changed||[]).length;status(form,n?'Saved · '+(j.name||j.run)+' · '+n+' sentence'+(n===1?'':'s'):'Nothing changed.');})
    .catch(function(err){status(form,String(err.message||err),true);mark(form);});
  });
  window.addEventListener('beforeunload',function(e){if(Array.prototype.some.call(document.querySelectorAll('form.revise-form'),dirty)){e.preventDefault();e.returnValue='';}});
@@ -337,6 +338,26 @@ def _lines_to_bullets(text: str, addresses: list[str]) -> dict[str, str]:
     return mapped
 
 
+
+def _display_name(run_id: str) -> str:
+    """The name people read (`rp-revise-01_C1.P2` → `run-revise-01`), as the Runs panel shows it."""
+    try:
+        from live.runs_panel import display_name
+    except ImportError:
+        return run_id
+    return display_name(run_id)
+
+
+def _note_why(folder: Path, run_id: str, paragraph: str, why: str) -> None:
+    """Keep the person's reason in the open run's own ticket (not in results/ or the log)."""
+    ticket = folder / "runs" / (run_id + ".md")
+    if ticket.is_file():
+        text = ticket.read_text(encoding="utf-8")
+        if "\n## Why\n" not in text:
+            text = text.rstrip("\n") + "\n\n## Why\n"
+        ticket.write_text(text.rstrip("\n") + "\n- %s: %s\n" % (paragraph, why), encoding="utf-8")
+
+
 def save_revise(page_src: Path, payload: dict, *, read_only: bool = False) -> tuple[dict | None, str | None]:
     """Map the box's lines onto the paragraph's Bullets, save what changed, extend the Revise Run."""
     if read_only:
@@ -391,19 +412,26 @@ def save_revise(page_src: Path, payload: dict, *, read_only: bool = False) -> tu
                     "bullets": [{"address": a, "bullet": bullet_token(blocks[a]),
                                  "record": record_token(fresh.get(a))} for a in addresses],
                     "message": "nothing changed"}, None
+        # The paragraph as it reads before this Save: a new Revise run keeps it as its Before.
+        before_text = "\n".join("%s · %s" % (a, _effective(records, realized, a) or "") for a in addresses)
         for item in changed:
             records[item["address"]] = {**records.get(item["address"], {}),
                                         "plan": version_tag(plan),
                                         "text": item["after"]}
         write_drafts(page_src, records)
         fresh = read_drafts(page_src)
-        display = str(payload.get("display") or paragraph).strip() or paragraph
-        run_id, existing = _open_run(page_src, paragraph)
-        ledger = _write_ledger(page_src, run_id, existing, paragraph, display, plan, changed, why)
+        # Records only at the two ends (JL 260928): the first Save opens the run (its ticket
+        # keeps the Before); later Saves change only the Draft; close-run writes results/.
+        run_id = find_open(page_src.parent, "revise", paragraph)
+        if not run_id:
+            run_id = open_run(page_src, "revise", target=paragraph, goal=why,
+                              by="person · Draft Space › Revise", before=before_text)["run"]
+        elif why:
+            _note_why(page_src.parent, run_id, paragraph, why)
     return {
         "paragraph": paragraph,
-        "run": ledger["run"], "step": ledger["step"], "summary": ledger["summary"],
-        "result": ledger["result"], "outline": str(draft_path(page_src)),
+        "run": run_id, "name": run_id, "step": "", "summary": "",
+        "result": "", "outline": str(draft_path(page_src)),
         "version": version_tag(plan),
         "text": box_text([_effective(fresh, realized, a) for a in addresses]),
         "bullets": [{"address": a, "bullet": bullet_token(blocks[a]), "record": record_token(fresh.get(a))}

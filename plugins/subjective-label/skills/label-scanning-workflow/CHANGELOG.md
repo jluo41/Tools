@@ -1,5 +1,12 @@
 # label-scanning-workflow · CHANGELOG
 
+## 0.8.0 · 2026-09-29
+
+Keep only the Scanning step order, allocation and receipts. Each Run's own steps
+moved to its view skill (subjective-label-test, -evaluation, -scan, -audit,
+-final-labels), one skill per workbench view (JL 260929). The handoff is bound
+by version, not checksum (AGENTS.md rule 9).
+
 ## 0.6.0 · 2026-09-01
 
 Allocate and order granular P3-P5 Run envelopes, including one prediction and

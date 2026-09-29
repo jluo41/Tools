@@ -37,7 +37,7 @@ plugin include GoEmotions, DICES, POPQuorn, LeWiDi, and MFTC.
 
 Dataset availability, licensing, splits, schemas, and per-rater fields can change.
 Verify them from primary documentation at execution time and record exact release,
-checksum, license, access date, and transformation code. A name in this file is not a
+license, access date, and transformation code. A name in this file is not a
 claim that the resource is currently accessible or suitable.
 
 ## 4. Registration
@@ -49,7 +49,7 @@ external_validation:
   id: external-01
   dataset: "provider/name"
   release: "..."
-  checksum: "..."
+  access_date: "..."
   native_construct: "..."
   target_population: "..."
   mapping_version: "mapping-01"
@@ -89,8 +89,8 @@ metric under a declared mapping on a particular external dataset.
 
 ## 7. Cache and privacy
 
-Cache external data only when its license permits. Keep download receipts, checksums,
-and transformation manifests. Apply the same privacy and access controls as the source
+Cache external data only when its license permits. Keep download receipts (release
+and access date) and transformation manifests. Apply the same privacy and access controls as the source
 requires; public availability does not imply unrestricted redistribution.
 
 ## 8. Implementation boundary

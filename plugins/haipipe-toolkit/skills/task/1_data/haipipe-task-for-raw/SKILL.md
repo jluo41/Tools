@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.4"
+  version: "0.5.5"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -119,6 +119,8 @@ b00_rawdata/
   only where needed. Only the passes that apply exist.
 - Privacy: metadata only. For PHI the profile pass is a server `.cmd` Run;
   dates leave as years, counts 1 to 10 as `<11`, and no row value leaves.
+  Encoded ids (`patient_id_encoded`, `invitation_id_encoded`) are meaningless
+  UUIDs, not PHI: a notebook may show them, and they never block a commit (JL 260929).
 - A table's reader-facing description (what one row is, what each column means, pictures
   of the values) is a `tNN_describe_<table>` Task from `haipipe-task-for-description`,
   beside the profile passes; its column dictionary lives in the Block's `src/`. A raw

@@ -1,8 +1,8 @@
-"""🏷 Labeling · four Spaces over one page-local labeling/ job, a Runs panel under each, plus one write door.
+"""🏷 Labeling · four Spaces over one page-local labeling/ job, a Runs panel beside each, plus one write door.
 
 Data · Labeling · Quality · Delivery are views over canonical files; the
 overview never renders item text and never upgrades an observed file to a
-passed gate.  Labeling → Label holds the label definitions.  Round item text
+passed gate.  Labeling → Definition holds the label definitions and Confirm meaning.  Round item text
 appears only in Labeling → Rounds, and only for items already shown to the
 person; the labels come from the chat.  Every write through
 ``POST /_board/labeling/act`` goes through the
@@ -152,7 +152,7 @@ def _canonical_job_module():
 
     The Board engine and the domain plugin are deliberately separate plugin
     roots.  Loading the small, dependency-stable ``job.py`` module by path
-    keeps the presenter from maintaining a second checksum implementation and
+    keeps the presenter from maintaining a second integrity implementation and
     avoids making either plugin depend on the other's Python package layout.
     """
     here = Path(__file__).resolve()
@@ -180,7 +180,7 @@ def _canonical_status(root: Path) -> dict | None:
     Older field-test fixtures often contain only placeholder P0 files.  They
     remain readable through the compatibility presenter, but once a canonical
     receipt exists the Board must defer to the domain engine and surface its
-    checksum/receipt failures instead of guessing from file presence.
+    integrity and receipt failures instead of guessing from file presence.
     """
     if not any(
         (root / rel).is_file()
@@ -220,7 +220,7 @@ def inspect(page_src: Path) -> dict:
     canonical = _canonical_status(root)
     if canonical:
         # Once a canonical receipt exists, the domain engine—not this view's
-        # file-presence heuristics—owns P0 checksum and receipt truth.
+        # file-presence heuristics, owns P0 integrity and receipt truth.
         p0 = {
             rel: bool((canonical.get("p0_files") or {}).get(rel, present))
             for rel, present in p0.items()
@@ -399,7 +399,7 @@ def inspect(page_src: Path) -> dict:
         g0_note = "; ".join(canonical_integrity_errors[:3])
     elif canonical:
         g0_note = (
-            "canonical P0 checksums and G0 meaning receipt validated"
+            "P0 contract and G0 meaning receipt validated"
             if g0_reported else
             "P0 is intact; human meaning confirmation/G0 receipt remains open"
         )
@@ -407,7 +407,7 @@ def inspect(page_src: Path) -> dict:
         g0_note = (
             "required files observed; P0 meaning confirmation remains open before G0 may be tested"
             if meaning_open else
-            "required files observed; canonical receipt/checksum validation is not present"
+            "required files observed; the canonical receipt is not present"
         )
     gate_rows = [
         ("G0", "Contract → Round", sum(p0.values()), len(p0), g0_reported, g0_note),
@@ -417,7 +417,7 @@ def inspect(page_src: Path) -> dict:
          "checkpoint reports four gates + human STOP" if g2_reported else "stopping evidence remains open"),
         ("G3", "Freeze → Test", 1 if handoff.is_file() and eval_registry.is_file() else 0, 1,
          handoff_status == "valid" and eval_registry.is_file(),
-         "handoff + evaluation registry observed; checksum validation still owed"),
+         "handoff + evaluation registry observed; handoff validation still owed"),
         ("G4", "Test → Scan", sum(p.is_file() for p in (eval_lock, eval_summary)), 2, False,
          "T* lock and evaluation summary must both exist"),
         ("G5", "Scan → Audit", 1 if latest_prod and (latest_prod / "run_report.md").is_file() else 0, 1, False,
@@ -651,10 +651,10 @@ def _embedding_module():
 
 
 SPACES = (
-    ("data", "Data", (("contract", "Contract"), ("schema", "Schema"), ("embedding", "Embedding"))),
-    ("labeling", "Labeling", (("discussion", "Discussion"), ("label", "Label"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
+    ("data", "Data", (("contract", "Contract"), ("embedding", "Embedding"))),
+    ("labeling", "Labeling", (("definition", "Definition"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
     ("quality", "Quality", (("test", "Test"), ("evaluation", "Evaluation"), ("audit", "Audit"))),
-    ("delivery", "Delivery", (("handoff", "Handoff"), ("final", "Final labels"))),
+    ("delivery", "Delivery", (("handoff", "Handoff"), ("scan", "Scan"), ("final", "Final labels"))),
 )
 
 
@@ -706,7 +706,7 @@ def _run_rows(root: Path) -> list[dict]:
         key = (r["operation"], r["target"] or r["run"])
         seen[key] = seen.get(key, 0) + 1
         suffix = f"-{seen[key]}" if seen[key] > 1 else ""
-        r["name"] = _run_name(r["run"]) + suffix
+        r["name"] = "run-" + _run_name(r["run"]) + suffix
         r["label"] = (r["target"] or _run_name(r["run"])) + suffix
     return rows
 
@@ -853,7 +853,7 @@ def _next_step(vm: dict) -> tuple[str, str]:
         return "Read-only: " + _hold_words(canonical.get("hold_reason") or state["authority_reason"]) + ".", "data"
     if canonical and canonical.get("phase") == "P0":
         if canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
-            return "Step 1: read the label meanings and confirm them.", "data"
+            return "Step 1: read the label meanings and confirm them.", "labeling"
         return str(canonical.get("next_action") or "P0 Contract"), "data"
     if cal and cal.get("phase") == "P1":
         current = cal.get("current_round")
@@ -870,12 +870,6 @@ def _next_step(vm: dict) -> tuple[str, str]:
 
 def _data_space(vm: dict) -> dict[str, str]:
     config, manifest, sealed, imported = vm["config"], vm["manifest"], vm["sealed"], vm["imported"]
-    state, canonical = vm["state"], vm["canonical"]
-    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
-    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
-    uncertainty = config.get("uncertainty") if isinstance(config.get("uncertainty"), dict) else {}
-    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     source = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
     n_items = manifest.get("n_items")
     n_sealed = manifest.get("n_sealed", sealed.get("n_items"))
@@ -883,24 +877,45 @@ def _data_space(vm: dict) -> dict[str, str]:
     if n_dev is None and isinstance(n_items, int) and isinstance(n_sealed, int):
         n_dev = n_items - n_sealed
 
+    context_field = manifest.get("context_field") or (config.get("corpus") or {}).get("context_field")
     corpus = _card("Data", "".join([
         _row("source", _esc(source.get("name") or (config.get("corpus") or {}).get("source") or "")),
         _row("items", _esc(n_items)),
         _row("to label", _esc(n_dev)),
         _row("held back", _esc(f"{n_sealed} items for the final test; you never see them" if n_sealed is not None else "none")),
         _row("one item is", _esc((config.get("corpus") or {}).get("population") or "")),
+        _row("item id field", f"<code>{_esc(manifest.get('id_field') or (config.get('corpus') or {}).get('id_field') or 'item_id')}</code>"),
+        _row("text field", f"<code>{_esc(manifest.get('text_field') or (config.get('corpus') or {}).get('text_field') or 'text')}</code>"),
+        _row("context field", f"<code>{_esc(context_field)}</code>" if context_field else ""),
         _row("embedding", _embedding_summary(vm.get("embedding"))),
     ]))
-    question = construct.get("question") or construct.get("seed") or ""
-    label = _card("Label", "".join([
-        _row("target", f"<code>{_esc(construct.get('name') or 'not named')}</code>"),
-        f'<p class=lead>{_esc(question)}</p>' if question else "",
-        _meaning_list([str(v) for v in labels.get("values") or []],
-                      labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}),
-        (f'<p class=mut>How unsure: {_esc(" · ".join(_unsure_words(v) for v in uncertainty.get("levels") or []))}. '
-         f'{_esc(uncertainty.get("meaning") or "")}</p>') if uncertainty.get("levels") else "",
-    ]))
+    imported_rows = []
+    for key, value in imported.items():
+        if isinstance(value, dict) and value.get("field") and isinstance(value.get("values"), dict):
+            counts = " · ".join(f"{_esc(k)} {_esc(v)}" for k, v in value["values"].items())
+            imported_rows.append(_row(str(value["field"]), counts))
+    schema = ""
+    if imported_rows:
+        unit = imported.get("unit") if isinstance(imported.get("unit"), dict) else {}
+        schema += _card("Imported labels (other people's labels, not the right answer)", "".join(imported_rows) + (
+            f'<p class=mut>Counted per {_esc(unit.get("row") or "source row")}.</p>'))
+    reveal = (config.get("reveal") or {}).get("reference_observations") if isinstance(config.get("reveal"), dict) else None
+    if isinstance(reveal, dict):
+        schema += _card("What you see after you lock an answer", "".join([
+            _row("from", _esc(reveal.get("label"))),
+            _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
+            _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
+        ]))
+    return {"contract": corpus + schema, "embedding": _embedding_view(vm)}
 
+
+def _meaning_gate(vm: dict) -> str:
+    """Confirm meaning (G0): the gate on the label meanings, so it sits in Labeling › Definition."""
+    config, state, canonical = vm.get("config") or {}, vm.get("state"), vm.get("canonical") or {}
+    if not state:
+        return ""
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     if _imported_reference_only(vm):
         # The header carries the single source-only status. This job has no
         # local meaning gate to confirm, so don't repeat it as an alarm card.
@@ -927,36 +942,7 @@ def _data_space(vm: dict) -> dict[str, str]:
     else:
         gate = _card("Meaning", f'<p class=mut>{_esc(state["first_failed"])}</p>')
 
-    context_field = manifest.get("context_field") or (config.get("corpus") or {}).get("context_field")
-    schema_rows = [
-        _row("item id field", f"<code>{_esc(manifest.get('id_field') or (config.get('corpus') or {}).get('id_field') or 'item_id')}</code>"),
-        _row("text field", f"<code>{_esc(manifest.get('text_field') or (config.get('corpus') or {}).get('text_field') or 'text')}</code>"),
-        _row("context field", f"<code>{_esc(context_field)}</code>" if context_field else ""),
-        _row("where you read it", "items in a round: in Labeling → Rounds once shown to you; "
-                                  "other items: on request in Data → Embedding (logged)", "mut"),
-    ]
-    imported_rows = []
-    for key, value in imported.items():
-        if isinstance(value, dict) and value.get("field") and isinstance(value.get("values"), dict):
-            counts = " · ".join(f"{_esc(k)} {_esc(v)}" for k, v in value["values"].items())
-            imported_rows.append(_row(str(value["field"]), counts))
-    schema = _card("What one item holds", "".join(schema_rows))
-    if imported_rows:
-        unit = imported.get("unit") if isinstance(imported.get("unit"), dict) else {}
-        schema += _card("Imported labels (other people's labels, not the right answer)", "".join(imported_rows) + (
-            f'<p class=mut>Counted per {_esc(unit.get("row") or "source row")}.</p>'))
-    reveal = (config.get("reveal") or {}).get("reference_observations") if isinstance(config.get("reveal"), dict) else None
-    if isinstance(reveal, dict):
-        schema += _card("What you see after you lock an answer", "".join([
-            _row("from", _esc(reveal.get("label"))),
-            _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
-            _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
-        ]))
-    return {
-        "contract": label + corpus + gate,
-        "schema": schema,
-        "embedding": _embedding_view(vm),
-    }
+    return gate
 
 
 _GROUP_COLORS = ("#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948",
@@ -1619,13 +1605,13 @@ def _meaning_prompt(vm: dict, run: str | None = None) -> str:
         "4. When I settle a label, record only my decision with decide: --keep, or --meaning with my wording, "
         "plus --reason in my words.",
         "5. When every label is settled, run close (add --open-question for anything we left open). "
-        "If a wording changed, I press Confirm meaning again in Data > Contract.",
+        "If a wording changed, I press Confirm meaning again in Labeling > Definition.",
     ]
     return "\n".join(lines)
 
 
 def _label_definitions(vm: dict) -> str:
-    """Labeling → Label: what each label means; discussing them is the definition-discussion Run."""
+    """Labeling → Definition: what each label means; discussing them is the definition-discussion Run."""
     config = vm.get("config") or {}
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
@@ -1639,8 +1625,9 @@ def _label_definitions(vm: dict) -> str:
     region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
     between = [str(r) for r in regions.get("values") or [] if len(str(r)) > 1]
     receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
+    still_valid = (vm.get("canonical") or {}).get("meaning_receipt_valid", True)  # a stale receipt is no confirmation
     confirmed = (f'by {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}'
-                 if receipt.get("confirmed_at") else "not yet (Data → Contract)")
+                 if receipt.get("confirmed_at") and still_valid else "")
     rows = "".join(
         f'<tr><td class=nowrap><b>{_esc(v)}</b></td><td>{_esc(meanings.get(v) or "")}</td></tr>' for v in values)
     between_rows = "".join(
@@ -1662,14 +1649,11 @@ def _label_definitions(vm: dict) -> str:
 
 
 def _discussion_view(vm: dict) -> str:
-    """The discussion question, then each definition-discussion Run: every label before and after.
+    """Each definition-discussion Run: every label before and after, and what stayed open.
 
     Starting or resuming a discussion is the Runs panel's `+ New Run` / `Resume` (JL 260927); this view
     shows what the discussions decided. The newest shows; picking a run in the panel shows that one.
     """
-    config = vm.get("config") or {}
-    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    question = construct.get("question") or construct.get("seed") or construct.get("name") or ""
     module = _definition_module()
     runs = [r for r in vm.get("runs") or [] if r["operation"] == "definition-discussion"]
     records = []
@@ -1691,7 +1675,7 @@ def _discussion_view(vm: dict) -> str:
             '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>Before</th><th>After</th>'
             f'<th>Why</th></tr></thead><tbody>{rows}</tbody></table></div>'
             + (f'<h3 class=sub>Still open</h3><ul>{questions}</ul>' if questions else "") + '</div>')
-    return _card("Discussion", f'<h3 class=discquestion>{_esc(question)}</h3>' + "".join(records), "focus")
+    return _card("Discussion", "".join(records)) if records else ""
 
 
 def _rounds_view(vm: dict) -> str:
@@ -1799,7 +1783,7 @@ def _labeling_space(vm: dict) -> dict[str, str]:
         guide = _card(f"Guideline {policy}", f'<div class=guide>{_guideline_html(text)}</div>')
     else:
         guide = _card("Guideline", "<p class=mut>No guideline version is readable yet.</p>")
-    return {"discussion": _discussion_view(vm), "label": label, "rounds": rounds_html, "guideline": guide}
+    return {"definition": label + _discussion_view(vm) + _meaning_gate(vm), "rounds": rounds_html, "guideline": guide}
 
 
 def _quality_space(vm: dict) -> dict[str, str]:
@@ -2039,7 +2023,7 @@ def _blocked_words(text: str) -> str:
     if text.startswith("G1 Round close"):
         return "the current round to be fully labeled and then closed (closing a round is not built yet)"
     if "meaning confirmation" in text:
-        return "you to read the label meanings and confirm them (Data → Contract)"
+        return "you to read the label meanings and confirm them (Labeling → Definition)"
     return text
 
 
@@ -2096,6 +2080,7 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
         runs_by_op.setdefault(str(r["operation"]), []).append(r)
     space_ids = {name: sid for sid, name, _ in SPACES}
     view_ids = {sid: {vname: vid for vid, vname in views} for sid, _, views in SPACES}
+    skills = _view_skills()
     out: dict[str, list[dict]] = {sid: [] for sid, _, _ in SPACES}
     for cells in rows:
         def cell(name, c=cells):
@@ -2107,7 +2092,28 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
         if not op or not views or (cell("started by") == "not built yet" and op not in runs_by_op):
             continue
         out[sid].append({"op": op, "words": cell("in words") or _RUN_WORDS.get(op, op),
-                         "views": views, "runs": runs_by_op.get(op, [])})
+                         "views": views, "runs": runs_by_op.get(op, []),
+                         "skill": skills.get((sid, views[0]), ""),
+                         "step": int(cell("step")) if cell("step").isdigit() else 99})
+    for types in out.values():
+        types.sort(key=lambda t: t["step"])
+    return out
+
+
+def _view_skills() -> dict[tuple[str, str], str]:
+    """(space id, view id) -> the view's one skill, from ref-space-mapping.md `## View skills` (JL 260929)."""
+    ref = _space_mapping_ref()
+    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "View skills") if ref else ([], [])
+    col = {h.lower(): i for i, h in enumerate(headers)}
+    space_ids = {name: sid for sid, name, _ in SPACES}
+    view_ids = {sid: {vname: vid for vid, vname in views} for sid, _, views in SPACES}
+    out = {}
+    for cells in rows:
+        space_name, _, view_name = cells[col["view"]].partition(" · ")
+        sid = space_ids.get(space_name.strip())
+        vid = view_ids.get(sid, {}).get(view_name.strip())
+        if sid and vid:
+            out[(sid, vid)] = cells[col["skill"]].strip().strip("`")
     return out
 
 
@@ -2138,7 +2144,11 @@ def _run_again(vm: dict, run: dict) -> tuple[str, str]:
                      f"at {where} through /subjective-label. It gets a new rlNN; {run['run']} stays as it is.")
 
 
-def _run_card(vm: dict, run: dict) -> str:
+def _skill_line(skill: str) -> str:
+    return f'<p class=run-skill>Skill <code>{_esc(skill)}</code></p>' if skill else ""
+
+
+def _run_card(vm: dict, run: dict, skill: str = "") -> str:
     action, again = _run_again(vm, run)
     ask = _run_ask(vm, run)
     status = str(run["status"])
@@ -2152,6 +2162,7 @@ def _run_card(vm: dict, run: dict) -> str:
         f'<header><b title="{_esc(run["run"])}">{_esc(run["name"])}</b>'
         f'<span class="run-state st-{_esc(status.split(" ")[0])}">{_esc(words)}</span>'
         f'<button type=button class=run-copy data-copy="{_esc(again)}">{action}</button></header>'
+        f'{_skill_line(skill)}'
         '<details class=run-prompt-box><summary>Prompt '
         f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>'
         f'<pre class=run-prompt>{_esc(ask)}</pre></details>'
@@ -2173,9 +2184,10 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
                   f"Start a new {t['op']} Run on the labeling job at {where} through /subjective-label. Target: ")
         buttons.append(
             f'<button type=button class=run-type data-op="{_esc(t["op"])}" data-views="{_esc(" ".join(t["views"]))}" '
-            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" title="{_esc(t["op"])}">'
+            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" data-skill="{_esc(t.get("skill") or "")}" '
+            f'title="{_esc(t["op"])}">'
             f'{_esc(t["words"])} <span class=run-count>{len(runs)}</span></button>')
-        cards.extend(_run_card(vm, r) for r in runs)
+        cards.extend(_run_card(vm, r, t.get("skill") or "") for r in runs)
     return (
         f'<section class=runs-panel data-space={sid}>'
         '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Runs</b></div>'
@@ -2183,7 +2195,7 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
         '<button type=button class="run-type run-new">+ New Run</button></div>'
         f'<div class=runs-detail><div class=run-list hidden></div>{"".join(cards)}'
         '<article class="run-card run-card-new" hidden><header><b>New run</b></header>'
-        '<details class=run-prompt-box open><summary>Prompt '
+        '<p class=run-skill hidden></p><details class=run-prompt-box open><summary>Prompt '
         '<button type=button class=run-copy data-copy="">Copy</button></summary>'
         '<pre class=run-prompt></pre></details></article>'
         '<div class=run-empty hidden>No runs yet.</div></div></div></section>'
@@ -2196,7 +2208,9 @@ def _delivery_space(vm: dict) -> dict[str, str]:
                if state["handoff"].is_file() else _later("P2 Freeze"))
     final = (_card("Final labels", _row("D*", "materialized"))
              if state["dstar"].is_file() else _later("P5 Audit"))
-    return {"handoff": handoff, "final": final}
+    runs = sorted((vm["root"] / "production").glob("run_*")) if (vm["root"] / "production").is_dir() else []
+    scan = _card("Scan", _row("production runs", _esc(len(runs)))) if runs else _later("P4 Scan")
+    return {"handoff": handoff, "scan": scan, "final": final}
 
 
 def _script_json(value) -> str:
@@ -2374,6 +2388,7 @@ details.roundbox>summary{display:flex;gap:12px;align-items:baseline;flex-wrap:wr
 details.roundbox>summary .mut{font-size:13px}
 details.roundbox[open]>summary{margin-bottom:6px}
 details.roundbox.on{border-color:var(--acc)}
+.run-skill{margin:6px 0 0;color:var(--mut);font-size:12px}.run-skill code{font-size:11.5px;color:var(--fg)}
 .discrec td.changed{color:var(--ok)}
 h3.sub{font-size:13px;margin:12px 0 2px}
 table.items{width:auto;max-width:100%}
@@ -2587,7 +2602,9 @@ function runsRender(p){
  $$('.run-card',p).forEach(function(c){c.hidden=true;});list.innerHTML='';list.hidden=true;empty.hidden=true;
  var op=newMode?p.dataset.lastOp:(on?on.dataset.op:'');
  if(newMode){var src=$('.run-type[data-op="'+op+'"]',p),card=$('.run-card-new',p),text=src?src.dataset.prompt:'';
-  $('.run-prompt',card).textContent=text;$('.run-copy',card).dataset.copy=text;card.hidden=false;return;}
+  $('.run-prompt',card).textContent=text;$('.run-copy',card).dataset.copy=text;
+  var sk=$('.run-skill',card),skill=src?src.dataset.skill:'';sk.innerHTML=skill?'Skill <code>'+esc(skill)+'</code>':'';sk.hidden=!skill;
+  card.hidden=false;return;}
  p.dataset.lastOp=op||'';
  var cards=op?$$('.run-card[data-op="'+op+'"]',p):[];
  if(!cards.length){empty.hidden=false;return;}
@@ -2915,7 +2932,7 @@ function load(){
  if(boot.hold){message('<p class=warn>Read-only · '+esc(boot.next||'')+'</p>');return;}
  if(boot.phase!=='P1'){
   if(boot.g0_open){message('<p><b>Step 1 first:</b> confirm what the labels mean.</p><div class=actions><button class=primary type=button id=go-confirm>Go to Confirm meaning</button></div>');
-   $('#go-confirm').addEventListener('click',function(){select('data','contract',true);});}
+   $('#go-confirm').addEventListener('click',function(){select('labeling','definition',true);});}
   else{message('<p class=mut>Labeling opens after P0 Contract passes.</p>');}
   return;}
  var cur=boot.current_round, rounds=boot.rounds||[];

@@ -128,7 +128,7 @@ Open the Current Run.
         body = render(self.page, "/examples/paper/board/MAIN/S-Test.html", "MAIN/S-Test.md")
         self.assertIn("No Structure Run yet.", body)
         self.assertIn("No Paragraph Run yet.", body)
-        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Page Writing</button>", body)
         self.assertIn(">Evidence</button>", body)
         self.assertIn("b03.j01.t01.r01", body)
         self.assertIn("Held", body)
@@ -157,7 +157,7 @@ Open the Current Run.
         self.assertEqual(rows[0]["status"], "Done")
         self.assertEqual(rows[0]["refs"], ["E01-VALUE-effect"])
         body = render(self.page, "/examples/paper/board/MAIN/S-Test.html", "MAIN/S-Test.md")
-        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Page Writing</button>", body)
         self.assertIn(">Evidence</button>", body)
         self.assertIn(">Supporting Runs</button>", body)
         self.assertIn("Value · E01", body)
@@ -455,7 +455,7 @@ Open the Current Run.
         body = render(self.page, "", "")
         self.assertIn("An empty field is not zero.", body)
         self.assertIn("C1.P2.B1", body)
-        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Page Writing</button>", body)
         self.assertIn("<h3>Paragraph</h3>", body)
         self.assertNotIn("<th>Version / Step</th>", body)
         self.assertIn("class=run-card", body)
@@ -710,7 +710,7 @@ Open the Current Run.
         self.assertEqual(by_id[f"P {task_stem}"]["lane"], "task")
         # The fixture also contributes one unresolved Supporting Run.
         body = render(self.page, "", "")
-        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Page Writing</button>", body)
         self.assertIn(">Supporting Runs</button>", body)
 
     def test_structure_must_close_before_numbered_paragraph_runs(self):

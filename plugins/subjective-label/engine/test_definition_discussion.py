@@ -52,8 +52,12 @@ def test_a_changed_meaning_is_one_revision_and_asks_for_g0_again(tmp_path: Path)
     revision = json.loads((root / "gates" / "meaning-revisions" / "001.json").read_text())
     assert revision["run"] == run and revision["before"] == {"high": "h", "low": "l", "none": "n"}
     assert revision["retired_meaning_receipt"]["human_id"] == "JL"
-    assert list((root / "gates" / "g0" / "history").glob("*.json"))
+    assert not [key for key in revision if "checksum" in key]
+    archived = list((root / "gates" / "g0" / "history").glob("*.json"))
+    assert [path.relative_to(root).as_posix() for path in archived] == [revision["retired_g0_receipt"]]
     assert not (root / "gates" / "g0" / "receipt.json").exists()
+    before = yaml.safe_load((job.results_dir(root) / run / "before.yaml").read_text())
+    assert set(before) == {"labels", "meanings"}
 
     state = job.status(root)
     assert state["p0_contract_integrity_valid"] and state["integrity_errors"] == []
@@ -69,7 +73,9 @@ def test_a_changed_meaning_is_one_revision_and_asks_for_g0_again(tmp_path: Path)
     assert [r["changed"] for r in ledger["labels"]] == [True, False, True]
     assert ledger["open_questions"] == ["Is a preachy refusal still none?"]
     assert yaml.safe_load((results / "runtime.yaml").read_text())["status"] == "complete"
-    assert "confirm the meaning again" in yaml.safe_load((results / "result.yaml").read_text())["outcome"]
+    result = yaml.safe_load((results / "result.yaml").read_text())
+    assert "confirm the meaning again" in result["outcome"]
+    assert all(set(a) == {"path"} for a in result["artifacts"])
     assert len((results / "turns.jsonl").read_text().splitlines()) == 2
 
 
@@ -126,3 +132,19 @@ def test_an_unrecorded_edit_to_the_meanings_breaks_p0(tmp_path: Path) -> None:
     (root / "config.yaml").write_bytes(job.yaml_bytes(config))
     errors = job.status(root)["p0_integrity_errors"]
     assert "label meanings in config.yaml differ from the last meaning revision" in errors
+
+
+def test_each_revision_starts_where_the_last_one_ended(tmp_path: Path) -> None:
+    root, _ = tc.build_job(tmp_path)
+    for index, high in enumerate(("first wording", "second wording"), start=1):
+        run = dd.start(root, human_id="JL")["run"]
+        dd.decide(root, run, human_id="JL", label="high", meaning=high)
+        dd.decide(root, run, human_id="JL", label="low", keep=True)
+        dd.decide(root, run, human_id="JL", label="none", keep=True)
+        dd.close(root, run, human_id="JL")
+    assert job.status(root)["meaning_revisions"] == 2 and job.status(root)["p0_contract_integrity_valid"]
+    second = root / "gates" / "meaning-revisions" / "002.json"
+    record = json.loads(second.read_text())
+    record["before"]["high"] = "a wording no revision ever wrote"
+    second.write_text(json.dumps(record, indent=2) + "\n")
+    assert "meaning revision 2: does not start from revision 1" in job.status(root)["p0_integrity_errors"]

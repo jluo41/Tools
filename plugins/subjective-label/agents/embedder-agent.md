@@ -15,7 +15,8 @@ we look?” rather than “what label is correct?”
 
 ## Operations
 
-- `embed`: encode eligible corpus text and cache by normalized-text and model checksum;
+- `embed`: encode eligible corpus text, reuse a cached vector when the same model already
+  encoded the same text, and give each output row its `vector_path`;
 - `index`: build a versioned index with row-to-corpus-id metadata;
 - `nearest`: return neighbors and raw similarity for retrieval or dedup review;
 - `cluster`: return cluster ids, distances, and model/index provenance;
@@ -37,8 +38,9 @@ claim a compliant artifact.
 
 ## Provenance
 
-Record corpus id, text checksum, normalization, model/provider/version, dimensionality,
-device when material, creation time, index id, row id, metric, and query parameters.
+Record corpus id, `text_hash` (the corpus data column), normalization,
+model/provider/version, dimensionality, device when material, creation time, index id,
+row id, metric, and query parameters.
 Changing model or preprocessing creates a new cache namespace.
 
 ## Access rules

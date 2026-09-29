@@ -119,8 +119,8 @@ def test_hold_job_refuses_confirmation(tmp_path: Path) -> None:
     config["authority"]["mode"] = "external_annotation_import"
     config["authority"]["creates_human_gold"] = False
     root, page = build_job(tmp_path, config)
-    # create_contract forces a single human authority; restore the import mode by hand
-    # and expect status to report the P0 checksum break rather than HOLD silently passing.
+    # create_contract forces a single human authority, so the page job is not on HOLD;
+    # the seed config's import mode would have been.
     state = job.status(root)
     assert state["hold"] is False
     assert job.authority_hold(config)[0] is True
@@ -180,7 +180,7 @@ def test_wrong_human_and_sealed_item_refused(tmp_path: Path) -> None:
         cal.open_item(root, "round_01", human_id="JL", session_id="s", item_id=sealed)
 
 
-def test_tampered_event_chain_is_detected(tmp_path: Path) -> None:
+def test_events_carry_no_hash_and_a_broken_log_is_detected(tmp_path: Path) -> None:
     root, _ = confirmed_job(tmp_path)
     cal.release_round(root, human_id="JL")
     opened = cal.open_item(root, "round_01", human_id="JL", session_id="s")
@@ -188,20 +188,50 @@ def test_tampered_event_chain_is_detected(tmp_path: Path) -> None:
                      class_label="none", region=None, uncertainty="low")
     path = root / "rounds/round_01/sessions/events.jsonl"
     lines = path.read_text().splitlines()
-    record = json.loads(lines[1])
-    record["payload"]["class_label"] = "high"
-    lines[1] = json.dumps(record, sort_keys=True)
-    path.write_text("\n".join(lines) + "\n")
-    assert any("checksum mismatch" in e for e in cal.verify_events(root / "rounds/round_01"))
+    events = [json.loads(line) for line in lines]
+    assert [e["kind"] for e in events] == ["show", "first", "lock", "reveal"]
+    assert not any(key in e for e in events for key in ("checksum", "prev_checksum"))
+    assert events[2]["payload"] == {"first_seq": events[1]["seq"]}
+    assert cal.verify_events(root / "rounds/round_01") == []
+
+    legacy = [dict(e, checksum="x", prev_checksum="y") for e in events]  # old fields are ignored
+    path.write_text("".join(json.dumps(e, sort_keys=True) + "\n" for e in legacy))
+    assert cal.verify_events(root / "rounds/round_01") == []
+
+    path.write_text("\n".join(lines[:1] + lines[2:]) + "\n")  # a deleted first event
+    errors = cal.verify_events(root / "rounds/round_01")
+    assert "event 2: sequence gap" in errors
+    assert any("lock for item" in e and "before any first" in e for e in errors)
+
+    broken = dict(events[1])
+    broken.pop("human_id")
+    path.write_text("\n".join([lines[0], json.dumps(broken, sort_keys=True), *lines[2:]]) + "\n")
+    assert "event 2: missing human_id" in cal.verify_events(root / "rounds/round_01")
 
 
-def test_p0_file_edit_after_g0_breaks_the_chain(tmp_path: Path) -> None:
+def test_round_records_carry_no_hash(tmp_path: Path) -> None:
     root, _ = confirmed_job(tmp_path)
-    register = root / "register.md"
-    register.write_text(register.read_text() + "\nedited\n")
+    released = cal.release_round(root, human_id="JL")
+    manifest = yaml.safe_load((root / "rounds/round_01/manifest.yaml").read_text())
+    assert not [key for key in manifest if "checksum" in key]
+    ticket = yaml.safe_load((root.parent / "runs" / f"{released['run']}.yaml").read_text())
+    result = yaml.safe_load((root.parent / "results" / released["run"] / "result.yaml").read_text())
+    assert ticket["commission"] == {"path": "labeling/rounds/round_01/card.md"}
+    assert ticket["inputs"] == [{"path": "labeling/corpus/items.jsonl"}]
+    assert all(set(a) == {"path"} for a in result["artifacts"])
+    assert "sha256" not in (root / "rounds/round_01/evidence.md").read_text()
+
+
+def test_meaning_edit_after_g0_reopens_the_meaning_gate(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    config = job.load_mapping(root / "config.yaml")
+    config["labels"]["meanings"]["low"] = "edited by hand, never confirmed"
+    (root / "config.yaml").write_bytes(job.yaml_bytes(config))
     state = job.status(root)
-    assert state["phase"] == "P0"
-    assert any("register.md" in e for e in state["integrity_errors"])
+    assert state["phase"] == "P0" and not state["g0_passed"]
+    assert state["first_blocked_frontier"] == "G0 · human meaning confirmation"
+    with pytest.raises(cal.LabelingRefused):
+        cal.release_round(root, human_id="JL")
 
 
 def test_reveal_index_never_contains_sealed_ids(tmp_path: Path) -> None:

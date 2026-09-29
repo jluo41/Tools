@@ -1,3 +1,8 @@
+## 1.12.3 · 2026-09-28
+
+- Docs: the Page workbench is three Spaces (Draft, Evidence, Delivery) with a Runs panel each,
+  over `draft/`; Run Space is the All-runs view (`lens=run`). Found stale by a fresh-agent field test.
+
 ## 1.12.2 · 2026-09-22
 
 - Docs: `rp-struct-NN` is Structure + Outline Bullets, no Mermaid.

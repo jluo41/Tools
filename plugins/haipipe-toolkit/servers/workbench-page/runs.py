@@ -25,6 +25,7 @@ from urllib.parse import parse_qs, quote, urlparse
 
 from live.outline_structure import STRUCTURE_CSS
 from src.outline_version import plan_dir
+from src import run_names as _names
 from src.item_table import (compact_global_run, compact_paper_run, read_items,
                             readable_global_run, readable_paper_route, repo_root,
                             run_registry)
@@ -70,6 +71,9 @@ _SCRATCH_RUN = re.compile(r"rp-scratch-(?:0[1-9]|[1-9]\d+)_([A-Za-z0-9._-]+)", r
 # Result is the change ledger; the accepted text returns to the writing Run
 # as a Version (haipipe-page-revise).
 _REVISE_RUN = re.compile(r"rp-revise-(?:0[1-9]|[1-9]\d+)_([A-Za-z0-9._-]+)", re.I)
+# Auto write and Evidence embed: an agent writes the Draft sentences, or folds
+# accepted evidence into the plan, for one target (page-run-families.md).
+_AUTO_EMBED_RUN = re.compile(r"rp-(auto|embed)-(?:0[1-9]|[1-9]\d+)(?:_([A-Za-z0-9._-]+))?", re.I)
 _PARAGRAPH_RUN = re.compile(
     r"(rp-para-(?:0[1-9]|[1-9]\d+))_P((?:0[1-9]|[1-9]\d+))"
     r"(?:-P((?:0[1-9]|[1-9]\d+)))?",
@@ -82,9 +86,20 @@ _LEGACY_PARAGRAPH_RUN = re.compile(
 )
 
 
+_WRITING_KINDS = ("structure", "section", "paragraph", "scratch", "revise", "auto-write",
+                  "evidence-embed", "context")
+
+
+def _new_kind(run_id: str) -> str | None:
+    """The kind of a readable run name (`run-section-0927-cleanup` → `section`), else None."""
+    found = _names.NAME.match(str(run_id or ""))
+    return found.group("kind") if found else None
+
+
 def _is_structure_run(run_id: str) -> bool:
     """Recognize the current structure Run and readable legacy records."""
-    return run_id in _STRUCTURE_RUNS or _STRUCTURE_RUN_RE.fullmatch(run_id) is not None
+    return (run_id in _STRUCTURE_RUNS or _STRUCTURE_RUN_RE.fullmatch(run_id) is not None
+            or _new_kind(run_id) == "structure")
 
 
 _CSS = """
@@ -181,6 +196,8 @@ def _is_page_run(fields: dict[str, str]) -> bool:
 
 def _page_run_label(run_id: str) -> str:
     """Keep the Page Run column short while preserving its canonical identity."""
+    if _names.is_run_name(run_id):
+        return run_id                     # already readable
     if run_id in _LEGACY_STRUCTURE_RUNS:
         return "rp00 · Structure (legacy)"
     if _is_structure_run(run_id):
@@ -193,6 +210,10 @@ def _page_run_label(run_id: str) -> str:
     revise = _REVISE_RUN.fullmatch(run_id)
     if revise:
         return f"{run_id.lower()} · Revise · {revise.group(1)}"
+    auto_embed = _AUTO_EMBED_RUN.fullmatch(run_id)
+    if auto_embed:
+        kind = "Auto write" if auto_embed.group(1).lower() == "auto" else "Evidence embed"
+        return " · ".join(x for x in (run_id.lower(), kind, auto_embed.group(2) or "") if x)
     match = _PARAGRAPH_RUN.fullmatch(run_id) or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id)
     if not match:
         return run_id
@@ -207,13 +228,16 @@ def _valid_page_run_id(run_id: str) -> bool:
     return (_is_structure_run(run_id) or _SECTION_RUN.fullmatch(run_id) is not None
             or _SCRATCH_RUN.fullmatch(run_id) is not None
             or _REVISE_RUN.fullmatch(run_id) is not None
+            or _AUTO_EMBED_RUN.fullmatch(run_id) is not None
+            or _names.is_run_name(run_id)
             or _PARAGRAPH_RUN.fullmatch(run_id) is not None
             or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id) is not None)
 
 
 def _audit_page_run_order(rows: list[dict]) -> None:
     """Reject noncanonical ids and require the closed Structure Run."""
-    page_rows = [row for row in rows if row.get("lane") == "page"]
+    # A fixed Delivery Run (run-delivery-<lane>) builds files; it is not a writing Run.
+    page_rows = [row for row in rows if row.get("lane") == "page" and row.get("operation") != "delivery"]
     structure = next((row for row in page_rows
                       if _is_structure_run(row["run_id"])), None)
     structure_closed = bool(structure and structure.get("status") == "Done")
@@ -223,7 +247,8 @@ def _audit_page_run_order(rows: list[dict]) -> None:
             row["status"] = "Held"
             row.setdefault("audit", []).append(
             "invalid Page Run identity; expected rp-struct-NN, rp-sec-NN, "
-                "rp-scratch-NN_<target>, rp-para-NN_Pxx[-Pyy], or rp-revise-NN_<target>"
+                "rp-scratch-NN_<target>, rp-para-NN_Pxx[-Pyy], rp-revise-NN_<target>, "
+                "rp-auto-NN[_<target>], or rp-embed-NN[_<target>]"
             )
             continue
         if _is_structure_run(run_id):
@@ -372,6 +397,10 @@ def _attach_evidence_bindings(page_src: Path, rows: list[dict]) -> None:
 
 def _page_writing_subspace(row: dict) -> str:
     """Map one local interactive Run to its minimal writing subspace."""
+    new = {"structure": "Structure", "scratch": "Scratch", "revise": "Revise",
+           "section": "Section", "paragraph": "Paragraph"}.get(_new_kind(row.get("run_id", "")))
+    if new:
+        return new
     if _is_structure_run(str(row.get("run_id", ""))):
         return "Structure"
     if row.get("mode") == "scratch" or _SCRATCH_RUN.fullmatch(str(row.get("run_id", ""))):
@@ -471,11 +500,16 @@ def _run_name(row: dict) -> str:
     """Return the semantic name shown on a closed Run card."""
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
         run_id = str(row.get("run_id", ""))
-        if row.get("mode") == "scratch" or _SCRATCH_RUN.fullmatch(run_id):
+        kind = _new_kind(run_id)
+        if kind and kind not in {"scratch", "revise", "structure"}:
+            target = str(row.get("target", "")).strip()
+            word = kind.replace("-", " ").capitalize()
+            return "%s · %s" % (word, target) if target else word
+        if row.get("mode") == "scratch" or _SCRATCH_RUN.fullmatch(run_id) or kind == "scratch":
             scope = str(row.get("target_scope", "target")).capitalize()
             target = str(row.get("target", "")).strip()
             return "Scratch · %s%s" % (scope, (" · " + target) if target else "")
-        if _REVISE_RUN.fullmatch(run_id):
+        if _REVISE_RUN.fullmatch(run_id) or kind == "revise":
             target = str(row.get("target", "")).strip()
             return "Revise · " + target if target else "Revise"
         if _is_structure_run(run_id):
@@ -519,7 +553,7 @@ def _run_action(row: dict) -> str:
             scope = str(row.get("target_scope", "target"))
             target = str(row.get("target", "the Page"))
             return "Capture rough thinking for %s %s" % (scope, target)
-        if _REVISE_RUN.fullmatch(str(row.get("run_id", ""))):
+        if _REVISE_RUN.fullmatch(str(row.get("run_id", ""))) or _new_kind(row.get("run_id", "")) == "revise":
             return "Compare before and after for %s and settle each change" % (
                 str(row.get("target", "")).strip() or "the target")
         if _is_structure_run(str(row.get("run_id", ""))):
@@ -1165,7 +1199,8 @@ def _version_closed(runtime: Path, version: str) -> bool:
 
 def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if runtime is None:
-        return "Held"
+        # An open run (ticket only) is running; anything else without a receipt is held.
+        return "Running" if fields.get("status", "").lower() in {"open", "running"} else "Held"
     status = fields.get("status", "").lower()
     if status in {"ready", "planned", "ticket", "queued"}:
         return "Ready"
@@ -1302,6 +1337,22 @@ def _task_result_locations(page_dir: Path, job_dir: Path,
     return list(dict.fromkeys(locations))
 
 
+def _fixed_delivery_run(page_src: Path, ticket: Path) -> dict | None:
+    """`runs/run-delivery-<lane>.sh`: the lane's one Delivery Run (JL 260928). It keeps no
+    runtime receipt; its result is the lane folder, and it is Done while the lane is current."""
+    from live.delivery import LANE_OF_RUN
+    lane = LANE_OF_RUN.get(ticket.stem)
+    if lane is None:
+        return None
+    folder = page_src.parent / "delivery" / lane
+    return {"run_id": ticket.stem, "global_id": ticket.stem, "compact_id": "", "ticket": ticket,
+            "runtime": None, "result_path": folder, "result": "delivery/%s/" % lane,
+            "target": "delivery/%s" % lane, "outcome": "", "kind": "Delivery", "origin": "Local",
+            "lane": "page", "family": "page", "operation": "delivery", "version": "", "step": "",
+            "mode": "", "target_scope": "", "participants": "", "coordinator": "", "contributors": "",
+            "goal": "", "audit": [], "refs": []}
+
+
 def local_runs(page_src: Path) -> list[dict]:
     """Read allocated Folder-local or Job-backed Task Run pairs."""
     page_dir = page_src.parent
@@ -1315,8 +1366,17 @@ def local_runs(page_src: Path) -> list[dict]:
     results_dir, result_base = locations[0]
     rows = list(instance_rows)
     paired_runtimes = {row["runtime"] for row in rows if row.get("runtime")}
+    delivery_lanes = None
     for ticket in _ticket_files(runs_dir):
         if ticket in item_tickets:
+            continue
+        fixed = _fixed_delivery_run(page_src, ticket)
+        if fixed is not None:
+            if delivery_lanes is None:
+                from live.delivery import check_delivery
+                delivery_lanes = {lane["lane"]: lane["state"] for lane in check_delivery(page_src)["lanes"]}
+            fixed["status"] = "Done" if delivery_lanes.get(fixed["target"].split("/")[-1]) == "pass" else "Ready"
+            rows.append(fixed)
             continue
         matches = [(path, base_path) for result_root, base_path in locations
                    if (path := _runtime_for(ticket, runs_dir, result_root)) is not None]
@@ -1329,14 +1389,21 @@ def local_runs(page_src: Path) -> list[dict]:
             fields[key] = fields.get(key) or ticket_fields.get(key, "")
         if not fields.get("operation") and re.fullmatch(r"r\d+_page-writing_c\d+-p\d+", ticket.stem):
             fields["operation"] = "paragraph-writing"
-        if not fields.get("operation") and _valid_page_run_id(ticket.stem):
+        if not fields.get("operation") and _valid_page_run_id(ticket.stem) and (
+                _new_kind(ticket.stem) in (None, *_WRITING_KINDS)):
             fields.update({"family": fields.get("family") or "page",
                            "operation": "interactive-writing",
                            "interaction": fields.get("interaction") or "human-feedback"})
         is_page_run = _is_page_run(fields)
         audit = list(location_findings)
+        # A readable-name run is open from its ticket until it closes (JL 260928:
+        # records at the start and at close only), so no runtime yet is normal.
+        open_run = (runtime is None and _names.is_run_name(ticket.stem)
+                    and ticket_fields.get("status", "open").lower() in {"open", "running", ""})
         if runtime is None:
-            audit.append("authored Run record has no runtime receipt")
+            fields["status"] = ticket_fields.get("status", "") or ("open" if open_run else "")
+            if not open_run:
+                audit.append("authored Run record has no runtime receipt")
         if len(matches) > 1:
             audit.append("multiple Result receipts resolve to the same Run; owner reconciliation required")
         retired_design = bool(re.fullmatch(
@@ -2181,7 +2248,7 @@ def render(page_src: Path, _path_q: str, _file_q: str,
             ("Run Specs", len(_workflow_map_rows(page_src))),
             ("Spaces", 4),
         ])),
-        ("writing", "Paper Writing", writing_sections, _run_pills([
+        ("writing", "Page Writing", writing_sections, _run_pills([
             ("Writing Runs", len(run_p)),
             ("Structure", len(writing["Structure"])),
             ("Scratch", len(writing["Scratch"])),

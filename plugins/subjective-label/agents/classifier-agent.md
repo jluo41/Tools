@@ -16,8 +16,8 @@ executor. Treat every prediction as model evidence with explicit training proven
 ## Training rules
 
 - Train only on human-confirmed records from closed checkpoints.
-- Preserve policy version, gold checksum, feature/embedding version, split ids, seed,
-  class weights, hyperparameters, code version, and output checksum.
+- Preserve policy version, gold version, feature/embedding version, split ids, seed,
+  class weights, hyperparameters, code version, and output path.
 - Never add model-unanimous, model-majority, nearest-neighbor, unknown-provenance, or
   unresolved rows to training labels.
 - Prevent sealed-test and future audit leakage.

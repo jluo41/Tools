@@ -20,7 +20,7 @@ reason each item was selected inspectable.
 - Exclude sealed-test ids from all development pools.
 - Treat embedding region, classifier label, confidence, and LM output as hypotheses.
 - Record eligible population, exclusions, seed, strata, quotas, inclusion probability,
-  rank features, selected arm, and checksums.
+  rank features, and selected arm.
 - Keep representative audit evidence distinct from intentionally enriched challenge
   evidence.
 
@@ -71,8 +71,8 @@ diagnostic enrichment. Preserve weights and protected claims.
 ## Outputs
 
 Write canonical manifests and JSONL records under the paths declared in
-`ref-assets.md`. Do not overwrite a frozen manifest. On resume, verify its checksum and
-return the existing selection.
+`ref-assets.md`. Do not overwrite a frozen manifest. On resume, verify it exists and parses,
+and return the existing selection.
 
 ## Failure handling
 

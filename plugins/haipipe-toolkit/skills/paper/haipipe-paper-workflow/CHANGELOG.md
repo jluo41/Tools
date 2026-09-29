@@ -1,5 +1,9 @@
+## 1.6.0 · 2026-09-29 · Cover letter run card
+- `ref/run-cards.md`: new `paper.coverletter` card (`🔘 Cover letter · Delivery`), run-delivery-coverletter in haipipe-paper-assemble 0.9.0.
+
 ## 1.5.1 · 2026-09-28 · No content hashes (JL 260928)
 
+- `ref/run-workflow.md`: `deliver.<page>.<format>` is the Page's fixed Delivery Run `run_delivery_<lane>`, current by file time (JL 260928).
 - `ref/run-workflow.md`: a compile Ticket freezes the config path and source versions; staleness before execution is file time or `git diff`. Runtime `runs` entries and Delivery receipts carry paths and versions, not input or artifact hashes.
 
 ## 1.5.0 · 2026-09-27

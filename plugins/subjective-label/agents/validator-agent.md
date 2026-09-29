@@ -30,7 +30,7 @@ or executor choice.
 3. Verify that human `T*` labels were produced under frozen `G*`, blind to candidate
    predictions, with region, uncertainty, reason, and consistency events.
 4. Verify candidate prediction files are immutable and closed before opening `T*` gold.
-5. Join by stable id and fail on missing, duplicate, extra, or checksum-mismatched rows.
+5. Join by stable id and fail on missing, duplicate, extra, or unreadable rows.
 6. Compute preregistered absolute metrics with intervals, per-class/per-region/protected-
    stratum results, confusion, abstention and failure rates, repeated-run stability,
    latency, and cost.
@@ -46,7 +46,7 @@ region diagnostics.
 ## External mode
 
 External datasets are optional and separately registered. Verify current source,
-release, checksum, license, native construct, mapping, and population. Preserve native
+release, access date, license, native construct, mapping, and population. Preserve native
 labels and label the result `external`. Do not compare to a published agreement number as
 an autonomy license and do not substitute external data for `T*`.
 

@@ -4,7 +4,8 @@ Scratch is deliberately smaller than writing or feedback.  It records a
 person's rough plan for one Page target, then asks the AI to produce a short
 summary when the person closes it.  The current Scratch registry lives in the
 selected Outline Markdown; the paired Run ticket and Result journal keep the
-durable execution receipt in ``runs/`` and ``results/``.
+durable execution receipt in ``runs/`` and ``results/``: the ticket when the run
+opens, ``results/`` when Finish closes it (JL 260928: records at the two ends).
 """
 from __future__ import annotations
 
@@ -18,12 +19,13 @@ from pathlib import Path
 
 from src.outline_version import plan_dir, latest_outline
 from src.run_folders import ticket_dir, ticket_rel
+from src.run_lifecycle import _log, open_run
 from src.plan_layout import is_sectioned, scratch_notes, to_canonical, write_scratch
 
 
 SCOPES = ("section", "subsection", "paragraph")
 _RECORD_RE = re.compile(
-    r"^###\s+(?P<run>rp-scratch-\d+_[A-Za-z0-9._-]+)\s+·\s+"
+    r"^###\s+(?P<run>rp-scratch-\d+_[A-Za-z0-9._-]+|run-scratch-\d{4}-[a-z0-9-]+)\s+·\s+"
     r"(?P<scope>section|subsection|paragraph)\s+·\s+(?P<target>[A-Za-z0-9._-]+)\s*$",
     re.I | re.M,
 )
@@ -186,6 +188,12 @@ def _next_run_id(page_src: Path) -> str:
     return "rp-scratch-%02d" % number
 
 
+def _open(page_src: Path, scope: str, target: str) -> str:
+    """Open a Scratch run: one ticket, `runs/run-scratch-<MMDD>-<c1-p2>.md`."""
+    return open_run(page_src, "scratch", target=target, goal="rough notes for %s %s" % (scope, target),
+                    by="person · Draft Space › Scratch")["run"]
+
+
 def _target_suffix(target: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "-", target).strip("-") or "page"
 
@@ -345,7 +353,7 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
         requested_run = _clean(payload.get("run_id", ""), "run_id", required=False)
         current = inventory["latest"].get(key)
         if requested_run:
-            if not re.fullmatch(r"rp-scratch-\d+_[A-Za-z0-9._-]+", requested_run, re.I):
+            if not re.fullmatch(r"rp-scratch-\d+_[A-Za-z0-9._-]+|run-scratch-\d{4}-[a-z0-9-]+", requested_run, re.I):
                 raise ValueError("invalid Scratch Run id")
             record = next((item for item in inventory["records"]
                            if item["run"] == requested_run), None)
@@ -357,16 +365,23 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
             record = current
             if not record.get("run"):
                 # Notes typed by hand in `## 2 · Scratch` get their first Run now.
-                record = dict(record, run=_run_id(_next_run_id(page_src), target), started=_now())
+                record = dict(record, run=_open(page_src, scope, target), started=_now())
         else:
-            record = {"run": _run_id(_next_run_id(page_src), target),
+            record = {"run": _open(page_src, scope, target),
                       "scope": scope, "target": target,
                       "started": _now()}
         record.update({"status": "closed" if step == "finish" else "open",
                        "updated": _now(), "notes": notes, "summary": summary})
         plan = _plan(page_src)
         _update_plan(plan, record)
-        result = _write_run(page_src, record, closed=step == "finish")
+        # Records only at the two ends (JL 260928): an autosave changes only the notes
+        # in the Draft; Finish is the close and writes results/ and one log line.
+        if step != "finish":
+            return {"run": record["run"], "scope": scope, "target": target, "status": "open",
+                    "summary": "", "version": "", "file": ""}, None
+        result = _write_run(page_src, record, closed=True)
+        _log(page_src.parent, page_src.stem, "%s closed: %s" % (record["run"], summary or "Scratch finished"),
+             "results/%s/" % record["run"])
         return result, None
     except (OSError, ValueError) as exc:
         return None, str(exc)

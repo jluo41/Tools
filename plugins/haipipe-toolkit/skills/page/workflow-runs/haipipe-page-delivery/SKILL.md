@@ -1,76 +1,71 @@
 ---
 name: haipipe-page-delivery
 description: >-
-  The Delivery Run of a Board Page (`rdNN_<target>`): build one declared
-  delivery target (web, LaTeX, Word, slides, render) from one released source
-  version by running its exporter. The built files are the record: no
-  hand-written receipt or manifest. It never rewrites prose or evidence and
-  never closes the Page. Trigger: delivery run, build the pdf, build the docx,
-  rebuild delivery, stale delivery,
-  /haipipe-page-delivery.
+  The Delivery Runs of a Page: one fixed Run per lane (run-delivery-webpage,
+  run-delivery-latex, run-delivery-word), rerun in place for every rebuild by
+  `page.py export`. The built files are the result: no new Run id, no receipt,
+  no manifest, no hash. It never rewrites prose or evidence and never closes the
+  Page. Trigger: delivery run, build the pdf, build the docx, build the web
+  page, rebuild delivery, stale delivery, /haipipe-page-delivery.
 metadata:
   version: "0.2.0"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-delivery · one target, one version, one build
+# /haipipe-page-delivery · one fixed Run per lane, rerun in place
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every file under `delivery/<lane>/`: fix the Page source or the exporter, then run the build again.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every file under `delivery/<lane>/`: fix the Page or the exporter, then rerun the lane's Run.
 
-**LOAD `../../haipipe-page-workflow/SKILL.md` FIRST.** This file owns the
-Delivery Run's delta: when one may be commissioned, what it binds, what it
-writes, and what it may not touch. The lanes it writes into are the 📤
-Delivery tab's contract in `../../haipipe-workbench-page/ref/delivery.md`;
-the identity grammar is `../../haipipe-page/ref/page-run-families.md`.
+**Load nothing else to rebuild.** A rebuild is one command; this file is all of it.
 
 ```text
-identity   rdNN_<target>          target ∈ web · latex · word · slide · render
-ticket     runs/rdNN_<target>.md
-result     results/rdNN_<target>/  runtime.yaml (status, attempt, exporter output)
-artifact   delivery/<lane>/…       written by the exporter only; no manifest
-actor      agent or automatic; the deck is the one authored exception
+lane    Run (fixed name)        ticket                          result
+web     run-delivery-webpage    runs/run-delivery-webpage.sh    delivery/web/     index.html · <page>.md copy
+latex   run-delivery-latex      runs/run-delivery-latex.sh      delivery/latex/   <page>.tex · <page>.pdf
+word    run-delivery-word       runs/run-delivery-word.sh       delivery/word/    <page>.docx · its PDF twin
 ```
 
-## 🎯 When it is commissioned
+## 🔁 Rebuild = rerun the same Run
 
-After the content and evidence release barrier is open: the planned Page Runs
-are closed and the release decision exists (`haipipe-page-writing`,
-`../../haipipe-page/ref/release-decisions.md`). One RD binds one source Page
-version, by path and version number, to one target lane. Rebuilding the same target
-from the same contract is another attempt in the same RD lineage; a different
-target or a materially different source version is a different RD. RD never
-reopens or rewrites an RE, and never edits the Page source.
+```bash
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/cli/page.py export <page-folder> [--lane web|latex|word|all] [--author "Junjie Luo"]
+# or, after the first export has written it:  bash <page-folder>/runs/run-delivery-<lane>.sh
+```
 
-## 🔁 How it runs
+1. **Same Run every time.** Never allocate `rd01_web`, `rd02_web`, or an attempt
+   number (JL 260928: "we just need one run ... no need for rd01_web, rd02_web").
+2. **Code writes the ticket.** `page.py export` writes `runs/run-delivery-<lane>.sh`
+   with the exact command it ran; nobody types it.
+3. **No record to write.** No `runtime.yaml`, no receipt, no
+   `build-manifest.json`, no hash (AGENTS.md rules 6 and 9). The files in
+   `delivery/<lane>/` and their file time are the whole record.
+4. **The state shows itself.** The Delivery Space and the Runs panel call a lane
+   current (`Done`) when its files are at least as new as the Page, and stale
+   (`Ready`, rerun it) when the Page changed after the build.
+5. **Any time.** A build never changes the Page, so it may run whenever the
+   person wants to read or send the file. A current lane is not a whole-Page
+   acceptance; `haipipe-page-check` is the only whole-Page close gate.
 
-1. **Allocate.** The next `rdNN_<target>` and its ticket.
-2. **Build.** web through `haipipe-page/cli/page.py build`; LaTeX and Word
-   through `/_board/latex` and `/_board/word` (the `exporters/` scripts,
-   deterministic, safe to run on click); slides only on the explicit ✨ press
-   (`claude -p`, minutes, money); render through the owning Design contract.
-3. **Record.** The built files and their file times are the record. Write no
-   `delivery/<lane>/build-manifest.json` and no hash by hand (JL 260928, AGENTS.md
-   rules 6 and 9); `runtime.yaml` records status, the attempt, and the
-   exporter's own warnings.
-4. **Show.** The Delivery Workspace compares source and artifacts by file time
-   and reports `pass`, `stale`, or `not-built` per lane. A current lane is
-   delivery evidence, not a whole-Page acceptance; `haipipe-page-check` is the
-   only human whole-Page close gate.
+The author of Word comments is the person annotating; for JL's papers it is
+"Junjie Luo" (AGENTS.md, Papers). Slides keep the same one-Run rule
+(`run-delivery-slides`), but only the explicit ✨ press in the Delivery Space
+starts it, because a model writes the deck (minutes, money). A render (Design
+screens) belongs to the Design contract (`run-delivery-render`).
 
 ## 🔒 Boundaries
 
-- Never edits `<page>.md`, an Evidence Result, or an accepted Version.
-- Never assembles or renames a paper: paper-level assembly is
-  `haipipe-paper-assemble`.
-- A hand edit inside `delivery/` is overwritten by the next build; the folder
-  is derived and safe to gitignore.
+- Never edits `<page>.md`, the Draft, an Evidence Result, or an accepted Version.
+- A wrong word in a built file is a Page or Draft edit, then a rerun
+  (`haipipe-page`, fast path). A wrong layout is an exporter fix, then a rerun.
+- Never assembles a paper: paper-level assembly is `haipipe-paper-assemble`.
+- Older numbered Runs (`rdNN_<lane>`) are history: read them, never add to them.
 - Missing current evidence bindings never fall back to a legacy Bib or display.
 
 ## 📂 Files
 
-- `../../haipipe-page-workflow/ref/workflow-table.md` · the `delivery` Run Spec row
-- `../../haipipe-page/ref/page-run-families.md` · RD identity and lineage
-- `../../haipipe-workbench-page/ref/delivery.md` · the tab, the lanes, the Delivery Workspace
-- `../../../../servers/workbench-page/delivery.py` · `export.py` · `exporters/` · the doors and writers
+- `../../haipipe-page/cli/page.py` (`export`) · `../../haipipe-page/src/page_export.py` · the command and the ticket writer
+- `../../../../servers/workbench-page/export.py` · `exporters/` · the LaTeX and Word writers
+- `../../../../servers/workbench-page/delivery.py` · the Delivery Space checks and `FIXED_RUNS`
+- `../../haipipe-workbench-page/ref/delivery.md` · the Delivery Space
 - `../../../paper/haipipe-paper-assemble/SKILL.md` · paper-level assembly, a different Run

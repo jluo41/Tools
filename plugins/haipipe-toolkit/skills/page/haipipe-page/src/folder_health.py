@@ -20,7 +20,7 @@ from .plan_shape import iter_plan_bullets
 
 FAIL, WARN, INFO, OK = "FAIL", "WARN", "INFO", "OK"
 ICON = {FAIL: "❌", WARN: "⚠️", INFO: "ℹ️", OK: "✅"}
-HEAD_SCAN = 1500  # check.py reads `arc:` only from the first 1,500 characters
+HEAD_SCAN = 3000  # fallback only: `arc:` belongs in the header block, before the first `## `
 REALIZES = re.compile(r"^(.*?)\s*<!-- realizes: (C\d+\.P\d+\.B\d+) -->", re.M)
 EVIDENCE_ID = re.compile(r"^\s*Evidence:\s*(E\d+-[A-Z]+-[A-Za-z0-9-]+)", re.M)
 RESULT_PATH = re.compile(r"^\s*(?:Answered|Drawn):.*?·\s*Result\s+(\S+)", re.M)
@@ -96,8 +96,9 @@ def check_header(plan: Path, text: str, out: list):
         if not re.search(rf"(?m)^{key}:\s*\S", head):
             out.append(Finding(WARN, "header", f"no `{key}:` line; status tools show this plan blank",
                                plan.name))
-    if not re.search(r"(?m)^arc:\s*\S", text[:HEAD_SCAN]):
-        where = "beyond the first 1,500 characters" if re.search(r"(?m)^arc:\s*\S", head) else "missing"
+    cut = re.search(r"(?m)^## ", text)
+    if not re.search(r"(?m)^arc:\s*\S", text[:cut.start()] if cut else text[:HEAD_SCAN]):
+        where = "below the header block" if re.search(r"(?m)^arc:\s*\S", head) else "missing"
         out.append(Finding(WARN, "header", f"`arc:` line {where}; check.py reports plan-no-arc", plan.name))
     for issue in version_policy_issues(plan, text):
         out.append(Finding(WARN, "header", issue, plan.name))

@@ -10,6 +10,8 @@ source or the Page-visible development corpus. It also renders a readable G_00
 guideline from the seed config's class meanings.
 
 The writer is additive: an existing different file is refused, never replaced.
+The manifests carry counts and fields, never a file checksum; the item-level
+``text_hash`` column is data that lets custody name sealed items without text.
 """
 
 from __future__ import annotations
@@ -149,7 +151,6 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
     manifest = {
         "schema_version": "subjective-label/fenced-corpus-v1",
         "items_file": "corpus/items.jsonl",
-        "items_checksum": "sha256:" + job.sha256_bytes(items_bytes),
         "n_items": len(corpus_rows),
         "n_eligible": len(corpus_rows),
         "n_sealed": len(sealed),
@@ -160,7 +161,6 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
         "context_field": corpus_cfg.get("context_field"),
         "population": corpus_cfg.get("population"),
         "source": corpus_cfg.get("source"),
-        "input_items_checksum": "sha256:" + job.sha256_file(items),
         "created_at": created,
     }
     frame_rule = (
@@ -174,7 +174,6 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
         "reserved_at": created,
         "frame": {"rule": frame_rule, "sampling": "seeded_random", "seed": seed, "strata": report},
         "n_items": len(sealed),
-        "protected_manifest_checksum": "sha256:" + job.sha256_bytes(protected),
         "text_location": "not retained in the fenced source; remains under custodian-controlled source custody",
         "access_policy": [
             "no development read, embed, index, retrieve, dedup, or prelabel",
@@ -194,7 +193,7 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
     }
     policy_manifest = {
         "schema": "subjective-label-policy/v1", "policy_id": "G_00", "parent": None,
-        "status": "seed", "components": {k: job.sha256_bytes(v) for k, v in policy_parts.items()},
+        "status": "seed", "components": list(policy_parts),
     }
     fenced_config = copy.deepcopy(config)
     fenced_corpus = fenced_config.setdefault("corpus", {})

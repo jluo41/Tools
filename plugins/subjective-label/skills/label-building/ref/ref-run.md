@@ -65,8 +65,9 @@ artifact carries its folder: `labeling/corpus/items.jsonl`.
 
 The envelope does not copy or replace canonical Labeling artifacts. The Ticket
 binds its Run Spec commission, such as a released Card or frozen registry. The
-Result records paths, checksums, counts, and the operation gate over the domain
-artifacts listed below. Protected ids, raw item text, private judgments,
+Result records paths, counts, and the operation gate over the domain
+artifacts listed below. Inputs, commission, and artifacts are `{path: ...}`
+only. Protected ids, raw item text, private judgments,
 credentials, and model secrets never enter the envelope.
 
 Use these required Ticket fields. A `phase` field may remain in a
@@ -81,7 +82,7 @@ phase: P3                          # compatibility capability tag only
 operation: executor-predict
 episode: test_01
 target: {executor: executor-a, test: test-v1}
-commission: {path: labeling/evaluation/registry.yaml, sha256: <hex>}
+commission: {path: labeling/evaluation/registry.yaml}
 inputs: []
 worker: {kind: api, name: <declared worker>}
 acceptance: <named operation gate below>
@@ -199,7 +200,7 @@ No model may synthesize a missing human event.
 ## 5. Completion and promotion
 
 Mark each Run `complete` only when its declared canonical Result exists,
-rehashes, and passes its operation-specific assertions. In addition:
+parses, and passes its operation-specific assertions. In addition:
 
 - `round-close` alone promotes G_t/D_t and records the next route;
 - `handoff-freeze` alone may write the immutable crossing after G2 and the
@@ -224,7 +225,7 @@ API call, or attempt. Put active and recovery-needed rows first.
 
 `haipipe-workbench-labeling` owns operation. `haipipe-workbench-page/ref/run-space.md` presents the
 same envelopes read-only and may group them by compatibility tag or episode. Show only safe
-targets, checksums, counts, status, and Result pointers. Never add a second
+targets, counts, status, and Result pointers. Never add a second
 approve, reveal, freeze, final, or run control.
 
 If the allocator, worker, Keeper, or verifier required by an operation does

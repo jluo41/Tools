@@ -6,8 +6,8 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.9.3"
-  last_updated: "2026-09-20"
+  version: "0.10.0"
+  last_updated: "2026-09-29"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -251,6 +251,25 @@ branch rather than assume success.
 
 ### 6 · Discovery Roadmap
 
+**The Roadmap is question first (JL 260928).** C6 opens with a few general
+questions; each D row (here) and each T row (C7) serves one of them and names
+the BJTR folder (Block › Job › Task › Run) that answers it. Read top down:
+general question → its T and D questions → their folders.
+
+```text
+Q | general question | serves        a few rows (about five), each a short plain question;
+                                     `serves` names the RQs, or `the whole paper`
+```
+
+Every D and T row leads with a **short plain question** a reader understands
+without the paper ("Has anyone shown this link before?"), carries a `folder`
+cell with its BJTR address (`b01.j05`, `b03.j02.t06`, a range such as
+`b03.j02.t01–t03`, or `none yet`), and ends with a `Q` cell. Row ids are `D<n>`
+and `T<n>`; never `B<n>` (a leftover Block Board id that reads as a Block).
+A new T or D starts as a question; its folder is created from it by
+haipipe-task or haipipe-discovery, which then writes the address into the
+row. A folder the paper uses that no row names is a missing question: add one.
+
 Describe the knowledge the paper must obtain from literature, external sources,
 or source interpretation before its claims and framing are defensible. Cover:
 
@@ -272,7 +291,7 @@ or source interpretation before its claims and framing are defensible. Cover:
 Use one row per discovery need:
 
 ```text
-D | what the paper must learn | question | source scope | expected synthesis | possible story consequence | feeds RQ/E/Section
+D | question | folder | what it must settle | source scope | expected synthesis | possible story consequence | feeds RQ/E/Section | Q
 ```
 
 Distinguish essential inquiries from useful extensions and state dependencies
@@ -309,7 +328,7 @@ Describe the evidence-producing study work required to answer the RQs. Cover:
 Use one row per coherent paper-level evidence block:
 
 ```text
-T | evidence obligation / analytical question | study material and design | required contrast | result form | interpretation branches | depends on | feeds RQ/E/Section
+T | question | folder | study material and design | required contrast | result form | interpretation branches | depends on | feeds RQ/E/Section | Q
 ```
 
 Distinguish the evidence needed for a sufficient paper from optional analyses.

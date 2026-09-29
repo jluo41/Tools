@@ -123,7 +123,7 @@ STOP evidence is bound:
 
 ```text
 `handoff-freeze` Run
-→ Label Handoff keeper rehashes G* + D_cal* + custody
+→ Label Handoff keeper checks G* + D_cal* + custody are complete and readable
 → records the signed immutable Label Handoff
 → its Result records the G3 compatibility predicate and Route to test work
 ```
@@ -181,7 +181,7 @@ An agent stops with an explicit HOLD when:
 
 - required human evidence is absent;
 - the sealed-access rule would be violated;
-- artifact checksum or parent version mismatches;
+- an artifact is missing or unreadable, or its count or parent version mismatches;
 - a required engine capability has not shipped;
 - a metric lacks a valid population or denominator;
 - a policy change would invalidate a final claim;

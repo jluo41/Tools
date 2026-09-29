@@ -26,8 +26,7 @@ Config source: {project_dir}/config.yaml → embedding section
 
 Cache layout (per project)
     {project_dir}/cache/embeddings/
-        vectors/{sha1}.npy             # per-text vector, keyed by hash(text + model)
-        manifest.jsonl                 # append-only: id, text_sha1, model, created_at
+        vectors/{sha1}.npy             # per-text vector; the file name is an internal cache key
         gallery_index.faiss            # FAISS index over current gallery vectors
         gallery_index.meta.json        # id -> gallery entry lookup for the index
 """
@@ -179,9 +178,10 @@ def _make_backend(cfg: dict):
 # ── commands ────────────────────────────────────────────────────────────────
 
 def cmd_embed(project_dir: Path, input_jsonl: Path, output_path: Path) -> None:
-    """Read {id, text} jsonl; write {id, vector_path, sha1} manifest + cached vectors.
+    """Read {id, text} jsonl; write {id, vector_path, cached} rows + cached vectors.
 
-    Reuses cached vectors when text hash + model match.
+    Reuses a cached vector when the same model already encoded the same text.
+    The cache key names a file only; the output rows carry the vector's path.
     """
     guard_job_root(project_dir, "G0")
     import numpy as np  # noqa: PLC0415
@@ -205,11 +205,11 @@ def cmd_embed(project_dir: Path, input_jsonl: Path, output_path: Path) -> None:
         h = _sha1(f"{model_tag}::{it['text']}")
         vec_path = vec_dir / f"{h}.npy"
         if vec_path.exists():
-            manifest.append({"id": it["id"], "sha1": h, "cached": True})
+            manifest.append({"id": it["id"], "vector_path": f"vectors/{h}.npy", "cached": True})
         else:
             texts_to_encode.append(it["text"])
             idx_to_encode.append((i, h, vec_path))
-            manifest.append({"id": it["id"], "sha1": h, "cached": False})
+            manifest.append({"id": it["id"], "vector_path": f"vectors/{h}.npy", "cached": False})
 
     if texts_to_encode:
         backend = _make_backend(cfg)

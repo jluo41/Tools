@@ -1580,7 +1580,10 @@ def check_plan_arc(path, name, rep):
     if path is None:
         return
     for plan in sorted(plan_files(plan_dir(path.parent))):
-        head = plan.read_text(encoding="utf-8", errors="replace")[:1500]
+        text = plan.read_text(encoding="utf-8", errors="replace")
+        # the header block: everything before the first `## ` heading (run names grew, 260929)
+        cut = re.search(r"(?m)^## ", text)
+        head = text[:cut.start()] if cut else text[:3000]
         if not re.search(r"(?m)^arc:\s*\S", head):
             rep.add(WARN, "plan-no-arc", f"{name} · {plan.name}",
                     "the plan carries no `arc:` line; a division list with no "

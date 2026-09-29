@@ -37,7 +37,7 @@ without becoming a second source of truth. Machine-readable records remain canon
 # {project} — {construct}
 
 Building **{Contract|Round|Freeze|HOLD}** · Scanning **{not runnable|Test|Scan|Audit|complete|HOLD}**
-handoff **{absent|valid checksum|invalid reason}** · policy **{G_t/G*}** · human gold **{D_t_n}**
+handoff **{absent|valid version|invalid reason}** · policy **{G_t/G*}** · human gold **{D_t_n}**
 
 | gate | evidence | result |
 |---|---|---|
@@ -96,7 +96,7 @@ set.
 ```markdown
 # Executor scorecard — {executor/run}
 
-handoff **{Label Handoff checksum}** · test **{T_star checksum}** · policy **{G_star checksum}** · validity **{valid/invalid}**
+handoff **{Label Handoff version}** · test **{T_star version}** · policy **{G_star version}** · validity **{valid/invalid}**
 
 | evidence | score | interval | floor/result |
 |---|---:|---:|---|

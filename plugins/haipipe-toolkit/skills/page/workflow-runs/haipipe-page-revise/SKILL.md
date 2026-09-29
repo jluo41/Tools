@@ -1,19 +1,21 @@
 ---
 name: haipipe-page-revise
 description: >-
-  The Revise Run of a Board Page (`rp-revise-NN_<target>`): compare two frozen
+  The Revise Run of a Board Page (`run-revise-<MMDD>-<target>`): compare two frozen
   texts of one target, before and after, and settle every difference. Its
   Result is a change ledger, one row per change with Before, After, kind, Why,
-  decision, and inferred preference, rendered in Run Space as red/green cards.
+  decision, and inferred preference, listed in the Draft Space Runs panel
+  (Revise edits) and rendered as red/green cards in the All-runs view.
   Two doors: the person edits Draft sentences in place in Draft Space → Revise
-  (each Save is one Step, Decision accept), or an agent compares two frozen
+  (the first Save opens the run, later Saves change only the Draft, close writes
+  the ledger), or an agent compares two frozen
   texts. Page Content is never touched; accepted Drafts reach the Page through
   the writing Run's Version. Trigger: revise, edit this sentence, compare
   before and after, what changed, track changes, review the revision, accept
   or reject changes, /haipipe-page-revise.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-28"
+  version: "0.4.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,16 +27,17 @@ the ledger format is `ref/change-ledger.md`; the identity grammar is
 `../../haipipe-page/ref/page-run-families.md`.
 
 ```text
-identity   rp-revise-NN_<target>     target: C1 · C1.P1 · P03-P05 · or `page`
+identity   run-revise-<MMDD>-<target>  target: C1 · C1.P1 · P03-P05 · or `page` (older: rp-revise-NN_<target>)
 inputs     text A and text B, named by path and version: two Versions of one writing
            Run, an accepted Version and a delegated paragraph Result, or two
            built Page versions (their delivery manifests)
-result     results/rp-revise-NN_<target>/  runtime.yaml · working.md · v001.md
+ticket     runs/run-revise-<MMDD>-<target>.md, written when the run opens; keeps the text before
+result     results/run-revise-<MMDD>-<target>/  runtime.yaml · working.md · v001.md, written at close
            the journal's Saved result holds the change ledger (ref/change-ledger.md)
 actor      a fresh agent or the person; never the writer of text B
 close      every change decided; the accepted text is handed to the owning
            writing Run as its next Version (NEW_VERSION), or nothing changes
-surface    Run Space → Page Writing → Revise; each row is one red/green card
+surface    Draft Space Runs panel → Revise edits; the All-runs view (lens=run) → Page Writing → Revise shows each row as one red/green card
 ```
 
 ## 🎯 Why it is a Run and not a Step
@@ -57,14 +60,18 @@ between points, and one `Save`. The blank-line blocks map back to the
 paragraph's Bullets in order (no blank lines: each line is one point; extra
 blocks join the last Bullet, missing blocks clear the rest); a Save writes the changed Draft fields
 into the selected Outline under the page lock, guarded by the Bullet and Draft
-tokens the page was rendered with, then opens or extends this paragraph's
-`rp-revise-NN_<C.P>` Run: one
-`## Step sNNN` per Save, one `##### Rnn · <kind>` card per changed sentence
-with `###### Before`, `###### After`, `###### Why` (the optional line the
-person typed), `###### Decision` `accept`, and `###### Preference status`
-naming the direct edit. Run Space renders the cards red/green. The Run stays
-`running` until the person closes it; adding or removing points is not a
-Revise edit but a Structure change. Server: `servers/workbench-page/
+tokens the page was rendered with. Records only at the two ends (JL 260928):
+the first Save on a paragraph opens its `run-revise-<MMDD>-<c1-p2>` run, one
+ticket in `runs/` that keeps the paragraph's text before the Save (`## Before`,
+one `C1.P2.B1 · sentence` line per Bullet); later Saves change only the Draft,
+and an optional Why is kept in that ticket. When the person says close,
+`page.py close-run <page> <run>` compares that Before with the Draft now and
+writes `results/<run>/v001.md`: one `## Step s001`, one `##### Rnn · <kind>` card
+per changed Bullet with `###### Before`, `###### After`, `###### Why`,
+`###### Decision` `accept`, and `###### Preference status` naming the direct
+edit, plus `runtime.yaml`, `working.md` and one log line. The All-runs view renders
+the cards red/green. Adding or removing points is not a Revise edit but a
+Structure change. Server: `servers/workbench-page/
 outline_revise.py`, POST `/_board/draft` with `action: revise`.
 
 ## 🔁 The compare door · two frozen texts
@@ -104,7 +111,7 @@ outline_revise.py`, POST `/_board/draft` with `action: revise`.
 
 ## 📂 Files
 
-- `ref/change-ledger.md` · the Result format Run Space renders, both doors
+- `ref/change-ledger.md` · the Result format the All-runs view renders, both doors
 - `../../../../servers/workbench-page/outline_revise.py` · the direct door: Revise view rows, `action: revise`, ledger writer
 - `../../haipipe-page-workflow/SKILL.md` · the Run list and the `revise` row
 - `../../haipipe-page-workflow/ref/writing-step-template.md` · the `#### Track changes` block the ledger reuses

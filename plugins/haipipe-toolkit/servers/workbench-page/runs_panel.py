@@ -18,12 +18,15 @@ from pathlib import Path
 
 from src.item_table import short_name
 from src.run_folders import folder_for, space_of
+from src import run_names
 
 CARDS = Path(__file__).resolve().parents[2] / "skills" / "page" / "haipipe-page-workflow" / "ref" / "run-cards.md"
 _CARD = re.compile(r"^## `(?P<card>[^`]+)`", re.M)
 _BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][A-Za-z]+)\s+·\s+"
                      r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w ]+?))?\s*$")
 _PROMPT = re.compile(r"^💬 PROMPT\s+(?P<prompt>.+?)\s*$")
+_SKILL = re.compile(r"^🧩 SKILL\s+(?P<skills>.+?)\s*$")
+_RUN_SKILLS = re.compile(r"(?m)^skills?:\s*(?P<skills>.+?)\s*$")
 _STATE = {"done": "Closed", "held": "Held", "waiting": "Awaiting you", "running": "Running",
           "review-ready": "Awaiting you", "open": "Running"}
 
@@ -43,14 +46,47 @@ def run_types(cards: Path = CARDS) -> list[dict]:
         end = text.find("\n## ", match.end())
         body = text[match.end():end if end >= 0 else len(text)]
         prompt = next((m["prompt"] for line in body.splitlines() if (m := _PROMPT.match(line))), "")
+        # `🧩 SKILL a · b` is the card's; `🧩 SKILL <button label>: a · b` is one button's.
+        skills, per_button = "", {}
+        for line in body.splitlines():
+            found = _SKILL.match(line)
+            if not found:
+                continue
+            label, sep, names = found["skills"].partition(":")
+            if sep and not label.strip().startswith("haipipe-"):
+                per_button[label.strip()] = names
+            elif not skills:
+                skills = found["skills"]
         for line in body.splitlines():
             button = _BUTTON.match(line)
             if button:
                 types.append({"card": match["card"], "label": button["label"], "space": button["space"],
                               "pattern": button["pattern"], "prompt": prompt,
+                              "skills": _skill_list(per_button.get(button["label"], skills)),
                               "views": " ".join((button["views"] or "").split())})
     return types
 
+
+
+def _skill_list(text: str) -> list[str]:
+    """`haipipe-page-writing · haipipe-writing` → both names, without a leading slash."""
+    return [s.strip().lstrip("/") for s in re.split(r"[·,]", text or "") if s.strip()]
+
+
+def _run_skills(row: dict, kind: dict) -> list[str]:
+    """The skills a run used: a `skills:` line in its ticket or runtime, else its run type's."""
+    for path in (row.get("ticket"), row.get("runtime")):
+        path = Path(str(path or ""))
+        if path.suffix in {".md", ".yaml", ".yml"} and path.is_file():
+            found = _RUN_SKILLS.search(path.read_text(encoding="utf-8", errors="replace")[:2000])
+            if found:
+                return _skill_list(found["skills"])
+    return list(kind.get("skills") or [])
+
+
+def _skills_html(skills: list[str]) -> str:
+    return ('<p class=run-skill>Skill %s</p>' % " · ".join("<code>%s</code>" % _e(s) for s in skills)
+            if skills else "")
 
 def _fill(template: str, **values) -> str:
     return re.sub(r"\{(\w+)\}", lambda m: str(values.get(m.group(1), m.group(0))), template or "")
@@ -113,7 +149,7 @@ def _result_files(row: dict) -> list[str]:
     return sorted(p.name for p in folder.iterdir() if p.is_file() and not p.name.startswith("."))[:8]
 
 
-_FORMAT = re.compile(r"^rd\d+_(web|latex|word|slides?)(?:_|$)", re.I)
+_FORMAT = re.compile(r"^(?:rd\d+_|run-delivery-)(web|webpage|latex|word|slides?)(?:_|$)", re.I)
 # What the panel calls a run (JL 260927: "just call it complete name"). The file
 # names on disk keep their short prefixes; the real id shows on hover.
 _DISPLAY = (
@@ -143,7 +179,7 @@ def display_name(run_id: str) -> str:
 def _card_views(row: dict) -> str:
     """The Delivery format tab a build run belongs to ("" = every tab)."""
     match = _FORMAT.match(_run_id(row))
-    return re.sub(r"^slide$", "slides", match.group(1).lower()) if match else ""
+    return {"slide": "slides", "webpage": "web"}.get(match.group(1).lower(), match.group(1).lower()) if match else ""
 
 
 def _card_html(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str:
@@ -162,7 +198,7 @@ def _card_html(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str
         '<article class=run-card data-type="%d" data-run="%s" data-name="%s" data-targets="%s" '
         'data-state="%s" data-views="%s" data-label="%s" hidden>'
         '<header><b title="%s">%s</b><span class="run-state st-%s">%s</span>'
-        '<button type=button class=run-copy data-copy="%s">Rerun</button></header>'
+        '<button type=button class=run-copy data-copy="%s">Rerun</button></header>%s'
         '<details class=run-prompt-box><summary>Prompt '
         '<button type=button class=run-copy data-copy="%s">Copy</button></summary>'
         '<pre class=run-prompt>%s</pre></details>'
@@ -173,7 +209,7 @@ def _card_html(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str
            _e(state.lower().replace(" ", "-")), _e(row["_views"] if "_views" in row else _card_views(row)),
            _e(state), _e(run),
            _e(row.get("_display") or display_name(run)),
-           _e(state.lower().replace(" ", "-")), _e(state), _e(rerun),
+           _e(state.lower().replace(" ", "-")), _e(state), _e(rerun), _skills_html(_run_skills(row, kind)),
            _e(prompt), _e(prompt),
            _e(state), (" · " + _e(row.get("goal"))) if row.get("goal") else "",
            _e(folder or "no result yet"), files))
@@ -208,6 +244,8 @@ def _name_by_item(rows: list[dict]) -> None:
     groups: dict[tuple[str, str], list[dict]] = {}
     for row in rows:
         run = _run_id(row)
+        if run_names.is_run_name(run):
+            continue                      # a readable name is shown as it is (JL 260928)
         served = row.get("_served") or {}
         kind = re.match(r"^re-(cite|value|display)-", run)
         word = _KIND_WORD.get(kind.group(1) if kind else served.get("tab", ""), "")
@@ -223,6 +261,8 @@ def _name_by_item(rows: list[dict]) -> None:
 
 _SUPPORT_PROMPT = ("/haipipe-task {run}: show its ticket, runtime and Result, and say whether the Result "
                    "still supports {target} on {page}.")
+_DISCOVERY_PROMPT = ("/haipipe-discovery {run}: show its Result Card and say whether it still supports "
+                     "{target} on {page}.")
 
 
 def _support_rows(runs: list[dict]) -> list[dict]:
@@ -252,12 +292,17 @@ def panel_html(page_src: Path, space: str, rows: list[dict], types: list[dict], 
     # CHECK run also shows under Delivery).
     rows = [r for r in rows if row_space(r) == space
             or any(re.search(t["pattern"], _ticket_name(r)) for t in mine)]
+    if space == "delivery":
+        # One Run per lane (JL 260928): the fixed run-delivery-<lane>. Older numbered
+        # Delivery Runs (rdNN_*) stay on disk and in the All-runs view, not here.
+        rows = [r for r in rows if not re.match(r"rd\d+_", _ticket_name(r), re.I)]
     buckets = [[] for _ in mine]
     other = []
     for row in sorted(rows, key=_number, reverse=True):
         name = _ticket_name(row)
         hit = next((i for i, t in enumerate(mine) if re.search(t["pattern"], name)), None)
-        served = (run_tabs or {}).get(_paper_run_key(_run_id(row)) or _paper_run_key(name))
+        served = ((run_tabs or {}).get(_paper_run_key(_run_id(row)) or _paper_run_key(name))
+                  or (run_tabs or {}).get(_run_id(row)) or (run_tabs or {}).get(Path(name).stem))
         if served:
             # An older Paper-local evidence run (pj..t..r..) joins the tab of the
             # Evidence Item it serves, and selecting that item finds it.
@@ -270,15 +315,22 @@ def panel_html(page_src: Path, space: str, rows: list[dict], types: list[dict], 
         _name_by_item([row for rows_ in buckets + [other] for row in rows_])
     kinds = list(mine)
     if space == "evidence" and supporting:
-        kinds.append({"card": "", "label": "Supporting runs", "space": space, "pattern": "",
-                      "views": "supporting", "prompt": _SUPPORT_PROMPT})
-        buckets.append(_support_rows(supporting))
+        # Supporting Runs are Task runs or Discovery runs, each owned by its own skill.
+        support = _support_rows(supporting)
+        discovery = [r for r in support if str(r.get("family") or "").lower().startswith("discover")]
+        task = [r for r in support if r not in discovery]
+        kinds.append({"card": "", "label": "Task runs", "space": space, "pattern": "",
+                      "views": "supporting", "prompt": _SUPPORT_PROMPT, "skills": ["haipipe-task"]})
+        buckets.append(task)
+        kinds.append({"card": "", "label": "Discovery runs", "space": space, "pattern": "",
+                      "views": "supporting", "prompt": _DISCOVERY_PROMPT, "skills": ["haipipe-discovery"]})
+        buckets.append(discovery)
     if other:
         kinds.append({"card": "", "label": "Other", "space": space, "pattern": "", "views": "",
                       "prompt": "/haipipe-page run {page} {run} again: {target}."})
         buckets.append(other)
     return panel_markup(space, kinds, buckets, base=base, fill=lambda row: fill, extra=extra,
-                        named=len(mine) + (1 if space == "evidence" and supporting else 0))
+                        named=len(mine) + (2 if space == "evidence" and supporting else 0))
 
 
 def _waiting(rows) -> int:
@@ -299,10 +351,11 @@ def panel_markup(space: str, kinds: list[dict], buckets: list[list[dict]], *, ba
     default_fill = fill({})
     buttons = "".join(
         '<button type=button class="run-type%s" data-type="%d" data-label="%s" data-prompt="%s" '
-        'data-views="%s" data-waiting="%d" data-count="%d">'
+        'data-skills="%s" data-views="%s" data-waiting="%d" data-count="%d">'
         '%s <span class=run-count>%d</span></button>'
         % (" on" if i == first else "", i, _e(k["label"]),
-           _e(_fill(k["prompt"], button=k["label"], **default_fill)), _e(k.get("views", "")),
+           _e(_fill(k["prompt"], button=k["label"], **default_fill)), _e(" · ".join(k.get("skills") or [])),
+           _e(k.get("views", "")),
            _waiting(buckets[i]), len(buckets[i]), _e(k["label"]), len(buckets[i]))
         for i, k in enumerate(kinds))
     cards = "".join(_card_html(row, i, kinds[i], base, fill(row))
@@ -315,7 +368,7 @@ def panel_markup(space: str, kinds: list[dict], buckets: list[list[dict]], *, ba
         '<div class=runs-body><div class=runs-types>%s'
         '<button type=button class="run-type run-new">+ New Run</button></div>'
         '<div class=runs-detail><div class=run-list></div>%s'
-        '<article class="run-card run-card-new" hidden><header><b>New run</b></header>'
+        '<article class="run-card run-card-new" hidden><header><b>New run</b></header><p class=run-skill hidden></p>'
         '<details class=run-prompt-box open><summary>Prompt '
         '<button type=button class=run-copy data-copy="">Copy</button></summary>'
         '<pre class=run-prompt></pre></details></article>'
@@ -348,6 +401,7 @@ PANEL_CSS = """
 .run-list button.on{border-color:var(--acc);color:var(--acc)}
 .run-card header{display:flex;align-items:center;gap:8px}
 .run-card header .run-copy{margin-left:auto}
+.run-skill{margin:6px 0 0;color:var(--mut);font-size:12px}.run-skill code{font-size:11.5px;color:var(--fg)}
 /* The prompt folds (JL 260927); Copy works while it is folded. */
 .run-prompt-box>summary{display:flex;align-items:center;gap:6px;margin:10px 0 4px;cursor:pointer;
  list-style:none;font:600 12px system-ui,sans-serif;text-transform:none;letter-spacing:normal;color:var(--fg)}
@@ -415,6 +469,8 @@ PANEL_JS = r"""
    var src=p.querySelector('.run-type[data-type="'+type+'"]'),card=p.querySelector('.run-card-new');
    var what=target||(p.dataset.space==='delivery'?p.dataset.viewLabel:'')||p.dataset.whole||'the whole page';
    card.querySelector('.run-prompt').textContent=(src?src.dataset.prompt:'').replace(/\{target\}/g,what);
+   var sk=card.querySelector('.run-skill'),names=(src&&src.dataset.skills||'').split(' · ').filter(Boolean);
+   sk.innerHTML=names.length?'Skill '+names.map(function(n){return '<code>'+n.replace(/[<>&"]/g,'')+'</code>';}).join(' · '):'';sk.hidden=!names.length;
    card.hidden=false;return;
   }
   p.dataset.lastType=type;

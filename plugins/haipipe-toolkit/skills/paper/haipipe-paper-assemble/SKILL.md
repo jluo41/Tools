@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.8.4"
+  version: "0.9.0"
   last_updated: "2026-09-28"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
@@ -292,6 +292,29 @@ and `misq` (double-spaced, blind title page, abstract page, lettered appendices
 on new pages, `displays` switchable inline/end; `apalike` stands in for MISQ's
 author-date style because the desk's own `.bst` is not shipped). A paper with no
 profile builds as before 0.7.0.
+
+## ✉️ The cover letter lane · run-delivery-coverletter (0.9.0)
+
+A submission sends a cover letter with the manuscript, so the build makes it the same way (JL 260929):
+
+```text
+WORDS   the "Cover letter" division of the submission Round page
+        B<x>-<desk>-Round/RD<NN>-<desk>-submission-<YYYYMMDD>/<stem>.md · approved like any page;
+        until its Content has the division, the Round page's latest draft is used and the letter is not ready
+FACTS   filled by code: {title} {journal} {article_type} {pages} {tables} {figures} in the words,
+        plus date, addressee and author block from paper-build.toml [coverletter]
+OUTPUT  delivery/cover-letter/ PDF (generated LaTeX) and DOCX · [outputs] cover_letter_pdf / _docx
+CHECKS  every number printed in the manuscript · required mentions (profile cover_letter_must_mention
+        + [coverletter] must_mention) · no causal verb · no process text · manuscript within the
+        profile's page_cap · author block complete · one or two pages
+SEND    build.py send RD<NN> freezes the letter with the manuscript into that Round's sent/
+```
+
+The words are authored and approved; everything factual is code-filled, so a number or a title can
+never drift from the manuscript. `scripts/cover_letter.py` holds the lane; `build-manifest.json`
+records it under `cover_letter` (source, ready, checks). `send` skips an output switched off with an
+empty value and, when the profile's `appendices = "main"`, the supplement a manuscript-with-appendices
+never produces.
 
 ## ⚙️ Canonical configuration
 

@@ -1,3 +1,9 @@
+## 0.9.0 · 2026-09-29 · run-delivery-coverletter
+- New lane (JL 260929 "we should also have a delivery cover letter ... run-delivery-coverletter"): `scripts/cover_letter.py`, called by `build_delivery.py` when paper-build.toml has `[coverletter]`. Words from the submission Round page's "Cover letter" division (its draft until adopted); facts filled by code; PDF via generated LaTeX and DOCX; checks for numbers against the manuscript text, required mentions, causal verbs, process text, the venue page cap, the author block and length; recorded under `cover_letter` in build-manifest.json and printed after the build.
+- `profiles/misq.toml`: `page_cap = 55` and `cover_letter_must_mention` from the MISQ desk rules.
+- `send` fix: `send RD<NN>` refused a MISQ paper because it demanded the supplement a manuscript-with-appendices never produces, and `section_snapshots = ""` resolved to delivery/ itself. Empty outputs and, under `appendices = "main"`, supplement outputs are now skipped; a not-ready letter is named when it travels with the Round.
+- Tests: `test_cover_letter_lane_fills_facts_and_checks_the_words`, `test_send_skips_switched_off_outputs_and_an_absent_supplement`. Assemble tests: 66 pass.
+
 ## 0.8.4 · 2026-09-28
 
 - ⛔ Hard rule under the title (JL 260928, AGENTS.md rule 6): never modify a generated file directly; change the code that writes it, then rerun.

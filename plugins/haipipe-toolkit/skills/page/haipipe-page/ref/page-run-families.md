@@ -22,7 +22,7 @@ Page workflow pass                 controller receipt; not a Level-4 Run
         │
         ├── RP  Page Writing Run   human/agent structure or prose iteration
         ├── RE  Page Evidence Run  one Page Evidence Item's lineage
-        └── RD  Page Delivery Run  one delivery target/version
+        └── RD  Page Delivery Run  one fixed Run per lane, rerun in place
 
 owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 ```
@@ -31,41 +31,44 @@ owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 
 | Family | Meaning | Canonical identity | Owns | Does not own |
 |---|---|---|---|---|
-| `RP` | Page Writing Run | `rp-struct-01`, `rp-scratch-01_C1.P1`, `rp-sec-01`, `rp-para-01_P03-P05`, `rp-revise-01_C1.P3` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
-| `RE` | Page Evidence Run | `re-value-01_<slug>`, `re-display-01_<slug>`, `re-cite-01_<slug>` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
-| `RD` | Page Delivery Run | `rd01_web`, `rd02_latex`, `rd03_word` | one delivery target/version, artifact, and build receipt | Page prose authority, Evidence truth, human CHECK close |
+| `RP` | Page Writing Run | `run-structure-0901-page-plan`, `run-scratch-0928-c1-p1`, `run-section-0927-readability-cleanup`, `run-paragraph-0928-p03-p05`, `run-revise-0928-c1-p3` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
+| `RE` | Page Evidence Run | `run-value-0928-adjusted-effect`, `run-display-0928-model-figure`, `run-citation-0928-prior-work` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
+| `RD` | Page Delivery Run | `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word` (fixed names, never numbered) | one delivery lane's built files, rebuilt by rerunning the same Run | Page prose authority, Evidence truth, human CHECK close |
 
-`RP`, `RE`, and `RD` counters are independent. The typed RP and RE
-sequences are also independent within their own kinds: `rp-struct-01` and
-`rp-sec-01` may coexist, as may `re-value-01` and `re-display-01`. Never
-renumber an allocated identity. Existing records using the retired compact
-forms such as `rp00_mermaid-structure` or `re01_<slug>` are compatibility input
-only during migration; active Page folders, packets, links, and new allocation
-use the canonical forms above.
+Every Page Run name is readable (JL 260928: "remove rp-xxx, make it readable"):
+`run-<kind>-<MMDD>-<slug>`, where `kind` is a word, `MMDD` the day the run
+started (from the clock) and `slug` two to four words: the purpose, the target
+(`c1-p2`, `p03-p05`) or the Evidence Item's slug. There is no counter; a name
+already taken on the Page gets `-2`. `RD` is three fixed names. The one grammar
+is `src/run_names.py` (`mint`, `kind_of`, `delivery_name`). Never rename an
+allocated run. Older names (`rp-sec-07`, `re-value-07_x`, `rp00_…`, `re01_…`,
+`rd01_latex`) still read; `page.py run-names <page>` renames a Page's runs once.
 
 ### RP · Page Writing Run
 
-`RP` has five explicit kind tokens. The kind is part of the identity; there
-are no hidden numeric bands:
+`RP` has seven writing kinds, each spelled as a word in the name (context and
+check are Page Runs outside the writing family):
 
 | Identity | Scope | Required output and boundary |
 |---|---|---|
-| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and structure list |
-| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; the person manually triggers Finish Scratch, which asks the AI for a Summary before closing; does not edit Draft prose |
-| `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
-| `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
-| `rp-revise-NN_<target>` | Revise: before and after | two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) compared into one change ledger; every row decided; the accepted text returns to the owning writing Run as a Version; owns decisions, never prose (`haipipe-page-revise`) |
+| `run-structure-<MMDD>-<slug>` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and structure list |
+| `run-scratch-<MMDD>-<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; the person manually triggers Finish Scratch, which asks the AI for a Summary before closing; does not edit Draft prose |
+| `run-section-<MMDD>-<slug>` | Section-level writing | one named Section drafting/revision session and its review loop |
+| `run-paragraph-<MMDD>-p03[-p05]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
+| `run-revise-<MMDD>-<target>` | Revise: before and after | two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) compared into one change ledger; every row decided; the accepted text returns to the owning writing Run as a Version; owns decisions, never prose (`haipipe-page-revise`) |
+| `run-auto-write-<MMDD>-<target>` | Auto write | an agent writes one paragraph or Section from its settled Points, reviews it against the rubric and rewrites, then hands Before / After to the person; ticket in `runs/`; owner `haipipe-page-writing` (drafting method `haipipe-writing`) |
+| `run-evidence-embed-<MMDD>-<target>` | Evidence embed | the EMBED step: accepted Evidence Results become `Answered:` lines in `## 1 · Structure` and keys or values in `## 3 · Draft`, saved as the next evidence version (v2.5 → v2.5.1); ticket in `runs/`; owner `haipipe-page-evidence` (EMBED) |
 
-`NN` starts at `01` independently for each kind. `rp-struct-01` is the first
-Structure Run and contains both SHAPE and SURVEY. It can have several human
+The first Run of a Page is a Structure Run (`run-structure-…`); it
+contains both SHAPE and SURVEY. It can have several human
 participants; record one shared Run and one paired Result, with contributors
-on each Step. `rp-struct-02` is a later independent structure/Bullet Run, not a
+on each Step. A later `run-structure-…` is an independent structure/Bullet Run, not a
 new Survey pass or a new participant.
 Scratch may be commissioned at a Section or whole paragraph-group target as
 soon as the selected Outline exists; it is a human thinking aid, not a replacement for
 the Structure gate. After the structure contract is closed, Section Runs begin
-at `rp-sec-01` and paragraph Runs begin at `rp-para-01_P01` (or the selected
-exact target).
+(`run-section-…`) and paragraph Runs (`run-paragraph-<MMDD>-p01`, or the selected
+exact target) may open.
 The paragraph target is mandatory and uses the Page-global `P01..PN` index.
 
 ```text
@@ -75,8 +78,8 @@ Version  = one append-only candidate snapshot/journal inside that Run
 ```
 
 A complete Section cycle is one Step, not a new Run. A later independent
-Section session receives the next `rp-sec-NN`. A revisit of the same fixed
-paragraph target normally reopens its existing `rp-para-NN_Pxx[-Pyy]` in a
+Section session opens a new Section Run. A revisit of the same fixed
+paragraph target normally reopens its existing Paragraph Run in a
 new Version; a materially different target or goal receives a new Run.
 
 ### RE · Page Evidence Run
@@ -86,9 +89,9 @@ names the focal Result, not every label that the Result may expose:
 
 | Identity | Focal Result | Additional field |
 |---|---|---|
-| `re-value-NN_<slug>` | one value or coherent value set | `kind: value` |
-| `re-display-NN_<slug>` | one display unit | `kind: display`; `display_kind: table\|figure\|algorithm` |
-| `re-cite-NN_<slug>` | one citation/source bundle | `kind: cite` |
+| `run-value-<MMDD>-<item slug>` | one value or coherent value set | `kind: value` |
+| `run-display-<MMDD>-<item slug>` | one display unit | `kind: display`; `display_kind: table\|figure\|algorithm` |
+| `run-citation-<MMDD>-<item slug>` | one citation/source bundle | `kind: cite` |
 
 `DISPLAY` is the umbrella type. A table, figure, or algorithm block is a
 display subtype and uses the same `D_` label namespace; there is no `re-table`
@@ -132,9 +135,9 @@ The canonical conceptual binding is:
 
 ```yaml
 item: E18
-page_run: re-value-01_adjusted-effect
+page_run: run-value-0928-adjusted-effect
 kind: value
-result: results/re-value-01_adjusted-effect/result.yaml
+result: results/run-value-0928-adjusted-effect/result.yaml
 labels:
   - token: "$V_adjusted_effect$"
     kind: VALUE
@@ -186,12 +189,15 @@ interpretation belongs to EMBED.
 
 ### RD · Page Delivery Run
 
-`RD` is commissioned after the content/evidence release barrier is open. One
-RD targets one delivery lane and concrete source version: web, LaTeX, Word,
-slides, or a rendered recipient preview. A rebuild of the same target may be
-another attempt in the same RD lineage when its contract is unchanged.
-Different targets or materially different source versions use different RD
-identities. RD does not reopen or rewrite an RE.
+Each lane has one fixed Delivery Run (JL 260928: "we just need one run, it can
+be run-delivery-webpage, no need for rd01_web, rd02_web"): `run-delivery-webpage`,
+`run-delivery-latex`, `run-delivery-word`; slides and render follow the pattern
+(`run-delivery-slides`, `run-delivery-render`). Every rebuild reruns the same Run
+through `page.py export`, which writes its ticket `runs/run-delivery-<lane>.sh`.
+There is no new id, attempt, `runtime.yaml` or receipt: the lane's files and
+their file time are the result. A build never changes the Page, so it may run
+at any time; it never reopens or rewrites an RE. Older `rdNN_<lane>` Runs are
+history. Contract: `../../workflow-runs/haipipe-page-delivery/SKILL.md`.
 
 ## Evidence Item, Result, Card, and Label
 
@@ -212,20 +218,14 @@ current authority is one Result/Card binding.
 
 ## Storage and routing
 
-Page-special tickets use the Page-readable family identity:
+Every Page Run is one ticket and one result folder with the same name, in a
+flat `runs/`. `page.py open-run` writes the ticket when the run starts;
+`page.py close-run` writes the result folder when it ends (JL 260928: records at
+the two ends, only the Page's text in between).
 
 ```text
-runs/rp-struct-NN.md
-runs/rp-scratch-NN_<target>.md
-runs/rp-sec-NN.md
-runs/rp-para-NN_Pxx[-Pyy].md
-runs/rp-revise-NN_<target>.md
-runs/re-value-NN_<slug>.md
-runs/re-display-NN_<slug>.md
-runs/re-cite-NN_<slug>.md
-runs/rdNN_<target>.md
-results/<same-run>/
-delivery/<lane>/
+runs/run-<kind>-<MMDD>-<slug>.md   ↔ results/run-<kind>-<MMDD>-<slug>/
+runs/run-delivery-<lane>.sh        written by page.py export; its result is delivery/<lane>/
 ```
 
 The Folder dialect may place the executable owner-native Ticket and canonical
@@ -236,9 +236,10 @@ storage.
 ## Boundaries
 
 - `RP`, `RE`, and `RD` are Page-local Run families, not Runs.
-- RP kind tokens are `struct`, `scratch`, `sec`, and `para`; paragraph identities expose
-  their exact `Pxx` target or contiguous range.
-- RE kind tokens are `value`, `display`, and `cite`; `display_kind` distinguishes
+- RP kind tokens are `struct`, `scratch`, `sec`, `para`, `revise`, `auto`, and `embed` (older form, still read);
+  new names spell each as a word (structure, scratch, section, paragraph, revise, auto-write,
+  evidence-embed), and a paragraph name exposes its exact target or range (`p03-p05`).
+- RE kind tokens are `value`, `display`, and `cite` (older form; new names say citation); `display_kind` distinguishes
   table, figure, and algorithm. Other renderer mechanisms remain internal and
   are cited as the resulting Page `figure` when they become a display.
 - One Evidence Item has one current RE lineage and one current Result/Card;

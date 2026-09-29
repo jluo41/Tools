@@ -14,7 +14,7 @@ approval on the person's behalf.
 Before the four review parts, return the two direct live workspace links when
 the Board is available: **Draft Space** (`<Board URL>&lens=div`) and
 **Evidence Space** (`<Board URL>&lens=evidence`). Use the same
-verified configured public origin as the Outline table. The embedded
+verified configured public origin as the workbench link. The embedded
 `/_board/evidence?...&embed=1` URL is an iframe implementation detail, not the
 primary Evidence link.
 
@@ -27,7 +27,7 @@ primary Evidence link.
   see `content-preview.md`. Label missing-evidence placeholders and stale
   Bullet bindings. Preview review does not approve or promote Page Content.
 
-- Link the latest `outline/<stem>-outline-v<G>.<S>[.<E>].md` and state its version and
+- Link the latest `draft/<stem>-draft-v<G>.<S>[.<E>].md` and state its version and
   `approved:` value.
 - Give its one-line `arc:` and a compact reader path: `C1 → C2 → …`; add
   decisive P/B labels when that helps the person inspect sequencing.
@@ -44,7 +44,7 @@ primary Evidence link.
 
 ## 2 · Evidence owed
 
-- Link `outline/<stem>-evidence-items.md` and report its item count by type;
+- Link `draft/<stem>-evidence-items.md` and report its item count by type;
   derive current readiness from `results/**/result.yaml`, never from the
   retired `outline/<stem>-evidence.md` snapshot. Also
   report `typed-item Bullets · explicit-none Bullets · missing decisions`; the

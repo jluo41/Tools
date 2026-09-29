@@ -25,8 +25,8 @@ unsettled v0 candidate is not released merely because a user requests a build.
 
 Writing Steps save candidates, review/diagnosis, affected Bullets, and feedback
 in their current Run. They do not adopt Page Content or rebuild delivery.
-Release adopts the accepted candidate once; each commissioned RD records its
-own delivery artifact and receipt. A whole-Page Check judges that immutable
+Release adopts the accepted candidate once; each lane's fixed Delivery Run is
+then rerun and its built files are the delivery record. A whole-Page Check judges that immutable
 version independently and does not rewrite the version it judges.
 
 ## Review packet

@@ -142,6 +142,10 @@ def run_tabs(page_src: Path) -> dict[str, dict]:
         for key in re.findall(r"\bp[._]?j(\d+)[._]?t(\d+)[._]?r(\d+)", line):
             if owner["tab"]:
                 out.setdefault("pj%st%sr%s" % key, owner)
+        # A renamed run (`run-value-0906-score-validation`, page.py run-names) keeps its item here.
+        for name in re.findall(r"\brun-(?:citation|value|display)-\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*", line):
+            if owner["tab"]:
+                out.setdefault(name, owner)
     runs = page_src.parent / "runs"
     for ticket in sorted(runs.rglob("re-*.md")) if runs.is_dir() else []:
         try:

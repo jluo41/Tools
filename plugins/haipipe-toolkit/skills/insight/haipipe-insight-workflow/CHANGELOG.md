@@ -2,6 +2,7 @@
 
 ## 1.3.3 — 2026-09-28 · No content hashes (JL 260928)
 
+- `ref/run-workflow.md`: `deliver.<page>.<target>` is the Page's fixed `run_delivery_<lane>`, current by file time (JL 260928).
 - The handoff index, GI5/GI6 receipts, Runtime and control records name paths and versions only;
   no `sha256`, `definition_hash` or `result_hash`. The Insight viewer reports a handoff stale when the
   signed Page or a whole-file dependency is newer than the GI5 receipt (file time).

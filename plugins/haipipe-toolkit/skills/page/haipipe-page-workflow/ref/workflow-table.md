@@ -44,7 +44,7 @@ Page.evidence (`re-value|cite|display-*` plus Supporting Runs)
   ├─ ready ─▶ Page.writing or Page.delivery
   └─ meaning changed ─▶ Page.structure or NEW_RUN
 
-Page.delivery (`rdNN_<target>`)
+Page.delivery (`run-delivery-<lane>`, one fixed Run per lane)
   └─ current build ─▶ Page.check
 
 Page.check
@@ -74,7 +74,7 @@ Runs Overview is where those concrete identities and Version/Step state appear.
 | `paragraph-writing` | `Page.interactive-writing.paragraph` | hybrid | one fixed paragraph/group | accepted text + settled Bullets + ready evidence | `SELF`, `NEW_VERSION`, delivery/evidence, `NEW_RUN`, `HOLD` | `0..K`, `1 <= K <= N` | Draft + Evidence + Runtime | `OUTLINE/SHAPE`, `CONTENT/WRITE` |
 | `revise` | `Page.interactive-writing.revise` | fresh agent/human | compare two frozen texts of one target (Before, After by path and version number); one ledger row per material change with kind, Why, decision | every row decided | `writing` (NEW_VERSION with the accepted text), `CLOSE`, `HOLD` | `0..N` per target | Draft (read-only) + Runtime | `REVISE` |
 | `evidence-item` | `Page.evidence-item` | agent/system/hybrid | one VALUE, CITE, or DISPLAY Result | typed Acceptance and any human verification settle | `SELF`, writing/delivery, `NEW_RUN`, `HOLD` | one RE per make-item + `0..N` Supporting Runs | Evidence + Runtime | `EVIDENCE/LAND+EMBED` |
-| `delivery` | `Page.delivery` | agent/system | one web/LaTeX/Word/render target | current artifact + build receipt | `SELF`, check, `NEW_RUN`, `HOLD` | one RD per target | Delivery + Runtime | `CONTENT/WRITE` |
+| `delivery` | `Page.delivery` | agent/system | one lane: web/LaTeX/Word | the lane's files at least as new as the Page | `SELF` (rerun), check, `HOLD` | one fixed Run per lane | Delivery | `CONTENT/WRITE` |
 | `check` | `Page.check` or controller Gate | fresh agent/hybrid | one immutable built Page version | pass or named finding route | `CLOSE`, owning Spec, `HOLD` | one Run only when independently ticketed; otherwise no L4 instance | read-only Draft/Evidence/Runtime/Delivery | `CHECK/CHECK` |
 
 ## Cell binding law

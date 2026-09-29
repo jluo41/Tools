@@ -71,8 +71,9 @@ def validate_build_config(config, delivery):
 
     inputs = [(delivery / config["pages"][key]).resolve()
               for key in ("main", "appendix", "order") if config["pages"].get(key)]
-    if config["source"].get("preamble"):
-        inputs.append((delivery / config["source"]["preamble"]).resolve())
+    for key in ("preamble", "head", "opening", "supplement_head", "supplement_opening", "store"):
+        if config["source"].get(key):
+            inputs.append((delivery / config["source"][key]).resolve())
     for source in inputs:
         if source == delivery or source == room or source.is_relative_to(room) or room.is_relative_to(source):
             raise ValueError(f"generated room overlaps a source input: {source}")
@@ -91,6 +92,7 @@ def validate_build_config(config, delivery):
 # a direct call resolves everything from this file and the environment.
 ENGINE_DIR = Path(globals().get("__engine_dir__") or Path(__file__).resolve().parent)
 DOCX_ENGINE = ENGINE_DIR / "latex_room_to_docx.py"
+COVER_LETTER = ENGINE_DIR / "cover_letter.py"            # 0.9.0: run-delivery-coverletter
 def _engine_version():
     skill = ENGINE_DIR.parent / "SKILL.md"
     if skill.exists():
@@ -129,6 +131,29 @@ DRAFT_INCLUDES_UNREADY = bool(CFG.get("evidence", {}).get("draft_includes_unread
 VENUE_PROFILE = str(CFG["paper"].get("venue_profile", "")).lower()
 JAMA = VENUE_PROFILE == "jama-internal-medicine"
 PREAMBLE_FILE = rel(CFG["source"]["preamble"]) if CFG.get("source", {}).get("preamble") else None
+# 0.9.1 · a paper that owns its LaTeX, all opt-in (JL 260929, Paper-FairGlucose-preprint: npj + arXiv):
+#   [source]   head = "<file>"            the paper's own preamble, \documentclass and \title included,
+#                                         inlined in place of the engine's package head and title block
+#                                         (a desk class, arxiv.sty); the files beside it are copied into
+#                                         the room so its \usepackage/\input resolve and the room stays
+#                                         self-contained for arXiv
+#   [source]   opening = "<file>"         what follows \begin{document} (default \maketitle)
+#   [source]   supplement_head / supplement_opening   the same pair, for a separate supplement
+#   [source]   store = "<dir>"            a paper-level display store a fragment reads by path
+#                                         (displays/Figure/x.pdf): each file is copied into the room
+#                                         and warned, since a display belongs in a DISPLAY Result
+#   [evidence] draft_citations = true     a DRAFT merges a Page's draft-bibliography/<page>.bib (the
+#                                         unverified keys a `delivery: draft` Page cites) when it has no
+#                                         selected-bibliography; every such Page is a G4 blocker
+def _source_file(key):
+    value = CFG.get("source", {}).get(key)
+    return rel(value) if value else None
+HEAD_FILE = _source_file("head")
+OPENING_FILE = _source_file("opening")
+SUPP_HEAD_FILE = _source_file("supplement_head")
+SUPP_OPENING_FILE = _source_file("supplement_opening")
+STORE = _source_file("store")
+DRAFT_CITATIONS = bool(CFG.get("evidence", {}).get("draft_citations", False))
 
 # ── venue profile · presentation only, never claims (0.7.0) ──────────────────
 # profiles/<name>.toml carries the desk's typography; [profile] in paper-build.toml
@@ -155,6 +180,11 @@ LATEX_ACKNOWLEDGMENTS = bool(_L.get("acknowledgments", True))  # false = a blind
 LATEX_RUNNING_HEAD = bool(_L.get("running_head", True))       # False: header carries only the DRAFT word while drafting
 # 0.8.2 · "per-appendix": floats restart in each lettered appendix (Table B1, C1 …); the Word lane reads the same key
 APPENDIX_PER_LETTER = str(PROFILE.get("appendix_float_numbering", "continuous")).lower() == "per-appendix"
+# 0.9.1 · `pdflatex` for a paper whose head loads no fontspec (arXiv builds with pdflatex);
+# appendices = "supplement": master.tex is the main article, supplement.tex the appendices
+# alone, combined.tex both (the one-file arXiv copy); main_pdf, supplement_pdf, combined_pdf
+LATEX_ENGINE = str(_L.get("engine", "xelatex")).lower()
+SUPPLEMENT_SPLIT = str(PROFILE.get("appendices", "")).lower() == "supplement"
 
 # ── document-wide placement state (0.7.0) ────────────────────────────────────
 # A display prints ONCE in the whole document, not once per fragment: a page
@@ -162,9 +192,12 @@ APPENDIX_PER_LETTER = str(PROFILE.get("appendix_float_numbering", "continuous"))
 EMBEDDED_UNITS: set = set()      # units some included fragment embeds as a real float
 PLACED_FLOATS: set = set()       # units the master already \input after a fragment
 BUILD_WARNINGS: list = []        # document-level warnings (bib collisions, …)
+DRAFT_CITED: list = []           # 0.9.1: Pages whose citations came from their unverified draft Bib
+STORE_READS: dict = {}           # 0.9.1: page id -> store paths its fragment read
 
 def reset_placement():
     EMBEDDED_UNITS.clear(); PLACED_FLOATS.clear(); BUILD_WARNINGS.clear()
+    DRAFT_CITED.clear(); STORE_READS.clear()
 
 def prescan_embedded(pages):
     """record every unit any INCLUDED fragment embeds, before any fragment is placed."""
@@ -504,6 +537,12 @@ def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
         blockers.append("one or more Section milestones are not ready")
     if unresolved:
         blockers.append("unresolved references remain")
+    if DRAFT_CITED:
+        blockers.append("citations are unverified: %d Section(s) cite from their draft Bib (%s)"
+                        % (len(DRAFT_CITED), ", ".join(DRAFT_CITED)))
+    if STORE_READS:
+        blockers.append("displays read from the paper store, not DISPLAY Results: %s"
+                        % ", ".join("%s (%d)" % (k, len(v)) for k, v in STORE_READS.items()))
     if latex_rc != 0:
         blockers.append("LaTeX rendering failed or has not been verified")
     if docx_rc != 0:
@@ -591,10 +630,40 @@ def from_master(p, path: str, exts=("", ".tex")):
         return None
     target = os.path.normpath(os.path.join(p["fragment"].parent, path))
     if not any(os.path.isfile(target + ext) for ext in exts):
-        return None
+        return from_store(p, path, exts)
     if "_archive" in Path(path).parts:
         BUILD_WARNINGS.append(f"{p['id']}: the fragment reads {path}, a retired _archive lane; bind it to a current Result")
     return os.path.relpath(target, os.path.normpath(LATEX)).replace(os.sep, "/")
+
+
+_STORE_REF = re.compile(r"\\(?:input|includegraphics)(?:\[[^\]]*\])?\{([^}]+)\}")
+
+
+def from_store(p, path: str, exts=("", ".tex")):
+    """0.9.1 · `[source] store`: a fragment path inside the paper's display store
+    (`displays/Figure/x.pdf`) is copied into the room at that same path and left as
+    written; a stored .tex it reaches is followed, because a table may \\input another.
+    None when no store is declared or the path is not in it."""
+    if STORE is None:
+        return None
+    parts = Path(path).parts
+    if not parts or parts[0] != STORE.name or ".." in parts:
+        return None
+    src = next((STORE.parent / (path + ext) for ext in exts if (STORE.parent / (path + ext)).is_file()), None)
+    if src is None or not src.resolve().is_relative_to(STORE.resolve()):
+        return None
+    dst = LATEX / src.relative_to(STORE.parent)
+    if not dst.exists():
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        if src.suffix == ".tex":
+            text = re.sub(r"(?m)(?<!\\)%.*$", "", src.read_text(encoding="utf-8", errors="replace"))
+            for m in _STORE_REF.finditer(text):
+                from_store(p, m.group(1), _GRAPHIC_EXT + (".tex",))
+    reads = STORE_READS.setdefault(p["id"], [])
+    if path not in reads:
+        reads.append(path)
+    return path
 
 
 def place_fragment(p, dest_dir: Path, labels, unresolved):
@@ -662,6 +731,20 @@ def page_bib(p):
     return p["dir"] / "delivery" / "latex" / "selected-bibliography" / f"{p['id']}.bib"
 
 
+def page_draft_bib(p):
+    """0.9.1 · the unverified Bib a `delivery: draft` Page's export writes beside its verified one."""
+    return p["dir"] / "delivery" / "latex" / "draft-bibliography" / f"{p['id']}.bib"
+
+
+def citing_bib(p):
+    """The Bib this build merges for a Page: its verified `page_bib`, else, when the paper
+    opts in with `[evidence] draft_citations`, its draft Bib (a G4 blocker, never silent)."""
+    verified = page_bib(p)
+    if verified.is_file() or not DRAFT_CITATIONS or not page_draft_bib(p).is_file():
+        return verified
+    return page_draft_bib(p)
+
+
 def _missing_bib(p):
     return (f"{p['id']}: cited Page has no delivery/latex/selected-bibliography/{p['id']}.bib; "
             "regenerate its Page delivery from accepted CITE Results")
@@ -673,7 +756,7 @@ def require_page_bibs(pages):
         if not p.get("included", p.get("ready", True)):
             continue
         fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
-        if (not page_bib(p).is_file() and fragment.is_file()
+        if (not citing_bib(p).is_file() and fragment.is_file()
                 and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8"))):
             raise RuntimeError(_missing_bib(p))
 
@@ -739,7 +822,9 @@ def merge_bib(pages):
         # Merge the same derived bibliography used by this Page's LaTeX delivery.
         # Citation authority remains its accepted CITE Results. Never read the
         # retired Outline/flat bibex lanes or substitute a paper-wide seed Bib.
-        b = page_bib(p)
+        b = citing_bib(p)
+        if b.is_file() and b == page_draft_bib(p):
+            DRAFT_CITED.append(p["id"])
         if not b.is_file():
             fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
             if fragment.is_file() and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8")):
@@ -764,11 +849,68 @@ def merge_bib(pages):
                     # same key, different entry: the first page's version is printed, the
                     # other page's citation data silently disappears unless someone is told
                     BUILD_WARNINGS.append(f"bib key {key} differs between {bodies[key][1]} and {p['id']}; {bodies[key][1]}'s entry kept")
-    BIB.write_text(f"% merged by {ENGINE_TAG} from each Page's delivery/latex/selected-bibliography/<page>.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
+    unverified = (f"% UNVERIFIED draft-bibliography/<page>.bib merged for: {', '.join(DRAFT_CITED)}\n"
+                  if DRAFT_CITED else "")
+    BIB.write_text(f"% merged by {ENGINE_TAG} from each Page's delivery/latex/selected-bibliography/<page>.bib · do not edit\n"
+                   + unverified + "\n" + "\n\n".join(out) + "\n", encoding="utf-8")
     return len(out)
 
 # ── master ───────────────────────────────────────────────────────────────────
+def _inputs(pairs, folder):
+    """\\input lines for one lane, a not-ready page as its numbered stub."""
+    out = []
+    for p, floats in pairs:
+        if p.get("included", p["ready"]):
+            out.append(rf"\input{{{folder}/{p['id']}}}")
+            out += [rf"\input{{displays/{f}/float}}" for f in floats]
+        else:
+            out.append(_stub(p))
+    return out
+
+
+def write_paper_owned(main, appx):
+    """0.9.1 · `[source] head`: the paper owns its preamble and title; the engine owns the order.
+
+    The head and the files beside it (a .sty, the shared preamble it \\inputs) are copied into
+    the room. With `appendices = "supplement"` the appendices leave master.tex: supplement.tex
+    prints them alone, each on a new page, with its own reference list, and combined.tex
+    prints the whole paper as one file (the arXiv copy)."""
+    for f in sorted(HEAD_FILE.parent.iterdir()):
+        if f.is_file() and f.suffix in {".sty", ".cls", ".clo", ".cfg", ".bst", ".tex"} \
+                and not (LATEX / f.name).exists():
+            shutil.copy2(f, LATEX / f.name)
+    gen = (f"% GENERATED by {ENGINE_TAG}\n"
+           "% The pages own the words. Edit a Section Page, then rebuild; never edit this file.\n")
+    head = HEAD_FILE.read_text(encoding="utf-8").rstrip() + "\n"
+    opening = OPENING_FILE.read_text(encoding="utf-8").rstrip() if OPENING_FILE else "\\maketitle"
+    bib = "\\bibliographystyle{%s}\n\\bibliography{reference}\n" % LATEX_BIBSTYLE
+
+    def doc(preamble, start, body):
+        return gen + preamble + "\n\\begin{document}\n" + start + "\n\n" + body + "\n\\end{document}\n"
+
+    main_body = "\n".join(_inputs(main, "sections"))
+    appx_inputs = _inputs(appx, "appendices")
+    sep = "\n\\clearpage\n" if LATEX_APPENDIX_NEWPAGE else "\n"
+    combined = main_body + "\n\n" + bib
+    if appx_inputs:
+        combined += "\n\\clearpage\n\\appendix\n" + sep.join(appx_inputs) + "\n"
+    for stale in ("supplement.tex", "combined.tex"):
+        (LATEX / stale).unlink(missing_ok=True)
+    if SUPPLEMENT_SPLIT and appx_inputs:
+        MASTER.write_text(doc(head, opening, main_body + "\n\n" + bib), encoding="utf-8")
+        supp_head = head + (SUPP_HEAD_FILE.read_text(encoding="utf-8").rstrip() + "\n" if SUPP_HEAD_FILE else "")
+        supp_open = SUPP_OPENING_FILE.read_text(encoding="utf-8").rstrip() if SUPP_OPENING_FILE else opening
+        (LATEX / "supplement.tex").write_text(
+            doc(supp_head, supp_open, "\n\\clearpage\n".join(appx_inputs) + "\n\n\\clearpage\n" + bib),
+            encoding="utf-8")
+        (LATEX / "combined.tex").write_text(doc(head, opening, combined), encoding="utf-8")
+    else:
+        MASTER.write_text(doc(head, opening, combined), encoding="utf-8")
+
+
 def write_master(main, appx, status, ready_n, total_n):
+    if HEAD_FILE:
+        return write_paper_owned(main, appx)
     # The Abstract PAGE is the title's authority; paper-build.toml is the fallback.
     # Both carried a title and they drifted (JL 260908), so the pages win here for
     # the same reason they win for every other word in the document.
@@ -1209,19 +1351,40 @@ def build():
     status = build_readiness(pages, unresolved)["status"]
     write_master(main_f, appx_f, status, len(ready), len(pages))
     register = display_register(main_f, appx_f)
-    # compile
-    rc = _run(["latexmk", "-xelatex", "-interaction=nonstopmode", "-halt-on-error", "-quiet", MASTER.name],
-              cwd=LATEX, capture_output=True, text=True)
-    pdf = LATEX / "master.pdf"; main_pdf = rel(OUT["main_pdf"])
-    if pdf.exists(): shutil.copy2(pdf, main_pdf)
-    for junk in LATEX.glob("master.*"):
-        if junk.suffix not in {".tex", ".pdf", ".bbl", ".log"}: junk.unlink()
+    # compile · master.tex, and (0.9.1) supplement.tex / combined.tex when the paper declares them
+    documents = [(MASTER, "main_pdf")] + [
+        (LATEX / f"{name}.tex", key) for name, key in (("supplement", "supplement_pdf"), ("combined", "combined_pdf"))
+        if (LATEX / f"{name}.tex").exists() and OUT.get(key)]
+    rc, printed = None, {}
+    for tex, key in documents:
+        r = _run(["latexmk", "-pdf" if LATEX_ENGINE == "pdflatex" else "-xelatex", "-interaction=nonstopmode",
+                  "-halt-on-error", "-quiet", tex.name], cwd=LATEX, capture_output=True, text=True)
+        if rc is None or (rc.returncode == 0 and r.returncode != 0):
+            rc = r   # the first failure is the one the manifest reports
+        if (LATEX / f"{tex.stem}.pdf").exists():
+            shutil.copy2(LATEX / f"{tex.stem}.pdf", rel(OUT[key]))
+        log = LATEX / f"{tex.stem}.log"
+        if log.exists():
+            m = re.search(r"Output written on \S+ \((\d+) pages?", log.read_text(errors="replace"))
+            printed[key] = int(m.group(1)) if m else None
+        for junk in LATEX.glob(f"{tex.stem}.*"):
+            if junk.suffix not in {".tex", ".pdf", ".bbl", ".log"}: junk.unlink()
+    main_pdf = rel(OUT["main_pdf"])
     # word
     docx_rc, docx_err = None, None
     if DOCX_ENGINE.exists():
         env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(HERE / "paper-build.toml"))
         r = _run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
         docx_rc, docx_err = r.returncode, (r.stderr or r.stdout)[-1500:]
+    # 0.9.0 (JL 260929): the submission cover letter, words from the Round page, facts from this build
+    cover = None
+    if COVER_LETTER.exists() and isinstance(CFG.get("coverletter"), dict):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("haipipe_cover_letter", COVER_LETTER)
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        cover = mod.build_cover_letter(CFG, PROFILE, ROOT, HERE, OUT,
+                                       title=declared_title(main) or CFG["paper"].get("title", CFG["paper"]["id"]),
+                                       main_pdf=main_pdf, tables=register["tables"], figures=register["figures"], run=_run)
     manifest_path = HERE / OUT["manifest"]
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
@@ -1245,6 +1408,16 @@ def build():
         "outputs": {"pdf": OUT["main_pdf"] if main_pdf.exists() else None,
                     "docx": OUT["main_docx"] if rel(OUT["main_docx"]).exists() else None},
     })
+    for key in ("supplement_pdf", "combined_pdf"):   # 0.9.1: the paper-owned documents and their length
+        if key in printed:
+            manifest["outputs"][key.replace("_pdf", "")] = OUT[key] if rel(OUT[key]).exists() else None
+    manifest["pages_printed"] = printed
+    manifest["draft_citations"] = list(DRAFT_CITED)
+    manifest["store_reads"] = {k: list(v) for k, v in STORE_READS.items()}
+    if cover is not None:
+        manifest["cover_letter"] = cover
+    else:
+        manifest.pop("cover_letter", None)
     manifest["readiness"] = {
         "ready": len(ready),
         "total": len(pages),
@@ -1266,7 +1439,14 @@ def build():
     print(f"displays: {register['figures']} figure + {register['tables']} table · "
           f"{len(register['findings'])} numbering finding(s) · delivery/display-register.md")
     print(f"pdf: {'✅ ' + OUT['main_pdf'] if main_pdf.exists() else '❌ latexmk rc=' + str(rc.returncode)}")
+    for key, n in printed.items():   # 0.9.1: every document this build compiled, with its length
+        print(f"  {'✅' if rel(OUT[key]).exists() else '❌'} {OUT[key]} · {n} pages")
     print(f"docx: {'✅ ' + OUT['main_docx'] if rel(OUT['main_docx']).exists() else '❌ rc=' + str(docx_rc)}")
+    if cover is not None:
+        todo = [f"{c['check']}: {c['detail']}" for c in cover["checks"] if not c["ok"]]
+        print(f"cover letter: {'✅' if cover['outputs']['pdf'] else '❌'} {cover['outputs']['pdf'] or 'latexmk rc=' + str(cover['latexmk_rc'])}"
+              f" · {'ready' if cover['ready'] else 'not ready'} · words from {cover['from']}")
+        for t in todo: print(f"  ✉ {t}")
     for p in pages:
         if not p["ready"]: print(f"  ⬜ {p['id']}: {'; '.join(p['reasons'])}")
     for p in pages:
@@ -1298,7 +1478,12 @@ def freeze(kind: str, rd: str):
     sources = []
     missing = []
     targets = set()
+    no_supplement = str(PROFILE.get("appendices", "")).lower() == "main"
     for key, configured in OUT.items():
+        if configured in ("", None):
+            continue      # 0.9.0: an output switched off (e.g. section_snapshots = "") is not part of a Round
+        if no_supplement and key.startswith("supplement_"):
+            continue      # 0.9.0: appendices inside the manuscript (MISQ) produce no supplement file
         src = rel(configured)
         if not src.exists():
             missing.append(f"{key}: {configured}")
@@ -1319,6 +1504,12 @@ def freeze(kind: str, rd: str):
 
     if missing:
         sys.exit("cannot freeze an incomplete build; missing: " + "; ".join(missing))
+    try:   # 0.9.0: say so when a letter that is not ready travels with the Round
+        cover = json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("cover_letter")
+    except (OSError, ValueError, KeyError):
+        cover = None
+    if cover and not cover.get("ready"):
+        print("  ⚠ the cover letter is not ready: " + "; ".join(c["check"] for c in cover.get("checks", []) if not c["ok"]))
 
     for key, src in sources:
         target = dst / src.name

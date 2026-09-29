@@ -14,6 +14,40 @@ def legacy_profile(page_src):
     return not items_path(Path(page_src)).is_file()
 
 
+def page_head(page_src, key):
+    """A `key: value` line from the Page Face head (above its first `## `), or ''."""
+    import re
+    try:
+        head = Path(page_src).read_text(encoding="utf-8", errors="replace").split("\n## ", 1)[0]
+    except OSError:
+        return ""
+    m = re.search(r"(?m)^%s:[ \t]*(.*?)\s*$" % re.escape(key), head)
+    return m.group(1) if m else ""
+
+
+def draft_delivery(page_src):
+    """`delivery: draft` in the Page head: a Page still at SHAPE may export.
+
+    Its items that are only specified (no Local Run, no Result, Decide not
+    signed) are not bindings yet, so they do not block the export; the export
+    lists them as pending in evidence-selection.json. A signed or planned
+    item with a missing Result still blocks, exactly as without the key."""
+    return page_head(page_src, "delivery").lower() == "draft"
+
+
+def _only_specified(row):
+    return (not row.get("decision") and not str(row.get("local_run") or "").strip()
+            and not str(row.get("result") or "").strip())
+
+
+def pending_items(page_src):
+    """The specified-only items a `delivery: draft` export leaves out, in ledger order."""
+    from .item_table import read_items
+    if not draft_delivery(page_src) or legacy_profile(page_src):
+        return []
+    return [item for item, row in read_items(Path(page_src)).items() if _only_specified(row)]
+
+
 def _unbound_manifests(home, *, strict=False):
     """Compatibility inspection for pre-ledger Pages; ambiguous items stay unresolved."""
     from .page_evidence import _result_document
@@ -60,9 +94,12 @@ def selected_results(page_src, *, strict=True, errors=None):
                 })
         return []
     selected = []
+    draft = draft_delivery(page_src)
     for item, row in read_items(page_src).items():
         if row.get("decision") in {"drop", "defer"}:
             continue
+        if draft and _only_specified(row):
+            continue  # pending: listed by pending_items(), never a binding yet
         ref = str(row.get("result") or "").strip().strip(chr(96))
         try:
             path = resolve(ref, repo_root(page_src.parent), page_src.parent)

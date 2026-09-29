@@ -2,7 +2,7 @@
 
 Read this reference from `haipipe-workbench-page` when an Evidence Item is
 `VALUE`, or when Evidence Space must explain a number's provenance. The
-Outline workbench owns only the workspace and presentation. The Page EVIDENCE
+Page workbench owns only the workspace and presentation. The Page EVIDENCE
 Run Specs own LAND; EMBED is a Result-folding Step. The local Run owns the
 Result.
 

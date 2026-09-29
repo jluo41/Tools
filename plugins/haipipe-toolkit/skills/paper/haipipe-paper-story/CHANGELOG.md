@@ -1,3 +1,11 @@
+## 0.10.0 · 2026-09-29 · The Roadmap is question first
+
+- C6 opens with a `Q | general question | serves` table (JL 260928: "each item a more general
+  question, under it the T and D, under T and D the BJTR"). Every D and T row leads with a short
+  plain question, carries a `folder` cell (BJTR address, a range such as `b03.j02.t01–t03`, or
+  `none yet`) and ends with a `Q` cell. Row ids are `D<n>` and `T<n>`, never `B<n>`. The Paper
+  workbench Story › Roadmap reads this as the tree general question → T and D → folders.
+
 ## 0.9.3 · 2026-09-20
 
 - Bind prospective C1–C8 Story work to the canonical Page/Run contracts and Paper Specs. CHECK remains a controller judgment and does not establish planned findings or authorize execution. No Page outline or human approval is promoted.

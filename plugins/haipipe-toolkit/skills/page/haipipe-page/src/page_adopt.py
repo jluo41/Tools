@@ -28,6 +28,7 @@ sync check passes: every Draft equals its Page sentence.
 """
 from __future__ import annotations
 
+import datetime
 import difflib
 import re
 from pathlib import Path
@@ -310,11 +311,34 @@ def _address_key(address: str) -> tuple:
     return tuple(int(n) for n in re.findall(r"\d+", address))
 
 
+def content_line(text: str, plan_name: str, now: datetime.datetime | None = None) -> str:
+    """Set the Page header's `content:` line: which Draft is in `## Content`, and when.
+
+    Code keeps this record (JL 260928: agents keep text, code keeps records); no agent
+    types a version or a date into `state:`. The line is replaced in place, or put
+    right after `state:` (else after the title) on its first adoption."""
+    m = re.search(r"-(draft|outline)-v([0-9][0-9.]*)\.md$", plan_name or "")
+    source = "%s v%s" % (m.group(1), m.group(2)) if m else (plan_name or "Draft")
+    line = "content: %s · adopted %s" % (source, (now or datetime.datetime.now()).strftime("%y%m%d %H%M"))
+    lines = text.split("\n")
+    head_end = next((i for i, l in enumerate(lines) if l.startswith("## ")), len(lines))
+    at = next((i for i in range(head_end) if lines[i].startswith("content:")), None)
+    if at is not None:
+        lines[at] = line
+    else:
+        after = next((i for i in range(head_end) if lines[i].startswith("state:")),
+                     next((i for i in range(head_end) if lines[i].startswith("# ")), -1))
+        lines.insert(after + 1, line)
+    return "\n".join(lines)
+
+
 def run(target, *, plan: Path | None = None, dry_run: bool = False) -> dict:
     """Adopt and, unless `dry_run`, write the Page. Adds a unified `diff`."""
     report = adopt(target, plan=plan)
     if report["refused"]:
         return report
+    if report["changes"]:
+        report["text"] = content_line(report["text"], report["plan"])
     page = Path(report["page"])
     before = page.read_text(encoding="utf-8")
     report["diff"] = "".join(difflib.unified_diff(

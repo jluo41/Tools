@@ -8,8 +8,8 @@ description: >-
   workbench, workbench folder, workbench roster, workbench tab, add a workbench,
   /haipipe-workbench.
 metadata:
-  version: "1.12.2"
-  last_updated: "2026-09-22"
+  version: "1.12.3"
+  last_updated: "2026-09-28"
 ---
 
 # /haipipe-workbench · a page's material, as one contract
@@ -38,7 +38,7 @@ Adding a new top-level Workbench is one roster update plus one drawer
 registration—the shell is never edited for it.
 
 Two words, two things: a **workbench** is the lane a Page owns on disk and the
-contract an agent writes to (`haipipe-workbench-page` says what `outline/`,
+contract an agent writes to (`haipipe-workbench-page` says what `draft/`,
 `runs/`, `results/` and `delivery/` hold); a **workbench** is that lane's
 served face in the browser (`plugins/haipipe-toolkit/servers/workbench-page`
 renders them). They pair by name, `haipipe-workbench-<x>` with
@@ -49,7 +49,7 @@ lists the pairs.
 
 Material lands in its rostered lane, and artifacts carry the page's stem. A
 standalone lane uses `<page-dir>/<lane>/`; a category-owned lane uses its real
-nested address, such as `outline/evidence/bibex/` or `delivery/latex/`.
+nested address, such as `draft/evidence/bibex/` or `delivery/latex/`.
 PRIMARY lanes hold originals a person makes (draw, chat): they are committed
 and only their category-owned writer edits them. Meetings are project/SPACE
 records owned by `haipipe-project-meeting`, never current Page material.
@@ -100,11 +100,12 @@ Workbench picker. A surface may use its own panel layout after opening, but that
 never creates a second top-level menu.
 A generic Page Workbench's OPERATING knowledge lives in one of exactly two
 public skills beside this one in `skills/page/`: `haipipe-workbench-page` (the 📃 Page
-tab with its Run Space, the 📤 Delivery tab, and the 📂 Folder tab: everything
+tab with its Draft, Evidence and Delivery Spaces and their Runs panels, the 📤
+Delivery tab, and the 📂 Folder tab: everything
 `servers/workbench-page` renders) or `haipipe-workbench-studio`. Internal lanes
 live as references under their owning category skill; they never mint
 duplicate callable skills. Page owns Citation/Bib, Value, Display, the ranked
-Skill record, Run Space (`ref/run-space.md`), LaTeX, Word, Slide, and Render
+Skill record, the All-runs view (`ref/run-space.md`), LaTeX, Word, Slide, and Render
 (`ref/delivery.md`), and the Folder inventory (`ref/folder.md`); Studio owns
 Chat and Draw. PageX is legacy migration input only.
 Every other workbench skill lives in the family that owns its lanes and its
@@ -119,20 +120,21 @@ promotes an internal lane to a duplicate top-level workbench.
 One lane inverts the shape: `haipipe-workbench-page/ref/folder.md` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
-## 🗂 Outline's three workspaces and the Run door (260913)
+## 🗂 The Page workbench's three Spaces and the Run door (260913; Spaces 260927)
 
 A unit folder has TWO PARTS. The UPPER, page part has one combined
-`outline/` planning authority and one visible surface with exactly **Draft
-Space + Evidence Space + Run Space**. Context and process records
+`draft/` planning authority (a legacy Page: `outline/`) and one visible surface
+with exactly **Draft Space + Evidence Space + Delivery Space**, each with its
+Runs panel on the right. Context and process records
 stay on disk and are inspectable through Folder, but do not compete as a
-visible workspace. Evidence Space is Result-first. Run Space contains
-Run P, Run E, and Supporting Runs. It also has two
+visible workspace. Evidence Space is Result-first. The Runs panels list
+Run P, Run E, Supporting Runs and Delivery Runs by view. It also has two
 presentation CATEGORY folders that group lanes without changing their grammar,
 writer or gate — `delivery/` (latex · word ·
 slide · render — what leaves the page) and `studio/` (chat · draw — the
 HUMAN's room: the person talks and sketches, and the chat may redraw on
 their ask). The LOWER, Task-side material is
-presented inside Outline as **Run Workspace**. A **Run P** uses three explicit
+presented in those Runs panels and the All-runs view (`lens=run`). A **Run P** uses three explicit
 Page-local kinds: `rp-struct-NN` for Structure + Outline Bullets,
 `rp-sec-NN` for Section-level writing, and `rp-para-NN_Pxx[-Pyy]` for fixed
 paragraph/paragraph-group writing. The initial structure identity is
@@ -160,12 +162,12 @@ Interactive writing Results also contain irreplaceable human feedback and
 accepted wording: never treat them as a disposable cache or regenerate their
 completed Steps/Versions. Results are never evidence merely by existing, and
 become Page evidence only when an Evidence Item/RE Result binds them. There is
-no Evidence storage lane under `outline/`; the Outline owns the Item contract,
+no Evidence storage lane under `draft/`; the plan folder owns the Item contract,
 while `runs/` and `results/` own execution and payloads. Rows and physical
 dialects: `ref/roster.md` and `haipipe-workbench-page/ref/run-space.md`.
 
 For a Board Page, the Evidence Item contract is in the authored
-`outline/<stem>-evidence-items.md`; its Supporting Run and Local Run references
+`draft/<stem>-evidence-items.md`; its Supporting Run and Local Run references
 resolve directly through the owning `runs/` and `results/` records. There is no
 `outline/evidence/supporting-runs/` binding lane. Actual page-local execution stays at the
 sibling `runs/` (Tickets) and `results/` (paired generated Results). `⚙️ Runs`
@@ -183,13 +185,14 @@ lane to another contract or own it directly: `haipipe-workbench-page` owns the
 CITE, VALUE, and DISPLAY Evidence Item contracts and their read-only
 presentation; the Run producer owns the Result payload. PageX is retired and
 must be moved to the migration archive. A storage lane therefore does not
-require a duplicate Workbench or Skill. Outline now presents exactly three
-reader-facing Spaces—Draft, Evidence, and Run—while Context stays off-stage;
+require a duplicate Workbench or Skill. 📃 Page presents exactly three
+reader-facing Spaces (Draft, Evidence and Delivery, each with its Runs panel)
+while Context stays off-stage;
 Delivery and Studio remain category surfaces:
 
 ```text
-📃 Page      haipipe-workbench-page       Draft + Evidence + Run over the
-                                       outline/ process; FIRST/default tab
+📃 Page      haipipe-workbench-page       Draft + Evidence + Delivery Spaces with
+                                       Runs panels over draft/; FIRST/default tab
 🎨 Design    haipipe-workbench-design     Goal · Design · Insight · Run · Delivery
                                        Spaces over one current Design Page-Folder
 📤 Delivery  haipipe-workbench-page       latex · word · slide · render — the
@@ -208,14 +211,14 @@ entries:
 📃 Page · 🎨 Studio · 🎨 Design · 📤 Delivery · 📂 Folder · 🏷 Labeling.
 Optional entries still keep their assigned place when applicable;
 an unassigned third-party entry follows these in stable registration order.
-On every source-backed Board Page, Run Space remains visible inside Outline
-even when neither lane has an allocated Run; each lane has a truthful empty
+On every source-backed Board Page, each Space's Runs panel stays visible
+even when no Run is allocated; each run type has a truthful empty
 state and does not create empty `runs/` or `results/` folders. `🏷 Labeling` is a
 domain extension and follows its own applicability rules. Skill is an internal
-Outline record reached through Folder inspection, backed by the nested
-`outline/skill/` store, so it has no duplicate top-level
+plan-folder record reached through Folder inspection, backed by the nested
+`draft/skill/` store, so it has no duplicate top-level
 picker row. Neither Evidence nor Probe has a skill or a top-level picker entry:
-Evidence is an internal Outline workspace and Probe is retired history.
+Evidence is a Space inside 📃 Page and Probe is retired history.
 No lane sells its own strip row; the shell's
 old 💬, 🖌 and 🎞 rows folded 260831 (stored tab sets migrate on load). The
 260815 refusal of "full chat under the canvas" bound the DRAW tab; the

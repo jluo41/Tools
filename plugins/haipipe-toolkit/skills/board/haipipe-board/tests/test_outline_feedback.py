@@ -74,7 +74,9 @@ class DraftSpaceFeedbackTest(unittest.TestCase):
         self.assertIsNone(error, error)
         self.assertEqual(result['status'], 'open')
         self.assertEqual(result['target'], 'C1.P1')
-        self.assertTrue((self.folder / 'results' / result['run'] / 'v001.md').is_file())
+        # an open Scratch run has its ticket only; results/ waits for Finish (JL 260928)
+        self.assertTrue((self.folder / 'runs' / (result['run'] + '.md')).is_file())
+        self.assertFalse((self.folder / 'results' / result['run']).exists())
 
     def test_legacy_editor_actions_stay_rejected(self):
         handler = OutlineMixin()

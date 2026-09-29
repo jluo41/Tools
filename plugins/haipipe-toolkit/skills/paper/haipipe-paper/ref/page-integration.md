@@ -59,7 +59,7 @@ rp-sec-01                  one Section writing session
 rp-para-01_P01-P03          fixed paragraph-group goal
 re-cite-01_<slug>           local citation Evidence Item
 re-display-01_<slug>        local display Evidence Item
-rd02_latex                 one Page delivery target/version
+run-delivery-latex         one lane's fixed Delivery Run, rerun in place
 ```
 
 Local Evidence/Display work is Page-owned; its selected Task/Display worker

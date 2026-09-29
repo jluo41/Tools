@@ -455,6 +455,122 @@ def detex(s):
 
 # --------------------------------------------------------------- page parse
 
+# A Page whose head says `content-format: latex` keeps LaTeX source in Content
+# (a Section migrated from a manuscript). Word has no LaTeX, so its lines are
+# turned into the Markdown this reader already knows before it reads them:
+# markup to **bold** / *italic* / `code`, math symbols to characters, a float
+# to one italic line naming it, a list item to a bullet line. \cite and \ref
+# stay as they are; the Inline resolver below handles them.
+_TEX_SYMBOLS = {"sim": "∼", "times": "×", "approx": "≈", "geq": "≥", "ge": "≥", "leq": "≤",
+                "le": "≤", "Delta": "Δ", "delta": "δ", "pm": "±", "sigma": "σ", "mu": "μ",
+                "alpha": "α", "beta": "β", "gamma": "γ", "lambda": "λ", "in": "∈", "mid": "|",
+                "cdot": "·", "quad": " ", "qquad": " ", "infty": "∞", "neq": "≠", "to": "→",
+                "rightarrow": "→", "sum": "Σ", "log": "log", "min": "min", "max": "max",
+                "ldots": "…", "dots": "…", "hat": "", "sqrt": "√", "lvert": "|", "rvert": "|"}
+_KEEP = re.compile(r"\\(?:cite[a-z]*|(?:auto|C|c)?ref)\*?(?:\[[^\]]*\])*\{[^}]*\}")
+
+
+def content_format(raw_page):
+    m = re.search(r"(?m)^content-format:\s*(\S+)\s*$", raw_page.split("\n## ", 1)[0])
+    return m.group(1).lower() if m else "markdown"
+
+
+def _unwrap(text, command, left="", right=""):
+    """`\\command{...}` -> left + ... + right, braces matched."""
+    token = "\\" + command + "{"
+    while token in text:
+        i = text.index(token)
+        k, depth = i + len(token), 1
+        while k < len(text) and depth:
+            depth += (text[k] == "{") - (text[k] == "}")
+            k += 1
+        text = text[:i] + left + text[i + len(token):k - 1] + right + text[k:]
+    return text
+
+
+def _tex_math(body):
+    for command in ("text", "mathrm", "mathbf", "operatorname"):
+        body = _unwrap(body, command)
+    body = re.sub(r"\\frac\{([^{}]*)\}\{([^{}]*)\}", r"\1/\2", body)
+    body = re.sub(r"\\([A-Za-z]+)", lambda m: _TEX_SYMBOLS.get(m.group(1), m.group(1)), body)
+    body = re.sub(r"([_^])\{([^{}]*)\}", r"\1\2", body)
+    return body.replace("{", "").replace("}", "").replace("\\", "")
+
+
+def tex_inline_md(s):
+    """One LaTeX source line -> the Markdown this reader renders."""
+    kept = []
+    s = _KEEP.sub(lambda m: kept.append(m.group(0)) or "\x00%d\x00" % (len(kept) - 1), s)
+    s = re.sub(r"\$([^$]*)\$", lambda m: _tex_math(m.group(1)), s)
+    s = re.sub(r"\\paragraph\*?\{([^{}]*)\}", r"**\1**", s)
+    for command, left, right in (("textbf", "**", "**"), ("emph", "", ""), ("textit", "", ""),
+                                 ("texttt", "`", "`"), ("underline", "", ""), ("url", "", ""),
+                                 ("textsuperscript", "", ""), ("text", "", "")):
+        s = _unwrap(s, command, left, right)
+    for old, new in (("{,}", ","), ("\\,", " "), ("\\ ", " "), ("~", " "), ("---", "—"), ("--", "–"),
+                     ("\\%", "%"), ("\\&", "&"), ("\\_", "_"), ("\\#", "#"), ('\\"i', "ï"),
+                     ('\\"o', "ö"), ('\\"u', "ü"), ('\\"a', "ä"), ("\\'e", "é"), ("``", '"'), ("''", '"')):
+        s = s.replace(old, new)
+    s = re.sub(r"\\(?:noindent|centering|small|footnotesize|hfill|par|clearpage|newpage)\b\s*", "", s)
+    s = re.sub(r"\\label\{[^}]*\}", "", s)
+    s = re.sub(r"\\([A-Za-z]+)", lambda m: _TEX_SYMBOLS.get(m.group(1), ""), s)
+    s = s.replace("{", "").replace("}", "")
+    s = re.sub(r"\x00(\d+)\x00", lambda m: kept[int(m.group(1))], s)
+    return " ".join(s.split())
+
+
+def latex_content_to_markdown(lines):
+    """Content lines of a `content-format: latex` Page -> Markdown lines."""
+    out, i = [], 0
+    while i < len(lines):
+        raw = lines[i]
+        s = raw.strip()
+        i += 1
+        if not s or s.startswith(("#", ">")):
+            out.append(raw)
+            continue
+        m = re.match(r"^\\begin\{([^}]+)\}", s)
+        if m and m.group(1) != "abstract":
+            env, block, depth = m.group(1), [s], s.count("\\begin{%s}" % m.group(1)) - s.count("\\end{%s}" % m.group(1))
+            while depth > 0 and i < len(lines):
+                block.append(lines[i].strip())
+                depth += lines[i].count("\\begin{%s}" % env) - lines[i].count("\\end{%s}" % env)
+                i += 1
+            text = " ".join(block)
+            if env.rstrip("*") in ("figure", "table"):
+                cap = re.search(r"\\caption\{", text)
+                caption = ""
+                if cap:
+                    k, depth = cap.end(), 1
+                    while k < len(text) and depth:
+                        depth += (text[k] == "{") - (text[k] == "}")
+                        k += 1
+                    caption = tex_inline_md(text[cap.end():k - 1])
+                noun = "Table" if env.startswith("table") else "Figure"
+                out.append("*[%s: %s]*" % (noun, caption or "see the PDF"))
+            elif env in ("itemize", "enumerate", "description"):
+                for item in re.split(r"\\item\b", text)[1:]:
+                    item = re.sub(r"\\end\{%s\}.*$" % re.escape(env), "", item)
+                    out.append("• " + tex_inline_md(item))
+            else:
+                inner = re.sub(r"\\(?:begin|end)\{[^}]+\}(?:\[[^\]]*\])?", " ", text)
+                out.append(tex_inline_md(inner))
+            continue
+        if re.match(r"^\\(?:sub)*section\*?\{|^\\(?:begin|end)\{abstract\}|^\\(?:clearpage|newpage|vspace)", s):
+            continue
+        if s.startswith("\\input{"):
+            out.append("*[Table: %s]*" % s[7:].rstrip("}").split("/")[-1])
+            continue
+        if s.startswith("\\keywords{"):
+            words = _unwrap(s, "keywords").replace("\\and", "·")
+            out.append("**Keywords:** " + " ".join(words.split()))
+            continue
+        line = tex_inline_md(s)
+        if line:
+            out.append(line)
+    return out
+
+
 def parse_page(path, keep_fences=False):
     """Return the blocks of `## Content`, dropping what QC5's read-and-drop
     table drops. A `>` lane binds to the paragraph ABOVE it, which is QC0's
@@ -497,7 +613,10 @@ def parse_page(path, keep_fences=False):
     if page_title and not own_h1:
         blocks.append(("h", 1, page_title))
     in_fence, fenced = False, 0
-    for raw in lines[start + 1:end]:
+    body = lines[start + 1:end]
+    if content_format(raw_page) == "latex":
+        body = latex_content_to_markdown(body)
+    for raw in body:
         line = raw.rstrip()
         # A ``` fence inside ## Content is an ASCII SKETCH: a hand-drawn table, a
         # structure outline, a form block. It is not prose, and shipping it to a

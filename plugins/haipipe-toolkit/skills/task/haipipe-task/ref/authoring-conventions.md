@@ -18,7 +18,17 @@ projections. Shared Task config omits the `rNN_` prefix.
 The notebook is generated: the Ticket converts the `# %%` worker `.py` and
 executes it. Never edit a notebook, by hand, by find-and-replace, or by a
 script that rewrites it after the run. To change what it shows (code, prose,
-an output, a path), change the `.py` and rerun the Ticket (JL 260927).
+an output, a path), change the `.py` and rerun the Ticket (JL 260927). The same
+holds for every generated file (a Board's `board/` HTML, `TASK-TABLE.md`,
+`code/haifn/`): change its source and rerun its generator. Report such a change
+by its source ("changed `visualize_explain.py`, reran its 16 Tickets"), never as
+an edit to the output (JL 260929).
+
+Encoded ids (`patient_id_encoded`, `invitation_id_encoded`, other encoded UUIDs)
+are meaningless ids, not PHI. A notebook, CSV or Result may show them; they are
+never a reason to hold back a commit, change a worker or rerun a Ticket. Before a
+push, check file size (a large data extract such as a `.parquet` stays out of
+git), secrets, and build leftovers (`.pyc`) instead (JL 260929).
 
 ## Worker output
 

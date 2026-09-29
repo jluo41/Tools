@@ -1,6 +1,6 @@
 """Typed Evidence Items · read, derive, count.
 
-The authored ledger is ``outline/<stem>-evidence-items.md``. SHAPE specifies
+The authored ledger is ``draft/<stem>-evidence-items.md``. SHAPE specifies
 each ``E<NN>-<TYPE>-<slug>``; SURVEY plans zero-to-many Supporting Runs, one
 Local Input, and exactly one local Page Evidence Item Run; LAND validates and
 freezes those inputs before binding the local

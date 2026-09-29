@@ -1,3 +1,6 @@
+## 0.8.0 · 2026-09-29 · A submission Round carries the cover letter
+- A submission Round's Content holds a `### Cover letter` division (words approved like any page); run-delivery-coverletter in haipipe-paper-assemble 0.9.0 builds it and `send` freezes it with the manuscript. First used by Paper-AgreeablePrescriptionDiscretion `RD02-MISQ-submission-20260929`.
+
 ## 0.7.4 · 2026-09-28 · No content hashes (JL 260928)
 
 - A Round records each `sent/` and `released/` snapshot by path and its `build-manifest.json` `built` time, not a manifest hash; CHECK verifies snapshot builds, and received feedback is inventoried with received dates.

@@ -4,6 +4,10 @@ notebook-cell-python — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.4.4] - 2026-09-29 - Generated output and encoded ids (JL 260929)
+
+- Rule 7: a notebook that changed because its .py changed and its Ticket reran is reported that way, never as an edit to the notebook.
+
 ## [0.4.3] - 2026-09-28 - Reader notebooks open on their title
 
 - Rule 7: `convert_to_notebooks.py` leaves the module docstring out of a `# notebook: hide-code` notebook; the docstring is written for whoever edits the .py, and the reader saw it before the notebook's own title (JL 260928, the b51 external galleries).

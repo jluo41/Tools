@@ -318,7 +318,34 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual(home["address"], "b01.j01")                                  # the first stays the row's own keys
             self.assertTrue(all(x["state"].startswith("allocated") for x in home["all"]))
             none = task_home(d, ["T2", "a robustness check", "alt spec"])
-            self.assertEqual((none["state"], none["all"]), ("no address yet", []))        # a row id like T2 is not an address
+            self.assertEqual((none["state"], none["all"]), ("no folder yet", []))        # a row id like T2 is not an address
+
+    def test_the_roadmap_is_a_tree_of_general_questions(self):
+        """JL 260928: a general question → its T and D rows → their BJTR folders."""
+        from live.paper import _addresses, _question_cards
+        self.assertEqual(_addresses("b03.j02.t01–t03 · b03.j02.t05"),
+                         ["b03j02t01", "b03j02t02", "b03j02t03", "b03j02t05"])   # a range names each task
+        with tempfile.TemporaryDirectory() as tmp:
+            b = make_board(Path(tmp))
+            story = b / "A1-Story" / "StoryA-desk-idea" / "StoryA-desk-idea.md"
+            text = story.read_text(encoding="utf-8")
+            text = text.replace("| D | what the paper must learn | scope | feeds |\n|---|---|---|---|",
+                                "| Q | general question | serves |\n|---|---|---|\n| Q1 | Is there an effect? | RQ1 |\n\n"
+                                "| D | what the paper must learn | scope | feeds | Q |\n|---|---|---|---|---|")
+            text = text.replace("| RQ1 |\n| D2 |", "| RQ1 | Q1 |\n| D2 |")
+            text = text.replace("| T | evidence obligation | design | feeds |\n|---|---|---|---|",
+                                "| T | evidence obligation | design | feeds | Q |\n|---|---|---|---|---|")
+            text = text.replace("| RQ1 · b01.j01.t01 |", "| RQ1 · b01.j01.t01 | Q1 |")
+            story.write_text(text, encoding="utf-8")
+            d = collect(b, "/papers/Paper-Test/board.md")
+            d["root"] = Path(tmp).resolve()                             # as render_paper sets it
+            cards, loose = _question_cards(d, d["story"][0])
+            self.assertEqual(len(cards), 1)
+            self.assertIn('id="q-Q1" data-key="Q1"', cards[0])
+            self.assertIn('id="task-T1"', cards[0]); self.assertIn('id="need-D1"', cards[0])
+            self.assertIn("2 of 2 with a folder", cards[0])
+            self.assertTrue(any('id="task-T2"' in c for c in loose))    # a row with no Q comes last
+            self.assertTrue(any('id="need-D2"' in c for c in loose))
 
     def test_roster_headings_with_a_description_or_no_folder(self):
         from live.paper import board_pages
@@ -351,7 +378,7 @@ class PaperWorkbenchTest(unittest.TestCase):
         kinds = paper_run_types()
         self.assertEqual(sorted(kinds), ["delivery", "ideation", "sections", "story"])
         self.assertEqual([k["label"] for k in kinds["story"]],
-                         ["Story revise", "Claim review", "Task review", "Supporting runs"])
+                         ["Story revise", "Claim review", "Task review", "Task runs", "Discovery runs"])
         self.assertTrue(all(k["prompt"] for ks in kinds.values() for k in ks))   # each button copies a prompt
         self.assertEqual(kinds["delivery"][-1]["views"], "rounds")
 
@@ -402,11 +429,13 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertLess(page.index('id="rq-RQ1"'), page.index('id="claim-E1"'))
             self.assertIn("It holds beyond the rating", page)
             self.assertIn("Does it hold?", page)
-            # Story › Roadmap: C7 and C6 rows, the Task home and the Discovery home
+            # Story › Roadmap: each C7 / C6 question with the folder that answers it (JL 260928)
             self.assertIn('id="task-T1" data-key="T1"', page)
-            self.assertIn("b01 ✓", page); self.assertIn("j01 ✓", page); self.assertIn("t01 ✓", page)
+            # JL 260929: an opened question shows its BJTR folder first, open; its row text is folded
+            self.assertIn('<details class="item-card" open id="block-b01"', page)
+            self.assertIn('<details class="row-details"><summary>Details</summary>', page)
             self.assertIn('id="task-T2"', page)
-            self.assertIn("no address yet", page)
+            self.assertIn("no folder yet", page)
             self.assertIn('id="need-D1" data-key="D1"', page)
             self.assertIn('id="block-b01"', page)
             self.assertIn("not this paper's: j02_flat", page)
@@ -421,7 +450,9 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn('data-name="run-claim-01"', page)
             self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bE1\b[^"]*"')
             self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bRQ1\b')
-            self.assertIn('data-label="Supporting runs"', page)
+            self.assertIn('data-label="Task runs"', page)
+            self.assertIn('data-skills="haipipe-task"', page)                # each run type names its skill (JL 260928)
+            self.assertIn('data-label="Discovery runs"', page)
             self.assertIn('data-run="b01.j01.t01.r01"', page)                 # a cited Task run, keyed to the rows covering it
             # Sections: one row per C8 row in compile order; a row opens its Page workbench
             self.assertIn('<div class="sec-row" data-key="S-DESK-Main-1-Introduction"', page)

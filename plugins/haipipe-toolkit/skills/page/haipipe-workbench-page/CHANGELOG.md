@@ -1,3 +1,69 @@
+## 0.94.0 · 2026-09-28 · The skill describes the workbench that ships
+
+- Delivery Runs are named `run-delivery-<lane>` (`delivery.py::FIXED_RUNS`, `runs_panel.py::_FORMAT`, the run card's `^run-delivery-` button); `ref/delivery.md` and `ref/space-mapping.md` follow.
+- A Section's LaTeX and Word title no longer prints the page id: `export.py::_page_title` drops a leading
+  `<page id> · ` from the H1, so the PDF opens with `§7 Conclusion`, not `S-MISQ-Main-7-Conclusion · §7 Conclusion`
+  (JL 260928: deliverables carry no process text). The file name keeps the page id. Test:
+  `test_a_leading_page_id_is_not_printed_in_the_title`.
+- Delivery: one fixed Run per lane in the Runs panel (`run_delivery_<lane>`), `Done` while the lane is current and `Ready` when the Page changed, from file times (`runs.py::_fixed_delivery_run`, no `runtime.yaml`). Older `rdNN_*` Runs stay on disk and in the All-runs view but not in the Delivery panel (`runs_panel.py`). The Checks view names the lane's Run in one line (`delivery.py::FIXED_RUNS`). `ref/delivery.md` rewritten to the live Delivery Space; `ref/space-mapping.md` RD rows updated. Checked in headless Chrome on a scratch copy of S-MISQ-Main-7-Conclusion.
+- `SKILL.md` rewritten against the live code (751 → about 320 lines): three Spaces (Draft,
+  Evidence, Delivery), each with its Runs panel on the right; the `draft/` folder and its
+  three-section Draft Markdown; routes (`/w` → `/_board/draft`, `lens`, `view`, `focus`, `run`);
+  what each Draft view and Evidence view does and writes; the Runs panel (run types from
+  `run-cards.md` `🔘 BUTTON … · views`, target, run card, full run names, item-named evidence
+  runs, copy-only); the concise-UI rule (JL 260927) with the list of removed items. Retired UI
+  is no longer described as current: copy chips, evidence chips on Bullets, the plan card and
+  its counts, the Sources line, Run Space as a Space.
+- Refs follow `draft/`: `plan-grammar.md` (file name, `# <stem> · draft v…` head,
+  `draft-version:`, `draft/previous/`, `plan_layout` folding), `record-shape.md`,
+  `review-packet.md`, `folder.md`, `skill-record.md`, `content-preview.md`,
+  `evidence/pagex.md`, `evidence/values.md`. `space-mapping.md`: the Spaces, renderers
+  (`space_views.py`, `runs_panel.py`), request flow and write contract as built.
+  `run-space.md`: the All-runs view (`lens=run`, no button). Delivery Run rows unchanged.
+- The 📃 Page tab's tooltip says "Draft, Evidence, and Delivery spaces"
+  (`page_workspace.py`, drawer `07-workbench-outline.js`).
+- Revise saves show in the Runs panel: a Revise-view Save makes `rp-revise-NN_<C.P>`, which no
+  button matched, so the panel filed it under "Other". New card `Page.revise` with the button
+  `Revise edits · Draft · ^rp-revise- · views revise` (`haipipe-page-workflow/ref/run-cards.md`).
+  The save message reads `Saved · run-revise-01 · 1 sentence` (`outline_revise.py`; was the
+  `rp-` id, the step and "→ Run Space").
+- The All-runs view labels its writing section "Page Writing" (was "Paper Writing" on every
+  Page; `runs.py`, 6 test assertions).
+- A fresh-agent field test answered correctly but found seven doc gaps, now fixed: the run-type
+  recipe (one prompt per card, first matching pattern wins, `No runs yet.`, `{run}` unfilled in
+  `+ New Run`), a Revise save needs a reload to show in the panel, the three writers edit the
+  current plan in place (the old "approved plan is never edited" line described the retired
+  Bullet editor), a standalone `page.py serve` binds loopback, and `haipipe-workbench` (1.12.3)
+  plus its `ref/roster.md` still described `outline/` and Run Space.
+- A second field test (9 files read, was 13) found the hidden gate: `runs.py::_TICKET_NAME` lists
+  which ticket names count as runs, so a new ticket prefix needs code in four places. The recipe
+  now separates a new button (run-cards.md only) from a new prefix, and names the `item:` ticket
+  line that Evidence-row selection reads and the page-wide `rp-revise-NN` numbering.
+- A third field test (a new Run family; 21 files read) corrected two lines: selection reads a
+  run's `target:` and Evidence item, never its name; a new Page writing prefix also needs
+  `runs.py::_valid_page_run_id` (else Held), its label helpers and an owner skill. The recipe now
+  lists every place and a search that finds them by mirroring `rp-revise`.
+- Each run in the Runs panel names the skill it uses (JL 260928): every card in `run-cards.md` has a
+  `🧩 SKILL` line (e.g. `haipipe-page-writing · haipipe-writing`); a run whose ticket or runtime has
+  a `skills:` line shows that instead; `+ New Run` shows its type's skills (`runs_panel.py`).
+- `servers/haipipe-page/tests/test_run_family_lists.py`: reads the RP and RE kind tokens from
+  `page-run-families.md` and checks every list knows each kind (Space folder, `_TICKET_NAME`, a
+  button, a full-word name, `_valid_page_run_id`). Its first run found `rp-auto` and `rp-embed`
+  missing from `_valid_page_run_id` (their runs would show Held); `runs.py` now accepts and labels them.
+
+- The studio drawing's new section "The runs of a Page" is built (JL 260929): Context joins the
+  Draft Table view (was a Page-level run no Space showed); the Page-level Check button is gone (Check
+  lives in Delivery › Checks); Displays name `haipipe-page-evidence · haipipe-display` through a
+  per-button `🧩 SKILL <label>: …` line; the Supporting Runs tab splits into `Task runs`
+  (haipipe-task) and `Discovery runs` (haipipe-discovery).
+- Readable run names end to end: `run-cards.md` patterns read `run-<kind>-…` and the older names;
+  `runs.py` accepts, labels and gates readable names (an open run with only its ticket shows
+  Running, not Held); `runs_panel.py` shows a readable name as it is and links renamed evidence
+  runs to their items through the Evidence Markdown; the Revise and Scratch writers mint
+  `run-revise-<MMDD>-<c1-p2>` / `run-scratch-…` and write `results/` only at close. Checked in
+  headless Chrome on a renamed copy of S-MISQ-Main-5-Results: Save → Running, no result; close-run
+  → Closed with its red/green ledger.
+
 ## 0.93.0 · 2026-09-28 · No content hashes (JL 260928)
 
 - Evidence Result envelopes (`ref/item-table.md`, `ref/evidence/values.md`, `displays.md`,

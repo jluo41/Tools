@@ -344,6 +344,128 @@ trusted publisher, Crossref, arXiv, or a person-supplied entry. A machine may
 retrieve, subset, validate, deduplicate, and copy it; it may not invent fields.
 The Result Card's `cite: @Key` MUST equal that entry's key.
 
+### Identity before entry
+
+A resolved DOI or arXiv identifier is required BEFORE an entry is fetched. A
+title-only lookup returns a different paper: Crossref answers the bibliographic
+query `Large Language Models are Zero-Shot Rankers for Recommender Systems`
+with `LLM-BL: Large Language Models are Zero-Shot Rankers for Bug Localization`
+(`10.1109/icpc66645.2025.00064`) ranked FIRST, and the correct
+`10.1007/978-3-031-56060-6_24` only third. Title mode therefore proposes
+candidates for a person and writes nothing.
+
+`scripts/paper_bib_fetch.py` owns this ladder and reuses `paper_runs.py`'s entry
+grammar, so the writer and the checker cannot drift apart. From the repository
+root its full path is:
+
+```text
+Tools/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/scripts/paper_bib_fetch.py
+```
+
+`Tools/` is a SYMLINK, so a plain `find Tools -name paper_bib_fetch.py` returns
+nothing and the tooling looks absent. Use `find -L`, or the path above.
+
+The ladder:
+
+```text
+--doi           Crossref REST transform -> doi.org content negotiation -> DataCite
+--arxiv         arxiv.org/bibtex/<id>
+--publisher-url a venue's own .bib endpoint, e.g. proceedings.neurips.cc/...-Bibtex.bib
+--bib-file      a person's or Scholar's export, with --source-url
+--resolve-title proposes Crossref + OpenAlex + arXiv candidates, refuses, exits 2
+```
+
+`--resolve-title` EXITS 2 by design, because refusing to write is its whole
+purpose. In a Run ticket written with `set -euo pipefail` that exit kills the
+script after step one and the Run writes nothing. Guard it:
+
+```bash
+"$PY" "$FETCH" --resolve-title "$TITLE" || [ $? -eq 2 ]
+```
+
+`--resolve-title` covers three channels because Crossref indexes DOIs: an
+arXiv-native paper or a pre-2022 proceedings record can be absent from it
+while five wrong papers rank above the right one. Its output reports
+`channels`, one state per channel, plus `degraded` and `strong_matches`. A
+channel that answered `http-503` is NOT a channel that found nothing: OpenAlex
+pauses anonymous search under load, and a degraded sweep that looks clean is
+the silent-cap failure named in `source-format.md`. Read `channels` before
+trusting a single hit, and re-run when `degraded` is true. `strong_matches`
+counts candidates at or above 0.80 similarity: more than one means the title
+is not unique and the publisher and year decide. Each candidate row carries
+its channel, DOI, arXiv id, year, type, publisher and similarity, plus
+`identifier_conflict`, which marks a row whose identifiers disagree with its
+year. OpenAlex merges records: its top hit for `Attention Is All You Need`
+carries arXiv `1706.03762` (2017) AND the DOI of a 2025 posting on another
+server, under one work dated 2025. Never take a DOI from a conflicted row.
+
+Crossref is first because a publisher may ignore `Accept: application/x-bibtex`:
+`10.1038/s41746-026-03117-z` answers `302 text/html` at `doi.org` while Crossref
+returns the correct entry. The fetcher refuses an HTML body, an entry count
+other than one, a DOI that disagrees with the requested DOI, and a title whose
+similarity to the expected title falls below `--min-title-similarity` (0.90),
+except that a registered SHORT title is a match: publishers drop the subtitle,
+so SAGE holds `The Face of Success` for an entry titled `The Face of Success:
+Inferences From Chief Executive Officers' Appearance Predict Company Profits`.
+That case warns instead, so a person confirms it is the same publication. The
+prefix counts only when the shorter title has at least three words and fifteen
+characters, so a fragment never stands in for a title.
+It WARNS, without refusing, on a missing DOI, a URL-shaped key that `\citep{}`
+cannot use, and a title that matches the expected one only after case folding.
+`--strict` turns those warnings into refusals. Warnings do not block by default
+because an arXiv preprint legitimately carries no DOI.
+
+### A resolved DOI is not proof of identity
+
+A DOI passed on the command line agrees with itself, so DOI-agreement proves
+nothing, and a different paper carrying an IDENTICAL title scores 1.0 on the
+similarity guard. `10.65215/2q58a426` is a real 2025 `posted-content` posting by
+the Shenzhen Medical Academy of Research and Translation that reuses the exact
+title `Attention Is All You Need`; it passes both guards with zero findings.
+
+`--expected-year <YYYY>` is therefore the load-bearing guard, and the only one
+that catches a title collision. Pass it on every fetch. The entry's year must
+fall within `--year-tolerance` (default 1) of it, or the fetch is refused.
+
+Two further defences are always on. The fetcher reads the Crossref record and
+reports `type`, `publisher`, `year`, `venue` and landing page in its summary
+AND into `bib.record` in the receipt, including the landing page, so a
+reviewer sees the Shenzhen publisher and can click straight through without
+re-querying. A Crossref `type: posted-content` raises `subject-is-a-posting`,
+because a preprint posting may legitimately BE the Subject but may never
+silently stand in for a venue record.
+
+Neither the fetcher's other guards nor `paper_runs.py check` compares an entry
+against the `subject:` block it describes, so a same-title entry swapped into an
+otherwise valid Result still checks green. `--expected-year` plus a reader's eye
+on `bib.record` is how that is caught today.
+
+### Bib source classes
+
+`bib.source_class` records what the entry's provenance is worth:
+
+```text
+authoritative-export   crossref | doi-content-negotiation | datacite | arxiv | publisher
+person-export          a person's own export, including google-scholar-export
+```
+
+`publisher` is reached with `--publisher-url`, which GETs the venue's `.bib`
+directly and requires an `application/x-bibtex` body. Do NOT route a publisher
+export through `--bib-file`: that stamps `person-export` and makes the receipt
+untrue, because no person was involved.
+
+Google Scholar is never fetched by a script: it refuses automated clients with
+`403` on the first request, and its export omits the DOI and lowercases the
+title. Its legitimate use is a person opening it in a browser for a Subject that
+Crossref, DataCite, and arXiv all lack, then passing that export through
+`--bib-file --source-url`. The weaker class stays on the receipt so a reader can
+see which Results rest on it. Rate limits count per public IP, so scripted
+Scholar access would also break a person's own browsing from the same network.
+
+Refetching the SAME entry preserves an existing `bib.verification`. A DIFFERENT
+entry resets it to `pending`, because a person's reading of the old entry does
+not carry over to a new one.
+
 Person-supplied metadata is NOT a person-supplied BibTeX entry. Turning a title,
 author list, DOI, or venue fields into BibTeX is composition even when every
 field was provided. Without a complete verbatim entry or an authoritative

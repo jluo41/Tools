@@ -408,7 +408,7 @@ def legacy_scratch(tail: list[str]) -> tuple[dict, list[str], set]:
 
 SCRATCH_TARGET = re.compile(r"^### (C\d+(?:\.P\d+)?)(?=\s|$|·)")
 SCRATCH_MARK = re.compile(
-    r"^<!-- (?P<run>rp-scratch-\d+_[A-Za-z0-9._-]+) · (?P<scope>\w+) · (?P<status>\w+) -->$"
+    r"^<!-- (?P<run>rp-scratch-\d+_[A-Za-z0-9._-]+|run-scratch-\d{4}-[a-z0-9-]+) · (?P<scope>\w+) · (?P<status>\w+) -->$"
 )
 
 

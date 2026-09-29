@@ -37,11 +37,17 @@ class RunsPanelTest(unittest.TestCase):
         labels = {(t["space"], t["label"]) for t in types}
         for wanted in [("Draft", "Paragraph revise"), ("Draft", "Evidence embed"),
                        ("Draft", "Auto write"), ("Evidence", "Bind / update citation"),
-                       ("Delivery", "Build"), ("Delivery", "Check"), ("Page", "Check")]:
+                       ("Delivery", "Build"), ("Delivery", "Check"), ("Draft", "Context"),
+                       ("Draft", "Revise edits")]:
             self.assertIn(wanted, labels)
         self.assertTrue(all(t["prompt"] for t in types))
         views = {t["label"]: t["views"] for t in types}
         self.assertEqual(views["Structure revise"], "table")
+        # The studio drawing's order puts Context in the Table view (JL 260929).
+        self.assertEqual(views["Context"], "table")
+        skills = {t["label"]: t["skills"] for t in types}
+        self.assertEqual(skills["Build figure / table"], ["haipipe-page-evidence", "haipipe-display"])
+        self.assertEqual(skills["Bind / update value"], ["haipipe-page-evidence"])
         # Each view lists only its own run types (JL 260927).
         self.assertEqual(views["Paragraph revise"], "revise")
         self.assertEqual(views["Scratch"], "scratch")
@@ -59,10 +65,14 @@ class RunsPanelTest(unittest.TestCase):
         self.assertIn("revise Sample C1.P2", html)
         self.assertNotIn("rd01_latex", html)
 
-    def test_delivery_builds_follow_their_format_tab(self):
-        html = panel_html(self.page, "delivery", self.rows, run_types(), plan_name="draft/x.md")
-        self.assertIn('data-run="rd01_latex"', html)
+    def test_delivery_shows_one_fixed_run_per_lane_on_its_format_tab(self):
+        # JL 260928: one Run per lane (run-delivery-latex); an older numbered rd01_latex is history
+        rows = self.rows + [{"global_id": "run-delivery-latex", "ticket": "", "target": "delivery/latex",
+                             "status": "Done", "result": "delivery/latex/"}]
+        html = panel_html(self.page, "delivery", rows, run_types(), plan_name="draft/x.md")
+        self.assertIn('data-run="run-delivery-latex"', html)
         self.assertIn('data-views="latex"', html)
+        self.assertNotIn('data-run="rd01_latex"', html)
         self.assertNotIn("rp-para-02_P02", html)
 
 

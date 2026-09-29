@@ -1,5 +1,9 @@
 # haipipe-run · CHANGELOG
 
+## 0.28.1 · 2026-09-28
+
+- A Page's delivery builds are one fixed Run per lane (`run_delivery_<lane>`), not numbered RD ids (`SKILL.md`, `ref/identity-and-history.md`, `ref/run-catalog.md`; JL 260928).
+
 ## 0.28.0 · 2026-09-22
 
 - `ref/run-catalog.md`: Page RP gains the `revise` kind (`rp-revise-NN_<target>`).

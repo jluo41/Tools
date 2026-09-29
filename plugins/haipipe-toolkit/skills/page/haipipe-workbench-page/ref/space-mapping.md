@@ -1,7 +1,7 @@
-# Outline Spaces · UI ↔ Page Folder ↔ Run Workflow mapping
+# Page workbench Spaces · UI ↔ Page Folder ↔ Run Workflow mapping
 
-This is the small implementation contract for the three core Spaces plus the
-read-only Delivery Space.
+This is the small implementation contract for the three Spaces (Draft,
+Evidence, Delivery), the Runs panel beside each, and the All-runs view.
 It answers one question: when a person clicks a Space, which renderer reads
 which Markdown or Result files, and which component is allowed to write them?
 
@@ -10,16 +10,18 @@ which Markdown or Result files, and which component is allowed to write them?
 The interface uses plain names:
 
 ```text
-Draft Space       Evidence Space       Run Space       Delivery Space
+Draft Space       Evidence Space       Delivery Space       (each with its Runs panel)
+All-runs view     no button; opened by a ?run=<id> link
 ```
 
 The implementation keeps stable internal names for compatibility:
 
 ```text
 data-space=bullet  · lens=div       · servers/workbench-page/outline.py
-data-space=evidence· lens=evidence  · servers/workbench-page/evidence.py
-data-space=run     · lens=run       · servers/workbench-page/runs.py
-data-space=delivery· lens=delivery · /_board/delivery?workspace=1
+data-space=evidence· lens=evidence  · servers/workbench-page/space_views.py (Card view: evidence.py)
+data-space=delivery· lens=delivery  · servers/workbench-page/space_views.py
+lens=run (no button)                · servers/workbench-page/runs.py
+Runs panel (each Space)             · servers/workbench-page/runs_panel.py
 ```
 
 `Bullet`, `div`, and `/_board/evidence` or `/_board/runs` are implementation
@@ -33,8 +35,8 @@ additional folders:
 
 | Compatibility dispatch → owning work | Primary Space | Authoritative files |
 |---|---|---|
-| SHAPE + SURVEY → Structure RP | Draft Space | `outline/*-outline-v*.md`, `*-evidence-items.md` |
-| LAND → typed RE and Supporting Runs | Run Space + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
+| SHAPE + SURVEY → Structure RP | Draft Space | `draft/*-draft-v*.md`, `*-evidence-items.md` |
+| LAND → typed RE and Supporting Runs | Runs panel + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
 | EMBED → evidence interpretation within the owning Run | Draft Space + Evidence Space | current Outline candidate plus selected Result label bindings |
 | CHECK → independent controller judgment | Draft + Evidence + Run + Delivery Spaces | exact candidate, plan, selected Results, acceptance records, receipts, and artifact versions |
 
@@ -52,7 +54,7 @@ folder is authoritative. A lighter, non-normative version may be called a
 **Workflow × Space Guide**. Internally, the normalized schema may still use
 `workspace_id`; in the workbench vocabulary, `Workspace` and `Space` mean the
 same member surface. The table below is the canonical specification;
-the Run Space `Workflow map` is its read-only UI projection.
+the All-runs view's `Workflow map` is its read-only UI projection.
 
 Rows are planned Run Specs. Columns are Spaces, not physical directories.
 Every cell is intentionally compact: `mode · schema · path`. A `—` cell means
@@ -62,11 +64,11 @@ Markdown stem.
 
 | Run Spec | Draft | Evidence | Run (`runtime`) | Delivery |
 |---|---|---|---|---|
-| `structure` | `action · OutlinePlan · outline/<stem>-outline-v*.md` | `review · EvidenceItemPlan · outline/<stem>-evidence-items.md` | `run · StructureRun · runs/rp-struct-* + results/rp-struct-*/` | `—` |
-| `scratch` | `input · ScratchNote · outline/<stem>-outline-v*.md#Scratch` | `—` | `run · ScratchResult · runs/rp-scratch-* + results/rp-scratch-*/` | `—` |
-| `section-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · SectionWritingRun · runs/rp-sec-* + results/rp-sec-*/` | `read · PageDraft · <stem>.md` |
-| `paragraph-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · ParagraphWritingRun · runs/rp-para-* + results/rp-para-*/` | `read · PageDraft · <stem>.md` |
-| `evidence-item` | `review · EvidenceBinding · outline/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/<lane>/ built files` |
+| `structure` | `action · OutlinePlan · draft/<stem>-draft-v*.md` | `review · EvidenceItemPlan · draft/<stem>-evidence-items.md` | `run · StructureRun · runs/rp-struct-* + results/rp-struct-*/` | `—` |
+| `scratch` | `input · ScratchNote · draft/<stem>-draft-v*.md#2-Scratch` | `—` | `run · ScratchResult · runs/rp-scratch-* + results/rp-scratch-*/` | `—` |
+| `section-writing` | `review · WritingResult · draft/<stem>-draft-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · SectionWritingRun · runs/rp-sec-* + results/rp-sec-*/` | `read · PageDraft · <stem>.md` |
+| `paragraph-writing` | `review · WritingResult · draft/<stem>-draft-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · ParagraphWritingRun · runs/rp-para-* + results/rp-para-*/` | `read · PageDraft · <stem>.md` |
+| `evidence-item` | `review · EvidenceBinding · draft/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/<lane>/ built files` |
 | `delivery` | `read · PageSource · <stem>.md` | `read · EvidenceResult · results/re-*/result.yaml` | `run · DeliveryRun · runs/rd*.md + results/rd*/` | `write · DeliveryArtifact · delivery/{web,latex,word,render}/` |
 
 Context collection, Content adoption, and whole-Page Check are controller
@@ -74,7 +76,7 @@ operations outside this Run Spec table. Their records remain inspectable:
 
 | Controller operation | Records and coverage |
 |---|---|
-| Context | `outline/records/<stem>-context.md` and the selected Folder identity/owner contract |
+| Context | `draft/records/<stem>-context.md` and the selected Folder identity/owner contract |
 | Adoption | Accepted Writing Results → `<stem>.md`, plus release provenance |
 | Check | Selected Draft/version, bound Evidence Results, Run acceptance and Step integrity, and Delivery build/source agreement; owner ruling when required |
 
@@ -84,8 +86,7 @@ explicit Run Spec; its compatibility label alone never creates a row.
 This table does not allocate Runs and does not move ownership. The Run Spec
 still owns target, actor, Gates, Routes, Result/receipt, and cardinality; the
 cell only binds that contract to a Space projection. Concrete Run
-instances remain in the Run Space's Page Writing, Evidence, and Supporting
-Runs tabs.
+instances show in each Space's Runs panel and in the All-runs view.
 
 ## 2. The Page Folder is the backend
 
@@ -96,9 +97,9 @@ model for these Spaces.
 <page-folder>/
 ├── <page>.md                         Page product: Opening · Content
 ├── page.toml                          optional source/title manifest
-├── outline/
-│   ├── <stem>-outline-v*.md           Draft plan + candidate prose / Shape authority
-│   ├── <stem>-evidence-items.md       authored Item contracts for Outline/Evidence
+├── draft/                             (a legacy Page: outline/)
+│   ├── <stem>-draft-v*.md             three-section Draft Markdown / Shape authority
+│   ├── <stem>-evidence-items.md       authored Item contracts: ## Citations · ## Displays · ## Values
 │   ├── records/<stem>-context.md, ... durable process records; off-stage
 │   └── previous/                      superseded plan versions
 ├── runs/
@@ -107,11 +108,11 @@ model for these Spaces.
 │   ├── re-value-NN_<slug>.md,
 │   │   re-display-NN_<slug>.md,
 │   │   re-cite-NN_<slug>.md              RE Evidence Run tickets
-│   └── rdNN_*.md                        RD Delivery Run tickets
+│   └── run-delivery-<lane>.sh  the fixed Delivery Runs; written by page.py export
 ├── results/
 │   ├── rp-*/                            Run P history / working drafts
 │   ├── re-*/                            RE result.yaml + payloads
-│   └── rdNN_*/                         RD receipt/diagnostics when stored here
+│   (a Delivery Run keeps no results/ folder: delivery/<lane>/ is its result)
 ├── workflow/                           Runtime/compatibility receipts; off-stage
 ├── scripts/                            execution support; off-stage
 ├── _archive/legacy-outline-evidence/   old Evidence material; migration only
@@ -122,19 +123,19 @@ The tree is a projection of ownership, not duplicated Space folders. The three
 core Spaces are projections of one Page Run Workflow Runtime: Draft reads the
 current Outline and writing Result, Evidence reads typed Result/Card bindings,
 and Run reads Run Instances plus recorded Gate/Route state. In
-particular, there is no new `draft/`, `evidence/`, or `run-space/` directory.
+particular, there is no separate `evidence/` or `run-space/` directory.
 Any old generated `outline/*-evidence.md` file or `outline/evidence/` tree must
 be moved to `_archive/legacy-outline-evidence/` before the Page is considered
-v4-ready. The authored `outline/*-evidence-items.md` contract remains active;
+v4-ready. The authored `draft/*-evidence-items.md` contract remains active;
 the runtime never reads the retired archive.
 
 ## 3. Space mapping
 
 | UI Space | Visible projection | Backend read set | Write authority |
 |---|---|---|---|
-| Draft Space | Structure list + Table / Reading / Scratch / Revise views | selected `outline/*-outline-v*.md` (including embedded Draft fields and `## Scratch` registry), and Results metadata | Table/Reading: none; Scratch: `action: scratch` writes the selected Outline registry plus its paired Run receipt; Revise: `action: revise` writes changed Draft fields plus the paragraph's Revise Run ledger; Structure: `action: structure` rewrites C/P headings |
-| Evidence Space | typed `Displays`, `Citations`, and `Values` sections; each item is a collapsed Result-first card | `results/**/result.yaml` and payload metadata | Evidence/Run workflow or producer writes Results; Space is read-only |
-| Run Space | RP, RE, RD, Supporting Runs | `runs/`, paired `results/`, delivery receipts, external Run registry and `supporting_results` references | owning workflow/CLI writes tickets and Results; Space is read-only |
+| Draft Space | Structure card + Table / Reading / Scratch / Revise views | selected `draft/*-draft-v*.md` (its three sections), and Results metadata | Table/Reading: none; Scratch: `action: scratch` writes the selected Outline registry plus its paired Run receipt; Revise: `action: revise` writes changed Draft fields plus the paragraph's Revise Run ledger; Structure: `action: structure` rewrites C/P headings |
+| Evidence Space | Citations · Displays · Values · Supporting Runs tabs; views All items (table), Card (Result-first page in a frame), Source (Evidence Markdown) | `results/**/result.yaml` and payload metadata | Evidence/Run workflow or producer writes Results; Space is read-only |
+| Runs panel · All-runs view | RP, RE, RD, Supporting Runs | `runs/`, paired `results/`, `delivery/<lane>/` file times, external Run registry and `supporting_results` references | owning workflow/CLI writes tickets and Results; Space is read-only |
 | Delivery Space | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, built lane files and their mtimes | none in the Space; delivery builders write artifacts and manifests |
 
 ### Draft Space
@@ -144,12 +145,12 @@ supplies the paragraph groups, the candidate wording, and the Structure text
 at the top: its `## C<n>` and `### C<n>.P<m>` headings, one line each, editable
 in place through `action: structure`. Table and Reading are read-only for the
 plan in the browser; Revise edits a paragraph's Draft through `action: revise`;
-the Outline endpoint rejects the legacy Bullet edit actions. Generated HTML is never the edit target. Each Bullet keeps its visible
-bracketed role label and, when evidence is bound, a compact read-only Evidence
-route/card tag; the full Evidence item remains in Evidence Space.
+the Draft endpoint rejects the legacy Bullet edit actions. Generated HTML is never the edit target. Draft shows no
+evidence chips (JL 260927); the full Evidence item remains in Evidence Space.
+Clicking a paragraph selects it and narrows the Runs panel.
 
-Scratch is explicit and quiet: entering Scratch reveals a small `+` beside
-each Section and whole paragraph group. The current Outline grammar has no
+Scratch is explicit and quiet: in Scratch view, clicking a Section or paragraph
+heading opens its note form. The current Outline grammar has no
 separate subsection node, so it avoids a duplicate Subsection plus; explicit
 subsection-scope records remain accepted for future Page schemas. B/symbol rows
 have no Scratch control. The form captures rough notes
@@ -163,11 +164,12 @@ the `+` reopens the editor.
 
 ### Evidence Space
 
-Evidence is Result-first and typed. The surface has three sections —
-`Displays` (`DISPLAY`, including legacy `TABLE`), `Citations` (`CITE`), and
-`Values` (`VALUE`) — rather than one mixed table. Each section shows only a
-high-level, collapsed card by default: type, readable label, short title,
-Bullet address, and status. Opening a card reveals the contract-level detail:
+Evidence is Result-first and typed. Tabs: `Citations` (`CITE`), `Displays`
+(`DISPLAY`, including legacy `TABLE`), `Values` (`VALUE`) and Supporting Runs.
+All items is a table, one row per item; selecting a row selects that item for
+the Runs panel. Card shows the Result-first cards of the current tab only, each
+collapsed to type, label, title, address and status; opening one selects its
+item too, and reveals the contract-level detail:
 Evidence Label, immutable Evidence Item id, Evidence Run, Supporting Runs,
 Result, Expected, and Acceptance. This makes the distinction explicit:
 the Item is the thing being claimed, the Evidence Run is the Page-owned
@@ -179,17 +181,17 @@ A Result manifest identifies the Evidence item, its type, optional `bullet`
 status, identity, and path are authoritative. Old generated Evidence snapshots
 and the retired Evidence folder are not read by the new renderer; they must be
 moved to `_archive/legacy-outline-evidence/` as a one-time migration step.
-Result paths remain behind a small `Sources`
-disclosure.
+Result paths show in the Runs panel's Results, not on the cards.
 
-### Run Space
+### Runs panel and All-runs view
 
-Run is the execution/readback view, separated by ownership:
+Each Space's Runs panel lists its view's run types (`../SKILL.md` § Runs panel).
+The All-runs view (`lens=run`) is the fuller readback, separated by ownership:
 
 ```text
 RP                human ↔ Page interaction and Page writing
 RE                one Page Evidence Item's execution lineage
-RD                one Page delivery target/version
+RD                one fixed Delivery Run per lane (run-delivery-<lane>)
 Supporting Runs   external/upstream Runs that remain inspectable in place
 ```
 
@@ -205,13 +207,13 @@ symlink the external ticket, Result, or protected payload.
 
 ```text
 Browser
-  │ click Draft / Evidence / Run / Delivery Space
+  │ click Draft / Evidence / Delivery Space
   ▼
-Outline outer page: servers/workbench-page/outline.py
-  │ Draft: render in place
-  │ Evidence: lazy iframe → /_board/evidence
-  │ Run:      lazy iframe → /_board/runs
-  │ Delivery Space: lazy iframe → /_board/delivery?workspace=1
+Page outer page: servers/workbench-page/outline.py
+  │ Draft, Evidence, Delivery: render in place (space_views.py), each with runs_panel.py
+  │ Evidence Card view: lazy iframe → /_board/evidence
+  │ Delivery previews: lazy iframes of the built files
+  │ lens=run:  lazy iframe → /_board/runs
   ▼
 Page server adapter: servers/haipipe-page/standalone_server.py
   │ resolves the Page source and dispatches the route
@@ -227,18 +229,19 @@ HTML projection returned to the browser
 
 The Board uses the same Page renderer. `assets/js/07-workbench-outline.js` handles
 Board navigation and deep links; it does not own a second data model. The
-standalone `src/page_workspace.py` exposes only the top-level Outline workbench,
-Delivery, and Folder. Evidence and Run are children of Outline.
+standalone `src/page_workspace.py` exposes the 📃 Page workbench, 📤 Delivery and
+📂 Folder tabs. The three Spaces and the Runs panels live inside 📃 Page.
 
 ## 5. Read/write contract
 
 ```text
-Draft Space      GET, plus bounded Scratch POST
-                                      ← Table/Reading remain GET-only; Scratch
-                                        writes only `## Scratch` and its paired
-                                        Run receipt
+Draft Space      GET, plus bounded POSTs
+                                      ← Table/Reading remain GET-only; Scratch,
+                                        Revise and the Structure card write only
+                                        their sections and paired Run records
 Evidence Space   GET only            ← Run/Result producers
-Run Space        GET only            ← Page workflow, Task workflow, registry
+Runs panel       GET only            ← Page workflow, Task workflow, registry
+                                        (copies prompts; starts nothing)
 Delivery Space GET only              ← delivery builders and manifest writers
 ```
 

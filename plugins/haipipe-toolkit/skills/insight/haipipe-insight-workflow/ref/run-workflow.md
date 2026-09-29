@@ -23,14 +23,14 @@ existing owners and identity grammars:
 | `evidence.<page>.<item>` | `haipipe-page-evidence`; Page RE lineage plus its native Ticket address | one decided VALUE/CITE/DISPLAY item and frozen Local Input | typed accepted Result + native receipt, required verification satisfied | one per commissioned make-item; ready → dependent writing/delivery, failure → HOLD or declared retry |
 | `structure.<page>` | shared Page writing owner; `rp-struct-NN` | explicitly commissioned whole-Page map, Shape and Survey target | accepted structure Result + receipt | only when commissioned; close → selected writing targets/evidence obligations |
 | `write.<page>.<scope>` | shared Page writing owner; `rp-sec-NN` or `rp-para-NN_<target>` | one selected section/paragraph goal, exact parent rows and ready evidence | accepted writing Result + receipt | 0..N selected scopes; owner-defined SELF/NEW_VERSION/CLOSE/NEW_RUN routes |
-| `deliver.<page>.<target>` | shared Page delivery owner; RD lineage/native Ticket | one released Page delivery target | current artifact and build receipt | 0..N declared targets; close → Page CHECK control, failure → repair or HOLD |
+| `deliver.<page>.<target>` | shared Page delivery owner; fixed `run-delivery-<lane>` | one Page delivery lane | the lane's files at least as new as the Page | 0..N declared targets; close → Page CHECK control, failure → repair or HOLD |
 
 The exact Run Type, actor, worker and storage dialect come from the selected
 owner, never from a Folder-kind label. A derivation or robustness computation
 uses `support.<target>` with an executable owner. It is not a second domain
 Run wrapped around that same computation. A single producer may serve multiple
 cells; its full native identity appears once and carries multiple consumers.
-RE/RD lineage and its underlying native Ticket identify the same work, so use
+RE lineage and its underlying native Ticket identify the same work, so use
 one inventory row with aliases, never two Runs.
 
 An existing accepted Result is a dependency reference. Index it with

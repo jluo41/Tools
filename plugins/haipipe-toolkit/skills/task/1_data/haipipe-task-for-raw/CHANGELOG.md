@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.5] - 2026-09-29 - Generated output and encoded ids (JL 260929)
+
+- Privacy: encoded ids (`patient_id_encoded`, `invitation_id_encoded`) are meaningless UUIDs, not PHI; a notebook may show them and they never block a commit.
+
 ## [0.5.4] - 2026-09-28 - No content hashes (JL 260928)
 
 - AGENTS.md rule 9: `ref/run-databricks-sh-template.sh` no longer writes `config_sha256` or a per-input `sha256`; `RUN_INPUTS` entries are plain paths. The Databricks handoff binds the config path, not a config hash.

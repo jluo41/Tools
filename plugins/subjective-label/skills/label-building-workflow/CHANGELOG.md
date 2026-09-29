@@ -1,5 +1,12 @@
 # label-building-workflow · CHANGELOG
 
+## 0.11.0 · 2026-09-29
+
+Keep only the Building step order, allocation and receipts. Each Run's own steps
+moved to its view skill (subjective-label-contract, -embedding, -definition,
+-rounds, -guideline, -test, -handoff), one skill per workbench view (JL 260929).
+Hash wording follows AGENTS.md rule 9 (no content hashes).
+
 ## 0.10.0 · 2026-09-20
 
 Clarify that local CLI and Board receipts are caller-attested, not identity

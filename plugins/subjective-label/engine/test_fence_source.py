@@ -77,6 +77,11 @@ def test_custom_id_and_body_are_canonicalized_and_sealed_text_stays_out(tmp_path
         next(item["body"] for item in rows if item["id"] == row["item_id"]).encode()
     ).hexdigest() for row in protected_rows)
     assert not any(text in protected_path.read_text() for text in sealed_texts)
+    for record in ("corpus/manifest.json", "test/sealed/status.json", "policy/versions/G_00/manifest.yaml"):
+        text = (source / record).read_text(encoding="utf-8")
+        assert "checksum" not in text and "sha256" not in text  # counts and fields, never a hash
+    corpus_manifest = json.loads((source / "corpus" / "manifest.json").read_text())
+    assert (corpus_manifest["n_items"], corpus_manifest["n_sealed"]) == (5, 3)
 
     fenced_cfg = yaml.safe_load((source / "config.yaml").read_text(encoding="utf-8"))
     assert fenced_cfg["corpus"]["id_field"] == "item_id"

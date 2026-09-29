@@ -7,7 +7,7 @@ description: >-
   a notebook, or for .py to .ipynb conversion and Jupytext-style cells.
 allowed-tools: Bash, Read, Write, Edit
 metadata:
-  version: "0.4.3"
+  version: "0.4.4"
   last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -129,7 +129,9 @@ Authoring rules:
      Code show the outputs, and a click opens the code. Never collapse cells
      by rewriting the executed notebook (JL 260927). Such a notebook also
      leaves the top docstring out: it is written for whoever edits the .py,
-     so the notebook opens on its own `#` title (JL 260928).
+     so the notebook opens on its own `#` title (JL 260928). A notebook that
+     changed because its .py changed and its Ticket reran is reported that
+     way, never as an edit to the notebook (JL 260929).
 
 
 ---

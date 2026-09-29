@@ -48,7 +48,7 @@ ASCII, but fixed dialect tokens such as Page `P01` and Scratch `C1.P1` retain
 their required case. Do not normalize a valid native identity globally.
 
 RP kind counters and RE kind counters are independent. Design's `rdNN` is
-Folder-wide; Page's RD delivery ids belong to a different owner namespace.
+Folder-wide; a Page's Delivery Runs are fixed names (`run-delivery-<lane>`), not numbered.
 RI, RL and Task R retain their own counters. Paper's current naming and its
 historical `pm-/pa-/pr-/pj` adapters are controlled by
 [Paper naming](../../../paper/haipipe-paper/ref/run-naming.md).

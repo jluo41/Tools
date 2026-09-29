@@ -50,12 +50,12 @@ is a shared Run rule.
 - Existing `page.interactive-writing.paragraph` Specs narrow the interactive RP
   profile to paragraph scope. Preserve their native spelling; do not conflate
   them with delegated `Page.paragraph-writing`.
-- RP kind tokens, RE focal kinds, and RD output formats are profile variants.
+- RP kind tokens and RE focal kinds are profile variants; a Page Delivery Run is one fixed Run per lane.
   Tables/figures/algorithms are display subtypes; individual labels are not Runs.
 - A renderer called within an RE is an internal worker. Independent display
   production needs its own commission, resolver and receipt; a renderer asset
   directory alone does not establish a Run.
-- Page RE/RD lineage and its underlying native Ticket may name the same work.
+- Page RE lineage and its underlying native Ticket may name the same work.
   Index aliases together. Distinct supporting production plus a local evidence
   transformation can be two Runs when each has its own target and close rule.
 - `Design.adopt` and compact Page/Paper forms are historical input only.

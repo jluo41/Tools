@@ -1,92 +1,63 @@
-# Delivery tab · one tab owns what four lanes ship
+# Delivery Space · what the Page ships, and the one Run per lane that builds it
 
-**LOAD `haipipe-workbench` and `../SKILL.md` (`haipipe-workbench-page`) FIRST.** This
-reference is one lane contract of `haipipe-workbench-page`: the 📤 Delivery tab
-over `<page>/delivery/` and the four internal lanes beneath it (latex · word ·
-slide · render). Each lane keeps its own storage, writer, and gate here; none
-is a second callable Workbench skill, and the tab never auto-calls a model.
-
-```text
-the tab       📤 Delivery: a 🏠 stat of what is built, one segment per lane
-the lanes     delivery/latex/ · delivery/word/ · delivery/slide/ · delivery/render/
-              (flat <page>/latex/ etc. are compatibility reads only)
-the writers   /_board/latex → exporters/md2tex.py + LuaLaTeX
-              /_board/word  → exporters/md2docx.py + exporters/docx2pdf.py
-              /_board/autodeck → servers/workbench-studio/autodeck.py (claude -p)
-              render → the Folder-native writer of the owning Design contract;
-                       POST /_board/render is only an optional served adapter
-the server    servers/workbench-page/delivery.py (surface) · export.py (doors) ·
-              exporters/ (the md2tex, md2docx, docx2pdf scripts, run by path)
-```
-
-## 📡 Surface · one tab, five segments
+**LOAD `../SKILL.md` (`haipipe-workbench-page`) FIRST.** This reference owns the
+Delivery Space of the Page workbench: the built files under `<page>/delivery/`,
+the check that says whether each lane is current, and the fixed Delivery Runs
+listed in its Runs panel. Rebuilding itself is `haipipe-page-delivery`.
 
 ```text
-📤 Delivery
-├── 🏠 What's built   one row per lane: ✅ built · mtime, or ⬜ with the way to
-│                     build it; render/ shows its file count
-├── 📜 LaTeX          the saved <stem>-view.html; BUILT ON CLICK via /_board/latex
-├── 📝 Word           the PDF twin of <stem>.docx; built on click via /_board/word
-├── 🎞 Slides         the saved <stem>-deck.html + the ✨ authoring bar: one
-│                     explicit press → /_board/autodeck; a missing deck is a
-│                     ghost until a person presses, never a view
-└── 📱 Render         saved recipient previews (.txt sms/push/reminder ·
-                      .html ui-card/dashboard · .docx report) + manifest.json
+the Space     Delivery · tabs Web · LaTeX · Word · Slides, each with its state
+              (pass · stale · not built) · views Preview · Artifacts · Checks
+the Runs      one fixed Run per lane in the Runs panel on the right:
+              run-delivery-webpage · run-delivery-latex · run-delivery-word
+              (Done while the lane is current, Ready when the Page changed)
+the command   page.py export <page> [--lane web|latex|word|all] [--author "<name>"]
+              writes runs/run-delivery-<lane>.sh and the lane's files
+the writers   web    → haipipe-page/src/page_workspace.py (build_page)
+              latex  → exporters/md2tex.py + LuaLaTeX      (ExportMixin.export_latex)
+              word   → exporters/md2docx.py + docx2pdf.py  (ExportMixin.export_word)
+              slides → servers/workbench-studio/autodeck.py, only on the ✨ press
 ```
 
-LaTeX and Word are deterministic pens and may build on click. The deck is an
-AUTHORED artifact (`claude -p`, minutes, money) and builds only on the ✨ press.
-Render is regenerated, never edited; an unpinned venue refuses.
+## 🗂 Storage · derived, never hand-edited
 
-## 🗂 Storage · derived, regenerable, never hand-edited
+```text
+delivery/web/     index.html · <page>.md (a copy that must read the same as the Page)
+delivery/latex/   <page>.tex · <page>.pdf · <page>-view.html · evidence-selection.json
+delivery/word/    <page>.docx · <page>.pdf (its twin) · <page>-view.html · evidence-selection.json
+delivery/slide/   <page>-deck.html
+```
 
-Every lane is DERIVED from the Page's Markdown: `delivery/latex/<stem>.tex` +
-`<stem>.pdf`, `delivery/word/<stem>.docx` + preview `<stem>.pdf`,
-`delivery/slide/<stem>-deck.html`, `delivery/render/<stem>-<unit>-v<N>.<ext>`
-+ `manifest.json`. A hand edit is overwritten on the next build and the folder
-is safe to gitignore. `delivery/web/` is the Page-owned static export built by
-`haipipe-page/cli/page.py build`; it is not a lane of this tab.
+Every file is written by code from the Page (AGENTS.md rule 6). A wrong word is
+a Page or Draft edit, a wrong layout is an exporter fix; either way the lane's
+Run is rerun. No lane manifest, receipt or hash is written (rules 6 and 9), and
+a Delivery Run keeps no `results/` folder. Older `rdNN_<lane>` Runs and any
+leftover `build-manifest.json` are history that nothing reads.
 
-Current Word and LaTeX exports use only the ledger-selected Results and record
-`evidence-selection.json`. Pages without a ledger use the labelled legacy
+Word and LaTeX use only the ledger-selected Results and record
+`evidence-selection.json`. A Page without a ledger uses the labelled legacy
 migration profile; missing current bindings never fall back to a legacy Bib or
-display. The shared Markdown reader strips HTML comments (Board receipts) so
-they never become manuscript prose.
+display. The shared Markdown reader strips HTML comments so Board notes never
+become manuscript prose. The deck is authored by a model (`claude -p`, minutes,
+money), so it builds only on the explicit ✨ press.
 
-## 🧾 RD ownership and receipt
+## 🔍 Checks · current or stale, by file time
 
-Load `../../haipipe-page/ref/page-run-families.md` for the Page Run identity
-contract. Each concrete delivery target/version is an `RD` Page Delivery Run
-(`rdNN_web`, `rdNN_latex`, `rdNN_word`, `rdNN_slide`, `rdNN_render`). An RD
-binds one source Page version to one target lane; the exporter writes the
-artifact and the Run's `runtime.yaml` keeps status and warnings. No lane
-manifest is written (JL 260928): the built files and their times are the
-record. Rebuilding the same target is another attempt in that RD lineage; a
-different target or a materially different source version gets a different
-RD. A current lane is delivery evidence, not a whole-Page acceptance decision:
-`haipipe-page-check` remains the only human whole-Page close gate.
-
-## 🔍 Delivery Workspace · consistency projection
-
-`/_board/delivery?path=…&file=…&workspace=1` (standalone and Board-hosted) is a
-GET-only projection Outline embeds. It compares each lane's built files with
-the current Page Markdown by file time alone (JL 260928: no content hashes, no
-build record needed): a lane is `pass` when its files are at least as new as
-the Page, `stale` when one is older, `not-built` when it has none. The web
-lane's Markdown copy must also read the same as the Page. Each lane shows the
-exact reason, file and build time. It never rebuilds or edits a file. The active lane entries copy a context-bound request to chat;
-copying never sends, starts, builds, or writes.
+The Checks view frames `/_board/delivery?path=…&file=…&workspace=1`
+(`delivery.py::check_delivery`, GET only, never builds or edits). A lane is
+`pass` when its built files are at least as new as the Page, `stale` when one is
+older, and `not built` when it has none; the web copy must also read the same as
+the Page. Each row names the file and its build time. A current lane is
+delivery evidence, not a whole-Page acceptance: `haipipe-page-check` remains
+the only whole-Page close gate. `/_board/delivery` without `workspace=1` is the
+older 📤 tab, kept for old links.
 
 ## 📂 Files
 
-- `../../../../servers/workbench-page/delivery.py` · the segmented surface, its
-  POST twin, and the Delivery Workspace
-- `../../../../servers/workbench-page/export.py` · the `/_board/latex` and
-  `/_board/word` doors
-- `../../../../servers/workbench-page/exporters/` · `md2tex.py`, `md2docx.py`,
-  `docx2pdf.py`, `test_md2docx.py`
-- `../../../../servers/workbench-page/assets/js/10-drawer/82-workbench-delivery.js` ·
-  the one registry row
+- `../../workflow-runs/haipipe-page-delivery/SKILL.md` · the fixed Runs and how to rerun them
+- `../../haipipe-page/src/page_export.py` · `cli/page.py export` · the command and the ticket writer
+- `../../../../servers/workbench-page/space_views.py` · `delivery_space_html`, the Space
+- `../../../../servers/workbench-page/delivery.py` · `check_delivery`, `FIXED_RUNS`, the Checks view
+- `../../../../servers/workbench-page/runs.py` · `_fixed_delivery_run`, the Runs panel rows
+- `../../../../servers/workbench-page/export.py` · `exporters/` · the LaTeX and Word writers
 - `../../../../servers/workbench-studio/autodeck.py` · the deck's ✨ pen
-- `../../haipipe-workbench/ref/roster.md` · the `delivery/`, `latex/`, `word/`,
-  `slide/`, `render/`, and `web/` rows

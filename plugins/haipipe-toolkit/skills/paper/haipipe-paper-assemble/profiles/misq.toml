@@ -57,6 +57,8 @@ heading_align = "center"         # Heading 1 and Heading 2 are centred
 caption_plain = true             # captions bold, upright, black (the Caption style), not italic grey
 table_borders = "horizontal"     # top, bottom and row rules; no vertical lines
 table_font_size = 8              # table cells 8 pt (w:sz 16)
+page_cap = 55                    # Research Article: 55 pp counting text, tables, figures, references and appendices (venue page desk rules)
+cover_letter_must_mention = ["MIS Quarterly", "Research Article", "not under review"]   # run-delivery-coverletter checks (0.9.0)
 
 
 [latex]

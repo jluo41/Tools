@@ -19,7 +19,7 @@ Load `subjective-label` first. **A Workflow is a list of Runs.** Its definition
 is the list of planned Run Specs plus their dependency/Route graph and
 completion rule; execution is the native Run Instances and their receipts.
 This document defines the Labeling graph over the operation types in
-`../../ref/ref-run.md`. The Run Type/owner contract defines each operation's
+`../label-building/ref/ref-run.md`. The Run Type/owner contract defines each operation's
 bounded target, action, acceptance, and canonical Result. The Building and
 Scanning doors define semantic authority and forbidden acts.
 
@@ -42,7 +42,7 @@ the rows and their Routes are the Workflow.
 
 | Capability tag (compatibility only) | Episode / target scope | Run Specs (`run_type`) and dependency order | Planned cardinality |
 |---|---|---|---:|
-| P0 · Contract | one imported corpus and target job | `corpus-contract`; independently commissioned `discovery-search`, `guideline-seed`, `test-reserve`, and `embedding-build` Specs when needed | 1 + D + G + T + E |
+| P0 · Contract | one imported corpus and target job | `corpus-contract`; `definition-discussion` before G0 when the human reworks the label wording; independently commissioned `discovery-search`, `guideline-seed`, `test-reserve`, and `embedding-build` Specs when needed | 1 + M + D + G + T + E |
 | P1 · Round | one released Card per round | `round-prepare` → optional `weak-prelabel` Runs → `human-calibration` → `guideline-learn` → `round-measure` → `round-close`; `round-close` Routes to another `round-prepare`, `handoff-freeze`, or `HOLD` | 5N + sum(W_r) |
 | P2 · Freeze | one stopped Building lineage | `handoff-freeze`; on accepted Result, Route to `test-gold-lock` | 1 |
 | P3 · Test | one frozen executor registry and sealed test | `test-gold-lock` → `executor-predict` per candidate/baseline → `executor-score` per closed prediction → `executor-select` | 2K + 2 |
@@ -59,7 +59,7 @@ The expected happy-path total is `D + G + T + E + sum(W_r) + 5N + 2K + S +
 from allocated Tickets with runtime receipts; retries under unchanged inputs
 are attempts on the same Run.
 
-Operation targets and minimum Results are defined in `../../ref/ref-run.md`.
+Operation targets and minimum Results are defined in `../label-building/ref/ref-run.md`.
 The Definition must use the host Run Spec contract for actor/action, gates,
 Routes, dependencies, and terminal rules. A symbolic repeat such as one
 `scan-shard` per frozen shard means a Run Instance for each commissioned
@@ -76,10 +76,10 @@ view, but does not replace the Run receipts or become a child Run.
 
 | Gate label | Owning work / evidence | Route enabled by the predicate |
 |---|---|---|
-| G0 | job `resource_controls` entry referencing the completed `corpus-contract` Result plus the identified human's meaning-confirmation receipt bound to the five contract authority files | `round-prepare` may be commissioned; optional `embedding-build` remains separately commissioned |
+| G0 | job `resource_controls` entry referencing the completed `corpus-contract` Result plus the identified human's meaning-confirmation receipt, a content snapshot that matches `config.yaml` by value | `round-prepare` may be commissioned; optional `embedding-build` remains separately commissioned |
 | G1 | `round-close` Result: Keeper checks pass and checkpoint is closed | another `round-prepare`, `handoff-freeze`, or `HOLD`, as recorded on the closing Run |
 | G2 | final qualifying `round-close` Result, configured stability/coverage/risk checks, and human STOP evidence | allocate `handoff-freeze` |
-| G3 | `handoff-freeze` Result binds the exact G*/D_cal* checksums and human FREEZE signature | `test-gold-lock` may begin under the frozen registry |
+| G3 | `handoff-freeze` Result binds the exact G*/D_cal* versions and human FREEZE signature | `test-gold-lock` may begin under the frozen registry |
 | G4 | `executor-select` Result applies the preregistered rule to closed predictions and scorecards | `scan-preflight` for a qualified or explicitly human-only route; otherwise `HOLD` or a semantic reopen |
 | G5 | `reconcile` Result proves one terminal disposition per in-scope id and a reconciled risk queue | `audit-sample` may begin under the frozen audit design |
 | G6 | `audit-analyze` Result and required human limitation acceptance; `dstar-materialize` validates the accepted route | `dstar-materialize` may promote the audited candidate, or the Run's explicit repair/rescan/semantic Route applies |
@@ -93,7 +93,7 @@ predicate is not itself a `HOLD`. The engine's `authority_hold(config)` sets
 HOLD for simulation/proxy authority, imported source labels without a locally
 appointed human, a missing human id, or an authority mode other than
 `single_human_semantic_authority` with `creates_human_gold: true`. Missing or
-invalid P0 files and checksum failures require repair before continuing.
+invalid P0 files, or counts that do not match, require repair before continuing.
 
 The `confirm` API checks that the caller-supplied id matches the configured
 semantic authority only when all five P0 files and their bound inputs pass
@@ -101,11 +101,11 @@ integrity checks and `authority_hold(config)` is false. The CLI and local
 Board record explicit caller attestation but do not authenticate caller
 identity. Before confirmation, an absent meaning receipt/G0 receipt is expected
 and status asks for explicit meaning attestation; it is not HOLD. If semantic
-confirmation exists but the G0 receipt is missing, invalid, or no longer binds
-the current files, status reports an integrity defect and does not enable
+confirmation exists but the G0 receipt is missing, invalid, or no longer
+matches the meaning receipt by value, status reports an integrity defect and does not enable
 `round-prepare`. A repeat confirmation can write a missing G0 receipt. A prior
-bound receipt can be upgraded only when its existing G0 receipt still verifies;
-the old receipt is archived by checksum before replacement. Corrupt or
+receipt can be replaced only when status finds no G0 integrity defect; the old
+receipt is first archived as `gates/g0/history/<YYYYMMDDTHHMMSS>.json`. Corrupt or
 unverified receipts are never overwritten. G0 evidence belongs to the
 transition into `round-prepare`;
 represent the control in the Workflow Runtime's `resource_controls` with a
@@ -126,8 +126,9 @@ closable Runs.
 ## Handoff and Routes
 
 The Result of `handoff-freeze` is the immutable Label Handoff. Scanning Runs
-bind its exact checksum in their Tickets and never follow `policy/current`.
-Read `../../ref/ref-label-handoff.md` for its fields. A later semantic change
+bind its exact version (for example `label-v1` and its date) in their Tickets
+and never follow `policy/current`.
+Read `../label-building/ref/ref-label-handoff.md` for its fields. A later semantic change
 must preserve the closed Results, record an invalidation control/receipt, and
 Route to a new Building lineage; it must not rewrite downstream history.
 
@@ -158,7 +159,7 @@ progress from a highest P-number, view, or artifact timestamp. Allocate only
 after that Spec's commission and frozen inputs exist.
 
 Return the active Run address or `none`, its Run Spec, terminal/held outcome,
-bound handoff checksum or its absence, the first unmet gate predicate and its
+bound handoff version or its absence, the first unmet gate predicate and its
 evidence owner, eligible next Run Spec, actual allocated Run count, and the
 optional planned count with its assumptions. P0-P5 may be included as
 compatibility display tags, clearly labeled as projections.

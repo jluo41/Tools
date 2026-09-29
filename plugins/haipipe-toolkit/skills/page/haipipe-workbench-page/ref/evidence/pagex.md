@@ -1,7 +1,7 @@
 # PageX · legacy migration input only
 
 PageX is not part of the active Page workflow. New Evidence Item records do
-not carry `PageX Bindings`, and the Outline workbench exposes no PageX workspace
+not carry `PageX Bindings`, and the Page workbench exposes no PageX workspace
 or evidence segment.
 
 Use the current split:

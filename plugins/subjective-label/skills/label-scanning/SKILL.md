@@ -26,7 +26,7 @@ door owns the LAW of the Scanning side, symmetric to `/label-building`.
 
 Scanning may choose and execute an implementation of `G*`; it may not redefine
 the human construct. `G*`, `D_cal*`, the corpus snapshot, and the sealed-test
-reservation are read-only inputs bound by the handoff checksum. A semantic
+reservation are read-only inputs bound by the handoff version. A semantic
 defect found here is preserved as evidence and returned to Building under a new
 lineage; it is never patched inside a Scanning Run, and neither are wrappers,
 thresholds, or routing.
@@ -44,7 +44,7 @@ P5 Audit   an immutable audit receipt and, on pass, D* with bounded claims
 Public datasets may supply separately labeled external-validity evidence. They
 never replace project-specific `T*` and never license production.
 
-Scanning uses the independently closable operations in `../../ref/ref-run.md`:
+Scanning uses the independently closable operations in `../label-building/ref/ref-run.md`:
 
 ```text
 P3  test-gold-lock · executor-predict* · executor-score* · executor-select
