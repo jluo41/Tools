@@ -2,6 +2,7 @@
 
 ## 0.9.1 · 2026-09-29 · Each Appendix page shows its own pair
 
+- Card headers (`.item-summary`): the status column is `fit-content(34%)` and wraps (40% under 620px). It was `auto` with `white-space:nowrap`, so a long state took its full width and squeezed the headline to a strip (Paper-CGMtoHbA1c Story › Questions: RQ2 wrapped to six lines beside "largely (normoglycemia covered on all 8 metrics; prediabetes only partly)"). `audit_paper_views.py` at 1360px: 0 of 17 views flagged.
 - `servers/workbench-paper/paper.py`: Sections › Narrative finds a page's call-peer pair by its `session:` and `codex-session:` ids together first. The Appendix pages share one Claude session and each keeps its own Codex thread, so the Claude id alone gave every Appendix page the last pair registered (Paper-CGMtoHbA1c showed `CGM2HbA1c-Appendix-C` three times). Tests: `test_paper_workbench.py`, 12 pass.
 
 ## 0.9.0 · 2026-09-29 · The cover letter in Delivery; the Roadmap tree

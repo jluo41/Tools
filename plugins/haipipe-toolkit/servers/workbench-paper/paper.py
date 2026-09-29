@@ -2349,14 +2349,14 @@ code{{font:12.5px ui-monospace,Menlo,monospace}}
 .item-card:hover{{border-color:#b8c4d2}}
 .item-card>summary{{list-style:none;cursor:pointer;padding:0}}
 .item-card>summary::-webkit-details-marker{{display:none}}
-.item-summary{{display:grid;grid-template-columns:1.1em auto minmax(0,1fr) auto auto;align-items:start;gap:10px;padding:12px 13px;min-width:0}}
+.item-summary{{display:grid;grid-template-columns:1.1em auto minmax(0,1fr) auto fit-content(34%);align-items:start;gap:10px;padding:12px 13px;min-width:0}}
 .item-chevron{{color:var(--mut);font-size:18px;line-height:1.2;transition:transform .12s ease}}
 .item-card[open]>summary .item-chevron{{transform:rotate(90deg)}}
 .item-kind{{color:var(--acc);font:650 12px ui-monospace,Menlo,monospace;border:1px solid var(--acc);border-radius:999px;
  padding:1px 8px;white-space:nowrap}}
 .item-main{{min-width:0;display:grid}}
 .item-label{{font-weight:650;font-size:15.5px;line-height:1.4}} .item-title{{color:var(--mut);font-size:13.5px}}
-.item-where{{color:var(--mut);font-size:12px;white-space:nowrap}} .item-status{{font-weight:650;font-size:14px;white-space:nowrap}}
+.item-where{{color:var(--mut);font-size:12px;white-space:nowrap}} .item-status{{font-weight:650;font-size:14px;line-height:1.4;overflow-wrap:anywhere}}
 .item-detail{{border-top:1px solid var(--line);padding:10px 12px 13px}}
 .item-detail td .idtag,.item-detail td:first-child{{white-space:nowrap}}
 .row-details{{margin-top:8px}} .row-details>summary{{cursor:pointer;color:var(--mut);font-size:12px;list-style:none}}
@@ -2382,7 +2382,7 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 @media(max-width:620px){{.kv>.item-row{{grid-template-columns:minmax(0,1fr)}}
  .kv>.item-row>b{{border-right:0;border-bottom:1px solid var(--line);padding:6px 12px}}
  .sec-row{{grid-template-columns:2em minmax(0,1fr) auto}} .sec-ver,.sec-state{{display:none}}
- .item-summary{{grid-template-columns:1.1em auto minmax(0,1fr) auto}} .item-where{{display:none}}}}
+ .item-summary{{grid-template-columns:1.1em auto minmax(0,1fr) fit-content(40%)}} .item-where{{display:none}}}}
 {space_css}{panel_css}
 /* the paper's 12px type floor (JL 260918) holds inside the Runs panel too */
 .runs-panel button,.run-list button{{font-size:12px!important}} .run-state{{font-size:12px}} .space-views-label{{font-size:12px}}
