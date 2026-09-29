@@ -1,3 +1,7 @@
+## 0.7.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
 ## 0.7.1 · 2026-09-28 · No content hashes (JL 260928)
 
 - Sync packet v2, Page projection receipts, selection and handoff receipts carry `sync_revision` only: `source_hash`, `output_hash`, `subject_hash` and `manifest_sha256` are gone from `references/` and the example. `check_ideation.py` and `selection_contract.py` no longer require or compare a hash; a leftover hash field in an old record is ignored (test `test_sync_v2_ignores_leftover_hash_fields`). A direct assessment names its subject Card path and a sorted `inputs` list; it is stale when an input is newer than the receipt.

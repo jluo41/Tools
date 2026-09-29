@@ -101,10 +101,10 @@ being guessed.
    Run/authority boundary being crossed rather than a stylistic choice:
 
    ```text
-   context   ─▶ <page>/outline/records/<stem>-context.md, generated. It points to
+   context   ─▶ <page>/draft/records/<stem>-context.md, generated. It points to
                 source authorities and writes no plan, evidence, or Page prose.
    outline   ─▶ versioned plan and authored Evidence Item specifications/routes
-                under outline/. No Page prose; transcribe only durable human approvals.
+                under draft/. No Page prose; transcribe only durable human approvals.
    evidence  ─▶ ready local Evidence Item Results and frozen inputs, plus
                 Result bindings in the authored item table. Leave CITE
                 `Verified` and display `accepted:` to their human authorities;
@@ -120,7 +120,7 @@ being guessed.
    confirm nothing outside Opening changed. This check informs the return; it
    does not award a final pass.
 8. Write the target to the exact `path` given. During EVIDENCE you may also
-   create an `outline/evidence/bibex/` entry landed verbatim from a person, and per unit in
+   create an `draft/evidence/bibex/` entry landed verbatim from a person, and per unit in
    `evidence_units` its `README.md`, `intake/`,
    `recipe/`, `assets/` and `preview.pdf`: render, pick and build are
    EVIDENCE's since 260819 (the LAND cycle). Never tick `accepted:`, which stays CHECK's.
@@ -141,7 +141,7 @@ being guessed.
   is visibly broken on the page.
 - No em-dashes. Use a colon, semicolon, comma, parentheses, or a new sentence.
 - English only.
-- Real citations. A file path in `outline/records/<stem>-files.md` is a file you read, and every row
+- Real citations. A file path in `draft/records/<stem>-files.md` is a file you read, and every row
   says what that file does for this page.
 - The page's own words, not coined labels. Use the board's existing vocabulary.
 - On a Q or S Page, each Aim has a stable id, one status emoji, its target,

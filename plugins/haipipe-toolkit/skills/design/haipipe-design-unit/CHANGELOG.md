@@ -1,6 +1,10 @@
 # haipipe-design-unit · version history
 
-## 0.4.1 current · 2026-09-28 · No content hashes (JL 260928) (version unchanged at 0.4.1; the Design family version is frozen)
+## 0.4.1 current · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929) (version unchanged at 0.4.1; the Design family version is frozen)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
+## 0.4.1 · 2026-09-28 · No content hashes (JL 260928) (version unchanged at 0.4.1; the Design family version is frozen)
 
 - Tickets, Results, runtime receipts and render manifests name files by path only;
   `check_unit.py` no longer writes, compares or requires a `sha256`, and ignores any

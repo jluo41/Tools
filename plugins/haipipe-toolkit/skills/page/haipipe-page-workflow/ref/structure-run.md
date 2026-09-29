@@ -99,8 +99,8 @@ results/rp-struct-01/
   runtime.yaml
   working.md
   v001.md
-outline/
-  <stem>-outline-v*.md
+draft/
+  <stem>-draft-v*.md
   <stem>-evidence-items.md
 ```
 

@@ -6,8 +6,8 @@ both call `run_progress()` here. Never writes.
 
 The Runs, in list order, and what each state is read from:
 
-    🧭 context    outline/records/<stem>-context.md exists as the current preflight projection
-    🧩 structure  newest outline/<stem>-outline-v<G>.<S>[.<E>].md and Shape approval
+    🧭 context    draft/records/<stem>-context.md exists as the current preflight projection
+    🧩 structure  newest draft/<stem>-draft-v<G>.<S>[.<E>].md and Shape approval
                  (SHAPE step), plus the Evidence Item table's Decide per item (SURVEY step)
     🃏 evidence   the Evidence Item table joined to local Results: ready · folded (LAND,
                  EMBED steps); legacy pages without a table: card state: lines ·

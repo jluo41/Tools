@@ -20,7 +20,7 @@ def write(path, value):
 
 def fixture(root, patient="patient-a", *, add_open=True):
     folder = root / patient
-    data = folder / "outline/evidence/materials/snapshot-01.yaml"
+    data = folder / "draft/evidence/materials/snapshot-01.yaml"
     write(data, {"snapshot": "immutable-01", "subject": patient, "tables": ["messages", "events"]})
     ds = {"id": patient, "version": "snapshot-01", "manifest": str(data)}
     item = {"run": "r01_description", "question": "What tables are available?", "target": "wisdom",
@@ -67,7 +67,7 @@ def fixture(root, patient="patient-a", *, add_open=True):
 def ri_fixture(root, patient="patient-c"):
     """Create an empty instance, then bind one RI to a normal R ticket."""
     folder = root / patient
-    data = folder / "outline/evidence/materials/snapshot-01.yaml"
+    data = folder / "draft/evidence/materials/snapshot-01.yaml"
     write(data, {"snapshot": "immutable-01", "subject": patient, "tables": ["events"]})
     dataset = {"id": patient, "version": "snapshot-01", "manifest": str(data)}
     write(folder / "workflow/insight.yaml", {
@@ -150,7 +150,7 @@ class InsightItemsTest(unittest.TestCase):
         self.assertEqual([], self.faults())
 
     def test_changed_dataset_in_place_shows_by_file_time(self):
-        data = self.folder / "outline/evidence/materials/snapshot-01.yaml"
+        data = self.folder / "draft/evidence/materials/snapshot-01.yaml"
         write(data, {"snapshot": "actually-new-data"})
         later = (self.execution / "input.yaml").stat().st_mtime + 60
         os.utime(data, (later, later))
@@ -201,7 +201,7 @@ class InsightItemsTest(unittest.TestCase):
     def test_new_snapshot_marks_old_binding_stale_without_destroying_result(self):
         path = self.folder / "workflow/insight.yaml"
         manifest = app.read_yaml(path)
-        data = self.folder / "outline/evidence/materials/snapshot-02.yaml"
+        data = self.folder / "draft/evidence/materials/snapshot-02.yaml"
         write(data, {"snapshot": "immutable-02"})
         manifest["datasets"].append({"id": "patient-a", "version": "snapshot-02", "manifest": str(data)})
         manifest["items"][0]["datasets"] = ["patient-a@snapshot-02"]
@@ -293,7 +293,7 @@ class InsightItemsTest(unittest.TestCase):
         before = base.read_bytes()
         manifest_path = folder / "workflow/insight.yaml"
         manifest = app.read_yaml(manifest_path)
-        data = folder / "outline/evidence/materials/snapshot-02.yaml"
+        data = folder / "draft/evidence/materials/snapshot-02.yaml"
         write(data, {"snapshot": "immutable-02", "subject": "patient-e"})
         manifest["datasets"].append({"id": "patient-e", "version": "snapshot-02",
                                      "manifest": str(data)})
@@ -339,7 +339,7 @@ class InsightItemsTest(unittest.TestCase):
         receipt = result.with_name("runtime.yaml")
         write(result, {"execution": ident, "value": 7})
         write(receipt, {"execution": ident, "status": "complete"})
-        local = folder / "outline/evidence/materials/local-result.yaml"
+        local = folder / "draft/evidence/materials/local-result.yaml"
         write(local, {"type": "VALUE", "status": "accepted", "value": 7})
         call = {"recipe_id": "support/compute", "owner": str(producer),
                 "entry": str(ticket), "code_version": "synthetic-v1",
@@ -487,11 +487,11 @@ class InsightItemsTest(unittest.TestCase):
 
     def test_freeze_cli_reports_exact_final_input(self):
         folder, _, packet = ri_fixture(self.root, "cli")
-        write(folder / "outline/ready-evidence.yaml", {"local_evidence_reason": "Inventory only"})
+        write(folder / "draft/ready-evidence.yaml", {"local_evidence_reason": "Inventory only"})
         output = io.StringIO()
         with redirect_stdout(output):
             status = app.main(["freeze", str(folder), "--item", packet["insight_run"],
-                               "--version", "v001", "--evidence", "outline/ready-evidence.yaml"])
+                               "--version", "v001", "--evidence", "draft/ready-evidence.yaml"])
         self.assertEqual(0, status)
         self.assertEqual(packet["execution"], json.loads(output.getvalue())["execution"])
         self.assertEqual([], app.inspect(folder)[2])

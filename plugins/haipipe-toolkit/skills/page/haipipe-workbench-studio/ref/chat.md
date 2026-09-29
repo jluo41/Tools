@@ -51,7 +51,7 @@ chat honest is the same three things that keep a Run honest:
   `discussion-settled-thread`, `sentence-without-realizes`,
   `number-without-lane`; the chat runs `check.py` scoped to the page after a
   write and clears what its pen owns.
-- **The record**: every write leaves one record in `outline/records/<stem>-log.md`
+- **The record**: every write leaves one record in `draft/records/<stem>-log.md`
   (`### YYMMDD HHMM · chat: <what changed>`) naming the file, even when the
   file is a task folder or another page; the page is the join.
 
@@ -72,14 +72,14 @@ what you type                         lands in                                gr
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 "this sentence overclaims"  comment   page.md · under that sentence           > Comment JL · text · YYMMDD HHMM       none · haipipe-sentence
 "why 8.69 million?"  answerable       the reply + a reply lane                >> CC<MMDD>: answer · source path       none · haipipe-sentence
-"should the title get a subtitle?"    outline/records/<stem>-discussion.md            ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
+"should the title get a subtitle?"    draft/records/<stem>-discussion.md              ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
   an open question                                                            Decide (board-wide id)                    ref/record-shape.md
 "make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-page-writing
-"add a sentence on X" · "drop S7"     outline/<stem>-outline-v<G>.<S>[.<E>].md  a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-page-structure
+"add a sentence on X" · "drop S7"     draft/<stem>-draft-v<G>.<S>[.<E>].md      a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-page-structure
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
-"where is S6's number?"  a fact       outline/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-page-structure
+"where is S6's number?"  a fact       draft/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-page-structure
   the page lacks
 "the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         CONTENT/WRITE · haipipe-page-writing
   a promise change
@@ -91,7 +91,7 @@ what you type                         lands in                                gr
   the numbers, as code                  owning task Folder; bind at SURVEY/LAND  bound to the Evidence Item               haipipe-task-for-page
 feedback · requirement · evidence     never by hand                           regenerated                              cli/feedback.py collect ·
                                                                                                                         cli/requirement.py · cli/evidence-status.py
-every row above                       outline/records/<stem>-log.md                   ### YYMMDD HHMM · chat: <headline>       append
+every row above                       draft/records/<stem>-log.md                     ### YYMMDD HHMM · chat: <headline>       append
 ```
 
 - **The chat is a router over the same authorities the Runs use**; it never
@@ -140,7 +140,7 @@ The live `PAGE_RULES_BODY` in `servers/workbench-studio/chat.py` follows this co
 `servers/workbench-studio/chat.py prime_context` injects, at connect: the board and page, the
 page's question and open Aims, `page-type:` and the progress strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
-current Scratch records, evidence owed and landed), the page's own skill list (`<page>/outline/skill/<stem>.md`,
+current Scratch records, evidence owed and landed), the page's own skill list (`<page>/draft/skill/<stem>.md`,
 one ranked `- <name> · note:` row per skill), its off-stage Context-record authority
 rows, and its Evidence Item Supporting/Local Run bindings, plus the SPACE
 context and the status-strip duty. PageX bindings are compatibility history,
@@ -176,7 +176,7 @@ targets the nested Studio lane directly.
 - `../../../../servers/workbench-studio/term.py` · the TUI form: the PTY, parking,
   reattachment
 - `../../../../servers/haipipe-board/write.py` · the pens the drawer calls: comment,
-  edit-sentence, discuss (a `D<nn>` record into `outline/records/<stem>-discussion.md`)
+  edit-sentence, discuss (a `D<nn>` record into `draft/records/<stem>-discussion.md`)
 - `../../../../servers/_host/serve.py` · `/_board/chat`, `/_board/chat-keep`
 - `../../haipipe-workbench-page/ref/record-shape.md` · the `D<nn>` and log record
   grammar the chat writes

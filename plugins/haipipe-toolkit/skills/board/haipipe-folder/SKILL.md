@@ -9,8 +9,8 @@ description: >-
   whether something is a page or a task, binding Run Specs to Folder resources, or routing a legacy page-type.
   Trigger: folder contract, page face, task face, folder kind, Folder ownership, Run Spec, /haipipe-folder.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-09-20"
+  version: "0.7.2"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-folder · one work object, two faces
@@ -85,7 +85,7 @@ A Folder may materialize only the lanes its owner selects:
 ```text
 <folder>/
 ├── <stem>.md             Page Face · what a reader opens
-├── outline/              human plan and decision record, when selected
+├── draft/                human plan and decision record, when selected
 ├── workflow/             machine intent/progress/receipts, when selected
 ├── evidence/             evidence lanes selected by the owner
 ├── delivery/             outward projections selected by the owner

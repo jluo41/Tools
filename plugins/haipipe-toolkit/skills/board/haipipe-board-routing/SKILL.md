@@ -7,8 +7,8 @@ description: >-
   happened and the board must record it. Trigger: route, write back, owning
   page, we decided, board structure, regroup, /haipipe-board-routing.
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-09-20"
+  version: "0.11.2"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -171,7 +171,7 @@ Rendering the index, checking a page, and checking a sentence all belong to `hai
 
 4  PICK the surface      load haipipe-page and the resolved Folder/domain
                          owner. Its Page contract says whether the input belongs in
-                         Opening, Content, Aims, or a typed `outline/` record
+                         Opening, Content, Aims, or a typed `draft/` record
 
 5  WRITE anchored        edit the owning on-stage field or typed record while
                          preserving its schema and id; never synthesize a
@@ -201,9 +201,9 @@ touch SPACE configuration. Never print credentials or edit machine-local
 **Human decisions.**
 Routing may update factual Aim `Now:` lines and append typed log records. When
 it has inspected the evidence, it may move an Aim among the allowed statuses
-and records the reason in `outline/records/<stem>-log.md`. It may never decide for the
+and records the reason in `draft/records/<stem>-log.md`. It may never decide for the
 person or change a page-level human gate. A proposal receives a Board-wide
-`D<nn>` thread in `outline/records/<stem>-discussion.md`; when it blocks an Aim, that
+`D<nn>` thread in `draft/records/<stem>-discussion.md`; when it blocks an Aim, that
 Aim's `Now:` points to the thread and the live ask is mirrored under
 `Aims › Decision Now` when that owner declares this native/legacy surface.
 New generic Pages keep targets and decisions in the owner's backstage records;

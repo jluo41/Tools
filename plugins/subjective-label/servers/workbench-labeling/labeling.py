@@ -2080,7 +2080,7 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
         runs_by_op.setdefault(str(r["operation"]), []).append(r)
     space_ids = {name: sid for sid, name, _ in SPACES}
     view_ids = {sid: {vname: vid for vid, vname in views} for sid, _, views in SPACES}
-    skills = _view_skills()
+    skills = _run_type_skills()
     out: dict[str, list[dict]] = {sid: [] for sid, _, _ in SPACES}
     for cells in rows:
         def cell(name, c=cells):
@@ -2093,27 +2093,27 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
             continue
         out[sid].append({"op": op, "words": cell("in words") or _RUN_WORDS.get(op, op),
                          "views": views, "runs": runs_by_op.get(op, []),
-                         "skill": skills.get((sid, views[0]), ""),
+                         "skills": skills.get(op, []),
                          "step": int(cell("step")) if cell("step").isdigit() else 99})
     for types in out.values():
         types.sort(key=lambda t: t["step"])
     return out
 
 
-def _view_skills() -> dict[tuple[str, str], str]:
-    """(space id, view id) -> the view's one skill, from ref-space-mapping.md `## View skills` (JL 260929)."""
+def _run_type_skills() -> dict[str, list[str]]:
+    """Run Type -> declared Skills from ref-space-mapping.md; these do not prove historical usage."""
     ref = _space_mapping_ref()
-    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "View skills") if ref else ([], [])
+    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Run Type skills") if ref else ([], [])
     col = {h.lower(): i for i, h in enumerate(headers)}
-    space_ids = {name: sid for sid, name, _ in SPACES}
-    view_ids = {sid: {vname: vid for vid, vname in views} for sid, _, views in SPACES}
-    out = {}
+    if "run type" not in col or "declared skills" not in col:
+        return {}
+    out: dict[str, list[str]] = {}
     for cells in rows:
-        space_name, _, view_name = cells[col["view"]].partition(" · ")
-        sid = space_ids.get(space_name.strip())
-        vid = view_ids.get(sid, {}).get(view_name.strip())
-        if sid and vid:
-            out[(sid, vid)] = cells[col["skill"]].strip().strip("`")
+        if max(col["run type"], col["declared skills"]) >= len(cells):
+            continue
+        op = cells[col["run type"]].strip().strip("`")
+        if op:
+            out[op] = re.findall(r"`([^`]+)`", cells[col["declared skills"]])
     return out
 
 
@@ -2144,11 +2144,14 @@ def _run_again(vm: dict, run: dict) -> tuple[str, str]:
                      f"at {where} through /subjective-label. It gets a new rlNN; {run['run']} stays as it is.")
 
 
-def _skill_line(skill: str) -> str:
-    return f'<p class=run-skill>Skill <code>{_esc(skill)}</code></p>' if skill else ""
+def _skills_line(skills: list[str]) -> str:
+    if not skills:
+        return ""
+    names = " · ".join(f"<code>{_esc(skill)}</code>" for skill in skills)
+    return f'<p class=run-skill>Run Type skills {names}</p>'
 
 
-def _run_card(vm: dict, run: dict, skill: str = "") -> str:
+def _run_card(vm: dict, run: dict, skills: list[str] | None = None) -> str:
     action, again = _run_again(vm, run)
     ask = _run_ask(vm, run)
     status = str(run["status"])
@@ -2162,7 +2165,7 @@ def _run_card(vm: dict, run: dict, skill: str = "") -> str:
         f'<header><b title="{_esc(run["run"])}">{_esc(run["name"])}</b>'
         f'<span class="run-state st-{_esc(status.split(" ")[0])}">{_esc(words)}</span>'
         f'<button type=button class=run-copy data-copy="{_esc(again)}">{action}</button></header>'
-        f'{_skill_line(skill)}'
+        f'{_skills_line(skills or [])}'
         '<details class=run-prompt-box><summary>Prompt '
         f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>'
         f'<pre class=run-prompt>{_esc(ask)}</pre></details>'
@@ -2184,10 +2187,10 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
                   f"Start a new {t['op']} Run on the labeling job at {where} through /subjective-label. Target: ")
         buttons.append(
             f'<button type=button class=run-type data-op="{_esc(t["op"])}" data-views="{_esc(" ".join(t["views"]))}" '
-            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" data-skill="{_esc(t.get("skill") or "")}" '
+            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" data-skills="{_esc("|".join(t.get("skills") or []))}" '
             f'title="{_esc(t["op"])}">'
             f'{_esc(t["words"])} <span class=run-count>{len(runs)}</span></button>')
-        cards.extend(_run_card(vm, r, t.get("skill") or "") for r in runs)
+        cards.extend(_run_card(vm, r, t.get("skills") or []) for r in runs)
     return (
         f'<section class=runs-panel data-space={sid}>'
         '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Runs</b></div>'
@@ -2603,7 +2606,9 @@ function runsRender(p){
  var op=newMode?p.dataset.lastOp:(on?on.dataset.op:'');
  if(newMode){var src=$('.run-type[data-op="'+op+'"]',p),card=$('.run-card-new',p),text=src?src.dataset.prompt:'';
   $('.run-prompt',card).textContent=text;$('.run-copy',card).dataset.copy=text;
-  var sk=$('.run-skill',card),skill=src?src.dataset.skill:'';sk.innerHTML=skill?'Skill <code>'+esc(skill)+'</code>':'';sk.hidden=!skill;
+  var sk=$('.run-skill',card),skills=src&&src.dataset.skills?src.dataset.skills.split('|'):[];
+  sk.innerHTML=skills.length?'Run Type skills '+skills.map(function(skill){return '<code>'+esc(skill)+'</code>';}).join(' · '):'';
+  sk.hidden=!skills.length;
   card.hidden=false;return;}
  p.dataset.lastOp=op||'';
  var cards=op?$$('.run-card[data-op="'+op+'"]',p):[];

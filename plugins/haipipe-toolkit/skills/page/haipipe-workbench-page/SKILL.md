@@ -14,8 +14,8 @@ description: >-
   file, record shape, evidence bundle, delivery tab, folder tab, stale
   workbench, /haipipe-workbench-page.
 metadata:
-  version: "0.94.0"
-  last_updated: "2026-09-28"
+  version: "0.94.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

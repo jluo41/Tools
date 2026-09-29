@@ -13,7 +13,7 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.18.0"
+  version: "0.18.1"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---

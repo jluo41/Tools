@@ -382,7 +382,7 @@ class WriteMixin:
         """Write a free discussion thought to the Page's active dialect.
 
         Folded Pages own open questions as board-wide ``D<nn>`` records in
-        ``outline/records/<stem>-discussion.md``.  Legacy flat Pages retain their
+        ``draft/records/<stem>-discussion.md``.  Legacy flat Pages retain their
         historical ``## Discussion`` section writer below.
         """
         # A SENTENCE comment is written `> Comment WHO …` since 260802. The

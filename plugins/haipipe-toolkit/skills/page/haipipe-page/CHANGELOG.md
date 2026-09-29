@@ -1,3 +1,8 @@
+## 0.121.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+- Code (JL 260929, same sweep): `cli/page.py` `outline-tidy` help and error name `draft/` (`draft/previous/`, `draft/records/`); comments and docstrings in `src/outline_version.py`, `common.py`, `page_question.py`, `page_progress.py`, `feedback.py`, `folder_health.py` describe the plan folder as `draft/`. Readers still fall back to `outline/` on a Page not yet moved (`plan_dir`).
+
 ## 0.121.1 · 2026-09-29 · run-names keeps the run's own day; the layout check agrees with it
 
 - `src/draft_migration.py::sweep_outline_paths` no longer edits generated files: anything under `delivery/` or `board/` (except the maintained inputs `paper-build.toml`, `build.py`, `preamble.tex`) is skipped, and each one that still cites `outline/` is listed under `rebuild_generated` so its build is rerun. On Paper-CGMtoHbA1c the sweep had rewritten `delivery/build-manifest.json` and the web copies by hand (JL 260929: never edit a generated file). Test: `test_sweep_never_edits_generated_files_and_names_them_for_a_rebuild`.

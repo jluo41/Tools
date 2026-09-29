@@ -2139,8 +2139,8 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
                    "runs": [], "control": {"gates": [], "routes": []},
                    "resource_controls": [], "frontier": [], "output": {"acceptance": "pending"}}
     record_id = f"registration-{qid.lower()}-{uuid.uuid4().hex[:12]}"
-    from src.outline_version import record_path
-    log = record_path(path.parent / "outline", path.stem, "log")
+    from src.outline_version import plan_dir, record_path
+    log = record_path(plan_dir(path.parent), path.stem, "log")
     receipt = f"{log.relative_to(board_root).as_posix()}#{record_id}"
     control = {"key": "registration", "target": {"question": qid, "partitions": partitions},
                "status": "passed", "authority": "haipipe-insight-question", "actor": actor,

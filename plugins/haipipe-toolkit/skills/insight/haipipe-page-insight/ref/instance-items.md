@@ -5,7 +5,7 @@
 ```text
 I01-<topic-instance>/
 ├── I01-<topic-instance>.md       topic Page and item findings
-├── outline/                     existing plan and Evidence Space
+├── draft/                       existing plan and Evidence Space
 ├── workflow/insight.yaml        instance, dataset versions, RI intent
 ├── runs/r01_description.sh      normal reusable R ticket; never rewritten by RI
 ├── runs/ri01_description.yaml   RI ticket: points to R + freezes new dataset
@@ -62,7 +62,7 @@ topic: Message response in one longitudinal dataset
 datasets:
   - id: patient-a
     version: snapshot-01
-    manifest: outline/evidence/materials/dataset-manifest.yaml
+    manifest: draft/evidence/materials/dataset-manifest.yaml
 items:
   - run: ri01_description
     base_run:
@@ -112,7 +112,7 @@ acceptance: Every pattern is supported; rival explanations remain visible
 datasets:
   - id: patient-a
     version: snapshot-01
-    manifest: outline/evidence/materials/dataset-manifest.yaml
+    manifest: draft/evidence/materials/dataset-manifest.yaml
 supporting_results:
   - run: <full-producing-execution-id>
     path: <accepted-result-envelope>

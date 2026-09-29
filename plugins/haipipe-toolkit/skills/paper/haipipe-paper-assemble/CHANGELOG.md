@@ -1,3 +1,7 @@
+## 0.9.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
 ## 0.9.0 · 2026-09-29 · run-delivery-coverletter
 - New lane (JL 260929 "we should also have a delivery cover letter ... run-delivery-coverletter"): `scripts/cover_letter.py`, called by `build_delivery.py` when paper-build.toml has `[coverletter]`. Words from the submission Round page's "Cover letter" division (its draft until adopted); facts filled by code; PDF via generated LaTeX and DOCX; checks for numbers against the manuscript text, required mentions, causal verbs, process text, the venue page cap, the author block and length; recorded under `cover_letter` in build-manifest.json and printed after the build.
 - `profiles/misq.toml`: `page_cap = 55` and `cover_letter_must_mention` from the MISQ desk rules.

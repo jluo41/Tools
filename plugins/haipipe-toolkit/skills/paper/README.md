@@ -32,7 +32,7 @@ Evidence Item graph
 
 <page-dir>/
 ├── <page>.md
-├── outline/     plan + nested Evidence Workspace (CITE/VALUE/DISPLAY + Run lineage)
+├── draft/       plan + nested Evidence Workspace (CITE/VALUE/DISPLAY + Run lineage)
 ├── workflow/    controller/Run receipts
 ├── scripts/     optional owned implementation
 ├── runs/        optional Page-owned interaction or Paper-local Run tickets

@@ -5,7 +5,7 @@
     python3 skillpage.py sync <board> <page-id>          # refresh the managed block
     python3 skillpage.py sync <board> --all
     python3 skillpage.py check <board>                   # report staleness, never write
-    python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> outline/skill/ (JL 260815)
+    python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> draft/skill/ (JL 260815)
 
 The generated inventory and authored health ruling have a strict boundary:
 
@@ -759,7 +759,7 @@ def snapshot(src, dst):
 
 
 def cmd_plug(a):
-    """Write the unit's material into the Page's `outline/skill/` lane.
+    """Write the unit's material into the Page's `draft/skill/` lane.
 
     The design-page shape: the page argues and settles, the workbench holds the
     unit's bytes, and nothing derived is spliced into the .md any more. The

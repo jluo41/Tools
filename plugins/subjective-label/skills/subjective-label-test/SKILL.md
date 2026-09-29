@@ -5,7 +5,7 @@ description: >-
   owns the held-back test: re-drawing its frame when needed and locking the human's blind gold on it. Every Run in this view names this skill, and no other view uses it.
   Use for held-back test, sealed test, test-reserve, test-gold-lock, T*, blind test labels, or /subjective-label-test.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -13,10 +13,13 @@ metadata:
 # /subjective-label-test · Quality Space › Test
 
 This skill owns the Runs of the labeling workbench's Quality › Test
-view: every Run card there names it, and no other view uses it (JL 260929:
-one skill per view). Load `subjective-label` (the family door),
-`subjective-label-workflow` (the Run graph) and `label-scanning` (who decides what) first. Which Run
-comes before and after these is in `label-scanning-workflow`.
+view: every Run Type here declares it as its context Skill. Load
+`subjective-label` (the family door) and `subjective-label-workflow` (the Run
+graph) first. For `test-reserve`, load `label-building` and
+`label-building-workflow`; for `test-gold-lock`, load `label-scanning` and
+`label-scanning-workflow`. The [Run Type–Skill table](../label-building/ref/ref-space-mapping.md#run-type-skills)
+is the source for these bindings. The Building or Scanning workflow gives the
+Run's order.
 
 ## Runs in this view
 

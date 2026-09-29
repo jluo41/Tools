@@ -10,8 +10,8 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.5"
-  last_updated: "2026-09-23"
+  version: "0.5.6"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -96,9 +96,11 @@ Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_ra
 b00_rawdata/
 └── j51_<cohort>_v<yymmdd>_raw/           one raw dataset version = one Job (j51-j99)
     ├── src/config-defaults.yaml          raw_data_name, upstream extraction, store path, min_cell
+    ├── src/synthetic_individual.yaml     one synthetic person through every table (synth_df)
     ├── t01_intake_inventory/             every table: rows, columns, size; every upstream Run ok?
     ├── t02_table_catalog_schema/         per table: subject key, time columns, schema family
-    ├── t11_profile_<table>/ …            ONE Task per observed table, from the inventory
+    ├── t11_profile_<table>/ …            ONE Task per observed table, from the inventory;
+    │   └── notebooks/<dataset>_<table>.ipynb   its reader notebook, with its synth_df
     ├── t91_audit_file_routing/           each raw table → exactly one ProcName
     ├── t92_datapoint_timeline/           date ranges (years) + open questions with evidence
     └── t93_source_handoff/               preserve / derive / ask lists + gated readiness
@@ -127,6 +129,12 @@ b00_rawdata/
   table in a non-parquet format gets the same card from its `r07_full_scan` Run
   (`description.json`, built while every row is read once); the Run fails when the card
   leaves a question open.
+- Every table Task has a reader notebook, `<task>/notebooks/<dataset>_<table>.ipynb`, that
+  shows its `synth_df`: one synthetic person's rows in that table, invented values in the real
+  columns (`haipipe-task-for-description` § synth_df); `t93` has the dataset notebook, the same
+  person through every table. For PHI the profile pass is a server `.cmd` Run, which brings no
+  notebook back, so the Job's `src/build_notebooks.py` builds them on the laptop from the fetched
+  Results (REACH PD2D `j51_reachpd2d_v260922_raw`, JL 260929).
 - `datapoint_timeline` and `source_handoff` are `haipipe-data-raw`'s
   `understand` and `hand-off` as Tasks. Readiness is computed from gates
   (every table routed once, every table profiled, no blocking question), never

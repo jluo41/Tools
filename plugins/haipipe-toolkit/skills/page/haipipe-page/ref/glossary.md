@@ -26,7 +26,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `board/page-types/haipipe-page-for-*` remain fallbacks.
 - **Context record** — the generated PREPARE projection of the governing
   identity, ownership, policy, requirements, related information, feedback,
-  decisions, and Page records. `<page>/outline/records/<stem>-context.md`
+  decisions, and Page records. `<page>/draft/records/<stem>-context.md`
 - **Writing DNA packet** — a frozen, versioned, style-only profile passed from
   the resolved Context into the current Writing Run. It may describe
   language, rhythm, compatible structure, and selected exemplars; it never
@@ -74,7 +74,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   alias/subtype of `DISPLAY`, not a separate Page Run family. SHAPE writes its expected ready payload
   and acceptance; the Evidence workflow assigns one current `RE` lineage and
   produces the Result. The authored
-  `outline/<stem>-evidence-items.md` is the Outline contract for the Item
+  `draft/<stem>-evidence-items.md` is the Outline contract for the Item
   identity, expectation, and Run graph; it is not a Result store. Status is
   derived (`specified → planned → ready → folded → accepted`).
 - **Evidence Run (`RE`)** — the Page-owned execution lineage for one Evidence

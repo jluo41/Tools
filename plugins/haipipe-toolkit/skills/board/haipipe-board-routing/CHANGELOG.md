@@ -7,6 +7,10 @@ SKILL.md frontmatter `version:`. Newest first.
 This support skill keeps independent semantic versions. A public
 `haipipe-board` major release does not mechanically promote it.
 
+## 0.11.2 - 2026-09-29 - outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
 ## 0.11.1 - 2026-09-20
 
 - Resolve Board kind and native membership before selecting the Folder/Page

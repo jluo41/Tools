@@ -11,7 +11,7 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.121.0"
+  version: "0.121.2"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -325,8 +325,8 @@ Use `migrate-addresses` explicitly for a pre-0.81 Shape whose paragraph number
 resets inside each division; it preserves prose and rewrites active Page-owned
 references before `setup` revalidates and rebuilds the Page.
 `outline-tidy` rewrites the current Outline Draft-first, moves every older
-version (and any retired `-logic.mmd`) into `outline/previous/`, moves the six
-process records into `outline/records/`, and repoints `outline/<file>`
+version (and any retired `-logic.mmd`) into `draft/previous/`, moves the six
+process records into `draft/records/`, and repoints `draft/<file>`
 citations in the Page's own files (records, Run scripts). It refuses when a Bullet would
 change, and works on Board Pages too, not only standalone folders.
 After it returns, inspect the generated Page Face, Shape/Draft coverage, setup
@@ -416,7 +416,7 @@ the Runs surface expands only the current Step and keeps older Steps collapsed.
 ## 📁 What a page is on disk
 
 For a canonical Task Page, **Task Folder = Page Folder =
-`tNN_<task>/`**. The same-stem Markdown, `outline/`, `workflow/`, `scripts/`,
+`tNN_<task>/`**. The same-stem Markdown, `draft/`, `workflow/`, `scripts/`,
 and `runs/` belong to that one Folder. Do not create a Page Folder beneath the
 Task Folder; the parent `jNN_<job>/` remains only the Job container.
 
@@ -454,7 +454,7 @@ uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 
 **The Folder symmetry**: every Folder has a Page Face and Task Face; a
 `primary_face` says which is the usual entry, not which face exists.
-`outline/` is the human planning/decision record and `workflow/` is the
+`draft/` is the human planning/decision record and `workflow/` is the
 machine-readable Workflow/Run record. Page-heavy work commonly stores
 compatibility receipts under `workflow/receipts/`; executable work commonly stores
 `plan.yaml` and `report.yaml`. Run Space is an Outline projection over this
@@ -503,7 +503,7 @@ may validate or reshape non-authoritative intermediates, but it
 cannot become a second value door. A reusable derivation, a source-data change, or any displayed
 numeric result belongs in the linked executable Folder and its Run Result
 binding. The
-the `outline/` process files, their ids, labels and writers are
+the `draft/` process files, their ids, labels and writers are
 `haipipe-workbench-page/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A Run Spec owner loads the exact
 Outline-workbench refs it needs as schema/material contracts. The Page surface installs
@@ -794,7 +794,7 @@ must not add another main Page section.
 Each section answers one reader question, and a sentence answering another
 section's question is misplaced: substance in Opening moves to Content.
 Inherited inputs and venue move to backstage contract records, page-owned prose
-rules to authored W records in `outline/records/<stem>-requirement.md`, intended
+rules to authored W records in `draft/records/<stem>-requirement.md`, intended
 outcomes to backstage target records, current facts to their Run/CHECK
 receipts, and a question for a person to a `D<nn>` record.
 There is no `## Boundary` section: what a page covers is the Opening's job,
@@ -805,7 +805,7 @@ table` remains available in Draft Space with `Address · Bullet · Feedback ·
 Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and
 B rows are the checkable claim/evidence rows. The compact reading projection
 shows the Point statement, not the plan's process-only `Note:` annotations.
-The `outline/` folder remains the authority for every plan, writing rule,
+The `draft/` folder remains the authority for every plan, writing rule,
 evidence, feedback, requirement, discussion, file, and log record.
 
 The live Outline/Draft Space makes each paragraph address (`C<n>.P<m>`;
@@ -830,7 +830,7 @@ secondary compact handle, such as `primary total-MME association
 
 A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
 renders exactly one paragraph and has no reader drawer. Its page-owned prose
-rules live as authored `W<n>` records in `outline/records/<stem>-requirement.md`, after
+rules live as authored `W<n>` records in `draft/records/<stem>-requirement.md`, after
 its generated venue `V<n>` records. The Outline workbench exposes both through
 one `📏 Requirement` lens to CONTEXT, OUTLINE, CONTENT, and CHECK. The Section
 product source carries no `### Writing Style`; post-paragraph notes and Stage
@@ -969,7 +969,7 @@ requested · pick the id and copy `ref/page-template.md`, never
 retype the shape · a three-to-five-word title stating the purpose · the
 Opening as one visible paragraph above the first blank line · Content as
 numbered parts, each with a caption, a figure and a short intro · Aims with
-their `Now:` lines · `outline/records/<stem>-files.md` with any Related Board Page row
+their `Now:` lines · `draft/records/<stem>-files.md` with any Related Board Page row
 the current Run needs · register in `board.md` only if requested · build, check, read the
 RENDER, report the finding count.
 
@@ -988,7 +988,7 @@ not write Page Content, refresh delivery, wait for export/browser verification,
 or use the broad repair/build loop below for that request.
 
 **General Page work on**: ONE page is the deliverable. Read the whole file and its
-`outline/` first; if the files record declares Related Board Pages, load the
+`draft/` first; if the files record declares Related Board Pages, load the
 one-hop packet from `cli/pagecontext.py <page> --run <run>` · run the
 checker and fix the mechanical findings in bulk · then read for what no
 checker reaches (the weak-English axis, one question per part, an Opening that
@@ -1076,7 +1076,7 @@ requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
 → the Folder-owned Page Face or declared Page Type → the selected Run profile
 and Page controller operation → the page's own
-authored W records in `outline/records/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
+authored W records in `draft/records/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and
 that criterion is not judged until the owner resolves it. The rubric (four
@@ -1112,12 +1112,12 @@ Every id inside a fenced figure renders as a link.
 - Before any claim that a Page Folder is current or complete, run
   `cli/page.py health <page-folder>` (several folders in one call are fine).
   It checks that the Folder agrees with itself: one current Outline, records
-  in `outline/records/`, the `approved:`/`status:`/`arc:` header, every Bullet
+  in `draft/records/`, the `approved:`/`status:`/`arc:` header, every Bullet
   parseable (an unindented line silently empties a Bullet), each Page
   `realizes:` sentence equal to its Draft, Evidence ids declared and bound
   Result paths present, and delivery newer than the Page. Exit 1 on any FAIL;
   report its WARN rows rather than calling the Folder done. It judges no prose:
-  Page CHECK still does that. `outline/evidence/bibex/` is live export output
+  Page CHECK still does that. `draft/evidence/bibex/` is live export output
   (`src/common.py::evidence_lane_dir`) and is not flagged as retired.
 - For Page creation or whole-Page completion, apply `ref/page-checklist.md`
   and name unmet, deferred or untested checks; never promote a scaffold,

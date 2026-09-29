@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write `outline/records/<stem>-requirement.md`: everything this page must OBEY.
+"""Write `draft/records/<stem>-requirement.md`: everything this page must OBEY.
 
 The generated block resolves venue records from the division the Page names;
 the authored block keeps page-owned writing records. The generator replaces
@@ -267,7 +267,7 @@ def main():
         board, pages = a.target.parents[2], [a.target]
     n = 0
     for pg in sorted(pages):
-        out = record_path(pg.parent / "outline", pg.stem, "requirement")
+        out = record_path(plan_dir(pg.parent), pg.stem, "requirement")
         out.parent.mkdir(parents=True, exist_ok=True)
         legacy = plan_dir(pg.parent) / f"{pg.stem}-writing.md"
         made = build(

@@ -30,7 +30,7 @@ def _slugify(t):
 
 
 # The ＋ button writes only the current Page Face. The Outline projection and
-# process records are produced from ``outline/``; this source does not duplicate
+# process records are produced from ``draft/``; this source does not duplicate
 # either one as a Page section.
 Q_STUB = """# {title}
 state: 🔴 OPEN
@@ -209,8 +209,8 @@ def structure_op(board, p):
         if dest_home.exists():
             dest_home = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}"
         stamp = dt.datetime.now().strftime("%y%m%d %H%M")
-        log_dir = (source_home or f.parent) / "outline"
-        from src.outline_version import record_path
+        from src.outline_version import plan_dir, record_path
+        log_dir = plan_dir(source_home or f.parent)
         log_file = record_path(log_dir, f.stem, "log")
         log_file.parent.mkdir(parents=True, exist_ok=True)
         record = f"### {stamp} · Archived from the Board index\n"

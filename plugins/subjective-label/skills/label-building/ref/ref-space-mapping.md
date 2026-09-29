@@ -42,24 +42,46 @@ Workflow map's `view` column decides which view's Runs panel lists a type; a
 type not built yet stays in the map only. The panel lists a view's types in
 `step` order.
 
-## View skills
+## Run Type skills
 
-Each view has exactly one skill, and no other view uses it (JL 260929). Every
-Run card in a view names that skill; the Runs panel reads this table.
+Each row declares the Skills relevant to one Run Type. The Workflow map below
+assigns that type to one Space and View. The eleven `subjective-label-<view>`
+Skills provide context for their respective Views; the other Skills are shared
+across Run Types. In particular, `Quality · Test` contains both a Building and
+a Scanning Run Type, so its View alone cannot determine the full Skill set.
+`subjective-label` is the family entry door and `haipipe-workbench-labeling` is
+the page surface; neither is a per-Run worker. The engine or named human is
+the worker. These are **declared** Skills, not evidence that a historical Run
+loaded them; current Tickets do not record Skill identities or versions.
 
-| view | skill |
-|---|---|
-| Data · Contract | `subjective-label-contract` |
-| Data · Embedding | `subjective-label-embedding` |
-| Labeling · Definition | `subjective-label-definition` |
-| Labeling · Rounds | `subjective-label-rounds` |
-| Labeling · Guideline | `subjective-label-guideline` |
-| Quality · Test | `subjective-label-test` |
-| Quality · Evaluation | `subjective-label-evaluation` |
-| Quality · Audit | `subjective-label-audit` |
-| Delivery · Handoff | `subjective-label-handoff` |
-| Delivery · Scan | `subjective-label-scan` |
-| Delivery · Final labels | `subjective-label-final-labels` |
+| step | Run Type | declared Skills |
+|---:|---|---|
+| 1 | `corpus-contract` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-contract` |
+| 2 | `test-reserve` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-test` |
+| 3 | `embedding-build` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-embedding` |
+| 4 | `discovery-search` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-definition` |
+| 5 | `definition-discussion` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-definition` |
+| 6 | `guideline-seed` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-guideline` |
+| 7 | `round-prepare` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-rounds` |
+| 8 | `weak-prelabel` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-rounds` |
+| 9 | `human-calibration` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-rounds` |
+| 10 | `guideline-learn` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-guideline` |
+| 11 | `round-measure` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-rounds` |
+| 12 | `round-close` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-rounds` |
+| 13 | `handoff-freeze` | `subjective-label-workflow`, `label-building`, `label-building-workflow`, `subjective-label-handoff` |
+| 14 | `test-gold-lock` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-test` |
+| 15 | `executor-predict` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-evaluation` |
+| 16 | `executor-score` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-evaluation` |
+| 17 | `executor-select` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-evaluation` |
+| 18 | `scan-preflight` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-scan` |
+| 19 | `scan-shard` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-scan` |
+| 20 | `risk-route` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-scan` |
+| 21 | `human-review` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-scan` |
+| 22 | `reconcile` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-scan` |
+| 23 | `audit-sample` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-audit` |
+| 24 | `audit-human-gold` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-audit` |
+| 25 | `audit-analyze` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-audit` |
+| 26 | `dstar-materialize` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-final-labels` |
 
 ## SOP
 
@@ -114,7 +136,7 @@ four artifact-Space cells, output path, and a per-type count. The count is only
 a count. The separate Runs panels and `?drawer=allruns` read allocated Tickets and
 runtime receipts and is the source for each actual Run's id, status, and
 outcome. Never synthesize a matching Run/status from a catalogue row. Each Run
-card names its view's one skill from `## View skills`; bounded target,
+card names its Run Type's declared Skills from `## Run Type skills`; bounded target,
 prerequisites, and a matching Ticket/status are not rendered inside this matrix.
 
 | step | compatibility tag | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to | view |
@@ -148,10 +170,10 @@ prerequisites, and a matching Ticket/status are not rendered inside this matrix.
 
 ### Run ownership and card fields
 
-The shared `subjective-label-workflow` Skill owns the graph and Routes. P0–P2
-use `label-building` for domain law and `label-building-workflow` for
-procedures; P3–P5 use `label-scanning` and `label-scanning-workflow`.
-These are family-level Skills, not per-Run worker assignments. The current
+The shared `subjective-label-workflow` Skill owns the graph and Routes. The
+table above explicitly assigns the Building or Scanning domain/procedure
+Skills to each Run Type, along with its View context Skill. These are
+Run Type guidance, not per-Run worker assignments. The current
 Ticket contract has `worker.kind/name`, but no canonical `owner_skill` or
 `worker_skill` field. For the implemented paths, the worker is an engine
 module (for example `engine/job.py`, `engine/embedding_build.py`, or

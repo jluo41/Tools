@@ -1112,7 +1112,8 @@ def _outline_cycle_strip(cycle):
 
 
 # ---------------------------------------------------------------- the plan
-# The structure Run's own file, `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
+# The structure Run's own file, `<page>/draft/<stem>-draft-v<G>.<S>[.<E>].md`
+# (`<page>/outline/<stem>-outline-v...` on a Page not yet moved to draft/)
 # (haipipe-workbench-page §🗂, JL 260817). It is AUTHORED, frozen once its
 # `approved:` line is ticked, and progress is NEVER written back into it.
 # An explicit Bullet editor write creates a new unapproved Shape first; that

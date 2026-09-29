@@ -6,7 +6,7 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.10.0"
+  version: "0.10.1"
   last_updated: "2026-09-29"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
@@ -46,7 +46,7 @@ Story-A                             ⛔ a bare letter says nothing (JL: "why thi
 Story01-agreeable-opioid            ⛔ numbers were rejected 260907
 ```
 
-The folder, the page `.md`, every `outline/` stem and every `story-row:` path
+The folder, the page `.md`, every `draft/` stem and every `story-row:` path
 carry the full id. The board parser accepts the bare `Story-A` form only to read
 grandfathered boards; a new Story never mints one.
 

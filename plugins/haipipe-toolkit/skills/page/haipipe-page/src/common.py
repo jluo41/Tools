@@ -18,7 +18,7 @@ STUDIO_LANES = frozenset({"chat", "draw"})
 def outline_lane_dirs(page_dir, lane):
     """Existing Outline-owned lane directories, canonical first and deduped.
 
-    New Skill work lives under ``outline/skill/``.  The former sibling
+    New Skill work lives under ``draft/skill/``.  The former sibling
     ``skill/`` directory remains readable during migration, but readers never
     let it outrank the canonical nested lane and writers never select it.
     """
@@ -47,7 +47,7 @@ def outline_lane_dir(page_dir, lane):
 def evidence_lane_dirs(page_dir, lane):
     """Existing lane directories, canonical first, with symlink aliases deduped.
 
-    New work lives under ``outline/evidence/<lane>/``.  The former
+    New work lives under ``draft/evidence/<lane>/``.  The former
     ``evidence/<lane>/`` category and a flat ``<lane>/`` remain readable
     migration aliases.  Readers use every distinct directory; writers always
     choose the canonical Outline-owned address for a new Page.
@@ -480,7 +480,7 @@ def _in_workbench(p, d):
     page is a workbench (JL 260815: "each subfolder will also be the workbench in
     that page"), and discovery never enters one. Child pages keep nesting, so
     a lifecycle tree still works. A page file lying directly beside the page's
-    own md is a stray for the same reason. Without this rule an `outline/skill/` lane
+    own md is a stray for the same reason. Without this rule a `draft/skill/` lane
     holding a unit snapshot would surface as a ghost page, because
     `PAGENAME.match("SKILL.md")` is true."""
     parts = p.relative_to(d).parts

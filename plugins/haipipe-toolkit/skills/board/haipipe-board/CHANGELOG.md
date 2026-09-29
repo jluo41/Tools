@@ -1,3 +1,8 @@
+## 1.1.4 · 2026-09-29
+
+- outline/ to draft/ in current-layout prose (JL 260929). Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+- Code (JL 260929, same sweep): `cli/check.py` messages name the file's real place (`_plan_rel`: `draft/records/<stem>-log.md`, or `outline/...` on a Page not yet moved) instead of always `outline/`; `cli/requirement.py`, `cli/context-record.py` and `src/page_context.py` resolve the plan folder with `plan_dir` rather than passing `<page>/outline`; `cli/evidence-status.py` writes `source: draft/*-evidence-items.md`; help and docstrings in `outline-pass.py`, `skillpage.py`, `feedback.py` say `draft/`. Servers: `haipipe-board/structure.py`, `activity.py` resolve logs through `plan_dir`; `write.py`, `_host/serve.py` comments say `draft/records/`. Test: `test_insight_items_integration.py` reads its snapshot from `draft/evidence/materials/`.
+
 ## 1.1.3 · 2026-09-28
 
 - **No content hashes (JL 260928).** No tool here writes, pins or compares a content hash any

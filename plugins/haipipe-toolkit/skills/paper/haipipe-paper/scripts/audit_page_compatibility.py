@@ -170,7 +170,7 @@ def audit(root: Path) -> dict[str, object]:
                 "legacy-evidence-root",
                 source,
                 root,
-                "evidence/ is at Page root; current records belong under outline/evidence/",
+                "evidence/ is at Page root; current records belong under draft/evidence/",
             )
 
         for heading in HEADING_RE.findall(text):

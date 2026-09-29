@@ -104,9 +104,9 @@ a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the se
                    condition has already occurred is a finding, not a mark
 🟡-final receipts  the flip leaves TWO receipts, whoever flips — a person, a lap, or
                    a charter: one record in the register's
-                   outline/<register-stem>-log.md QUOTING the licensing sentence,
+                   draft/records/<register-stem>-log.md QUOTING the licensing sentence,
                    and one record in the ANSWERING Folder's
-                   outline/<answering-stem>-log.md naming the QUESTION id and the
+                   draft/records/<answering-stem>-log.md naming the QUESTION id and the
                    word final (the shape the checker scans) — staleness travels by
                    citation, and a citation invisible from the cited end cannot travel
 ```

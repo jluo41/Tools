@@ -14,8 +14,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-structure.
 metadata:
-  version: "0.49.0"
-  last_updated: "2026-09-25"
+  version: "0.49.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -113,7 +113,7 @@ during the human discussion, even at v0 or before all Evidence is ready. Mark
 missing factual material explicitly. The source and write protocol are
 `haipipe-workbench-page/ref/content-preview.md`; load it for this work.
 The candidate stays as the Bullet's Draft in the selected
-`outline/<stem>-outline-v<G>.<S>[.<E>].md`, written Draft-first: the sentence
+`draft/<stem>-draft-v<G>.<S>[.<E>].md`, written Draft-first: the sentence
 on the dash line, the planned point in `Point:` (`plan-grammar.md` § Draft-first
 Bullets). Collaborative writing uses
 `../../haipipe-page-workflow/ref/interactive-writing-run.md`: the current Writing
@@ -224,17 +224,17 @@ may reuse the same source or Supporting Run.
 Q        what will this page say, division by division, bullet by bullet;
          what does each bullet owe; and where in tasks/ does each owed thing
          come from?
-READS    outline/records/<stem>-requirement.md (V1 to V4) · outline/records/<stem>-feedback.md
-         (open rows) · outline/<stem>-evidence-items.md (the authored Item
+READS    draft/records/<stem>-requirement.md (V1 to V4) · draft/records/<stem>-feedback.md
+         (open rows) · draft/<stem>-evidence-items.md (the authored Item
          contract) · the owning Run Workflow/Run Spec outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
-         outline/records/<stem>-context.md · declared sibling Pages' approved arcs and
-         decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
-WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
-         outline/records/<stem>-discussion.md (D<nn>) · outline/records/<stem>-log.md (one
+         draft/records/<stem>-context.md · declared sibling Pages' approved arcs and
+         decisions + the Story Section Narrative row through Context · draft/skill/<stem>.md when present
+WRITES   draft/<stem>-draft-v<G>.<S>[.<E>].md · draft/<stem>-evidence-items.md ·
+         draft/records/<stem>-discussion.md (D<nn>) · draft/records/<stem>-log.md (one
          record) · current `runs/` tickets and `results/` manifests ·
          embedded Drafts in the selected Outline Markdown (Draft-first) ·
-         the superseded plan moved to outline/previous/ · never the page
+         the superseded plan moved to draft/previous/ · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
          Run map, one explicit Local Input, and one decision (SURVEY)
@@ -257,7 +257,7 @@ RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
   divisions · `grammar` fixes a first-word set and an order rule · `resolved`
   points at a source outside the type · no key means the base section order),
   `ref/plan-grammar.md`, the page, the generated Context record, and the other
-  process records under `outline/`. A missing, stale, or conflicting required
+  process records under `draft/`. A missing, stale, or conflicting required
   Context row routes to CONTEXT before SHAPE or SURVEY continues. The
   policy sits in the Run Spec owner's contract, which the Skill
   tool strips: read the file's first 20 lines with the Read tool. Read the
@@ -466,7 +466,7 @@ measured authority is `not specified`, never recalled from memory.
 
 ### ③ Threads and the log record
 
-- **Every open ask becomes a `D<nn>` record** in `outline/records/<stem>-discussion.md`
+- **Every open ask becomes a `D<nn>` record** in `draft/records/<stem>-discussion.md`
   (Ask · Options · We lean · Decide), id allocated board-wide
   (`ref/record-shape.md`); a settled one is a log record. An ask with no Aim
   is a thread, never a minted Aim.
@@ -740,7 +740,7 @@ OUTLINE never routes directly to CHECK; a Page version must first pass CONTENT.
 ```text
 Run: OUTLINE
 cycle: SHAPE | SURVEY
-file: <page>/outline/<stem>-outline-v<G>.<S>[.<E>].md | <page>/outline/<stem>-evidence-items.md
+file: <page>/draft/<stem>-draft-v<G>.<S>[.<E>].md | <page>/draft/<stem>-evidence-items.md
 supersedes: <previous exact version> | none
 requirement: V1 V2 V3 V4 read ✅
 feedback: n routed · n served · n declined

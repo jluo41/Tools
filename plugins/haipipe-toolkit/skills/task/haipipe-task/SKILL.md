@@ -11,8 +11,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.8.1"
-  last_updated: "2026-09-28"
+  version: "1.8.2"
+  last_updated: "2026-09-29"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -198,7 +198,7 @@ never executes a producing Folder invisibly.
 type        specialist                         related Skill
 data        haipipe-task-for-data              haipipe-data
 raw         haipipe-task-for-raw               haipipe-data-raw
-description haipipe-task-for-description       haipipe-data-raw (one Table Card per stored table)
+description haipipe-task-for-description       haipipe-data-raw (one Table Card and synth_df per stored table)
 algo        haipipe-task-for-algo              haipipe-nn-algo
 fit         haipipe-task-for-fit               haipipe-nn-tuner + instance + fit-owned GPU companions
 eval        haipipe-task-for-eval              project-local evaluation

@@ -1,6 +1,9 @@
 # haipipe-design-workflow · version history
 
-0.4.0 current · 260928 · No content hashes (JL 260928) (version unchanged at 0.4.0; the Design family version is frozen)
+0.4.0 current · 260929 · outline/ to draft/ in current-layout prose (JL 260929) (version unchanged at 0.4.0; the Design family version is frozen)
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
+0.4.0 · 260928 · No content hashes (JL 260928) (version unchanged at 0.4.0; the Design family version is frozen)
 - Commission, Generate and Verify run records, decisions and runtime receipts
   name files by path only; no `sha256`, `ticket_sha256` or hash-bound render.
 - A queued run is out of date when a file it names is newer than its run record

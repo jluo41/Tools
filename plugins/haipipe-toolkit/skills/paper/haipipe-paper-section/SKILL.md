@@ -7,8 +7,8 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.5"
-  last_updated: "2026-09-28"
+  version: "0.9.6"
+  last_updated: "2026-09-29"
   page_ruling: none
   group-token: "S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>"
   outline:
@@ -70,7 +70,7 @@ Prose never outranks a changed Section Narrative row or binding desk rule.
 The rendered Section Opening is exactly one paragraph: the question and the
 minimum orientation needed to enter the manuscript unit. It has no reader
 drawer. Page-owned prose rules live in
-`outline/records/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
+`draft/records/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
 `Applies`, and `Source`, after the generated venue `V<n>` block. The Outline
 workbench exposes both through one `📏 Requirement` lens for CONTEXT, OUTLINE,
 CONTENT, and CHECK. A Section Page carries no `### Writing Style` block.
@@ -129,7 +129,7 @@ into this page and the paper folder is rebuilt whole. The old desk room
 
 **Mechanical assembly milestone**: this Page can supply a fragment to a draft
 build when three things exist: the current outline table is explicitly approved
-(`outline/<page>-outline-v*.md`, ticked), every display unit has its
+(`draft/<page>-draft-v*.md`, ticked), every display unit has its
 `preview.pdf`, and the page PDF compiles under `delivery/latex/`. A page
 missing any of the three is not ready, and the paper build says so.
 Those files do not make the Section DONE. Only current Page CHECK closure under

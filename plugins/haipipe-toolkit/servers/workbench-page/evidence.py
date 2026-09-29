@@ -1056,6 +1056,7 @@ def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     ev = (plan_dir(folder) / f"{stem}-evidence.md") if folder else \
          (plan_dir(page_src.parent) / f"{stem}-evidence.md")
     page_home = folder or page_src.parent
+    plan = plan_dir(page_home).name   # draft/ since Page 0.118; outline/ on a Page not yet moved
     runmap = next((d / f"{stem}-run-bindings.md"
                    for d in evidence_run_dirs(page_home)
                    if (d / f"{stem}-run-bindings.md").is_file()), None)
@@ -1066,7 +1067,7 @@ def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     else:
         body = ("<div class=ghost>No evidence snapshot yet: "
                 "<code>cli/evidence-status.py</code> (or an OUTLINE pass) "
-                "writes <code>outline/%s-evidence.md</code>.</div>" % html.escape(stem))
+                "writes <code>%s/%s-evidence.md</code>.</div>" % (plan, html.escape(stem)))
     runs_body, related_run_count = _related_run_cards(evidence_text, run_text)
     _plan, evidence_records = _evidence_snapshot(evidence_text)
     counts = {kind: 0 for kind in ("CITE", "VALUE", "DISPLAY")}
@@ -1075,7 +1076,7 @@ def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
         if kind in counts:
             counts[kind] += 1
     ctx = json.dumps({"path": path_q, "file": file_q, "stem": stem,
-                      "folded": folded})
+                      "folded": folded, "plan": plan})
     return f"""<!doctype html><meta charset=utf-8>
 <title>📃 Page · Evidence Space · {html.escape(stem)}</title>
 <style>{_CSS}</style>
@@ -1102,8 +1103,9 @@ def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
              : (/\\.md$/.test(p) ? p.slice(0, p.lastIndexOf('/')) : '');
     if (!base) return '';
     var m = (CTX.file || '').match(/^(.*)\\/([^\\/]+)\\/\\2\\.md$/);
-    if (m) return base + '/' + m[1] + '/' + m[2] + '/outline/evidence/' + workbench + '/' + m[2] + (ext || '-view.html');
-    return base + '/outline/evidence/' + workbench + '/' + CTX.stem + (ext || '-view.html');
+    var plan = CTX.plan || 'draft';
+    if (m) return base + '/' + m[1] + '/' + m[2] + '/' + plan + '/evidence/' + workbench + '/' + m[2] + (ext || '-view.html');
+    return base + '/' + plan + '/evidence/' + workbench + '/' + CTX.stem + (ext || '-view.html');
   }}
   var LANES = {{
     bibex:   {{ext: '-bib.html',  route: 'bibex'}},

@@ -8,6 +8,10 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.18.1 · 2026-09-29 · outline/ to draft/ (JL 260929)
+
+- `scripts/paper_runs.py`: a Topic with a root `evidence/` is told to use `draft/evidence/` (it said `outline/evidence/`).
+
 ## 0.18.0 · 2026-09-29 · Bib fetching becomes a receipt, not an honor system
 
 - `scripts/paper_bib_fetch.py` (new): fetch ONE verbatim entry and stamp `bib.source`, `bib.mode: verbatim_copy`, `bib.source_class`, `channel` and `fetched_at`. Ladder per identity: `--doi` tries Crossref REST transform, then doi.org content negotiation, then DataCite; `--arxiv` uses `arxiv.org/bibtex/<id>`. It reuses `paper_runs.py`'s `BIB_START_RE`/`_balanced_entry`/`DOI_RE`, so an entry the writer accepts is an entry the checker accepts.

@@ -1,4 +1,4 @@
-# Context record · `outline/records/<stem>-context.md`
+# Context record · `draft/records/<stem>-context.md`
 
 This generated record is the context snapshot used by later Page Run Specs. It
 is a projection over source authorities, never a replacement for
@@ -31,7 +31,7 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Outline policy**: <exact skill/path#locator>
 - **Expected structure**: <exact skill/path#locator>
 - **Narrative/style policy**: <exact skill/path#locator or none>
-- **Requirements**: outline/records/<stem>-requirement.md#<record ids> or none
+- **Requirements**: draft/records/<stem>-requirement.md#<record ids> or none
 - **Sources**: <every governing authority and version/date>
 
 ### CTX4 · Related information

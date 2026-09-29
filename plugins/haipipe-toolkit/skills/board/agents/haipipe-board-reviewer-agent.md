@@ -61,7 +61,7 @@ Own:
 - Voice and page-specificity of changed Openings when read consecutively in
   Board order.
 - Consistency among page-level `state:`, `## Aims` plus their `Now:` lines,
-  and `outline/records/<stem>-log.md`.
+  and `draft/records/<stem>-log.md`.
 - Stale or contradictory claims visible in the Board and the files it links.
 - Page and group ownership clarity when `board.md` changed.
 

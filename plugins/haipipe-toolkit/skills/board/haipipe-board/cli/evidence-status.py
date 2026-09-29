@@ -20,6 +20,7 @@ _spec = importlib.util.spec_from_file_location(
 lo = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(lo)
 
+from src.outline_version import plan_dir  # noqa: E402
 from src.item_table import (  # noqa: E402
     CYCLES, EMOJI, ITEM_TYPES, LADDER, action_label, bullets, compact_global_run,
     cycle_now, item_status, read_items, readable_global_run, readable_paper_route,
@@ -204,7 +205,7 @@ def build_run_bindings(page_md: Path) -> str:
         f"# {page_md.stem} · evidence run bindings",
         f"page: {page_md.stem}",
         "kind: evidence-runs · ⚙️ derived · never hand-edited · pointers only",
-        "source: outline/*-evidence-items.md + owning task/discovery Runs + page runs/results/",
+        f"source: {plan_dir(page_md.parent).name}/*-evidence-items.md + owning task/discovery Runs + page runs/results/",
         "boundary: supporting Runs/Results stay external; local Runs stay in runs/; local Results stay in results/.",
         "",
     ]

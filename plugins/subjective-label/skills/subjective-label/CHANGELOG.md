@@ -1,5 +1,11 @@
 # subjective-label · CHANGELOG
 
+## 0.9.1 · 2026-09-29
+
+Clarify that a View context Skill is one of several Skills declared by a Run
+Type. The Run Type table names shared workflow, domain, and procedure Skills
+as well; a historical Run's actual Skill usage is not inferred from that table.
+
 ## 0.9.0 · 2026-09-29
 
 Add the VIEW layer: eleven view skills, one per workbench view, never shared

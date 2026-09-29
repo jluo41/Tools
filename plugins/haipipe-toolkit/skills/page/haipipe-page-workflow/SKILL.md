@@ -11,8 +11,8 @@ description: >-
   workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.66.0"
-  last_updated: "2026-09-28"
+  version: "0.66.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
 
@@ -294,7 +294,7 @@ explanation, and three final Draft Space, Evidence Space, and Current Run links.
 Formal delivery also provides current evidence surfaces and the Page-level PDF. DISPLAY evidence
 is a typed Result at `results/<re-run>/result.yaml` with its unit under
 `results/<re-run>/payload/<unit>/`; it appears in Outline's Evidence Space and is consumed by
-current Delivery exporters. `outline/evidence/bibex/` and `delivery/latex/` remain current lanes;
+current Delivery exporters. `draft/evidence/bibex/` and `delivery/latex/` remain current lanes;
 `outline/evidence/display/` is migration-only. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
 

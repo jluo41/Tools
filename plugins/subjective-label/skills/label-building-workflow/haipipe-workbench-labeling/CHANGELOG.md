@@ -1,5 +1,14 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.22.1 · 2026-09-29
+
+- The Runs panel now lists every Skill declared for the selected Run Type,
+  including shared workflow, domain, procedure, and View context Skills.
+- The 26-row Run Type table is the panel's Skill source. It describes guidance,
+  not the Skills actually loaded by a historical Run.
+- Point the prerequisite and roster reference at the current `haipipe-workbench`
+  Skill name.
+
 ## 0.22.0 · 2026-09-26
 
 - A labeling job's Runs sit in the Page folder, beside `labeling/`:

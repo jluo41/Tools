@@ -12,8 +12,8 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.6.3"
-  last_updated: "2026-09-28"
+  version: "1.6.4"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

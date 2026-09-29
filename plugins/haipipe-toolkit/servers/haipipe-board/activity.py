@@ -23,7 +23,7 @@ from urllib.parse import unquote
 from . import base
 from .structure import page_id_of
 from src.common import page_files
-from src.outline_version import record_path
+from src.outline_version import plan_dir, record_path
 
 
 
@@ -57,7 +57,7 @@ class ActivityMixin:
         """Return ``(Page source, log source, current-record?)`` rows."""
         sources = []
         for page in page_files(board):
-            record = record_path(page.parent / "outline", page.stem, "log")
+            record = record_path(plan_dir(page.parent), page.stem, "log")
             sources.append((page, record if record.is_file() else page,
                             record.is_file()))
         return sources

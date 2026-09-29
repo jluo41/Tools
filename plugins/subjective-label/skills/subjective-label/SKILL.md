@@ -10,7 +10,7 @@ description: >-
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
   or /subjective-label.
 metadata:
-  version: "0.9.0"
+  version: "0.9.1"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -46,7 +46,7 @@ Five layers, never mixed:
 ```text
 LAW      label-building · label-scanning          who may decide, human gates, verbs, forbidden acts
 ORDER    label-building-workflow · label-scanning-workflow   which Run comes next, allocation, receipts
-VIEW     subjective-label-<view> × 11                 one skill per workbench view; a Run's own steps; the only skill a Run card names
+VIEW     subjective-label-<view> × 11                 one context skill per workbench view; a Run's own steps
 CROSSING subjective-label-workflow               Run Specs, dependencies, gates, Routes, handoff validity, invalidation
 RUN      haipipe-run + ref-run.md                 Level-4 identity, Ticket/Result pairing, receipt, presentation
 ```
@@ -55,7 +55,11 @@ The eleven view skills are `subjective-label-contract` and `-embedding` (Data),
 `-definition`, `-rounds` and `-guideline` (Labeling), `-test`, `-evaluation` and
 `-audit` (Quality), and `-handoff`, `-scan` and `-final-labels` (Delivery). Route a
 request about one Run to its view skill; no view skill is used by another view
-(JL 260929). A rule that fits two layers goes in the door. P0-P5 and G0-G6 are stable
+(JL 260929). That Skill is one member of the Run Type's declared set, which
+also includes shared workflow, domain, and procedure Skills; see
+`../label-building/ref/ref-space-mapping.md` §Run Type skills. The set describes
+guidance, not proof that a historical Run loaded each Skill. A rule that fits
+two layers goes in the door. P0-P5 and G0-G6 are stable
 compatibility labels declared in `subjective-label-workflow`; they are not
 independent Workflow units, owners, or route authority.
 

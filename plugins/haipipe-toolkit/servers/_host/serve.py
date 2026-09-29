@@ -184,7 +184,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         "/_board/local-cmd", "/_board/term-probe", "/_board/term",
         "/_board/release",
     })
-    # Current log records are ``### YYMMDD HHMM · ...`` under ``outline/``.
+    # Current log records are ``### YYMMDD HHMM · ...`` under ``draft/records/``.
     # The optional list-marker form keeps historical Page-level logs readable.
     LOG_LINE = re.compile(r"^(?:#{3,4}\s+|[-*]?\s*)(\d{6})(?:\s+\d{3,4})?\s*·")
     _log_cache = {}

@@ -7,7 +7,7 @@ description: >-
   Commission decisions, shipping, or measurement.
 metadata:
   version: "0.4.1"
-  last_updated: "2026-09-28"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-design-unit · one Ticket, one inspectable Result

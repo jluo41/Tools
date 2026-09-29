@@ -102,7 +102,7 @@ comment/click leading to it is a Step, not another Run.
 
 Modes include `compose`, `brainstorm`, `theory-driven`, `challenge`, and
 `revise`; revise pins the base draft and the feedback file
-(`outline/feedback/<run>.md`); a challenge item's revise stays in challenge
+(`draft/feedback/<run>.md`); a challenge item's revise stays in challenge
 mode. The worker is `haipipe-design-unit` through the existing designer
 dispatcher.
 

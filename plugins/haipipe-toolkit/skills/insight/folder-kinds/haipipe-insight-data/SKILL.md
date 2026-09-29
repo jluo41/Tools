@@ -7,8 +7,8 @@ description: >-
   observations the board must cite once. Trigger: insight data, observations,
   Data, folder-kind data, legacy page-type data, /haipipe-insight-data.
 metadata:
-  version: "1.3.2"
-  last_updated: "2026-09-28"
+  version: "1.3.3"
+  last_updated: "2026-09-29"
   workflow: haipipe-insight-workflow
   folder_kind: data
   primary_face: task
@@ -116,5 +116,5 @@ coverage/gaps. Do not hand it a precomputed claim.
 ## Files
 
 - Page: `<DataFolder>/<DataFolder>.md`
-- Evidence graph: `outline/<stem>-evidence-items.md`, generated
-  `outline/evidence/supporting-runs/`, frozen Local Input, and local Results
+- Evidence graph: `draft/<stem>-evidence-items.md` with its `Supporting Runs`
+  lines, frozen Local Input, and local Results

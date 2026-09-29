@@ -108,5 +108,5 @@ for each. Keep one Page-wide group for shared requirements.>
 - ⬜ P2 · Contract fields and state are honest; unknowns have a refresh route.
 - ⬜ P3 · Page CHECK names the rendered Page and exact contract version.
 
-<!-- Inventories and logs remain under outline/records/<stem>-files.md and
-outline/records/<stem>-log.md. They are not authored Page sections. -->
+<!-- Inventories and logs remain under draft/records/<stem>-files.md and
+draft/records/<stem>-log.md. They are not authored Page sections. -->

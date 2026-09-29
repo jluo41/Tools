@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-28"
+  version: "0.9.1"
+  last_updated: "2026-09-29"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -72,7 +72,7 @@ the source with prose mined from Word.
 ## 🏁 The milestone that admits a page
 
 A Section Page enters the build when three things exist on it: an approved
-outline table (`outline/<page>-outline-v*.md` with its tick), a preview PDF for
+outline table (`draft/<page>-draft-v*.md` with its tick), a preview PDF for
 every display unit the page CITES and that is LIVE
 (`results/<re-run>/payload/<unit>/preview.pdf`), and its own compiled page PDF
 (`delivery/latex/<page>.pdf`). A page missing any of
@@ -435,7 +435,7 @@ resolve Paper and its delivery/
 ```
 
 `sent/` and `released/` are frozen copies and never rebuilt in place; the
-Round's close receipt under `outline/` carries their paths and manifest `built` times.
+Round's close receipt under `draft/` carries their paths and manifest `built` times.
 `haipipe-paper-round` owns the folder shape. A freeze fails if any declared
 output is missing or if the destination already contains a prior snapshot;
 this prevents a partial send from masquerading as a complete Round.

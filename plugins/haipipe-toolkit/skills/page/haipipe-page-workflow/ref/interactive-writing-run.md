@@ -190,8 +190,8 @@ without changing prose; no-op acceptance/navigation creates no change card.
 
 ```text
 <folder>/
-├── outline/                         current editable planning authority
-│   ├── <stem>-outline-v1.2.md        current Shape + embedded Drafts (Draft-first)
+├── draft/                           current editable planning authority
+│   ├── <stem>-draft-v1.2.md          current Shape + embedded Drafts (Draft-first)
 │   ├── previous/                     superseded versions (v1.1, v1.0, …)
 │   └── <stem>-evidence-items.md     requirements and Supporting/Local graph
 ├── runs/rp-struct-01.md             initial Structure Run: SHAPE + SURVEY

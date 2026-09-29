@@ -7,8 +7,8 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.6.0"
-  last_updated: "2026-09-28"
+  version: "1.6.1"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
@@ -79,7 +79,7 @@ research meaning. A work receipt establishes what was done; C5 interprets what
 the evidence supports. Accepted work can leave a proposition contradicted or
 inconclusive. C3 may have an answered RQ even when its hoped-for claim fails.
 Read work progress from the native owner, and preserve human decisions in the
-Story's shared outline/workflow records. Do not reconstruct a release ledger
+Story's shared draft/ and workflow/ records. Do not reconstruct a release ledger
 as the Story's Content outline.
 
 ## 🚪 Gates
@@ -165,7 +165,7 @@ Paper-<Slug>/
 │   ├── Story00-ideation/
 │   └── StoryA-misq-phytrait-discretion/
 │       ├── StoryA-misq-phytrait-discretion.md                 Story prospective blueprint
-│       ├── outline/                    Page 00–04 records
+│       ├── draft/                      Page 00–04 records
 │       └── studio/                     optional Story-local presentation lanes
 ├── Ba-<desk>-Main/                     Section Pages
 ├── Bb-<desk>-Appendix/                 Section Pages
@@ -198,7 +198,7 @@ renumbering and are not new allocation grammars. `RD<NN>` names a Round Page.
 
 ## 🧾 Receipts and work status
 
-The existing Story `outline/` log and shared `workflow/` receipts may record
+The existing Story `draft/records/` log and shared `workflow/` receipts may record
 G0, G1, G2 interpretations and G3 Section releases. The Paper-side G0 record,
 when present, is only a validation/projection pointer to the final Ideation
 handoff and sole I3 selection receipt; it does not repeat the I3 verdict,

@@ -1,3 +1,7 @@
+## 0.66.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
 ## 0.66.0 · 2026-09-28 · No content hashes (JL 260928)
 
 - One fixed Delivery Run per lane (JL 260928: "we just need one run, it can be run_delivery_webpage"): `run_delivery_webpage`, `run_delivery_latex`, `run_delivery_word`, rerun in place, never numbered. `ref/run-cards.md` `Page.delivery` card (button `^run_delivery_`), `ref/workflow-table.md`, `ref/page-run-contract.md` and this SKILL (Run Spec row, CONTENT, identity lines) say so; `RD` has no counter.

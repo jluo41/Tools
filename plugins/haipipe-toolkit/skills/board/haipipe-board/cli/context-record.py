@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write `outline/records/<stem>-context.md`: the CONTEXT/PREPARE snapshot of a Page.
+"""Write `draft/records/<stem>-context.md`: the CONTEXT/PREPARE snapshot of a Page.
 
     python3 cli/context-record.py <page.md>          one page
     python3 cli/context-record.py --all <board-dir>  every page on the board
@@ -291,7 +291,7 @@ def main():
         board, pages = a.target.parents[2], [a.target]
     n = 0
     for pg in pages:
-        out = record_path(pg.parent / "outline", pg.stem, "context")
+        out = record_path(plan_dir(pg.parent), pg.stem, "context")
         out.parent.mkdir(parents=True, exist_ok=True)
         out.parent.mkdir(exist_ok=True)
         out.write_text(build(pg, board), encoding="utf-8")

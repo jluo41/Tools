@@ -89,7 +89,7 @@ def main():
     plan = _latest_plan(page)
     fails, gaps = [], []
     if plan is None:
-        print("plan         none yet: write outline/<stem>-outline-v0.1.md from ref/plan-grammar.md")
+        print("plan         none yet: write draft/<stem>-draft-v0.1.md from ref/plan-grammar.md")
     else:
         txt = plan.read_text(encoding="utf-8", errors="replace")
         tick = "✅" if re.search(r"(?m)^approved:\s*✅", txt) else "⬜"

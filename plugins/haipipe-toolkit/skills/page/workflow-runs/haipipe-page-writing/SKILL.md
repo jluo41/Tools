@@ -10,8 +10,8 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   writing Run, WRITE cycle, publish page, build page, /haipipe-page-writing.
 metadata:
-  version: "0.20.0"
-  last_updated: "2026-09-28"
+  version: "0.20.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
 

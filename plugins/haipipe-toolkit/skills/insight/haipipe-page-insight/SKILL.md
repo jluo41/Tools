@@ -8,8 +8,8 @@ description: >-
   checkpoints, shared Task analysis calls, and exact RI/result citations. Application
   InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-09-28"
+  version: "1.3.1"
+  last_updated: "2026-09-29"
   outline:
     mode: fixed
     source: "this SKILL.md"

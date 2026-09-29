@@ -90,14 +90,14 @@ that released version.
 
 ## 5. Source and projection law
 
-The Page Markdown and its `outline/` records are authoritative. A Section's
+The Page Markdown and its `draft/` records are authoritative. A Section's
 `delivery/latex/<page>.tex` is the Paper assembly input; the Paper-level
 `delivery/` tree is generated from those fragments and the Story compile order.
 No generated Word/PDF, retired room, or Round snapshot becomes a wording
 source.
 
 The current Page product exposes only its Page Face. Logs, discussions, files,
-requirements, evidence records, and historical drafts stay under `outline/`
+requirements, evidence records, and historical drafts stay under `draft/`
 or an explicit archive. `## Diagram`, `## Outline`, `## Files`, `## Log`, and
 `## Discussion` are not new authored Page sections. A diagram belongs in a
 Content division map or the Page's visual lane.

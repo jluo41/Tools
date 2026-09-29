@@ -43,6 +43,16 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+
+def _plan_rel(f) -> str:
+    """A plan-folder file as the reader finds it from its Page folder: `draft/records/x.md`
+    (`outline/...` on a Page not yet moved to draft/)."""
+    f = Path(f)
+    for up in f.parents:
+        if up.name in ("draft", "outline"):
+            return f.relative_to(up.parent).as_posix()
+    return f.name
 from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
@@ -913,7 +923,7 @@ RETIRED_SECTIONS = {
     # ("`retired-section` reports it") described behaviour the table did not
     # have. 1,026 lines of a retired section passed silently on the MISQ paper
     # board for eleven days (JL 260830).
-    "Files": "moved to `outline/records/<stem>-files.md` (JL 260831, QPf12 row 3): one "
+    "Files": "moved to `draft/records/<stem>-files.md` (JL 260831, QPf12 row 3): one "
              "`### F<n> · <what it is for>` record per file with `Path` and `Role`; a "
              "Related Board Page is a record with `Role: related` and its row verbatim under it",
     "States": "merged into `## Aims` (260819): one Aim row carries its tick, "
@@ -1200,7 +1210,7 @@ def check_canvas_frames(text, name, rep, board_dir=None):
 
 
 def _files_record_text(path):
-    """The page's outline/records/<stem>-files.md, with each `- **Path**: `x`` row
+    """The page's draft/records/<stem>-files.md, with each `- **Path**: `x`` row
     rewritten as a bare `- `x`` row so the Files path checks read it unchanged."""
     if not path:
         return ""
@@ -1223,7 +1233,7 @@ def check_file_paths(text, name, rep, board_dir=None, path=None):
     repo root, because a Files row may point at any of the three.
     """
     block = section_text(text, "Files") or ""
-    # Since 260831 the file map lives in outline/records/<stem>-files.md (JL, QPf12 row 3);
+    # Since 260831 the file map lives in draft/records/<stem>-files.md (JL, QPf12 row 3);
     # its `- **Path**: `x`` rows are checked with the same teeth as a page's rows.
     block = block + "\n" + _files_record_text(path)
     roots = [HERE, HERE.parent]
@@ -1361,7 +1371,7 @@ def check_generated_block(text, name, rep, path=None):
     if not blocks:
         return
     # The Log may live on the page OR, since haipipe-workbench-page 0.16.0, in
-    # `outline/records/<stem>-log.md`. Reading only the page made this check lose its
+    # `draft/records/<stem>-log.md`. Reading only the page made this check lose its
     # input the moment a page migrated: `latest` went "" for ever and a stale
     # form block could never be reported again. A finding count dropping because
     # a check lost its input is worse than the finding (field test, JL 260830).
@@ -1395,7 +1405,7 @@ def _one_generated_block(tag, block, latest, name, rep):
 
 
 def check_evidence_file(path, name, rep):
-    """`outline/<stem>-evidence.md` is DERIVED (haipipe-workbench-page 0.22.0):
+    """`draft/<stem>-evidence.md` is DERIVED (haipipe-workbench-page 0.22.0):
     the typed table (`<stem>-evidence-items.md`, specified at SHAPE and planned
     at SURVEY) joined to local Results, one record per Evidence Item, its Status
     one word of the item ladder,
@@ -1412,8 +1422,8 @@ def check_evidence_file(path, name, rep):
     stamp = re.search(r"MEASURED\s+(2\d{5})(?:\s+(\d{4}))?", text)
     if not stamp or "GENERATED; do not hand-edit" not in text:
         rep.add(WARN, "evidence-hand-edited", name,
-                "`outline/%s` carries no `MEASURED <date>` + GENERATED line; a status "
-                "nobody generated is a status somebody typed" % ev.name)
+                "`%s` carries no `MEASURED <date>` + GENERATED line; a status "
+                "nobody generated is a status somebody typed" % _plan_rel(ev))
         return
     import datetime as _dt
     measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
@@ -1428,12 +1438,12 @@ def check_evidence_file(path, name, rep):
                 newest, newest_name = f.stat().st_mtime, f.relative_to(path.parent).as_posix()
     if newest > measured + 60:
         rep.add(WARN, "evidence-stale", name,
-                "`outline/%s` was measured %s %s but `%s` changed later; regenerate "
-                "with `cli/evidence-status.py`" % (ev.name, stamp.group(1), stamp.group(2) or "", newest_name))
+                "`%s` was measured %s %s but `%s` changed later; regenerate "
+                "with `cli/evidence-status.py`" % (_plan_rel(ev), stamp.group(1), stamp.group(2) or "", newest_name))
 
 
 def check_discussion_file(path, name, rep):
-    """`outline/records/<stem>-discussion.md` holds OPEN questions only (haipipe-workbench-
+    """`draft/records/<stem>-discussion.md` holds OPEN questions only (haipipe-workbench-
     outline 0.18.0, JL 260831: "the solved one go to logs, and only leave the
     one we have not solved"). A thread that is settled, decided or dropped has
     moved: its ruling is one `### YYMMDD · D<nn> …` record in `-log.md`. A
@@ -1451,13 +1461,13 @@ def check_discussion_file(path, name, rep):
                 or re.search(r"(?m)^\s*(?:settled:|- \*\*Settled\*\*:)", body) \
                 or re.search(r"(?m)^\s*status:\s*✅", body):
             rep.add(WARN, "discussion-settled-thread", name,
-                    f"thread `{m.group(1)}` is settled and still in `outline/{f.name}`; the discussion "
-                    f"holds open questions only, so its ruling belongs in `outline/records/{path.stem}-log.md` "
+                    f"thread `{m.group(1)}` is settled and still in `{_plan_rel(f)}`; the discussion "
+                    f"holds open questions only, so its ruling belongs in `draft/records/{path.stem}-log.md` "
                     f"as one dated record (haipipe-workbench-page 0.18.0)")
 
 
 def check_requirement_file(text, path, name, rep):
-    """`outline/records/<stem>-requirement.md` holds a generated venue V block and an
+    """`draft/records/<stem>-requirement.md` holds a generated venue V block and an
     authored page-writing W block. `cli/requirement.py` refreshes only V. A
     Section that binds a venue division and has no file shows no 📏 chip; a V
     block without its GENERATED line has lost its ownership boundary."""
@@ -1468,12 +1478,12 @@ def check_requirement_file(text, path, name, rep):
     f = record_path(plan_dir(path.parent), path.stem, "requirement")
     if not f.exists():
         rep.add(WARN, "requirement-missing", name,
-                f"this page binds a venue division and `outline/{f.name}` "
+                f"this page binds a venue division and `{_plan_rel(f)}` "
                 f"does not exist; run `cli/requirement.py {path.name}`")
         return
     if "GENERATED; do not hand-edit" not in f.read_text(encoding="utf-8", errors="replace"):
         rep.add(WARN, "requirement-hand-edited", name,
-                f"`outline/{f.name}` carries no GENERATED line for its venue V block; regenerate it without replacing authored W records")
+                f"`{_plan_rel(f)}` carries no GENERATED line for its venue V block; regenerate it without replacing authored W records")
         return
     # STALE: the venue desk (its one source) is newer than the stamp; a
     # requirement that outlives a moved desk reads as binding.
@@ -1491,7 +1501,7 @@ def check_requirement_file(text, path, name, rep):
     for s in srcs:
         if s.exists() and s.stat().st_mtime > measured + 60:
             rep.add(WARN, "requirement-stale", name,
-                    f"`outline/{f.name}` was measured {stamp.group(1)} {stamp.group(2) or ''} but `{s.name}` changed "
+                    f"`{_plan_rel(f)}` was measured {stamp.group(1)} {stamp.group(2) or ''} but `{s.name}` changed "
                     f"later; regenerate with `cli/requirement.py {path.name}`")
             return
 
@@ -1505,13 +1515,13 @@ def check_section_writing_requirements(text, path, name, rep):
     if re.search(r"(?m)^#{2,3}\s+Writing Style\b", text):
         rep.add(WARN, "section-writing-in-page", name,
                 "a manuscript Section stores writing rules in "
-                f"`outline/records/{path.stem}-requirement.md` as W<n> records; remove the Page's "
+                f"`draft/records/{path.stem}-requirement.md` as W<n> records; remove the Page's "
                 "`Writing Style` block after migrating each instruction to a W<n> record")
     retired = plan_dir(path.parent) / f"{path.stem}-writing.md"
     if retired.exists():
         rep.add(WARN, "writing-file-retired", name,
-                f"`outline/{retired.name}` is a redundant sidecar; move its W<n> "
-                f"records into `outline/records/{path.stem}-requirement.md`")
+                f"`{_plan_rel(retired)}` is a redundant sidecar; move its W<n> "
+                f"records into `draft/records/{path.stem}-requirement.md`")
     f = record_path(plan_dir(path.parent), path.stem, "requirement")
     if not f.exists():
         # check_requirement_file already reports the missing shared file.
@@ -1520,23 +1530,23 @@ def check_section_writing_requirements(text, path, name, rep):
     records = list(re.finditer(r"(?ms)^###\s+(W\d+)\s*·\s*([^\n]+)\n(.*?)(?=^###\s+|\Z)", ftxt))
     if not records:
         rep.add(WARN, "writing-shape", name,
-                f"`outline/{f.name}` has no authored `### W<n> · <preview>` records")
+                f"`{_plan_rel(f)}` has no authored `### W<n> · <preview>` records")
         return
     writing_begin = ftxt.find("# --- writing:begin (authored) ---")
     writing_end = ftxt.find("# --- writing:end ---")
     if writing_begin < 0 or writing_end <= writing_begin:
         rep.add(WARN, "writing-shape", name,
-                f"`outline/{f.name}` must bound W<n> records with authored writing markers")
+                f"`{_plan_rel(f)}` must bound W<n> records with authored writing markers")
     elif any(not (writing_begin < record.start() < writing_end) for record in records):
         rep.add(WARN, "writing-shape", name,
-                f"every W<n> record in `outline/{f.name}` must remain inside the authored writing block")
+                f"every W<n> record in `{_plan_rel(f)}` must remain inside the authored writing block")
     for record in records:
         body = record.group(3)
         missing = [label for label in ("Rule", "Applies", "Source")
                    if not re.search(rf"(?m)^- \*\*{label}\*\*:\s*\S", body)]
         if missing:
             rep.add(WARN, "writing-shape", name,
-                    f"`{record.group(1)}` in `outline/{f.name}` lacks "
+                    f"`{record.group(1)}` in `{_plan_rel(f)}` lacks "
                     + ", ".join(missing))
 
 
@@ -1594,7 +1604,7 @@ def check_feedback_coverage(path, text, name, rep):
     """Both directions of the Round⇄page join (haipipe-page-structure ⓪ COLLECT).
 
     Forward: every §2B row a Round routes to this page appears in the page's
-    outline/feedback/<RD>.md. Reverse: every register row names a real Round
+    draft/feedback/<RD>.md. Reverse: every register row names a real Round
     row. A page that never ran OUTLINE never collected, so G7 must not close on
     a Round whose targets carry no register (field test, JL 260831)."""
     if path is None or re.search(r"(?m)^page-type:\s*round\b", text[:600]):
@@ -1611,7 +1621,7 @@ def check_feedback_coverage(path, text, name, rep):
         if not reg.exists():
             rep.add(WARN, "feedback-uncollected", name,
                     f"{rd.stem.split('-')[0]} routes {len(routed)} row(s) here and "
-                    f"`outline/{reg.name}` does not exist; run "
+                    f"`{_plan_rel(reg)}` does not exist; run "
                     f"`cli/feedback.py collect` (OUTLINE ⓪)")
             continue
         have = register_ids(reg)
@@ -2175,7 +2185,7 @@ def check_insight_family(d, rep):
                                for line in heads):
                         rep.add(WARN, "partial-final-no-page-receipt", name,
                                 f"`{qid}` leans on a sentence in {pid} and {pid}'s "
-                                f"`outline/records/{cited.stem}-log.md` does not record "
+                                f"`draft/records/{cited.stem}-log.md` does not record "
                                 "it: the flip leaves TWO receipts "
                                 "(insight-workflow §Marks), because a citation "
                                 "invisible from the cited end cannot carry "

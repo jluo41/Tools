@@ -10,8 +10,8 @@ description: >-
   evidence, evidence Run, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.30.0"
-  last_updated: "2026-09-28"
+  version: "0.30.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -71,7 +71,7 @@ display and prose requirements, not another execution owner.
 
 ```text
 READS    target Page · checked v0 plan or approved G>=1 plan · current
-         outline/<stem>-evidence-items.md contract · selected Run
+         draft/<stem>-evidence-items.md contract · selected Run
          Tickets/receipts/Results · frozen Context · current Result manifests
 WRITES   Supporting and local Run receipts/Results in their owner-governed
          Run and Result stores ·
@@ -323,7 +323,7 @@ If a ready Result contradicts the outline, open a `D<nn>` thread and route to
 SHAPE. Otherwise preserve the Shape exactly and write the next evidence
 revision `v<G>.<S>.<E+1>`. The two-part source `v<G>.<S>` has implicit
 `E=0`. Set `supersedes:` to the exact source version, and move the source
-file into `outline/previous/` (`page.py outline-tidy <page>`). For `G=0`, keep
+file into `draft/previous/` (`page.py outline-tidy <page>`). For `G=0`, keep
 `approved: ⬜` and return to SHAPE; CONTENT remains closed. For `G>=1`, add
 `shape-base: v<G>.<S>`, transcribe `approved: ✅ inherited from v<G>.<S> · …`
 from that approved Shape, and route to CONTENT so every changed evidence

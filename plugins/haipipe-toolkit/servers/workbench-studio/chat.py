@@ -512,7 +512,7 @@ def page_folder_context(f, root):
             m = re.search(r"(?m)^plan:.*?(owed \d+ · landed \d+ · accepted \d+)", ev.read_text(encoding="utf-8", errors="ignore"))
             if m: parts.append("evidence " + m.group(1))
         names = [k for k in ("requirement", "discussion", "feedback", "evidence", "files", "log") if record_path(o, stem, k).is_file()]
-        out.append("  · outline/: " + (" · ".join(parts) if parts else "no plan yet") + f"  [files: {', '.join(names) or 'none'}]")
+        out.append(f"  · {o.name}/: " + (" · ".join(parts) if parts else "no plan yet") + f"  [files: {', '.join(names) or 'none'}]")
     out.extend(_scratch_context(f, root))
     try:                                   # the progress strip, from disk (src/page_progress.py)
         import sys as _sys
@@ -528,7 +528,7 @@ def page_folder_context(f, root):
         if lst.is_file():
             rows = [ln[2:].strip() for ln in lst.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.startswith("- ")]
             if rows:
-                out.append(f"  · outline/{lane}/: {label}: " + " · ".join(r.split(" · ")[0] for r in rows[:12]))
+                out.append(f"  · {plan_dir(d).name}/{lane}/: {label}: " + " · ".join(r.split(" · ")[0] for r in rows[:12]))
     return out
 
 
@@ -734,7 +734,7 @@ BOARD_RULES_BODY = """The board folder given below holds `board.md` (title · `s
 yours: which page to act on next, the ## Pages order, grouping and group intros,
 cross-page consistency. Deep work inside one page belongs to that page's own chat
 and follows haipipe-workbench-studio/ref/chat.md §🗺. Never hand-edit board/ (generated). Every page
-you change gets one record at the top of its outline/records/<stem>-log.md:
+you change gets one record at the top of its draft/records/<stem>-log.md:
 `### YYMMDD HHMM · chat: <what changed>`. Preserve every signed `> Comment` and `> ✎`
 line beneath the sentence it concerns.
 

@@ -731,7 +731,7 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
     if (topic / "evidence").exists():
         errors.append(
             f"legacy-root-evidence-forbidden: {topic / 'evidence'}: "
-            "use outline/evidence/"
+            "use draft/evidence/"
         )
     errors.extend(_manifest_errors(topic))
     topic_readable, topic_compact, _ = _topic_identity(topic)

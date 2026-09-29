@@ -129,7 +129,7 @@ def references_block(q):
     stem = pathlib.Path(q.get("file") or "").stem
     if not (_bd.PAGE_DIR and stem):
         return ""
-    # Canonical `outline/evidence/bibex/` first; a flat `bibex/` is only a
+    # Canonical `draft/evidence/bibex/` first; a flat `bibex/` is only a
     # pre-migration alias (haipipe-page folder v3).
     bib = evidence_lane_dir(_bd.PAGE_DIR, "bibex") / (stem + ".bib")
     src = _bd.PAGE_DIR / (stem + ".md")
@@ -215,7 +215,7 @@ def sect(label, inner, cls="", open_=False):
 
 
 # ── 🧭 Outline = current plan table ─────────────────────────────────────────
-# The versioned plan in outline/ is the one reader-facing narrative structure.
+# The versioned plan in draft/ is the one reader-facing narrative structure.
 # A Page never carries a second hand-authored map or an inline canvas.
 
 
@@ -508,7 +508,7 @@ def _outline_grid(page_src):
     def point_cell(block):
         """Render only the reader-facing Point in the compact Page table.
 
-        Plan annotations are process material.  They remain in ``outline/``
+        Plan annotations are process material.  They remain in ``draft/``
         and in the Outline workbench instead of leaking into the reading face.
         """
         point = block["point"]
@@ -1358,7 +1358,7 @@ def _render_question(q, prv, nxt):
     # flat rows, so a long action map could not be collapsed to its group
     # names while every other section on the page could.
     page_src = pathlib.Path(_bd.BASE or ".") / q["file"] if q.get("file") else None
-    # A folded Page keeps process records in its outline/ folder.  The main
+    # A folded Page keeps process records in its draft/ folder.  The main
     # Page therefore renders only the product and compact Outline projection;
     # Files, Discussion, and Log belong to the Outline workbench workspaces.
     has_outline_folder = bool(

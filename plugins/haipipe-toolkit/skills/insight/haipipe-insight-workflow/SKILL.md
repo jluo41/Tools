@@ -7,8 +7,8 @@ description: >-
   person-signed handoff settlement. Use to run, resume, or inspect an
   InsightBoard, answer its registered questions, or report blocked work.
 metadata:
-  version: "1.3.3"
-  last_updated: "2026-09-28"
+  version: "1.3.4"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -221,7 +221,7 @@ Run receipts remain in their owners' stores. The Runtime indexes rather than
 duplicates their authority. `ref/run-workflow.md` defines the envelope.
 
 A GI/resource update leaves one dated control receipt in the granting Folder's
-`outline/records/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
+`draft/records/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
 MT00 records GI0 and partition registration; Question registers record GI1 and
 GI6; answer Folders record GI2-GI4; Wisdom records GI5. Include the runtime id,
 exact target, evidence/version, assertion, actor, outcome and next action.

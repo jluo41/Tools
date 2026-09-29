@@ -44,9 +44,9 @@ route serves it now; the Page workbench shows no Skills card.
 The Outline workbench embeds the generated index at **Page Records → Skills**:
 one card per skill with a ⠿ drag handle, the skill's version, last_updated, and
 description, `open the skill`, and ✕. The primary store remains
-`outline/skill/<stem>.md`; Outline reads it in place and never copies it. A
+`draft/skill/<stem>.md`; Outline reads it in place and never copies it. A
 pre-migration sibling `skill/<stem>.md` is a read-only compatibility input;
-the next write lands canonically under `outline/skill/`. The compatibility
+the next write lands canonically under `draft/skill/`. The compatibility
 routes remain active, but the Workbench picker has no standalone 🛠 Skill row. Its
 header says `drag to rank · refresh appends`; it does not infer that a seed has
 already been human-ranked or manufacture a rank-movement date.

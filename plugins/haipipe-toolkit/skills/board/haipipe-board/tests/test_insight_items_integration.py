@@ -49,7 +49,7 @@ class InsightIntegrationTest(unittest.TestCase):
     def test_changed_source_is_flagged_by_file_time_not_hash(self):
         # No content hashes (JL 260928): a source saved after the Run's input
         # record is flagged by file time on the item table.
-        data = self.a / "outline/evidence/materials/snapshot-01.yaml"
+        data = self.a / "draft/evidence/materials/snapshot-01.yaml"
         data.write_text("changed: true\n")
         later = (self.exec_a / "input.yaml").stat().st_mtime + 60
         os.utime(data, (later, later))

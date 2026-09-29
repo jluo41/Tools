@@ -30,7 +30,7 @@ their source trees. See `haipipe-workbench-design/ref/design-board.md` and
 │   ├── draw/group.excalidraw
 │   └── QA1-<slug>/
 │       ├── QA1-<slug>.md
-│       ├── outline/
+│       ├── draft/
 │       ├── workflow/
 │       ├── studio/
 │       ├── runs/
@@ -174,7 +174,7 @@ Do not author these retired process sections on a current Page:
 ## Log
 ```
 
-Their current homes are records under `outline/`. Do not author `## Outline`
+Their current homes are records under `draft/`. Do not author `## Outline`
 or `## Diagram`; the renderer projects the current versioned plan, while Draw
 lives under `studio/draw/`.
 
@@ -195,8 +195,8 @@ uses `🔴`, `🟡`, `✅`, or `⏸️` and is a different field.
 ## Page-local records
 
 ```text
-<page>/outline/
-├── <stem>-outline-v<G>.<S>[.<E>].md   the one current plan
+<page>/draft/
+├── <stem>-draft-v<G>.<S>[.<E>].md     the one current plan
 ├── <stem>-evidence-items.md
 ├── records/
 │   ├── <stem>-context.md

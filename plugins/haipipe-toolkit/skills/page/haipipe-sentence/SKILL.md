@@ -8,8 +8,8 @@ description: >-
   edit this sentence, card on these words, sentence address,
   /haipipe-sentence.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-09-28"
+  version: "0.6.2"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -185,7 +185,7 @@ A card has two sources and the same render:
 
 📐 a paper marker  \citep{} · {VAL:? …} · [Q-X-n] · displayNN · \ref{}
    the marker names itself, and the build resolves it against the page's
-   `outline/evidence/bibex/` citations and typed DISPLAY Results at
+   `draft/evidence/bibex/` citations and typed DISPLAY Results at
    `results/<re-run>/result.yaml` with units under
    `results/<re-run>/payload/<unit>/`, plus the generated delivery assets.
    The retired `outline/evidence/display/` lane is migration input only. The

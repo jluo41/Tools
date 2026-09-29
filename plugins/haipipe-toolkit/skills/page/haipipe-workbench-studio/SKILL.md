@@ -9,8 +9,8 @@ description: >-
   autodraw, chat and draw together, the human's room,
   /haipipe-workbench-studio.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-22"
+  version: "0.4.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

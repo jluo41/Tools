@@ -5,6 +5,18 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.0] — 2026-09-29
+
+- `synth_df` (JL 260929: "I want the synth df to be the task level and task type level"): the Table
+  Card's ③ is one synthetic person's rows in the table, in the real columns, invented values that
+  obey the rule filling the table, from one story typed per dataset in the Job's `src/`. Task level:
+  every table notebook shows it right after "What is this table?" and draws her rows; dataset level:
+  the dataset notebook shows her through every table; Task type level: new section § synth_df and
+  rule 12. Without a typed story, one made-up row of typical values, still named `synth_df`.
+- Where it sits: server-resident (PHI) data builds the same notebooks on the laptop from the fetched
+  masked Results, with the Job's `src/build_notebooks.py`, since an inline server Run brings back no
+  executed notebook. Reference: REACH PD2D `b00_rawdata/j51_reachpd2d_v260922_raw` (28 tables).
+
 ## [0.3.1] — 2026-09-27
 
 - `templates/describe_table.py`: real `##` section headings numbered in plain digits (`## 1. Grain`), and `# notebook: hide-code`, so the Table Card notebook opens on its outputs (notebook-cell-python 0.4.1, rules 2 and 7).

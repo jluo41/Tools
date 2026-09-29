@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.1.3"
-  last_updated: "2026-09-28"
+  version: "1.1.4"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
 
@@ -94,7 +94,7 @@ creating or changing Board structure.
 ├── <N>-Q<group>-<slug>/           generic Board Group
 │   └── <page>/                    one Page Folder
 │       ├── <page>.md              Page Face
-│       ├── outline/               Context record, Draft, Evidence, Run Spaces
+│       ├── draft/                 Context record, Draft, Evidence, Run Spaces
 │       ├── workflow/              owner-selected identity and control records
 │       ├── studio/                Chat and Draw
 │       ├── runs/                  optional Run tickets
@@ -185,7 +185,7 @@ to one Page or to `board.md`. In the same round:
 1. update the owning source;
 2. update targets and completion facts in the Page owner's declared records
    when their truth changed; existing native/legacy Aims use their `Now:` fields;
-3. write the dated process record under `outline/records/<stem>-log.md`;
+3. write the dated process record under `draft/records/<stem>-log.md`;
 4. rebuild the Board;
 5. run the checker and inspect the rendered result.
 
@@ -272,7 +272,7 @@ never writes a Board roster into Project or SPACE metadata.
 
 The live Draft Space presents the selected Outline's Bullet/Draft table in two
 columns, grouped by paragraph. `servers/workbench-page/outline_preview.py` reads and writes
-embedded Drafts in `outline/<stem>-outline-v*.md`; the selected
+embedded Drafts in `draft/<stem>-draft-v*.md`; the selected
 Outline remains the sole Shape, tag, evidence-decision, and Draft authority.
 Do not render a `+ Bullet` button, append form, editor, or separate Comments
 composer. Draft Space is read-only; candidate changes belong to the owning

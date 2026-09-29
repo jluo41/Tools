@@ -8,8 +8,8 @@ description: >-
   workbench, workbench folder, workbench roster, workbench tab, add a workbench,
   /haipipe-workbench.
 metadata:
-  version: "1.12.3"
-  last_updated: "2026-09-28"
+  version: "1.12.4"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-workbench · a page's material, as one contract

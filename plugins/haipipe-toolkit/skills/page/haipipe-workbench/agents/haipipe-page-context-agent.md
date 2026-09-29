@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-context-agent
-description: "Write-scoped CONTEXT producer for one Board Page. PREPARE collects, resolves, and freezes the Page's governing policy, requirements, ownership, related information, feedback, decisions, records, and current planning/evidence state into outline/records/<stem>-context.md. It writes no plan, evidence Result, Page Content, or human tick and commissions no Level-4 Run. Trigger: page context producer, context Run, PREPARE, off-stage Context record, context agent."
+description: "Write-scoped CONTEXT producer for one Board Page. PREPARE collects, resolves, and freezes the Page's governing policy, requirements, ownership, related information, feedback, decisions, records, and current planning/evidence state into draft/records/<stem>-context.md. It writes no plan, evidence Result, Page Content, or human tick and commissions no Level-4 Run. Trigger: page context producer, context Run, PREPARE, off-stage Context record, context agent."
 tools:
   - Read
   - Write
@@ -31,7 +31,7 @@ The Page surface already installs the shared Outline presenter; do not append
 it as an execution dependency.
 
 Collect only declared sources; resolve authority without guessing; write the
-generated `outline/records/<stem>-context.md` projection; freeze source addresses and
+generated `draft/records/<stem>-context.md` projection; freeze source addresses and
 freshness facts. Missing or conflicting required input routes to CONTEXT or
 HOLD. If the named authority itself is stale, name its owning skill and resume
 point instead of repairing it. The normal route is OUTLINE/SHAPE.

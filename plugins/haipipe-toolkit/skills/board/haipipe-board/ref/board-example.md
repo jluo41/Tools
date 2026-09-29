@@ -11,10 +11,11 @@ in `SKILL.md`, `board-form.md`, and `haipipe-page`.
 ├── 1-QA-eligibility/
 │   └── QA1-entry-rule/
 │       ├── QA1-entry-rule.md
-│       └── outline/
-│           ├── QA1-entry-rule-outline-v0.1.md
-│           ├── QA1-entry-rule-files.md
-│           └── QA1-entry-rule-log.md
+│       └── draft/
+│           ├── QA1-entry-rule-draft-v0.1.md
+│           └── records/
+│               ├── QA1-entry-rule-files.md
+│               └── QA1-entry-rule-log.md
 └── board/                         generated
 ```
 
@@ -72,11 +73,11 @@ Each condition names its field, operator, threshold, and missing-value behavior.
   **Now:** Not started.
 ````
 
-## outline/QA1-entry-rule-outline-v0.1.md
+## draft/QA1-entry-rule-draft-v0.1.md
 
 ```markdown
-# Outline v0.1
-outline-version: v0.1
+# Draft v0.1
+draft-version: v0.1
 approved: ⬜
 
 | Address | Bullet | Feedback | Evidence | Supporting Run | Local Run |

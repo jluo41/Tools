@@ -6,8 +6,8 @@ description: >-
   is the only evidence a DesignBoard may bind. Trigger: insight wisdom,
   counsel, design handoff, folder-kind wisdom, /haipipe-insight-wisdom.
 metadata:
-  version: "1.4.1"
-  last_updated: "2026-09-28"
+  version: "1.4.2"
+  last_updated: "2026-09-29"
   workflow: haipipe-insight-workflow
   folder_kind: wisdom
   primary_face: page
@@ -125,7 +125,7 @@ the local signed W is the only Design authority.
 
 - Page and handoff: `<WisdomFolder>/<WisdomFolder>.md`
 - External-parent binding, when used:
-  `<WisdomFolder>/outline/<stem>-evidence-items.md` and its Supporting/local Results
+  `<WisdomFolder>/draft/<stem>-evidence-items.md` and its Supporting/local Results
 - Cross-board binding: the consuming Design Page's Evidence Workspace
 
 For GI5/GI6 receipts and the read-only current Design binding projection, read

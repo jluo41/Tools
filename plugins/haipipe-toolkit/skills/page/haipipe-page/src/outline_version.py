@@ -140,14 +140,14 @@ def plan_files(folder: Path, stem=None) -> list[Path]:
                   | set(Path(folder).glob(f"{prefix}-draft-v*.md")))
 
 
-# Superseded Outline versions live in `outline/previous/`, so `outline/`
-# holds exactly one plan: the current one. Every reader globs `outline/`
+# Superseded plan versions live in `draft/previous/`, so `draft/`
+# holds exactly one plan: the current one. Every reader globs `draft/`
 # only, and a named older version is still found under `previous/`.
 PREVIOUS = "previous"
 
 
 def retire_superseded(outline_dir: Path, stem=None) -> list[Path]:
-    """Move every Outline version except the newest into `outline/previous/`.
+    """Move every plan version except the newest into `draft/previous/`.
 
     Returns the moved files' new paths. Never overwrites a file already in
     `previous/`; a name clash is left in place and reported by the caller.
@@ -171,7 +171,7 @@ def retire_superseded(outline_dir: Path, stem=None) -> list[Path]:
     return moved
 
 
-# The six process records sit in `outline/records/`, so `outline/` opens on the
+# The six process records sit in `draft/records/`, so `draft/` opens on the
 # two authored files: the current plan and the Evidence Item contract.
 RECORDS = "records"
 RECORD_KINDS = ("context", "requirement", "discussion", "feedback", "files", "log")
@@ -195,7 +195,7 @@ def record_path(outline_dir: Path, stem: str, kind: str) -> Path:
 
 
 def retire_records(outline_dir: Path) -> list[Path]:
-    """Move flat `<stem>-<kind>.md` process records into `outline/records/`."""
+    """Move flat `<stem>-<kind>.md` process records into `draft/records/`."""
     outline_dir = Path(outline_dir)
     moved = []
     for kind in RECORD_KINDS:
@@ -242,7 +242,7 @@ def relink_moved(path: Path, old_dir: Path) -> int:
 
 
 def find_version(outline_dir: Path, name: str) -> Path | None:
-    """Return a named Outline version from `outline/` or `outline/previous/`."""
+    """Return a named plan version from `draft/` or `draft/previous/` (`outline/` on an older Page)."""
     for folder in (Path(outline_dir), Path(outline_dir) / PREVIOUS):
         if (folder / name).is_file():
             return folder / name

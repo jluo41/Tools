@@ -32,7 +32,7 @@ across the whole Design Folder, so ITEM02's first Run may be `rd05`. The
 approval record is the released Commission's `decision.yaml` under
 `results/`.
 
-`item` names the Design Item register row (`outline/<stem>-design-items.md`)
+`item` names the Design Item register row (`draft/<stem>-design-items.md`)
 this Run serves. The checker does not interpret it; the Design workbench groups
 Runs by it. Commission Tickets carry it too. Historical Adopt Tickets may be
 read for audit only; they are never new worker inputs or current workflow gates.
@@ -41,7 +41,7 @@ Roles: `evidence | inspiration | reference | avoid | base | feedback | handoff`.
 Role never promotes authority. `run_id` normally names a real Supporting/native
 Run. An `rpNN` Page Run may enter only as frozen `feedback` to a revise Run; it
 cannot become evidence, handoff authority, or the producer of a Generate
-Result. A revise Generate's `feedback` input is `outline/feedback/<run>.md`,
+Result. A revise Generate's `feedback` input is `draft/feedback/<run>.md`,
 written when the revise is queued. Static
 Briefs and signed W handoffs omit Run ids.
 Design callers validate W signing/applicability, Board reads, and allowed input

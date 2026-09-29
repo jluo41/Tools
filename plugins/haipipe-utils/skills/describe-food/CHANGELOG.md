@@ -2,6 +2,20 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.4.2 — 2026-09-29
+--------------------------------------------------------------------------------
+
+The input forms in `build_inputs_gallery.py` now name what actually comes in.
+`05-carb-only` and `07-named-nothing` are one form, `05-macro-nutrition`: in
+both the patient typed a number and named no food, and `Just Carbs` or `Unknown`
+is only a placeholder, so the input is the number. Its specimen is three real
+rows, one per kind of writer (WellDoc carbs, OhioT1DM carbs, dubosson calories).
+`08-image` became `07-image`, a photo in and macros out, and `09-batch` became
+`08-batch`. The photo specimen's path is written relative to the SPACE root, so
+no machine path lands on disk, and the builder finds the SPACE root from the
+cwd when `Tools` is a symlink. The door itself is unchanged.
+
+
 0.4.1 — 2026-09-21
 --------------------------------------------------------------------------------
 

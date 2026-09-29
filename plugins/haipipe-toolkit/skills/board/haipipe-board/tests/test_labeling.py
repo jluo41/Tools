@@ -891,17 +891,34 @@ class LabelingReviewFixesTest(unittest.TestCase):
 
     def test_runs_panel_lists_only_each_views_built_types(self):
         # one source: the Workflow map's `view` column (JL 260927: a view shows only its own run types)
-        from live.labeling import _run_types
-        vm = {"runs": [{"run": "rl02_embedding-build_x", "operation": "embedding-build", "status": "complete"}]}
+        from live.labeling import _md_table, _run_type_skills, _run_types, _runs_panel, _space_mapping_ref
+        vm = {"root": Path("labeling"), "runs": [{"run": "rl02_embedding-build_x", "operation": "embedding-build",
+                                         "status": "complete", "target": "x", "name": "run-embedding-build-x",
+                                         "label": "x", "started_at": "", "finished_at": "",
+                                         "outcome": "", "artifacts": []}], "cal": {}}
         types = _run_types(vm)
         views = {t["op"]: (sid, t["views"]) for sid in types for t in types[sid]}
         self.assertEqual(views["embedding-build"], ("data", ["embedding"]))
         self.assertEqual(views["corpus-contract"], ("data", ["contract"]))
         self.assertEqual(views["definition-discussion"], ("labeling", ["definition"]))
-        skills = {t["op"]: t["skill"] for sid in types for t in types[sid]}
-        self.assertEqual(skills["corpus-contract"], "subjective-label-contract")
-        self.assertEqual(skills["definition-discussion"], "subjective-label-definition")
-        self.assertEqual(skills["human-calibration"], "subjective-label-rounds")
+        skills = {t["op"]: t["skills"] for sid in types for t in types[sid]}
+        self.assertEqual(skills["corpus-contract"], ["subjective-label-workflow", "label-building",
+                                                      "label-building-workflow", "subjective-label-contract"])
+        self.assertEqual(skills["definition-discussion"][-1], "subjective-label-definition")
+        self.assertEqual(skills["human-calibration"][-1], "subjective-label-rounds")
+        all_skills = _run_type_skills()
+        self.assertEqual(len(all_skills), 26)
+        _, workflow_rows = _md_table(_space_mapping_ref().read_text(encoding="utf-8"), "Workflow map")
+        self.assertEqual(set(all_skills), {row[2].strip("`") for row in workflow_rows})
+        skill_root = Path(__file__).resolve().parents[5] / "subjective-label" / "skills"
+        for declared in all_skills.values():
+            self.assertEqual(len(declared), 4)
+            self.assertTrue(all((skill_root / name / "SKILL.md").is_file() for name in declared))
+        self.assertEqual(all_skills["test-reserve"][1:3], ["label-building", "label-building-workflow"])
+        self.assertEqual(all_skills["test-gold-lock"][1:3], ["label-scanning", "label-scanning-workflow"])
+        panel = _runs_panel(vm, "data", types["data"])
+        self.assertIn("Run Type skills <code>subjective-label-workflow</code>", panel)
+        self.assertIn('data-skills="subjective-label-workflow|label-building|label-building-workflow|subjective-label-contract"', panel)
         self.assertEqual([t["op"] for t in types["labeling"]][:2], ["definition-discussion", "round-prepare"])
         self.assertEqual(views["human-calibration"], ("labeling", ["rounds"]))
         self.assertEqual(len(types["data"][1]["runs"]) if types["data"][1]["op"] == "embedding-build" else 1, 1)

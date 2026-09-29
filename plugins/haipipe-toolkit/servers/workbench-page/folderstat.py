@@ -33,24 +33,25 @@ ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "outline": "🧭", "draft": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
         "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
         "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
-        "results": "📦", "outline/evidence/supporting-runs": "🧷"}
+        "results": "📦", "draft/evidence/supporting-runs": "🧷",
+        "outline/evidence/supporting-runs": "🧷"}   # a Page not yet moved to draft/
 
 # The two-part unit grammar (haipipe-workbench §🗂/🔌, JL 260831): which category
 # owns each lane, so the table can say it and the gaps line can speak the
 # grammar instead of the pre-260831 flat roster. A flat lane name counts for
 # its category until the sweep folds it in (a stub keeps it resolving after).
 # Evidence is not a top-level category: it is the material workspace owned by
-# Outline.  The old flat lanes remain named here only so Folder can explain
-# their migration destination.
-CATEGORY = {"bibex": "outline/evidence", "display": "outline/evidence",
-            "pagex": "outline/evidence", "materials": "outline/evidence",
-            "skill": "outline",
+# the plan folder, draft/ since Page 0.118.  The old flat lanes remain named here
+# only so Folder can explain their migration destination.
+CATEGORY = {"bibex": "draft/evidence", "display": "draft/evidence",
+            "pagex": "draft/evidence", "materials": "draft/evidence",
+            "skill": "draft",
             "latex": "delivery", "word": "delivery", "slide": "delivery",
             "render": "delivery",
             "chat": "studio", "draw": "studio",
             "scripts": "code", "runs": "code", "results": "code"}
 DERIVED = {"latex", "word", "bibex", "slide", "display", "render"}
-DERIVED_LABELS = {"outline/evidence/supporting-runs"}
+DERIVED_LABELS = {"draft/evidence/supporting-runs", "outline/evidence/supporting-runs"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
 # judgment. display joined the same day (JL: "I want to add the rebuild

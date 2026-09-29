@@ -106,7 +106,7 @@ must match the owner contract: `paper-analysis` for a paper Subject or
 equal the sole key in the Result Bib. The file at `runtime_path` must show
 `family: discovery`, that matching operation, and the person's
 `bib.verification` receipt. The Discovery Task's derived
-`outline/evidence/bibex/<task>.bib` may be listed as an additional convenience
+`draft/evidence/bibex/<task>.bib` may be listed as an additional convenience
 reference, but never as the only external lineage.
 
 A Bib file is a citation projection, not a source entry. Do not encode a

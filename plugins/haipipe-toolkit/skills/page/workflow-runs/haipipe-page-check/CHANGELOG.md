@@ -1,3 +1,7 @@
+## 0.13.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
 ## 0.13.0 · 2026-09-28 · No content hashes (JL 260928)
 
 - `checked_version` is the Page version number and saved time (e.g. `v1.5 260928 1241`), not a

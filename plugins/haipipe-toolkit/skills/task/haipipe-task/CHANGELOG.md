@@ -1,3 +1,7 @@
+## 1.8.2 · 2026-09-29 · synth_df at the Task type level (JL 260929)
+
+- Task types: `description` now names its `synth_df`, one synthetic person's rows in each stored table, shown in every table notebook (`haipipe-task-for-description` 0.4.0 § synth_df; `haipipe-task-for-raw` 0.5.6 for the raw Block).
+
 ## 1.8.1 · 2026-09-29 · A Task Page has no `## Outline` (JL 260929)
 
 - `ref/task-page.md` and `ref/task-page-template.md` no longer say the renderer generates `## Outline`: since haipipe-page 0.121 the plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline table in Draft Space, and a Task Page has no `## Outline` section. The word Outline stays where haipipe-page keeps it: the OUTLINE workflow stage, the Outline table, and the `outline:` grammar key.

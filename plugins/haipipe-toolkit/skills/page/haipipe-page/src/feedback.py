@@ -8,7 +8,7 @@ A Round page carries two tables this reads and nothing else:
   §2B  #### S<x> (<page ids>) · <title>
        - **<id> · <head>** (parent <R..>; <anchors>). **Feedback:** … **State:** <s>.
 
-The register a page keeps is `outline/records/<stem>-feedback.md`, one file grouped by Round: rows DERIVED from the
+The register a page keeps is `draft/records/<stem>-feedback.md`, one file grouped by Round: rows DERIVED from the
 Round (never paraphrased), one field the page authors, `landed:`.
 
 A row carries the Round's WORDS, not only its head: the `**Feedback:**` and

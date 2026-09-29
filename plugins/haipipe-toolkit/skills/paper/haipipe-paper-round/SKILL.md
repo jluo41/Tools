@@ -7,8 +7,8 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-28"
+  version: "0.8.1"
+  last_updated: "2026-09-29"
   group-token: "RD"
   outline:
     mode: fixed
@@ -102,7 +102,7 @@ Paper-<Slug>/
         ├── released/         immutable answering build with the same manifest set
         ├── response/         external Round only: approved response letter/table
         │                     and its response manifest; omitted for internal work
-        └── outline/          Page Context/Outline/Evidence/Log projections
+        └── draft/            Page Context/Outline/Evidence/Log projections
 ```
 
 `sent/` and `released/` contain the exact output set declared by the paper-root
@@ -185,7 +185,7 @@ generated Outline   plan table: item · route · owner · state · checked versi
 The generated Outline is a projection of the Round's current plan, not a
 second feedback ledger. The atomic ledger remains Role 2. Do not author
 `## Outline`, `## States`, `## Files`, `## Discussion`, or `## Log` on the Page;
-the corresponding records belong under `outline/` and are linked from the Page. This keeps the Round
+the corresponding records belong under `draft/` and are linked from the Page. This keeps the Round
 compatible with the common Page CHECK and prevents an old Round's meeting
 notes from becoming a second authority.
 
@@ -311,7 +311,7 @@ telling becomes a human-approved C8 candidate row; it does not create a
 foreign Section or let the Round write a second manuscript.
 
 **Where a routed concern LANDS on its owner** (260831): the owning page's
-`outline/records/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
+`draft/records/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
 during its own OUTLINE pass (`haipipe-page-structure` ⓪ COLLECT). This page never
 writes into another page's folder, and it never dispatches an agent at its
 targets: it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands
@@ -394,7 +394,7 @@ A machine may propose dispositions, route accepted work, and close an already
 answered Decision Now row with the human's words. It may not manufacture the
 decision or mark the Round closed from ledger counts alone.
 
-Gate G5 (the per-round gate) leaves its receipt row under `outline/` and a
+Gate G5 (the per-round gate) leaves its receipt row under `draft/` and a
 linked summary in Role 7, stating the gate, assertion results, snapshot paths,
 and who approved the response receipt.
 

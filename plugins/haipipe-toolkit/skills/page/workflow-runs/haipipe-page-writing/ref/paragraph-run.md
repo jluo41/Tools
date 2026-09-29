@@ -68,7 +68,7 @@ writing:
 - Plan: <approved version and date; C1.P2 job and B1..Bn>
 - Evidence: <each Bullet's folded Item → full Local Run → Result path>
 - Current prose: <Page saved time and this paragraph's prior text, if any>
-- SHAPE Draft: <selected outline/<stem>-outline-v*.md addressed Draft field and
+- SHAPE Draft: <selected draft/<stem>-draft-v*.md addressed Draft field and
   its text, or absent; candidate prose, not accepted Content>
 - Continuity: <whole argument reference, previous accepted paragraph/version,
   next paragraph's approved job; use an explicit boundary for first/last>

@@ -1,3 +1,7 @@
+## 0.22.3 · 2026-09-29 · outline/ to draft/ (JL 260929)
+
+- `cli/agree.py`: its comment's example path is `draft/evidence/`.
+
 ## 0.22.2 · 2026-09-28 · No content hashes (JL 260928)
 
 - Method, rubric, profile and anti-slop records carry path and version, never a content hash: `sha256` catalog override, `profile_hash`, `rules_sha256` and the input/report hashes in `trace.md` are removed. The anti-slop catalog entry's `version` is `skill-version` instead of `content-hash`.

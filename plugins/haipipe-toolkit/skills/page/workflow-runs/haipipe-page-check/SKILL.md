@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, check gate, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-09-28"
+  version: "0.13.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -236,8 +236,8 @@ CHECK administers display acceptance and any owner RULING that exists:
 ```text
 tick             lives on                          reserved by            Run
 ──────────────────────────────────────────────────────────────────────────────────
-`approved:`      outline/<stem>-outline-v<G>.<S>[.<E>].md  haipipe-page-structure  SHAPE; evidence may inherit
-`Decide`         outline/<stem>-evidence-items.md, per item  haipipe-page-structure  SURVEY
+`approved:`      draft/<stem>-draft-v<G>.<S>[.<E>].md      haipipe-page-structure  SHAPE; evidence may inherit
+`Decide`         draft/<stem>-evidence-items.md, per item  haipipe-page-structure  SURVEY
 `Verified`       each authored CITE Evidence Item  haipipe-page-evidence     LAND
 `read:`          legacy outbound source material   owning Run    LAND
 `accepted: ✅`   the page · each display README    this contract            CHECK
@@ -257,7 +257,7 @@ gate receipt, and `local` requires a distinct Page-Face RULING. Legacy Page
 Types retain their declared closing gate.
 
 A further human-reserved write is an ORDER rather than a field: the row rank
-in `outline/skill/`, whose law is "the scan seeds, the person ranks" and where
+in `draft/skill/`, whose law is "the scan seeds, the person ranks" and where
 a refresh never edits, reorders, or removes a row.
 
 Collect required gates across the selected version's plan, Evidence Results,
@@ -281,7 +281,7 @@ the mechanical teeth pass and answers only "another pass" or "ready"; it never
 CLOSEs, and the loop's budget (3 rounds, a finding surviving two consecutive
 rounds is a HOLD) is `haipipe-page-workflow` §The WRITE loop's. (2) A PERSON'S
 "NO" IS ROUTED, never a dead end: it lands as one feedback record in
-`outline/`, `accepted:` stays unticked, and it routes like a finding (wording →
+`draft/records/`, `accepted:` stays unticked, and it routes like a finding (wording →
 CONTENT/WRITE · an absent Run graph → OUTLINE/SURVEY · an incomplete or stale
 Result → EVIDENCE/LAND · the argument → OUTLINE/SHAPE). A checkable "no" is
 promoted into a tooth or a pre-check rule
@@ -318,7 +318,7 @@ durable passed evidence routes to HOLD.
 
 Requirements resolve in the order `haipipe-page` §🔍 states (base and
 template → Page Face owner → current Run Spec owner → the page's authored W records in
-`outline/records/<stem>-requirement.md` and Stage Contract → the division purpose
+`draft/records/<stem>-requirement.md` and Stage Contract → the division purpose
 and each paragraph's job line); a conflict between two sources is reported
 and that criterion is not judged. A non-Section compatibility page may still
 carry `## Writing Style` in its source.

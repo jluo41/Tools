@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, a Claude and Codex session per Section,
   complete-paper assembly, compiling, or review rounds.
 metadata:
-  version: "1.4.1"
-  last_updated: "2026-09-28"
+  version: "1.4.4"
+  last_updated: "2026-09-29"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 

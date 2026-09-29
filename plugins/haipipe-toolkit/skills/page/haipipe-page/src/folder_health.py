@@ -68,7 +68,7 @@ def check_layout(folder: Path, stem: str, out: list):
         out.append(Finding(WARN, "layout",
                            f"process records outside {outline.name}/{RECORDS}/: {', '.join(sorted(loose))} "
                            f"(page.py outline-tidy moves them)"))
-    # `outline/evidence/bibex/` is still written by the Page export (src/common.py
+    # `draft/evidence/bibex/` is still written by the Page export (src/common.py
     # evidence_lane_dir), so only the other retired lanes and files are flagged.
     # A `display/` lane whose units have no DISPLAY Result yet is still read by the
     # paper delivery, so it is reported apart and archived only after those Results exist.

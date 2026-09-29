@@ -13,7 +13,7 @@ already wrote, so it is thirty lines of copying and belongs to no other family.
 
 WHERE AN EXPORT LANDS is the category-aware workbench contract
 (`haipipe-workbench`): a folded Page writes Delivery lanes below
-`<page-dir>/delivery/<lane>/`, Outline lanes below `outline/`, and Studio lanes
+`<page-dir>/delivery/<lane>/`, plan lanes below `draft/`, and Studio lanes
 below `studio/`. A flat legacy Page may fall back to a board-level lane where
 that writer explicitly supports it. `autodeck.py` refuses a flat Page outright.
 

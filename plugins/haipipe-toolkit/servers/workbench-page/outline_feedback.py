@@ -3,7 +3,7 @@
 Each paragraph row of Draft Space carries a (+) and a folded note thread. A
 saved note becomes one `#### Feedback F<nn>` item inside a PENDING Step of the
 Page Writing Run (RP) that owns the paragraph, appended to that Run's current
-Version journal `results/<run>/v<NNN>.md`. The plan file under `outline/` and
+Version journal `results/<run>/v<NNN>.md`. The plan file under `draft/` and
 the Page source are never written here: the agent completes the pending Step
 on its next turn through the fast feedback path of
 `haipipe-page-workflow/ref/interactive-writing-run.md`.

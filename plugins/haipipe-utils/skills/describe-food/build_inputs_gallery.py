@@ -13,7 +13,8 @@ import pathlib
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
-ROOT = next(a for a in HERE.parents
+# resolve() unwinds a Tools symlink, so a SPACE that links Tools in is found from the cwd instead
+ROOT = next(a for a in [*HERE.parents, pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SKILLS = ROOT / "Tools/plugins/haipipe-utils/skills"
 sys.path[:0] = [str(HERE), str(SKILLS / "haipipe-norm")]
@@ -53,13 +54,40 @@ def sample_shape(*names, n=1):
     return take
 
 
+def sample_macro():
+    """The input of 05-macro-nutrition is the typed NUMBER; the name beside it
+    is only a placeholder. One real row per kind of writer, biggest first:
+    WellDoc's 'Just Carbs' with its carbs, OhioT1DM's 'Unknown' with its carbs,
+    dubosson's 'Unknown' with its calories. Values go in as they arrive: a 0
+    that WellDoc stores for a macro nobody typed stays 0, NaN becomes null."""
+    def take(g):
+        sub = g[g["shape"].isin(["carb_declaration", "unnamed"])].copy()
+        sub["typed"] = np.where(sub["Carbs"].fillna(0) > 0, "Carbs",
+                                np.where(sub["Calories"].fillna(0) > 0, "Calories", ""))
+        sub = sub[sub["typed"] != ""].sort_values(["cohort", "PatientID", "CarbsEntryID"], kind="stable")
+        sub["placeholder"] = sub["FoodName"].astype(str).str.strip().str.lower()   # 'just carbs' is 'Just Carbs'
+        groups = sorted(sub.groupby(["placeholder", "typed"]), key=lambda kv: -len(kv[1]))
+        req = {"FoodName": [], "Carbs": [], "Calories": []}
+        prov = []
+        for (_, typed), grp in groups:
+            top = grp.cohort.value_counts()
+            row = grp[grp.cohort == top.index[0]].iloc[0]
+            name = grp["FoodName"].value_counts().index[0]            # its commonest writing
+            req["FoodName"].append(name)
+            for c in ("Carbs", "Calories"):
+                req[c].append(None if pd.isna(row[c]) else float(row[c]))
+            prov.append(f"{name!r} with {typed} typed, {len(grp):,} rows, mostly {top.index[0]}")
+        return req, "Real rows. " + " · ".join(prov) + "."
+    return take
+
+
 def sample_photo(n=1):
     """Return a real CGMacros photo row, not the text placeholder ``Unknown``.
 
     The frozen gold index intentionally omits image paths, so the photo shape
-    must join back to the source Diet frame.  Keep the first frame as an
-    absolute path: that is the contract consumed by stage 0, and it makes the
-    gallery specimen independently checkable on the host that built it.
+    must join back to the source Diet frame. The first frame is written
+    relative to the SPACE root, the way t17's frozen photo names are keyed, so
+    no machine path lands on disk; stage 0 reads it from the SPACE root.
     """
     def take(g):
         rows = []
@@ -87,7 +115,7 @@ def sample_photo(n=1):
             if path.is_file():
                 return {
                     "FoodName": [row["FoodName"]],
-                    "ImagePath": [str(path)],
+                    "ImagePath": [str(path.relative_to(ROOT))],
                 }, ("Real CGMacros row. `Unknown` appears 1,644 times; this "
                     f"specimen carries {path.name} from {row['PatientID']}.")
         raise FileNotFoundError("CGMacros photo rows exist but no JPG is readable")
@@ -137,33 +165,33 @@ SHAPES = [
           by_shape("newline_grams", "single_grams"),
           "5-api-examples/03-text-with-grams/1-grams-1",
           sample=sample_shape("newline_grams", "single_grams")),
-    Shape("05-carb-only", "a carb count with no food named",
-          "A WellDoc app entry MODE, not a food. The Carbs number is real and "
-          "the other macros are NOT MEASURED rather than zero. It is 0% of "
-          "every non-WellDoc cohort.",
-          {"FoodName": ["Just Carbs"]}, by_shape("carb_declaration"),
+    Shape("05-macro-nutrition", "typed macro numbers; the name is only a placeholder",
+          "The input is the NUMBER, not the name. WellDoc's 'Just Carbs' entry "
+          "mode and the public cohorts' 'Unknown' (OhioT1DM carbs, dubosson "
+          "calories) both mean: a count was typed and no food was named. "
+          "Nothing to resolve, so the door answers MISS on purpose and the "
+          "row's own number is the meal's. A macro nobody typed is NOT "
+          "MEASURED, not zero.",
+          {"FoodName": ["Just Carbs"], "Carbs": [45]},
+          by_shape("carb_declaration", "unnamed"),
           "5-api-examples/04-text-names-no-food/1-just-carbs",
-          sample=sample_shape("carb_declaration")),
+          sample=sample_macro()),
     Shape("06-mixed-declaration", "a carb count AND a food, together",
           "'Just Carbs; White Rice' is both shapes at once, which is why typing "
           "must happen per COMPONENT and not per meal string.",
           {"FoodName": ["Just Carbs; White Rice"]}, by_shape("mixed_declaration"),
           "5-api-examples/04-text-names-no-food/3-dinner",
           sample=sample_shape("mixed_declaration")),
-    Shape("07-named-nothing", "the food was never named",
-          "'Unknown' is 100% of CGMacros, OhioT1DM and dubosson: the meal was "
-          "photographed or logged, never typed. Nothing to resolve, and saying "
-          "so is the answer.",
-          {"FoodName": ["Unknown"]}, by_shape("unnamed"),
-          "5-api-examples/04-text-names-no-food/2-unknown",
-          sample=sample_shape("unnamed")),
-    Shape("08-image", "a photograph, no name at all",
-          "CGMacros is the only cohort where a meal PHOTO and five real macros "
-          "sit on the same row, so it is the only place this shape exists.",
-          {"FoodName": ["Unknown"], "ImagePath": ["<a CGMacros photo>"]},
+    Shape("07-image", "a photo in, macros out",
+          "The input is the PHOTO; the output is the macros. The door reads it "
+          "only when an image engine is set: stage 0 names the food from the "
+          "photo, then the text lane finds its nutrition. CGMacros is the only "
+          "cohort where a meal photo and five measured macros sit on the same "
+          "row, so its measured macros are the right answer to check against.",
+          {"ImagePath": ["<a CGMacros photo>"], "FoodName": ["Unknown"]},
           by_shape("photo_only"), "5-api-examples/06-image-upload",
           sample=sample_photo()),
-    Shape("09-batch", "several meals at once",
+    Shape("08-batch", "several meals at once",
           "A call shape rather than a row shape. Order is preserved and each "
           "meal keeps its own verdict.",
           {"FoodName": ["White Rice", "Just Carbs", "Unknown", "Banana"]},

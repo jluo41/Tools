@@ -8,8 +8,8 @@ description: >-
   academic voice, humanize, writing feedback and prose evaluation.
   Page owns planning, Run state and acceptance. Trigger: /haipipe-writing.
 metadata:
-  version: "0.22.2"
-  last_updated: "2026-09-28"
+  version: "0.22.3"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

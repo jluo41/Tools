@@ -16,7 +16,7 @@ from src.page_migration import migrate_embedded_drafts, migrate_global_paragraph
 
 
 def _repoint_citations(folder: Path, moves: dict) -> int:
-    """Rewrite `outline/<name>` to `outline/<sub>/<name>` in the Page's text files.
+    """Rewrite `draft/<name>` to `draft/<sub>/<name>` (or the same under `outline/`) in the Page's text files.
 
     `moves` maps a moved file name to its subfolder (`previous` or `records`).
     """
@@ -47,7 +47,7 @@ def _repoint_citations(folder: Path, moves: dict) -> int:
 
 
 def outline_tidy(target: Path, dry_run: bool = False) -> dict:
-    """Current Outline Draft-first; superseded versions under outline/previous/."""
+    """Current plan Draft-first; superseded versions under draft/previous/."""
     from src.outline_version import (latest_outline, plan_files, retire_superseded, retire_records,
                                      version_key, PREVIOUS, RECORD_KINDS)
     from src.plan_shape import draft_first_plan, iter_plan_bullets
@@ -57,7 +57,7 @@ def outline_tidy(target: Path, dry_run: bool = False) -> dict:
     outline = (target if target.name in ("outline", "draft") else
                plan_dir(target if target.is_dir() else target.parent))
     if not outline.is_dir():
-        raise ValueError(f"No outline/ folder at {outline}")
+        raise ValueError(f"No plan folder (draft/) at {outline}")
     stem = target.stem if target.is_file() else None
     current = latest_outline(outline, stem)
     if current is None or current.parent != outline:
@@ -122,9 +122,9 @@ def main(argv=None):
     migrate_drafts.add_argument("page", type=Path)
     tidy = commands.add_parser(
         "outline-tidy",
-        help="Current Outline Draft-first; old versions to outline/previous/, records to outline/records/",
+        help="Current plan Draft-first; old versions to draft/previous/, records to draft/records/",
     )
-    tidy.add_argument("page", type=Path, help="Page Face .md, Page Folder, or its outline/ folder")
+    tidy.add_argument("page", type=Path, help="Page Face .md, Page Folder, or its draft/ folder")
     tidy.add_argument("--dry-run", action="store_true")
     layout = commands.add_parser(
         "draft-layout",

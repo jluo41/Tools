@@ -7,8 +7,8 @@ description: >-
   the Story's Section Narrative rows, and Section Pages. Use when researching,
   creating, refreshing, or comparing a venue Page.
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-09-28"
+  version: "0.9.2"
+  last_updated: "2026-09-29"
   page_ruling: none
   outline:
     mode: fixed

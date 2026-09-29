@@ -94,6 +94,14 @@ envelope with missing canonical outputs is truthful non-success, never `Done`.
 Existing `rNN_labeling-*` envelopes remain readable migration history. Never
 rename or alias them; every newly allocated Labeling Run uses `rlNN`.
 
+The [Run Type–Skill table](ref-space-mapping.md#run-type-skills) declares the
+guidance relevant to each operation. A View's context Skill is only one member
+of that set. Current Tickets record the worker but no resolved or actually
+loaded Skill identities or versions, so a reader must not present the table as
+proof of a historical Run's Skill usage. A future Ticket/runtime extension
+should distinguish the declared set from verified use without rewriting old
+envelopes.
+
 ## 3. The 26 Labeling operation kinds
 
 The table names each Labeling Run Type and its minimum canonical Result. A

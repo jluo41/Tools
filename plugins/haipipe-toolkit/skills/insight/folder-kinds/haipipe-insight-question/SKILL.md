@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.3.3"
-  last_updated: "2026-09-28"
+  version: "1.3.4"
+  last_updated: "2026-09-29"
   workflow: haipipe-insight-workflow
   folder_kind: question
   primary_face: page
@@ -89,7 +89,7 @@ Classify the minimum rung that can answer the ask; identify each eligible
 selected cell; update the Queue from Page CLOSE plus Run and GI control receipts; preserve
 partial-final reasons; and propagate reopening when a cited parent changes.
 The register pen writes queue state; target Folders write receipts in their own
-`outline/records/<stem>-log.md`.
+`draft/records/<stem>-log.md`.
 
 For the pre-climbed external-parent bridge, verify the five assertions owned by
 `haipipe-insight-workflow`, write the exact item Result/RF packet and local W Folder on
@@ -146,6 +146,6 @@ permission.
 
 - Runtime: `0-MT-meta/MT01-question-data/` through `MT04-question-wisdom/`
 - Queue grammar is owned here; register receipts live at
-  `<register>/outline/<register-stem>-log.md`; no private scripts.
+  `<register>/draft/records/<register-stem>-log.md`; no private scripts.
 - Question Groups are derived by
   `../../haipipe-insight/ref/question-groups.md`; no group path is created.

@@ -1,3 +1,8 @@
+## 0.94.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+- Server `workbench-page` (JL 260929): `evidence.py` links a saved evidence view under the Page's real plan folder (`CTX.plan`, `draft/` since 0.118) instead of a fixed `/outline/evidence/`, which broke on every moved Page, and its empty-state line names that folder; `folderstat.py` gives `draft/evidence/supporting-runs` its 🧷 icon and derived flag (only the `outline/` label had them) and names `draft/evidence` as the flat lanes' destination; `export.py`, `outline.py`, `outline_feedback.py` docstrings say `draft/`.
+
 ## 0.94.0 · 2026-09-28 · The skill describes the workbench that ships
 
 - Delivery Runs are named `run-delivery-<lane>` (`delivery.py::FIXED_RUNS`, `runs_panel.py::_FORMAT`, the run card's `^run-delivery-` button); `ref/delivery.md` and `ref/space-mapping.md` follow.

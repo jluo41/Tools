@@ -11,8 +11,8 @@ description: >-
   create, refresh, read, or check a Paper Ideation Page; route idea generation,
   novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "1.1.1"
-  last_updated: "2026-09-28"
+  version: "1.1.2"
+  last_updated: "2026-09-29"
   group-token: "Story00"
   outline:
     mode: grammar
@@ -143,7 +143,7 @@ Paper-<Slug>/
     ├── Story00-ideation/              THIS PAGE · one direction, its ideas, ranked
     └── StoryA-misq-phytrait-discretion/                       what the first selected idea became:
         ├── StoryA-misq-phytrait-discretion.md                 one idea · one prospective paper blueprint
-        └── outline/                   its Page workflow records
+        └── draft/                     its Page workflow records
     (a second surviving idea is StoryB-<desk>-<idea-slug>/ · the letter identifies the Story)
 ```
 

@@ -1,3 +1,8 @@
+## 1.4.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+- `scripts/audit_page_compatibility.py`: a Page-root `evidence/` is told its records belong under `draft/evidence/`.
+
 ## 1.4.3 · 2026-09-29 · Per-page Appendix pairs
 
 - `scripts/create_section_sessions.py`: an Appendix that keeps one older Codex thread per page now gets one call-peer pair per page, `<Short>-Appendix-<letter>`, with the new Appendix Claude session, as `ref/section-sessions.md` already said; before, it got no pair at all. `codex_name()` reads the thread's name from the Codex session index for the pair. Found on Paper-CGMtoHbA1c (three pairs registered by hand); checked on a stubbed two-appendix paper.

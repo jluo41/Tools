@@ -5,6 +5,13 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.6] - 2026-09-29 - Reader notebooks with synth_df (JL 260929)
+
+- Raw understanding Block `b00`: every table Task has a reader notebook
+  `<task>/notebooks/<dataset>_<table>.ipynb` with its `synth_df`, and `t93` the dataset notebook;
+  the Job's `src/synthetic_individual.yaml` holds the one synthetic person. For PHI they are built
+  on the laptop from the fetched Results by the Job's `src/build_notebooks.py` (REACH PD2D, JL 260929).
+
 ## [0.5.5] - 2026-09-29 - Generated output and encoded ids (JL 260929)
 
 - Privacy: encoded ids (`patient_id_encoded`, `invitation_id_encoded`) are meaningless UUIDs, not PHI; a notebook may show them and they never block a commit.

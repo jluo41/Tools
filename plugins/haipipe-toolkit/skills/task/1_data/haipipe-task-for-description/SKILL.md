@@ -4,8 +4,9 @@ description: >-
   Table-description Task specialist: one Task per stored table produces its
   Table Card, a notebook and a card.md that say what one row is (proven by
   counting), what each column means (typed in a column dictionary, never
-  invented), what the values look like (one picture per meaning group), a
-  made-up example row, what to watch out for, where each column goes, and
+  invented), what the values look like (one picture per meaning group), its
+  synth_df (one synthetic person's rows in the table, invented values in the
+  real columns), what to watch out for, where each column goes, and
   what changed since the earlier version. Works on any parquet table: a raw
   release, a ProcDf, a Record table, an external asset. A raw table in any
   format (CSV, Excel, XML, per-person JSON) gets the same card from its
@@ -13,11 +14,11 @@ description: >-
   question open. Called by /haipipe-task when task-type=description.
   Trigger: describe a table, table card, what does this table look like, data
   dictionary, column meanings, explain a table, table notebook, what is one
-  row, describe every column.
+  row, describe every column, synth_df, synthetic patient, synthetic rows.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-27"
+  version: "0.4.0"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -157,6 +158,16 @@ tasks/bNN_<block>/
   One dictionary for all versions means a meaning is typed once.
 - Other stores work the same way: the config's `table:` names a ProcDf, a
   Record table, or an `ext_*` asset table instead of a raw file.
+- **Server-resident data** (PHI, read only on the server): the profile Run runs
+  there and brings back masked metadata only, and an inline server Run brings
+  back no executed notebook. The notebooks are then built on the laptop after a
+  pull, from those fetched Results and `synth_df`, by the Job's
+  `src/build_notebooks.py` (sources `src/table_notebook.py`,
+  `src/dataset_notebook.py`, views `src/table_views.py`), into the same
+  `<task>/notebooks/<dataset>_<table>.ipynb` and
+  `t93_source_handoff/notebooks/<dataset>_overview.ipynb`. They are a view, like
+  a board build, not a Run; they are kept out of the cluster's deploy. REACH
+  PD2D `b00_rawdata/j51_reachpd2d_v260922_raw` is the reference.
 
 
 The Table Card, section by section
@@ -171,13 +182,52 @@ the table   what it is (typed), file, rows × columns, time span, column map pic
             and what is left once they are dropped
 ②  columns  one table and one picture per meaning group: meaning, role,
             filled %, distinct, typical values
-③  example  a made-up row: each column's most common value or median;
-            identifying columns show a placeholder
+③  synth_df one synthetic person's rows in this table (§ synth_df below);
+            without a typed story, one made-up row of typical values
 ④  gotchas  grain breaks, duplicates, empty and constant columns, undescribed
             or unconfirmed meanings, dictionary notes
 ⑤  feeds    which downstream reader (ProcName, CaseFn...) reads each column
 ⑥  changes  added, removed, retyped, or 20-point fill moves since compare_to
 ```
+
+
+synth_df: one synthetic person, at the Task and at the Task type
+----------------------------------------------------------------
+
+A column list says what a table can hold; `synth_df` shows what it does hold,
+as rows a reader can point at. It is the table's rows for ONE made-up person,
+in the real columns and their real order, with invented values (JL 260929).
+
+```text
+Task level        every table Task's notebook shows its table's synth_df under
+                  "What do one person's rows look like?", right after "What is
+                  this table?", then draws those rows the way the table is read
+                  (values on their cut-points, events on a time line, periods as
+                  bars, months as stacks)
+dataset level     the dataset notebook shows the same person through every table:
+                  one time line of all her dated rows, and her rows per table
+Task type level   this section: every description or raw-profile Task of any
+                  Project shows a synth_df; a new dataset types its story once
+```
+
+- **One story per dataset**, typed once in the Job's `src/`
+  (`synthetic_individual.yaml`, read by `synthetic_individual.py`), so her visit
+  ids and days agree in every table that records the same visit. The builder
+  fills what follows from the story: ids, each table's own time columns, flags.
+- **Invented, never copied or sampled.** No value comes from a real row, so
+  `synth_df` is laptop-safe and shareable even for a server-resident PHI table;
+  it is never used for a substantive result.
+- **Obeys the table's rule.** A row sits in a filtered table only if the rule
+  that fills the table would put it there (an HbA1c of 6.1 in a prediabetes
+  table, 6.8 in a diabetes one), so the rows teach the rule.
+- **Fails on drift.** A story key that is not a column of the table stops the
+  build; a story therefore never outlives a schema change silently.
+- A dataset with no typed story shows one made-up row of typical values
+  (each column's most common value or median; identifying columns show a
+  placeholder), still named `synth_df`.
+
+Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/j51_reachpd2d_v260922_raw/`
+(`src/synthetic_individual.yaml`, 28 tables).
 
 
 Commands
@@ -251,6 +301,9 @@ Rules
    share a name. Its cells stay short: the drawing code lives in the Block's
    `src/` (WellDoc: `table_views.py`, `dataset_views.py`) and each cell is one
    call under its question, so the notebook reads from top to bottom (JL 260927).
+12. **Every table notebook shows its synth_df**, and every dataset notebook shows
+   the same person through all its tables (§ synth_df). A notebook is generated
+   from its `.py`: never edit it; change the `.py` and rebuild (JL 260929).
 
 
 Related

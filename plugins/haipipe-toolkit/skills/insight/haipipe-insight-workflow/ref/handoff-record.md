@@ -13,10 +13,10 @@ The Board and Design viewers read this evidence; they grant no approval.
    partition register for a partition-major verdict. Resolve current
    applicability at the source owners; a historical Result alone cannot prove it.
 2. A person states the signature for that exact payload. Wisdom records GI5 in
-   `outline/<wisdom-stem>-log.md`, with the actor, Runtime id, Page pin, signature,
+   `draft/records/<wisdom-stem>-log.md`, with the actor, Runtime id, Page pin, signature,
    and dependency versions. Record the person's authorization; never synthesize it.
 3. Question settles each SERVES cell against that same Page and signature and
-   writes GI6 in its own `outline/<register-stem>-log.md`.
+   writes GI6 in its own `draft/records/<register-stem>-log.md`.
 4. Index these existing records in the Wisdom Folder's `workflow/handoff.yaml`
    and the aggregate Runtime's `resource_controls`. The index creates no Run and
    has no independent approval authority. Any missing required record,
@@ -52,7 +52,7 @@ page:
 dependencies:
   - {path: <current-source-or-version-record>, version: <exact-version>}
   - {path: <current-verdict-record>, version: <exact-version>}
-gi5: {path: outline/FW01-counsel-log.md#signed-v001}
+gi5: {path: draft/records/FW01-counsel-log.md#signed-v001}
 gi6:
   - {path: <Question-Outline-log>#settled-qw1-v001}
 ```

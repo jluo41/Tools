@@ -9,15 +9,15 @@ description: >-
   the left and a Runs panel on the right, and one write door,
   POST /_board/labeling/act, for exactly ten engine-checked actions (zoom in).
   Studio Chat opens separately. Use when designing, opening, diagnosing, or
-  implementing the labeling plugin, tab, or folder, or /haipipe-workbench-labeling.
+  implementing the labeling Workbench, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
-  version: "0.22.0"
+  version: "0.22.1"
   last_updated: "2026-09-29"
 ---
 
 # /haipipe-workbench-labeling · one job, one folder, one operated surface
 
-**LOAD `haipipe-plugin` and `subjective-label` FIRST.** This is a LANE plugin:
+**LOAD `haipipe-workbench` and `subjective-label` FIRST.** This is a Workbench lane:
 it owns the `labeling/` roster row and its own surface. The family workflows
 own semantic order and writes; this skill owns how that job lives beside and
 appears beside one Page.
@@ -44,7 +44,7 @@ Labeling   Definition · Rounds · Guideline
 Quality    Test · Evaluation · Audit
 Delivery   Handoff · Scan · Final labels
 Runs       the right side of every Space, at every width: the current view's Run types
-           in step order · the selected Run (its view's one skill, Resume/Rerun, ▸ Prompt +
+           in step order · the selected Run (its Run Type's declared Skills, Resume/Rerun, ▸ Prompt +
            Copy, Running process, Results); ▸/◂ folds it to a strip
 drawers    ?drawer=workflow (Phases · SOP · Workflow map) · ?drawer=allruns; no button
 write      POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
@@ -138,9 +138,9 @@ A Runs panel lists only the current view's Run types, from the Workflow map's
 `view` column, in its `step` order, each with this job's count. Types the map marks `not built yet`
 stay in the map only; a view with no type says `No runs yet.` Below the types
 sits the selected Run: its name (`run-human-calibration-round-01`, the file id
-on hover), its state, a `Skill` line naming its view's one skill (from the
-`## View skills` table in `ref/ref-space-mapping.md`; JL 260929: a skill is never
-shared by two views), `Resume` (an open Run, same rlNN) or `Rerun` (a closed one,
+on hover), its state, a `Run Type skills` line naming the declared set (from
+`## Run Type skills` in `ref/ref-space-mapping.md`), `Resume` (an open Run,
+same rlNN) or `Rerun` (a closed one,
 new rlNN), a folded `▸ Prompt` whose `Copy` works while folded, Running process
 and Results. `+ New Run` shows an open prompt for the selected type. Every button
 only copies a prompt; none starts a Run. `▸/◂` folds the panel to a thin strip,
@@ -160,7 +160,8 @@ shows the friendly operation name/type, where its action or result belongs,
 the output path, and a per-type count. The Runs panels and `?drawer=allruns` are the actual inventory:
 one row per allocated Ticket with its runtime status and outcome. Do not infer
 a Run or status from the catalogue row or count. Each Run card names its
-view's one skill; the matrix does not render bounded target,
+Run Type's declared Skills, which do not prove what a historical Run loaded;
+the matrix does not render bounded target,
 actor/prerequisites, or a link to a matching Ticket.
 
 The supported first-use path is: create the Page-local job in Studio Chat from
@@ -305,7 +306,7 @@ the JUDGE-by-chat instructions. It does not start a Run or write a judgment;
 the chat must call the permitted calibration actions. Offer a copy control
 only when there is a concrete next interaction, such as continuing an open
 round. A richer per-Run prompt should also bind the Board/Folder/Page, target,
-Run Type, its view skill, prerequisite state, matching Ticket/status when
+Run Type, its declared Skills, prerequisite state, matching Ticket/status when
 one exists, and the next allowed action.
 The current round prompt still lacks a stable Board/Folder/Page identity, the
 exact target field, the matching Ticket id/status, and an explicit
@@ -356,7 +357,7 @@ stop      at human gate, HOLD, invalidation, step limit, or completion
 When implementing or changing the plugin, keep these pieces aligned:
 
 ```text
-roster       haipipe-plugin/ref/roster.md · labeling/ row first
+roster       haipipe-workbench/ref/roster.md · labeling/ row first
 registry     plugins/subjective-label/servers/workbench-labeling/assets/js/10-drawer/60-workbench-labeling.js · one tab registration
 surface      Board `plugins/subjective-label/servers/workbench-labeling/labeling.py` · four Spaces + Runs panels, Label definitions, Rounds tables, `LabelingMixin`
              standalone `engine/page_plugin.py` · older read-only presenter

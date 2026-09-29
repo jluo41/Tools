@@ -191,7 +191,7 @@ target: {question: QW2, partition: F}
 status: passed
 authority: haipipe-insight-question
 evidence: [<exact-Page-path-and-version>, <person-signature-source>]
-receipt: <register>/outline/<register-stem>-log.md#<record-id>
+receipt: <register>/draft/records/<register-stem>-log.md#<record-id>
 ```
 
 Each dated control receipt records `workflow_runtime_id`, target, assertion,

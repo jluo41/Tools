@@ -63,8 +63,8 @@ them; they do not expand the Page Face:
 
 | Backstage record | Owner | Completion test |
 |---|---|---|
-| Outline / Draft | Draft Space and `outline/` | The current plan, Bullets, Drafts, and the Structure list remain addressable and internally consistent. |
-| Aims / requirements | Run Space, CHECK, and `outline/` records | Targets and completion tests are available to the workflow even when no `## Aims` is rendered on the Page. |
+| Outline / Draft | Draft Space and `draft/` | The current plan, Bullets, Drafts, and the Structure list remain addressable and internally consistent. |
+| Aims / requirements | Run Space, CHECK, and `draft/` records | Targets and completion tests are available to the workflow even when no `## Aims` is rendered on the Page. |
 | Stage Contract | Page configuration and upstream records | Required inputs, venue, and handoff are resolvable without appearing in the reading surface. |
 
 The Outline check also requires one uninterrupted Page-global paragraph

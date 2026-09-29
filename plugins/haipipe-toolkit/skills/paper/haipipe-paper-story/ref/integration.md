@@ -12,7 +12,7 @@ Do not mistake those two levels of planning for each other.
 
 G0–G5 are owned by `haipipe-paper-workflow`. Existing human selection,
 release, settlement and Section-release records stay in the Story's
-`outline/` log and the shared `workflow/` receipts, using their existing
+`draft/records/` log and the shared `workflow/` receipts, using their existing
 schemas. Work owners keep job/run state, budgets, commands and accepted
 Results. C6/C7 may link those records; C5 summarizes their evidential meaning.
 Preserve every existing receipt during a content revision. No Story row,
