@@ -30,7 +30,7 @@ skipped). Exit 1 when any Page is behind.
 | `health` | Does the Folder agree with itself (one plan, Drafts on the Page, Evidence ids, delivery age)? |
 | `/haipipe-page-check` | Is one built Page version good enough to close? (Page CHECK, judges prose) |
 
-## Rules (layout 0.118)
+## Rules (layout 0.121)
 
 Each rule names the skill version that introduced it; `·` means it does not
 apply yet (for example, no plan written).
@@ -44,7 +44,7 @@ apply yet (for example, no plan written).
 | `### Structure Overview` present | 0.118 | `page.py draft-layout <page>` |
 | process records in `draft/records/` | 0.117 | `page.py draft-layout <page>` |
 | Evidence Markdown grouped (`## Citations`, `## Displays`, `## Values`) | 0.118 | `page.py draft-layout <page>`; an item of another kind is retyped first (EVIDENCE work) |
-| Page runs (`rp-`, `re-`, `rd`) sorted into Space folders; Task Runs `rNN_` and Design Run tickets `rdNN_<commission\|generate\|verify\|adopt\|revise\|reject>_*` stay flat | 0.118 | `page.py draft-layout <page> --sort-runs` |
+| runs/ in place: a readable run (`run-<kind>-<MMDD>-<slug>`, `run-delivery-<lane>`) sits flat in `runs/`; an older Page run (`rp-`, `re-`, `rd`) sits in its Space folder until renamed; Task Runs `rNN_` and Design Run tickets `rdNN_<commission\|generate\|verify\|adopt\|revise\|reject>_*` stay flat | 0.121 | `page.py run-names <page>` (renames older runs and moves every readable ticket flat) |
 | `results/<run>/` flat by run name | 0.118 | move `results/<space>/<run>/` up |
 | no links the Page server refuses | 0.118 | replace the link with the real folder |
 | no `outline/` paths in the Page's own files, Python `/ "outline"` joins included ("outline/content" prose is not a path) | 0.118 | `page.py draft-layout <board>` (links between Pages need the Board run) |
@@ -62,7 +62,9 @@ One command brings a Page, a Board or a Task tree to the latest layout:
 `page.py draft-layout <page | board | tasks-dir> --sort-runs`. Preview it with
 `--dry-run` (it counts the path rewrites too). Run it on the Board, not Page by
 Page, so links between Pages (`../Other/outline/...`) are rewritten. Then
-rebuild generated views that cite the old paths (`board/`, `delivery/`) and run
+run `page.py run-names` on each Page (older run names become readable, their
+tickets flat; the day comes from the ticket or its Result), rebuild generated
+views that cite the old paths (`board/`, `delivery/`), and run
 `check-page-folder` again. The printed fix commands use paths relative to where
 you ran the check.
 
@@ -108,6 +110,7 @@ page() { .venv/bin/python Tools/plugins/haipipe-toolkit/skills/page/haipipe-page
 for d in examples*; do page check-page-folder "$d"; done   # every Page in the SPACE: latest or behind
 page draft-layout <root> --sort-runs --archive-evidence --dry-run   # <root> = a Board, a paper, or tasks/
 page draft-layout <root> --sort-runs --archive-evidence
+page run-names <root>/<group>/*                        # every Page: readable run names, flat runs/
 page check-page-folder <root>                        # behind only where Evidence work is left
 ```
 

@@ -1,4 +1,6 @@
-## 0.121.1 · 2026-09-29 · run-names keeps the run's own day
+## 0.121.1 · 2026-09-29 · run-names keeps the run's own day; the layout check agrees with it
+
+- `src/layout_check.py`: the rule `runs/ sorted by Space` becomes `runs/ in place` (since 0.121, `LAYOUT_VERSION` 0.121): a readable run sits flat in `runs/`, an older Page run sits in its Space folder until `page.py run-names` renames it, and the fix names `page.py run-names`. Before, `folder_for` mapped readable names to a Space too, so every Page that `run-names` had just flattened was reported behind (all 11 Paper-CGMtoHbA1c Pages). `fn/check-page-folder.md` rule table and recipe follow. Test: `test_readable_runs_sit_flat_and_older_runs_sit_in_their_space`.
 
 - `src/run_rename.py::_day`: with no `started_at` or dated stem, the day is the oldest file time of the ticket and its Result, not the ticket's alone. `draft-layout --sort-runs` rewrites tickets, so on Paper-CGMtoHbA1c every Scratch Run from 0919 to 0921 was named `run-scratch-0929-…`; `results/` is never edited, so its files keep the real day.
 

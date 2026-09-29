@@ -18,9 +18,10 @@ import re
 from .outline_version import PREVIOUS, RECORD_KINDS, RECORDS, latest_outline, plan_dir, plan_files
 from .plan_layout import is_sectioned, overview_lines
 from .plan_shape import iter_plan_bullets
+from . import run_names
 from .run_folders import FOLDERS, folder_for
 
-LAYOUT_VERSION = "0.118"
+LAYOUT_VERSION = "0.121"
 # Evidence lanes that stay live in `draft/evidence/`: the Page export writes `bibex/`, and
 # `materials/` holds the Page's imports (haipipe-workbench ref/roster.md). Every other
 # lane is retired Outline evidence, `display/` once its units are DISPLAY Results.
@@ -31,7 +32,7 @@ VERSIONED = re.compile(r"-(?:outline|draft)-v\d")
 OUTLINE_PATH = re.compile(r"(?<![\w.-])outline/")
 TEXT = {".md", ".yaml", ".yml", ".json", ".sh", ".py", ".txt", ".tex", ".html"}
 FIX_LAYOUT = "page.py draft-layout {page}"
-FIX_RUNS = "page.py draft-layout {page} --sort-runs"
+FIX_RUNS = "page.py run-names {page}"
 
 
 @dataclass
@@ -195,14 +196,18 @@ def check_page_folder(target: Path) -> dict:
           evidence_detail if grouped is False else "no evidence items", evidence_fix)
 
     runs = folder / "runs"
-    # Only Page runs (rp-, re-, rd) move to Space folders; Task Runs (rNN_) stay flat.
-    loose_runs = sorted(p.name for p in runs.iterdir() if p.is_file() and not p.name.startswith(".")
-                        and folder_for(p.stem)) if runs.is_dir() else []
-    sorted_runs = [d.name for d in runs.iterdir() if d.is_dir() and d.name in FOLDERS] if runs.is_dir() else []
-    _rule(rules, "runs/ sorted by Space", "0.118",
-          None if not loose_runs and not sorted_runs else not loose_runs,
-          "%d Page run(s) loose in runs/" % len(loose_runs) if loose_runs else
-          ", ".join(sorted(sorted_runs)) or "no Page runs", FIX_RUNS)
+    # A readable run (`run-<kind>-<MMDD>-<slug>`, 0.121) sits flat in runs/; an older Page run
+    # (rp-, re-, rd) sits in its Space folder until `page.py run-names` renames it; Task Runs
+    # (rNN_) stay flat.
+    tickets = [p for p in runs.rglob("*") if p.is_file() and not p.name.startswith(".")
+               and (p.parent == runs or p.parent.name in FOLDERS)] if runs.is_dir() else []
+    page_runs = [p for p in tickets if folder_for(p.stem)]
+    loose = sorted(p.name for p in page_runs if p.parent == runs and not run_names.is_run_name(p.stem))
+    nested = sorted(p.name for p in page_runs if p.parent != runs and run_names.is_run_name(p.stem))
+    _rule(rules, "runs/ in place", "0.121", None if not page_runs else not loose and not nested,
+          "; ".join(filter(None, ["%d older Page run(s) loose in runs/" % len(loose) if loose else "",
+                                  "%d readable run(s) inside a Space folder" % len(nested) if nested else ""]))
+          or "%d Page run(s) in place" % len(page_runs), FIX_RUNS)
     results = folder / "results"
     nested = sorted(d.name for d in results.iterdir() if d.is_dir() and d.name in FOLDERS) \
         if results.is_dir() else []

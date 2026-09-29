@@ -200,12 +200,29 @@ def test_check_page_folder_reports_behind_then_latest(tmp_path: Path):
     before = check_page_folder(page)
     behind = {r["rule"] for r in before["rules"] if r["state"] == "BEHIND"}
     assert before["verdict"] == "behind" and "plan folder is draft/" in behind
-    assert "runs/ sorted by Space" in behind and "plan in three sections" in behind
+    assert "runs/ in place" in behind and "plan in three sections" in behind
     draft_layout(page, sort_runs=True)
     after = check_page_folder(page)
     assert after["verdict"] == "latest", [r for r in after["rules"] if r["state"] == "BEHIND"]
     assert (page / "runs" / "r01_task_run.sh").is_file()  # a Task Run stays flat
     assert pages_in(tmp_path / "Board") == [page.resolve()]
+
+
+def test_readable_runs_sit_flat_and_older_runs_sit_in_their_space(tmp_path: Path):
+    from src.layout_check import check_page_folder
+    page = tmp_path / "Sample-Page"
+    (page / "runs" / "evidence-run").mkdir(parents=True)
+    (page / "Sample-Page.md").write_text("# Sample-Page\n", encoding="utf-8")
+    (page / "runs" / "run-section-0920-c1-p1.md").write_text("x\n", encoding="utf-8")
+    (page / "runs" / "run-delivery-webpage.sh").write_text("x\n", encoding="utf-8")
+    (page / "runs" / "evidence-run" / "re-value-01_x.md").write_text("x\n", encoding="utf-8")
+    state = lambda: next(r["state"] for r in check_page_folder(page)["rules"] if r["rule"] == "runs/ in place")
+    assert state() == "PASS"
+    (page / "runs" / "rp-sec-02.md").write_text("x\n", encoding="utf-8")              # older, loose
+    assert state() == "BEHIND"
+    (page / "runs" / "rp-sec-02.md").unlink()
+    (page / "runs" / "run-section-0920-c1-p1.md").rename(page / "runs" / "evidence-run" / "run-section-0920-c1-p1.md")
+    assert state() == "BEHIND"                                                          # readable, nested
 
 
 def test_draft_layout_on_a_task_group_moves_every_page_and_the_paths_around_them(tmp_path: Path):
