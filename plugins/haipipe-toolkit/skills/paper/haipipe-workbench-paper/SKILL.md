@@ -8,8 +8,8 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.14.0"
-  last_updated: "2026-09-29"
+  version: "0.16.1"
+  last_updated: "2026-09-30"
 ---
 
 # /haipipe-workbench-paper · the Paper-level work console
@@ -56,7 +56,7 @@ The route is `#<space>[/<tab>][/<view>]`:
 
 ```text
 ideation
-story      spine · logic-work
+story      spine · logic-work · related
 sections   main · appendix          ×  table · narrative · evidence
 delivery   latex · word · rounds    ×  preview · artifacts · checks   (rounds has no views)
 ```
@@ -252,10 +252,12 @@ opening to each run ticket and its receipt state; a Discovery task also says wha
 found). Work built in another project says "built outside tasks/" with its path; a row
 with no folder says "no folder yet".
 
-Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): each group label is a colored band
-(no left stripe, JL 260930): Hypotheses and This question's work blue, Potential claims green,
-Potential contributions orange, Foundation work gray (its band says "shared by all 5
-questions"). Each question's header row has a light background. Every work item folds,
+Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): each group label is a colored word
+with no fill and no left stripe (JL 260930: "I don't want to make it too colorful"; no
+left stripe): Hypotheses and This question's work blue, Potential claims green, Potential
+contributions orange, Foundation work gray (its label says "shared by all 5
+questions"). Each question's header row has a light background. A picked item keeps a
+clear background; its left stripe alone marks it. Every work item folds,
 closed by default (JL 260929: "右边那些 results 也是可以 click 的，也是可以 collapse 的"); its
 closed line still shows its stage, its question, "for Hypotheses 1a and 1b", "also for
 Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
@@ -263,6 +265,43 @@ Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
 Questions start closed (JL 260930): the questions alone read as the paper's outline, with nothing else on the closed line (JL 260930: no tally). The closed line is two lines: the "Question N" pill with the block's `**Name**` beside it, then the full question below. board.md `story-current: <Story stem>` limits the tree to that Story (a submitted paper and its redesign are two Stories; the tree shows the one being worked on, with no Story label); without it every Story's questions are drawn. Picking: a click on a closed question opens it and selects it for the Runs panel; on an open, unselected one it selects; on the selected one it closes. A click on a hypothesis selects it, lights the work that tests it and opens it.
 Opening a work item selects it; closing it clears the pick. Under 1100px the right half
 drops below the left. The only box is the tree's frame.
+
+**Related Papers** (`#story/related`, JL 260930: "each paper to be a card that I can
+read the original pdf"): the papers this study stands beside, one card each. The
+paper's target venue comes first, under "At <venue>", and other venues follow under
+"Other venues" (JL 260930: "this is not limited to NMI"); inside each, the cards sit in
+bands: Closest to this paper, For one research question, Background, Cautions and
+framing. The rows are the Story's §5.3 P-board (haipipe-paper-story 0.14.0); each names
+the Discovery Paper Run that holds the paper, and the card reads that Run's Result
+folder: `runtime.yaml` (title, authors, venue), `abstract.md`, `source-access.json`
+(the publisher link) and `paper.pdf`. The venue is the H1 of board.md's `venue-page`, before its colon; a card
+sits under it when its Run's venue string starts with that name.
+
+```text
+45 PAPERS · 38 WITH A PDF
+At Nature Machine Intelligence  15
+CLOSEST TO THIS PAPER  3
+┌──────────────────────────────────────────────────────────────────────┐
+│ ▸ Cardiac health assessment across scenarios and devices using a …   │
+│   Gu et al. · 2026 · Nature Machine Intelligence              RQ1 📄 │
+├──────────────────────────────────────────────────────────────────────┤
+│ ▸ Neural scaling of deep chemical models                             │
+│   Frey et al. · 2023 · Nature Machine Intelligence            All 📄 │
+└──────────────────────────────────────────────────────────────────────┘
+Other venues  30
+```
+
+Closed, a card is two plain lines (JL 260930: "too messy, not readable … no need to show
+all the details in the card front face"): the title, then first author, year and short
+venue, with the question and a 📄 when the PDF is inside. A band's cards sit as rows in
+one box. Open, it shows why the paper matters (the P row's line), "Open the PDF in a new
+tab ↗", "Publisher page ↗", "Paper Run ↗", the abstract folded under "Abstract", and the
+PDF itself, or "No free full text" when the Run has none. There is no facts line (the P id,
+reading depth, citing Sections, venue string; JL 260930: "not relevant and could be
+removed"); those stay in the Story row and the Paper Run. The PDF frame carries `data-pdf`, not `data-src`, so the page's `lazy()` loader leaves it
+alone and it loads only when its card opens. A row whose Run is missing says "no Paper Run
+at <address>". `related_html()` draws the tab; `_paper_card()` one card;
+`paper_card_data()` reads one Run.
 
 Task home rules: the Task home is `examples/<Project>/tasks/` (or `task/`, or
 board.md `task-home:`), read Block → Job → Task in both folder shapes (a task folder

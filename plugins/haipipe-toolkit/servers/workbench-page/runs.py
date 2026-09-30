@@ -1285,14 +1285,18 @@ def _fallback_result(runtime: Path | None, base: Path) -> str:
         return str(runtime.parent)
 
 
-def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
-    """Return Evidence Items only when their ledger has named this local run."""
+def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path, ledger: dict | None = None) -> list[str]:
+    """Return Evidence Items only when their ledger has named this local run.
+
+    A caller that loops over a Page's runs passes `ledger` (the Page's `read_items`,
+    read once): reading it per run cost 564 reads and 33 s on the MISQ paper's
+    Sections Space (JL 260930)."""
     compact = compact_paper_run(run_id) or compact_global_run(run_id)
     needles = {run_id, ticket.name, str(ticket.relative_to(page_src.parent))}
     if compact:
         needles.update({compact, readable_paper_route(compact), readable_global_run(compact)})
     refs = []
-    for item in read_items(page_src).values():
+    for item in (read_items(page_src) if ledger is None else ledger).values():
         declared = " ".join((item.get("local_run", ""), item.get("result", "")))
         if any(needle and needle in declared for needle in needles):
             refs.append(item["item"])
@@ -1367,6 +1371,7 @@ def local_runs(page_src: Path) -> list[dict]:
     rows = list(instance_rows)
     paired_runtimes = {row["runtime"] for row in rows if row.get("runtime")}
     delivery_lanes = None
+    ledger = read_items(page_src)
     for ticket in _ticket_files(runs_dir):
         if ticket in item_tickets:
             continue
@@ -1486,6 +1491,7 @@ def local_runs(page_src: Path) -> list[dict]:
                 page_src,
                 run_id=global_id,
                 ticket=ticket,
+                ledger=ledger,
             ),
         })
     orphan_candidates = {}
@@ -1639,6 +1645,7 @@ def _insight_runs(page_src: Path) -> list[dict]:
     except (OSError, ValueError, TypeError, KeyError, AttributeError, api.yaml.YAMLError):
         return []  # the Outline item table displays the validation failure
     rows = []
+    ledger = read_items(page_src)
     for item in items:
         if not item["ticket"]:
             continue  # proposed items are not allocated Runs
@@ -1671,7 +1678,7 @@ def _insight_runs(page_src: Path) -> list[dict]:
                                   if base_run else "Insight"),
                          "operation": "item", "version": info["version"] if info else "",
                          "step": "", "goal": "", "base_run": base_run,
-                         "refs": _evidence_refs(page_src, run_id=ident, ticket=ticket)})
+                         "refs": _evidence_refs(page_src, run_id=ident, ticket=ticket, ledger=ledger)})
     return sorted(rows, key=_sort_key)
 
 

@@ -1,3 +1,7 @@
+## 0.94.2 · 2026-09-30 · Runs panel reads a Page's Evidence Items once
+
+- `servers/workbench-page/runs.py`: `local_runs` and `_insight_runs` read the Page's Evidence Markdown (`read_items`) once and pass it to `_evidence_refs` as `ledger`; before, every run re-read it. On Paper-AgreeablePrescriptionDiscretion the Paper Workbench's Sections Space made 582 reads for 18 Pages (33 s of a 59 s open); now 18. The rendered page is byte-identical before and after; one warm open fell from 40-52 s on 5601 to about 7 s on a restarted 5599 (load average 40-80, so seconds are noisy). Tests: `test_runs_workbench.py`, `test_insight_items_integration.py`, `test_revise_run.py`, `test_outline_v4_workspaces.py`, `test_paper_workbench.py` (57 pass) and four haipipe-page suites (36 pass).
+
 ## 0.94.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

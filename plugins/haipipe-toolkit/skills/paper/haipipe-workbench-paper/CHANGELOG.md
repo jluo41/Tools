@@ -1,10 +1,27 @@
 # CHANGELOG · haipipe-workbench-paper
 
+## 0.16.1 · 2026-09-30 · Related Papers on Paper-CGMtoHbA1c
+
+- A related-paper card names an accepted manuscript as "accepted-manuscript PDF" (was plain "PDF"), and a group first author keeps its whole name ("AI-READI Consortium et al.", was "Consortium et al."). `paper.py`: the `kind` map and `_first_author`.
+- Paper-CGMtoHbA1c's Related Papers tab now has 16 cards (JL 260930: "why I didn't see any paper"): 10 at Diabetes Care, 6 elsewhere, 3 with a PDF, from StoryA §5.3's new P-board and Proj21-CGM-Pred `discoveries/b01_hba1c_estimation_literature/`. Tests: `test_paper_workbench.py` 13 pass; `audit_paper_views.py` 0 flagged on two papers at 1360px.
+
+## 0.16.0 · 2026-09-30 · Story › Related Papers: plain cards, the PDF inside
+
+- A third Story tab after High-level logic + Low-level work, `#story/related` (JL 260930: "create a new subspace after High-level logic + Low-level work … make each paper to be a card that I can read the original pdf"). The paper's target venue comes first, under "At <venue>" (JL 260930: "我们选 paper 一定要选一个 venue 的"), and other venues follow under "Other venues" (JL 260930: "this is not limited to NMI"). Inside each, four bands: Closest to this paper, For one research question, Background, Cautions and framing. The rows are the Story's §5.3 P-board (haipipe-paper-story 0.14.0).
+- A closed card is two plain lines (JL 260930: "these papers card are not good, too messy, not readable … no need to show all the details in the card front face"): the title, then first author, year and short venue, with the question and a 📄 when the PDF is inside; a band's cards are rows in one box. Open: why it matters, links to the PDF, the publisher page and the Paper Run, the abstract folded, and the PDF embedded, loaded only when the card opens (`data-pdf`, since the page's `lazy()` loads every `data-src` in a shown pane and was loading all the PDFs at once).
+- No facts line under the why line (JL 260930, on "P3 · for RQ1 · 📄 PDF · read: abstract · not cited yet · Nature Machine Intelligence 7, 1823–1833 (2025) · Article": "this is not relevant and could be removed"); a "cited in …" match against the Section Pages' Evidence Bibs was built for it and removed with it.
+- `paper.py`: `story()` reads `P` rows; `related_html`, `_role_bands`, `_paper_card`, `_short_venue`, `paper_card_data`, `_disc_run`, `_yaml_block`, `_first_author` and `venue_name` are new. Tests: `test_paper_workbench.py` 13 pass (new: `test_related_papers_are_venue_cards_with_their_pdf`); board suite 800 pass; `audit_paper_views.py` 0 flagged at 1360px (`story/related` added to its routes).
+- On Paper-ScalingGlucose-NatSeries2026: 45 papers, 38 with a PDF; 15 in Nature Machine Intelligence (Discovery b01.j01.t01 and b01.j02.t01), 30 from other venues (b01.j03.t01 and b01.j03.t02).
+
 ## 0.15.0 · 2026-09-30 · Questions start closed; Stories named in the tree
 
 - Question blocks in High-level logic + Low-level work start closed (JL 260930: "could you make the questions to be hidden by default"). The closed line shows only the question; a tally line was tried and removed the same day (JL 260930: "I don't think this is useful"). "Not under a question" also starts closed.
 - board.md `story-current: <Story stem>` limits the tree to that one Story (found on Paper-TestToLearn-MS2026: StoryA the submitted paper and StoryC its redesign both numbered their questions from 1). A Story-name row above each Story's questions was tried and removed the same day (JL 260930: "I don't think we need this"). Without the line every Story is drawn, so other papers do not change.
 - `paper.py`: `_q_block` drops `open`; `logic_work_html` reads `story-current`; the click handler comment follows the new default. Tests: `test_paper_workbench.py` 12 pass (the RQ1 anchor no longer expects `open`); `audit_paper_views.py` 0 flagged on Paper-TestToLearn-MS2026 at 1360px and 2000px.
+
+## 0.14.1 · 2026-09-30 · No color fills: a stripe marks the pick
+
+- A picked work item, hypothesis, question or Sections row keeps a clear background; only its 3px left stripe marks it (JL 260930: "we don't need to have the color fill the whole card, make it transparent … I don't want to make it too colorful"). The group bands (Hypotheses, Potential claims, Potential contributions, Foundation work, This question's work) keep their colored label and left stripe with no fill. A work item lit by a picked hypothesis shows a faint stripe instead of a tint, and hovering a work item colors its question line instead of filling the whole card. `paper.py` CSS only. Tests: `test_paper_workbench.py` 12 pass; `audit_paper_views.py` 0 flagged on two papers at 1360px.
 
 ## 0.14.0 · 2026-09-29 · Colored group bands; every work item folds
 

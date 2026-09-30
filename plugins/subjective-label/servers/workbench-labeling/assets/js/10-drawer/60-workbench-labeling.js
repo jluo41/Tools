@@ -27,9 +27,9 @@
     try { return boardPath(); } catch (e) { return location.pathname; }
   }
 
-  /* Studio binds Chat to the CURRENT generated Page URL, not board.md.  Keep
-     that exact address in the presenter request so plugins/subjective-label/servers/workbench-labeling/labeling.py can frame
-     the same `?pane=chat` document Studio uses. */
+  /* The presenter checks the CURRENT generated Page URL, not board.md, so
+     plugins/subjective-label/servers/workbench-labeling/labeling.py serves
+     the Workbench only for the Page that is open. */
   function pageURL() { return location.pathname; }
 
   function url(page) {
@@ -104,7 +104,7 @@
     window.boardWorkbenches.register({
       id: 'labeling',
       label: '🏷 Labeling',
-      hint: 'Confirm the meaning, then label with the keyboard · Studio Chat opens separately',
+      hint: 'Confirm the meaning, then label round by round',
       menu: 'workbench',
       order: 70,
       applies: isSurfacePage,

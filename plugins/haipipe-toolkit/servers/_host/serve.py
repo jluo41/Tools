@@ -348,7 +348,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             # 🏷 every labeling job on this Board; click one to zoom in
             return self.labeling_board_view()
         if self.path.split("?", 1)[0] == "/_board/labeling":
-            # 🏷 four Spaces over one labeling/ lane; Studio Chat opens separately
+            # 🏷 four Spaces over one labeling/ lane
             return self.labeling_view()
         if self.path.split("?", 1)[0] == "/_board/runs":
             # ⚙️ one page's planned and registered Tickets, never an execute door

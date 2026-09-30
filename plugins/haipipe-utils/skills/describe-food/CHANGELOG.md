@@ -2,6 +2,34 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.6.1 — 2026-09-30
+--------------------------------------------------------------------------------
+
+A negative logged value is WellDoc's mark for "not given", not an amount. The
+observed bank holds 2,031 negative Sugar values (-1.0 x 1,951, -0.5 x 73, a few
+others; 'Unsweetened Iced Tea' -1.0), and 0.6.0 passed them through: 903 of the
+35,549 answers frozen in ext_food_resolved S20260930 (pinned by EventNormV5)
+had a negative Sugar. observed.lookup now reads a negative value as not given,
+so Sugar is empty; the first five nutrients have no negative values in the bank,
+so none of their answers moves. test_foodnorm.py L1 checks it. The corrected
+freeze is ext_food_resolved S20260930B (b51 j01 t04 r14 to r16, parity 35,549 of
+35,549), for EventNormV6: 2,601 Sugar answers change (903 negative ones and 1,698
+meals in which one food's sugar was not given), all to empty. Sugar is filled on
+89.7% of answered requests; the 97.1% in 0.6.0 counted the negative values.
+
+NutriBench v1 is a ruler now: benchmark/build_units.py reads its raw files from
+_FoodInfo/2-corpus/NutriBench/raw (11,857 meals, each one sentence, per-meal
+macros; CC BY-NC-SA 4.0, internal testing only) into E5_NUTRIBENCH. build_units.py,
+build_inputs_gallery.py and run.py also find the SPACE root from the working
+directory, so they run through the Tools symlink. describe-food answers 0.8% of
+the sentences: a sentence is one component to the door. The branded and China
+tables add nothing there (0.6% -> 0.6% on 1,000 sampled meals, b51 j01 t19 r05).
+
+Seen and not changed: 10 foods in the USDA table have a negative carbohydrate
+(by difference), before any of this work; whether an answer uses one is not
+measured yet.
+
+
 0.6.0 — 2026-09-30
 --------------------------------------------------------------------------------
 

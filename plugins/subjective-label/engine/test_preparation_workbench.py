@@ -191,7 +191,9 @@ def test_labeling_panel_uses_disk_names_and_keeps_legacy_readable(tmp_path) -> N
 def test_legacy_job_does_not_offer_retroactive_preparation_runs(tmp_path) -> None:
     (tmp_path / "config.yaml").write_text("schema_version: subjective-label/v2\n", encoding="utf-8")
     vm = {"root": tmp_path, "runs": [], "preparation": {"attached": False, "linked": False}}
-    assert "legacy source" in workbench._preparation_view(vm)
+    view = workbench._preparation_view(vm)
+    assert "<h2>Corpus</h2>" in view
+    assert "before Corpus Preparation Runs existed" in view
     assert not [t for t in workbench._run_types(vm)["data"] if t.get("family") == "corpus"]
 
 

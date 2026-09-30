@@ -8,6 +8,12 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.19.0 · 2026-09-30 · A Paper Run's Ticket rebuilds its Result from the DOI
+
+- `scripts/paper_result_build.py` (new): one DOI plus the readout and reuse lines → the whole Paper Result the Paper Workbench's Related Papers cards read: `runtime.yaml` (identity, venue string from Crossref, reading depth), the one-entry Bib (through `paper_bib_fetch.py`), `source-access.json`/`.md` and `abstract.md` (through `paper_source_access.py`), `facts.md` (identity plus one fact per abstract sentence), the Result card, and `paper.pdf` when a free copy exists (`--pdf-from` a file already on disk, else OpenAlex's open-access PDF; `local_pdf.version` is published, accepted or preprint). A Ticket calls it, so rerunning the Ticket rebuilds the Result (JL 260930: Paper-CGMtoHbA1c's Related Papers tab was empty). PubMed Central and publisher sites answer scripts with a bot check; the script does not try to get past it, and such a card links the free full text instead.
+- Crossref markup is cleaned: `&amp;` becomes `&`, and `HbA<sub>1C</sub>` becomes `HbA1C`.
+- First used on Proj21-CGM-Pred `discoveries/b01_hba1c_estimation_literature/` (16 Paper Runs; `paper_runs.py check` 0 errors).
+
 ## 0.18.1 · 2026-09-29 · outline/ to draft/ (JL 260929)
 
 - `scripts/paper_runs.py`: a Topic with a root `evidence/` is told to use `draft/evidence/` (it said `outline/evidence/`).

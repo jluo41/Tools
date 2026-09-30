@@ -11,7 +11,7 @@ from live.autodraw import autodraw
 from live.chat import chat_guard
 from live.labeling import (
     P0_FILES, inspect, is_labeling_run_page, is_labeling_surface_page,
-    labeling_chat_hold, labeling_hold_for_scene, render, studio_chat_page_url,
+    labeling_chat_hold, labeling_hold_for_scene, render, generated_page_url,
 )
 from live.term import TermMixin, labeling_tui_hold
 from src import assets
@@ -51,6 +51,41 @@ class LabelingSurfaceTest(unittest.TestCase):
     def make_contract(self, config="schema_version: subjective-label/v2\n"):
         for rel in P0_FILES:
             self.put(rel, config if rel == "config.yaml" else "{}\n")
+
+    def test_preparation_shows_the_corpus_from_items_to_label_only(self):
+        self.make_contract(
+            "schema_version: subjective-label/v2\ncorpus:\n"
+            "  population: one reply; context is the earlier turns\n"
+            "  source:\n    name: DemoSet\n    uri: https://example.org/demo\n"
+        )
+        self.put("corpus/manifest.json", json.dumps({
+            "items_file": "corpus/items.jsonl", "id_field": "item_id",
+            "text_field": "text", "context_field": "context_prev",
+            "created_at": "2026-09-16T16:07:22+00:00",
+        }))
+        rows = [
+            {"item_id": "1", "text": "a b c", "context_prev": "x y",
+             "population_status": "eligible",
+             "source_metadata": {"row_unit": "one conversation", "rater_count": 9}},
+            {"item_id": "2", "text": "a", "context_prev": "",
+             "population_status": "eligible"},
+            {"item_id": "3", "text": " ".join(["held"] * 500), "context_prev": "z",
+             "population_status": "sealed"},
+        ]
+        self.put("corpus/items.jsonl", "".join(json.dumps(r) + "\n" for r in rows))
+        body = render(self.page, "/demo/board.md", self.file_q,
+                      "/demo/board/SL/S-Label-1-demo.html", self.board)
+        pane = body.split("data-view=preparation hidden>", 1)[1].split("<div class=pane", 1)[0]
+        self.assertIn("<h2>Corpus</h2>", pane)
+        self.assertIn('href="https://example.org/demo"', pane)
+        self.assertIn("one reply; context is the earlier turns", pane)
+        self.assertIn("one conversation", pane)
+        self.assertIn("2 words median, 1 to 3", pane)          # held-back text never counted
+        self.assertIn("1 item has none", pane)
+        self.assertIn("2 items to label", pane)
+        self.assertIn("16 Sep 2026", pane)
+        self.assertNotIn("held held", body)
+        self.assertNotIn("already-unitized", body)
 
     def test_missing_lane_reports_contract_without_creating_it(self):
         state = inspect(self.page)
@@ -151,9 +186,8 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertNotIn(secret, body)
         self.assertNotIn("sealed-7", body)
         self.assertNotIn("items in a round: in Labeling → Rounds once shown to you", body)  # a hint, gone (v3)
-        self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
-        self.assertNotIn("board.md?pane=chat", body)
-        self.assertIn(">Studio Chat</a>", body)
+        self.assertNotIn("?pane=chat", body)
+        self.assertNotIn("Studio Chat", body)
         self.assertNotIn('id=studio-chat', body)
         self.assertIn('<meta name="viewport"', body)
         self.assertIn('aria-label="Labeling Spaces"', body)
@@ -203,8 +237,6 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertNotIn("Read-only: no labeler is named", body)
         self.assertNotIn('<h2>Meaning</h2>', body)
         self.assertNotIn('class="lead next hold"', body)
-        # The copy is calmer; the server-side write guard remains in force.
-        self.assertIn("labeling_hold=1", body)
 
     def test_artifact_chain_moves_observed_frontier_without_certifying_g6(self):
         self.make_contract("authority:\n  human_id: JL\n  mode: real-human\n  creates_human_gold: true\n")
@@ -280,7 +312,6 @@ class LabelingSurfaceTest(unittest.TestCase):
             "/demo/board/SL/S-Label-1-demo.html",
             self.board,
         )
-        self.assertIn("labeling_hold=1", body)
         self.assertIn("HOLD", body)
 
     def test_labeling_hold_blocks_tui_and_draw_server_side(self):
@@ -308,26 +339,26 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("Draw generation is read-only", draw_result["err"])
         self.assertFalse((self.board / scene).exists())
 
-    def test_studio_chat_requires_the_matching_generated_page(self):
-        good = studio_chat_page_url(
+    def test_workbench_requires_the_matching_generated_page(self):
+        good = generated_page_url(
             "/demo/board.md", self.file_q,
             "/demo/board/SL/S-Label-1-demo.html",
             self.board,
         )
         self.assertEqual(good, "/demo/board/SL/S-Label-1-demo.html")
-        self.assertEqual(studio_chat_page_url(
+        self.assertEqual(generated_page_url(
             "/demo/board.md", self.file_q, "", self.board), "")
-        self.assertEqual(studio_chat_page_url(
+        self.assertEqual(generated_page_url(
             "/demo/board.md", self.file_q,
             "/demo/board/SL/S-Label-2-demo.html",
             self.board,
         ), "")
-        self.assertEqual(studio_chat_page_url(
+        self.assertEqual(generated_page_url(
             "/demo/board.md", self.file_q,
             "/other/board/SL/S-Label-1-demo.html",
             self.board,
         ), "")
-        self.assertEqual(studio_chat_page_url(
+        self.assertEqual(generated_page_url(
             "/demo/board.md", self.file_q,
             "/demo/board/WRONG/S-Label-1-demo.html",
             self.board,
@@ -789,7 +820,7 @@ class LabelingRegistrationTest(unittest.TestCase):
         self.assertIn("S-Label-Dash", script)
         self.assertIn("pageURL()", script)
         self.assertIn("page: pageURL()", script)
-        self.assertIn("Studio Chat opens separately", script)
+        self.assertNotIn("Studio Chat", script)
         for retired in ("/label-init", "/label-round", "/label-evaluate", "/label-complete"):
             self.assertNotIn(retired, script)
 

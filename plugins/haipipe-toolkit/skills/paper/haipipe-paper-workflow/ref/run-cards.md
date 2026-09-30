@@ -65,7 +65,7 @@ button of its owner.
 🧩 SKILL    haipipe-task
 💬 PROMPT   /haipipe-task {target}: create or continue the Task folder (BJTR) that answers this question on {page}, write its address on the row, and build its run tickets; JL presses Run.
 
-🔘 BUTTON   Discovery runs · Story · - · views logic-work
+🔘 BUTTON   Discovery runs · Story · - · views logic-work related
 🧩 SKILL    haipipe-discovery
 💬 PROMPT   /haipipe-discovery {target}: create or continue the Discovery folder (BJTR) that answers this question on {page}, write its address on the row, and add its Paper Runs.
 

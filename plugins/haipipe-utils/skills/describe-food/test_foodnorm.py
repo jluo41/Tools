@@ -130,6 +130,14 @@ def run_l1_contract():
     else:
         print(f"  ok   Sugar answered from USDA: {row['Sugar']} (bank has a sugar column: {has_sugar})")
 
+    # WellDoc logs -1.0 or -0.5 for a sugar it was not given. That is a mark, not an
+    # amount: the answer must be empty, never negative.
+    tea = normalize(["Unsweetened Iced Tea"])[0]
+    if tea["Sugar"] is not None and tea["Sugar"] < 0:
+        fails.append(f"'Unsweetened Iced Tea' answered a negative Sugar: {tea['Sugar']}")
+    else:
+        print(f"  ok   a logged negative sugar reads empty ({tea['Sugar']}, {tea['NutritionSource']})")
+
     return fails
 
 

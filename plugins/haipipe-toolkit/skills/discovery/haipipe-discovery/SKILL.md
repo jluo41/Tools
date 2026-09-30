@@ -13,7 +13,7 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.18.1"
+  version: "0.19.0"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md
 ---
@@ -403,7 +403,8 @@ A materially changed analysis allocates a new Run with `supersedes:`.
 The ticket sets runtime to running, calls the selected workers, then writes its
 paired Result only. On success write the Card, facts, one-entry Bib (through
 `scripts/paper_bib_fetch.py`, identity before entry), optional PDF/raw/trigger,
-and status complete. After Subject allocation, an analysis,
+and status complete. For a paper with a DOI, `scripts/paper_result_build.py` writes that
+whole Result, so the Ticket can simply call it and rerunning the Ticket rebuilds the Result. After Subject allocation, an analysis,
 retrieval, or Bib failure preserves blocked or unresolved plus a reason. Never
 claim complete around missing evidence.
 

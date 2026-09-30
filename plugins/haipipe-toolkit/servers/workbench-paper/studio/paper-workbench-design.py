@@ -102,6 +102,7 @@ MAP = [
                        ("3", "Task runs", "haipipe-task", "T<n> → its Task folder (BJTR); you press Run"),
                        ("4", "Discovery runs", "haipipe-discovery", "D<n> → its Discovery folder (BJTR)"),
                        ("5", "Claim review", "haipipe-paper-story", "RQ → its claims, after 3 and 4")]),
+        ("Related Papers", [("4", "Discovery runs", "haipipe-discovery", "P<n> → its Paper Run; the card opens the PDF")]),
     ], "hands on: C8 rows → Sections · Task and Discovery Results → Evidence Items"),
     ("Sections Space", "Does each Section say it right, with evidence?", [
         ("Narrative view", [("1", "Narrative review", "haipipe-paper-story", "the Section's C8 row")]),
@@ -353,6 +354,7 @@ text("files-map", FX + 24, SY + 82,
      "Ideation › Ideas       Story00-ideation.md · Ideas (ranked)    Story00-ideation/runs/\n"
      "Story › Spine          StoryA-….md · ### 1, 2, 4               StoryA-…/runs/\n"
      "Story › logic + work   StoryA-….md · ### 3, 5, 6, 7            StoryA-…/runs/\n"
+     "Story › Related Papers StoryA-….md · #### 5.3 P rows           discoveries/…/results/<run>/paper.pdf\n"
      "                       task/ · discoveries/                    task/, discoveries/<BJTR>/runs/\n"
      "Sections › Table       StoryA-….md · ### 8.2 + each Page       each Page's runs/\n"
      "Sections › Narrative   StoryA-….md · ### 8.1                   StoryA-…/runs/\n"

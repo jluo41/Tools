@@ -1,3 +1,8 @@
+## 0.14.0 · 2026-09-30 · §5.3 P-board: the target venue's related papers
+
+- §5.3 Novelty basis holds a P-board: one row per related paper, the venue the paper is written for first (JL 260930: "我们选 paper 一定要选一个 venue 的 … 在 NMI 上找一些相关的 paper"), other venues allowed (JL 260930: "this is not limited to NMI"), `P | paper | role | question | why it matters | Discovery Run`. Role is `closest`, `question`, `background` or `caution`; question is an RQ id or `all`; each row names the Discovery Paper Run that holds the paper, and a §6 row names the Discovery Task. The Paper Workbench draws it as Story › Related Papers (haipipe-workbench-paper 0.15.0).
+- Paper-ScalingGlucose-NatSeries2026 StoryA: P1-P15, 15 Nature Machine Intelligence papers (Discovery b01.j02.t01 plus Frey 2023 and Xiao 2025 in b01.j01.t01); §6 gains D6 and now names the two Discovery Tasks that exist (it said no Discovery block existed).
+
 ## 0.13.1 · 2026-09-30 · A question has a short Name
 
 - Each §3 question block may carry `- **Name**: <two or three plain words>` above `- **Question**`, so a question reads like a hypothesis or claim: short name first, sentence second (JL 260930: "Question: short name, then the sentences that describe this question"). The Paper Workbench prints it beside the Question pill. First used on Paper-TestToLearn-MS2026 StoryA and StoryC.

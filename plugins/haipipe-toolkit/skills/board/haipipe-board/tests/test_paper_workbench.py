@@ -406,6 +406,77 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("Not under a question", rest)
             self.assertIn("Is anything left over?", rest)
 
+    def test_related_papers_are_venue_cards_with_their_pdf(self):
+        """JL 260930: a Story tab after the logic view lists the target venue's related papers,
+        one card each, and the card opens the original PDF. The rows are the Story's §5.3
+        P-board; each names the Discovery Paper Run holding the paper and its paper.pdf."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            b = make_board(root)
+            (root / "venue.md").write_text("# Test Quarterly: the desk that wants both\n", encoding="utf-8")
+            board_md = b / "board.md"
+            board_md.write_text(board_md.read_text(encoding="utf-8").replace(
+                "paper-root .\n", "paper-root .\nvenue-page  ../../venue.md\n"), encoding="utf-8")
+            story = b / "A1-Story" / "StoryA-desk-idea" / "StoryA-desk-idea.md"
+            story.write_text(story.read_text(encoding="utf-8") + (
+                "\n| P | paper | role | question | why it matters | Discovery Run |\n|---|---|---|---|---|---|\n"
+                "| P1 | Smith et al. 2020 | closest | all | The nearest study at this desk. | b01.j01.t01.r01 |\n"
+                "| P2 | Jones 2021 | caution | RQ1 | A caution on the same model. | b01.j01.t01.r02 |\n"
+                "| P3 | Lost 2022 | question | RQ1 | Named, never run. | b01.j01.t01.r09 |\n"), encoding="utf-8")
+            res = root / "discoveries" / "b01_evidence_board" / "j01_landscape_inquiry" / "t01_prior_work" / "results"
+            r1, r2 = res / "r01_smith2020", res / "r02_jones2021"
+            r2.mkdir(parents=True)
+            (r1 / "runtime.yaml").write_text(
+                'run: r01_smith2020\nsubject:\n  kind: paper\n  title: "Traits and prescribing"\n'
+                '  doi: "10.1000/t1"\n  authors: "Ann Smith; Bo Lee"\n  venue: "Test Quarterly 1, 1-9 (2020) · Article"\n'
+                'analysis:\n  reading_depth: abstract\n', encoding="utf-8")
+            (r1 / "source-access.json").write_text(json.dumps(
+                {"links": {"publisher": "https://example.test/t1"},
+                 "local_pdf": {"path": "paper.pdf", "version": "published", "source": "https://example.test/t1.pdf"}}),
+                encoding="utf-8")
+            (r1 / "paper.pdf").write_bytes(b"%PDF-1.4\n")
+            (r1 / "r01_smith2020.bib").write_text("@article{Smith_2020, title={Traits}}\n", encoding="utf-8")
+            (r1 / "abstract.md").write_text("# Retrieved abstract\n\nSource: https://example.test/t1\n\nThe trait predicts it.\n",
+                                            encoding="utf-8")
+            (r2 / "runtime.yaml").write_text('subject:\n  title: "A caution"\n  authors: "Cy Jones"\n', encoding="utf-8")
+            (r2 / "source-access.json").write_text('{"local_pdf": null}', encoding="utf-8")
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            self.assertIn('data-tab="related" data-label="Related Papers"', page)
+            self.assertLess(page.index('data-tab="logic-work"'), page.index('data-tab="related"'))   # after the logic view
+            rp = page[page.index('<div class="rp-list">'):page.index('<section class=runs-panel data-space="story"')]
+            self.assertIn('<div class="rp-head">3 papers · 1 with a PDF</div>', rp)
+            # the target venue first, then other venues (JL 260930: "this is not limited to NMI")
+            self.assertIn('<h3 class="rp-venue">At Test Quarterly<span class="lw-kn">1</span></h3>', rp)
+            self.assertIn('<h3 class="rp-venue">Other venues<span class="lw-kn">2</span></h3>', rp)
+            self.assertLess(rp.index('data-key="P1"'), rp.index("Other venues"))
+            self.assertLess(rp.index("Other venues"), rp.index('data-key="P2"'))
+            self.assertIn('<div class="lw-k lw-k-hyp">Closest to this paper<span class="lw-kn">1</span></div>', rp)
+            away = rp[rp.index("Other venues"):]
+            self.assertLess(away.index("For one research question"), away.index("Cautions and framing"))
+            p1 = rp[rp.index('data-key="P1"'):rp.index("Other venues")]
+            # closed, two plain lines (JL 260930: "too messy … no need to show all the details in the card front face")
+            front = p1[:p1.index("</summary>")]
+            self.assertIn('<div class="rp-title">Traits and prescribing</div>', front)
+            self.assertIn('<div class="rp-sub"><span>Smith et al. · 2020 · Test Quarterly</span>'
+                          '<span class="rp-marks"><span class="rp-q">All</span><span title="PDF inside">📄</span></span></div>', front)
+            for inside in ("The nearest study at this desk.", "published PDF", "cited in", "Abstract", "read: abstract"):
+                self.assertNotIn(inside, front)
+            # open: why it matters, links, the abstract folded, then the PDF; no facts line (JL 260930: "not relevant")
+            self.assertIn('<p class="rp-why">The nearest study at this desk.</p>', p1)
+            self.assertNotIn("rp-facts", page)
+            self.assertNotIn("cited in", page)
+            self.assertIn('<details class="rp-absd"><summary>Abstract</summary><p>The trait predicts it.</p></details>', p1)
+            self.assertIn('<div class="rp-group">', rp)
+            # the PDF sits in the card and loads only when the card opens
+            pdf = "/discoveries/b01_evidence_board/j01_landscape_inquiry/t01_prior_work/results/r01_smith2020/paper.pdf"
+            self.assertIn('<iframe class="rp-frame" title="PDF · Traits and prescribing" data-pdf="%s"></iframe>' % pdf, p1)
+            self.assertNotIn('data-src="%s"' % pdf, page)                   # lazy() loads every data-src in a shown pane
+            self.assertIn('href="%s" target="_blank"' % pdf, p1)
+            self.assertIn("details.rp-card", page)
+            p2 = rp[rp.index('data-key="P2"'):]
+            self.assertIn("No free full text.", p2)
+            self.assertIn("no Paper Run at b01j01t01r09", rp)
+
     def test_roster_headings_with_a_description_or_no_folder(self):
         from live.paper import board_pages
         groups = board_pages("## Pages\n\n### Story · the idea pool and the blueprint\n\nStory00-ideation.md\n\n"

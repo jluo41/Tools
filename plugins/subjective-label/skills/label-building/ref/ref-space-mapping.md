@@ -23,9 +23,8 @@ level.
 The dedicated Labeling host also opens a canonical Page folder directly at
 `/workbench/labeling?file=<Page>/<Page>.md`, relative to its served root. That
 Page has the same Spaces, Views, Runs panel, and checked action door without a
-Board, generated Page URL, or Board overview. On this direct route, copy a Run
-request into your agent conversation; a Board-backed Page also offers its
-Studio Chat tab. Copying a request never starts a Run.
+Board, generated Page URL, or Board overview. On either route, copy a Run
+request into your agent conversation. Copying a request never starts a Run.
 
 ## Space roster
 
@@ -166,12 +165,10 @@ row. Use these action words consistently:
 
 - `Start here`: a real, visible page control exists at the named location and
   its listed prerequisites pass. The map itself is not a start button.
-- `Chat command`: setup starts from a command sent in Studio Chat or a connected
-  agent conversation. It is not a
+- `Chat command`: setup starts from a command sent in the agent conversation. It is not a
   page button or a copy-prompt affordance.
 - `Copy request → paste and send`: copy-only text for one concrete next
-  interaction. The person must paste and send it in Studio Chat or a connected
-  agent conversation; copying does
+  interaction. The person must paste and send it in the agent conversation; copying does
   not call a writer, create a Run, or change job state.
 - `Shown here · read-only`: this view reads an existing canonical artifact;
   it does not mean the named Run Type ran.

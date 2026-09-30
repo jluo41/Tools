@@ -33,7 +33,7 @@ generated Board Page. `file=` is a path relative to `--root`. The Page file must
 exist as `<Page>/<Page>.md`; flat Markdown sources and symlinked paths are
 rejected. This route is unavailable on the mixed Board host. It has the same
 Data, Labeling, Quality, Delivery, Runs, and engine-checked action surface;
-the Board back link and Studio Chat tab apply only to Board-backed Pages.
+the Board back link applies only to Board-backed Pages.
 
 `<board>` is the Board folder's slug (`job-mini-board` for `job-mini-board-260830`)
 and `<page>` a Page id (`S-Label-1`). The server fills in `path=`, `file=` and

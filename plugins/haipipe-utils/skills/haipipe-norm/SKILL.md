@@ -244,7 +244,7 @@ hard-coded folder:
     paths.py release_file(asset, filename=None)   the pinned file, sha256 checked
     <noun>norm/_release.py                        loads paths.py beside the skill; no PYTHONPATH
 
-The release is `$EVENTNORM_RELEASE` (default `EventNormV3`, the release the WellDoc SourceFn reads); `EVENTNORM_RELEASE=none`, or a
+The release is `$EVENTNORM_RELEASE` (default `EventNormV6`, the release the newest WellDoc SourceFn, `WellDocDataExtV260930`, reads); `EVENTNORM_RELEASE=none`, or a
 release that does not pin the asset, falls back to the old flat folder. Each member's
 answers are also frozen there as `ext_<noun>_resolved`, one row per distinct request
 in the WellDoc Source tables, so a SourceFn looks an answer up and never calls a

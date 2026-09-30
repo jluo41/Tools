@@ -123,9 +123,12 @@ def lookup(name: str, path=None) -> Optional[Dict]:
     vals = {}
     for k in NUTRIENT_KEYS:
         v = rec.get(k)
+        # A negative number is WellDoc's mark for "not given", not an amount: 2,031 logged
+        # Sugar values are -1.0 or -0.5 ('Unsweetened Iced Tea' -1.0); the first five have none.
         # The first five read a gap as 0, as they always have. Sugar reads it as empty:
         # a serving the vendor gave no sugar for is not a sugar-free serving.
-        vals[k] = float(v) if v is not None and v == v else (None if k == "Sugar" else 0.0)
+        given = v is not None and v == v and float(v) >= 0
+        vals[k] = float(v) if given else (None if k == "Sugar" else 0.0)
     return {
         "values": vals,
         "n": int(rec.get("n") or 0),

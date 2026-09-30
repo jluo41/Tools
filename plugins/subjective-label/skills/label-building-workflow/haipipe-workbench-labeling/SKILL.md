@@ -8,10 +8,10 @@ description: >-
   with four Spaces (Data, Labeling, Quality, Delivery), each with its content on
   the left and a Runs panel on the right, and one write door,
   POST /_board/labeling/act, for exactly ten engine-checked actions (zoom in).
-  Board-backed Pages offer Studio Chat separately. Use when designing, opening, diagnosing, or
+  Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
-  version: "0.23.15"
+  version: "0.23.16"
   last_updated: "2026-09-29"
 ---
 
@@ -43,7 +43,7 @@ empty      S-Label-* Pages without a job appear under "Pages before Contract"
            and link to their Page-level Preparation View, without allocating a Run;
            flat Board sources first ask for a canonical Page folder
 
-🏷 Page level · the title, the Space tabs (Board-backed: + Studio Chat), then one Space
+🏷 Page level · the title, the Space tabs, then one Space
 Data       Preparation · Contract · Embedding
 Labeling   Definition · Rounds · Guideline
 Quality    Test · Evaluation · Audit
@@ -80,8 +80,7 @@ The separate host isolates the service and its settings. Its direct Page route
 resolves an existing `<Page>/<Page>.md` relative to `--root`, without `board.md`
 or a generated Page URL. It rejects flat sources, symlinks, traversal, and
 requests on the mixed Board host. The direct Page has the same Spaces, Views,
-Runs panel, and Labeling action door; it has no Board back link or Studio Chat
-tab. Create a Page folder before attaching Corpus Preparation or creating a
+Runs panel, and Labeling action door; it has no Board back link. Create a Page folder before attaching Corpus Preparation or creating a
 new Contract.
 
 `<DOMAIN>` is whichever origin the server printed at startup (loopback, the
@@ -99,7 +98,7 @@ adapter (`_board_pages`) and nothing else of the Board grammar, and the
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | a Board-backed Page offers an optional `🏷 Labeling` right-pane tab; the direct Page-folder route opens the same four Spaces, each with Views on the left and a Runs panel on the right. The current adapter keeps P0-P5 as compatibility capability tags in the Workflow drawer's Phases card (`?drawer=workflow`); they are not Workflow nodes, Run owners, or Route authority. Studio Chat opens in its own tab only for Board-backed Pages |
+| SURFACE | a Board-backed Page offers an optional `🏷 Labeling` right-pane tab; the direct Page-folder route opens the same four Spaces, each with Views on the left and a Runs panel on the right. The current adapter keeps P0-P5 as compatibility capability tags in the Workflow drawer's Phases card (`?drawer=workflow`); they are not Workflow nodes, Run owners, or Route authority |
 | WRITER | `subjective-label-workflow` defines the Run Spec graph and Routes; the Building/Scanning guides document operation order. Their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
 | BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
 
@@ -142,13 +141,17 @@ The surface uses one location word: **Space**. In this plugin, "Space" and
 (JL 260928): Schema merged into Contract, Discussion and Label into Definition,
 and Delivery gained Scan, so each of the 26 job-local Run types sits in exactly
 one view. Data → Preparation adds five upstream source-owned Run Types.
+Once a job exists, Data → Preparation opens with a `Corpus` card: the source,
+what one item is, the text and context fields with word counts over the items
+to label only (held-back text is never read), and when the corpus was prepared.
+Data → Contract keeps the counts (items, to label, held back).
 Preparation is a Data view over source-owned Corpus Runs; it can appear before
 `labeling/config.yaml` exists. `labeling/preparation-owner.yaml` attaches its
 source early so each completed Run appears in the panel. Its accepted package
 is later linked through `labeling/preparation-ref.yaml`, while private candidates and the protected
 group frame remain with the source owner. There is no Run Space and no page bar
-(v3, 260927, as the Page workbench): the page is its title, the Space tabs
-(with `Studio Chat` only on Board-backed Pages), then one Space. Each Space is its content
+(v3, 260927, as the Page workbench): the page is its title, the Space tabs,
+then one Space. Each Space is its content
 on the left and its Runs panel on the right at every width; the panel stays in
 view while the page scrolls. Two drawers have no button and open only from the
 URL: `?drawer=workflow` shows the Phases card (P0-P5 as compatibility capability
@@ -195,9 +198,8 @@ The supported first-use path for structured transcripts is: use
 materialize and check it, reserve whole source groups, then link the accepted
 package to a real Page. Data → Preparation shows these source-owned Runs before
 the job exists, and offers a new Run prompt only for the next unfinished step
-while an owner is attached and the Page has no Contract. Copy the Data → Contract request and send it in Studio Chat
-on a Board-backed Page or in the current agent conversation on a direct Page;
-name the target, semantic human, and
+while an owner is attached and the Page has no Contract. Copy the Data → Contract request and send it in your agent conversation
+(Claude Code or Codex); name the target, semantic human, and
 sealed-test custodian (the human may also be the custodian). Discuss and settle
 the label meanings in Labeling → Definition, close that discussion, then confirm
 meaning as the configured human. Optionally build an embedding,
@@ -234,14 +236,12 @@ the source of the Run Spec frontier. The existing status/Space adapter still
 projects compatibility state from gate receipts; it is not the host Run graph
 and cannot by itself authorize a later Run.
 
-On a Board host, Labeling fills its own Workbench pane. The header link
-`Open Studio Chat` opens the exact generated-Page `?pane=chat` document that
-Studio owns in a separate browser tab, including its composer, sessions, quick
-actions, settings, GUI/TUI handoff, and optional Draw controls. Labeling never
-embeds that document and never implements a second Chat. The Board-source
-`board.md` is only the source resolver and must never receive `?pane=chat`;
-the current generated `<page>.html` URL is carried separately and validated
-server-side. Chat may prepare or dispatch work, but a semantic decision becomes
+On a Board host, Labeling fills its own Workbench pane. It has no chat of its
+own and no link to one (Studio Chat was removed 260930): every copied request
+goes into your agent conversation. The Board-source `board.md` is only the
+source resolver; the current generated `<page>.html` URL is carried separately
+and validated server-side. A conversation may prepare or dispatch work, but a
+semantic decision becomes
 real only when the owning workflow writer lands its canonical event under
 `labeling/`.
 
@@ -367,8 +367,7 @@ The current round prompt now includes the Board, Page, folder, round target,
 Run Type, declared Skills, G0 and released-Card prerequisites, and matching
 Ticket id/status when there is one. After Corpus Preparation links an accepted package, Data → Contract
 offers a contextual, clipboard-only setup request in the Runs panel. Paste it
-into Studio Chat on a Board-backed Page or into the current agent conversation
-on a direct Page; copying does not create the Contract Run.
+into your agent conversation; copying does not create the Contract Run.
 
 ## ⚙️ Relationship to Runs
 

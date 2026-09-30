@@ -9,7 +9,7 @@ person; the labels come from the chat.  Every write through
 subjective-label engine (``job.confirm_meaning`` and ``calibration``), which
 re-checks the caller-supplied configured authority id, HOLD, G0, the event
 order, and sealed custody on each call. The Workbench does not authenticate
-the caller's identity. Studio Chat appears only for Board-backed Pages.
+the caller's identity.
 """
 from __future__ import annotations
 
@@ -541,12 +541,12 @@ def labeling_hold_for_scene(root: Path, scene_q: str) -> tuple[bool, str]:
     return False, ""
 
 
-def studio_chat_page_url(
+def generated_page_url(
         path_q: str, file_q: str, page_q: str, board_dir: Path | None) -> str:
-    """Validate and return the generated Page URL Studio binds Chat to.
+    """Validate and return the generated Page URL the Workbench belongs to.
 
     ``path_q`` is intentionally ``board.md`` because it resolves the source
-    file.  It is not a browser Page and must never receive ``?pane=chat``.
+    file.  It is not a browser Page.
     ``page_q`` comes from the current page frame's ``location.pathname`` and
     must name the matching generated HTML beneath that same Board.  The Board
     source is parsed with the same group-token law as the builder, then the
@@ -1014,16 +1014,11 @@ def _data_space(vm: dict) -> dict[str, str]:
     if n_dev is None and isinstance(n_items, int) and isinstance(n_sealed, int):
         n_dev = n_items - n_sealed
 
-    context_field = manifest.get("context_field") or (config.get("corpus") or {}).get("context_field")
     corpus = _card("Data", "".join([
         _row("source", _esc(source.get("name") or (config.get("corpus") or {}).get("source") or "")),
         _row("items", _esc(n_items)),
         _row("to label", _esc(n_dev)),
         _row("held back", _esc(f"{n_sealed} items for the final test; you never see them" if n_sealed is not None else "none")),
-        _row("one item is", _esc((config.get("corpus") or {}).get("population") or "")),
-        _row("item id field", f"<code>{_esc(manifest.get('id_field') or (config.get('corpus') or {}).get('id_field') or 'item_id')}</code>"),
-        _row("text field", f"<code>{_esc(manifest.get('text_field') or (config.get('corpus') or {}).get('text_field') or 'text')}</code>"),
-        _row("context field", f"<code>{_esc(context_field)}</code>" if context_field else ""),
         _row("embedding", _embedding_summary(vm.get("embedding"))),
     ]))
     imported_rows = []
@@ -1047,9 +1042,94 @@ def _data_space(vm: dict) -> dict[str, str]:
             "embedding": _embedding_view(vm)}
 
 
+@lru_cache(maxsize=16)
+def _corpus_shape(items: str, mtime_ns: int, size: int, text_field: str,
+                  context_field: str) -> dict:
+    """Word counts over the items to label only; held-back text is never read."""
+    from statistics import median  # noqa: PLC0415
+    text_words, context_words, meta = [], [], {}
+    try:
+        with open(items, encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if not isinstance(row, dict) or row.get("population_status") != "eligible":
+                    continue
+                if not meta and isinstance(row.get("source_metadata"), dict):
+                    meta = row["source_metadata"]
+                text_words.append(len(str(row.get(text_field) or "").split()))
+                if context_field:
+                    context_words.append(len(str(row.get(context_field) or "").split()))
+    except OSError:
+        return {}
+
+    def spread(words: list[int]) -> str:
+        return f"{median(words):g} words median, {min(words)} to {max(words)}" if words else ""
+
+    return {"n": len(text_words), "text": spread(text_words), "context": spread(context_words),
+            "no_context": sum(1 for n in context_words if n == 0), "meta": meta}
+
+
+def _corpus_card(vm: dict) -> str:
+    """What the corpus is and what one item is (Data → Preparation); Contract keeps the counts."""
+    config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    source = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
+    if not source and isinstance(corpus.get("source"), dict):
+        source = corpus["source"]
+    population = manifest.get("population")
+    pop = population if isinstance(population, dict) else {}
+    unit = (pop.get("definition") or (population if isinstance(population, str) else "")
+            or corpus.get("population") or "")
+    id_field = manifest.get("id_field") or corpus.get("id_field") or "item_id"
+    text_field = manifest.get("text_field") or corpus.get("text_field") or "text"
+    context_field = manifest.get("context_field") or corpus.get("context_field") or ""
+    items = vm["root"] / (manifest.get("items_file") or "corpus/items.jsonl")
+    try:
+        stat = items.stat()
+        shape = _corpus_shape(str(items), stat.st_mtime_ns, stat.st_size, text_field, context_field)
+    except OSError:
+        shape = {}
+    meta = shape.get("meta") or {}
+    name = _esc(source.get("name") or "")
+    if name and source.get("uri"):
+        name = f'<a href="{_esc(source["uri"])}" target=_blank rel=noopener>{name}</a>'
+    if name and source.get("license"):
+        name += f' · {_esc(source["license"])}'
+    context = ""
+    if context_field and shape.get("context"):
+        context = f'<code>{_esc(context_field)}</code> · {_esc(shape["context"])}'
+        if shape.get("no_context"):
+            n = shape["no_context"]
+            context += f' · {_esc(n)} {"item has" if n == 1 else "items have"} none'
+    prepared = ""
+    if not (vm.get("preparation") or {}).get("linked"):
+        m = re.match(r"(\d{4})-(\d{2})-(\d{2})", str(manifest.get("created_at") or ""))
+        months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+        when = f"{int(m.group(3))} {months[int(m.group(2)) - 1]} {m.group(1)} · " if m else ""
+        prepared = when + "before Corpus Preparation Runs existed, so no Runs are listed"
+    return _card("Corpus", "".join([
+        _row("source", name) if name else "",
+        _row("source row", _esc(meta.get("row_unit"))) if meta.get("row_unit") else "",
+        _row("encounters", _esc(pop.get("n_encounters"))) if pop.get("n_encounters") else "",
+        _row("raters", _esc(meta.get("rater_count"))) if meta.get("rater_count") else "",
+        _row("one item is", _esc(unit)) if unit else "",
+        _row("item text", f'<code>{_esc(text_field)}</code> · {_esc(shape["text"])}') if shape.get("text") else "",
+        _row("context", context) if context else "",
+        _row("item id", f"<code>{_esc(id_field)}</code>"),
+        _row("word counts from", _esc(f'{shape["n"]} items to label')) if shape.get("n") else "",
+        _row("kept together", "no encounter is split across the held-back test")
+        if pop.get("encounter_straddle_across_seal") == [] else "",
+        _row("prepared", _esc(prepared)) if prepared else "",
+    ]))
+
+
 def _preparation_view(vm: dict) -> str:
     prep = vm.get("preparation") or {}
-    if not vm.get("page_ready", True) and not (vm["root"] / "config.yaml").is_file():
+    has_job = (vm["root"] / "config.yaml").is_file()
+    if not vm.get("page_ready", True) and not has_job:
         source = vm["page_src"]
         target = vm["page_candidate"]
         prompt = (f"Use /haipipe-page to create the canonical Page folder for {source}. "
@@ -1062,15 +1142,13 @@ def _preparation_view(vm: dict) -> str:
             f'<div class=actions><button type=button class=primary data-copy="{_esc(prompt)}">'
             "Copy Page-folder request</button></div>",
         ]))
+    corpus = _corpus_card(vm) if has_job else ""
     if prep.get("error"):
-        return _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>')
+        return corpus + _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>')
     if not prep.get("linked"):
         if not prep.get("attached"):
-            if (vm["root"] / "config.yaml").is_file():
-                return _card("Corpus Preparation", "<p>This job began with an already-unitized "
-                             "legacy source. It has no source-owned preparation Runs. "
-                             "Its existing Contract and Labeling Runs remain in their original "
-                             "folders; prepare a new source before creating a new job.</p>")
+            if corpus:
+                return corpus
             prompt = ("Use /subjective-label-preparation for the Page whose labeling folder is at "
                       f"{_job_where(vm)}. Identify the transcript JSONL and source owner, attach "
                       "that owner to this Page, then work through the five Corpus Preparation "
@@ -1081,7 +1159,7 @@ def _preparation_view(vm: dict) -> str:
                          "Copy setup request</button></div>")
         owner_ref = prep["owner_reference"]
         completed = len({run["operation"] for run in prep["runs"] if run["status"] == "complete"})
-        return _card("Corpus Preparation", "".join([
+        return corpus + _card("Corpus Preparation", "".join([
             _row("source", f'<code>{_esc(owner_ref["source_id"])}</code>'),
             _row("owner", f'<code>{_esc(owner_ref["owner"])}</code>'),
             _row("Run Types finished", _esc(f"{completed} of 5")),
@@ -1099,7 +1177,7 @@ def _preparation_view(vm: dict) -> str:
         _row("status", '<span class=ok>accepted · whole source groups kept together</span>'),
         _row("owner", f'<code>{_esc(ref["owner"])}</code>'),
     ]
-    return _card("Corpus Preparation", "".join(rows))
+    return corpus + _card("Corpus Preparation", "".join(rows))
 
 
 def _meaning_gate(vm: dict) -> str:
@@ -2661,11 +2739,9 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
            board_dir: Path | None, *, standalone: bool = False) -> str:
     vm = _view_model(page_src)
     state, canonical, config = vm["state"], vm["canonical"], vm["config"]
-    chat_page = "" if standalone else studio_chat_page_url(path_q, file_q, page_q, board_dir)
-    if not standalone and not chat_page:
-        raise ValueError("Labeling Studio Chat requires the matching generated Page URL")
+    if not standalone and not generated_page_url(path_q, file_q, page_q, board_dir):
+        raise ValueError("Labeling Workbench requires the matching generated Page URL")
     hold = bool(state["authority_hold"] or state["next_action"].startswith("HOLD"))
-    chat_url = (chat_page + "?pane=chat" + ("&labeling_hold=1" if hold else "")) if chat_page else ""
     next_line, next_space = _next_step(vm)
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     title = construct.get("question") or construct.get("name") or page_src.stem
@@ -2724,8 +2800,6 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
     }
     back_link = ('' if standalone else
                  f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>')
-    chat_link = (f'<a class="space chatlink" href="{_esc(chat_url)}" target=_blank rel=noopener>Studio Chat</a>'
-                 if chat_url else '')
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -2735,8 +2809,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
         f' 🏷 {_esc(title)}</h1>'
         f'<section class=drawer data-drawer-panel=workflow hidden>{drawers["workflow"]}</section>'
         f'<section class=drawer data-drawer-panel=allruns hidden>{drawers["allruns"]}</section>'
-        f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}'
-        f'{chat_link}</nav>'
+        f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}</nav>'
         + "".join(sections) +
         f'<script type=application/json id=labeling-boot>{_script_json(boot)}</script>'
         f'<script>{_JS}</script></body></html>'
@@ -2978,7 +3051,6 @@ _CSS += """/* v3 (JL 260927, as the Page workbench): no page bar; each Space is 
    is a thin strip. A view lists only its own Run types. */
 .pagetitle{display:flex;align-items:center;gap:8px;margin:0 0 6px}
 .pagetitle .back{text-decoration:none;font-weight:700}
-.spaces .chatlink{margin-left:auto;text-decoration:none}
 .drawer{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0 0;background:var(--card)}
 .space-split{display:flex;align-items:flex-start;gap:16px}
 .space-main{flex:1 1 auto;min-width:0}
@@ -3666,7 +3738,7 @@ class LabelingMixin:
             return self.reply(400, {"ok": False, "err": got[1]})
         if not is_labeling_surface_page(got[0]):
             return self.reply(404, {"ok": False, "err": "Page has no labeling lane"})
-        if not studio_chat_page_url(path_q, file_q, page_q, got[1]):
+        if not generated_page_url(path_q, file_q, page_q, got[1]):
             return self.reply(400, {"ok": False,
                                     "err": "missing or mismatched generated Page URL"})
         body = render(got[0], path_q, file_q, page_q, got[1]).encode("utf-8")
@@ -3687,7 +3759,7 @@ class LabelingMixin:
         path_q = p.get("path") or ""
         file_q = p.get("file") or ""
         page_q = p.get("page") or ""
-        if not studio_chat_page_url(path_q, file_q, page_q, got[1]):
+        if not generated_page_url(path_q, file_q, page_q, got[1]):
             return None, "missing or mismatched generated Page URL"
         return {"url": "/_board/labeling?path=%s&file=%s&page=%s" %
                 (quote(path_q), quote(file_q), quote(page_q))}, None
@@ -3747,8 +3819,8 @@ class LabelingMixin:
         page_src, board_dir = got
         if not is_labeling_surface_page(page_src):
             return 404, {"ok": False, "err": "Page has no labeling lane"}
-        if not standalone and not studio_chat_page_url(p.get("path") or "", p.get("file") or "",
-                                                      p.get("page") or "", board_dir):
+        if not standalone and not generated_page_url(p.get("path") or "", p.get("file") or "",
+                                                    p.get("page") or "", board_dir):
             return 400, {"ok": False, "err": "missing or mismatched generated Page URL"}
         if p.get("attest") is not True:
             return 400, {"ok": False, "err": "labeling writes need an explicit caller attestation"}

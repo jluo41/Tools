@@ -100,7 +100,7 @@ def find_asset(rel, env_var=None, kind="EXTERNAL", start=None) -> pathlib.Path:
 # and its sha256, which is checked once per process. No release, or an asset the
 # release does not pin, returns None and the caller keeps its old path.
 
-DEFAULT_RELEASE = "EventNormV3"                 # the release WellDocDataExtV260927 reads
+DEFAULT_RELEASE = "EventNormV6"                 # the release WellDocDataExtV260930 reads
 _RELEASE_CACHE = {}
 
 

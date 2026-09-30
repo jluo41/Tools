@@ -1,3 +1,7 @@
+## 1.6.3 · 2026-09-30 · Discovery runs also show on Story › Related Papers (JL 260930)
+
+- `ref/run-cards.md`: the Discovery runs button says `views logic-work related`, so it shows beside the new Related Papers tab (haipipe-workbench-paper 0.16.0), where each card is one Discovery Paper Run.
+
 ## 1.6.2 · 2026-09-29 · Story run buttons move to the logic-work tab (JL 260929)
 
 - `ref/run-cards.md`: Claim review, Task review, Task runs and Discovery runs say `views logic-work` (were `views questions` and `views roadmap`). The Paper workbench merged Story › Questions and Story › Roadmap into one tab, High-level logic + Low-level work (haipipe-workbench-paper 0.10.0), so all four Story judgment and supporting buttons show beside it.

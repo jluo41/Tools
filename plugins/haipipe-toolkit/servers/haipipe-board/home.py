@@ -383,7 +383,7 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
     if route == "labeling":
         # The 🏷 view binds to the generated Page it sits beside: `path` is the
         # Board source, `file` the Page Face, `page` the built html (see
-        # workbench-labeling's `studio_chat_page_url`). All three come from disk.
+        # workbench-labeling's `generated_page_url`). All three come from disk.
         generated = resolve_short(root, slug, anchor)
         if generated is None:
             return None, "the labeling tab needs the built Board page; run build.py first"

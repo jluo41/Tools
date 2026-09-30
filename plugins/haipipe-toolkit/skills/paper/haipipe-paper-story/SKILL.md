@@ -6,8 +6,8 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-09-29"
+  version: "0.14.0"
+  last_updated: "2026-09-30"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -279,6 +279,23 @@ one or more RQs and claims as appropriate; do not force one E-row per RQ.
 Separate evidence support (established / provisional / absent / contradicted /
 inconclusive) from execution progress. A completed, accepted analysis can
 contradict a proposition. Keep that result and its implication visible.
+
+The Novelty basis also holds the **P-board** (JL 260930): the papers this study
+stands beside, one row each, each held as a Discovery Paper Run (a §6 row names the
+Discovery Task that holds them):
+
+```text
+P | paper | role | question | why it matters | Discovery Run
+```
+
+`role` is `closest`, `question`, `background` or `caution`; `question` is an RQ id
+or `all`; `Discovery Run` is the Paper Run's address (`b01.j02.t01.r01`). Search the
+venue the paper is written for first (JL 260930: "我们选 paper 一定要选一个 venue 的"),
+then add papers from other venues (JL 260930: "this is not limited to NMI"). The why
+line says in plain words what the paper shows for this study, from what was read (its
+abstract, or the PDF when the row says so). The Paper Workbench draws the P-board as
+Story › Related Papers: the target venue's papers first, then other venues, one card
+per row with the Run's `paper.pdf` inside.
 
 “Established” requires inspected evidence with adequate scope. User-reported
 availability is a labeled planning input until verified; a path or receipt

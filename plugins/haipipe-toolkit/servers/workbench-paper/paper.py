@@ -764,6 +764,7 @@ def story(d, p):
          "dd": table_rows(t, r"D\d+"), "dd_h": _table_headers(t, r"D\d+") or [],
          "tt": table_rows(t, r"[TB]\d+"), "tt_h": _table_headers(t, r"[TB]\d+") or [],
          "qq": table_rows(t, r"Q\d+"), "qq_h": _table_headers(t, r"Q\d+") or [],
+         "pp": table_rows(t, r"P\d+"), "pp_h": _table_headers(t, r"P\d+") or [],
          "qb": question_blocks(t),
          "sections": [], "sec_h": [], "order": []}
     s["sec_h"] = _table_headers(t, SECTION_ROW) or []
@@ -1864,6 +1865,152 @@ def logic_work_html(d):
     return '<div class="lw">%s%s</div>' % (head, "".join(blocks))
 
 
+# Story › Related Papers (JL 260930): papers from the venue the paper is written for,
+# one card each, the original PDF readable inside the card. The rows are the Story's
+# §5.3 P-board; each names the Discovery Paper Run that holds the paper (its Bib,
+# abstract, facts and, when a free copy exists, paper.pdf).
+RELATED_ROLES = (("closest", "Closest to this paper", "hyp"), ("question", "For one research question", "claim"),
+                 ("background", "Background", "found"), ("caution", "Cautions and framing", "contrib"))
+
+
+def _cell(heads, row, name):
+    """The cell under the first header starting with `name` ('' when none)."""
+    i = next((k for k, h in enumerate(heads) if h.strip().lower().startswith(name)), None)
+    return row[i].strip() if i is not None and i < len(row) else ""
+
+
+def _disc_run(d, addr):
+    """`b01j02t01r03` → that Paper Run's Result folder in the Discovery home, or None."""
+    m = re.fullmatch(r"(b\d{2}j\d{2}t\d{2})(r\d{2})", addr or "")
+    hit = _disc_lookup(d, m.group(1)) if m else None
+    task = hit[2] if hit else None
+    return _find(task["dir"] / "results", m.group(2)) if task is not None else None
+
+
+def _yaml_block(text, block):
+    """The `key: value` lines indented under one top-level `block:` of a small YAML file."""
+    out, on = {}, False
+    for line in (text or "").splitlines():
+        if not line.strip():
+            continue
+        if not line.startswith((" ", "\t")):
+            on = line.split(":", 1)[0].strip() == block
+            continue
+        m = re.match(r"^\s+([\w-]+):\s*(.*?)\s*$", line) if on else None
+        if m:
+            out.setdefault(m.group(1), m.group(2).strip().strip("\"'"))
+    return out
+
+
+def paper_card_data(run):
+    """What one Paper Run's Result folder says about its paper."""
+    subj = _yaml_block(read(run / "runtime.yaml"), "subject")
+    try:
+        acc = json.loads(read(run / "source-access.json") or "{}")
+    except ValueError:
+        acc = {}
+    abstract = " ".join(ln.strip() for ln in read(run / "abstract.md").splitlines()
+                        if ln.strip() and not ln.lstrip().startswith(("#", "Source:", ">")))
+    doi = subj.get("doi", "")
+    return {"title": subj.get("title", ""), "authors": subj.get("authors", ""), "venue": subj.get("venue", ""),
+            "abstract": abstract, "pdf": (run / "paper.pdf") if (run / "paper.pdf").is_file() else None,
+            "publisher": (acc.get("links") or {}).get("publisher") or ("https://doi.org/" + doi if doi else ""),
+            "card": run / (run.name + ".md")}
+
+
+def _first_author(authors):
+    """`Xiao Gu; Wei Tang; …` → `Gu et al.`; `Frey, Nathan C.` keeps the surname; a group
+    author (`AI-READI Consortium`) keeps its whole name."""
+    names = [a.strip() for a in (authors or "").split(";") if a.strip()]
+    if not names:
+        return ""
+    group = re.search(r"\b(Consortium|Group|Committee|Collaboration|Investigators|Study)\b", names[0])
+    first = names[0] if group else names[0].split(",")[0].strip() if "," in names[0] else names[0].split()[-1]
+    return first + (" et al." if len(names) > 1 else "")
+
+
+def venue_name(d):
+    """The target venue: the H1 of board.md's `venue-page`, before its colon."""
+    rel = _links(read(d["board"] / "board.md")).get("venue-page", "")
+    h1 = re.search(r"^#\s+(.+)$", read((d["board"] / rel).resolve()), re.M) if rel else None
+    return h1.group(1).split(":")[0].strip() if h1 else ""
+
+
+def _short_venue(v):
+    """`Nature Machine Intelligence 8, 220-233 (2026) · Article` → (`Nature Machine Intelligence`, `2026`);
+    `NeurIPS 2022 · Conference paper` → (`NeurIPS`, `2022`); `arXiv preprint 2001.08361 (2020)` → (`arXiv`, `2020`)."""
+    v = v or ""
+    year = re.search(r"\((\d{4})\)", v) or re.search(r"\b((?:19|20)\d{2})\b", v)
+    name = "arXiv" if v.startswith("arXiv") else re.sub(r"\s*\b(?:19|20)\d{2}\b", "", re.sub(
+        r"\s+\d+,.*$", "", re.sub(r"\s*\(\d{4}\)", "", v.split(" · ")[0]))).strip()
+    return name, year.group(1) if year else ""
+
+
+def _paper_card(d, s, row):
+    """One related paper. Closed, two plain lines (JL 260930: "too messy … no need to
+    show all the details in the card front face"): the title, then who, when and where,
+    with the question and a 📄 when the PDF is inside. Open: why it matters, its links,
+    the abstract (folded) and the PDF itself; no facts line (JL 260930: "not relevant").
+    Returns (html, has_pdf, venue)."""
+    heads, pid = s["pp_h"], row[0]
+    addr = next(iter(_addresses(_cell(heads, row, "discovery") or " ".join(row[1:]))), "")
+    run = _disc_run(d, addr)
+    m = paper_card_data(run) if run is not None else {}
+    title = m.get("title") or _cell(heads, row, "paper") or pid
+    venue, year = _short_venue(m.get("venue"))
+    who = " · ".join(x for x in (_first_author(m.get("authors")), year, venue) if x) or _cell(heads, row, "paper")
+    q = _cell(heads, row, "question")
+    qword = "All" if q.lower() in ("all", "every question") else q
+    pdf = m.get("pdf")
+    marks = ('<span class="rp-q">%s</span>' % esc(qword) if q else "") + ('<span title="PDF inside">📄</span>' if pdf else "")
+    summary = ('<summary><span class="bjt-chev">▸</span><div class="lw-sum"><div class="rp-title">%s</div>'
+               '<div class="rp-sub"><span>%s</span><span class="rp-marks">%s</span></div></div></summary>'
+               % (esc(title), esc(who) if run is not None else
+                  '<span class="warn">no Paper Run at %s</span>' % esc(addr or "this row"), marks))
+    url = _tree_url(d, pdf) if pdf else ""
+    acts = [('<a href="%s" target="_blank" rel="noopener">Open the PDF in a new tab ↗</a>' % esc(url)) if url else "",
+            ('<a href="%s" target="_blank" rel="noopener">Publisher page ↗</a>' % esc(m["publisher"])) if m.get("publisher") else "",
+            _file_link(d, m["card"], "Paper Run ↗") if m.get("card") is not None and m["card"].is_file() else ""]
+    body = [('<p class="rp-why">%s</p>' % esc(_cell(heads, row, "why"))) if _cell(heads, row, "why") else "",
+            '<div class="rp-acts">%s</div>' % "".join('<span>%s</span>' % a for a in acts if a)]
+    if m.get("abstract"):
+        body.append('<details class="rp-absd"><summary>Abstract</summary><p>%s</p></details>' % esc(m["abstract"]))
+    body.append('<iframe class="rp-frame" title="%s" data-pdf="%s"></iframe>' % (esc("PDF · " + title), esc(url)) if url else
+                '<div class="rp-nopdf mut">No free full text. Read it on the publisher page; it may need a subscription.</div>')
+    return ('<details class="rp-card" data-key="%s">%s<div class="rp-body">%s</div></details>'
+            % (esc(pid), summary, "".join(body)), bool(pdf), m.get("venue", ""))
+
+
+def _role_bands(cards):
+    """[(role, card)] → the role bands in their fixed order, each a count and one box of rows."""
+    groups = {k: [c for r, c in cards if r == k] for k, _, _ in RELATED_ROLES}
+    return "".join('<div class="lw-k lw-k-%s">%s<span class="lw-kn">%d</span></div><div class="rp-group">%s</div>'
+                   % (cls, esc(label), len(groups[k]), "".join(groups[k])) for k, label, cls in RELATED_ROLES if groups[k])
+
+
+def related_html(d):
+    """Story › Related Papers: the §5.3 P-board. The target venue's papers come first and
+    other venues follow (JL 260930: "this is not limited to NMI"); inside each, the
+    papers are grouped by the role they play."""
+    rows = [(s, r) for s in d["story"] for r in s["pp"]]
+    if not rows:
+        return '<div class="space-empty">No related paper yet.</div>'
+    venue, n_pdf, roles = venue_name(d), 0, {k for k, _, _ in RELATED_ROLES}
+    here, away = [], []
+    for s, r in rows:
+        role = (_cell(s["pp_h"], r, "role").split() or ["background"])[0].lower()
+        card, has, where = _paper_card(d, s, r)
+        n_pdf += has
+        at_venue = not venue or where.lower().startswith(venue.lower())
+        (here if at_venue else away).append((role if role in roles else "background", card))
+    head = '<div class="rp-head">%d paper%s · %d with a PDF</div>' % (len(rows), "" if len(rows) == 1 else "s", n_pdf)
+    if not venue:
+        return '<div class="rp-list">%s%s</div>' % (head, _role_bands(here))
+    parts = [('<h3 class="rp-venue">At %s<span class="lw-kn">%d</span></h3>%s' % (esc(venue), len(here), _role_bands(here))) if here else "",
+             ('<h3 class="rp-venue">Other venues<span class="lw-kn">%d</span></h3>%s' % (len(away), _role_bands(away))) if away else ""]
+    return '<div class="rp-list">%s%s</div>' % (head, "".join(parts))
+
+
 def _named(addr, named):
     """Is this job address answered by a question row (at job level or below)?"""
     return any(addr.startswith(a) or a.startswith(addr) for a in named)
@@ -1992,7 +2139,8 @@ def _not_ready_ids(rd):
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation Space"), ("story", "Story Space"),
           ("sections", "Sections Space"), ("delivery", "Delivery Space"))
-STORY_TABS = (("spine", "Spine"), ("logic-work", "High-level logic + Low-level work"))   # JL 260929
+STORY_TABS = (("spine", "Spine"), ("logic-work", "High-level logic + Low-level work"),   # JL 260929
+              ("related", "Related Papers"))                                             # JL 260930
 SECTION_TABS = (("main", "Main"), ("appendix", "Appendix"))
 SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "Evidence"))
 DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("cover", "Cover letter"), ("rounds", "Rounds"))
@@ -2287,7 +2435,8 @@ def render_story(d, kinds):
     if not d["story"]:
         empty = '<div class="space-empty">No Story yet.</div>'
         return _space("story", "".join(_pane(empty, k) for k, _ in STORY_TABS), _story_panel(d, kinds), STORY_TABS)
-    main = _pane(_spine_html(d), "spine") + _pane(logic_work_html(d), "logic-work")
+    main = (_pane(_spine_html(d), "spine") + _pane(logic_work_html(d), "logic-work")
+            + _pane(related_html(d), "related"))
     return _space("story", main, _story_panel(d, kinds), STORY_TABS)
 
 
@@ -2571,19 +2720,20 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 
 .lw-qhead{{flex:1 1 0;min-width:0}} .lw-qtop{{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}} .lw-qname{{font-weight:700}} .lw-q .lw-qtext{{display:block;margin-top:4px;font-weight:500}}
 .lw-q>summary:hover{{background:color-mix(in srgb,var(--acc) 5%,var(--soft))}}
-.lw-q.runs-selected>summary,.lw-h.runs-selected,.lw-w.runs-selected{{background:color-mix(in srgb,var(--acc) 9%,var(--card))}}
+.lw-q.runs-selected>summary{{box-shadow:inset 3px 0 0 var(--acc)}}
+.lw-h.runs-selected,.lw-w.runs-selected{{background:transparent;box-shadow:inset 3px 0 0 var(--acc)}}
 .lw-g .lw-l{{padding-left:40px}} .lw-g>.lw-l,.lw-g>.lw-r{{padding-top:0;padding-bottom:10px}}
 .lw-k{{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:16px 0 8px;padding:6px 10px;
  border-radius:7px;font:700 12.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}}
 .lw-l>.lw-k:first-child,.lw-r>.lw-k:first-child{{margin-top:4px}}
 .lw-kn{{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}}
-.lw-k-hyp,.lw-k-work{{color:var(--acc);background:color-mix(in srgb,var(--acc) 9%,transparent)}}
-.lw-k-claim{{color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}}
-.lw-k-contrib{{color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}}
-.lw-k-found{{color:var(--mut);background:color-mix(in srgb,var(--mut) 12%,transparent)}}
+.lw-k-hyp,.lw-k-work{{color:var(--acc)}}
+.lw-k-claim{{color:var(--ok)}}
+.lw-k-contrib{{color:var(--warn)}}
+.lw-k-found{{color:var(--mut)}}
 .lw-c{{margin:0 0 10px}}
-.lw-w{{padding:6px 8px;margin:0 -8px 6px;border-radius:8px}} .lw-w:hover{{background:var(--soft)}}
-.lw-w.lw-lit{{background:color-mix(in srgb,var(--acc) 7%,var(--card))}}
+.lw-w{{padding:6px 8px;margin:0 -8px 6px;border-radius:8px}} .lw-w>summary:hover .lw-wq{{color:var(--acc)}}
+.lw-w.lw-lit{{box-shadow:inset 3px 0 0 color-mix(in srgb,var(--acc) 40%,transparent)}}
 .lw-w>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:4px;align-items:baseline}}
 .lw-w>summary::-webkit-details-marker{{display:none}} .lw-w[open]>summary .bjt-chev{{transform:rotate(90deg)}}
 .lw-sum{{min-width:0}} .lw-folders{{margin:4px 0 2px 1.3em}}
@@ -2599,6 +2749,24 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .bj-b,.bj-j,.bj-t{{font-size:14px;line-height:1.55;display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}}
 .bj-j{{margin-left:16px}} .bj-t{{margin-left:32px}}
 .bj-r>summary{{cursor:pointer;color:var(--mut);font-size:12.5px}} .bj-rn{{font-size:12.5px}} .bj-run{{margin-left:14px;font-size:12.5px}}
+/* Story › Related Papers: one card per paper, the target venue first, its PDF inside (JL 260930) */
+.rp-head{{font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 2px}}
+.rp-venue{{display:flex;gap:10px;align-items:baseline;margin:22px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line);
+ font-size:16px;font-weight:700}} .rp-list>.rp-venue:first-of-type{{margin-top:8px}}
+.rp-group{{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden;margin:0 0 4px}}
+.rp-card+.rp-card{{border-top:1px solid var(--line)}}
+.rp-card>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:6px;align-items:baseline;padding:10px 14px}}
+.rp-card>summary::-webkit-details-marker{{display:none}} .rp-card[open]>summary .bjt-chev{{transform:rotate(90deg)}}
+.rp-card>summary:hover,.rp-card[open]>summary{{background:var(--soft)}}
+.rp-title{{font-weight:600;font-size:14.5px;line-height:1.4}}
+.rp-sub{{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:2px;font-size:13px;color:var(--mut)}}
+.rp-marks{{display:flex;gap:10px;flex:none}} .rp-q{{color:var(--acc);font-weight:600}}
+.rp-body{{padding:6px 14px 14px calc(14px + 1em + 6px)}}
+.rp-why{{font-size:14.5px;line-height:1.55;margin:4px 0 6px}}
+.rp-acts{{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}}
+.rp-absd>summary{{cursor:pointer;font-size:13.5px;color:var(--mut)}} .rp-absd>p{{font-size:14px;line-height:1.55;margin:6px 0 0}}
+.rp-nopdf{{font-size:13.5px;margin-top:8px}}
+.rp-frame{{display:block;width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}}
 @media(max-width:1100px){{.lw-row{{grid-template-columns:minmax(0,1fr)}}
  .lw-r{{border-left:0;padding-left:40px}} .lw-head .lw-r{{display:none}}}}
 code{{font:12.5px ui-monospace,Menlo,monospace}}
@@ -2607,7 +2775,7 @@ code{{font:12.5px ui-monospace,Menlo,monospace}}
  padding:9px 12px;border-top:1px solid var(--line);cursor:pointer}}
 .sec-row:first-child{{border-top:0}}
 .sec-row:hover{{background:var(--soft)}}
-.sec-row.runs-selected{{background:color-mix(in srgb,var(--acc) 9%,var(--card));box-shadow:inset 3px 0 0 var(--acc)}}
+.sec-row.runs-selected{{background:transparent;box-shadow:inset 3px 0 0 var(--acc)}}
 .sec-num,.sec-ver{{font:500 13px ui-monospace,Menlo,monospace;color:var(--mut)}} .sec-name{{font-weight:600}}
 .sec-state{{font-size:13px;overflow-wrap:anywhere}} .sec-open{{font-size:13px;text-align:right;white-space:nowrap}}
 .item-cards{{display:grid;gap:9px;margin:0 0 12px}}
@@ -2739,6 +2907,9 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
  var auto=new WeakSet();   /* work a picked hypothesis opened: its toggle must not steal the pick */
  document.addEventListener('toggle',function(ev){{
   var w=ev.target;
+  /* a related paper's PDF loads only when its card opens (data-pdf, so lazy() leaves it alone) */
+  if(w.matches&&w.matches('details.rp-card')){{var f=w.open&&w.querySelector('iframe[data-pdf]');
+   if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf);return;}}
   if(w.matches&&w.matches('details.lw-w[data-key]')){{
    if(auto.has(w)){{auto.delete(w);return;}}
    var wp=w.closest('.panel');if(!wp)return;
