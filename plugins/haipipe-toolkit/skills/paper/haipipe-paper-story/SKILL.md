@@ -181,6 +181,7 @@ and the work that tests each guess.
 
 ```markdown
 #### 3.1 · Question 1 · RQ1
+- **Name**: <two or three plain words>
 - **Question**: <the question>
 - **Why the paper needs it**: <its job in the paper>
 - **Answer form**: <what evidence would answer it>
@@ -206,7 +207,7 @@ and the work that tests each guess.
 - **D1** · for 1a, 1b
 ```
 
-Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
+A question's **Name** is its short phrase, the words the Paper Workbench prints beside "Question N" with the full question on the line below (JL 260930). Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
 A hypothesis and the claim it yields share a code; a claim keeps its paper-wide id
 (C1, C2, …, used by the Pitch, §8 and the Section Pages) right after its code. Every
 item is a short name, a colon, and one plain sentence (JL 260929: "short-phrase-name:

@@ -48,6 +48,7 @@ basis: evidence-informed           # brief-only · evidence-informed
 mode: compose                      # compose · revise · brainstorm · theory-driven · challenge
 expected: a first-time reader can say who sent it and what to do after one read
 falsified: a cold reader cannot name the next step from the text alone
+because: FW01 · W1                 # the one insight rule it acts on · none
 evidence:
 - handoff · ../../../A00_SMSR2Full-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
 acceptance:
@@ -60,6 +61,15 @@ acceptance:
 `role · path` (or `role  path`); the roles are `evidence`, `handoff`,
 `inspiration`, `reference`, and `avoid` (`base` and `feedback` are written by
 revise runs). On screen a `handoff` reads "signed insight".
+
+`because` names the one insight rule the item acts on, as `<page id> · <row>`
+(`because: FW02 · W1`). The card's **Because** row prints that rule's DO / DO NOT
+sentence from the page, found among the item's `evidence` first, then on the same
+Insight board. `because: none`, or a `brief-only` item with no line, reads "AI
+idea, not from an insight". An `evidence-informed` item with no line reads "no rule
+named"; a rule not on the page reads "no such rule". A `challenge` item adds "if it
+loses, the rule holds". The design bundle csv carries the same line in its last
+column, `because`. The line is display only: a Commission does not pin it.
 
 `expected` and `falsified` judge design quality. They may name what a later
 experiment will check, but Design Runs judge design quality only, so

@@ -253,15 +253,14 @@ found). Work built in another project says "built outside tasks/" with its path;
 with no folder says "no folder yet".
 
 Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): each group label is a colored band
-with a left stripe: Hypotheses and This question's work blue, Potential claims green,
+(no left stripe, JL 260930): Hypotheses and This question's work blue, Potential claims green,
 Potential contributions orange, Foundation work gray (its band says "shared by all 5
 questions"). Each question's header row has a light background. Every work item folds,
 closed by default (JL 260929: "右边那些 results 也是可以 click 的，也是可以 collapse 的"); its
 closed line still shows its stage, its question, "for Hypotheses 1a and 1b", "also for
 Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
 
-Picking: the first click on a question selects it for the Runs panel, the next closes
-it. A click on a hypothesis selects it, lights the work that tests it and opens it.
+Questions start closed (JL 260930): the questions alone read as the paper's outline, with nothing else on the closed line (JL 260930: no tally). The closed line is two lines: the "Question N" pill with the block's `**Name**` beside it, then the full question below. board.md `story-current: <Story stem>` limits the tree to that Story (a submitted paper and its redesign are two Stories; the tree shows the one being worked on, with no Story label); without it every Story's questions are drawn. Picking: a click on a closed question opens it and selects it for the Runs panel; on an open, unselected one it selects; on the selected one it closes. A click on a hypothesis selects it, lights the work that tests it and opens it.
 Opening a work item selects it; closing it clears the pick. Under 1100px the right half
 drops below the left. The only box is the tree's frame.
 

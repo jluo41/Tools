@@ -40,7 +40,7 @@ _UNIT_CHECKER = (SKILLS / "design"
 _STEP = {"commission": "Commission", "generate": "Generate",
          "verify": "Verify", "adopt": "Adopt (historical)"}
 _ITEM_FIELDS = ("type", "audience", "job", "goal", "stance", "basis", "mode",
-                "expected", "falsified")
+                "expected", "falsified", "because")
 _ITEM_LISTS = ("acceptance", "evidence")
 # contract words -> what a reader understands at first glance; the contract word stays in the files
 _PLAIN = {
@@ -431,6 +431,46 @@ def _evidence_rows(folder: Path, item: dict) -> list[dict]:
     return out
 
 
+_BECAUSE = re.compile(r"^([A-Z][DIKW]\d{2})\s*[·:\s]\s*([A-Z]\d+)$")
+
+
+def because_rule(item: dict) -> dict:
+    """The one insight rule an item says it acts on: register line `because: FW02 · W1`.
+
+    state is "rule" (found; `rule` holds its DO / DO NOT sentence), "unknown" (named
+    but not on the cited page), "ai" (`because: none`, or built from the Brief only:
+    an AI idea, not from an insight) or "unnamed" (built on evidence, no rule named).
+    The page is looked up among the item's evidence first, then on the same Insight board."""
+    raw = (item.get("because") or "").strip()
+    out = {"state": "unnamed", "ref": raw, "page": None, "rule": None}
+    if raw.lower() in ("none", "no insight", "-") or (not raw and item.get("basis") != "evidence-informed"):
+        return {**out, "state": "ai"}
+    hit = _BECAUSE.match(raw)
+    if not hit:
+        return out if not raw else {**out, "state": "unknown"}
+    pid, rid = hit.groups()
+    out["ref"] = f"{pid} · {rid}"
+    files = [r["file"] for r in item.get("evidence_rows", []) if r["exists"]]
+    page = next((f for f in files if f.stem.startswith(pid + "-")), None)
+    for f in files if page is None else ():
+        page = next(iter(sorted(f.parent.parent.parent.glob(f"*/{pid}-*/{pid}-*.md"))), None)
+        if page:
+            break
+    if page is None:
+        return {**out, "state": "unknown"}
+    from live.design_actions import counsel_lines
+    rule = next((r for r in counsel_lines(_read(page)) if r["id"] == rid), None)
+    return {**out, "state": "rule" if rule else "unknown", "page": page, "rule": rule}
+
+
+def because_words(item: dict) -> str:
+    """The because line as plain text, for the csv: `FW02 · W1: DO run a factorial round …`."""
+    b = item.get("because_rule") or because_rule(item)
+    if b["state"] == "rule":
+        return f'{b["ref"]}: {"DO" if b["rule"]["do"] else "DO NOT"} {b["rule"]["text"]}'
+    return {"ai": "AI idea, not from an insight", "unnamed": ""}.get(b["state"], f'{b["ref"]} (not found)')
+
+
 _TABLE_ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 _HANDOFF_KEY = re.compile(r"^(FINDING|STRENGTH|BOUNDARY|CONSEQUENCE|OVERREACH)\s{2,}(.*)$")
 _ROLE_WORDS = {"handoff": "signed insight", "evidence": "evidence", "inspiration": "inspiration",
@@ -771,6 +811,7 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
         item["runs"] = [run for run in runs if run["item"] == item["id"]]
         item["state"], item["glyph"], item["waiting"] = _fold_state(item["runs"], human)
         item["evidence_rows"] = _evidence_rows(folder, item)
+        item["because_rule"] = because_rule(item)
         latest = next((r for r in reversed(item["runs"])
                        if r["kind"] == "generate" and r["artifacts"] and r["status"] == "complete"), None)
         item["latest"] = ({"run": latest["id"], "text": latest["artifacts"][0]["text"],
@@ -1440,6 +1481,26 @@ def _bet_changed(item: dict, released: dict) -> bool:
         or (frozen_rules is not None and list(frozen_rules) != list(item["acceptance"])))
 
 
+def _because_html(item: dict, root: Path | None = None) -> str:
+    """The one rule this design acts on, in its own words, or an honest label when there is none."""
+    b = item.get("because_rule") or because_rule(item)
+    if b["state"] == "ai":
+        return '<div class=mut>AI idea, not from an insight</div>'
+    if b["state"] == "unnamed":
+        return '<div class=bad>no rule named · add <code>because: &lt;page&gt; · &lt;row&gt;</code></div>'
+    if b["state"] == "unknown":
+        return f'<div class=bad>{_escape(b["ref"])} · no such rule on the cited page</div>'
+    lab = insight_label(b["page"])
+    tag = f'<b>{_escape(lab["shown"] or b["ref"].split(" ")[0])} · {_escape(b["rule"]["id"])}</b>'
+    href = _insight_href(root, b["page"])
+    if href:
+        tag = f'<a href="{_escape(href)}">{tag}</a>'
+    verb = "DO" if b["rule"]["do"] else "DO NOT"
+    note = ('<div class=mut>written to test this rule: if it loses, the rule holds</div>'
+            if item.get("stance") == "challenge" else "")
+    return f'<div>{tag} <span class=mut>{verb}</span> {_escape(b["rule"]["text"])}</div>{note}'
+
+
 def _explain(item: dict, root: Path | None = None) -> str:
     """The right-hand side of a card, as a two-column table (JL 260918): a small label on
     the left, the content on the right: why this design, where its insight came from,
@@ -1452,6 +1513,7 @@ def _explain(item: dict, root: Path | None = None) -> str:
     rows = [("Why this design",
              f'<p class=goal>{_escape(item["goal"]) or "<span class=mut>no goal recorded</span>"}</p>'
              + (f'<div class=mut>{why}</div>' if why else "")),
+            ("Because", _because_html(item, root)),
             ("From insight to design", _insight_flow(item, root))]
     if item["expected"] or item["falsified"]:
         bet = ""

@@ -1,3 +1,7 @@
+## 0.13.1 · 2026-09-30 · A question has a short Name
+
+- Each §3 question block may carry `- **Name**: <two or three plain words>` above `- **Question**`, so a question reads like a hypothesis or claim: short name first, sentence second (JL 260930: "Question: short name, then the sentences that describe this question"). The Paper Workbench prints it beside the Question pill. First used on Paper-TestToLearn-MS2026 StoryA and StoryC.
+
 ## 0.13.0 · 2026-09-29 · Codes by question; short name and sentence; foundation in every block
 
 - §3 items are coded by question (1a, 1b under Question 1; JL 260929: "if this is for Question 1, then the hypothesis and claims should be 1a, 1b"). A hypothesis and its claim share a code; a claim keeps its paper-wide id (C1–C5) right after the code, so the Pitch, §8 and the Section Pages' C1–C5 still point at it (a find-and-replace was not safe: C1 is also a Section plan's division id, as in `C1.P1.B1`).

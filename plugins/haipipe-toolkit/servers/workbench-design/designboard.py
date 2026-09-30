@@ -19,7 +19,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 from live.design import (
-    _declared_insight_boards, _handoff_says, _insight_bindings, _read, _signal_line,
+    _declared_insight_boards, _handoff_says, _insight_bindings, _read, _signal_line, because_words,
     brief_page, brief_rows, design_chat_action, design_chat_copy, design_chat_copy_script, design_chat_prompt,
     design_next_run, design_picture, design_run_guide, design_snapshot, design_title, insight_caption,
     is_task_header, name_refs, plain_words, shown_design, venue_word,
@@ -501,7 +501,7 @@ def bundle_rows(snapshot: dict) -> list[dict]:
             "line": line.get("id", ""), "who": line.get("audience") or i.get("audience", ""),
             "their_job": line.get("job") or i.get("job", ""), "venue": line.get("venue") or i.get("type", ""),
             "folder": i["folder"], "item": i["id"], "title": i["title"], "state": i["state"], "text": design["text"],
-            "draft_run": design["run"],
+            "draft_run": design["run"], "because": because_words(i),
             "render": i["render"]["render"] if i.get("render") else "",
         })
     return rows
@@ -511,7 +511,7 @@ def bundle_csv(snapshot: dict) -> str:
     import csv
     import io
     out = io.StringIO()
-    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "render"]
+    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "render", "because"]
     writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in bundle_rows(snapshot):

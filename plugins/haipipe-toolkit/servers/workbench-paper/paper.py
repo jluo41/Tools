@@ -1815,9 +1815,15 @@ def _q_block(d, T, q):
     also = lambda it: [n for n, a in T["asked"].get(it["w"], [])
                        if n != _num(q["id"]) and (not a or not it["addrs"] or a & set(it["addrs"]))]
     right += [_work_item(d, T, it, labels, also=also(it)) for it in own] or ['<div class="lw-say">no work named yet</div>']
-    return ('<details class="qc lw-q" data-key="%s" open><summary><span class="bjt-chev">›</span>'
-            '<span class="item-kind">Question %s</span><span class="lw-qtext">%s</span></summary>%s</details>'
-            % (esc(q["id"]), esc(_num(q["id"])), esc(q["text"]), _lw_row("", "".join(left), "".join(right))))
+    # closed by default (JL 260930): the questions alone read as the paper's outline
+    # the label sits on its own line with the question's short name, the question below it
+    # (JL 260930: "Question: short name, then the sentence"), as hypotheses and claims do
+    name = _field(q["fields"], "name")
+    return ('<details class="qc lw-q" data-key="%s"><summary><span class="bjt-chev">›</span><div class="lw-qhead">'
+            '<div class="lw-qtop"><span class="item-kind">Question %s</span>%s</div>'
+            '<div class="lw-qtext">%s</div></div></summary>%s</details>'
+            % (esc(q["id"]), esc(_num(q["id"])), ('<span class="lw-qname">%s</span>' % esc(name)) if name else "",
+               esc(q["text"]), _lw_row("", "".join(left), "".join(right))))
 
 
 def _rest_block(d, T):
@@ -1833,7 +1839,7 @@ def _rest_block(d, T):
                         ('<div class="bj-home mut">%s</div>%s' % (esc(_home_label(d["disc"])), _bjtr(d, dn, disc=True))) if dn else ""))
     if not left and not right:
         return ""
-    return ('<details class="qc lw-q lw-rest" open><summary><span class="bjt-chev">›</span>'
+    return ('<details class="qc lw-q lw-rest"><summary><span class="bjt-chev">›</span>'
             '<span class="lw-qtext">Not under a question</span></summary>%s</details>'
             % _lw_row("", "".join(left) or '<div class="lw-say">every §5 row has a hypothesis</div>', "".join(right)))
 
@@ -1843,12 +1849,15 @@ def logic_work_html(d):
     Each question is a block; its left side is the high-level logic (hypotheses, potential
     claims, potential contributions), its right side the low-level work that tests it,
     each piece named as a question, in the order it runs, with its B → J → T → R."""
+    # board.md `story-current:` names the Story being worked on (JL 260930: one paper in this
+    # tree, no Story labels); without it every Story's questions are drawn, as before
+    cur = scalar(read(d["board"] / "board.md"), "story-current").strip()
+    stories = [s for s in d["story"] if s["stem"] == cur] if cur else d["story"]
     blocks = []
-    for s in d["story"]:
+    for s in stories or d["story"]:
         T = story_tree(s)
         blocks += [_q_block(d, T, q) for q in T["questions"]]
         blocks.append(_rest_block(d, T))
-    blocks = [b for b in blocks if b]
     if not blocks:
         return '<div class="space-empty">No research question yet.</div>'
     head = _lw_row("", "High-level logic", "Low-level work · B → J → T → R", "lw-head")
@@ -2559,11 +2568,13 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .lw-q+.lw-q{{border-top:1px solid var(--line)}}
 .lw-q>summary{{display:flex;gap:8px;align-items:baseline;padding:12px 14px;margin-bottom:6px;font-weight:650;font-size:15.5px;line-height:1.45;
  background:var(--soft);border-bottom:1px solid var(--line)}}
+
+.lw-qhead{{flex:1 1 0;min-width:0}} .lw-qtop{{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}} .lw-qname{{font-weight:700}} .lw-q .lw-qtext{{display:block;margin-top:4px;font-weight:500}}
 .lw-q>summary:hover{{background:color-mix(in srgb,var(--acc) 5%,var(--soft))}}
-.lw-q.runs-selected>summary,.lw-h.runs-selected,.lw-w.runs-selected{{background:color-mix(in srgb,var(--acc) 9%,var(--card));box-shadow:inset 3px 0 0 var(--acc)}}
+.lw-q.runs-selected>summary,.lw-h.runs-selected,.lw-w.runs-selected{{background:color-mix(in srgb,var(--acc) 9%,var(--card))}}
 .lw-g .lw-l{{padding-left:40px}} .lw-g>.lw-l,.lw-g>.lw-r{{padding-top:0;padding-bottom:10px}}
-.lw-k{{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:16px 0 8px;padding:6px 10px;border-left:3px solid currentColor;
- border-radius:0 7px 7px 0;font:700 12.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}}
+.lw-k{{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:16px 0 8px;padding:6px 10px;
+ border-radius:7px;font:700 12.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}}
 .lw-l>.lw-k:first-child,.lw-r>.lw-k:first-child{{margin-top:4px}}
 .lw-kn{{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}}
 .lw-k-hyp,.lw-k-work{{color:var(--acc);background:color-mix(in srgb,var(--acc) 9%,transparent)}}
@@ -2702,7 +2713,7 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
    history.replaceState(null,'','#'+space+(t?'/'+t:'')+(v?'/'+v:''));
    return;
   }}
-  /* a fold of the Questions tree opens by default: its first click selects it, the next one closes it */
+  /* a fold of the Questions tree starts closed: a click on a closed fold opens and selects it; on an open, unselected fold it selects; on the selected fold it closes */
   var sm=ev.target.closest('details.qc[data-key]>summary');
   if(sm&&!ev.target.closest('a,button')){{
    var f=sm.parentElement,fp=f.closest('.panel');

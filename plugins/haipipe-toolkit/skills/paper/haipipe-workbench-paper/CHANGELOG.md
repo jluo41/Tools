@@ -1,5 +1,11 @@
 # CHANGELOG · haipipe-workbench-paper
 
+## 0.15.0 · 2026-09-30 · Questions start closed; Stories named in the tree
+
+- Question blocks in High-level logic + Low-level work start closed (JL 260930: "could you make the questions to be hidden by default"). The closed line shows only the question; a tally line was tried and removed the same day (JL 260930: "I don't think this is useful"). "Not under a question" also starts closed.
+- board.md `story-current: <Story stem>` limits the tree to that one Story (found on Paper-TestToLearn-MS2026: StoryA the submitted paper and StoryC its redesign both numbered their questions from 1). A Story-name row above each Story's questions was tried and removed the same day (JL 260930: "I don't think we need this"). Without the line every Story is drawn, so other papers do not change.
+- `paper.py`: `_q_block` drops `open`; `logic_work_html` reads `story-current`; the click handler comment follows the new default. Tests: `test_paper_workbench.py` 12 pass (the RQ1 anchor no longer expects `open`); `audit_paper_views.py` 0 flagged on Paper-TestToLearn-MS2026 at 1360px and 2000px.
+
 ## 0.14.0 · 2026-09-29 · Colored group bands; every work item folds
 
 - Group labels are colored bands with a left stripe, replacing faint grey caps (JL 260929: "这东西感觉有点浅浅的 … 变得更显眼一些，或者说你加上一些条纹，把它分隔开"): Hypotheses and This question's work blue, Potential claims green, Potential contributions orange, Foundation work gray with "shared by all 5 questions" in its band. An old `.lw-k` rule from the earlier inline "Contribution" label was overriding the group style; it is gone.

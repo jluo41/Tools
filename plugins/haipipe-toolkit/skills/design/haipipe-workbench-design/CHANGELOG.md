@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.12.3 · 2026-09-29 · Each card names the rule it follows
+
+- A Design Item may carry `because: <page id> · <row>` (`because: FW02 · W1`). The card's
+  new **Because** row prints that rule's DO / DO NOT sentence, linked to the Insight page.
+- No line reads honestly: "AI idea, not from an insight" for `because: none` or a
+  `brief-only` item, "no rule named" for an `evidence-informed` item, "no such rule" when
+  the row is not on the page. A `challenge` item adds "if it loses, the rule holds".
+- The design bundle csv gains a last column, `because`.
+
 ## 0.12.2 · 2026-09-28 · No content hashes (JL 260928)
 
 - The Design buttons write run records, decisions and receipts that name files by path

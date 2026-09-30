@@ -6,11 +6,14 @@ from tempfile import TemporaryDirectory
 
 from live import design_actions as acts
 from live.design import (
+    because_rule,
+    because_words,
     design_contract_status,
     design_snapshot,
     is_current_design_page,
     modern_file,
     perform_action,
+    plan_folder,
     render_design,
 )
 from fixture_design_v2 import (
@@ -394,6 +397,50 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             rendered = render_design(snapshot, "insight")
             self.assertIn("built on evidence, but no insight is named yet", rendered)
             self.assertIn("needs an insight", rendered)
+
+
+class BecauseRuleTest(unittest.TestCase):
+    """Each card names the one insight rule it acts on (`because: FW01 · W1`), or says it has none."""
+
+    def item(self, page: Path, **fields) -> dict:
+        return {"basis": "evidence-informed", "because": "", "stance": "follow",
+                "evidence_rows": [{"file": page, "exists": True}], **fields}
+
+    def test_rule_is_read_from_the_cited_page(self):
+        with TemporaryDirectory() as td:
+            page = build_insight_board(Path(td) / "Insight") / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
+            rule = because_rule(self.item(page, because="FW01 · W2"))
+            self.assertEqual((rule["state"], rule["ref"], rule["rule"]["do"]), ("rule", "FW01 · W2", False))
+            self.assertEqual(rule["rule"]["text"], "vary the message by age, gender, send day or region")
+            self.assertEqual(because_rule(self.item(page, because="FW01 W1"))["rule"]["id"], "W1")
+            self.assertEqual(because_words(self.item(page, because="FW01 · W1")),
+                             "FW01 · W1: DO send `salience` to the whole population")
+
+    def test_missing_rule_ai_idea_and_unnamed_are_told_apart(self):
+        with TemporaryDirectory() as td:
+            page = build_insight_board(Path(td) / "Insight") / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
+            self.assertEqual(because_rule(self.item(page, because="FW01 · W9"))["state"], "unknown")
+            self.assertEqual(because_rule(self.item(page, because="FW07 · W1"))["state"], "unknown")
+            self.assertEqual(because_rule(self.item(page, because="none"))["state"], "ai")
+            self.assertEqual(because_rule(self.item(page, basis="brief-only"))["state"], "ai")
+            self.assertEqual(because_rule(self.item(page))["state"], "unnamed")
+            self.assertEqual(because_words(self.item(page, basis="brief-only")), "AI idea, not from an insight")
+
+    def test_card_shows_the_rule_sentence_and_the_challenge_note(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            register = plan_folder(page.parent) / f"{page.stem}-design-items.md"
+            text = register.read_text(encoding="utf-8")
+            text = text.replace("basis: evidence-informed\n", "basis: evidence-informed\nbecause: FW01 · W1\n", 1)
+            register.write_text(text, encoding="utf-8")
+            snapshot = design_snapshot(page, board)
+            first = snapshot["items"][0]
+            self.assertEqual(first["because_rule"]["state"], "rule")
+            rendered = render_design(snapshot, "design")
+            self.assertIn("<th>Because</th>", rendered)
+            self.assertIn("send `salience` to the whole population", rendered)
+            first["stance"] = "challenge"
+            self.assertIn("if it loses, the rule holds", render_design(snapshot, "design"))
 
 
 class DesignSignalTest(unittest.TestCase):

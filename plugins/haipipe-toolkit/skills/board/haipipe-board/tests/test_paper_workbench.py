@@ -371,7 +371,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual(T["loose"], ["T4", "D2"])                  # named by no question
             self.assertEqual(T["up"]["T2"], ["1b", "E2", "RQ1"])        # its runs show when any of these is picked
             html_ = _q_block(d, T, q)
-            self.assertIn('<span class="item-kind">Question 1</span><span class="lw-qtext">Does it hold?</span>', html_)
+            self.assertIn('<span class="item-kind">Question 1</span></div><div class="lw-qtext">Does it hold?</div>', html_)
             # each group is a colored band (JL 260929: the labels were too faint)
             for kind, group in (("hyp", "Hypotheses"), ("claim", "Potential claims"), ("contrib", "Potential contributions"),
                                 ("work", "This question&#x27;s work")):
@@ -490,8 +490,8 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("'story/roadmap':'story/logic-work'", page)       # an old link lands here
             self.assertIn("'story/questions':'story/logic-work'", page)
             self.assertIn('<div class="lw-l">High-level logic</div><div class="lw-r">Low-level work · B → J → T → R</div>', page)
-            q1 = page[page.index('<details class="qc lw-q" data-key="RQ1" open>'):page.index('<section class=runs-panel data-space="story"')]
-            self.assertIn('<span class="item-kind">Question 1</span><span class="lw-qtext">Does it hold?</span>', q1)
+            q1 = page[page.index('<details class="qc lw-q" data-key="RQ1">'):page.index('<section class=runs-panel data-space="story"')]
+            self.assertIn('<span class="item-kind">Question 1</span></div><div class="lw-qtext">Does it hold?</div>', q1)
             self.assertNotIn("⬜ open", q1)                                # no answer state (JL 260929: "confusing")
             # a Story still writing the RQ table: each §5 row naming the RQ is one hypothesis
             self.assertIn('<div class="lw-h" data-key="E1">', q1)

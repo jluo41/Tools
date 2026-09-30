@@ -155,6 +155,8 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
         lines.append(f"expected: {expected}")
     if falsified:
         lines.append(f"falsified: {falsified}")
+    if (fields.get("because") or "").strip():
+        lines.append(f"because: {fields['because'].strip()}")
     if evidence:
         lines.append("evidence:")
         lines += [f"- {line}" for line in evidence]
