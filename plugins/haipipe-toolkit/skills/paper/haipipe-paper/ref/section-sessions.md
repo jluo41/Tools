@@ -3,12 +3,12 @@
 `/haipipe-paper sessions [paper]` gives every Section its own named Claude Code
 session and its own named Codex thread, paired, so each Section is written,
 checked and messaged in its own context on either provider. Run it once the
-Story's C8 Section Narrative has fixed the Section structure; before that there
+Story's §8 Section Narrative has fixed the Section structure; before that there
 is nothing stable to own.
 
 ## When
 
-1. The Story page carries its `haipipe:compile-order` block (C8 is settled).
+1. The Story page carries its `haipipe:compile-order` block (§8 is settled).
 2. Every Section Page folder exists under `B?-<desk>-Main/` and `B?-<desk>-Appendix/`.
 3. Rerun after a Section Page is added; live sessions are kept, existing pairs are bound.
 
@@ -99,5 +99,5 @@ exact lines; the owner applies it inside its own folder.
 ## Not in scope
 
 The command creates no Page, Run, Result or receipt and never decides which
-Section exists: C8 does. Pairing is identity-only (`sync` stays off); reading a
+Section exists: §8 does. Pairing is identity-only (`sync` stays off); reading a
 peer's history is the call-peer skill's `READ_EXISTING_PEER`.

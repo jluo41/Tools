@@ -13,7 +13,7 @@ Spec bindings and the compile/response profiles.
 | Page Evidence | consuming Page's Evidence Item / `page` | `re-value-NN_<slug>`, `re-cite-NN_<slug>`, `re-display-NN_<slug>`; Page RE/native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
 | Page delivery | shared Page delivery owner / `page` | one fixed Run per lane: `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word`; no receipt | generated Page artifact; does not authorize Page release |
 | Supporting work | Task, Discovery or other declared native owner | full native `rNN`, `rlNN`, or global Ticket/Result address | consumer-neutral computation or inquiry; never renamed for Paper |
-| Paper judgment | Paper Ideation/Story card owner / `paper` | declared judgment grammar below | one fixed idea, proposition, obligation or Section row |
+| Paper judgment | Paper Ideation/Story card owner / `paper` | declared judgment grammar below | one fixed idea, claim, Task Roadmap row or Section row |
 
 A Page Evidence worker can call Task or Display capabilities. That does not
 turn its local RE into a Task-owned Run. Independently commissioned Supporting
@@ -90,9 +90,9 @@ journal exactly as `rp-para` keeps them:
 
 ```text
 JUDGE_RUN_ID := ridea-NN_<slug>            one candidate idea       lives on Story00-ideation
-             |  rclaim-NN_<slug>           one C5 proposition        lives on the Story page
-             |  rtask-NN_<slug>            one C7 evidence obligation lives on the Story page
-             |  rnarra-NN_<section-id>     one C8 Section row         lives on the Story page
+             |  rclaim-NN_<slug>           one claim                 lives on the Story page
+             |  rtask-NN_<slug>            one Task Roadmap row       lives on the Story page
+             |  rnarra-NN_<section-id>     one Section Narrative row  lives on the Story page
 ```
 
 The ticket's frontmatter names the row it discusses, which is how the card
@@ -109,7 +109,7 @@ result: results/rclaim-01_beyond-rating
 
 A judgment Run never selects an idea (the I3 receipt does), never releases a
 Section (G3 does), and never allocates a Task (the Task owner does). A
-Section's `rp-struct-01` consumes the released C8 row and any relevant judgment
+Section's `rp-struct-01` consumes the released Section Narrative row and any relevant judgment
 Result; an `rnarra` session is not mandatory when no such work was commissioned.
 
 

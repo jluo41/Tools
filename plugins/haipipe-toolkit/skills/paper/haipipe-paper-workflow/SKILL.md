@@ -7,7 +7,7 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.6.3"
+  version: "1.7.0"
   last_updated: "2026-09-30"
 ---
 
@@ -42,9 +42,9 @@ Select the relevant Specs rather than executing a fixed sequence:
 
 ```text
 Ideation native work / bounded idea judgments → I3 + G0 → Story work
-Story claim/obligation/narrative judgments → G1 → native Supporting Runs
+Story claim/task/narrative judgments → G1 → native Supporting Runs
 native accepted Results → G2 → affected Story rows / Page Evidence Runs
-reviewed C8 row → G3 → selected Page Structure/Writing/Evidence/Delivery Runs
+reviewed Section Narrative row → G3 → selected Page Structure/Writing/Evidence/Delivery Runs
 current Section deliveries → manuscript compile Run → G4 readiness control
 feedback batch → response work + affected owner Runs → G5 closure
 ```
@@ -66,20 +66,20 @@ controller steps and compatibility labels do not add Run identities.
 |---|---|---|
 | Ideation Page | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
 | Venue Page | one target/category's typed and versioned external-desk contract | choosing the target or ranking Ideas |
-| Story Page | Seed C1–C5, Discovery Roadmap C6, Task Roadmap C7, Section Narrative C8, selected telling and compile projection | executing Runs, replacing work records, or storing manuscript Section prose |
+| Story Page | Seed §1–§5, Discovery Roadmap §6, Task Roadmap §7, Section Narrative §8, selected telling and compile projection | executing Runs, replacing work records, or storing manuscript Section prose |
 | Discovery block | external literature/source inquiry and its Results | changing the Story's claim state |
 | Task block | jobs, configurations, and execution Runs | silently releasing itself or rewriting Story rows |
 | Run receipt | what actually ran, its provenance, checks, and Result | deciding how the paper should be told |
 | Section Page | local outline, evidence bindings, prose, displays, page deliverable | changing the Story's identity or RQ text |
 | Compile | generated manuscript projection and build manifest | becoming a source of wording or evidence |
-| Round Page | feedback ledger, dispositions, checked response package | becoming a second home for revised prose |
+| Round Page | concern table, dispositions, checked response package | becoming a second home for revised prose |
 
 The Story explains the prospective paper and remains the authority for its
-research meaning. A work receipt establishes what was done; C5 interprets what
+research meaning. A work receipt establishes what was done; §5 interprets what
 the evidence supports. Accepted work can leave a proposition contradicted or
-inconclusive. C3 may have an answered RQ even when its hoped-for claim fails.
+inconclusive. §3 may have an answered RQ even when its hoped-for claim fails.
 Read work progress from the native owner, and preserve human decisions in the
-Story's shared draft/ and workflow/ records. Do not reconstruct a release ledger
+Story's shared draft/ and workflow/ records. Do not reconstruct a release table
 as the Story's Content outline.
 
 ## 🚪 Gates
@@ -106,7 +106,7 @@ G0  Ideation → Story
     delivery are current only with their own matching Page-owned receipts. G0
     validates the latest semantic handoff and reciprocal Story binding; it does
     not silently promote a stale Page release or delivery. If
-    `paper_page.state: blocked`, preserve the canonical Page path and each last
+    `paper_page.state: blocked`, preserve the Page path and each last
     honest surface revision, report the named gap, and create no surrogate
     Page, projection receipt, or selection receipt. A stale release surface is
     a Page publication issue, not a second I3 selection state; only apply a
@@ -114,8 +114,8 @@ G0  Ideation → Story
     released Ideation view.
 
 G1  Story → Evidence/Execution
-    The reviewed Story plan names Seed identity and RQs, C5 evidence basis and
-    boundaries, C6 external inquiries, C7 study evidence, and C8 intended
+    The reviewed Story plan names Seed identity and RQs, §5 evidence basis and
+    boundaries, §6 external inquiries, §7 study evidence, and §8 intended
     telling. A human
     explicitly releases the relevant work in its workflow record. Other
     unstarted research needs can remain planned. A draft or content row alone
@@ -124,15 +124,15 @@ G1  Story → Evidence/Execution
 G2  Evidence/Execution → Story
     Each returning block has an accepted owner-native Result, limitations and
     a full path/id. Record that return without requiring every other released
-    block to finish. Update C5 support and C3 answers as justified, then the
-    affected C6/C7 needs and C8 narrative. Preserve null, contradictory and
+    block to finish. Update §5 support and §3 answers as justified, then the
+    affected §6/§7 needs and §8 narrative. Preserve null, contradictory and
     inconclusive outcomes. G2 is repeatable and does not grant a version promotion.
 
 G3  Story → Section
     A person releases each Section row independently. The row names its
     reader question, ordered moves, claim role, entry/exit state, required
     evidence/displays, current target/category and Venue contract, transitions,
-    cut rules and open risks. A proposed C8 row may precede its Section file;
+    cut rules and open risks. A proposed §8 row may precede its Section file;
     release binds the exact Section identity and human decision. No fixed
     percentage or automatic v1 promotion is required.
 
@@ -213,12 +213,12 @@ contract is satisfied. There is no separate child control-page receipt store.
 Read the Runtime and exact native receipts for status. List each current
 bounded goal, owner, accepted Result/version and remaining dependency or gate.
 Show planned, managed and reused work distinctly. Report DRAFT/ready from the
-build manifest; report response coverage from the Round ledger. A status read
+build manifest; report response coverage from the Round's concern table. A status read
 neither allocates a Run nor asks for decisions already recorded.
 
 ## 🧭 Current boundary
 
-The Story Page is the sole paper-level prospective blueprint. Its C1–C8
+The Story Page is the sole paper-level prospective blueprint. Its §1–§8
 content is the authority for the prospective paper; Discovery and Task remain
 external work owners, Section remains the manuscript owner, Compile remains a
 projection, and Round remains the feedback owner. Current Paper routing does
@@ -236,10 +236,10 @@ not resolve retired child Page names or hidden compatibility paths.
   operational target and owns any later human-approved rebind.
 - Page Shape approval, Page CHECK acceptance, and the I3 selection receipt are
   distinct decisions; the Paper workflow creates no second selection receipt.
-- When `paper_page.state: blocked`, the canonical Page path and each last honest
+- When `paper_page.state: blocked`, the Page path and each last honest
   surface revision remain visible; no surrogate Page, local Ideation Run, or
   fake projection receipt is made.
-- Every central evidence gap has a substantive C6/C7 research need or an
+- Every central evidence gap has a substantive §6/§7 research need or an
   explicit scope decision; operations do not displace that explanation.
 - Story CHECK evaluates the blueprint's clarity and coverage, not completion
   of its planned research. Story skill and new outlines remain v0.x pending

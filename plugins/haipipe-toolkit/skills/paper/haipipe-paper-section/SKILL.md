@@ -7,7 +7,7 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.6"
+  version: "0.9.7"
   last_updated: "2026-09-29"
   page_ruling: none
   group-token: "S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>"
@@ -26,7 +26,7 @@ metadata:
 
 For a Section Page update, load `haipipe-page`, `haipipe-page-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, this PageType and
-its relevant references in the shared canonical order. Read
+its relevant references in the shared set order. Read
 `../../haipipe-paper/ref/page-integration.md` when planning a Run or release.
 Reading a proposed handoff alone allocates no Run.
 
@@ -55,7 +55,7 @@ differ.
 Authority order:
 
 ```text
-Story Seed divisions (C1–C5: identity and evidence boundaries)
+Story Seed divisions (§1–§5: identity and evidence boundaries)
   → selected Venue rules
   → current Story §8 Section Narrative row and Story version
   → venue × section-kind structure/template
@@ -91,7 +91,7 @@ Paper-<Slug>/                                        groups at the paper root (0
 One B group per family within each desk: Main, Appendix and Round have separate
 group letters, as in Ba/Bb/Bc above. Section IDs are semantic: `S-<desk>-Main-<kind>` and
 `S-<desk>-Appendix-<slug>`. The ID must tell a reader the object, desk, lane,
-and page job without a numeric crosswalk. The selected Story C8 compile-order
+and page job without a numeric crosswalk. The selected Story §8 compile-order
 projection supplies manuscript order; `board.md` is the Page roster.
 A Section is never renamed merely because another
 section is inserted.
@@ -142,7 +142,7 @@ and the human submission decision remain separate. Follow
 Record these fields in the Page before drafting:
 
 ```text
-story-row           Story<Letter>-<desk>-<idea-slug> C8 / <section-id> (resolve the actual row anchor) + the Story version
+story-row           Story<Letter>-<desk>-<idea-slug> §8 / <section-id> (resolve the actual row anchor) + the Story version
 section_kind        abstract · introduction · literature-review · theory ·
                     methods · results · discussion · conclusion · appendix ·
                     venue-specific kind · UNDERSCORE, matching the header key
@@ -163,7 +163,7 @@ transition-in/out   required joins to neighboring Sections
 
 If the Section Narrative row is missing or stale, CONTEXT records its exact
 source and returns `HOLD` to `haipipe-paper-story`, the owner of the Story page
-and its C8 narrative and detailed Section rows. If Venue
+and its §8 narrative and detailed Section rows. If Venue
 authority is missing or stale, it returns `HOLD` to
 `haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a shared reference library. After the exact owner repairs and versions the source, the
 Section resumes at CONTEXT/PREPARE. Section work never repairs upstream
@@ -273,7 +273,7 @@ claim ids advanced
 evidence/citation/value/display bindings
 expected prose or display placement
 transition to the next move
-known limitation or unresolved obligation
+known limitation or unresolved need
 ```
 
 **The plan is a list of sentence slots (0.5.3, JL 260831).** One bullet is one
@@ -338,7 +338,7 @@ Every consequential sentence must be one of:
 
 - supported by one or more typed Evidence Item and accepted local Result ids;
 - explicitly framed as interpretation and bounded by its evidence;
-- visibly marked as an open obligation that prevents closure.
+- visibly marked as an open need that prevents closure.
 
 One Section may cite many displays. A display owned elsewhere must arrive
 through a named Supporting Run Result; the Section's local DISPLAY Result
@@ -361,7 +361,7 @@ On a venue change:
 - Exactly one current Story Section Narrative row governs the Page.
 - Reader entry and exit states match neighboring rows.
 - Every claim and consequential sentence has inspectable support or an open
-  obligation.
+  need.
 - Every citation key resolves; every value has provenance; every cited display
   names an accepted artifact version.
 - Venue rules are distinguished from pack observations.

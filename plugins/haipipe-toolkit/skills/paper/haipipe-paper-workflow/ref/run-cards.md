@@ -41,19 +41,19 @@ shown under three buttons, one per Page Space.
 
 🔘 BUTTON   Story revise · Story · ^rp- · views spine
 🧩 SKILL    haipipe-paper-story · haipipe-writing
-💬 PROMPT   /haipipe-page run {page} rp-sec: revise {target} of the Story; keep its C1–C8 contract and change no row another Page owns.
+💬 PROMPT   /haipipe-page run {page} rp-sec: revise {target} of the Story; keep its eight parts (§1–§8) and change no row another Page owns.
 
 ## `paper.judgment.claim` · `rclaim-NN_<slug>`
 
 🔘 BUTTON   Claim review · Story · ^rclaim- · views logic-work
 🧩 SKILL    haipipe-paper-story
-💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this C5 claim against its evidence, boundaries and open risks; research it needs is a separate run.
+💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this claim against its evidence, boundaries and open risks; research it needs is a separate run.
 
-## `paper.judgment.obligation` · `rtask-NN_<slug>`
+## `paper.judgment.task` · `rtask-NN_<slug>`
 
 🔘 BUTTON   Task review · Story · ^rtask- · views logic-work
 🧩 SKILL    haipipe-paper-story
-💬 PROMPT   /haipipe-paper-story review {target} on {page}: review this C7 obligation and its study plan; commission supporting work only after its G1 release.
+💬 PROMPT   /haipipe-paper-story review {target} on {page}: review this Task Roadmap row and its study plan; commission supporting work only after its G1 release.
 
 ## Supporting work · Task runs and Discovery runs, owned by their folders
 
@@ -69,11 +69,20 @@ button of its owner.
 🧩 SKILL    haipipe-discovery
 💬 PROMPT   /haipipe-discovery {target}: create or continue the Discovery folder (BJTR) that answers this question on {page}, write its address on the row, and add its Paper Runs.
 
+## Story drawings · the RoadMap Draw tab, owned by the Story
+
+A drawing in `studio/` is written by its own `studio/make_<name>.py`, which reads the
+Story when it runs; the button reruns those scripts so the drawings follow the Story.
+
+🔘 BUTTON   Redraw · Story · - · views roadmap-draw
+🧩 SKILL    haipipe-paper-story
+💬 PROMPT   /haipipe-paper-story draw {paper}: rerun each studio/make_*.py so every drawing follows the current Story, then check the drawing in RoadMap Draw; with no script yet, write studio/make_paper_workflow.py as the Story skill describes and run it.
+
 ## `paper.judgment.narrative` · `rnarra-NN_<section>`
 
 🔘 BUTTON   Narrative review · Sections · ^rnarra- · views table narrative
 🧩 SKILL    haipipe-paper-story
-💬 PROMPT   /haipipe-paper-story review the C8 row of {target} on {page}: check its moves, claims, displays and cut rule against the Section's current draft.
+💬 PROMPT   /haipipe-paper-story review the Section Narrative row of {target} on {page}: check its moves, claims, displays and cut rule against the Section's current draft.
 
 ## Section Page runs · Draft, Evidence and Delivery Spaces of each Section
 
@@ -91,7 +100,7 @@ button of its owner.
 
 🔘 BUTTON   Page check · Sections · ^rp-check-|^run-check- · views table
 🧩 SKILL    haipipe-page-check
-💬 PROMPT   /haipipe-page-check {target}: judge the Section's current built version against its C8 row, evidence and venue; route CLOSE or name what must change.
+💬 PROMPT   /haipipe-page-check {target}: judge the Section's current built version against its Section Narrative row, evidence and venue; route CLOSE or name what must change.
 
 ## `paper.compile` · the manuscript build
 

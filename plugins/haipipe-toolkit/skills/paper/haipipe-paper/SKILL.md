@@ -7,7 +7,7 @@ description: >-
   Use for paper setup, status, drafting, a Claude and Codex session per Section,
   complete-paper assembly, compiling, or review rounds.
 metadata:
-  version: "1.4.4"
+  version: "1.5.0"
   last_updated: "2026-09-29"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
@@ -29,7 +29,7 @@ haipipe-paper
   → resolve the concrete Page and its Page Type
 ```
 
-When creating or updating a concrete Page, use the Page router's canonical order:
+When creating or updating a concrete Page, use the Page router's order:
 
 ```text
 haipipe-page
@@ -64,14 +64,14 @@ Page containers, status reads and gate records do not allocate Runs.
 | Owner | Paper responsibility |
 |---|---|
 | Ideation | semantic idea cards and the I3 handoff; `haipipe-paper-ideation` projects it |
-| Story | prospective C1–C8 blueprint and selected telling; `haipipe-paper-story` |
+| Story | prospective §1–§8 blueprint and selected telling; `haipipe-paper-story` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
 | Section | reader-ordered manuscript unit and its wording/evidence; `haipipe-paper-section` |
 | Round | one feedback batch and checked response; `haipipe-paper-round` |
 
 Use native receipts to report the current owner, accepted Result/version,
 pending dependency and next human decision. Retargeting keeps Story identity,
-binds the selected Venue and changes only the candidate telling in C8. Read the
+binds the selected Venue and changes only the candidate telling in §8. Read the
 exact PageType contract for its content rules; this router does not restate it.
 
 `/haipipe-paper status` is a read-only rollup, not a Page Type or lifecycle.
@@ -125,7 +125,7 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper venue <target> [controller-label]
 /haipipe-paper section <section-id> [controller-label]
 /haipipe-paper sessions [paper]        a named Claude session + Codex thread per
-                                       Section (one for the Appendix), once C8
+                                       Section (one for the Appendix), once §8
                                        fixes the Sections
 /haipipe-paper round <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G4
@@ -152,14 +152,30 @@ hint to resume from its latest receipt.
 | a display Evidence Item | `haipipe-display` and the chosen worker, through the Page RE Result contract |
 | Paper board presentation | `haipipe-workbench-paper`; `haipipe-board` owns rendering/checking |
 
+### What the person sees · the Paper Workbench
+
+A person who names a Workbench tab means its owner below. The link and the
+screen's own rules are in `haipipe-workbench-paper`.
+
+| Space › tab | What it shows | Owner skill |
+|---|---|---|
+| Ideation | one card per candidate Idea, its question first | `haipipe-paper-ideation` |
+| Story › Spine | §1 Identity, §2 Pitch, §4 Stakes | `haipipe-paper-story` |
+| Story › RoadMap Draw | the drawings in `studio/` | `haipipe-paper-story` (draw) |
+| Story › High-level logic + Low-level work | each question: hypotheses, claims, contributions, then its Task and Discovery work | `haipipe-paper-story`; the work in `haipipe-task`, `haipipe-discovery` |
+| Story › Related Papers | one card per §5.3 related paper | `haipipe-paper-story`; its Paper Runs in `haipipe-discovery` |
+| Sections › Main, Appendix | each Section in compile order: Table, Narrative, Evidence | `haipipe-paper-section` and each Section Page |
+| Delivery › LaTeX, Word, Cover letter | the built manuscript, its files and checks | `haipipe-paper-assemble` |
+| Delivery › Rounds | one card per feedback Round | `haipipe-paper-round` |
+
 Load only what the request uses. Reuse an already loaded owner; do not recurse
 between the Paper router, Page router and domain adapter. Insight and Design
 remain independent families, referenced through their own Results/contracts.
 
 ## 📐 Story boundary
 
-`haipipe-paper-story` owns C1–C8 meaning, the read-through test and the selected
-telling. Each Section binds one current C8 row through `story-row:`. Read
+`haipipe-paper-story` owns §1–§8 meaning, the read-through test and the selected
+telling. Each Section binds one current Section Narrative row (§8) through `story-row:`. Read
 `haipipe-paper-story/ref/integration.md` for the compile-order interface;
 planning a Section does not instantiate its Page, authorize execution or imply
 approval.
@@ -173,7 +189,7 @@ not maintain a second naming or migration contract.
 
 ## 🧑‍💻 Section sessions
 
-Once the Story's C8 compile order fixes the Sections, `/haipipe-paper sessions`
+Once the Story's §8 compile order fixes the Sections, `/haipipe-paper sessions`
 gives each Main Section Page, and the Appendix group as one unit, a named Claude
 session and a named Codex thread (`<Short>-<unit>`, `<Short>-<unit>-Codex`),
 pairs them, records both ids in the page header (`session:`, `codex-session:`),
@@ -219,8 +235,8 @@ The former S01–S10 stage contracts, stage resolver, S-page creator, S03/S04
 topic-entry tooling, stage-specific craft, and their helper scripts are outside
 the current Paper runtime. This door does not load them.
 
-The current Paper graph has one Story prospective blueprint. Its C1–C5 Seed
-content, C6 Discovery Roadmap, C7 Task Roadmap, and C8 Section Narrative remain
+The current Paper graph has one Story prospective blueprint. Its §1–§5 Seed
+content, §6 Discovery Roadmap, §7 Task Roadmap, and §8 Section Narrative remain
 substantive Story content; the corresponding execution, Section, Compile, and
 Round records stay with their native owners. The router reads no retired child
 Page, compatibility alias, or fallback source.
@@ -228,7 +244,7 @@ Page, compatibility alias, or fallback source.
 ## ✅ Completion checks
 
 Before reporting Paper work complete, identify the active Page owner, Run Spec,
-Story/C8 row, accepted evidence/display Results, current Page CHECK versions,
+Story §8 row, accepted evidence/display Results, current Page CHECK versions,
 assembly manifest and G4 status. Keep DRAFT, blocked, deferred and human-owned
 decisions explicit. A discussion or planning handoff does not create a Run,
 release a Section or close G4. Use the owning Page, Workflow, Assembly, Venue

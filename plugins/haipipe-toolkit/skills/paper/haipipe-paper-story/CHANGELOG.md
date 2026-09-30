@@ -1,3 +1,27 @@
+## 0.17.0 · 2026-09-30 · Story parts are §N; C-numbers are claims; draw mode
+
+- A Story part is written `§N` or by its name (§7, the Task Roadmap), as the Story file's own headings are, never `C1`-`C8`; `C1`, `C2` … are claim ids only, and `C1.P1.B1` stays the Page's Bullet address (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench, which shows Question N, Hypothesis 1a and Claim 1a). Swept through this skill, `ref/integration.md` and the other paper skills.
+- **Evidence obligations** in §7 is now **Evidence needs**, and the Story CHECK reads the Story "not as a record of finished work" (AGENTS rule 9 bans both old words).
+- New section: Drawings of the Story. A drawing in `studio/` is written by its own `studio/make_<name>.py`, which reads the Story when it runs; **draw** mode reruns those scripts (the `Redraw` card on Story › RoadMap Draw). The first is Paper-ScalingGlucose-NatSeries2026's `studio/make_paper_workflow.py`.
+- The description names what the Workbench shows (research questions, hypotheses, claims, related papers, RoadMap Draw) so those words reach this skill.
+
+## 0.16.0 · 2026-09-30 · Question 0 states the tasks
+
+- §3 may open with `#### 3.0 · Question 0 · RQ0`, a question that sets the pretraining task and the downstream tasks instead of testing a guess, with a **Tasks** group (`- Pretraining · Name: sentence`, `- Downstream · Name: sentence`) and `- none: …` in its other groups (JL 260930: "what is the pretraining task, and also the downstream task, we haven't specified them"). Questions 1-5 keep their numbers, so every 1a and C1 reference still holds.
+- Paper-ScalingGlucose-NatSeries2026 StoryA: Question 0 "Pretraining and downstream tasks", read from the code: next-reading pretraining over up to 576 readings (numeric: mean squared error; token: one token per mg/dL value 11-400, cross-entropy); the 2-hour forecast with no fine-tuning, RMSE per step; the low and high alerts (T6, not built). §3's opening, §3.6, A3 and a Law line updated. The Methods page's "256 bins" disagrees with the code and is left for its writing pass.
+- Paper-ScalingGlucose-NatSeries2026 StoryA: Question 6 "Fairness" (JL 260930: "I still remember we have another question about the fairness"): hypotheses 6a (a bigger model does not shrink the gap to new patients) and 6b (patient-group gaps stay), claim 6a (C6), E11 (an exploratory read of the b04.j02.t01 tables, 360 models) and E12 (absent), T13 (Task b04.j02.t01, which no row had named) and T14 (no task yet); Question logic and Answer form move to §3.7 and §3.8. Question 0 now says the forecast is scored on two test sets, later days of the training patients and patients never seen, and T10 and T12 say the same.
+
+## 0.15.0 · 2026-09-30 · Task and Discovery rows have a short name too
+
+- §7 and §6 rows gain a `name` column after the id: a short phrase of five words or fewer, with the `question` cell now one plain sentence saying what we do, as a §3 question has (JL 260930: "the Label, + Short names, and a new line to explain what it is"). The Paper Workbench prints the name beside the stage pill and the sentence below (haipipe-workbench-paper 0.17.0).
+- A question's Name need not be a question (JL 260930 named Question 3 "Different Prediction Horizon"); 0.14.1's "short question phrase" becomes "a short phrase, often a question".
+- Paper-ScalingGlucose-NatSeries2026 StoryA: T1-T12 and D1-D6 names and plain sentences; Question 3 is Different Prediction Horizon, and C4 turns (JL 260930): the gain from scale is strongest at 5 minutes and fades toward 2 hours because CGM cannot see meals or exercise, so a glucose foundation model must be event-aware. Updated with it: hypothesis 3a, claim 3a (C4), its contribution, E6, T3, the Pitch box, §3.6, §4.3, §8's box, arc and Results and Discussion rows, and a Law line.
+
+## 0.14.1 · 2026-09-30 · A question is a short phrase and one plain sentence
+
+- `- **Name**:` is a short question phrase of five words or fewer, and `- **Question**:` is one plain sentence saying what the paper does to answer it, so the Paper Workbench reads "Question 1  Model or data?" with the plain line below (JL 260930: "I want the question to be Question NN Short question phrase, and next line is the plain language to explain the question", "the question here we have are just too long"). Replaces 0.13.1's "two or three plain words".
+- Paper-ScalingGlucose-NatSeries2026 StoryA: Names and plain Questions for Questions 1-5 (Model or data?, Reuse the same patients?, Further ahead?, Numbers or tokens?, Predict bigger data?); the long technical questions are gone and their precise wording stays in the hypotheses and claims.
+
 ## 0.14.0 · 2026-09-30 · §5.3 P-board: the target venue's related papers
 
 - §5.3 Novelty basis holds a P-board: one row per related paper, the venue the paper is written for first (JL 260930: "我们选 paper 一定要选一个 venue 的 … 在 NMI 上找一些相关的 paper"), other venues allowed (JL 260930: "this is not limited to NMI"), `P | paper | role | question | why it matters | Discovery Run`. Role is `closest`, `question`, `background` or `caution`; question is an RQ id or `all`; each row names the Discovery Paper Run that holds the paper, and a §6 row names the Discovery Task. The Paper Workbench draws it as Story › Related Papers (haipipe-workbench-paper 0.15.0).
@@ -20,7 +44,7 @@
 - §7 rows are named as the question they answer and carry a stage (data · training · evaluation · results · analysis · figures), in run order (JL 260929: "where is the work for data, for the model training, for the results analysis … the work should follow the logics", "name them in the question format"). The upstream data, training and evaluation work gets its own rows; a row every research question needs says `every question`.
 - Applied first to Paper-ScalingGlucose-NatSeries2026 StoryA: H1–H6, C1–C5, one contribution per question, T10–T12 (training set, model grid, scores) added, T1–T9 renamed as plain questions, T4 gained the epoch analysis folder `b04.j02.t05`.
 
-## 0.11.0 · 2026-09-29 · C3 is one block per question (JL 260929)
+## 0.11.0 · 2026-09-29 · §3 is one block per question (JL 260929)
 
 - §3 Research Questions writes one block per research question: `#### 3.N · Question N · RQn`, the question's fields (Question, Why the paper needs it, Answer form, Discovery, Task, Section, Answer state, Contribution), then one `**Cn · Hypothesis · short phrase**` record per hypothesis (Statement, Tests, Role, Now, If it fails). JL 260929: "one question will be one block", holding its hypotheses, claims and contribution. The hypotheses are the planned claims, so they keep the claim ids; a hypothesis reads as a claim once every §5 evidence row (E1, E2, …) that tests it is established. The one-row-per-RQ table is still read.
 - §8 Section Narrative's claim system may point to the §3 hypotheses and name their roles instead of restating each statement.
@@ -32,7 +56,7 @@
 
 ## 0.10.0 · 2026-09-29 · The Roadmap is question first
 
-- C6 opens with a `Q | general question | serves` table (JL 260928: "each item a more general
+- §6 opens with a `Q | general question | serves` table (JL 260928: "each item a more general
   question, under it the T and D, under T and D the BJTR"). Every D and T row leads with a short
   plain question, carries a `folder` cell (BJTR address, a range such as `b03.j02.t01–t03`, or
   `none yet`) and ends with a `Q` cell. Row ids are `D<n>` and `T<n>`, never `B<n>`. The Paper
@@ -40,7 +64,7 @@
 
 ## 0.9.3 · 2026-09-20
 
-- Bind prospective C1–C8 Story work to the canonical Page/Run contracts and Paper Specs. CHECK remains a controller judgment and does not establish planned findings or authorize execution. No Page outline or human approval is promoted.
+- Bind prospective §1–§8 Story work to the current Page/Run contracts and Paper Specs. CHECK remains a controller judgment and does not establish planned findings or authorize execution. No Page outline or human approval is promoted.
 
 ## 0.9.2 · 260908
 - Story id grammar is `Story<Letter>-<desk>-<idea-slug>` (JL 260908: "letter should be good", after "why this is just A? really silly"): the letter orders, the desk names the telling, the slug names the idea; `Story-A` is out, `Story01-…` stays rejected. New "🔤 The Story id" block; group-token updated; first instance `StoryA-misq-phytrait-discretion`.
@@ -58,7 +82,7 @@
 ## 0.9.1 · 260907 · draft repair; v1 remains unauthorized
 
 - Withdrew the unauthorized 1.0.0 control-page rewrite; restored the prospective
-  eight-division blueprint and the C6 Discovery / C7 Task / C8 Narrative roles.
+  eight-division blueprint and the §6 Discovery / §7 Task / §8 Narrative roles.
 - Separated propositions, research questions, work progress, and human approval;
   added adverse-evidence states, core/optional work, and eight Aim read-through tests.
 - Kept interface details in ref/integration.md and aligned downstream routers.
@@ -81,10 +105,10 @@
 - Reframed Story as a prospective guide to the whole paper rather than a work
   manual or control center.
 - Integrated the former three planning surfaces into eight Content divisions:
-  C1–C5 are the Seed, C6 is Discovery Roadmap, C7 is Task Roadmap, and C8 is
+  §1–§5 are the Seed, §6 is Discovery Roadmap, §7 is Task Roadmap, and §8 is
   Section Narrative.
 - Restored discovery gaps and expected syntheses; paper-level evidence
-  obligations, designs, and interpretation branches; and the Narrative's
+  needs, designs, and interpretation branches; and the Narrative's
   venue decision, claim system, argument arc, reader journey, per-section
   narrative, evidence/display allocation, transitions, and compile order.
 - Kept Evidence as the through-line from starting basis to Discovery, produced
@@ -141,7 +165,7 @@
 
 - **Ideation 0.5.0 vocabulary** (JL 260824): the origin page's exit cell is
   `went to` (was `graduated-to`); the birth-certificate clause and closing
-  checks drop the ledger/nursery/graduation wording. Binding mechanics
+  checks drop the old nursery/graduation wording. Binding mechanics
   unchanged.
 
 ## 0.4.3 — 2026-08-24
@@ -172,7 +196,7 @@
   honest, silence is not. Idea quality becomes a readable property of the
   board: how many rows can flip ✅ and what their deltas are worth.
 - **The birth certificate**: §5's first row binds the Explore Page this paper
-  graduated from (cross-repo pagex, the bank-page pattern) and the ledger's
+  graduated from (cross-repo pagex, the bank-page pattern) and the idea table's
   graduated-to points back; retrofit Seeds say so in the Log instead.
 - **Runtime home renamed** to `paperboard/A1-SD-story/` under the 260823
   scaffold grammar; `0-SD-seed/` boards are grandfathered.

@@ -98,6 +98,7 @@ MAP = [
     ], "hands on: the chosen idea and its venue → the Story"),
     ("Story Space", "What does the paper ask, and what must it find out?", [
         ("Spine", [("1", "Story revise", "haipipe-paper-story · haipipe-writing", "Identity · Pitch · Stakes")]),
+        ("RoadMap Draw", []),
         ("High-level logic + Low-level work", [("2", "Task review", "haipipe-paper-story", "T<n> and D<n> under a hypothesis: is each the right question?"),
                        ("3", "Task runs", "haipipe-task", "T<n> → its Task folder (BJTR); you press Run"),
                        ("4", "Discovery runs", "haipipe-discovery", "D<n> → its Discovery folder (BJTR)"),
@@ -245,20 +246,20 @@ def story_content(key, cx, cy):
     x = cx + 18
     card(f"{key}-q1", x, cy + 30, 510,
          "▾ Question 1 · Is there an association beyond the rating?",
-         "  HYPOTHESES                     │ POTENTIAL WORK · Foundation (shared)\n"
-         "   1a  Holds: it adds to the   🔨 │  › Data  › Training  › Evaluation\n"
-         "       rating                     │ This question\n"
-         "  POTENTIAL CLAIMS               │  Results  What do all the models say?\n"
-         "   1a  Beyond the rating: …       │   for Hypothesis 1a · b03 j02 t01  ▸ 4 runs\n"
-         "  POTENTIAL CONTRIBUTIONS        │  Discovery  Has anyone shown this?\n"
-         "   A new signal: …                │   b01 j01 t01 prior_work  supports", sel=True, h=132)
+         "  Hypothesis 1a               🔨 │  › Data  › Training  › Evaluation\n"
+         "  Holds: it adds to the rating   │\n"
+         "                                 │  Results  What do all the models say?\n"
+         "  Claim 1a                       │   for Hypothesis 1a · b03 j02 t01  ▸ 4 runs\n"
+         "  Beyond the rating: …           │  Discovery  Has anyone shown this?\n"
+         "  Contribution 1a                │   b01 j01 t01 prior_work  supports\n"
+         "  A new signal: …                │", sel=True, h=132)
     text(f"{key}-rest", x, cy + 182,
          "▸ Question 2 · Is the link stronger at high doses?\n"
          "▸ Not under a question", 12, mono=True)
 
 
-space("story", 1, "Story Space", ["Spine", "High-level logic + Low-level work"], 1,
-      "Reads StoryA-….md · Spine ### 1, 2, 4 · logic + work ### 3, 5, 6 (D, Q), 7 (T)", [], None,
+space("story", 1, "Story Space", ["Spine", "RoadMap Draw", "High-level logic + Low-level work", "Related Papers"], 2,
+      "Reads StoryA-….md · Spine ### 1, 2, 4 · RoadMap Draw studio/ · logic + work ### 3, 5, 6 (D, Q), 7 (T)", [], None,
       story_content,
       ["2 Task review · 0", "3 Task runs · 22", "4 Discovery runs · 53", "5 Claim review · 1", "+ New Run"], 1,
       {"name": "b03.j02.t01.r04", "skill": "haipipe-task",
@@ -353,6 +354,7 @@ text("files-map", FX + 24, SY + 82,
      "\n"
      "Ideation › Ideas       Story00-ideation.md · Ideas (ranked)    Story00-ideation/runs/\n"
      "Story › Spine          StoryA-….md · ### 1, 2, 4               StoryA-…/runs/\n"
+     "Story › RoadMap Draw   studio/<Story stem>.excalidraw           (the canvas saves to it)\n"
      "Story › logic + work   StoryA-….md · ### 3, 5, 6, 7            StoryA-…/runs/\n"
      "Story › Related Papers StoryA-….md · #### 5.3 P rows           discoveries/…/results/<run>/paper.pdf\n"
      "                       task/ · discoveries/                    task/, discoveries/<BJTR>/runs/\n"

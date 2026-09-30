@@ -619,7 +619,7 @@ def test_cover_letter_lane_fills_facts_and_checks_the_words(tmp_path, monkeypatc
     root = tmp_path / "Paper-T"; here = root / "delivery"; here.mkdir(parents=True)
     page_dir = root / "Bc-T-Round" / "RD02-T-submission-20260929"; (page_dir / "draft").mkdir(parents=True)
     page = page_dir / "RD02-T-submission-20260929.md"
-    page.write_text("# RD02\n\n## Content\n\n### Cover letter\n<!-- words arrive after approval -->\n\n### 2 · Ledger\nnone\n")
+    page.write_text("# RD02\n\n## Content\n\n### Cover letter\n<!-- words arrive after approval -->\n\n### 2 · Feedback Concern Table\nnone\n")
     words = ('We submit "{title}" as a {article_type} in {journal}.\n\n'
              "Agreeableness is associated with 9.34 more MME, and 12.5 more elsewhere; it leads to more.\n\n"
              "It is not under review elsewhere.\n")

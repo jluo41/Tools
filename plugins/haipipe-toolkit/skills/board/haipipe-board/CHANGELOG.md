@@ -1,3 +1,8 @@
+## 1.1.5 · 2026-09-30
+
+- A drawing is never saved by merely being opened. `servers/workbench-studio/assets/xcal-boot.js` now waits for the first gesture (pointer, key or paste) on every scene before it may save, as it already did for linked Page and Group scenes. A plain scene a script wrote leaves out fields Excalidraw fills in on load, so opening it in an editing canvas rewrote the file (seen 260930 on Paper-ScalingGlucose-NatSeries2026 `studio/paper-workflow.excalidraw`, opened in the Paper Workbench's new Story › RoadMap Draw). Checked in headless Chrome on a throwaway board: open only, 0 saves and the file byte-identical; one drawn rectangle, 1 save.
+- `servers/workbench-studio/xcal.py`: `mint_board_scene` writes a plain empty scene the first time a Board's `studio/<name>.excalidraw` is opened (only beside a `board.md`), so RoadMap Draw's first stroke has a file (haipipe-workbench-paper 0.18.0). Test: `test_linked_live.py`.
+
 ## 1.1.4 · 2026-09-29
 
 - outline/ to draft/ in current-layout prose (JL 260929). Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

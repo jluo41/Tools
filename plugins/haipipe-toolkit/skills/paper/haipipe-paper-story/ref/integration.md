@@ -7,20 +7,20 @@ meaning live only in `../SKILL.md`; routers resolve that contract directly.
 ## Page and workflow records
 
 The shared Page shell remains Opening → Outline → Content → Aims. Outline
-plans the Story Page's content; C6/C7 describe the paper's research plan.
+plans the Story Page's content; §6/§7 describe the paper's research plan.
 Do not mistake those two levels of planning for each other.
 
 G0–G5 are owned by `haipipe-paper-workflow`. Existing human selection,
 release, settlement and Section-release records stay in the Story's
 `draft/records/` log and the shared `workflow/` receipts, using their existing
 schemas. Work owners keep job/run state, budgets, commands and accepted
-Results. C6/C7 may link those records; C5 summarizes their evidential meaning.
+Results. §6/§7 may link those records; §5 summarizes their evidential meaning.
 Preserve every existing receipt during a content revision. No Story row,
 CHECK pass or requested edit constitutes a new execution release.
 
-On returned evidence: read the Result and its limitations, update the C5
-proposition and C3 answer as justified, then revise affected C6/C7 needs and
-C8 claims/Section moves. A halted run is not a null result. A null result
+On returned evidence: read the Result and its limitations, update the §5
+proposition and §3 answer as justified, then revise affected §6/§7 needs and
+§8 claims/Section moves. A halted run is not a null result. A null result
 is not automatically evidence of no relationship. Receipt acceptance and
 claim support are different decisions.
 
@@ -31,7 +31,7 @@ remain historical; a changed structure gets a new unapproved v0.x draft.
 
 ## Section rows
 
-C8's detailed Section Narrative rows own reader question, ordered moves,
+§8's detailed Section Narrative rows own reader question, ordered moves,
 claims, evidence/display allocation, entry/exit, transitions and cut rules.
 The compact section-map projection must agree with those rows. Keep the shared
 Outline presenter and its supported projection mechanism; do not hand-copy a
@@ -39,7 +39,7 @@ generated table into the Page's Outline.
 
 A planned row can exist before its Section Page. Once instantiated, retain its
 exact `section-id`, target/category, Story version and `story-row:` binding.
-Resolve by semantic row id within C8; do not assume the subsection is §8.1.
+Resolve by semantic row id within §8; do not assume the subsection is §8.1.
 Current Section bindings use `story-row:` anchors; update an anchor only as
 part of the affected Page's authorized revision.
 
@@ -64,11 +64,11 @@ appendix:
 ```
 
 These ids illustrate the format only; emit only the paper's actual Section ids.
-The block is derived from the selected C8 rows. Before Section files exist,
-keep their intended reader order in C8 without inventing compilable paths.
+The block is derived from the selected §8 rows. Before Section files exist,
+keep their intended reader order in §8 without inventing compilable paths.
 Before assembly, require an unambiguous selected target and real Section ids
 consistent with `delivery/paper-build.toml`. Use one active marker block;
-additional candidate Section orders stay in C8 until a target is selected or the
+additional candidate Section orders stay in §8 until a target is selected or the
 declared builder explicitly supports target-qualified selection. Do not
 promise multiple identical marker blocks to a single-block parser.
 
@@ -81,8 +81,8 @@ approve the Story skill, a Story outline, work releases, or submission.
 
 Inspect the current Page, outline, Aims, accepted sources and any unmerged
 source content before editing. Map source/proposition/boundary content into
-C5, external inquiries into C6, study evidence plans into C7, and claims,
-argument, reader journey and Section plans into C8. Retain Seed identity and
+§5, external inquiries into §6, study evidence plans into §7, and claims,
+argument, reader journey and Section plans into §8. Retain Seed identity and
 source references.
 Preserve actual findings and historical approvals as evidence of past state;
 do not carry an old approval to the new shape or promote a preliminary claim.

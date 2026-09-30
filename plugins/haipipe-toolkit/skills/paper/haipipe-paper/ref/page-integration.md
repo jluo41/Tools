@@ -13,7 +13,7 @@ haipipe-page
   Page release · Page delivery · Page CHECK
 
 haipipe-paper
-  Paper Run Workflow · G0–G5 · Story C1–C8 · Story/Section bindings
+  Paper Run Workflow · G0–G5 · Story §1–§8 · Story/Section bindings
   Venue library · Round routing · complete-paper assembly
 ```
 
@@ -22,7 +22,7 @@ Paper Page Types extend the Page Face; they do not reorder or replace
 `page-type:` declaration when its self-owned Page Type is the first matching
 owner. This migration does not introduce a parallel `folder-kind:` system.
 
-This adapter follows the current canonical Page Workflow, Page Run families,
+This adapter follows the current Page Workflow, Page Run families,
 and interactive-writing contract. On upstream changes, compare ownership,
 loading order, IDs, release and Result boundaries before adopting them. The
 compatibility check compares those contracts and the upstream skill versions;
@@ -32,7 +32,7 @@ no content hash is pinned (JL 260928). The Paper update record documents the che
 
 `haipipe-paper` selects the Paper operation. `haipipe-page` resolves an actual
 Page's Folder/Face owner and `haipipe-page-workflow` loads the current Run Spec,
-Paper Workflow, exact Paper PageType, and relevant references in its canonical
+Paper Workflow, exact Paper PageType, and relevant references in its set
 order. Load the Paper-specific owner only for that Page. A generic Page never
 loads every Paper skill.
 
@@ -86,7 +86,7 @@ that released version.
 - G4 admits only current Section outputs whose outline, cited display previews,
   Page delivery, accepted evidence, and Page CHECK version are all resolvable.
 - Assembly may run before G4, but its manifest must say `DRAFT` and name the
-  missing Page or Paper obligations.
+  missing Page or Paper pieces.
 
 ## 5. Source and projection law
 

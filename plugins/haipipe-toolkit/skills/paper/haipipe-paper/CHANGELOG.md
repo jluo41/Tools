@@ -1,3 +1,9 @@
+## 1.5.0 · 2026-09-30 · The door names what the Workbench shows
+
+- New table "What the person sees": each Paper Workbench tab (Ideation; Story › Spine, RoadMap Draw, High-level logic + Low-level work, Related Papers; Sections; Delivery › LaTeX, Word, Cover letter, Rounds) and the skill that owns it, so a person naming a tab reaches its owner (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Workbench).
+- Story parts are §N or their name, never C1-C8 (haipipe-paper-story 0.17.0), here and in `ref/page-integration.md`, `ref/paper-structure.md`, `ref/section-sessions.md` and `ref/run-naming.md`; the Task review Spec is `paper.judgment.task`; "canonical" and "obligation" are gone (AGENTS rule 9).
+- `ref/paper-structure.md` and the family README show `studio/`, the folder Story › RoadMap Draw reads.
+
 ## 1.4.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -18,7 +24,7 @@
 
 ## 1.4.0 · 2026-09-28
 
-- Add `/haipipe-paper sessions` (JL 260928): once the Story's C8 compile order fixes the
+- Add `/haipipe-paper sessions` (JL 260928): once the Story's §8 compile order fixes the
   Sections, `scripts/create_section_sessions.py` gives each unit (a Main Section Page, and the
   whole Appendix group as ONE unit by default, `--appendix each` to split) a named Claude session
   `<Short>-<unit>` and a named Codex thread `<Short>-<unit>-Codex`, pairs them (identity-only
@@ -96,7 +102,7 @@
 
 ## 0.7.0 · 260904
 
-- Separate family-entry routing from the canonical concrete Page RUN order.
+- Separate family-entry routing from the concrete Page RUN order.
 - Replace the active Probe/PageX/workbench-lane model with one shared Outline
   workbench and typed VALUE/CITE/DISPLAY local Results over Supporting/local Runs.
 - Add CONTEXT to the Paper Page loop and update status/folder/desk-room

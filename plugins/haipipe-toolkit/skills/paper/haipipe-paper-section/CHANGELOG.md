@@ -1,3 +1,8 @@
+## 0.9.7 · 2026-09-30 · Story parts are §N
+
+- Story parts are §N or their name, never C1-C8 (haipipe-paper-story 0.17.0; JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench). `story-row:` reads `<Story> §8 / <section-id>`, as current Section Pages already write it. `C2.P1` and claim ids are unchanged.
+- "open obligation" is an open need; "canonical order" is the set order (AGENTS rule 9).
+
 ## 0.9.6 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -8,7 +13,7 @@
 
 ## 0.9.4 · 2026-09-20
 
-- Align local typed RE, RP writing and RD delivery with current owners. Preserve stable Section IDs and legacy receipt identities; use the canonical Paper Workflow without a wrapper Section Run.
+- Align local typed RE, RP writing and RD delivery with current owners. Preserve stable Section IDs and legacy receipt identities; use the current Paper Workflow without a wrapper Section Run.
 
 ## 0.9.3 · 2026-09-13
 
@@ -61,7 +66,7 @@
 ## 0.8.1 · 260904
 
 - Enter every Section through the five-phase Page lifecycle beginning at
-  CONTEXT and use the canonical dependency order.
+  CONTEXT and use the set dependency order.
 - Replace active PageX/probe/bibex/value/display workbench language with typed
   Evidence Items, Supporting Runs, one Local Input, one Local Run, and one
   accepted local Result in the shared Outline workbench.
@@ -184,7 +189,7 @@ does not exist, and nothing checked.
 Companion fix outside this skill: `haipipe-board/cli/pagestatus.py` counted
 divisions with `^### \d+ · `, narrower than `check.py:1176`'s `§?[\d.]+`, so
 every Section Page numbering its divisions by the MANUSCRIPT (`### §6.1 …`)
-reported `§ 0`; and it counted only canonical `A<n>.<m>` Aims, not the LEGACY
+reported `§ 0`; and it counted only current `A<n>.<m>` Aims, not the LEGACY
 checkbox form `src/common.py aim_progress` supports on purpose. On a 20-page
 paper board that hid 45 divisions and 276 Aims.
 

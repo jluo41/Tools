@@ -17,6 +17,7 @@ Paper-<Slug>/
 ├── Ba-<desk>-Main/                  named Main Section Pages
 ├── Bb-<desk>-Appendix/              named Appendix Section Pages
 ├── Bc-<desk>-Round/                 RD<NN> feedback Round Pages
+├── studio/                          drawings: make_<name>.py writes <name>.excalidraw
 └── delivery/                        generated complete-paper projection
     ├── paper-build.toml             order, venue profile, output names
     ├── latex/                       master, fragments, displays, bib, PDF
@@ -33,10 +34,10 @@ free group letter. There is no `0-paperboard/` wrapper in the current layout.
   display title. The Paper Workbench binds the token after `·` to disk.
 - Current Section IDs are semantic: `S-<desk>-Main-<N>-<Title>` or
   `S-<desk>-Appendix-<L>-<Title>`. Unnumbered Pages keep their title.
-- A Story C8 row is recognized only when the Section id is its first table cell.
+- A Story Section Narrative row (§8) is recognized only when the Section id is its first table cell.
 - Compile order is read only from the Story's
   `<!-- haipipe:compile-order:start -->` / `end` markers with `- ` ids.
-- C7 Tasks live in the Task layer's project folder. The Paper folder records
+- Task Roadmap (§7) work lives in the Task layer's project folder. The Paper folder records
   the evidence need and consumes the accepted Result; it does not execute the
   Task.
 

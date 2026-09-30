@@ -66,6 +66,7 @@ Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the
 │       └── StoryA-misq-phytrait-discretion.md               Seed · Discovery / Task Roadmaps · Section
 │                                    Narrative + derived compile-order block
 ├── Ba-<desk>-Main/  Bb-<desk>-Appendix/  Bc-<desk>-Round/
+├── studio/                          Story drawings: make_<name>.py writes <name>.excalidraw
 └── delivery/                        GENERATED from the Section Pages' own
     ├── paper-build.toml             delivery/latex/<page>.tex fragments
     ├── latex/                       master.tex · sections/ · displays/ · .bib · PDF

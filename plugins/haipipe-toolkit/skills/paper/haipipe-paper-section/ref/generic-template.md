@@ -9,7 +9,7 @@ generic outline into an invented venue rule.
 ```yaml
 page-type: section
 section_kind: <kind>
-story-row: <Story<Letter>-<desk>-<idea-slug> C8 / <section-id> (resolve the actual row anchor) + Story version>
+story-row: <Story<Letter>-<desk>-<idea-slug> §8 / <section-id> (resolve the actual row anchor) + Story version>
 reader-question: <one question>
 entry-state: <reader state on entry>
 exit-state: <reader state on exit>
@@ -41,7 +41,7 @@ exact proposition established
 typed Evidence Item ids and accepted local Result bindings
 expected prose or display placement
 transition to the next move
-known limitation or unresolved obligation
+known limitation or unresolved need
 ```
 
 The final move must deliver the declared exit state and transition-out without

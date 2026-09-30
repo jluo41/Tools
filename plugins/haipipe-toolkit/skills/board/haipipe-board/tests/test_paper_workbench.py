@@ -245,7 +245,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             # Gates read files, never percentages
             gates = dict((g, v) for g, _n, v in d["gates"])
             self.assertTrue(gates["G0"].startswith("⬜ open"))
-            self.assertEqual(gates["G3"], "1 of 2 C8 rows have a Section page")
+            self.assertEqual(gates["G3"], "1 of 2 Section Narrative rows have a Section page")
             self.assertEqual(gates["G4"], "DRAFT · 1/2 pages ready")       # read from delivery/build-manifest.json
 
     def test_idea_card_shows_the_idea_before_its_metadata(self):
@@ -351,11 +351,11 @@ class PaperWorkbenchTest(unittest.TestCase):
             text = text.replace("| T | evidence obligation | design | feeds |\n|---|---|---|---|\n"
                                 "| T1 | the main estimate | cohort model | RQ1 · b01.j01.t01 |\n"
                                 "| T2 | a robustness check | alt spec | RQ1 |",
-                                "| T | question | stage | design | feeds |\n|---|---|---|---|---|\n"
-                                "| T1 | Is the main estimate right? | analysis | cohort model | RQ1 · b01.j01.t01 |\n"
-                                "| T2 | Does it survive a robustness check? | analysis | alt spec | RQ1 |\n"
-                                "| T3 | Which readings are in? | data | the cohort | every question |\n"
-                                "| T4 | Is anything left over? | figures | none | none yet |")
+                                "| T | name | question | stage | design | feeds |\n|---|---|---|---|---|---|\n"
+                                "| T1 | Main estimate right? | We fit the cohort model and check the main estimate. | analysis | cohort model | RQ1 · b01.j01.t01 |\n"
+                                "| T2 | Survives a check? | We rerun it on another spec. | analysis | alt spec | RQ1 |\n"
+                                "| T3 | Which readings? | We list the readings used. | data | the cohort | every question |\n"
+                                "| T4 | Anything left over? | We look for loose work. | figures | none | none yet |")
             story.write_text(text, encoding="utf-8")
             d = collect(b, "/papers/Paper-Test/board.md")
             d["root"] = Path(tmp).resolve()                             # as render_paper sets it
@@ -372,10 +372,13 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual(T["up"]["T2"], ["1b", "E2", "RQ1"])        # its runs show when any of these is picked
             html_ = _q_block(d, T, q)
             self.assertIn('<span class="item-kind">Question 1</span></div><div class="lw-qtext">Does it hold?</div>', html_)
-            # each group is a colored band (JL 260929: the labels were too faint)
-            for kind, group in (("hyp", "Hypotheses"), ("claim", "Potential claims"), ("contrib", "Potential contributions"),
-                                ("work", "This question&#x27;s work")):
-                self.assertIn('<div class="lw-k lw-k-%s">%s</div>' % (kind, group), html_)
+            # no group labels: each pill names its kind (JL 260930: "of no information")
+            self.assertNotIn('class="lw-k', html_)
+            for group in ("Hypotheses", "Potential claims", "Potential contributions", "Foundation work",
+                          "This question&#x27;s work"):
+                self.assertNotIn(">%s<" % group, html_)
+            self.assertNotIn("shared by all", html_)
+            self.assertEqual(html_.count('<div class="lw-g">'), 5)       # 3 on the left, foundation and own work
             # coded by question; a short name in bold, then the sentence (JL 260929)
             # the pill and mark on one line, the name and sentence from the next (JL 260929)
             self.assertIn('<div class="lw-h" data-key="1a"><div class="lw-top"><span class="item-kind">Hypothesis 1a</span>'
@@ -386,25 +389,85 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertNotIn(">C1<", html_)                                           # the old id stays in the file only
             self.assertIn('<div class="lw-say">from Hypothesis 1a</div>', html_)
             self.assertIn('<div class="lw-say">rests on Claims 1a and 1b</div>', html_)
-            # the foundation sits inside the question, folded and shared; then this question's own work
-            found = '<div class="lw-k lw-k-found">Foundation work<span class="lw-kn">shared by all 2 questions</span></div>'
-            self.assertIn(found, html_)
+            # a contribution is labelled as a claim is (JL 260930)
+            self.assertIn('<span class="item-kind">Contribution 1a</span></div><div class="lw-body"><b class="lw-name">A new signal</b>', html_)
+            # an empty group says so under its kind's pill
+            h2 = _q_block(d, T, T["questions"][1])
+            self.assertIn('<span class="item-kind">Claim</span></div><div class="lw-say">none yet</div>', h2)
+            self.assertIn('<span class="item-kind">Contribution</span></div><div class="lw-say">none yet</div>', h2)
+            # the foundation sits inside the question, folded, first; then this question's own work
             self.assertIn('<details class="lw-w" data-key="T3" data-for="">', html_)
-            self.assertLess(html_.index(found), html_.index('lw-k-work">This question&#x27;s work'))
+            self.assertLess(html_.index('data-key="T3"'), html_.index('data-key="T1"'))
             # every work item folds; closed, it still says what it tests and how big it is
             self.assertIn('<details class="lw-w" data-key="T1" data-for="1a"><summary>', html_)
             self.assertIn('<span class="lw-size">1 task · 1 run</span>', html_)
-            self.assertIn('<span class="item-kind">Analysis</span><span class="lw-wq">Is the main estimate right?</span>', html_)
+            # stage pill and short name on one line, the plain sentence below, as a question (JL 260930)
+            self.assertIn('<span class="item-kind">Analysis</span><span class="lw-wq">Main estimate right?</span></div>'
+                          '<div class="lw-wtext">We fit the cohort model and check the main estimate.</div>', html_)
             self.assertIn('<span class="lw-for">for Hypotheses 1a and 1b</span>', html_)
             self.assertIn('<span class="lw-also">also for Question 2</span>', html_)   # T1 is Question 2's work too
             self.assertEqual(html_.count("also for"), 1)
-            self.assertLess(html_.index("Is the main estimate right?"), html_.index('<span class="item-kind">Discovery</span>'))
+            self.assertLess(html_.index("Main estimate right?"), html_.index('<span class="item-kind">Discovery</span>'))
             self.assertNotIn("⬜ open", html_)                          # the answer state is not shown
             self.assertNotIn("<summary>Details</summary>", html_)
             self.assertEqual(html_.count('<details class="item-card"'), 0)   # JL 260929: no card inside the tree
             rest = _rest_block(d, T)
             self.assertIn("Not under a question", rest)
-            self.assertIn("Is anything left over?", rest)
+            self.assertIn("Anything left over?", rest)
+            # a Question 0 that sets the tasks lists them first and leaves out its empty groups (JL 260930)
+            story.write_text(story.read_text(encoding="utf-8").replace(
+                "#### 3.1 · Question 1 · RQ1\n",
+                "#### 3.0 · Question 0 · RQ0\n- **Name**: The tasks\n- **Question**: We say what the model learns and is tested on.\n\n"
+                "**Tasks**\n- Pretraining · Next reading: it predicts the next reading.\n"
+                "- Downstream · Forecast: it continues the readings 24 steps.\n\n"
+                "**Hypotheses**\n- none: it tests no guess.\n\n#### 3.1 · Question 1 · RQ1\n"), encoding="utf-8")
+            d = collect(b, "/papers/Paper-Test/board.md")
+            d["root"] = Path(tmp).resolve()
+            T = story_tree(d["story"][0])
+            q0 = T["questions"][0]
+            self.assertEqual((q0["id"], [x["kind"] for x in q0["tasks"]]), ("RQ0", ["Pretraining", "Downstream"]))
+            h0 = _q_block(d, T, q0)
+            self.assertIn('<span class="item-kind">Question 0</span><span class="lw-qname">The tasks</span>', h0)
+            self.assertIn('<div class="lw-k lw-k-task">Tasks</div><div class="lw-h"><div class="lw-top">'
+                          '<span class="item-kind">Pretraining</span>', h0)
+            self.assertIn('<b class="lw-name">Next reading</b>: it predicts the next reading.', h0)
+            for group in ("Hypotheses", "Potential claims", "Potential contributions"):
+                self.assertNotIn(">%s</div>" % group, h0)
+            self.assertNotIn("shared by all", h0)
+
+    def test_roadmap_draw_is_the_storys_excalidraw_in_studio(self):
+        """JL 260930: a Story tab between Spine and the logic view, named RoadMap Draw by JL,
+        shows the paper's Excalidraw drawing, saved in the paper's studio/ folder."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            b = make_board(root)
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            self.assertIn('data-tab="roadmap-draw" data-label="RoadMap Draw"', page)
+            self.assertIn("'story/roadmap':'story/logic-work'", page)   # the retired Roadmap tab's links still go there
+            self.assertLess(page.index('data-tab="spine"'), page.index('data-tab="roadmap-draw"'))
+            self.assertLess(page.index('data-tab="roadmap-draw"'), page.index('data-tab="logic-work"'))
+            url = "/_excalidraw/?board=papers/Paper-Test/studio/StoryA-desk-idea.excalidraw&amp;edit=1"
+            # the canvas loads when the tab shows (data-src), not with the page
+            self.assertIn('<iframe class="rd-frame" title="RoadMap Draw" referrerpolicy="no-referrer" data-src="%s"></iframe>' % url, page)
+            self.assertIn('<a class="rd-open" href="%s" target="_blank" rel="noopener">Open full screen ↗</a>' % url, page)
+            self.assertNotIn('class="rd-file', page)                  # one drawing: no switcher
+            # a pick in the logic view draws no bar (JL 260930: "I don't want this as well")
+            self.assertIn(".lw-h.runs-selected,.lw-w.runs-selected{background:transparent}", page)
+            self.assertNotIn(".lw-q.runs-selected>summary", page)
+            self.assertNotIn(".lw-w.lw-lit{", page)
+            self.assertFalse((b / "studio").exists())                 # rendering writes nothing
+            # a drawing already in studio/ opens instead of a new empty one
+            (b / "studio").mkdir()
+            other = "/_excalidraw/?board=papers/Paper-Test/studio/overview.excalidraw&amp;edit=1"
+            (b / "studio" / "overview.excalidraw").write_text('{"type":"excalidraw","elements":[]}', encoding="utf-8")
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            self.assertIn('referrerpolicy="no-referrer" data-src="%s"></iframe>' % other, page)
+            self.assertNotIn('class="rd-file', page)
+            # the Story's own drawing, once it exists, comes first; the others are one click away
+            (b / "studio" / "StoryA-desk-idea.excalidraw").write_text('{"type":"excalidraw","elements":[]}', encoding="utf-8")
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            self.assertIn('<button type=button class="rd-file on" data-src="%s">StoryA-desk-idea</button>'
+                          '<button type=button class="rd-file" data-src="%s">overview</button>' % (url, other), page)
 
     def test_related_papers_are_venue_cards_with_their_pdf(self):
         """JL 260930: a Story tab after the logic view lists the target venue's related papers,
@@ -508,7 +571,8 @@ class PaperWorkbenchTest(unittest.TestCase):
         kinds = paper_run_types()
         self.assertEqual(sorted(kinds), ["delivery", "ideation", "sections", "story"])
         self.assertEqual([k["label"] for k in kinds["story"]],
-                         ["Story revise", "Claim review", "Task review", "Task runs", "Discovery runs"])
+                         ["Story revise", "Claim review", "Task review", "Task runs", "Discovery runs", "Redraw"])
+        self.assertEqual(kinds["story"][-1]["views"], "roadmap-draw")   # RoadMap Draw's own card
         self.assertTrue(all(k["prompt"] for ks in kinds.values() for k in ks))   # each button copies a prompt
         self.assertEqual(kinds["delivery"][-1]["views"], "rounds")
 
@@ -522,7 +586,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             rows = section_rows(d)
             self.assertEqual([r["id"] for r in rows], ["S-DESK-Main-1-Introduction", "S-DESK-Main-2-Results"])
             self.assertEqual((rows[0]["num"], rows[0]["name"], rows[0]["state"]), ("1", "Introduction", "DRAFT"))
-            self.assertEqual(rows[1]["state"], "not set up")               # a C8 row with no Section Page yet
+            self.assertEqual(rows[1]["state"], "not set up")               # a §8 row with no Section Page yet
             self.assertEqual(rows[0]["session"]["pair"], "paper-desk-introduction")
 
     def test_render_needs_no_console_and_links_back_to_outline(self):
@@ -569,6 +633,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn('<span class="item-kind">Hypothesis 1</span><span class="lw-mark">🔨</span></div>'
                           '<div class="lw-body">It holds beyond the rating</div>', q1)
             self.assertIn('<span class="item-kind">Task</span><span class="lw-wq">the main estimate</span>', q1)
+            self.assertNotIn("lw-wtext", q1)                              # no `name` cell: the question alone
             self.assertIn('<span class="idtag">b01</span> <b>block</b>', q1)        # B
             self.assertIn('<span class="idtag">j01</span> job', q1)                 # J
             self.assertIn('<span class="idtag">t01</span>', q1)                     # T

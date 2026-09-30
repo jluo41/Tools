@@ -1,3 +1,8 @@
+## 1.1.3 · 2026-09-30 · Story parts are §N
+
+- Story parts are §N, never C3 or C5 (haipipe-paper-story 0.17.0; JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench); the question chain ends in the claims under each §3 question.
+- "canonical" is gone (AGENTS rule 9).
+
 ## 1.1.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -18,12 +23,12 @@
   the paper claim). The count is the number of distinct questions worth asking, never a
   batch quota; a card with only a title and a claim is `unframed`: row and disposition
   entry, no division. At I3 the selected question becomes the Story's Primary Research
-  Question verbatim (Story C3), whose claims (C5) the Story Space nests under it.
+  Question verbatim (Story §3), whose claims (§5) the Story Space nests under it.
   Source of the question: the Idea Card's new `question` field (haipipe-ideation 0.7.0).
 
 ## 1.0.3 · 2026-09-20
 
-- Use the canonical Page/Run loading order and Paper Spec adapter. Route semantic ideation to its shared owner; retain separate working/released/delivery surfaces and the sole I3 selection authority.
+- Use the current Page/Run loading order and Paper Spec adapter. Route semantic ideation to its shared owner; retain separate working/released/delivery surfaces and the sole I3 selection authority.
 
 ## 1.0.2 · 2026-09-13
 
@@ -44,7 +49,7 @@
 ## 1.0.0 · 260908
 
 - Made `haipipe-ideation` the sole semantic owner of Direction/Idea Cards,
-  Generate/Test state, the canonical machine portfolio recommendation, and the
+  Generate/Test state, the machine portfolio recommendation, and the
   I3 human selection receipt.
 - Added the I1/I2 `paper-ideation-sync` adapter and final I3
   `paper-ideation-handoff` adapter. One evergreen Story00 Page now refreshes by
@@ -58,7 +63,7 @@
   HIGH/MEDIUM/LOW novelty scale. Page Shape approval and CHECK acceptance remain
   Page decisions; G0 validates the independent I3 receipt and reciprocal Story
   binding.
-- Defined output-fenced behavior: retain the canonical Page path and last actual
+- Defined output-fenced behavior: retain the Page path and last actual
   revision, report the blocked sync, and never mint a surrogate Page or second
   projection receipt.
 
@@ -97,7 +102,7 @@
 - Defined `iNN` assignment as Idea admission: admitted cards keep divisions,
   while rejected pre-admission framings may remain only in Eliminated Ideas.
 - Made retrofit naming non-destructive: historical SD paths remain readable
-  until a separately authorized migration, while canonical Story roles and
+  until a separately authorized migration, while current Story roles and
   two-way bindings are recorded on revision.
 
 ## 0.7.3 · 260907
@@ -223,7 +228,7 @@
 ## 0.1.0 — 2026-08-23
 
 - **Created as the P0 nursery contract** (JL 260823): one research direction
-  per page on a standing IdeaBoard; idea ledger with claim-level novelty,
+  per page on a standing IdeaBoard; idea table with claim-level novelty,
   pilot receipts, and the fixed verdict vocabulary; graduation gate to a Seed
   with two-way binding; ABANDONED rows never deleted. Methodology informed by
   the ARIS idea-discovery/novelty-check references (Tools/references/aris):

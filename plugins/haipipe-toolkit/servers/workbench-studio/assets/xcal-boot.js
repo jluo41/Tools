@@ -366,9 +366,13 @@
     }));
   }
 
-  var last = sig(els), busy = false, stale = false, armed = !linked;
+  // Every scene waits for the first gesture, not only a linked one: a plain scene a
+  // script wrote leaves out fields Excalidraw fills in on load, so it too was saved
+  // back by merely being looked at (JL 260930, a generated drawing opened in the
+  // Paper Workbench's Story › RoadMap Draw).
+  var last = sig(els), busy = false, stale = false, armed = false;
   function arm(ev) {
-    if (armed || !linked) return;
+    if (armed) return;
     var target = ev && ev.target;
     if (target && target.closest && target.closest("#haipipe-linked-controls")) return;
     // Excalidraw normalizes loaded elements before the first human gesture.

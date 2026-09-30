@@ -72,6 +72,22 @@ class LinkedLiveTest(unittest.TestCase):
             self.assertIsNone(live.mint_page_scene(legacy))
             self.assertFalse(legacy.exists())
 
+    def test_board_studio_scene_mints_empty_and_plain(self):
+        """JL 260930: the Paper Workbench's RoadMap Draw saves to <board>/studio/."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            board = root / "papers" / "Paper-X"
+            board.mkdir(parents=True)
+            (board / "board.md").write_text("# Paper-X\n", encoding="utf-8")
+            live = Live(root)
+            scene = live.mint_board_scene(board / "studio" / "StoryA-x.excalidraw")
+            self.assertEqual(scene["elements"], [])
+            self.assertNotIn("haipipe", scene)                   # plain, not a linked Page source
+            self.assertEqual(read_scene(board / "studio" / "StoryA-x.excalidraw")["elements"], [])
+            self.assertIsNone(live.mint_board_scene(root / "papers" / "studio" / "a.excalidraw"))   # no board.md
+            self.assertIsNone(live.mint_board_scene(board / "other" / "a.excalidraw"))
+            self.assertFalse((root / "papers" / "studio").exists())
+
     def test_chat_receives_the_same_group_and_page_owner_addresses(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

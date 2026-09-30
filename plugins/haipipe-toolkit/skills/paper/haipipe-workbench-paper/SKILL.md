@@ -8,7 +8,7 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.16.1"
+  version: "0.19.0"
   last_updated: "2026-09-30"
 ---
 
@@ -19,7 +19,7 @@ SURFACE, WRITER, and BOUNDARY. This skill defines the Paper-level delta. It is
 the Paper counterpart to `haipipe-workbench-page`:
 
 That skill is written for Page-level workbenches. For this Board-level workbench read
-it for the four obligations only, then return here: the route, the Spaces, the
+it for the four duties only, then return here: the route, the Spaces, the
 claim rules and the writer rule are all in this file.
 
 ```text
@@ -56,7 +56,7 @@ The route is `#<space>[/<tab>][/<view>]`:
 
 ```text
 ideation
-story      spine · logic-work · related
+story      spine · roadmap-draw · logic-work · related
 sections   main · appendix          ×  table · narrative · evidence
 delivery   latex · word · rounds    ×  preview · artifacts · checks   (rounds has no views)
 ```
@@ -69,7 +69,7 @@ Spaces from the Board's Markdown on every open, exactly as the Page workbench
 does. The 0.1.0 `console/` prototype (a static `data.js` rebuilt by hand, one
 paper only) is retired and is never read.
 
-## 🧩 The four Workbench obligations
+## 🧩 The four Workbench duties
 
 ### 📦 Storage
 
@@ -85,6 +85,7 @@ Paper-<Slug>/
 ├── Ba-<desk>-Main/                  manuscript Section Pages        → Sections › Main
 ├── Bb-<desk>-Appendix/              supporting Section Pages        → Sections › Appendix
 ├── Bc-<desk>-Round/                 feedback and response Pages     → Delivery › Rounds
+├── studio/                          Story drawings and their scripts → Story › RoadMap Draw
 └── delivery/                        generated whole-paper projection → Delivery › LaTeX, Word
 ```
 
@@ -124,14 +125,15 @@ table has cell edges; long prose is set one sentence per line, for display only.
 No type under 12px, inside the Runs panel too; a closed card shows its whole
 headline (never an ellipsis on a claim or an idea). Checked by
 `skills/board/haipipe-board/tests/audit_paper_views.py`, which drives all
-sixteen routes in real Chrome at 1360px and 2000px: no page overflow, no pane
+nineteen routes in real Chrome at 1360px and 2000px: no page overflow, no pane
 leaking, nothing past the right edge, a Runs panel beside every view.
 
 The four Spaces, in the order the paper moves:
 
 ```text
 Ideation Space    candidate Ideas and their admission
-Story Space       the one prospective Story: Spine, High-level logic + Low-level work
+Story Space       the one prospective Story: Spine, RoadMap Draw, High-level logic +
+                  Low-level work, Related Papers
 Sections Space    every Section in compile order, joined to its Section Page
 Delivery Space    the manuscript delivery/ holds, its checks, and the review rounds
 ```
@@ -147,7 +149,7 @@ open and routes actions to the owner that is allowed to write them.
 
 **Its only engagement is the Runs panel.** Each Space lists the run types its
 tab or view owns, from `haipipe-paper-workflow/ref/run-cards.md` (`🔘 BUTTON`
-and `💬 PROMPT` lines). Selecting an idea, question, claim, C7/C6 row, Section
+and `💬 PROMPT` lines). Selecting an idea, question, claim, Task or Discovery row, Section
 or round narrows the panel to that target. A run shows its prompt (Copy), its
 process and its results; Rerun and `+ New Run` copy a prompt the person runs in
 a Claude or Codex session, which records who started it. Clicking never sends,
@@ -197,42 +199,55 @@ Workbench never creates a second admission decision.
 ### Story Space · "What is this Paper saying and doing?"
 
 ```text
-Spine       the Story's C1 Identity, C2 Pitch and C4 Stakes as label/value rows;
+Spine       the Story's §1 Identity, §2 Pitch and §4 Stakes as label/value rows;
             each division opens on the Story page (Open ↗)
+RoadMap Draw  (`#story/roadmap-draw`)
+            the paper's drawings in studio/, editable; a script-written drawing
+            is redrawn by the Redraw card
 High-level logic + Low-level work  (`#story/logic-work`)
             one tree, split down the middle (JL 260929): one block per research
-            question, the question across the top; left, its Hypotheses,
-            Potential claims and Potential contributions; right, its Potential
-            work: Foundation (shared, folded), then This question. Last, "Not
-            under a question"
+            question, the question across the top; left, its hypotheses,
+            potential claims and potential contributions, each item under its
+            own pill, no group labels; right, its work: the foundation every
+            question shares, then this question's own. Last, "Not under a
+            question"
+Related Papers  (`#story/related`)
+            one card per §5.3 related paper, the target venue first; open a
+            card to read its PDF
 ```
 
 ```text
-▾ Question 1  Do model size and data size contribute symmetrically …?
-  HYPOTHESES                                      │ POTENTIAL WORK
-   Hypothesis 1a  Capacity saturates: past a      │ Foundation
-                  modest size, a bigger model …🔨 │  › Data        Which CGM readings train the models?
-   Hypothesis 1b  Data keeps paying: more …    🔨 │  › Training    Can the full model grid be trained?
-  POTENTIAL CLAIMS                                │  › Evaluation  How well does each trained model do?
-   Claim 1a  More capacity stops helping: …       │ This question
-             from Hypothesis 1a                   │  Results  Fitted as one law, what do all the models' scores say?
-  POTENTIAL CONTRIBUTIONS                         │           for Hypotheses 1a and 1b · also for Questions 2, 3, 4 and 5
-   Patients, not parameters: …                    │    tasks/  b04 scaling_law_analysis
-             rests on Claims 1a and 1b            │              j01 collect_and_fit
-                                                  │                t01 collect_scaling_data  ▸ 3 runs
+▾ Question 1  Model or data?
+  We make the model bigger, or give it more training data, and see which one lowers the forecast error.
+  Hypothesis 1a                              🔨 │ › Data        Which training data?
+  Capacity saturates: past a modest size, …     │ › Training    Train the whole grid?
+  Hypothesis 1b                              🔨 │ › Evaluation  How good is each model?
+  Data keeps paying: more training data …       │
+                                                │ › Results     One law for all?
+  Claim 1a                                      │   We fit one scaling law to every model's score …
+  More capacity stops helping: …                │   for Hypotheses 1a and 1b · also for Questions 2, 3, 4 and 5
+  from Hypothesis 1a                            │     tasks/  b04 scaling_law_analysis
+                                                │               j01 collect_and_fit
+  Contribution 1a                               │                 t01 collect_scaling_data  ▸ 3 runs
+  Patients, not parameters: …                   │
+  rests on Claims 1a and 1b                     │
 ```
 
 Where each line comes from (haipipe-paper-story 0.13.0): the question block
-(`#### 3.N · Question N · RQn`) and its four groups, items coded 1a, 1b …:
+(`#### 3.N · Question N · RQn`) and its four groups, items coded 1a, 1b … (a Question 0
+that sets the tasks opens with a **Tasks** group, `- Pretraining · Name: sentence`, drawn
+first with its kind as the pill, and shows only the groups it fills; JL 260930):
 **Hypotheses** (`- **1a** · Name: sentence · tested by E1`), **Potential claims**
 (`- **1a** · C1 · from 1a · Name: sentence`; the C1 alias is not shown), **Potential
 contributions** (`- rests on 1a, 1b · Name: sentence`), **Potential work** (`- **T1** · for
 1a, 1b`, optionally followed by addresses that narrow a row to this question's folders).
 Each hypothesis, claim and contribution puts its pill (and a hypothesis's mark) on
 one line and starts its text on the next, the short name before the colon in bold
-(JL 260929: "make the text start from the next line after the label"). A work item's words are its §7/§6 row's
-`question` cell and its pill the row's `stage` (Data, Training, Evaluation, Results,
-Analysis, Figures, or Discovery for a §6 row); work runs top to bottom in that order
+(JL 260929: "make the text start from the next line after the label"). A work item reads like a question: its pill the row's
+`stage` (Data, Training, Evaluation, Results, Analysis, Figures, or Discovery for a §6
+row) with the row's `name` cell beside it, and the row's `question` cell, one plain
+sentence, on the line below (JL 260930: "the Label, + Short names, and a new line to
+explain what it is"); a row with no `name` cell shows its `question` beside the pill; work runs top to bottom in that order
 (JL 260929: "the work should follow the logics"). §7 rows marked `every question` sit
 under Foundation in every block, folded, "shared by all 5 questions" (JL 260929: "the
 question level foundation work … and it can be shared"). A row another question also
@@ -252,19 +267,41 @@ opening to each run ticket and its receipt state; a Discovery task also says wha
 found). Work built in another project says "built outside tasks/" with its path; a row
 with no folder says "no folder yet".
 
-Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): each group label is a colored word
-with no fill and no left stripe (JL 260930: "I don't want to make it too colorful"; no
-left stripe): Hypotheses and This question's work blue, Potential claims green, Potential
-contributions orange, Foundation work gray (its label says "shared by all 5
-questions"). Each question's header row has a light background. A picked item keeps a
-clear background; its left stripe alone marks it. Every work item folds,
+Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): no group labels (JL 260930:
+"Hypotheses <--- could we just remove this … of no information", and the same for
+Foundation work, "shared by all 7 questions" and This question's work). Every item's pill
+names its kind, a contribution's too (JL 260930: "we can have the contribution label as
+well, just as the claim and hypothesis"): Hypothesis 1a, Claim 1a, Contribution 1a, a
+contribution coded by its order in the question. A gap separates the groups; an empty
+group shows its kind's pill over "none yet" or the Story's own `- none: …` reason. Only a
+Question 0's Tasks keeps its label, because its pills name the task alone. On the right,
+the foundation every question shares comes first, this question's own work after a gap.
+Each question's header row has a light background. A pick draws nothing
+(JL 260930, of the blue left bar: "I don't want this as well"; a fill was turned down
+before): an opened question or work item shows the pick by being open, and the Runs
+panel names it. Every work item folds,
 closed by default (JL 260929: "右边那些 results 也是可以 click 的，也是可以 collapse 的"); its
-closed line still shows its stage, its question, "for Hypotheses 1a and 1b", "also for
-Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
+closed line still shows its stage and short name, the plain sentence, "for Hypotheses
+1a and 1b", "also for Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
 
-Questions start closed (JL 260930): the questions alone read as the paper's outline, with nothing else on the closed line (JL 260930: no tally). The closed line is two lines: the "Question N" pill with the block's `**Name**` beside it, then the full question below. board.md `story-current: <Story stem>` limits the tree to that Story (a submitted paper and its redesign are two Stories; the tree shows the one being worked on, with no Story label); without it every Story's questions are drawn. Picking: a click on a closed question opens it and selects it for the Runs panel; on an open, unselected one it selects; on the selected one it closes. A click on a hypothesis selects it, lights the work that tests it and opens it.
+Questions start closed (JL 260930): the questions alone read as the paper's outline, with nothing else on the closed line (JL 260930: no tally). The closed line is two lines: the "Question N" pill with the block's `**Name**` beside it, then the plain question below. board.md `story-current: <Story stem>` limits the tree to that Story (a submitted paper and its redesign are two Stories; the tree shows the one being worked on, with no Story label); without it every Story's questions are drawn. Picking: a click on a closed question opens it and selects it for the Runs panel; on an open, unselected one it selects; on the selected one it closes. A click on a hypothesis selects it, lights the work that tests it and opens it.
 Opening a work item selects it; closing it clears the pick. Under 1100px the right half
 drops below the left. The only box is the tree's frame.
+
+**RoadMap Draw** (`#story/roadmap-draw`, between Spine and the logic view; JL 260930 named it:
+"a view … to show the excalidraw draw which will be saved here: studio"): the paper's own
+Excalidraw canvas, full width and editable, on a drawing in `<paper>/studio/`: the
+Story's own `<Story stem>.excalidraw` (the Story board.md `story-current:` names, else the
+first `Story<X>`) when it exists, else the first drawing there, else the Story's own,
+new. The canvas is the server's self-hosted Excalidraw
+(`/_excalidraw/?board=<path>&edit=1`), loaded when the tab shows; every stroke saves
+through `/_board/excalidraw-save`. The server writes the empty file the first time the
+canvas opens (`mint_board_scene` in `servers/workbench-studio/xcal.py`: a plain scene,
+only in a `studio/` folder beside a `board.md`); rendering the page writes nothing. With more
+than one `.excalidraw` in `studio/`, each is a button above the canvas, the Story's own first;
+"Open full screen ↗" opens the same canvas in its own tab. One tab holds the pen: a second
+tab on the same drawing opens read-only. Opening a drawing never saves it; the first
+stroke does, so a drawing a script wrote stays as its script wrote it until someone draws.
 
 **Related Papers** (`#story/related`, JL 260930: "each paper to be a card that I can
 read the original pdf"): the papers this study stands beside, one card each. The
@@ -307,21 +344,21 @@ Task home rules: the Task home is `examples/<Project>/tasks/` (or `task/`, or
 board.md `task-home:`), read Block → Job → Task in both folder shapes (a task folder
 with its own runs/ results/, or the flat `<job>/{runs,results,scripts}/<task>/`);
 runs are the tickets under runs/ and their state is the result's `runtime.yaml`.
-Write every C7 address in full, one per job or task
+Write every Task Roadmap address in full, one per job or task
 (`Task: b01.j01, b01.j02.`, `b01.j05.t02–t03`): a bare `j02` after a comma is not
 an address. The
-claim = board.md `blocks: b03 b04 b02.j01` + every address on a C7 row. Address
+claim = board.md `blocks: b03 b04 b02.j01` + every address on a Task Roadmap row. Address
 grammar: lowercase two-digit `bNN[.jNN[.tNN[.rNN]]]` (a row id such as `B2` is
-not an address); end the row's design cell with `Task: b03.j02.`, as C6 ends its
+not an address); end the row's design cell with `Task: b03.j02.`, as a Discovery Roadmap row ends its
 scope cell with `Discovery: b01.j04.`. CLAIMED = a block or job shows because
-`blocks:` or a C7 address covers it; ADDRESSED = the C7 row names its own
+`blocks:` or a Task Roadmap address covers it; ADDRESSED = the row names its own
 address. Unclaimed jobs are named once, muted, never expanded. Discovery home
 (`examples/<Project>/discoveries/`, or `discovery-home:`) is claimed the same way
-through `discoveries:` and C6 addresses.
+through `discoveries:` and Discovery Roadmap addresses.
 
 The High-level logic + Low-level work Runs panel lists Claim review (`rclaim`), Task review (`rtask`), Task
 runs (haipipe-task) and Discovery runs (haipipe-discovery): the supporting runs this
-paper's Evidence Items cite, each under its owner and keyed to the C7 and C6 rows
+paper's Evidence Items cite, each under its owner and keyed to the Task and Discovery Roadmap rows
 whose addresses cover them and to every hypothesis, E-row and question above those
 rows, so picking a question or a hypothesis shows the runs behind it. Every run type and run names its skill
 (`🧩 SKILL` in run-cards.md).
@@ -333,8 +370,8 @@ haipipe-paper-assemble's run-delivery-coverletter writes from the submission Rou
 page's Cover letter division, and shows the letter, its files and its checks.
 
 A board with no Story page says `No Story yet.` in each tab, never an empty pane.
-Story Space presents StoryA's blueprint; C6 is the Discovery Roadmap, C7 the Task
-Roadmap, C8 the Section Narrative and compile order (shown in Sections Space).
+Story Space presents StoryA's blueprint; §6 is the Discovery Roadmap, §7 the Task
+Roadmap, §8 the Section Narrative and compile order (shown in Sections Space).
 These are Story divisions, not extra Pages or extra Spaces.
 
 ### Sections Space · "Where is each Section?"
@@ -342,9 +379,10 @@ These are Story divisions, not extra Pages or extra Spaces.
 ```text
 Table       one row per Section in compile order: number · name · draft version ·
             state word (from the Page's state: line); Open ↗ goes to that Page's
-            workbench (/_board/draft). A C8 row with no Section Page reads
-            `not set up`
-Narrative   one card per C8 row: the reader question leads; open = the row's
+            workbench (/_board/draft). A Section Narrative row with no Section
+            Page reads `not set up`
+Narrative   one card per Section Narrative row: the reader question leads;
+            open = the row's
             moves, what it must establish and refuse, evidence, display, exit
             state, cut rule, and the Section's session: its Claude session from
             the page's `session:` line (`/haipipe-paper sessions`) and any Codex
@@ -381,14 +419,14 @@ it builds nothing on open. The Build button copies the build prompt.
 
 ## Workflow, Run Specs and control records
 
-`haipipe-paper-workflow/ref/run-workflow.md` is the canonical Spec list and
+`haipipe-paper-workflow/ref/run-workflow.md` is the one Spec list and
 compatibility map; `ref/space-mapping.md` names each Run's reader-facing name,
-canonical Type and Spec, owner/worker Skills, actor, prerequisites and the
+Run Type and Spec, owner/worker Skills, actor, prerequisites and the
 Space that shows it. Both are definition views for readers of this skill; the
 screen shows only the Runs panels, whose buttons come from
 `haipipe-paper-workflow/ref/run-cards.md`.
 
-Paper judgment Specs are `idea`, `claim`, `obligation`, and `narrative`; shared
+Paper judgment Specs are `idea`, `claim`, `task`, and `narrative`; shared
 native Specs are `support`, `structure`, `write`, `evidence`, and `deliver`;
 Paper delivery/response Specs are `compile` and `response`. Selection (I3),
 setup, G0–G5, sync and Story/Section routes remain control actions with no Run
@@ -400,9 +438,9 @@ The Paper Workbench may display gate state, but the named owner closes the gate:
 
 ```text
 G0  Ideation → Story       I3 / Paper Ideation handoff      shown on the Idea card
-G1  Story → work           Story release of Discovery/Task  shown on C7 / C6 cards
+G1  Story → work           Story release of Discovery/Task  shown on the work rows
 G2  work → Story           accepted Result and interpretation shown on the claim state
-G3  Story → Section        human release of one C8 row      shown on the Section row
+G3  Story → Section        human release of one §8 row      shown on the Section row
 G4  Section → Compile      Section release and delivery     shown in Delivery › Checks
 G5  Round → next route     every concern answered once      shown on the Round card
 ```

@@ -23,16 +23,16 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 | Spec template | Run Type / owner | Target and inputs | Actor / action | Entry → exit | Routes and internal Steps |
 |---|---|---|---|---|---|
 | `idea.<idea>` | `paper.judgment.idea` / Paper Ideation Page | one admitted Idea; exact Ideation card and test Results | hybrid / discuss one idea | card exists → bounded judgment recorded | unresolved source → support; accepted discussion → CLOSE; feedback → SELF/NEW_VERSION |
-| `claim.<story>.<claim>` | `paper.judgment.claim` / Story | one C5 proposition and its evidence/limits | hybrid / judge claim support | frozen claim + available evidence → judgment and open limits recorded | missing evidence → support; settled → CLOSE; revision → SELF/NEW_VERSION |
-| `obligation.<story>.<row>` | `paper.judgment.obligation` / Story | one C7 evidence obligation and candidate study plan | hybrid / review one obligation | row exists → bounded obligation judgment | research needed → support after G1; settled → CLOSE |
-| `narrative.<story>.<section>` | `paper.judgment.narrative` / Story | one C8 row, current Venue contract, claim/evidence pointers | hybrid / review Section telling | row exists → reviewed narrative with risks | G3 release → selected structure/write; otherwise HOLD or CLOSE as proposal |
+| `claim.<story>.<claim>` | `paper.judgment.claim` / Story | one claim and its evidence/limits | hybrid / judge claim support | frozen claim + available evidence → judgment and open limits recorded | missing evidence → support; settled → CLOSE; revision → SELF/NEW_VERSION |
+| `task.<story>.<row>` | `paper.judgment.task` / Story | one Task Roadmap row and candidate study plan | hybrid / review one row | row exists → bounded task judgment | research needed → support after G1; settled → CLOSE |
+| `narrative.<story>.<section>` | `paper.judgment.narrative` / Story | one Section Narrative row, current Venue contract, claim/evidence pointers | hybrid / review Section telling | row exists → reviewed narrative with risks | G3 release → selected structure/write; otherwise HOLD or CLOSE as proposal |
 | `support.<target>` | selected Task/Discovery/Ideation worker's native Run Type | one missing computation, source inquiry, generation or test Result; frozen inputs and authorized scope | owner-selected / execute bounded work | owner entry + relevant G1 → accepted native Result | relevant G2 return → consumers; failure → owner retry or HOLD |
 | `structure.<page>` | Page Structure RP / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
 | `write.<page>.<scope>` | Page Writing RP / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
 | `evidence.<page>.<item>` | Page Evidence RE / Page evidence owner + selected worker | one VALUE/CITE/DISPLAY item; frozen Local Input and 0..N Supporting Results | agent or hybrid / make and verify typed Result | decided item + required inputs → accepted typed Result | EMBED control → dependent write/deliver; failure → repair or HOLD |
 | `deliver.<page>.<format>` | Page Delivery Run `run-delivery-<lane>` / `haipipe-page-delivery` | one Page lane (web, LaTeX, Word) | agent / rerun the lane's fixed Run | the lane's files at least as new as the Page | Page CHECK control → compile dependency; failure → repair/HOLD |
 | `compile.<paper>.<build>` | `paper.compile` / `haipipe-paper-assemble` | exact compile-order, Section fragments/bindings, config/profile | agent / assemble one manuscript build | valid safe config + explicit build request → truthful manifest and declared outputs or failure | G4 evaluates readiness; feedback → response; build outcome → CLOSE |
-| `response.<round>` | `paper.response` / `haipipe-paper-round` | one frozen feedback batch/base build, ledger, checked returned versions | hybrid / compose one response package | named batch → covered concerns, frozen answer build and human response/close receipt | required repairs → affected owner Specs; incomplete → HOLD; G5 → CLOSE |
+| `response.<round>` | `paper.response` / `haipipe-paper-round` | one frozen feedback batch/base build, concern table, checked returned versions | hybrid / compose one response package | named batch → covered concerns, frozen answer build and human response/close receipt | required repairs → affected owner Specs; incomplete → HOLD; G5 → CLOSE |
 
 G0–G5 predicates are defined in the Workflow skill. Their human decisions keep
 the same authority. A judgment may close with a documented concern or proposed
@@ -62,10 +62,10 @@ The old workbench vocabulary maps as follows:
 | `paper.ideation.generate`, `paper.ideation.test` | Ideation capability routes; bounded execution uses `support.<target>`, discussion uses `idea.<idea>` |
 | `paper.ideation.select` | the existing human I3 control, followed by G0 validation; no second selection |
 | `paper.story.shape` | selected `structure.<page>` and writing Specs, when commissioned |
-| `paper.story.review` | selected claim/obligation/narrative judgment Specs |
+| `paper.story.review` | selected claim/task/narrative judgment Specs |
 | `paper.story.route`, `paper.section.route` | dependency routing and G1/G3 controls; Section work uses its native Specs |
 | `paper.compile` | `compile.<paper>.<build>` |
-| `paper.round.respond` | `response.<round>`; ledger triage alone is a control action |
+| `paper.round.respond` | `response.<round>`; concern-table triage alone is a control action |
 
 P0–P4 are legacy Run names. The four Paper PageType skills are direct
 `paper/haipipe-paper-*` entrypoints; they do not define the `paper-runs` layer.
@@ -100,7 +100,7 @@ A commissioned response uses the Paper human-session dialect:
 `<Round>/results/rresponse-NN_<batch>/`. Its journal records Versions/Steps,
 concern pointers, response and frozen build references, and the final human
 decision. It never copies revised Section prose into a second source store.
-Routine ledger updates do not require this commission.
+Routine concern-table updates do not require this commission.
 
 ## Runtime and completion
 

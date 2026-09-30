@@ -11,7 +11,7 @@ description: >-
   create, refresh, read, or check a Paper Ideation Page; route idea generation,
   novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "1.1.2"
+  version: "1.1.3"
   last_updated: "2026-09-29"
   group-token: "Story00"
   outline:
@@ -78,7 +78,7 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
 
 - `kind: paper-ideation-sync` is the working-state adapter. It carries the
   Direction, Discovery Landscape, Opportunity Map, every admitted card and
-  test state, the canonical machine-only `portfolio_recommendation`, and open
+  test state, the machine-only `portfolio_recommendation`, and open
   gaps. Its `selection_authority.status` remains `none`; it cannot authorize a
   Story.
 - `kind: paper-ideation-handoff` is the selected-state adapter. It points to
@@ -97,9 +97,9 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
   adapter reads that Page-owned receipt and remains the only writer of the sync
   packet's nested `paper_page` status.
 - When `paper_page.state: missing`, use `/haipipe-page` to mint or bind the one
-  canonical Ideation Page and leave all three surfaces `not-requested` until a
+  Ideation Page and leave all three surfaces `not-requested` until a
   projection is actually recorded. When it is `blocked`, preserve the
-  canonical path and each last honest surface revision/receipt, report the
+  Page path and each last honest surface revision/receipt, report the
   named gap, and do not mint a surrogate Page, a second projection receipt, or
   a local Ideation Run.
 - A formal Page-level CONTENT pass may adopt the working projection only after
@@ -164,7 +164,7 @@ counting job at the idea level.
 
 Historical `SD00-ideation` / `SD01-seed` instances remain readable and are not
 renamed or moved merely to satisfy this contract. When such a Page is next
-revised, record its canonical `Story00-ideation` / `Story<Letter>-<desk>-<idea-slug>` role and
+revised, record its `Story00-ideation` / `Story<Letter>-<desk>-<idea-slug>` role and
 preserve two-way links. A filesystem rename is a separate, explicitly scoped
 migration, never an implicit Page or G0 action.
 
@@ -198,7 +198,7 @@ the question   Does <object> <relation> <outcome>, for <whom / where>, beyond <w
 the handle     2–5 words derived FROM the question, for slugs and the went-to Story name
                (the Idea Card's `title`); it never stands in for the question
 the chain      Direction question → Idea questions (this Page) → the selected
-               Story's Primary Research Question (Story C3) → its claims (Story C5)
+               Story's Primary Research Question (Story §3) → its claims (Story §3)
 ```
 
 A research question is admissible when it names one object, one relation or
@@ -413,7 +413,7 @@ Journal / Venue Fit           broad screen for every admitted idea; deep fit
                               📮 → /haipipe-journal-fit
 Risk                          what could sink it
 Reviewer's Likely Objection   the strongest counterargument
-Recommendation               the sync packet's canonical machine-only recommendation
+Recommendation               the sync packet's machine-only recommendation
 Next Evidence Action         exact Discovery, Task, Venue, select, defer, or abandon route
 ```
 
@@ -514,7 +514,7 @@ sole I3 receipt establish all four:
 It is a two-way act: `went to` copies the exact Story path already allocated in
 the receipt, normally `StoryA-<desk>-<idea-slug>`,
 `StoryB-<desk>-<idea-slug>`, and so on beside this Page, or the new repo when an
-Idea leaves for a different paper. That Story's C5 Source Pages and provenance
+Idea leaves for a different paper. That Story's §5 Source Pages and provenance
 bind this Page, the final handoff, and the I3 receipt back. A row naming a Story
 that does not bind back, or a Story claiming an origin this Page does not show,
 is a defect on whichever side is missing.
@@ -528,7 +528,7 @@ Idea and never edits the selection receipt.
 
 A machine may generate Ideas through I1, run I2 searches and pilots through
 the proper owners, fill Core Claims, build Venue Fit Cards, and write the one
-canonical portfolio recommendation in the sync packet. It may not author the
+portfolio recommendation in the sync packet. It may not author the
 I3 person's identity, date, verdict, target/category, accepted risks, or Story
 authorization. Selection, deferral, abandonment, targeting, and commitment are
 human acts recorded once by `haipipe-ideation-select`.
@@ -571,13 +571,13 @@ automatically revokes, replaces, or rewrites the old selection.
   filled or honestly `⬜`; an `unframed` card has a row and a disposition entry
   only.
 - A selected Idea's question is the Story's Primary Research Question
-  verbatim, and the Story's C3 binds back to this row.
+  verbatim, and the Story's §3 binds back to this row.
 - Every disposition row states whether it is an admitted `iNN` card or a
   rejected pre-admission framing; only admitted cards owe retained divisions.
 - Every row in Ideas (ranked) has no blank cell; every verdict is from the
   fixed vocabulary and comes from I3 or remains open; current work names its
   sync packet, while a legacy source is explicitly labeled legacy.
-- Comparison order and the canonical portfolio recommendation are not treated
+- Comparison order and the portfolio recommendation are not treated
   as selection; only the I3 receipt and `went to` authorize a Story.
 - Every Idea division carries the card/test fields, filled or honestly `⬜`.
 - Every Core Claims / Novelty Check line traces to a per-claim Run/Result; every
@@ -588,7 +588,7 @@ automatically revokes, replaces, or rewrites the old selection.
 - Every non-open human verdict projects the sole receipt's person and date.
 - Every `went to` names a distinct Story that binds this page back.
 - Historical SD-named instances preserve their paths unless an explicit
-  migration is authorized; canonical roles and two-way bindings remain clear.
+  migration is authorized; roles and two-way bindings remain clear.
 - The disposition division holds every Idea ever merged, deferred, or dropped,
   each with its reason; nothing raised has vanished.
 

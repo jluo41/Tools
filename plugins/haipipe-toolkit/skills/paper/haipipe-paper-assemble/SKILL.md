@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.9.1"
+  version: "0.9.2"
   last_updated: "2026-09-29"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
@@ -61,7 +61,7 @@ The Board and Page files decide what the paper is allowed to claim and whether
 the relevant Section is CHECK-closed. Each Section Page owns its wording and
 projects it into `delivery/latex/<page>.tex`, the body fragment used by the
 paper builder. `<page>-master.tex` is only the standalone Page wrapper;
-it is not a manuscript input. The selected Story C8 compile-order block owns
+it is not a manuscript input. The selected Story §8 compile-order block owns
 the order. The paper's `delivery/latex/` is regenerated from the body fragments
 and is never edited by hand (JL 260907; this replaces the 260824
 desk-room law, under which `<N>-<desk><year>/sections/*.tex` was the source of
@@ -154,7 +154,7 @@ The implementation has four separable parts:
    the source manifest, and run structural plus rendered visual checks.
 
 The shared engine lives under this skill: `scripts/build_delivery.py` is the
-CANONICAL delivery engine (regenerates `delivery/latex/`, compiles, converts
+ONLY delivery engine (regenerates `delivery/latex/`, compiles, converts
 Word, writes the display register and the manifest) and
 `scripts/latex_room_to_docx.py` is the latex-room → DOCX adapter it calls. A
 paper supplies configuration only: its `delivery/build.py` is the thin wrapper
@@ -316,7 +316,7 @@ records it under `cover_letter` (source, ready, checks). `send` skips an output 
 empty value and, when the profile's `appendices = "main"`, the supplement a manuscript-with-appendices
 never produces.
 
-## ⚙️ Canonical configuration
+## ⚙️ Configuration
 
 The paper keeps one `delivery/paper-build.toml`. Paths are resolved relative
 to that config file. The following is the minimum contract; fields may be
@@ -336,7 +336,7 @@ venue_profile = "misq"
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
-order = "../A1-Story/StoryA-misq-phytrait-discretion/StoryA-misq-phytrait-discretion.md"   # selected C8 compile-order block
+order = "../A1-Story/StoryA-misq-phytrait-discretion/StoryA-misq-phytrait-discretion.md"   # selected §8 compile-order block
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -363,7 +363,7 @@ assets = "latex/submission-assets"
 manifest = "build-manifest.json"
 ```
 
-The selected C8 compile-order block and declared Section groups determine the
+The selected §8 compile-order block and declared Section groups determine the
 current build inputs. A missing or ambiguous order is a repair requirement,
 not permission to read a retired planning Page or silently choose another
 desk room. Inspect older adapters before use and report unsupported checks;
@@ -372,7 +372,7 @@ For the single-target interface, require exactly one complete marker block.
 Reject duplicate or malformed Section entries instead of silently omitting
 them; candidate tellings are narrative plans, not additional active blocks.
 
-The canonical engine validates configuration before any write or cleanup.
+The engine validates configuration before any write or cleanup.
 `paper-build.toml` lives in `<paper>/delivery/`; `source.room` is exactly
 `latex`. Generated paths must remain inside their declared output directory,
 with no `..`, absolute path, symlink escape or overlap with authored inputs.
@@ -547,7 +547,7 @@ The assembly engine must check, or explicitly report that a check is not
 available:
 
 - every declared source file exists and is inside generated `delivery/latex/`;
-  the selected C8 order agrees with `[pages]`, and every listed Section meets
+  the selected §8 order agrees with `[pages]`, and every listed Section meets
   the milestone or is reported as not ready;
 - no generated DOCX/PDF/snapshot is read as an input;
 - every `\\input`, citation, label/reference, table asset, and figure asset

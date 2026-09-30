@@ -1,3 +1,9 @@
+## 1.7.0 · 2026-09-30 · Task review is paper.judgment.task; the Redraw card
+
+- The Task review Spec is `paper.judgment.task` (`task.<story>.<row>`), matching its `rtask` ticket and the "Task review" button (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench; AGENTS rule 9 bans "obligation"). No saved Run used the old id.
+- `ref/run-cards.md`: new `Redraw` card on Story › RoadMap Draw, which had no card; prompts name a claim, a Task Roadmap row and a Section Narrative row instead of C5, C7 and C8.
+- Story parts are §N or their name (haipipe-paper-story 0.17.0); "ledger" is the Round's concern table; "canonical" is gone.
+
 ## 1.6.3 · 2026-09-30 · Discovery runs also show on Story › Related Papers (JL 260930)
 
 - `ref/run-cards.md`: the Discovery runs button says `views logic-work related`, so it shows beside the new Related Papers tab (haipipe-workbench-paper 0.16.0), where each card is one Discovery Paper Run.
@@ -37,7 +43,7 @@
 
 ## 1.3.0 · 2026-09-20
 
-- Define the Paper Workflow as bounded Specs and actual owner-native Runs. Separate gates/controller decisions from Runs; document compile/response receipts and canonical RP/RE/RD integration.
+- Define the Paper Workflow as bounded Specs and actual owner-native Runs. Separate gates/controller decisions from Runs; document compile/response receipts and the RP/RE/RD integration.
 
 ## 1.2.1 · 2026-09-13
 
@@ -74,7 +80,7 @@
   `workflow/selection.yaml` receipt, and reciprocal Story binding.
 - Clarified that Page Shape approval and Page CHECK are separate Page
   decisions; Paper G0 creates no second selection receipt.
-- Preserved the blocked-page no-surrogate rule for the canonical Page path,
+- Preserved the blocked-page no-surrogate rule for the Page path,
   projection, and selection receipt.
 
 ## 1.1.3 · 2026-09-08
@@ -129,7 +135,7 @@
   Supporting/local Runs, and accepted local Results instead of an active probe
   lane.
 - Separate paper-family entry routing from its position as the Folder-owning
-  workflow inside the canonical concrete Page chain.
+  workflow inside the concrete Page chain.
 
 ## 0.7.3 · 260831
 - Replace ASCII angle-bracket arrows in the discovery description with Unicode
@@ -155,7 +161,7 @@
 
 - **The appendix token is `SA`, Section-Appendix** (JL 260831: "The AM is not
   correct, it should be SA"): a desk group's pages are `S<D><NN>` main
-  sections, `SA<NN>` appendix sections, `RD<NN>` rounds. The Round ledger
+  sections, `SA<NN>` appendix sections, `RD<NN>` rounds. The Round's concern table
   grammar (`SA-PP<n>` rows) already said so; the page ids now agree. MISQ
   renamed AM01-AM06 → SA01-SA06 the same day; boards still on `A<D>` are
   grandfathered until their own rename.

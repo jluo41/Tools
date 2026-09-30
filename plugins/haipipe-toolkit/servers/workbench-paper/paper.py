@@ -13,7 +13,7 @@ you should have haipipe-workbench-paper"):
     Ideation   Story00-ideation: the Ideas (ranked) table when the page has
                one, else the plan's `Idea <n>:` divisions · evidence items ·
                the I3 admission receipt
-    Story      every Story<Letter> page: C1–C8 · RQ / E / D / T / Section
+    Story      every Story<Letter> page: §1–§8 · RQ / E / D / T / Section
                rows · compile order
     Run        every page's runs/ + results/ · gates G0–G5 read from the files
                haipipe-paper-workflow names · the Workflow map projected from
@@ -174,7 +174,7 @@ def collect(board, path_param):
             pages.append({"group": g, "stem": stem, "rel": rel,
                           "text": read(board / rel) if rel else ""})
     story00 = next((p for p in pages if p["stem"].startswith("Story00")), None)
-    # Story<Letter> is canonical; legacy numbered Stories (Story01-seed, Story02-roadmap,
+    # Story<Letter> is the current form; legacy numbered Stories (Story01-seed, Story02-roadmap,
     # Story03-narrative-MISQ) stay readable per haipipe-paper-ideation, so they are Stories too
     stories = [p for p in pages if STORY_STEM.match(p["stem"])]
     sections = [p for p in pages if p["stem"].startswith("S-")]
@@ -202,7 +202,7 @@ def collect(board, path_param):
 
 def paper_desk(d):
     """The desk name, read from a real B group (`Ba-MISQ-Main` → MISQ) or, before
-    any Section group exists, from the Story's C8 target cell (`MISQ · 1`)."""
+    any Section group exists, from the Story's §8 target cell (`MISQ · 1`)."""
     for g in d["groups"]:
         m = re.match(r"^B[a-z]-(.+)-(?:Main|Appendix|Round)$", g["folder"])
         if m:
@@ -603,7 +603,7 @@ def _addresses(text):
 
 def paper_scope(d):
     """The Task-home addresses this paper claims: board.md `blocks:` plus every
-    bNN[.jNN[.tNN]] address written on a Story C7 row. Empty = nothing claimed."""
+    bNN[.jNN[.tNN]] address written on a Story Task Roadmap (§7) row. Empty = nothing claimed."""
     scope = list(d["blocks"]["claim"])
     for s in d.get("story", []):
         for cells in s["tt"]:
@@ -676,7 +676,7 @@ def project_discoveries(d):
 
 def discovery_scope(d):
     """Discovery addresses this paper claims: board.md `discoveries:` plus every
-    bNN[.jNN[.tNN]] address written on a Story C6 row."""
+    bNN[.jNN[.tNN]] address written on a Story Discovery Roadmap (§6) row."""
     scope = list(d["disc"]["claim"])
     for s in d.get("story", []):
         for cells in s["dd"]:
@@ -768,7 +768,7 @@ def story(d, p):
          "qb": question_blocks(t),
          "sections": [], "sec_h": [], "order": []}
     s["sec_h"] = _table_headers(t, SECTION_ROW) or []
-    # the Spine is C1 Identity, C2 Pitch, C4 Stakes; matched by title so a legacy numbered
+    # the Spine is §1 Identity, §2 Pitch, §4 Stakes; matched by title so a legacy numbered
     # Story part (Story02-roadmap's `1 · Mission`) does not pose as an Identity
     s["spine"] = [(n, title, parse_division(division_body(t, n)))
                   for n, title in s["divisions"]
@@ -807,7 +807,7 @@ _FIELD = re.compile(r"^-\s+\*\*(.+?)\*\*\s*:\s*(.*)$")
 
 
 def section_records(body):
-    """C8 rows written as records → the table rows' shape: {id, target, question,
+    """§8 Section Narrative rows written as records → the table rows' shape: {id, target, question,
     cells, heads}. `**S-<id> (N) · one job**` opens a record; its `- **Field**: value`
     lines are its cells; the Reader question field is the question."""
     out, cur = [], None
@@ -1094,11 +1094,11 @@ def gates(d):
               "✅ I3 receipt · %d Story page(s)" % len(d["stories"]) if receipt
               else "⬜ open · no I3 receipt · %d Story page(s)" % len(d["stories"])))
     g.append(("G1", "Story → work", "— read on the Story's workflow records"))
-    g.append(("G2", "work → Story", "— read on the Story's C5 support"))
+    g.append(("G2", "work → Story", "— read on the Story's §5 evidence rows"))
     rows = sum(len(s["sections"]) for s in d["story"])
     minted = sum(1 for s in d["story"] for r in s["sections"] if r["rel"])
     g.append(("G3", "Story → Section",
-              "%d of %d C8 rows have a Section page" % (minted, rows) if rows else "⬜ no C8 rows"))
+              "%d of %d Section Narrative rows have a Section page" % (minted, rows) if rows else "⬜ no Section Narrative rows"))
     man = b / "delivery" / "build-manifest.json"
     if man.is_file():
         try:
@@ -1222,14 +1222,14 @@ def delivery_info(d):
             if f.is_file() and not f.name.startswith("."):
                 info["returned"].append({"name": f.name, "rel": "delivery/word-feedback/" + f.name, "path": f,
                                          "size": _size(f), "stamp": _stamp(f)})
-    # compile order: the manifest's, else the Story's C8 block
+    # compile order: the manifest's, else the Story's §8 block
     order = []
     if man and isinstance(man.get("order"), dict):
         order = [(x, "main") for x in man["order"].get("main", [])] + [(x, "appendix") for x in man["order"].get("appendix", [])]
         info["order_src"] = "build-manifest.json (%s)" % (man.get("order_source") or "").split(" · ")[0]
     elif d["story"] and d["story"][0]["order"]:
         order = [(x, "main" if "-Main-" in x else "appendix") for x in d["story"][0]["order"]]
-        info["order_src"] = "Story C8 compile order (no build yet)"
+        info["order_src"] = "Story §8 compile order (no build yet)"
     info["order"] = order
     mpages = {p.get("id"): p for p in (man or {}).get("pages", []) if isinstance(p, dict)}
     by_stem = {p["stem"]: p for p in d["pages"]}
@@ -1436,11 +1436,11 @@ def _plain(text):
 
 
 _QHEAD = re.compile(r"^####\s+[\d.]+\s*·\s*Question\s+(\d+)(?:\s*·\s*(RQ\d+))?\s*$", re.I)
-_GROUP = re.compile(r"^\*\*(hypotheses|potential claims|potential contributions|potential work)\*\*\s*:?\s*$", re.I)
+_GROUP = re.compile(r"^\*\*(tasks|hypotheses|potential claims|potential contributions|potential work)\*\*\s*:?\s*$", re.I)
 _ITEM = re.compile(r"^-\s+(?:\*\*([A-Z]{1,2}\d+|\d+[a-z])\*\*\s*(?:·\s*)?)?(.*)$")
 _CODE = re.compile(r"(?<![\w.])(\d+[a-z])(?!\w)")
 _SUBFIELD = re.compile(r"\*\*(.+?)\*\*\s*:\s*(.*?)(?=\s*·\s*\*\*|$)")
-_GROUPS = {"hypotheses": "hypotheses", "potential claims": "claims",
+_GROUPS = {"tasks": "tasks", "hypotheses": "hypotheses", "potential claims": "claims",
            "potential contributions": "contributions", "potential work": "work"}
 
 
@@ -1453,6 +1453,8 @@ def question_blocks(text):
       **Potential claims**         - **1a** · C1 · from 1a · Name: sentence   (indented `- **Role**: …`)
       **Potential contributions**  - rests on 1a, 1b · Name: sentence
       **Potential work**           - **T1** · for 1a, 1b   (optionally `· b04.j03.t01, …` to narrow)
+    A question that sets the study's tasks rather than testing a guess may open with
+      **Tasks**                    - Pretraining · Name: sentence   (the kind, then the task)
     A claim keeps its paper-wide id (C1) after its code. [] for a Story that still
     writes the RQ table."""
     n = next((n for n, title in divisions(text) if title.strip().lower().startswith("research question")), None)
@@ -1461,7 +1463,7 @@ def question_blocks(text):
         s = line.strip()
         m = _QHEAD.match(s)
         if m:
-            cur = {"n": int(m.group(1)), "id": m.group(2) or "RQ" + m.group(1), "fields": [],
+            cur = {"n": int(m.group(1)), "id": m.group(2) or "RQ" + m.group(1), "fields": [], "tasks": [],
                    "hypotheses": [], "claims": [], "contributions": [], "work": []}
             out.append(cur)
             group = last = None
@@ -1506,18 +1508,22 @@ _STAGE_ORDER = {k: i for i, k in enumerate(_STAGES + ("task", "discovery"))}
 
 
 def _work_rows(s):
-    """The §7 Task and §6 Discovery rows: id → the question each answers (its `question`
-    cell), its stage (a §7 `stage` cell: data · training · evaluation · results · analysis ·
-    figures), whether it serves `every question`, and the row ids it names."""
+    """The §7 Task and §6 Discovery rows: id → its short name (a `name` cell) and the
+    plain sentence under it (its `question` cell), or the question alone as its name when
+    the row has no `name` cell; its stage (a §7 `stage` cell: data · training · evaluation ·
+    results · analysis · figures), whether it serves `every question`, and the row ids it names."""
     work = {}
     for kind, rows, heads in (("task", s["tt"], s["tt_h"]), ("disc", s["dd"], s["dd_h"])):
         iq = next((i for i, h in enumerate(heads) if h.strip().lower() == "question"), 1)
         ist = next((i for i, h in enumerate(heads) if h.strip().lower() == "stage"), None)
+        inm = next((i for i, h in enumerate(heads) if h.strip().lower() == "name"), None)
         for c in rows:
             stage = (c[ist].strip().lower() if ist is not None and ist < len(c) else "") or (
                 "discovery" if kind == "disc" else "task")
+            q = c[iq] if len(c) > iq else c[0]
+            nm = c[inm].strip() if inm is not None and inm < len(c) else ""
             work[_row_key(c[0])] = {"id": _row_key(c[0]), "kind": kind, "cells": c, "stage": stage,
-                                    "name": c[iq] if len(c) > iq else c[0],
+                                    "name": nm or q, "text": q if nm else "",
                                     "shared": any("every question" in x.lower() for x in c[1:]),
                                     "names": set(_row_ids(" ".join(c[1:])))}
     return work
@@ -1546,11 +1552,14 @@ def story_tree(s):
     qs = []
     for b in s.get("qb") or []:
         q = {"id": b["id"], "text": _field(b["fields"], "question") or b["id"], "fields": b["fields"],
+             "tasks": [{"kind": x["parts"][0], "text": " · ".join(x["parts"][1:])} for x in b.get("tasks", [])],
              "hyps": [], "claims": [], "contribs": [], "items": [], "notes": {}}
         for h in b["hypotheses"]:
             if h["id"]:
                 q["hyps"].append({"id": h["id"], "tests": [x for x in _row_ids(_part(h["parts"], "tested by")) if x in tests],
                                   "phrase": next((x for x in h["parts"] if not x.lower().startswith("tested by")), h["id"])})
+            else:
+                q["notes"]["hypotheses"] = " · ".join(h["parts"])
         for c in b["claims"]:
             if c["id"]:
                 alias = next((x for x in c["parts"] if re.fullmatch(r"C\d+", x)), "")
@@ -1757,17 +1766,20 @@ def _also(others):
 def _work_item(d, T, it, labels, also=()):
     """One piece of work, named as the question it answers (JL 260929), folded like the
     foundation work (JL 260929: "results 也是可以 click 的，也是可以 collapse 的"). Closed, it
-    still shows its stage, its question, the hypotheses it tests, the other questions that
-    use it and its size; open, its B → J → T → R. Opening it selects it for the Runs panel."""
+    still shows its stage and short name on one line, the plain sentence below, as a question
+    does (JL 260930: "the Label, + Short names, and a new line to explain what it is"), then
+    the hypotheses it tests, the other questions that use it and its size; open, its
+    B → J → T → R. Opening it selects it for the Runs panel."""
     c = T["work"][it["w"]]
     folders, size = _item_folders(d, T, it)
     fr = [labels.get(h, _label("Hypothesis", h)) for h in it["for"]]
     tags = "".join(x for x in (('<span class="lw-for">for %s</span>' % esc(_and(fr))) if fr else "",
                                _also(also), '<span class="lw-size">%s</span>' % esc(size)) if x)
     return ('<details class="lw-w" data-key="%s" data-for="%s"><summary><span class="bjt-chev">›</span><div class="lw-sum">'
-            '<div class="lw-wline"><span class="item-kind">%s</span><span class="lw-wq">%s</span></div>'
+            '<div class="lw-wline"><span class="item-kind">%s</span><span class="lw-wq">%s</span></div>%s'
             '<div class="lw-tags">%s</div></div></summary><div class="lw-folders">%s</div></details>'
-            % (esc(it["w"]), esc(" ".join(it["for"])), esc(c["stage"].capitalize()), esc(c["name"]), tags, folders))
+            % (esc(it["w"]), esc(" ".join(it["for"])), esc(c["stage"].capitalize()), esc(c["name"]),
+               ('<div class="lw-wtext">%s</div>' % esc(c["text"])) if c.get("text") else "", tags, folders))
 
 
 def _band(kind, label, note=""):
@@ -1784,38 +1796,45 @@ def _in_order(T, items):
 
 def _q_block(d, T, q):
     """One question block (JL 260929: the question is the main block): the question across
-    the top; left, its hypotheses, potential claims and potential contributions, coded 1a,
+    the top; left, its tasks (only a question that sets them), its hypotheses, potential claims and potential contributions, coded 1a,
     1b …, each a short name and a sentence; right, its potential work: first the foundation
     every question stands on (§7 rows marked `every question`, folded, marked shared), then
     this question's own work in run order, each named as a question, with its folders."""
     labels = {h["id"]: _label("Hypothesis", h["id"]) for h in q["hyps"]}
-    none = lambda key, default: '<div class="lw-say">%s</div>' % esc(q["notes"].get(key) or default)
-    left = [_band("hyp", "Hypotheses")]
-    left += [_hyp_line(h["id"], labels[h["id"]], h["phrase"], _mark([T["tests"][x]["state"] for x in h["tests"]]))
-             for h in q["hyps"]] or [none("hypotheses", "none yet")]
-    left.append(_band("claim", "Potential claims"))
-    left += ['<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div><div class="lw-body">%s</div>'
-             '<div class="lw-say">from %s</div></div>' % (esc(_label("Claim", c["id"])), _nx(c["text"]),
-                                                            esc(_and([labels.get(h, _label("Hypothesis", h)) for h in c["from"]])))
-             for c in q["claims"]] or [none("claims", "none yet")]
-    left.append(_band("contrib", "Potential contributions"))
-    left += ['<div class="lw-c"><div class="lw-text">%s</div><div class="lw-say">rests on %s</div></div>'
-             % (_nx(c["text"]), esc(_and([_label("Claim", x) for x in c["rests"]]))) for c in q["contribs"]] or [
-                 none("contributions", "none yet")]
+    # no group labels (JL 260930: "Hypotheses <--- could we just remove this … of no
+    # information", and the same for Foundation work and This question's work): every
+    # item's pill names its kind, so each group is only a gap; an empty group says so
+    # under its kind's pill. Tasks keeps its label: its pills name only the task.
+    none = lambda kind, key: ('<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div>'
+                              '<div class="lw-say">%s</div></div>' % (esc(kind), esc(q["notes"].get(key) or "none yet")))
+    group = lambda items: '<div class="lw-g">%s</div>' % "".join(items)
+    # a question that sets the tasks (JL 260930: "what is the pretraining task, and also the
+    # downstream task") lists them first, and shows only the groups it fills
+    tasks = q.get("tasks") or []          # the RQ table has none
+    groups = [([_band("task", "Tasks")] + [_hyp_line("", x["kind"], x["text"]) for x in tasks]) if tasks else []]
+    groups.append([_hyp_line(h["id"], labels[h["id"]], h["phrase"], _mark([T["tests"][x]["state"] for x in h["tests"]]))
+                   for h in q["hyps"]] or ([] if tasks else [none("Hypothesis", "hypotheses")]))
+    groups.append(['<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div><div class="lw-body">%s</div>'
+                   '<div class="lw-say">from %s</div></div>' % (esc(_label("Claim", c["id"])), _nx(c["text"]),
+                                                                  esc(_and([labels.get(h, _label("Hypothesis", h)) for h in c["from"]])))
+                   for c in q["claims"]] or ([] if tasks else [none("Claim", "claims")]))
+    # a contribution is labelled like a claim (JL 260930: "we can have the contribution label
+    # as well"), coded by question in its order: Contribution 1a, 1b
+    groups.append(['<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div><div class="lw-body">%s</div>'
+                   '<div class="lw-say">rests on %s</div></div>'
+                   % (esc(_label("Contribution", _num(q["id"]) + "abcdefghijklmnopqrstuvwxyz"[i % 26])), _nx(c["text"]),
+                      esc(_and([_label("Claim", x) for x in c["rests"]]))) for i, c in enumerate(q["contribs"])] or (
+                       [] if tasks else [none("Contribution", "contributions")]))
+    left = [group(g) for g in groups if g]
     listed = {i["w"]: i for i in q["items"]}
     found = _in_order(T, [listed.get(w) or {"w": w, "for": [], "addrs": []} for w in T["shared"]])
     own = _in_order(T, [i for i in q["items"] if i["w"] not in T["shared"]])
-    n = len(T["questions"])
-    right = []
-    if found:
-        right.append(_band("found", "Foundation work", ("shared by all %d questions" % n) if n > 1 else ""))
-        right += [_work_item(d, T, it, labels) for it in found]
-    right.append(_band("work", "This question's work"))
+    right = [group([_work_item(d, T, it, labels) for it in found])] if found else []
     # "also for" only where another question uses the same folders: a row narrowed to other
     # folders there (each question's own figures) is not shared work
     also = lambda it: [n for n, a in T["asked"].get(it["w"], [])
                        if n != _num(q["id"]) and (not a or not it["addrs"] or a & set(it["addrs"]))]
-    right += [_work_item(d, T, it, labels, also=also(it)) for it in own] or ['<div class="lw-say">no work named yet</div>']
+    right.append(group([_work_item(d, T, it, labels, also=also(it)) for it in own] or ['<div class="lw-say">no work named yet</div>']))
     # closed by default (JL 260930): the questions alone read as the paper's outline
     # the label sits on its own line with the question's short name, the question below it
     # (JL 260930: "Question: short name, then the sentence"), as hypotheses and claims do
@@ -2037,6 +2056,32 @@ def _unnamed_addrs(d):
     return jobs, djobs
 
 
+def roadmap_html(d):
+    """Story › RoadMap Draw (JL 260930, JL's name: "a view … to show the excalidraw draw
+    which will be saved here: studio"): the paper's Excalidraw canvas, editable, on a
+    drawing in `<paper>/studio/`. It opens `<Story stem>.excalidraw` (the Story board.md
+    `story-current:` names) when that exists, else the first drawing there; with none, the
+    Story's own, which the server writes empty the first time the canvas opens
+    (`mint_board_scene`). Every other drawing in `studio/` is one click away."""
+    stems = [s["stem"] for s in d["story"]]
+    cur = scalar(read(d["board"] / "board.md"), "story-current").strip()
+    stem = cur if cur in stems else next((x for x in stems if re.match(r"^Story[A-Z]", x)), stems[0] if stems else "")
+    if not stem:
+        return '<div class="space-empty">No Story yet.</div>'
+    studio = Path(d["board"]) / "studio"
+    own = studio / (stem + ".excalidraw")
+    files = sorted(studio.glob("*.excalidraw"), key=lambda f: (f.name != own.name, f.name)) if studio.is_dir() else []
+    files = files or [own]
+    urls = [(f, "/_excalidraw/?board=%s&edit=1" % quote(_tree_url(d, f).lstrip("/"), safe="/")) for f in files]
+    chips = "".join('<button type=button class="rd-file%s" data-src="%s">%s</button>'
+                    % (" on" if i == 0 else "", esc(u), esc(f.stem)) for i, (f, u) in enumerate(urls)) \
+        if len(urls) > 1 else ""
+    return ('<div class="rd-bar">%s<a class="rd-open" href="%s" target="_blank" rel="noopener">Open full screen ↗</a></div>'
+            # no referrer, as the Draw panel does: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
+            '<iframe class="rd-frame" title="RoadMap Draw" referrerpolicy="no-referrer" data-src="%s"></iframe>'
+            % (chips, esc(urls[0][1]), esc(urls[0][1])))
+
+
 def _tree_url(d, path):
     """A plain server path for a Task-home file or folder (raw, outside any board)."""
     root = d["root"]
@@ -2071,7 +2116,7 @@ def _disc_link(d, blk, job, task, label):
 
 
 def _disc_join(d, cells):
-    """The Discovery jobs/tasks a C6 row names by address, as links; '' when none."""
+    """The Discovery jobs/tasks a Discovery Roadmap row names by address, as links; '' when none."""
     out = []
     for a in _addresses(" ".join(cells)):
         hit = _disc_lookup(d, a)
@@ -2139,7 +2184,8 @@ def _not_ready_ids(rd):
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation Space"), ("story", "Story Space"),
           ("sections", "Sections Space"), ("delivery", "Delivery Space"))
-STORY_TABS = (("spine", "Spine"), ("logic-work", "High-level logic + Low-level work"),   # JL 260929
+STORY_TABS = (("spine", "Spine"), ("roadmap-draw", "RoadMap Draw"),                           # JL 260930
+              ("logic-work", "High-level logic + Low-level work"),                        # JL 260929
               ("related", "Related Papers"))                                             # JL 260930
 SECTION_TABS = (("main", "Main"), ("appendix", "Appendix"))
 SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "Evidence"))
@@ -2242,7 +2288,7 @@ def _ideation_panel(d, kinds):
 
 
 def _claim_rq(s):
-    """C5 claim number → the RQs its row names."""
+    """Claim number → the RQs its row names."""
     irq = _col(s["e_h"], ("rq", "question"), 1)
     out = {}
     for c in s["e"]:
@@ -2254,7 +2300,7 @@ def _claim_rq(s):
 
 def _supporting_rows(d, s, fill, T):
     """The Task and Discovery runs this paper's Evidence Items cite, as run rows
-    keyed by the C7 and C6 rows whose addresses cover them, and by every claim and
+    keyed by the Task and Discovery Roadmap rows whose addresses cover them, and by every claim and
     RQ above those rows, so selecting a question shows the runs behind it."""
     q_of = {_row_key(c[0]): _q_of(s["tt_h"], c) for c in s["tt"]}
     q_of.update({_row_key(c[0]): _q_of(s["dd_h"], c) for c in s["dd"]})
@@ -2435,14 +2481,14 @@ def render_story(d, kinds):
     if not d["story"]:
         empty = '<div class="space-empty">No Story yet.</div>'
         return _space("story", "".join(_pane(empty, k) for k, _ in STORY_TABS), _story_panel(d, kinds), STORY_TABS)
-    main = (_pane(_spine_html(d), "spine") + _pane(logic_work_html(d), "logic-work")
-            + _pane(related_html(d), "related"))
+    main = (_pane(_spine_html(d), "spine") + _pane(roadmap_html(d), "roadmap-draw")
+            + _pane(logic_work_html(d), "logic-work") + _pane(related_html(d), "related"))
     return _space("story", main, _story_panel(d, kinds), STORY_TABS)
 
 
 def section_rows(d):
-    """Every Section of the paper in compile order: the Story's C8 rows joined to
-    their Section Pages, then any Section Page no C8 row names."""
+    """Every Section of the paper in compile order: the Story's §8 rows joined to
+    their Section Pages, then any Section Page no §8 row names."""
     by_id, heads = {}, {}
     for s in d["story"]:
         for r in s["sections"]:
@@ -2720,24 +2766,24 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 
 .lw-qhead{{flex:1 1 0;min-width:0}} .lw-qtop{{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}} .lw-qname{{font-weight:700}} .lw-q .lw-qtext{{display:block;margin-top:4px;font-weight:500}}
 .lw-q>summary:hover{{background:color-mix(in srgb,var(--acc) 5%,var(--soft))}}
-.lw-q.runs-selected>summary{{box-shadow:inset 3px 0 0 var(--acc)}}
-.lw-h.runs-selected,.lw-w.runs-selected{{background:transparent;box-shadow:inset 3px 0 0 var(--acc)}}
+/* a pick draws nothing (JL 260930, the blue bar: "I don't want this as well"); an open item shows it */
+.lw-h.runs-selected,.lw-w.runs-selected{{background:transparent}}
 .lw-g .lw-l{{padding-left:40px}} .lw-g>.lw-l,.lw-g>.lw-r{{padding-top:0;padding-bottom:10px}}
 .lw-k{{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:16px 0 8px;padding:6px 10px;
  border-radius:7px;font:700 12.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}}
 .lw-l>.lw-k:first-child,.lw-r>.lw-k:first-child{{margin-top:4px}}
 .lw-kn{{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}}
-.lw-k-hyp,.lw-k-work{{color:var(--acc)}}
+.lw-k-task,.lw-k-hyp,.lw-k-work{{color:var(--acc)}}
 .lw-k-claim{{color:var(--ok)}}
 .lw-k-contrib{{color:var(--warn)}}
 .lw-k-found{{color:var(--mut)}}
-.lw-c{{margin:0 0 10px}}
+.lw-c{{margin:0 0 16px}} .lw-g+.lw-g{{margin-top:22px}}
 .lw-w{{padding:6px 8px;margin:0 -8px 6px;border-radius:8px}} .lw-w>summary:hover .lw-wq{{color:var(--acc)}}
-.lw-w.lw-lit{{box-shadow:inset 3px 0 0 color-mix(in srgb,var(--acc) 40%,transparent)}}
 .lw-w>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:4px;align-items:baseline}}
 .lw-w>summary::-webkit-details-marker{{display:none}} .lw-w[open]>summary .bjt-chev{{transform:rotate(90deg)}}
 .lw-sum{{min-width:0}} .lw-folders{{margin:4px 0 2px 1.3em}}
 .lw-wline{{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline}} .lw-wq{{font-weight:600;font-size:14.5px}}
+.lw-wtext{{font-size:14px;margin-top:2px}}
 .lw-tags{{display:flex;gap:4px 12px;flex-wrap:wrap;margin:3px 0 0}} .lw-for{{color:var(--acc);font-size:12.5px;font-weight:600}}
 .lw-also,.lw-size{{color:var(--mut);font-size:12.5px}}
 .lw-h{{cursor:pointer;border-radius:7px;padding:5px 8px;margin:0 -8px 6px}} .lw-h:hover{{background:var(--soft)}}
@@ -2766,6 +2812,10 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .rp-acts{{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}}
 .rp-absd>summary{{cursor:pointer;font-size:13.5px;color:var(--mut)}} .rp-absd>p{{font-size:14px;line-height:1.55;margin:6px 0 0}}
 .rp-nopdf{{font-size:13.5px;margin-top:8px}}
+.rd-bar{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}} .rd-open{{margin-left:auto;font-size:13px}}
+.rd-file{{border:1px solid var(--line);background:transparent;color:inherit;border-radius:999px;padding:3px 10px;font:inherit;font-size:13px;cursor:pointer}}
+.rd-file.on{{border-color:var(--acc);color:var(--acc);font-weight:600}}
+.rd-frame{{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}}
 .rp-frame{{display:block;width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}}
 @media(max-width:1100px){{.lw-row{{grid-template-columns:minmax(0,1fr)}}
  .lw-r{{border-left:0;padding-left:40px}} .lw-head .lw-r{{display:none}}}}
@@ -2903,6 +2953,11 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
   emit('space-target',{{space:panel.dataset.space,target:same?'':el.dataset.key}});
  }});
  document.addEventListener('keydown',function(ev){{var r=ev.target.closest&&ev.target.closest('.sec-row');if(r&&ev.key==='Enter')r.click();}});
+ /* RoadMap Draw: another drawing in studio/ swaps the canvas and the full-screen link */
+ document.addEventListener('click',function(ev){{var b=ev.target.closest&&ev.target.closest('.rd-file');if(!b)return;
+  var w=b.closest('.space-pane');w.querySelectorAll('.rd-file').forEach(function(x){{x.classList.toggle('on',x===b);}});
+  var f=w.querySelector('.rd-frame'),a=w.querySelector('.rd-open');f.dataset.src=b.dataset.src;f.setAttribute('src',b.dataset.src);
+  if(a)a.setAttribute('href',b.dataset.src);}});
  /* Opening a card selects it for the Runs panel; closing it hands the selection back to the card around it. */
  var auto=new WeakSet();   /* work a picked hypothesis opened: its toggle must not steal the pick */
  document.addEventListener('toggle',function(ev){{

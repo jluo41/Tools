@@ -1,9 +1,38 @@
+## 0.19.0 · 2026-09-30 · The skill names the Story parts as the screen does
+
+- Story parts are §N or their name (a Task Roadmap row, a Discovery Roadmap row, a Section Narrative row), never C6/C7/C8; C1, C2 … are claim ids only (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with this workbench; haipipe-paper-story 0.17.0). `paper.py` comments follow, and the G3 line on screen now reads "N of M Section Narrative rows have a Section page".
+- The Story Space box lists all four tabs (Spine, RoadMap Draw, High-level logic + Low-level work, Related Papers); the Storage tree shows `studio/`, which RoadMap Draw reads.
+- "The four Workbench obligations" is "the four Workbench duties"; the Task review Spec is `paper.judgment.task`; "canonical" is gone (AGENTS rule 9).
+- `audit_paper_views.py` also drives Delivery › Cover letter: nineteen routes, not sixteen.
+- RoadMap Draw gets a Runs-panel card, `Redraw` (haipipe-paper-workflow `ref/run-cards.md`).
+
 # CHANGELOG · haipipe-workbench-paper
+
+## 0.18.1 · 2026-09-30 · No group labels in a question block
+
+- High-level logic + Low-level work drops the group labels Hypotheses, Potential claims and Potential contributions on the left (JL 260930: "Hypotheses <--- could we just remove this … of no information") and Foundation work, "shared by all 7 questions" and This question's work on the right (JL 260930: "same to this, remove this"). Every item's pill already names its kind; a gap now separates the groups (`.lw-g`). An empty group shows its kind's pill over "none yet" or the Story's `- none: …` reason. A Question 0's Tasks label stays: its pills name the task alone.
+- A contribution gets a pill like a claim's (JL 260930: "we can have the contribution label as well, just as the claim and hypothesis"): Contribution 1a, 1b, coded by its order in the question. `paper.py`: `_q_block`. Tests: `test_paper_workbench.py`; the design drawing's Story card matches.
+- A picked question, hypothesis or work item no longer draws the 3px blue left bar, and work a picked hypothesis lights no longer draws its faint one (JL 260930: "I don't want this as well"). No fill replaces it (turned down in 0.14.1): an open item shows the pick, and the Runs panel names it. The Sections Space row keeps its bar, its only mark.
+
+## 0.18.0 · 2026-09-30 · A question block may list its tasks
+
+- High-level logic + Low-level work: a question block's **Tasks** group (haipipe-paper-story 0.16.0) is drawn first on the left under a "Tasks" label, each task with its kind as the pill (Pretraining, Downstream) and its short name in bold; a block with tasks leaves out its empty Hypotheses, Potential claims and Potential contributions groups (JL 260930: "what is the pretraining task, and also the downstream task, we haven't specified them"). `paper.py`: `_GROUP`, `question_blocks`, `story_tree`, `_q_block`, `.lw-k-task`.
+
+## 0.18.0 · 2026-09-30 · Story › RoadMap Draw
+
+- A Story tab between Spine and High-level logic + Low-level work, named by JL: "RoadMap Draw", `#story/roadmap-draw` (`#story/roadmap` still sends old links of the retired Roadmap tab to the logic view) (JL 260930: "I also want to have a view of subspace to show the excalidraw draw which will be saved here: …/studio"). It embeds the server's Excalidraw, editable, on a drawing in `<paper>/studio/`: the Story's own `<Story stem>.excalidraw` if it exists, else the first drawing there, else the Story's own, new; with several drawings, each is a button above the canvas; the iframe sends no referrer, as the Draw panel's does, because Excalidraw refuses a same-site embed ("I'm not a pretzel!"); "Open full screen ↗" opens it alone. `paper.py`: `roadmap_html`, `STORY_TABS`, `.rd-*` CSS and the switch handler.
+- `servers/workbench-studio/xcal.py`: `mint_board_scene` writes a plain empty scene the first time a Board's `studio/<name>.excalidraw` is opened, as a Page's `studio/draw/` scene already was, so the first stroke has a file to save into. Opening a drawing never saves it; only a stroke does (haipipe-board 1.1.5, `xcal-boot.js`).
+- Tests: `test_paper_workbench.py` (tab order, the lazy canvas, the switcher, nothing written on render), `test_linked_live.py` (minting only beside a `board.md`); `audit_paper_views.py` visits `story/roadmap-draw`; the design drawing gains the tab.
+
+## 0.17.0 · 2026-09-30 · A work item is its stage, a short name, and a plain line
+
+- High-level logic + Low-level work: a work item's closed line reads like a question's: the stage pill with the §7/§6 row's `name` cell beside it, then the row's `question` cell, one plain sentence, on the next line (JL 260930: "make the same to the left … the Label, + Short names, and a new line to explain what it is"; before, the pill stood beside a long question that wrapped). A row with no `name` cell draws as before. `paper.py`: `_work_rows` reads `name`, `_work_item` adds `<div class="lw-wtext">`.
+- Paper-ScalingGlucose-NatSeries2026 StoryA: §7 T1-T12 and §6 D1-D6 gain names (Which training data?, One law for all?, Has anyone found this? …) and plain sentences; Question 3 is Different Prediction Horizon (haipipe-paper-story 0.15.0).
 
 ## 0.16.1 · 2026-09-30 · Related Papers on Paper-CGMtoHbA1c
 
 - A related-paper card names an accepted manuscript as "accepted-manuscript PDF" (was plain "PDF"), and a group first author keeps its whole name ("AI-READI Consortium et al.", was "Consortium et al."). `paper.py`: the `kind` map and `_first_author`.
-- Paper-CGMtoHbA1c's Related Papers tab now has 16 cards (JL 260930: "why I didn't see any paper"): 10 at Diabetes Care, 6 elsewhere, 3 with a PDF, from StoryA §5.3's new P-board and Proj21-CGM-Pred `discoveries/b01_hba1c_estimation_literature/`. Tests: `test_paper_workbench.py` 13 pass; `audit_paper_views.py` 0 flagged on two papers at 1360px.
+- Paper-CGMtoHbA1c's Related Papers tab now has 13 cards (JL 260930: "why I didn't see any paper", then "mainly related to the Diabetes Care" and "focus on the most recent paper"): 10 Diabetes Care papers from 2023-2026 plus the 2018 GMI paper that defines the benchmark, and 3 from other journals that the study answers directly; 1 with a PDF. The rows are StoryA §5.3's new P-board over Proj21-CGM-Pred `discoveries/b01_hba1c_estimation_literature/`. Tests: `test_paper_workbench.py` 13 pass; `audit_paper_views.py` 0 flagged on two papers at 1360px.
 
 ## 0.16.0 · 2026-09-30 · Story › Related Papers: plain cards, the PDF inside
 
@@ -57,15 +86,15 @@
 
 ## 0.11.0 · 2026-09-29 · One tree, split down the middle
 
-- Story › High-level logic + Low-level work is one tree read left to right (JL 260929: "Question -- then hypothesis / claims -- then right part low level works, in the right part, we have B J T R. left and right they are still under the same tree, but visually separated"). Left: one block per question (JL: "each question is a block"), its hypotheses under it, each one clean line: `Hypothesis N` (or `Claim N` once every E-row testing it is established), a short phrase, one mark. Right, beside each hypothesis: B → J → T → R, one line per level, runs folded (`▸ 3 runs · no receipts`, open to each run ticket and its receipt). The C7/C6 rows are not drawn; their words, the tests, the role and "if it fails" sit under Details. A hypothesis whose folders equal the previous one's says "same as Hypothesis 1". "Not under a question" ends the tree: E-rows no question names, C7/C6 rows no question reaches, claimed folders no row names.
-- `servers/workbench-paper/paper.py`: `question_blocks()` reads StoryA's new §3 blocks (haipipe-paper-story 0.11.0); `story_tree()` makes every join (question → hypothesis → the E-rows it tests → the C7/C6 rows those E-rows name, either end → folders) and gives the Runs panel its keys (a supporting run is keyed to every hypothesis, E-row and question above its row); `_q_block`, `_rest_block`, `_work_cell`, `_bjtr` and `_runs_fold` draw it. A Story that still writes the RQ table gets one hypothesis per E-row. `story_links`, `_chain_cards`, `_loose_cards`, `_bjt_tree`, `_block_cards`, `_disc_cards` and their helpers are gone.
+- Story › High-level logic + Low-level work is one tree read left to right (JL 260929: "Question -- then hypothesis / claims -- then right part low level works, in the right part, we have B J T R. left and right they are still under the same tree, but visually separated"). Left: one block per question (JL: "each question is a block"), its hypotheses under it, each one clean line: `Hypothesis N` (or `Claim N` once every E-row testing it is established), a short phrase, one mark. Right, beside each hypothesis: B → J → T → R, one line per level, runs folded (`▸ 3 runs · no receipts`, open to each run ticket and its receipt). The §7/§6 rows are not drawn; their words, the tests, the role and "if it fails" sit under Details. A hypothesis whose folders equal the previous one's says "same as Hypothesis 1". "Not under a question" ends the tree: E-rows no question names, §7/§6 rows no question reaches, claimed folders no row names.
+- `servers/workbench-paper/paper.py`: `question_blocks()` reads StoryA's new §3 blocks (haipipe-paper-story 0.11.0); `story_tree()` makes every join (question → hypothesis → the E-rows it tests → the §7/§6 rows those E-rows name, either end → folders) and gives the Runs panel its keys (a supporting run is keyed to every hypothesis, E-row and question above its row); `_q_block`, `_rest_block`, `_work_cell`, `_bjtr` and `_runs_fold` draw it. A Story that still writes the RQ table gets one hypothesis per E-row. `story_links`, `_chain_cards`, `_loose_cards`, `_bjt_tree`, `_block_cards`, `_disc_cards` and their helpers are gone.
 - Clicking a hypothesis row selects it for the Runs panel (again to clear); the question keeps first-click-selects, next-click-closes.
 - Tests: `test_paper_workbench.py` 12 pass (`test_logic_work_tree_reads_question_blocks` replaces the claim-tree test; the render test covers a Story still on the RQ table).
 
 ## 0.10.0 · 2026-09-29 · High-level logic + Low-level work: one tree, question to folder
 
-- Story › Questions and Story › Roadmap are one tab (JL 260929: "Questions --> Claims, and then Claims (With Tasks Discovery Questions + BJTR folders) … this will show the whole picture of the paper"). One card per C3 RQ holds a fold per C5 claim (E-row); each claim holds a fold per C7 Task and C6 Discovery question that backs it; each of those holds its BJTR folders. Rows the RQ names that no claim holds follow in the card under "For the whole question". Claims with no RQ, rows under no RQ (grouped by their `Q` when the Story has a Q table) and folders no row names come last. The tab is named High-level logic + Low-level work (`#story/logic-work`; JL 260929: "High-Level Logic + Low Level Work"); the Questions and Roadmap tabs are gone, and `#story/questions`, `#story/roadmap`, `#story/tasks` and `#run/supporting` land on it.
-- Every row names its level in its pill (JL 260929, names proposed first and then approved): `Question RQ1`; `Hypothesis E5` or `Claim E2` (one C5 E-row, `Claim` only once its support state says "established": Paper-CGMtoHbA1c's `✅ stated · ⬜ unbacked` stays a Hypothesis); `Task T1`; `Discovery D1`; `Folder b04.j01`. On Paper-ScalingGlucose-NatSeries2026 all ten E-rows read Hypothesis: none is reproduced locally yet.
+- Story › Questions and Story › Roadmap are one tab (JL 260929: "Questions --> Claims, and then Claims (With Tasks Discovery Questions + BJTR folders) … this will show the whole picture of the paper"). One card per §3 RQ holds a fold per §5 claim (E-row); each claim holds a fold per §7 Task and §6 Discovery question that backs it; each of those holds its BJTR folders. Rows the RQ names that no claim holds follow in the card under "For the whole question". Claims with no RQ, rows under no RQ (grouped by their `Q` when the Story has a Q table) and folders no row names come last. The tab is named High-level logic + Low-level work (`#story/logic-work`; JL 260929: "High-Level Logic + Low Level Work"); the Questions and Roadmap tabs are gone, and `#story/questions`, `#story/roadmap`, `#story/tasks` and `#run/supporting` land on it.
+- Every row names its level in its pill (JL 260929, names proposed first and then approved): `Question RQ1`; `Hypothesis E5` or `Claim E2` (one §5 E-row, `Claim` only once its support state says "established": Paper-CGMtoHbA1c's `✅ stated · ⬜ unbacked` stays a Hypothesis); `Task T1`; `Discovery D1`; `Folder b04.j01`. On Paper-ScalingGlucose-NatSeries2026 all ten E-rows read Hypothesis: none is reproduced locally yet.
 - `servers/workbench-paper/paper.py`: `story_links()` makes every join, reading a link from either end (an E-row naming `T2`, or a T row naming `E1-E4`; ranges name each id; an Evidence Item id such as `E01-CITE-…` and a Bullet address such as `C1.P1.B1` are not row ids). `_chain_cards`, `_claim_fold`, `_work_fold` and `_loose_cards` replace `_rq_cards`, `_claim_card`, `_task_cards`, `_dd_cards` and `_question_cards`. Claims and rows are borderless folds (the RQ is the only card); a job's pill carries its whole address (`b04.j01`); a C6 row's Discovery jobs are the same folds (`_disc_tree`).
 - Runs panel: the first click on a fold selects it, the next closes it and hands the selection to the fold or card above. A supporting run is keyed to every claim and RQ above its row, so picking RQ1 or E1 shows the Task runs behind it. Claim review, Task review, Task runs and Discovery runs all show on this tab (haipipe-paper-workflow 1.6.2 `run-cards.md`, `views logic-work`; `paper_run_types()` now reads a hyphen in a view name).
 - A question's card header shows the question only. Its answer state (StoryA RQ1: "🔨 fitted (pretrain-loss) · C1 WEAK: the CI's upper edge sits at the imposed bound (2.0), not the point estimate · ⬜ unbacked locally") moved under Details (JL 260929: "I don't need this, this is confusing").
@@ -76,7 +105,7 @@
 
 - Delivery › Word › Preview shows the Word output (JL 260929: "for the word, why we cannot preview it"): the PDF twin `<stem>.pdf` beside the `.docx` in a frame, under one line naming the `.docx`, its size and time, and a note when the twin is older than the `.docx`. The twin is drawn by the paper build: `haipipe-paper-assemble/scripts/build_delivery.py` now runs the Page workbench's `exporters/docx2pdf.py` on `main_docx` and `supplement_docx` and records them in `build-manifest.json` `outputs` (`docx_pdf`, `supplement_docx_pdf`). Without a twin the file row says so.
 - Runs panel (`servers/workbench-page/runs_panel.py`, shared with the Page workbench): a run type with no run yet shows `No runs yet.` and the skill that does its work (JL 260929: "why I cannot see the relative skills?"). Before, the skill appeared only on a run or on + New Run.
-- Story › Roadmap: Block → Job → Task are borderless folds (JL 260929: first "we only have the structure for block. No jobs", then "套这么多感觉跟棺材一样" about nested cards, then "我想让它能够合上去" about a flat table). The block and each job are a fold with an arrow, pill, name and counts, open by default and closed with one click; a job opens to its one task table. No card, frame or table sits around a job (`_bjt_tree`). A Task or Discovery question's header carries only its id and question: the address and "allocated · 2/2 levels exist" are gone (JL 260929: "完全都没有用 … 干扰人思考"). SKILL.md says to write every C7 address in full: Paper-CGMtoHbA1c's `b01 j01, j02, j03` claimed only j01. `audit_paper_views.py`: 0 of 17 views flagged at 1360px and 2000px; `test_paper_workbench.py` asserts the folds.
+- Story › Roadmap: Block → Job → Task are borderless folds (JL 260929: first "we only have the structure for block. No jobs", then "套这么多感觉跟棺材一样" about nested cards, then "我想让它能够合上去" about a flat table). The block and each job are a fold with an arrow, pill, name and counts, open by default and closed with one click; a job opens to its one task table. No card, frame or table sits around a job (`_bjt_tree`). A Task or Discovery question's header carries only its id and question: the address and "allocated · 2/2 levels exist" are gone (JL 260929: "完全都没有用 … 干扰人思考"). SKILL.md says to write every §7 address in full: Paper-CGMtoHbA1c's `b01 j01, j02, j03` claimed only j01. `audit_paper_views.py`: 0 of 17 views flagged at 1360px and 2000px; `test_paper_workbench.py` asserts the folds.
 - Card headers (`.item-summary`): the status column is `fit-content(34%)` and wraps (40% under 620px). It was `auto` with `white-space:nowrap`, so a long state took its full width and squeezed the headline to a strip (Paper-CGMtoHbA1c Story › Questions: RQ2 wrapped to six lines beside "largely (normoglycemia covered on all 8 metrics; prediabetes only partly)"). `audit_paper_views.py` at 1360px: 0 of 17 views flagged.
 - `servers/workbench-paper/paper.py`: Sections › Narrative finds a page's call-peer pair by its `session:` and `codex-session:` ids together first. The Appendix pages share one Claude session and each keeps its own Codex thread, so the Claude id alone gave every Appendix page the last pair registered (Paper-CGMtoHbA1c showed `CGM2HbA1c-Appendix-C` three times). Tests: `test_paper_workbench.py`, 12 pass.
 
@@ -89,7 +118,7 @@
   its files, Checks each letter check and whether it is ready, with Open ↗ to the Round page. The fixed
   run run-delivery-coverletter shows under the `paper.coverletter` card (views cover). The letter no
   longer repeats in the LaTeX and Word tabs.
-- Story › Roadmap is a tree when the Story has a C6 `Q` table: general question → its T and D rows (by
+- Story › Roadmap is a tree when the Story has a §6 `Q` table: general question → its T and D rows (by
   their `Q` column) → their folders; a row with no Q comes last; a range address such as
   `b03.j02.t01–t03` names each task; selecting a Q filters the Runs panel to its runs.
 - New buttons with skills: Select idea (Ideation, haipipe-ideation-select), Page check (Sections,
@@ -97,10 +126,10 @@
 
 ## 0.8.0 · 2026-09-28 · Question first; every run names its skill
 
-- Story › Roadmap is question first: a C7 T row or C6 D row card holds the folder that answers it;
+- Story › Roadmap is question first: a §7 T row or §6 D row card holds the folder that answers it;
   folders no question names are listed last, down to the task. The separate Task home and Discovery
   home lists are gone. `no address yet` reads `no folder yet`.
-- The Story's C6 and C7 rows lead with a short plain question and a folder column; B1–B4 became
+- The Story's §6 and §7 rows lead with a short plain question and a folder column; B1–B4 became
   T1–T4 (the header always said T; B was the old Block Board id).
 - Runs panel: every Paper run card has a `🧩 SKILL` line (`paper_run_types` reads it); Supporting
   runs split into Task runs (haipipe-task) and Discovery runs (haipipe-discovery).
@@ -128,13 +157,13 @@
   Delivery (LaTeX, Word × Preview, Artifacts, Checks; Rounds). Each Space has its content on the
   left and its own Runs panel on the right, the Page's `runs_panel.py` markup; buttons come from
   `haipipe-paper-workflow/ref/run-cards.md`. Opening a card or clicking a row selects it for the panel.
-- Gone: the Setup Space (a C8 row with no Page reads `not set up`; the Codex session sits on the
+- Gone: the Setup Space (a §8 row with no Page reads `not set up`; the Codex session sits on the
   Section's Narrative card), the Run Space (its runs are in the Runs panels; gates show where they
   happen), the Workflow map and folder tree (docs only), the backend Markdown cards, `⧉ chat` and
   `⧉ Copy Run request`, tallies, briefs and hint lines. Old `#setup/…`, `#run/…` and view routes
   still land on the view that holds their content.
 - Sections Space is new: the compile order joined to each Section Page (draft version, state,
-  Open ↗ to its workbench), the C8 narrative cards, and the hero Displays and Values; a selected
+  Open ↗ to its workbench), the §8 narrative cards, and the hero Displays and Values; a selected
   Section shows its Narrative review and its own Draft, Evidence and Delivery runs.
 - Shared with the Page workbench (`servers/workbench-page/runs_panel.py`): a type's count follows
   the selected target and view, and the panel opens on a type that has runs there; `panel_markup`
@@ -142,22 +171,22 @@
   `run-narrative`.
 - `tests/audit_paper_views.py` walks the seventeen new routes and flags a view with no Runs panel.
 - Rosters and Stories in other shapes now read: a `### Label · folder · what it holds` heading, or one
-  with no folder (the page is found by its own folder name), and C8 rows written as records
+  with no folder (the page is found by its own folder name), and §8 rows written as records
   (`**S-<id> (N) · job**` + `- **Field**: value` lines) beside the table form. A desk name may carry
   a hyphen (`S-JAMA-IM-Main-1-Introduction`). Paper-AgreeableOpioid-Jama showed no Story before.
 
 ## 0.6.0 · 2026-09-22
 
 - Story Space reads legacy numbered Story pages (`Story01-seed`, `Story02-roadmap`,
-  `Story03-narrative-MISQ`) as Stories beside canonical `Story<Letter>`; before, a board
+  `Story03-narrative-MISQ`) as Stories beside the current `Story<Letter>`; before, a board
   with only numbered Stories showed "no Story yet" and none of their cards or Runs (JL 260925).
 - Story Space: the `Claims & Hypothesis` view is now `Research Questions`
   (`#story/questions`; `#story/claims` still lands there). The card grain is
-  the C3 research question; its C5 propositions (the claims) sit inside as
+  the §3 research question; its §5 propositions (the claims) sit inside as
   nested cards, each keeping its `claim-En` id, `C5 · En` source stamp and
   rclaim Discussion row. Before, one card per claim repeated the same question
   in every card that shared it (JL 260922: combine them, do not rename claims
-  to research questions). E-rows whose RQ cell names no C3 row are kept in one
+  to research questions). E-rows whose RQ cell names no §3 row are kept in one
   last card. `servers/workbench-paper/paper.py`: `_rq_cards` + `_claim_card`
   replace `_claim_cards`; E/RQ columns are found by header name when the table
   has a header row, else by the positional convention.
@@ -181,7 +210,7 @@
 ## 0.4.1 · 2026-09-21
 
 - Add separate `⧉ Copy Run request` clipboard controls to bound Paper judgment
-  entries for admitted Ideas, C5 claims, C7 obligations, and C8 narratives.
+  entries for admitted Ideas, claims, Task Roadmap rows, and §8 narratives.
   Prompts carry the exact Page/target, instantiated Spec, Run Type, owner,
   prerequisites, family-filtered matching Ticket/Result/status, expected
   receipt, and next permitted owner action.
@@ -191,7 +220,7 @@
 
 ## 0.4.0 · 2026-09-21
 
-- Expand the Run map with reader-facing names, canonical Types/Specs, bounded
+- Expand the Run map with reader-facing names, Run Types/Specs, bounded
   work, owner/worker Skills, actors, prerequisites, and per-Space role/entry.
 - Keep controls distinct from Specs and actual native Runs. Preserve source-
   grounded copy-to-chat as discussion context; identify the separate Run-
@@ -201,7 +230,7 @@
 
 ## 0.3.0 · 2026-09-20
 
-- Align the Space/folder map with the canonical Run Specs and explicit controls. Present all five Spaces and owner-native receipts without allocating wrapper Runs.
+- Align the Space/folder map with the Run Specs and explicit controls. Present all five Spaces and owner-native receipts without allocating wrapper Runs.
 
 ## 0.2.2 · 2026-09-18
 
@@ -215,7 +244,7 @@
   its full name as a tooltip. The audit is kept as a tool:
   `board/haipipe-board/tests/audit_paper_views.py --base … --paper …`.
 - Cold-read fixes (a fresh agent was handed a pasted `⧉ copy to chat` snippet
-  and asked to act on it, dry run; its friction log): the C7 card resolved
+  and asked to act on it, dry run; its friction log): the §7 card resolved
   only the FIRST address on a row while the claim counted them all, so
   `task_home()` now resolves every address and the card shows each; SKILL.md
   gains the address grammar and the `Task: bNN.jNN.` suffix convention, the
@@ -269,19 +298,19 @@
 - Gates G0–G5 read named files; the Workflow map is projected from
   `ref/space-mapping.md`. Type scale and chips follow `servers/workbench-page/outline.py`.
 - Story Space is five card lists (JL: judge, not write): Claims & Hypothesis
-  (C5 joined to C3), Task Roadmap, Sections (C8), and hero Evidence Items
+  (§5 joined to §3), Task Roadmap, Sections (§8), and hero Evidence Items
   (Main-page DISPLAY + Abstract VALUE), beside Spine. Spine shows the Story's
-  C1 Identity, C2 Pitch and C4 Stakes content, not a division list (JL).
+  §1 Identity, §2 Pitch and §4 Stakes content, not a division list (JL).
 - Task Roadmap opens with the project's Task home, examples/<Project>/tasks/
   or task/ (JL: check the existing folder): one collapsed card per bNN block,
   its jobs and a task table (addr · task · develops · runs · state) read off
   the folder on every load, in both Task shapes (a task folder under the job
-  with its own runs/ results/ scripts/, or the flat runs/<task>/ layout). C7
+  with its own runs/ results/ scripts/, or the flat runs/<task>/ layout). §7
   rows follow; a row joins the tree only through a bNN[.jNN[.tNN]] address in
   one of its cells and otherwise reads `no address yet`. It also shows on a
   board with no Story yet.
 - A paper claims its part of the Task home (JL: b05, b06 are another study's):
-  board.md `blocks: b00.j04 b02.j01 b02.j02 b03 b04` plus every C7 address.
+  board.md `blocks: b00.j04 b02.j01 b02.j02 b03 b04` plus every §7 address.
   Claimed blocks expand; a claim at job level hides the block's other jobs;
   unclaimed blocks are named once in a muted tail; no claim shows the whole
   home and says so. `task-home:` may name the folder outright.
@@ -291,7 +320,7 @@
   link into that Discovery Board, one card per inquiry lists its Task Pages
   with question · runs · status · outcome · confidence from discovery.yaml,
   and each card's feeds row names the D-rows that claim it. Claim with
-  `discoveries:` + C6 addresses; MISQ StoryA C6 rows D1–D6 now carry
+  `discoveries:` + §6 addresses; MISQ StoryA §6 rows D1–D6 now carry
   `Discovery: b01.j01` … `b01.j06`.
 - Setup's Board and Folder & Page views are one table (folder · role · state ·
   pages) with the desk named, and no generated `delivery/` row.

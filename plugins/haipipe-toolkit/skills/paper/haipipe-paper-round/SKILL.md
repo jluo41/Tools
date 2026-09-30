@@ -3,18 +3,18 @@ name: haipipe-paper-round
 description: >-
   The Paper Round PageType contract for one bounded
   feedback-and-response cycle: an editor decision, reviewer round, or coauthor
-  pass. Atomizes every concern into a coverage ledger, records dispositions,
+  pass. Splits every concern into a concern table, records dispositions,
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.8.1"
+  version: "0.9.0"
   last_updated: "2026-09-29"
   group-token: "RD"
   outline:
     mode: fixed
     source: "this SKILL.md"
     surface: "Opening → Outline → Content → Aims"
-    shape: "Round Identity and Intake → Feedback Coverage Ledger → Decisions and Response Strategy → Change Routing → Applied and Checked Changes → Response Package → Close Receipt and Handoff"
+    shape: "Round Identity and Intake → Feedback Concern Table → Decisions and Response Strategy → Change Routing → Applied and Checked Changes → Response Package → Close Receipt and Handoff"
 ---
 
 # /haipipe-paper-round · close one feedback cycle without losing an item
@@ -22,14 +22,14 @@ metadata:
 Load `haipipe-page`, `haipipe-page-workflow`, the current Run Workflow/Spec
 owner, `haipipe-paper-workflow`, then this PageType and its references. Use the
 shared Page contract for Page work and `response.<round>` for a commissioned
-response package; ledger triage alone does not allocate a Run.
+response package; concern-table triage alone does not allocate a Run.
 Declare `page-type: round`.
 
 ## Paper ownership and entry
 
 This skill owns the Paper Round Page and its `page-type: round` contract below. Opens on a feedback batch any time after
-a build exists. Closes through gate G5: every concern ledgered and routed
-exactly once (the Story's C5 support and C6/C7 needs for new evidence, a Story C8
+a build exists. Closes through gate G5: every concern in the table and routed
+exactly once (the Story's §5 support and §6/§7 needs for new evidence, a Story §8
 Section Narrative row for retelling, a Section for rework) and a person approves
 the response receipt. `haipipe-paper-workflow`
 holds the full gate assertions; this block only binds the Page owner. The page
@@ -47,15 +47,15 @@ or one pre-submission audit whose concerns will be answered together.
 ```text
 base paper build + received feedback
                   ↓
-        one Round Page and ledger
+        one Round Page and its concern table
                   ↓ routes work to
-      Story C5–C8 content · Sections · their evidence/workbenches
+      Story §5–§8 content · Sections · their evidence/workbenches
                   ↓ returns checked versions to
        response package + revised build + close receipt
 ```
 
 Do not create one Round per reviewer, comment, or changed Section. Keep every
-atomic concern addressable inside the same Round ledger. Open a new Round when a
+atomic concern addressable inside the same Round concern table. Open a new Round when a
 new decision or feedback batch arrives after closure.
 
 A **Paper Round** is the persistent feedback cycle defined here. A **Page
@@ -88,7 +88,7 @@ response-due      date, explicit none, or unknown
 
 A Round BEGINS with a delivery and ENDS with one (0.5.0, JL 260907): the
 version you sent that drew the comments, and the version you released with
-every ledgered concern answered. Both are frozen inside the Round's folder,
+every concern in the table answered. Both are frozen inside the Round's folder,
 beside what came back:
 
 ```text
@@ -115,7 +115,7 @@ A missing declared output is a failed freeze, not a silently partial Round.
 `response/` is not another manuscript source or evidence lane. It is the
 immutable upload-facing response package, cut only after the response content
 in Role 6 has human approval; its manifest records the response paragraphs and
-the ledger item ids they answer. An internal Round omits the directory and records
+the concern ids they answer. An internal Round omits the directory and records
 `no external response required` in Roles 6 and 7.
 
 A professor's pass, a coauthor pass, and a desk decision are all Rounds of the
@@ -151,7 +151,7 @@ Bc-MISQ-Round/      RD01-MISQ-feedback-20260825/
 
 - `Bc-<desk>-Round` is the desk's Round shelf; `RD<NN>` is the semantic Round
   token and is unique across the paper, even when more than one desk exists.
-- The canonical new Page stem is
+- The new Page stem is
   `RD<NN>-<desk>-<event>-<YYYYMMDD>`; `<event>` is a short lower-kebab label.
   Use ASCII lowercase letters, digits, and single hyphens in `<event>` (for
   example `editor-decision` or `coauthor-pass`); keep it stable after intake.
@@ -183,7 +183,7 @@ generated Outline   plan table: item · route · owner · state · checked versi
 ```
 
 The generated Outline is a projection of the Round's current plan, not a
-second feedback ledger. The atomic ledger remains Role 2. Do not author
+second concern table. The concern table remains Role 2. Do not author
 `## Outline`, `## States`, `## Files`, `## Discussion`, or `## Log` on the Page;
 the corresponding records belong under `draft/` and are linked from the Page. This keeps the Round
 compatible with the common Page CHECK and prevents an old Round's meeting
@@ -221,14 +221,14 @@ remain unambiguous.
    recipient, manifest `built` time) · what came back (`feedback/`: source
    inventory and received dates) · scope · due date
 
-2  Feedback Coverage Ledger
+2  Feedback Concern Table
    one row per atomic concern; every received point appears exactly once
 
 3  Decisions and Response Strategy
    accept · narrow · answer · decline · defer, with human authority and reason
 
 4  Change Routing
-   affected claim · Story §8 row · Section · evidence/workbench obligation · owner
+   affected claim · Story §8 row · Section · evidence/workbench need · owner
 
 5  Applied and Checked Changes
    what changed · owning Page · before/after version · CHECK result
@@ -237,12 +237,12 @@ remain unambiguous.
    point-by-point reply, editor note, tracked-change/diff pointers, commitments
 
 7  Close Receipt and Handoff
-   ledger totals · the released build (`released/`: exact output set, path,
+   concern-table totals · the released build (`released/`: exact output set, path,
    manifest `built` time) · response artifact or explicit internal no-response record ·
    deferred items · next Round · approved-by · approved-at · approval record
 ```
 
-## 📋 Feedback ledger contract
+## 📋 Concern table contract
 
 Atomize bundled feedback before routing it. Give every concern one stable id and
 these fields:
@@ -260,7 +260,7 @@ Do not imply that this local scale is shared by Display, Task, or other owners.
 
 When evidence does not support a stable mapping, use `unresolved` as a
 triage state, preserve the reviewer's wording and evidence, and name the human
-resolver. Do not force a severity merely to complete the ledger.
+resolver. Do not force a severity merely to complete the table.
 
 ```text
 item-id
@@ -281,7 +281,7 @@ before version and checked after version
 open blocker or explicit deferred handoff
 ```
 
-Use `open`, `routed`, `applied`, `answered`, `declined`, or `deferred` as ledger
+Use `open`, `routed`, `applied`, `answered`, `declined`, or `deferred` as concern
 states. `open` and `routed` are non-terminal. `applied` means a changed owning
 Page has passed CHECK and is waiting for the response trace; it is not terminal
 for an external Round. `answered` is the terminal state for a checked change or
@@ -296,10 +296,10 @@ Keep authority with the artifact being changed:
 
 | Concern | Owning destination |
 |---|---|
-| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's C5 evidence proposition plus the corresponding C6 Discovery or C7 Task need |
+| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's §5 evidence proposition plus the corresponding §6 Discovery or §7 Task need |
 | contribution, claim role, or paper order | the Story's §8 Section Narrative row (and its compile-order block) |
 | section argument, wording, placement, or limitation | owning Section Page |
-| missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story C7 |
+| missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story §7 |
 | citation request | consuming Page's CITE Evidence Item and verified source set |
 | number correction | consuming Page's VALUE Evidence Item and accepted local Result |
 | table or figure change | consuming Page's DISPLAY Evidence Item and accepted `results/<re-run>/payload/<unit>/`; route a revision through that RE owner |
@@ -307,51 +307,51 @@ Keep authority with the artifact being changed:
 
 For a `foreign-desk` Round, the received desk is named in the identity and
 the route still lands first on the governing Story. A request about the
-telling becomes a human-approved C8 candidate row; it does not create a
+telling becomes a human-approved §8 candidate row; it does not create a
 foreign Section or let the Round write a second manuscript.
 
 **Where a routed concern LANDS on its owner** (260831): the owning page's
-`draft/records/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
+`draft/records/<stem>-feedback.md` (a section per Round), a register the page projects from this table
 during its own OUTLINE pass (`haipipe-page-structure` ⓪ COLLECT). This page never
 writes into another page's folder, and it never dispatches an agent at its
 targets: it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands
 every register in one process with no agent at all, and `cli/feedback.py reopen
-<board>` lists which pages hold an open row, in the order this ledger's own
+<board>` lists which pages hold an open row, in the order this table's own
 gates impose (a Section whose concern also routes to the Story waits on the
 Story; shared dependencies must be coordinated). Dispatch each affected Page
 through the shared Page authority test. Wording feedback on a matching open
 RP resumes its next Writing Step; it does not rerun OUTLINE. A changed plan
 uses OUTLINE/SHAPE and its required human decision. Keep existing releases and
 acceptances bound to their exact scope/version rather than requesting another
-approval for every ledger item. `applied` here needs that register's
+approval for every concern. `applied` here needs that register's
 `landed:` version first, and G5 runs `feedback-coverage` board-wide before
 this page may close.
 
-The phrase **routed exactly once** means one ledger row and one route decision,
+The phrase **routed exactly once** means one concern row and one route decision,
 not that a concern can name only one affected artifact. A single route may
-name a primary owning Page plus a required Story C5/C6/C7 or C8 update; those
+name a primary owning Page plus a required Story §5/§6/§7 or §8 update; those
 linked destinations remain one coordinated route under the same item id. Do
-not clone the concern into a second ledger row or create duplicate work items.
+not clone the concern into a second concern row or create duplicate work items.
 
 The Round records routes and checked returns. It does not become a second home
 for revised section prose, research values, citations, or paper displays. A
-ledger item may say `applied` only after the owning Page names a checked version;
+concern may say `applied` only after the owning Page names a checked version;
 “edited” or “agent finished” is not proof.
 
 ## 🃏 Evidence and delivery boundary
 
-The Round does not own an Evidence/Execution lane. Its Context and ledger may
+The Round does not own an Evidence/Execution lane. Its Context and concern table may
 point to an accepted Result, a source path, or a checked Page version, but it
 does not create new evidence/execution Runs or typed evidence items during
 triage. A separately commissioned response session follows `response.<round>`;
 ordinary Page writing keeps its native RP contract.
-If a concern needs substantive new evidence, route it to the Story's C5
-support and C6/C7 need, then let the external Discovery/Task/Run owner return
+If a concern needs substantive new evidence, route it to the Story's §5
+support and §6/§7 need, then let the external Discovery/Task/Run owner return
 the result. If a Section needs a local CITE/VALUE/DISPLAY item, the consuming
 Section owns that item and its Page workflow. The Round records only the
 relation and the returned version.
 
-New substantive paper evidence changes C5 support and affected C6/C7 needs on
+New substantive paper evidence changes §5 support and affected §6/§7 needs on
 the Story; the Section whose prose uses it binds its own typed Evidence Item.
 Round feedback is stored in `feedback/`, not converted into a new evidence
 authority. Do not recreate retired PageX or legacy evidence, bibex, or
@@ -360,7 +360,7 @@ standalone value workbench lanes.
 The assembler owns complete-manuscript artifacts; the Page Delivery workbench
 owns individual Page exports. The assembler's `send` action freezes the
 identified base build into `sent/` under the existing human authorization.
-For closure, first check the ledger, response and candidate answering build;
+For closure, first check the concern table, response and candidate answering build;
 this preliminary review does not close the Round. After the person approves
 that response/build and authorizes closure, freeze it into `released/`, record
 its snapshot path and manifest `built` time, then perform the final Round CHECK/G5 closure against
@@ -392,7 +392,7 @@ Reserve these acts for a person:
 
 A machine may propose dispositions, route accepted work, and close an already
 answered Decision Now row with the human's words. It may not manufacture the
-decision or mark the Round closed from ledger counts alone.
+decision or mark the Round closed from concern counts alone.
 
 Gate G5 (the per-round gate) leaves its receipt row under `draft/` and a
 linked summary in Role 7, stating the gate, assertion results, snapshot paths,
@@ -403,12 +403,12 @@ and who approved the response receipt.
 Close only through CHECK when:
 
 - the Round identity names one feedback batch and one base build;
-- every received concern appears exactly once in the ledger;
+- every received concern appears exactly once in the concern table;
 - every item has a terminal disposition with inspectable support;
 - every applied change names the owning Page and its checked after-version;
 - `sent/` and `released/` each contain the complete declared delivery output
   set, and both snapshot paths and `built` times are recorded;
-- every external response paragraph maps back to ledger items;
+- every external response paragraph maps back to concerns;
 - the revised paper build and external response artifact, when required, are
   regenerated and recorded; an internal Round records the explicit no-response
   decision;

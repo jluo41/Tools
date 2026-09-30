@@ -1,3 +1,8 @@
+## 0.9.2 · 2026-09-30 · Story parts are §N
+
+- The compile order is the Story's §8 block, never "C8" (haipipe-paper-story 0.17.0; JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench).
+- "Canonical configuration" is Configuration and the engine is the only delivery engine (AGENTS rule 9); the Round fixture in `tests/test_build_delivery.py` titles its division Feedback Concern Table.
+
 ## 0.9.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -123,7 +128,7 @@
 
 ## 0.8.0 · 2026-09-20
 
-- Validate required config and generated paths before mutation; correct the canonical config example. Bind commissioned builds to the compile Spec. Merge Page delivery bibliographies, preserve stable Section identities and label MISQ thresholds as local guidance. Add path/bibliography regression coverage.
+- Validate required config and generated paths before mutation; correct the config example. Bind commissioned builds to the compile Spec. Merge Page delivery bibliographies, preserve stable Section identities and label MISQ thresholds as local guidance. Add path/bibliography regression coverage.
 
 ## 0.7.9 · 260908
 - **The WORD lane followed the venue for the first time.** The LaTeX lane has always taken `bibstyle` from the profile, while `latex_room_to_docx.py` emitted numbered Vancouver citations (`[1,2]` and a numbered reference list) for EVERY profile, so a MISQ submission was going out with medical-journal citations. Caught by diffing the generated .docx against the co-author's `MISQ-Official-Format.docx`, which is APA author-date throughout (JL 260908: "is the word fit the misq template as well?").
@@ -211,7 +216,7 @@ Verified on both papers: Paper-AgreeableOpioid-Jama 25-page PDF + main and suppl
 
 ## 0.6.0 · 260908
 
-- Canonical engine `scripts/build_delivery.py` (was paper-local `delivery/build.py`
+- One engine `scripts/build_delivery.py` (was paper-local `delivery/build.py`
   in every paper); papers install the thin wrapper `ref/build.py.wrapper` as
   `delivery/build.py`. Three behaviors found by Paper-MISQ-Board in one paper
   copy now ship for all: A display printed once (`DEDUPE_EMBEDDED_FLOATS`),

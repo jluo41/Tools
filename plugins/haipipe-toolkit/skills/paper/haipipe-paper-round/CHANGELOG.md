@@ -1,3 +1,8 @@
+## 0.9.0 · 2026-09-30 · The concern table
+
+- "Feedback Coverage Ledger" is now **Feedback Concern Table**, and every "ledger" in this contract is the concern table (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench; AGENTS rule 9 bans "ledger"). The shape is not matched exactly, so Round Pages that still title the division the old way pass; they take the new title on their next revision.
+- Story parts are §N or their name, never C5-C8 (haipipe-paper-story 0.17.0).
+
 ## 0.8.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -16,7 +21,7 @@
 
 ## 0.7.2 · 2026-09-20
 
-- Separate RD Round Pages, controller rounds and writing Versions. Define commissioned response Runs, pending answer identity, owner-routed repairs, matching human release approval and final freeze/CHECK ordering; ledger triage creates no evidence Run.
+- Separate RD Round Pages, controller rounds and writing Versions. Define commissioned response Runs, pending answer identity, owner-routed repairs, matching human release approval and final freeze/CHECK ordering; concern-table triage creates no evidence Run.
 
 ## 0.7.1 · 2026-09-13
 
@@ -26,9 +31,9 @@
 ## 0.7.0 · 2026-09-08
 
 - Round is explicitly a Page-level feedback control surface, not a Run or an
-  Evidence/Execution owner; new evidence routes to Story C5/C6/C7 and the
+  Evidence/Execution owner; new evidence routes to Story §5/§6/§7 and the
   external Discovery/Task/Run owners.
-- `RD<NN>` remains the canonical, paper-wide unique Round token. The new Page
+- `RD<NN>` remains the paper-wide unique Round token. The new Page
   stem is `RD<NN>-<desk>-<event>-<YYYYMMDD>`, aligned with the desk's Main and
   Appendix naming style; `R` and `RR` are not aliases.
 - The Page surface is fixed as `Opening → Outline → Content → Aims`, with the
@@ -37,7 +42,7 @@
 - An external response package has one immutable `response/` home beside the
   manuscript snapshots; internal Rounds record `no external response required`
   and omit that directory.
-- “Routed exactly once” now means one atomic ledger row and one route decision;
+- “Routed exactly once” now means one atomic concern row and one route decision;
   one decision may name a primary Page plus linked Story updates. `applied` is
   non-terminal until the response is `answered`, and G5 records approver
   identity and timestamp.
@@ -46,7 +51,7 @@
 
 ## 0.6.1 · 2026-09-08
 
-- Keep `RD<NN>` as the canonical Round Page token. The earlier Round-local
+- Keep `RD<NN>` as the Round Page token. The earlier Round-local
   `pr-…` suggestion is superseded by 0.7.0: Round does not mint Runs.
 
 ## 0.6.0 · 260907

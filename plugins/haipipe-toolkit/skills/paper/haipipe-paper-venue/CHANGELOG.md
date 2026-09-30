@@ -1,3 +1,7 @@
+## 0.9.3 · 2026-09-30 · Plain words
+
+- "canonical order" is the set order and "an open obligation" is a number that still owes its source (AGENTS rule 9; JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench).
+
 ## 0.9.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
@@ -30,7 +34,7 @@
 
 ## 0.6.0 — 2026-09-04
 
-- Enter concrete Venue work through the canonical five-phase Page chain.
+- Enter concrete Venue work through the five-phase Page chain.
 - Replace active PageX/probe/bibex/value/display workbench language with typed
   VALUE/CITE/DISPLAY Results over Supporting Runs, one Local Input, and one
   local Run in the shared Outline workbench.
@@ -144,7 +148,7 @@ jurisdictions rather than sections. Two declared parts of the shape did not.
 - **Outline mode corrected to `resolved`**, source `paper/venue/<pack>/<outlet>/`
   — one style.md per unit, one division. The desk dictates the division list;
   comparability across the 16 desks lives at the PART level. The seven old
-  divisions survive as content obligations only.
+  divisions survive as content needs only.
 - **Ownership stated: a SHARED desk record, consumer-neutral.** No paper name,
   no `serves:`; refreshed on the desk's clock. A paper's venue decision lives
   in its Narrative's Venue divisions, and retargeting touches the Narrative,

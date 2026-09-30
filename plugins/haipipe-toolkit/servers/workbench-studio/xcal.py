@@ -699,6 +699,8 @@ class XcalMixin:
             # landing in the wrong file (JL 260815, seen on QPf4).
             scene = self.mint_page_scene(f)
             if scene is None:
+                scene = self.mint_board_scene(f)
+            if scene is None:
                 return self.reply(404, {"ok": False, "err": f"no {path}"})
         else:
             try:
@@ -772,6 +774,30 @@ class XcalMixin:
                  "haipipe": {"schema": "haipipe-linked-drawing/v1",
                              "kind": "page",
                              "page": {"id": f.stem, "markdown": md_rel}}}
+        f.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            write_scene_exclusive(f, scene)
+        except FileExistsError:
+            scene = read_scene(f)
+        return scene
+
+    def mint_board_scene(self, f):
+        """<board>/studio/<name>.excalidraw -> mint EMPTY and return it.
+
+        A Board's own drawing sits in `studio/` beside its `board.md`; the Paper
+        Workbench's Story › RoadMap Draw opens one there (JL 260930). Like a Page
+        scene it is written the first time it is opened, so the first save has a
+        file to land in. It is a plain scene, not a linked Page source, so a save
+        replaces its elements. Anything else returns None."""
+        if (f.suffix != ".excalidraw" or f.parent.name != "studio"
+                or not (f.parent.parent / "board.md").is_file()):
+            return None
+        scene = {"type": "excalidraw", "version": 2,
+                 "source": "haipipe-board/mint",
+                 "elements": [],
+                 "appState": {"gridSize": None,
+                              "viewBackgroundColor": "#ffffff"},
+                 "files": {}}
         f.parent.mkdir(parents=True, exist_ok=True)
         try:
             write_scene_exclusive(f, scene)

@@ -7,7 +7,7 @@ description: >-
   the Story's Section Narrative rows, and Section Pages. Use when researching,
   creating, refreshing, or comparing a venue Page.
 metadata:
-  version: "0.9.2"
+  version: "0.9.3"
   last_updated: "2026-09-29"
   page_ruling: none
   outline:
@@ -20,7 +20,7 @@ metadata:
 
 For a concrete Venue Page update, load `haipipe-page`,
 `haipipe-page-workflow`, the current Run Workflow/Spec owner,
-`haipipe-paper-workflow`, this PageType and relevant references in canonical order. Name the Page
+`haipipe-paper-workflow`, this PageType and relevant references in their set order. Name the Page
 `QBv<n>-<slug>.md` and declare `page-type: venue`. The shared Page resolver
 selects its owner; the filename fallback remains readable for existing Pages.
 
@@ -204,7 +204,7 @@ no active PageX, probe, bibex, value, or display workbench; old lanes are
 migration-only input.
 
 Every number and binding rule must resolve to its Evidence Item plus full
-Run/Result identity. A bare uncited number is an open obligation.
+Run/Result identity. A bare uncited number still owes its source.
 
 ## 📤 Handoff
 
