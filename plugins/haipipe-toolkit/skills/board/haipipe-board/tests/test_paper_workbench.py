@@ -9,6 +9,7 @@ files, and every Space carries its own Runs panel beside the content (JL 260927)
 import sys
 import json
 import shutil
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,6 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
 from live.paper import collect, paper_run_types, render_paper, section_rows, session_rows, task_home  # noqa: E402
+from live.paper import render_run_result, run_files, run_result_url  # noqa: E402
 
 BOARD = """# Paper-Test · paper board
 spine: one idea, told to a desk
@@ -435,6 +437,52 @@ class PaperWorkbenchTest(unittest.TestCase):
                 self.assertNotIn(">%s</div>" % group, h0)
             self.assertNotIn("shared by all", h0)
 
+    def test_a_run_opens_its_results(self):
+        """JL 260930: "for a run, how could we have a popout window to show the results of
+        that run's results". A run finds its files in its own results/<run>/, else by its
+        name in a shared results/, else by every word of its name, else all of results/."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "tasks" / "b01_a" / "j01_b" / "t01_c"
+            for rel, text in (("runs/run_6a2_f01.sh", "#!/bin/bash\n"), ("runs/run_fit_forecast.sh", ""),
+                              ("results/figures/6a2_f01_growth.png", "png"),
+                              ("results/tables/6a2_t01_long.csv", "size,rmse\n1m,20.5\n10m,19.1\n"),
+                              ("results/fits_forecast/alpha.json", "{}"),
+                              ("results/r02_new/summary.md", "# Fit\n\n| a | b |\n|---|---|\n| 1 | <b>2</b> |\n"),
+                              ("results/r02_new/runtime.yaml", "status: complete\n"),
+                              ("results/r02_new/fit_summary.md", "Fit Summary\n===========\n  Form A: L(D) = 4.92\n    R2 = 0.09\n"),
+                              ("notebooks/run_6a2_f01.ipynb", "{}")):
+                (task / rel).parent.mkdir(parents=True, exist_ok=True)
+                (task / rel).write_text(text, encoding="utf-8")
+            names = lambda r: [f.name for f in run_files(task, r)[1]]
+            self.assertEqual(run_files(task, "run_6a2_f01")[0], "the files in results/ whose name holds 6a2_f01")
+            self.assertEqual(names("run_6a2_f01"), ["6a2_f01_growth.png"])
+            self.assertEqual(names("r02_new"), ["fit_summary.md", "runtime.yaml", "summary.md"])   # its own folder
+            self.assertEqual(names("run_fit_forecast"), ["alpha.json"])                   # fits_forecast/
+            self.assertTrue(run_files(task, "run_zzz")[0].startswith("all of results/"))
+            self.assertEqual(len(run_files(task, "")[1]), 6)
+            url = run_result_url(root, task, "run_6a2_f01")
+            self.assertEqual(url, "/_board/run-result?task=tasks/b01_a/j01_b/t01_c&run=run_6a2_f01")
+            page = render_run_result(root, "tasks/b01_a/j01_b/t01_c", "run_6a2_f01")
+            self.assertIn('<img loading="lazy" src="/tasks/b01_a/j01_b/t01_c/results/figures/6a2_f01_growth.png"', page)
+            self.assertIn('href="/tasks/b01_a/j01_b/t01_c/runs/run_6a2_f01.sh"', page)          # Run script
+            self.assertIn('href="/tasks/b01_a/j01_b/t01_c/notebooks/run_6a2_f01.ipynb"', page)  # Executed notebook
+            whole = render_run_result(root, "tasks/b01_a/j01_b/t01_c", "")
+            self.assertIn("<td>20.5</td>", whole)                                   # a table's first rows
+            self.assertIn("2 rows · 2 columns", whole)
+            own = render_run_result(root, "tasks/b01_a/j01_b/t01_c", "r02_new")
+            self.assertIn("<h2>Receipt</h2><pre>status: complete", own)
+            self.assertIn("<td>&lt;b&gt;2&lt;/b&gt;</td>", own)                     # Markdown table, HTML escaped
+            # a .md with no Markdown mark is plain text laid out by line: shown as written (JL 260930)
+            self.assertIn("<pre>Fit Summary\n===========\n  Form A: L(D) = 4.92\n    R2 = 0.09\n</pre>", own)
+            with self.assertRaises(ValueError):
+                render_run_result(root / "tasks", "../..", "")                     # never outside the root
+            # in the workbench, a run line is a link the page opens in its pop-out
+            b = make_board(root)
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            self.assertIn('<div id="rr-pop" hidden>', page)
+            self.assertIn("a[data-pop]", page)
+
     def test_roadmap_draw_is_the_storys_excalidraw_in_studio(self):
         """JL 260930: a Story tab between Spine and the logic view, named RoadMap Draw by JL,
         shows the paper's Excalidraw drawing, saved in the paper's studio/ folder."""
@@ -637,6 +685,10 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn('<span class="idtag">b01</span> <b>block</b>', q1)        # B
             self.assertIn('<span class="idtag">j01</span> job', q1)                 # J
             self.assertIn('<span class="idtag">t01</span>', q1)                     # T
+            # a Task's name is plain text, not a link to its raw Markdown (JL 260930); a
+            # Discovery task still opens its board in Outline
+            self.assertIn('<span class="idtag">t01</span> task ', q1)
+            self.assertNotIn('t01_task/t01_task.md', q1)
             self.assertIn("1 run · done 1", q1)                                      # R, folded: its receipt says done
             self.assertIn("no folder yet", q1)                                       # T2 names no folder
             self.assertIn("prior_work", q1)                                          # D1's Discovery task

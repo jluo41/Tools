@@ -8,7 +8,7 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.19.0"
+  version: "0.20.0"
   last_updated: "2026-09-30"
 ---
 
@@ -262,10 +262,26 @@ every join.
 Nothing sits behind a Details click (JL 260929: "replace it with the plain text"): the
 answer state, tests and each claim's Role, Now and If it fails stay in the Story file.
 Under each work item: its folders in the Task or Discovery home, one line per level
-(`b04` block, `j01` job, `t01` task linked to its page, R as `▸ 3 runs · no receipts`
-opening to each run ticket and its receipt state; a Discovery task also says what it
+(`b04` block, `j01` job, `t01` task as plain text (JL 260930: its link only opened the raw
+Task Markdown), R as `▸ 3 runs · no receipts`
+on the task line, opening to each run ticket and its receipt state below it, one level in; a Discovery task also says what it
 found). Work built in another project says "built outside tasks/" with its path; a row
 with no folder says "no folder yet".
+
+A run opens its results (JL 260930: "for a run, how could we have a popout window to
+show the results of that run's results"). Each run line under R is a link; a click opens
+a pop-out over the page (Esc or a click outside closes it; "Open in its own tab ↗", or a
+Cmd-click, keeps it). A Task run's card in the Runs panel has the same "Open the results ↗".
+The pop-out is `GET /_board/run-result?task=<Task folder>&run=<run stem>`
+(`render_run_result` in `paper.py`): the run's receipt (`runtime.yaml`), then its
+summaries (Markdown with its tables drawn; a `.md` with no Markdown mark, and `.txt`, as written), figures, tables (the first 50 rows of
+each `.csv`/`.tsv`) and every other file, each opening raw, with links to the run script,
+the executed notebook (`notebooks/<run>.ipynb`) and the Task page. The files are the run's
+own `results/<run>/`; in a Task that keeps one shared `results/`, the files named after the
+run (`run_6a2_f01.sh` → `figures/6a2_f01_…png`), else those whose path holds every word of
+its name (`run_fit_forecast.sh` → `fits_forecast/…`), else all of `results/`, and the page
+says which (`run_files`). It reads only inside the server root. The page runs nothing:
+Rerun still copies a prompt for a Claude or Codex session.
 
 Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): no group labels (JL 260930:
 "Hypotheses <--- could we just remove this … of no information", and the same for

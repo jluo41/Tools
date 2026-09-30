@@ -320,6 +320,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/paper":
             # 📄 Board-level Paper Workbench, rendered live from the paper board
             return self.paper_view()
+        if self.path.split("?", 1)[0] == "/_board/run-result":
+            # 📄 one Task run's results, the Paper Workbench's pop-out (JL 260930)
+            return self.run_result_view()
         if self.path.split("?", 1)[0] == "/_board/design":
             # 🎨 one live projection over the selected Design Page-Folder
             return self.design_view()
@@ -438,6 +441,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.outline_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/paper":
             return self.paper_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/run-result":
+            return self.run_result_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design":
             return self.design_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-board":

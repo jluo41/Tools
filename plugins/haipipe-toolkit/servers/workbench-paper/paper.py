@@ -1654,16 +1654,25 @@ def _nodes(tree, addrs):
     return out
 
 
-def _runs_fold(t):
-    """R: a task's runs, `▸ 3 runs · no receipts`, open to one line per run ticket."""
-    ticks = t.get("ticket_list") or []
+def _runs_fold(d, t):
+    """R: a task's runs as (`3 runs · no receipts`, one line per run ticket, or per
+    `results/<run>/` folder when a Task has results and no tickets), or the "no runs yet"
+    mark. A line opens that run's results in the pop-out (JL 260930: "a popout window to
+    show the results")."""
+    ticks = [stem for stem, _ in (t.get("ticket_list") or [])]
+    home = Path(t["dir"])
+    if not ticks and (home / "results").is_dir():
+        ticks = sorted(x.name for x in (home / "results").iterdir() if x.is_dir() and not x.name.startswith("."))
     n = len(ticks) or t.get("n_results", 0)
     if not n:
         return '<span class="mut bj-rn">no runs yet</span>'
-    lines = "".join('<div class="bj-run"><span class="idtag">%s</span> <span class="mut">%s</span></div>'
-                    % (esc(stem), esc((t.get("receipt_map") or {}).get(stem) or "no receipt")) for stem, _ in ticks)
-    return '<details class="bj-r"><summary>%s</summary>%s</details>' % (
-        esc("%d run%s · %s" % (n, "" if n == 1 else "s", _fmt_state(t.get("receipts") or {}))), lines)
+    opens = d.get("root") is not None and ((home / "results").is_dir() or (home / "runs").is_dir())
+    line = lambda stem: '<span class="idtag">%s</span> <span class="mut">%s</span>' % (
+        esc(stem), esc((t.get("receipt_map") or {}).get(stem) or "no receipt"))
+    lines = "".join(('<a class="bj-run" href="%s" target="_blank" data-pop="%s">%s</a>'
+                     % (esc(run_result_url(d["root"], home, stem)), esc(stem), line(stem))) if opens else
+                    '<div class="bj-run">%s</div>' % line(stem) for stem in ticks)
+    return esc("%d run%s · %s" % (n, "" if n == 1 else "s", _fmt_state(t.get("receipts") or {}))), lines
 
 
 def _bjtr(d, nodes, disc=False):
@@ -1679,9 +1688,15 @@ def _bjtr(d, nodes, disc=False):
                         ' <span class="mut">%s</span>' % esc(t["outcome"] + ((" · " + t["confidence"]) if t.get("confidence") else ""))
                         if t.get("outcome") else "")
                 else:
-                    url = _tree_url(d, t["page"] or t["dir"])
-                    name = ('<a href="%s">%s</a>' % (esc(url), esc(t["name"][4:]))) if url else esc(t["name"][4:])
-                out.append('<div class="bj-t"><span class="idtag">%s</span> %s %s</div>' % (esc(t["name"][:3]), name, _runs_fold(t)))
+                    # plain text: the link only opened the raw Task Markdown (JL 260930: "I don't
+                    # think this is useful, could you remove this link?"); its runs open results
+                    name = esc(t["name"][4:])
+                head, fold = '<span class="idtag">%s</span> %s' % (esc(t["name"][:3]), name), _runs_fold(d, t)
+                # the runs open below the task, one level in, as t sits under j (JL 260930:
+                # "make the run below the t02 … follow the same indentation as b and j and t")
+                out.append(('<details class="bj-tr"><summary class="bj-t">%s <span class="bj-rs">%s</span></summary>'
+                            '<div class="bj-runs">%s</div></details>' % (head, fold[0], fold[1])) if isinstance(fold, tuple)
+                           else '<div class="bj-t">%s %s</div>' % (head, fold))
             if not ts:
                 out.append('<div class="bj-t mut">no task yet</div>')
     return "".join(out)
@@ -2317,10 +2332,19 @@ def _supporting_rows(d, s, fill, T):
                         keys += sorted({q_of[k] for k in keys if q_of.get(k)}) + [u for k in keys for u in T["up"].get(k, [])]
                         users = sorted({u["page"] + " " + u["item"].split("-")[0] for u in r["users"]})
                         st = (r["status"] or "").lower()
+                        task = tnode.get("task")
+                        home = Path(task["dir"]) if task and task.get("dir") else None
+                        stem = r["tickets"][0][0] if r["tickets"] else ""
+                        # its card opens the run's results in the pop-out (JL 260930)
+                        opens = home is not None and (home / "results").is_dir() and d.get("root") is not None
                         rows.append({"run_id": dotted, "global_id": dotted, "ticket": ticket,
                                      "status": "done" if st in ("complete", "completed", "done") else (st or "unknown"),
                                      "target": owner + " · " + dotted, "goal": "used by " + ", ".join(users),
-                                     "result": "", "_display": dotted, "_keys": " ".join(keys)})
+                                     "result": "", "_display": dotted, "_keys": " ".join(keys),
+                                     "result_path": (home / "results" / stem if stem and (home / "results" / stem).is_dir()
+                                                     else home / "results") if opens else "",
+                                     "_open": run_result_url(d["root"], home, stem) if opens else "",
+                                     "_open_name": stem or dotted})
     return _tag(rows, (), fill)
 
 
@@ -2794,7 +2818,18 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .bj-home,.bj-none{{font-size:12.5px}}
 .bj-b,.bj-j,.bj-t{{font-size:14px;line-height:1.55;display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}}
 .bj-j{{margin-left:16px}} .bj-t{{margin-left:32px}}
-.bj-r>summary{{cursor:pointer;color:var(--mut);font-size:12.5px}} .bj-rn{{font-size:12.5px}} .bj-run{{margin-left:14px;font-size:12.5px}}
+.bj-tr>summary{{list-style:none;cursor:pointer}} .bj-tr>summary::-webkit-details-marker{{display:none}}
+.bj-rs{{color:var(--mut);font-size:12.5px}} .bj-rs::before{{content:"▸ "}} .bj-tr[open]>summary .bj-rs::before{{content:"▾ "}}
+.bj-rn{{font-size:12.5px}} .bj-runs{{margin-left:48px}}
+.bj-run{{display:block;font-size:12.5px;line-height:1.7;color:inherit;text-decoration:none}}
+a.bj-run:hover .idtag{{color:var(--acc);text-decoration:underline}}
+#rr-pop{{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}}
+#rr-pop[hidden]{{display:none}}
+.rr-box{{width:min(1240px,94vw);height:90vh;background:var(--bg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25)}}
+.rr-box>header{{display:flex;gap:14px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}}
+.rr-title{{font:600 14px ui-monospace,Menlo,monospace}} .rr-new{{margin-left:auto;font-size:13px}}
+.rr-x{{border:0;background:transparent;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:2px 6px}}
+.rr-frame{{flex:1;width:100%;border:0;background:var(--bg)}}
 /* Story › Related Papers: one card per paper, the target venue first, its PDF inside (JL 260930) */
 .rp-head{{font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 2px}}
 .rp-venue{{display:flex;gap:10px;align-items:baseline;margin:22px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line);
@@ -2874,6 +2909,9 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 <h1>📄 {title}</h1>
 <div class="spaces">{space_chips}</div>
 {panels}
+<div id="rr-pop" hidden><div class="rr-box" role="dialog" aria-label="Run results"><header><span class="rr-title"></span>
+<a class="rr-new" target="_blank" rel="noopener">Open in its own tab ↗</a><button type=button class="rr-x" title="Close (Esc)">✕</button></header>
+<iframe class="rr-frame" title="Run results"></iframe></div></div>
 <script>{panel_js}</script>
 <script>
 (function(){{
@@ -2981,6 +3019,19 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
   if(up)up.classList.add('runs-selected');
   emit('space-target',{{space:p.dataset.space,target:up?up.dataset.key:''}});
  }},true);
+ /* a run's results open in a pop-out over the page (JL 260930); a modified click or
+    "Open in its own tab" keeps the page, and Esc or a click outside closes it */
+ var pop=document.getElementById('rr-pop');
+ function popClose(){{pop.hidden=true;pop.querySelector('.rr-frame').removeAttribute('src');}}
+ document.addEventListener('click',function(ev){{
+  var a=ev.target.closest&&ev.target.closest('a[data-pop]');
+  if(a&&!ev.metaKey&&!ev.ctrlKey&&!ev.shiftKey&&!ev.altKey&&ev.button===0){{
+   ev.preventDefault();ev.stopPropagation();
+   pop.querySelector('.rr-title').textContent=a.dataset.pop;pop.querySelector('.rr-new').href=a.href;
+   pop.querySelector('.rr-frame').src=a.href;pop.hidden=false;return;}}
+  if(!pop.hidden&&(ev.target===pop||(ev.target.closest&&ev.target.closest('.rr-x')))){{ev.stopPropagation();popClose();}}
+ }},true);
+ document.addEventListener('keydown',function(ev){{if(ev.key==='Escape'&&!pop.hidden)popClose();}});
  window.addEventListener('hashchange',route);route();
 }})();
 </script></body></html>"""
@@ -3002,6 +3053,210 @@ def render_paper(board, root, path_param):
                         paper_id=esc(d["board"].name))
 
 
+
+# ---- one run's results, in a pop-out (JL 260930: "for a run, how could we have a popout
+# window to show the results of that run's results") -------------------------------------
+_IMG_EXT = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
+_TAB_EXT = {".csv", ".tsv"}
+_DOC_EXT = {".md", ".markdown", ".txt"}
+_MAX_FILES, _MAX_ROWS, _MAX_DOC = 300, 50, 200_000
+
+
+def run_result_url(root, task_dir, run=""):
+    """`/_board/run-result?task=<Task folder>&run=<run stem>`; '' outside the root."""
+    try:
+        rel = Path(task_dir).resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        return ""
+    return "/_board/run-result?task=%s%s" % (quote(rel, safe="/"), ("&run=" + quote(run, safe="")) if run else "")
+
+
+def run_files(task_dir, run=""):
+    """(where, files) for one run of a Task. Its own `results/<run>/` when there is one;
+    else the files in `results/` named after it (`run_6a2_f01.sh` wrote
+    `figures/6a2_f01_horizon_fairness_growth.png`), which is how a Task keeping one shared
+    `results/` tells its runs apart; else the files whose path holds every word of that name
+    (`run_fit_forecast.sh` wrote `fits_forecast/…`); else all of `results/`, said so. No
+    run: all of it."""
+    res = Path(task_dir) / "results"
+    if not res.is_dir():
+        return "no results/ folder yet", []
+    every = lambda base: sorted((f for f in base.rglob("*") if f.is_file() and not f.name.startswith(".")),
+                                key=lambda f: f.relative_to(res).as_posix())
+    if not run:
+        return "results/", every(res)
+    if (res / run).is_dir():
+        return "results/%s/" % run, every(res / run)
+    key = re.sub(r"^run[_-]", "", run)
+    named = [f for f in every(res) if key and key in f.name]
+    if named:
+        return "the files in results/ whose name holds %s" % key, named
+    words = [w for w in key.split("_") if w]
+    worded = [f for f in every(res) if words and all(w in f.relative_to(res).as_posix() for w in words)]
+    if worded:
+        return "the files in results/ whose path holds %s" % " and ".join(words), worded
+    return "all of results/: this Task keeps one folder for every run, and no file there is named after %s" % key, every(res)
+
+
+def _md_view(text):
+    """Enough Markdown for a result summary: headings, bullets, pipe tables, fences, bold
+    and code. Raw HTML is escaped, never run."""
+    out, lines, i, para = [], text.split("\n"), 0, []
+
+    def flush():                                  # a line break inside a paragraph stays
+        if para:
+            out.append("<p>%s</p>" % "<br>".join(inline(x) for x in para))
+            para.clear()
+    while i < len(lines):
+        s = lines[i].strip()
+        if s.startswith("```"):
+            flush()
+            j = i + 1
+            while j < len(lines) and not lines[j].strip().startswith("```"):
+                j += 1
+            out.append("<pre>%s</pre>" % esc("\n".join(lines[i + 1:j])))
+            i = j + 1
+            continue
+        m = re.match(r"^(#{1,4})\s+(.*)$", s)
+        if m:
+            flush()
+            out.append("<h%d>%s</h%d>" % (len(m.group(1)) + 2, inline(m.group(2)), len(m.group(1)) + 2))
+        elif s.startswith("|") and i + 1 < len(lines) and re.match(r"^\|?\s*:?-{2,}", lines[i + 1].strip()):
+            flush()
+            cells = lambda row: [c.strip() for c in row.strip().strip("|").split("|")]
+            head, j, body = cells(s), i + 2, []
+            while j < len(lines) and lines[j].strip().startswith("|"):
+                body.append(cells(lines[j]))
+                j += 1
+            out.append("<table><tr>%s</tr>%s</table>" % ("".join("<th>%s</th>" % inline(c) for c in head),
+                       "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % inline(c) for c in r) for r in body)))
+            i = j
+            continue
+        elif re.match(r"^[-*]\s+", s):
+            flush()
+            items = []
+            while i < len(lines) and re.match(r"^\s*[-*]\s+", lines[i]):
+                items.append("<li>%s</li>" % inline(re.sub(r"^\s*[-*]\s+", "", lines[i])))
+                i += 1
+            out.append("<ul>%s</ul>" % "".join(items))
+            continue
+        elif not s:
+            flush()
+        else:
+            para.append(s)
+        i += 1
+    flush()
+    return "".join(out)
+
+
+def _csv_view(f):
+    """The first rows of a table, and how many there are."""
+    import csv
+    import itertools
+    delim = "\t" if f.suffix == ".tsv" else ","
+    try:
+        with f.open(encoding="utf-8", errors="replace", newline="") as fh:
+            rows = list(itertools.islice(csv.reader(fh, delimiter=delim), _MAX_ROWS + 1))
+        n = None
+        if f.stat().st_size < 20_000_000:
+            with f.open("rb") as fh:
+                n = max(sum(1 for _ in fh) - 1, 0)
+    except OSError as exc:
+        return '<p class="mut">cannot read: %s</p>' % esc(exc)
+    if not rows:
+        return '<p class="mut">empty</p>'
+    head, body = rows[0], rows[1:_MAX_ROWS + 1]
+    note = ("%d rows" % n if n is not None else "a large file") + (", the first %d shown" % len(body) if n is None or n > len(body) else "")
+    return ('<p class="mut">%s · %d columns</p><div class="tw"><table><tr>%s</tr>%s</table></div>'
+            % (esc(note), len(head), "".join("<th>%s</th>" % esc(c) for c in head),
+               "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % esc(c) for c in r) for r in body)))
+
+
+_RESULT_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>
+:root{{--bg:#fff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--acc:#3e5c84;--soft:#f6f7f9}}
+@media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--acc:#7d9cc4;--soft:#1b1d21}}}}
+body{{margin:0;padding:18px 22px 40px;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
+h1{{font-size:20px;margin:0 0 2px}} h2{{font-size:16px;margin:26px 0 8px;padding-top:12px;border-top:1px solid var(--line)}}
+h3,h4,h5,h6{{font-size:14.5px;margin:14px 0 6px}} .mut{{color:var(--mut)}} a{{color:var(--acc)}}
+.where{{margin:0 0 6px}} .links{{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}}
+code,pre{{font:12.5px/1.5 ui-monospace,Menlo,monospace}} pre{{background:var(--soft);padding:10px 12px;border-radius:8px;overflow:auto}}
+.doc{{border:1px solid var(--line);border-radius:10px;padding:4px 16px 10px;margin:0 0 14px}}
+.doc>h3:first-child{{font:600 13px ui-monospace,Menlo,monospace;color:var(--mut)}}
+.figs{{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}}
+figure{{margin:0;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}}
+figure img{{width:100%;height:auto;display:block}} figcaption{{font:12px ui-monospace,Menlo,monospace;color:#555;margin-top:6px;word-break:break-all}}
+.tw{{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:8px}}
+table{{border-collapse:collapse;font-size:13px}} th,td{{border-bottom:1px solid var(--line);padding:4px 10px;text-align:left;white-space:nowrap}}
+th{{position:sticky;top:0;background:var(--soft)}} .doc table{{margin:8px 0}}
+ul.files{{list-style:none;padding:0;margin:0}} ul.files li{{font:13px ui-monospace,Menlo,monospace;padding:2px 0}}
+</style></head><body>
+{body}
+</body></html>"""
+
+
+def render_run_result(root, task_rel, run=""):
+    """One run's results as a page: where they are, then its summaries, figures, tables
+    and every other file, each opening raw. Reads only inside the root."""
+    root = Path(root).resolve()
+    tdir = (root / task_rel.strip("/")).resolve()
+    tdir.relative_to(root)                                   # outside the root: ValueError
+    if not tdir.is_dir():
+        raise FileNotFoundError(task_rel)
+    raw = lambda f: "/" + quote(f.resolve().relative_to(root).as_posix(), safe="/")
+    where, files = run_files(tdir, run)
+    more = max(len(files) - _MAX_FILES, 0)
+    files = files[:_MAX_FILES]
+    res = tdir / "results"
+    shown = lambda f: f.relative_to(res).as_posix() if res in f.parents else f.name
+    runs = tdir / "runs"
+    ticket = next((f for f in sorted(runs.rglob(run + ".*")) if f.is_file()), None) if run and runs.is_dir() else None
+    nb = tdir / "notebooks" / (run + ".ipynb") if run else None
+    links = [('<a href="%s" target="_blank" rel="noopener">Run script ↗</a>' % esc(raw(ticket))) if ticket else "",
+             ('<a href="%s" target="_blank" rel="noopener">Executed notebook ↗</a>' % esc(raw(nb))) if nb and nb.is_file() else "",
+             ('<a href="%s" target="_blank" rel="noopener">Task page ↗</a>' % esc(raw(tdir / (tdir.name + ".md"))))
+             if (tdir / (tdir.name + ".md")).is_file() else ""]
+    body = ['<h1>%s</h1>' % esc(run or tdir.name),
+            '<p class="where mut"><code>%s</code> · %s</p>' % (esc(tdir.relative_to(root).as_posix()), esc(where)),
+            '<div class="links">%s</div>' % "".join(x for x in links if x)]
+    rt = res / run / "runtime.yaml" if run else None
+    if rt is not None and rt.is_file():
+        body.append('<h2>Receipt</h2><pre>%s</pre>' % esc(rt.read_text(encoding="utf-8", errors="replace")[:4000]))
+    docs = [f for f in files if f.suffix.lower() in _DOC_EXT and f.name != "runtime.yaml"]
+    figs = [f for f in files if f.suffix.lower() in _IMG_EXT]
+    tabs = [f for f in files if f.suffix.lower() in _TAB_EXT]
+    rest = [f for f in files if f not in docs and f not in figs and f not in tabs and f != rt]
+    if docs:
+        body.append("<h2>Summaries · %d</h2>" % len(docs))
+        for f in docs:
+            text = f.read_text(encoding="utf-8", errors="replace") if f.stat().st_size <= _MAX_DOC else ""
+            # a .md with no Markdown mark (heading, table row, bullet) is plain text laid out by
+            # line, as fit_summary.md is (JL 260930: "How to handle this markdown render?"):
+            # it shows as written
+            marked = f.suffix.lower() != ".txt" and re.search(r"(?m)^(#{1,6}\s|\s*\|.*\||\s*[-*]\s)", text)
+            inner = (_md_view(text) if marked else "<pre>%s</pre>" % esc(text)) if text else \
+                '<p class="mut">too long to show here</p>'
+            body.append('<div class="doc"><h3><a href="%s" target="_blank" rel="noopener">%s</a></h3>%s</div>'
+                        % (esc(raw(f)), esc(shown(f)), inner))
+    if figs:
+        body.append('<h2>Figures · %d</h2><div class="figs">%s</div>' % (len(figs), "".join(
+            '<figure><a href="%s" target="_blank" rel="noopener"><img loading="lazy" src="%s" alt="%s"></a>'
+            '<figcaption>%s</figcaption></figure>' % (esc(raw(f)), esc(raw(f)), esc(f.name), esc(shown(f))) for f in figs)))
+    for f in tabs:
+        if f is tabs[0]:
+            body.append("<h2>Tables · %d</h2>" % len(tabs))
+        body.append('<h3><a href="%s" target="_blank" rel="noopener">%s</a></h3>%s' % (esc(raw(f)), esc(shown(f)), _csv_view(f)))
+    if rest:
+        body.append('<h2>Other files · %d</h2><ul class="files">%s</ul>' % (len(rest), "".join(
+            '<li><a href="%s" target="_blank" rel="noopener">%s</a> <span class="mut">%s</span></li>'
+            % (esc(raw(f)), esc(shown(f)), esc(_size(f))) for f in rest)))
+    if more:
+        body.append('<p class="mut">and %d more files, not shown</p>' % more)
+    if not files:
+        body.append('<p class="mut">No result file yet.</p>')
+    return _RESULT_PAGE.format(title=esc(run or tdir.name), body="\n".join(body))
+
+
 # ---------------------------------------------------------------- the route
 class PaperWorkbenchMixin:
     """GET /_board/paper — the Board-level Paper Workbench, rendered live."""
@@ -3021,6 +3276,17 @@ class PaperWorkbenchMixin:
             page = render_paper(board, self.root, p["path"])
         except Exception as exc:  # a render bug is a named row, never a blank pane
             return self._paper_send(("<h1>📄 paper</h1><p>render failed: %s</p>" % esc(exc)).encode("utf-8"), 500, head_only)
+        return self._paper_send(page.encode("utf-8"), 200, head_only)
+
+    def run_result_view(self, head_only=False):
+        """GET /_board/run-result?task=<Task folder>&run=<run stem>: one run's results."""
+        q = parse_qs(urlparse(self.path).query)
+        try:
+            page = render_run_result(self.root, (q.get("task") or [""])[0], (q.get("run") or [""])[0])
+        except (ValueError, FileNotFoundError) as exc:
+            return self._paper_send(("<p>No such Task folder: %s</p>" % esc(exc)).encode("utf-8"), 404, head_only)
+        except Exception as exc:  # a render bug is a named row, never a blank pane
+            return self._paper_send(("<p>render failed: %s</p>" % esc(exc)).encode("utf-8"), 500, head_only)
         return self._paper_send(page.encode("utf-8"), 200, head_only)
 
     def _paper_send(self, body, code, head_only):

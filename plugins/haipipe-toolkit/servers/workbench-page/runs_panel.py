@@ -203,7 +203,7 @@ def _card_html(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str
         '<button type=button class=run-copy data-copy="%s">Copy</button></summary>'
         '<pre class=run-prompt>%s</pre></details>'
         '<h4>Running process</h4><div class=run-process>%s%s</div>'
-        '<h4>Results</h4><div class=run-results><code class=repo-path>%s</code><ul>%s</ul></div>'
+        '<h4>Results</h4><div class=run-results>%s<code class=repo-path>%s</code><ul>%s</ul></div>'
         '</article>'
         % (index, _e(run), _e(row.get("_display") or display_name(run)), _e(_targets(row)),
            _e(state.lower().replace(" ", "-")), _e(row["_views"] if "_views" in row else _card_views(row)),
@@ -212,6 +212,9 @@ def _card_html(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str
            _e(state.lower().replace(" ", "-")), _e(state), _e(rerun), _skills_html(_run_skills(row, kind)),
            _e(prompt), _e(prompt),
            _e(state), (" · " + _e(row.get("goal"))) if row.get("goal") else "",
+           # a row may name a page that shows its results (the Paper Workbench's pop-out)
+           ('<a class=run-open href="%s" target=_blank data-pop="%s">Open the results ↗</a>'
+            % (_e(row["_open"]), _e(row.get("_open_name") or run))) if row.get("_open") else "",
            _e(folder or "no result yet"), files))
 
 
@@ -415,6 +418,7 @@ PANEL_CSS = """
 .run-prompt{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:7px 9px;border-radius:7px;
  background:color-mix(in srgb,var(--acc) 6%,var(--card));font:12px/1.5 ui-monospace,Menlo,monospace}
 .run-results ul{margin:4px 0 0;padding-left:18px;font-size:12px}
+.run-open{display:block;margin:0 0 6px;font-size:13px;font-weight:600}
 .run-state{font:600 10.5px/1.4 system-ui,sans-serif;border-radius:5px;padding:1px 6px;
  border:1px solid var(--line);color:var(--mut)}
 .run-state.st-awaiting-you{color:#2b8a3e;border-color:#2b8a3e}
