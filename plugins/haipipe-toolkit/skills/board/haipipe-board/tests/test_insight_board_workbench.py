@@ -171,7 +171,7 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             self.assertIn("DO send", html)                 # the answer's rows are shown
             self.assertIn("signed", html.lower())
             self.assertIn("Workflow map", html)
-            self.assertIn("Run Spec templates", html)
+            self.assertIn("Owed Run Specs", html)
             self.assertIn("Wisdom", html)
             self.assertNotIn("I5 Wisdom", html)
             self.assertIn("Folder on this board", html)
@@ -274,9 +274,9 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             self.assertEqual(qd2["question"], "how many rows per week?")
             self.assertEqual(qd2["cells"]["F"]["raw"], "⬜ open")
             self.assertEqual(qd2["cells"]["B"]["raw"], "⬜ open")
-            text = (board / "0-MT-meta/MT01-question-data/outline/MT01-question-data-log.md").read_text(encoding="utf-8")
+            text = (board / "0-MT-meta/MT01-question-data/draft/records/MT01-question-data-log.md").read_text(encoding="utf-8")
             self.assertRegex(text, r"(?m)^\d{6} · Registered `QD2` on F, B from the Insight Board · origin: curiosity-driven · born from: FD01 · D1")
-            self.assertIn("give Claude Code", render_insight_board(snap, "insight", "QD2", "B"))
+            self.assertIn("The answer Page is not allocated or recorded yet.", render_insight_board(snap, "insight", "QD2", "B"))
             with self.assertRaises(ValueError):
                 register_question(board, "W", "what to send next?", "B")   # MT04 is transposed
             with self.assertRaises(ValueError):

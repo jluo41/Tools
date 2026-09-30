@@ -61,7 +61,7 @@ class EvidenceRunBindingsTest(unittest.TestCase):
             page.write_text("# Q1\n", encoding="utf-8")
             rendered = render(page, "/board.md", "Q1.md")
         self.assertIn("<title>Evidence Space · Q1</title>", rendered)
-        self.assertIn("No Evidence Result yet.", rendered)
+        self.assertIn("No current Evidence Item or Result.", rendered)
         self.assertIn("q.get('focus')", rendered)
         self.assertIn("classList.add('run-focus')", rendered)
         self.assertIn("scrollIntoView({block:'center'})", rendered)
@@ -528,7 +528,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
         self.assertIn("v4 migration required", html)
         self.assertIn("outline/S-Test-evidence.md", html)
-        self.assertIn("No Evidence Result yet.", html)
+        self.assertIn("No current Evidence Item or Result.", html)
         self.assertNotIn("E99-VALUE-legacy", html)
         self.assertNotIn('function runKey', html)
         self.assertNotIn('class=related-run-card', html)
@@ -547,7 +547,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
         self.assertIn("v4 migration required", html)
         self.assertIn("outline/evidence", html)
-        self.assertIn("No Evidence Result yet.", html)
+        self.assertIn("No current Evidence Item or Result.", html)
         self.assertNotIn("E99-VALUE-legacy", html)
 
     def test_related_run_cards_are_grouped_by_evidence_and_report_unique_count(self):

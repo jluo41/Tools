@@ -13,7 +13,7 @@ from live.design import (
     perform_action,
     render_design,
 )
-from tests.fixture_design_v2 import (
+from fixture_design_v2 import (
     ItemSpec, audit, bind_insight_handoff, build_design_folder, build_insight_board, demo_specs, sms_criteria,
 )
 
@@ -667,7 +667,7 @@ class AuditFixesTest(unittest.TestCase):
             self.assertIn("the register changed after release", card)
 
     def test_a_changed_insight_is_queued_again_in_the_open(self):
-        from tests.fixture_design_v2 import HANDOFF_REL
+        from fixture_design_v2 import HANDOFF_REL
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td))
             item_id = self.new_item(page, basis="evidence-informed", evidence=f"evidence · {HANDOFF_REL}")

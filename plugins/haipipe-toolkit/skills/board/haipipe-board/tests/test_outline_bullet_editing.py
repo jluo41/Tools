@@ -62,7 +62,12 @@ class OutlineBulletEditingTest(unittest.TestCase):
             self.assertNotIn("data-bullet-edit", card)
             self.assertNotIn("data-bullet-write", card)
             self.assertNotIn("data-preview-write", card)
-            self.assertEqual(card.count("<textarea"), card.count("<textarea name=comment"))  # only the note composer
+            # Only the note composer, the Scratch notes boxes and the Revise box
+            # (Draft Space views) are text areas; no Bullet has its own editor.
+            self.assertEqual(card.count("<textarea"),
+                             card.count("<textarea name=comment")
+                             + card.count('<textarea name="notes"')
+                             + card.count('<textarea name="text" class="revise-box"'))
             self.assertNotIn("Save Bullet", card)
             self.assertNotIn("Read paragraph", card)
             self.assertNotIn("Planned move", card)
@@ -338,8 +343,11 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
                               file_q="S-page/S-page.md")
             self.assertNotIn("form[data-bullet-write]", rendered)
             self.assertNotIn("data-bullet-edit", rendered)
-            self.assertNotIn("fetch('/_board/draft',{method:'POST'", rendered)
-            self.assertNotIn("location.reload()", rendered)
+            # Scratch and Revise post to /_board/draft on purpose; a Bullet
+            # editor would post edit-bullet / append-bullet.
+            self.assertNotIn("edit-bullet", rendered)
+            self.assertNotIn("append-bullet", rendered)
+            # location.reload() now belongs to the Scratch editor (outline_scratch.py).
             self.assertIn("details.paragraph-group>summary", rendered)
 
     def test_post_route_rejects_legacy_bullet_writes(self):

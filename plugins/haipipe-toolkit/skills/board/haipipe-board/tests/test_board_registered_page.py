@@ -281,7 +281,7 @@ def test_fresh_official_init_tiny_board_build_and_checker(tmp_path, suffix, cont
     assert result.returncode == 0, result.stdout + result.stderr
     source = folder / "independent-note.md"
     manifest = folder / "page.toml"
-    material = folder / "outline/evidence/materials" / original.name
+    material = folder / "draft/evidence/materials" / original.name
     snapshots = {p: (p.read_bytes(), p.stat().st_ino)
                  for p in (source, manifest, material, original)}
     face = source.read_text()
@@ -289,7 +289,7 @@ def test_fresh_official_init_tiny_board_build_and_checker(tmp_path, suffix, cont
     assert "### A1 · Source" in face and "⬜ A1.1" in face
     write(board / "board.md", "# Reading Board\nspine: read the imported source\n"
           "close: the source is reviewed\n## Topic\nA synthetic technical import.\n"
-          "## Pipeline\nImport then review.\n## Pages\n### G1 · Reading\n"
+          "## Pipeline\nImport then review.\n## Pages\n### G1 · 1-G1-reading\n"
           "Discuss the imported source.\n1-G1-reading/independent-note/independent-note.md\n")
     result = cli(ENGINE / "cli/build.py", board)
     assert result.returncode == 0, result.stdout + result.stderr

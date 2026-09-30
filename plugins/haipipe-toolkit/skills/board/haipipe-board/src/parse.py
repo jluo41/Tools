@@ -6,6 +6,7 @@ from .page_parse import parse_page, split_sections, strip_notes
 from .body import LINKS
 from .common import page_files, registered_page_source, sec
 from .dialect_task_block import group_token as task_group_token
+from .dialect_task_block import mounted_info
 from .dialect_task_block import page_info as task_page_info
 from .stage_contract import contract_status
 
@@ -17,6 +18,28 @@ from .stage_contract import contract_status
 _DISCOVERY_BOARD_MARKER = re.compile(
     r"^<!--\s*haipipe:discovery-board-jobs:(?:start|end)\s*-->$"
 )
+
+
+# A mounted Task or Discovery Page keeps its own domain `status:`. The Board
+# shows it in the four-state vocabulary it already draws, and never counts it
+# as a settled question.
+_DOMAIN_STATE = {
+    "reported": "✅", "closed": "✅", "complete": "✅", "completed": "✅",
+    "done": "✅", "answered": "✅",
+    "planned": "🟡", "running": "🟡", "active": "🟡", "executed": "🟡",
+    "in-progress": "🟡", "partial": "🟡",
+    "blocked": "⏸", "hold": "⏸", "on-hold": "⏸",
+}
+
+
+def domain_state(text):
+    """`status: reported` in a Folder Page's head -> `✅ REPORTED`, else ``."""
+    head = "\n".join(text.split("\n")[:40])
+    found = re.search(r"(?m)^status:\s*([A-Za-z][A-Za-z-]*)\s*$", head)
+    if not found:
+        return ""
+    word = found.group(1).lower()
+    return f"{_DOMAIN_STATE.get(word, '🔴')} {word.upper()}"
 
 
 def split_blocks(src):
@@ -141,7 +164,8 @@ def parse_dir(d):
     disk, dupes = {}, []
     for p in page_files(d):
         registered = registered_page_source(p.parent) == p
-        task_info = task_page_info(d, p, block_family) if block_board else None
+        task_info = (task_page_info(d, p, block_family) if block_board
+                     else mounted_info(d, p))
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
         # A NAMED Q family (JL 260727): `Q-Skill-haipipe-board.md`. Same idea as
         # the named S families, and for the same reason: a skill page is
@@ -393,7 +417,9 @@ def parse_dir(d):
             paths = ln[4:].split()
             if paths:
                 order.append((group, parse_doc(d, paths)))
-        elif ln.endswith(".md"):
+        elif ln.endswith(".md") and not re.search(r"\s", ln.lstrip("-*· ").strip()):
+            # A listing is one path. A prose line that merely ends in ".md"
+            # ("this group lives beside board.md") is the group's introduction.
             name = ln.lstrip("-*· ").strip()
             key_name = name if name in disk else ""
             ambiguous = False
@@ -447,8 +473,11 @@ def parse_dir(d):
             q["group"] = g
         else:
             _key, qid, p, kind, family, _default_group, _group_key = item
-            q = parse_page(qid, p.read_text(encoding="utf-8"), g,
-                           p.relative_to(d).as_posix(), kind, family)
+            text = p.read_text(encoding="utf-8")
+            q = parse_page(qid, text, g, p.relative_to(d).as_posix(), kind, family)
+            if kind in {"task", "discovery"} and not block_board:
+                q["state"] = domain_state(text) or q["state"]
+                q["mounted"] = True
         qs.append(q)
     by_id = {q["id"].casefold(): q for q in qs if q.get("file")}
     for q in qs:

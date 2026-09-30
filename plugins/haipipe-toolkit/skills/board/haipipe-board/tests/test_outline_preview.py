@@ -74,7 +74,12 @@ class OutlinePreviewTest(unittest.TestCase):
         self.save('', result['record_token'])
         self.assertNotIn('C1.P1.B1', read_previews(self.page))
         card = plan_card(self.page)
-        self.assertEqual(card.count('<textarea'), card.count('<textarea name=comment'))  # only the note composer
+        # Only the note composer, the Scratch notes boxes and the Revise box
+        # (Draft Space views) are text areas; no Bullet has its own editor.
+        self.assertEqual(card.count('<textarea'),
+                         card.count('<textarea name=comment')
+                         + card.count('<textarea name="notes"')
+                         + card.count('<textarea name="text" class="revise-box"'))
         self.assertIn('Not drafted', card)
 
     def test_shared_realization_is_seeded_once_with_explicit_cross_reference(self):
@@ -83,10 +88,15 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertEqual(seeds['C1.P1.B2']['shared'], 'C1.P1.B1')
         card = plan_card(self.page)
         self.assertIn('<span>Bullet</span><span>Draft</span>', card)
-        # Table and immersive reader are two projections of the same embedded
-        # Draft value; one is hidden at a time by the view switch.
-        self.assertEqual(card.count('Existing prose.'), 2)
-        self.assertEqual(card.count('<textarea'), card.count('<textarea name=comment'))  # only the note composer
+        # Table, immersive reader and the Revise box are three projections of
+        # the same embedded Draft value; one is shown at a time by the view switch.
+        self.assertEqual(card.count('Existing prose.'), 3)
+        # Only the note composer, the Scratch notes boxes and the Revise box
+        # (Draft Space views) are text areas; no Bullet has its own editor.
+        self.assertEqual(card.count('<textarea'),
+                         card.count('<textarea name=comment')
+                         + card.count('<textarea name="notes"')
+                         + card.count('<textarea name="text" class="revise-box"'))
         self.assertNotIn('Read paragraph', card)
 
     def test_script_like_prose_is_escaped_in_read_only_projection(self):
@@ -118,9 +128,9 @@ class OutlinePreviewTest(unittest.TestCase):
                               'S-test/S-test.md')
         self.assertIn('data-draft-mode=table', page)
         self.assertIn('data-draft-mode=reading', page)
-        self.assertIn("requestedDraftMode=params.get('view')==='reading'", page)
-        self.assertIn('<details class=source-details>', card)
-        self.assertIn('<summary>Sources</summary>', card)
+        self.assertIn("requestedDraftMode=['scratch','reading','revise'].indexOf(params.get('view'))>=0", page)
+        # Page 0.118+: the Draft card has no Sources row.
+        self.assertNotIn('<details class=source-details>', card)
         self.assertNotIn('<details class=preview-editor open', card)
         self.assertIn('title="Open C1.P1.B1">B1</a>', card)
         self.assertIn('<span class=point-label>[Point]</span>', card)

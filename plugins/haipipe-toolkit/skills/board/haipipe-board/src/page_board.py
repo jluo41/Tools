@@ -1145,6 +1145,10 @@ def frac_done_of(q):
 def tree_page_name(q):
     """One Page, one guessable file; Task Pages lead with their full address."""
     stem = Path(q.get("file") or q["id"]).stem
+    if q.get("mounted"):
+        # `t01_<slug>` repeats under every Job, so a mounted Page is addressed
+        # by its Board-derived id alone.
+        return f"{q['id']}.html"
     if q.get("kind") == "task":
         slug = re.sub(r"^t\d{2}_", "", stem)
         return f"{q['id']}-{slug}.html"

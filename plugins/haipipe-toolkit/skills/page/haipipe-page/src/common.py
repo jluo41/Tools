@@ -374,6 +374,44 @@ PAGENAME = re.compile(
 TASK_PAGE_NAME = re.compile(r"^t\d{2}_[a-z0-9][a-z0-9_]*\.md$")
 
 
+def _listed_paths(d):
+    """Board-relative `.md` paths that `## Pages` names, one per line."""
+    try:
+        text = (Path(d) / "board.md").read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    found = re.search(r"(?ms)^##\s+Pages\s*$\n?(.*?)(?=^##\s+|\Z)", text)
+    if not found:
+        return set()
+    rows = (ln.strip().lstrip("-*· ").strip() for ln in found.group(1).split("\n"))
+    return {r for r in rows if "/" in r and r.endswith(".md") and not re.search(r"\s", r)}
+
+
+def mounted_folder_kind(page):
+    """`task`, `discovery`, or `` for one same-stem BJTR Folder Page.
+
+    Task and Discovery Pages are owned by their domain workflows; a Board only
+    mounts them. The kind is what the Folder declares (`folder-kind:` in its
+    frontmatter or head), or, for a Page older than that key, the `tasks/` or
+    `discoveries/` folder it sits under. Any other `tNN_<slug>.md` stays a
+    plain file, so a related folder full of notes never becomes ghost Pages.
+    """
+    page = Path(page)
+    if not TASK_PAGE_NAME.fullmatch(page.name) or page.parent.name != page.stem:
+        return ""
+    try:
+        head = "\n".join(page.read_text(encoding="utf-8").split("\n")[:40])
+    except OSError:
+        return ""
+    declared = re.search(r"(?m)^folder-kind:\s*(task|discovery)\s*$", head)
+    if declared:
+        return declared.group(1)
+    for part in page.parts[:-1]:
+        if part in {"tasks", "discoveries"}:
+            return "task" if part == "tasks" else "discovery"
+    return ""
+
+
 def board_kind(d):
     """Return the explicit Board container kind, with no path inference.
 
@@ -539,6 +577,16 @@ def page_files(d):
             if p not in seen and eligible(p) and PAGENAME.match(p.name):
                 seen.add(p)
                 yield p
+    # A same-stem Task or Discovery Folder Page mounts on any Board without a
+    # copy, but only when `## Pages` lists it by Board-relative path. Its
+    # Folder's own status and prose grammar stay the source of truth, and a
+    # Board that does not list a Task tree never adopts it.
+    listed = _listed_paths(d)
+    for p in sorted(d.rglob("t[0-9][0-9]_*.md")) if listed else ():
+        if (p not in seen and p.relative_to(d).as_posix() in listed
+                and eligible(p) and mounted_folder_kind(p)):
+            seen.add(p)
+            yield p
     for manifest in sorted(d.rglob("page.toml")):
         source = registered_page_source(manifest.parent)
         if source is not None and source not in seen and eligible(source):

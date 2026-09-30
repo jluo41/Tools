@@ -8,8 +8,8 @@ from tempfile import TemporaryDirectory
 from live import design_actions as acts
 from live.design import design_snapshot, perform_action, render_design, _render_for
 from live.designboard import bundle_rows, design_board_snapshot, render_design_board
-from tests.fixture_design_v2 import FolderBuilder, ItemSpec, audit
-from tests.test_design_workbench import legacy_fixture, v2_fixture
+from fixture_design_v2 import FolderBuilder, ItemSpec, audit
+from test_design_workbench import legacy_fixture, v2_fixture
 
 
 def spec(stage="generated", **fields):

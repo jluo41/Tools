@@ -69,12 +69,12 @@ class BoardV1ContractTest(unittest.TestCase):
             BOARD_FAMILY / "haipipe-board-routing" / "SKILL.md"
         ).read_text(encoding="utf-8")
         normalized_board = " ".join(board.split())
-        for term in ("Page Run", "Task Run", "Page workflow pass"):
+        for term in ("Page Run", "Task Run", "Page Workflow Runtime execution"):
             self.assertIn(term, normalized_board)
         self.assertIn("rp00_mermaid-structure", normalized_board)
-        self.assertIn("rpNN_pNN[-pNN]", normalized_board)
+        self.assertIn("rp-para-NN_Pxx[-Pyy]", normalized_board)
         self.assertNotIn("prNN", normalized_board)
-        self.assertIn("outline/records/<stem>-discussion.md", routing)
+        self.assertIn("draft/records/<stem>-discussion.md", routing)
         self.assertIn("Aims › Decision Now", routing)
         self.assertNotIn("inside `## States`", routing)
         self.assertNotIn("a Log line · a State entry", routing)
@@ -113,7 +113,7 @@ class BoardV1ContractTest(unittest.TestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("6 phase contracts · 0 findings", result.stdout)
+        self.assertIn("6 Folder contracts · 0 findings", result.stdout)
 
 
 if __name__ == "__main__":

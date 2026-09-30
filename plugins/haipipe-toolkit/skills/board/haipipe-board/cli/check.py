@@ -61,6 +61,7 @@ from src.outline_version import plan_dir, plan_files, record_path  # noqa: E402
 from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
                         aim_ids, aim_progress, board_kind, group_stem,
                         page_files, registered_page_source)
+from src.dialect_task_block import mounted_info  # noqa: E402
 from src.dialect_task_block import page_info as task_page_info  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
 from src.outline_version import latest_outline  # noqa: E402
@@ -72,11 +73,10 @@ from src.feedback import SEMANTIC_SECTION_ID  # noqa: E402  · the one section-i
 from src.feedback import (rounds as _rounds, parse_round, register_path,  # noqa: E402
                           register_ids, routed_rows)
 from src.folder_contract import resolved_folder_kind  # noqa: E402
+from src.naming import (NAME_MAX_WORDS, NAME_TARGET_WORDS, ai_flavor,  # noqa: E402
+                        name_words)
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
-MAX_PAGE_TITLE_WORDS = 6
-# `Q<group><n>-<slug>` or `S-<Family>-<unit>-<slug>`, as the heading writes it.
-PAGE_ID_RE = re.compile(r"Q[A-Za-z]*\d+[\w-]*|S-[\w-]+")
 # One grammar, one place: src/feedback.py's SEMANTIC_SECTION_ID (260908 it gained
 # the optional section index, `S-<desk>-Main-<N>-<Title>`). This checker kept a
 # private copy and so read `S-JAMA-IM-Main-1-Introduction` as a legacy stage page
@@ -184,6 +184,86 @@ def state_token(value):
     if not value:
         return ""
     return value.split()[0].replace("\ufe0f", "")
+
+
+def reader_title_words(title):
+    """Return the reader-facing words in one Page H1.
+
+    The visible purpose phrase has an eight-word ceiling. Machine identity and
+    derived release metadata are useful navigation but are not the phrase a
+    writer is being asked to shorten, so remove them before counting.
+    """
+    title = re.sub(
+        r"^(?:(?:Q[A-Za-z0-9-]*\d[A-Za-z0-9-]*)|"
+        r"(?:S\s+[A-Za-z]+\s+[A-Za-z0-9]+)|"
+        r"(?:(?:Skill|Agent|Meeting|Design)[ -]?\d+))\s*·\s*",
+        "", title, flags=re.I)
+    title = re.sub(r"\s*\((?:Skill|Agent|Meeting)\b[^)]*\)\s*$", "", title,
+                   flags=re.I)
+    title = re.sub(r"\s*·\s*v\d[0-9A-Za-z.-]*\s*$", "", title, flags=re.I)
+    return name_words(title)
+
+
+def check_identity_name(value, kind, code, where, rep):
+    """Report the mechanical half of the shared naming law."""
+    words = name_words(value)
+    if len(words) > NAME_MAX_WORDS:
+        rep.add(
+            WARN, code, where,
+            f"{kind} has {len(words)} reader-facing words; use "
+            f"{NAME_TARGET_WORDS} or fewer and never more than "
+            f"{NAME_MAX_WORDS}. Rewrite around one identity; do not truncate")
+    flavor = ai_flavor(value)
+    if flavor:
+        rep.add(
+            WARN, "name-ai-flavor", where,
+            f"{kind} uses generic model-like wording ({flavor!r}); name the "
+            "concrete object, action, or outcome")
+
+
+def check_page_title(text, name, rep):
+    """Check the Page H1 against the shared six-target, eight-ceiling law."""
+    match = re.search(r"^#\s+(.+?)\s*$", text, re.M)
+    if not match:
+        return
+    title = match.group(1)
+    # Identity/version prefixes are navigation, not part of the authored name.
+    visible = " ".join(reader_title_words(title))
+    line = text[:match.start()].count("\n") + 1
+    check_identity_name(visible, "Page title", "page-title-long",
+                        f"{name}:{line}", rep)
+
+
+def check_board_names(text, rep):
+    """Check the Board title and Question Group names in ``board.md``."""
+    title = re.search(r"^#\s+(.+?)\s*$", text, re.M)
+    if title:
+        line = text[:title.start()].count("\n") + 1
+        check_identity_name(title.group(1), "Board title", "board-title-long",
+                            f"board.md:{line}", rep)
+
+    names = "|".join(re.escape(n) for n in alias_names("Pages"))
+    pages = re.search(rf"(?ms)^##\s+(?:{names})\s*$\n?(.*?)(?=^##\s+|\Z)", text)
+    if not pages:
+        return
+    for match in re.finditer(
+            r"^###\s+Q(?:[0-9][a-z]|[A-Z]+[a-z]*)\s*\u00b7\s*(.+?)\s*$",
+            pages.group(1), re.M):
+        line = text[:pages.start(1) + match.start()].count("\n") + 1
+        check_identity_name(match.group(1), "Question Group title",
+                            "question-group-title-long", f"board.md:{line}", rep)
+
+
+def check_division_names(text, name, rep):
+    """Check direct Content division names; prose and job lines are exempt."""
+    block = re.search(r"(?ms)^##\s+Content\s*$\n?(.*?)(?=^##\s+|\Z)", text)
+    if not block:
+        return
+    pattern = r"^###\s+(?:\u00a7\s*)?\d+(?:\.\d+)*\s*(?:\u00b7\s*)?(.+?)\s*$"
+    for match in re.finditer(pattern, block.group(1), re.M):
+        line = text[:block.start(1) + match.start()].count("\n") + 1
+        check_identity_name(match.group(1), "Content division name",
+                            "division-name-long", f"{name}:{line}", rep)
 
 
 def strip_fences(text, prose_only=False):
@@ -395,6 +475,7 @@ def check_board(d, rep):
 
     if not re.search(r"^#\s+\S", text, re.M):
         rep.add(ERROR, "board-missing-title", "board.md", "no `# title` line")
+    check_board_names(text, rep)
     for canon in ("Topic", "Pipeline", "Pages"):
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
@@ -467,6 +548,7 @@ def check_board(d, rep):
 
     pages = {
         (p.relative_to(d).as_posix() if (block_board and task_page_info(d, p))
+         or (not block_board and mounted_info(d, p))
          or registered_page_source(p.parent) == p
          else p.name): p
         for p in page_files(d)
@@ -556,6 +638,31 @@ def check_board(d, rep):
     return pages, links, decision_only
 
 
+def check_mounted_page(d, path, name, rep, seen):
+    """A Task or Discovery Folder Page mounted on this Board.
+
+    The Folder's own workflow owns the Page's status and prose grammar, so the
+    Q contract (state, owner, Opening, Aims) does not apply. The Board only
+    needs a unique id and an address that agrees with the path it sits on.
+    """
+    info = mounted_info(d, path)
+    if info["id"] in seen:
+        rep.add(ERROR, "duplicate-id", name,
+                f"id {info['id']} is already used by {seen[info['id']]}")
+    seen[info["id"]] = name
+    text = path.read_text(encoding="utf-8", errors="replace")
+    declared = re.search(r"(?m)^address_compact:\s*(b\d{2}j\d{2}t\d{2})\s*$", text)
+    from_path = "".join(
+        m.group(1).lower()
+        for part in path.relative_to(d).parts[:-1]
+        for m in [re.match(r"^([bjt]\d{2})(?:_|$)", part, re.I)] if m)
+    if declared and re.fullmatch(r"b\d{2}j\d{2}t\d{2}", from_path) \
+            and declared.group(1).lower() != from_path:
+        rep.add(WARN, "mounted-address-mismatch", name,
+                f"address_compact {declared.group(1)} does not match the "
+                f"Folder path address {from_path}")
+
+
 def check_face(path, name, rep, links, page_ids, decision_only=False):
     text = path.read_text(encoding="utf-8")
     imported_content = None
@@ -570,21 +677,12 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     title_match = re.search(r"^#\s+(\S.*?)\s*$", text, re.M)
     if not title_match:
         rep.add(ERROR, "missing-title", name, "no `# title` line")
-    else:
-        title = title_match.group(1)
-        # The heading is written `{id} · {title}` (src/page_board.py), and the
-        # page id is not part of the title, so drop a leading id-shaped token.
-        head, sep, tail = title.partition("\u00b7")
-        if sep and PAGE_ID_RE.fullmatch(head.strip()):
-            title = tail.strip()
-        # Visible words are semantic tokens, not punctuation-only separators.
-        # A hyphenated compound, slash-joined identifier, or acronym is one word.
-        words = re.findall(r"[A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*", title)
-        if imported_content is None and len(words) > MAX_PAGE_TITLE_WORDS:
-            line = text[:title_match.start()].count("\n") + 1
-            rep.add(WARN, "title-too-long", f"{name}:{line}",
-                    f"title has {len(words)} visible words; target 3-5 and keep the whole "
-                    f"title at or below {MAX_PAGE_TITLE_WORDS} (JL 260827)")
+    elif imported_content is None:
+        # The shared naming law (six-word target, eight-word ceiling) replaced
+        # the older six-word `title-too-long` warning.
+        check_page_title(text, name, rep)
+    if imported_content is None:
+        check_division_names(text, name, rep)
     for canon in REQUIRED:
         # `Done when` is satisfied by the page's PLAN once the page migrated to
         # haipipe-workbench-page 0.16.0 and kept no copy.
@@ -2630,7 +2728,11 @@ def main():
             page_ids.add(m.group(1))
         elif SEMANTIC_SECTION_PAGE.fullmatch(name):
             page_ids.add(Path(name).stem)
+    mounted_ids = {}
     for name, p in sorted(pages.items()):
+        if board_kind(d) not in {"task-block", "discovery-block"} and mounted_info(d, p):
+            check_mounted_page(d, p, name, rep, mounted_ids)
+            continue
         check_face(p, name, rep, links, page_ids, decision_only)
     check_topic_entries(d, pages, rep)
     check_draw_folders(d, rep)

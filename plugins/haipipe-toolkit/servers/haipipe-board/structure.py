@@ -22,6 +22,8 @@ from urllib.parse import unquote
 
 from . import base
 from .base import _now_stamp, q_files, vet_qpath
+from src.common import board_is_numbered
+from src.naming import name_problem
 
 
 def _slugify(t):
@@ -109,6 +111,8 @@ def structure_op(board, p):
         title = " ".join((p.get("title") or "").split())
         if not title:
             return None, "the group needs a title"
+        if problem := name_problem(title, "Question Group title"):
+            return None, problem
         used = {l for _, l, _ in heads}
         letter = (p.get("letter") or "").strip().upper().lstrip("Q")
         if not letter:
@@ -117,6 +121,8 @@ def structure_op(board, p):
             return None, f"group letter Q{letter or '?'} is taken or invalid"
         block = [f"### Q{letter} · {title}"]
         hook = " ".join((p.get("hook") or "").split())
+        if hook and (problem := name_problem(hook, "group hook")):
+            return None, problem
         if hook:
             block.append(hook)
         for ln in (p.get("body") or "").split("\n"):
@@ -134,6 +140,8 @@ def structure_op(board, p):
         title = " ".join((p.get("title") or "").split())
         if not title:
             return None, "the question needs a title"
+        if problem := name_problem(title, "Page title"):
+            return None, problem
         m = re.match(r"^Q?([0-9][a-z]|[A-Z]+[a-z]?)", g)
         hit = next(((i, l, h) for i, l, h in heads
                     if (m and l == m.group(1)) or h == g), None)

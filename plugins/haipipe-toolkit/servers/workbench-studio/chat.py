@@ -30,6 +30,7 @@ from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from host_paths import HOST as HOST_DIR   # servers/_host (status.py lives there)
 from .structure import page_id_of
 from src.common import outline_lane_dirs, studio_lane_dir
+from src.naming import compact_name, name_problem
 from src.outline_version import latest_outline, plan_dir, record_path
 from server_config import load_server_config, server_config_dir
 
@@ -1620,9 +1621,11 @@ class ChatMixin:
         """POST /_board/session-name {file, id, name} → 给某段 session 改名。
         名字住在登记表（板外之物不进 .md 头部：QD1「板上只记结果」）。"""
         sid = (p.get("id") or "").strip()
-        name = " ".join((p.get("name") or "").split())[:80]
+        name = " ".join((p.get("name") or "").split())
         if not sid:
             return None, "缺 id"
+        if name and (problem := name_problem(name, "session name")):
+            return None, problem
         self.record_session(f, sid, name=name or " ")     # 单空格 = 显式清名
         return {"id": sid, "name": name}, None
 
@@ -1652,7 +1655,7 @@ class ChatMixin:
                         t = " ".join(c.split())
                         if t.startswith("<"):          # 跳过注入的 reminder 块
                             continue
-                        return t[:90]
+                        return compact_name(t)
         except Exception:
             pass
         return ""

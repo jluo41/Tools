@@ -16,7 +16,7 @@ from live.designboard import (
     render_design_board,
     resolve_board,
 )
-from tests.fixture_design_v2 import build_design_folder, build_insight_board, demo_specs
+from fixture_design_v2 import build_design_folder, build_insight_board, demo_specs
 
 BRIEF = """# Design Brief
 folder-kind: brief

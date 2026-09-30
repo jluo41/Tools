@@ -207,6 +207,12 @@ if __name__ == "__main__":
         registered = set()
         for q in qs:
             source = target / q.get("file", "")
+            if q.get("mounted"):
+                # A mounted Task or Discovery Page keeps its Folder's own prose,
+                # which may be short; it is not a sample for the JS-off gate.
+                group = boardbody.group_token(q.get("group") or "") or "_ungrouped"
+                registered.add(target / "board" / group / tree_page_name(q))
+                continue
             if registered_page_source(source.parent) != source:
                 continue
             group = boardbody.group_token(q.get("group") or "") or "_ungrouped"

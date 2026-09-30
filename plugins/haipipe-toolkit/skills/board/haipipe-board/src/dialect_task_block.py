@@ -15,6 +15,7 @@ from pathlib import Path
 KINDS = {"task-block", "discovery-block"}
 _BLOCK = re.compile(r"^(b\d{2})(?:_|$)", re.I)
 _JOB = re.compile(r"^(j\d{2})(?:_|$)", re.I)
+_TASK_PREFIX = re.compile(r"^(t\d{2})_", re.I)
 _TASK = re.compile(r"^(t\d{2})_(?P<name>[a-z0-9][a-z0-9_]*)$", re.I)
 
 
@@ -75,6 +76,55 @@ def page_info(board_dir, page, family="task"):
         "task": task_name,
         "reference": rel.as_posix(),
         "sort_key": (job_number, job_name.casefold(), task_number, task_name.casefold()),
+    }
+
+
+_ADDRESS_LINE = re.compile(r"(?m)^address_compact:\s*(b\d{2}j\d{2}t\d{2})\s*$", re.I)
+_ADDRESS_SETEXT = re.compile(
+    r"(?ms)^Address\s*\n-{3,}\s*\n\s*(b\d{2}[.]?j\d{2}[.]?t\d{2})\b", re.I)
+
+
+def mounted_info(board_dir, page):
+    """Describe one Task or Discovery Folder Page mounted on a generic Board.
+
+    The Folder's own Page Face is read as it is; the Board contributes only
+    an id and a place in the roster. The id is `T-<address>` or `D-<address>`,
+    where the address is the Folder's declared `address_compact`, its legacy
+    `Address` section, or the bNN/jNN/tNN parts of its path. The Board-relative
+    path is the Page's identity on disk, because `t01_...` recurs under every
+    Job. Returns ``None`` when the Page is not a mounted Folder Page.
+    """
+    from .common import mounted_folder_kind
+    board_dir, page = Path(board_dir), Path(page)
+    kind = mounted_folder_kind(page)
+    if not kind:
+        return None
+    try:
+        rel = page.relative_to(board_dir)
+    except ValueError:
+        return None
+    try:
+        text = page.read_text(encoding="utf-8")
+    except OSError:
+        text = ""
+    found = _ADDRESS_LINE.search(text) or _ADDRESS_SETEXT.search(text)
+    if found:
+        compact = re.sub(r"[.]", "", found.group(1)).lower()
+    else:
+        parts = [_prefix(pat, part) for part in rel.parts[:-1]
+                 for pat in (_BLOCK, _JOB, _TASK_PREFIX)]
+        compact = "".join(x for x in parts if x) or page.stem
+    letter = "T" if kind == "task" else "D"
+    return {
+        "id": f"{letter}-{compact}",
+        "kind": kind,
+        "family": kind,
+        "group": "",
+        "group_token": "",
+        "job": "",
+        "task": page.stem,
+        "reference": rel.as_posix(),
+        "sort_key": (10_000, rel.as_posix().casefold(), 0, ""),
     }
 
 
