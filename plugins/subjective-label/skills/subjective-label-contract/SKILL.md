@@ -5,7 +5,7 @@ description: >-
   sets up one labeling job: builds the fenced source, creates the P0 contract (corpus, fields, held-back test, G_00), and reads its status. Every Run in this view names this skill, and no other view uses it.
   Use for setting up a labeling job, fence_source, job.py create or status, the held-back test at setup, P0 integrity, or /subjective-label-contract.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -21,19 +21,29 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
- 1    run-corpus-contract      built · engine/fence_source.py, then engine/job.py create
+step  Run Type                     state
+ 1    corpus-contract      built · engine/fence_source.py, then engine/job.py create
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 The fenced source that `create` imports is built by `engine/fence_source.py`.
+A raw transcript is not yet its input: first choose the labeling unit and
+derive one row per unit with a target, prior context, and source lineage.
+Read [`CORPUS-PREPARATION.md`](../../CORPUS-PREPARATION.md) for the
+preparation boundary and multi-turn examples. Use
+`/subjective-label-preparation` for source-owned Runs and the Data →
+Preparation view before this Page-local Contract. `corpus-contract` freezes one
+accepted, labeling-ready snapshot; it does not stand for all the cleaning and
+unitization work that produced it.
+
 A fenced source is a corpus snapshot whose sealed test is reserved before any
-development read. The tool does the test-reserve work before the job exists,
-so it allocates no Run; the reservation reaches the job inside
-`corpus-contract`. It draws the sealed ids with a declared seed, optionally
+development read. The older `fence_source.py` tool handles already-unitized,
+single-unit sources and allocates no native Preparation Run. It draws sealed
+item IDs with a declared seed, optionally
 stratified evenly by one item-level field read from a side JSONL (a field with
 two values for one item is refused). It requires a non-empty value in the
 configured `corpus.text_field`, computes `text_hash` from that field, and
@@ -48,9 +58,15 @@ renders G_00 `guideline.md` and `cheatsheet.md` from the config meanings (see
 `../label-building/ref/ref-config.md` §3a). Like `create`, it is additive: an existing
 different file is refused.
 
+That older tool samples `item_id` values individually. For transcript data,
+use `engine/corpus_preparation.py` instead: it materializes the chosen unit,
+checks prior context and lineage, reserves complete source groups, and writes
+an accepted package plus `preparation-receipt.json`. Never use item-level
+fencing for multiple items from one conversation.
+
 ```bash
 # Run from the repository root.
-python3 plugins/subjective-label/engine/fence_source.py \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/fence_source.py" \
   --items <items.jsonl> --config <config.seed.yaml> --out <fenced-source> \
   --sealed-n <n> --seed <seed> --custodian <human> \
   [--stratify-jsonl <rows.jsonl> --stratify-field <field>]
@@ -65,8 +81,14 @@ The canonical technical entry is `engine/job.py create`. It imports one
 already-fenced corpus snapshot and its opaque sealed-test reservation into the
 Page's direct `labeling/` lane, writes the five P0 artifacts through an
 additive/idempotent writer, and leaves `authority.meaning_confirmed: false`.
-It byte-copies the protected manifest as an opaque payload, but
-never parses, prints, or renders it; it never copies a historical round, proxy
+For a prepared transcript package it first verifies the QA, frame, eligible
+corpus, and protected-manifest digests, and binds the accepted source receipt
+in `labeling/preparation-ref.yaml`. A mismatched Page reference or package
+fails before P0 files are written. Older fenced sources remain readable but
+do not gain a group-safety claim retroactively.
+It copies the protected manifest without printing or rendering protected IDs;
+the current validator can parse supported ID/hash records to reconcile counts
+and membership. It never copies a historical round, proxy
 judgment, or model-derived gold. `engine/job.py status` checks, without writing, that the corpus,
 opaque reservation, policy components, and P0 receipt are present and readable. It
 never raises on a bad or unreadable file; it lists each defect in
@@ -82,7 +104,7 @@ satisfy that gate. A valid confirmation needs the human's receipt in
 `config.yaml`.
 
 `engine/job.py create` writes the P0 domain scaffold and allocates exactly one
-completed `rlNN_corpus-contract_*` Ticket/runtime/Result envelope. It does not
+completed `run-labeling-corpus-contract-<MMDD>-<target>` Ticket/runtime/Result envelope. It does not
 speculatively allocate the optional or later operations above. Do not count
 historical scaffold files as Runs; `engine/run_catalog.py plan` remains a
 truthful planning tool for operations that have not been commissioned.
@@ -101,7 +123,7 @@ artifacts are present and readable.
 
 ```bash
 # Run from the repository root.
-python3 plugins/subjective-label/engine/job.py create \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/job.py" create \
   --source-job <fenced-source> \
   --page-file <page-home>/<page>.md \
   --job-root <page-home>/labeling \
@@ -111,7 +133,7 @@ python3 plugins/subjective-label/engine/job.py create \
 The read-only status invocation is exact and requires no Page-file argument:
 
 ```bash
-python3 plugins/subjective-label/engine/job.py status \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/job.py" status \
   --job-root <page-home>/labeling
 ```
 

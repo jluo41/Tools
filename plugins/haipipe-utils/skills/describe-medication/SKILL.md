@@ -2,7 +2,7 @@
 name: describe-medication
 description: "Normalize a logged medication (any cohort's dialect: a WellDoc MedicationID, an OhioT1DM drug class, a Shanghai free-text string) to an FDA-identified drug with a dose that states its own unit. Use when a Medication ProcName needs a drug name, an NDC, a pharmacologic class, or a dose scale, or when a SourceFn must enrich medication data. Trigger: describe medication, medication to drug name, resolve MedicationID, NDC, RxNorm, dose unit, mednorm, 药物归一化."
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-22"
   measured: "82.8% of 397,204 administrations get an FDA ingredient; 82.7% get a dose unit; 62.2% typed as insulin"
   chain: "emits DrugKey, which describe-insulin consumes"
@@ -55,6 +55,14 @@ THE ONE-MINUTE VERSION
                  DosageForm · Route · NDC
      provenance  MedSource · MedConf · IsInsulin
 ```
+
+A DEVICE IS NOT A DRUG (260930). `IsInsulin` also reads the log's own words, so
+`Insulin Disposable Pump (OMNIPOD CLASSIC PODS, GEN 3,) MISC` was typed as an insulin
+and sent to describe-insulin. A log that names a pump, pod, infusion set, pen needle,
+insulin syringe, lancet or test strip, and that the FDA Directory does not resolve to
+a drug, is now `IsInsulin` false (`aggregate.DEVICE_RE`). A drug sold in a device
+(`LYUMJEV TEMPO PEN ... insulin pen`, `Dupixent Syringe`) resolves in the bank and
+keeps its answer. Over every frozen request of S20260927 this changed 1 answer.
 
 
 WHAT IT ACTUALLY DELIVERS, MEASURED

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.5] - 2026-09-29 - a contract field can say when it was added
+
+- `FieldSpec.since` (default 1) names the `contract_version` that added a field. A version built before it lacks the column and reads it as the field's default; a field without `since` stays required, and `since` above `contract_version` is refused (`code/haipipe/external_base/asset.py`, `providers/local_external_store.py`). Builds and `validate_asset.py` stay strict. Asked for by the food session so `ext_food_resolved` can gain `Sugar` without making S20260926 and S20260929 unreadable. `ref/asset-model.md` shows the form.
+
 ## [0.3.4] - 2026-09-29 - "lock" is now "release" (JL 260929)
 
 - A named, never rewritten set of asset -> version pins is a **release**: `ExternalStore/_releases/<ReleaseName>.yaml`, yaml key `release:`, `ExternalRelease` / `load_release` / `ExternalAsset(release=...)` in `code/haipipe/external_base/`, command `release`, `fn/fn-release.md`, Block Job `j49_external_releases`. The old words `lock`, `_locks/`, `ExternalLock` are gone; the code still reads `_locks/` when `_releases/` is missing, for a store not moved yet.

@@ -2,6 +2,7 @@
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
 - Code (JL 260929, same sweep): `cli/page.py` `outline-tidy` help and error name `draft/` (`draft/previous/`, `draft/records/`); comments and docstrings in `src/outline_version.py`, `common.py`, `page_question.py`, `page_progress.py`, `feedback.py`, `folder_health.py` describe the plan folder as `draft/`. Readers still fall back to `outline/` on a Page not yet moved (`plan_dir`).
+- `src/draft_migration.py::kept_by_result`: `draft-layout` and the layout rule "no outline/ paths in the Page's files" leave a Run ticket's `outline/` path alone when that Run's own Result recorded it (a Design Run's `runtime.yaml` inputs). The Result is never edited and the Design run contract checks the ticket against it, so rewriting the ticket broke 12 Design Runs on DrFirst's R2Messages board ("runtime input manifest is incomplete"); those tickets were restored. Test: `test_a_ticket_keeps_the_outline_paths_its_own_result_recorded`.
 
 ## 0.121.1 · 2026-09-29 · run-names keeps the run's own day; the layout check agrees with it
 

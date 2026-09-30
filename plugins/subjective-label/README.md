@@ -3,6 +3,11 @@
 A human-grounded package for building one subjective label and then scanning a
 corpus under that frozen meaning.
 
+For structured transcript inputs, define the labeling unit and prepare a
+versioned, group-fenced item set before Contract; see
+[corpus preparation](CORPUS-PREPARATION.md). Other raw formats need an explicit
+normalizer before they can use this path.
+
 ## Family architecture
 
 ```text
@@ -12,8 +17,9 @@ subjective-label                         one user-facing umbrella
 ├── label-scanning                      Scanning side LAW
 ├── label-scanning-workflow             Scanning step order, allocation, Run receipts
 ├── subjective-label-workflow           the Workflow: Run Specs, dependencies, gates, Routes, handoff
-└── subjective-label-<view> × 11        one context skill per workbench view; shared skills also guide its Run Types
-    Data      contract · embedding
+├── subjective-label-preparation       upstream source-owned Corpus Runs
+└── subjective-label-<job-view> × 11   one context skill per job view; shared skills also guide its Run Types
+    Data      preparation · contract · embedding
     Labeling  definition · rounds · guideline
     Quality   test · evaluation · audit
     Delivery  handoff · scan · final-labels
@@ -29,7 +35,7 @@ The split follows one authority boundary:
               test Runs → production Runs → audit Runs → D*
 ```
 
-**A Workflow is a list of Runs.** Each Run Type declares its shared workflow,
+**A Workflow declares Run Specs; its runtime is the concrete Runs.** Each Run Type declares its shared workflow,
 domain, procedure, and View context Skills in the
 [Run Type–Skill table](skills/label-building/ref/ref-space-mapping.md#run-type-skills).
 P0-P5 remain compatibility capability tags
@@ -86,6 +92,7 @@ artifacts.
 | `/label-scanning` | `label-scanning/` | the Scanning law: Test, Scan, Audit |
 | `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning step order (steps 14-26), allocation, receipts |
 | `/subjective-label-workflow` | `subjective-label-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
+| `/subjective-label-preparation` | `subjective-label-preparation/` | transcript units, group reservation and the source-owned Data → Preparation Runs |
 | `/subjective-label-<view>` | `subjective-label-<view>/` (11) | one context Skill per workbench View; a Run Type also declares shared workflow, domain, and procedure Skills |
 | `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
 | `/haipipe-workbench-labeling` | `skills/label-building-workflow/haipipe-workbench-labeling/` | the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and one write door |

@@ -56,7 +56,7 @@ def test_build_embeds_only_development_items_before_g0(tmp_path: Path) -> None:
     assert all(set(row) == {"row", "item_id", "text_hash", "tokens", "cut"} for row in embedded)
 
     run = result["run"]
-    assert run.startswith("rl02_embedding-build_tiny-model-v1")
+    assert run.startswith("run-labeling-embedding-build-") and run.endswith("-tiny-model-v1")
     runtime = yaml.safe_load((root.parent / "results" / run / "runtime.yaml").read_text())
     assert runtime["status"] == "complete"
     assert (root.parent / "results" / run / "result.yaml").is_file()
@@ -75,7 +75,7 @@ def test_rebuild_is_a_no_op(tmp_path: Path) -> None:
     first = emb.build(root, model="org/tiny", encoder=fake_encoder)
     again = emb.build(root, model="org/tiny", encoder=fake_encoder)
     assert again["built"] is False and again["run"] == first["run"]
-    assert len(list((root.parent / "runs").glob("rl*_embedding-build_*.yaml"))) == 1
+    assert len(list((root.parent / "runs").glob("run-labeling-embedding-build-*.yaml"))) == 1
 
 
 def test_changed_corpus_is_refused(tmp_path: Path) -> None:
@@ -106,7 +106,7 @@ def test_failed_encoder_marks_the_run_failed(tmp_path: Path) -> None:
 
     with pytest.raises(OSError):
         emb.build(root, model="org/tiny", encoder=broken)
-    runtime = yaml.safe_load(next((root.parent / "results").glob("rl*_embedding-build_tiny/runtime.yaml")).read_text())
+    runtime = yaml.safe_load(next((root.parent / "results").glob("run-labeling-embedding-build-*-tiny/runtime.yaml")).read_text())
     assert runtime["status"] == "failed" and "model download failed" in runtime["failure"]
 
 
@@ -140,7 +140,7 @@ def test_failed_build_shows_as_failed_and_can_retry(tmp_path: Path) -> None:
     row = next(r for r in emb.build_status(root) if r["id"] == "BAAI/bge-m3")
     assert row["state"] == "failed" and "model download failed" in row["failure"]
     again = emb.build(root, model="BAAI/bge-m3", encoder=fake_encoder)
-    assert again["built"] is True and again["run"].startswith("rl03_")
+    assert again["built"] is True and again["run"].startswith("run-labeling-embedding-build-")
 
 
 def test_one_build_at_a_time_and_catalog_only(tmp_path: Path) -> None:
@@ -201,7 +201,7 @@ def test_bad_settings_are_refused_before_any_work(tmp_path: Path) -> None:
             emb.build(root, model="Qwen/Qwen3-Embedding-0.6B", encoder=fake_encoder, **kwargs)
     with pytest.raises(emb.EmbeddingRefused, match="does not take an instruction"):
         emb.build(root, model="BAAI/bge-m3", encoder=fake_encoder, instruction="anything")
-    assert not list((root.parent / "runs").glob("rl*_embedding-build_*.yaml"))
+    assert not list((root.parent / "runs").glob("run-labeling-embedding-build-*.yaml"))
 
 
 def test_old_builds_get_a_3d_view_without_touching_vectors(tmp_path: Path) -> None:
@@ -287,6 +287,7 @@ def test_who_started_reads_older_free_text_tickets() -> None:
     assert emb.who_started({"requested_by": "cli, requested by JL in chat"}) == \
         {"person": "JL", "via": "terminal", "note": "asked in chat"}
     assert emb.who_started({"requested_by": "board labeling screen", "started_by": "JL"})["via"] == "run button"
+    assert emb.who_started({"requested_by": "labeling workbench screen", "started_by": "JL"})["via"] == "run button"
 
 
 def test_the_command_line_will_not_build_without_a_person(tmp_path: Path) -> None:
@@ -294,4 +295,4 @@ def test_the_command_line_will_not_build_without_a_person(tmp_path: Path) -> Non
     with pytest.raises(SystemExit):
         emb.main(["build", "--job-root", str(root), "--model", "org/tiny"])
     assert not (root / "cache" / "embeddings" / "tiny").exists()
-    assert not list((root.parent / "runs").glob("rl*_embedding-build_*.yaml"))
+    assert not list((root.parent / "runs").glob("run-labeling-embedding-build-*.yaml"))

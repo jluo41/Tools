@@ -1,5 +1,113 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.23.15 · 2026-09-29
+
+- Bind the human-calibration copy request to the Board, Page, folder, Run Type,
+  round target, declared Skills, G0/Card prerequisites, and actual Ticket state.
+
+## 0.23.14 · 2026-09-29
+
+- An unfilled label schema now leads to Definition discussion; the Confirm
+  meaning button and G0 writer refuse blank class meanings.
+
+## 0.23.13 · 2026-09-29
+
+- Give a missing G0 receipt its own Definition repair path when an intact
+  human meaning confirmation already predates the released round. Show the
+  restore action in the Page, Board status, and Rounds guidance; route
+  irreparable historical jobs to the read-only Definition warning. Their
+  Labeling Run cards are records rather than executable prompts.
+
+## 0.23.12 · 2026-09-29
+
+- Hide G0 confirmation while a definition discussion is open, and show a
+  historical warning instead of a confirmation button when a released round
+  has no valid pre-release attestation. Historical unbuilt or blocked Run
+  cards expose a read-only Record, not a copied execution Prompt.
+
+## 0.23.11 · 2026-09-29
+
+- Explain a legacy discussion left open after round release as blocked history
+  instead of telling the reader to finish a Run that can no longer proceed.
+
+## 0.23.10 · 2026-09-29
+
+- Offer only the next unfinished Corpus Preparation Run Type while its source
+  owner is attached; stop offering source Runs after a package or Contract is
+  bound to the Page.
+- Use an open Definition discussion's `Resume` instead of suggesting a second
+  `+ New Run`; keep historical unbuilt Run Types review-only. Point G0-pending
+  users through the discussion before confirmation.
+
+## 0.23.9 · 2026-09-29
+
+- Hide discussion prompts after round release; the round writer refuses an
+  open discussion, preserving the G0 meaning bound to a frozen batch.
+
+## 0.23.8 · 2026-09-29
+
+- Keep an interrupted Result's `Finish Run` card in the Board's waiting list.
+- Apply the no-judgment Definition gate to an already-open discussion's writer
+  calls, matching the Workbench's prompt suppression.
+
+## 0.23.7 · 2026-09-29
+
+- Point the Page header and Board card at interrupted calibration Result
+  finalization before guideline work. The copied ongoing-round prompt now
+  calls `open_item` for an already-shown unfinished item and forbids replaying
+  its recorded first answer.
+
+## 0.23.6 · 2026-09-29
+
+- Hide Definition discussion start/resume requests until the Contract is
+  valid and the job is not on HOLD; suppress new or replayed discussion
+  prompts once any item has been judged.
+
+## 0.23.5 · 2026-09-29
+
+- Offer a contextual `Resume` copy request to finish an interrupted
+  human-calibration Result when every item has a final event but the runtime
+  is still running. The request uses `calibration.py finalize` on the same
+  Ticket and never asks for judgments again.
+
+## 0.23.4 · 2026-09-29
+
+- Hide `human-calibration` `+ New Run` after any calibration Ticket exists for
+  the open round. A closed or unreadable runtime cannot be reused by the
+  engine; the Workbench keeps its history visible without a misleading action.
+
+## 0.23.3 · 2026-09-29
+
+- Give a released round a contextual `human-calibration` `+ New Run` copy
+  request before its first item; `Resume` appears after the first item opens.
+  Hide that request without an open item or while the job is on HOLD. Embedding
+  and round preparation use their checked view buttons instead of a generic
+  Runs-panel start prompt.
+- Suppress `Resume` on stale human-calibration Tickets and `Rerun` on finished
+  batches. Point the copied JUDGE prompt to the Rounds view skill and describe
+  optional reference observations accurately.
+
+## 0.23.2 · 2026-09-29
+
+- Make the Board-backed Studio Chat versus direct Page agent-conversation
+  distinction explicit in the first-use path and surface summary.
+
+## 0.23.1 · 2026-09-29
+
+- Clarify that host commands need Python 3.10+, the direct Page route uses
+  the current four-Space presenter, and Data → Contract has a copy request
+  after an accepted preparation package is linked.
+
+## 0.23.0 · 2026-09-29
+
+- The dedicated Labeling host opens an existing canonical Page folder through
+  `/workbench/labeling?file=<Page>/<Page>.md` without a Board or generated
+  Page. The mixed Board host cannot use that route. The same action door
+  checks origin and engine authority before accepting writes.
+- Flat Board Markdown sources now ask for their own Page folder before Corpus
+  Preparation or a new Contract. The Workbench no longer offers source-owned
+  Run prompts that would write into a shared group lane.
+
 ## 0.22.1 · 2026-09-29
 
 - The Runs panel now lists every Skill declared for the selected Run Type,

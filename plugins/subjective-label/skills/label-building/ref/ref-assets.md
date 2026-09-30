@@ -115,9 +115,9 @@ to the Page, so a job file reads `labeling/corpus/items.jsonl`:
 <Page>/
 ├── labeling/                         {project_dir}, the tree above
 ├── runs/
-│   └── rlNN_<operation>_<target>.yaml    authored Run Ticket
+│   └── run-labeling-<operation>-<MMDD>-<target>.yaml    authored Run Ticket
 └── results/
-    └── rlNN_<operation>_<target>/
+    └── run-labeling-<operation>-<MMDD>-<target>/
         ├── runtime.yaml              lifecycle and attempt trail
         └── result.yaml               safe pointers to canonical domain Results
 ```

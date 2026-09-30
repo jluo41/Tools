@@ -228,6 +228,13 @@ class USDADatabase:
         self.db_path = db_path or USDA_DB
         self.con = sqlite3.connect(str(self.db_path))
         self.con.row_factory = sqlite3.Row
+        # Sugar is read when the bank has it (ext_food_bank SR2018_FND2026_FNDDS2024_SUGARS,
+        # ext_food_bank_branded). An older bank without the column answers sugars = NULL,
+        # so a release that pins it gets the same five numbers as before and an empty Sugar.
+        has = {r[1] for r in self.con.execute("PRAGMA table_info(food)")}
+        self.cols = ("food.fdc_id, food.description, food.data_type, food.calories, food.protein, "
+                     "food.fat, food.carbs, food.fiber, "
+                     + ("food.sugars" if "sugars" in has else "NULL AS sugars"))
 
     def close(self):
         self.con.close()
@@ -248,8 +255,9 @@ class USDADatabase:
 
         Returns list of dicts (top-k, best-scoring first). Every element is a
         plain dict -- callers may rely on .get(). Keys: fdc_id, description,
-        data_type, calories, protein, fat, carbs, fiber, __score, and __alias
-        when the candidate came from the curated alias dict.
+        data_type, calories, protein, fat, carbs, fiber, sugars (None when the
+        bank has no sugar column), __score, and __alias when the candidate came
+        from the curated alias dict.
         """
         toks_raw = self.tokenize(food)
         toks = [t for t in toks_raw if t not in STOPWORDS] or toks_raw
@@ -264,8 +272,7 @@ class USDADatabase:
         if food_norm in ALIAS:
             alias_target = ALIAS[food_norm]
             rows = list(self.con.execute(
-                "SELECT food.fdc_id, food.description, food.data_type, food.calories, "
-                "       food.protein, food.fat, food.carbs, food.fiber "
+                f"SELECT {self.cols} "
                 "FROM food WHERE description LIKE ? AND calories IS NOT NULL "
                 "ORDER BY length(description) LIMIT 3",
                 (alias_target + "%",)
@@ -286,8 +293,7 @@ class USDADatabase:
                 seen.add(d["fdc_id"])
                 results.append(d)
 
-        cols = ("food.fdc_id, food.description, food.data_type, "
-                "food.calories, food.protein, food.fat, food.carbs, food.fiber")
+        cols = self.cols
         whole = " ".join(toks)
 
         # Tier 1: Description headword IS the query ('rice,%' or 'chinese cabbage,%')
@@ -358,8 +364,7 @@ class USDADatabase:
     def get_by_fdc_id(self, fdc_id: int):
         """Fetch single food by fdc_id."""
         row = self.con.execute(
-            "SELECT fdc_id, description, data_type, calories, protein, fat, carbs, fiber "
-            "FROM food WHERE fdc_id = ?",
+            f"SELECT {self.cols} FROM food WHERE fdc_id = ?",
             (fdc_id,)
         ).fetchone()
         return dict(row) if row else None

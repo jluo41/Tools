@@ -774,7 +774,8 @@ def _log_tail(path: Path, lines: int = 4) -> list[str]:
     return [line[:300] for line in kept[-lines:]]
 
 
-BUTTON_CHANNEL = "board labeling screen"
+BUTTON_CHANNEL = "board labeling screen"  # legacy Board receipts and callers
+BUTTON_CHANNELS = (BUTTON_CHANNEL, "labeling workbench screen")
 
 
 def who_started(commission: dict | None) -> dict:
@@ -787,7 +788,7 @@ def who_started(commission: dict | None) -> dict:
         asked = re.search(r"requested by (\S+)(?: in (\w+))?", channel)
         if asked:
             person, note = asked.group(1), (f"asked in {asked.group(2)}" if asked.group(2) else None)
-    return {"person": person or None, "via": "run button" if channel.startswith(BUTTON_CHANNEL) else "terminal",
+    return {"person": person or None, "via": "run button" if channel.startswith(BUTTON_CHANNELS) else "terminal",
             "note": note}
 
 
@@ -813,9 +814,9 @@ def build_status(job_root: Path) -> list[dict]:
     for entry in models:
         version = entry["version"]
         folder = base / version
-        runs = sorted(job.results_dir(job_root).glob(f"rl*_embedding-build_{version}/runtime.yaml")) \
-            if job.results_dir(job_root).is_dir() else []
-        runtime = job.load_mapping(runs[-1]) if runs else {}
+        runs = job.matching_runs(job_root, "embedding-build", version)
+        runtime_path = job.results_dir(job_root) / runs[-1] / "runtime.yaml" if runs else None
+        runtime = job.load_mapping(runtime_path) if runtime_path and runtime_path.is_file() else {}
         mark = _marker(folder)
         if version in built:
             state = "built"

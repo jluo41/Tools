@@ -115,6 +115,21 @@ def run_l1_contract():
     else:
         print("  ok   decompose() recovers (food, grams)")
 
+    # Sugar is the sixth nutrient. A bank with a sugar column answers it; a bank
+    # without one leaves it empty, never 0.
+    from foodnorm import normalize
+    from foodnorm.usda_db import USDADatabase
+    row = normalize(["Banana"], use_observed=False)[0]
+    has_sugar = "food.sugars" in USDADatabase().cols
+    if "Sugar" not in row:
+        fails.append("the answer has no Sugar column")
+    elif has_sugar and not row["Sugar"]:
+        fails.append(f"the bank has sugar but 'Banana' came back without it: {row}")
+    elif not has_sugar and row["Sugar"] is not None:
+        fails.append(f"the bank has no sugar but 'Banana' answered {row['Sugar']}")
+    else:
+        print(f"  ok   Sugar answered from USDA: {row['Sugar']} (bank has a sugar column: {has_sugar})")
+
     return fails
 
 

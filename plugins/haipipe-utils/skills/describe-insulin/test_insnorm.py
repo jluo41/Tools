@@ -110,6 +110,38 @@ def t_regular_insulin_alias_resolves():
     return "common free-text alias is covered"
 
 
+def t_premix_named_in_the_log_beats_the_seam():
+    """describe-medication answers 'Humulin 70/30' with the ingredient 'Insulin human';
+    the log's own words name the premix, and the premix must win (61 Shanghai rows)."""
+    r = normalize(["Insulin human"], raw=["Humulin 70/30"])[0]
+    assert r["InsulinResolved"] == "insulin human 70/30", r
+    assert r["Biphasic"] is True and r["InsulinClass"] == "premix", r
+    assert r["PKSource"].startswith("raw_premix:"), r
+    return "seam 'Insulin human' + log 'Humulin 70/30' -> insulin human 70/30, premix"
+
+
+def t_two_products_listed_are_ambiguous():
+    """Two insulins listed in one field get no single curve (16 Shanghai rows)."""
+    r = normalize(["Insulin glargine"], raw=["insulin glargine, 14 IU, Humulin 70/30, 12 IU"])[0]
+    assert r["PKConf"] == "AMBIGUOUS", r
+    assert r["InsulinResolved"] == "insulin glargine | insulin human 70/30", r
+    assert r["DurationMin"] is None and r["OnsetMin"] is None, r
+    return "glargine + Humulin 70/30 in one field -> AMBIGUOUS, no curve"
+
+
+def t_commas_inside_one_product_are_not_two():
+    """Catalog names are full of commas; a refinement of one product is still one product,
+    and a regimen word beside the product is not a second product."""
+    cases = [("insulin aspart, w/niacinamide, (FIASP) 100 UNIT/ML subcutaneous injection", "insulin aspart faster"),
+             ("Insulin Lispro-aabc, 1 U Dial, (LYUMJEV KWIKPEN) 100 UNIT/ML SOPN", "insulin lispro-aabc"),
+             ("Semglee, yfgn, 100 UNIT/ML subcutaneous Solution Pen-injector", "insulin glargine"),
+             ("CSII - basal insulin (Novolin R, IU / H)", "insulin human regular")]
+    for text, key in cases:
+        r = normalize([text])[0]
+        assert r["InsulinResolved"] == key and r["PKConf"] == "OK", (text, r)
+    return f"{len(cases)} comma-bearing names stay one product"
+
+
 def t_welldoc_ids_resolve_through_e2_lexicon():
     """WellDoc's MedicationID is a coded DrugKey, not a product name.
 
@@ -241,6 +273,9 @@ if __name__ == "__main__":
         ("regular insulin alias resolves", t_regular_insulin_alias_resolves),
         ("WellDoc IDs resolve through E2_LEXICON", t_welldoc_ids_resolve_through_e2_lexicon),
         ("an explicit multi-product input is ambiguous", t_explicit_multi_product_is_ambiguous),
+        ("a premix named in the log beats the seam", t_premix_named_in_the_log_beats_the_seam),
+        ("two products listed in one field are ambiguous", t_two_products_listed_are_ambiguous),
+        ("commas inside one product are not two", t_commas_inside_one_product_are_not_two),
         ("class-only inputs resolve", t_class_only_inputs_resolve),
         ("a combination is ALIAS, not OK", t_combination_is_alias_not_ok),
         ("a premix is flagged biphasic", t_premix_is_flagged_biphasic),

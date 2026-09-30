@@ -24,8 +24,10 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.util
 import json
 import os
+import re
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -209,6 +211,49 @@ def results_dir(job_root: Path) -> Path:
     return page_root(job_root) / "results"
 
 
+def run_stem(family: str, operation: str, target: str, when: str | date | datetime) -> str:
+    """Readable Run stem shared by Tickets, Results and the Workbench."""
+    for field, value in (("family", family), ("operation", operation)):
+        if not re.fullmatch(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*", value):
+            raise ValueError(f"invalid {field} for a Run name: {value!r}")
+    day = when.strftime("%m%d") if isinstance(when, (date, datetime)) else ""
+    if not day:
+        match = re.match(r"^\d{4}-(\d{2})-(\d{2})", str(when))
+        if not match:
+            raise ValueError(f"Run opening date must begin YYYY-MM-DD: {when!r}")
+        day = "".join(match.groups())
+    slug = re.sub(r"[^a-z0-9]+", "-", str(target).lower()).strip("-") or "target"
+    return f"run-{family}-{operation}-{day}-{slug}"
+
+
+def mint_labeling_run(job_root: Path, operation: str, target: str,
+                      when: str | date | datetime | None = None) -> str:
+    """Allocate a full name; an existing Ticket or Result is never reused."""
+    stem = run_stem("labeling", operation, target, when or datetime.now().astimezone())
+    taken = {p.stem for p in runs_dir(job_root).glob("*.yaml")}
+    if results_dir(job_root).is_dir():
+        taken.update(p.name for p in results_dir(job_root).iterdir())
+    if stem not in taken:
+        return stem
+    suffix = 2
+    while f"{stem}-{suffix}" in taken:
+        suffix += 1
+    return f"{stem}-{suffix}"
+
+
+def matching_runs(job_root: Path, operation: str, target: str) -> list[str]:
+    """Find old and new Ticket names from the recorded fields, not their spelling."""
+    matches = []
+    for path in runs_dir(job_root).glob("*.yaml"):
+        try:
+            ticket = load_mapping(path)
+        except (OSError, ValueError, yaml.YAMLError):
+            continue
+        if ticket.get("operation") == operation and str(ticket.get("target")) == str(target):
+            matches.append(path)
+    return [p.stem for p in sorted(matches, key=lambda p: (p.stat().st_mtime_ns, p.name))]
+
+
 def page_path(job_root: Path, rel: str) -> str:
     """A labeling/ file as a Run receipt names it: relative to the Page."""
     return f"{Path(job_root).name}/{rel}"
@@ -225,6 +270,17 @@ def validate_page_lane(page_file: Path, job_root: Path) -> Path:
             "canonical destination must be the supplied Page file's direct "
             f"labeling/ lane: expected {expected}, got {job_root}"
         )
+    return page_file
+
+
+def require_page_folder(page_file: Path) -> Path:
+    """New jobs need a Page-owned folder, not a lane shared by flat Board sources."""
+    page_file = page_file.resolve()
+    if not page_file.is_file():
+        raise FileNotFoundError(f"Page source file not found: {page_file}")
+    if page_file.suffix != ".md" or page_file.parent.name != page_file.stem:
+        raise RuntimeError("create the canonical <Page>/<Page>.md folder before attaching "
+                           "Corpus Preparation or creating a Labeling Contract")
     return page_file
 
 
@@ -505,6 +561,14 @@ def semantic_bindings(config: dict, policy: str | None) -> dict:
     }
 
 
+def missing_label_meanings(config: dict) -> list[str]:
+    """Every label needs nonblank human-reviewable wording before G0 can pass."""
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
+    return [str(value) for value in labels.get("values") or []
+            if not isinstance(meanings.get(str(value)), str) or not meanings[str(value)].strip()]
+
+
 def runtime_timestamp(value: str) -> str:
     """Normalize a date or datetime to an offset-bearing runtime timestamp."""
     parsed = datetime.fromisoformat(value)
@@ -574,6 +638,7 @@ def _meaning_receipt_valid(config: dict, job_root: Path) -> bool:
     receipt = authority.get("meaning_receipt")
     return bool(
         _meaning_receipt_bound(config, job_root)
+        and not missing_label_meanings(config)
         and isinstance(receipt, dict)
         and receipt.get("identity_assurance") == "caller_attested_not_authenticated"
     )
@@ -613,9 +678,35 @@ def create_contract(
 ) -> dict:
     source_job = source_job.resolve()
     job_root = job_root.resolve()
+    page_file = require_page_folder(page_file)
     page_file = validate_page_lane(page_file, job_root)
     if source_job == job_root:
         raise RuntimeError("source job and destination job root must differ")
+
+    preparation_ref = None
+    if (source_job / "preparation-receipt.json").is_file():
+        spec = importlib.util.spec_from_file_location(
+            "subjective_label_preparation_for_contract", Path(__file__).with_name("corpus_preparation.py")
+        )
+        assert spec and spec.loader
+        preparation = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(preparation)
+        preparation_receipt = preparation.verify_package(source_job)
+        preparation_ref = preparation.preparation_reference(
+            Path(preparation_receipt["owner"]), source_job, preparation_receipt
+        )
+        owner_ref = job_root / "preparation-owner.yaml"
+        if owner_ref.exists():
+            source_owner = Path(preparation_receipt["owner"])
+            owner_record = load_mapping(source_owner / "source.yaml")
+            expected_owner_ref = {**owner_record, "owner": str(source_owner)}
+            if load_mapping(owner_ref) != expected_owner_ref:
+                raise RuntimeError("Page preparation owner disagrees with the requested source package")
+        existing_ref = job_root / "preparation-ref.yaml"
+        if existing_ref.exists() and load_mapping(existing_ref) != preparation_ref:
+            raise RuntimeError("Page preparation reference disagrees with the requested source package")
+    elif (job_root / "preparation-ref.yaml").exists() or (job_root / "preparation-owner.yaml").exists():
+        raise RuntimeError("Page has a Corpus Preparation owner, but this source has no accepted preparation receipt")
 
     source_config = load_mapping(source_job / "config.yaml")
     source_corpus_manifest = load_mapping(source_job / "corpus" / "manifest.json")
@@ -663,6 +754,10 @@ def create_contract(
         "source_job": source_job.name,
         "created_at": created_at,
     }
+    if preparation_ref:
+        config["contract_import"]["preparation"] = {
+            key: preparation_ref[key] for key in ("snapshot_id", "recipe_id", "item_set_id", "partition_id")
+        }
 
     corpus_cfg = config.get("corpus")
     if corpus_cfg is not None and not isinstance(corpus_cfg, dict):
@@ -754,7 +849,15 @@ def create_contract(
         "p0_artifacts": list(P0_FILES),
         "next_action": "identified human confirms target meaning and schema",
     }
-    run_name = "rl01_corpus-contract_job-v1"
+    if preparation_ref:
+        receipt["preparation"] = {
+            key: preparation_ref[key] for key in ("snapshot_id", "recipe_id", "item_set_id", "partition_id",
+                                                 "qa_digest", "frame_digest", "eligible_digest")
+        }
+    previous_contract = matching_runs(job_root, "corpus-contract", "job-v1")
+    run_name = previous_contract[0] if previous_contract else mint_labeling_run(
+        job_root, "corpus-contract", "job-v1", created_at
+    )
     run_ticket = {
         "run": run_name,
         "family": "labeling",
@@ -764,7 +867,9 @@ def create_contract(
         "episode": "contract",
         "target": "job-v1",
         "commission": {"path": page_path(job_root, "gates/p0-contract/receipt.json")},
-        "inputs": [{"path": page_path(job_root, "corpus/items.jsonl")}],
+        "inputs": [{"path": page_path(job_root, "corpus/items.jsonl")}] + (
+            [{"path": page_path(job_root, "preparation-ref.yaml")}] if preparation_ref else []
+        ),
         "worker": {
             "kind": "cli",
             "name": "subjective-label.engine.job:create_contract",
@@ -837,9 +942,14 @@ def create_contract(
         job_root / "REPORT.md": report,
         job_root / ".state.json": json_bytes(state),
     }
+    if preparation_ref:
+        artifacts[job_root / "preparation-ref.yaml"] = yaml_bytes(preparation_ref)
     for name, data in component_bytes.items():
         artifacts[job_root / "policy" / "versions" / "G_00" / name] = data
 
+    for path, data in artifacts.items():
+        if path.exists() and (not path.is_file() or path.read_bytes() != data):
+            raise RuntimeError(f"refusing to overwrite changed artifact: {path}")
     created: list[str] = []
     for path, data in artifacts.items():
         if write_once(path, data):
@@ -927,6 +1037,13 @@ def confirm_meaning(
             "P0 contract integrity must pass before confirmation: "
             f"{blocking_p0 or before['missing']}"
         )
+    if not g0_repairable_after_round(job_root, config):
+        raise RuntimeError("a round was released without a valid earlier meaning confirmation; "
+                           "G0 cannot be confirmed retroactively for that round")
+    missing_meanings = missing_label_meanings(config)
+    if missing_meanings:
+        raise RuntimeError("define every label meaning before G0 confirmation: "
+                           + ", ".join(missing_meanings))
     if blocking_g0:
         raise RuntimeError(
             "G0 receipt integrity must be repaired before confirmation: "
@@ -938,8 +1055,13 @@ def confirm_meaning(
             "phase": "P1",
             "updated_files": [],
             "updated_count": 0,
-            "next_action": "propose round_01 card",
+            "next_action": before["next_action"],
         }
+
+    if not any((job_root / "rounds").glob("round_*/card.md")):
+        discussion = unfinished_definition_discussion(job_root)
+        if discussion:
+            raise RuntimeError(f"close definition discussion {discussion} before confirming meaning")
 
     already_semantic = _meaning_receipt_valid(config, job_root)
     if not already_semantic:
@@ -984,8 +1106,45 @@ def confirm_meaning(
         "phase": "P1",
         "updated_files": updated,
         "updated_count": len(updated),
-        "next_action": "propose round_01 card",
+        "next_action": after["next_action"],
     }
+
+
+def unfinished_definition_discussion(job_root: Path) -> str | None:
+    """An open definition Ticket must close before G0 confirmation or round release."""
+    for ticket_path in sorted(runs_dir(job_root).glob("*definition-discussion*.yaml")):
+        try:
+            ticket = load_mapping(ticket_path)
+            if ticket.get("operation") != "definition-discussion":
+                continue
+            runtime = load_mapping(results_dir(job_root) / ticket_path.stem / "runtime.yaml")
+        except (OSError, ValueError, yaml.YAMLError) as error:
+            raise RuntimeError(f"definition discussion {ticket_path.stem} has an unreadable Ticket or runtime") from error
+        if runtime.get("status") != "complete":
+            return ticket_path.stem
+    return None
+
+
+def g0_repairable_after_round(job_root: Path, config: dict) -> bool:
+    """A missing G0 receipt may be restored only from a pre-release attestation."""
+    cards = sorted((Path(job_root) / "rounds").glob("round_*/card.md"))
+    if not cards:
+        return True
+    if not _meaning_receipt_valid(config, Path(job_root)):
+        return False
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
+    try:
+        confirmed_at = datetime.fromisoformat(str(receipt["confirmed_at"]).replace("Z", "+00:00"))
+        releases = []
+        for card in cards:
+            match = re.search(r"^released_at:\s*(\S+)", card.read_text(encoding="utf-8"), re.MULTILINE)
+            if not match:
+                return False
+            releases.append(datetime.fromisoformat(match.group(1).replace("Z", "+00:00")))
+        return all(confirmed_at <= released_at for released_at in releases)
+    except (KeyError, TypeError, ValueError, OSError):
+        return False
 
 
 def revise_meanings(
@@ -996,7 +1155,7 @@ def revise_meanings(
     run: str,
     revised_at: str,
 ) -> dict:
-    """Record one human-decided change to the label meanings, before any item is judged.
+    """Record one human-decided change to the label meanings, before round release.
 
     The P0 contract froze the meanings it was given (for S-Label-4, an AI draft).
     A closed ``definition-discussion`` Run is the one sanctioned way to change
@@ -1022,6 +1181,8 @@ def revise_meanings(
         raise RuntimeError(
             "the meanings can change only before any item is judged; already judged: " + ", ".join(judged[:5])
         )
+    if any((job_root / "rounds").glob("round_*/card.md")):
+        raise RuntimeError("the meanings cannot change after a round is released")
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
     values = [str(v) for v in labels.get("values") or []]
     current = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
@@ -1210,6 +1371,7 @@ def status(job_root: Path) -> dict:
 
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     meaning_confirmed = bool(authority.get("meaning_confirmed"))
+    missing_meanings = missing_label_meanings(config)
     try:
         meaning_is_bound = bool(config) and _meaning_receipt_bound(config, job_root)
         meaning_is_valid = meaning_is_bound and _meaning_receipt_valid(config, job_root)
@@ -1306,6 +1468,9 @@ def status(job_root: Path) -> dict:
                 )
                 if not g0_receipt_valid:
                     g0_integrity_errors.append("G0 receipt is invalid or semantically unbound")
+                elif meaning_is_valid and not g0_repairable_after_round(job_root, config):
+                    g0_receipt_valid = False
+                    g0_integrity_errors.append("G0 confirmation does not predate released round")
 
     p0_contract_integrity_valid = not missing and not p0_integrity_errors
     integrity_errors = p0_integrity_errors + g0_integrity_errors
@@ -1316,6 +1481,8 @@ def status(job_root: Path) -> dict:
         "g0_receipt_valid": g0_receipt_valid,
     }
     g0_ready = g0_passed(g0_state)
+    retroactive_g0_block = (not g0_ready and p0_contract_integrity_valid and not hold
+                           and not g0_repairable_after_round(job_root, config))
     # `phase` is a compatibility projection for older status readers. The
     # booleans above and below own every gate and confirmation decision.
     if missing:
@@ -1330,17 +1497,27 @@ def status(job_root: Path) -> dict:
         phase = "P0"
         next_action = f"HOLD · {hold_reason}"
         first_blocked = "G0 · human authority"
+    elif retroactive_g0_block:
+        phase = "P0"
+        next_action = "keep the released round as history; create a new labeling job for new labels"
+        first_blocked = "G0 · prior meaning confirmation missing"
     elif g0_integrity_errors:
         phase = "P0"
-        next_action = "repair the G0 receipt before any Round 1 proposal"
+        next_action = ("restore the missing G0 receipt from the pre-release human attestation"
+                       if g0_integrity_errors == ["G0 receipt missing after semantic confirmation"]
+                       and any((job_root / "rounds").glob("round_*/card.md")) else
+                       "repair the G0 receipt before any Round 1 proposal")
         first_blocked = "G0 · receipt integrity"
     elif not meaning_is_valid:
         phase = "P0"
-        next_action = "human meaning confirmation"
-        first_blocked = "G0 · human meaning confirmation"
+        next_action = ("define every label meaning before confirmation" if missing_meanings
+                       else "human meaning confirmation")
+        first_blocked = ("G0 · label meanings missing" if missing_meanings
+                         else "G0 · human meaning confirmation")
     else:
         phase = "P1"
-        next_action = "propose round_01 card"
+        next_action = ("inspect the existing round" if any((job_root / "rounds").glob("round_*/card.md"))
+                       else "propose round_01 card")
         first_blocked = None
     return {
         "job_root": str(job_root),
@@ -1352,9 +1529,11 @@ def status(job_root: Path) -> dict:
         "hold_reason": hold_reason,
         "meaning_confirmed": meaning_confirmed,
         "meaning_receipt_valid": meaning_is_valid,
+        "meaning_definitions_missing": missing_meanings,
         "meaning_revisions": len(revisions),
         "g0_receipt_valid": g0_receipt_valid,
         "g0_passed": g0_ready,
+        "g0_retroactive_block": retroactive_g0_block,
         "p0_contract_integrity_valid": p0_contract_integrity_valid,
         "p0_integrity_errors": p0_integrity_errors,
         "g0_integrity_errors": g0_integrity_errors,

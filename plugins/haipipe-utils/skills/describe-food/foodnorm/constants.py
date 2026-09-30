@@ -70,6 +70,37 @@ def _pinned_bank():
 
 USDA_DB = pathlib.Path(os.environ.get("FOODNORM_DB") or _pinned_bank() or _LEGACY_DB)
 
+
+def _branded_bank():
+    """The branded sqlite, or None. On only when a release pins ext_food_bank_branded, or
+    FOODNORM_BRANDED_DB names a file for an A/B run; FOODNORM_BRANDED_DB=off forces it off.
+    So a release that does not pin it (EventNormV3) keeps its answers unchanged."""
+    env = os.environ.get("FOODNORM_BRANDED_DB")
+    if env:
+        return None if env.lower() == "off" else pathlib.Path(env)
+    from ._release import release_file
+    pinned = release_file("ext_food_bank_branded", "branded_nutrition.sqlite")
+    return pathlib.Path(pinned) if pinned else None
+
+
+BRANDED_DB = _branded_bank()
+BRANDED_TOP = 5          # the branded answer is the median over this many trusted candidates
+
+
+def _cn_bank():
+    """The China Food Composition Tables table, or None: on when a release pins ext_food_bank_cn
+    or FOODNORM_CN_DB names the parquet; FOODNORM_CN_DB=off forces it off. Used only for
+    components whose Chinese original the caller passes (name_zh_col)."""
+    env = os.environ.get("FOODNORM_CN_DB")
+    if env:
+        return None if env.lower() == "off" else str(env)
+    from ._release import release_file
+    pinned = release_file("ext_food_bank_cn", "df_ext_food_bank_cn.parquet")
+    return str(pinned) if pinned else None
+
+
+CN_DB = _cn_bank()
+
 # App UI labels that occupy the FoodName field but name no food. Sending one of
 # these to a food bank can only produce a wrong match -- there is nothing to match.
 #

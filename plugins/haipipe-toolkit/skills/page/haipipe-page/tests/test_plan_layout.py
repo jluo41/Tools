@@ -475,6 +475,27 @@ def test_sweep_never_edits_generated_files_and_names_them_for_a_rebuild(tmp_path
     assert "See draft/S-Gen-log.md" in (page / "S-Gen.md").read_text()
 
 
+
+def test_a_ticket_keeps_the_outline_paths_its_own_result_recorded(tmp_path: Path):
+    from src.draft_migration import sweep_outline_paths
+    from src.layout_check import check_page_folder
+    page = tmp_path / "Design-01"
+    (page / "draft" / "feedback").mkdir(parents=True)
+    (page / "results" / "rd19_generate_item05").mkdir(parents=True)
+    (page / "runs").mkdir()
+    (page / "Design-01.md").write_text("# D\nSee outline/feedback/x.md\n", encoding="utf-8")
+    (page / "results" / "rd19_generate_item05" / "runtime.yaml").write_text(
+        "inputs:\n- path: outline/feedback/rd19_generate_item05.md\n", encoding="utf-8")
+    ticket = "inputs:\n  path: outline/feedback/rd19_generate_item05.md\nnotes: outline/feedback/other.md\n"
+    (page / "runs" / "rd19_generate_item05.yaml").write_text(ticket, encoding="utf-8")
+    sweep_outline_paths(tmp_path, [page])
+    text = (page / "runs" / "rd19_generate_item05.yaml").read_text()
+    assert "path: outline/feedback/rd19_generate_item05.md" in text     # the Result recorded it: kept
+    assert "notes: draft/feedback/other.md" in text                      # any other path still moves
+    assert "See draft/feedback/x.md" in (page / "Design-01.md").read_text()
+    rule = next(r for r in check_page_folder(page)["rules"] if r["rule"] == "no outline/ paths in the Page's files")
+    assert rule["state"] == "PASS"
+
 BARE_PLAN = """# Bare-Page · outline v3
 outline-version: v3
 approved: ✅ JL 260828

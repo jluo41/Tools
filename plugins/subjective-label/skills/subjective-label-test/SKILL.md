@@ -24,13 +24,14 @@ Run's order.
 ## Runs in this view
 
 ```text
-step  run                          state
- 2    run-test-reserve         not built · the first reservation happens inside run-corpus-contract
-14    run-test-gold-lock       not built
+step  Run Type                     state
+ 2    test-reserve         not built · the first reservation happens inside corpus-contract
+14    test-gold-lock       not built
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 `test-reserve` (not built yet) supersedes the sealed frame under custody,

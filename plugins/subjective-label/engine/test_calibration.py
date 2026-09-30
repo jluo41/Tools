@@ -114,6 +114,65 @@ def test_release_refused_before_meaning_confirmation(tmp_path: Path) -> None:
         cal.release_round(root, human_id="JL")
 
 
+def test_g0_cannot_be_confirmed_after_a_round_without_prior_attestation(tmp_path: Path) -> None:
+    root, page = build_job(tmp_path)
+    card = root / "rounds" / "round_01" / "card.md"
+    card.parent.mkdir(parents=True)
+    card.write_text("# round_01\nreleased_at: 2026-09-28T12:00:00+00:00\n", encoding="utf-8")
+    config_before = (root / "config.yaml").read_bytes()
+    assert not job.g0_repairable_after_round(root, job.load_mapping(root / "config.yaml"))
+    assert job.status(root)["g0_retroactive_block"]
+    assert job.status(root)["first_blocked_frontier"] == "G0 · prior meaning confirmation missing"
+    with pytest.raises(RuntimeError, match="cannot be confirmed retroactively"):
+        job.confirm_meaning(job_root=root, page_file=page, human_id="JL",
+                            confirmed_at="2026-09-29T12:00:00+00:00",
+                            accept_current_schema=True, attest_as_human=True)
+    assert (root / "config.yaml").read_bytes() == config_before
+    assert not (root / "gates" / "g0" / "receipt.json").exists()
+
+
+def test_blank_label_meanings_require_definition_before_g0(tmp_path: Path) -> None:
+    config = json.loads(json.dumps(CONFIG))
+    del config["labels"]["meanings"]
+    root, page = build_job(tmp_path, config)
+    state = job.status(root)
+    assert state["p0_contract_integrity_valid"]
+    assert state["meaning_definitions_missing"] == ["high", "low", "none"]
+    assert state["first_blocked_frontier"] == "G0 · label meanings missing"
+    with pytest.raises(RuntimeError, match="define every label meaning"):
+        job.confirm_meaning(job_root=root, page_file=page, human_id="JL",
+                            confirmed_at="2026-09-29T12:00:00+00:00",
+                            accept_current_schema=True, attest_as_human=True)
+    assert not (root / "gates" / "g0" / "receipt.json").exists()
+
+
+def test_missing_g0_receipt_can_be_restored_from_pre_release_attestation(tmp_path: Path) -> None:
+    root, page = confirmed_job(tmp_path)
+    cal.release_round(root, human_id="JL")
+    (root / "gates" / "g0" / "receipt.json").unlink()
+    assert job.g0_repairable_after_round(root, job.load_mapping(root / "config.yaml"))
+    assert not job.status(root)["g0_retroactive_block"]
+    assert job.status(root)["next_action"] == "restore the missing G0 receipt from the pre-release human attestation"
+    restored = job.confirm_meaning(job_root=root, page_file=page, human_id="JL",
+                                   confirmed_at="2026-09-29T12:00:00+00:00",
+                                   accept_current_schema=True, attest_as_human=True)
+    assert restored["updated_files"] == ["gates/g0/receipt.json"]
+    assert restored["next_action"] == "inspect the existing round"
+    assert job.status(root)["g0_passed"]
+
+
+def test_post_release_meaning_and_g0_receipts_cannot_validate_a_prior_round(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    card = root / "rounds" / "round_01" / "card.md"
+    card.parent.mkdir(parents=True)
+    card.write_text("# round_01\nreleased_at: 2026-09-15T12:00:00+00:00\n", encoding="utf-8")
+    state = job.status(root)
+    assert not state["g0_passed"]
+    assert not state["g0_receipt_valid"]
+    assert state["g0_retroactive_block"]
+    assert "G0 confirmation does not predate released round" in state["g0_integrity_errors"]
+
+
 def test_hold_job_refuses_confirmation(tmp_path: Path) -> None:
     config = json.loads(json.dumps(CONFIG))
     config["authority"]["mode"] = "external_annotation_import"
@@ -166,7 +225,7 @@ def test_full_round_one_flow(tmp_path: Path) -> None:
     assert runtime["status"] == "complete"
     state = cal.job_state(root)
     assert state["rounds"][0]["state"] == "judged"
-    assert (root.parent / "runs").is_dir() and len(list((root.parent / "runs").glob("rl*.yaml"))) == 3
+    assert (root.parent / "runs").is_dir() and len(list((root.parent / "runs").glob("run-labeling-*.yaml"))) == 3
     assert not (root / "gold/cumulative.jsonl").read_text()  # no gold without round-close
 
 
@@ -178,6 +237,85 @@ def test_wrong_human_and_sealed_item_refused(tmp_path: Path) -> None:
     sealed = sorted(sealed_ids(root))[0]
     with pytest.raises(cal.LabelingRefused):
         cal.open_item(root, "round_01", human_id="JL", session_id="s", item_id=sealed)
+
+
+@pytest.mark.parametrize("locked", [False, True])
+def test_interrupted_first_answer_resumes_at_reveal(tmp_path: Path, locked: bool) -> None:
+    root, _ = confirmed_job(tmp_path)
+    cal.release_round(root, human_id="JL")
+    opened = cal.open_item(root, "round_01", human_id="JL", session_id="s1")
+    item_id = opened["item"]["item_id"]
+    round_path = root / "rounds/round_01"
+    base = {"run": opened["run"], "round_id": "round_01", "item_id": item_id,
+            "human_id": "JL", "session_id": "s1"}
+    first = cal._append_event(round_path, {**base, "kind": "first", "payload": {
+        "class_label": "low", "diagnostic_region": "L", "uncertainty": {"level": "low"},
+        "rationale": {"reason": "", "rejected_label": None}, "prelabels_visible": False}})
+    if locked:
+        cal._append_event(round_path, {**base, "kind": "lock", "payload": {"first_seq": first["seq"]}})
+
+    resumed = cal.open_item(root, "round_01", human_id="JL", session_id="s2")
+    assert resumed["stage"] == "reveal"
+    assert resumed["first"]["class_label"] == "low"
+    assert resumed["reveal"]["kind"] == "reference_observations"
+    kinds = [event["kind"] for event in cal._events(round_path)]
+    assert kinds == ["show", "first", "lock", "reveal"]
+    assert cal.verify_events(round_path) == []
+    cal.record_final(root, "round_01", item_id, human_id="JL", session_id="s2",
+                     class_label="low", region="L", uncertainty="low")
+
+
+def test_closed_calibration_ticket_cannot_receive_more_events(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    cal.release_round(root, human_id="JL")
+    opened = cal.open_item(root, "round_01", human_id="JL", session_id="s1")
+    runtime_path = root.parent / "results" / opened["run"] / "runtime.yaml"
+    runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+    runtime["status"] = "complete"
+    runtime_path.write_text(yaml.safe_dump(runtime), encoding="utf-8")
+    events_path = root / "rounds/round_01/sessions/events.jsonl"
+    before = events_path.read_bytes()
+    with pytest.raises(cal.LabelingRefused, match="not running"):
+        cal.open_item(root, "round_01", human_id="JL", session_id="s2")
+    assert events_path.read_bytes() == before
+
+
+def test_last_final_event_can_finalize_an_interrupted_result(tmp_path: Path, monkeypatch) -> None:
+    root, _ = confirmed_job(tmp_path)
+    cal.release_round(root, human_id="JL")
+    with pytest.raises(cal.LabelingRefused, match="no calibration Run"):
+        cal.finalize_calibration(root, "round_01", human_id="JL")
+    run = ""
+    for index in range(4):
+        opened = cal.open_item(root, "round_01", human_id="JL", session_id="s")
+        run, item_id = opened["run"], opened["item"]["item_id"]
+        if index == 0:
+            with pytest.raises(cal.LabelingRefused, match="still has items"):
+                cal.finalize_calibration(root, "round_01", human_id="JL")
+        cal.record_first(root, "round_01", item_id, human_id="JL", session_id="s",
+                         class_label="low", region=None, uncertainty="low")
+        if index == 3:
+            with monkeypatch.context() as patch:
+                def interrupted(*_args, **_kwargs):
+                    raise RuntimeError("interrupted after final event")
+                patch.setattr(cal, "_close_calibration", interrupted)
+                with pytest.raises(RuntimeError, match="interrupted"):
+                    cal.record_final(root, "round_01", item_id, human_id="JL", session_id="s",
+                                     class_label="low", region=None, uncertainty="low")
+        else:
+            cal.record_final(root, "round_01", item_id, human_id="JL", session_id="s",
+                             class_label="low", region=None, uncertainty="low")
+    runtime_path = root.parent / "results" / run / "runtime.yaml"
+    assert yaml.safe_load(runtime_path.read_text(encoding="utf-8"))["status"] == "running"
+    interrupted_state = cal.job_state(root)
+    assert interrupted_state["rounds"][0]["state"] == "judged"
+    assert "finalize the interrupted human-calibration Result" in interrupted_state["next_step"]
+    result = cal.finalize_calibration(root, "round_01", human_id="JL")
+    assert result == {"round_id": "round_01", "run": run, "status": "complete", "finals": 4}
+    assert yaml.safe_load(runtime_path.read_text(encoding="utf-8"))["status"] == "complete"
+    assert (root.parent / "results" / run / "result.yaml").is_file()
+    assert cal.verify_events(root / "rounds/round_01") == []
+    assert "finalize the interrupted" not in cal.job_state(root)["next_step"]
 
 
 def test_events_carry_no_hash_and_a_broken_log_is_detected(tmp_path: Path) -> None:

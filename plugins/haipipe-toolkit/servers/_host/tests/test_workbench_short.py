@@ -181,6 +181,7 @@ class OnlyHostTest(unittest.TestCase):
                      "/unit/diagram/board/index.html", "/unit/diagram/board/_assets/board.js",
                      "/_board/health", "/_board/asset/xterm.css",
                      "/_board/labeling-board?path=x", "/_board/labeling?path=x&file=y",
+                     "/workbench/labeling?file=pages/A/A.md",
                      "/_board/labeling/act"):
             self.assertTrue(route_allowed(path, only), path)
         for path in ("/_shell", "/_events", "/_term/abc", "/_board/terms", "/_board/chat",

@@ -2,7 +2,7 @@
 name: describe-insulin
 description: "Turn an insulin product name into pharmacokinetic parameters: class, onset, peak, duration. Consumes describe-medication's DrugKey, and also serves cohorts that name only an insulin CLASS (OhioT1DM) or a product the FDA Directory does not list (Shanghai). Use when insulin-on-board or insulin action timing is needed, or when insulin rows must be classified rapid/short/intermediate/long/ultra-long/premix. Trigger: describe insulin, insulin PK, onset peak duration, IOB, insulin on board, DIA, basal bolus, insnorm, 胰岛素药代."
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-22"
   measured: "263,417 of 263,491 insulin rows get an action curve or a stated reason not to; on MEPS the molecule is right 93.6% of the time it answers; against 1,831 prescriber-recorded DIAs the table runs 0.5 h short on rapid analogues"
   chain: "consumes describe-medication's DrugKey"
@@ -85,6 +85,15 @@ Lyumjev/lispro-aabc product and `553838` to Humalog/lispro; `PKSource` keeps
 the `lexicon:<id>` hop visible. An input that explicitly names alternatives,
 such as `Humalog (Lispro) or Novolog (Aspart)`, returns `PKConf=AMBIGUOUS`,
 keeps both canonical names in `InsulinResolved`, and writes no action curve.
+
+Two products LISTED in one field get the same answer (260930): `insulin glargine, 14 IU, Humulin 70/30, 12 IU` is
+split on commas outside brackets, and when two different products remain it is AMBIGUOUS with no curve. A refinement
+of one product (`insulin aspart, w/niacinamide, (FIASP)` is `insulin aspart faster`) and a regimen word beside the
+product (`basal insulin`) do not count as a second product. When the caller passes `raw`, the log's own words win
+in two more cases: a premix they name beats the plain molecule the seam kept (`Humulin 70/30` against the seam
+`Insulin human` is `insulin human 70/30`, a premix, `PKSource` `raw_premix:`), and two products they list make the
+answer AMBIGUOUS (`raw_ambiguous:`). Over every frozen request of S20260927 this changed 10 insulin answers, all
+Shanghai: 7 forms of `Humulin 70/30` and 3 fields naming two insulins.
 
 
 WHAT COMES BACK IS PARAMETERS, NOT A CURVE

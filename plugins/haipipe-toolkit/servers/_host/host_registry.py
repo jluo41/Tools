@@ -93,3 +93,34 @@ def route_allowed(path: str, only) -> bool:
     for w in only:
         allowed |= WORKBENCH_ROUTES.get(w, frozenset())
     return name in allowed
+
+
+def static_path_allowed(root: Path, translated: Path) -> bool:
+    """Keep source/custody files outside the host's static-file surface.
+
+    The Workbench reads these files server-side through checked presenters. A
+    direct static GET would bypass the View's text and custody restrictions,
+    including on a host configured for public Board reads.
+    """
+    try:
+        target = translated.resolve()
+        relative = target.relative_to(root.resolve())
+    except (OSError, RuntimeError, ValueError):
+        return False
+    parts = [part.casefold() for part in relative.parts]
+    name = parts[-1] if parts else ""
+    if any(part.startswith(".") for part in parts) or name == "settings.env":
+        return False
+    if any(part == "corpus-preparation" for part in parts):
+        return False
+    for index, part in enumerate(parts):
+        if part == "labeling":
+            generated_board_page = (index == len(parts) - 2 and index > 0
+                                    and parts[index - 1] == "board" and name.endswith(".html")
+                                    and (target.parent.parent.parent / "board.md").is_file())
+            if not generated_board_page:
+                return False
+    if (name.endswith(".jsonl") or ".jsonl." in name
+            or ".private." in name or ".protected." in name):
+        return False
+    return True

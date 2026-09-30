@@ -21,16 +21,17 @@ comes before and after these is in `label-scanning-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
-18    run-scan-preflight       not built
-19    run-scan-shard           not built · one per frozen shard
-20    run-risk-route           not built
-21    run-human-review         not built
-22    run-reconcile            not built
+step  Run Type                     state
+18    scan-preflight       not built
+19    scan-shard           not built · one per frozen shard
+20    risk-route           not built
+21    human-review         not built
+22    reconcile            not built
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 ```text

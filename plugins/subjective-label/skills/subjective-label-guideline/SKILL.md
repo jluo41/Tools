@@ -21,13 +21,14 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
- 6    run-guideline-seed       not built · G_00 itself comes from run-corpus-contract
-10    run-guideline-learn      not built
+step  Run Type                     state
+ 6    guideline-seed       not built · G_00 itself comes from corpus-contract
+10    guideline-learn      not built
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 `guideline-seed` (not built yet) revises the inspectable policy, only when

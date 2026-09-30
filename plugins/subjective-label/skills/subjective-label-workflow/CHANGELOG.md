@@ -1,5 +1,11 @@
 # subjective-label-workflow · CHANGELOG
 
+## 0.12.1 · 2026-09-29
+
+- Require nonblank wording for every label before G0 and state the chronology
+  condition for restoring a missing G0 receipt after round release. Include
+  definition discussions (`M`) in the planned Run count formula.
+
 ## 0.12.0 · 2026-09-20
 
 Clarify that the local confirmation API checks a caller-supplied authority id

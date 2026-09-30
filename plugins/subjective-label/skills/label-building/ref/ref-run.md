@@ -40,15 +40,17 @@ person may write them.
 
 ## 2. One envelope, domain artifacts stay authoritative
 
-Use one job-wide, monotonic `rlNN` address (`rl` = Run of Labeling). Never
-renumber or infer it from a domain ordinal such as `round_03`. The prefix is
-the native family identity, so the stem does not repeat `labeling-`:
+Use a readable `run-labeling-<operation>-<MMDD>-<target>` name on disk and
+in the Workbench. `MMDD` is the opening date, not a source version; the Ticket
+binds exact inputs. If that name is taken in the Page's `runs/` or `results/`,
+append `-2`, `-3`, and so on. Never infer an identity from a domain ordinal
+such as `round_03`:
 
 ```text
-rl01_corpus-contract_job-v1
-rl02_discovery-search_trait-definition
-rl03_embedding-build_all-minilm-l6-v2
-rl04_round-prepare_round-01
+run-labeling-corpus-contract-0929-job-v1
+run-labeling-discovery-search-0929-trait-definition
+run-labeling-embedding-build-0929-all-minilm-l6-v2
+run-labeling-round-prepare-0929-round-01
 ```
 
 Every allocated Run has one control envelope, in the Page folder beside
@@ -75,7 +77,7 @@ legacy/current dialect record as a compatibility capability tag; it is never a
 Run Spec identity or gate/Route authority:
 
 ```yaml
-run: rl14_executor-predict_test-v1-executor-a
+run: run-labeling-executor-predict-0929-test-v1-executor-a
 family: labeling
 domain: subjective-label
 phase: P3                          # compatibility capability tag only
@@ -91,8 +93,10 @@ supersedes: null
 
 Create the runtime receipt with `status: planned` before work starts. A Result
 envelope with missing canonical outputs is truthful non-success, never `Done`.
-Existing `rNN_labeling-*` envelopes remain readable migration history. Never
-rename or alias them; every newly allocated Labeling Run uses `rlNN`.
+Existing `rNN_labeling-*` and `rlNN_*` envelopes remain readable migration
+history. Do not rename their files in place; every newly allocated Labeling
+Run uses the full `run-labeling-...` name. The old abbreviated stem may still
+be shown as a compatibility alias on an older Run card.
 
 The [Run Type–Skill table](ref-space-mapping.md#run-type-skills) declares the
 guidance relevant to each operation. A View's context Skill is only one member

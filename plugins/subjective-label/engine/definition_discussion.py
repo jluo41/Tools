@@ -12,8 +12,8 @@ answers stay blind.  Only the human's stated decisions are recorded as decisions
              wording becomes one meaning revision (job.py)      results/<run>/ledger.yaml · result.yaml
 
 A changed meaning retires the G0 confirmation, so the human presses Confirm
-meaning again.  Meanings change only before any item has a first answer; after
-that, a change is a guideline patch for guideline-learn.
+meaning again.  Finish the discussion before releasing a round; after a round
+is released, a change belongs to a later guideline patch.
 """
 
 from __future__ import annotations
@@ -22,6 +22,8 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+
+import yaml
 
 HERE = Path(__file__).resolve().parent
 _SPEC = importlib.util.spec_from_file_location("subjective_label_calibration_for_definition", HERE / "calibration.py")
@@ -46,8 +48,15 @@ def _runs(job_root: Path) -> list[str]:
     base = job.runs_dir(job_root)
     if not base.is_dir():
         return []
-    names = [p.stem for p in base.glob(f"rl*_{OPERATION}_*.yaml")]
-    return sorted(names, key=lambda n: int(n[2:].split("_", 1)[0]))
+    matches = []
+    for path in base.glob("*.yaml"):
+        try:
+            ticket = job.load_mapping(path)
+        except (OSError, ValueError, yaml.YAMLError):
+            continue
+        if ticket.get("operation") == OPERATION:
+            matches.append(path)
+    return [p.stem for p in sorted(matches, key=lambda p: (p.stat().st_mtime_ns, p.name))]
 
 
 def _runtime(job_root: Path, run: str) -> dict:
@@ -67,6 +76,12 @@ def _require(job_root: Path, human_id: str) -> dict:
         raise LabelingRefused(f"HOLD · {state['hold_reason']}")
     if not human_id or human_id != state.get("human_id"):
         raise LabelingRefused("caller-supplied human_id must match the configured semantic authority")
+    if job._judged_items(job_root):
+        raise LabelingRefused("items are already judged, so the meanings are fixed; "
+                              "a change now is a guideline patch for guideline-learn")
+    if any((job_root / "rounds").glob("round_*/card.md")):
+        raise LabelingRefused("a round is already released; this discussion cannot continue, "
+                              "and any later change belongs to a guideline patch")
     return state
 
 
@@ -95,10 +110,6 @@ def start(job_root: Path, *, human_id: str, channel: str = "claude chat") -> dic
     already = _open_run(job_root)
     if already:
         return {**state(job_root, already), "resumed": True}
-    judged = job._judged_items(job_root)
-    if judged:
-        raise LabelingRefused("items are already judged, so the meanings are fixed; "
-                              "a change now is a guideline patch for guideline-learn")
     config_path = job_root / "config.yaml"
     values, meanings = _labels(job.load_mapping(config_path))
     if not values:

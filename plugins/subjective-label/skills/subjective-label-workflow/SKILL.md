@@ -8,8 +8,8 @@ description: >-
   Scanning Run Specs across the immutable Label Handoff. Use when resolving
   the next eligible Run Spec, a held route, or /subjective-label-workflow.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-20"
+  version: "0.12.1"
+  last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -49,12 +49,13 @@ the rows and their Routes are the Workflow.
 | P4 · Scan | one immutable production manifest and its shards | `scan-preflight` → `scan-shard` per shard → `risk-route` → `human-review` → `reconcile` | S + 4 |
 | P5 · Audit | one frozen audit design and candidate corpus | `audit-sample` → `audit-human-gold` → `audit-analyze` → `dstar-materialize` when pass or bounded limitation is accepted | 4 |
 
-`D` is commissioned discovery queries; `G`, `T`, and `E` are the commissioned
+`M` is completed definition discussions; `D` is commissioned discovery
+queries; `G`, `T`, and `E` are the commissioned
 counts for optional policy-candidate, reservation-frame, and embedding Runs
 (usually 0 or 1 each); `N` is the number of calibration rounds; `W_r` is weak
 executors per round; `K` is
 qualification candidates including the baseline; `S` is production shards.
-The expected happy-path total is `D + G + T + E + sum(W_r) + 5N + 2K + S +
+The expected happy-path total is `M + D + G + T + E + sum(W_r) + 5N + 2K + S +
 12`. This is planned cardinality, not an inventory. Count actual work only
 from allocated Tickets with runtime receipts; retries under unchanged inputs
 are attempts on the same Run.
@@ -103,7 +104,10 @@ identity. Before confirmation, an absent meaning receipt/G0 receipt is expected
 and status asks for explicit meaning attestation; it is not HOLD. If semantic
 confirmation exists but the G0 receipt is missing, invalid, or no longer
 matches the meaning receipt by value, status reports an integrity defect and does not enable
-`round-prepare`. A repeat confirmation can write a missing G0 receipt. A prior
+`round-prepare`. A repeat confirmation can restore a missing G0 receipt only
+from an intact meaning attestation that predates every released round. A new
+confirmation cannot authorize an already released round. Every label must have
+nonblank meaning wording before G0 can pass. A prior
 receipt can be replaced only when status finds no G0 integrity defect; the old
 receipt is first archived as `gates/g0/history/<YYYYMMDDTHHMMSS>.json`. Corrupt or
 unverified receipts are never overwritten. G0 evidence belongs to the

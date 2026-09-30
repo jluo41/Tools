@@ -82,6 +82,15 @@ serve:                          # only when providers.serve is live
   log_responses: true           # keep what the live provider answered
 ```
 
+**Adding a field later.** A published contract changes only with a higher
+`contract_version`. A field added then is written as a mapping with `since:`
+set to that version, e.g. `{name: Sugar, kind: raw, since: 2}`. Versions built
+before it lack the column and read it as the field's default, so older
+versions and the releases that pin them keep working. A field without `since`
+is required in every version. Builds (`build_table_asset.py`,
+`freeze_service_answers.py`) and `validate_asset.py` stay strict, so every new
+version must carry every field.
+
 ```yaml
 # a multi-step asset: the key the cohort has is not the key the provider uses
 asset: ext_patient_engagement

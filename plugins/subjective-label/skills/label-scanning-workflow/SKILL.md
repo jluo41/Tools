@@ -48,20 +48,20 @@ Each Run's own steps live in the one skill of the workbench view that shows it
 (JL 260929: one skill per view, never shared). This file keeps only the order.
 
 ```text
-step  run                          view                      skill
-14    run-test-gold-lock           Quality › Test            subjective-label-test
-15    run-executor-predict*        Quality › Evaluation      subjective-label-evaluation
-16    run-executor-score*          Quality › Evaluation      subjective-label-evaluation
-17    run-executor-select          Quality › Evaluation      subjective-label-evaluation
-18    run-scan-preflight           Delivery › Scan           subjective-label-scan
-19    run-scan-shard*              Delivery › Scan           subjective-label-scan
-20    run-risk-route               Delivery › Scan           subjective-label-scan
-21    run-human-review             Delivery › Scan           subjective-label-scan
-22    run-reconcile                Delivery › Scan           subjective-label-scan
-23    run-audit-sample             Quality › Audit           subjective-label-audit
-24    run-audit-human-gold         Quality › Audit           subjective-label-audit
-25    run-audit-analyze            Quality › Audit           subjective-label-audit
-26    run-dstar-materialize        Delivery › Final labels   subjective-label-final-labels
+step  Run Type                     view                      skill
+14    test-gold-lock           Quality › Test            subjective-label-test
+15    executor-predict*        Quality › Evaluation      subjective-label-evaluation
+16    executor-score*          Quality › Evaluation      subjective-label-evaluation
+17    executor-select          Quality › Evaluation      subjective-label-evaluation
+18    scan-preflight           Delivery › Scan           subjective-label-scan
+19    scan-shard*              Delivery › Scan           subjective-label-scan
+20    risk-route               Delivery › Scan           subjective-label-scan
+21    human-review             Delivery › Scan           subjective-label-scan
+22    reconcile                Delivery › Scan           subjective-label-scan
+23    audit-sample             Quality › Audit           subjective-label-audit
+24    audit-human-gold         Quality › Audit           subjective-label-audit
+25    audit-analyze            Quality › Audit           subjective-label-audit
+26    dstar-materialize        Delivery › Final labels   subjective-label-final-labels
 ```
 
 `*` one per candidate model (15, 16) or corpus shard (19), run in parallel after

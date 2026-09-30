@@ -47,11 +47,25 @@ VOLUME_FORM_RE = re.compile(r"solution|suspension|syrup|elixir|liquid|drops|"
                             r"concentrate|emulsion", re.I)
 
 
+# A delivery DEVICE, not a drug. 'Insulin Disposable Pump (OMNIPOD CLASSIC PODS, GEN 3,) MISC'
+# names insulin only to say what the pump is for; it holds no product and has no action
+# curve. Read only from the log's own words when the FDA Directory found no drug, so a
+# drug sold in a device ('Dupixent Syringe', 'LYUMJEV TEMPO PEN ... insulin pen') keeps
+# its bank answer.
+DEVICE_RE = re.compile(r"\b(pump|pods?|omnipod|infusion sets?|pen needles?|insulin syringes?|"
+                       r"lancets?|test strips?)\b", re.I)
+
+
 def is_insulin(ingredient, brand=None, class_key=None) -> bool:
     for s in (class_key, ingredient, brand):
         if s and INSULIN_RE.search(str(s)):
             return True
     return False
+
+
+def is_device(logged, ingredient=None) -> bool:
+    """True for a log that names a delivery device and no drug the bank found."""
+    return bool(logged) and not ingredient and bool(DEVICE_RE.search(str(logged)))
 
 
 def infer_unit(logged_unit, ingredient, dosage_form, insulin) -> Optional[str]:
@@ -109,7 +123,7 @@ def build(item, hit: Optional[Dict], conf: str, source: str,
     # describe-insulin -- the one member of the family that can serve them.
     # A bank miss is not evidence that a thing is not insulin.
     logged = item.key if item.kind in ("named", "class_only") else None
-    d["IsInsulin"] = is_insulin(ingredient, brand, class_key or logged)
+    d["IsInsulin"] = is_insulin(ingredient, brand, class_key or logged) and not is_device(logged, ingredient)
 
     # The seam. See constants.IDENTITY for why this is not Ingredient.
     d["DrugKey"] = ingredient or logged or None

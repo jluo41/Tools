@@ -341,6 +341,29 @@ _VARS = {"..", "PAGE_DIR", "page_dir", "PAGE", "page", "TASK_DIR", "task_dir"}
 _PY_JOIN = re.compile(r"""(/\s*)(["'])outline\2""")
 
 
+def kept_by_result(path) -> set[str]:
+    """The `outline/...` paths a Run ticket shares with its own Result, which keep their words.
+
+    A closed Run's Result records what the Run read (a Design Run's `runtime.yaml` inputs),
+    and the Design run contract checks the ticket against that record. The Result is never
+    edited, so the ticket keeps those same paths too: rewriting them left 12 Design Runs of
+    DrFirst's R2Messages board with "runtime input manifest is incomplete" (JL 260929).
+    """
+    parts = Path(path).parts
+    if "runs" not in parts:
+        return set()
+    i = len(parts) - 1 - parts[::-1].index("runs")
+    result = Path(*parts[:i]) / "results" / Path(path).stem
+    kept = set()
+    for f in (result.rglob("*") if result.is_dir() else []):
+        if f.is_file() and f.suffix in (".yaml", ".yml", ".json", ".md"):
+            try:
+                kept.update(re.findall(r"(?<![\w.-])outline/[\w./-]*\w", f.read_text(encoding="utf-8", errors="ignore")))
+            except OSError:
+                pass
+    return kept
+
+
 _STEP_WORDS = {"content", "evidence", "venue", "context", "check", "structure", "writing", "draft"}
 
 
@@ -422,9 +445,12 @@ def sweep_outline_paths(root: Path, pages: list[Path], *, pages_only: bool = Tru
                 continue
             if "outline" not in text and "draft/" not in text:
                 continue
+            kept = kept_by_result(path)
             out, last, n = [], 0, 0
             for m in _OUTLINE.finditer(text):
                 rest = _REST.match(text, m.end(), min(len(text), m.end() + 300)).group(0)
+                if kept and ("outline/" + rest).rstrip("./-") in kept:
+                    continue  # the ticket's own Result recorded this path
                 pre = _before(text, m.start())
                 seg = pre.rstrip("/").split("/")[-1] if pre else ""
                 if rest.startswith("board-context") or seg == "_board":

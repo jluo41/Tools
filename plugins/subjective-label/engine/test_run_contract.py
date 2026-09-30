@@ -49,7 +49,8 @@ def test_labeling_run_dialect_declares_exact_operation_catalog_and_envelope():
 
 def test_happy_path_formula_plans_44_runs_with_expected_phase_counts():
     catalog = _catalog_module()
-    runs = catalog.plan_runs(discovery=2, round_weak=(0, 2, 2), executors=3, shards=1)
+    runs = catalog.plan_runs(discovery=2, round_weak=(0, 2, 2), executors=3,
+                             shards=1, opened_on="2026-09-29")
 
     assert len(runs) == 44
     assert Counter(run.phase for run in runs) == {
@@ -67,9 +68,9 @@ def test_happy_path_formula_plans_44_runs_with_expected_phase_counts():
 
     addresses = [run.run for run in runs]
     assert len(addresses) == len(set(addresses))
-    assert addresses[0].startswith("rl01_corpus-contract_")
-    assert addresses[1] == "rl02_definition-discussion_labels-v1"
-    assert addresses[-1].startswith("rl44_dstar-materialize_")
+    assert addresses[0] == "run-labeling-corpus-contract-0929-job-v1"
+    assert addresses[1] == "run-labeling-definition-discussion-0929-labels-v1"
+    assert addresses[-1] == "run-labeling-dstar-materialize-0929-d-star-v1"
 
 
 def test_planner_cli_executes_the_documented_example():
@@ -86,6 +87,8 @@ def test_planner_cli_executes_the_documented_example():
             "3",
             "--shards",
             "1",
+            "--opened-on",
+            "2026-09-29",
         ],
         check=True,
         capture_output=True,
@@ -103,7 +106,7 @@ def test_planner_cli_executes_the_documented_example():
     assert tag_counts == {"P0": 7, "P1": 19, "P2": 1, "P3": 8, "P4": 5, "P5": 4}
     total_line = next(line for line in completed.stdout.splitlines() if line.startswith("TOTAL"))
     assert total_line.split() == ["TOTAL", "44"]
-    assert "rl44_dstar-materialize_d-star-v1" in completed.stdout
+    assert "run-labeling-dstar-materialize-0929-d-star-v1" in completed.stdout
 
 
 def test_optional_p0_run_counts_can_be_zero_and_match_formula():
@@ -169,13 +172,13 @@ def test_planner_cli_accepts_zero_optional_p0_counts():
     assert "definition-discussion" not in operations
 
 
-def test_labeling_run_ids_use_the_native_rl_namespace():
+def test_labeling_run_ids_use_full_readable_names():
     catalog = _catalog_module()
     runs = catalog.plan_runs(discovery=0, round_weak=(0,), executors=1, shards=1)
 
     assert runs
-    assert all(run.run.startswith("rl") for run in runs)
-    assert all("_labeling-" not in run.run for run in runs)
+    assert all(run.run.startswith("run-labeling-") for run in runs)
+    assert all("_" not in run.run for run in runs)
 
 
 def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():

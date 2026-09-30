@@ -48,10 +48,10 @@ import re
 from pathlib import Path
 from typing import Dict, Optional
 
-NUTRIENT_KEYS = ("Calories", "Carbs", "Protein", "Fat", "Fiber")
-# The nine the Diet frame has never carried. Banked here so a caller that wants
-# them does not need a second lookup; describe-food does not return them yet.
-EXTRA_KEYS = ("Sodium", "Sugar", "AddedSugars", "SaturatedFat", "TransFat",
+NUTRIENT_KEYS = ("Calories", "Carbs", "Protein", "Fat", "Fiber", "Sugar")
+# The eight the answer does not carry. Banked here so a caller that wants them
+# does not need a second lookup; describe-food does not return them yet.
+EXTRA_KEYS = ("Sodium", "AddedSugars", "SaturatedFat", "TransFat",
               "PolyUnSaturatedFat", "MonoUnSaturatedFat", "Cholesterol",
               "Potassium")
 
@@ -123,7 +123,9 @@ def lookup(name: str, path=None) -> Optional[Dict]:
     vals = {}
     for k in NUTRIENT_KEYS:
         v = rec.get(k)
-        vals[k] = float(v) if v is not None and v == v else 0.0
+        # The first five read a gap as 0, as they always have. Sugar reads it as empty:
+        # a serving the vendor gave no sugar for is not a sugar-free serving.
+        vals[k] = float(v) if v is not None and v == v else (None if k == "Sugar" else 0.0)
     return {
         "values": vals,
         "n": int(rec.get("n") or 0),

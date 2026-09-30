@@ -601,7 +601,7 @@ Page's plan folder, inside each Page and in the files around them
 `--archive-evidence` it moves retired Evidence lanes to
 `draft/_archive/legacy-outline-evidence/`, except a `display/` lane whose units
 have no DISPLAY Result yet. A Page it refuses in a tree run is reported and the
-other Pages still move. Sealed `results/` are never edited.
+other Pages still move. Sealed `results/` are never edited, and a Run ticket keeps an `outline/` path that its own Result recorded.
 
 ## 🧬 One owner claims the Page Face
 

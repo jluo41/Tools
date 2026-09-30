@@ -5,8 +5,8 @@ This module is the Building side's item-level writer.  It owns exactly three
 things, in the order ``label-building-workflow`` gives them:
 
     CARD     the identified human releases a round card        card.md
-    PREPARE  a random development draw is frozen               rlNN_round-prepare_round-NN
-    JUDGE    show → first → lock → reveal → final, per item    rlNN_human-calibration_round-NN
+    PREPARE  a random development draw is frozen               run-labeling-round-prepare-...
+    JUDGE    show → first → lock → reveal → final, per item    run-labeling-human-calibration-...
 
 Every judgment is an append-only, sequence-numbered event in
 ``rounds/round_NN/sessions/events.jsonl``; no record carries a content hash.  Nothing here promotes gold or a
@@ -116,30 +116,12 @@ def _schema(config: dict) -> dict:
     }
 
 
-def _next_run_number(job_root: Path) -> int:
-    seen = [0]
-    for base in (job.runs_dir(job_root), job.results_dir(job_root)):
-        if not base.is_dir():
-            continue
-        for path in base.iterdir():
-            hit = re.match(r"^rl(\d+)_", path.name)
-            if hit:
-                seen.append(int(hit.group(1)))
-    return max(seen) + 1
-
-
 def _run_name(job_root: Path, operation: str, target: str) -> str:
-    return f"rl{_next_run_number(job_root):02d}_{operation}_{target}"
+    return job.mint_labeling_run(job_root, operation, target)
 
 
 def _find_run(job_root: Path, operation: str, target: str) -> str | None:
-    runs = job.runs_dir(job_root)
-    if not runs.is_dir():
-        return None
-    hits = sorted(
-        path.stem for path in runs.glob(f"rl*_{operation}_{target}.yaml")
-        if re.match(rf"^rl\d+_{re.escape(operation)}_{re.escape(target)}$", path.stem)
-    )
+    hits = job.matching_runs(job_root, operation, target)
     return hits[-1] if hits else None
 
 
@@ -281,6 +263,8 @@ def job_state(job_root: Path) -> dict:
         next_step = state["next_action"]
     elif current:
         next_step = f"label {current['round_id']}: {current['finals']}/{current['batch_size']} done"
+    elif rounds and rounds[-1]["state"] == "judged" and rounds[-1]["calibration_status"] == "running":
+        next_step = f"finalize the interrupted human-calibration Result for {rounds[-1]['round_id']}"
     elif rounds and rounds[-1]["state"] == "judged":
         next_step = (
             f"{rounds[-1]['round_id']} judged · next: guideline-learn, round-measure, "
@@ -296,6 +280,14 @@ def job_state(job_root: Path) -> dict:
 
 
 # ── CARD + PREPARE ───────────────────────────────────────────────────────────
+
+
+def _unfinished_definition_discussion(job_root: Path) -> str | None:
+    """A round cannot freeze its policy while a meaning discussion is open."""
+    try:
+        return job.unfinished_definition_discussion(job_root)
+    except RuntimeError as error:
+        raise LabelingRefused(str(error)) from error
 
 
 def release_round(
@@ -314,6 +306,9 @@ def release_round(
     """
     job_root = job_root.resolve()
     require_human_p1(job_root, human_id)
+    discussion = _unfinished_definition_discussion(job_root)
+    if discussion:
+        raise LabelingRefused(f"close definition discussion {discussion} before releasing a round")
     config = _config(job_root)
     rounds_cfg = config.get("rounds") if isinstance(config.get("rounds"), dict) else {}
     round1 = rounds_cfg.get("round1") if isinstance(rounds_cfg.get("round1"), dict) else {}
@@ -493,6 +488,13 @@ def _ensure_calibration_run(job_root: Path, round_path: Path, human_id: str) -> 
     t = _round_index(round_path.name)
     run = _find_run(job_root, "human-calibration", round_target(t))
     if run:
+        runtime_path = job.results_dir(job_root) / run / "runtime.yaml"
+        try:
+            runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError) as error:
+            raise LabelingRefused(f"calibration Run {run} has no readable runtime") from error
+        if not isinstance(runtime, dict) or runtime.get("status") != "running":
+            raise LabelingRefused(f"calibration Run {run} is not running; repair its lifecycle before judging")
         return run
     run = _run_name(job_root, "human-calibration", round_target(t))
     started = now_iso()
@@ -593,8 +595,8 @@ def open_item(job_root: Path, round_id: str, *, human_id: str, session_id: str,
     require_human_p1(job_root, human_id)
     config = _config(job_root)
     round_path, batch = _round_for_judging(job_root, round_id)
-    run = _ensure_calibration_run(job_root, round_path, human_id)
     with _locked(round_path / "sessions" / ".lock"):
+        run = _ensure_calibration_run(job_root, round_path, human_id)
         states = _item_states(round_path)
         ids = [str(row["item_id"]) for row in batch]
         if item_id is None:
@@ -613,6 +615,18 @@ def open_item(job_root: Path, round_id: str, *, human_id: str, session_id: str,
             _append_event(round_path, {"run": run, "round_id": round_id, "item_id": item_id,
                                        "kind": "show", "human_id": human_id, "session_id": session_id,
                                        "payload": {"prelabels_visible": False}})
+        if entry.get("first") and not entry.get("reveal") and not entry.get("final"):
+            # A stopped writer may have recorded first or lock without the reveal.
+            # Finish that same first answer; never ask the person to answer again.
+            first_seq = entry["first"].get("seq")
+            if not isinstance(first_seq, int) or first_seq < 1:
+                raise LabelingRefused("first judgment has no valid event sequence")
+            comparison = reveal_for(job_root, config, item_id)
+            base = {"run": run, "round_id": round_id, "item_id": item_id,
+                    "human_id": human_id, "session_id": session_id}
+            if "lock" not in entry["kinds"]:
+                _append_event(round_path, {**base, "kind": "lock", "payload": {"first_seq": first_seq}})
+            _append_event(round_path, {**base, "kind": "reveal", "payload": comparison})
         states = _item_states(round_path)
     entry = states.get(item_id, {})
     stage = "final" if entry.get("final") else "reveal" if entry.get("reveal") else "first"
@@ -645,8 +659,8 @@ def record_first(job_root: Path, round_id: str, item_id: str, *, human_id: str, 
         raise LabelingRefused("item is not in this round's frozen batch")
     judgment = _judgment(schema, class_label, region or _pure_region(schema, class_label),
                          uncertainty, reason, rejected_label)
-    run = _ensure_calibration_run(job_root, round_path, human_id)
     with _locked(round_path / "sessions" / ".lock"):
+        run = _ensure_calibration_run(job_root, round_path, human_id)
         kinds = _item_states(round_path).get(item_id, {}).get("kinds", [])
         if "show" not in kinds:
             raise LabelingRefused("an item must be shown before its first judgment")
@@ -654,11 +668,11 @@ def record_first(job_root: Path, round_id: str, item_id: str, *, human_id: str, 
             raise LabelingRefused("the first judgment is already locked for this item")
         base = {"run": run, "round_id": round_id, "item_id": item_id,
                 "human_id": human_id, "session_id": session_id}
+        comparison = reveal_for(job_root, config, item_id)
         first = _append_event(round_path, {**base, "kind": "first",
                                            "payload": {**judgment, "prelabels_visible": False}})
         _append_event(round_path, {**base, "kind": "lock",
                                    "payload": {"first_seq": first["seq"]}})
-        comparison = reveal_for(job_root, config, item_id)
         _append_event(round_path, {**base, "kind": "reveal", "payload": comparison})
     return {"first": judgment, "reveal": comparison}
 
@@ -684,8 +698,8 @@ def record_final(job_root: Path, round_id: str, item_id: str, *, human_id: str, 
     judgment = _judgment(schema, None if unresolved else class_label,
                          region or _pure_region(schema, class_label), uncertainty, reason,
                          None, allow_unresolved=unresolved)
-    run = _ensure_calibration_run(job_root, round_path, human_id)
     with _locked(round_path / "sessions" / ".lock"):
+        run = _ensure_calibration_run(job_root, round_path, human_id)
         states = _item_states(round_path)
         entry = states.get(item_id, {"kinds": []})
         if "lock" not in entry["kinds"] or "reveal" not in entry["kinds"]:
@@ -781,6 +795,22 @@ def _close_calibration(job_root: Path, round_path: Path, batch: list[dict], stat
     return run
 
 
+def finalize_calibration(job_root: Path, round_id: str, *, human_id: str) -> dict:
+    """Finish a Run whose last final event was recorded before its Result closed."""
+    job_root = job_root.resolve()
+    require_human_p1(job_root, human_id)
+    round_path, batch = _round_for_judging(job_root, round_id)
+    with _locked(round_path / "sessions" / ".lock"):
+        if not _find_run(job_root, "human-calibration", round_target(_round_index(round_id))):
+            raise LabelingRefused("this round has no calibration Run to finalize")
+        run = _ensure_calibration_run(job_root, round_path, human_id)
+        states = _item_states(round_path)
+        if any(not states.get(str(row["item_id"]), {}).get("final") for row in batch):
+            raise LabelingRefused("the frozen batch still has items without final judgments")
+        _close_calibration(job_root, round_path, batch, states, run, _config(job_root))
+    return {"round_id": round_id, "run": run, "status": "complete", "finals": len(batch)}
+
+
 # ── REVEAL: external reference observations, after lock only ────────────────
 
 
@@ -856,12 +886,19 @@ def main() -> None:
     verify = sub.add_parser("verify", help="check one round's event log")
     verify.add_argument("--job-root", type=Path, required=True)
     verify.add_argument("--round", required=True)
+    finalize = sub.add_parser("finalize", help="close a fully judged calibration Run left running")
+    finalize.add_argument("--job-root", type=Path, required=True)
+    finalize.add_argument("--round", required=True)
+    finalize.add_argument("--human-id", required=True)
     args = parser.parse_args()
     if args.command == "state":
         print(json.dumps(job_state(args.job_root), indent=2, sort_keys=True, ensure_ascii=False))
-    else:
+    elif args.command == "verify":
         errors = verify_events(args.job_root.resolve() / "rounds" / args.round)
         print(json.dumps({"round": args.round, "errors": errors, "ok": not errors}, indent=2))
+    else:
+        print(json.dumps(finalize_calibration(args.job_root, args.round, human_id=args.human_id),
+                         indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -544,7 +544,7 @@ class LabelingEmbeddingViewTest(unittest.TestCase):
                      'data-item="a1"', 'data-group-pick="1"', "class=embdata",
                      'data-map-show=round', 'data-zoom=in',
                      'data-ex-group="1"', "Show typical items",
-                     "--started-by &lt;your name&gt;", "from the terminal; no person&#x27;s request is recorded"):
+                     "--started-by &#x27;&lt;your name&gt;&#x27;", "from the terminal; no person&#x27;s request is recorded"):
             self.assertIn(text, body)
         self.assertEqual(body.count('<circle class="pt'), 2)
         self.assertNotIn("No embedding yet.", body)
@@ -626,7 +626,8 @@ class LabelingRoundDrawTest(unittest.TestCase):
                 {"kind": "first", "item_id": "157", "payload": {"class_label": "low"}},
                 {"kind": "first", "item_id": "11", "payload": {"class_label": "none"}},
                 {"kind": "final", "item_id": "11", "payload": {"class_label": "none"}})))
-        current = {"round_id": "round_01", "state": "judging", "finals": 1, "batch_size": 2}
+        current = {"round_id": "round_01", "state": "judging", "finals": 1,
+                   "batch_size": 2, "open_item": "157"}
         space = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": current},
                                  "canonical": {}, "embedding": None, "config": {}})
         rounds = space["rounds"]
@@ -643,7 +644,7 @@ class LabelingRoundDrawTest(unittest.TestCase):
                                          "target": "round-01", "status": "running"})
         self.assertEqual(action, "Resume")
         for text in ("Continue labeling round 1 of", "Waiting for my final: #1 item 157 (first: low)",
-                     "Never show the votes or your view before my first answer is recorded."):
+                     "Never show reference observations or your view before my first answer is recorded."):
             self.assertIn(text, prompt)
         self.assertEqual(prompt.count("Next items:"), 0)  # every item has a first answer
         self.assertNotIn("Next items:", rounds)  # every item has a first answer
@@ -706,9 +707,9 @@ class LabelingRoundDrawTest(unittest.TestCase):
             self.assertIn(text, prompt)
         panel = _runs_panel(vm, "labeling", [{"op": "definition-discussion", "words": "Discuss the label meanings",
                                                "views": ["discussion", "label"], "runs": []}])
-        self.assertIn(f'data-prompt="{html.escape(prompt, quote=True)}"', panel)
+        self.assertIn('data-prompt=""', panel)  # no valid Contract in this display-only fixture
         self.assertEqual(_run_again(vm, {"run": "rl08_definition-discussion_labels-v1", "operation": "definition-discussion",
-                                         "target": "labels-v1", "status": "complete"}), ("Rerun", prompt))
+                                         "target": "labels-v1", "status": "complete"}), ("", ""))
         self.assertIn("navigator.clipboard.writeText(t)", _JS)
         self.assertIn("document.execCommand('copy')", _JS)
         self.assertIn(".catch(function(){return legacyCopy(t);})", _JS)
@@ -750,6 +751,9 @@ class LabelingBoardLevelTest(unittest.TestCase):
         from live.labeling import render_board
         body = render_board(self.base.board, "/demo/board.md")
         self.assertIn("No Page on this Board has a labeling job yet.", body)
+        self.assertIn("Pages before Contract", body)
+        self.assertIn("Prepare corpus", body)
+        self.assertIn('href="/_board/labeling?path=/demo/board.md&amp;file=S-Label-1-demo/S-Label-1-demo.md', body)
 
     def test_confirmation_text_names_no_person(self):
         self.base.make_contract(
@@ -941,28 +945,30 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual([r["run"] for r in rows],
                          ["rl02_embedding-build_minilm", "rl03_round-prepare_round-01", "rl10_embedding-build_minilm"])
         self.assertEqual([r["name"] for r in rows],
-                         ["run-embedding-build-minilm", "run-round-prepare-round-01", "run-embedding-build-minilm-2"])
+                         ["run-labeling-embedding-build-minilm", "run-labeling-round-prepare-round-01",
+                          "run-labeling-embedding-build-minilm-2"])
         self.assertEqual(rows[2]["label"], "minilm-2")
         card = _run_card({"root": page / "labeling", "cal": {}}, rows[2])
         self.assertIn('data-name="minilm-2" data-target="minilm"', card)
-        self.assertIn('<b title="rl10_embedding-build_minilm">run-embedding-build-minilm-2</b>', card)
+        self.assertIn('<b title="rl10_embedding-build_minilm">run-labeling-embedding-build-minilm-2</b>', card)
         for hook in ("function runsWant(", "'labeling:run'", "runsWant('data',v)", "runsWant('labeling',d.dataset.target)"):
             self.assertIn(hook, _JS)
 
     def test_sop_lists_the_steps_and_marks_where_this_job_is(self):
-        from live.labeling import _sop
+        from live.labeling import _md_table, _sop, _space_mapping_ref
         vm = {"runs": [{"run": "rl01_corpus-contract_job-v1", "operation": "corpus-contract", "status": "complete"},
                        {"run": "rl03_round-prepare_round-01", "operation": "round-prepare", "status": "complete"},
                        {"run": "rl04_human-calibration_round-01", "operation": "human-calibration", "status": "running"}],
               "canonical": {"phase": "P1", "meaning_receipt_valid": True}}
         body = _sop(vm)
         self.assertIn("SOP · how a labeling job runs", body)
-        self.assertEqual(body.count("<tr"), 8)  # header + the 7 steps the SOP supports today
+        _, steps = _md_table(_space_mapping_ref().read_text(encoding="utf-8"), "SOP")
+        self.assertEqual(body.count("<tr"), len(steps) + 1)
         self.assertIn("Discuss what the labels mean", body)  # step 2, the definition-discussion Run
         self.assertIn("Label the open round", body)
-        self.assertIn("running · rl04 (now)", body)
+        self.assertIn("running · run-labeling-human-calibration-round-01 (now)", body)
         self.assertEqual(body.count("<tr class=now>"), 1)
-        self.assertIn("done · rl03", body)
+        self.assertIn("done · run-labeling-round-prepare-round-01", body)
         self.assertIn(">not built yet<", body)  # guideline-learn has no engine yet
         self.assertIn('<td data-label="This job">done</td>', body)  # the meaning receipt, gate G0
 

@@ -218,7 +218,7 @@ def check_page_folder(target: Path) -> dict:
     _rule(rules, "no links the Page server refuses", "0.118", not links,
           ", ".join(links[:4]) or "none", "replace each link with the real folder or remove it")
 
-    from .draft_migration import _PY_JOIN, is_prose_outline
+    from .draft_migration import _PY_JOIN, is_prose_outline, kept_by_result
     cited = []
     for path in folder.rglob("*"):
         if path.is_file() and path.suffix in TEXT and not path.is_symlink() and "results" not in path.parts:
@@ -226,8 +226,10 @@ def check_page_folder(target: Path) -> dict:
                 body_text = path.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
+            kept = kept_by_result(path)
             hits = sum(1 for m in OUTLINE_PATH.finditer(body_text)
-                       if not body_text[m.end():].startswith("board-context")  # kept by the sweep
+                       if not ("outline/" + re.match(r"[\w./-]*", body_text[m.end():]).group(0)).rstrip("./-") in kept
+                       and not body_text[m.end():].startswith("board-context")  # kept by the sweep
                        and not body_text[max(0, m.start() - 8):m.start()].endswith("_board/")  # old URL
                        and (not (m.start() == 0 or body_text[m.start() - 1] in " \t\n(\"'`")
                             or not is_prose_outline(re.match(r"[\w./-]*", body_text[m.end():]).group(0), folder)))

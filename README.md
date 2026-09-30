@@ -29,7 +29,7 @@ This table covers the four package directories directly under `plugins/`. The HA
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
 and [skill structure map](plugins/haipipe-toolkit/skills/STRUCTURE.md).
 For the shared Workbench, Run Type, and Skill relationship, see
-[Workbench design principles](WORKBENCH-DESIGN.md).
+[Workbench design principles](principle/WORKBENCH-DESIGN.md).
 
 ## Installation
 

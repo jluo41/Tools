@@ -21,12 +21,13 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
- 3    run-embedding-build      built · engine/embedding_build.py build
+step  Run Type                     state
+ 3    embedding-build      built · engine/embedding_build.py build
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 `create` intentionally leaves `cache/embeddings/` empty. `embedding-build` is
@@ -45,7 +46,7 @@ The `embedding-build` action is `engine/embedding_build.py build`. It embeds eve
 model. Each input is the response, a blank line, then the context, so a
 word-piece cut only ever drops the end of the context. It writes
 `cache/embeddings/<version>/` (`manifest.json`, `vectors.npy`, `rows.jsonl`,
-`map.jsonl`, `groups.json`) and one `rlNN_embedding-build_<version>` Run,
+`map.jsonl`, `groups.json`) and one `run-labeling-embedding-build-<MMDD>-<version>` Run,
 where `<version>` is the model name in lower case. The embedder choice lives on
 the Ticket, so `config.yaml` is never edited. Because a vector sets no label,
 the build is not gated on G0; it refuses only a HOLD job or P0 files that do
@@ -65,7 +66,7 @@ for the rotating view; `embedding_build.py map3d` adds it to an older build
 without touching its vectors.
 
 ```bash
-python3 plugins/subjective-label/engine/embedding_build.py build \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/embedding_build.py" build \
   --job-root <page-folder>/labeling --started-by <the person who asked> \
   --model Qwen/Qwen3-Embedding-0.6B
 ```

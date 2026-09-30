@@ -20,7 +20,8 @@ from pathlib import Path
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
 # the resolver. Same walk as haipipe-norm/paths.py:space_root().
-ROOT = next(a for a in Path(__file__).resolve().parents
+# resolve() unwinds a Tools symlink, so a SPACE that links Tools in is found from the cwd instead.
+ROOT = next(a for a in [*Path(__file__).resolve().parents, Path.cwd(), *Path.cwd().parents]
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo"
 

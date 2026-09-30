@@ -1,9 +1,9 @@
 ---
 name: describe-food
-description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
+description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber/Sugar, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-22"
+  version: "0.6.0"
+  last_updated: "2026-09-30"
   changelog: CHANGELOG.md
   measured: "69.1% of 71,673 Diet rows MEASURED, 5.7% ESTIMATED, 25.2% MISS. ESTIMATED carries median 2.0 g carb error, p90 15.0 g, 10% over 15 g."
 ---
@@ -49,11 +49,32 @@ MATCH WHAT HAS ALREADY BEEN MEASURED.
                    28,408 entries, ExternalStore/foodbank_observed/  -> MEASURED
     T1  catalog    RESERVED: FoodID -> the app's own food catalog     -> MEASURED
     T2  usda       fuzzy match against USDA FDC                       -> ESTIMATED
-    T3  none                                                          -> MISS
+    T_CN china     the component's CHINESE original, exact name or    -> ESTIMATED
+                   alias, in the China Food Composition Tables 6th ed.
+                   (ext_food_bank_cn); only when T2 found no trusted
+                   match and the caller passed name_zh_col
+    T3  branded    USDA's 1.8M packaged products (ext_food_bank_branded) -> ESTIMATED
+                   only for a ONE-FOOD meal, when T0 missed AND T2 found no
+                   trusted match;
+                   every content word of the name must be in the
+                   product's description or brand; the answer is the
+                   median over the top 5 such products
+        none                                                          -> MISS
 
-A meal is resolved at ONE tier, never a mixture: T0 is denominated per SERVING
-and T2 per 100 g, and adding one to the other yields a number that is neither.
-The tier is picked by, in order:
+T_CN and T3 are OFF unless a release pins their table, or FOODNORM_CN_DB /
+FOODNORM_BRANDED_DB names the file for an A/B run (`off` forces them off). A
+release that pins neither (EventNormV3) answers exactly as before: re-asking all
+35,549 frozen requests with this code under EventNormV3 agreed on every field
+(b51 j01 t04 r06_parity_EventNormV3). A label or a book that leaves a nutrient out
+leaves it EMPTY, never 0, and a meal that sums such a component is empty for that
+nutrient.
+
+A meal never mixes per SERVING with per 100 g: T0 is denominated per serving and
+T2, T_CN and T3 per 100 g, and adding one to the other yields a number that is
+neither. The three per-100 g banks are ONE family and do add up: 'Hairtail 80 g
++ Rice 100 g' is the China table's hairtail plus USDA's rice, with
+NutritionSource `bank_usda+bank_cn`. The family (T0, or per 100 g) is picked by,
+in order:
 
     1. CAN IT HONOUR THE STATED PORTION?  A log that says '141 g' has given
        better information than any bank's idea of a serving, and only T2 can be
@@ -204,14 +225,21 @@ The door (what a SourceFn uses) -- batch, order-preserving, duplicates resolved 
     from foodnorm import normalize
 
     out = normalize(df["FoodName"].fillna("").astype(str).tolist())
-    # -> one dict per input: Calories, Carbs, Protein, Fat, Fiber,
-    #    NutritionSource, NutritionConf, NutritionBasis
+    # -> one dict per input: Calories, Carbs, Protein, Fat, Fiber, Sugar,
+    #    NutritionSource, NutritionConf, NutritionBasis, NutritionCoverage
+    # Sugar (total sugars, g) is empty, never 0, where no table gave one.
 
 The DataFrame-shaped form, for a caller that already holds one and wants the
 columns joined on. It exposes the stage sequence, so prefer the door:
 
     from foodnorm import enrich_food_to_nutrition
     df = enrich_food_to_nutrition(df, food_col="FoodName", stages="1-2")
+
+    # Shanghai logs in Chinese and FoodName is a translation. Pass the original
+    # (one component per line, same order) so the China table can be reached:
+    df = enrich_food_to_nutrition(df, food_col="FoodName", name_zh_col="FoodName_zh")
+    # A string typed in Chinese needs nothing extra: normalize(["带鱼100g"]) reaches
+    # the China table by itself. USDA (T2) never answers a Chinese name.
 
 CLI:
 
@@ -253,7 +281,8 @@ THE CONTRACT
 Only GOOD / OK / ALIAS may be written into nutrition columns. WEAK and MISS stay
 NULL. **A confidently wrong food is worse than a missing one.**
 
-    NutritionSource   bank_usda | none
+    NutritionSource   bank_observed | bank_usda | bank_cn | bank_branded | none,
+                      or several per-100 g banks joined by + (bank_usda+bank_cn)
     NutritionConf     GOOD | PARTIAL | MISS
 
 `PARTIAL` means some component of that meal did not resolve -- its totals
@@ -321,25 +350,25 @@ CLOSED GAPS (2026-07-12)
 OPEN GAPS
 --------------------------------------------------------------------------------
 
-1. The bank holds ZERO branded foods. USDA publishes 2,007,636 of them, free. This
-   is what the residual 22.6% is made of, essentially without exception:
+1. Branded foods now have their own table, ext_food_bank_branded (T3), for
+   ONE-FOOD meals only. Open Food Facts US: gap 45.6% -> 24.4% on 10,000
+   products, carb median error 0.32 g per 100 g (b51 j01 t19 r01). Still open:
+   brewed coffee and size-only names ('cold brew iced coffee (venti)'), and
+   branded items inside meals of several foods, where a per-100 g figure without
+   grams cannot be combined with T0's servings.
 
-       657  coffee (brewed from grounds)
-       308  whole grain oatmeal bread (pepperidge farm)
-       238  cold brew iced coffee (venti)
-       144  multi grain cheerios
-       143  honey (sue bee)
-       141  steel cut oats quick 3-minute (quaker)
+2. Chinese composite dishes (红烧肉, 百叶包, 烂糊肉丝) exist in no public food
+   composition table -- every official table, including 中国食物成分表, lists
+   ingredients only. Only consumer databases (e.g. boohee, commercial) carry
+   prepared dishes. The ingredients USDA lacks (带鱼, 茼蒿, 鲳鱼) are now reached
+   through ext_food_bank_cn (T_CN, name_zh_col); Shanghai rows fully answered
+   70.3% -> 73.5% (b51 j01 t19 r03).
 
-   The index above was the prerequisite -- at 20x the rows, unindexed retrieval
-   would be unusable. Importing is now the highest-value move, and its payoff is
-   falsifiable: rerun `test_foodnorm.py --bench` and see whether r moves off 0.705.
-
-2. Chinese composite dishes (红烧肉, 百叶包) exist in no public food composition
-   table -- every official table, including 中国食物成分表, lists ingredients only.
-   Only consumer databases (e.g. boohee, commercial) carry prepared dishes.
-   Chinese INGREDIENTS that USDA lacks entirely (hairtail 带鱼, crown daisy 茼蒿,
-   pomfret 鲳鱼) would be covered by 中国食物成分表 (1,677 items, free).
+3. Six nutrients are answered; Sugar joined in 0.6.0. WellDoc rows carry eight
+   more (AddedSugars, Sodium, four kinds of fat, cholesterol, potassium) and no
+   tier returns them yet. The China table gives no sugar, so a meal with a
+   China-table food has an empty Sugar. A glycemic-index table is proposed but
+   waits on a licence check of its two candidate sources.
 
 
 TESTS

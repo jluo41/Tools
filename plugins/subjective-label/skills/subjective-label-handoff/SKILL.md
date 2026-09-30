@@ -21,12 +21,13 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
-13    run-handoff-freeze       not built (no Label Handoff Keeper)
+step  Run Type                     state
+13    handoff-freeze       not built (no Label Handoff Keeper)
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 ```text

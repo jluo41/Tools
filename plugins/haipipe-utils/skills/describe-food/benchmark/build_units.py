@@ -62,7 +62,8 @@ sys.path.insert(0, str(HERE.parent))            # describe-food/
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
 # the resolver. Same walk as haipipe-norm/paths.py:space_root().
-ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
+# resolve() unwinds a Tools symlink, so a SPACE that links Tools in is found from the cwd instead.
+ROOT = next(a for a in [*pathlib.Path(__file__).resolve().parents, pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SOURCE = ROOT / "_WorkSpace/1-SourceStore"
 EXT = ROOT / "_WorkSpace/ExternalStore"
@@ -97,6 +98,8 @@ CORPORA = [
          ruler="E2_N5K"),
     dict(name="OpenFoodFacts-US", kind="off", unit_is_a="brand_product",
          ruler="E3_OFF"),
+    dict(name="NutriBench", kind="nutribench", unit_is_a="meal_sentence",
+         ruler="E5_NUTRIBENCH"),
 ]
 
 # Looked at, nothing there. The reason is recorded so nobody re-checks blind.
@@ -189,6 +192,25 @@ def _load_public(c):
         u["gold_n"] = u.row_weight
         return u, len(it), "per_100g", \
             "Nutrition5k ingredients_metadata (USDA-derived per-gram macros)"
+
+    if c["kind"] == "nutribench":
+        # v1, all four splits: WWEIA and WHO meals, each written once with its
+        # grams (metric) and once in household words (natural). A unit is the
+        # whole sentence, and its gold is the MEAL's macros; NutriBench gives
+        # no fibre.
+        raw = OUT / c["name"] / "raw" / "v1"
+        d = pd.concat([pd.read_parquet(f) for f in sorted(raw.glob("*.parquet"))], ignore_index=True)
+        d = d.rename(columns={"carb": "Carbs", "protein": "Protein", "fat": "Fat", "energy": "Calories"})
+        d["Fiber"] = np.nan
+        d["unit"] = d.meal_description.astype(str).str.strip()
+        g = d.groupby("unit", sort=False)
+        u = pd.DataFrame({"unit": g.size().index, "row_weight": g.size().values,
+                          "n_rows": g.size().values})
+        for n in NUTRIENTS:
+            u["gold_" + n] = g[n].median().values
+        u["gold_n"] = u.row_weight
+        return u, len(d), "per_meal", \
+            "NutriBench v1 (Hugging Face dongx1997/NutriBench, CC BY-NC-SA 4.0), per-meal macros"
 
     d = pd.read_parquet(EXT / "openfoodfacts/off_product.parquet")
     d = d[d.countries_en.astype(str).str.contains("United States", na=False)]
@@ -642,6 +664,15 @@ built to sell, and the bank has never heard of the brand.
 
 US products only. The dump is multilingual and both the door and USDA read
 English; grading a French product name would measure language, not food.
+""",
+    "NutriBench": """
+Meals written as a person would say them, one sentence each: "During lunch, I
+savored 240g of unsweetened bottled water, 142g of thin crust pepperoni pizza
+from school ...". 11,857 meals from NutriBench v1 (WWEIA and WHO records), each
+written once with grams and once in household words. The gold is the MEAL's
+macros. The door splits a log on ';' and new lines, never inside a sentence, so
+this corpus measures how far it gets with free text. CC BY-NC-SA 4.0:
+non-commercial, an internal test set only.
 """,
 }
 

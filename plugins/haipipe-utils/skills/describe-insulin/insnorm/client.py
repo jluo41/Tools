@@ -152,6 +152,50 @@ def _basis(mode) -> str:
 
 _ID_RE = re.compile(r"^\d+(?:\.0+)?$")
 _OR_RE = re.compile(r"\s+\bor\b\s+", re.I)
+_RATIO_RE = re.compile(r"^\d+/\d+$")
+
+# Regimen words, not products: 'basal insulin' next to 'Novolin R' names how the
+# product is used, so it never counts as a second product in one field.
+CLASS_KEYS = frozenset({"basal insulin", "bolus insulin"})
+
+
+def _split_outside_parens(raw):
+    """'insulin glargine, 14 IU, Humulin 70/30, 12 IU' -> its comma or semicolon parts.
+
+    A comma inside brackets stays: 'insulin lispro (HUMALOG TEMPO PEN,U-100,INSULN)'
+    is one product, and catalog names are full of such commas."""
+    parts, depth, cur = [], 0, ""
+    for ch in str(raw):
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth = max(0, depth - 1)
+        if ch in ",;" and depth == 0:
+            parts.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    parts.append(cur)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def _distinct_products(keys):
+    """Product keys named in one field, with any key that another one refines dropped.
+
+    'insulin aspart, w/niacinamide, (FIASP)' names 'insulin aspart' and then 'insulin
+    aspart faster', which says everything the first says and more: one product."""
+    keys = [k for i, k in enumerate(keys) if k not in keys[:i] and k not in CLASS_KEYS]
+    return [k for k in keys if not any(o != k and _more_specific(o, k) == o for o in keys)]
+
+
+def _premix_of(a, b):
+    """True when key `a` is a premix of the molecule key `b` names: 'insulin human 70/30'
+    against 'insulin human regular'. A premix keeps its molecule's words and adds a ratio,
+    so a log that states the ratio says more than a seam that lost it."""
+    if a not in PK or b not in PK or not PK[a][4] or PK[b][4]:
+        return False
+    base = {t for t in a.split() if not _RATIO_RE.match(t)}
+    return base < set(b.split()) or base == set(b.split())
 
 
 def _lookup(name):
@@ -188,6 +232,22 @@ def _lookup(name):
                 resolved.append(key)
         if len(resolved) > 1:
             kept = " | ".join(resolved)
+            return kept, AMBIGUOUS, f"ambiguous:{kept}"
+
+    # Two products in one field, listed rather than offered as alternatives:
+    # 'insulin glargine, 14 IU, Humulin 70/30, 12 IU' is a basal and a premix given
+    # together, and one action curve cannot describe both (16 Shanghai rows took the
+    # first one's). Refinements of one product and regimen words do not count.
+    parts = _split_outside_parens(raw)
+    if len(parts) > 1:
+        found = []
+        for part in parts:
+            key, conf, src = _lookup_text(part)
+            if key is not None and conf != AMBIGUOUS:
+                found.append(key)
+        products = _distinct_products(found)
+        if len(products) > 1:
+            kept = " | ".join(products)
             return kept, AMBIGUOUS, f"ambiguous:{kept}"
 
     # In clinical phrases the product is often inside parentheses while the
@@ -294,6 +354,18 @@ def _normalize_local(items, dia_hours=None, delivery=None, raw=None,
                     and _more_specific(akey, key) == akey):
                 key, conf = akey, aconf
                 src = f"raw_more_specific:{akey}+{src}"
+            # A premix the log names beats the plain molecule the seam kept:
+            # describe-medication answers 'Humulin 70/30' with the ingredient
+            # 'Insulin human', and 61 Shanghai premix rows read as regular insulin.
+            elif (akey is not None and aconf != AMBIGUOUS and conf != AMBIGUOUS
+                    and _premix_of(akey, key)):
+                key, conf = akey, aconf
+                src = f"raw_premix:{akey}+{src}"
+            # The log names two products and the seam kept one: the log wins, and
+            # the answer is AMBIGUOUS with no curve.
+            elif akey is not None and aconf == AMBIGUOUS and conf != AMBIGUOUS:
+                key, conf = akey, aconf
+                src = f"raw_ambiguous:{akey}+{src}"
         mode = modes[i]
         mode = str(mode).strip().lower() if mode not in (None, "") else None
         basis = _basis(mode)

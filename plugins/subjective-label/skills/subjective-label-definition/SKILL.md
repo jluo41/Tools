@@ -5,7 +5,7 @@ description: >-
   settles what each label means: outside evidence, the definition discussion with the identified human, and the G0 Confirm meaning gate. Every Run in this view names this skill, and no other view uses it.
   Use for discussing the label meanings, definition-discussion, revising a label's wording, Confirm meaning, G0, meaning receipt, discovery search, or /subjective-label-definition.
 metadata:
-  version: "0.1.0"
+  version: "0.1.4"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -21,14 +21,15 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
- 4    run-discovery-search         not built · one bounded outside-evidence query
- 5    run-definition-discussion    built · engine/definition_discussion.py
+step  Run Type                     state
+ 4    discovery-search         not built · one bounded outside-evidence query
+ 5    definition-discussion    built · engine/definition_discussion.py
 G0    Confirm meaning              a gate, not a Run · engine/job.py confirm or the button
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 `discovery-search` (not built yet) runs one bounded external-evidence query
@@ -41,7 +42,9 @@ are `config.yaml`, `corpus/manifest.json`, `test/sealed/status.json`,
 `register.md`, and `policy/versions/G_00/manifest.yaml`. A complete,
 integrity-valid `corpus-contract` Result with valid human authority but no
 meaning receipt is G0-pending, not `HOLD`: the identified human owes the
-confirmation. Missing or unreadable P0 files, or invalid human
+confirmation. G0 requires nonblank wording for every label. When a Contract
+has label names but no meanings, the Definition discussion must settle them
+before the UI offers Confirm meaning. Missing or unreadable P0 files, or invalid human
 authority requires repair or `HOLD` before any dependent work proceeds.
 
 `definition-discussion` (`engine/definition_discussion.py`) is how the
@@ -59,8 +62,10 @@ deciding Run, the retired meaning receipt), archives the G0 receipt to
 `gates/g0/history/`, and resets the confirmation, so the person presses
 Confirm meaning again. `job.py status` checks the chain: each revision starts where
 the last one ended, and `config.yaml` holds the last one's wording, so any
-unrecorded edit is caught. Both refuse once any item has a first or final
-answer; after that, a change is a guideline patch for `guideline-learn`.
+unrecorded edit is caught. Close this Run before releasing a round: the release
+writer refuses an open discussion, and the discussion writer refuses any later
+turn, decision, or close once a round card exists. After release, a meaning
+change is a later guideline patch for `guideline-learn`.
 
 `authority_hold(config)` is true for simulation/proxy authority, imported
 source labels without a locally appointed human, a missing human id, or any
@@ -70,11 +75,17 @@ absent meaning receipt and G0 receipt is the expected pending-confirmation
 state: `status` names explicit caller attestation as `next_action`, not
 `HOLD`. The confirmation API checks that the caller-supplied id matches the
 configured semantic authority and refuses on HOLD or P0 integrity failure;
-the CLI and local Board do not authenticate the caller's identity. If semantic confirmation exists but its G0 receipt is
-missing, invalid, or no longer matches the confirmed meanings, status treats the
-confirmation as stale: G0 is open again, `next_action` asks for confirmation,
-and `round-prepare` remains ineligible. Repeating confirmation
-can write a missing G0 receipt. A prior bound receipt can be upgraded only
+the CLI and local Board do not authenticate the caller's identity. If semantic
+confirmation exists but its G0 receipt is missing, status keeps G0 open and
+asks to restore the receipt. A missing receipt can be restored after round
+release only when the intact meaning receipt proves confirmation preceded that
+release. Labeling → Definition exposes `Restore G0 receipt` for exactly that
+case; the existing round resumes afterward. An invalid or semantically
+unbound G0 receipt requires separate integrity repair and cannot be silently
+overwritten. Status also checks the confirmation time when a matching G0
+receipt exists: a confirmation later than a released round remains blocked.
+A new attestation
+cannot retroactively authorize an already released round. A prior bound receipt can be upgraded only
 when its existing G0 receipt still verifies; the old receipt is archived under
 `gates/g0/history/` before replacement. Corrupt or unverified receipts are never
 overwritten.
@@ -88,13 +99,16 @@ the current construct, class schema, seven regions,
 uncertainty/unresolved disposition, and G_00 manifest. `confirm` records
 what was confirmed (construct, classes, regions, uncertainty) in
 `authority.meaning_receipt` and writes `gates/g0/receipt.json` with the same
-content. It is idempotent. Without both semantic and G0 receipts,
+content. A new confirmation refuses while a definition discussion is open;
+restoring a missing G0 receipt from an intact pre-release attestation can proceed
+even if an obsolete discussion Ticket remains open after round release. It is
+idempotent when G0 is already valid. Without both semantic and G0 receipts,
 the compatibility status remains P0. The G0 receipt must declare the canonical schema,
 `status: passed`, the same identified human, and the same confirmed content;
 presence alone never passes the gate.
 
 ```bash
-python3 plugins/subjective-label/engine/job.py confirm \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/job.py" confirm \
   --page-file <page-home>/<page>.md \
   --job-root <page-home>/labeling \
   --human-id <human> --accept-current-schema --attest-as-human

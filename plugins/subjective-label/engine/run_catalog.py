@@ -8,6 +8,7 @@ import json
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass
+from datetime import date
 from typing import Iterable
 
 
@@ -74,6 +75,7 @@ def plan_runs(
     test_reserve_count: int = 1,
     embedding_build_count: int = 1,
     definition_discussion_count: int = 1,
+    opened_on: str | None = None,
 ) -> list[PlannedRun]:
     weak_counts = tuple(round_weak)
     for name, value in (
@@ -159,16 +161,25 @@ def plan_runs(
     _append(rows, "P5", "audit-analyze", "audit_01", "audit-v1")
     _append(rows, "P5", "dstar-materialize", "audit_01", "D-star-v1")
 
-    width = max(2, len(str(len(rows))))
+    opened_on = opened_on or date.today().isoformat()
+    date_match = re.fullmatch(r"\d{4}-(\d{2})-(\d{2})", opened_on)
+    if not date_match:
+        raise ValueError("opened_on must be YYYY-MM-DD")
+    mmdd = "".join(date_match.groups())
+    names: Counter[str] = Counter()
+    def planned_name(operation: str, target: str) -> str:
+        stem = f"run-labeling-{operation}-{mmdd}-{_slug(target)}"
+        names[stem] += 1
+        return stem if names[stem] == 1 else f"{stem}-{names[stem]}"
     return [
         PlannedRun(
-            run=f"rl{index:0{width}d}_{operation}_{_slug(target)}",
+            run=planned_name(operation, target),
             phase=phase,
             operation=operation,
             episode=episode,
             target=target,
         )
-        for index, (phase, operation, episode, target) in enumerate(rows, start=1)
+        for phase, operation, episode, target in rows
     ]
 
 
@@ -242,6 +253,8 @@ def main() -> int:
         help="definition-discussion Runs M before G0 (default: 1, set 0 when omitted)",
     )
     plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    plan.add_argument("--opened-on", default=date.today().isoformat(),
+                      help="illustrative opening date for names, YYYY-MM-DD")
     args = parser.parse_args()
 
     try:
@@ -254,6 +267,7 @@ def main() -> int:
             test_reserve_count=args.test_reservations,
             embedding_build_count=args.embedding_builds,
             definition_discussion_count=args.definition_discussions,
+            opened_on=args.opened_on,
         )
     except ValueError as exc:
         parser.error(str(exc))

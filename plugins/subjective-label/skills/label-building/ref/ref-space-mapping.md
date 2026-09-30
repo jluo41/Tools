@@ -1,6 +1,6 @@
 # Labeling Space · UI ↔ Page Folder ↔ Run mapping
 
-This is the orientation contract for the Board Labeling surface of
+This is the orientation contract for the Labeling Workbench surface of
 `haipipe-workbench-labeling` (`plugins/subjective-label/servers/workbench-labeling/labeling.py`). It uses one location word:
 **Space = Workspace** (one concept). The current adapter retains P0-P5 in the
 Workflow drawer's Phases card (`?drawer=workflow`) as compatibility capability tags. They
@@ -11,36 +11,70 @@ the shared Run Spec graph and native Run receipts.
 ## Two levels
 
 The Board level (`GET /_board/labeling-board?path=<board.md>`) lists one card
-per Page that owns a `labeling/` job; a card opens that Page's surface below.
+per Page with an attached preparation owner, a linked accepted package, or a `labeling/` job; a
+card opens that Page's surface below.
+It also gives empty `S-Label-*` Pages a separate **Pages before Contract** link.
+A flat Board source first needs its own Page folder; an already-folded Page can
+start upstream work. Neither state invents a job or a Run.
 The Page header's `← All labeling jobs` link returns to the Board level. The
 Board level has no Spaces and no writes. The rest of this file is the Page
 level.
+
+The dedicated Labeling host also opens a canonical Page folder directly at
+`/workbench/labeling?file=<Page>/<Page>.md`, relative to its served root. That
+Page has the same Spaces, Views, Runs panel, and checked action door without a
+Board, generated Page URL, or Board overview. On this direct route, copy a Run
+request into your agent conversation; a Board-backed Page also offers its
+Studio Chat tab. Copying a request never starts a Run.
 
 ## Space roster
 
 | order | Space | views | first question | canonical sources |
 |---|---|---|---|---|
-| 1 | **Data** | Contract · Embedding | What is one item, what does the corpus hold, and how does an item become a vector? | `config.yaml` (corpus) · `corpus/manifest.json` · `corpus/imported_label_summary.json` · `test/sealed/status.json` · `cache/embeddings/<version>/manifest.json` |
+| 1 | **Data** | Preparation · Contract · Embedding | How is one transcript turned into a checked item, what does the corpus hold, and how does an item become a vector? | `preparation-owner.yaml` (source attachment) · `preparation-ref.yaml` (accepted Result bindings) · `config.yaml` (corpus) · `corpus/manifest.json` · `test/sealed/status.json` · `cache/embeddings/<version>/manifest.json` |
 | 2 | **Labeling** | Definition · Rounds · Guideline | What does each label mean and is that confirmed, which items does each round label in chat, and what does the guideline say now? | `config.yaml` (labels) · `gates/g0/receipt.json` · `gates/meaning-revisions/` · `../results/<definition-discussion run>/ledger.yaml` · `rounds/round_NN/human_batch.jsonl` · `rounds/round_NN/sessions/events.jsonl` · `corpus/items.jsonl` (Rounds only) · `policy/current` · `policy/versions/<G>/guideline.md` |
 | 3 | **Quality** | Test · Evaluation · Audit | Is the sealed test safe, and what evidence qualifies an executor and the final corpus? | `test/sealed/status.json` · `test/final/lock.json` · `evaluation/registry.yaml` · `audit/final_*/` |
 | 4 | **Delivery** | Handoff · Scan · Final labels | What is handed over, how is the corpus labeled under it, and what can a reader receive? | `handoff/label-v1.yaml` · `production/run_<n>/` · `corpus/final/D_star.jsonl` |
 
-All paths are relative to the Page's `labeling/` folder, except the engine
-call. A view exists only because Runs live in it (JL 260928): Schema merged
+All paths in this roster are relative to the Page's `labeling/` folder;
+Preparation Tickets and Results remain in the referenced source owner's
+`corpus-preparation/` folder. A view exists only because Runs live in it (JL 260928): Schema merged
 into Contract, Discussion and Label merged into Definition, and Scan joined
 Delivery. Guideline is a view inside Labeling. The older Human tab and the Run
 Space are gone, and so is the page bar (v3, 260927). Runs live in three places:
 
 | where | what it shows | sources |
 |---|---|---|
-| the **Runs panel**, right of every Space | the current view's built Run types with counts, then the selected Run (Resume/Rerun, folded Prompt + Copy, Running process, Results) | `../runs/*.yaml` · `../results/*/runtime.yaml` · `../results/*/result.yaml` · this file's Workflow map `view` column |
+| the **Runs panel**, right of every Space | the current view's built Run types with counts, then the selected Run (Resume/Rerun, folded Prompt + Copy, Running process, Results) | `../runs/*.yaml` · `../results/*/runtime.yaml` · `../results/*/result.yaml` · linked `<source>/corpus-preparation/runs/*.yaml` and `results/*/` for Data → Preparation · this file's Run Type tables |
 | `?drawer=workflow` (no button) | Phases (P0-P5 compatibility tags), then the SOP, then the Workflow map | `engine/job.py status()` · this file's `## SOP` and `## Workflow map` |
-| `?drawer=allruns` (no button) | one row per Ticket: what ran, state, result | `../runs/*.yaml` · `../results/*/runtime.yaml` |
+| `?drawer=allruns` (no button) | one row per Ticket: what ran, state, result | Page `../runs/*.yaml` and `../results/*/runtime.yaml` · linked source-owned Corpus Runs |
 
-`../runs/` and `../results/` sit in the Page folder beside `labeling/`. The
-Workflow map's `view` column decides which view's Runs panel lists a type; a
-type not built yet stays in the map only. The panel lists a view's types in
-`step` order.
+`../runs/` and `../results/` sit in the Page folder beside `labeling/`. Linked
+Corpus Preparation Runs remain under the source folder and appear only when
+their accepted package binds them to this Page. The Workflow map's `view`
+column decides which view's Labeling Runs panel lists a type; the Corpus
+Preparation table assigns its source-owned types to Data → Preparation. A type
+not built yet stays in the map only. The panel lists a view's types in `step`
+order.
+
+Raw transcripts require a prior unit recipe and preparation. `Data →
+Preparation` reads the five source-owned Run Types below. They are separate
+from the current four-Space, 26-job-Run-Type catalogue; see
+[`CORPUS-PREPARATION.md`](../../../CORPUS-PREPARATION.md).
+After a source owner is attached, its panel offers a new Run request only for
+the next unfinished preparation step. It keeps completed Tickets readable;
+once a package or Contract is bound to the Page, it offers no new source Run
+from that Page.
+
+## Corpus Preparation Run Types
+
+| step | Run Type | in words | Skill | writes to |
+|---:|---|---|---|---|
+| 1 | `source-normalize` | Normalize source | `subjective-label-preparation` | source snapshot, normalized conversations, reject ledger |
+| 2 | `unit-recipe` | Choose labeling unit | `subjective-label-preparation` | accepted target/context/group recipe |
+| 3 | `unit-materialize` | Create candidate items | `subjective-label-preparation` | private candidate set and lineage |
+| 4 | `unit-check` | Check candidate items | `subjective-label-preparation` | public QA receipt |
+| 5 | `initial-group-reserve` | Reserve source groups | `subjective-label-preparation` | source-level frame and fenced package |
 
 ## Run Type skills
 
@@ -49,6 +83,13 @@ assigns that type to one Space and View. The eleven `subjective-label-<view>`
 Skills provide context for their respective Views; the other Skills are shared
 across Run Types. In particular, `Quality · Test` contains both a Building and
 a Scanning Run Type, so its View alone cannot determine the full Skill set.
+The four entries in each current row describe the family architecture:
+cross-view Run graph, Building/Scanning law, Building/Scanning order, and the
+View's Run procedure. The View Skill is the primary procedure. Its current
+instructions tell an agent performing the Run to load the other three and the
+family entry Skill first. Four is not a rule for future Run Types or a claim
+that a UI read or engine call loads them. The engine's checked writer still
+owns execution and authorization.
 `subjective-label` is the family entry door and `haipipe-workbench-labeling` is
 the page surface; neither is a per-Run worker. The engine or named human is
 the worker. These are **declared** Skills, not evidence that a historical Run
@@ -91,16 +132,23 @@ evaluation, production scanning, audit, and D* materialization do not have
 workers yet. Do not treat the 26-row Workflow map as a promise that those
 operations can be run. `Run type` names the Run written by a step
 (`—` means no Run; `gate G0` is a human confirmation, not a Run).
+For an already-unitized single-unit legacy source, the older fenced-source
+path can begin at step 1; steps 0a–0e do not acquire retrospective Runs.
 
 | step | what happens | you do | the chat or engine does | where | Run type |
 |---|---|---|---|---|---|
-| 1 | Create one labeling job | On a real Page, give Studio Chat `/subjective-label`, the source corpus and target, and identify the semantic human and sealed-test custodian (one person may hold both roles) | Fences the source before development reads, imports the corpus and held-back test, records the initial guideline, and writes the first Run | Studio Chat → Data · Contract | `corpus-contract` |
-| 2 | Discuss what the labels mean | Copy `+ New Run` (or `Resume`) from the Runs panel of Labeling → Definition into Studio Chat, then settle each label: keep its wording or give your own | Asks one question at a time, proposes wording and made-up edge cases (never a round item), and records only your decisions; closing writes the ledger and, if any wording changed, one meaning revision that retires the old G0 | Labeling · Definition + Studio Chat | `definition-discussion` |
-| 3 | Confirm what the labels mean | The configured human reviews the question and definitions, then presses Confirm meaning and attests as that human | Checks the contract, records the G0 receipt, and makes round 1 eligible; the local Board records the supplied id but does not authenticate identity | Labeling · Definition | gate G0 |
+| 0a | Attach and normalize a transcript source | Give your agent conversation the transcript JSONL and source folder; attach its preparation owner to this Page, then use the copied `source-normalize` prompt | The Page shows each source Run as it closes; normalization validates ordered turns and source groups and writes a reject ledger | Data · Preparation | `source-normalize` |
+| 0b | Choose the labeling unit | As preparation owner, choose final or every assistant reply and its earlier-context window | Freezes one accepted recipe | Data · Preparation | `unit-recipe` |
+| 0c | Create candidate items | Use the copied `unit-materialize` prompt for that source and recipe | Writes deterministic private targets, prior context, and lineage | Data · Preparation | `unit-materialize` |
+| 0d | Check the candidate set | Review the unit choices and run `unit-check` | Recomputes units and verifies IDs, context, lineage, and group identity | Data · Preparation | `unit-check` |
+| 0e | Reserve source groups and link | Name the custodian, seed, and count of whole source groups; run `initial-group-reserve`, then link its accepted package to the Page | Keeps sealed text under source custody, writes an eligible-only package and Page reference | Data · Preparation | `initial-group-reserve` |
+| 1 | Create one labeling job | On the linked Page, copy the Data → Contract request into your agent conversation with `/subjective-label`, the accepted package and target, and the semantic human | Verifies preparation and custody receipts, imports eligible data, records the initial guideline, and writes the first Labeling Run | Agent conversation → Data · Contract | `corpus-contract` |
+| 2 | Discuss what the labels mean | Select `+ New Run` then `Copy` (or use `Resume`) in Labeling → Definition; paste into your agent conversation, then settle each label: keep its wording or give your own | Asks one question at a time, proposes wording and made-up edge cases (never a round item), and records only your decisions; closing writes the ledger and, if any wording changed, one meaning revision that retires the old G0 | Labeling · Definition + agent conversation | `definition-discussion` |
+| 3 | Confirm what the labels mean | Once every label has nonblank wording and any discussion is closed, the configured human reviews the question and definitions, then presses Confirm meaning and attests as that human. If an intact earlier attestation exists but only G0 is missing, press Restore G0 receipt instead. | Checks the contract, records G0, and makes round 1 eligible. Restore uses the earlier semantic attestation; a new confirmation cannot retroactively authorize a released round. | Labeling · Definition | gate G0 |
 | 4 | Build a map (optional) | After the P0 files pass integrity checks and the job is not on HOLD, choose a model and press Run embedding; G0 is not required | Builds the requested embedding and shows its map and groups | Data · Embedding | `embedding-build` |
 | 5 | Release round 1 | After G0 passes, choose the batch size and press Start round 1 | Draws eligible items only and writes the prepared-round Run | Labeling · Rounds | `round-prepare` |
-| 6 | Label the open round | Copy `Resume` on this round's `human-calibration` Run in the Runs panel, paste it into Studio Chat in this repository, and give your first answer and final label for each item | Opens each item through the calibration writer; records first, lock, reveal, and final in order. The human-calibration Run starts when the first item is opened | Labeling · Rounds + Studio Chat | `human-calibration` |
-| 7 | Stop after round 1 is judged | Check the round and Run inventory. Do not try to release round 2 | Preserves the judgments and stops at the missing Checkpoint Keeper; no gold is promoted and the guideline remains G_00 | Labeling · Rounds · All runs | `round-close` |
+| 6 | Label the open round | Select `+ New Run` for `human-calibration` before the first item, then `Copy`; use `Resume` once its Run exists. Paste the request into your agent conversation and give your first and final labels for each item | Opens each item through the calibration writer; records first, lock, reveal, and final in order. The human-calibration Run starts when the first item is opened | Labeling · Rounds + agent conversation | `human-calibration` |
+| 7 | Stop after round 1 is judged | Check the round and Run inventory. If every item has a final event but the calibration Result is still running, use its `Resume` request to finalize the same Run; do not release round 2 | Preserves the judgments and stops at the missing Checkpoint Keeper; no gold is promoted and the guideline remains G_00 | Labeling · Rounds · All runs | `round-close` |
 
 The actual Tickets and their runtime status/outcome are in the Runs panels and `?drawer=allruns`.
 The Workflow map below is a Run Type catalogue, not a list of work that has
@@ -118,10 +166,12 @@ row. Use these action words consistently:
 
 - `Start here`: a real, visible page control exists at the named location and
   its listed prerequisites pass. The map itself is not a start button.
-- `Chat command`: setup starts from a command sent in Studio Chat. It is not a
+- `Chat command`: setup starts from a command sent in Studio Chat or a connected
+  agent conversation. It is not a
   page button or a copy-prompt affordance.
 - `Copy request → paste and send`: copy-only text for one concrete next
-  interaction. The person must paste and send it in Studio Chat; copying does
+  interaction. The person must paste and send it in Studio Chat or a connected
+  agent conversation; copying does
   not call a writer, create a Run, or change job state.
 - `Shown here · read-only`: this view reads an existing canonical artifact;
   it does not mean the named Run Type ran.
@@ -141,11 +191,11 @@ prerequisites, and a matching Ticket/status are not rendered inside this matrix.
 
 | step | compatibility tag | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to | view |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | P0 | `corpus-contract` | Set up the job | Chat command · in Studio Chat, invoke `/subjective-label`; no page control | Shown here · read-only · Contract after setup | — | Shown here · read-only · held-back count only | — | `gates/p0-contract/receipt.json` | Data · Contract |
+| 1 | P0 | `corpus-contract` | Set up the job | Copy request → paste and send · Data → Contract after an accepted Corpus Preparation package is linked to this Page; `/subjective-label` validates the package and creates the job | Start here + Shown here · read-only · Contract after setup | — | Shown here · read-only · held-back count only | — | `gates/p0-contract/receipt.json` | Data · Contract |
 | 2 | P0 | `test-reserve` | Hold back test items | not built yet | Shown here · read-only · setup's held-back count | — | Shown here · read-only · sealed-test status | — | `test/sealed/status.json` | Quality · Test |
 | 3 | P0 | `embedding-build` | Build a map | Start here · Data → Embedding button; explicit human model choice; P0 integrity valid and no HOLD; G0 not required | Start here + Shown here · read-only · Embedding | Shown here · read-only · map groups in Rounds | — | — | `cache/embeddings/<version>/` | Data · Embedding |
 | 4 | P0 | `discovery-search` | Search outside evidence | not built yet | — | — | — | — | `discovery/search_<n>/result.json` | Labeling · Definition |
-| 5 | P0 | `definition-discussion` | Discuss the label meanings | Copy request → paste and send · `+ New Run` or `Resume` in the Runs panel of Labeling → Definition; the chat records only the human's stated decisions; only before any item is judged | — | Start here + Shown here · read-only · Definition shows each label before and after, then Confirm meaning | — | — | `results/<run>/ledger.yaml` · `gates/meaning-revisions/<seq>.json` | Labeling · Definition |
+| 5 | P0 | `definition-discussion` | Discuss the label meanings | Copy request → paste and send · `+ New Run` or `Resume` in the Runs panel of Labeling → Definition; the chat records only the human's stated decisions; close it before releasing a round | — | Start here + Shown here · read-only · Definition shows each label before and after, then Confirm meaning | — | — | `results/<run>/ledger.yaml` · `gates/meaning-revisions/<seq>.json` | Labeling · Definition |
 | 6 | P0 | `guideline-seed` | Draft a guideline candidate | not built yet | — | Shown here · read-only · G_00 is created by corpus-contract, not this Run | — | — | `policy/versions/G_00/` | Labeling · Guideline |
 | 7 | P1 | `round-prepare` | Draw one round | Start here · Start round 1 after G0 passes; the identified human releases it | — | Start here + Shown here · read-only · Rounds | — | — | `rounds/round_NN/` | Labeling · Rounds |
 | 8 | P1 | `weak-prelabel` | Pre-label one prepared round | not built yet | — | — | — | — | `rounds/round_NN/prelabels/` | Labeling · Rounds |
@@ -184,28 +234,28 @@ The supported Run paths and their current entry points are:
 
 | Run Type | bounded work | workflow and domain Skills | actor and prerequisites | implemented worker and entry |
 |---|---|---|---|---|
-| `corpus-contract` | One imported, fenced corpus snapshot and target | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The identified semantic human and sealed-test custodian; a real Page, eligible source, target, and named owners | `fence_source.py` + `job.py create`; invoke `/subjective-label` in Studio Chat. There is no in-page copy control today. |
+| `corpus-contract` | One imported, fenced corpus snapshot and target | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The identified semantic human and sealed-test custodian; a real Page, accepted preparation package, target, and named owners | Data → Contract offers a copy request only after the package is linked and before a job exists. Paste it into your agent conversation for `/subjective-label` to validate the package and call `job.py create`. |
+| `definition-discussion` | One version of the target's label meanings before round release | `subjective-label-workflow`; `label-building` + `label-building-workflow`; `subjective-label-definition` | The configured semantic human settles each label's meaning; a valid Contract and no released round are required | Labeling → Definition offers `+ New Run` or `Resume` in the Runs panel. Copy its request into your agent conversation; `definition_discussion.py` records the decisions and closes the Run. |
 | `embedding-build` | One corpus × embedder version | `subjective-label-workflow`; `label-building` + `label-building-workflow` | A named human chooses a catalog model/settings; P0 files pass integrity and the job is not on HOLD. G0 is not required. | `embedding_build.py`; Start here in Data → Embedding. |
-| `round-prepare` | One released Card; only round 1 is supported today | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The identified human releases the Card after valid G0, with no HOLD | `calibration.release_round`; Start round 1 in Labeling → Rounds. |
-| `human-calibration` | One frozen human batch | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The configured semantic human labels a released round with G0 passed, no HOLD, and an item remaining | `calibration.open_item`, `record_first`, and `record_final`; copy the open-round prompt into Studio Chat. Copying is inert; the first item open allocates the Run. |
+| `round-prepare` | One released Card; only round 1 is supported today | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The identified human releases the Card after valid G0, with no HOLD or open definition discussion | `calibration.release_round`; Start round 1 in Labeling → Rounds. |
+| `human-calibration` | One frozen human batch | `subjective-label-workflow`; `label-building` + `label-building-workflow` | The configured semantic human labels a released round with G0 passed, no HOLD, and an item remaining | `calibration.open_item`, `record_first`, and `record_final`; select `+ New Run` then `Copy` before the first item, or use `Resume` after the Run exists. Paste the request into your agent conversation. Copying is inert; the first item open allocates the Run. If the last final event preceded an interrupted close, `calibration.py finalize` completes that same Result. |
 
 These Skills describe the workflow and domain; they are not worker Skill
 assignments recorded on those Tickets. The current map can truthfully show a
 Start entry for embedding and round preparation and a Copy entry for human
-calibration. It can show the chat command for contract setup, but must not call
-that a copy prompt while the page has no such control. The other 21 Run Types
+calibration. It can show a bounded Contract copy request only after the accepted
+source package is linked. The other 21 Run Types
 have no prompt or start affordance today.
 
-The current human-calibration prompt binds the job folder, question, label
-names, round progress, pending items, and JUDGE-by-chat instructions. It does
-not yet carry a stable Board/Folder/Page identity, exact target field, matching
-Ticket id/status, or explicit prerequisite result. Per-Run worker Skills are
-not declared in the Ticket contract, so the prompt cannot truthfully name one.
-The prompt is useful for the current open round, but it does not yet meet the
-full context-card contract above. A future setup prompt for `corpus-contract`
-is valid only before a job exists and only when it can bind this Page, source,
-target, semantic human, custodian, relevant Skills, and the no-existing-Run
-state; it must remain clipboard-only until the person pastes and sends it.
+The current human-calibration prompt binds the Board, Page, job folder, Run
+Type and round target, declared Run Type Skills, G0 and Card prerequisites,
+matching Ticket id/status when it exists, question, label names, progress,
+pending items, and JUDGE-by-chat instructions. It names no worker Skill,
+because the Ticket contract declares no such field. The current
+`corpus-contract` copy request
+binds the Page folder and accepted package path, then asks the agent to confirm
+the target, job ID, semantic human, and custodian before it writes. It remains
+clipboard-only until the person pastes and sends it.
 
 Every future per-Run card should show the Run Type and plain name, one bounded
 target, graph/domain Skills, declared actor, exact prerequisites, truthful
@@ -259,7 +309,7 @@ the `Confirm meaning` button (`confirm_meaning`). `Labeling → Rounds` holds
 `release_round` (`Start round 1`); `open_item`, `first`, and `final` stay in the
 door but have no page button, since answers come from the chat. The
 `definition-discussion` Run's `+ New Run` and `Resume` (Labeling → Definition)
-and the open round's `Resume` only copy text; the discussion writes
+and the open round's `human-calibration` `+ New Run` or `Resume` only copy text; the discussion writes
 through `engine/definition_discussion.py` in chat, never through the door. `Data → Embedding`
 holds five: `build_embedding`, `embedding_status`, `embedding_item`,
 `group_examples`, `embedding_item_text`. Quality and Delivery have no
@@ -270,9 +320,9 @@ write-and-authority law in
 ## Projection law
 
 The four Spaces are views over one page-local `labeling/` folder, not storage
-folders. A Run is `rlNN_<operation>_<target>`, with its Ticket at
+folders. A new Labeling Run is `run-labeling-<operation>-<MMDD>-<target>`, with its Ticket at
 `<Page>/runs/<run>.yaml` and its Result at `<Page>/results/<run>/`, beside
 `labeling/`. Receipt paths are relative to the Page. The 26
 operation kinds and the count law are in `ref-run.md`. A round is an episode
 that groups Runs. Each item judgment is an event inside the
-`rlNN_human-calibration_round-NN` Run, never a Run of its own.
+`run-labeling-human-calibration-<MMDD>-round-NN` Run, never a Run of its own.

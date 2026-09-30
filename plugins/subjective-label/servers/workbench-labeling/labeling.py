@@ -8,8 +8,8 @@ person; the labels come from the chat.  Every write through
 ``POST /_board/labeling/act`` goes through the
 subjective-label engine (``job.confirm_meaning`` and ``calibration``), which
 re-checks the caller-supplied configured authority id, HOLD, G0, the event
-order, and sealed custody on each call. The local Board does not authenticate
-the caller's identity. Studio Chat stays a separate tab.
+order, and sealed custody on each call. The Workbench does not authenticate
+the caller's identity. Studio Chat appears only for Board-backed Pages.
 """
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ import html
 import importlib.util
 import json
 import re
+import shlex
+import sys
 from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from urllib.parse import parse_qs, quote, unquote, urlparse
@@ -109,6 +111,16 @@ def _truth(value) -> bool:
     }
 
 
+def _page_folder_candidate(page_src: Path) -> Path:
+    """The canonical Page file, whether the Board source is folded or flat."""
+    if page_src.parent.name == page_src.stem:
+        return page_src
+    for ancestor in page_src.parents:
+        if (ancestor / "board.md").is_file():
+            return ancestor / "pages" / page_src.stem / page_src.name
+    return page_src.parent / page_src.stem / page_src.name
+
+
 def _labeling_lane(page_src: Path) -> tuple[Path, str]:
     """Resolve the page-folder lane even when Board renders a flat source.
 
@@ -117,19 +129,12 @@ def _labeling_lane(page_src: Path) -> tuple[Path, str]:
     sidecar instead of silently reporting an empty lane beside the flat copy.
     """
     direct = page_src.parent / "labeling"
-    if direct.is_dir():
-        return direct, "canonical page-local lane"
-    for ancestor in page_src.parents:
-        if not (ancestor / "board.md").is_file():
-            continue
-        folded_page = ancestor / "pages" / page_src.stem / page_src.name
-        folded_lane = folded_page.parent / "labeling"
-        if folded_page.is_file() and folded_lane.is_dir():
-            return folded_lane, (
-                "page-folder bridge from flat Board source · "
-                f"pages/{page_src.stem}/labeling/"
-            )
-        break
+    folded_page = _page_folder_candidate(page_src)
+    if folded_page != page_src and folded_page.is_file() and not folded_page.is_symlink():
+        return folded_page.parent / "labeling", (
+            "page-folder bridge from flat Board source · "
+            f"pages/{page_src.stem}/labeling/"
+        )
     return direct, "canonical page-local lane"
 
 
@@ -460,7 +465,7 @@ def is_labeling_surface_page(page_src: Path) -> bool:
     """True for every real Page that can own an optional labeling/ lane.
 
     A specialized ``page-type: labeling`` changes the Page's prose grammar;
-    it is not a prerequisite for opening a Page-local plugin.  The one control
+    it is not a prerequisite for opening a Page-local Workbench. The one control
     dashboard is excluded because it inventories jobs and owns no job itself.
     """
     return page_src.is_file() and page_src.name != "S-Label-Dash.md"
@@ -650,8 +655,24 @@ def _embedding_module():
     return module
 
 
+@lru_cache(maxsize=1)
+def _preparation_module():
+    domain = _canonical_job_module()
+    if domain is None:
+        return None
+    candidate = Path(domain.__file__).with_name("corpus_preparation.py")
+    if not candidate.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("subjective_label_preparation_for_board", candidate)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 SPACES = (
-    ("data", "Data", (("contract", "Contract"), ("embedding", "Embedding"))),
+    ("data", "Data", (("preparation", "Preparation"), ("contract", "Contract"), ("embedding", "Embedding"))),
     ("labeling", "Labeling", (("definition", "Definition"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
     ("quality", "Quality", (("test", "Test"), ("evaluation", "Evaluation"), ("audit", "Audit"))),
     ("delivery", "Delivery", (("handoff", "Handoff"), ("scan", "Scan"), ("final", "Final labels"))),
@@ -670,25 +691,35 @@ def _load_mapping(path: Path) -> dict:
     return {} if error else value
 
 
-def _run_rows(root: Path) -> list[dict]:
+def _run_rows(root: Path, *, owner: Path | None = None, family: str = "labeling") -> list[dict]:
     """One row per authored Ticket, with the runtime status beside it."""
     rows = []
-    runs = root.parent / "runs"  # the Page folder holds runs/ and results/, beside labeling/
+    run_owner = owner or root.parent  # Labeling lives beside labeling/; Corpus owns its own runs/.
+    runs = run_owner / "runs"
     if not runs.is_dir():
         return rows
     for ticket in sorted(runs.glob("*.yaml")):
         data = _load_mapping(ticket)
-        runtime = _load_mapping(root.parent / "results" / ticket.stem / "runtime.yaml")
-        result = (root.parent / "results" / ticket.stem / "result.yaml").is_file()
+        if family == "corpus" and data.get("family") != "corpus":
+            continue
+        if family == "labeling" and not (
+            data.get("family") == "labeling" or ticket.stem.startswith("rl")
+            or re.match(r"r\d+_labeling", ticket.stem)
+        ):
+            continue
+        runtime = _load_mapping(run_owner / "results" / ticket.stem / "runtime.yaml")
+        result = (run_owner / "results" / ticket.stem / "result.yaml").is_file()
         status = str(runtime.get("status") or ("no runtime" if not runtime else "unknown"))
         if status == "complete" and not result:
             status = "complete · result.yaml missing"
-        result_data = _load_mapping(root.parent / "results" / ticket.stem / "result.yaml") if result else {}
+        result_data = _load_mapping(run_owner / "results" / ticket.stem / "result.yaml") if result else {}
         commission = data.get("commission") if isinstance(data.get("commission"), dict) else {}
         worker = runtime.get("worker") or data.get("worker")
         worker = worker if isinstance(worker, dict) else {}
         rows.append({
             "run": ticket.stem,
+            "family": family,
+            "owner": str(run_owner),
             "operation": str(data.get("operation") or "?"),
             "target": str(data.get("target") or runtime.get("target") or ""),
             "status": status,
@@ -698,15 +729,22 @@ def _run_rows(root: Path) -> list[dict]:
             "started_by": str(commission.get("started_by") or worker.get("name") or ""),
             "worker_kind": str(worker.get("kind") or ""),
             "artifacts": [str(a["path"]) for a in result_data.get("artifacts") or []
-                          if isinstance(a, dict) and a.get("path")][:4],
+                          if isinstance(a, dict) and a.get("path")
+                          and (family != "corpus" or ("private" not in str(a["path"])
+                                                      and "protected" not in str(a["path"])))][:4],
+            "ticket_mtime": ticket.stat().st_mtime_ns,
         })
-    rows.sort(key=lambda r: (int(m.group(1)) if (m := re.match(r"rl(\d+)_", r["run"])) else 0, r["run"]))
+    def order(row: dict):
+        legacy = re.match(r"^rl(\d+)_", row["run"])
+        return (row["started_at"], 0 if legacy else 1,
+                int(legacy.group(1)) if legacy else row["ticket_mtime"], row["run"])
+    rows.sort(key=order)
     seen: dict[tuple[str, str], int] = {}
     for r in rows:  # a rerun on the same target keeps the older run's plain name and counts up: -2, -3
         key = (r["operation"], r["target"] or r["run"])
         seen[key] = seen.get(key, 0) + 1
         suffix = f"-{seen[key]}" if seen[key] > 1 else ""
-        r["name"] = "run-" + _run_name(r["run"]) + suffix
+        r["name"] = r["run"] if r["run"].startswith("run-") else _run_name(r["run"]) + suffix
         r["label"] = (r["target"] or _run_name(r["run"])) + suffix
     return rows
 
@@ -796,6 +834,7 @@ def _meaning_list(values: list, meanings: dict) -> str:
 
 def _view_model(page_src: Path) -> dict:
     root, location_note = _job_root(page_src)
+    page_candidate = _page_folder_candidate(page_src)
     state = inspect(page_src)
     canonical = state.get("canonical_status") or {}
     config = _load_mapping(root / "config.yaml")
@@ -808,14 +847,66 @@ def _view_model(page_src: Path) -> dict:
             except Exception as error:  # the page must still render
                 cal_state = {"error": type(error).__name__}
     return {
-        "root": root, "location_note": location_note, "state": state,
+        "root": root, "page_src": page_src, "page_candidate": page_candidate,
+        "page_ready": page_candidate.is_file() and not page_candidate.is_symlink(),
+        "location_note": location_note, "state": state,
         "canonical": canonical, "config": config, "cal": cal_state,
         "manifest": _read_json(root / "corpus" / "manifest.json"),
         "sealed": _read_json(root / "test" / "sealed" / "status.json"),
         "imported": _read_json(root / "corpus" / "imported_label_summary.json"),
+        "preparation": _preparation_state(root),
         "runs": _run_rows(root),
         "embedding": _embedding_state(root),
     }
+
+
+def _preparation_state(root: Path) -> dict:
+    owner_file = root / "preparation-owner.yaml"
+    accepted_file = root / "preparation-ref.yaml"
+    owner_ref = _load_mapping(owner_file)
+    ref = _load_mapping(accepted_file)
+    if (owner_file.is_file() and not owner_ref) or (accepted_file.is_file() and not ref):
+        return {"attached": owner_file.is_file(), "linked": accepted_file.is_file(),
+                "runs": [], "error": "preparation reference cannot be read"}
+    if not ref:
+        if not owner_ref:
+            return {"attached": False, "linked": False, "runs": []}
+        owner = Path(str(owner_ref.get("owner") or ""))
+        source_id = str(owner_ref.get("source_id") or "")
+        expected = {"schema": "subjective-label/preparation-owner-v1", "source_id": source_id}
+        if (not owner.is_absolute() or owner.name != "corpus-preparation" or owner.is_symlink()
+                or not source_id or _load_mapping(owner / "source.yaml") != expected
+                or owner_ref != {**expected, "owner": str(owner)}):
+            return {"attached": True, "linked": False, "owner_reference": owner_ref,
+                    "runs": [], "error": "preparation owner reference is invalid or changed"}
+        return {"attached": True, "linked": False, "owner_reference": owner_ref,
+                "runs": _run_rows(root, owner=owner, family="corpus")}
+    owner = Path(str(ref.get("owner") or ""))
+    package = Path(str(ref.get("package") or ""))
+    if (not owner.is_absolute() or owner.name != "corpus-preparation"
+            or not package.is_relative_to(owner / "packages") or owner.is_symlink()):
+        return {"attached": True, "linked": True, "reference": ref, "runs": [],
+                "error": "preparation reference has an invalid owner or package path"}
+    owner_record = _load_mapping(owner / "source.yaml")
+    if owner_ref and (owner_ref != {**owner_record, "owner": str(owner)}
+                      or owner_record.get("schema") != "subjective-label/preparation-owner-v1"):
+        return {"attached": True, "linked": True, "reference": ref, "runs": [],
+                "error": "preparation owner and accepted package references disagree"}
+    module = _preparation_module()
+    if module is None:
+        return {"attached": True, "linked": True, "reference": ref, "runs": [],
+                "error": "Corpus Preparation engine is unavailable"}
+    try:
+        receipt = module.verify_package(package)
+        if ref != module.preparation_reference(owner, package, receipt):
+            raise RuntimeError("Page preparation reference disagrees with its package or Runs")
+    except (OSError, ValueError, KeyError, RuntimeError) as error:
+        return {"attached": True, "linked": True, "reference": ref, "runs": [],
+                "error": f"{type(error).__name__}: {error}"}
+    linked_run_names = {str(name) for name in ref["upstream_runs"]}
+    runs = [run for run in _run_rows(root, owner=owner, family="corpus")
+            if run["run"] in linked_run_names]
+    return {"attached": True, "linked": True, "reference": ref, "runs": runs, "receipt": receipt}
 
 
 def _reap_when_done(proc) -> None:
@@ -838,10 +929,23 @@ def _next_step(vm: dict) -> tuple[str, str]:
     """Plain words for the header line, and the Space that holds that step."""
     state, canonical, cal = vm["state"], vm["canonical"], vm["cal"] or {}
     root = vm["root"]
+    preparation = vm.get("preparation") or {}
+    if not vm.get("page_ready", True) and not (root / "config.yaml").is_file():
+        return "Create this Page's own folder before Corpus Preparation.", "data"
+    if preparation.get("error"):
+        return "Repair the Corpus Preparation reference before continuing.", "data"
+    if preparation.get("attached") and not preparation.get("linked") and not (root / "config.yaml").is_file():
+        completed = {run["operation"] for run in preparation.get("runs") or []
+                     if run["status"] == "complete"}
+        for operation in ("source-normalize", "unit-recipe", "unit-materialize",
+                          "unit-check", "initial-group-reserve"):
+            if operation not in completed:
+                return f"Continue Corpus Preparation: {operation}.", "data"
+        return "Review and link an accepted Corpus Preparation package to this Page.", "data"
+    if preparation.get("linked") and not (root / "config.yaml").is_file():
+        return "Corpus Preparation is accepted. Create this Page's Labeling Contract.", "data"
     if not root.exists():
-        return "No labeling job on this Page yet. Ask Claude in Studio Chat to start one (/subjective-label).", "data"
-    if state["canonical_integrity_errors"]:
-        return "Repair needed: " + state["canonical_integrity_errors"][0], "data"
+        return "Prepare and link a corpus, then create this Page's Labeling Contract.", "data"
     if _imported_reference_only(vm):
         source = _import_source_name(vm["config"])
         return (
@@ -851,9 +955,22 @@ def _next_step(vm: dict) -> tuple[str, str]:
         )
     if state["authority_hold"]:
         return "Read-only: " + _hold_words(canonical.get("hold_reason") or state["authority_reason"]) + ".", "data"
+    if _g0_retroactive_block(vm):
+        return "A round was released without valid prior meaning confirmation. Keep this job as history; start a new job for new labels.", "labeling"
+    if _g0_repair_request(vm):
+        return "Restore the missing G0 receipt from the earlier human confirmation.", "labeling"
+    if state["canonical_integrity_errors"]:
+        return "Repair needed: " + state["canonical_integrity_errors"][0], "data"
+    if _open_definition_run(vm) and _meaning_allowed(vm):
+        return "Finish the open label-meaning discussion before releasing a round.", "labeling"
+    if (_open_definition_run(vm) and canonical.get("phase") == "P0"
+            and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation"):
+        return "An earlier discussion cannot continue after round release. Review the current meanings, then confirm them.", "labeling"
     if canonical and canonical.get("phase") == "P0":
+        if canonical.get("meaning_definitions_missing"):
+            return "Define every label meaning in a Definition discussion before confirming G0.", "labeling"
         if canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
-            return "Step 1: read the label meanings and confirm them.", "labeling"
+            return "Review or discuss the label meanings, then confirm them.", "labeling"
         return str(canonical.get("next_action") or "P0 Contract"), "data"
     if cal and cal.get("phase") == "P1":
         current = cal.get("current_round")
@@ -861,6 +978,9 @@ def _next_step(vm: dict) -> tuple[str, str]:
             return (f"Label {_round_words(current['round_id'])}: {current['finals']} of "
                     f"{current['batch_size']} done."), "labeling"
         rounds = cal.get("rounds") or []
+        if rounds and rounds[-1]["state"] == "judged" and rounds[-1].get("calibration_status") == "running":
+            return (f"{_round_words(rounds[-1]['round_id']).capitalize()} has all final labels. "
+                    "Finish its interrupted human-calibration Result from the Runs panel."), "labeling"
         if rounds and rounds[-1]["state"] == "judged":
             return (f"{_round_words(rounds[-1]['round_id']).capitalize()} is fully labeled. Next: learn the guideline and "
                     "close the round (Checkpoint Keeper, not built yet)."), "labeling"
@@ -870,6 +990,23 @@ def _next_step(vm: dict) -> tuple[str, str]:
 
 def _data_space(vm: dict) -> dict[str, str]:
     config, manifest, sealed, imported = vm["config"], vm["manifest"], vm["sealed"], vm["imported"]
+    preparation = vm.get("preparation") or {}
+    if not (vm["root"] / "config.yaml").is_file():
+        if not vm.get("page_ready", True):
+            contract = _card("Labeling Contract", "<p>Create this Page's own folder, then "
+                             "complete and link Corpus Preparation before Contract.</p>")
+        elif preparation.get("linked") and not preparation.get("error"):
+            package = (preparation.get("reference") or {}).get("package") or ""
+            contract = _card("Labeling Contract", "".join([
+                "<p>The Corpus Preparation package is accepted. Create this Page's "
+                "Labeling Contract through the Runs panel.</p>",
+                _row("accepted package", f"<code>{_esc(package)}</code>"),
+            ]))
+        else:
+            contract = _card("Labeling Contract", "<p>Complete and link Corpus "
+                             "Preparation before creating this Page's Contract.</p>")
+        return {"preparation": _preparation_view(vm), "contract": contract,
+                "embedding": _embedding_view(vm)}
     source = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
     n_items = manifest.get("n_items")
     n_sealed = manifest.get("n_sealed", sealed.get("n_items"))
@@ -906,7 +1043,63 @@ def _data_space(vm: dict) -> dict[str, str]:
             _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
             _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
         ]))
-    return {"contract": corpus + schema, "embedding": _embedding_view(vm)}
+    return {"preparation": _preparation_view(vm), "contract": corpus + schema,
+            "embedding": _embedding_view(vm)}
+
+
+def _preparation_view(vm: dict) -> str:
+    prep = vm.get("preparation") or {}
+    if not vm.get("page_ready", True) and not (vm["root"] / "config.yaml").is_file():
+        source = vm["page_src"]
+        target = vm["page_candidate"]
+        prompt = (f"Use /haipipe-page to create the canonical Page folder for {source}. "
+                  f"The Page file should be {target}. Preserve the Board source and its "
+                  "existing content. Return to Data → Preparation after the Page folder exists.")
+        return _card("Page folder needed", "".join([
+            "<p>Corpus Preparation needs this Page's own folder. The current Board source "
+            "is flat, so it cannot own an isolated <code>labeling/</code> lane yet.</p>",
+            _row("Page file to create", f"<code>{_esc(target)}</code>"),
+            f'<div class=actions><button type=button class=primary data-copy="{_esc(prompt)}">'
+            "Copy Page-folder request</button></div>",
+        ]))
+    if prep.get("error"):
+        return _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>')
+    if not prep.get("linked"):
+        if not prep.get("attached"):
+            if (vm["root"] / "config.yaml").is_file():
+                return _card("Corpus Preparation", "<p>This job began with an already-unitized "
+                             "legacy source. It has no source-owned preparation Runs. "
+                             "Its existing Contract and Labeling Runs remain in their original "
+                             "folders; prepare a new source before creating a new job.</p>")
+            prompt = ("Use /subjective-label-preparation for the Page whose labeling folder is at "
+                      f"{_job_where(vm)}. Identify the transcript JSONL and source owner, attach "
+                      "that owner to this Page, then work through the five Corpus Preparation "
+                      "Run Types in order. Link the accepted package before creating a Labeling Contract.")
+            return _card("Corpus Preparation", "<p>Attach a source preparation owner to this Page, "
+                         "then use the Run Types on the right in order.</p>"
+                         f'<div class=actions><button type=button class=primary data-copy="{_esc(prompt)}">'
+                         "Copy setup request</button></div>")
+        owner_ref = prep["owner_reference"]
+        completed = len({run["operation"] for run in prep["runs"] if run["status"] == "complete"})
+        return _card("Corpus Preparation", "".join([
+            _row("source", f'<code>{_esc(owner_ref["source_id"])}</code>'),
+            _row("owner", f'<code>{_esc(owner_ref["owner"])}</code>'),
+            _row("Run Types finished", _esc(f"{completed} of 5")),
+            _row("next", _esc(_next_step(vm)[0])),
+        ]))
+    receipt = prep["receipt"]
+    ref = prep["reference"]
+    rows = [
+        _row("source", f'<code>{_esc(receipt["snapshot_id"])}</code>'),
+        _row("recipe", f'<code>{_esc(receipt["recipe_id"])}</code>'),
+        _row("item set", f'<code>{_esc(receipt["item_set_id"])}</code>'),
+        _row("partition", f'<code>{_esc(receipt["partition_id"])}</code>'),
+        _row("development", _esc(receipt["n_eligible"])),
+        _row("held back", _esc(receipt["n_sealed"])),
+        _row("status", '<span class=ok>accepted · whole source groups kept together</span>'),
+        _row("owner", f'<code>{_esc(ref["owner"])}</code>'),
+    ]
+    return _card("Corpus Preparation", "".join(rows))
 
 
 def _meaning_gate(vm: dict) -> str:
@@ -927,16 +1120,32 @@ def _meaning_gate(vm: dict) -> str:
     elif canonical and canonical.get("meaning_receipt_valid") and canonical.get("g0_receipt_valid"):
         receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
         gate = _card("Meaning confirmed ✓", f'<p class=ok>Caller attested as {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}.</p>')
-    elif canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
+    elif _g0_retroactive_block(vm):
+        gate = _card("Meaning confirmation unavailable", '<p class=warn>A round was released '
+                     'without a valid earlier meaning confirmation. G0 cannot be confirmed '
+                     'retroactively for that round. Keep this job as history and start a new '
+                     'job for new labels.</p>')
+    elif _open_definition_run(vm) and _meaning_allowed(vm):
+        gate = _card("Meaning discussion open", '<p>Finish the open discussion in the Runs '
+                     'panel before confirming the meanings.</p>')
+    elif canonical.get("meaning_definitions_missing") and not canonical.get("g0_retroactive_block"):
+        names = ", ".join(str(value) for value in canonical["meaning_definitions_missing"])
+        gate = _card("Define label meanings first", f'<p>These labels still need meanings: {_esc(names)}. '
+                     'Use the Definition discussion Run to decide their wording before confirming G0.</p>')
+    elif _g0_repair_request(vm) or (canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation"):
+        repair = _g0_repair_request(vm)
         region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
-        gate = _card("Confirm the meaning", (
-            "<p>Confirming records your attestation that these classes, boundary regions, "
-            'and unsure levels match your intended meaning. The Board does not authenticate identity.</p>'
+        gate = _card("Restore G0 receipt" if repair else "Confirm the meaning", (
+            ("<p>An intact earlier human confirmation already records these meanings. "
+             "Restore its missing G0 receipt; this does not create a new semantic decision.</p>"
+             if repair else
+             "<p>Confirming records your attestation that these classes, boundary regions, "
+             "and unsure levels match your intended meaning. The Workbench does not authenticate identity.</p>") +
             '<details><summary>boundary regions</summary>'
             f'{_meaning_list([str(v) for v in regions.get("values") or []], region_meanings)}</details>'
             '<label class=attest><input type=checkbox data-confirm-attest> '
             'These meanings are what I mean.</label>'
-            '<div class=actions><button class=primary type=button data-confirm-meaning disabled>Confirm meaning</button>'
+            f'<div class=actions><button class=primary type=button data-confirm-meaning disabled>{"Restore G0 receipt" if repair else "Confirm meaning"}</button>'
             '<span class=msg role=status data-confirm-msg></span></div>'
         ), "focus")
     else:
@@ -1174,19 +1383,24 @@ def _piece(text) -> str:
 
 def _settings_flags(settings: dict) -> str:
     """The CLI flags that rebuild exactly these settings; defaults are left out."""
-    import shlex  # noqa: PLC0415
     flags = []
     if settings.get("input") and settings["input"] != "reply_context":
-        flags.append(f'--input {settings["input"]}')
+        flags.append(f'--input {shlex.quote(str(settings["input"]))}')
     if settings.get("instruction"):
         flags.append(f'--instruction {shlex.quote(str(settings["instruction"]))}')
     if settings.get("groups"):
         flags.append(f'--groups {int(settings["groups"])}')
     if settings.get("map") and settings["map"] != "tsne":
-        flags.append(f'--map {settings["map"]}')
+        flags.append(f'--map {shlex.quote(str(settings["map"]))}')
     if int(settings.get("seed") or 0):
         flags.append(f'--seed {int(settings["seed"])}')
     return "".join(" " + f for f in flags)
+
+
+def _engine_command(script: str, *args: str) -> str:
+    """Build a replay command from this installed package and host Python."""
+    path = Path(__file__).resolve().parents[2] / "engine" / script
+    return " ".join(shlex.quote(part) for part in (sys.executable, str(path), *map(str, args)))
 
 
 def _embedding_build_view(vm: dict, emb: dict) -> str:
@@ -1195,8 +1409,8 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
     model_id = str(m["model"]["id"])
     model_name = model_id.rsplit("/", 1)[-1]
     settings = m.get("settings") or {}
-    command = ("python Tools/plugins/subjective-label/engine/embedding_build.py build "
-               f"--job-root {_repo_relative(root)} --started-by <your name> --model {model_id}"
+    command = (_engine_command("embedding_build.py", "build", "--job-root", _repo_relative(root),
+                               "--started-by", "<your name>", "--model", model_id)
                + _settings_flags(settings))
     dim = m["model"]["dim"]
     pre = m.get("preprocessing") or {}
@@ -1534,9 +1748,20 @@ def _job_where(vm: dict) -> str:
         return str(root)
 
 
-def _chat_prompt(vm: dict, current: dict, draw: dict) -> str:
+def _chat_prompt(vm: dict, current: dict, draw: dict, *, run: dict | None = None) -> str:
     """The text to paste into a Claude chat to go on labeling this round; it writes nothing."""
     root, config = vm["root"], vm.get("config") or {}
+    round_id = str(current.get("round_id") or "")
+    page = vm.get("page_candidate") or vm.get("page_src") or root.parent / f"{root.parent.name}.md"
+    board = next((folder / "board.md" for folder in page.parent.parents
+                  if (folder / "board.md").is_file()), None)
+    run_id = str((run or {}).get("run") or current.get("calibration_run") or "")
+    matching = run or next((r for r in vm.get("runs") or [] if r.get("run") == run_id), None)
+    run_state = str(matching.get("status") or "unknown") if matching else ("not started" if not run_id else "recorded")
+    skills = _run_type_skills().get("human-calibration") or []
+    card = draw.get("card") or {}
+    released_card = bool(card.get("released_at") and card.get("released_by")
+                         and (root / "rounds" / round_id / "card.md").is_file())
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     labels = (config.get("labels") or {}).get("values") if isinstance(config.get("labels"), dict) else None
     human = ((config.get("authority") or {}) if isinstance(config.get("authority"), dict) else {}).get("human_id") or "me"
@@ -1545,7 +1770,15 @@ def _chat_prompt(vm: dict, current: dict, draw: dict) -> str:
     todo = [tag(i) for i in draw["items"] if i["state"] == "waiting"][:5]
     lines = [
         f'Continue labeling {_round_words(current.get("round_id"))} of {root.parent.name} with me ({human}).',
+        f'Board: {_repo_relative(board) if board else "none (standalone Page)"}',
+        f'Page: {_repo_relative(page)}',
+        f'Folder: {_repo_relative(root.parent)}',
         f"Job folder: {_job_where(vm)}",
+        f'Run Type: human-calibration · target: {round_id}',
+        f'Declared Skills: {" · ".join(skills) if skills else "see Run Type map"}',
+        f'Run: {run_id or "none yet"} · status: {run_state}',
+        f'Prerequisite: G0 {"passed" if (vm.get("canonical") or {}).get("g0_passed") else "not verified"}; '
+        f'released Card {"verified" if released_card else "not verified"}.',
         f'Question: {construct.get("question") or construct.get("name") or ""}'
         + (f'  Labels: {" · ".join(str(v) for v in labels)}' if labels else ""),
         f'Progress: {current.get("finals", 0)} of {current.get("batch_size", len(draw["items"]))} labeled.',
@@ -1556,11 +1789,12 @@ def _chat_prompt(vm: dict, current: dict, draw: dict) -> str:
         lines.append("Next items: " + ", ".join(todo))
     lines += [
         "",
-        'Follow /label-building-workflow, JUDGE "By chat" (engine/calibration.py):',
-        "1. Show me the next items (conversation and AI reply); open_item for any item not shown yet.",
-        "2. Record only what I say: record_first for my first answer, then show the raters' votes and your view.",
+        'Follow /subjective-label-rounds, JUDGE "By chat" (engine/calibration.py):',
+        "1. Call open_item for the next unfinished item, even if it was shown earlier. Show me its conversation and AI reply.",
+        "2. Record only what I say: record_first for my first answer, then show any available reference observations and your view.",
         "3. record_final when I keep or change; add_feedback for a note about an item.",
-        "Never show the votes or your view before my first answer is recorded.",
+        "If first or lock was already recorded, open_item finishes a missing reveal; never repeat record_first.",
+        "Never show reference observations or your view before my first answer is recorded.",
     ]
     return "\n".join(lines)
 
@@ -1575,7 +1809,8 @@ def _meaning_prompt(vm: dict, run: str | None = None) -> str:
     values = [str(v) for v in labels.get("values") or []]
     meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
     where = _job_where(vm)
-    tool = f"python Tools/plugins/subjective-label/engine/definition_discussion.py {{command}} --job-root {where} --human-id {human}"
+    tool = _engine_command("definition_discussion.py", "start", "--job-root", where,
+                           "--human-id", human)
     lines = [
         f"Discuss what the labels of {vm['root'].parent.name} mean with me ({human}), one label at a time. "
         "I decide what each label means; you ask and propose.",
@@ -1594,7 +1829,7 @@ def _meaning_prompt(vm: dict, run: str | None = None) -> str:
         lines.append(f"Run: {run} (open). Settled: {', '.join(settled) or 'none yet'}. "
                      f"Open: {', '.join(state['open']) or 'none'}.")
     else:
-        lines.append("Start the Run: " + tool.format(command="start"))
+        lines.append("Start the Run: " + tool)
     lines += [
         "",
         "How (engine/definition_discussion.py):",
@@ -1608,6 +1843,56 @@ def _meaning_prompt(vm: dict, run: str | None = None) -> str:
         "If a wording changed, I press Confirm meaning again in Labeling > Definition.",
     ]
     return "\n".join(lines)
+
+
+def _meaning_allowed(vm: dict) -> bool:
+    """Match the discussion writer's Contract, authority, and round gates."""
+    canonical = vm.get("canonical") or {}
+    config = vm.get("config") or {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    module = _canonical_job_module()
+    if (not canonical.get("p0_contract_integrity_valid") or canonical.get("hold")
+            or not (labels or {}).get("values") or module is None):
+        return False
+    try:
+        return (not module._judged_items(vm["root"])
+                and not any((vm["root"] / "rounds").glob("round_*/card.md")))
+    except (OSError, ValueError, KeyError, RuntimeError):
+        return False
+
+
+def _g0_retroactive_block(vm: dict) -> bool:
+    canonical = vm.get("canonical") or {}
+    if canonical.get("g0_passed") or not canonical.get("p0_contract_integrity_valid"):
+        return False
+    if canonical.get("g0_retroactive_block"):
+        return True
+    module = _canonical_job_module()
+    if module is None:
+        return False
+    try:
+        return not module.g0_repairable_after_round(vm["root"], vm.get("config") or {})
+    except (OSError, ValueError, KeyError, RuntimeError):
+        return True
+
+
+def _g0_repair_request(vm: dict) -> bool:
+    """Show the repair door only for an intact, already-confirmed meaning receipt."""
+    canonical = vm.get("canonical") or {}
+    return bool(canonical.get("p0_contract_integrity_valid")
+                and canonical.get("meaning_receipt_valid")
+                and not canonical.get("g0_receipt_valid")
+                and not canonical.get("hold")
+                and canonical.get("g0_integrity_errors") ==
+                ["G0 receipt missing after semantic confirmation"]
+                and not _g0_retroactive_block(vm))
+
+
+def _open_definition_run(vm: dict) -> dict | None:
+    """The active discussion owns Resume; a second Ticket is not available yet."""
+    return next((run for run in reversed(vm.get("runs") or [])
+                 if run.get("operation") == "definition-discussion"
+                 and run.get("status") == "running"), None)
 
 
 def _label_definitions(vm: dict) -> str:
@@ -1871,7 +2156,8 @@ def _workflow_map(vm: dict) -> str:
     ref = _space_mapping_ref()
     if ref is None:
         return _card("Workflow map", "<p class=mut>ref-space-mapping.md is not reachable from this Board.</p>")
-    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map")
+    mapping_text = ref.read_text(encoding="utf-8")
+    headers, rows = _md_table(mapping_text, "Workflow map")
     if not headers:
         return _card("Workflow map", "<p class=mut>ref-space-mapping.md has no Workflow map table.</p>")
     col = {h.lower(): i for i, h in enumerate(headers)}
@@ -1904,7 +2190,24 @@ def _workflow_map(vm: dict) -> str:
     table = ('<div class=scroll><table class=wfmap><thead><tr>'
              + "".join(f"<th>{_esc(h)}</th>" for h in labels)
              + "</tr></thead><tbody>" + "".join(body) + "</tbody></table></div>")
-    return _card("Workflow map", table)
+    prep_headers, prep_rows = _md_table(mapping_text, "Corpus Preparation Run Types")
+    prep_col = {h.lower(): i for i, h in enumerate(prep_headers)}
+    prep_counts: dict[str, int] = {}
+    for run in (vm.get("preparation") or {}).get("runs") or []:
+        prep_counts[run["operation"]] = prep_counts.get(run["operation"], 0) + 1
+    prep_body = []
+    for cells in prep_rows:
+        operation = cells[prep_col["run type"]].strip("`")
+        prep_body.append("<tr>" + "".join((
+            f'<td><b>{_esc(cells[prep_col["in words"]])}</b><div class=mut><code>{_esc(operation)}</code></div></td>',
+            '<td>source owner · Data → Preparation</td>',
+            f'<td><code>{_esc(cells[prep_col["skill"]].strip("`"))}</code></td>',
+            f'<td class=num>{prep_counts.get(operation) or ""}</td>',
+        )) + "</tr>")
+    prep_table = ('<div class=scroll><table class=wfmap><thead><tr>'
+                  '<th>Run type</th><th>Owner and view</th><th>Skill</th><th>On this source</th>'
+                  '</tr></thead><tbody>' + "".join(prep_body) + '</tbody></table></div>')
+    return _card("Corpus Preparation Runs", prep_table) + _card("Workflow map", table)
 
 
 def _sop_state(op: str, vm: dict, runs_by_op: dict, not_built: set) -> str:
@@ -1913,13 +2216,20 @@ def _sop_state(op: str, vm: dict, runs_by_op: dict, not_built: set) -> str:
         return "done" if (vm.get("canonical") or {}).get("meaning_receipt_valid") else "not yet"
     if op in ("", "—"):
         return ""
+    preparation = _preparation_module()
+    root = vm.get("root")
+    established_job = bool(vm.get("canonical")) or (root is not None and (root / "config.yaml").is_file())
+    if (preparation and op in preparation.RUN_TYPES
+            and not (vm.get("preparation") or {}).get("linked")
+            and established_job):
+        return "legacy source"
     runs = runs_by_op.get(op) or []
     running = [r for r in runs if r["status"] == "running"]
     if running:
-        return "running · " + ", ".join(r["run"].split("_")[0] for r in running)
+        return "running · " + ", ".join(_run_name(r["run"]) for r in running)
     done = [r for r in runs if r["status"].startswith("complete")]
     if done:
-        return "done · " + ", ".join(r["run"].split("_")[0] for r in done)
+        return "done · " + ", ".join(_run_name(r["run"]) for r in done)
     if runs:
         return runs[-1]["status"]
     return "not built yet" if op in not_built else "not yet"
@@ -1940,7 +2250,7 @@ def _sop(vm: dict) -> str:
     not_built = {r[wf["run type"]].strip("`") for r in wf_rows
                  if "run type" in wf and "started by" in wf and r[wf["started by"]] == "not built yet"}
     runs_by_op: dict = {}
-    for r in vm.get("runs") or []:
+    for r in (vm.get("runs") or []) + ((vm.get("preparation") or {}).get("runs") or []):
         runs_by_op.setdefault(str(r["operation"]), []).append(r)
     labels = ["#", "Step", "You do", "The chat or engine does", "Where", "Run", "This job"]
     states = []
@@ -1996,8 +2306,11 @@ def _run_title(run: dict, build_names: dict[str, str]) -> str:
     """'Build a map: MiniLM · reply + context', 'Draw a round: round 1'; the Run id stays under it."""
     op = str(run.get("operation") or "")
     words = _RUN_WORDS.get(op, op)
-    m = re.fullmatch(r"rl\d+_" + re.escape(op) + r"_(.+)", str(run.get("run") or ""))
-    target = m.group(1) if m else ""
+    target = str(run.get("target") or "")
+    if not target:
+        old = re.match(r"^rl\d+_[^_]+_(.+)$", str(run.get("run") or ""))
+        target = old.group(1) if old else ""
+    target = target.replace("_", "-")
     if op == "embedding-build" and target in build_names:
         return f"{words}: {build_names[target]}"
     if re.fullmatch(r"round-0*\d+", target):
@@ -2028,8 +2341,8 @@ def _blocked_words(text: str) -> str:
 
 
 def _run_table(vm: dict) -> str:
-    """Every Run on this Page: what ran, its state, its result."""
-    runs = vm["runs"]
+    """Page-local and linked source-owned Runs: what ran, its state, its result."""
+    runs = ((vm.get("preparation") or {}).get("runs") or []) + vm["runs"]
     if not runs:
         return ""
     builds = ((vm.get("embedding") or {}).get("builds")) or []
@@ -2040,7 +2353,7 @@ def _run_table(vm: dict) -> str:
         f'<td><b>{_esc(_run_title(r, build_names))}</b>'
         f'<div class=mut><code>{_esc(r["run"])}</code></div></td>'
         f'<td class="{"ok" if r["status"] == "complete" else "warn"}">{_esc(_STATUS_WORDS.get(str(r["status"]), str(r["status"])))}</td>'
-        f'<td class=mut>{_esc(_outcome_words(r["outcome"]))}</td></tr>'
+        f'<td class=mut>{_esc(_outcome_words(r["outcome"]) or ("results/" + r["run"] + "/" if r.get("family") == "corpus" else ""))}</td></tr>'
         for r in runs
     )
     return ('<div class=scroll><table class=runs><thead><tr><th>What ran</th><th>State</th>'
@@ -2073,7 +2386,8 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
     only, unless this job already has a Run of it; a type with no view yet (`Scan (future)`) shows nowhere.
     """
     ref = _space_mapping_ref()
-    headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map") if ref else ([], [])
+    mapping_text = ref.read_text(encoding="utf-8") if ref else ""
+    headers, rows = _md_table(mapping_text, "Workflow map") if ref else ([], [])
     col = {h.lower(): i for i, h in enumerate(headers)}
     runs_by_op: dict[str, list[dict]] = {}
     for r in vm["runs"]:
@@ -2093,8 +2407,23 @@ def _run_types(vm: dict) -> dict[str, list[dict]]:
             continue
         out[sid].append({"op": op, "words": cell("in words") or _RUN_WORDS.get(op, op),
                          "views": views, "runs": runs_by_op.get(op, []),
-                         "skills": skills.get(op, []),
+                         "skills": skills.get(op, []), "built": cell("started by") != "not built yet",
                          "step": int(cell("step")) if cell("step").isdigit() else 99})
+    prep_runs: dict[str, list[dict]] = {}
+    for run in (vm.get("preparation") or {}).get("runs") or []:
+        prep_runs.setdefault(run["operation"], []).append(run)
+    prep_headers, prep_rows = _md_table(mapping_text, "Corpus Preparation Run Types") if ref else ([], [])
+    prep_col = {h.lower(): i for i, h in enumerate(prep_headers)}
+    for cells in prep_rows:
+        if (vm["root"] / "config.yaml").is_file() and not (vm.get("preparation") or {}).get("attached"):
+            continue  # an existing legacy job cannot acquire retrospective source-owned Runs
+        op = cells[prep_col["run type"]].strip("`")
+        words = cells[prep_col["in words"]]
+        skill = cells[prep_col["skill"]].strip("`")
+        step = int(cells[prep_col["step"]])
+        out["data"].append({"op": op, "words": words, "views": ["preparation"],
+                            "runs": prep_runs.get(op, []), "family": "corpus",
+                            "skills": [skill], "built": True, "step": step - 100})
     for types in out.values():
         types.sort(key=lambda t: t["step"])
     return out
@@ -2118,30 +2447,77 @@ def _run_type_skills() -> dict[str, list[str]]:
 
 
 def _run_name(run_id: str) -> str:
-    """`rl04_human-calibration_round-01` → `human-calibration-round-01`; the file id shows on hover."""
-    return re.sub(r"^rl\d+_", "", run_id).replace("_", "-")
+    """Keep new full names verbatim; expand old Labeling addresses for display."""
+    if run_id.startswith("run-"):
+        return run_id
+    return "run-labeling-" + re.sub(r"^rl\d+_", "", run_id).replace("_", "-")
 
 
 def _run_ask(vm: dict, run: dict) -> str:
     """The Run's prompt: what it did and where its Ticket and Result are."""
+    if run.get("family") == "corpus":
+        return (f"Review Corpus Preparation Run {run['run']} at {run['owner']}. "
+                f"Ticket: runs/{run['run']}.yaml · Result: results/{run['run']}/")
     words = _RUN_WORDS.get(run["operation"], run["operation"])
     return (f"{words}{' · ' + run['target'] if run.get('target') else ''} on the labeling job at {_job_where(vm)}. "
             f"Run {run['run']} · Ticket: runs/{run['run']}.yaml · Result: results/{run['run']}/")
 
 
-def _run_again(vm: dict, run: dict) -> tuple[str, str]:
-    """Resume an open Run (same rlNN) or Rerun a closed one (a new rlNN); both only copy a prompt."""
+def _run_again(vm: dict, run: dict, *, built: bool = True) -> tuple[str, str]:
+    """Resume an open Run or Rerun a closed one; both only copy a prompt."""
+    if not built:
+        return "", ""  # historical Ticket remains readable; this build has no worker
+    if run.get("family") != "corpus" and _g0_retroactive_block(vm):
+        return "", ""  # a released round without earlier confirmation is history
+    if run["operation"] == "corpus-contract" and run.get("family") != "corpus":
+        return "", ""  # the Page's Contract is already bound to this job
+    if run.get("family") == "corpus":
+        prep = vm.get("preparation") or {}
+        if (not vm.get("page_ready", True) or prep.get("error") or prep.get("linked")
+                or (vm["root"] / "config.yaml").is_file()):
+            return "", ""
+        action = "Resume" if run["status"] == "running" else "Rerun"
+        return action, (f"{action} the {run['operation']} Corpus Preparation Run for {run['target']} "
+                        f"at {run['owner']} through /subjective-label-preparation. "
+                        + (f"Keep Ticket {run['run']}." if action == "Resume" else
+                           f"Reuse {run['run']} for identical accepted inputs, or allocate a new full run-corpus name for changed inputs."))
     where = _job_where(vm)
     if run["operation"] == "definition-discussion":
-        return ("Resume", _meaning_prompt(vm, run["run"])) if run["status"] == "running" else ("Rerun", _meaning_prompt(vm))
+        if not _meaning_allowed(vm):
+            return "", ""
+        active = _open_definition_run(vm)
+        if active:
+            return (("Resume", _meaning_prompt(vm, run["run"]))
+                    if active["run"] == run["run"] else ("", ""))
+        return "Rerun", _meaning_prompt(vm)
+    if run["operation"] == "human-calibration":
+        cal = vm.get("cal") or {}
+        current = cal.get("current_round") or {}
+        round_id = current.get("round_id") or ""
+        if (run["status"] == "running" and current.get("open_item")
+                and run.get("target") == round_id.replace("_", "-")
+                and not (vm.get("canonical") or {}).get("hold")):
+            return "Resume", _chat_prompt(vm, current, _round_draw(vm["root"], round_id), run=run)
+        judged = next((r for r in cal.get("rounds") or []
+                       if r.get("round_id", "").replace("_", "-") == run.get("target")
+                       and r.get("state") == "judged" and r.get("calibration_status") == "running"), None)
+        if run["status"] == "running" and judged and not (vm.get("canonical") or {}).get("hold"):
+            config = vm.get("config") or {}
+            authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+            command = _engine_command("calibration.py", "finalize", "--job-root", where,
+                                      "--round", judged["round_id"], "--human-id",
+                                      (authority or {}).get("human_id") or "<configured-human-id>")
+            return "Resume", (f"Finish the interrupted {run['run']} Result. All items in "
+                              f"{judged['round_id']} have final events, but its runtime is still running. "
+                              f"Verify the event log, then run: {command}. Do not repeat a judgment.")
+        return "", ""  # a stale or finished batch cannot be resumed or rerun
+    if run["operation"] in {"round-prepare", "embedding-build"}:
+        return "", ""  # these start through checked view actions, not a generic prompt
     if run["status"] == "running":
-        current = (vm.get("cal") or {}).get("current_round") or {}
-        if run["operation"] == "human-calibration" and current.get("round_id"):
-            return "Resume", _chat_prompt(vm, current, _round_draw(vm["root"], current["round_id"]))
         return "Resume", (f"Resume Run {run['run']} on the labeling job at {where} through /subjective-label. "
-                          "Keep the same rlNN.")
+                          "Keep the same Ticket and Result name.")
     return "Rerun", (f"Start a new {run['operation']} Run{' for target ' + run['target'] if run.get('target') else ''} on the labeling job "
-                     f"at {where} through /subjective-label. It gets a new rlNN; {run['run']} stays as it is.")
+                     f"at {where} through /subjective-label. Give it a new full run-labeling name; {run['run']} stays as it is.")
 
 
 def _skills_line(skills: list[str]) -> str:
@@ -2151,29 +2527,58 @@ def _skills_line(skills: list[str]) -> str:
     return f'<p class=run-skill>Run Type skills {names}</p>'
 
 
-def _run_card(vm: dict, run: dict, skills: list[str] | None = None) -> str:
-    action, again = _run_again(vm, run)
-    ask = _run_ask(vm, run)
+def _run_card(vm: dict, run: dict, skills: list[str] | None = None, *, built: bool = True) -> str:
+    action, again = _run_again(vm, run, built=built)
+    ask = again or _run_ask(vm, run)
     status = str(run["status"])
-    words = _STATUS_WORDS.get(status, status)
+    blocked_g0 = run.get("family") != "corpus" and _g0_retroactive_block(vm)
+    blocked_discussion = (run["operation"] == "definition-discussion" and status == "running"
+                          and not _meaning_allowed(vm))
+    blocked_history = status == "running" and (blocked_discussion or blocked_g0)
+    words = "blocked history" if blocked_history else _STATUS_WORDS.get(status, status)
     times = " → ".join(x for x in (_when(run.get("started_at")), _when(run.get("finished_at"))) if x)
     process = " · ".join(x for x in (times, _outcome_words(run.get("outcome"))) if x)
     files = "".join(f"<li><code>{_esc(p)}</code></li>" for p in run.get("artifacts") or [])
+    legacy = (f'<p class=run-skill>Legacy Ticket on disk <code>{_esc(run["run"])}</code></p>'
+              if run["name"] != run["run"] else "")
+    action_button = (f'<button type=button class=run-copy data-copy="{_esc(again)}">{action}</button>'
+                     if again else "")
+    blocked_note = ('<p class=warn>This discussion cannot continue after round release. '
+                    'Its earlier turns remain on disk.</p>'
+                    if blocked_discussion else
+                    '<p class=warn>This Run cannot continue: G0 cannot authorize the released round. '
+                    'Its Ticket and Result remain on disk.</p>' if blocked_g0 else "")
+    review_only = not built or bool(blocked_note) or not again
+    prompt_header = ('<details class=run-prompt-box><summary>Record</summary>' if review_only else
+                     '<details class=run-prompt-box><summary>Prompt '
+                     f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>')
     return (
         f'<article class=run-card data-op="{_esc(run["operation"])}" data-run="{_esc(run["run"])}" '
         f'data-name="{_esc(run["label"])}" data-target="{_esc(run.get("target") or "")}" hidden>'
         f'<header><b title="{_esc(run["run"])}">{_esc(run["name"])}</b>'
-        f'<span class="run-state st-{_esc(status.split(" ")[0])}">{_esc(words)}</span>'
-        f'<button type=button class=run-copy data-copy="{_esc(again)}">{action}</button></header>'
-        f'{_skills_line(skills or [])}'
-        '<details class=run-prompt-box><summary>Prompt '
-        f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>'
+        f'<span class="run-state st-{_esc("blocked" if blocked_history else status.split(" ")[0])}">{_esc(words)}</span>'
+        f'{action_button}</header>{blocked_note}'
+        f'{_skills_line(skills or [])}{legacy}'
+        f'{prompt_header}'
         f'<pre class=run-prompt>{_esc(ask)}</pre></details>'
         f'<h4>Running process</h4><div class=run-process>{_esc(process)}</div>'
-        f'<h4>Results</h4><div class=run-results><code>results/{_esc(run["run"])}/</code>'
+        f'<h4>Results</h4><div class=run-results><code>{_esc(run.get("owner") + "/" if run.get("family") == "corpus" else "")}results/{_esc(run["run"])}/</code>'
         f'{f"<ul>{files}</ul>" if files else ""}</div>'
         '</article>'
     )
+
+
+_CORPUS_ORDER = ("source-normalize", "unit-recipe", "unit-materialize",
+                 "unit-check", "initial-group-reserve")
+
+
+def _next_preparation_operation(vm: dict) -> str | None:
+    prep = vm.get("preparation") or {}
+    if (not vm.get("page_ready", True) or not prep.get("attached") or prep.get("linked")
+            or prep.get("error") or (vm["root"] / "config.yaml").is_file()):
+        return None
+    completed = {r.get("operation") for r in prep.get("runs") or [] if r.get("status") == "complete"}
+    return next((op for op in _CORPUS_ORDER if op not in completed), None)
 
 
 def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
@@ -2183,14 +2588,45 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
     for t in types:
         runs = list(reversed(t["runs"]))  # newest first
         waiting = sum(1 for r in runs if r["status"] == "running" and r.get("worker_kind") == "human")
-        prompt = (_meaning_prompt(vm) if t["op"] == "definition-discussion" else
-                  f"Start a new {t['op']} Run on the labeling job at {where} through /subjective-label. Target: ")
+        if t.get("family") == "corpus":
+            prep = vm.get("preparation") or {}
+            owner = (prep.get("reference") or prep.get("owner_reference") or {}).get("owner")
+            prompt = (f"Start the next {t['op']} Corpus Preparation Run for the Page at {where} "
+                      f"through /subjective-label-preparation. "
+                      + (f"Source owner: {owner}. " if owner else
+                         "First attach the source preparation owner to this Page. ")
+                      + "Record a full run-corpus Ticket and Result.")
+            if t["op"] != _next_preparation_operation(vm):
+                prompt = ""
+        elif t["op"] == "corpus-contract":
+            prep = vm.get("preparation") or {}
+            if (prep.get("linked") and not prep.get("error")
+                    and not (vm["root"] / "config.yaml").is_file()):
+                package = (prep.get("reference") or {}).get("package") or ""
+                prompt = (f"Use /subjective-label to create the Labeling Contract for the Page "
+                          f"in {vm['root'].parent} from the accepted Corpus Preparation package "
+                          f"at {package}. Labeling folder: {where}. Confirm the target trait, "
+                          "job ID, identified semantic human, and sealed-test custodian; "
+                          "validate the package and custody boundary before writing one "
+                          "run-labeling-corpus-contract Ticket and Result. Do not show protected IDs.")
+            else:
+                prompt = ""
+        elif t["op"] == "definition-discussion":
+            prompt = _meaning_prompt(vm) if _meaning_allowed(vm) and not _open_definition_run(vm) else ""
+        elif t["op"] == "human-calibration":
+            current = (vm.get("cal") or {}).get("current_round") or {}
+            prompt = (_chat_prompt(vm, current, _round_draw(vm["root"], current["round_id"]))
+                      if current.get("round_id") and current.get("open_item")
+                      and not current.get("calibration_run")
+                      and not (vm.get("canonical") or {}).get("hold") else "")
+        else:
+            prompt = ""  # embedding-build and round-prepare start through checked view actions
         buttons.append(
             f'<button type=button class=run-type data-op="{_esc(t["op"])}" data-views="{_esc(" ".join(t["views"]))}" '
             f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" data-skills="{_esc("|".join(t.get("skills") or []))}" '
             f'title="{_esc(t["op"])}">'
             f'{_esc(t["words"])} <span class=run-count>{len(runs)}</span></button>')
-        cards.extend(_run_card(vm, r, t.get("skills") or []) for r in runs)
+        cards.extend(_run_card(vm, r, t.get("skills") or [], built=t.get("built", True)) for r in runs)
     return (
         f'<section class=runs-panel data-space={sid}>'
         '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Runs</b></div>'
@@ -2221,14 +2657,15 @@ def _script_json(value) -> str:
             .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026"))
 
 
-def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Path) -> str:
+def render(page_src: Path, path_q: str, file_q: str, page_q: str,
+           board_dir: Path | None, *, standalone: bool = False) -> str:
     vm = _view_model(page_src)
     state, canonical, config = vm["state"], vm["canonical"], vm["config"]
-    chat_page = studio_chat_page_url(path_q, file_q, page_q, board_dir)
-    if not chat_page:
+    chat_page = "" if standalone else studio_chat_page_url(path_q, file_q, page_q, board_dir)
+    if not standalone and not chat_page:
         raise ValueError("Labeling Studio Chat requires the matching generated Page URL")
     hold = bool(state["authority_hold"] or state["next_action"].startswith("HOLD"))
-    chat_url = chat_page + "?pane=chat" + ("&labeling_hold=1" if hold else "")
+    chat_url = (chat_page + "?pane=chat" + ("&labeling_hold=1" if hold else "")) if chat_page else ""
     next_line, next_space = _next_step(vm)
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     title = construct.get("question") or construct.get("name") or page_src.stem
@@ -2263,13 +2700,20 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
     cal = vm["cal"] or {}
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     boot = {
+        "mode": "page" if standalone else "board",
         "path": path_q, "file": file_q, "page": page_q,
         "identity": f"{path_q}|{file_q}",
         "human_id": authority.get("human_id") or "",
         "hold": hold,
         "next": next_line,
         "phase": canonical.get("phase") if canonical else None,
-        "g0_open": bool(canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation"),
+        "g0_open": bool(canonical and (canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation"
+                                       or canonical.get("first_blocked_frontier") == "G0 · label meanings missing"
+                                       or canonical.get("g0_retroactive_block") or _g0_repair_request(vm))),
+        "g0_retroactive_block": _g0_retroactive_block(vm),
+        "g0_repair_request": _g0_repair_request(vm),
+        "missing_meanings": canonical.get("meaning_definitions_missing") or [],
+        "definition_open": bool(_open_definition_run(vm) and _meaning_allowed(vm)),
         "default_space": next_space,
         "question": construct.get("question") or construct.get("name") or "",
         "schema": cal.get("schema") or {},
@@ -2278,17 +2722,21 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
         "batch_default": ((config.get("rounds") or {}).get("round1") or {}).get("human_batch_size") or 20,
         "spaces": {sid: [vid for vid, _ in views] for sid, _, views in SPACES},
     }
+    back_link = ('' if standalone else
+                 f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>')
+    chat_link = (f'<a class="space chatlink" href="{_esc(chat_url)}" target=_blank rel=noopener>Studio Chat</a>'
+                 if chat_url else '')
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>Labeling · {_esc(page_src.stem)}</title><style>{_CSS}</style></head><body>'
         f'<h1 class=pagetitle title="{_esc(next_line)}">'
-        f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>'
+        f'{back_link}'
         f' 🏷 {_esc(title)}</h1>'
         f'<section class=drawer data-drawer-panel=workflow hidden>{drawers["workflow"]}</section>'
         f'<section class=drawer data-drawer-panel=allruns hidden>{drawers["allruns"]}</section>'
         f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}'
-        f'<a class="space chatlink" href="{_esc(chat_url)}" target=_blank rel=noopener>Studio Chat</a></nav>'
+        f'{chat_link}</nav>'
         + "".join(sections) +
         f'<script type=application/json id=labeling-boot>{_script_json(boot)}</script>'
         f'<script>{_JS}</script></body></html>'
@@ -2567,6 +3015,7 @@ _CSS += """/* v3 (JL 260927, as the Page workbench): no page bar; each Space is 
 .run-results{font-size:12px;overflow-wrap:anywhere}.run-results ul{margin:4px 0 0;padding-left:18px}
 .run-state{font:600 10.5px/1.4 system-ui,sans-serif;border-radius:5px;padding:1px 6px;border:1px solid var(--line);color:var(--mut)}
 .run-state.st-running{color:var(--ok);border-color:var(--ok)}
+.run-state.st-blocked{color:var(--warn);border-color:var(--warn)}
 .run-state.st-failed{color:var(--warn);border-color:var(--warn)}
 .run-empty{color:var(--mut);font-size:12px}
 .runs-panel.folded{flex-basis:42px;cursor:pointer}
@@ -2602,6 +3051,8 @@ $$('.chip').forEach(function(c){c.addEventListener('click',function(){select(c.d
 /* ── Runs panel, right of each Space: a view lists only its own Run types; pick a type, then a run ── */
 function runsRender(p){
  var on=$('.run-type.on',p),newMode=on&&on.classList.contains('run-new'),list=$('.run-list',p),empty=$('.run-empty',p);
+ var source=newMode?$('.run-type[data-op="'+p.dataset.lastOp+'"]',p):on;
+ $('.run-new',p).hidden=!source||!source.dataset.prompt;
  $$('.run-card',p).forEach(function(c){c.hidden=true;});list.innerHTML='';list.hidden=true;empty.hidden=true;
  var op=newMode?p.dataset.lastOp:(on?on.dataset.op:'');
  if(newMode){var src=$('.run-type[data-op="'+op+'"]',p),card=$('.run-card-new',p),text=src?src.dataset.prompt:'';
@@ -2612,7 +3063,10 @@ function runsRender(p){
   card.hidden=false;return;}
  p.dataset.lastOp=op||'';
  var cards=op?$$('.run-card[data-op="'+op+'"]',p):[];
- if(!cards.length){empty.hidden=false;return;}
+ if(!cards.length){var pendingSkills=on&&on.dataset.skills?on.dataset.skills.split('|'):[];
+  empty.innerHTML='No runs yet.'+(pendingSkills.length?'<p class=run-skill>Run Type skills '+
+   pendingSkills.map(function(skill){return '<code>'+esc(skill)+'</code>';}).join(' · ')+'</p>':'');
+  empty.hidden=false;return;}
  var first=cards.filter(function(c){return c.dataset.target&&c.dataset.target===p.dataset.want;})[0]||cards[0];
  function show(c){cards.forEach(function(x){x.hidden=x!==c;});}
  cards.forEach(function(c){var b=document.createElement('button');b.type='button';b.textContent=c.dataset.name;b.title=c.dataset.run;
@@ -2634,7 +3088,7 @@ function runsFor(space,view){var p=$('.runs-panel[data-space="'+space+'"]');if(!
  var best=null;
  $$('.run-type[data-op]',p).forEach(function(b){b.hidden=(b.dataset.views||'').split(' ').indexOf(view)<0;
   if(!b.hidden&&(!best||+b.dataset.waiting>+best.dataset.waiting)){best=b;}});
- $('.run-new',p).hidden=!best;
+ $('.run-new',p).hidden=!best||!best.dataset.prompt;
  $$('.run-type',p).forEach(function(b){b.classList.toggle('on',b===best);});
  runsRender(p);}
 $$('.runs-panel').forEach(function(p){
@@ -2899,7 +3353,7 @@ $$('.embpane').forEach(function(pane){
 var sessionId;try{sessionId=sessionStorage.getItem('labeling-session')||'';}catch(e){sessionId='';}
 if(!sessionId){sessionId='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{sessionStorage.setItem('labeling-session',sessionId);}catch(e){}}
 function act(action,body){
- var payload=Object.assign({path:boot.path,file:boot.file,page:boot.page,action:action,
+ var payload=Object.assign({mode:boot.mode,path:boot.path,file:boot.file,page:boot.page,action:action,
   human_id:boot.human_id,session_id:sessionId},body||{});
  if(action!=='confirm_meaning')payload.attest=true;
  return fetch('/_board/labeling/act',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
@@ -2909,9 +3363,12 @@ function act(action,body){
 var attest=$('[data-confirm-attest]'),confirmBtn=$('[data-confirm-meaning]'),confirmMsg=$('[data-confirm-msg]');
 if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.disabled=!attest.checked;});
  confirmBtn.addEventListener('click',function(){
-  if(!window.confirm('This records your caller attestation as '+boot.human_id+'. The Board does not verify your identity. Continue?'))return;
+  var ask=boot.g0_repair_request?
+   'This restores the missing G0 receipt from the earlier human confirmation. The Workbench does not verify your identity. Continue?':
+   'This records your caller attestation as '+boot.human_id+'. The Workbench does not verify your identity. Continue?';
+  if(!window.confirm(ask))return;
   confirmBtn.disabled=true;confirmMsg.textContent='Saving…';confirmMsg.className='msg';
-  act('confirm_meaning',{attest:true}).then(function(){confirmMsg.textContent='Confirmed. Opening round 1…';
+  act('confirm_meaning',{attest:true}).then(function(){confirmMsg.textContent=boot.g0_repair_request?'G0 receipt restored. Opening the round…':'Confirmed. Opening round 1…';
    var u=new URL(location.href);u.searchParams.set('space','labeling');u.searchParams.set('view','rounds');location.href=u.toString();})
   .catch(function(e){confirmMsg.textContent=e.message;confirmMsg.className='msg err';confirmBtn.disabled=false;});});}
 /* ── Label: start a round; a round in progress is the server's table, labeled in chat ── */
@@ -2936,11 +3393,18 @@ function load(){
  if(!app){return;}
  if(boot.hold){message('<p class=warn>Read-only · '+esc(boot.next||'')+'</p>');return;}
  if(boot.phase!=='P1'){
-  if(boot.g0_open){message('<p><b>Step 1 first:</b> confirm what the labels mean.</p><div class=actions><button class=primary type=button id=go-confirm>Go to Confirm meaning</button></div>');
-   $('#go-confirm').addEventListener('click',function(){select('labeling','definition',true);});}
+  if(boot.g0_open){
+   if(boot.g0_retroactive_block){message('<p>A round was released without valid prior meaning confirmation. Keep this job as history; start a new job for new labels.</p>');}
+   else if(boot.g0_repair_request){message('<p>Restore the missing G0 receipt from the earlier human confirmation.</p><div class=actions><button class=primary type=button id=go-confirm>Go to Definition</button></div>');
+    $('#go-confirm').addEventListener('click',function(){select('labeling','definition',true);});}
+   else if(boot.missing_meanings.length){message('<p>Define every label meaning in a Definition discussion before confirming G0.</p><div class=actions><button class=primary type=button id=go-confirm>Go to Definition</button></div>');
+    $('#go-confirm').addEventListener('click',function(){select('labeling','definition',true);});}
+   else{message('<p><b>Step 1 first:</b> '+(boot.definition_open?'finish the open label-meaning discussion.':'review or discuss the label meanings, then confirm them.')+'</p><div class=actions><button class=primary type=button id=go-confirm>Go to Definition</button></div>');
+    $('#go-confirm').addEventListener('click',function(){select('labeling','definition',true);});}}
   else{message('<p class=mut>Labeling opens after P0 Contract passes.</p>');}
   return;}
  var cur=boot.current_round, rounds=boot.rounds||[];
+ if(boot.definition_open){message('<p>Finish the open label-meaning discussion before releasing a round.</p>');return;}
  if(!cur&&rounds.length&&rounds[rounds.length-1].state==='judged'){
   var r=rounds[rounds.length-1];message('<p class=ok>'+esc(r.round_id)+' is done: '+r.finals+' of '+r.batch_size+' labeled.</p>');return;}
  if(!cur){
@@ -2992,14 +3456,34 @@ def _job_row(page_src: Path, page: dict, path_q: str) -> dict:
     n_dev = manifest.get("n_eligible")
     if n_dev is None and isinstance(n_items, int) and isinstance(n_sealed, int):
         n_dev = n_items - n_sealed
-    if state["authority_hold"]:
+    prep = vm.get("preparation") or {}
+    if prep.get("error"):
+        kind, badge, rank = "repair", "Needs repair", 4
+    elif prep.get("attached") and not (vm["root"] / "config.yaml").is_file():
+        kind, badge, rank = ("preparing", "Create Contract" if prep.get("linked") else "Prepare corpus", 1)
+        receipt = prep.get("receipt") or {}
+        source = {"name": (prep.get("owner_reference") or {}).get("source_id")
+                  or receipt.get("snapshot_id") or ""}
+        n_dev, n_sealed = receipt.get("n_eligible"), receipt.get("n_sealed")
+    elif state["authority_hold"]:
         kind, badge, rank = "hold", "Read-only", 5
+    elif _g0_retroactive_block(vm):
+        kind, badge, rank = "repair", "Invalid G0", 4
+    elif _g0_repair_request(vm):
+        kind, badge, rank = "confirm", "Restore G0", 1
     elif state["canonical_integrity_errors"]:
         kind, badge, rank = "repair", "Needs repair", 4
+    elif _open_definition_run(vm) and _meaning_allowed(vm):
+        kind, badge, rank = "confirm", "Discuss meanings", 1
+    elif canonical.get("meaning_definitions_missing"):
+        kind, badge, rank = "confirm", "Define meanings", 1
     elif canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
         kind, badge, rank = "confirm", "Confirm meaning", 1
     elif cal.get("phase") == "P1" and current:
         kind, badge, rank = "labeling", f"Labeling {current['finals']}/{current['batch_size']}", 0
+    elif (cal.get("phase") == "P1" and rounds and rounds[-1]["state"] == "judged"
+          and rounds[-1].get("calibration_status") == "running"):
+        kind, badge, rank = "labeling", "Finish Run", 1
     elif cal.get("phase") == "P1" and rounds and rounds[-1]["state"] == "judged":
         kind, badge, rank = "judged", f"{_round_words(rounds[-1]['round_id'])} done", 3
     elif cal.get("phase") == "P1":
@@ -3013,7 +3497,8 @@ def _job_row(page_src: Path, page: dict, path_q: str) -> dict:
         "target": construct.get("name") or "", "question": construct.get("question") or "",
         "source": source.get("name") or "", "n_dev": n_dev, "n_sealed": n_sealed,
         "human": authority.get("human_id") or "", "kind": kind, "badge": badge, "rank": rank,
-        "labeled": labeled, "current": current, "rounds": len(rounds), "runs": len(vm["runs"]),
+        "labeled": labeled, "current": current, "rounds": len(rounds),
+        "runs": len(vm["runs"]) + len(prep.get("runs") or []),
         "next": next_line, "labeling_url": labeling_url, "page_url": page_url,
     }
 
@@ -3027,9 +3512,16 @@ def board_jobs(board_dir: Path, path_q: str, probe: bool = False) -> dict:
         if not is_labeling_surface_page(page_src):
             continue
         lane, _ = _labeling_lane(page_src)
-        if not (lane / "config.yaml").is_file():
+        if (not (lane / "config.yaml").is_file()
+                and not (lane / "preparation-ref.yaml").is_file()
+                and not (lane / "preparation-owner.yaml").is_file()):
             if page_src.name.startswith("S-Label-"):
-                empty.append({"id": page.get("id"), "title": page.get("title")})
+                labeling_url, _ = _job_urls(path_q, page)
+                candidate = _page_folder_candidate(page_src)
+                ready = candidate.is_file() and not candidate.is_symlink()
+                empty.append({"id": page.get("id"), "title": page.get("title"),
+                              "labeling_url": labeling_url + "&space=data&view=preparation",
+                              "badge": "Prepare corpus" if ready else "Create Page folder"})
             continue
         if probe:
             jobs.append({"id": page.get("id")})
@@ -3048,7 +3540,7 @@ def board_jobs(board_dir: Path, path_q: str, probe: bool = False) -> dict:
 def render_board(board_dir: Path, path_q: str) -> str:
     data = board_jobs(board_dir, path_q)
     jobs = data["jobs"]
-    waiting = [j for j in jobs if j["kind"] in {"labeling", "confirm", "ready"}]
+    waiting = [j for j in jobs if j["kind"] in {"labeling", "confirm", "ready", "preparing"}]
     if not jobs:
         headline = "No Page on this Board has a labeling job yet."
     elif waiting:
@@ -3056,7 +3548,7 @@ def render_board(board_dir: Path, path_q: str) -> str:
     else:
         headline = f"{len(jobs)} jobs. None is waiting for you right now."
     def record(job: dict) -> str:
-        pill = {"confirm": "acc", "labeling": "acc", "ready": "acc", "judged": "ok",
+        pill = {"preparing": "acc", "confirm": "acc", "labeling": "acc", "ready": "acc", "judged": "ok",
                 "hold": "mut", "repair": "warn"}.get(job["kind"], "mut")
         data_bits = [x for x in (
             job.get("source") or "",
@@ -3088,9 +3580,14 @@ def render_board(board_dir: Path, path_q: str) -> str:
         groups = f'<p class=mut>{_esc(headline)}</p>'
     empty = ""
     if data["empty"]:
-        empty = ('<p class=mut>Pages with no labeling job yet: '
-                 + ", ".join(_esc(e["id"]) for e in data["empty"])
-                 + '</p>')
+        links = "".join(
+            f'<a class="rec job" href="{_esc(e["labeling_url"])}">'
+            f'<div class=rh><span class=rid>{_esc(e["id"])}</span>'
+            f'<span class=rt>{_esc(e.get("title") or e["id"])}</span>'
+            f'<span class="pill mut">{_esc(e["badge"])}</span></div></a>'
+            for e in data["empty"]
+        )
+        empty = f'<div class=card><h2>Pages before Contract</h2>{links}</div>'
     name = Path(board_dir).name
     tally = f'{len(waiting)} waiting · {len(jobs)} jobs'
     return (
@@ -3114,6 +3611,50 @@ a.rec:hover,a.rec:focus-visible{background:color-mix(in srgb,var(--acc) 6%,var(-
 
 class LabelingMixin:
     """The 🏷 tab: four Spaces over one labeling/ lane, plus the labeling writer door."""
+
+    def _labeling_page_target(self, file_q: str):
+        """Resolve a canonical Page folder only on the dedicated labeling host."""
+        if getattr(self, "only", None) != frozenset({"labeling"}):
+            return None, "standalone Labeling Page requires the dedicated labeling host"
+        if not isinstance(file_q, str):
+            return None, "file must be a string"
+        if (not file_q or file_q.startswith("/") or "\\" in file_q
+                or ":" in file_q or "\x00" in file_q):
+            return None, "unsafe Page folder path"
+        parts = PurePosixPath(file_q).parts
+        if (any(part in {"", ".", ".."} for part in file_q.split("/"))
+                or not file_q.endswith(".md")):
+            return None, "unsafe Page folder path"
+        root = self.root.resolve()
+        candidate = root
+        for part in parts:
+            candidate = candidate / part
+            if candidate.is_symlink():
+                return None, "Page folder may not use symlinks"
+        if candidate.parent.name != candidate.stem or not candidate.is_file():
+            return None, "file must be a canonical <Page>/<Page>.md"
+        try:
+            candidate.resolve().relative_to(root)
+        except (ValueError, OSError, RuntimeError):
+            return None, "Page folder is outside the served root"
+        if not is_labeling_surface_page(candidate):
+            return None, "Page has no labeling lane"
+        return candidate, None
+
+    def labeling_page_view(self, head_only=False):
+        q = parse_qs(urlparse(self.path).query)
+        page_src, err = self._labeling_page_target((q.get("file") or [""])[0])
+        if page_src is None:
+            return self.reply(400, {"ok": False, "err": err})
+        file_q = page_src.relative_to(self.root.resolve()).as_posix()
+        body = render(page_src, "", file_q, "", None, standalone=True).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
 
     def labeling_view(self, head_only=False):
         q = parse_qs(urlparse(self.path).query)
@@ -3192,18 +3733,22 @@ class LabelingMixin:
         """
         origin = self.headers.get("Origin") or ""
         host = self.headers.get("Host") or ""
-        if p.get("action") == "confirm_meaning" and not origin:
-            return 403, {"ok": False, "err": "meaning confirmation requires the Board origin"}
+        standalone = p.get("mode") == "page"
+        if p.get("mode") not in (None, "board", "page"):
+            return 400, {"ok": False, "err": "unknown Labeling workbench mode"}
+        if (standalone or p.get("action") == "confirm_meaning") and not origin:
+            needed = "Workbench origin" if standalone else "Board origin"
+            return 403, {"ok": False, "err": f"labeling write requires the {needed}"}
         if origin and urlparse(origin).netloc != host:
             return 403, {"ok": False, "err": "cross-origin labeling write refused"}
-        got = self.target(p)
+        got = (self._labeling_page_target(p.get("file")) if standalone else self.target(p))
         if got[0] is None:
             return 400, {"ok": False, "err": got[1]}
         page_src, board_dir = got
         if not is_labeling_surface_page(page_src):
             return 404, {"ok": False, "err": "Page has no labeling lane"}
-        if not studio_chat_page_url(p.get("path") or "", p.get("file") or "",
-                                    p.get("page") or "", board_dir):
+        if not standalone and not studio_chat_page_url(p.get("path") or "", p.get("file") or "",
+                                                      p.get("page") or "", board_dir):
             return 400, {"ok": False, "err": "missing or mismatched generated Page URL"}
         if p.get("attest") is not True:
             return 400, {"ok": False, "err": "labeling writes need an explicit caller attestation"}
@@ -3217,6 +3762,7 @@ class LabelingMixin:
         human = str(p.get("human_id") or "")
         session = re.sub(r"[^A-Za-z0-9_-]", "", str(p.get("session_id") or ""))[:40] or "browser"
         action = p.get("action")
+        channel = "labeling workbench screen" if standalone else "board labeling screen"
         try:
             if action == "confirm_meaning":
                 page_file = root.parent / page_src.name
@@ -3224,10 +3770,10 @@ class LabelingMixin:
                     job_root=root, page_file=page_file, human_id=human,
                     confirmed_at=cal.now_iso(), accept_current_schema=True,
                     attest_as_human=p.get("attest") is True,
-                    channel="board labeling screen")
+                    channel=channel)
             elif action == "release_round":
                 result = cal.release_round(root, human_id=human, n=int(p.get("n") or 0) or None,
-                                           channel="board labeling screen")
+                                           channel=channel)
             elif action == "open_item":
                 result = cal.open_item(root, str(p.get("round_id") or ""), human_id=human,
                                        session_id=session)
@@ -3255,14 +3801,14 @@ class LabelingMixin:
                 elif action == "group_examples":
                     result = embmod.group_examples(root, str(p.get("version") or ""), int(p.get("group_index")),
                                                    k=int(p.get("k") or 3), offset=int(p.get("offset") or 0),
-                                                   human_id=human, channel="board labeling screen")
+                                                   human_id=human, channel=channel)
                 elif action == "embedding_item_text":
                     result = embmod.item_text(root, str(p.get("version") or ""), str(p.get("item_id") or ""),
-                                              human_id=human, channel="board labeling screen")
+                                              human_id=human, channel=channel)
                 elif action == "build_embedding":
                     groups = p.get("groups")
                     proc, version = embmod.start_background_build(
-                        root, str(p.get("model") or ""), channel="board labeling screen", started_by=human,
+                        root, str(p.get("model") or ""), channel=channel, started_by=human,
                         input_mode=str(p.get("input_mode") or "reply_context"),
                         instruction=p.get("instruction") or None,
                         groups=int(groups) if groups not in (None, "") else None,

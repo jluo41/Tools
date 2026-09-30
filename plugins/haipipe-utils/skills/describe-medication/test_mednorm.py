@@ -236,6 +236,19 @@ def t_only_trusted_writes_identity():
     return "rule 3 holds"
 
 
+def t_a_device_is_not_an_insulin():
+    """An insulin pump names insulin only to say what it is for (15 WellDoc rows).
+    A drug sold in a device keeps its answer."""
+    pod, pen, syringe = normalize([
+        "Insulin Disposable Pump (OMNIPOD CLASSIC PODS, GEN 3,) MISC",
+        "insulin lispro-aabc (LYUMJEV TEMPO PEN,U-100,INSULN) 100 unit/mL insulin pen, sensor",
+        "dupilumab (Dupixent Syringe) 300 mg/2 mL"], doses=[1, 1, 1])
+    assert pod["IsInsulin"] is False, pod
+    assert pen["IsInsulin"] is True and pen["DrugKey"] == "Insulin lispro-aabc", pen
+    assert syringe["IsInsulin"] is False and syringe["DrugKey"] == "Dupilumab", syringe
+    return "Omnipod pod not insulin · Lyumjev pen still insulin · Dupixent syringe unchanged"
+
+
 def t_good_requires_the_code():
     """GOOD is an INVARIANT, not a fact about one id: a row is GOOD if and only
     if its NDC resolved. A name match, however exact, is OK -- two products can
@@ -355,6 +368,7 @@ if __name__ == "__main__":
         ("result shape is constant", t_shape_is_constant),
         ("order held, dose per row", t_order_and_dose_are_per_row),
         ("length mismatch raises", t_length_mismatch_raises),
+        ("a device is not an insulin", t_a_device_is_not_an_insulin),
         ("empty batch", t_empty_batch),
         ("real corpus floor", t_real_corpus_floor),
     ]:

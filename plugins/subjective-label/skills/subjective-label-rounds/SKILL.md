@@ -5,7 +5,7 @@ description: >-
   runs one calibration round: card, draw, weak pre-labels, the human's judgments by chat, measure and close. Every Run in this view names this skill, and no other view uses it.
   Use for starting a round, round card, round-prepare, labeling a round in chat, open_item, record_first, record_final, events.jsonl, resuming a round, measuring or closing a round, or /subjective-label-rounds.
 metadata:
-  version: "0.1.0"
+  version: "0.1.3"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -21,16 +21,17 @@ comes before and after these is in `label-building-workflow`.
 ## Runs in this view
 
 ```text
-step  run                          state
- 7    run-round-prepare        built · engine/calibration.py release_round (round 1 only)
- 8    run-weak-prelabel        not built
- 9    run-human-calibration    built · open_item, record_first, record_final
-11    run-round-measure        not built
-12    run-round-close          not built (no Checkpoint Keeper)
+step  Run Type                     state
+ 7    round-prepare        built · engine/calibration.py release_round (round 1 only)
+ 8    weak-prelabel        not built
+ 9    human-calibration    built · open_item, record_first, record_final
+11    round-measure        not built
+12    round-close          not built (no Checkpoint Keeper)
 ```
 
-A Run is named `rlNN_<operation>_<target>` on disk and shown as
-`run-<operation>-<target>` on the page. Its Ticket is `<Page>/runs/<run>.yaml`
+A new Run uses `run-labeling-<operation>-<MMDD>-<target>` on disk and
+on the page. Older short-named Tickets remain readable. Its Ticket is
+`<Page>/runs/<run>.yaml`
 and its Result `<Page>/results/<run>/`, beside `labeling/`.
 
 ### What the engine builds today
@@ -63,9 +64,9 @@ Two read-only helpers: `state` derives every round's state, and `verify`
 checks one round's events sequence.
 
 ```bash
-python3 plugins/subjective-label/engine/calibration.py state \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/calibration.py" state \
   --job-root <page-home>/labeling
-python3 plugins/subjective-label/engine/calibration.py verify \
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/subjective-label/engine/calibration.py" verify \
   --job-root <page-home>/labeling --round round_01
 ```
 
@@ -108,7 +109,7 @@ It writes, once each: `candidate_pool.jsonl` and `human_batch.jsonl` (seed and
 inclusion probability `n / pool` on every row), `manifest.yaml` (policy
 version, corpus, card, pool, and batch), `evidence.md`, `prospect.md` (round 1
 has no forecast), `README.md` (`state: prepared`), an empty `sessions/`, and a
-complete `rlNN_round-prepare_round-01` Run.
+complete `run-labeling-round-prepare-<MMDD>-round-01` Run.
 
 After `round-prepare` closes, allocate one `weak-prelabel` Run per registered
 weak executor under `G_(t-1)`. Each writes its sealed
@@ -128,15 +129,27 @@ final     the human's final decision + change type
           (none · correction · clarification · concept_revision · unresolved)
 ```
 
-Resume rule: the open item is the first batch row with no `final` event; a
-row with `lock` and no `final` resumes at `reveal`. A dead chat changes nothing
-on disk.
+Resume rule: the open item is the first batch row with no `final` event. If
+the writer stopped after `first` or `lock`, `open_item` finishes the same
+answer's lock and reveal before returning; it never asks the human for a
+second first answer. Recorded events survive a stopped chat. A closed or
+unreadable Run runtime refuses further judgments until its lifecycle is
+repaired.
+
+If every item has a `final` event but the human-calibration runtime is still
+`running`, the Runs panel offers a `Resume` request to finish that existing
+Result. Verify the events and call `engine/calibration.py finalize --job-root
+<job> --round <round_01> --human-id <configured-human-id>`; it closes the
+same Ticket without repeating any human judgment. It refuses an unfinished
+batch or a Run that is no longer running.
 
 **By chat** (JL 260918): the person reads the round in `Labeling → Rounds`
 (the open round's item table: #, Item, Text, Group, State, Feedback; text appears
 once the item has been shown, and the chat shows an item with `open_item`) and
-talks the items through in chat; `Resume` on the round's `human-calibration`
-Run in the Runs panel copies the text that starts or resumes that chat. The chat records
+talks the items through in chat. Before the first item opens, `+ New Run` for
+`human-calibration` in the Runs panel opens the round's chat request, whose
+`Copy` button copies it; after the first item opens and allocates the Run,
+`Resume` copies an updated request. The chat records
 only answers the person states: `record_first` for a first answer (then shows
 the comparison), `record_final` for keep or change, and `add_feedback` for a
 note about an item (`sessions/feedback.jsonl`, author human or model, never a
@@ -149,7 +162,7 @@ identity authentication:
 
 1. `open_item` returns the resume item (or a named batch item) and appends one
    `show` event per session, only while the item has no `first`. The first
-   call allocates `rlNN_human-calibration_round-01` with `status: running`.
+   call allocates `run-labeling-human-calibration-<MMDD>-round-01` with `status: running`.
 2. `record_first` needs a `show` and no earlier `first`. It appends `first`,
    `lock`, and `reveal` in one call. The reveal payload comes from config
    `reveal.reference_observations` (`../label-building/ref/ref-config.md` §3a) and is marked
@@ -171,7 +184,7 @@ JSON object per line, append-only:
 schema          subjective-label-calibration-event/v1
 seq             1, 2, 3 … with no gap
 at              timestamp with UTC offset
-run             rlNN_human-calibration_round-NN
+run             run-labeling-human-calibration-<MMDD>-round-NN
 round_id        round_NN
 item_id         the batch item
 kind            show | first | lock | reveal | final

@@ -25,10 +25,10 @@ import json
 import os
 from typing import Dict, List, Optional, Sequence
 
-# The five nutrients, and the three provenance columns that must travel with
-# them. A number without its basis is not interpretable and must never be
-# returned alone.
-NUTRIENTS = ("Calories", "Carbs", "Protein", "Fat", "Fiber")
+# The six nutrients, and the provenance columns that must travel with them. A
+# number without its basis is not interpretable and must never be returned alone.
+# Sugar (total sugars, g) joined in 0.6.0; it is empty, never 0, where a bank gave none.
+NUTRIENTS = ("Calories", "Carbs", "Protein", "Fat", "Fiber", "Sugar")
 PROVENANCE = ("NutritionSource", "NutritionConf", "NutritionBasis",
               "NutritionCoverage")
 
@@ -90,7 +90,7 @@ def normalize(foods: Sequence[str], transport: str = None, **kw) -> List[Dict]:
         transport: "local" (default) or "http"; else FOODNORM_TRANSPORT.
         **kw: passed through to the resolver (stages, image_col, image_engine…).
 
-    Returns one dict per input carrying Calories/Carbs/Protein/Fat/Fiber plus
+    Returns one dict per input carrying Calories/Carbs/Protein/Fat/Fiber/Sugar plus
     NutritionSource, NutritionConf and NutritionBasis. Read NutritionBasis
     before comparing or pooling any number: per_100g is not a meal.
     """

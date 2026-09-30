@@ -31,7 +31,8 @@ def source_job(root: Path) -> Path:
                 "project": {"id": "source"},
                 "construct": {"name": "old-target"},
                 "authority": {"human_id": "PROXY", "mode": "simulation"},
-                "labels": {"values": ["high", "low", "none"]},
+                "labels": {"values": ["high", "low", "none"],
+                           "meanings": {"high": "High", "low": "Low", "none": "No match"}},
                 "regions": {"values": ["H", "L", "N", "HL", "LN", "HN", "HLN"]},
                 "uncertainty": {"levels": ["low", "high"], "unresolved_is_label": False},
             },
@@ -104,7 +105,7 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
     ).read_bytes()
     assert (dest / "gold/cumulative.jsonl").read_bytes() == b""
     assert not any((dest / "rounds").iterdir())
-    run = "rl01_corpus-contract_job-v1"
+    run = "run-labeling-corpus-contract-0901-job-v1"
     assert (dest.parent / "runs" / f"{run}.yaml").is_file()
     assert (dest.parent / "results" / run / "runtime.yaml").is_file()
     assert (dest.parent / "results" / run / "result.yaml").is_file()
@@ -551,7 +552,7 @@ def test_an_unrecorded_edit_to_the_meanings_after_confirmation_fails_g0(tmp_path
     assert receipt["bindings"]["policy_version"] == "G_00"
 
     config = job.load_mapping(dest / "config.yaml")
-    config["labels"]["meanings"] = {"high": "edited by hand"}
+    config["labels"]["meanings"]["high"] = "edited by hand"
     write(dest / "config.yaml", job.yaml_bytes(config))
     state = job.status(dest)
     assert state["g0_passed"] is False

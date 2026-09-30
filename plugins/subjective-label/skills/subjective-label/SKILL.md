@@ -22,6 +22,14 @@ snapshot plus one target trait and one identified human semantic authority,
 inspect its artifacts, and route to the owning sibling door.
 Do not expose internal round actions as a menu of lifecycle phases.
 
+Before running an engine command, resolve the tools checkout that contains
+`plugins/subjective-label` and set `TOOLS_ROOT` to that directory. Use `.` when
+working in the tools checkout, or the consuming workspace's `Tools` link when
+it has one. A Page path and a source path remain relative to the current
+workspace (or may be absolute); do not assume the tools checkout is the
+current directory. Set `PYTHON_BIN` to that workspace's Python interpreter
+(for example `.venv/bin/python`, or `python3` when no project venv is used).
+
 ## Architecture
 
 ```text
@@ -51,7 +59,9 @@ CROSSING subjective-label-workflow               Run Specs, dependencies, gates,
 RUN      haipipe-run + ref-run.md                 Level-4 identity, Ticket/Result pairing, receipt, presentation
 ```
 
-The eleven view skills are `subjective-label-contract` and `-embedding` (Data),
+The Data views use `subjective-label-preparation` for upstream raw-corpus work,
+then `subjective-label-contract` and `-embedding` for the Page-local job.
+The eleven job view skills are `subjective-label-contract` and `-embedding` (Data),
 `-definition`, `-rounds` and `-guideline` (Labeling), `-test`, `-evaluation` and
 `-audit` (Quality), and `-handoff`, `-scan` and `-final-labels` (Delivery). Route a
 request about one Run to its view skill; no view skill is used by another view
@@ -111,6 +121,7 @@ workflow | run | drive    forward to /subjective-label-workflow, which hands the
                           runnable side to its ORDER machine
 one Run | one view        forward to that view's skill (/subjective-label-<view>),
                           which holds the Run's own steps
+raw corpus | preparation forward to /subjective-label-preparation before Contract
 feedback | digest         use the existing family feedback procedures
 ```
 

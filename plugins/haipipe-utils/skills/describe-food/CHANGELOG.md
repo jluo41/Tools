@@ -2,6 +2,68 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.6.0 — 2026-09-30
+--------------------------------------------------------------------------------
+
+Sugar is the sixth nutrient: `Sugar`, total sugars in g, on the same
+NutritionBasis as the other five, and empty (never 0) where no table gave one.
+
+- Where it comes from: T0 observed (the WellDoc bank already held Sugar), T2
+  USDA (new ext_food_bank version SR2018_FND2026_FNDDS2024_SUGARS: the same
+  sqlite plus a `sugars` column, sugar on 11,524 of 13,359 foods; search
+  unchanged on 500 of 500 logged names, b51 j01 t02 r05), and T3 branded (the
+  table already stored it). The China table gives none.
+- The other five do not move. A bank without a sugars column answers
+  Sugar = empty, so EventNormV3 and V4 keep their answers. The freeze with Sugar,
+  ext_food_resolved S20260930, equals S20260929 on every other field over all
+  35,549 requests; Sugar is filled on 97.1% of the answered ones (t04 r11).
+- Graded on FNDDS 2021-2023 with FNDDS taken out of the bank (the E1 method):
+  median error 0.9 g per 100 g, mean 4.42 g, r 0.681 over 3,049 foods; on the
+  same foods carbs read 2.88 / 8.26 / 0.761 (b51 j01 t13 r02_sugar_fndds).
+- Where a table leaves a nutrient out, the first five still read 0 (as before);
+  Sugar reads empty. `NUTRIENTS` in client.py, `NUTRIENT_KEYS` in enrich.py and
+  observed.py gain Sugar; usda_db.py reads `sugars` when the bank has the column.
+- test_foodnorm.py L1 checks that the answer carries Sugar, filled when the
+  bank has sugar and empty when it has none.
+
+
+0.5.0 — 2026-09-29
+--------------------------------------------------------------------------------
+
+Two more tables, each OFF until a release pins it (or FOODNORM_BRANDED_DB /
+FOODNORM_CN_DB names the file for an A/B run), so EventNormV3 answers exactly as
+before: re-asking all 35,549 frozen requests with this code under EventNormV3
+agreed on every field (b51 j01 t04 r06_parity_EventNormV3).
+
+- T3 branded, `ext_food_bank_branded` (USDA Branded Foods 2025-04, 1,825,217
+  products, built by b51 j01 t05). Asked only for a ONE-FOOD meal that T0 and T2
+  missed. A match needs every content word of the name in the product's
+  description or brand; the answer is the median over the top 5 matches, per
+  100 g. On 10,000 Open Food Facts US products it cut the gap from 45.6% to 24.4%,
+  with a median carb error of 0.32 g per 100 g on the 2,121 new answers (b51 j01
+  t19 r01). On every WellDoc test row, single foods improve (15.8 -> 13.2 pp over
+  157 -> 209 graded rows) and nothing regresses (t19 r04). A first version that
+  also answered inside meals of several foods made them worse (23.2 -> 28.3 pp),
+  because one branded item could outvote T0 for the whole meal; hence one-food
+  meals only.
+- T_CN china, `ext_food_bank_cn` (China Food Composition Tables 6th ed., 1,677
+  foods, 2,256 names, built by b51 j01 t06). Reached through the new
+  `name_zh_col` argument: the component's Chinese original, exact name or alias,
+  after T2 missed. Shanghai rows fully answered 70.3% -> 73.5% (t19 r03).
+- Chinese text reaches the China table through the door too: a component typed
+  in Chinese is its own Chinese original, and '带鱼100g' is read as 带鱼, 100 g
+  (the dialect splits '带鱼 100 g' but not '带鱼100g'). Under EventNormV4,
+  normalize(['带鱼100g']) is 3.1 g carbs from bank_cn.
+- T2 skips a name with Chinese characters. USDA has none, and its tokenizer drops
+  them: '带鱼100g' used to match on '100g' alone and come back trusted (6.43 g
+  carbs per 100 g of something else). Under EventNormV3 it is now MISS. No frozen
+  request contains Chinese characters, so no frozen answer changed (t04 r06, r09).
+- The per-100 g banks (T2, T_CN, T3) are one family and add up within a meal;
+  NutritionSource names each, e.g. `bank_usda+bank_cn`. A nutrient a label or the
+  book leaves out stays empty, never 0.
+- `benchmark/run.py` finds the SPACE root from the cwd when Tools is a symlink.
+
+
 0.4.2 — 2026-09-29
 --------------------------------------------------------------------------------
 

@@ -20,7 +20,7 @@ When a request says “two labels,” ask whether that means two class values fo
 one construct (one job, with both values in its schema) or two separate
 constructs (one job per construct). Do not infer which they mean. Before using
 a real corpus, do a scratch-workspace check with synthetic rows. There is no
-non-writing `--dry-run` command: `fence_source.py` and `job.py create` write
+non-writing `--dry-run` command: `corpus_preparation.py`, `fence_source.py`, and `job.py create` write
 artifacts, while `job.py status` is read-only. For the scratch check, create a
 temporary Page Markdown file in the temporary workspace because `create`
 requires an existing Page file and writes `<page-folder>/labeling/` plus a
@@ -61,21 +61,21 @@ Each Run's own steps live in the one skill of the workbench view that shows it
 (JL 260929: one skill per view, never shared). This file keeps only the order.
 
 ```text
-step  run                          view                    skill
- 1    run-corpus-contract          Data › Contract         subjective-label-contract
- 2    run-test-reserve*            Quality › Test          subjective-label-test
- 3    run-embedding-build*         Data › Embedding        subjective-label-embedding
- 4    run-discovery-search*        Labeling › Definition   subjective-label-definition
- 5    run-definition-discussion    Labeling › Definition   subjective-label-definition
+step  Run Type                     view                    skill
+ 1    corpus-contract          Data › Contract         subjective-label-contract
+ 2    test-reserve*            Quality › Test          subjective-label-test
+ 3    embedding-build*         Data › Embedding        subjective-label-embedding
+ 4    discovery-search*        Labeling › Definition   subjective-label-definition
+ 5    definition-discussion    Labeling › Definition   subjective-label-definition
 G0    Confirm meaning (a gate)     Labeling › Definition   subjective-label-definition
- 6    run-guideline-seed*          Labeling › Guideline    subjective-label-guideline
- 7    run-round-prepare            Labeling › Rounds       subjective-label-rounds
- 8    run-weak-prelabel*           Labeling › Rounds       subjective-label-rounds
- 9    run-human-calibration        Labeling › Rounds       subjective-label-rounds
-10    run-guideline-learn          Labeling › Guideline    subjective-label-guideline
-11    run-round-measure            Labeling › Rounds       subjective-label-rounds
-12    run-round-close              Labeling › Rounds       subjective-label-rounds
-13    run-handoff-freeze           Delivery › Handoff      subjective-label-handoff
+ 6    guideline-seed*          Labeling › Guideline    subjective-label-guideline
+ 7    round-prepare            Labeling › Rounds       subjective-label-rounds
+ 8    weak-prelabel*           Labeling › Rounds       subjective-label-rounds
+ 9    human-calibration        Labeling › Rounds       subjective-label-rounds
+10    guideline-learn          Labeling › Guideline    subjective-label-guideline
+11    round-measure            Labeling › Rounds       subjective-label-rounds
+12    round-close              Labeling › Rounds       subjective-label-rounds
+13    handoff-freeze           Delivery › Handoff      subjective-label-handoff
 ```
 
 `*` optional. Steps 7 to 12 repeat for each round.
@@ -83,7 +83,8 @@ G0    Confirm meaning (a gate)     Labeling › Definition   subjective-label-de
 ## Contract order · P0 compatibility tag
 
 ```text
-pre-job      build the fenced source                             → engine/fence_source.py, no Run
+pre-job      normalize, unitize, check, and reserve groups       → source-owned Corpus Preparation Runs
+legacy      fence an already-unitized single-unit source        → engine/fence_source.py, no Run
 first Run    import fenced corpus, initial policy, reservation  → corpus-contract
 optional    the human settles each label's wording, in chat     → definition-discussion
 optional    bounded external-evidence query, if commissioned   → discovery-search*

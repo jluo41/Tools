@@ -100,7 +100,7 @@ bootstrap()                                     # the skill grammar (src/) and c
 from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # noqa: E402
 from server_config import (configured_domain, domains, load_server_config,  # noqa: E402
                            server_config_dir)
-from host_registry import WORKBENCH_ROUTES, route_allowed  # noqa: E402
+from host_registry import WORKBENCH_ROUTES, route_allowed, static_path_allowed  # noqa: E402
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
 # POST /_board/stop 把旗子立起来，chat 循环在下一条消息处收工，
@@ -130,7 +130,7 @@ except ImportError:  # subjective-label is not checked out beside this workbench
         """Stand-in when `plugins/subjective-label/servers/workbench-labeling` is absent."""
         def _no_labeling(self, *a, **k):
             return self.reply(404, {"ok": False, "err": "labeling workbench not installed"})
-        labeling_view = labeling_board_view = _no_labeling
+        labeling_view = labeling_board_view = labeling_page_view = _no_labeling
         def plug_labeling(self, p):
             return None, "labeling workbench not installed"
         plug_labeling_board = plug_labeling
@@ -226,6 +226,16 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return True
         return False
 
+    def reject_private_static(self, *, fallback=False):
+        """Reject direct file reads that would bypass a Workbench's custody checks."""
+        path = self.path.split("?", 1)[0]
+        if not fallback and path.startswith(("/_", "/w/", "/b/")):
+            return False
+        if not static_path_allowed(self.root, Path(self.translate_path(self.path))):
+            self.send_error(404, "not found")
+            return True
+        return False
+
     def _term_route(self):
         """/_term/ 的分流：自有 PTY 在这里终结（/ws 走 ws_term，其余给个健康页），
         ttyd 后备照旧反代。返回 True 表示已经处理完。"""
@@ -282,6 +292,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         workbench = self.workbench_request()
         if workbench:
             return self.serve_workbench(*workbench)
+        if self.path.split("?", 1)[0] == "/workbench/labeling":
+            return self.labeling_page_view()
+        if self.reject_private_static():
+            return
         # QD5 · the operating shell. Three routes, and they sit at the very top
         # because two of them are ordinary board URLs wearing a query string:
         # a pane must be recognised BEFORE the static handler serves the file.
@@ -334,7 +348,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             # 🏷 every labeling job on this Board; click one to zoom in
             return self.labeling_board_view()
         if self.path.split("?", 1)[0] == "/_board/labeling":
-            # 🏷 five Spaces over one labeling/ lane; Studio Chat opens separately
+            # 🏷 four Spaces over one labeling/ lane; Studio Chat opens separately
             return self.labeling_view()
         if self.path.split("?", 1)[0] == "/_board/runs":
             # ⚙️ one page's planned and registered Tickets, never an execute door
@@ -373,6 +387,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.proxy_excalidraw()
         # Last stop before the static handler: send the text compressed if the
         # browser asked for that (QD5 C2 P5). Falls through untouched otherwise.
+        if self.reject_private_static(fallback=True):
+            return
         if self.try_gzip():
             return
         return SimpleHTTPRequestHandler.do_GET(self)
@@ -410,6 +426,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         workbench = self.workbench_request()
         if workbench:
             return self.serve_workbench(*workbench)
+        if self.path.split("?", 1)[0] == "/workbench/labeling":
+            return self.labeling_page_view(head_only=True)
+        if self.reject_private_static():
+            return
         if self.pane_of(self.path):
             return self.head_pane()
         if self.path.split("?", 1)[0] == "/_board/folderstat":
@@ -444,6 +464,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             if self._term_route():
                 return
             return self.proxy_term()
+        if self.reject_private_static(fallback=True):
+            return
         return SimpleHTTPRequestHandler.do_HEAD(self)
     def do_POST(self):
         if not self.require_request_auth():
@@ -556,6 +578,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.design_board_act(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/labeling/act":
+            # The Labeling door resolves Board-backed and standalone Page targets itself.
+            code, res = self.labeling_act(p)
+            return self.reply(code, res)
         if isinstance(p.get("group"), str) and p["group"]:
             # A group-level session names its group in text; any other "group"
             # value belongs to the route (it once crashed the labeling door).
@@ -673,10 +699,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path == "/_board/labeling-board":  # 🏷 Board-level tab contract + probe
             res, err = self.plug_labeling_board(p)
             return self.reply(200 if not err else 400, {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/labeling/act":  # 🏷 the one labeling write door
-            code, res = self.labeling_act(p)
-            return self.reply(code, res)
-        if self.path == "/_board/labeling":    # 🏷 five Spaces over one labeling/ lane
+        if self.path == "/_board/labeling":    # 🏷 four Spaces over one labeling/ lane
             res, err = self.plug_labeling(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
