@@ -98,10 +98,10 @@ MAP = [
     ], "hands on: the chosen idea and its venue → the Story"),
     ("Story Space", "What does the paper ask, and what must it find out?", [
         ("Spine", [("1", "Story revise", "haipipe-paper-story · haipipe-writing", "Identity · Pitch · Stakes")]),
-        ("Questions", [("5", "Claim review", "haipipe-paper-story", "RQ1–RQ7 and claims, after 3 and 4")]),
-        ("Roadmap", [("2", "Task review", "haipipe-paper-story", "Q<n> → T<n> and D<n>: is each the right question?"),
-                     ("3", "Task runs", "haipipe-task", "T<n> → its Task folder (BJTR); you press Run"),
-                     ("4", "Discovery runs", "haipipe-discovery", "D<n> → its Discovery folder (BJTR)")]),
+        ("High-level logic + Low-level work", [("2", "Task review", "haipipe-paper-story", "T<n> and D<n> under a hypothesis: is each the right question?"),
+                       ("3", "Task runs", "haipipe-task", "T<n> → its Task folder (BJTR); you press Run"),
+                       ("4", "Discovery runs", "haipipe-discovery", "D<n> → its Discovery folder (BJTR)"),
+                       ("5", "Claim review", "haipipe-paper-story", "RQ → its claims, after 3 and 4")]),
     ], "hands on: C8 rows → Sections · Task and Discovery Results → Evidence Items"),
     ("Sections Space", "Does each Section say it right, with evidence?", [
         ("Narrative view", [("1", "Narrative review", "haipipe-paper-story", "the Section's C8 row")]),
@@ -170,8 +170,11 @@ def space(key, i, title, tabs, sel_tab, reads, views, sel_view, draw_content, ty
     rect(f"{key}-space", x0, Y0, FW, FH)
     text(f"{key}-title", x0 + 24, Y0 + 26, title, 30)
     line(f"{key}-rule", x0 + 24, Y0 + 62, FW - 48)
-    for n, tab in enumerate(tabs):
-        button(f"{key}-tab-{n}", x0 + 24 + n * 188, Y0 + 76, 176, 50, tab, sel=n == sel_tab, size=19)
+    tx = x0 + 24
+    for n, tab in enumerate(tabs):                  # a tab is as wide as its label
+        tw = max(176, 11 * len(tab) + 28)
+        button(f"{key}-tab-{n}", tx, Y0 + 76, tw, 50, tab, sel=n == sel_tab, size=19)
+        tx += tw + 12
     text(f"{key}-reads", x0 + 24, Y0 + 148, reads, 16, MUTED)
     if views:
         text(f"{key}-view-label", x0 + 24, Y0 + 188, "View", 17, MUTED)
@@ -237,34 +240,33 @@ space("ideation", 0, "Ideation Space", ["Ideas"], 0,
 
 
 def story_content(key, cx, cy):
+    """The question is the block (JL 260929): logic left, its work right, in run order."""
     x = cx + 18
-    text(f"{key}-q1", x, cy + 20, "▸ Q1 · Is the data right?                    T1", 12, mono=True)
-    card(f"{key}-q2", x, cy + 52, 510,
-         "▾ Q2 · Is there an association beyond the rating?   RQ1, RQ2",
-         "\nT5 · What is the association in each condition?\n"
-         "     b03.j02.t01–t05 · b04.j02.t01        Task folder\n"
-         "D1 · What does prior work say links traits to Rx?\n"
-         "     b01.j01                              Discovery folder\n"
-         "D5 · Has anyone shown this link before?   b01.j05", sel=True, h=132)
-    text(f"{key}-rest", x, cy + 200,
-         "▸ Q3 · Where is it stronger, and where weaker?   T3\n"
-         "▸ Q4 · Does it hold up?        T2 · T4 · D2 · D3 · D4\n"
-         "       T2, T4: no folder yet   [Create Task folder]\n"
-         "▸ Q5 · How will MISQ readers see it?             D6", 12, mono=True)
-    text(f"{key}-unplaced", x, cy + 300, "Not placed yet\n▸ b03.j02.t07 · b03.j03", 12, MUTED)
+    card(f"{key}-q1", x, cy + 30, 510,
+         "▾ Question 1 · Is there an association beyond the rating?",
+         "  HYPOTHESES                     │ POTENTIAL WORK · Foundation (shared)\n"
+         "   1a  Holds: it adds to the   🔨 │  › Data  › Training  › Evaluation\n"
+         "       rating                     │ This question\n"
+         "  POTENTIAL CLAIMS               │  Results  What do all the models say?\n"
+         "   1a  Beyond the rating: …       │   for Hypothesis 1a · b03 j02 t01  ▸ 4 runs\n"
+         "  POTENTIAL CONTRIBUTIONS        │  Discovery  Has anyone shown this?\n"
+         "   A new signal: …                │   b01 j01 t01 prior_work  supports", sel=True, h=132)
+    text(f"{key}-rest", x, cy + 182,
+         "▸ Question 2 · Is the link stronger at high doses?\n"
+         "▸ Not under a question", 12, mono=True)
 
 
-space("story", 1, "Story Space", ["Spine", "Questions", "Roadmap"], 2,
-      "Reads StoryA-….md · Spine ### 1, 2, 4 · Questions ### 3, 5 · Roadmap ### 6 (Q, D), ### 7 (T)", [], None,
+space("story", 1, "Story Space", ["Spine", "High-level logic + Low-level work"], 1,
+      "Reads StoryA-….md · Spine ### 1, 2, 4 · logic + work ### 3, 5, 6 (D, Q), 7 (T)", [], None,
       story_content,
-      ["2 Task review · 0", "3 Task runs · 22", "4 Discovery runs · 53", "+ New Run"], 1,
+      ["2 Task review · 0", "3 Task runs · 22", "4 Discovery runs · 53", "5 Claim review · 1", "+ New Run"], 1,
       {"name": "b03.j02.t01.r04", "skill": "haipipe-task",
        "prompt": "/haipipe-task T5: continue the Task\nfolder that answers this question;\nJL presses Run.",
        "process": "Done · used by S-MISQ-Main-0-Abstract\nand S-MISQ-Main-5-Results",
        "results": "task/b03_…/t01_…/results/r04_…/"},
-      "Spine → 1 Story revise · Questions → 5 Claim review\n"
-      "Roadmap → 2 Task review · 3 Task runs · 4 Discovery runs\n"
-      "Q (general question) → T and D → BJTR folders; a folder no question claims is listed last.")
+      "Spine → 1 Story revise\n"
+      "High-level logic + Low-level work → 2 Task review · 3 Task runs · 4 Discovery runs · 5 Claim review\n"
+      "Question block: Hypotheses · Claims · Contributions │ its work, named as questions, in run order (JL 260929).")
 
 
 def sections_content(key, cx, cy):
@@ -323,13 +325,13 @@ for i in range(3):
 
 # ---- part 3 · what changed, what each Space reads ------------------------------
 SY = Y0 + FH + 90
-text("change-title", 48, SY, "3 · What changes (JL 260928)", 28)
+text("change-title", 48, SY, "3 · What changes (JL 260928, 260929)", 28)
 rect("change-box", 48, SY + 56, 1320, 470)
 text("change-table", 72, SY + 82,
      "Before                                       Now\n"
      "\n"
-     "Story › Roadmap: Task Roadmap, Discovery     Story › Roadmap is one tree: Q1–Q5 general questions\n"
-     "  Roadmap, Task home, Discovery home           → T and D questions → BJTR folders\n"
+     "Story › Questions and Story › Roadmap,       one tab, one tree split down the middle: Question →\n"
+     "  two tabs; Task home, Discovery home           Hypothesis │ B → J → T → R\n"
      "B1–B4 (the old Block Board ids)              T1–T4: short plain questions, a folder column\n"
      "Supporting runs, one button                  Task runs (haipipe-task) · Discovery runs\n"
      "                                             (haipipe-discovery)\n"
@@ -350,9 +352,8 @@ text("files-map", FX + 24, SY + 82,
      "\n"
      "Ideation › Ideas       Story00-ideation.md · Ideas (ranked)    Story00-ideation/runs/\n"
      "Story › Spine          StoryA-….md · ### 1, 2, 4               StoryA-…/runs/\n"
-     "Story › Questions      StoryA-….md · ### 3, 5                  StoryA-…/runs/\n"
-     "Story › Roadmap        StoryA-….md · ### 6, 7                  task/<BJTR>/runs/\n"
-     "                       task/ · discoveries/                    discoveries/<BJTR>/runs/\n"
+     "Story › logic + work   StoryA-….md · ### 3, 5, 6, 7            StoryA-…/runs/\n"
+     "                       task/ · discoveries/                    task/, discoveries/<BJTR>/runs/\n"
      "Sections › Table       StoryA-….md · ### 8.2 + each Page       each Page's runs/\n"
      "Sections › Narrative   StoryA-….md · ### 8.1                   StoryA-…/runs/\n"
      "Sections › Evidence    each Page's draft/…-evidence-items.md   each Page's runs/\n"

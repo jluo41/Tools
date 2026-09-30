@@ -33,7 +33,7 @@ import websocket
 
 CHROME = os.environ.get("CHROME_BIN", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 VIEWS = [("ideation", ""),
-         ("story", "spine"), ("story", "questions"), ("story", "roadmap"),
+         ("story", "spine"), ("story", "logic-work"),
          ("sections", "main/table"), ("sections", "main/narrative"), ("sections", "main/evidence"),
          ("sections", "appendix/table"), ("sections", "appendix/narrative"), ("sections", "appendix/evidence"),
          ("delivery", "latex/preview"), ("delivery", "latex/artifacts"), ("delivery", "latex/checks"),

@@ -45,13 +45,13 @@ shown under three buttons, one per Page Space.
 
 ## `paper.judgment.claim` · `rclaim-NN_<slug>`
 
-🔘 BUTTON   Claim review · Story · ^rclaim- · views questions
+🔘 BUTTON   Claim review · Story · ^rclaim- · views logic-work
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this C5 claim against its evidence, boundaries and open risks; research it needs is a separate run.
 
 ## `paper.judgment.obligation` · `rtask-NN_<slug>`
 
-🔘 BUTTON   Task review · Story · ^rtask- · views roadmap
+🔘 BUTTON   Task review · Story · ^rtask- · views logic-work
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: review this C7 obligation and its study plan; commission supporting work only after its G1 release.
 
@@ -61,11 +61,11 @@ A question (a T or D row) is answered by runs in its folder: a Task folder under
 `task/` or a Discovery folder under `discoveries/`. Each run shows under the
 button of its owner.
 
-🔘 BUTTON   Task runs · Story · - · views roadmap
+🔘 BUTTON   Task runs · Story · - · views logic-work
 🧩 SKILL    haipipe-task
 💬 PROMPT   /haipipe-task {target}: create or continue the Task folder (BJTR) that answers this question on {page}, write its address on the row, and build its run tickets; JL presses Run.
 
-🔘 BUTTON   Discovery runs · Story · - · views roadmap
+🔘 BUTTON   Discovery runs · Story · - · views logic-work
 🧩 SKILL    haipipe-discovery
 💬 PROMPT   /haipipe-discovery {target}: create or continue the Discovery folder (BJTR) that answers this question on {page}, write its address on the row, and add its Paper Runs.
 

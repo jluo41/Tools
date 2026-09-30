@@ -320,32 +320,91 @@ class PaperWorkbenchTest(unittest.TestCase):
             none = task_home(d, ["T2", "a robustness check", "alt spec"])
             self.assertEqual((none["state"], none["all"]), ("no folder yet", []))        # a row id like T2 is not an address
 
-    def test_the_roadmap_is_a_tree_of_general_questions(self):
-        """JL 260928: a general question → its T and D rows → their BJTR folders."""
-        from live.paper import _addresses, _question_cards
+    def test_logic_work_tree_reads_question_blocks(self):
+        """JL 260929: the question is the block. §3 holds its hypotheses, potential claims,
+        potential contributions and potential work, coded 1a, 1b …, each a short name and a
+        sentence. Work is named as questions and runs in stage order; the foundation every
+        question stands on (§7 `every question`) sits folded inside each question, shared."""
+        from live.paper import _addresses, _q_block, _rest_block, _row_ids, question_blocks, story_tree
         self.assertEqual(_addresses("b03.j02.t01–t03 · b03.j02.t05"),
                          ["b03j02t01", "b03j02t02", "b03j02t03", "b03j02t05"])   # a range names each task
+        self.assertEqual(_row_ids("E1-E4, E10; RQ1–RQ3 · E01-CITE-prior · C1.P1.B1 · T2's"),
+                         ["E1", "E2", "E3", "E4", "E10", "RQ1", "RQ2", "RQ3", "T2"])   # no item id, no Bullet
         with tempfile.TemporaryDirectory() as tmp:
             b = make_board(Path(tmp))
             story = b / "A1-Story" / "StoryA-desk-idea" / "StoryA-desk-idea.md"
             text = story.read_text(encoding="utf-8")
-            text = text.replace("| D | what the paper must learn | scope | feeds |\n|---|---|---|---|",
-                                "| Q | general question | serves |\n|---|---|---|\n| Q1 | Is there an effect? | RQ1 |\n\n"
-                                "| D | what the paper must learn | scope | feeds | Q |\n|---|---|---|---|---|")
-            text = text.replace("| RQ1 |\n| D2 |", "| RQ1 | Q1 |\n| D2 |")
-            text = text.replace("| T | evidence obligation | design | feeds |\n|---|---|---|---|",
-                                "| T | evidence obligation | design | feeds | Q |\n|---|---|---|---|---|")
-            text = text.replace("| RQ1 · b01.j01.t01 |", "| RQ1 · b01.j01.t01 | Q1 |")
+            text = text.replace("| RQ | question | answer state |\n|---|---|---|\n| RQ1 | Does it hold? | ⬜ open |\n",
+                                "#### 3.1 · Question 1 · RQ1\n- **Question**: Does it hold?\n- **Answer state**: ⬜ open\n\n"
+                                "**Hypotheses**\n- **1a** · Holds beyond the rating: the trait adds to the star rating. · tested by E1\n"
+                                "- **1b** · A second reading: it holds on the other scale too. · tested by E2\n\n"
+                                "**Potential claims**\n- **1a** · C1 · from 1a · Beyond the rating: the trait predicts prescribing beyond it.\n"
+                                "  - **Role**: primary · **If it fails**: the paper narrows to the `review_text` signal alone.\n"
+                                "- **1b** · C2 · from 1b · Holds twice: the second reading holds too.\n\n"
+                                "**Potential contributions**\n- rests on 1a, 1b · A new signal: the trait adds to the rating.\n\n"
+                                "**Potential work**\n- **D1** · for 1a, 1b\n- **T1** · for 1a\n- **T2** · for 1b\n\n"
+                                "#### 3.2 · Question 2 · RQ2\n- **Question**: Is it stronger in one group?\n\n"
+                                "**Hypotheses**\n- **2a** · Stronger in one group: the effect is larger there. · tested by E1\n\n"
+                                "**Potential work**\n- **T1** · for 2a\n")
+            text = text.replace("| rerun on the full cohort |\n",
+                                "| rerun on the full cohort |\n| E2 | RQ1 | ✅ established | A second claim | owed to T2 |\n")
+            text = text.replace("| T | evidence obligation | design | feeds |\n|---|---|---|---|\n"
+                                "| T1 | the main estimate | cohort model | RQ1 · b01.j01.t01 |\n"
+                                "| T2 | a robustness check | alt spec | RQ1 |",
+                                "| T | question | stage | design | feeds |\n|---|---|---|---|---|\n"
+                                "| T1 | Is the main estimate right? | analysis | cohort model | RQ1 · b01.j01.t01 |\n"
+                                "| T2 | Does it survive a robustness check? | analysis | alt spec | RQ1 |\n"
+                                "| T3 | Which readings are in? | data | the cohort | every question |\n"
+                                "| T4 | Is anything left over? | figures | none | none yet |")
             story.write_text(text, encoding="utf-8")
             d = collect(b, "/papers/Paper-Test/board.md")
             d["root"] = Path(tmp).resolve()                             # as render_paper sets it
-            cards, loose = _question_cards(d, d["story"][0])
-            self.assertEqual(len(cards), 1)
-            self.assertIn('id="q-Q1" data-key="Q1"', cards[0])
-            self.assertIn('id="task-T1"', cards[0]); self.assertIn('id="need-D1"', cards[0])
-            self.assertIn("2 of 2 with a folder", cards[0])
-            self.assertTrue(any('id="task-T2"' in c for c in loose))    # a row with no Q comes last
-            self.assertTrue(any('id="need-D2"' in c for c in loose))
+            qb = question_blocks(story.read_text(encoding="utf-8"))
+            self.assertEqual([[h["id"] for h in x["hypotheses"]] for x in qb], [["1a", "1b"], ["2a"]])
+            self.assertIn(("If it fails", "the paper narrows to the review_text signal alone."), qb[0]["claims"][0]["fields"])
+            T = story_tree(d["story"][0])
+            q = T["questions"][0]
+            self.assertEqual([(c["id"], c["alias"], c["from"]) for c in q["claims"]], [("1a", "C1", ["1a"]), ("1b", "C2", ["1b"])])
+            self.assertEqual([c["rests"] for c in q["contribs"]], [["1a", "1b"]])
+            self.assertEqual([(i["w"], i["for"]) for i in q["items"]], [("D1", ["1a", "1b"]), ("T1", ["1a"]), ("T2", ["1b"])])
+            self.assertEqual(T["shared"], ["T3"])                       # marked `every question`
+            self.assertEqual(T["loose"], ["T4", "D2"])                  # named by no question
+            self.assertEqual(T["up"]["T2"], ["1b", "E2", "RQ1"])        # its runs show when any of these is picked
+            html_ = _q_block(d, T, q)
+            self.assertIn('<span class="item-kind">Question 1</span><span class="lw-qtext">Does it hold?</span>', html_)
+            # each group is a colored band (JL 260929: the labels were too faint)
+            for kind, group in (("hyp", "Hypotheses"), ("claim", "Potential claims"), ("contrib", "Potential contributions"),
+                                ("work", "This question&#x27;s work")):
+                self.assertIn('<div class="lw-k lw-k-%s">%s</div>' % (kind, group), html_)
+            # coded by question; a short name in bold, then the sentence (JL 260929)
+            # the pill and mark on one line, the name and sentence from the next (JL 260929)
+            self.assertIn('<div class="lw-h" data-key="1a"><div class="lw-top"><span class="item-kind">Hypothesis 1a</span>'
+                          '<span class="lw-mark">🔨</span></div><div class="lw-body"><b class="lw-name">Holds beyond the rating</b>:'
+                          ' the trait adds to the star rating.</div>', html_)
+            self.assertIn('<span class="lw-mark">✅</span>', html_)                   # 1b's test is established
+            self.assertIn('<span class="item-kind">Claim 1a</span></div><div class="lw-body"><b class="lw-name">Beyond the rating</b>', html_)
+            self.assertNotIn(">C1<", html_)                                           # the old id stays in the file only
+            self.assertIn('<div class="lw-say">from Hypothesis 1a</div>', html_)
+            self.assertIn('<div class="lw-say">rests on Claims 1a and 1b</div>', html_)
+            # the foundation sits inside the question, folded and shared; then this question's own work
+            found = '<div class="lw-k lw-k-found">Foundation work<span class="lw-kn">shared by all 2 questions</span></div>'
+            self.assertIn(found, html_)
+            self.assertIn('<details class="lw-w" data-key="T3" data-for="">', html_)
+            self.assertLess(html_.index(found), html_.index('lw-k-work">This question&#x27;s work'))
+            # every work item folds; closed, it still says what it tests and how big it is
+            self.assertIn('<details class="lw-w" data-key="T1" data-for="1a"><summary>', html_)
+            self.assertIn('<span class="lw-size">1 task · 1 run</span>', html_)
+            self.assertIn('<span class="item-kind">Analysis</span><span class="lw-wq">Is the main estimate right?</span>', html_)
+            self.assertIn('<span class="lw-for">for Hypotheses 1a and 1b</span>', html_)
+            self.assertIn('<span class="lw-also">also for Question 2</span>', html_)   # T1 is Question 2's work too
+            self.assertEqual(html_.count("also for"), 1)
+            self.assertLess(html_.index("Is the main estimate right?"), html_.index('<span class="item-kind">Discovery</span>'))
+            self.assertNotIn("⬜ open", html_)                          # the answer state is not shown
+            self.assertNotIn("<summary>Details</summary>", html_)
+            self.assertEqual(html_.count('<details class="item-card"'), 0)   # JL 260929: no card inside the tree
+            rest = _rest_block(d, T)
+            self.assertIn("Not under a question", rest)
+            self.assertIn("Is anything left over?", rest)
 
     def test_roster_headings_with_a_description_or_no_folder(self):
         from live.paper import board_pages
@@ -423,35 +482,34 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("tests whether a text-inferred trait predicts prescribing beyond the rating", page)
             self.assertIn("This paper tests whether a review-inferred trait predicts prescribing.", page)
             self.assertIn("Review text may carry a signal the star rating does not show.", page)
-            # Story › Questions: the RQ is the card; its claim is nested inside it
-            self.assertIn('id="rq-RQ1" data-key="RQ1"', page)
-            self.assertIn('id="claim-E1" data-key="E1"', page)
-            self.assertLess(page.index('id="rq-RQ1"'), page.index('id="claim-E1"'))
-            self.assertIn("It holds beyond the rating", page)
-            self.assertIn("Does it hold?", page)
-            # Story › Roadmap: each C7 / C6 question with the folder that answers it (JL 260928)
-            self.assertIn('id="task-T1" data-key="T1"', page)
-            # JL 260929: an opened question shows its B → J → T folders first: the block and each job
-            # are borderless folds, open, that a person can close; no cards inside cards
-            t1 = page[page.index('id="task-T1"'):page.index('id="task-T2"')]
-            self.assertIn('<details class="bjt-b" open><summary>', t1)
-            self.assertIn('<details class="bjt-j" open><summary>', t1)
-            self.assertIn('<table class="grid bjt-t">', t1)
-            self.assertEqual(t1.count('<details class="item-card"'), 1)    # the question card only
-            self.assertIn('<details class="row-details"><summary>Details</summary>', page)
-            self.assertIn('id="task-T2"', page)
-            self.assertIn("No folder yet.", page)                           # said once, in the card
-            self.assertNotIn("levels exist", page)                          # JL 260929: no header state
-            self.assertIn('id="need-D1" data-key="D1"', page)
-            self.assertIn('<details class="bjt-b" open><summary><span class="bjt-chev">›</span><span class="item-kind">b01</span>', page)
-            self.assertIn("not this paper's: j02_flat", page)
-            self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is named, never expanded
-            self.assertIn("the joined cohort table", page)                 # develops: typed on the page
-            self.assertIn("1 tk · done 1", page)                           # receipt folded to done
-            self.assertIn('id="disc-b01j01"', page)
-            self.assertIn("Does prior work already link the trait to prescribing?", page)
-            self.assertIn("supports · medium", page)
-            self.assertIn("discoveries%2Fb01_evidence_board%2Fboard.md", page)   # link into the Discovery Board
+            # Story › High-level logic + Low-level work (JL 260929): each question is a block,
+            # its logic on the left, its work on the right with B → J → T → R
+            self.assertIn('data-tab="logic-work" data-label="High-level logic + Low-level work"', page)
+            self.assertNotIn('data-tab="roadmap"', page)
+            self.assertNotIn('data-tab="questions"', page)
+            self.assertIn("'story/roadmap':'story/logic-work'", page)       # an old link lands here
+            self.assertIn("'story/questions':'story/logic-work'", page)
+            self.assertIn('<div class="lw-l">High-level logic</div><div class="lw-r">Low-level work · B → J → T → R</div>', page)
+            q1 = page[page.index('<details class="qc lw-q" data-key="RQ1" open>'):page.index('<section class=runs-panel data-space="story"')]
+            self.assertIn('<span class="item-kind">Question 1</span><span class="lw-qtext">Does it hold?</span>', q1)
+            self.assertNotIn("⬜ open", q1)                                # no answer state (JL 260929: "confusing")
+            # a Story still writing the RQ table: each §5 row naming the RQ is one hypothesis
+            self.assertIn('<div class="lw-h" data-key="E1">', q1)
+            self.assertIn('<span class="item-kind">Hypothesis 1</span><span class="lw-mark">🔨</span></div>'
+                          '<div class="lw-body">It holds beyond the rating</div>', q1)
+            self.assertIn('<span class="item-kind">Task</span><span class="lw-wq">the main estimate</span>', q1)
+            self.assertIn('<span class="idtag">b01</span> <b>block</b>', q1)        # B
+            self.assertIn('<span class="idtag">j01</span> job', q1)                 # J
+            self.assertIn('<span class="idtag">t01</span>', q1)                     # T
+            self.assertIn("1 run · done 1", q1)                                      # R, folded: its receipt says done
+            self.assertIn("no folder yet", q1)                                       # T2 names no folder
+            self.assertIn("prior_work", q1)                                          # D1's Discovery task
+            self.assertIn("supports · medium", q1)                                   # and what it found
+            self.assertIn("discoveries%2Fb01_evidence_board%2Fboard.md", q1)         # link into the Discovery Board
+            self.assertEqual(q1.count('<details class="item-card"'), 0)             # no card inside the tree
+            self.assertNotIn("levels exist", page)
+            self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is never expanded
+            self.assertNotIn("<summary>Details</summary>", q1)             # plain text, no Details
             # Story Runs: the judgment run joined by its target, named in full
             self.assertIn('data-name="run-claim-01"', page)
             self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bE1\b[^"]*"')

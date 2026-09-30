@@ -8,8 +8,8 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-28"
+  version: "0.14.0"
+  last_updated: "2026-09-29"
 ---
 
 # /haipipe-workbench-paper · the Paper-level work console
@@ -56,7 +56,7 @@ The route is `#<space>[/<tab>][/<view>]`:
 
 ```text
 ideation
-story      spine · questions · roadmap
+story      spine · logic-work
 sections   main · appendix          ×  table · narrative · evidence
 delivery   latex · word · rounds    ×  preview · artifacts · checks   (rounds has no views)
 ```
@@ -124,14 +124,14 @@ table has cell edges; long prose is set one sentence per line, for display only.
 No type under 12px, inside the Runs panel too; a closed card shows its whole
 headline (never an ellipsis on a claim or an idea). Checked by
 `skills/board/haipipe-board/tests/audit_paper_views.py`, which drives all
-seventeen routes in real Chrome at 1360px and 2000px: no page overflow, no pane
+sixteen routes in real Chrome at 1360px and 2000px: no page overflow, no pane
 leaking, nothing past the right edge, a Runs panel beside every view.
 
 The four Spaces, in the order the paper moves:
 
 ```text
 Ideation Space    candidate Ideas and their admission
-Story Space       the one prospective Story: Spine, Questions, Roadmap
+Story Space       the one prospective Story: Spine, High-level logic + Low-level work
 Sections Space    every Section in compile order, joined to its Section Page
 Delivery Space    the manuscript delivery/ holds, its checks, and the review rounds
 ```
@@ -199,24 +199,77 @@ Workbench never creates a second admission decision.
 ```text
 Spine       the Story's C1 Identity, C2 Pitch and C4 Stakes as label/value rows;
             each division opens on the Story page (Open ↗)
-Questions   one card per C3 RQ row: the question and its answer state; inside it,
-            one nested card per C5 E-row (a claim = a proposition) that names this
-            RQ. A question and a claim are different objects and keep their words:
-            an RQ asks, a proposition states what can be supported, and one RQ can
-            carry several. E-rows whose RQ cell names no C3 row stay in one last card
-Roadmap     question first (JL 260928): Task questions, one card per C7 T row
-            (a short plain question) holding the Task folder it names; Discovery
-            questions, one card per C6 D row holding its Discovery folder; then
-            "Folders no question names yet": claimed folders no row names, down to
-            the task (a row naming b03.j02.t06 leaves t01–t05 here)
+High-level logic + Low-level work  (`#story/logic-work`)
+            one tree, split down the middle (JL 260929): one block per research
+            question, the question across the top; left, its Hypotheses,
+            Potential claims and Potential contributions; right, its Potential
+            work: Foundation (shared, folded), then This question. Last, "Not
+            under a question"
 ```
 
+```text
+▾ Question 1  Do model size and data size contribute symmetrically …?
+  HYPOTHESES                                      │ POTENTIAL WORK
+   Hypothesis 1a  Capacity saturates: past a      │ Foundation
+                  modest size, a bigger model …🔨 │  › Data        Which CGM readings train the models?
+   Hypothesis 1b  Data keeps paying: more …    🔨 │  › Training    Can the full model grid be trained?
+  POTENTIAL CLAIMS                                │  › Evaluation  How well does each trained model do?
+   Claim 1a  More capacity stops helping: …       │ This question
+             from Hypothesis 1a                   │  Results  Fitted as one law, what do all the models' scores say?
+  POTENTIAL CONTRIBUTIONS                         │           for Hypotheses 1a and 1b · also for Questions 2, 3, 4 and 5
+   Patients, not parameters: …                    │    tasks/  b04 scaling_law_analysis
+             rests on Claims 1a and 1b            │              j01 collect_and_fit
+                                                  │                t01 collect_scaling_data  ▸ 3 runs
+```
+
+Where each line comes from (haipipe-paper-story 0.13.0): the question block
+(`#### 3.N · Question N · RQn`) and its four groups, items coded 1a, 1b …:
+**Hypotheses** (`- **1a** · Name: sentence · tested by E1`), **Potential claims**
+(`- **1a** · C1 · from 1a · Name: sentence`; the C1 alias is not shown), **Potential
+contributions** (`- rests on 1a, 1b · Name: sentence`), **Potential work** (`- **T1** · for
+1a, 1b`, optionally followed by addresses that narrow a row to this question's folders).
+Each hypothesis, claim and contribution puts its pill (and a hypothesis's mark) on
+one line and starts its text on the next, the short name before the colon in bold
+(JL 260929: "make the text start from the next line after the label"). A work item's words are its §7/§6 row's
+`question` cell and its pill the row's `stage` (Data, Training, Evaluation, Results,
+Analysis, Figures, or Discovery for a §6 row); work runs top to bottom in that order
+(JL 260929: "the work should follow the logics"). §7 rows marked `every question` sit
+under Foundation in every block, folded, "shared by all 5 questions" (JL 260929: "the
+question level foundation work … and it can be shared"). A row another question also
+lists on the same folders says "also for Questions 2, 3, 4 and 5"; a row narrowed to
+other folders there (each question's own figures) does not. A hypothesis's mark comes
+from the §5 rows it names (✅ established, 🔨 provisional, ⬜ absent, ❌ contradicted). A
+group with no item says "none yet", or the Story's own `- none: …` reason. A Story that
+still writes the RQ table gets one hypothesis per §5 row and its work read from either
+end of the §5↔§7 links. `question_blocks()` parses the blocks and `story_tree()` makes
+every join.
+
+Nothing sits behind a Details click (JL 260929: "replace it with the plain text"): the
+answer state, tests and each claim's Role, Now and If it fails stay in the Story file.
+Under each work item: its folders in the Task or Discovery home, one line per level
+(`b04` block, `j01` job, `t01` task linked to its page, R as `▸ 3 runs · no receipts`
+opening to each run ticket and its receipt state; a Discovery task also says what it
+found). Work built in another project says "built outside tasks/" with its path; a row
+with no folder says "no folder yet".
+
+Look (JL 260929: "你觉得你还可以再怎么去美化一下它"): each group label is a colored band
+with a left stripe: Hypotheses and This question's work blue, Potential claims green,
+Potential contributions orange, Foundation work gray (its band says "shared by all 5
+questions"). Each question's header row has a light background. Every work item folds,
+closed by default (JL 260929: "右边那些 results 也是可以 click 的，也是可以 collapse 的"); its
+closed line still shows its stage, its question, "for Hypotheses 1a and 1b", "also for
+Questions …" and its size ("4 tasks · 20 runs", or "no folder yet").
+
+Picking: the first click on a question selects it for the Runs panel, the next closes
+it. A click on a hypothesis selects it, lights the work that tests it and opens it.
+Opening a work item selects it; closing it clears the pick. Under 1100px the right half
+drops below the left. The only box is the tree's frame.
+
 Task home rules: the Task home is `examples/<Project>/tasks/` (or `task/`, or
-board.md `task-home:`); Block → Job → Task are borderless folds (JL 260929: no boxes
-inside boxes, and each level can close): inside a question card, the block and each
-job are a fold (arrow · pill · name · counts), open by default, and a job opens to its
-one table addr · task · develops · runs · state read off the folder in both shapes; in
-"Folders no question names yet" the block is the card and holds the same job folds. Write every C7 address in full, one per job or task
+board.md `task-home:`), read Block → Job → Task in both folder shapes (a task folder
+with its own runs/ results/, or the flat `<job>/{runs,results,scripts}/<task>/`);
+runs are the tickets under runs/ and their state is the result's `runtime.yaml`.
+Write every C7 address in full, one per job or task
 (`Task: b01.j01, b01.j02.`, `b01.j05.t02–t03`): a bare `j02` after a comma is not
 an address. The
 claim = board.md `blocks: b03 b04 b02.j01` + every address on a C7 row. Address
@@ -228,14 +281,15 @@ address. Unclaimed jobs are named once, muted, never expanded. Discovery home
 (`examples/<Project>/discoveries/`, or `discovery-home:`) is claimed the same way
 through `discoveries:` and C6 addresses.
 
-The Roadmap's Runs panel lists Task review (`rtask`), Task runs (haipipe-task)
-and Discovery runs (haipipe-discovery): the supporting runs this paper's Evidence
-Items cite, each under its owner and keyed to the C7 and C6 rows whose addresses
-cover them. Every run type and run names its skill (`🧩 SKILL` in run-cards.md).
-A C7 or C6 card header carries only its id and question (JL 260929: no address, no "allocated · levels exist"); a row with no address opens to `No folder yet.`. The next design step, in
+The High-level logic + Low-level work Runs panel lists Claim review (`rclaim`), Task review (`rtask`), Task
+runs (haipipe-task) and Discovery runs (haipipe-discovery): the supporting runs this
+paper's Evidence Items cite, each under its owner and keyed to the C7 and C6 rows
+whose addresses cover them and to every hypothesis, E-row and question above those
+rows, so picking a question or a hypothesis shows the runs behind it. Every run type and run names its skill
+(`🧩 SKILL` in run-cards.md).
+The drawing
 `studio/paper-workbench-design.excalidraw` (generated by
-`studio/paper-workbench-design.py`): general questions Q1–Q5 above the T and D
-rows (now live: Story › Roadmap reads the C6 `Q` table), and a Delivery › Cover
+`studio/paper-workbench-design.py`) also shows a Delivery › Cover
 letter tab (live): it reads `build-manifest.json` `cover_letter`, which
 haipipe-paper-assemble's run-delivery-coverletter writes from the submission Round
 page's Cover letter division, and shows the letter, its files and its checks.
@@ -324,7 +378,7 @@ existence, a generated PDF, or a Run-Type row marked `recorded`.
 - Draft links use `/_board/draft` and a concrete Page `file`; the two
   routes are siblings, not aliases.
 - A Paper link may start at `file=board.md` and use a hash for a place,
-  for example `#story/questions` or `#sections/main/narrative`.
+  for example `#story/logic-work` or `#sections/main/narrative`.
 - The parent Board URL remains the shell's URL when the Workbench is in the right
   pane; the iframe URL carries the Paper Workbench route, just as the Page's does.
 - `Run-Type` is not a synonym for `Space`, `Workspace`, or concrete `Run`.

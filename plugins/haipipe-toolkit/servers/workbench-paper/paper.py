@@ -764,6 +764,7 @@ def story(d, p):
          "dd": table_rows(t, r"D\d+"), "dd_h": _table_headers(t, r"D\d+") or [],
          "tt": table_rows(t, r"[TB]\d+"), "tt_h": _table_headers(t, r"[TB]\d+") or [],
          "qq": table_rows(t, r"Q\d+"), "qq_h": _table_headers(t, r"Q\d+") or [],
+         "qb": question_blocks(t),
          "sections": [], "sec_h": [], "order": []}
     s["sec_h"] = _table_headers(t, SECTION_ROW) or []
     # the Spine is C1 Identity, C2 Pitch, C4 Stakes; matched by title so a legacy numbered
@@ -1328,29 +1329,6 @@ def _card(cid, kind, label, sub, where, status, status_cls, rows, key="", attrs=
                where, status_cls, esc(status), detail))
 
 
-def _repo_rel(d, path):
-    """A path as the chat needs it: relative to the repository root."""
-    if not path:
-        return ""
-    pth = Path(path)
-    if not pth.is_absolute():
-        pth = d["board"] / pth
-    try:
-        return str(pth.resolve().relative_to(Path(d["root"]).resolve())).replace(os.sep, "/")
-    except (ValueError, KeyError):
-        return str(path)
-
-
-def _srcd(d, path, ref, card_html):
-    """Stamp a card with the Markdown it was read from (data-src) and the row
-    it shows (data-ref), so `copy to chat` can cite the truth source."""
-    i = card_html.find('<details class="item-card"')
-    j = card_html.find(">", i) if i >= 0 else -1
-    if j < 0:
-        return card_html
-    return card_html[:j] + ' data-src="%s" data-ref="%s"' % (esc(_repo_rel(d, path)), esc(ref)) + card_html[j:]
-
-
 def _status_cls(text):
     t = (text or "").upper()
     if t.startswith("NOT ") or t.startswith("NO ") or "ABSENT" in t or "MISSING" in t:
@@ -1360,16 +1338,6 @@ def _status_cls(text):
     if "⚠" in t or "🔨" in t or "PROVISIONAL" in t or "PARTIAL" in t or "WAITING" in t:
         return "warn"
     return "mut"
-
-
-def _open_cards(cards):
-    """The same cards, opened: inside a question its folders are what the person came to see."""
-    return [c.replace('<details class="item-card"', '<details class="item-card" open', 1) for c in cards]
-
-
-def _skip_cols(headers, *names):
-    """Header positions to leave out of a card's Details (shown elsewhere on the card)."""
-    return {i for i, h in enumerate(headers) if h.strip().lower() in names}
 
 
 def _fields(headers, cells, skip):
@@ -1435,65 +1403,456 @@ def _col(headers, needles, default):
     return default
 
 
-def _claim_card(d, s, c, where):
-    """One C5 proposition in the Evidence-card shape. Columns follow the header
-    row when the table has one (`proposition`, `support state`); otherwise the
-    positional E | RQ | state | proposition order."""
-    eid = re.match(r"E-?\d+", c[0]).group(0)
+_ROW_ID = re.compile(r"(?<![\w.])(RQ|[ETBDQHC])-?0*(\d+)(?:\s*[–-]\s*(?:\1-?)?0*(\d+))?(?![\w-]|\.\w)")
+
+
+def _row_ids(text):
+    """The Story row ids a cell names (`RQ2`, `E4`, `T1`, `B3`, `D5`, `Q2`, and the §3
+    question blocks' `H1` hypotheses and `C1` claims); a range (`E1-E4`, `RQ1–RQ7`) names
+    each one. An Evidence Item id (`E01-CITE-…`) and a Bullet address (`C1.P1.B1`) are
+    not row ids."""
+    out = []
+    for m in _ROW_ID.finditer(text or ""):
+        lo = int(m.group(2))
+        hi = int(m.group(3)) if m.group(3) and int(m.group(3)) >= lo else lo
+        for n in range(lo, min(hi, lo + 50) + 1):
+            if "%s%d" % (m.group(1), n) not in out:
+                out.append("%s%d" % (m.group(1), n))
+    return out
+
+
+def _row_key(cell):
+    """`E2 (C1)` → `E2`, `T01` → `T1`: the id a row's first cell carries."""
+    ids = _row_ids(cell)
+    return ids[0] if ids else (cell or "").strip()
+
+
+def _plain(text):
+    """A field value → plain text: links to their label, no bold or code marks. Unlike
+    clean(), a file name keeps its underscores."""
+    text = _LINK_RE.sub(r"\1", text or "")
+    return re.sub(r"\s+", " ", re.sub(r"\*\*|`", "", text)).strip()
+
+
+_QHEAD = re.compile(r"^####\s+[\d.]+\s*·\s*Question\s+(\d+)(?:\s*·\s*(RQ\d+))?\s*$", re.I)
+_GROUP = re.compile(r"^\*\*(hypotheses|potential claims|potential contributions|potential work)\*\*\s*:?\s*$", re.I)
+_ITEM = re.compile(r"^-\s+(?:\*\*([A-Z]{1,2}\d+|\d+[a-z])\*\*\s*(?:·\s*)?)?(.*)$")
+_CODE = re.compile(r"(?<![\w.])(\d+[a-z])(?!\w)")
+_SUBFIELD = re.compile(r"\*\*(.+?)\*\*\s*:\s*(.*?)(?=\s*·\s*\*\*|$)")
+_GROUPS = {"hypotheses": "hypotheses", "potential claims": "claims",
+           "potential contributions": "contributions", "potential work": "work"}
+
+
+def question_blocks(text):
+    """§3 written as one block per question (JL 260929; haipipe-paper-story 0.12.0):
+    `#### 3.N · Question N · RQn`, the question's `- **Field**: value` lines, then four
+    groups, each a bold label and one `- ` line per item, coded by question (1a, 1b, 2a …;
+    haipipe-paper-story 0.13.0), each a short name, a colon and one plain sentence:
+      **Hypotheses**               - **1a** · Name: sentence · tested by E1, E2
+      **Potential claims**         - **1a** · C1 · from 1a · Name: sentence   (indented `- **Role**: …`)
+      **Potential contributions**  - rests on 1a, 1b · Name: sentence
+      **Potential work**           - **T1** · for 1a, 1b   (optionally `· b04.j03.t01, …` to narrow)
+    A claim keeps its paper-wide id (C1) after its code. [] for a Story that still
+    writes the RQ table."""
+    n = next((n for n, title in divisions(text) if title.strip().lower().startswith("research question")), None)
+    out, cur, group, last = [], None, None, None
+    for line in (division_body(text, n) if n is not None else "").splitlines():
+        s = line.strip()
+        m = _QHEAD.match(s)
+        if m:
+            cur = {"n": int(m.group(1)), "id": m.group(2) or "RQ" + m.group(1), "fields": [],
+                   "hypotheses": [], "claims": [], "contributions": [], "work": []}
+            out.append(cur)
+            group = last = None
+            continue
+        if line.startswith("#"):
+            cur = group = last = None
+            continue
+        if cur is None or not s:
+            continue
+        g = _GROUP.match(s)
+        if g:
+            group, last = _GROUPS[g.group(1).lower()], None
+            continue
+        if group is None:
+            f = _FIELD.match(s)
+            if f:
+                cur["fields"].append((f.group(1).strip(), _plain(f.group(2))))
+            continue
+        if line[:1] == "-":
+            m = _ITEM.match(s)
+            last = {"id": m.group(1) or "", "fields": [],
+                    "parts": [x.strip() for x in _plain(m.group(2)).split(" · ") if x.strip()] or [""]}
+            cur[group].append(last)
+        elif last is not None and s.startswith("- "):            # an indented `- **Role**: …` line
+            last["fields"] += [(k.strip(), _plain(v)) for k, v in _SUBFIELD.findall(s[2:])]
+        elif last is not None:                                    # a wrapped line continues the item
+            last["parts"][-1] = (last["parts"][-1] + " " + _plain(s)).strip()
+    return out
+
+
+def _field(fields, *names):
+    return next((v for k, v in fields if k.strip().lower() in names), "")
+
+
+def _part(parts, word):
+    """The rest of the part that starts with `word` (`tested by`, `from`, `for`, …)."""
+    return next((x[len(word):].strip() for x in parts if x.lower().startswith(word)), "")
+
+
+_STAGES = ("data", "training", "evaluation", "results", "analysis", "figures")
+_STAGE_ORDER = {k: i for i, k in enumerate(_STAGES + ("task", "discovery"))}
+
+
+def _work_rows(s):
+    """The §7 Task and §6 Discovery rows: id → the question each answers (its `question`
+    cell), its stage (a §7 `stage` cell: data · training · evaluation · results · analysis ·
+    figures), whether it serves `every question`, and the row ids it names."""
+    work = {}
+    for kind, rows, heads in (("task", s["tt"], s["tt_h"]), ("disc", s["dd"], s["dd_h"])):
+        iq = next((i for i, h in enumerate(heads) if h.strip().lower() == "question"), 1)
+        ist = next((i for i, h in enumerate(heads) if h.strip().lower() == "stage"), None)
+        for c in rows:
+            stage = (c[ist].strip().lower() if ist is not None and ist < len(c) else "") or (
+                "discovery" if kind == "disc" else "task")
+            work[_row_key(c[0])] = {"id": _row_key(c[0]), "kind": kind, "cells": c, "stage": stage,
+                                    "name": c[iq] if len(c) > iq else c[0],
+                                    "shared": any("every question" in x.lower() for x in c[1:]),
+                                    "names": set(_row_ids(" ".join(c[1:])))}
+    return work
+
+
+def story_tree(s):
+    """High-level logic joined to low-level work (JL 260929). §3 question blocks give each
+    question its hypotheses (each names the §5 rows testing it), potential claims (each
+    from a hypothesis), potential contributions (each resting on claims) and potential
+    work (each §7/§6 row for the hypotheses it tests). A Story that still writes the RQ
+    table gets one hypothesis per §5 row and its work read from either end of the §5↔§7
+    links. §7 rows marked `every question` are the shared work; `up` maps each work row
+    to every hypothesis, §5 row and question above it, which keys its Runs panel runs."""
+    work = _work_rows(s)
+    irq = _col(s["e_h"], ("rq", "question"), 1)
     ip = _col(s["e_h"], ("proposition", "claim"), 3)
     ist = _col(s["e_h"], ("support", "state", "status"), 2)
-    prop = c[ip] if len(c) > ip else ""
-    status = c[ist] if len(c) > ist else ""
-    rows = _fields(s["e_h"], c, {0, 1, ip, ist})
-    return _card("claim-" + eid, c[0], prop or c[0], "", where, status, _status_cls(status), rows,
-                 key=_norm_key("E", eid))
-
-
-def _rq_cards(d, s):
-    """One card per C3 research question; its C5 propositions (the claims) sit
-    inside as nested cards. An RQ asks and a proposition states what can be
-    supported, so the question is the grain and the claims are its children
-    (JL 260922). E-rows whose RQ cell names no C3 row stay in one last card."""
-    irq = _col(s["e_h"], ("rq", "question"), 1)
-    by_rq = {}
+    tests = {}
     for c in s["e"]:
         if re.match(r"E-?\d+", c[0]):
-            by_rq.setdefault(c[irq] if len(c) > irq else "", []).append(c)
-    ist = _col(s["rq_h"], ("answer state", "state", "status"), -1) if s["rq_h"] else -1
-    cards = []
-    for r in s["rq"]:
-        rid, question = r[0], (r[1] if len(r) > 1 else "")
-        if 1 < ist < len(r):
-            state = r[ist]
-        else:
-            state = r[-1] if not s["rq_h"] and len(r) > 2 else ""
-        claims = by_rq.pop(rid, [])
-        rows = _fields(s["rq_h"], r, {0, 1, ist})
-        inner = "".join(_claim_card(d, s, c, "") for c in claims)
-        if inner:
-            rows.append(("", '<div class="item-cards">%s</div>' % inner))
-        cards.append(_card("rq-" + rid, rid, question or rid, "", "", state, _status_cls(state), rows, key=rid))
-    orphans = [c for cs in by_rq.values() for c in cs]
-    if orphans:
-        inner = "".join(_claim_card(d, s, c, esc((c[irq] if len(c) > irq else "") or "")) for c in orphans)
-        cards.append(_card("rq-unassigned", "C5", "Claims with no research question", "", "", "", "mut",
-                           [("", '<div class="item-cards">%s</div>' % inner)]))
-    return cards
+            e, said = _row_key(c[0]), set(_row_ids(" ".join(c[1:])))
+            tests[e] = {"id": e, "cells": c, "prop": c[ip] if len(c) > ip else "",
+                        "state": c[ist] if len(c) > ist else "",
+                        "rqs": [x for x in _row_ids(c[irq] if len(c) > irq else "") if x.startswith("RQ")],
+                        "work": [w for w in work if w in said or e in work[w]["names"]]}
+    qs = []
+    for b in s.get("qb") or []:
+        q = {"id": b["id"], "text": _field(b["fields"], "question") or b["id"], "fields": b["fields"],
+             "hyps": [], "claims": [], "contribs": [], "items": [], "notes": {}}
+        for h in b["hypotheses"]:
+            if h["id"]:
+                q["hyps"].append({"id": h["id"], "tests": [x for x in _row_ids(_part(h["parts"], "tested by")) if x in tests],
+                                  "phrase": next((x for x in h["parts"] if not x.lower().startswith("tested by")), h["id"])})
+        for c in b["claims"]:
+            if c["id"]:
+                alias = next((x for x in c["parts"] if re.fullmatch(r"C\d+", x)), "")
+                q["claims"].append({"id": c["id"], "alias": alias, "from": _CODE.findall(_part(c["parts"], "from ")),
+                                    "fields": c["fields"],
+                                    "text": " · ".join(x for x in c["parts"] if x != alias and not x.lower().startswith("from "))})
+            else:
+                q["notes"]["claims"] = " · ".join(c["parts"])
+        for c in b["contributions"]:
+            rests = _CODE.findall(_part(c["parts"], "rests on"))
+            text = " · ".join(x for x in c["parts"] if not x.lower().startswith("rests on"))
+            if rests:
+                q["contribs"].append({"rests": rests, "text": text})
+            else:
+                q["notes"]["contributions"] = text
+        for w in b["work"]:
+            wid = _row_key(w["id"]) if w["id"] else ""
+            if wid in work:
+                q["items"].append({"w": wid, "for": _CODE.findall(_part(w["parts"], "for ")),
+                                   "addrs": _addresses(" ".join(x for x in w["parts"] if not x.lower().startswith("for ")))})
+        qs.append(q)
+    if not s.get("qb"):                     # the RQ table: one hypothesis per §5 row naming the RQ
+        for r in s["rq"]:
+            rid, said = _row_key(r[0]), set(_row_ids(" ".join(r[1:])))
+            hyps = [{"id": e, "phrase": x["prop"], "tests": [e]} for e, x in tests.items() if rid in x["rqs"]]
+            items = []
+            for w in work:
+                fr = [h["id"] for h in hyps if w in tests[h["id"]]["work"]]
+                if fr or w in said or rid in work[w]["names"]:
+                    items.append({"w": w, "for": fr, "addrs": []})
+            heads = s["rq_h"]
+            qs.append({"id": rid, "text": r[1] if len(r) > 1 else rid, "hyps": hyps, "claims": [], "contribs": [],
+                       "items": items, "notes": {},
+                       "fields": [(heads[i] if i < len(heads) else "col %d" % (i + 1), r[i])
+                                  for i in range(2, len(r)) if r[i] and r[i] not in ("—", "-")]})
+    shared = [w for w in work if work[w]["shared"]]
+    named = {i["w"] for q in qs for i in q["items"]}
+    placed = {x for q in qs for h in q["hyps"] for x in h["tests"]}
+    up = {w: [] for w in work}
+    for q in qs:
+        tests_of = {h["id"]: h["tests"] for h in q["hyps"]}
+        for i in q["items"]:
+            up[i["w"]] += i["for"] + [x for h in i["for"] for x in tests_of.get(h, [])] + [q["id"]]
+    orphans = [x for x in tests.values() if x["id"] not in placed]
+    for x in orphans:
+        for w in x["work"]:
+            up[w].append(x["id"])
+    asked = {}
+    for q in qs:
+        for i in q["items"]:
+            asked.setdefault(i["w"], []).append((_num(q["id"]), set(i["addrs"])))
+    return {"questions": qs, "orphans": orphans, "tests": tests, "work": work, "shared": shared, "asked": asked,
+            "up": {w: list(dict.fromkeys(ks)) for w, ks in up.items()},
+            "loose": [w for w in work if w not in named and w not in shared]}
 
 
-def _task_cards(d, s):
-    cards = []
-    for c in s["tt"]:
-        tid = c[0]
-        home = task_home(d, c)
-        # JL 260929: the BJTR folders are what matters; the row's own text is folded under Details
-        rows = _fields(s["tt_h"], c, {0, 1} | _skip_cols(s["tt_h"], "folder", "q"))
-        table = _bjt_tree(d, [x["address"].replace(".", "") for x in home["all"]]) if home["all"] else ""
-        body = table or '<div class="space-empty">No folder yet.</div>'
-        # JL 260929: no address or "allocated · 2/2 levels exist" in the header; the folders say it
-        cards.append(_card("task-" + tid, tid, c[1] if len(c) > 1 else tid, "", "", "", "mut",
-                           rows, key=tid, body=body, fold=True))
-    return cards
+def _num(rid):
+    m = re.search(r"\d+", rid or "")
+    return m.group(0) if m else (rid or "")
+
+
+def _mark(states):
+    """One mark for a hypothesis from the states of the §5 rows that test it: ✅ when
+    every row says established (a ✅ alone is not enough, since a Story may write
+    `✅ stated · ⬜ unbacked`), ❌ when one is contradicted, 🔨 when one is provisional,
+    ⬜ otherwise."""
+    low = [(x or "").lower() for x in states]
+    if low and all("established" in x for x in low):
+        return "✅"
+    if any("contradict" in x for x in low):
+        return "❌"
+    if any("🔨" in x or "provisional" in x for x in low):
+        return "🔨"
+    return "⬜"
+
+
+def _nodes(tree, addrs):
+    """Addresses (`b04j01t02`, `b04j01`, `b01`) → [(block, [(job, tasks)])] in folder
+    order: a block or job address takes all of it, a task address takes that task."""
+    out = []
+    for blk in tree:
+        jobs = []
+        for j in blk["jobs"]:
+            if any(j["addr"].startswith(a) for a in addrs):
+                jobs.append((j, j["tasks"]))
+            else:
+                ts = [t for t in j["tasks"] if t["addr"] in addrs]
+                if ts:
+                    jobs.append((j, ts))
+        if jobs:
+            out.append((blk, jobs))
+    return out
+
+
+def _runs_fold(t):
+    """R: a task's runs, `▸ 3 runs · no receipts`, open to one line per run ticket."""
+    ticks = t.get("ticket_list") or []
+    n = len(ticks) or t.get("n_results", 0)
+    if not n:
+        return '<span class="mut bj-rn">no runs yet</span>'
+    lines = "".join('<div class="bj-run"><span class="idtag">%s</span> <span class="mut">%s</span></div>'
+                    % (esc(stem), esc((t.get("receipt_map") or {}).get(stem) or "no receipt")) for stem, _ in ticks)
+    return '<details class="bj-r"><summary>%s</summary>%s</details>' % (
+        esc("%d run%s · %s" % (n, "" if n == 1 else "s", _fmt_state(t.get("receipts") or {}))), lines)
+
+
+def _bjtr(d, nodes, disc=False):
+    """B → J → T → R, one line per level, no boxes (JL 260929)."""
+    out = []
+    for blk, jobs in nodes:
+        out.append('<div class="bj-b"><span class="idtag">%s</span> <b>%s</b></div>' % (esc(blk["addr"]), esc(blk["name"][4:])))
+        for j, ts in jobs:
+            out.append('<div class="bj-j"><span class="idtag">%s</span> %s</div>' % (esc(j["name"][:3]), esc(j["name"][4:])))
+            for t in ts:
+                if disc:                         # a Discovery task also says what it found
+                    name = _disc_link(d, blk, j, t, t["name"][4:]) + (
+                        ' <span class="mut">%s</span>' % esc(t["outcome"] + ((" · " + t["confidence"]) if t.get("confidence") else ""))
+                        if t.get("outcome") else "")
+                else:
+                    url = _tree_url(d, t["page"] or t["dir"])
+                    name = ('<a href="%s">%s</a>' % (esc(url), esc(t["name"][4:]))) if url else esc(t["name"][4:])
+                out.append('<div class="bj-t"><span class="idtag">%s</span> %s %s</div>' % (esc(t["name"][:3]), name, _runs_fold(t)))
+            if not ts:
+                out.append('<div class="bj-t mut">no task yet</div>')
+    return "".join(out)
+
+
+def _home_label(home):
+    return ((home["dir"].name + "/") if home.get("dir") is not None else "")
+
+
+def _item_folders(d, T, it):
+    """One work item's B → J → T → R: the folders the question block names for it (a
+    shared row narrowed to what this question needs), else its row's own addresses.
+    Returns (html, size): size is the closed line's count, `4 tasks · 14 runs`."""
+    c = T["work"][it["w"]]
+    if c["kind"] == "task":
+        addrs = it["addrs"] or [x["address"].replace(".", "") for x in task_home(d, c["cells"])["all"]]
+        nodes, home = _nodes(d["blocks"]["tree"], set(addrs)), d["blocks"]
+    else:
+        addrs = it["addrs"] or [x for x in _addresses(" ".join(c["cells"])) if _disc_lookup(d, x)]
+        nodes, home = _nodes(d["disc"]["tree"], set(addrs)), d["disc"]
+    if nodes:
+        tasks = [t for _, jobs in nodes for _, ts in jobs for t in ts]
+        runs = sum(len(t.get("ticket_list") or []) or t.get("n_results", 0) for t in tasks)
+        size = "%d task%s · %d run%s" % (len(tasks), "" if len(tasks) == 1 else "s", runs, "" if runs == 1 else "s")
+        return ('<div class="bj-home mut">%s</div>%s' % (esc(_home_label(home)), _bjtr(d, nodes, disc=c["kind"] == "disc")), size)
+    away = re.search(r"\b(examples-[\w.-]+/[\w.@-]+)", " ".join(c["cells"]))
+    if away and c["kind"] == "task":                 # built in another project, outside the Task home
+        return ('<div class="bj-none mut">built outside %s: <code>%s</code></div>'
+                % (esc(_home_label(home) or "this project"), esc(away.group(1))), "built outside " + (_home_label(home) or "this project"))
+    return ('<div class="bj-none mut">%sno folder yet</div>' % (esc(_home_label(home) + " · ") if _home_label(home) else ""),
+            "no folder yet")
+
+
+def _and(labels):
+    """["Hypothesis 1", "Hypothesis 2"] → "Hypotheses 1 and 2"; one label stays as it is."""
+    if len(labels) < 2:
+        return "".join(labels)
+    kinds = {x.split()[0] for x in labels}
+    if len(kinds) == 1:
+        nums = [x.split()[-1] for x in labels]
+        word = {"Hypothesis": "Hypotheses", "Claim": "Claims"}.get(kinds.pop(), "")
+        return "%s %s and %s" % (word, ", ".join(nums[:-1]), nums[-1])
+    return ", ".join(labels[:-1]) + " and " + labels[-1]
+
+
+def _lw_row(key, left, right, cls="lw-g"):
+    return ('<div class="lw-row %s"%s><div class="lw-l">%s</div><div class="lw-r">%s</div></div>'
+            % (cls, (' data-key="%s"' % esc(key)) if key else "", left, right))
+
+
+def _label(kind, rid):
+    """`Hypothesis 1a` for a §3 code; `Hypothesis 1` for an older id such as E1."""
+    return "%s %s" % (kind, rid if re.fullmatch(r"\d+[a-z]", rid or "") else _num(rid))
+
+
+def _nx(text):
+    """`Short name: one sentence` → the name in bold, then the sentence (JL 260929: "both
+    the hypotheses and claims to be short-phrase-name: explanation")."""
+    m = re.match(r"^([^:]{2,80}):\s+(.+)$", text or "")
+    if not m:
+        return esc(text)
+    return '<b class="lw-name">%s</b>: %s' % (esc(m.group(1)), esc(m.group(2)))
+
+
+def _hyp_line(key, pill, text, mark="", strong=True):
+    """One pickable item on the left: the pill and its mark on one line, the short name
+    and sentence starting on the next (JL 260929: "make the text start from the next line
+    after the label")."""
+    return ('<div class="lw-h"%s><div class="lw-top"><span class="item-kind">%s</span><span class="lw-mark">%s</span></div>'
+            '<div class="lw-body">%s</div></div>'
+            % ((' data-key="%s"' % esc(key)) if key else "", esc(pill), mark, _nx(text) if strong else esc(text)))
+
+
+def _also(others):
+    if not others:
+        return ""
+    nums = [str(n) for n in others]
+    words = ("Question " + nums[0]) if len(nums) == 1 else "Questions %s and %s" % (", ".join(nums[:-1]), nums[-1])
+    return '<span class="lw-also">also for %s</span>' % esc(words)
+
+
+def _work_item(d, T, it, labels, also=()):
+    """One piece of work, named as the question it answers (JL 260929), folded like the
+    foundation work (JL 260929: "results 也是可以 click 的，也是可以 collapse 的"). Closed, it
+    still shows its stage, its question, the hypotheses it tests, the other questions that
+    use it and its size; open, its B → J → T → R. Opening it selects it for the Runs panel."""
+    c = T["work"][it["w"]]
+    folders, size = _item_folders(d, T, it)
+    fr = [labels.get(h, _label("Hypothesis", h)) for h in it["for"]]
+    tags = "".join(x for x in (('<span class="lw-for">for %s</span>' % esc(_and(fr))) if fr else "",
+                               _also(also), '<span class="lw-size">%s</span>' % esc(size)) if x)
+    return ('<details class="lw-w" data-key="%s" data-for="%s"><summary><span class="bjt-chev">›</span><div class="lw-sum">'
+            '<div class="lw-wline"><span class="item-kind">%s</span><span class="lw-wq">%s</span></div>'
+            '<div class="lw-tags">%s</div></div></summary><div class="lw-folders">%s</div></details>'
+            % (esc(it["w"]), esc(" ".join(it["for"])), esc(c["stage"].capitalize()), esc(c["name"]), tags, folders))
+
+
+def _band(kind, label, note=""):
+    """A group label as a colored band with a left stripe (JL 260929: the group labels were
+    "浅浅的"; "变得更显眼一些，或者说你加上一些条纹，把它分隔开")."""
+    return '<div class="lw-k lw-k-%s">%s%s</div>' % (kind, esc(label), ('<span class="lw-kn">%s</span>' % esc(note)) if note else "")
+
+
+def _in_order(T, items):
+    """Work in the order it runs: data, training, evaluation, results, analysis, figures,
+    then Discovery (JL 260929: "the work should follow the logics")."""
+    return [x for _, x in sorted(enumerate(items), key=lambda p: (_STAGE_ORDER.get(T["work"][p[1]["w"]]["stage"], 6), p[0]))]
+
+
+def _q_block(d, T, q):
+    """One question block (JL 260929: the question is the main block): the question across
+    the top; left, its hypotheses, potential claims and potential contributions, coded 1a,
+    1b …, each a short name and a sentence; right, its potential work: first the foundation
+    every question stands on (§7 rows marked `every question`, folded, marked shared), then
+    this question's own work in run order, each named as a question, with its folders."""
+    labels = {h["id"]: _label("Hypothesis", h["id"]) for h in q["hyps"]}
+    none = lambda key, default: '<div class="lw-say">%s</div>' % esc(q["notes"].get(key) or default)
+    left = [_band("hyp", "Hypotheses")]
+    left += [_hyp_line(h["id"], labels[h["id"]], h["phrase"], _mark([T["tests"][x]["state"] for x in h["tests"]]))
+             for h in q["hyps"]] or [none("hypotheses", "none yet")]
+    left.append(_band("claim", "Potential claims"))
+    left += ['<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div><div class="lw-body">%s</div>'
+             '<div class="lw-say">from %s</div></div>' % (esc(_label("Claim", c["id"])), _nx(c["text"]),
+                                                            esc(_and([labels.get(h, _label("Hypothesis", h)) for h in c["from"]])))
+             for c in q["claims"]] or [none("claims", "none yet")]
+    left.append(_band("contrib", "Potential contributions"))
+    left += ['<div class="lw-c"><div class="lw-text">%s</div><div class="lw-say">rests on %s</div></div>'
+             % (_nx(c["text"]), esc(_and([_label("Claim", x) for x in c["rests"]]))) for c in q["contribs"]] or [
+                 none("contributions", "none yet")]
+    listed = {i["w"]: i for i in q["items"]}
+    found = _in_order(T, [listed.get(w) or {"w": w, "for": [], "addrs": []} for w in T["shared"]])
+    own = _in_order(T, [i for i in q["items"] if i["w"] not in T["shared"]])
+    n = len(T["questions"])
+    right = []
+    if found:
+        right.append(_band("found", "Foundation work", ("shared by all %d questions" % n) if n > 1 else ""))
+        right += [_work_item(d, T, it, labels) for it in found]
+    right.append(_band("work", "This question's work"))
+    # "also for" only where another question uses the same folders: a row narrowed to other
+    # folders there (each question's own figures) is not shared work
+    also = lambda it: [n for n, a in T["asked"].get(it["w"], [])
+                       if n != _num(q["id"]) and (not a or not it["addrs"] or a & set(it["addrs"]))]
+    right += [_work_item(d, T, it, labels, also=also(it)) for it in own] or ['<div class="lw-say">no work named yet</div>']
+    return ('<details class="qc lw-q" data-key="%s" open><summary><span class="bjt-chev">›</span>'
+            '<span class="item-kind">Question %s</span><span class="lw-qtext">%s</span></summary>%s</details>'
+            % (esc(q["id"]), esc(_num(q["id"])), esc(q["text"]), _lw_row("", "".join(left), "".join(right))))
+
+
+def _rest_block(d, T):
+    """What no question holds: §5 rows no hypothesis names, §7/§6 rows no question names,
+    and claimed folders no row names."""
+    left = [_hyp_line(x["id"], x["id"], x["prop"], _mark([x["state"]]), strong=False) for x in T["orphans"]]
+    right = [_work_item(d, T, it, {}) for it in _in_order(T, [{"w": w, "for": [], "addrs": []} for w in T["loose"]])]
+    ta, da = _unnamed_addrs(d)
+    tn, dn = _nodes(d["blocks"]["tree"], set(ta)), _nodes(d["disc"]["tree"], set(da))
+    if tn or dn:
+        right.append('<div class="lw-w"><div class="lw-wline"><span class="lw-wq mut">Folders no row names</span></div>%s%s</div>'
+                     % (('<div class="bj-home mut">%s</div>%s' % (esc(_home_label(d["blocks"])), _bjtr(d, tn))) if tn else "",
+                        ('<div class="bj-home mut">%s</div>%s' % (esc(_home_label(d["disc"])), _bjtr(d, dn, disc=True))) if dn else ""))
+    if not left and not right:
+        return ""
+    return ('<details class="qc lw-q lw-rest" open><summary><span class="bjt-chev">›</span>'
+            '<span class="lw-qtext">Not under a question</span></summary>%s</details>'
+            % _lw_row("", "".join(left) or '<div class="lw-say">every §5 row has a hypothesis</div>', "".join(right)))
+
+
+def logic_work_html(d):
+    """Story › High-level logic + Low-level work (JL 260929): one tree, visually split.
+    Each question is a block; its left side is the high-level logic (hypotheses, potential
+    claims, potential contributions), its right side the low-level work that tests it,
+    each piece named as a question, in the order it runs, with its B → J → T → R."""
+    blocks = []
+    for s in d["story"]:
+        T = story_tree(s)
+        blocks += [_q_block(d, T, q) for q in T["questions"]]
+        blocks.append(_rest_block(d, T))
+    blocks = [b for b in blocks if b]
+    if not blocks:
+        return '<div class="space-empty">No research question yet.</div>'
+    head = _lw_row("", "High-level logic", "Low-level work · B → J → T → R", "lw-head")
+    return '<div class="lw">%s%s</div>' % (head, "".join(blocks))
 
 
 def _named(addr, named):
@@ -1501,9 +1860,9 @@ def _named(addr, named):
     return any(addr.startswith(a) or a.startswith(addr) for a in named)
 
 
-def _unnamed_cards(d):
-    """The claimed folders that no Task or Discovery question names yet (JL 260928:
-    question first, then its Task and Discovery runs; one list, not two)."""
+def _unnamed_addrs(d):
+    """The claimed folders that no Task or Discovery row names yet, as addresses:
+    (Task-home job or task addresses, Discovery job addresses)."""
     t_named = [a for s in d["story"] for c in s["tt"] for a in _addresses(" ".join(c))]
     d_named = [a for s in d["story"] for c in s["dd"] for a in _addresses(" ".join(c))]
     scope, jobs = paper_scope(d), []
@@ -1512,16 +1871,14 @@ def _unnamed_cards(d):
             if not _claimed(j["addr"], scope):
                 continue
             if not _named(j["addr"], t_named):
-                jobs.append(j["addr"])                       # no question names this job
-            else:                                            # a question names some of its tasks
+                jobs.append(j["addr"])                       # no row names this job
+            else:                                            # a row names some of its tasks
                 jobs += [t["addr"] for t in j["tasks"]
                          if _claimed(t["addr"], scope) and not _named(t["addr"], t_named)]
-    tasks, _ = _block_cards(d, jobs) if jobs else ([], [])
     dscope = discovery_scope(d)
     djobs = [j["addr"] for blk in d["disc"]["tree"] for j in blk["jobs"]
              if _claimed(j["addr"], dscope) and not _named(j["addr"], d_named)]
-    disc, _ = _disc_cards(d, djobs, _disc_feeds(d)) if djobs else ([], [])
-    return tasks + disc
+    return jobs, djobs
 
 
 def _tree_url(d, path):
@@ -1537,88 +1894,6 @@ def _claimed(addr, scope):
     """Is this block/job address inside the claim? A claim `b03` covers every
     job in b03; `b02j01` covers b02 (the block) and only j01 inside it."""
     return any(a.startswith(addr) or addr.startswith(a) for a in scope)
-
-
-def _receipts(tasks):
-    out = {}
-    for t in tasks:
-        for k, v in t["receipts"].items():
-            out[k] = out.get(k, 0) + v
-    return out
-
-
-def _scoped_blocks(d, scope):
-    """(block, its jobs in `scope` with their tasks in `scope`, jobs outside the paper's claim)."""
-    claim = paper_scope(d)
-    for blk in d["blocks"]["tree"]:
-        if scope and not _claimed(blk["addr"], scope):
-            continue
-        jobs = [dict(j, tasks=[t for t in j["tasks"] if not scope or _claimed(t["addr"], scope)])
-                for j in blk["jobs"] if not scope or _claimed(j["addr"], scope)]
-        yield blk, jobs, [j for j in blk["jobs"] if not _claimed(j["addr"], claim)]
-
-
-def _bjt_tree(d, scope, block_rows=True):
-    """Block → Job → Task as folds with no boxes (JL 260929: "套这么多感觉跟棺材一样", then "我想让它
-    能够合上去"): the block and each job are a borderless fold (arrow · pill · name · counts), opened by
-    default, indented one step; a job opens to its one task table. Jobs outside the paper's own
-    claim are named once, muted."""
-    out = []
-    pill = lambda a: '<span class="item-kind">%s</span>' % esc(a)
-    head = "".join("<th>%s</th>" % h for h in ("addr", "task", "develops", "runs", "state"))
-    fold = lambda cls, summary, body: ('<details class="%s" open><summary><span class="bjt-chev">›</span>%s</summary>%s</details>'
-                                       % (cls, summary, body))
-    for blk, jobs, other in _scoped_blocks(d, scope):
-        inner = []
-        for j in jobs:
-            trs = []
-            for t in j["tasks"]:
-                url = _tree_url(d, t["page"] or t["dir"])
-                name = ('<a href="%s">%s</a>' % (esc(url), esc(t["name"]))) if url and t["page"] else esc(t["name"])
-                dev = esc(t["develops"]) if t["develops"] else '<span class="mut">?</span>'
-                if t["develops"] and t["develops_src"] != "page":
-                    dev = '<i title="from %s, not typed on the page">%s</i>' % (esc(t["develops_src"]), dev)
-                runs = (esc("%d tk · %s" % (t["tickets"], _fmt_state(t["receipts"]))) if (t["tickets"] or t["receipts"])
-                        else '<span class="mut">—</span>')
-                state = esc(t["state"]) if t["state"] else '<span class="mut">%s</span>' % ("no state: line" if t["page"] else "no page")
-                trs.append('<tr><td><span class="idtag">%s</span></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
-                           % (esc(t["addr"]), name, dev, runs, state))
-            body = ('<table class="grid bjt-t"><tr>%s</tr>%s</table>' % (head, "".join(trs)) if trs
-                    else '<div class="bjt-o mut">no tNN_ task under this job</div>')
-            jurl = _tree_url(d, j["dir"])
-            inner.append(fold("bjt-j", '%s <b>%s</b> <span class="mut">· %d task(s) · %d ticket(s) · %s</span> %s'
-                              % (pill(j["addr"][3:]), esc(j["name"]), len(j["tasks"]), sum(t["tickets"] for t in j["tasks"]),
-                                 esc(_fmt_state(_receipts(j["tasks"]))), ('<a href="%s">folder</a>' % esc(jurl)) if jurl else ""),
-                              body))
-        if other:
-            inner.append('<div class="bjt-o mut">not claimed · not this paper\'s: %s</div>'
-                         % esc(" · ".join(j["name"] for j in other)))
-        if block_rows:
-            tasks = [t for j in jobs for t in j["tasks"]]
-            board = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
-            out.append(fold("bjt-b", '%s <b>%s</b> <span class="mut">· %d job(s) · %d task(s) · %s</span> %s'
-                            % (pill(blk["addr"]), esc(blk["name"]), len(jobs), len(tasks),
-                               esc(_fmt_state(_receipts(tasks))), board), "".join(inner)))
-        else:
-            out += inner
-    return '<div class="bjt">%s</div>' % "".join(out) if out else ""
-
-
-def _block_cards(d, scope):
-    """One collapsed card per bNN block in `scope`; open = the block's one Job → Task table
-    (`_bjt_tree` without its block fold: the card header is the block)."""
-    cards, skipped = [], [b["name"] for b in d["blocks"]["tree"] if scope and not _claimed(b["addr"], scope)]
-    for blk, jobs, other in _scoped_blocks(d, scope):
-        tasks = [t for j in jobs for t in j["tasks"]]
-        state = _receipts(tasks)
-        where = ('<a href="%s">board</a>' % esc(_tree_url(d, blk["dir"] / "board" / "index.html"))) if blk["board"] else ""
-        sub = "%d job(s) · %d task(s) · %d ticket(s)" % (len(jobs), len(tasks), sum(t["tickets"] for t in tasks)) + (
-            (" · %d job(s) not claimed" % len(other)) if other else "")
-        body = _bjt_tree(d, [a for a in scope if a.startswith(blk["addr"])] or [blk["addr"]], block_rows=False)
-        cards.append(_srcd(d, blk["dir"], blk["addr"], _card("block-" + blk["addr"], blk["addr"], blk["name"], esc(sub),
-                           where, _fmt_state(state), "ok" if state.get("done") and len(state) == 1 else ("warn" if state else "mut"),
-                           [], body=body or _empty("no job in this block"))))
-    return cards, skipped
 
 
 def _disc_link(d, blk, job, task, label):
@@ -1650,52 +1925,6 @@ def _disc_join(d, cells):
         else:
             out.append('<span class="warn">%s ✗ not in the Discovery home</span>' % esc(a))
     return " · ".join(out)
-
-
-def _disc_cards(d, scope, feeds):
-    """One collapsed card per claimed Discovery job; open = its Task Pages."""
-    cards, skipped = [], []
-    for blk in d["disc"]["tree"]:
-        for j in blk["jobs"]:
-            if scope and not _claimed(j["addr"], scope):
-                skipped.append(j["name"])
-                continue
-            st, oc = {}, {}
-            for t in j["tasks"]:
-                st[t["status"] or "?"] = st.get(t["status"] or "?", 0) + 1
-                if t["outcome"]:
-                    oc[t["outcome"]] = oc.get(t["outcome"], 0) + 1
-            fmt = lambda c: " · ".join("%s %d" % kv for kv in sorted(c.items(), key=lambda kv: -kv[1])) or "—"
-            trs = []
-            for t in j["tasks"]:
-                runs = "%d run(s)" % max(t["tickets"], t["n_results"]) if (t["tickets"] or t["n_results"]) else "—"
-                trs.append(('<span class="idtag">%s</span>' % esc(t["addr"]),
-                            _disc_link(d, blk, j, t, t["name"]),
-                            esc(t["question"]) if t["question"] else '<span class="mut">no question in discovery.yaml</span>',
-                            esc(runs), esc(t["status"] or "?"),
-                            esc((t["outcome"] + ((" · " + t["confidence"]) if t["confidence"] else "")) if t["outcome"] else "—")))
-            rows = [("tasks", _table(["addr", "task page", "question", "runs", "status", "outcome"], trs) or _empty("no tNN_ Discovery Task under this job"))]
-            back = feeds.get(j["addr"], [])
-            rows.append(("feeds", (" · ".join('<span class="idtag">%s</span>' % esc(x) for x in back)) if back
-                         else '<span class="mut">no C6 row names this job yet · write %s in a D-row cell</span>' % esc("%s.%s" % (blk["addr"], j["name"][:3]))))
-            rows.append(("index", ('<a href="%s">_index.md</a>' % esc(_tree_url(d, j["index"]))) if j["index"] else '<span class="mut">no _index.md</span>'))
-            where = _disc_link(d, blk, None, None, "board") if blk["board_md"] else ""
-            cards.append(_srcd(d, j["dir"], j["addr"], _card("disc-" + j["addr"], j["addr"], j["name"],
-                               esc("%d task page(s) · %d run(s) · %s" % (len(j["tasks"]), sum(max(t["tickets"], t["n_results"]) for t in j["tasks"]), fmt(st))),
-                               where, fmt(oc) if oc else "no outcome yet", "ok" if oc and not st.get("blocked") else ("warn" if st.get("blocked") else "mut"), rows)))
-    return cards, skipped
-
-
-def _disc_feeds(d):
-    """Discovery job address → the C6 rows that name it."""
-    feeds = {}
-    for s in d.get("story", []):
-        for cells in s["dd"]:
-            for a in _addresses(" ".join(cells)):
-                hit = _disc_lookup(d, a)
-                if hit and hit[1] is not None:
-                    feeds.setdefault(hit[1]["addr"], []).append(cells[0])
-    return feeds
 
 
 def _hero_cards(d):
@@ -1754,7 +1983,7 @@ def _not_ready_ids(rd):
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation Space"), ("story", "Story Space"),
           ("sections", "Sections Space"), ("delivery", "Delivery Space"))
-STORY_TABS = (("spine", "Spine"), ("questions", "Questions"), ("roadmap", "Roadmap"))
+STORY_TABS = (("spine", "Spine"), ("logic-work", "High-level logic + Low-level work"))   # JL 260929
 SECTION_TABS = (("main", "Main"), ("appendix", "Appendix"))
 SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "Evidence"))
 DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("cover", "Cover letter"), ("rounds", "Rounds"))
@@ -1762,7 +1991,7 @@ DELIVERY_VIEWS = (("preview", "Preview"), ("artifacts", "Artifacts"), ("checks",
 
 _CARDS = SKILLS / "paper" / "haipipe-paper-workflow" / "ref" / "run-cards.md"
 _BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][A-Za-z]+)\s+·\s+"
-                     r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w ]+?))?\s*$")
+                     r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w -]+?))?\s*$")
 _PROMPT = re.compile(r"^💬 PROMPT\s+(?P<prompt>.+?)\s*$")
 
 
@@ -1856,22 +2085,23 @@ def _ideation_panel(d, kinds):
 
 
 def _claim_rq(s):
-    """C5 claim number → the RQ its row names."""
+    """C5 claim number → the RQs its row names."""
     irq = _col(s["e_h"], ("rq", "question"), 1)
     out = {}
     for c in s["e"]:
         m = re.match(r"E-?\d+", c[0])
         if m:
-            out[_norm_key("E", m.group(0))] = c[irq] if len(c) > irq else ""
+            out[_norm_key("E", m.group(0))] = [x for x in _row_ids(c[irq] if len(c) > irq else "") if x.startswith("RQ")]
     return out
 
 
-def _supporting_rows(d, s, fill):
+def _supporting_rows(d, s, fill, T):
     """The Task and Discovery runs this paper's Evidence Items cite, as run rows
-    keyed by the C7 and C6 rows whose addresses cover them."""
-    q_of = {c[0]: _q_of(s["tt_h"], c) for c in s["tt"]}
-    q_of.update({c[0]: _q_of(s["dd_h"], c) for c in s["dd"]})
-    covers = [(c[0], _addresses(" ".join(c))) for c in s["tt"] + s["dd"]]
+    keyed by the C7 and C6 rows whose addresses cover them, and by every claim and
+    RQ above those rows, so selecting a question shows the runs behind it."""
+    q_of = {_row_key(c[0]): _q_of(s["tt_h"], c) for c in s["tt"]}
+    q_of.update({_row_key(c[0]): _q_of(s["dd_h"], c) for c in s["dd"]})
+    covers = [(_row_key(c[0]), _addresses(" ".join(c))) for c in s["tt"] + s["dd"]]
     rows = []
     for owner in ("Execution", "Discovery"):
         for node in d["supporting"][owner].values():
@@ -1881,7 +2111,7 @@ def _supporting_rows(d, s, fill):
                         dotted = ".".join(re.findall(r"[bjtr]\d{2}", r["addr"]))
                         ticket = r["tickets"][0][1] if r["tickets"] else None
                         keys = [row for row, addrs in covers if any(r["addr"].startswith(a) for a in addrs)]
-                        keys += sorted({q_of[k] for k in keys if q_of.get(k)})
+                        keys += sorted({q_of[k] for k in keys if q_of.get(k)}) + [u for k in keys for u in T["up"].get(k, [])]
                         users = sorted({u["page"] + " " + u["item"].split("-")[0] for u in r["users"]})
                         st = (r["status"] or "").lower()
                         rows.append({"run_id": dotted, "global_id": dotted, "ticket": ticket,
@@ -1895,18 +2125,24 @@ def _story_panel(d, kinds):
     rows = []
     for s in d["story"]:
         fill = {"page": s["stem"], "paper": d["board"].name}
-        rq = _claim_rq(s)
+        rq, T = _claim_rq(s), story_tree(s)
+        hyp_of = {}                                  # §5 row → the hypotheses it tests
+        for q in T["questions"]:
+            for h in q["hyps"]:
+                for x in h["tests"]:
+                    hyp_of.setdefault(x, []).append(h["id"])
         for row in _page_runs(d, s):
             name = str(row.get("run_id") or row.get("global_id") or "")
             target = str(row.get("target") or "")
             if re.search(r"(^|\s)rclaim-", name):
                 e = _norm_key("E", target)
-                rows += _tag([row], [e, rq.get(e, "")], fill)
+                rows += _tag([row], [e] + rq.get(e, []) + hyp_of.get(e, []), fill)
             elif re.search(r"(^|\s)rtask-", name):
-                rows += _tag([row], [target], fill)
+                t = _row_key(target)
+                rows += _tag([row], [t] + T["up"].get(t, []), fill)
             elif not re.search(r"(^|\s)(ridea|rnarra)-", name):
                 rows += _tag([row], [], fill)
-        rows += _supporting_rows(d, s, fill)
+        rows += _supporting_rows(d, s, fill, T)
     first = d["story"][0]["stem"] if d["story"] else "the Story"
     fill = {"page": first, "paper": d["board"].name}
     # a supporting run goes under its owner: a Task folder's run or a Discovery folder's run
@@ -2032,80 +2268,17 @@ def _spine_html(d):
     return "".join(out) or '<div class="space-empty">No Story yet.</div>'
 
 
-def _dd_cards(d, s):
-    """One card per C6 row: what the paper must learn, and the inquiry it names."""
-    cards = []
-    for c in s["dd"]:
-        rows = _fields(s["dd_h"], c, {0, 1} | _skip_cols(s["dd_h"], "folder", "q"))
-        addrs = [a for a in _addresses(" ".join(c)) if _disc_lookup(d, a)]
-        folders, _ = _disc_cards(d, addrs, _disc_feeds(d)) if addrs else ([], [])
-        body = ('<div class="item-cards">%s</div>' % "".join(_open_cards(folders)) if folders
-                else '<div class="space-empty">No folder yet.</div>')
-        cards.append(_card("need-" + c[0], c[0], c[1] if len(c) > 1 else "", "", "", "", "mut",
-                           rows, key=c[0], body=body, fold=True))
-    return cards
-
-
 def _q_of(headers, row):
     """The general question a T or D row names in its `Q` column ('' when none)."""
     i = next((k for k, h in enumerate(headers) if h.strip().upper() == "Q"), None)
     return row[i].strip() if i is not None and i < len(row) else ""
 
 
-def _question_cards(d, s):
-    """JL 260928: a few general questions; under each, its T and D questions; under each
-    of those, the BJTR folders that answer it. A T or D row with no Q comes last."""
-    tasks = dict(zip((c[0] for c in s["tt"]), _task_cards(d, s)))
-    needs = dict(zip((c[0] for c in s["dd"]), _dd_cards(d, s)))
-    q_of = {c[0]: _q_of(s["tt_h"], c) for c in s["tt"]}
-    q_of.update({c[0]: _q_of(s["dd_h"], c) for c in s["dd"]})
-    has = {c[0]: bool(task_home(d, c)["all"]) for c in s["tt"]}
-    has.update({c[0]: any(_disc_lookup(d, a) for a in _addresses(" ".join(c))) for c in s["dd"]})
-    cards = []
-    for q in s["qq"]:
-        mine = [k for k, v in q_of.items() if v == q[0]]
-        inner = [tasks[k] for k in mine if k in tasks] + [needs[k] for k in mine if k in needs]
-        with_folder = sum(1 for k in mine if has[k])
-        rows = [("Rows", esc(" · ".join(mine) or "none yet"))]
-        if inner:
-            rows.append(("Questions", '<div class="item-cards">%s</div>' % "".join(inner)))
-        rq = " · ".join(q[2:3]) if len(q) > 2 else ""
-        status = "%d of %d with a folder" % (with_folder, len(mine)) if mine else "no T or D yet"
-        cards.append(_card("q-" + q[0], q[0], q[1] if len(q) > 1 else q[0], "", esc(rq), status,
-                           "ok" if mine and with_folder == len(mine) else ("warn" if with_folder else "mut"),
-                           rows, key=q[0]))        # its runs carry Q<n> among their keys
-    loose = [tasks[k] for k, v in q_of.items() if not v and k in tasks] + \
-            [needs[k] for k, v in q_of.items() if not v and k in needs]
-    return cards, loose
-
-
 def render_story(d, kinds):
     if not d["story"]:
         empty = '<div class="space-empty">No Story yet.</div>'
         return _space("story", "".join(_pane(empty, k) for k, _ in STORY_TABS), _story_panel(d, kinds), STORY_TABS)
-    questions = [c for s in d["story"] for c in _rq_cards(d, s)]
-    roadmap = []
-    if any(s["qq"] for s in d["story"]):
-        general, loose = [], []
-        for s in d["story"]:
-            g, l = _question_cards(d, s)
-            general += g
-            loose += l
-        roadmap.append('<h3 class="space-h">Questions</h3>' + _cards(general, ""))
-        if loose:
-            roadmap.append('<h3 class="space-h">No general question yet</h3>' + _cards(loose, ""))
-    else:                                            # a Story with no Q table: T and D rows as they are
-        tasks = [c for s in d["story"] for c in _task_cards(d, s)]
-        needs = [c for s in d["story"] for c in _dd_cards(d, s)]
-        roadmap.append('<h3 class="space-h">Task questions</h3>' + _cards(tasks, "No C7 row yet."))
-        if needs:
-            roadmap.append('<h3 class="space-h">Discovery questions</h3>' + _cards(needs, ""))
-    unnamed = _unnamed_cards(d)
-    if unnamed:
-        roadmap.append('<h3 class="space-h">Folders no question names yet</h3>' + _cards(unnamed, ""))
-    main = (_pane(_spine_html(d), "spine")
-            + _pane(_cards(questions, "No research question yet."), "questions")
-            + _pane("".join(roadmap), "roadmap"))
+    main = _pane(_spine_html(d), "spine") + _pane(logic_work_html(d), "logic-work")
     return _space("story", main, _story_panel(d, kinds), STORY_TABS)
 
 
@@ -2374,12 +2547,49 @@ table.grid th{{text-align:left;background:var(--soft);font:600 11.5px -apple-sys
 table.grid td{{padding:9px 11px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}}
 table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid tr:last-child td{{border-bottom:0}}
 .idtag,.path{{font:500 12.5px ui-monospace,Menlo,monospace;color:var(--mut)}} .path{{overflow-wrap:anywhere}}
-.bjt details>summary{{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:6px 2px;line-height:1.5}}
-.bjt details>summary::-webkit-details-marker{{display:none}} .bjt summary b{{font-weight:650}}
 .bjt-chev{{color:var(--mut);display:inline-block;width:1em;text-align:center;transition:transform .12s ease}}
-.bjt details[open]>summary>.bjt-chev{{transform:rotate(90deg)}}
-.bjt-j,.bjt-b>.bjt-o{{margin-left:22px}} .bjt>.bjt-j,.bjt>.bjt-o{{margin-left:0}}
-table.grid.bjt-t{{width:calc(100% - 22px);margin:2px 0 10px 22px}} .bjt-o{{font-size:13px;padding:4px 2px}}
+.qc>summary{{list-style:none;cursor:pointer}} .qc>summary::-webkit-details-marker{{display:none}}
+.qc[open]>summary .bjt-chev{{transform:rotate(90deg)}}
+/* Story › High-level logic + Low-level work: one tree, split down the middle (JL 260929) */
+.lw{{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}}
+.lw-row{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.lw-l{{padding:7px 14px;min-width:0}} .lw-r{{padding:7px 14px;border-left:1px solid var(--line);min-width:0}}
+.lw-head{{background:var(--soft);border-bottom:1px solid var(--line);font:700 12px -apple-system,sans-serif;
+ text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}}
+.lw-q+.lw-q{{border-top:1px solid var(--line)}}
+.lw-q>summary{{display:flex;gap:8px;align-items:baseline;padding:12px 14px;margin-bottom:6px;font-weight:650;font-size:15.5px;line-height:1.45;
+ background:var(--soft);border-bottom:1px solid var(--line)}}
+.lw-q>summary:hover{{background:color-mix(in srgb,var(--acc) 5%,var(--soft))}}
+.lw-q.runs-selected>summary,.lw-h.runs-selected,.lw-w.runs-selected{{background:color-mix(in srgb,var(--acc) 9%,var(--card));box-shadow:inset 3px 0 0 var(--acc)}}
+.lw-g .lw-l{{padding-left:40px}} .lw-g>.lw-l,.lw-g>.lw-r{{padding-top:0;padding-bottom:10px}}
+.lw-k{{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:16px 0 8px;padding:6px 10px;border-left:3px solid currentColor;
+ border-radius:0 7px 7px 0;font:700 12.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}}
+.lw-l>.lw-k:first-child,.lw-r>.lw-k:first-child{{margin-top:4px}}
+.lw-kn{{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85}}
+.lw-k-hyp,.lw-k-work{{color:var(--acc);background:color-mix(in srgb,var(--acc) 9%,transparent)}}
+.lw-k-claim{{color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}}
+.lw-k-contrib{{color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}}
+.lw-k-found{{color:var(--mut);background:color-mix(in srgb,var(--mut) 12%,transparent)}}
+.lw-c{{margin:0 0 10px}}
+.lw-w{{padding:6px 8px;margin:0 -8px 6px;border-radius:8px}} .lw-w:hover{{background:var(--soft)}}
+.lw-w.lw-lit{{background:color-mix(in srgb,var(--acc) 7%,var(--card))}}
+.lw-w>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:4px;align-items:baseline}}
+.lw-w>summary::-webkit-details-marker{{display:none}} .lw-w[open]>summary .bjt-chev{{transform:rotate(90deg)}}
+.lw-sum{{min-width:0}} .lw-folders{{margin:4px 0 2px 1.3em}}
+.lw-wline{{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline}} .lw-wq{{font-weight:600;font-size:14.5px}}
+.lw-tags{{display:flex;gap:4px 12px;flex-wrap:wrap;margin:3px 0 0}} .lw-for{{color:var(--acc);font-size:12.5px;font-weight:600}}
+.lw-also,.lw-size{{color:var(--mut);font-size:12.5px}}
+.lw-h{{cursor:pointer;border-radius:7px;padding:5px 8px;margin:0 -8px 6px}} .lw-h:hover{{background:var(--soft)}}
+.lw-say{{color:var(--mut);font-size:14px;line-height:1.5;margin-top:3px}}
+.lw-text{{font-size:14.5px}}
+.lw-hline{{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:baseline;line-height:1.45}}
+.lw-top{{display:flex;justify-content:space-between;align-items:center;gap:8px}} .lw-body{{margin-top:3px;font-size:15px;line-height:1.5}} .lw-name{{font-weight:650}} .lw-mark{{font-size:14px}}
+.bj-home,.bj-none{{font-size:12.5px}}
+.bj-b,.bj-j,.bj-t{{font-size:14px;line-height:1.55;display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}}
+.bj-j{{margin-left:16px}} .bj-t{{margin-left:32px}}
+.bj-r>summary{{cursor:pointer;color:var(--mut);font-size:12.5px}} .bj-rn{{font-size:12.5px}} .bj-run{{margin-left:14px;font-size:12.5px}}
+@media(max-width:1100px){{.lw-row{{grid-template-columns:minmax(0,1fr)}}
+ .lw-r{{border-left:0;padding-left:40px}} .lw-head .lw-r{{display:none}}}}
 code{{font:12.5px ui-monospace,Menlo,monospace}}
 .sec-list{{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}}
 .sec-row{{display:grid;grid-template-columns:2.4em minmax(0,1fr) 4.5em 12em 4.5em;gap:10px;align-items:baseline;
@@ -2441,16 +2651,18 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
  var DEFAULT='{default_space}';
  /* the pre-260927 routes (five Spaces) still land on the view that holds their content */
  var ALIAS={{'setup':'sections','run':'sections','run/page':'sections/table','run/evidence':'sections/evidence',
-  'run/supporting':'story/roadmap','run/gates':'delivery/latex/checks','run/workflow':'story',
+  'run/supporting':'story/logic-work','run/gates':'delivery/latex/checks','run/workflow':'story',
+  'story/questions':'story/logic-work',
   'ideation/pool':'ideation','ideation/evidence':'ideation','ideation/admission':'ideation',
-  'story/claims':'story/questions','story/tasks':'story/roadmap','story/sections':'sections/narrative',
+  'story/claims':'story/logic-work','story/tasks':'story/logic-work','story/roadmap':'story/logic-work',
+  'story/sections':'sections/narrative',
   'story/evidence':'sections/evidence','delivery/manuscript':'delivery/latex/artifacts',
   'delivery/sections':'sections/table','delivery/displays':'delivery/latex/artifacts',
   'delivery/checks':'delivery/latex/checks','setup/sessions':'sections/narrative'}};
  var panels={{}};
  document.querySelectorAll('.panel[data-space]').forEach(function(p){{panels[p.dataset.space]=p;}});
  function emit(name,detail){{document.dispatchEvent(new CustomEvent(name,{{detail:detail}}));}}
- function clearSel(p){{p.querySelectorAll('.runs-selected').forEach(function(x){{x.classList.remove('runs-selected');}});}}
+ function clearSel(p){{p.querySelectorAll('.runs-selected,.lw-lit').forEach(function(x){{x.classList.remove('runs-selected','lw-lit');}});}}
  function lazy(p){{p.querySelectorAll('iframe[data-src]').forEach(function(f){{
   if(!f.closest('[hidden]')&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.src);}});}}
  function pick(space,parts){{
@@ -2490,20 +2702,44 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
    history.replaceState(null,'','#'+space+(t?'/'+t:'')+(v?'/'+v:''));
    return;
   }}
+  /* a fold of the Questions tree opens by default: its first click selects it, the next one closes it */
+  var sm=ev.target.closest('details.qc[data-key]>summary');
+  if(sm&&!ev.target.closest('a,button')){{
+   var f=sm.parentElement,fp=f.closest('.panel');
+   if(!f.open||!f.classList.contains('runs-selected')){{
+    if(f.open)ev.preventDefault();
+    clearSel(fp);f.classList.add('runs-selected');emit('space-target',{{space:fp.dataset.space,target:f.dataset.key}});return;}}
+   f.classList.remove('runs-selected');
+   var above=f.parentElement.closest('details.qc[data-key][open],details.item-card[data-key][open]');
+   if(above)above.classList.add('runs-selected');
+   emit('space-target',{{space:fp.dataset.space,target:above?above.dataset.key:''}});return;
+  }}
   if(ev.target.closest('a,button,summary,.runs-panel'))return;
-  var el=ev.target.closest('.sec-row[data-key],.spine-card[data-key]');if(!el)return;
+  var el=ev.target.closest('.sec-row[data-key],.spine-card[data-key],.lw-h[data-key],.lw-w[data-key]');if(!el)return;
   var panel=el.closest('.panel'),same=el.classList.contains('runs-selected');
   clearSel(panel);if(!same)el.classList.add('runs-selected');
+  if(!same&&el.classList.contains('lw-h')){{var blk=el.closest('.lw-q')||panel,k=' '+el.dataset.key+' ';
+   blk.querySelectorAll('.lw-w[data-for]').forEach(function(w){{if((' '+w.dataset.for+' ').indexOf(k)>=0){{w.classList.add('lw-lit');
+    if(!w.open){{auto.add(w);w.open=true;}}}}}});}}
   emit('space-target',{{space:panel.dataset.space,target:same?'':el.dataset.key}});
  }});
  document.addEventListener('keydown',function(ev){{var r=ev.target.closest&&ev.target.closest('.sec-row');if(r&&ev.key==='Enter')r.click();}});
  /* Opening a card selects it for the Runs panel; closing it hands the selection back to the card around it. */
+ var auto=new WeakSet();   /* work a picked hypothesis opened: its toggle must not steal the pick */
  document.addEventListener('toggle',function(ev){{
+  var w=ev.target;
+  if(w.matches&&w.matches('details.lw-w[data-key]')){{
+   if(auto.has(w)){{auto.delete(w);return;}}
+   var wp=w.closest('.panel');if(!wp)return;
+   if(w.open){{clearSel(wp);w.classList.add('runs-selected');emit('space-target',{{space:wp.dataset.space,target:w.dataset.key}});}}
+   else if(w.classList.contains('runs-selected')){{w.classList.remove('runs-selected');emit('space-target',{{space:wp.dataset.space,target:''}});}}
+   return;}}
   var c=ev.target;if(!c.matches||!c.matches('details.item-card[data-key]'))return;
   var p=c.closest('.panel');if(!p)return;
   if(c.open){{clearSel(p);c.classList.add('runs-selected');emit('space-target',{{space:p.dataset.space,target:c.dataset.key}});return;}}
-  if(!c.classList.contains('runs-selected'))return;
-  c.classList.remove('runs-selected');
+  var held=c.querySelector('.runs-selected');
+  if(!c.classList.contains('runs-selected')&&!held)return;
+  c.classList.remove('runs-selected');if(held)held.classList.remove('runs-selected');
   var up=c.parentElement.closest('details.item-card[data-key][open]');
   if(up)up.classList.add('runs-selected');
   emit('space-target',{{space:p.dataset.space,target:up?up.dataset.key:''}});

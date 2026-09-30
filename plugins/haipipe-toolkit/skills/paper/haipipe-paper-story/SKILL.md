@@ -6,7 +6,7 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.10.1"
+  version: "0.13.0"
   last_updated: "2026-09-29"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
@@ -172,11 +172,56 @@ Cover:
 - **Question logic** — which questions depend on others and how their answers
   jointly resolve the paper's puzzle.
 
-Use one row per RQ:
+Write one block per question (JL 260929: "the question is the main block"): a
+`#### 3.N · Question N · RQn` heading, the question's own fields, then four
+groups, each a bold label and one line per item. Every link is written once,
+pointing up the chain, so the block reads as a narrative: the question, the
+guesses at its answer, what the paper would claim, why a reader would care,
+and the work that tests each guess.
 
-```text
-RQ | question | why the paper needs it | answer form | Discovery | Task | intended claim/Section | answer state
+```markdown
+#### 3.1 · Question 1 · RQ1
+- **Question**: <the question>
+- **Why the paper needs it**: <its job in the paper>
+- **Answer form**: <what evidence would answer it>
+- **Answer state**: <where the answer stands>
+- **Section**: Results, Discussion
+
+**Hypotheses**
+- **1a** · <Short name>: <one plain sentence> · tested by E1
+- **1b** · <Short name>: <one plain sentence> · tested by E2
+
+**Potential claims**
+- **1a** · C1 · from 1a · <Short name>: <the statement the paper would make>
+  - **Role**: <primary · mechanism · scope …>
+  - **Now**: <where it stands and what gates it>
+  - **If it fails**: <what the paper becomes>
+
+**Potential contributions**
+- rests on 1a, 1b · <Short name>: <what the reader gains>
+
+**Potential work**
+- **T1** · for 1a, 1b
+- **T9** · for 1a · b04.j03.t01, b04.j03.t02
+- **D1** · for 1a, 1b
 ```
+
+Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
+A hypothesis and the claim it yields share a code; a claim keeps its paper-wide id
+(C1, C2, …, used by the Pitch, §8 and the Section Pages) right after its code. Every
+item is a short name, a colon, and one plain sentence (JL 260929: "short-phrase-name:
+explanation"), so the bold names alone read as the argument. A hypothesis guesses an
+answer and names the §5 evidence rows (E1, E2, …) that test it. A claim says which
+hypothesis it comes from; a hypothesis may yield no claim (a corollary the paper will
+never claim says so as `- none: <why>`). A contribution names the claims it rests on.
+A work item names a §7 Task or §6 Discovery row and the hypotheses it tests;
+addresses after it narrow a row several questions use to the folders this question
+needs. The foundation every question stands on (the training set, the model runs,
+their scores) is not listed: its §7 row says `every question`, and it belongs to
+every block. The Paper Workbench reads these blocks for its High-level logic +
+Low-level work tab; the older one-row-per-RQ table is still read (`RQ | question |
+why the paper needs it | answer form | Discovery | Task | intended claim/Section |
+answer state`), with one hypothesis per §5 evidence row.
 
 The RQ text describes the paper's inquiry. State and cross-references keep the
 inquiry traceable, but they are secondary to the question and answer logic.
@@ -325,11 +370,25 @@ Describe the evidence-producing study work required to answer the RQs. Cover:
 - **Dependency and destination** — what must precede the task and which RQ,
   E-row, claim, display, and Section its result will serve.
 
-Use one row per coherent paper-level evidence block:
+Use one row per coherent paper-level evidence block, named as the question it
+answers and tagged with its stage, and order the work as it runs (JL 260929:
+"the work should follow the logics"; name it "in the question format"):
 
 ```text
-T | question | folder | study material and design | required contrast | result form | interpretation branches | depends on | feeds RQ/E/Section | Q
+T | question | stage | study material and design | required contrast | result form | interpretation branches | depends on | feeds
 ```
+
+Stages, in run order: `data` (build or profile the data), `training` (train the
+models), `evaluation` (score them, or add a new readout), `results` (collect the
+scores and fit), `analysis` (one contrast or refit per row), `figures` (draw the
+displays). Include the upstream work (data, training, evaluation) even when it
+already ran: a paper whose Task Roadmap starts at analysis hides what its
+numbers stand on. A row every research question needs says `every question` in
+its feeds cell; the others are named by the §3 question blocks. The question is
+plain: "Does capacity still stop helping once the model-size limit is removed?",
+not "Refit α with the bound relaxed". Write its folders in full in the feeds or
+design cell (`Task: b04.j01.t01, b04.j01.t02.`); work built in another project
+names that project's path.
 
 Distinguish the evidence needed for a sufficient paper from optional analyses.
 Describe meaningful dependencies and feasibility limits (available data,
@@ -352,7 +411,9 @@ evidence into one reader-ordered argument. Cover:
   paper addresses, the question that reader brings, and the contribution the
   telling promises without changing the Seed's identity.
 - **Claim system** — each exact proposition, its role, E-row parent, evidence
-  state, boundary, and intended landing place.
+  state, boundary, and intended landing place. When §3 Research Questions
+  holds the hypotheses (one block per question), this §8 Section Narrative
+  names their roles and points to §3 instead of restating each statement.
 - **Argument arc** — the dependency order among puzzle, gap, mechanism,
   evidence, boundary, contribution, and implication.
 - **Reader journey** — what the reader believes, asks, sees, and may conclude
