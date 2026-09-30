@@ -17,7 +17,7 @@ description: >-
   row, describe every column, synth_df, synthetic patient, synthetic rows.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -304,6 +304,11 @@ Rules
 12. **Every table notebook shows its synth_df**, and every dataset notebook shows
    the same person through all its tables (§ synth_df). A notebook is generated
    from its `.py`: never edit it; change the `.py` and rebuild (JL 260929).
+   Where the raw rows sit on this machine and the notebook may stay on it
+   (WellDoc Proj01 `b00`), the one table notebook draws three real people
+   instead, right after "What is this table?": one with few rows, one typical,
+   one with many, picked with a fixed seed, shown as person 1 to 3 and never by
+   id. That notebook holds real rows, so git ignores it (JL 260929).
 
 
 Related

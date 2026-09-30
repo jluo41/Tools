@@ -5,6 +5,12 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.7] - 2026-09-29 - One notebook with real people where rows stay local (JL 260929)
+
+- WellDoc Proj01 `b00`: each table Task keeps one notebook, the whole table plus three real people
+  (few, typical, many rows), instead of a synth_df; it holds real rows, so git ignores the table
+  Tasks' `notebooks/` folders (`haipipe-task-for-description` rule 12).
+
 ## [0.5.6] - 2026-09-29 - Reader notebooks with synth_df (JL 260929)
 
 - Raw understanding Block `b00`: every table Task has a reader notebook

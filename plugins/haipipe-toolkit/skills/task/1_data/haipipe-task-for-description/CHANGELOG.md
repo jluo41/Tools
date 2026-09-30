@@ -5,6 +5,13 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.1] — 2026-09-29
+
+- Rule 12, local real rows (JL 260929: "we just need to use the real data, and we just need one
+  notebook"): where the raw rows sit on this machine (WellDoc Proj01 `b00`), the one table notebook
+  draws three real people (few, typical, many rows; fixed seed; person 1 to 3, never an id) right
+  after "What is this table?", instead of a synth_df, and git ignores the table notebooks.
+
 ## [0.4.0] — 2026-09-29
 
 - `synth_df` (JL 260929: "I want the synth df to be the task level and task type level"): the Table

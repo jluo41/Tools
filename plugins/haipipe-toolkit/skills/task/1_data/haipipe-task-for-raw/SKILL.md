@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.6"
+  version: "0.5.7"
   last_updated: "2026-09-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -134,7 +134,9 @@ b00_rawdata/
   columns (`haipipe-task-for-description` § synth_df); `t93` has the dataset notebook, the same
   person through every table. For PHI the profile pass is a server `.cmd` Run, which brings no
   notebook back, so the Job's `src/build_notebooks.py` builds them on the laptop from the fetched
-  Results (REACH PD2D `j51_reachpd2d_v260922_raw`, JL 260929).
+  Results (REACH PD2D `j51_reachpd2d_v260922_raw`, JL 260929). Where the raw rows sit on this
+  machine (WellDoc Proj01 `b00`), the table notebook draws three real people instead, in the same
+  one notebook, and git ignores it (`haipipe-task-for-description` rule 12, JL 260929).
 - `datapoint_timeline` and `source_handoff` are `haipipe-data-raw`'s
   `understand` and `hand-off` as Tasks. Readiness is computed from gates
   (every table routed once, every table profiled, no blocking question), never
