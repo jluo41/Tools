@@ -353,19 +353,6 @@ def page_text(
         "inconclusive": "⏸️ INCONCLUSIVE",
         "blocked": "⏸️ BLOCKED",
     }.get(status, "🟡 ACTIVE")
-    records_tick = {
-        "ok": "✅",
-        "inconclusive": "❄️",
-        "blocked": "❄️",
-    }.get(status, "🔨")
-    has_runs = any((task_path / "runs").glob("r*.sh"))
-    evidence_tick = (
-        "✅"
-        if has_runs and status == "ok"
-        else "🔨"
-        if has_runs and status not in {"inconclusive", "blocked"}
-        else "❄️"
-    )
     normalized_question = re.sub(r"\s+", " ", question).strip()
     subject = display_phrase(task_name[4:], limit=6)
     page_heading = heading or page_title(task_name[4:])
@@ -444,26 +431,6 @@ They do not become Paper Run receipts unless a canonical Subject is admitted and
 Structural migration establishes the BJTR address and preserves existing records, but it does not verify or backfill their source lineage.
 The next evidence action is to admit a canonical Subject as a Run, revise the Page from completed Results, or explicitly hold the unresolved boundary.
 
-## Aims
-### A1 · 🔎 {division_names[0]}
-- ✅ A1.1 · The Task Page states one bounded external-evidence question and its admission rule.
-  **Done when:** The question, source boundary, and canonical-Subject gate can be found from this Page.
-  **Now:** The question and admission rule are visible here; `discovery.yaml` owns the detailed source boundary.
-
-### A2 · 📚 {division_names[1]}
-- {records_tick} A2.1 · The root Page realizes the `{discovery_type}` reader promise from the preserved records.
-  **Done when:** The Page carries the type-specific synthesis rather than only pointing at a legacy record.
-  **Now:** Existing records are preserved and linked; synthesis into the root Page remains explicit migration work unless this Aim is met.
-
-### A3 · 🔗 {division_names[2]}
-- {evidence_tick} A3.1 · New evidence is traceable to one canonical Subject per Run.
-  **Done when:** Every newly admitted source has a same-stem Run, Result, runtime receipt, facts, and authoritative Bib entry.
-  **Now:** Existing indexes are preserved; historical Paper Runs were not inferred during structural migration.
-
-### A4 · 🧭 {division_names[3]}
-- ✅ A4.1 · The Page states what migration does not establish and the lawful next evidence action.
-  **Done when:** A reader can distinguish preserved legacy material from verified Result-backed evidence and choose the next route.
-  **Now:** The limitation and the admit, revise, or hold routes are stated in Content.
 """
 
 

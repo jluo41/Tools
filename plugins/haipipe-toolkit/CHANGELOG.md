@@ -3,6 +3,12 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### discovery: Pages drop `## Aims` · 2026-10-01
+
+- Discovery Task Pages follow the `haipipe-page` Page Face, Opening → Content; Aims are
+  backstage. `paper_runs.py check` no longer requires `## Aims` and still checks a legacy one;
+  `migrate_bjtr.py` stops writing it (`haipipe-discovery` 0.20.0).
+
 ### workbench-paper: four Spaces, Runs beside each · 2026-09-27
 
 - The Paper Workbench now uses the Page workbench's grammar (JL 260927): Ideation · Story ·

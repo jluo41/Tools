@@ -102,10 +102,9 @@ report:
             self.assertIn("folder-kind: discovery", page)
             self.assertNotIn("## Writing Style", page)
             self.assertIn("### 2 · Type payload", page)
-            self.assertIn("### A2 · 📚 Type payload", page)
-            self.assertIn("- 🔨 A2.1", page)
             self.assertIn("### 3 · Evidence map", page)
-            self.assertIn("- ❄️ A3.1", page)
+            # Page Face is Opening -> Content; Aims are backstage (haipipe-page 0.121).
+            self.assertNotIn("## Aims", page)
             readme = (bank.parent / "README.md").read_text(encoding="utf-8")
             self.assertIn(
                 "discoveries/b01_project_evidence_board/"
@@ -175,8 +174,7 @@ question: What failure modes remain?
             self.assertIn("status: executing", manifest)
             self.assertNotIn("\nreport:", manifest)
             self.assertIn("state: 🟡 ACTIVE", page)
-            self.assertIn("- ✅ A1.1", page)
-            self.assertIn("- 🔨 A2.1", page)
+            self.assertNotIn("## Aims", page)
 
     def test_repair_refreshes_only_migration_page_and_preserves_heading(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

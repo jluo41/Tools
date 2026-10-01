@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.19.0"
-  last_updated: "2026-09-29"
+  version: "0.20.0"
+  last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md
 ---
 
@@ -435,7 +435,7 @@ python scripts/paper_runs.py build-bib <task> --write
 Write the closing report, then run the final deterministic gate:
 
 ~~~bash
-# append/reconcile discovery.yaml report: and Page/Aims state
+# append/reconcile discovery.yaml report: and Page state
 python scripts/paper_runs.py check <task>
 ~~~
 
@@ -443,10 +443,10 @@ After the shared Page workflow has produced and CHECKed the root Task Page,
 use `haipipe-workbench-page/ref/evidence/citations.md` to validate the derived
 aggregate under `draft/evidence/bibex/`, append
 `discovery.yaml report:`, reconcile its Run counts and canonical `evidence_bib`
-path with the inventory, reconcile Page/Aims state, set the truthful terminal
+path with the inventory, reconcile the Page `state:` line, set the truthful terminal
 status, and append project log events. The checker reports Result-level
 citation-verification counts and rejects a legacy root `<task>/evidence/` lane.
-D1 CLOSE cannot report `ok` when a material Run is unresolved, a load-bearing Aim
+D1 CLOSE cannot report `ok` when a material Run is unresolved, a load-bearing (backstage) Aim
 is held, an aggregated complete Result citation is not person-verified in its
 runtime receipt, or the checker fails. Missing work/gates report `blocked`;
 `inconclusive` is reserved for completed admissible evidence with verified
@@ -489,8 +489,9 @@ closed. Without that receipt, they reopen as `executing`. Use
 `migrate_bjtr.py --repair-pages` (dry-run first, then `--write`) to refresh only
 Pages carrying the deterministic migration signature; authored Pages are left
 untouched. The checker requires the current Page frame, a bounded Opening, a
-face diagram per Content division, Content/Aim name agreement, and Page/Aim
-closure. Writing rules now live in Outline requirement records; `## Writing
+face diagram per Content division, and, only on a legacy Page that still
+carries `## Aims`, Content/Aim name agreement and Aim closure; a current Page
+is Opening → Content with Aims backstage. Writing rules now live in Outline requirement records; `## Writing
 Style`, `## Diagram`, and retired process sections are migration findings, not
 current Page sections.
 

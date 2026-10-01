@@ -8,6 +8,15 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.20.0 · 2026-10-01 · Discovery Pages drop `## Aims` (Page Face is Opening → Content)
+
+- Aligns Discovery with `haipipe-page` 0.121: the reader Page is Opening → Content, and Aims are backstage records, never Page sections (JL 261001: "we have no more Aims").
+- `scripts/paper_runs.py`: `page-aims-missing` is gone. A Page without `## Aims` passes; a legacy Page that still carries one is checked as before (Aim set, Aim/division name agreement, `page-done-with-open-aim`). Content now runs to the next `##` heading or end of file (`CONTENT_RE`), so division-diagram checks work with or without Aims.
+- `scripts/migrate_bjtr.py`: migrated Pages are written without an Aims block (the migration signature is the `method:` line, unchanged).
+- Docs: `ref/page-types.md` (Page Face, one-division-per-run rule 4), `SKILL.md` (CLOSE and migration notes), `haipipe-discovery-inquiry` SKILL and `ref/workflow-table.md`, `haipipe-discovery-synthesize` SKILL say Aims are backstage.
+- Checked: `tests/` 83 passed (3 new: Page without Aims in both layouts; diagram rule still enforced without Aims; 2 migration tests now assert no `## Aims`).
+- Also: frontmatter `version:` was left at 0.19.0 by the 0.19.1 entry; it now reads 0.20.0.
+
 ## 0.19.1 · 2026-10-01 · An abstract comes from OpenAlex when PubMed has none
 
 - `scripts/paper_source_access.py`: when PubMed has no abstract, the abstract is rebuilt from OpenAlex's `abstract_inverted_index`, and `abstract.source` names the OpenAlex record. PubMed does not index the business, OR and IS journals (Management Science, ISR, MISQ, Marketing Science, JMR), so 16 of 17 UTD-24 Paper Runs for Paper-MessageTradeOffEgm (`discoveries/b01_sms_engagement_evidence/j05_.../t01_utd_related_papers`) came out metadata-only. A sibling Task had patched the same gap inside each Ticket.

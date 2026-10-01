@@ -367,11 +367,15 @@ def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
     return ".".join(parts), "".join(parts), errors
 
 
+# `## Content` runs to the next level-2 heading (a legacy `## Aims`) or the end.
+CONTENT_RE = re.compile(r"(?ms)^## Content\s*\n(.*?)(?=^## \S|\Z)")
+
+
 def _run_division_errors(
     page: Path,
     body: str,
     division_pairs: list[tuple[str, str]],
-    aim_pairs: list[tuple[str, str]],
+    aim_pairs: list[tuple[str, str]] | None,
     run_ids: list[str] | None,
 ) -> list[str]:
     errors: list[str] = []
@@ -379,8 +383,8 @@ def _run_division_errors(
     names = [name.strip() for _, name in division_pairs]
     if numbers != list(range(1, len(numbers) + 1)) or len(numbers) < 2:
         errors.append(f"page-run-division-set-invalid: {page}: {numbers}")
-    aim_numbers = [int(number) for number, _ in aim_pairs]
-    if aim_numbers != numbers:
+    aim_numbers = [int(number) for number, _ in aim_pairs or []]
+    if aim_pairs is not None and aim_numbers != numbers:
         errors.append(
             f"page-run-aim-set-invalid: {page}: A{aim_numbers} != {numbers}"
         )
@@ -442,8 +446,10 @@ def _page_errors(
             errors.append(f"page-opening-too-long: {page}: {len(visible)}")
     if not re.search(r"(?m)^## Content\s*$", text):
         errors.append(f"page-content-missing: {page}")
-    if not re.search(r"(?m)^## Aims\s*$", text):
-        errors.append(f"page-aims-missing: {page}")
+    # The Page Face is Opening -> Content (haipipe-page 0.121). Aims are
+    # backstage target records; a legacy Page that still carries `## Aims`
+    # is checked for Aim/division agreement, a current Page carries none.
+    has_aims = re.search(r"(?m)^## Aims\s*$", text) is not None
 
     division_pairs = re.findall(r"(?m)^### ([0-9]+) · (.+?)\s*$", text)
     divisions = {number: name.strip() for number, name in division_pairs}
@@ -455,13 +461,13 @@ def _page_errors(
     layout_match = LAYOUT_RE.search(text)
     layout = layout_match.group(1) if layout_match else None
     if layout == RUN_DIVISION_LAYOUT:
-        content_match = re.search(r"(?ms)^## Content\s*\n(.*?)(?=^## Aims\s*$)", text)
+        content_match = CONTENT_RE.search(text)
         errors.extend(
             _run_division_errors(
                 page,
                 content_match.group(1) if content_match else "",
                 division_pairs,
-                aim_pairs,
+                aim_pairs if has_aims else None,
                 run_ids,
             )
         )
@@ -473,7 +479,7 @@ def _page_errors(
     else:
         if len(division_pairs) != 4 or set(divisions) != {"1", "2", "3", "4"}:
             errors.append(f"page-discovery-division-set-invalid: {page}")
-        if len(aim_pairs) != 4 or set(aim_groups) != {"1", "2", "3", "4"}:
+        if has_aims and (len(aim_pairs) != 4 or set(aim_groups) != {"1", "2", "3", "4"}):
             errors.append(f"page-discovery-aim-set-invalid: {page}")
         for index, role in enumerate(DISCOVERY_PAGE_ROLES, start=1):
             name = divisions.get(str(index), "")
@@ -491,7 +497,7 @@ def _page_errors(
                 f"{aim_name!r} != {division_name!r}"
             )
 
-    content = re.search(r"(?ms)^## Content\s*\n(.*?)(?=^## Aims\s*$)", text)
+    content = CONTENT_RE.search(text)
     if content:
         body = content.group(1)
         headings = list(re.finditer(r"(?m)^### [0-9]+ · .+?\s*$", body))

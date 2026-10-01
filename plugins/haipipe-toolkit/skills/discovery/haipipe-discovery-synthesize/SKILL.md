@@ -111,7 +111,7 @@ local Bib, or competing Page artifact.
    `research-lit`, `comm-lit-review`, or `academic-researcher`), but keep the
    worker's output as a draft packet. If the Page is in interactive work, keep
    candidate prose in the Outline preview and let the Page Run settle it. The
-   Page phase remains the only writer of Page Content, Aims, and CHECK receipts.
+   Page phase remains the only writer of Page Content, backstage Aim records, and CHECK receipts.
 5. Organize the root Page by the reader's answer and themes, not by one paper
    per paragraph. A typed `summary.md`, `verdict.md`, or `landscape.md` is an
    optional compact Task-side receipt; it never replaces the root Page.

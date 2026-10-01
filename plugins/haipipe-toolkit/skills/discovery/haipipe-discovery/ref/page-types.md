@@ -60,8 +60,10 @@ type or the Topic is invalid.
 
 ## Page Face contract
 
-The Page keeps the shared `haipipe-page` frame: Opening, generated Outline,
-Content, and Aims. Its Content makes four promises, with headings chosen for the
+The Page keeps the shared `haipipe-page` Page Face: Opening, then Content.
+Outline, Aims and other process records are backstage in the Page Folder and
+are never added as Page sections (a legacy `## Aims` is still checked when
+present). Its Content makes four promises, with headings chosen for the
 subject rather than copied mechanically. Each Discovery Content division may
 carry its own captioned face diagram; a whole-Page diagram is not a fifth
 on-stage section. Do not author `## Outline`, `## Diagram`, or `## Writing Style`;
@@ -82,8 +84,9 @@ technical-report grammar belongs only to `folder-kind: task`.
 
 In the four-division layout the Page synthesizes Results many-to-many. It may quote or compress them, but
 must not become a pasted `notes.md` ledger or imply one paper per paragraph.
-`Aims` judge whether the article keeps its reader promise; Paper Run status is
-derived separately from runtime receipts.
+Backstage Aim records, when a workflow keeps them, judge whether the article
+keeps its reader promise; Paper Run status is derived separately from runtime
+receipts.
 
 ## One division per Run (`layout: one-division-per-run`)
 
@@ -103,10 +106,9 @@ requires:
    (Video, Title, Creator, Result, State), then the links and that Run's notes.
 3. **The last division is `Limits · <what is still open>`**: the transcript
    and source-list pointers, what is unchecked, and the next move.
-4. **Aims mirror divisions one to one**, with identical names: A1 for the
-   concept, one Aim per Run ("rNN's key claims are checked against the
-   original video"), and a last Aim that closes when every table row reads
-   `checked`.
+4. **No Aims on the Page.** The Concept table's `State` column carries each
+   Run's checked state. A legacy Page that still carries `## Aims` must mirror
+   the divisions one to one with identical names, and the checker enforces it.
 
 Every division still opens with its `**Label**:` line and a text block. In
 this layout a Result belongs to exactly one division, which is the point: the

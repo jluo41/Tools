@@ -787,6 +787,41 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertEqual(0, paper_runs.command_build_bib(topic, None, True))
             self.assertTrue(paper_runs.default_bib_path(topic).is_file())
 
+    def test_page_without_aims_is_valid(self) -> None:
+        # Page Face is Opening -> Content; Aims are backstage (haipipe-page 0.121).
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_pair(topic, "r01_example2026_demo")
+            page = topic / f"{topic.name}.md"
+            text = page.read_text(encoding="utf-8")
+            page.write_text(text[: text.index("## Aims")].rstrip() + "\n", encoding="utf-8")
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertEqual([], errors)
+
+    def test_run_division_page_without_aims_is_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            page = topic / f"{topic.name}.md"
+            text = page.read_text(encoding="utf-8")
+            page.write_text(text[: text.index("## Aims")].rstrip() + "\n", encoding="utf-8")
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertEqual([], page_errors_only(errors), errors)
+
+    def test_page_without_aims_still_needs_division_diagrams(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_pair(topic, "r01_example2026_demo")
+            page = topic / f"{topic.name}.md"
+            text = page.read_text(encoding="utf-8")
+            text = text[: text.index("## Aims")].rstrip() + "\n"
+            text = text.replace("**Open decision**: what remains and where the inquiry goes next.\n", "")
+            page.write_text(text, encoding="utf-8")
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(e.startswith("page-content-division-diagram-missing:") for e in errors),
+                errors,
+            )
+
     def test_missing_bib_fails_complete_result(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))

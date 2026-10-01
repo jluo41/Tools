@@ -17,7 +17,7 @@ metadata:
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "four ordered role headings: Question and boundary, Type payload, Evidence map, Limits and next move; each adds a subject-specific title and owns the same-name Aim group"
+    shape: "four ordered role headings: Question and boundary, Type payload, Evidence map, Limits and next move; each adds a subject-specific title; Aims are backstage records, not Page sections"
 ---
 
 # /haipipe-discovery-inquiry · Discovery owner contract and Run Workflow
@@ -97,7 +97,7 @@ select the empirical `page-type: task` compatibility grammar.
 ## Page Face
 
 The root same-stem Page writes `folder-kind: discovery` and follows the shared
-Opening → generated Outline → Content → Aims frame. Content has four ordered
+Page Face: Opening → Content (Outline and Aims are backstage records). Content has four ordered
 roles; the words before the second ` · ` are fixed and the rest is specific to
 the inquiry. A face diagram belongs inside each Content division; there is no
 top-level `## Diagram` or authored `## Outline` section:
@@ -192,7 +192,7 @@ Task Result must be complete and bound. D1 closure requires `paper_runs.py check
 admitted Run is resolved or explicitly held, the Page answers its question at
 the promised `discovery_type`, and Page state agrees with `discovery.yaml`.
 `report:` supports `reported`; `ok` additionally requires the Result-backed
-Evidence map, the Outline CITE aggregate, and all load-bearing Page Aims
+Evidence map, the Outline CITE aggregate, and all load-bearing backstage Aims
 to be met. Non-load-bearing limitations may remain recorded, but a held
 load-bearing Aim forbids `ok`. Every complete Result entering the aggregate
 must also carry the
