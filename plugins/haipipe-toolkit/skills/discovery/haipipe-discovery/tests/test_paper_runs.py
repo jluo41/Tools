@@ -822,6 +822,14 @@ class PaperRunContractTest(unittest.TestCase):
                 errors,
             )
 
+    def test_quote_inside_braced_value_is_literal(self) -> None:
+        text = '@InProceedings{pmlr-v32-gentile14,\n  title = {Online Clustering of Bandits},\n  abstract = {clustering of exploration-exploitation (\u201cbandit") strategies.}\n}\n'
+        match = paper_runs.BIB_START_RE.search(text)
+        self.assertTrue(paper_runs._balanced_entry(text, match).endswith("}"))
+        quoted = '@misc{K2026, title = "A {B} title", year = 2026}'
+        match = paper_runs.BIB_START_RE.search(quoted)
+        self.assertEqual(quoted, paper_runs._balanced_entry(quoted, match))
+
     def test_missing_bib_fails_complete_result(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))

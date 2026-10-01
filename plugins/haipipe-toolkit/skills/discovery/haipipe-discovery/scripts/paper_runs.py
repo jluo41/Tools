@@ -147,6 +147,7 @@ def _balanced_entry(text: str, start: re.Match[str]) -> str:
     closer = "}" if opener == "{" else ")"
     open_at = text.find(opener, start.start())
     depth = 0
+    braces = 0  # every `{` open at this point, including the entry's own
     in_quote = False
     escaped = False
     for index in range(open_at, len(text)):
@@ -157,11 +158,18 @@ def _balanced_entry(text: str, start: re.Match[str]) -> str:
         if char == "\\":
             escaped = True
             continue
-        if char == '"':
+        # A `"` delimits a value only at field level; inside a braced value it is
+        # a literal character (PMLR's pmlr-v32-gentile14 abstract: `(“bandit")`).
+        inside_value = braces - (1 if opener == "{" else 0)
+        if char == '"' and inside_value <= 0:
             in_quote = not in_quote
             continue
         if in_quote:
             continue
+        if char == "{":
+            braces += 1
+        elif char == "}":
+            braces -= 1
         if char == opener:
             depth += 1
         elif char == closer:

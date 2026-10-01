@@ -8,6 +8,11 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.20.1 · 2026-10-01 · A `"` inside a braced Bib value is literal
+
+- `scripts/paper_runs.py::_balanced_entry`: a straight `"` toggled quote mode at any depth, so PMLR's own entry for `pmlr-v32-gentile14` (abstract `(“bandit")`) was refused as "unbalanced" by both `paper_bib_fetch.py` and `check`. A quote now delimits a value only at field level; inside braces it is a character, as in BibTeX.
+- Test: `tests/test_paper_runs.py::test_quote_inside_braced_value_is_literal`; 84 passed.
+
 ## 0.20.0 · 2026-10-01 · Discovery Pages drop `## Aims` (Page Face is Opening → Content)
 
 - Aligns Discovery with `haipipe-page` 0.121: the reader Page is Opening → Content, and Aims are backstage records, never Page sections (JL 261001: "we have no more Aims").
