@@ -63,10 +63,10 @@ The shared `runs/` and `results/` lanes carry disjoint namespaces:
 
 ```text
 runs/rNN_<run>.sh|.ps1|.cmd       Task Ticket
-runs/rp-struct-NN.md             Page structure interaction
-runs/rp-scratch-NN_<target>.md    Page Scratch capture
-runs/rp-sec-NN.md                Page Section session
-runs/rp-para-NN_Pxx[-Pyy].md      Page paragraph/group interaction
+runs/`run-structure-<MMDD>-<slug>`.md             Page structure interaction
+runs/`run-scratch-<MMDD>-<slug>`    Page Scratch capture
+runs/`run-section-<MMDD>-<slug>`.md                Page Section session
+runs/`run-paragraph-<MMDD>-<slug>`      Page paragraph/group interaction
 results/<same-run>/runtime.yaml   receipt for the corresponding namespace
 ```
 

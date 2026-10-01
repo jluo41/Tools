@@ -31,7 +31,7 @@ owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 
 | Family | Meaning | Canonical identity | Owns | Does not own |
 |---|---|---|---|---|
-| `RP` | Page Writing Run | `run-structure-0901-page-plan`, `run-scratch-0928-c1-p1`, `run-section-0927-readability-cleanup`, `run-paragraph-0928-p03-p05`, `run-revise-0928-c1-p3` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
+| `RP` | Page Writing Run | `run-structure-0901-page-plan`, `run-scratch-0928-c1-p1`, `run-section-0927-readability-cleanup`, `run-paragraph-0928-p03-p05`, `run-revise-0928-c1-p3` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `run-structure-<MMDD>-<slug>` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
 | `RE` | Page Evidence Run | `run-value-0928-adjusted-effect`, `run-display-0928-model-figure`, `run-citation-0928-prior-work` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
 | `RD` | Page Delivery Run | `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word` (fixed names, never numbered) | one delivery lane's built files, rebuilt by rerunning the same Run | Page prose authority, Evidence truth, human CHECK close |
 

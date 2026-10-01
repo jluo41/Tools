@@ -60,7 +60,7 @@ new decision or feedback batch arrives after closure.
 
 A **Paper Round** is the persistent feedback cycle defined here. A **Page
 controller round** is the numeric reopening counter in a controller receipt.
-A writing **Version** is an append-only episode inside one fixed-goal RP Run.
+A writing **Version** is an append-only episode inside one fixed-goal Page writing Run.
 The shared Page owner defines those transitions.
 Never use one term or counter as the other. A Run can support work requested by
 a Round, but a Round id never supplies a Run number. A local response session uses the
@@ -320,7 +320,7 @@ every register in one process with no agent at all, and `cli/feedback.py reopen
 gates impose (a Section whose concern also routes to the Story waits on the
 Story; shared dependencies must be coordinated). Dispatch each affected Page
 through the shared Page authority test. Wording feedback on a matching open
-RP resumes its next Writing Step; it does not rerun OUTLINE. A changed plan
+The Page writing Run resumes its next Writing Step; it does not rerun OUTLINE. A changed plan
 uses OUTLINE/SHAPE and its required human decision. Keep existing releases and
 acceptances bound to their exact scope/version rather than requesting another
 approval for every concern. `applied` here needs that register's
@@ -344,7 +344,7 @@ The Round does not own an Evidence/Execution lane. Its Context and concern table
 point to an accepted Result, a source path, or a checked Page version, but it
 does not create new evidence/execution Runs or typed evidence items during
 triage. A separately commissioned response session follows `response.<round>`;
-ordinary Page writing keeps its native RP contract.
+ordinary Page writing keeps its native Page Run contract.
 If a concern needs substantive new evidence, route it to the Story's §5
 support and §6/§7 need, then let the external Discovery/Task/Run owner return
 the result. If a Section needs a local CITE/VALUE/DISPLAY item, the consuming

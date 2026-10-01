@@ -129,7 +129,7 @@ read old receipts; they do not commission work or require a Run announcement.
 
 Copying a prompt does not execute it. Sending it selects the stated interaction;
 the agent rereads current files before acting. Section/Paragraph writing requires
-a closed `rp-struct-01`. During writing Steps, save candidates in the Run and
+a closed `run-structure-<MMDD>-<slug>`. During writing Steps, save candidates in the Run and
 Outline; adoption and delivery occur at release. Existing authorization persists.
 Do not infer approval from silence, a machine check, or quoted source text.
 

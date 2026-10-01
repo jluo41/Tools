@@ -46,13 +46,13 @@ than creating a second content surface.
 
 | Name | Identity | Owner |
 |---|---|---|
-| Page Writing Run | `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]` | Page-owned bounded writing/structure target with feedback Steps and Versions |
+| Page Writing Run | `run-structure-<MMDD>-<slug>`, `run-scratch-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`, `run-paragraph-<MMDD>-<slug>` | Page-owned bounded writing/structure target with feedback Steps and Versions |
 | Task Run | native `rNN` or global run id | output-producing Task/Discovery family |
 | Page Workflow Runtime execution | `workflow_runtime_id`, controller packet and receipt | `haipipe-page-workflow`; invoked by the `RUN` verb; coordinates actual Runs |
 
 The Workflow Runtime envelope does not allocate an extra Run. Board hosts
 these projections without renaming identities or becoming their authority.
-The initial Structure Run is `rp-struct-01`; load
+The initial Structure Run is `run-structure-<MMDD>-<slug>`; load
 [Page Run families](../page/haipipe-page/ref/page-run-families.md) for RP/RE/RD
 allocation. Historical compact `rp00_*`, `rpNN_pNN` and `prNN_*` records remain
 readable compatibility input. New writers use the canonical typed IDs.
@@ -113,5 +113,6 @@ The Folder-contract command is a cross-family integration audit and names the
 owning external skill for every finding. Use repeatable `--workflow <name>`
 arguments when validating one workflow's Folder owners in isolation.
 
-Use `/workflow-table board` when a cross-skill workflow view is needed. Keep
+Use `/table-workbench` when a workbench needs its Space · View · Run type · Agent ·
+Skill · Person signs table. Keep
 test counts in command output and changelogs, not in this README.

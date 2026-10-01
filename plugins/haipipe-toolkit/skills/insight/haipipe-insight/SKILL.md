@@ -3,17 +3,19 @@ name: haipipe-insight
 description: >-
   Unified Insight door for Task-side topic/data instances and InsightBoards.
   Routes dataset-first requests to the Task Insight Page/RI contract and
-  board-scoped requests to a graph of owner-native Runs. Meta declares the
-  extract; Question registers ask; Data observes; Information derives;
-  Knowledge claims; Wisdom counsels and exports a person-signed Design
-  Handoff. Ends at the correct Insight boundary, never designs. Trigger:
+  board-scoped requests to a graph of owner-native Runs. One dataset is one
+  board in the Project's insights/ world. Meta declares the extract; Question
+  registers ask; task runs answer Data and Information; the answering page
+  says what its results show; Knowledge claims on a page; Wisdom counsels on a page and
+  exports a person-signed Design Handoff. Ends at the correct Insight
+  boundary, never designs. Trigger:
   insight, InsightBoard, Insight Page, RI, question register, DIKW, climb,
   chain, partition, pooling verdict, Design Handoff, InsightBoard grooming,
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.6.4"
-  last_updated: "2026-09-29"
+  version: "2.3.0"
+  last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -120,6 +122,9 @@ haipipe-task/fn/insight       Task-side route procedure (compatibility alias inc
 haipipe-page-insight          Task-side topic/data Page, item, RI, and DIKW/RF Result contract
 haipipe-insight-meta         the head: source inventory only, holds NO question
 haipipe-insight-question     the four registers MT01-MT04: asked and tracked, never concluded
+haipipe-insight-evidence-plan one question's evidence needs, planned before any run
+haipipe-insight-bind          one page's needs bound to result files (answers.yaml)
+haipipe-insight-check         every answered cell: needs bound, fit, cited, current
 haipipe-insight-data/-information/-knowledge/-wisdom     what each rung IS
 haipipe-page-workflow         the loop every page here runs, like every page anywhere
 haipipe-insight-workflow      Run Specs, native Run inventory, dependencies,
@@ -127,7 +132,9 @@ haipipe-insight-workflow      Run Specs, native Run inventory, dependencies,
 haipipe-folder                the shared two-face Folder contract
 ```
 
-Read `ref/page-v2-adapter.md` whenever creating, reopening, or checking a rung
+Read `ref/evidence-needs.md` before asking, planning, binding, writing or
+checking any answer: it is the one join of Logic, Work and Report. Read
+`ref/page-v2-adapter.md` whenever creating, reopening, or checking a rung
 Page. Read `ref/question-groups.md` for question registration, status, or
 dispatch. The first separates Page closure from epistemic advancement; the
 second defines the derived `partition × DIKW target` grouping without adding a
@@ -145,12 +152,25 @@ RF never reaches Design directly.
 
 ## Resource laws
 
-- One board owns one source extract. A subgroup is a partition; a child board
-  requires a SPLIT verdict and its own consumer.
-- D observes; I derives from exact D rows; K claims from I; W counsels from K.
-  X permits the declared mirrored-I contrast and K-from-K pooling verdict:
-  `POOL`, `SPLIT`, or evidence-supported `UNDETERMINED`.
-- The register writes identity/state, answer Pages write findings, and Wisdom
+- One board owns one source extract and lives at
+  `<Project>/insights/<Dataset>-InsightBoard/`. A subgroup is a partition; a
+  child board requires a SPLIT verdict and its own consumer.
+- Logic · Work · Report: the registers ask, task runs compute, the answering
+  page says what its results show. The code lives in the Project's DIKW task
+  Block; each answering page folder is also a task folder whose
+  `runs/<ticket>.sh` call the task's own ticket with `RESULT_DIR` set to the
+  page's `results/<ticket>/`. The board has no store.
+- **The evidence need is the join** (`ref/evidence-needs.md`). Each question
+  lists its needs `<QID>.E<n>` (compute · cite · judge) before any run; the
+  answering page's `answers.yaml` binds each need to the narrowest result files
+  whose fields carry its `pass:`; the page text cites `[<QID>.E<n>]`. A cell is
+  ✅ only when `haipipe-insight-check` finds every need bound, fit, cited and
+  current. A config's `answers:` is a cross-check derived from the bindings.
+- D and I are answered by runs; K claims on a page from named results; W
+  counsels on a page from named K pages. `cross` permits the declared mirrored-I
+  contrast and K-from-K pooling verdict: `POOL`, `SPLIT`, or evidence-supported
+  `UNDETERMINED`.
+- The register writes identity/state, pages write findings, and Wisdom
   exports a person-signed handoff. Queue cells remain the settlement authority.
 - Question prefixes fix their rung. A rung change creates a linked successor
   id in the destination register, preserving the original row and receipts.
@@ -158,7 +178,8 @@ RF never reaches Design directly.
   Signature presence alone does not establish current eligibility.
 
 For board layout, question births, the three writing authorities, and citation
-exceptions, read [`ref/board-contract.md`](ref/board-contract.md). For partition
+exceptions, read [`ref/board-contract.md`](ref/board-contract.md). For the answering page (the
+workbench's Report column), read [`ref/report.md`](ref/report.md). For partition
 scaffolding, read [`ref/partition.md`](ref/partition.md). For the Task Wisdom RF
 bridge, read [`../haipipe-insight-workflow/ref/task-rf-bridge.md`](../haipipe-insight-workflow/ref/task-rf-bridge.md).
 
@@ -176,19 +197,34 @@ meta | sources      create/resume the one MT00 (`haipipe-insight-meta`)
 question | ask      register one question from plain words: the verb decides level, partitions
                     and lineage, then writes the row (`haipipe-insight-question`) ·
                     NEVER answer it there
-climb | chain       open or extend the frontier rung for one question (`haipipe-insight-workflow` + selected Folder owner) ·
-                    Evidence Items planned · honor the native owner’s release requirements
-partition           register a partition on MT00 and insert its group before X
+plan                plan one question's evidence needs on its row, for a person to agree
+                    (`haipipe-insight-evidence-plan`)
+bind                bind one page's needs to result files in its answers.yaml, writing and
+                    running tickets; new computation waits for a person's release
+                    (`haipipe-insight-bind`)
+climb | chain       open or extend the frontier rung for one question (`haipipe-insight-workflow` + selected Folder owner):
+                    plan its needs, bind each to a task run's files (adding the run when none
+                    fits), run the page's tickets into <page>/results/<ticket>/, then write
+                    the page citing each need ·
+                    honor the native owner’s release requirements
+partition           register a partition on MT00 and insert its group before `9-cross/`
                     (the umbrella's ref/partition.md)
-verdict             drive the X group XI → XK → a POOL/SPLIT/UNDETERMINED
+verdict             drive the cross group I → K → a POOL/SPLIT/UNDETERMINED
                     verdict page under the partition's predeclared thresholds
                     (`haipipe-insight-workflow` + Information/Knowledge owners) · every W waits for it
-settle              flip the register cell ✅, 🚫 with a reason, or 🟡 <page> final
-                    (haipipe-insight-question's exit), citing the closing page
+settle              flip the register cell ✅ <page id>, 🚫 with a reason, or 🟡 <page id> final
+                    (haipipe-insight-question's exit), naming the answering page (`✅ <L><NN>-<partition>`)
 handoff             draft the W page's Design Handoff division · ✋ a person signs its
                     `signed:` row — `signed: ✅ <initials> <YYMMDD>`, never a machine ·
                     the door RECORDS a signature the person states, never decides one
-check | review      CHECK selected rung pages in a fresh context through haipipe-page-check
+report              write or refresh the answering page's .md from its own results/
+                    (headline, answer, strength, limit, the runs it read, each need cited,
+                    results-read:) · ref/report.md ·
+                    the level's folder skill writes it; it never settles a cell
+check | review      CHECK selected answering pages and Wisdom pages in a fresh context:
+                    `haipipe-insight-check` (needs bound, fit, cited, current; a failing ✅ is an
+                    overclaim) and every number traces to a file in one of the page's own
+                    results/<ticket>/; haipipe-page-check for Wisdom pages
 workflow | run      execute selected Run Specs and controls (§Execution): pin → dispatch → receipt → settle
 ```
 
@@ -256,8 +292,8 @@ without asking the person to repeat it.
 ## Board grooming is an audit, not a hidden writer
 
 When a user asks to groom an InsightBoard, first identify the real board path
-and read its `board.md`, MT01–MT04 registers, current D/I/K/W pages, and the
-mechanical Insight checks. Report the current frontier, partial or open
+and read its `board.md`, MT01–MT04 registers, its answering pages with their runs/ and results/,
+its Wisdom pages, and the mechanical Insight checks. Report the current frontier, partial or open
 register cells, dead or malformed references, and the Wisdom Handoffs that
 are actually bindable. Keep the report linked to the exact source paths so a
 demo is evidence-backed rather than generated from an empty fixture.

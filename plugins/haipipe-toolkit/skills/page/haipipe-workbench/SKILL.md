@@ -135,14 +135,14 @@ slide · render — what leaves the page) and `studio/` (chat · draw — the
 HUMAN's room: the person talks and sketches, and the chat may redraw on
 their ask). The LOWER, Task-side material is
 presented in those Runs panels and the All-runs view (`lens=run`). A **Run P** uses three explicit
-Page-local kinds: `rp-struct-NN` for Structure + Outline Bullets,
-`rp-sec-NN` for Section-level writing, and `rp-para-NN_Pxx[-Pyy]` for fixed
+Page-local kinds: `run-structure-<MMDD>-<slug>` for Structure + Outline Bullets,
+`run-section-<MMDD>-<slug>` for Section-level writing, and `run-paragraph-<MMDD>-<slug>` for fixed
 paragraph/paragraph-group writing. The initial structure identity is
-`rp-struct-01`; the presenter preserves interactive human-feedback
+`run-structure-<MMDD>-<slug>`; the presenter preserves interactive human-feedback
 Version/Step history. A complete Section draft → review/rating → diagnose →
 revise cycle is one Step inside its Run; a later independently commissioned
-Section session gets a new `rp-sec-NN`. A **Run E** is a Page-owned Evidence attempt with
-`re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>` as its
+Section session gets a new `run-section-<MMDD>-<slug>`. A **Run E** is a Page-owned Evidence attempt with
+`run-value-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>`, or `run-citation-<MMDD>-<slug>` as its
 typed identity. One RE Result/Card may expose many `$V_xxx$`,
 `\figure{D_xxx}`, `\table{D_xxx}`, and `\cite{C_xxx}` Labels. A
 **Supporting Run** keeps its external owner-native identity; its owner retains

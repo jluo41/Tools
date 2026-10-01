@@ -2,7 +2,8 @@
 name: haipipe-design
 description: >-
   Canonical owner of one stable Design Folder, its Design Item register, and
-  the Design Workbench's five Spaces: Goal, Design, Insight, Run, and Delivery. Keeps Page and
+  the Design Workbench's Spaces: Design Goal, Design, and Delivery on a page, and
+  Design Tasks and Theory of Design on a board. Keeps Page and
   Design Run lists distinct. Use for commissioning, generating, independently
   verifying and handing off exact Design candidates. Ends when Verify passes,
   never implementation, distribution, experimentation, or measurement.
@@ -19,7 +20,7 @@ metadata:
     shape: "commission decision → generation → verification → delivery handoff"
 ---
 
-# /haipipe-design · one Workbench, five Spaces, two Run lists
+# /haipipe-design · one Workbench, three page Spaces, two Run lists
 
 ## Version governance
 
@@ -76,7 +77,8 @@ experiment will check, but Design Runs judge design quality only, so
 they carry no experiment words (arm, allocation, power, winner, field).
 
 `goal`, `stance`, `basis`, `expected`, and `falsified` are the register's
-copy of the v2 `design_intent`. Adding an item checks the bindings the records
+copy of the v2 `design_intent`. The register's add-item check
+(`design_actions.add_item`) checks the bindings the records
 check enforces: a `challenge` stance goes with `challenge` mode and only with
 it; `challenge` or `theory-driven` mode needs both `expected` and
 `falsified`; `brainstorm` goes with stance `explore` or `generate` and carries
@@ -113,18 +115,27 @@ Result is its draft.
 ## Workbench and Spaces
 
 `Space` is the only reader-facing word for a workbench surface (JL 260916). One
-Design Workbench presents the Folder through five Spaces, in time order:
+Design Workbench presents a Design Folder page through three Spaces:
 
 | Space | Shows |
 |---|---|
-| Goal Space | the ask, from the Brief line that names the folder: venue, who, their job, how many designs (wanted · registered · ready), which Insight board |
-| Design Space | one foldable row per Design Item; opened, the design beside Why this design, From insight to design, The bet, Rules, Runs, and the buttons |
-| Insight Space | per item, the supporting insights: page, signed by whom, what it says, pinned or not; "needs an insight" when none is named; the board's signed pages no item uses |
-| Run Space | each item's Commission → Generate → Verify timeline: who, when, outcome, next |
-| Delivery Space | a read-only handoff of each item whose Verify passed |
+| Design Goal (key `goal`) | the board's `design-goal.md` (Aim, Venue, Rules, Resources, Leave out; owner skill `haipipe-design-goal`), the venue profile defaults, and the register's acceptance rules |
+| Design | the task, then one card per Design Item in four columns (Design · Rationale · Supporting work · Expectation); each card folds its Insight pages and its Runs (the item's Commission → Generate → Verify timeline), with Commission Release/Hold and Queue buttons |
+| Delivery | each item whose independent Verify passed, word for word, plus a csv |
 
-`Run Space` and `Delivery Space` are fixed platform names; `Goal`, `Design`,
-and `Insight Space` are Design's own. Every word on the surface is a plain
+A board presents two Spaces:
+
+| Space | Shows |
+|---|---|
+| Design Tasks | the task list, the shared rules, and a csv |
+| Theory of Design | `haipipe-workbench-design/ref/design-theory.md` plus the board's `design-theory.md` |
+
+Each Space has a Runs panel that reads
+`haipipe-design-workflow/references/run-cards.md`. The Workbench Table is
+`haipipe-workbench-design/ref/workbench-table.md`, in the shape of the
+`table-workbench` skill. The old five Spaces (Goal, Design, Insight, Run,
+Delivery) are retired: what the old Insight Space and Run Space showed now
+folds inside each Design card. Every word on the surface is a plain
 word (the Brief and its lines, signed insight, draft, run record, records
 check); contract words stay in the files and never appear beside their plain
 word. No roster, handoff, Ticket, candidate, DU, or Brief line id (`R1`)
@@ -136,17 +147,17 @@ presenter is `haipipe-workbench-design`.
 
 ## One Folder, two independent Workflows
 
-The rule is one Folder, two workflows: the Page workflow explains and delivers the Folder, the Design workflow commissions, generates, and verifies drafts; neither mints the other's Runs (the Page workflow's `rp-struct-01` Run and the Design workflow's `rdNN_*` Runs never share an id).
+The rule is one Folder, two workflows: the Page workflow explains and delivers the Folder, the Design workflow commissions, generates, and verifies drafts; neither mints the other's Runs (the Page workflow's `run-structure-*` Run and the Design workflow's `run-design-*` Runs never share an id).
 
 ```text
 PAGE RUN GRAPH                          DESIGN RUN GRAPH
-rp-struct-01                            rdNN_commission_*
-rp-sec-NN / rp-para-NN_*                       │ release
+`run-structure-<MMDD>-<slug>`                            run-design-commission-*
+`run-section-<MMDD>-<slug>` / `run-paragraph-<MMDD>-<slug>`_*                       │ release
 Page evidence/delivery/check                    ▼
-                                       N × rdNN_generate_*
+                                       N × run-design-generate-*
                                                 │ draft
                                                 ▼
-                                       J × rdNN_verify_*
+                                       J × run-design-verify-*
                                                 │ pass
                                                 ▼
                                        Verify pass → Delivery ready
@@ -199,7 +210,7 @@ inside Commission is a Step/Gate event, not another Run.
 | generic identity, Ticket/Result pairing, receipt invariants | `haipipe-run` |
 | generation/verification unit work | `haipipe-design-unit` |
 | Page RP/evidence/delivery/check graph | `haipipe-page-workflow` |
-| Space table and projections | `workflow-table` |
+| Space table and projections (the Workbench Table) | `table-workbench` |
 
 Candidate wording, arrangement, visual form, or behavior changes route to a
 new `Design.generate` revise Run with frozen base and feedback. Wording that
@@ -223,12 +234,12 @@ Design-<NN>-<audience>-<job>-<venue>/
 ├── workflow/                           # when used: Page workflow receipts
 ├── scripts/config/                     # once a Run exists: one config per Design Run
 ├── runs/
-│   ├── rp-struct-NN.md                 # when used: Page Runs
-│   ├── rp-sec-NN.md
-│   ├── rp-para-NN_Pxx[-Pyy].md
-│   └── rdNN_commission|generate|verify_*.yaml
+│   ├── `run-structure-<MMDD>-<slug>`.md                 # when used: Page Runs
+│   ├── `run-section-<MMDD>-<slug>`.md
+│   ├── `run-paragraph-<MMDD>-<slug>`
+│   └── run-design-<commission|generate|verify>-<MMDD>-<slug>.yaml
 ├── results/
-│   └── rdNN_commission|generate|verify_*/
+│   └── run-design-<commission|generate|verify>-<MMDD>-<slug>/
 │       ├── result.yaml or decision.yaml
 │       ├── checks.yaml                # Generate and Verify
 │       ├── content/                   # Generate: the draft bytes
@@ -241,7 +252,7 @@ Design-<NN>-<audience>-<job>-<venue>/
 
 `new-folder` writes only the Page and the register; everything else appears
 when the step that writes it runs. Commission decisions live in
-`results/rdNN_commission_*/decision.yaml`, never under `draft/`. Every
+`results/run-design-commission-*/decision.yaml`, never under `draft/`. Every
 Design Run keeps the same stem across run record and Result. Completed Results
 and decisions are immutable. Workers render inside their own Result. The presenter
 reads those pictures without copying or modifying them; Delivery shows only the
@@ -306,12 +317,13 @@ measurement belong to downstream owners.
 ## Clean-break contract
 
 Unsupported Design bytes are not readable history: legacy shapes are refused,
-never reinterpreted. Historical `rdNN_adopt_*` records from the retired flow
+never reinterpreted. Historical `run-design-adopt-*` records from the retired flow
 may be read only as legacy Delivery evidence; new writers must not create them.
 
 This skill has one current grammar only: Design v0.4.0, v2 Ticket/Result
 contracts, the `2-Design/Design-NN-…` folder, and
-`rdNN_commission|generate|verify_*` ids. It does not read, migrate,
+`run-design-<commission|generate|verify>-<MMDD>-<slug>` ids (JL 261001; older
+`rdNN_*` ids are retired and renamed once by `haipipe-design-unit/scripts/rename_runs.py`). It does not read, migrate,
 route, validate, or continue v1 Tickets/Results, D0-D5/GD0-GD6,
 `rNN_design_*`, `design/DU*/`, `2-DS-design/DS*`, PageX, or previous
 phase-shaped Design folders; the workbench serves them with HTTP 410. A decisive

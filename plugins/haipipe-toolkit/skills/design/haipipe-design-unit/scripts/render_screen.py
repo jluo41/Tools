@@ -3,7 +3,7 @@
 
     python3 render_screen.py --result-dir <result> --html <result>/content/screen.html --png <result>/render/screen-v2.png
     python3 render_screen.py --result-dir <result> --html … --png … --manifest <result>/render/manifest.json \
-                             --item ITEM03 --candidate rd26_generate_item03 --version 2
+                             --item ITEM03 --candidate run-design-generate-0918-design-3 --version 2
 
 A `visual` criterion is an observation method, so this script reports what a
 headless browser sees. It writes only render evidence in the specified Result;

@@ -40,7 +40,7 @@ class DesignUnitGateTest(unittest.TestCase):
         os.utime(path, (later, later))
 
     def ticket(self, number=1, operation="generate", targets=None, updates=None, inputs=None):
-        name = f"rd{number:02}_{operation}_sms"
+        name = f"run-design-{operation}-0926-design-{number}"
         config = {"goal": "Synthetic fixture", "kind": "sms", "mode": "compose",
                   "basis": "brief-only", "unit": {"shape": "single", "count": 1},
                   "max_iterations": 2,
@@ -153,7 +153,7 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assertEqual(gate.validate(ticket), [])
         self.write(source, "Signed insight, edited\n")
         self.touch_later(source, ticket)
-        self.assert_bad(ticket, message="changed after rd01_generate_sms.yaml was written")
+        self.assert_bad(ticket, message="changed after run-design-generate-0926-design-1.yaml was written")
         self.assertIn("changed after", " ".join(gate.audit_folder(self.owner)))
 
     def test_frozen_config_is_not_held_to_file_time(self):
@@ -281,7 +281,7 @@ class DesignUnitGateTest(unittest.TestCase):
     def test_verify_rejects_target_with_forged_run_pairing(self):
         du = self.result(self.ticket())
         manifest = gate.document(du)
-        manifest["run"] = "rd99_generate_imposter"
+        manifest["run"] = "run-design-generate-0926-imposter"
         self.dump(du, manifest)
         runtime_path = du.parent / "runtime.yaml"
         runtime = gate.document(runtime_path)
@@ -397,7 +397,7 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assert_bad(ticket, message="duplicate YAML")
 
     def test_orphan_result_is_visible(self):
-        orphan = self.owner / "results" / "rd03_generate_orphan"
+        orphan = self.owner / "results" / "run-design-generate-0926-orphan"
         orphan.mkdir(parents=True)
         self.assertIn("orphan Result", " ".join(gate.audit_folder(self.owner)))
 
@@ -428,7 +428,7 @@ class DesignUnitGateTest(unittest.TestCase):
     def test_decision_runs_are_paired_not_rejected(self):
         # Commission is current; Adopt is historical reader compatibility:
         # the folder audit checks their pairing, never worker semantics.
-        run = "rd05_commission_sms"
+        run = "run-design-commission-0926-design-5"
         self.dump(self.owner / "runs" / f"{run}.yaml", {
             "schema": gate.TICKET_SCHEMA, "run": run, "operation": "commission",
             "target": "One SMS", "actor": {"mode": "human", "owner": "JL"}})
@@ -438,8 +438,8 @@ class DesignUnitGateTest(unittest.TestCase):
         self.dump(self.owner / "results" / run / "decision.yaml",
                   {"run": run, "decision": "release", "actor": "JL"})
         self.assertEqual(gate.audit_folder(self.owner), [])
-        bad = self.owner / "runs" / "rd06_adopt_sms.yaml"
-        self.dump(bad, {"schema": gate.TICKET_SCHEMA, "run": "rd06_adopt_other",
+        bad = self.owner / "runs" / "run-design-adopt-0926-design-6.yaml"
+        self.dump(bad, {"schema": gate.TICKET_SCHEMA, "run": "run-design-adopt-0926-other",
                         "operation": "adopt"})
         self.assertIn("identity mismatch", " ".join(gate.audit_folder(self.owner)))
 
@@ -480,7 +480,7 @@ class DesignUnitGateTest(unittest.TestCase):
         outside = self.write(self.owner / "uncommissioned.html", "not a commissioned artifact")
         for source, candidate, changes, diagnostic in (
                 (outside, ticket.stem, {}, "not a commissioned content artifact"),
-                (result.parent / "content/sms.txt", "rd99_generate_other", {}, "not a commissioned content artifact"),
+                (result.parent / "content/sms.txt", "run-design-generate-0926-other", {}, "not a commissioned content artifact"),
                 (result.parent / "content/sms.txt", ticket.stem, {"version": 0}, "positive integer")):
             with self.subTest(diagnostic=diagnostic, candidate=candidate):
                 self.add_render(result, source, candidate, **changes)

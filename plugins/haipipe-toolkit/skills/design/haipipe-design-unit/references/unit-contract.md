@@ -6,29 +6,31 @@ accepted Ticket/Result schema; v1 is rejected.
 
 ## Ticket
 
-A Run is `<owner>/runs/<rdNN_generate|verify_slug>.yaml`, paired with
+A Run is `<owner>/runs/run-design-<generate|verify>-<MMDD>-<slug>.yaml` (older
+`rdNN_*` names are retired), paired with
 `<owner>/results/<same-stem>/`. Resolve Ticket references from the owner and
 Result-local references from the Result directory. Every reference names one
 regular file by path; no content hash (JL 260928). Never dispatch YAML through bash.
 
 ```yaml
 schema: haipipe.design-ticket/v2
-run: rd02_generate_item01
+run: run-design-generate-0918-design-1
 operation: generate
 item: ITEM01            # the Design Item this Run serves (register id)
 worker: haipipe-design-unit
 actor: designer-context-01
 target: Send the salience wording unchanged
-config: {path: scripts/config/rd02_generate_item01.yaml}
+config: {path: scripts/config/run-design-generate-0918-design-1.yaml}
 approval:
   actor: <person>
-  record: {path: results/rd01_commission_item01/decision.yaml}
+  record: {path: results/run-design-commission-0918-design-1/decision.yaml}
 inputs: []  # role + path; optional real upstream run_id
 targets: [] # verify only: exact generation result.yaml refs
 ```
 
-Run slugs follow the item id (`rd02_generate_item01`), and `rdNN` counts
-across the whole Design Folder, so ITEM02's first Run may be `rd05`. The
+The slug is the design as the screen says it (`ITEM01` -> `design-1`); a second run of
+the same step, day and design gets `-2`, `-3`. Order is the ticket's `sequence:`, counted
+across the whole Design Folder, so ITEM02's first Run may be sequence 5. The
 approval record is the released Commission's `decision.yaml` under
 `results/`.
 
@@ -111,7 +113,8 @@ Criteria have unique ids. The kinds are `max_chars`, `contains`, `excludes`,
 `starts_with`, `ends_with`, `semantic`, and `visual`. The first five are
 built-ins the checker recomputes per UTF-8 artifact; `ends_with` compares the
 draft with trailing whitespace stripped, `starts_with` with leading
-whitespace stripped. `semantic` and `visual` name an observation method; they
+whitespace stripped. `max_chars` does not count the `{LINK}` slot, which the
+sending platform fills with the real link later (JL 261001). `semantic` and `visual` name an observation method; they
 are not automatic. Each such criterion freezes `description`, `observation`,
 `pass_when`, `fail_when`, and `not_verifiable_when`; a bare phrase such as
 "respectful" is insufficient. The Commission editor accepts one rule per line
@@ -134,7 +137,7 @@ deliverables and criteria before release.
 
 ```yaml
 schema: haipipe.design-result/v2
-run: rd02_generate_item01
+run: run-design-generate-0918-design-1
 operation: generate
 target: Send the salience wording unchanged
 producer: designer-context-01
@@ -234,7 +237,7 @@ checkout (which writes `scripts/` after `runs/` and `results/`) never reads as
 stale. A `superseded` run (a queued run
 replaced after a named file changed) needs a reason in `failure` and no
 result. Any hash field left in an older record is ignored. Commission decisions, and explicitly supported historical
-`rdNN_adopt_*` decisions, are checked for pairing and a recorded decision.
+`run-design-adopt-*` decisions, are checked for pairing and a recorded decision.
 Historical Adopt records retain their real ids; no current writer creates them.
 Messages use folder-relative paths and plain words
 ("a Generate Result requires content artifacts").

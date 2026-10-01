@@ -25,6 +25,11 @@ BASES = ("brief-only", "evidence-informed")
 MODES = ("compose", "revise", "brainstorm", "theory-driven", "challenge")
 ROLES = ("evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff")
 _RD = re.compile(r"^rd(\d+)_", re.I)
+# Design Run names (JL 261001), the Page grammar with `design` as the family word:
+#   run-design-<step>-<MMDD>-design-<N>[-2]   e.g. run-design-generate-0918-design-1
+# Older `rdNN_<step>_itemNN` names are retired (rename_runs.py renames a folder once); a
+# folder not yet renamed still orders by its rd number. Order is the ticket's `sequence:`.
+RUN_NAME = re.compile(r"^run-design-(commission|generate|verify|adopt)-(\d{4})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
 # A quote opens after a space or line start and closes before one, so the apostrophe
 # in "it's" or "doesn't" is never read as a quote mark (audit H1, 260918).
 _QUOTED = re.compile(r"(?<!\w)['\"‘“](.+?)['\"’”](?!\w)")
@@ -77,11 +82,37 @@ def _slug(text: str) -> str:
     return slug or "item"
 
 
+def run_sequence(ticket: Path) -> int:
+    """A Design Run's place in its folder: the ticket's `sequence:`, else its old rd number."""
+    hit = _RD.match(ticket.name)
+    if hit:
+        return int(hit.group(1))
+    try:
+        return int((yaml.safe_load(ticket.read_text(encoding="utf-8")) or {}).get("sequence") or 0)
+    except (OSError, ValueError, TypeError, yaml.YAMLError):
+        return 0
+
+
 def _next_run(folder: Path) -> int:
     runs = folder / "runs"
-    numbers = [int(m.group(1)) for p in runs.glob("rd*_*.yaml")
-               if (m := _RD.match(p.name))] if runs.is_dir() else []
-    return max(numbers, default=0) + 1
+    tickets = [p for pat in ("rd*_*.yaml", "run-design-*.yaml") for p in runs.glob(pat)] if runs.is_dir() else []
+    return max((run_sequence(p) for p in tickets), default=0) + 1
+
+
+def design_slug(item_id: str) -> str:
+    """`ITEM01` -> `design-1`: the design as the screen says it (Design 1)."""
+    hit = re.match(r"^ITEM0*(\d+)$", str(item_id), re.I)
+    return f"design-{hit.group(1)}" if hit else _slug(item_id).replace("_", "-")
+
+
+def run_name(folder: Path, step: str, item_id: str, day: datetime | None = None) -> str:
+    """A new Design Run name; a second one of the same step, day and design gets `-2`, `-3`."""
+    base = f"run-design-{step}-{(day or datetime.now()).strftime('%m%d')}-{design_slug(item_id)}"
+    name, n = base, 1
+    while (folder / "runs" / f"{name}.yaml").exists() or (folder / "results" / name).exists():
+        n += 1
+        name = f"{base}-{n}"
+    return name
 
 
 def plan_folder(folder: Path) -> Path:
@@ -356,15 +387,14 @@ def commission(folder: Path, stem: str, item: dict, actor: str, words: str,
     if released is not None:
         raise ActionError(f"{item['id']} was already released in {released['id']}; at most one released Commission per item")
     number = _next_run(folder)
-    slug = _slug(item["id"])
-    run = f"rd{number:02d}_commission_{slug}"
+    run = run_name(folder, "commission", item["id"])
     config_path = _config(folder, stem, item, run, "self")
     inputs, missing = _evidence_inputs(folder, item.get("evidence") or [])
     if (item.get("basis") == "evidence-informed") and not inputs:
         raise ActionError("evidence-informed item, but no evidence file resolves: " + ", ".join(missing))
     all_inputs = [_ref(folder, config_path)] + inputs
     ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
-        "schema": TICKET_SCHEMA, "run": run, "run_type": "Design.commission",
+        "schema": TICKET_SCHEMA, "run": run, "sequence": number, "run_type": "Design.commission",
         "operation": "commission", "item": item["id"], "target": item.get("title"),
         "actor": {"mode": "human", "owner": actor},
         "action": "release or hold the frozen commission", "inputs": all_inputs,
@@ -429,7 +459,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         raise ActionError("no released Commission for this item; a person releases first")
     _refuse_if_open(runs)
     number = _next_run(folder)
-    run = f"rd{number:02d}_generate_{_slug(item['id'])}"
+    run = run_name(folder, "generate", item["id"])
     mode = None
     extra_inputs: list[dict] = []
     if feedback.strip():
@@ -455,7 +485,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     approval = folder / "results" / released["id"] / "decision.yaml"
     ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
-        "schema": TICKET_SCHEMA, "run": run, "operation": "generate",
+        "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "generate",
         "worker": "haipipe-design-unit", "actor": "designer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
         "approval": {"actor": released["actor"], "record": _ref(folder, approval)},
@@ -485,7 +515,7 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     if judged:
         raise ActionError(f"{generated['id']} already has an independent review ({judged[-1]['id']})")
     number = _next_run(folder)
-    run = f"rd{number:02d}_verify_{_slug(item['id'])}"
+    run = run_name(folder, "verify", item["id"])
     config_path, evidence = _frozen(folder, stem, item, released, run, "independent")
     approval = folder / "results" / released["id"] / "decision.yaml"
     target = _ref(folder, generated["result_dir"] / "result.yaml")
@@ -495,7 +525,7 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     if missing:
         raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
-        "schema": TICKET_SCHEMA, "run": run, "operation": "verify",
+        "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "verify",
         "worker": "haipipe-design-unit", "actor": "reviewer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
         "approval": {"actor": released["actor"], "record": _ref(folder, approval)},
@@ -710,7 +740,9 @@ def adopt_all(folder: Path, stem: str, items: list[dict], actor: str, words: str
 def planned_runs(folder: Path) -> list[dict]:
     """Every planned agent run in a folder: what the queue runner picks up."""
     out = []
-    for runtime_path in sorted((folder / "results").glob("rd*/runtime.yaml")) if (folder / "results").is_dir() else []:
+    results = folder / "results"
+    found = [p for pat in ("rd*/runtime.yaml", "run-design-*/runtime.yaml") for p in results.glob(pat)] if results.is_dir() else []
+    for runtime_path in sorted(found):
         runtime = _load(runtime_path)
         if runtime.get("status") == "planned" and runtime.get("operation") in ("generate", "verify"):
             out.append({"run": runtime.get("run") or runtime_path.parent.name,

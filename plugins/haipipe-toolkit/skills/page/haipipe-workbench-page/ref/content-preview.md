@@ -43,7 +43,7 @@ stored under `## Opening Draft` in that same Outline.
   The current Outline grammar has no separate subsection node, so it does not
   render a duplicate Subsection plus. Explicit subsection-scope records remain
   accepted for future Page schemas. B/symbol rows have no Scratch control. `Save` creates or updates an open
-  `rp-scratch-NN_<target>` Run; the person manually clicks `Finish Scratch` to
+  `run-scratch-<MMDD>-<slug>` Run; the person manually clicks `Finish Scratch` to
   ask the AI for a concise Summary from the notes and close it. The browser
   writes the registry under `## Scratch` in this same
   selected Outline and the paired ticket/result under `workflow-runs/` and `results/`.
@@ -77,11 +77,11 @@ file:
 ```markdown
 ## Scratch
 
-### rp-scratch-01_C1.P1 · paragraph · C1.P1
+### `run-scratch-<MMDD>-<slug>` · paragraph · C1.P1
 - Scope: paragraph
 - Target: C1.P1
 - Status: closed
-- Run: rp-scratch-01_C1.P1
+- Run: `run-scratch-<MMDD>-<slug>`
 - Notes: |
   Start with the visit, then explain the mechanism.
 - Summary: |

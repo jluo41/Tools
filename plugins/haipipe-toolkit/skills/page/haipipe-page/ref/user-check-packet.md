@@ -42,7 +42,7 @@ all three links.
 Use this packet before new feedback arrives:
 
 ```markdown
-## ✍️ <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · next Step <vNNN/sNNN>
+## ✍️ <`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>` · next Step <vNNN/sNNN>
 
 ### P01 · <C.P> · <Structure description>
 
@@ -68,15 +68,15 @@ review/rating → diagnose → revise cycle and the post-revision
 review/diagnosis. Do not
 write `sNNN` to the Version journal until the person supplies feedback,
 acceptance, or an explicit close. Resolve each description from the closed
-`rp-struct-01` index in the Outline; if
+`run-structure-<MMDD>-<slug>` index in the Outline; if
 the description is missing or ambiguous, show a named blocker rather than
 inventing one.
 
 After a saved writing Step:
 
 1. Start with the exact durable identity as the heading:
-   `## <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · <vNNN/sNNN>`.
-   For example, `## rp-para-01_P03 · v001/s003`. The Run id states which
+   `## <`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>` · <vNNN/sNNN>`.
+   For example, `## `run-paragraph-<MMDD>-<slug>` · v001/s003`. The Run id states which
    interaction is open;
    its scope suffix states the fixed structure, Section, or paragraph target.
 2. Immediately show the complete saved candidate for the fixed Run scope. For

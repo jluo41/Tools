@@ -1,6 +1,6 @@
 # Paper Run naming and ownership
 
-The shared `haipipe-page/ref/page-run-families.md` owns RP/RE/RD naming;
+The shared `haipipe-page/src/run_names.py` owns Page Run naming;
 `haipipe-run` owns native Tickets and Results. This adapter adds Paper context
 and judgment targets. Read `haipipe-paper-workflow/ref/run-workflow.md` for
 Spec bindings and the compile/response profiles.
@@ -9,17 +9,17 @@ Spec bindings and the compile/response profiles.
 
 | Work | Semantic owner / family | New identity and storage | Boundary |
 |---|---|---|---|
-| Page writing | exact Paper PageType + shared Page writing / `page` | `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]`; Page-native Ticket/Result | structure or bounded prose session; feedback is a Step |
-| Page Evidence | consuming Page's Evidence Item / `page` | `re-value-NN_<slug>`, `re-cite-NN_<slug>`, `re-display-NN_<slug>`; Page RE/native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
+| Page writing | exact Paper PageType + shared Page writing / `page` | `run-<kind>-<MMDD>-<slug>` (kind: structure, scratch, section, paragraph, revise, auto-write, evidence-embed, context, check); Page-native Ticket/Result | structure or bounded prose session; feedback is a Step |
+| Page Evidence | consuming Page's Evidence Item / `page` | `run-value-<MMDD>-<slug>`, `run-citation-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>`; Page-native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
 | Page delivery | shared Page delivery owner / `page` | one fixed Run per lane: `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word`; no receipt | generated Page artifact; does not authorize Page release |
 | Supporting work | Task, Discovery or other declared native owner | full native `rNN`, `rlNN`, or global Ticket/Result address | consumer-neutral computation or inquiry; never renamed for Paper |
-| Paper judgment | Paper Ideation/Story card owner / `paper` | declared judgment grammar below | one fixed idea, claim, Task Roadmap row or Section row |
+| Paper judgment | Paper Ideation/Story card owner / `paper` | `run-paper-<judgment>-<MMDD>-<slug>`, below | one fixed idea, claim, Task Roadmap row or Section row |
 
 A Page Evidence worker can call Task or Display capabilities. That does not
-turn its local RE into a Task-owned Run. Independently commissioned Supporting
-work remains with its native owner and is a dependency. RE lineage and the
+turn its local evidence Run into a Task-owned Run. Independently commissioned Supporting
+work remains with its native owner and is a dependency. The evidence Run and the
 underlying native Ticket represent one execution and must not be counted twice.
-A local Evidence Result cannot satisfy a human RP writing prerequisite.
+A local Evidence Result cannot satisfy a human Page writing prerequisite.
 
 ## Paper context
 
@@ -32,26 +32,26 @@ containers, not extra Run families or Run-number allocation authorities.
 An example Page-local Evidence receipt projection is:
 
 ```yaml
-run: re-cite-01_prescribing-variation
+run: run-citation-0901-prior-work
 family: page
 operation: evidence-item
 paper_lane: main
-page: S-MISQ-Main-Introduction
-item: E01-CITE-prescribing-variation
-target: E01-CITE-prescribing-variation
+page: S-<desk>-Main-Introduction
+item: E01-CITE-prior-work
+target: E01-CITE-prior-work
 ticket: <exact-native-Ticket-address>
-result: results/re-cite-01_prescribing-variation/
+result: results/run-citation-0901-prior-work/
 ```
 
 Resolve the Ticket dialect from the shared Page/Run owner; the placeholders
 are not allocations. Frozen inputs, worker, status and acceptance remain
 required by that owner. The Page's accepted DISPLAY unit is reached through
-its Result, such as `results/re-display-01_<slug>/payload/Display1-<slug>/`.
+its Result, such as `results/run-display-<MMDD>-<slug>/payload/Display1-<slug>/`.
 
 ## Allocation and interaction
 
-Load the current Page Run families before allocating. `rp-struct-01` combines
-SHAPE and SURVEY; Scratch, Section and paragraph counters are independent.
+Load the current Page Run names before allocating. The first `run-structure-…`
+Run combines SHAPE and SURVEY; Scratch, Section and paragraph counters are independent.
 Page-global `P01…PN` addresses do not restart at a Content division. Normal
 feedback appends a Step; same-target reopening appends a Version; materially
 changed goals/targets follow the owner's NEW_RUN rule. Sync, Page controller
@@ -63,36 +63,28 @@ that full address and the exact Result/version. A reused Result is a dependency,
 not another execution. Delegated Task writing retains its own native identity;
 it does not stand in for required Page interaction/acceptance.
 
-## Existing Paper-local and compact identities
+## Older short names
 
-Existing `pm-<page>-<target>-rNN`, `pa-...`, `pr-...`, `pjNNtNNrNN`,
-`rp00_mermaid-structure`, `rpNN_pNN[-pNN]` and `rNN_page-writing...` records
-retain their original paths, IDs and family fields. These are compatibility
-inputs, not new allocation grammars. Do not relabel their historical worker or
-owner based only on the prefix. Resolve the original Ticket/Result/receipt;
-missing ownership or acceptance is an explicit gap.
-
-New Page Evidence uses typed RE. No bulk rename or duplicate execution is
-needed. An accepted historical Result may be reused by exact path and version when
-its contract still meets the present requirement. If genuinely new work is
-commissioned, allocate the current native identity and record `supersedes`
-only when it actually replaces the old target/result; a reuse pointer does
-not claim a replacement or fabricate a new receipt. Preserve frozen Round
-`sent/` and `released/` snapshots.
+Older short names (`rp-`, `re-`, `rd01_`, `pm-`, `pa-`, `pr-`, `pjNN…`, `ridea-`,
+`rclaim-`, `rtask-`, `rnarra-`) are retired (JL 261001). No new Run uses them.
+`page.py run-names` renames a Page's old Runs once.
 
 ## Paper judgment Runs
 
 Idea and Story cards support bounded judgment sessions. Page prose and structure
-use the shared RP contract when separately commissioned. Each card the Paper Workbench shows
+use the shared Page Run contract when separately commissioned. Each card the Paper Workbench shows
 on those Spaces may keep its discussion in one Paper-owned judgment Run, in the same
 `runs/` + `results/` pair every Page has, with human feedback Steps in the
-journal exactly as `rp-para` keeps them:
+journal exactly as a Page `run-paragraph-…` Run keeps them:
 
 ```text
-JUDGE_RUN_ID := ridea-NN_<slug>            one candidate idea       lives on Story00-ideation
-             |  rclaim-NN_<slug>           one claim                 lives on the Story page
-             |  rtask-NN_<slug>            one Task Roadmap row       lives on the Story page
-             |  rnarra-NN_<section-id>     one Section Narrative row  lives on the Story page
+JUDGE_RUN_ID := run-paper-idea-<MMDD>-<slug>        one candidate idea       lives on Story00-ideation
+             |  run-paper-claim-<MMDD>-<slug>       one claim                 lives on the Story page
+             |  run-paper-task-<MMDD>-<slug>        one Task Roadmap row       lives on the Story page
+             |  run-paper-narrative-<MMDD>-<slug>   one Section Narrative row  lives on the Story page
+
+MMDD is the day the Run opens; slug is two to four lowercase words. A name
+already taken on the Page gets -2, -3.
 ```
 
 The ticket's frontmatter names the row it discusses, which is how the card
@@ -103,14 +95,14 @@ family: paper
 operation: judgment
 interaction: human-feedback
 target: E5              # i01 · E5 · T1 (or B1) · S-<desk>-Main-1-<Title>
-run: rclaim-01_beyond-rating
-result: results/rclaim-01_beyond-rating
+run: run-paper-claim-0901-beyond-rating
+result: results/run-paper-claim-0901-beyond-rating
 ```
 
 A judgment Run never selects an idea (the I3 receipt does), never releases a
 Section (G3 does), and never allocates a Task (the Task owner does). A
-Section's `rp-struct-01` consumes the released Section Narrative row and any relevant judgment
-Result; an `rnarra` session is not mandatory when no such work was commissioned.
+Section's first `run-structure-…` Run consumes the released Section Narrative row and any relevant judgment
+Result; a `run-paper-narrative-…` session is not mandatory when no such work was commissioned.
 
 
 ### Judgment Result and close rule

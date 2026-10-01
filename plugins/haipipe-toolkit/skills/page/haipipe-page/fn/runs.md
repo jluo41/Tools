@@ -31,7 +31,7 @@ do not infer its identity or lifecycle from the Page.
 
 ## PROPOSE is read-only
 
-1. Detect the Page stage and the RP kind. If `rp-struct-01` does not
+1. Detect the Page stage and the RP kind. If `run-structure-<MMDD>-<slug>` does not
    exist, propose only the initial structure/Bullet candidate. If the current
    structure/Bullet Run is open, resume it and propose no Section or paragraph
    Run. Section candidates become legal only after the structure contract is
@@ -65,17 +65,17 @@ that already has a draft Shape. RP identities state their scope explicitly:
 
 | IDs | Scope | Human-facing work |
 |---|---|---|
-| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, evidence decisions, and structure list |
-| `rp-sec-NN` | Section-level | One named Section drafting/revision session/round and its review loop |
-| `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group |
+| `run-structure-<MMDD>-<slug>` | Page Structure Run: SHAPE + SURVEY | Direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, evidence decisions, and structure list |
+| `run-section-<MMDD>-<slug>` | Section-level | One named Section drafting/revision session/round and its review loop |
+| `run-paragraph-<MMDD>-<slug>` | Paragraph-level | One fixed paragraph or contiguous paragraph group |
 
 For the initial candidate, propose:
 
 | Candidate | Human decision needed | Goal | Scope / review window | Why now | Next action |
 |---|---|---|---|---|---|
-| `1` | Agree the Page's direction, visual structure, and evidence routes | Page Structure Run: SHAPE + SURVEY | Whole-Page map, ordered Bullets, Point roles, evidence decisions, and paragraph index | Section and paragraph work need a closed reading order | `start` or `resume rp-struct-01` |
+| `1` | Agree the Page's direction, visual structure, and evidence routes | Page Structure Run: SHAPE + SURVEY | Whole-Page map, ordered Bullets, Point roles, evidence decisions, and paragraph index | Section and paragraph work need a closed reading order | `start` or `resume `run-structure-<MMDD>-<slug>` |
 
-Selection allocates exactly `rp-struct-01`. Human and agent may take
+Selection allocates exactly `run-structure-<MMDD>-<slug>`. Human and agent may take
 many Steps to settle the structure/Bullets, and several people may contribute
 to those Steps. Record one shared `participants` list and each Step's
 `contributors`; do not allocate a second RP because another person joins.
@@ -83,10 +83,10 @@ The structure contract must freeze
 the Page-global reading order as `P01`, `P02`, ... `PN` and map each serial to
 the plan address such as `C2.P3` before Section or paragraph work is proposed.
 Later structure/Bullet refinement is a separately commissioned Run such as
-`rp-struct-02`, not a prose Run. A Survey pass is not such a refinement: it is
-the SURVEY cycle of the open `rp-struct-01`.
+`run-structure-<MMDD>-<slug>`, not a prose Run. A Survey pass is not such a refinement: it is
+the SURVEY cycle of the open `run-structure-<MMDD>-<slug>`.
 
-Starting or resuming `rp-struct-01` works on the current plan's headings and
+Starting or resuming `run-structure-<MMDD>-<slug>` works on the current plan's headings and
 Bullets. The Run's primary review artifact is the Structure card Draft Space
 reads from that plan: every division and paragraph with its `P01..PN` id,
 shown as a text list above the Bullet table. There is no separate map file to
@@ -97,13 +97,13 @@ route and planned Supporting/Local work in the same paired Structure Result;
 it does not execute or claim those Results.
 
 After the structure contract closes, propose Section-level candidates in
-`rp-sec-NN`. A Section Run covers a complete Section drafting/revision round;
+`run-section-<MMDD>-<slug>`. A Section Run covers a complete Section drafting/revision round;
 each complete draft → review/rating → diagnose → revise cycle is one Step
 inside that Run. A later independently commissioned Section session gets a new
-new `rp-sec-NN` Run. It is not a new Run merely because one Step or one chat turn
+new `run-section-<MMDD>-<slug>` Run. It is not a new Run merely because one Step or one chat turn
 finished.
 
-Paragraph-level work uses `rp-para-NN_Pxx[-Pyy]`. Partition the closed index into `K`
+Paragraph-level work uses `run-paragraph-<MMDD>-<slug>`. Partition the closed index into `K`
 independently reviewable paragraph groups:
 
 ```text
@@ -129,18 +129,18 @@ Candidate positions are planning labels, not promises of future identities.
 Use scope-valid canonical identities after selection:
 
 ```text
-rp-struct-01             whole-Page Structure + P01..PN index
-rp-struct-02             structure/Bullet refinement
-rp-sec-01                Section-level drafting/revision round
-rp-sec-02                later independent Section round
-rp-para-01_P03           paragraph P03
-rp-para-02_P04-P05       paragraphs P04-P05, judged together
+run-structure-0901-outline        whole-Page Structure + P01..PN index
+run-structure-0905-bullets        structure/Bullet refinement
+run-section-0906-c2               Section-level drafting/revision round
+run-section-0912-c2               later independent Section round
+run-paragraph-0907-p03            paragraph P03
+run-paragraph-0907-p04-p05        paragraphs P04-P05, judged together
 ```
 
 The semantic slug is optional for structure and Section Runs but must remain
 scope-valid; put the full descriptive goal in the Goal column. Paragraph Runs
-must expose the exact serial or contiguous range. `rp` means Run of Page, and
-its counter is independent from Task `rNN`.
+must expose the exact serial or contiguous range. A Page Run name is
+independent from Task `rNN`.
 
 For every selected paragraph Run, copy the frozen Structure description
 from the Page-global paragraph index into the Goal and review packet. The
@@ -185,14 +185,14 @@ current Run inventory and source identities.
 
 ```text
 matching open goal       → resume the same typed RP and append the next Step
-same paragraph target, closed goal → reopen the same rp-para-NN_Pxx[-Pyy] in the next vNNN.md
-later independent Section session → allocate the next free rp-sec-NN
-genuinely independent structure/Bullet goal → allocate the next free rp-struct-NN
+same paragraph target, closed goal → reopen the same `run-paragraph-<MMDD>-<slug>` in the next vNNN.md
+later independent Section session → allocate the next free `run-section-<MMDD>-<slug>`
+genuinely independent structure/Bullet goal → allocate the next free `run-structure-<MMDD>-<slug>`
 ```
 
-For the first goal, create `runs/rp-struct-01.md`. For a selected
+For the first goal, create `runs/`run-structure-<MMDD>-<slug>`.md`. For a selected
 structure/Bullet, Section, or paragraph goal, create a scope-valid
-`runs/<rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>.md` and the paired
+`runs/<`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>` and the paired
 `results/<same-run>/runtime.yaml`, `working.md`, and `v001.md`. Capture the
 selecting request as the start of `## Step s001`. For a Section Run, do not
 close that Step until the candidate has gone through draft, review/rating,
@@ -201,9 +201,9 @@ Version, later feedback belongs to the current or next completed Step; do not
 create one file or Run per Step.
 
 Use the next free typed Page-local RP only at allocation time, except that the
-first selected Structure candidate always receives `rp-struct-01`.
+first selected Structure candidate always receives `run-structure-<MMDD>-<slug>`.
 The `struct`, `sec`, and `para` sequences are independent from one another and
-from Task `rNN`; `rp-para-01_P03` and `r01` may coexist. If the human changes
+from Task `rNN`; `run-paragraph-<MMDD>-<slug>` and `r01` may coexist. If the human changes
 the requested goal enough that it is independently closable, propose or start
 a new Page Run rather than silently expanding the old scope.
 
@@ -217,6 +217,6 @@ Run.
 Once selected work is saved, follow the interactive-writing contract and the
 Page user-check packet. Report the actual typed RP identity, current
 `vNNN/sNNN`, saved scope, feedback disposition, and next human decision. For
-`rp-struct-01`, show the
+`run-structure-<MMDD>-<slug>`, show the
 current Structure and `P01..PN` mapping first. Do not present an
 unselected proposal as `Ready`, `Waiting`, or `Held` in the Runs inventory.

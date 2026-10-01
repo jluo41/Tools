@@ -1,43 +1,37 @@
-# Design Board workbench · Space ↔ file map at board grain
+Design Board workbench: Space to file map (Board level)
+=======================================================
 
-The folded Run Type guide is separate from current matching records. It uses
-the Page-level Design descriptions (name/canonical Type, bounded work,
-owner/worker Skills, actor, prerequisites); Board capability is
-`Shown here · read-only`, with `Copy request → paste and send` for eligible
-Generate/Verify work in Design Space. Matching records retain folder/item
-scope, real id, status, outcome and actor. Goal covers Commission;
-Design/Insight/Run cover all three current types; Delivery covers only the
-Generate/Verify support for ready items.
+This is the Board level of the Design workbench, as served in 0.14.0. It
+has two Spaces: Design Tasks and Theory of Design. Every design, run and
+delivery lives at the Page level (`space-mapping.md`). `design-board.md`
+describes the Board level in prose.
 
-Design Item rows explain the next eligible Run and link to **Open item
-controls** in the owning Page's Design Space. Native gates remain there;
-Board task/folder operations remain separate from Run allocation. Run Space
-keeps its history/status ledger.
 
-The per-item **Copy prompt to chat** action uses its Folder's Page snapshot
-and the same eligibility/prompt builder as the Page workbench. A reviewable prompt
-names the exact item, target, Type, Skills, prerequisites, Commission, matching
-Run/receipt and next action. It instructs chat to reread state, reuse an existing
-queued identity, preserve the human Commission and independent Verify gates,
-and report one Run's id/receipt. Copying changes only the clipboard; pasting and
-sending remain manual. Native controls stay on the owning Page. Commission,
-running, stale, blocked, unresolved, invalid, ready, retired or static states,
-folder audit findings and missing/blocked Insight bindings have no prompt.
-Revisions require native queueing with feedback first. Run/Delivery have no copy.
+The two Spaces
+--------------
 
-| Space | Reads | Shows | Links down to |
+| Space (tab, `space=`) | Reads | Shows | Links down to |
 | --- | --- | --- | --- |
-| Goal Space | `0-BR-brief/*/BR00-brief.md` (the list of design tasks); `board.md` `reads:`; each folder's register and independent Verify results for the counts | one line per task, by its full name `<job> <venue> for <who>` (never its line id) · how many (wanted · registered · ready) · insight board · folder · status; folders the Brief does not list; the New design tasks form; the Insight board line | Page-level Goal Space of that folder |
-| Design Space | every `2-Design/*/` folder's register and Runs | every Design Item with folder, item, its title with the design text in one line under it, state, and who is waited on | Page-level Design Space of that folder (`?item=`) |
-| Insight Space | every Insight board named by `reads:` or by a Brief line; each signed page's `signed:` and Design Handoff `FINDING`; each folder's evidence lines | per board: insight (title, label under it) · signed · what it says · rules it implies · used by, grouped per folder (`Design-01 · 6 items`, linked to that folder's Insight Space); a second table "Other pages the designs use (not signed insights)"; a red line when no design rests on a signed insight | the Insight workbench (`live_url` of the board) |
-| Run Space | every folder's `runs/`, `results/*/runtime.yaml`, `result.yaml`, `decision.yaml` | the next-action queue (person first, then agent); every Run newest first with folder, original Run ID, Run type, who, status, outcome; the records check across folders | Page-level Run Space of that folder (`?item=`) |
-| Delivery Space | every folder's register and each item's exact Verify-passed draft; its Result-local render manifest (legacy Delivery manifest as fallback) | one table per folder: item (id · title) · design text, or a picture gallery for a folder of screens; declined items folded under "Declined, kept for the record"; the csv link | Page-level Delivery Space of that folder |
+| Design Tasks Space (`tasks`) | the Brief's design task list (`0-BR-brief/BR00-brief/BR00-brief.md`, the table with `audience`, `job`, `venue`, `designs`, `folder`, `insight` columns); each `2-Design/*/` folder's register, and its independent Verify results for the counts and the csv | one row per task: design task (full name `<job> <venue> for <who>`, never its line id) · designs · folder · state; a **New Design Folder** button on a row with no folder; folders no design task lists; "every design task keeps" (the shared rules); **↓ Download all designs · N · csv** | the task name opens the folder's Page Design Space; the folder cell opens its Design Goal Space |
+| Theory of Design Space (`theory`) | `skills/design/haipipe-workbench-design/ref/design-theory.md`, then the board's own `design-theory.md` beside `board.md` | the general theory of design, then the board's domain knowledge, both rendered from ASCII docs | none |
 
-Header: one line, `Board level · N design tasks · N wanted · N registered ·
-N ready · waiting on <person>: N · on agent: N`, below the board's title; a
-red line is added only when the records check has findings.
+Header: the board title and "Board level" only. A records-check warning
+is added only when the check has findings across folders.
 
-## The list of design tasks
+
+The Runs panel
+--------------
+
+Each Space has the shared Runs panel on the right. Its run types come from
+`skills/design/haipipe-design-workflow/references/run-cards.md`. Each card
+names a button, an agent, a skill, what the person signs, and a prompt.
+The Workbench Table is `ref/workbench-table.md`. Board cards: Add design
+tasks and Set shared rules (Tasks), Add a theory (Theory). The panel
+starts nothing. **Copy** hands the prompt to a session.
+
+
+The list of design tasks
+------------------------
 
 The first Markdown table in the Brief whose header names `audience`, `job`
 and `venue` together:
@@ -46,58 +40,81 @@ and `venue` together:
 | line | audience | job | venue | designs | insight | folder |
 |---|---|---|---|---|---|---|
 | R1 | all patients | prescription review | sms | 10 |  | `Design-01-all-patients-prescription-review-sms` |
-| R4 | young male, age 35 or under | prescription review | sms | 10 | `DesignWorkbench-Demo-260916-InsightBoard` | — |
+| R4 | young male, age 35 or under | prescription review | sms | 10 |  | — |
 ```
 
-Columns match by header word (`audience`, `job`, `venue`, `designs` or
-`wanted` or `how many`, `insight`, `folder`; the line id is the column headed
-`line`, `row`, `id`, `#`, or `page`). A Brief with no line-id column still
-works: its rows are numbered R1, R2 … in order. The id is a key in the file,
-never a name on screen. `—`, `-`, or an empty folder cell means "no folder
-yet"; an empty insight cell means the board's `reads:`. Line status is
-derived: `no folder yet`, `folder missing on disk`, the Page level's refusal
-reason for a legacy folder, or a count of item states (`1 ready · 9
-generated`).
+Columns match by header word: `audience`, `job`, `venue`, `designs` (or
+`wanted` or `how many`), `insight`, `folder`. The line id is the column
+headed `line`, `row`, `id`, `#`, or `page`. A Brief with no line-id column
+still works: its rows are numbered R1, R2 and so on, in order. The id is a
+key in the file, never a name on screen. `—`, `-`, or an empty folder cell
+means "no folder yet". The `insight` column is still parsed, but the Board
+level no longer shows it.
 
-## The two writes
+Line state is derived: `no folder yet`, `folder missing on disk`, the Page
+level's refusal reason for a legacy folder, or a count of item states
+(`1 ready · 9 generated`). Item states follow the Page-level state fold:
+Commission, Generate and Verify Runs (`run-design-(commission|generate|verify)-*`)
+with receipts in `results/<stem>/runtime.yaml`. Verify pass means ready
+for Delivery. Declined items stay out of the counts and the csv.
 
-`add-tasks` `{subgroups, job, venue, designs, insight, open}`: one new line
-per subgroup, ids continuing `R<N>`; missing `designs` / `insight` / `folder`
-columns are added to the table, and the section is created (`### What to
-design`) when the Brief has no list; with `open` = yes each new line gets a
-folder at once. Refused, and nothing written, without a subgroup, job, or
-venue, with `designs` below 1, or when the Insight board named does not
-resolve from this board (a sibling name, or a relative path as on `reads:`).
-The form's picker offers only names that resolve to an Insight board, each
-shown by its folder name.
+
+The writes
+----------
 
 `new-folder` `{row}`: `row` is the parsed Brief row's `id`, for example
-`{"row":"R3"}`; never pass a display title or integer position. Creates
-`2-Design/Design-NN-<audience-slug>-<job-slug>-<venue>/`
-with a page that passes the board checker (`folder-kind: design`,
-`state: 🔴 OPEN · no design registered yet`, `owner:` from board.md else the
-Brief, an Opening question "Which N <job> <venue> designs should we make for
-<audience>?") and an empty register, writes the folder name into the line's
-`folder` cell, and lists the page in board.md `## Pages` under its Design
-heading. Refused when the line already names a folder (so a second click
-opens no duplicate) or is not in the Brief; a refusal names the task by its
-full name, never `R3`.
+`{"row":"R3"}`; never a display title or integer position. It creates
+`2-Design/Design-NN-<audience-slug>-<job-slug>-<venue>/` with a page that
+passes the board checker (`folder-kind: design`, `state: 🔴 OPEN · no
+design registered yet`, `owner:` from board.md else the Brief, an Opening
+question "Which N <job> <venue> designs should we make for <audience>?")
+and an empty register. It writes the folder name into the line's `folder`
+cell and lists the page in board.md `## Pages` under its Design heading.
+It is refused when the line already names a folder (so a second click
+opens no duplicate) or is not in the Brief. A refusal names the task by
+its full name, never `R3`.
+
+`add-tasks` still answers on the route, but no form calls it. New design
+tasks come from the Add design tasks card, through `haipipe-design-brief`.
 
 Neither write exists on the static `board/design.html`.
 
-## Routes
+
+Routes
+------
 
 ```text
-GET  /_board/design-board?path=/…/board.md[&space=goal|design|insight|run|delivery]
-GET  /_board/design-board?board=<folder name>          short link
-GET  /_board/design-board                              bare link: the server's only DesignBoard (the root itself, or the single one under it); with several, a list of them (200)
+GET  /_board/design-board?path=/…/board.md[&space=tasks|theory]
+GET  /_board/design-board?board=<folder name>          short link; a unique name start is enough
+GET  /_board/design-board                              bare link: the server's only DesignBoard; with several, a list of them (200)
 GET  /_board/design?folder=<Design-NN-…>[&space=…]     short Page-level link; 302 to the full path= & file= link; several boards hold it: 404 page listing each, never a guess
-GET  /_board/design-bundle?path=/…/board.md            csv, one row per independently verified ready item; no failed or unverified drafts; downstream owners decide sending
+GET  /_board/design-bundle?path=/…/board.md[&folder=]  csv, one row per independently verified ready design; downstream owners decide sending
 POST /_board/design-board       {path}                 -> the live URL (workbench menu)
-POST /_board/design-board-act   {path, action, …}      -> add-tasks · new-folder
+POST /_board/design-board-act   {path, action, …}      -> new-folder (add-tasks kept, no form)
 board/design.html                                       static twin, built with the Board site
 ```
 
-`?space=` aliases: `brief, tasks, frame, plan → goal`; `intent, items → design`;
-`signal, evidence, insights → insight`; `runs, queue, waiting, workflow → run`;
-`ready, launch → delivery`. Default `goal`.
+Boards are found under `examples*/*/designs/*/board.md`, for example
+`examples-<N>-<world>/<Project>/designs/B<NN>_DesignBoard-<Name>-<YYMMDD>`.
+The legacy `applications/` globs are still searched for historical boards
+only.
+
+`?space=` aliases: `goal, brief, frame, plan, design, items, run, runs,
+delivery, ready` open Design Tasks (the retired board Spaces);
+`theories, knowledge` open Theory of Design. Default `tasks`.
+
+
+Retired
+-------
+
+Retired in 0.14.0, kept here in one line each so old notes read right:
+
+- Five Spaces at board level, and the board Goal, Design, Insight, Run
+  and Delivery Spaces.
+- The Waiting on queue and the Every Run table.
+- The "Run types in this Space" guide.
+- The "New design tasks" form and its Insight board picker.
+- The Insight board line and the "Insight pages the designs use" fold.
+  `board.md` `reads:` now feeds only a card's Insight pages fold.
+- Adopt: historical records stay readable only.
+- Content hashes.

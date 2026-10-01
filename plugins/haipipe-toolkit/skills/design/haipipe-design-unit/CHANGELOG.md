@@ -1,5 +1,11 @@
 # haipipe-design-unit · version history
 
+## 0.4.1 current · 2026-10-01 · {LINK} is not counted (JL 261001) (version unchanged at 0.4.1; the Design family version is frozen)
+
+- `{LINK}` is the slot the sending platform fills with the real link, like `{NAME}`.
+  `check_unit.py` leaves it out of `max_chars`, so a text that carries `{LINK}` keeps
+  its full character budget. Texts without it are counted exactly as before.
+
 ## 0.4.1 current · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929) (version unchanged at 0.4.1; the Design family version is frozen)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

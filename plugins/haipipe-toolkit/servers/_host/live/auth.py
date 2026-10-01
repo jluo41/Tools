@@ -87,7 +87,7 @@ class AuthMixin:
     # narrow: POST twins, chat, writes, and every other workspace route remain
     # authenticated when --public-read is enabled.
     public_read_live_routes = {"/_board/design", "/_board/design-board", "/_board/design-bundle",
-                               "/_board/insight-board", "/_board/insight"}
+                               "/_board/insight-board", "/_board/insight", "/_board/insight-run"}
     auth_cookie_name = "jjluo_board_session"
     auth_cookie_days = 0
     auth_cookie_key: bytes | None = None

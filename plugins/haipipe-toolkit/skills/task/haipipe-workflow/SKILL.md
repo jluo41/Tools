@@ -30,8 +30,8 @@ I → Process[Run₁, Run₂, … Runₙ] → O
 `Plan`, `Build`, `Execute`, and `Report` are commands for working with this
 definition. They are not domain Phases and do not receive runtime authority.
 
-Load `haipipe-run` whenever the Workflow has executable work. Load
-`workflow-table` when the user needs the Run Spec × Workspace projection.
+Load `haipipe-run` whenever the Workflow has executable work. The Run Spec × Workspace
+projection lives in each family's own `ref/workflow-table.md`.
 Resolve type/profile keys through the shared
 [Run catalogue](../../run/haipipe-run/ref/run-catalog.md).
 Load [`ref/workflow-runtime.md`](ref/workflow-runtime.md) when multiple Runs,

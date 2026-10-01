@@ -1,5 +1,22 @@
 # haipipe-insight-data · version history
 
+
+## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
+
+- The join is the evidence need: `answers.yaml` binds each compute need to result files; the page cites `[QD<n>.E<k>]` and records `results-read:`; GI2 uses `haipipe-insight-check` instead of the config's `answers:` (which was derived from the tickets and so could not cross-check them).
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Page paths read `<n>-<partition>/D<NN>-<partition>-<slug>/` (no partition letters).
+
+## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
+
+- A Data answer is its page folder: `runs/` tickets call the task run with `RESULT_DIR` set to the page's `results/<ticket>/`; the page's `.md` is the report (words optional). No `_results/` store or `reports/` folder; heavy output goes to `ProjectResult` under the page path.
+
+## 2.0.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- A Data answer is a task run in a `j1N_data_<topic>` Job whose config names the question under `answers:`; its results in the board's `_results/` are the evidence; a report is optional. The page, evidence graph and Page Face sections are gone; old boards keep their D pages, frozen.
+
 ## 1.3.3 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

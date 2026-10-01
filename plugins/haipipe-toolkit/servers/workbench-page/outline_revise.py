@@ -34,7 +34,6 @@ from src.run_lifecycle import find_open, open_run
 from live.outline_preview import (bullet_token, draft_path, page_lock, read_drafts,
                                   reader_prose, record_token, write_drafts)
 
-_RUN_RE = re.compile(r"^rp-revise-(?P<number>\d{2,})_(?P<target>[A-Za-z0-9._-]+)$")
 _ADDRESS_RE = re.compile(r"^C\d+\.P\d+$")
 _BULLET_RE = re.compile(r"^C\d+\.P\d+\.B\d+$")
 MAX_TEXT = 40000
@@ -207,31 +206,6 @@ def _clean_line(value: str, address: str) -> str:
     return text
 
 
-def _open_run(page_src: Path, target: str) -> tuple[str, bool]:
-    """-> (run id, existing) · reuse the target's running Revise Run, else allocate."""
-    base = page_src.parent
-    numbers = []
-    candidates = []
-    for folder in (base / "runs", base / "results"):
-        if not folder.is_dir():
-            continue
-        # Tickets may sit in a Space folder (runs/draft-manual-run/); results stay flat.
-        for path in (folder.rglob("*") if folder.name == "runs" else folder.iterdir()):
-            match = _RUN_RE.match(path.stem if path.is_file() else path.name)
-            if not match:
-                continue
-            numbers.append(int(match.group("number")))
-            if match.group("target") == target and path.is_dir():
-                candidates.append(path)
-    for result in sorted(candidates):
-        runtime = result / "runtime.yaml"
-        if runtime.is_file():
-            status = re.search(r"(?m)^status:\s*([^#\n]+)", runtime.read_text(encoding="utf-8", errors="replace"))
-            if status and status.group(1).strip().lower() in {"running", "open", "waiting-for-feedback"}:
-                return result.name, True
-    return "rp-revise-%02d_%s" % (max(numbers, default=0) + 1, target), False
-
-
 def _card(number: int, address: str, before: str, after: str, why: str) -> str:
     kind = "first draft" if not before else "deletion" if not after else "wording"
     return (
@@ -338,9 +312,8 @@ def _lines_to_bullets(text: str, addresses: list[str]) -> dict[str, str]:
     return mapped
 
 
-
 def _display_name(run_id: str) -> str:
-    """The name people read (`rp-revise-01_C1.P2` → `run-revise-01`), as the Runs panel shows it."""
+    """The name people read, as the Runs panel shows it."""
     try:
         from live.runs_panel import display_name
     except ImportError:

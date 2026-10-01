@@ -118,7 +118,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             self.assertEqual([(i["folder"], i["id"]) for i in snap["waiting"]],
                              [("Design-01-all-patients-prescription-review-sms", "ITEM02"), ("Design-02-patients-refill-due-refill-review-ui-card", "ITEM01")])
             self.assertEqual(len(snap["ready"]), 1)
-            self.assertEqual(snap["runs"][0]["id"], "rd04_adopt_item01")   # newest first
+            self.assertEqual(snap["runs"][0]["id"], "run-design-adopt-0918-design-1")   # newest first
             self.assertEqual(snap["audit"], [])
             self.assertEqual(snap["insight"]["status"], "bound")
             self.assertEqual(snap["insight_names"], ["DesignWorkbench-Demo-260916-InsightBoard"])
@@ -127,8 +127,6 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             self.assertEqual([(name, item) for name, _rel, item in pages[0]["used_by"]],
                              [("Design-01-all-patients-prescription-review-sms", "ITEM01"),
                               ("Design-01-all-patients-prescription-review-sms", "ITEM02")])
-            self.assertIn(">Design-01</a> <span class=mut>2 items</span>",
-                          render_design_board(snap, "insight"))          # grouped per folder, linked
             self.assertTrue(pages[0]["finding"].startswith("Of thirteen arms"))
             self.assertEqual(snap["relative"], "DesignWorkbench-Demo-260916-DesignBoard")
 
@@ -137,26 +135,34 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             board = board_fixture(Path(td))
             snap = design_board_snapshot(board, Path(td))
             rendered = render_design_board(snap)
-            for label in ("Goal Space", "Design Space", "Insight Space", "Run Space", "Delivery Space",
-                          "Design tasks · from the Brief", "3 design tasks · 4 wanted · 3 registered · 1 ready",
-                          "<th>design task</th>", "Prescription review SMS for young male, age 35 or under",
-                          "no folder yet", "New Design Folder", "New design tasks", "(board default)",
-                          # the href is HTML-escaped, so & is &amp; in the page
-                          "/_board/design?path=%2FDesignWorkbench-Demo-260916-DesignBoard%2Fboard.md&amp;file=2-Design%2FDesign-01-all-patients-prescription-review-sms%2FDesign-01-all-patients-prescription-review-sms.md&amp;space=design&amp;item=ITEM02",
-                          "1 of 1 insights currently eligible", "records check: PASS in every folder",
-                          "<th>used by</th>", ">Design-01</a> <span class=mut>2 items</span>"):
+            # two Spaces at the board level, a header with no counts (JL 261001)
+            for label in ("Design Tasks Space", "Theory of Design Space", "<div class=mut>Board level</div>",
+                          "<h2>Design tasks</h2>", "<th>design task</th>",
+                          "Prescription review SMS for young male, age 35 or under",
+                          "no folder yet", "New Design Folder", "class=runs-panel", 'data-label="Add design tasks"',
+                          "/_board/design?path=%2FDesignWorkbench-Demo-260916-DesignBoard%2Fboard.md&amp;file=2-Design%2FDesign-01-all-patients-prescription-review-sms%2FDesign-01-all-patients-prescription-review-sms.md&amp;space=design"):
                 self.assertIn(label, rendered)
             for jargon in ("roster", "Roster", "handoffs signed", "check_unit", "candidate", "DS01",
                            "<b>R3</b>", "<th>line</th>"):  # a task shows by its full name, not its row id
                 self.assertNotIn(jargon, rendered)
-            self.assertIn("Waiting on", render_design_board(snap, "run"))
-            delivery = render_design_board(snap, "delivery").split('data-space="delivery">', 1)[1].split("</section>", 1)[0]
-            self.assertIn("<tr><th>item</th><th>design</th></tr>", delivery)
-            self.assertNotIn("Refill review app card for patients with a refill due within 7 days", delivery)
-            self.assertNotIn("adopted", delivery)
+            nav = rendered.split("<nav class=tabs>", 1)[1].split("</nav>", 1)[0]
+            for gone in ("Goal Space", ">Design Space<", "Delivery Space"):    # the theory text may name them
+                self.assertNotIn(gone, nav)
+            for gone in ("<h2>Insight board</h2>", "<th>insight board</th>",
+                         "Waiting on", "Every Run", "Run types in this Space", "data-act=\"add-tasks\""):
+                self.assertNotIn(gone, rendered)
+            head = rendered.split("<header>", 1)[1].split("</header>", 1)[0]
+            for count in ("wanted · ", "waiting on you:", "registered"):    # the header carries no counts
+                self.assertNotIn(count, head)
+            for old in ("run", "delivery", "goal", "design"):              # an old link opens Design Tasks
+                self.assertIn('data-space="tasks" class=on', render_design_board(snap, old))
+            theory = render_design_board(snap, "theory")
+            self.assertIn('data-space="theory" class=on', theory)
+            self.assertIn("<h1>Theory of Design</h1>", theory)
+            self.assertIn("1 · The design problem: abduction", theory)
             static = render_design_board(design_board_snapshot(board, Path(td), static=True))
             self.assertNotIn("New Design Folder", static)
-            self.assertNotIn("New design tasks", static)
+            self.assertNotIn("<pre class=theory>Deduction", static)
 
 
 class DesignBoardWritesTest(unittest.TestCase):
@@ -293,6 +299,5 @@ class BundleTest(unittest.TestCase):
             csv_text = bundle_csv(snap)
             self.assertTrue(csv_text.startswith("line,who,their_job,venue,folder,item,title,state,text,draft_run,render"))
             self.assertIn(",ready,", csv_text)
-            self.assertIn("Download all designs · 1 · csv", render_design_board(snap, "delivery"))
-            self.assertNotIn("Download all designs", render_design_board(design_board_snapshot(board, Path(td), static=True), "delivery"))
-            self.assertIn("rules it implies: DO send", render_design_board(snap, "insight"))
+            self.assertIn("Download all designs · 1 · csv", render_design_board(snap))
+            self.assertNotIn("Download all designs", render_design_board(design_board_snapshot(board, Path(td), static=True)))

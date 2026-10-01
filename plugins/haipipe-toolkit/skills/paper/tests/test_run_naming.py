@@ -6,60 +6,42 @@ from pathlib import Path
 
 
 REF = Path(__file__).parents[1] / "haipipe-paper" / "ref" / "run-naming.md"
+CARDS = Path(__file__).parents[1] / "haipipe-paper-workflow" / "ref" / "run-cards.md"
 TEXT = REF.read_text(encoding="utf-8")
 
-PAPER_RUN = re.compile(
-    r"^p(?P<lane>[mar])-[a-z0-9]+(?:-[a-z0-9]+)*-"
-    r"(?P<target>[ef][0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*)-r[0-9]{2}$"
-)
-PAGE_RUN = re.compile(r"^r[0-9]{2}_[a-z0-9-]+_[a-z0-9-]+$")
-PARAGRAPH_WRITING = re.compile(r"^r[0-9]{2}_page-writing_c[0-9]{2}-p[0-9]{2}$")
-LEGACY_PJ = re.compile(r"^pj[0-9]{2}t[0-9]{2}r[0-9]{2}(?:_.+)?$")
+# Every Run name is the full form (JL 261001): Paper judgment Runs and Page Runs.
+JUDGE_RUN = re.compile(r"^run-paper-(?P<judgment>idea|claim|task|narrative)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+PAGE_RUN = re.compile(r"^run-(structure|scratch|section|paragraph|revise|auto-write|evidence-embed|context|check|"
+                      r"value|citation|display)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+SHORT = re.compile(r"^(rp-|re-|rd[0-9]+_|pm-|pa-|pr-|pj[0-9]|ridea-|rclaim-|rtask-|rnarra-)")
 
 
 class PaperRunNamingTest(unittest.TestCase):
-    def test_semantic_paper_examples_are_lane_qualified(self) -> None:
-        examples = [
-            "pm-introduction-e01-cite-prescribing-variation-r01",
-            "pm-results-e13-display-cohort-overview-r01",
-            "pa-robustness-e01-value-sensitivity-r01",
-            "pr-rd01-misq-feedback-20260825-e01-cite-response-r01",
-        ]
-        for run_id in examples:
-            match = PAPER_RUN.fullmatch(run_id)
-            self.assertIsNotNone(match, run_id)
-            self.assertIn(match.group("lane"), {"m", "a", "r"})
+    def test_judgment_runs_use_the_full_paper_form(self) -> None:
+        for run_id in ("run-paper-idea-0901-agentic-learning", "run-paper-claim-0901-beyond-rating",
+                       "run-paper-task-0902-funnel-rates", "run-paper-narrative-0903-introduction"):
+            self.assertIsNotNone(JUDGE_RUN.fullmatch(run_id), run_id)
+        for judgment in ("idea", "claim", "task", "narrative"):
+            self.assertIn(f"run-paper-{judgment}-<MMDD>-<slug>", TEXT)
 
-    def test_page_and_paragraph_writing_names_remain_distinct(self) -> None:
-        self.assertTrue(
-            PARAGRAPH_WRITING.fullmatch("r01_page-writing_c01-p01")
-        )
-        self.assertTrue(
-            PAGE_RUN.fullmatch("r05_page-evidence-item_e03-cite-prior-work")
-        )
-        self.assertNotEqual(
-            "pm-introduction-e01-cite-prescribing-variation-r01",
-            "r01_page-writing_c01-p01",
-        )
-        self.assertIsNone(PARAGRAPH_WRITING.fullmatch("r01_page-division-writing_c01"))
-        self.assertIsNone(PARAGRAPH_WRITING.fullmatch("r01_page-writing_c01"))
+    def test_page_runs_use_the_full_page_form(self) -> None:
+        self.assertTrue(PAGE_RUN.fullmatch("run-paragraph-0901-c1-p2"))
+        self.assertTrue(PAGE_RUN.fullmatch("run-citation-0901-prior-work"))
+        self.assertIsNone(JUDGE_RUN.fullmatch("run-paragraph-0901-c1-p2"))
 
-    def test_old_pj_form_is_explicitly_read_only(self) -> None:
-        self.assertTrue(LEGACY_PJ.fullmatch("pj02t01r01_rx_variation"))
-        self.assertIsNone(PAPER_RUN.fullmatch("pj02t01r01_rx_variation"))
-        self.assertIn("historical, read-only Runs", TEXT)
-        self.assertIn("must not be guessed or reused", TEXT)
+    def test_short_names_are_retired_everywhere(self) -> None:
+        self.assertIn("are retired (JL 261001)", TEXT)
+        for line in CARDS.read_text(encoding="utf-8").splitlines():
+            if line.startswith("🔘 BUTTON"):
+                pattern = line.split("·")[2].strip()
+                self.assertNotRegex(pattern, r"\^(rp-|re-|rd\\d|ridea|rclaim|rtask|rnarra|pj|pm-|pa-|pr-)", line)
+        for example in ("rp-sec-07", "ridea-01_x", "pm-intro-e01-cite-x-r01"):
+            self.assertTrue(SHORT.match(example))
+            self.assertIsNone(JUDGE_RUN.fullmatch(example))
 
     def test_lane_map_and_round_token_are_documented(self) -> None:
-        for phrase in (
-            "`Ba-<desk>-Main/`",
-            "`Bb-<desk>-Appendix/`",
-            "`Bc-<desk>-Round/`",
-            "`RD` remains the",
-            "`m`",
-            "`a`",
-            "`r`",
-        ):
+        for phrase in ("`Ba-<desk>-Main`", "`Bb-<desk>-Appendix`", "`Bc-<desk>-Round`",
+                       "`RD<NN>` is a feedback Round Page identifier"):
             self.assertIn(phrase, TEXT)
 
 

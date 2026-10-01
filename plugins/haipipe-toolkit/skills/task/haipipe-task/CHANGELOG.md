@@ -1,3 +1,11 @@
+## 1.9.0 · 2026-10-01 · The DIKW Block (JL 261001)
+
+- `ref/hierarchy.md` § Block number ranges: an InsightBoard's code lives in an auxiliary
+  `b5N_<topic>_dikw` Block with Jobs by level (j1N data, j2N information, j3N knowledge,
+  j4N wisdom); each dataset × partition is one config and Run `rNN_<dataset>_<cut>` naming
+  its extract, cut and `answers:`; an InsightBoard page calls it through its own ticket
+  with `RESULT_DIR=<page>/results/<ticket>/` (a consumer-owned Run), not `RESULT_STORE`.
+
 ## 1.8.2 · 2026-09-29 · synth_df at the Task type level (JL 260929)
 
 - Task types: `description` now names its `synth_df`, one synthetic person's rows in each stored table, shown in every table notebook (`haipipe-task-for-description` 0.4.0 § synth_df; `haipipe-task-for-raw` 0.5.6 for the raw Block).

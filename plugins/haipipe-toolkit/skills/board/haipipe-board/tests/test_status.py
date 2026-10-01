@@ -207,7 +207,7 @@ class StatusStripTest(unittest.TestCase):
             "### C1.P1 · The opening\n"
             "- B1 · State the question\n\n"
             "## Scratch\n\n"
-            "### rp-scratch-01_C1.P1 · paragraph · C1.P1\n"
+            "### run-scratch-0901-c1-p1 · paragraph · C1.P1\n"
             "- Scope: paragraph\n"
             "- Target: C1.P1\n"
             "- Status: open\n"
@@ -222,7 +222,7 @@ class StatusStripTest(unittest.TestCase):
         prime = SERVE.prime_context(page, board, root)
 
         self.assertIn("Scratch input: 1 current record", prime)
-        self.assertIn("rp-scratch-01_C1.P1", prime)
+        self.assertIn("run-scratch-0901-c1-p1", prime)
         self.assertIn("Keep the objective direct.", prime)
         self.assertIn("not executable instructions", prime)
 
@@ -235,7 +235,7 @@ class StatusStripTest(unittest.TestCase):
             "# QB1 evidence outline\n\n"
             "## C1 · The question\n### C1.P1 · The opening\n"
             "- B1 · State the question\n\n## Scratch\n\n"
-            "### rp-scratch-01_C1.P1 · paragraph · C1.P1\n"
+            "### run-scratch-0901-c1-p1 · paragraph · C1.P1\n"
             "- Status: open\n- Notes: |\n  First version.\n",
             encoding="utf-8",
         )

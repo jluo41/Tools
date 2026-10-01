@@ -44,7 +44,7 @@ migration:
   status: needed                 # needed | planned
   legacy_paths:
     - paper
-    - insights
+    - applications
     - results
   note: "Paths are preserved until owner-specific migration is approved."
 ```
@@ -63,7 +63,8 @@ examples/<project>/
 ├── discoveries/          LAZY · external-evidence executor
 ├── diagram/              LAZY · Project story and Board/view surfaces
 ├── papers/               LAZY · academic consumers
-├── applications/         LAZY · non-academic consumers
+├── insights/             LAZY · one InsightBoard per dataset
+├── designs/              LAZY · Design boards and Design Folders
 └── external/             LAZY · read-only upstream repositories/assets
 ```
 
@@ -77,8 +78,8 @@ submodules, are legacy debt and are not renamed without an explicit migration.
 
 ```text
 external/ ──▶ discoveries/ ──┐
-                             ├──▶ Task/Insights Board ──▶ papers/
-tasks/ ──────────────────────┘                         └──▶ applications/
+                             ├──▶ insights/ (one board per dataset) ──▶ papers/
+tasks/ ──────────────────────┘                                      └──▶ designs/
 ```
 
 | Root | Role | Owner and boundary |
@@ -87,12 +88,14 @@ tasks/ ──────────────────────┘    
 | `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
 | `diagram/` | navigation and interpretation surfaces | Project story plus project-level Boards and meetings |
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
-| `applications/` | non-academic consumer | `haipipe-insight` and `haipipe-design` |
+| `insights/` | one InsightBoard per dataset: questions, reports, light run results | `haipipe-insight`; code stays in `tasks/` |
+| `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 
-An Insight is a Page type on the Task/Insights Board, not a sixth root world.
-Reusable Findings flow to Paper/Application through their Page contracts. Raw
-Task Results do not move to the Project root.
+An InsightBoard is a world of its own (JL 261001), one folder per dataset; a
+Task-side Insight Page stays on its Task Board. Reusable findings flow to Paper
+and Design through their contracts. Raw Task Results never move to the Project
+root; a board's light results live in its own `_results/`.
 
 ## Profiles
 
@@ -153,7 +156,8 @@ not move to the Project diagram tree.
 Never create these as new root structures:
 
 - `results/`: generated output belongs to a Job or consumer-owned store.
-- `insights/`: use an Insight Page on the Task/Insights Board.
+- `applications/`: legacy since 261001; Insight boards go to `insights/`, Design
+  boards to `designs/` (old ones under each world's `_old/`).
 - `probes/`: use the current Page evidence contract.
 - `_old/`, `cc-archive/`: archive inside the owning world, or preserve only as
   declared migration debt.
@@ -173,7 +177,8 @@ valid profile-owned structure.
 | `discoveries/` internals | `haipipe-discovery` |
 | Board/Page internals | `haipipe-board`, `haipipe-page`, owning workflow |
 | `papers/` internals | `haipipe-paper` |
-| `applications/` internals | `haipipe-insight`, `haipipe-design` |
+| `insights/` internals | `haipipe-insight` |
+| `designs/` internals | `haipipe-design` |
 
 An audit at this layer checks only Project-root truth. It must not claim that a
 child world is internally compliant without invoking that world's checker.

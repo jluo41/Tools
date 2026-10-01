@@ -47,12 +47,12 @@ are allowed. Use exact versions, never `latest`.
 ```yaml
 schema: haipipe.insight-handoff/v1
 page:
-  path: FW01-counsel.md
+  path: W<NN>-<partition>-<slug>.md
   version: v001
 dependencies:
   - {path: <current-source-or-version-record>, version: <exact-version>}
   - {path: <current-verdict-record>, version: <exact-version>}
-gi5: {path: draft/records/FW01-counsel-log.md#signed-v001}
+gi5: {path: draft/records/W<NN>-<partition>-<slug>-log.md#signed-v001}
 gi6:
   - {path: <Question-Outline-log>#settled-qw1-v001}
 ```
@@ -88,7 +88,7 @@ authority: haipipe-insight-question
 actor: <settlement-actor>
 workflow_runtime_id: <actual-runtime-id>
 page: <exact-page-mapping-from-index>
-target: {question: QW1, partition: F}
+target: {question: QW1, partition: full}
 signature_receipt: <exact-gi5-reference-from-index>
 ```
 

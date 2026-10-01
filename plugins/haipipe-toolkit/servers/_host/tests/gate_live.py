@@ -113,7 +113,6 @@ def script(base, fx_name, page_rel):
     g("w page bad tab", f"/w/{slug}/{stem}/studio")
     g("w page labeling", f"/w/{slug}/{stem}/labeling")
     g("w missing", "/w/nosuchboard")
-    g("pagexview", "/_board/pagexview")
     for route in ("folderstat", "outline", "value", "evidence", "delivery", "runs", "paper",
                   "design", "insight-board", "labeling"):
         h(route, f"/_board/{route}?{q}")

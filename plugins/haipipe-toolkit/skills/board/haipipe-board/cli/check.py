@@ -1525,7 +1525,7 @@ def check_evidence_file(path, name, rep):
     measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
     newest, newest_name = 0.0, ""
     lanes = [plan_dir(path.parent), path.parent / "probe", path.parent / "bibex",
-             path.parent / "display", path.parent / "pagex"]
+             path.parent / "display"]
     for lane in lanes:
         if not lane.is_dir():
             continue
@@ -2074,7 +2074,8 @@ def check_native_design_runs(d, rep):
     folders = set()
     for pattern in ("runs/rd*_generate_*.yaml", "runs/rd*_verify_*.yaml",
                     "runs/rd*_commission_*.yaml", "runs/rd*_adopt_*.yaml",
-                    "results/rd*_generate_*", "results/rd*_verify_*"):
+                    "results/rd*_generate_*", "results/rd*_verify_*",
+                    "runs/run-design-*.yaml", "results/run-design-*"):   # current names (JL 261001)
         paths = d.rglob(pattern)
         folders.update(p.parent.parent for p in paths
                        if p.is_file() or p.is_dir())
@@ -2117,9 +2118,6 @@ def check_design_family(d, rep):
     check_native_design_runs(d, rep)
     if "DesignBoard" in d.name:
         retired = set(d.rglob("design/DU*"))
-        retired.update(d.rglob("evidence/pagex"))
-        retired.update(d.rglob("outline/evidence/pagex"))
-        retired.update(d.rglob("draft/evidence/pagex"))
         for phase_file in d.rglob("workflow/phase.yaml"):
             text = phase_file.read_text(encoding="utf-8", errors="replace")
             if re.search(r"(?m)^\s*phase:\s*D[0-5]\b", text) or re.search(
@@ -2134,7 +2132,7 @@ def check_design_family(d, rep):
             if "board" in parts or any(p.startswith("_") for p in parts):
                 continue
             rep.add(ERROR, "retired-design-shape", str(path.relative_to(d)),
-                    "D0-D5, design/DU*, and PageX are unsupported; create a current "
+                    "D0-D5 and design/DU* are unsupported; create a current "
                     "Design Folder and rdNN Run instead of adapting this record; "
                     "park the old record under _archive/ to keep it unjudged")
     return
@@ -2444,7 +2442,7 @@ def check_page(d, rep):
     # because the site still pointed at page-types deleted upstream. Say so
     # first, so nobody debugs the sources for a finding the build owns.
     built = (site / "index.html").stat().st_mtime
-    # 260907: a dangling symlink inside an archived page (pagex/ links follow
+    # 260907: a dangling symlink inside an archived page (a link that follows
     # a page that was renamed) must not crash the whole checker; skip it here,
     # dead-href reporting owns broken links.
     newer = [f for f in d.rglob("*.md")

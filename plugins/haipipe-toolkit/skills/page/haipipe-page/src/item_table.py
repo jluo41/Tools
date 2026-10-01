@@ -495,27 +495,6 @@ def _registered_supports(value: str, registry: dict[str, dict[str, str]]) -> boo
     return bool(entries)
 
 
-def _valid_pagex(value: str) -> tuple[bool, int]:
-    """Validate a legacy PageX field only far enough to report migration input."""
-    if not value or value == "[]":
-        return True, 0
-    entries = [entry.strip() for entry in value.split(";") if entry.strip()]
-    if not entries:
-        return False, 0
-    for entry in entries:
-        path_text, separator, authority = entry.partition("·")
-        path_text, authority = path_text.strip(), authority.strip()
-        path = Path(path_text)
-        if (
-            not separator or not path_text or path_text.endswith("/")
-            or path.is_absolute() or ".." in path.parts
-            or not authority.lower().startswith("authority ")
-            or not authority[len("authority "):].strip()
-        ):
-            return False, len(entries)
-    return True, len(entries)
-
-
 def read_items(page_md: Path) -> dict:
     """Return ``{item_id: row}`` from the authored Evidence Item table."""
     f = items_path(page_md)
@@ -523,7 +502,7 @@ def read_items(page_md: Path) -> dict:
         return {}
     labels = (
         "target", "label", "need", "expected", "acceptance", "supporting runs",
-        "verified", "pagex bindings", "local input", "local run", "decide",
+        "verified", "local input", "local run", "decide",
     )
     rows, cur = {}, None
     for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -531,7 +510,6 @@ def read_items(page_md: Path) -> dict:
         if m:
             item_id, target, name = m.groups()
             cur = {k: "" for k in labels}
-            cur["_legacy_pagex_present"] = False
             cur.update({
                 "item": item_id,
                 "type": item_id.split("-", 2)[1],
@@ -554,24 +532,15 @@ def read_items(page_md: Path) -> dict:
             key = m.group(1).strip().lower()
             if key in labels:
                 cur[key] = m.group(2).strip()
-                if key == "pagex bindings":
-                    cur["_legacy_pagex_present"] = True
     registry = run_registry(str(repo_root(page_md.parent)))
     for row in rows.values():
         row["supporting_runs"] = row.pop("supporting runs")
-        row["pagex_bindings"] = row.pop("pagex bindings")
         row["local_input"] = row.pop("local input")
         row["local_run"] = row.pop("local run")
         action, address, result = _parse_local(row["local_run"])
         row.update({"action": action, "address": address, "result": result})
         supports_valid, support_count = _valid_supporting(row["supporting_runs"])
         row.update({"support_count": support_count, "supports_valid": supports_valid})
-        pagex_valid, pagex_count = _valid_pagex(row["pagex_bindings"])
-        row.update({
-            "pagex_count": pagex_count,
-            "pagex_valid": pagex_valid,
-            "legacy_pagex": bool(row.pop("_legacy_pagex_present", False)),
-        })
         d = row["decide"].lower()
         row["decision"] = (
             "make" if "☑" in d and "make" in d else
@@ -595,7 +564,7 @@ def read_items(page_md: Path) -> dict:
             row["supporting_runs"], registry
         ) and (local_registered or local_planned)
         row["planned"] = (
-            supports_valid and not row["legacy_pagex"] and bool(row["local_input"])
+            supports_valid and bool(row["local_input"])
             and _valid_local_action_address(action, address) and row["runs_registered"]
         )
     return rows

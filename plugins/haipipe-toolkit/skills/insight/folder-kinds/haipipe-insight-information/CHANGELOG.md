@@ -1,5 +1,22 @@
 # haipipe-insight-information · version history
 
+
+## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
+
+- The join is the evidence need: each question binds only its own grouping's files, with the fields its `pass:` names; a run on the topic that lacks them does not fit. GI3 uses `haipipe-insight-check`; the page cites `[QI<n>.E<k>]` and records `results-read:`.
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Page paths read `<n>-<partition>/I<NN>-<partition>-<slug>/`; cross contrasts named by `cross`; generic task example.
+
+## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
+
+- An Information answer is its page folder: `runs/` tickets call the task run with `RESULT_DIR` set to the page's `results/<ticket>/` (tables, `metrics.json`, `fig_*.png`); the page's `.md` is the report and embeds the figures. No `_results/` store or `reports/` folder.
+
+## 2.0.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- An Information answer is a task run in a `j2N_information_<topic>` Job (one run may answer every question its config lists) plus the report that says what the results show. Page Face, PARENTS rows and the Page evidence graph are gone; old boards keep their I pages, frozen.
+
 ## 1.3.1 — 2026-09-28 · No content hashes (JL 260928)
 
 - D-row parents are pinned by path and version, never by content hash.

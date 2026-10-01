@@ -1,5 +1,22 @@
 # haipipe-insight-wisdom · version history
 
+
+## 1.8.0 · 2026-10-01 · Evidence needs (JL 261001)
+
+- A Wisdom question's needs are cite (Knowledge) and judge only, so its page has no `runs/`; a compute need on a QW row is misrouted to a Knowledge successor. Each `W<n>` cites its needs; GI5 requires `haipipe-insight-check` to find no overclaim.
+
+## 1.7.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Wisdom page folder reads `<n>-<partition>/W<NN>-<partition>-<slug>/` (e.g. `1-full/W<NN>-full-<slug>/`).
+
+## 1.6.0 · 2026-10-01 · Cites Knowledge pages (JL 261001)
+
+- Wisdom cites Knowledge pages (the answering page is the report; no `reports/` folder). A Wisdom page that reasons only from other pages has no `runs/`; signed Wisdom pages are unchanged.
+
+## 1.5.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- Wisdom stays a Page Folder (the signed handoff is bound by path) and cites Knowledge reports by question id and partition; legacy boards keep PARENTS records for K pages.
+
 ## 1.4.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

@@ -35,7 +35,8 @@ The explicit workbench workspaces keep their own APIs:
     GET  /_board/design-bundle?path=<board.md>           -> csv of every design with its state (send the adopted rows)
                                                        -> open a Design Folder for one roster row
     POST /_board/insight-board {path}                  -> live Board-level Insight URL;
-                            read-only Meta/Questions/Partitions/DIKW overview
+                            read-only Scope/Insight/Check/Delivery, one dataset
+    GET  /_board/insight-run?board=&task=&call=        -> one task call's results (the run pop-out)
     POST /_board/structure {path, op, ...}             -> add/archive groups and questions
                             op: add_group {title, letter?, hook?, body?}
                                 add_question {group, title}
@@ -138,7 +139,6 @@ except ImportError:  # subjective-label is not checked out beside this workbench
             return 404, {"ok": False, "err": "labeling workbench not installed"}
 from live.shell import ShellMixin
 from live.export import ExportMixin
-from live.legacy_pagex import LegacyPagexViewMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.design import DesignMixin
@@ -173,7 +173,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -336,8 +336,11 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             # 🔎 one live projection over the whole InsightBoard
             return self.insight_board_view()
         if self.path.split("?", 1)[0] == "/_board/insight":
-            # 🔎 one page of an InsightBoard, seen from its register cell
+            # 🔎 one page of an InsightBoard as a document, the workbench's pop-out
             return self.insight_page_view()
+        if self.path.split("?", 1)[0] == "/_board/insight-run":
+            # 🔎 one task call's results, the Insight workbench's run pop-out
+            return self.insight_run_view()
         if self.path.split("?", 1)[0] == "/_board/value":
             # 🔢 every number the page owes or uses, joined both ways (QPw4v)
             return self.value_view()
@@ -376,8 +379,6 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             self.end_headers()
             self.wfile.write(body)
             return
-        if self.path.startswith("/_board/pagexview"):  # legacy PageX read-only view
-            return self.serve_pagexview()
         if self.path.startswith("/_board/asset/"):
             return self.serve_asset()
         if self.path.startswith("/_term/"):
@@ -453,6 +454,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.insight_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/insight":
             return self.insight_page_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/insight-run":
+            return self.insight_run_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/value":
             return self.value_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/evidence":
@@ -640,16 +643,6 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         # The 🛠 skill map workbench (/_board/skill, skill-order, skill-entry,
         # skillview, mdview) was retired on 2026-09-21; the outline/skill/ lane
         # stays an authored store with no served surface.
-        # PageX was retired from current Folder/Page work on 260904. Keep the
-        # old GET viewer above for stored migration history, but never refresh,
-        # rank, create, restore, or shortlist PageX bindings through the server.
-        if self.path in {"/_board/pagex", "/_board/pagex-order",
-                         "/_board/pagex-entry", "/_board/pagex-match"}:
-            return self.reply(410, {
-                "ok": False,
-                "err": "PageX is retired; use Context source addresses or "
-                       "Evidence Item Supporting/Local Run bindings",
-            })
         # Meeting records moved above Page scope on 260904. Existing
         # <page>/meeting/ bytes remain readable through Folder/static paths,
         # but the Board server must not mint or present new Page-local records.

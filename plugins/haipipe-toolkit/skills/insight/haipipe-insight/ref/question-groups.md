@@ -7,20 +7,20 @@ four Question registers; it is never another Folder, queue, or authority ledger.
 ```text
 Question Group = partition scope × target Insight Level
 
-QG-F-D   full/template × Data
-QG-B-I   partition B × Information
-QG-C-K   partition C × Knowledge
-QG-F-W   full/template × Wisdom
-QG-X-K   cross-partition scope × Knowledge
+QG-full-D        full/template × Data
+QG-alpha-I       partition alpha × Information
+QG-beta-K        partition beta × Knowledge
+QG-full-W        full/template × Wisdom
+QG-cross-K       cross-partition scope × Knowledge
 ```
 
 ## Axes and identity
 
-The partition axis comes from MT00 in its declared order. `F` is the full
-template. Registered audience partitions use their MT00 letters. `X` is a
-derived cross-partition scope, not an audience partition; it exists only for a
-question whose answer needs rows from two or more partitions. Since X owns no
-raw rows, `QG-X-D` is invalid.
+The partition axis comes from MT00 in its declared order. `full` is the full
+template. Registered audience partitions use their MT00 names (no letters).
+`cross` is a derived cross-partition scope, not an audience partition; it exists
+only for a question whose answer needs rows from two or more partitions. Since
+cross owns no raw rows, `QG-cross-D` is invalid.
 
 The target axis is fixed:
 
@@ -37,23 +37,23 @@ question id in the destination register with reciprocal `supersedes` /
 `superseded-by` links. Historical rows and settlements stay at their original
 addresses; open old cells retire with an explicit refusal reason. Only the
 successor's own cells join the new rung's groups. Changing MT00 partitions
-recomputes the affected groups and reopens X where required.
+recomputes the affected groups and reopens cross where required.
 
 ## Membership
 
 One question keeps one stable `QD|QI|QK|QW<n>` id and one register row. Its
-eligible Queue cell under partition `P` belongs to `QG-P-<target>`.
+eligible Queue cell under partition `<name>` belongs to `QG-<name>-<target>`.
 
 ```text
-QI3 under B   belongs to QG-B-I
-QW2 under F   belongs to QG-F-W
-QK7 routed X  belongs to QG-X-K
+QI3 under alpha       belongs to QG-alpha-I
+QW2 under full        belongs to QG-full-W
+QK7 routed cross      belongs to QG-cross-K
 ```
 
 A COLUMN question may therefore appear in several Question Groups through its
-distinct partition cells without being duplicated. An X question belongs only
-to the matching X group; dot cells in audience columns are routing marks, not
-members. An F-only question belongs to the F group; its `🚫 F-only` audience
+distinct partition cells without being duplicated. A cross question belongs only
+to the matching cross group; dot cells in audience columns are routing marks, not
+members. A full-only question belongs to the full group; its `🚫 full-only` audience
 cells remain visible terminal receipts but dispatch no pages.
 
 ## State and dispatch
@@ -77,7 +77,7 @@ The same projection works in both layouts:
 
 ```text
 rung-major       MT02 is the I-axis slice; each partition column exposes QG-*-I
-partition-major  group B is the partition slice; its D/I/K/W pages expose QG-B-*
+partition-major  group alpha is the partition slice; its D/I/K/W pages expose QG-alpha-*
 ```
 
 No `question-group.yaml`, duplicated question row, group state file, or new

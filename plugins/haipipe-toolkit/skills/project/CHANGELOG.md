@@ -25,6 +25,15 @@ is the thing that MINTS FOLDERS, so the prohibition is restated here as a scaffo
   own `verdict.md` (Review-type terminal file) is a DIFFERENT thing and SURVIVES.
 
 
+
+## [0.5.0] — 2026-10-01 — insights/ and designs/ worlds; applications/ retired
+
+JL 261001 ("no more applications"). Reverses the 3.1.0 removal of `insights/`.
+- `insights/` is a world again: one `<Dataset>-InsightBoard/` per extract, holding its
+  registers, reports and light run results (`haipipe-insight` 2.0.0); the code stays in `tasks/`.
+- `designs/` is the Design world (`haipipe-design`).
+- `applications/` becomes legacy debt; old boards move to `insights/_old/` and `designs/_old/`.
+
 ## [3.1.0] — 2026-07-12 — insights/ removed from the container layout
 
 JL insight-retirement ruling. `/haipipe-project` no longer mints an `insights/` folder: the container is `tasks/ discoveries/ diagram/` (+ `papers/`, `applications/` optional).

@@ -17,7 +17,7 @@ Page controller passes are controls. Step and Version stay inside a Run.
 Use `haipipe-ideation` for generation/testing/selection and
 `haipipe-paper-ideation` for the Paper Page projection. Both Paper and Page
 entrypoints load the adapter when that Page is involved. Discovery/Task execute
-external supporting work; Page RP/RE/RD own writing, local evidence and Page
+external supporting work; Page Runs (`run-<kind>-…`) own writing, local evidence and Page
 delivery. The assembler composes Section outputs; Round routes feedback back
 to its exact owner. Skills are loaded as needed, not all at once.
 
@@ -46,10 +46,10 @@ Evidence Workspace. Supporting Run Results and the single Page-local Run
 provide the material; no `pagex/`, `probe/`, or standalone value lane is a
 current write target.
 
-New local work uses the shared typed RP/RE/RD grammar. Read
-`haipipe-paper/ref/run-naming.md` for Paper judgment IDs, owner/worker boundaries
-and historical `pm-/pa-/pr-/pj...` or compact `rp00/rpNN` records. Existing
-identities are not renamed; reused Results keep their exact native address.
+Every Run has a full name: Page Runs `run-<kind>-<MMDD>-<slug>`, Paper judgment
+Runs `run-paper-<judgment>-<MMDD>-<slug>`. Read `haipipe-paper/ref/run-naming.md`
+for the names and owner/worker boundaries. Older short names are retired; reused
+Results keep their exact native address.
 
 There is no View layer and no Paper-level Literature, Value, or Display Page
 Type or workbench. CITE, VALUE, and DISPLAY are typed Results presented in the

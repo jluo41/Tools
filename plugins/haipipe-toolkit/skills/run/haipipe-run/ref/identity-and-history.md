@@ -76,7 +76,7 @@ Published Results and closed history are immutable.
 Read the [interactive profile](../../../page/haipipe-page-workflow/ref/interactive-writing-run.md)
 for concrete journals, working state and human closure.
 
-- Structure `rp-struct-01` combines SHAPE and SURVEY; participants share that
+- Structure `run-structure-<MMDD>-<slug>` combines SHAPE and SURVEY; participants share that
   commission. Its accepted Mermaid structure and Page-global P index precede
   Section/paragraph writing allocations.
 - Scratch can be commissioned against the selected Outline's Section or
@@ -84,7 +84,7 @@ for concrete journals, working state and human closure.
 - Feedback within a fixed goal appends a Step. Same-goal reopening appends a
   Version. An open Version is append-only; closed Version records are immutable.
 - A changed goal/target requires a new Run. A later independently commissioned
-  Section session also receives the next `rp-sec-NN` under the Page profile.
+  Section session also receives the next `run-section-<MMDD>-<slug>` under the Page profile.
 - Paragraph groups can share one commission only when accepted together. An
   N-paragraph Page can have K bounded writing groups, with `1 <= K <= N`;
   allocation follows commissioned work, not every paragraph automatically.

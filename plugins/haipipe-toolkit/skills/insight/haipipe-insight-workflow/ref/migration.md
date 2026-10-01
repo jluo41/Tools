@@ -71,8 +71,8 @@ originally evaluated. No inventory of external live Boards is implied.
 A version bump edits no page, yet it can move the frontier: a new closing check un-closes every page that fails it, and the register then contradicts its own pages with nobody having touched either. Two rules make that safe:
 
 ```text
-① every bump SHIPS ITS MIGRATION NOTE, the way ../../haipipe-insight/ref/partition.md grandfathers
-  9-X-cross/ by name: what happens to artifacts settled under the older version.
+① every bump SHIPS ITS MIGRATION NOTE, the way ../../haipipe-insight/ref/partition.md marks the
+  pre-261001 letter grammar as history: what happens to artifacts settled under the older version.
   The default is OWE-ON-NEXT-TOUCH — settled cells stay settled, the page owes the
   new check when next opened. The exception is a bump that ADDS A HUMAN GATE
   (a signature, a release): that blocks immediately, because the risk it guards
@@ -80,7 +80,7 @@ A version bump edits no page, yet it can move the frontier: a new closing check 
 ② the bumping desk COMPUTES THE BLAST RADIUS before shipping: grep the live
   boards for every artifact the new check fails, AND the sibling law for every
   version pin the bump stales, and list both in the migration note by id. A bump
-  that names FW01 and silently un-closes FW02 shipped half a migration — and
+  that names one W page and silently un-closes its sibling shipped half a migration — and
   sibling citations are best written UNPINNED, so there is nothing to stale.
   A patch that lands a rule must grep the family for every sentence stating the
   OLD rule: two rounds running, a rule split across files was updated in some
@@ -92,8 +92,8 @@ The register never flips backward on a bump: an affected cell KEEPS its mark and
 ## 🧾 Marks, spelling and receipts
 
 ```text
-token spelling     a mark's spelling INCLUDES its spacing: `🚫 F-only` is the token,
-                   `🚫Fonly` is not it. Canonical forward; a live board is re-spelled
+token spelling     a mark's spelling INCLUDES its spacing: `🚫 full-only` is the token,
+                   `🚫full-only` is not it. Canonical forward; a live board is re-spelled
                    only in an authorized sweep, and its tables re-pad in the same
                    sweep — two spellings in one column defeats the mark
 a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the sentence

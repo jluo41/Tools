@@ -7,8 +7,8 @@ description: >-
   person-signed handoff settlement. Use to run, resume, or inspect an
   InsightBoard, answer its registered questions, or report blocked work.
 metadata:
-  version: "1.3.4"
-  last_updated: "2026-09-29"
+  version: "2.3.0"
+  last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -48,8 +48,12 @@ and counsel. Select work from missing targets and dependencies; a Folder may
 need zero, one, or several native Runs. A Run Spec has one bounded target and
 close rule; only an allocated native Ticket and receipt establish a Run.
 
-The runtime enumerates Supporting Runs, Page Evidence Runs and explicitly
-commissioned Page Writing/Delivery Runs. Page passes, registration, GI checks,
+The runtime enumerates the page tickets that answer questions (an answering
+page's `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets `RESULT_DIR`
+to the page's `results/<ticket>/` and calls a task run in the Project's DIKW
+Block whose config's `answers:` cross-checks the question), the Report runs
+that write or refresh the answering page's `.md` from its own results, and the
+Wisdom pages' writing and delivery Runs (JL 261001; `haipipe-insight` `ref/board-contract.md`). Page passes, registration, GI checks,
 signature recording and settlement are controller/resource actions without
 Run ids. A control-only execution may have an empty Run inventory. Completed
 Results are reused by exact address; a Page pass never becomes a wrapper Run.
@@ -69,9 +73,9 @@ an RP requires an actual selected writing goal. The dispatcher can also perform
 an explicit control-only action, such as registration or a CHECK over an
 existing Page. Report that action without inventing a Run.
 
-After native Results and receipts land, evaluate the relevant Page/GI
-conditions. Settle one cell only after its Page CHECK/CLOSE and exact predicates
-pass. When requested answer targets are terminal, requested control actions meet
+After native Results and receipts land, evaluate the relevant GI
+conditions. Settle one cell only after its answering page
+passes its check and the exact predicates pass. When requested answer targets are terminal, requested control actions meet
 their own acceptance rules, and the completion policy passes,
 close the Runtime. A required unresolved gate leaves it `held`, never complete.
 
@@ -81,10 +85,10 @@ close the Runtime. A required unresolved gate leaves it `held`, never complete.
 |---|---|---|
 | Meta | `haipipe-insight-meta` | MT00 source inventory, grain, window, freshness, limits and partition register |
 | Question | `haipipe-insight-question` | MT01–MT04 stable questions and per-partition Queue cells |
-| Data | `haipipe-insight-data` | observations from exact accepted source evidence |
-| Information | `haipipe-insight-information` | reproducible derivations from accepted parent rows |
-| Knowledge | `haipipe-insight-knowledge` | bounded claims, rivals, strength and pooling verdict |
-| Wisdom | `haipipe-insight-wisdom` | contextual counsel and person-signed Design Handoff |
+| Data | `haipipe-insight-data` | observations: the answering page's ticket results; the page says them in words |
+| Information | `haipipe-insight-information` | reproducible derivations: the answering page's ticket results and the page that reads them |
+| Knowledge | `haipipe-insight-knowledge` | a page: bounded claim, rivals, strength, pooling verdict |
+| Wisdom | `haipipe-insight-wisdom` | a Page: contextual counsel and person-signed Design Handoff |
 
 Each owner selects its native Run work through `ref/run-workflow.md`; ownership
 alone creates no Run. A pooling verdict is Knowledge about exchangeability and
@@ -100,21 +104,22 @@ resource/version/target named in its receipt.
 A Question Group is a derived `partition × DIKW target` view of Queue cells;
 its state never allocates a Run or settles its members together. Load
 [`ref/partition-policy.md`](ref/partition-policy.md) for audience eligibility,
-COLUMN/X/F-only routing, pooling, or late partition arrival. MT00 alone
-registers a partition; Question owns its asks and cell state. X owns comparisons,
+COLUMN/cross/full-only routing, pooling, or late partition arrival. MT00 alone
+registers a partition; Question owns its asks and cell state. `cross` owns comparisons,
 has no raw D rows, and every partition-major W depends on the current verdict.
 
 ## 🔁 Semantic dependencies across answer targets
 
-The Climb Law constrains evidence dependencies: I cites accepted D, K cites
-accepted I, and W cites accepted K. It does not require a new Run for an
-already accepted parent. A partition-major board adds a dependency because X
+The Climb Law constrains evidence dependencies: an Information page reads
+its own current results, a Knowledge page cites results and Information pages,
+and a Wisdom page cites Knowledge pages. It does not require a new Run for an
+already accepted parent. A partition-major board adds a dependency because `cross`
 consumes mirrored results and every W cites the pooling verdict:
 
 ```text
-F's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ X group
-                                                                  │ XI → XK → verdict
-                                                                  ▼
+full's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ cross group
+                                                                     │ I → K → verdict
+                                                                     ▼
                                                  every W page last, template
                                                  included, all citing the verdict
 ```
@@ -139,27 +144,32 @@ Run receipts and are indexed under `control`. No GI check gets a synthetic Run i
 clause, which is per-column-set.
 
 ```text
-GI0  inventory ready      MT00 has Page CHECK/CLOSE and its sources resolve through
-                          accepted Results or governed frozen local inputs · the four
+GI0  inventory ready      MT00 names the board's ONE extract and it resolves · the four
                           registers exist · on partition-major the partition register
-                          and the shared-threshold pointer exist
-GI1  question registered      the cell's row carries target, raiser, what-would-answer,
-                          and a state cell · its partition group exists on disk
-GI2  observations citable   the D Page reached CHECK/CLOSE; every value is bound by
-                          path to either accepted Supporting Result → frozen Local Input →
-                          ready typed local Result, or governed static local source →
-                          frozen Local Input → ready typed local Result. The latter
-                          owes no Supporting Run; Data owns both acceptance branches
-GI3  derivation citable   the I Page reached CHECK/CLOSE and derives only from
-                          exact version-pinned D parent rows (X contrast:
-                          mirrored I rows, the one exception)
-GI4  parent/verdict ready   the local K Page reached CHECK/CLOSE and cites exact
-                          version-pinned I parent rows · OR the pre-climbed
-                          external-parent bridge passes all five bridge assertions ·
-                          on partition-major the X group's current POOL, SPLIT, or
-                          UNDETERMINED verdict cites the predeclared shared thresholds
-                          and is current against the partition register — a late
-                          partition voids this gate
+                          (with one config stem per cut) and the shared-threshold
+                          pointer exist
+GI1  question registered      the cell's row carries target, raiser, what-would-answer
+                          with its evidence needs (kinds legal at the rung;
+                          haipipe-insight ref/evidence-needs.md), and a state cell · its partition is on MT00's register (a W
+                          cell also needs its partition's folder for the W page)
+GI2  observations citable   the answering page's ticket for the QD question has a
+                          current `ok` receipt for the board's extract in the page's
+                          `results/<ticket>/`; haipipe-insight-check finds every need
+                          bound, fit, cited and current; unit, window and coverage are stated (QA
+                          note or page); no interpretation has entered
+GI3  derivation citable   the same for a QI question (needs included), and its page (required for
+                          Information) traces every number to a file in its own results and keeps
+                          nulls visible (cross contrast: mirrored Information results of
+                          each partition, the one exception)
+GI4  parent/verdict ready   the Knowledge page passed a fresh-context check: every
+                          number traces to a current named result, haipipe-insight-check
+                          finds every need bound, fit, cited and current (no compute
+                          need reasoned away), strength, rivals and boundary are stated · OR the pre-climbed external-parent
+                          bridge passes all five bridge assertions · on
+                          partition-major the cross group's current POOL, SPLIT, or
+                          UNDETERMINED verdict page cites the predeclared shared
+                          thresholds and is current against the partition register —
+                          a late partition voids this gate
 GI5  handoff authorized      ✋ the handoff's `signed:` row reads `✅ <initials> <YYMMDD>`
                           (haipipe-insight-wisdom) · `⬜` blocks · no machine
                           writes it · receipt pins the exact Page and dependencies
@@ -168,9 +178,11 @@ GI5  handoff authorized      ✋ the handoff's `signed:` row reads `✅ <initial
                           licensed UNDETERMINED partial-final non-answer likewise
                           has no GI5 pass or Design handoff; Question records GI6
                           under its two-receipt rule
-GI6  answer settled               the register cell flips ✅, or 🚫 with a reason, or 🟡 <page>
-                          final when the page states why the remainder cannot close
-                          (haipipe-insight-question) — always citing the closing page ·
+GI6  answer settled               no overclaim from haipipe-insight-check on the cell, then the
+                          register cell flips ✅ <page id> (`✅ <L><NN>-<partition>`), or 🚫 with a reason, or
+                          🟡 <page id> final when the answer states why the remainder cannot
+                          close (haipipe-insight-question) — always naming the answering
+                          page, whose state line names the question back (`answers QI2`) ·
                           gaps remain → the next lap
 ```
 
@@ -183,8 +195,10 @@ restatement of the Queue — headers, Diagrams, Openings, status words, and coun
 Reconciling one is Question Task-Face work citing the Queue.
 
 **New computation release and handoff signing remain person-reserved.** A new
-Supporting computation is released through the owning Page Evidence Item's
-SURVEY `Decide`; legacy Probe records are read-only history. Handoff
+computation is a new task config (and, when needed, a new task) in the DIKW
+Block, authored through `haipipe-task`; the person presses Run. Legacy Probe
+records and Page Evidence Items on boards made before page tickets are read-only
+history. Handoff
 signing is GI5. Page Workflow may also require local Shape approval, CITE
 verification, or Page acceptance while authoring that Folder. Those nested
 Page-Face controls may pause a copilot pass, but they do not create extra Insight
@@ -202,16 +216,17 @@ input.
 ```text
 Meta        0-MT-meta/MT00-meta/
 Question        0-MT-meta/MT01-MT04/
-D/I/K     rung-major:       1-D-data/ · 2-I-information/ · 3-K-knowledge/
-          partition-major:  <N>-<L>-<partition>/ with the partition letter prefixed
-                            to every page id · X-cross/ for the contrast and verdict
-                            (index-free, letters sort last · legacy: 9-X-cross/)
-Wisdom        rung-major 4-W-wisdom/, or each partition group's W page
+D/I/K     <N>-<partition>/<R><NN>-<partition>-<slug>/ (Job/Task): <slug>.md (Report) ·
+          runs/<ticket>.sh + results/<ticket>/ (Work) · 9-cross/ (pinned
+          last) for cross pages · old rung-major
+          boards: 1-D-data/ · 2-I-information/ · 3-K-knowledge/
+Wisdom    each partition's folder <N>-<partition>/W<NN>-<partition>-<slug>/ (no runs/
+          when it reasons only from other pages)
 ```
 
 These are disk groups, not Question Groups. The derived projection cuts across
-them: an MT02 column exposes `QG-<partition>-I`, while partition group B exposes
-`QG-B-D`, `QG-B-I`, `QG-B-K`, and `QG-B-W`.
+them: an MT02 column exposes `QG-<partition>-I`, while partition group `<partition>` exposes
+`QG-<partition>-D`, `QG-<partition>-I`, `QG-<partition>-K`, and `QG-<partition>-W`.
 
 ## 🧾 Runtime records
 
@@ -222,8 +237,9 @@ duplicates their authority. `ref/run-workflow.md` defines the envelope.
 
 A GI/resource update leaves one dated control receipt in the granting Folder's
 `draft/records/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
-MT00 records GI0 and partition registration; Question registers record GI1 and
-GI6; answer Folders record GI2-GI4; Wisdom records GI5. Include the runtime id,
+MT00 records GI0 and partition registration; Question registers record GI1,
+GI2-GI4 (the register facing the answer's rung, since a run or a run result has no
+Folder log) and GI6; Wisdom records GI5. Include the runtime id,
 exact target, evidence/version, assertion, actor, outcome and next action.
 For GI5/GI6 and Design eligibility, use [`ref/handoff-record.md`](ref/handoff-record.md).
 Link any consumed native Run receipt; the Folder log cannot replace it.
@@ -261,7 +277,7 @@ register and answering-Page receipts quoting the licensing sentence.
 - STOP on contradiction: conflicting Queue, Page or receipt state is a named
   defect with exact sources; never overwrite history to make projections agree.
 - **Known-stale is marked, not repaired.** A line known stale but deliberately left (a frozen handoff, a fenced page) is marked `🧊 <staling event>` where it stands, so frozen debt is distinguishable from unnoticed drift; an unmarked stale line remains a finding.
-- **Refusal is convergence.** A 🚫 with a reason is a terminal state equal in rank to ✅: the lane terminates because refusing is answering, and a board rich in refusal reasons (thin, F-only, defer, no-measure) is converging, not failing. The defect is the cell that can neither answer nor refuse.
+- **Refusal is convergence.** A 🚫 with a reason is a terminal state equal in rank to ✅: the lane terminates because refusing is answering, and a board rich in refusal reasons (thin, full-only, defer, no-measure) is converging, not failing. The defect is the cell that can neither answer nor refuse.
 
 ## ↩ Return
 

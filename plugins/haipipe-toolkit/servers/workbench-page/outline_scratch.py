@@ -25,11 +25,10 @@ from src.plan_layout import is_sectioned, scratch_notes, to_canonical, write_scr
 
 SCOPES = ("section", "subsection", "paragraph")
 _RECORD_RE = re.compile(
-    r"^###\s+(?P<run>rp-scratch-\d+_[A-Za-z0-9._-]+|run-scratch-\d{4}-[a-z0-9-]+)\s+·\s+"
+    r"^###\s+(?P<run>run-scratch-\d{4}-[a-z0-9-]+)\s+·\s+"
     r"(?P<scope>section|subsection|paragraph)\s+·\s+(?P<target>[A-Za-z0-9._-]+)\s*$",
     re.I | re.M,
 )
-_RUN_RE = re.compile(r"^rp-scratch-(?P<number>\d+)_", re.I)
 _FIELD_RE = re.compile(r"^-\s+(?P<name>[A-Za-z][A-Za-z ]*):\s*(?P<value>.*)$")
 
 
@@ -174,18 +173,6 @@ def read_scratch(page_src: Path) -> dict:
     for record in records:
         latest[(record["scope"], record["target"])] = record
     return {"records": records, "latest": latest}
-
-
-def _next_run_id(page_src: Path) -> str:
-    inventory = read_scratch(page_src)
-    numbers = [int(match.group("number")) for record in inventory["records"]
-               if (match := _RUN_RE.match(record["run"]))]
-    results = page_src.parent / "results"
-    if results.is_dir():
-        numbers.extend(int(match.group("number")) for path in results.iterdir()
-                       if (match := _RUN_RE.match(path.name)))
-    number = max(numbers, default=0) + 1
-    return "rp-scratch-%02d" % number
 
 
 def _open(page_src: Path, scope: str, target: str) -> str:
@@ -353,7 +340,7 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
         requested_run = _clean(payload.get("run_id", ""), "run_id", required=False)
         current = inventory["latest"].get(key)
         if requested_run:
-            if not re.fullmatch(r"rp-scratch-\d+_[A-Za-z0-9._-]+|run-scratch-\d{4}-[a-z0-9-]+", requested_run, re.I):
+            if not re.fullmatch(r"run-scratch-\d{4}-[a-z0-9-]+", requested_run, re.I):
                 raise ValueError("invalid Scratch Run id")
             record = next((item for item in inventory["records"]
                            if item["run"] == requested_run), None)

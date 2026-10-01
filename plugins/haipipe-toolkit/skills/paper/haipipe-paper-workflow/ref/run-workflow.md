@@ -27,8 +27,8 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 | `task.<story>.<row>` | `paper.judgment.task` / Story | one Task Roadmap row and candidate study plan | hybrid / review one row | row exists → bounded task judgment | research needed → support after G1; settled → CLOSE |
 | `narrative.<story>.<section>` | `paper.judgment.narrative` / Story | one Section Narrative row, current Venue contract, claim/evidence pointers | hybrid / review Section telling | row exists → reviewed narrative with risks | G3 release → selected structure/write; otherwise HOLD or CLOSE as proposal |
 | `support.<target>` | selected Task/Discovery/Ideation worker's native Run Type | one missing computation, source inquiry, generation or test Result; frozen inputs and authorized scope | owner-selected / execute bounded work | owner entry + relevant G1 → accepted native Result | relevant G2 return → consumers; failure → owner retry or HOLD |
-| `structure.<page>` | Page Structure RP / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
-| `write.<page>.<scope>` | Page Writing RP / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
+| `structure.<page>` | Page `run-structure-…` / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
+| `write.<page>.<scope>` | Page `run-section-…` or `run-paragraph-…` / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
 | `evidence.<page>.<item>` | Page Evidence RE / Page evidence owner + selected worker | one VALUE/CITE/DISPLAY item; frozen Local Input and 0..N Supporting Results | agent or hybrid / make and verify typed Result | decided item + required inputs → accepted typed Result | EMBED control → dependent write/deliver; failure → repair or HOLD |
 | `deliver.<page>.<format>` | Page Delivery Run `run-delivery-<lane>` / `haipipe-page-delivery` | one Page lane (web, LaTeX, Word) | agent / rerun the lane's fixed Run | the lane's files at least as new as the Page | Page CHECK control → compile dependency; failure → repair/HOLD |
 | `compile.<paper>.<build>` | `paper.compile` / `haipipe-paper-assemble` | exact compile-order, Section fragments/bindings, config/profile | agent / assemble one manuscript build | valid safe config + explicit build request → truthful manifest and declared outputs or failure | G4 evaluates readiness; feedback → response; build outcome → CLOSE |
@@ -75,10 +75,10 @@ builds.
 
 ## Native identities and Result storage
 
-Page RP/RE/RD use the current shared grammar. Paper judgments use the declared
-`ridea/rclaim/rtask/rnarra` profile and scoped human closure in
+Page Runs use the shared full names (`run-<kind>-<MMDD>-<slug>`). Paper judgments use
+`run-paper-<idea|claim|task|narrative>-<MMDD>-<slug>` and scoped human closure in
 [Paper naming](../../haipipe-paper/ref/run-naming.md#judgment-result-and-close-rule).
-Supporting Runs stay in Task/Discovery/other native stores. RE lineage and
+Supporting Runs stay in Task/Discovery/other native stores. A local evidence Run and
 its native Ticket refer to the same work; index it once with aliases.
 
 A commissioned compile uses the neutral folder-local executable dialect:

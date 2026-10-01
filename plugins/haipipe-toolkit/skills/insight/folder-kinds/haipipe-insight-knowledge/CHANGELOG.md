@@ -1,5 +1,22 @@
 # haipipe-insight-knowledge · version history
 
+
+## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
+
+- A claim computes whenever its question has a compute need (a gain with uncertainty, an adjusted contrast for a named rival, a held-out score, a size); a compute need answered by reasoning is a GAP, never a WEAK claim. Rivals the ask names are compute needs. GI4 uses `haipipe-insight-check`.
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Page paths read `<n>-<partition>/K<NN>-<partition>-<slug>/` (no partition letters).
+
+## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
+
+- A Knowledge answer is its page's `.md` (no `reports/` folder); it cites Information pages and its own results. A page that computes calls the task through its own `runs/` ticket into its `results/<ticket>/`; one that reasons only from other pages has no `runs/`. No board `_results/` store.
+
+## 2.0.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- A Knowledge answer is a report citing named run results and Information reports. The strength rubric and the pooling-verdict rules are unchanged; GI4 passes on a fresh-context check of the report. New rival tests become `j3N_knowledge_<topic>` task runs.
+
 ## 1.4.1 — 2026-09-28 · No content hashes (JL 260928)
 
 - I-row parents are pinned by path and version, never by content hash.

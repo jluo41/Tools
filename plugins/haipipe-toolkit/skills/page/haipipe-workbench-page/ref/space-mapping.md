@@ -103,11 +103,11 @@ model for these Spaces.
 │   ├── records/<stem>-context.md, ... durable process records; off-stage
 │   └── previous/                      superseded plan versions
 ├── runs/
-│   ├── rp-struct-NN.md, rp-scratch-NN_<target>.md, rp-sec-NN.md,
-│   │   rp-para-NN_Pxx[-Pyy].md          Run P Markdown tickets
-│   ├── re-value-NN_<slug>.md,
-│   │   re-display-NN_<slug>.md,
-│   │   re-cite-NN_<slug>.md              RE Evidence Run tickets
+│   ├── `run-structure-<MMDD>-<slug>`.md, `run-scratch-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`.md,
+│   │   `run-paragraph-<MMDD>-<slug>`          Run P Markdown tickets
+│   ├── `run-value-<MMDD>-<slug>`,
+│   │   `run-display-<MMDD>-<slug>`,
+│   │   `run-citation-<MMDD>-<slug>`              RE Evidence Run tickets
 │   └── run-delivery-<lane>.sh  the fixed Delivery Runs; written by page.py export
 ├── results/
 │   ├── rp-*/                            Run P history / working drafts
@@ -155,7 +155,7 @@ separate subsection node, so it avoids a duplicate Subsection plus; explicit
 subsection-scope records remain accepted for future Page schemas. B/symbol rows
 have no Scratch control. The form captures rough notes
 without changing the Draft. `Save` creates or updates
-`rp-scratch-NN_<target>` and its `## Scratch` registry record; the person
+`run-scratch-<MMDD>-<slug>` and its `## Scratch` registry record; the person
 manually clicks `Finish Scratch` to ask the AI for a concise Summary from the
 notes and close the Run. There is no `💬 Notes` thread,
 old feedback badge, or `action: feedback` composer in Draft Space. In Scratch
@@ -196,7 +196,7 @@ Supporting Runs   external/upstream Runs that remain inspectable in place
 ```
 
 RP reads `rp*.md` tickets and their `results/rp*/` journals, including the
-human-first `rp-scratch-NN_<target>` records. RE reads
+human-first `run-scratch-<MMDD>-<slug>` records. RE reads
 Page-owned evidence tickets and their paired Result manifests. RD reads the
 delivery lane's built files and their times. Supporting Runs are
 assembled from references in an RE Result and the owner-native registry;

@@ -937,7 +937,7 @@ def inline(text):
     return t
 
 
-_LOCAL_RUN_RE = re.compile(r"`?((?:re-|rp-|rd|pj|pm-|pa-|pr-)[\w.-]+)`?")
+_LOCAL_RUN_RE = re.compile(r"`?(run-[\w.-]+)`?")
 _MODES = ("reuse", "rerun", "new-run", "new run", "new-task", "new round", "registered", "complete")
 
 
@@ -960,7 +960,7 @@ def _parse_supporting(value):
 
 
 def _parse_local(value):
-    """`Page · Evidence Item · reuse · pj06t01r02 → results/…/result.yaml` → {mode, run, result}."""
+    """`Page · Evidence Item · reuse · run-value-0901-score → results/…/result.yaml` → {mode, run, result}."""
     v = (value or "").strip()
     left, _, right = v.partition("→")
     m = _LOCAL_RUN_RE.search(left)
@@ -2361,13 +2361,13 @@ def _story_panel(d, kinds):
         for row in _page_runs(d, s):
             name = str(row.get("run_id") or row.get("global_id") or "")
             target = str(row.get("target") or "")
-            if re.search(r"(^|\s)rclaim-", name):
+            if re.search(r"(^|\s)run-paper-claim-", name):
                 e = _norm_key("E", target)
                 rows += _tag([row], [e] + rq.get(e, []) + hyp_of.get(e, []), fill)
-            elif re.search(r"(^|\s)rtask-", name):
+            elif re.search(r"(^|\s)run-paper-task-", name):
                 t = _row_key(target)
                 rows += _tag([row], [t] + T["up"].get(t, []), fill)
-            elif not re.search(r"(^|\s)(ridea|rnarra)-", name):
+            elif not re.search(r"(^|\s)run-paper-(idea|narrative)-", name):
                 rows += _tag([row], [], fill)
         rows += _supporting_rows(d, s, fill, T)
     first = d["story"][0]["stem"] if d["story"] else "the Story"
@@ -2386,7 +2386,7 @@ def _sections_panel(d, kinds, sections):
     for s in d["story"]:
         fill = {"page": s["stem"], "paper": d["board"].name}
         for row in _page_runs(d, s):
-            if re.search(r"(^|\s)rnarra-", str(row.get("run_id") or "")):
+            if re.search(r"(^|\s)run-paper-narrative-", str(row.get("run_id") or "")):
                 sid = str(row.get("target") or "").strip()
                 rows += [dict(x, _views=part.get(sid, "")) for x in _tag([row], [sid], fill)]
     for sec in sections:

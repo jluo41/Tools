@@ -51,22 +51,21 @@ identity.
 
 ## 3. Run boundary
 
-New Page interaction and evidence follow the shared RP/RE/RD contract:
+New Page interaction and evidence follow the shared Page Run names:
 
 ```text
-rp-struct-01               whole-Page SHAPE + SURVEY
-rp-sec-01                  one Section writing session
-rp-para-01_P01-P03          fixed paragraph-group goal
-re-cite-01_<slug>           local citation Evidence Item
-re-display-01_<slug>        local display Evidence Item
-run-delivery-latex         one lane's fixed Delivery Run, rerun in place
+run-structure-<MMDD>-<slug>    whole-Page SHAPE + SURVEY
+run-section-<MMDD>-<slug>      one Section writing session
+run-paragraph-<MMDD>-<slug>    fixed paragraph-group goal
+run-citation-<MMDD>-<slug>     local citation Evidence Item
+run-display-<MMDD>-<slug>      local display Evidence Item
+run-delivery-latex             one lane's fixed Delivery Run, rerun in place
 ```
 
 Local Evidence/Display work is Page-owned; its selected Task/Display worker
 does not change that ownership. Independent Supporting Runs remain with their
-Task/Discovery owner and full native identity. The historical `pm-/pa-/pr-`,
-`pj...` and compact `rp00/rpNN` forms are read-only compatibility inputs, never
-new allocation templates. See `run-naming.md` beside this file for the
+Task/Discovery owner and full native identity. Older short names are retired.
+See `run-naming.md` beside this file for the
 ownership table and Paper judgment profile. Evidence does not satisfy human
 writing acceptance, and a judgment never replaces I3 or G3.
 
@@ -143,7 +142,7 @@ renumbering.
 Migrate current active Pages in place. Preserve stable Story, Section, claim,
 Evidence, and historical Run identities. Use the Page migration command for
 Page-global paragraph addresses, classify old Runs rather than renaming them,
-and allocate current typed RP identities only when real Page interaction is
+and allocate current Page Run names only when real Page interaction is
 commissioned. Keep historical IDs unchanged.
 Do not modify `_archive/`, frozen `sent/`/`released/` snapshots, or generated
 delivery by hand.

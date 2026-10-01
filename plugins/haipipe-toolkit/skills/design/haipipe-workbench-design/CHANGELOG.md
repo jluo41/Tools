@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.14.0 · 2026-10-01 · Workbench Table (JL 261001)
+
+- `ref/workbench-table.md`: Level · Space · View · Run type · Agent · Skill · Person signs for
+  both levels, in the `table-workbench` shape. The Design Goal Space's five views follow the
+  blocks of `design-goal.md`; their skill is the new `haipipe-design-goal`. Its cards are
+  `haipipe-design-workflow/references/run-cards.md`.
+- The Runs panel reads those cards (`design_run_types`) instead of a list in `design.py`: the
+  Design Goal Space offers its five run types, and every prompt names the agent that runs it.
+
+## 0.14.0 · 2026-10-01 · Two board Spaces and a Runs panel (JL 261001)
+
+- Board level: Design Tasks Space (was Goal) and a new Theory of Design Space, which renders
+  `ref/design-theory.md` and the board's own `design-theory.md`. The board's Design and
+  Delivery Spaces are gone; every design, run and delivery lives at the page level.
+- Every Space at both levels has the shared Runs panel (`live.runs_panel`), as in the Paper
+  and Page workbenches. It replaces the "Run types in this Space" guide, the "New design
+  tasks" form and the "New Design Item" form; the native Commission and queue buttons stay.
+- The Insight board line and the "Insight pages the designs use" fold are removed at both levels.
+- Page level: the Goal Space is now called **Design Goal Space** (the key stays `goal`), and it
+  shows the full design input: Aim, Venue (venue default beside this task), Rules, Resources,
+  Leave out (what must never appear in the message), each line with its source, gaps counted as "not stated". Source: the board's
+  `design-goal.md` with `Task · <folder>` overrides, plus the venue profile and the register.
+  Its Runs panel gains a "Design input" run type that fills the gaps.
+- `{LINK}` is the link slot: Delivery and the csv show it after the ask's colon on every
+  design; stored texts are unchanged. `haipipe-design-unit`'s `max_chars` does not count it.
+- The drawing's board frame shows the two Spaces; its Design Theories table names the new Spaces.
+
+## 0.13.0 · 2026-10-01 · Three Spaces at both levels (JL 261001)
+
+- Page level: Goal · Design · Delivery. Goal states the one design task, with the rules every
+  design keeps. Design shows the task again above one card per design, each closed row in four
+  columns: Design · Rationale · Supporting work · Expectation. A card's insight pages and runs
+  fold inside it; the Insight and Run Spaces are gone, and their old links open Design.
+- Board level: the same three Spaces. Goal lists the design tasks and the rules every task
+  keeps; Design shows one folded block per design task; Delivery is unchanged plus a csv. The
+  header names the board only, no counts.
+- The screen says `Design N` (the files keep `ITEMNN`) and "design task" again, not "targets".
+- `/_board/design-bundle?…&folder=<name>` returns one design task's csv; the page's Delivery
+  Space links it.
+
+## 0.12.4 · 2026-10-01 · Targets, not Brief (JL 261001)
+
+- The screen says **targets** where it said "Brief" or "design tasks": the board's Goal Space
+  heading is "Targets", its column "target", its form "New targets"; a design built without
+  insight reads "from the targets only". The file keeps its name, `0-BR-brief/BR00-brief.md`,
+  and the skill stays `haipipe-design-brief` until a separate rename pass.
+- New design drawing `servers/workbench-design/studio/design-board-workbench-design.py` (generates
+  the `.excalidraw`): four Spaces (Goal · Knowledge · Design · Delivery), one High/Low table per
+  target, general design theory (abduction, C-K, FBS, axiomatic design, satisficing) and the
+  domain theories for messages. The served screen does not follow the drawing yet.
+
 ## 0.12.3 · 2026-09-29 · Each card names the rule it follows
 
 - A Design Item may carry `because: <page id> · <row>` (`because: FW02 · W1`). The card's

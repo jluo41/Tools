@@ -17,11 +17,12 @@ from pathlib import Path
 from src.outline_version import plan_dir, latest_outline
 from src.plan_shape import global_paragraph_mapping
 from live.runs import local_runs
+from src import run_names
 
 RUN_NAMES = {"structure": "run-structure", "section": "run-section",
              "paragraph": "run-paragraph"}
-IDENTITY = {"structure": "rp-struct-NN", "section": "rp-sec-NN",
-            "paragraph": "rp-para-NN_Pxx[-Pyy]"}
+IDENTITY = {"structure": "run-structure-<MMDD>-<slug>", "section": "run-section-<MMDD>-<slug>",
+            "paragraph": "run-paragraph-<MMDD>-<slug>"}
 NEXT = {
     "Waiting": "resume: present the saved candidate, apply the Feedback below or ask for it.",
     "Running": "resume the unfinished Step after reconciling the saved candidate and journal.",
@@ -57,18 +58,22 @@ class RunPrompts:
             return str(path)
 
     def matches(self, row, kind, target):
+        """A Run of this kind and scope, by its full name's kind and its own target fields."""
         run = row["run_id"]
-        if kind == "structure":
-            return bool(re.fullmatch(r"rp-struct-\d{2,}", run))
-        if kind == "section":
-            scopes = re.findall(r"(?<![A-Za-z0-9])C\d+(?![\d.])",
-                                row.get("target", "") + " " + row.get("target_scope", ""))
-            return bool(re.fullmatch(r"rp-sec-\d{2,}", run) and set(scopes) == {target})
-        match = re.fullmatch(r"rp-para-\d{2,}_P(\d+)(?:-P(\d+))?", run)
-        if not match or target not in self.paragraphs:
+        if run_names.kind_of(run) != kind:
             return False
+        if kind == "structure":
+            return True
+        fields = " ".join(str(row.get(k, "")) for k in ("target", "target_scope", "paragraphs"))
+        if kind == "section":
+            return set(re.findall(r"(?<![A-Za-z0-9])C\d+(?![\d.])", fields)) == {target}
+        if target not in self.paragraphs:
+            return False
+        if str(row.get("target", "")).strip() == target:
+            return True
         index = int(self.paragraphs[target].split(".P")[1])
-        return int(match[1]) <= index <= int(match[2] or match[1])
+        spans = re.findall(r"(?<![\w.])P(\d+)(?:\s*-\s*P(\d+))?", fields + " " + run.upper().replace("-P", " P"))
+        return any(int(a) <= index <= int(b or a) for a, b in spans)
 
     def excerpt(self, kind, target):
         """Only a paragraph quotes its Outline block; the others name the file."""
@@ -91,8 +96,7 @@ class RunPrompts:
         # Multiple open candidates are an ambiguity, never a sorting decision.
         chosen = active[0] if len(active) == 1 else None
         if not active and matches:
-            chosen = max(matches, key=lambda row: int(
-                re.search(r"rp-(?:struct|sec|para)-(\d+)", row["run_id"])[1]))
+            chosen = max(matches, key=lambda row: row["run_id"])   # a full name sorts by its day
         board = "standalone Page" if self.board_path == "/" else self.board_path
         lines = [
             "/haipipe-page %s %s" % (RUN_NAMES[kind], scope),
@@ -106,10 +110,10 @@ class RunPrompts:
             lines.append("Legacy address: the Page-global P index is derived from reading order. "
                          "Confirm it against the accepted Structure and frozen Run target before "
                          "editing; report a conflict, never renumber the source.")
-        structure_closed = any(row["run_id"] == "rp-struct-01" and row["status"] == "Done"
+        structure_closed = any(run_names.kind_of(row["run_id"]) == "structure" and row["status"] == "Done"
                                for row in self.rows)
         if kind != "structure" and not structure_closed:
-            lines.append("Blocker: rp-struct-01 is not closed. Settle the Structure first; "
+            lines.append("Blocker: the structure Run is not closed. Settle the Structure first; "
                          "do not allocate or start Section/Paragraph writing.")
         if len(active) > 1:
             lines.append("Run selection is ambiguous: %s · ask which Run to resume before changing anything."

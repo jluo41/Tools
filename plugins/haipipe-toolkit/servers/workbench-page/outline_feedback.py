@@ -10,11 +10,11 @@ on its next turn through the fast feedback path of
 
 The owning Run is chosen in this order:
 
-  1. an open `rp-para-NN_Pxx[-Pyy]` whose paragraph range covers the paragraph
-  2. an open `rp-struct-NN` (the structure is still being settled)
-  3. an open `rp-sec-NN` covering the paragraph
-  4. the latest finished `rp-para-NN` covering it, reopened in a new Version
-  5. a newly allocated `rp-para-NN_Pxx` (ticket + paired results/)
+  1. an open `run-paragraph-…` Run whose paragraph range covers the paragraph
+  2. an open `run-structure-…` Run (the structure is still being settled)
+  3. an open `run-section-…` Run covering the paragraph
+  4. the latest finished `run-paragraph-…` Run covering it, reopened in a new Version
+  5. a newly allocated `run-paragraph-<MMDD>-p<NN>` (ticket + paired results/)
 
 `Kind` separates the author's story notes from wording requests:
 `explore` (what this paragraph should explore or say), `wording` (change the
@@ -31,6 +31,7 @@ from pathlib import Path
 from live.outline_preview import page_lock
 from src.outline_version import plan_dir, latest_outline
 from src.run_folders import ticket_dir, ticket_rel
+from src import run_names
 
 KINDS = ("explore", "wording", "accept")
 OPEN_STATUSES = {"", "ready", "running", "waiting-for-feedback", "open"}
@@ -132,29 +133,29 @@ def _prange(fields: dict[str, str], every: set[int]) -> set[int]:
     return set()
 
 
+_WRITING_KIND = {"paragraph": "para", "section": "sec", "structure": "struct"}
+
+
 def _kind_of(stem: str) -> str:
-    if stem.startswith("rp-para-"):
-        return "para"
-    if stem.startswith("rp-sec-"):
-        return "sec"
-    if stem.startswith("rp-struct-"):
-        return "struct"
-    return ""
+    """The writing kind of a full Page Run name (`run-paragraph-…` → `para`), else ""."""
+    return _WRITING_KIND.get(run_names.kind_of(stem) or "", "")
 
 
 def run_rows(page: Path, every: set[int]) -> list[dict]:
-    """Enumerate Page Writing Runs (RP) with status, version, and covered paragraphs."""
+    """Enumerate Page Writing Runs with status, version, and covered paragraphs."""
     runs_dir = page.parent / "runs"
     results_dir = page.parent / "results"
     rows = []
     if not runs_dir.is_dir():
         return rows
-    for ticket in sorted(runs_dir.rglob("rp-*.md")):
+    # A full name carries its day (`run-paragraph-0901-p02`); the order of the
+    # names is the order the runs opened, so `nn` is that position.
+    tickets = sorted(runs_dir.rglob("run-*.md"), key=lambda t: t.stem)
+    for nn, ticket in enumerate(tickets, 1):
         stem = ticket.stem
         kind = _kind_of(stem)
         if not kind:
             continue
-        number = re.search(r"-(\d+)", stem)
         ticket_fields = _front(_read(ticket))
         runtime = results_dir / stem / "runtime.yaml"
         runtime_fields = _front(_read(runtime)) if runtime.is_file() else {}
@@ -166,7 +167,7 @@ def run_rows(page: Path, every: set[int]) -> list[dict]:
         rows.append({
             "id": stem,
             "kind": kind,
-            "nn": int(number.group(1)) if number else 0,
+            "nn": nn,
             "ticket": ticket,
             "results": results_dir / stem,
             "runtime": runtime,
@@ -216,14 +217,14 @@ def _target_paragraphs(target: str, every: dict[int, str]) -> list[int]:
 
 
 def feedback_items(page: Path) -> dict[str, list[dict]]:
-    """Return `C<n>.P<m>` → Feedback items from every RP Version journal."""
+    """Return `C<n>.P<m>` → Feedback items from every Page writing Run's Version journal."""
     paras = paragraphs(page)
     every = {v["p"]: k for k, v in paras.items()}
     out: dict[str, list[dict]] = {k: [] for k in paras}
     results_dir = page.parent / "results"
     if not results_dir.is_dir():
         return out
-    for vfile in sorted(results_dir.glob("rp-*/v[0-9][0-9][0-9].md")):
+    for vfile in sorted(results_dir.glob("run-*/v[0-9][0-9][0-9].md")):
         text = _read(vfile)
         steps = list(re.finditer(r"^##[ \t]+Step[ \t]+(s\d{3})\b.*$", text, re.M))
         closure = re.search(r"^##[ \t]+Version closure[ \t]*$", text, re.M)
@@ -630,8 +631,8 @@ def _write_working(row: dict, version: str, step: str, label: str, kind: str, pa
 
 
 def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: str, now: str) -> dict:
-    nn = max([r["nn"] for r in rows if r["kind"] == "para"], default=0) + 1
-    run_id = "rp-para-%02d_P%02d" % (nn, para["p"])
+    taken = {r["id"] for r in rows} | {p.name for p in (page.parent / "results").glob("run-*")}
+    run_id = run_names.mint("paragraph", "p%02d" % para["p"], taken=taken)
     ticket = ticket_dir(page.parent, run_id) / ("%s.md" % run_id)
     ticket.parent.mkdir(parents=True, exist_ok=True)
     plan = plan_path(page)
@@ -640,11 +641,11 @@ def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: 
         "target: %s\nparagraphs: P%02d\nresult: results/%s\npage: %s\nrun: %s\n---\n\n"
         "# %s\n\n"
         "- Goal: capture and settle Draft Space feedback on P%02d · %s · %s.\n"
-        "- RP kind: %s\n"
+        "- Run kind: %s\n"
         "- Structure description: P%02d · %s · %s\n"
         "- Page and Board: `%s`\n"
         "- Scope: P%02d at %s only; every other paragraph is protected.\n"
-        "- Sources: current Page source, `%s`, and the closed `rp-struct-01` result when present.\n"
+        "- Sources: current Page source, `%s`, and the closed structure Run's result when present.\n"
         "- Success: the person explicitly accepts or revises P%02d after the note is answered.\n"
         "- Review: P%02d read as one paragraph.\n"
         "- Allocated by: Draft Space feedback composer · %s · %s\n"
@@ -656,7 +657,7 @@ def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: 
         encoding="utf-8")
     results = page.parent / "results" / run_id
     results.mkdir(parents=True, exist_ok=True)
-    return {"id": run_id, "kind": "para", "nn": nn, "ticket": ticket, "results": results,
+    return {"id": run_id, "kind": "para", "nn": len(rows) + 1, "ticket": ticket, "results": results,
             "runtime": results / "runtime.yaml", "status": "ready", "version": "", "step": "",
             "covers": {para["p"]}, "target": paragraph, "paragraphs": "P%02d" % para["p"]}
 

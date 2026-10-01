@@ -6,7 +6,7 @@ controller label, workbench, or background service. Use it when a person is shap
 drafting, or revising a Page with the agent. It may start before Shape approval
 and before evidence is ready. Published Content still has its existing gates.
 For the fused Structure Run, also load `structure-run.md`: SHAPE and SURVEY
-are cycles of one `rp-struct-01`, including when several people participate.
+are cycles of one `run-structure-<MMDD>-<slug>`, including when several people participate.
 For the rationale, see `../../../../../docs/page-writing-philosophy.md`.
 
 ## 🔖 Run bookends · the Draft changes during a Run; records wait for its close
@@ -75,46 +75,46 @@ scope extension from the person, not a quiet expansion.
 
 ## Page-level cardinality and RP names
 
-The first structure Run is always `rp-struct-01`, even when the Page was
+The first structure Run is always `run-structure-<MMDD>-<slug>`, even when the Page was
 imported with a draft Shape. RP allocation is Page-local and type-explicit:
 
 | IDs | Scope | What the Run settles |
 |---|---|---|
-| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, the structure list, and the frozen `P01..PN` index; no adopted prose or material evidence execution |
-| `rp-scratch-NN_<target>` | Human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; B/symbol rows are not targets; the person manually triggers Finish Scratch and the AI generates the closing Summary |
-| `rp-sec-NN` | Section-level | One named Section drafting/revision round and its candidate, review/rating, diagnosis, revision, and report |
-| `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group, such as `P03–P05` |
-| `rp-revise-NN_<target>` | Revise | Two frozen texts of one target compared; one change ledger row per material change with Before, After, kind, Why, and Decision; the accepted text returns to the owning writing Run as a Version (`haipipe-page-revise`) |
+| `run-structure-<MMDD>-<slug>` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, the structure list, and the frozen `P01..PN` index; no adopted prose or material evidence execution |
+| `run-scratch-<MMDD>-<slug>` | Human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; B/symbol rows are not targets; the person manually triggers Finish Scratch and the AI generates the closing Summary |
+| `run-section-<MMDD>-<slug>` | Section-level | One named Section drafting/revision round and its candidate, review/rating, diagnosis, revision, and report |
+| `run-paragraph-<MMDD>-<slug>` | Paragraph-level | One fixed paragraph or contiguous paragraph group, such as `P03–P05` |
+| `run-revise-<MMDD>-<slug>` | Revise | Two frozen texts of one target compared; one change ledger row per material change with Before, After, kind, Why, and Decision; the accepted text returns to the owning writing Run as a Version (`haipipe-page-revise`) |
 
-`rp-struct-01` is the initial Structure Run and contains both SHAPE and SURVEY.
+`run-structure-<MMDD>-<slug>` is the initial Structure Run and contains both SHAPE and SURVEY.
 It may contain many Steps while the map, Bullets, roles, and evidence routes
 are being settled. Several people share this Run: record `participants` on the
 Run and `contributors` on each Step; joining the review does not allocate a
-new RP. `rp-struct-02` and later ids are optional independent post-closure
+new RP. `run-structure-<MMDD>-<slug>` and later ids are optional independent post-closure
 structural goals, not separate Survey Runs. Scratch is available as
 a small human planning capture once the selected Outline exists; it does not
 write Draft prose or bypass later Structure or evidence gates. Only after
 the Structure contract is closed may the workflow propose Section Runs in
-`rp-sec-NN` or paragraph Runs in `rp-para-NN_Pxx[-Pyy]`.
+`run-section-<MMDD>-<slug>` or paragraph Runs in `run-paragraph-<MMDD>-<slug>`.
 
 For Section-level writing, one complete draft → review/rating → diagnose →
 revise cycle is one Step inside the current Section Run, not a new Run. The
 agent must review and diagnose again after revising; self-revision is not
 self-acceptance. A later independently commissioned Section drafting/revision
-session—such as after a substantial structure change—gets a new `rp-sec-NN`
+session—such as after a substantial structure change—gets a new `run-section-<MMDD>-<slug>`
 Run. Within the same commissioned round, later feedback appends another Step.
 
 The four RP kinds are sibling Page Runs; structure, Scratch, Section, and
 paragraph Runs are not children of one another. For paragraph-level writing, keep the
 paragraph or contiguous range fixed. A
 later revisit of that same target normally reopens the same Run in a new
-Version; a materially different target or goal gets a new `rp-para-NN` Run.
+Version; a materially different target or goal gets a new `run-paragraph-<MMDD>-<slug>` Run.
 Group adjacent paragraphs only when one human decision must accept or revise
-them together. Thus `rp-para-01_P03`, `rp-para-02_P04-P05`, and
-`rp-para-03_P06` are valid examples. If the closed index has `N` paragraphs,
+them together. Thus `run-paragraph-<MMDD>-<slug>`, `run-paragraph-<MMDD>-<slug>`, and
+`run-paragraph-<MMDD>-<slug>` are valid examples. If the closed index has `N` paragraphs,
 its paragraph candidates satisfy `1 <= K <= N`; the RP sequence and paragraph
 serial are separate coordinates. The Page RP identity and a native Task Run
-may coexist, for example `rp-para-01_P03` and `r01`.
+may coexist, for example `run-paragraph-<MMDD>-<slug>` and `r01`.
 
 Before paragraph selection, show the complete candidate list in frozen reading order using
 Candidate numbers, never future typed RP identities. Allocate only the selected
@@ -126,7 +126,7 @@ Run.
 Use `family: page`, `operation: interactive-writing`, and
 `interaction: human-feedback` for prose review/writing. A Scratch ticket also
 uses `mode: scratch`, `target_scope: section|subsection|paragraph`, and
-`interaction: human-scratch`. Allocate `rp-struct-01` first for structure, then use the
+`interaction: human-scratch`. Allocate `run-structure-<MMDD>-<slug>` first for structure, then use the
 next free identity whose kind matches the selected scope. Semantic names belong
 in Goal, not in the identity. Never rename a Task/Discovery Run to an RP, and
 never consume its `rNN` counter when allocating a Page Run. Reject an identity
@@ -138,7 +138,7 @@ internal agent call.
 
 Every paragraph Run and every reader-facing review packet also carries the
 frozen Structure description for each selected paragraph. Resolve it
-from the closed `rp-struct-01` index in the Outline, for example `P06 · C3.P6 · Scope and acceptance`.
+from the closed `run-structure-<MMDD>-<slug>` index in the Outline, for example `P06 · C3.P6 · Scope and acceptance`.
 Do not replace this frozen description with a newly invented Goal sentence.
 Missing or conflicting descriptions are visible blockers.
 
@@ -194,12 +194,12 @@ without changing prose; no-op acceptance/navigation creates no change card.
 │   ├── <stem>-draft-v1.2.md          current Shape + embedded Drafts (Draft-first)
 │   ├── previous/                     superseded versions (v1.1, v1.0, …)
 │   └── <stem>-evidence-items.md     requirements and Supporting/Local graph
-├── runs/rp-struct-01.md             initial Structure Run: SHAPE + SURVEY
-├── runs/rp-struct-NN.md             structure/Bullet refinement Run
-├── runs/rp-scratch-NN_<target>.md   human Scratch capture Run
-├── runs/rp-sec-NN.md                Section Run
-├── runs/rp-para-NN_Pxx[-Pyy].md     paragraph Run
-├── runs/rp-revise-NN_<target>.md    Revise Run: before · after · decisions
+├── runs/`run-structure-<MMDD>-<slug>`.md             initial Structure Run: SHAPE + SURVEY
+├── runs/`run-structure-<MMDD>-<slug>`.md             structure/Bullet refinement Run
+├── runs/`run-scratch-<MMDD>-<slug>`   human Scratch capture Run
+├── runs/`run-section-<MMDD>-<slug>`.md                Section Run
+├── runs/`run-paragraph-<MMDD>-<slug>`     paragraph Run
+├── runs/`run-revise-<MMDD>-<slug>`    Revise Run: before · after · decisions
 └── results/<same-run>/
     ├── runtime.yaml                 derived current status/pointers
     ├── working.md                   short resume view of effective decisions
@@ -287,7 +287,7 @@ reads to resume or close the Run. Compare actual files before resuming.
    budget, and review/diagnose the revised candidate before reporting the result.
    Paragraph Runs use the same base rubric at their fixed scope. Save located
    findings and actual evaluator/method identity; do not invent a numerical
-   rating scale. For `rp-struct-01`, SHAPE updates
+   rating scale. For `run-structure-<MMDD>-<slug>`, SHAPE updates
    structure list and Outline Bullets together, while SURVEY updates typed Evidence
    Item route decisions in that same Run; neither cycle creates a second
    planning Run. For a paragraph Run, keep the fixed target
@@ -409,7 +409,7 @@ naming closed `v001.md` as its prior Version, and recording what is being reopen
 Never reopen by editing `v001.md`. Within an open Version, append another
 Step only when it completes the next scoped cycle. A new Claude/Codex chat can
 resume the same Run, but a later independently commissioned Section
-drafting/revision session receives a new `rp-sec-NN` identity referencing its
+drafting/revision session receives a new `run-section-<MMDD>-<slug>` identity referencing its
 predecessor. A paragraph revisit with the same fixed target normally
 reopens the existing paragraph Run in a new Version. Ordinary human feedback
 is an expected input of this profile, not an Execution-contract rerun.

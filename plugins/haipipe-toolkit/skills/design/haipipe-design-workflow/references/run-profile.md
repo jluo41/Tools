@@ -18,17 +18,26 @@ projections, or retry attempts.
 ## Identity
 
 ```text
-<Design Folder>/runs/rdNN_commission_<slug>.yaml
-<Design Folder>/runs/rdNN_generate_<slug>.yaml
-<Design Folder>/runs/rdNN_verify_<slug>.yaml
+<Design Folder>/runs/run-design-commission-<MMDD>-design-<N>.yaml
+<Design Folder>/runs/run-design-generate-<MMDD>-design-<N>.yaml
+<Design Folder>/runs/run-design-verify-<MMDD>-design-<N>.yaml
 
 <Design Folder>/results/<same-stem>/
 ```
 
-The slug is the item id: `rd01_commission_item01`, `rd02_generate_item01`.
-`rdNN` counts across the whole Design Folder, so ITEM02's first Run may be
-`rd05`. `haipipe.design-ticket/v2` and its paired v2 Result/receipt are the
-only accepted Design schemas. Run record and Result stem are one Run identity.
+A Design Run's name is the Page grammar with `design` as the family word (JL 261001):
+`run-design-<step>-<MMDD>-<slug>`. `step` is commission, generate or verify; `MMDD`
+is the day the run started; the slug is the design as the screen says it
+(`ITEM01` -> `design-1`). A second run of the same step, day and design gets `-2`,
+`-3`: `run-design-generate-0918-design-6-3`. Order across the whole folder is the
+ticket's `sequence:` line, counted from 1, so Design 2's first run may be sequence 5.
+
+Older `rdNN_*` names are retired. `haipipe-design-unit/scripts/rename_runs.py
+<design-folder>` renames a folder's runs once (a dry run without `--write`): ticket,
+result folder and frozen config, every mention inside the folder, and the old number
+kept as `sequence:`. `haipipe.design-ticket/v2` and its paired v2
+Result/receipt are the only accepted Design schemas. Run record and Result stem are
+one Run identity.
 
 ## Run record fields
 
@@ -41,7 +50,8 @@ Commission decision run record, as `design_actions` writes it:
 
 ```yaml
 schema: haipipe.design-ticket/v2
-run: rd01_commission_item01          # equals the file stem
+run: run-design-commission-0918-design-1   # equals the file stem
+sequence: 1                                # its place in the folder
 run_type: Design.commission
 operation: commission                # matches the stem
 item: ITEM01
@@ -52,8 +62,8 @@ inputs: [{path}, …]                  # Commission: its config + the item's evi
 entry_gate: <condition>
 exit_gate: {mode: human, assertion: <close rule>}
 routes: {release: generate, hold: HOLD}
-result: results/rd01_commission_item01/
-receipt: results/rd01_commission_item01/runtime.yaml
+result: results/run-design-commission-0918-design-1/
+receipt: results/run-design-commission-0918-design-1/runtime.yaml
 ```
 
 `check_unit.py --folder` checks a decision run for pairing only: `schema`, `run`
@@ -66,16 +76,17 @@ requires; the full contract is `haipipe-design-unit/references/unit-contract.md`
 
 ```yaml
 schema: haipipe.design-ticket/v2
-run: rd02_generate_item01            # equals the file stem
+run: run-design-generate-0918-design-1   # equals the file stem
+sequence: 2                              # its place in the folder
 operation: generate                  # generate | verify; matches the stem
 worker: haipipe-design-unit          # exactly this
 actor: designer-context-01           # a plain string naming the worker context
 item: ITEM01                         # the workbench groups by it; the checker ignores it
 target: <the item's title>
-config: {path: scripts/config/rd02_generate_item01.yaml}
+config: {path: scripts/config/run-design-generate-0918-design-1.yaml}
 approval:
   actor: <the person who released>
-  record: {path: results/rd01_commission_item01/decision.yaml}
+  record: {path: results/run-design-commission-0918-design-1/decision.yaml}
 inputs: [{role, path, run_id?}, …]   # evidence | handoff | inspiration | reference | avoid | base | feedback
 targets: []                          # verify: the exact Generate result.yaml refs
 ```
@@ -149,17 +160,17 @@ worker writes to Delivery. Existing Delivery manifests are legacy display input.
 A worker run's receipt, as the workbench queues it and `complete_run` closes it:
 
 ```yaml
-run: rd02_generate_item01
+run: run-design-generate-0918-design-1
 family: design
 operation: generate
 item: ITEM01
 target: <the item's title>
 status: complete                     # planned | running | complete | failed | blocked | superseded
-ticket: runs/rd02_generate_item01.yaml
-result: results/rd02_generate_item01/
+ticket: runs/run-design-generate-0918-design-1.yaml
+result: results/run-design-generate-0918-design-1/
 inputs:
-  - {path: scripts/config/rd02_generate_item01.yaml}
-  - {path: results/rd01_commission_item01/decision.yaml}
+  - {path: scripts/config/run-design-generate-0918-design-1.yaml}
+  - {path: results/run-design-commission-0918-design-1/decision.yaml}
   - {role: handoff, path: <insight page>}
 worker: {kind: skill, name: haipipe-design-unit, actor: designer-context-01}
 queued_at: <RFC3339 timestamp>
@@ -201,11 +212,11 @@ reads its inputs as history, though a closed Verify is stale when its target
 Result is newer than its own `result.yaml`;
 a superseded run needs a reason and no result. Also verify that every Design
 Run resolves to one Workflow Run Spec, legal Gate/Route outcomes, paired v2
-Result, and runtime receipt; Run Space rows must show the same ids.
+Result, and runtime receipt; each Design card's Runs fold must show the same ids.
 
 ## Clean break
 
-Historical `rdNN_adopt_*` decisions remain readable for pairing/audit only,
+Historical `run-design-adopt-*` decisions remain readable for pairing/audit only,
 under their original ids and marked as legacy. Current writers create only
 Commission, Generate and Verify; no new Adopt or Delivery Run is allocated.
 

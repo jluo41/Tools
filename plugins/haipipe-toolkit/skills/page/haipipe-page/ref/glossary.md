@@ -53,7 +53,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   workflow writers update that one file. Table and Reading never edit the plan
   through the browser. Scratch is the separate, bounded human-thinking lane
   that writes only the plan's `## Scratch` registry and a paired
-  `rp-scratch-NN_<target>` receipt; it never edits Draft prose.
+  `run-scratch-<MMDD>-<slug>` receipt; it never edits Draft prose.
 - **Scratch Mode** — the Draft view where a person captures rough thinking at
   Section (`C1`) or whole paragraph-group (`C1.P1`) scope. The current Outline
   grammar has no separate subsection node, so it renders one plus per visible
@@ -185,14 +185,14 @@ as pointers, because that section is the authority.
   control records; the label alone never allocates a Run.
 - **RP / Page Writing Run** — one independently commissioned Page writing
   session/round at a fixed scope. Its explicit kinds are
-  `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, and
-  `rp-para-NN_Pxx[-Pyy]`; the sequence starts
+  `run-structure-<MMDD>-<slug>`, `run-scratch-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`, and
+  `run-paragraph-<MMDD>-<slug>`; the sequence starts
   at `01` independently for each kind. It stores the typed Run record beside
   paired results and settles candidate structure or wording, not final Content
   or delivery.
 - **RE / Page Evidence Run** — one current Page evidence lineage for one
-  Evidence Item. Its explicit kinds are `re-value-NN_<slug>`,
-  `re-display-NN_<slug>`, and `re-cite-NN_<slug>`. One RE emits one current
+  Evidence Item. Its explicit kinds are `run-value-<MMDD>-<slug>`,
+  `run-display-<MMDD>-<slug>`, and `run-citation-<MMDD>-<slug>`. One RE emits one current
   Result/Card that may expose many `$V_xxx$`, `\figure{D_xxx}`,
   `\table{D_xxx}`, and `\cite{C_xxx}` Labels. `DISPLAY` uses
   `display_kind: table | figure | algorithm`.

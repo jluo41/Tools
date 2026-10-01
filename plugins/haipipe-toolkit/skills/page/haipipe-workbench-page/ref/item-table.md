@@ -50,7 +50,7 @@ Type references may extend `payload`, but these keys never disappear:
 item: E01-DISPLAY-example
 type: DISPLAY
 run: b01j01t01r01
-page_run: re-display-01_example-display
+page_run: `run-display-<MMDD>-<slug>`
 status: complete
 input:
   path: <frozen-local-input>
@@ -267,7 +267,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>` |
-| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one typed Page `RE` lineage: `re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>`, plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
+| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one typed Page `RE` lineage: `run-value-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>`, or `run-citation-<MMDD>-<slug>`, plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
 | `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
 Comments hold rationale; they never replace an expected payload, acceptance

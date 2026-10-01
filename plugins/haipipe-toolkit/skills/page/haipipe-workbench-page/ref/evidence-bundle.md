@@ -65,7 +65,7 @@ obligations:
 resources:
   items: [E01-VALUE-adjusted-effect]
   supporting_runs: [b01j02t03r04]
-  evidence_runs: [re-value-01_adjusted-effect]
+  evidence_runs: [`run-value-<MMDD>-<slug>`]
   local_runs: [b03j01t02r01]
   cards: [evidence-card:E01-VALUE-adjusted-effect]
   labels: ["$V_adjusted_fx$", "\\figure{D_effect_forest}", "\\table{D_regression_main}", "\\cite{C_prior_work}"]

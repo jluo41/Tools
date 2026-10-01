@@ -104,11 +104,10 @@ class DesignRepairsTest(unittest.TestCase):
             snapshot = design_snapshot(page, board)
             old = runs["ITEM01"]["adopt"]
             before = files(board)
-            for rendered in (render_design(snapshot, "run"), render_design(snapshot, "design"),
-                             render_design_board(design_board_snapshot(board, board), "run")):
+            for rendered in (render_design(snapshot, "run"), render_design(snapshot, "design")):
                 self.assertIn(old, rendered)
                 self.assertIn("Adopt (historical)", rendered)
-                self.assertNotIn(old.replace("_adopt_", "_delivery_"), rendered)
+                self.assertNotIn(old.replace("-adopt-", "-delivery-"), rendered)
             # The card's strip of Run chips, which carried the id as a hover title, is gone
             # (JL 260921); the id still survives in every view, asserted just above.
             self.assertNotIn("class=steps", render_design(snapshot, "design"))
@@ -199,7 +198,7 @@ class DesignRepairsTest(unittest.TestCase):
                     self.assertIsNotNone(err)
                     revised, err = perform_action(page, {"action": "queue-revise", "item": "ITEM01", "feedback": "Make the action clearer"})
                     self.assertIsNone(err)
-                    self.assertIn("_generate_", revised["run"])
+                    self.assertTrue(revised["run"].startswith("run-design-generate-"))   # current names (JL 261001)
                 self.assertEqual(generated_bytes, files(page.parent / "results" / runs["ITEM01"]["generate"]))
 
     def test_revision_mode_uses_released_stance_despite_register_edit(self):

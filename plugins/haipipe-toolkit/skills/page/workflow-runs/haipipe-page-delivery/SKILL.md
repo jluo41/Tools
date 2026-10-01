@@ -33,7 +33,7 @@ word    run-delivery-word       runs/run-delivery-word.sh       delivery/word/  
 # or, after the first export has written it:  bash <page-folder>/runs/run-delivery-<lane>.sh
 ```
 
-1. **Same Run every time.** Never allocate `rd01_web`, `rd02_web`, or an attempt
+1. **Same Run every time.** Never allocate a numbered `rdNN_<lane>` Run or an attempt
    number (JL 260928: "we just need one run ... no need for rd01_web, rd02_web").
 2. **Code writes the ticket.** `page.py export` writes `runs/run-delivery-<lane>.sh`
    with the exact command it ran; nobody types it.

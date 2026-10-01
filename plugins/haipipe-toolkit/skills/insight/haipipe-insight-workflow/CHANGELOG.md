@@ -1,5 +1,39 @@
 # haipipe-insight-workflow · version history
 
+
+## 2.3.0 · 2026-10-01 · Evidence needs in the gates (JL 261001)
+
+- GI1 requires evidence needs with kinds legal at the rung; GI2, GI3 and GI4 require `haipipe-insight-check` to find every need bound, fit, cited and current (GI4: no compute need reasoned away); GI6 settles only without an overclaim. Contract: `haipipe-insight/ref/evidence-needs.md`.
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Partition-name grammar: `9-cross/`, `<L><NN>-<partition>-<slug>/` page folders, `QG-<partition>-<L>`, `🚫 full-only`; run-workflow and handoff examples use placeholder partitions.
+
+## 2.1.0 · 2026-10-01 · Page tickets; the answering page is the report (JL 261001)
+
+- No `RESULT_STORE=insights/<board>/_results` dispatch and no `reports/`: the runtime enumerates
+  each answering page's `runs/` tickets (`RESULT_DIR` = the page's `results/<ticket>/`), the
+  Report runs that write the page's `.md` from its own results, and Wisdom page Runs.
+- GI2/GI3 read the page's own results; GI6 settles `✅ <page id>`; group mapping shows the
+  partition folder as Job and the page as Task.
+- `ref/run-workflow.md`: `support` runs a page's ticket; `report` writes/refreshes the answering
+  page; worked example updated. `ref/partition-policy.md`: a new dataset is a new board whose
+  pages call the same tasks.
+
+## 2.0.0 · 2026-10-01 · Runs and reports answer questions (JL 261001)
+
+- The runtime enumerates the DIKW Block's task runs (a config's `answers:` names the
+  questions; dispatched with `RESULT_STORE=insights/<board>/_results`), the Report runs that
+  write `reports/<partition>/<QID>.md`, and the Wisdom pages' writing/delivery Runs.
+- GI0 names the board's one extract and the partition register's config stems; GI2/GI3 pass
+  on a current `ok` run result (and a checked report); GI4 on a checked Knowledge report;
+  GI6 settles `✅ report`.
+- `ref/run-workflow.md`: `support.<target>` is the DIKW task run; new `report.<QID>.<partition>`
+  Spec; `evidence/structure/write/deliver` scoped to Wisdom pages and legacy boards; new
+  dependency graph and worked example.
+- New computation is a task config authored through `haipipe-task`; legacy Page Evidence
+  Items are read-only history.
+
 ## 1.3.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

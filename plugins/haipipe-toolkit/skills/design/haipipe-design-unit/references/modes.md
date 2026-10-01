@@ -11,7 +11,7 @@ Load only the mode selected in frozen config. The common contract and
 | theory-driven | explore from a named mechanism without calling it observed | expected effect + failure condition required | pinned theory/reference + uncertainty |
 | challenge | make an alternative to one exact authorized claim | challenge stance (which goes only with this mode) + alternative effect + distinguishing condition required | exact claim and authorized source |
 
-The register's New Design Item check (`design_actions.add_item`) refuses the
+The register's add-item check (`design_actions.add_item`) refuses the
 same bindings the records check enforces, so an item that breaks them is
 never released. A revise of a challenge item stays in challenge mode.
 

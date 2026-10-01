@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.3.4"
-  last_updated: "2026-09-29"
+  version: "1.7.0"
+  last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: question
   primary_face: page
@@ -28,7 +28,9 @@ Existing registers may retain `page-type: question`; new ones use
 `folder-kind: question` plus `question-rung:`.
 
 For registration, status, or dispatch, read
-`../../haipipe-insight/ref/question-groups.md`. For Page authoring and closure,
+`../../haipipe-insight/ref/question-groups.md`. For what would answer a
+question, read `../../haipipe-insight/ref/evidence-needs.md`: the evidence
+needs on each row are the one join of Logic, Work and Report. For Page authoring and closure,
 read `../../haipipe-insight/ref/page-v2-adapter.md`.
 
 ## Position
@@ -56,8 +58,8 @@ marks. The successor starts with its own open cells and answerability test;
 no completion or person signature transfers. Record both links in owner logs.
 
 The register is one DIKW-axis slice of the board. Its intersection with each
-eligible partition column is a derived Question Group: MT02 column B is
-`QG-B-I`, and MT04 column F is `QG-F-W`. A Question Group is never a fifth
+eligible partition column is a derived Question Group: MT02 column `<partition>` is
+`QG-<partition>-I`, and MT04 column `full` is `QG-full-W`. A Question Group is never a fifth
 register or a Folder. One row may contribute cells to several groups while
 retaining one id and one origin.
 
@@ -65,8 +67,17 @@ retaining one id and one origin.
 
 Questions have two legal births: need-first from BR00's `Insight Needs Raised`,
 or insight-first from a reader observing a gap on this board. Record raiser,
-target rung, why now, what would answer it, affected partition(s), and blocked
-Aim. No preferred answer is admissible.
+target rung, why now, what would answer it (in words, then as evidence needs),
+affected partition(s), and blocked Aim. No preferred answer is admissible: "do nothing" and a null must remain
+admissible answers.
+
+**Expected (optional, JL 261001).** The register may record what the asker
+expects BEFORE any run exists: the board's hypothesis. It is a recorded
+prior, not a preferred answer. It is written once, never edited after the
+first run of the question lands, never cited as evidence, and never handed to
+the next rung. Its use is afterwards: an answering page that departs from it is a
+surprise worth reading, and one that matches it confirms a belief. A missing
+Expected line is legal and is shown as "none recorded".
 
 A pre-climbed external-parent bridge is still an ordinary Wisdom question. Its
 QW row additionally records the Task Insight instance, item, execution version,
@@ -76,7 +87,35 @@ borrowed RF is evidence for the question, not its Application answer.
 
 ## Page Face
 
-Division 1 is the Queue; later divisions are one question each in id order.
+Division 1 is the Queue; later divisions are one question each in id order,
+each headed `#### N · <QID> · <Short Name>` (five words or fewer; the Insight
+workbench prints it beside "Question N") with these fields, one paragraph each:
+
+```markdown
+#### 5 · QI4 · Temporal Dynamics
+
+**The ask**: <the full question>
+**Why now**: <why the board needs it>
+**What would answer it**: <the evidence that would settle it, in words>
+- E1 · compute · <what a run must produce> · pass: <what a result must show>
+- E2 · cite · <what is borrowed> · from: QI3.E1
+**Needs agreed**: ⬜ | ✅ <initials> <YYMMDD>
+**Expected**: <optional · what the asker expects, written before any run>
+**Where it stands**: <state, pointing at the Queue>
+```
+
+**Evidence needs (JL 261001).** The lines under **What would answer it** are
+the question's evidence needs, `<QID>.E<n>`, each `compute`, `cite` or
+`judge` (`../../haipipe-insight/ref/evidence-needs.md` § 1). They are planned
+before any run (`haipipe-insight-evidence-plan`), agreed by a person on the
+**Needs agreed** line, bound by the answering page (`answers.yaml`), and cited
+by its text. Once a bound result exists a need is never edited: append
+`· retired: <reason>` and add a new id. A row with no need lines is
+unplanned: legal on a board made before this contract, and reported by
+`haipipe-insight-check`.
+
+The Queue row keeps the question SHORT and plain (the workbench's question
+line); the long form belongs in **The ask**.
 The Queue shows the current Folder ids and canonical marks (`⬜`, `🟡`, `✅`,
 `🚫`) per partition where applicable. Its partition columns plus this Folder's
 `question-rung:` derive the `QG-<partition>-<rung>` handles; no group state is
@@ -120,12 +159,14 @@ Folder's GI conditions still govern citation and register settlement.
 ## Gate and Closure
 
 GI1 passes for one question when its id prefix agrees with `question-rung:`,
-origin and answerability test are complete, and every eligible partition has
-an explicit Queue cell. Those cells derive their Question Group memberships;
+origin and answerability test are complete, its evidence needs are written
+with kinds legal at its rung, and every eligible partition has an explicit
+Queue cell. Those cells derive their Question Group memberships;
 no separate group acceptance exists. A bridge QW additionally requires its exact
 instance/item/version/RF packet and local W Folder. GI6 closes the registered chain only
-when its target rung is terminal and every partial final has a reason on its
-target Folder; for a bridge, that terminal is the signed local Wisdom Folder, never
+when its target rung is terminal, `haipipe-insight-check` finds no overclaim on
+the cell (every need bound, fit, cited and current), and every partial final
+has a reason on its target Folder; for a bridge, that terminal is the signed local Wisdom Folder, never
 the external RF. Under a current `UNDETERMINED` partition verdict, a non-template
 W cell may settle `🟡 <page> final` only when the answering W Page records the
 exact unresolved blocker and what could resolve it, and quotes the licensing
@@ -137,14 +178,19 @@ closed as a register.
 
 ## Handoff
 
-Hand the next rung a neutral question id, exact ask, target, scope/partition,
-answerability test, and blocked Aim. A bridge handoff also carries the exact
+Hand the next rung a neutral question id, exact ask, its evidence needs,
+target, scope/partition, answerability test, and blocked Aim. A bridge handoff also carries the exact
 item Result/RF packet to Wisdom. Never hand it an anticipated result or Design
 permission.
 
 ## Files
 
 - Runtime: `0-MT-meta/MT01-question-data/` through `MT04-question-wisdom/`
+- A settled cell names its answering page: `✅ <page id>` (`✅ <L><NN>-<partition>`), `🟡 <page id>
+  final`, or `🚫 <reason>`. The page's state line names the question back
+  (`answers QI2`); one page may answer several questions, and the cell is the join.
+- A ✅ cell that `haipipe-insight-check` reports GAP, STALE or UNBOUND is an
+  overclaim: the register pen drops it to 🟡 until the page is fixed.
 - Queue grammar is owned here; register receipts live at
   `<register>/draft/records/<register-stem>-log.md`; no private scripts.
 - Question Groups are derived by

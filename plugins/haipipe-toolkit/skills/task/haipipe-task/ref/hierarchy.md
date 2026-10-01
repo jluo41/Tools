@@ -66,8 +66,23 @@ b10          aidata       TfmFn/SplitFn + AIDataStore     (Stage 4)
 b11 to b19   model        one Block per prediction question; one Job per model
 b21 to b29   evaluation   fairness, calibration, external validation of a model
 b31 to b39   endpoint     inference Fns, Endpoint_Set packaging, deployment
-b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
+b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies,
+                          and DIKW question-answering Blocks for InsightBoards
 ```
+
+- **A DIKW Block (JL 261001)** holds the code InsightBoards run:
+  `b5N_<topic>_dikw/`, Jobs grouped by DIKW level so the work reads in the same
+  order as the questions: `j1N_data_<topic>` (shape, catalogs, balance),
+  `j2N_information_<topic>` (rates, crossings, features), `j3N_knowledge_<topic>`
+  and `j4N_wisdom_<topic>` only when such computations exist. All are topic Jobs
+  (built once, serving every dataset). A Task is dataset-neutral; each dataset ×
+  partition is one config and Run, `rNN_<dataset>_<cut>`, whose config names the
+  extract, the cut (`population.where`) and the register questions it answers
+  (`answers: [QI1, …]`). An InsightBoard page folder calls the Run through its
+  own ticket `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets
+  `RESULT_DIR=<page>/results/<ticket>/` and `RUN_TICKET` to itself, then execs
+  the Task's own ticket (a consumer-owned Run); the config never names a board
+  or a result folder. Contract: `haipipe-insight` `ref/board-contract.md`.
 
 - Single digits `b00`-`b03` are PER DATASET: one raw dataset in, one store
   out, the same `j5N` number meaning the same dataset in all four. From `b10`

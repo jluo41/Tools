@@ -10,13 +10,13 @@ insertions computed by the presenter. Revise adds one field per card,
 ## Step s001
 
 ### Human feedback
-Compare v002 (accepted) with v003 (candidate) of rp-para-01_P03.
+Compare v002 (accepted) with v003 (candidate) of `run-paragraph-<MMDD>-<slug>`
 
 ### Saved result
 
 #### Inputs
-- Before: results/rp-para-01_P03/v002.md · closed 260928 1241
-- After:  results/rp-para-01_P03/v003.md · saved 260928 1307
+- Before: results/`run-paragraph-<MMDD>-<slug>`/v002.md · closed 260928 1241
+- After:  results/`run-paragraph-<MMDD>-<slug>`/v003.md · saved 260928 1307
 - Target: C1.P3
 
 #### Track changes
@@ -45,7 +45,7 @@ candidate
 …
 
 #### Handoff
-- accepted text → rp-para-01_P03 NEW_VERSION v004 · <date>
+- accepted text → `run-paragraph-<MMDD>-<slug>` NEW_VERSION v004 · <date>
 ```
 
 ## The direct-edit Step

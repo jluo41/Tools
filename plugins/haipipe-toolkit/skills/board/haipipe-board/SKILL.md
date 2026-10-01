@@ -48,8 +48,8 @@ points at the same source.
 A **Workflow is a list of Runs**, declared as bounded Run Specs with dependencies
 and routes. Keep its runtime execution and owner-native Run identities distinct:
 
-- Page Writing Runs use `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, or
-  `rp-para-NN_Pxx[-Pyy]`; the initial Structure Run is `rp-struct-01`.
+- Page Writing Runs use `run-structure-<MMDD>-<slug>`, `run-scratch-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`, or
+  `run-paragraph-<MMDD>-<slug>`; the initial Structure Run is `run-structure-<MMDD>-<slug>`.
   Feedback adds Steps/Versions inside the selected Run. Page Evidence and
   Delivery Runs keep their own RE/RD identities. Load the canonical
   [Page Run families](../../page/haipipe-page/ref/page-run-families.md) when naming them.
@@ -281,7 +281,7 @@ preserved in Markdown and never publish as Content.
 See `haipipe-workbench-page/ref/content-preview.md` for the SHAPE/CONTENT boundary.
 Render a Page's authored `<stem>-logic.mmd` as a safe derived Mermaid Structure
 before the plan and paragraph groups. While the selected Structure Run
-(`rp-struct-01` initially) is active,
+(`run-structure-<MMDD>-<slug>` initially) is active,
 expand that review artifact; if it is absent, render a blocker naming the
 expected source instead of hiding the card. After that Run completes, retain an
 existing map collapsed by default. The plan remains structural authority and

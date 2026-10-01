@@ -72,7 +72,7 @@ class BoardV1ContractTest(unittest.TestCase):
         for term in ("Page Run", "Task Run", "Page Workflow Runtime execution"):
             self.assertIn(term, normalized_board)
         self.assertIn("rp00_mermaid-structure", normalized_board)
-        self.assertIn("rp-para-NN_Pxx[-Pyy]", normalized_board)
+        self.assertIn("run-paragraph-<MMDD>-<slug>", normalized_board)
         self.assertNotIn("prNN", normalized_board)
         self.assertIn("draft/records/<stem>-discussion.md", routing)
         self.assertIn("Aims › Decision Now", routing)

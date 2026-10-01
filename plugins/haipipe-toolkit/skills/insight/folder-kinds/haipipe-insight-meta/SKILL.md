@@ -7,8 +7,8 @@ description: >-
   or refreshing an InsightBoard. Trigger: insight meta, data inventory,
   folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-09-20"
+  version: "1.5.0"
+  last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: meta
   primary_face: page
@@ -33,7 +33,14 @@ changing the partition register.
 ## Position
 
 Meta owns the inventory prerequisite. GI0 must pass before an answering
-Run can consume that inventory. One Meta Folder exists at `0-MT-meta/MT00-meta/`.
+Run can consume that inventory. One Meta Folder exists at `0-MT-meta/MT00-meta/`
+of a board in `insights/<Dataset>-InsightBoard/`.
+
+**One dataset (JL 261001).** MT00 names the board's ONE prepared extract (its
+path, manifest and data dictionary). It is the identity of the board: the
+workbench shows it in one banner line on every Space, and every task config
+the board dispatches reads exactly this extract (`input.parquet_path`). A
+second extract is a second board.
 
 ## Folder Kind
 
@@ -53,7 +60,11 @@ Folders owned by Question, not divisions of Meta.
 The reader promise is: **what data exists here, at what grain, for whom, for
 when, and with which limits**. Use the fixed outline declared in metadata.
 Partition-major boards insert `Partition Register` and `Shared Thresholds`
-after division 1. No question, result, or conclusion appears on this face.
+after division 1. Each partition row names the partition by its full name
+(one lowercase word; there is no letter column), its cut (`where`), its row
+count and share, and the config stem every task uses for that cut
+(`rNN_<dataset>_<partition>`): that column is how a run is placed in its
+partition's table. No question, result, or conclusion appears on this face.
 
 ## Task Face
 

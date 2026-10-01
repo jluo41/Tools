@@ -1,15 +1,15 @@
 ---
 name: haipipe-page-structure
 description: >-
-  The Structure Run of a Board Page (`rp-struct-NN`). Treats the addressed Bullet as the
+  The Structure Run of a Board Page (`run-structure-<MMDD>-<slug>`). Treats the addressed Bullet as the
   primary plan-evidence-content unit:
   two planning cycles, SHAPE (brief → propose → react → revise; name every typed
   Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
   Execution/Discovery Supporting Runs, one Local Input, and exactly one local
   Page Evidence Item Run declaration). Writes the versioned plan, the derived
-  Structure and Outline Bullets used by RP `rp-struct-NN`, Evidence Item table, open threads and log;
+  Structure and Outline Bullets used by RP `run-structure-<MMDD>-<slug>`, Evidence Item table, open threads and log;
   records evidence-to-Run lineage but allocates no Ticket and executes no material. Both cycles are recorded in the
-  shared `rp-struct-01` Structure Run, and multiple people may contribute Steps to that Run. Trigger: page outline, OUTLINE
+  shared `run-structure-<MMDD>-<slug>` Structure Run, and multiple people may contribute Steps to that Run. Trigger: page outline, OUTLINE
   Run, shape the plan, survey the evidence items, evidence item table, review,
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-structure.
@@ -57,12 +57,12 @@ sibling prose.
 ## 🧭 Run Workflow placement
 
 OUTLINE is a Run Workflow dispatch adapter, not a Level-4 Run family. SHAPE
-and SURVEY are internal planning Steps/cycles of the single `rp-struct-01`
+and SURVEY are internal planning Steps/cycles of the single `run-structure-<MMDD>-<slug>`
 Run Spec/Run Instance. They define the graph and Result contracts; only the
 EVIDENCE Run Specs materialize Supporting or RE Runs later.
 
 The Page workflow gives OUTLINE two planning cycles inside one Structure Run.
-`rp-struct-01` is allocated once and shared by every contributor; a new person
+`run-structure-<MMDD>-<slug>` is allocated once and shared by every contributor; a new person
 or a new cycle does not create another planning Run. Its sibling
 `haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-writing` owns the
 later WRITE cycle. All governing context must first be resolved by
@@ -87,8 +87,8 @@ Runtime checker at its boundary.
 
 ```text
 OUTLINE part
-  SHAPE    rp-struct-01  plan + typed item expectation     👤 approved:
-  SURVEY   rp-struct-01  classify supports + Local Input + route plan  👤 Decide, per item
+  SHAPE    `run-structure-<MMDD>-<slug>`  plan + typed item expectation     👤 approved:
+  SURVEY   `run-structure-<MMDD>-<slug>`  classify supports + Local Input + route plan  👤 Decide, per item
   LAND     evidence     allocate planned routes, execute → Result     ⚙ local work exhausted; external gates named
   EMBED    evidence     fold Results into v<G>.<S>.<E+1>        ⚙ CONTENT when G≥1
 ```
@@ -283,14 +283,14 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
             declared sibling Pages' approved arcs/decisions + Story Section row + owning
             Run Spec policy + venue; the log is history, never a Shape authority;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept;
-            the Outline producer writes the complete `P01..PN` Structure and Outline Bullets into the shared `rp-struct-01` Structure Run, including one contextual Role tag on every proposed Bullet
+            the Outline producer writes the complete `P01..PN` Structure and Outline Bullets into the shared `run-structure-<MMDD>-<slug>` Structure Run, including one contextual Role tag on every proposed Bullet
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
 4 REVISE    update the same unapproved working Shape and Structure together;
             save the human exchange as a Writing Step
 loop 3 ⇄ 4 until the person ticks approved:
 ```
 
-During an open `rp-struct-01` Structure Run, the Structure card at the top of
+During an open `run-structure-<MMDD>-<slug>` Structure Run, the Structure card at the top of
 Draft Space is the review projection of the plan: plain text, one line per
 `## C<n>` division and `### C<n>.P<m>` paragraph, read from the selected
 Outline on every open. The person may edit that text directly (titles, order,
@@ -328,7 +328,7 @@ Content remains a later adoption authority.
 The live Draft Space's Table and Reading views are read-only. Scratch Mode is
 the one bounded human-thinking capture surface: a small `+` at Section,
 whole paragraph-group scope writes only the selected Outline's
-`## Scratch` registry and its paired `rp-scratch-NN_<target>` receipt. It does
+`## Scratch` registry and its paired `run-scratch-<MMDD>-<slug>` receipt. It does
 not edit Draft prose. Page/Run workflow writers provide the
 bounded SHAPE hand-edit path: they may revise one Bullet; additions are made
 through Markdown or chat, not a `+ Bullet` UI control. The first write

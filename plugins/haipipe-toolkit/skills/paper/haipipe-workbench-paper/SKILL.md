@@ -157,14 +157,14 @@ starts, allocates, or writes; the page makes no request of its own.
 
 | Surface | Authority / writer | Runs panel |
 |---|---|---|
-| Ideation | `haipipe-ideation` / `haipipe-paper-ideation` | Idea review (`ridea`) · Generate ideas · Test idea |
-| Story | `haipipe-paper-story` and the Story Page | Story revise (the Story's `rp-`) · Claim review (`rclaim`) · Task review (`rtask`) · Supporting runs |
-| Sections | each Section Page, through its own Page workbench | Narrative review (`rnarra`) · the Section's Draft, Evidence and Delivery runs |
+| Ideation | `haipipe-ideation` / `haipipe-paper-ideation` | Idea review (`run-paper-idea-…`) · Generate ideas · Test idea |
+| Story | `haipipe-paper-story` and the Story Page | Story revise (the Story's Page Runs) · Claim review (`run-paper-claim-…`) · Task review (`run-paper-task-…`) · Supporting runs |
+| Sections | each Section Page, through its own Page workbench | Narrative review (`run-paper-narrative-…`) · the Section's Draft, Evidence and Delivery runs |
 | Delivery | `haipipe-paper-assemble` / `haipipe-paper-round` | Build (the last `build-manifest.json`) · Check · Response |
 
-Run names are the full names the Page workbench uses: `rclaim-01_…` shows as
-`run-claim-01`, `ridea` as `run-idea`, `rtask` as `run-task`, `rnarra` as
-`run-narrative`; the last build shows as `run-compile-<yymmdd>`.
+Run names are full names: Paper judgment Runs are `run-paper-idea-…`,
+`run-paper-claim-…`, `run-paper-task-…` and `run-paper-narrative-…`; Page Runs are
+`run-<kind>-<MMDD>-<slug>`; the last build shows as `run-compile-<yymmdd>`.
 
 ### 🚧 Boundary
 
@@ -372,7 +372,7 @@ address. Unclaimed jobs are named once, muted, never expanded. Discovery home
 (`examples/<Project>/discoveries/`, or `discovery-home:`) is claimed the same way
 through `discoveries:` and Discovery Roadmap addresses.
 
-The High-level logic + Low-level work Runs panel lists Claim review (`rclaim`), Task review (`rtask`), Task
+The High-level logic + Low-level work Runs panel lists Claim review (`run-paper-claim-…`), Task review (`run-paper-task-…`), Task
 runs (haipipe-task) and Discovery runs (haipipe-discovery): the supporting runs this
 paper's Evidence Items cite, each under its owner and keyed to the Task and Discovery Roadmap rows
 whose addresses cover them and to every hypothesis, E-row and question above those
@@ -409,7 +409,7 @@ Evidence    the hero list: every DISPLAY item on a Main or Appendix page and
 ```
 
 Main and Appendix are tabs. Selecting a Section shows its runs: Narrative review
-(`rnarra`, on the Story page) and the Section Page's own runs, grouped as Draft,
+(`run-paper-narrative-…`, on the Story page) and the Section Page's own runs, grouped as Draft,
 Evidence and Delivery runs by the Page Space folder that holds them. Evidence
 runs are named by the item they serve (`run-value-E25`), as on the Page.
 

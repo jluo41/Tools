@@ -99,18 +99,17 @@ section is inserted.
 ## ⚙️ Paper Section Run profile
 
 Read [`../../haipipe-paper/ref/run-naming.md`](../../../haipipe-paper/ref/run-naming.md)
-and the shared Page Run families. New local Evidence uses typed RE identities
-such as `re-cite-01_prescribing-variation` or `re-value-01_sensitivity`.
+and the shared Page Run names. New local Evidence uses full names such as
+`run-citation-<MMDD>-<slug>` or `run-value-<MMDD>-<slug>`.
 The Page owns the Evidence Item; the selected Task/Display worker does not
 change that owner. Independent Supporting Runs keep their native Task or
 Discovery identity and full path.
 
-Human interaction uses `rp-struct-01` for SHAPE + SURVEY, then the selected
-`rp-sec-NN` or `rp-para-NN_Pxx[-Pyy]` session. Feedback is a Step; same-target
+Human interaction uses a `run-structure-…` Run for SHAPE + SURVEY, then the
+selected `run-section-…` or `run-paragraph-…` session. Feedback is a Step; same-target
 reopening is a Version. Record the semantic `page:` and `paper_lane:` alongside
-the native receipt. Existing `pm-/pa-/pr-/pj...` and compact `rp00/rpNN` records
-are compatibility inputs; preserve their identity and verify their original
-owner/receipt before reuse. Evidence acceptance never replaces human writing
+the native receipt. Older short names are retired; a reused Result keeps its
+exact original path, and its owner and receipt are verified before reuse. Evidence acceptance never replaces human writing
 acceptance. The Paper Workflow's `structure/write/evidence/deliver` Specs bind
 these native Runs, without a wrapper Section Run.
 

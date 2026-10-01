@@ -1,7 +1,7 @@
 """🎨 Design · live Page-Folder presenter for ``haipipe-workbench-design``.
 
 It reads only the current Design Folder's contract files: the Design Item
-register, ``rdNN_*`` Tickets, runtime receipts, ``checks.yaml``, content
+register, ``run-design-*`` Tickets, runtime receipts, ``checks.yaml``, content
 artifacts, and ``decision.yaml``.  Every state on the page is derived from
 those bytes at read time.  The only writes it exposes are the Design
 contract's Commission release, the queueing of agent Tickets (Generate,
@@ -30,6 +30,9 @@ _DESIGN_MARKER = re.compile(r"(?m)^\s*folder-kind:\s*design\s*$", re.I)
 _LEGACY_RUN = re.compile(r"^r\d+_design(?:_|$)", re.I)
 _RUN_FILE = re.compile(
     r"^(rd(\d+)_(commission|generate|verify|adopt)_[A-Za-z0-9][A-Za-z0-9_-]*)\.ya?ml$", re.I)
+# the current name (JL 261001): run-design-<step>-<MMDD>-design-<N>[-2]; order is `sequence:`
+_RUN_FILE_NEW = re.compile(
+    r"^(run-design-(commission|generate|verify|adopt)-\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*)\.ya?ml$")
 _TITLE = re.compile(r"(?m)^#\s+(.+?)\s*$")
 _READS = re.compile(r"(?im)^\s*reads:\s*(.*?)\s*$")
 _ITEM_HEAD = re.compile(r"^##\s+(ITEM\d+)\s*[·:-]\s*(.+?)\s*$")
@@ -46,7 +49,7 @@ _ITEM_LISTS = ("acceptance", "evidence")
 _PLAIN = {
     ("stance", "follow"): "follows the evidence", ("stance", "challenge"): "challenges the evidence",
     ("stance", "explore"): "explores a new direction", ("stance", "generate"): "a new design",
-    ("basis", "evidence-informed"): "built on evidence", ("basis", "brief-only"): "from the brief only",
+    ("basis", "evidence-informed"): "built on evidence", ("basis", "brief-only"): "from the design task only",
     ("mode", "compose"): "written fresh", ("mode", "revise"): "revised from an earlier draft",
     ("mode", "challenge"): "written to test the evidence", ("mode", "brainstorm"): "many rough options",
     ("mode", "theory-driven"): "derived from a stated theory",
@@ -83,8 +86,6 @@ def _legacy_reason(page_src: Path, text: str = "") -> str:
     runs = folder / "runs"
     if runs.is_dir() and any(_LEGACY_RUN.match(p.name) for p in runs.iterdir()):
         return "legacy rNN_design_* Run storage is not supported"
-    if (folder / "pagex").exists() or re.search(r"(?im)^\s*pagex\s*:", text):
-        return "legacy PageX storage is not supported"
     if re.search(r"(?im)^\s*(?:schema|contract-version):\s*v?1(?:\.0)?\s*$", text):
         return "legacy v1 Page/Ticket/Result storage is not supported"
     return ""
@@ -251,10 +252,18 @@ def _load_runs(folder: Path) -> list[dict]:
     rows = []
     for ticket_path in sorted(runs_dir.iterdir()):
         hit = _RUN_FILE.match(ticket_path.name)
-        if not hit:
+        new = None if hit else _RUN_FILE_NEW.match(ticket_path.name)
+        if not hit and not new:
             continue
-        run_id, number, kind = hit.group(1), int(hit.group(2)), hit.group(3).lower()
         ticket = _yaml(ticket_path)
+        if hit:
+            run_id, number, kind = hit.group(1), int(hit.group(2)), hit.group(3).lower()
+        else:
+            run_id, kind = new.group(1), new.group(2)
+            try:
+                number = int(ticket.get("sequence") or 0)
+            except (TypeError, ValueError):
+                number = 0
         result_dir = folder / "results" / run_id
         runtime = _yaml(result_dir / "runtime.yaml")
         result = _yaml(result_dir / "result.yaml")
@@ -401,6 +410,19 @@ def _audit(folder: Path) -> list[str]:
         return [f"checker unavailable: {exc}"]
 
 
+def _relocated(folder: Path, rel: str) -> Path | None:
+    """A cited page whose Insight board has moved: found by its last three path parts
+    (`1-F-full/FW01-send-salience/FW01-send-salience.md`) under the nearest Project's
+    `insights/` world. The register keeps its old path, so no released Run goes stale."""
+    tail = "/".join(Path(rel).parts[-3:])
+    for up in folder.parents:
+        world = up / "insights"
+        if world.is_dir():
+            hits = sorted(world.glob(f"*/{tail}"))
+            return hits[0].resolve() if hits else None
+    return None
+
+
 def _evidence_rows(folder: Path, item: dict) -> list[dict]:
     """Merge register evidence lines with the roles the item's Tickets pinned."""
     rows: dict[str, dict] = {}
@@ -421,6 +443,8 @@ def _evidence_rows(folder: Path, item: dict) -> list[dict]:
             row["pinned"] = True
     out = []
     for row in rows.values():
+        if not row["file"].is_file():
+            row["file"] = _relocated(folder, row["path"]) or row["file"]
         text = _read(row["file"]) if row["file"].is_file() else ""
         signed = _SIGNED.search(text)
         row["exists"] = row["file"].is_file()
@@ -555,6 +579,122 @@ def design_title(row: dict) -> str:
     return f"{head} for {audience}" if audience else head
 
 
+LINK_SLOT = "{LINK}"
+
+
+def with_link(text: str) -> str:
+    """Show `{LINK}` where the platform puts the link: right after the ask's colon, before
+    the opt-out (JL 261001). The stored text is unchanged; a text that already carries
+    `{LINK}` is shown as it is."""
+    if not text or LINK_SLOT in text:
+        return text
+    stop = text.rfind("Reply STOP")
+    colon = (text[:stop] if stop > 0 else text).rfind(":")
+    return text if colon < 0 else text[:colon + 1] + " " + LINK_SLOT + text[colon + 1:]
+
+
+# The design input (JL 261001): Theory of Design §2 says a design starts from an aim,
+# constraints and resources. The board's `design-goal.md` states them once; a task
+# section overrides a line; the venue profile gives the channel's own defaults.
+_INPUT_BLOCKS = ("Aim", "Venue", "Rules", "Resources", "Leave out")
+_VENUE_DIR = SKILLS / "design" / "venue"
+_VENUE_LABEL = {"length": "Length", "cta": "Call to action", "opt-out": "Opt-out", "personalization": "Personalization",
+                "links": "Link", "language": "Reading level"}
+
+
+def _input_sections(text: str) -> list[tuple[str, list[tuple[str, str, str]]]]:
+    """ASCII doc -> [(title, [(key, value, source)])]; a title is a line underlined by --- or ===."""
+    lines, out, i = text.splitlines(), [], 0
+    while i < len(lines):
+        nxt = lines[i + 1].strip() if i + 1 < len(lines) else ""
+        if lines[i].strip() and re.fullmatch(r"[-=]{3,}", nxt):
+            out.append((lines[i].strip(), []))
+            i += 2
+            continue
+        m = re.match(r"^([A-Za-z][\w -]*?):\s*(.*?)\s*(?:<-\s*(.*))?$", lines[i])
+        if m and out:
+            out[-1][1].append((m.group(1).strip(), m.group(2).strip(), (m.group(3) or "").strip()))
+        i += 1
+    return out
+
+
+def venue_defaults(venue: str) -> dict[str, str]:
+    """`- **Length:** 160 chars ...` lines under a venue README's `## Constraints`."""
+    path = _VENUE_DIR / f"venue-{(venue or '').strip().lower()}" / "README.md"
+    if not path.is_file():
+        return {}
+    text = path.read_text(encoding="utf-8", errors="replace")
+    part = text.split("## Constraints", 1)[1].split("\n## ", 1)[0] if "## Constraints" in text else ""
+    return {m.group(1).strip().lower(): m.group(2).strip()
+            for m in re.finditer(r"(?m)^-\s+\*\*(.+?):\*\*\s*(.+?)\s*$", part)}
+
+
+def design_input(board: Path | None, folder: Path) -> dict:
+    """The board's design input with this folder's overrides: {block: [(key, value, source)]}."""
+    path = board / "design-goal.md" if board else None
+    if not path or not path.is_file():
+        return {"path": None, "blocks": {}}
+    sections = _input_sections(path.read_text(encoding="utf-8", errors="replace"))
+    blocks = {title: list(rows) for title, rows in sections if title in _INPUT_BLOCKS}
+    for title, rows in sections:
+        if title == f"Task · {folder.name}":
+            for key, value, source in rows:
+                for name, lines in blocks.items():
+                    if any(k == key for k, _, _ in lines):
+                        blocks[name] = [(k, value, source) if k == key else (k, v, s) for k, v, s in lines]
+                        break
+                else:
+                    blocks.setdefault("Aim", []).append((key, value, source))
+    return {"path": path, "blocks": blocks}
+
+
+def _input_html(root: Path, row: dict, inp: dict, counts: str, rules: list[str]) -> str:
+    """The Design Goal Space: the task's design input as column tables, as in the Paper workbench."""
+    # The screen shows the specification only; where each line came from stays in the
+    # file after `<-` (JL 261001: no source column, no file ids on screen).
+    blocks = inp["blocks"]
+
+    def cell(value: str) -> str:
+        return '<span class=mut>Not specified</span>' if value in ("", "?") else _escape(value)
+
+    def grid(title: str, heads: tuple[str, ...], rows: list[str]) -> str:
+        head = "".join(f"<th>{_escape(h)}</th>" for h in heads)
+        return f'<h3>{title}</h3><table class="grid input"><tr>{head}</tr>{"".join(rows)}</table>'
+
+    def line(key: str, value: str) -> str:
+        return f'<tr><td class=key>{_escape(key[:1].upper() + key[1:])}</td><td>{cell(value)}</td></tr>'
+
+    job = (row["job"] or "").strip()
+    out = []
+    aim = [line(k, v) for k, v, _ in blocks.get("Aim", [])]
+    if job and not any(k.lower() == "patient task" for k, _, _ in blocks.get("Aim", [])):
+        aim.insert(1, line("Patient task", job[:1].upper() + job[1:]))
+    aim.append(f'<tr><td class=key>Deliverables</td><td>{counts}</td></tr>')
+    out.append(grid("Aim", ("Item", "Specification"), aim))
+    venue = row["venue"] or ""
+    defaults = {k: v[:1].upper() + v[1:] for k, v in venue_defaults(venue).items()}
+    used, rows = set(), []
+    for key, value, _ in blocks.get("Venue", []):
+        used.add(key.lower())
+        rows.append(f'<tr><td class=key>{_escape(_VENUE_LABEL.get(key.lower(), key))}</td><td>{cell(value)}</td>'
+                    f'<td class=mut>{_escape(defaults.get(key.lower(), "—"))}</td></tr>')
+    rows += [f'<tr><td class=key>{_escape(_VENUE_LABEL.get(k, k))}</td><td class=mut>As the channel standard</td>'
+             f'<td class=mut>{_escape(v)}</td></tr>' for k, v in defaults.items() if k not in used]
+    name = venue.upper() if len(venue) <= 4 else venue.title()
+    out.append(grid(f"Channel requirements · {_escape(name)}", ("Requirement", "This task", f"{name} standard"), rows)
+               if rows else f'<h3>Channel requirements · {_escape(name)}</h3><div class=empty>No channel profile for {_escape(venue)}.</div>')
+    rule_rows = [line(k, v) for k, v, _ in blocks.get("Rules", [])]
+    if rules:
+        rule_rows.append(f'<tr><td class=key>Acceptance checks</td><td>{"<br>".join(_escape(r) for r in rules)}</td></tr>')
+    out.append(grid("Requirements", ("Item", "Specification"), rule_rows))
+    for title, heading in (("Resources", "Inputs and resources"), ("Leave out", "Exclusions")):
+        if blocks.get(title):
+            out.append(grid(heading, ("Item", "Specification"), [line(k, v) for k, v, _ in blocks[title]]))
+    if not inp["path"]:
+        out.append('<div class=bad>No design-goal.md beside board.md: only the task line is shown.</div>')
+    return "".join(out)
+
+
 def _goal(folder: Path, board_root: Path | None, items: list[dict]) -> dict:
     """Goal Space: the Brief line that names this folder, and the counts against it."""
     brief = brief_page(board_root)
@@ -575,7 +715,7 @@ def _verified_design(item: dict) -> dict | None:
     """Return the candidate whose latest independent Verify passed.
 
     Delivery is deliberately derived from the Verify record, not from a
-    separate human decision.  Historical ``rdNN_adopt_*`` records may still
+    separate human decision.  Historical ``run-design-adopt-*`` records may still
     be present, but they are not required for a design to be ready.
     """
     if item.get("state") != "ready":
@@ -886,11 +1026,45 @@ button.do:hover{background:var(--soft)}button.do.bad{border-color:var(--bad);col
 .bubble{background:var(--soft);border-radius:16px 16px 16px 4px;padding:8px 11px;font:14.5px/1.42 -apple-system,sans-serif;white-space:pre-wrap;word-break:break-word}
 .bubble .link{color:var(--acc);text-decoration:underline}
 .item{padding:0}.item.sel{margin:0;padding:0;background:none}.item.sel>details>summary{box-shadow:inset 3px 0 0 var(--acc)}.foldbar{margin:6px 0 2px;text-align:right}
+details.itemfold.cardrow>summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;height:auto;min-height:34px;align-items:center;padding:9px 4px;font-size:13px}
+details.itemfold.cardrow>summary::before{display:none}details.itemfold.cardrow>summary>span{min-width:0;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+details.itemfold.cardrow>summary .c1 b{max-width:none;white-space:normal}details.itemfold.cardrow>summary .c1 .line>b:first-child::before{content:"▸ ";color:var(--mut)}
+details.itemfold.cardrow[open]>summary .c1 .line>b:first-child::before{content:"▾ "}details.itemfold.cardrow .peek{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+details.itemfold.cardrow .move{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+details.itemfold.cardrow .sup,details.itemfold.cardrow .wrong{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cardgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:6px 4px 14px;align-items:start}
+.cardgrid>.col{min-width:0}
+h4.colh{margin:12px 0 4px;font:650 11px -apple-system,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.cardgrid>.col>h4.colh:first-child{margin-top:2px}
+details.sub{border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:6px 10px}details.sub>summary{font-size:13px;color:var(--fg);font-weight:600}
+details.sub[open]>summary{margin-bottom:6px}ul.notes{margin:0;padding-left:18px;font-size:13px;line-height:1.5}ul.notes li{margin:3px 0}
+@media(max-width:860px){.cardgrid{grid-template-columns:1fr}.cardgrid>.col.pic{position:static}}
+details.runsfold{margin:6px 0 8px}details.runsfold>summary{font-size:12px;color:var(--mut);font-weight:400}
+details.runsfold[open]>summary{margin-bottom:4px}
+details.itemfold.cardrow .line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ul.runs{list-style:none;margin:0;padding:0}ul.runs li{padding:6px 0;border-bottom:1px dashed var(--line)}ul.runs li:last-child{border-bottom:0}
+ul.runs .rl{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;font-size:13px}ul.runs .rid{font-size:11px;color:var(--mut)}
+ul.runs .said{font-size:12.5px;color:var(--mut);font-style:italic;margin:2px 0}ul.runs li.old{opacity:.6}
+ul.ladder{list-style:none;margin:0;padding:0}ul.ladder li{display:flex;gap:12px;padding:5px 0;border-bottom:1px dashed var(--line)}ul.ladder li:last-child{border-bottom:0}
+ul.ladder .lvl{flex:0 0 92px;font-size:11.5px;color:var(--mut);padding-top:2px}ul.ladder .pg{flex:1;min-width:0}
+ul.ladder .finding{display:block;font-size:12.5px;color:var(--mut);line-height:1.4}
+.task .tl{display:flex;gap:10px;margin:2px 0}.task .tl>.mut{flex:0 0 130px}
+span.link{font:600 12px ui-monospace,Menlo,monospace;color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);border-radius:4px;padding:0 3px}
+.cardhead{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:4px;color:var(--mut);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--line)}
+.task{border:1px solid var(--acc);border-radius:8px;background:var(--soft);padding:10px 14px;margin:6px 0 12px;line-height:1.55}.taskhead{font-weight:650;color:var(--acc);font-size:15px}
+details.inner{margin:8px 0 0}
+@media(max-width:860px){details.itemfold.cardrow>summary,.cardhead{grid-template-columns:1fr}.cardhead span+span{display:none}}
 details.itemfold>summary{list-style:none;display:flex;gap:12px;align-items:center;height:46px;cursor:pointer;color:var(--fg);font-size:14px;overflow:hidden}
 details.itemfold>summary::-webkit-details-marker{display:none}details.itemfold>summary::before{content:"▸";color:var(--mut);flex:0 0 10px}
 details.itemfold[open]>summary::before{content:"▾"}details.itemfold>summary:hover{background:var(--soft)}
 details.itemfold>summary b{flex:0 1 auto;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .peek{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut);font-size:13px}.st{flex:0 0 auto;white-space:nowrap}
+table.grid{width:100%;border:1px solid var(--line);border-radius:9px;border-collapse:separate;border-spacing:0;overflow:hidden;margin:4px 0 12px}
+table.grid th{background:var(--soft);padding:7px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+table.grid td{padding:7px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}
+table.grid th:last-child,table.grid td:last-child{border-right:0}table.grid tr:last-child td{border-bottom:0}
+table.input td.key{width:170px;font-weight:600}table.input td.src{width:170px;font-size:12px;color:var(--mut)}
+h3{font-size:13px;margin:18px 0 2px;font-weight:650}
 .itembody{height:560px;overflow:auto;padding:2px 8px 14px 0;border-top:1px dashed var(--line)}
 .itembody .pair .pic{position:sticky;top:6px;max-height:540px;overflow:auto}
 table.explain{border:1px solid var(--line);border-radius:10px;border-collapse:separate;border-spacing:0;overflow:hidden;margin:6px 0 0}table.explain th{width:160px;background:var(--soft);font-size:11px;font-weight:650;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);padding:12px 14px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}table.explain td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}table.explain tr:last-child th,table.explain tr:last-child td{border-bottom:0}table.explain td>.mut:first-child{margin-bottom:4px}@media(max-width:720px){table.explain th{width:110px;padding:10px}}
@@ -997,6 +1171,12 @@ def _revise_of(run: dict) -> tuple[str, str]:
     return (base["run_id"] if base else "", text)
 
 
+def run_short(run_id: str) -> str:
+    """A run said briefly: `rd13` for an old name, `verify 09-18` for a current one."""
+    hit = re.match(r"^run-design-([a-z]+)-(\d{2})(\d{2})-", str(run_id))
+    return f"{hit.group(1)} {hit.group(2)}-{hit.group(3)}" if hit else str(run_id).split("_")[0]
+
+
 def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None) -> str:
     rows = []
     for run in runs:
@@ -1021,7 +1201,7 @@ def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None)
             detail = f'<div class=mut>“{_escape(run["words"])}”</div>' + detail
         rows.append(
             f'<tr><td>{_href(root, run["ticket_path"], run["id"])}</td>'
-            f'<td>{_escape(run["step"])}{(" · revise of " + _escape(base.split("_")[0])) if base else ""}'
+            f'<td>{_escape(run["step"])}{(" · revise of " + _escape(run_short(base))) if base else ""}'
             f'<div class=mut><code>Design.{_escape(run["kind"])}</code> · {_escape(plain_words(run["target"]))}</div></td>'
             f'<td>{_escape(run["actor"])} <span class=mut>{_escape(run["mode"])}</span></td>'
             f'<td class=mut>{_escape(run["finished"] or run["started"] or "—")}</td>'
@@ -1065,6 +1245,92 @@ _DESIGN_RUN_GUIDE = {
         "requires": "A complete Generate Result, pinned sources and criteria, and a reviewer independent of its producer. An already completed valid review cannot be repeated unchanged.",
     },
 }
+
+
+# The Runs panel beside each Space (JL 261001): like the Paper and Page workbenches,
+# work is started from a run type and its prompt, copied into a Claude or Codex
+# session, never from a form on the page. The run types are the Design run cards,
+# the Workbench Table written as cards (one per button: agent, skill, signs, prompt).
+_RUN_CARDS = SKILLS / "design" / "haipipe-design-workflow" / "references" / "run-cards.md"
+_CARD_SPACE = {"Tasks": "tasks", "Theory": "theory", "Goal": "goal", "Design": "design", "Delivery": "delivery"}
+
+
+def design_run_types(path: Path = _RUN_CARDS) -> dict[str, list[dict]]:
+    """The Design run cards -> {space: [{label, pattern, agent, skills, signs, prompt}]}, in card order."""
+    out: dict[str, list[dict]] = {}
+    card = None
+    for line in _read(path).splitlines() if path.is_file() else []:
+        m = re.match(r"^🔘 BUTTON\s+(.+?)\s+·\s+(\w+)\s+·\s+(\S.*?)(?:\s+·\s+views\s+.*)?$", line)
+        if m:
+            card = {"label": m.group(1), "pattern": m.group(3).strip(), "agent": "", "skills": [],
+                    "signs": "", "prompt": ""}
+            out.setdefault(_CARD_SPACE.get(m.group(2), m.group(2).lower()), []).append(card)
+            continue
+        if card is None:
+            continue
+        for mark, key in (("🤖 AGENT", "agent"), ("🧩 SKILL", "skills"), ("✍️ SIGNS", "signs"), ("💬 PROMPT", "prompt")):
+            if line.startswith(mark):
+                value = line[len(mark):].strip()
+                card[key] = [value] if key == "skills" else value
+    for cards in out.values():
+        for card in cards:
+            # the panel names the skill on every run; the prompt names the agent that runs it
+            if card["agent"] and card["agent"] != "none":
+                card["prompt"] = f'Run with {card["agent"]}. {card["prompt"]}'
+            if card["signs"] and card["signs"] != "none":
+                card["prompt"] += f' I sign {card["signs"]}.'
+    return out
+
+
+_PANEL_STATUS = {"complete": "done", "running": "running", "planned": "open", "failed": "held", "blocked": "held"}
+
+
+def design_runs_panel(space: str, runs: list[dict], *, root: Path, page: str, board: str,
+                      whole: str) -> str:
+    """The Runs panel for one Space: its run types, each run's prompt, process and result."""
+    import re as _re
+    from live.runs_panel import panel_markup
+    kinds = design_run_types().get(space, [])
+    buckets = [[] for _ in kinds]
+    for run in sorted(runs, key=lambda r: (r.get("finished") or r.get("started") or "", r["id"]), reverse=True):
+        if space == "delivery" and run["outcome"] != "pass":
+            continue
+        hit = next((i for i, k in enumerate(kinds) if k["pattern"] != "-" and _re.search(k["pattern"], run["id"])), None)
+        if hit is None:
+            continue
+        name = design_number(run["item"]) if run["item"] else run["id"]
+        buckets[hit].append({
+            "run_id": run["id"], "global_id": run["id"], "status": _PANEL_STATUS.get(run["status"], run["status"]),
+            "target": " · ".join(x for x in (run.get("folder"), run["item"]) if x) or "the folder",
+            "ticket": str(run["ticket_path"]), "runtime": str(run["result_dir"] / "runtime.yaml"),
+            "result_path": str(run["result_dir"]), "_views": "", "_keys": run["item"],
+            "_display": f'{name} · {kinds[hit]["label"]}',
+            "goal": " · ".join(x for x in (run["actor"], run["outcome"], run.get("finished") or "") if x),
+        })
+    return panel_markup(space, kinds, buckets, base=Path(root), fill=lambda row: {"page": page, "board": board},
+                        whole=whole)
+
+
+def runs_panel_assets() -> tuple[str, str]:
+    """The shared panel's CSS (plus this workbench's side-by-side layout) and its script."""
+    from live.runs_panel import PANEL_CSS, PANEL_JS
+    css = PANEL_CSS + """
+:root{--card:var(--bg)}
+body{max-width:1560px}
+.pane.on.split{display:flex;align-items:flex-start;gap:16px}
+.split>.space-main{flex:1 1 auto;min-width:0}
+.split>.runs-panel{flex:0 0 clamp(260px,28vw,440px);margin:0;position:sticky;top:8px;
+ max-height:calc(100vh - 16px);display:flex;flex-direction:column;overflow:hidden}
+.split>.runs-panel .runs-bar{flex-wrap:wrap}
+.split>.runs-panel .runs-body{overflow:auto;min-height:0;grid-template-columns:1fr}
+.split>.runs-panel .runs-types{flex-direction:row;flex-wrap:wrap}
+.split>.runs-panel .run-type{gap:8px}
+.split>.runs-panel.folded{flex-basis:42px}
+.split>.runs-panel.folded .runs-bar{writing-mode:vertical-rl;flex-wrap:nowrap;padding:10px 9px;gap:10px}
+@media(max-width:900px){.pane.on.split{display:block}.split>.runs-panel{position:static;max-height:none;margin-top:14px}
+ .split>.runs-panel.folded .runs-bar{writing-mode:horizontal-tb}}
+"""
+    return css, "<script>" + PANEL_JS + "</script>"
 
 
 def _next_design_run(item: dict) -> tuple[str, str]:
@@ -1187,7 +1453,7 @@ def design_next_run(item: dict, human: str, *, writable: bool = False, compact: 
     """Explain this item's next native action, separately from its actual history.
 
     An item with nothing to start says nothing here (JL 260921): its own line
-    already carries the state, and its Runs are Run Space's business.
+    already carries the state, and its Runs are in the card's Runs fold.
     """
     action, kind = _next_design_run(item)
     if not action and item["state"] not in _RUNNING_STATES:
@@ -1197,7 +1463,7 @@ def design_next_run(item: dict, human: str, *, writable: bool = False, compact: 
     if not kind:
         kind = latest["kind"] if latest else ""
     spec = _DESIGN_RUN_GUIDE.get(kind)
-    capability = "Start here" if action and writable else "Shown here · read-only"
+    capability = "You can start it from this card" if action and writable else "Read only on this page"
     heading = (f'{lead}: {spec["name"]} · {spec["actor"]}' if spec and (action or lead == "Current Run") else lead)
     matches = [r for r in item["runs"] if r["kind"] == kind]
     match = matches[-1] if matches else None
@@ -1236,68 +1502,6 @@ def design_next_run(item: dict, human: str, *, writable: bool = False, compact: 
     detail += f'<div class=mut>Latest matching record: {_escape(current)}</div>'
     facts += f'<details><summary>Run type, Skills and prerequisites</summary>{detail}</details>'
     return f'<details><summary>{_escape(heading)}</summary>{facts}</details>' if compact else facts
-
-
-def design_run_guide(items: list[dict], space: str, *, writable: bool = False,
-                     copy_kinds: set[str] | None = None) -> str:
-    """Space-specific type catalogue with a separate summary of matching instances."""
-    kinds = {"goal": ("commission",), "design": ("commission", "generate", "verify"),
-             "insight": ("commission", "generate", "verify"), "run": ("commission", "generate", "verify"),
-             "delivery": ("generate", "verify")}[space]
-    notes = {
-        "goal": "Commission uses each registered item's goal and rules. Adding a task, folder or item does not allocate a Design Run.",
-        "design": "Use each item's native controls for its next eligible Run. Queueing records work for the agent dispatcher.",
-        "insight": "These Design Runs consume allowed sources. Insight signing and evidence repair stay with their native owners.",
-        "run": "This Space is the history and status ledger. Start actions remain in the item's Design Space.",
-        "delivery": "Delivery reads the exact Generate Result and passed independent Verify. It allocates no Run and offers no start action.",
-    }
-    # One row per item, one column per Run type: an item's title is read once
-    # and where it stands reads across (JL 260921: the old list repeated every
-    # title once per type, and every type repeated the same closing sentence).
-    rows, starts = [], []
-    for item in items:
-        # A declined item is retired: Delivery folds its card away, so its title must
-        # not come back in this table underneath (JL 260918, the fold is the promise).
-        if item["state"] == "declined":
-            continue
-        cells = ""
-        for kind in kinds:
-            found = [r for r in item["runs"] if r["kind"] == kind]
-            latest = found[-1] if found else None
-            if latest is None:
-                cells += '<td><span class=mut>—</span></td>'
-                continue
-            outcome = latest["outcome"] or latest["status"]
-            mark = "ok" if outcome in ("pass", "release", "complete") else "bad" if latest["status"] == "failed" else "mut"
-            cells += (f'<td><span class={mark}>{_escape(outcome)}</span> '
-                      f'<span class=mut>{_escape(latest["id"].split("_")[0])}</span></td>')
-        name = " · ".join(x for x in (item.get("folder"), item["id"]) if x)
-        rows.append(f'<tr><td><b>{_escape(name)}</b><div class=mut>{_escape(item["title"])}</div></td>{cells}</tr>')
-    for kind in kinds:
-        spec = _DESIGN_RUN_GUIDE[kind]
-        startable = writable and any(_next_design_run(item)[1] == kind for item in items)
-        copyable = space == "design" and kind in (copy_kinds or set())
-        if startable or copyable:
-            starts.append(spec["name"])
-    types = "".join(
-        f'<li><b>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])} · {_escape(_DESIGN_RUN_GUIDE[kind]["actor"])}</b> — '
-        f'{_escape(_DESIGN_RUN_GUIDE[kind]["purpose"])}</li>' for kind in kinds)
-    needs = "".join(
-        f'<li><b>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])}</b> · <code>{_escape(_DESIGN_RUN_GUIDE[kind]["type"])}</code> · '
-        f'worker {_escape(_DESIGN_RUN_GUIDE[kind]["worker"])}<br>'
-        f'<span class=mut>{_escape(_DESIGN_RUN_GUIDE[kind]["requires"])}</span></li>' for kind in kinds)
-    head = "".join(f'<th>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])}</th>' for kind in kinds)
-    where = (f'You can start {" and ".join(starts)} on an eligible item below.' if starts
-             else "Nothing starts here; an item's own controls in Design Space do that.")
-    return ('<details><summary>Run types in this Space</summary>'
-            f'<p>{_escape(notes[space])} {_escape(where)}</p>'
-            f'<ul class=rules>{types}</ul>'
-            + (f'<table><tr><th>item</th>{head}</tr>{"".join(rows)}</table>'
-               if rows else '<p class=mut>No item records in this scope.</p>')
-            + '<p class=mut>The latest record of each type; every Run, including superseded ones, is in Run Space.</p>'
-            + f'<details><summary>What each Run needs</summary><ul class=rules>{needs}</ul>'
-            '<p class=mut>Owner Skill: <code>haipipe-design-workflow</code>. '
-            'The native control checks these again before it writes.</p></details></details>')
 
 
 def _actions(item: dict, human: str) -> tuple[str, str]:
@@ -1400,7 +1604,7 @@ def _insight_flow(item: dict, root: Path | None = None) -> str:
         levels.setdefault(rung, []).append(
             f'<span class=node>{label + " " if label else ""}{_escape(title) or _escape(stem)}{mark}{missing}</span>')
     if not levels:
-        return ('<div class=mut>from the Brief only · no insight needed</div>' if item["basis"] != "evidence-informed"
+        return ('<div class=mut>from the design task only · no insight needed</div>' if item["basis"] != "evidence-informed"
                 else '<div class=bad>needs an insight · none named yet</div>')
     rows = [(_RUNG_WORD.get(k, "Also read"), levels[k]) for k in ("D", "I", "K", "W", "?") if k in levels]
     rows.append(("This design", [f'<span class=node><b>{_escape(item["id"])}</b> {_escape(item["title"])}</span>']))
@@ -1452,10 +1656,10 @@ def _rule_checks(item: dict) -> tuple[str, str]:
                  else '<span class="g mut">·</span>')
         rows.append(f"<li>{glyph}{_escape(rule)}</li>")
     head = (f'{passed} of {len(lines)} pass <span class=mut>· {word} '
-            f'{_escape(source["id"].split("_")[0])}</span>') if source else '<span class=mut>not checked yet</span>'
+            f'{_escape(run_short(source["id"]))}</span>') if source else '<span class=mut>not checked yet</span>'
     released = next((r for r in item["runs"] if r["kind"] == "commission" and r["outcome"] == "release"), None)
     if released and _bet_changed(item, released):
-        head += (f' <span class=bad>· the register changed after release ({_escape(released["id"].split("_")[0])}); '
+        head += (f' <span class=bad>· the register changed after release ({_escape(run_short(released["id"]))}); '
                  'drafts still follow the released goal and rules</span>')
     return head, "".join(rows) or "<li class=mut>none</li>"
 
@@ -1501,57 +1705,217 @@ def _because_html(item: dict, root: Path | None = None) -> str:
     return f'<div>{tag} <span class=mut>{verb}</span> {_escape(b["rule"]["text"])}</div>{note}'
 
 
-def _explain(item: dict, root: Path | None = None) -> str:
-    """The right-hand side of a card, as a two-column table (JL 260918): a small label on
-    the left, the content on the right: why this design, where its insight came from,
-    the bet, the rules.
+def _support_ladder(item: dict, root: Path | None = None) -> str:
+    """The insight pages a design rests on, top down (JL 261001): the counsel (Wisdom) first,
+    then the claim (Knowledge), the pattern (Information) and the observation (Data). Each
+    page by its name in words, its level, whether it is signed, and its finding in a line."""
+    pages = [r for r in item["evidence_rows"] if r["role"] in _SUPPORT_ROLES]
+    if not pages:
+        return ('<div class=mut>From the design goal alone; no insight page is needed.</div>'
+                if item["basis"] != "evidence-informed" else '<div class=mut>No insight page named yet.</div>')
+    out = []
+    for rung in "WKID?":
+        for r in (p for p in pages if _rung(p) == rung):
+            name = f"<b>{_escape(_page_words(r))}</b>"
+            href = _insight_href(root, r["file"]) if r["exists"] and rung != "?" else ""
+            if href:
+                name = f'<a href="{_escape(href)}">{name}</a>'
+            level = _RUNG_WORD.get(rung, "Source")
+            mark = (" · signed" if r["signed"].startswith("signed") else " · unsigned" if r["signed"] else "")
+            mark += " · to avoid" if r["role"] == "avoid" else ""
+            title, counsel = "", ""
+            if r["exists"]:
+                text = _read(r["file"])
+                m = _H1.search(text)
+                title = m.group(1).strip() if m else ""
+                says = _handoff_says(text) if rung == "W" else {"counsel": []}
+                if says["counsel"]:
+                    # a Wisdom page's counsel is the rule a design acts on: shown in its own words
+                    counsel = ('<span class=finding>Rules it implies: ' + " · ".join(
+                        ("DO " if c["do"] else "DO NOT ") + name_refs(_escape(c["text"]), r["file"])
+                        for c in says["counsel"]) + '</span>')
+            else:
+                title = "Page not found on the Insight board."
+            out.append(f'<li><span class=lvl>{level}</span><span class=pg>{name}<span class=mut>{mark}</span>'
+                       f'{("<span class=finding>" + _escape(title) + "</span>") if title else ""}{counsel}</span></li>')
+    return f'<ul class=ladder>{"".join(out)}</ul>'
 
-    No strip of Runs: JL asked on 260921 for it to go. The card's own line already says
-    the state and who is waited on, and the Runs themselves belong to the Run Space."""
+
+def _review_notes(item: dict) -> str:
+    """The independent reviewer's own words on the shown draft (its `review.md`), one per line."""
+    shown = shown_design(item)
+    if not shown:
+        return ""
+    for r in reversed(item["runs"]):
+        if (r["kind"] == "verify" and r["status"] == "complete"
+                and any(str(t.get("path", "")).startswith(f'results/{shown["run"]}/') for t in r["targets"])):
+            path = r["result_dir"] / "review.md"
+            if not path.is_file():
+                return ""
+            lines = [re.sub(r"^[-*]\s+|^\d+[.)]\s+", "", ln.strip()) for ln in _read(path).splitlines()
+                     if ln.strip() and not ln.lstrip().startswith("#")]
+            return "".join(f"<li>{_escape(ln)}</li>" for ln in lines[:8])
+    return ""
+
+
+
+def _design_runs_list(item: dict) -> str:
+    """This design's own runs as a short list that fits the column (JL 261001): the step,
+    its outcome, who and when, the person's words when they gave a decision; the run id
+    small underneath. The insight board's runs sit behind its pages, not here."""
+    rows = []
+    for r in item["runs"]:
+        bad = r["status"] in ("failed", "blocked")
+        outcome = r["outcome"] or ("planned · queued for agent" if r["status"] == "planned" and r["mode"] == "agent"
+                                   else r["status"])
+        if r["checks"]:
+            outcome += f' {r["checks_passed"]}/{len(r["checks"])}'
+        when = r["finished"] or r["started"] or ""
+        words = f'<div class=said>“{_escape(r["words"])}”</div>' if r["words"] else ""
+        rows.append(f'<li{" class=old" if r["status"] == "superseded" else ""}><div class=rl>'
+                    f'<b>{_escape(_STEP.get(r["kind"], r["kind"]))}</b>'
+                    f'<span class="{"bad" if bad else "ok" if r["status"] == "complete" else "mut"}">{_escape(outcome)}</span>'
+                    f'<span class=mut>{_escape(r["actor"])} · {_escape(when)}</span></div>'
+                    f'{words}<code class=rid>{_escape(r["id"])}</code></li>')
+    return f'<ul class=runs>{"".join(rows)}</ul>' if rows else ""
+
+
+def _rationale_col(item: dict, root: Path | None) -> str:
+    """The open card's middle column (JL 261001): why this design. The design move and the rule
+    it follows stay open; the Insight Evidence it rests on folds. How the design was made
+    (its Design Runs) sits with the design, in the first column."""
     pairs = [(k, v) for k, v in (("stance", item["stance"]), ("basis", item["basis"])) if v]
     why = " · ".join(_PLAIN.get((k, v), f"{k} {_escape(v)}") for k, v in pairs)
-    rows = [("Why this design",
-             f'<p class=goal>{_escape(item["goal"]) or "<span class=mut>no goal recorded</span>"}</p>'
-             + (f'<div class=mut>{why}</div>' if why else "")),
-            ("Because", _because_html(item, root)),
-            ("From insight to design", _insight_flow(item, root))]
-    if item["expected"] or item["falsified"]:
-        bet = ""
-        if item["expected"]:
-            bet += f'<div class=betl><span class="k ok">expected</span>{_escape(item["expected"])}</div>'
-        if item["falsified"]:
-            bet += f'<div class=betl><span class="k bad">wrong if</span>{_escape(item["falsified"])}</div>'
-        rows.append(("The bet", bet))
+    out = ('<h4 class=colh>Design move</h4>'
+           f'<p class=goal>{_escape(item["goal"]) or "<span class=mut>No design move recorded.</span>"}</p>'
+           + (f'<div class=mut>{why}</div>' if why else ""))
+    b = item.get("because_rule") or because_rule(item)
+    if b["state"] != "unnamed":           # a design with no named rule says nothing here
+        out += f'<h4 class=colh>Rule followed</h4>{_because_html(item, root)}'
+    pages = [r for r in item["evidence_rows"] if r["role"] in _SUPPORT_ROLES]
+    out += (f'<details class=sub><summary>Insight Evidence · {len(pages)} page{"s" if len(pages) != 1 else ""}</summary>'
+            f'{_support_ladder(item, root)}</details>')
+    return out
+
+
+def _evaluation_col(item: dict, aim: dict | None = None) -> str:
+    """The open card's right column (JL 261001): Evaluation, of two kinds. Acceptance is
+    judged now, by the independent Verify; the expected effect is judged later, by the send."""
+    aim = aim or {}
     head, rules = _rule_checks(item)
-    rows.append(("Rules", f'<div class=mut>{head}</div><ul class=checks>{rules}</ul>'))
-    return ("<table class=explain>" + "".join(f"<tr><th>{k}</th><td>{v}</td></tr>" for k, v in rows)
-            + "</table>")
+    notes = _review_notes(item)
+    out = (f'<details class=sub><summary>Acceptance · {head}</summary><ul class=checks>{rules}</ul></details>')
+    if notes:
+        out += f'<details class=sub><summary>Review notes</summary><ul class=notes>{notes}</ul></details>'
+    effect = ""
+    for label, value in (("Expected", item["expected"]), ("Wrong if", item["falsified"]),
+                         ("Against", aim.get("baseline", "")), ("Measured by", aim.get("success metrics", ""))):
+        if value:
+            tone = {"Expected": "ok", "Wrong if": "bad"}.get(label, "mut")
+            effect += f'<div class=betl><span class="k {tone}">{label}</span>{_escape(value)}</div>'
+    out += ('<details class=sub><summary>Expected effect · <span class=mut>not tested yet, judged at the send</span></summary>'
+            + (effect or '<div class=mut>No expected effect recorded.</div>') + '</details>')
+    return out
 
 
 _OPT_OUT = ": Reply STOP to opt-out"
 
 
 def _sms_bubble(text: str) -> str:
-    """The SMS as the patient sees it: the sending system puts the link just before the opt-out suffix."""
-    body = _escape(text.strip())
-    cut = body.rfind(_OPT_OUT)
-    if cut < 0:
-        return body
-    return body[:cut] + ': <span class=link>link</span> ' + body[cut + 2:]
+    """The SMS as the patient sees it, with the `{LINK}` slot where the platform puts the link."""
+    return _escape(with_link(text.strip())).replace(LINK_SLOT, f'<span class=link>{LINK_SLOT}</span>')
 
 
-def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: bool = True, chat_prompt: str = "") -> str:
+def design_number(item_id: str) -> str:
+    """`ITEM03` said on screen: `Design 3` (JL 261001: Design N on screen, ITEMNN in the files)."""
+    hit = re.match(r"^ITEM0*(\d+)$", str(item_id))
+    return f"Design {hit.group(1)}" if hit else str(item_id)
+
+
+def shared_rules(items: list[dict]) -> list[str]:
+    """The rules every live design keeps, in the order the first one lists them."""
+    live = [i for i in items if i["state"] != "declined" and i["acceptance"]]
+    if not live:
+        return []
+    return [r for r in live[0]["acceptance"] if all(r in i["acceptance"] for i in live[1:])]
+
+
+def _task_block(snapshot: dict, items: list[dict], aim: dict | None = None) -> str:
+    """The Design Goal in brief, above the cards (JL 261001): the task, then the objective,
+    the audience, how success is measured and the baseline every design is read against,
+    then the acceptance checks every design keeps. The full input is the Design Goal Space."""
+    row, aim = snapshot["goal"]["row"], aim or {}
+    rules = shared_rules(items)
+    head = _escape(design_title(row)) if row else _escape(snapshot["title"])
+    lines = [(label, aim.get(key, "")) for label, key in (("Objective", "objective"), ("Audience", "target audience"),
+                                                           ("Measured by", "success metrics"), ("Baseline", "baseline"))]
+    if not any(v for _, v in lines) and row:
+        lines = [("Audience", row["audience"]), ("Patient task", row["job"]), ("Channel", row["venue"])]
+    if not row:
+        lines = [("", "No design task line names this folder yet.")]
+    if rules:
+        lines.append(("Every design keeps", " · ".join(rules)))
+    body = "".join(f'<div class=tl><span class=mut>{_escape(k)}</span>{_escape(v)}</div>' for k, v in lines if v)
+    return f'<div class=task><div class=taskhead>{head}</div>{body}</div>'
+
+
+_SUPPORT_ROLES = ("handoff", "evidence", "inspiration", "reference", "avoid")
+
+
+def _page_words(row: dict) -> str:
+    """An insight page by its name in words: `FW01-send-salience` -> `Send salience`."""
+    # both page-id schemes: `FW01-send-salience` and `W01-full-send-salience`
+    words = re.sub(r"^(?:[A-Z][DIKW]\d{2}|[DIKW]\d{2}-[a-z0-9]+)-", "", Path(row["name"]).stem).replace("-", " ").strip()
+    return words[:1].upper() + words[1:]
+
+
+def _rung(row: dict) -> str:
+    stem = Path(row["name"]).stem
+    hit = _RUNG.match(stem) or re.match(r"^()([DIKW])\d{2}-[a-z0-9]+-", stem)
+    return hit.group(2) if hit else "?"
+
+
+def _card_columns(item: dict, text: str, picture: bool) -> str:
+    """One card's closed row (JL 261001): one short line per column, Design · Rationale ·
+    Evaluation. The sentences behind each line are the open card's; the closed row only
+    names the design, what it rests on, and where its evaluation stands."""
+    pages = sorted((r for r in item.get("evidence_rows", []) if r["role"] in _SUPPORT_ROLES),
+                   key=lambda r: "WKID?".index(_rung(r)))
+    rests = (f'<span class=mut>Rests on</span> {_escape(_page_words(pages[0]))}'
+             + (f' <span class=mut>· +{len(pages) - 1}</span>' if len(pages) > 1 else "")
+             if pages else '<span class=mut>From the design goal alone</span>')
+    head, _rules = _rule_checks(item)
+    count = re.match(r"(\d+) of (\d+) pass", head)
+    accept = (f'<span class="{"ok" if count.group(1) == count.group(2) else "bad"}">✓ {count.group(1)}/{count.group(2)}</span> '
+              '<span class=mut>acceptance</span>' if count else '<span class=mut>acceptance not checked</span>')
+    effect = ' <span class=mut>· effect not tested yet</span>' if item["expected"] else ""
+    # The state's emoji sits right after the number (JL 261001), so six rows scan at a glance;
+    # the word is said only when the emoji alone does not say it (ready needs no word).
+    word = "" if item["state"] == "ready" else item["state"]
+    word += (" · waiting on " + item["waiting"]) if item["waiting"] else ""
+    return (f'<span class=c1><span class=line><b>{_escape(design_number(item["id"]))}</b>'
+            f' <span class=glyph title="{_escape(item["state"])}">{_escape(item["glyph"])}</span>'
+            f' <b>· {_escape(item["title"])}</b>'
+            f'{(" <span class=\"mut st\">" + _escape(word.strip(" ·")) + "</span>") if word else ""}</span></span>'
+            f'<span class=c2><span class=line>{rests}</span></span>'
+            f'<span class=c3><span class=line>{accept}{effect}</span></span>')
+
+
+def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: bool = True, chat_prompt: str = "",
+               extra: str = "", aim: dict | None = None) -> str:
     meta = " · ".join(x for x in (item["type"], item["audience"], item["job"]) if x)
     if item.get("ready"):
         ready = item["ready"]
-        text, note = ready["text"], (f'ready for Delivery · <code>{_escape(ready["run"])}</code> · '
-                                     f'verified by <code>{_escape(ready["verification"])}</code>')
+        size = len(ready["text"].strip().replace(LINK_SLOT, ""))
+        text, note = ready["text"], f'Ready for Delivery · {size} characters · passed independent review'
+
     elif item["latest"]:
         lat = item["latest"]
         verdict = f' · {lat["verdict"]}' if lat["verdict"] and lat["status"] == "complete" else ""
-        text, note = lat["text"], (f'latest draft · <code>{_escape(lat["run"])}</code> · {_escape(lat["status"])}{_escape(verdict)}')
+        text, note = lat["text"], f'Latest draft · {_escape(lat["status"])}{_escape(verdict)}'
+
     else:
-        text, note = "", "no draft yet"
+        text, note = "", "No draft yet"
     picture = design_picture(root, item)
     if picture:
         # A screen is read as its picture; its source stays one click away.
@@ -1564,30 +1928,26 @@ def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: 
     else:
         design = (f'<pre class=text>{_escape(text)}</pre>' if text else "") + f'<div class=mut>{note}</div>'
     actions, fold = _actions(item, human) if writable else ("", "")
-    facts = _explain(item, root)
-    # The design on the left, its explanation on the right (JL 260918): a screen as its
-    # picture, a text design (an SMS) as the message itself. The design stays in view while
-    # the explanation scrolls beside it.
-    pair = "<div class=pair>" if picture else '<div class="pair text">'
+    # just "Design Runs" (JL 261001): the emoji and the acceptance count already say how far it got
+    runs = (f'<details class=runsfold><summary>Design Runs</summary>'
+            f'{_design_runs_list(item) or "<div class=mut>No run yet.</div>"}</details>')
     if actions and fold:
         actions = (f'<details class=decide{" open" if selected else ""}><summary>{_escape(fold)}</summary>'
                    f'<div class=act>{actions}</div></details>')
     elif actions:
         actions = f'<div class=act>{actions}</div>'
-    # The buttons sit under the design, in the column that stays in view (audit N6).
-    body = (f'{pair}<div class=pic>{design}{actions}<div class=msg></div></div>'
-            f'<div class=facts>{facts}</div></div>')
+    # Open, the card keeps the closed row's three columns (JL 261001): the design with its
+    # buttons, then its rationale, then its evaluation. The design column stays in view.
+    body = (f'<div class=cardgrid><div class="col pic">{design}{runs}{actions}<div class=msg></div></div>'
+            f'<div class="col why">{_rationale_col(item, root)}</div>'
+            f'<div class="col eval">{_evaluation_col(item, aim)}</div></div>')
     # One fixed-height row per item that opens into a fixed-height card (JL 260918): the row
     # names the item, previews the design in one line, and says where it stands.
-    peek = _escape(item["goal"]) if picture else _escape(" ".join(text.split()))
     return (
         f'<section class="item{" sel" if selected else ""}" id="item-{_escape(item["id"])}" data-item="{_escape(item["id"])}">'
-        f'<details class=itemfold{" open" if selected else ""}><summary>'
-        f'<b>{_escape(item["id"])} · {_escape(item["title"])}</b><span class=peek>{peek}</span>'
-        f'<span class="mut st">{_escape(item["glyph"])} {_escape(item["state"])}'
-        f'{(" · waiting on " + _escape(item["waiting"])) if item["waiting"] else ""}</span></summary>'
-        f'<div class=itembody><div class=mut>{_escape(meta)}</div>'
-        f'{design_next_run(item, human, writable=writable)}{design_chat_copy(chat_prompt)}{body}</div></details></section>'
+        f'<details class="itemfold cardrow"{" open" if selected else ""}><summary>{_card_columns(item, text, bool(picture))}</summary>'
+        f'<div class=itembody><div class=mut>{_escape(meta)} · <code>{_escape(item["id"])}</code> in the files</div>'
+        f'{design_next_run(item, human, writable=writable)}{design_chat_copy(chat_prompt)}{body}{extra}</div></details></section>'
     )
 
 
@@ -1597,46 +1957,23 @@ def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: 
 # the `-all` actions the way it already refuses `adopt-all`.
 
 
-def _new_item_form(next_id: str) -> str:
-    return (
-        '<details class=newitem><summary>New Design Item</summary><div class=form data-item="__new__">'
-        f'<label>id</label><input name=id value="{_escape(next_id)}">'
-        '<label>title</label><input name=title placeholder="what is being designed, in one line">'
-        '<label>type</label><input name=type value=sms placeholder="sms · ui-card · email · push · …">'
-        '<label>audience</label><input name=audience placeholder="who receives it">'
-        '<label>job</label><input name=job placeholder="what the recipient is trying to do">'
-        '<label>goal</label><input name=goal placeholder="what this design tries to do, one sentence">'
-        # plain words on screen, the contract word as the option's value (audit L2)
-        '<label>approach</label><select name=stance>'
-        + "".join(f'<option value={k}>{_escape(_PLAIN[("stance", k)])}</option>' for k in ("generate", "follow", "challenge", "explore"))
-        + '</select>'
-        '<label>built on</label><select name=basis>'
-        + "".join(f'<option value={k}>{_escape(_PLAIN[("basis", k)])}</option>' for k in ("brief-only", "evidence-informed"))
-        + '</select>'
-        '<label>expected</label><input name=expected placeholder="what you expect a reader to do or feel (needed when the approach challenges the evidence)">'
-        '<label>wrong if</label><input name=falsified placeholder="what would show the expectation wrong">'
-        '<label>insights</label><textarea name=evidence placeholder="one per line: evidence · path from this folder to the insight page (other words: inspiration, reference, avoid)"></textarea>'
-        '<label>rules</label><textarea name=acceptance placeholder="one rule per line. Checked by machine: ≤ N characters; a quoted phrase must appear; no \'X\' or does not say \'X\' must not; ends with \'X\'; a {PLACEHOLDER}. Anything else is judged by the reviewer."></textarea>'
-        '<div class=full><button class=do data-action=add-item>Add item to register</button> <span class=msg></span></div>'
-        '</div></details>'
-    )
-
-
 def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
                   flow_space: str | None = None, query: dict | None = None) -> str:
-    """Five Spaces: Goal (the ask), Design (items), Insight (what supports them),
-    Run (timeline per item), Delivery (designs whose Verify passed)."""
+    """Three Spaces (JL 261001): Goal (the one design task, stated once), Design (the task
+    again, then one card per design: Design · Rationale · Supporting work · Expectation, with
+    its insight pages and its runs folded inside), Delivery (designs whose Verify passed).
+    The old Insight and Run Spaces open the Design Space."""
     root = snapshot["root"]
     page = snapshot["page"]
     items = snapshot["items"]
     human = snapshot.get("human", "person")
     aliases = {"frame": "goal", "plan": "goal", "brief": "goal", "ask": "goal",
                "intent": "design", "draft": "design", "items": "design",
-               "signal": "insight", "evidence": "insight", "insights": "insight",
-               "runs": "run", "shape": "run", "workflow": "run", "runtime": "run", "create": "run", "review": "run",
-               "launch": "delivery", "commit": "delivery"}
+               "insight": "design", "signal": "design", "evidence": "design", "insights": "design",
+               "run": "design", "runs": "design", "shape": "design", "workflow": "design", "runtime": "design",
+               "create": "design", "review": "design", "launch": "delivery", "commit": "delivery"}
     selected = aliases.get(space, space) if space else "goal"
-    if selected not in ("goal", "design", "insight", "run", "delivery"):
+    if selected not in ("goal", "design", "delivery"):
         selected = "goal"
     ids = [item["id"] for item in items]
     if selected_item not in ids:
@@ -1663,7 +2000,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         row = goal["row"]
         # counts is HTML from here on: the text is escaped once, the button below is markup
         declined = sum(1 for i in items if i["state"] == "declined")
-        counts = _escape((f'{goal["wanted"]} wanted · ' if goal["wanted"] else "") +
+        counts = _escape((f'{goal["wanted"]} designs requested · ' if goal["wanted"] else "") +
                          f'{goal["registered"]} registered · {goal["ready"]} ready'
                          + (f' · {declined} declined' if declined else ""))
         if missing and request:
@@ -1672,45 +2009,40 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         elif missing and snapshot["current"] and not snapshot.get("static"):
             counts += (f' <span class=act data-item="__all__"><button class=do data-action=draft-request>'
                        f'Ask the agent to draft the missing {missing}</button><span class=msg></span></span>')
-        goal_html = (
-            f'<pre class=text>{_escape(goal["sentence"])}</pre>'
-            '<table class=kv>'
-            f'<tr><th>venue</th><td>{_escape(row["venue"])}</td></tr>'
-            f'<tr><th>who</th><td>{_escape(row["audience"])}</td></tr>'
-            f'<tr><th>their job</th><td>{_escape(row["job"])}</td></tr>'
-            f'<tr><th>how many</th><td>{counts}</td></tr>'
-            f'<tr><th>from</th><td>{_href(root, goal["brief"], goal["brief"].name)} · design tasks</td></tr>'
-            '</table>')
+        board_dir = Path(snapshot["folder"]).parent.parent
+        goal_html = ('<h2>The design task</h2>'
+                     f'<pre class=text>{_escape(goal["sentence"])}</pre>'
+                     + _input_html(root, row, design_input(board_dir, Path(snapshot["folder"])), counts,
+                                   shared_rules(items)))
     elif goal["brief"]:
         goal_html = (f'<div class=empty>No line in {_href(root, goal["brief"], goal["brief"].name)} names this folder yet; '
                      'add a row (audience · job · venue · designs · folder) and the goal appears here.</div>')
     else:
-        goal_html = '<div class=empty>No Brief under 0-BR-brief/ on the owning board; the goal has nowhere to be read from.</div>'
-    ins = snapshot["insight"]
-    if ins["status"] == "not-declared":
-        goal_html += '<h2>Insight board</h2><div class=mut>none declared by the owning board · this folder designs from the Brief only</div>'
-    elif ins["status"] == "missing":
-        goal_html += (f'<h2>Insight board</h2><div class=bad>{_escape(", ".join(ins["requested"]))} · named on the Brief line '
-                      'but not found beside this board</div>')
-    else:
-        goal_html += f'<h2>Insight board</h2><div class={"bad" if ins["status"] == "blocked" else "mut"}>{_signal_line(ins)}</div>'
+        goal_html = '<div class=empty>No design task file under 0-BR-brief/ on the owning board; the goal has nowhere to be read from.</div>'
 
     # Design Space -----------------------------------------------------------
     writable = snapshot["current"] and not snapshot.get("static")
     chat_prompts = {item["id"]: design_chat_prompt(snapshot, item) for item in items}
-    design_html = ""
+    inp = design_input(Path(snapshot["folder"]).parent.parent, Path(snapshot["folder"]))
+    aim = {k.lower(): v for k, v, _ in inp["blocks"].get("Aim", [])}
+    design_html = _task_block(snapshot, items, aim)
+
     if items:
         # A declined item is retired: its card stays for the record, folded after the live ones.
         live = [item for item in items if item["state"] != "declined"]
         retired = [item for item in items if item["state"] == "declined"]
         design_html += ('<div class="mut foldbar"><a href=# data-fold=open>open all</a> · '
-                        '<a href=# data-fold=close>close all</a></div>')
+                        '<a href=# data-fold=close>close all</a></div>'
+                        '<div class=cardhead><span>Design</span><span>Rationale</span>'
+                        '<span>Evaluation</span></div>')
         design_html += "".join(_item_card(root, item, human, item["id"] == selected_item, writable=writable,
-                                         chat_prompt=chat_prompts[item["id"]]) for item in live)
+                                         chat_prompt=chat_prompts[item["id"]], aim=aim)
+                               for item in live)
         if retired:
             opened = " open" if selected_item in {item["id"] for item in retired} else ""
             design_html += (f'<details class=retired{opened}><summary>Declined, kept for the record · {len(retired)}</summary>'
-                            + "".join(_item_card(root, item, human, item["id"] == selected_item, writable=writable) for item in retired)
+                            + "".join(_item_card(root, item, human, item["id"] == selected_item, writable=writable,
+                                                 aim=aim) for item in retired)
                             + '</details>')
     else:
         design_html = (f'<div class=empty>No Design Item register yet. Add the first item below; it writes '
@@ -1719,71 +2051,20 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         design_html += ('<h2>Runs without an item</h2>'
                         '<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
                         f'{_run_rows(root, snapshot["unassigned"])}</table>')
-    if writable:
-        numbers = [int(i[4:]) for i in ids if i[4:].isdigit()]
-        design_html += _new_item_form(f"ITEM{max(numbers, default=0) + 1:02d}")
 
-    # Insight Space ----------------------------------------------------------
-    narrowed = ""
-    if selected_item and q.get("path") and q.get("file"):
-        base = f'?path={quote(str(q["path"]), safe="")}&amp;file={quote(str(q["file"]), safe="")}'
-        narrowed = (f'<div class=mut>showing {_escape(selected_item)} only · '
-                    f'<a href="{base}&amp;space=SPACE">show every item</a></div>')
-    insight_html = [narrowed.replace("SPACE", "insight")] if narrowed else []
-    for block in snapshot["insight_space"]["items"]:
-        item = block["item"]
-        if selected_item and item["id"] != selected_item:
-            continue
-        insight_html.append(f'<h2>{_escape(item["id"])} · {_escape(item["title"])}</h2>')
-        if block["needed"]:
-            insight_html.append('<div class=bad>built on evidence, but no insight is named yet · add an evidence line to the register</div>')
-        elif not block["rows"]:
-            insight_html.append('<div class=mut>Brief only · no insight needed</div>')
-        else:
-            insight_html.append('<table><tr><th>insight</th><th>signed</th><th>what it says</th><th>pinned</th></tr>' + "".join(
-                f'<tr><td>{_page_name(root, r) if r["exists"] else "<code class=bad>" + _escape(r["name"]) + " missing</code>"}'
-                f'<div class=mut>{_escape(r["word"])} · {_escape(insight_caption(r["file"]))}</div></td>'
-                f'<td>{_escape(r["signed"]) if r["signed"] else "<span class=mut>—</span>"}</td>'
-                f'<td>{name_refs(_escape(r["finding"]), r["file"]) if r["finding"] else "<span class=mut>—</span>"}'
-                f'{("<div class=mut>then: " + name_refs(_escape(r["consequence"]), r["file"]) + "</div>") if r["consequence"] else ""}'
-                f'{("<div class=mut>rules it implies: " + " · ".join(("DO " if c["do"] else "DO NOT ") + name_refs(_escape(c["text"]), r["file"]) for c in r["counsel"]) + "</div>") if r.get("counsel") else ""}</td>'
-                f'<td>{"in the run record" if r["pinned"] else "<span class=mut>not yet</span>"}</td></tr>'
-                for r in block["rows"]) + '</table>')
-    if not insight_html:
-        insight_html.append('<div class=empty>No Design Item yet, so nothing to support.</div>')
-    unused = snapshot["insight_space"]["unused"]
-    if not unused and not selected_item and snapshot["insight"]["boards"]:
-        insight_html.append('<h2>Available, unused</h2><div class=mut>none · every signed insight is used by an item</div>')
-    if unused and not selected_item:
-        insight_html.append('<h2>Available, unused</h2><div class=mut>' + " · ".join(
-            f'{_href(root, u["file"], insight_label(u["file"])["words"])} ({_escape(insight_caption(u["file"]))}) {"✅ " + _escape(u["signed"]) if u["signed"] else "⬜ unsigned"}'
-            for u in unused) + '</div>')
-
-    # Run Space --------------------------------------------------------------
-    run_html = [narrowed.replace("SPACE", "run")] if narrowed else []
-    for item in items:
-        if selected_item and item["id"] != selected_item:
-            continue
-        run_html.append(f'<h2>{_escape(item["id"])} · {_escape(item["title"])} '
-                        f'<span class=mut>{_escape(item["glyph"])} {_escape(item["state"])}'
-                        f'{(" · waiting on " + _escape(item["waiting"])) if item["waiting"] else ""}</span></h2>')
-        if item["runs"]:
-            run_html.append('<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th>'
-                            f'<th>status</th><th>outcome</th><th>next</th></tr>{_run_rows(root, item["runs"], item["acceptance"])}</table>')
-        else:
-            run_html.append('<div class=empty>No Run yet. The first Run is a Commission a person releases.</div>')
+    # Design Space, continued: runs that name no item, and the records check -----
+    if not items and not snapshot["runs"]:
+        design_html += '<div class=empty>No Design Run records are present in this folder.</div>'
     if not items and snapshot["runs"]:
-        run_html.append('<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
+        design_html += ('<h2>Runs</h2><table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
                         f'{_run_rows(root, snapshot["runs"])}</table>')
-    if not run_html:
-        run_html.append('<div class=empty>No Design Run records are present in this folder.</div>')
     audit = snapshot["audit"]
     if snapshot["current"]:
         if audit:
-            run_html.append(f'<details><summary class=bad>records check: {len(audit)} finding(s)</summary><ul class=rules>'
+            design_html += (f'<details><summary class=bad>records check: {len(audit)} finding(s)</summary><ul class=rules>'
                             + "".join(f"<li><code>{_escape(issue)}</code></li>" for issue in audit) + '</ul></details>')
         else:
-            run_html.append('<div class="mut ok">records check: PASS · every run has its result and receipt</div>')
+            design_html += '<div class="mut ok">records check: PASS · every run has its result and receipt</div>'
 
     # Delivery Space ---------------------------------------------------------
     # A quick overview of what is ready to hand to the next team: one row per
@@ -1792,12 +2073,13 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         rows, tiles = [], []
         for item in (item for item in group if item.get("ready")):
             design = item.get("ready")
-            label = _escape(item["id"])
+            label = _escape(design_number(item["id"]))
             if q.get("path") and q.get("file"):
                 label = (f'<a href="?path={quote(str(q["path"]), safe="")}&amp;file={quote(str(q["file"]), safe="")}'
                          f'&amp;space=design&amp;item={_escape(item["id"])}">{label}</a>')
-            text_html = (_sms_bubble(design["text"]) if design and (item["type"] or "").lower() == "sms"
-                         else _escape(design["text"]) if design else "")
+            sent = with_link(design["text"]) if design else ""
+            text_html = (_sms_bubble(sent) if design and (item["type"] or "").lower() == "sms"
+                         else _escape(sent) if design else "")
             body = (f"<div class=design>{text_html}</div>" if design else "<span class=mut>not ready for Delivery yet</span>")
             rows.append(f'<tr><td class=who><b>{label}</b><div class=mut>{_escape(item["title"])}</div></td><td>{body}</td></tr>')
             tiles.append(f'<figure>{design_picture(root, item) or body}'
@@ -1805,7 +2087,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         if any(item.get("render") and item.get("ready") for item in group):
             # Screens read side by side as pictures; text designs keep the table.
             return f'<div class=gallery>{"".join(tiles)}</div>'
-        return ('<table class=designs><tr><th>item</th><th>design</th></tr>' + "".join(rows) + '</table>') if rows else ""
+        return ('<table class=designs><tr><th>design</th><th>the text, word for word</th></tr>' + "".join(rows) + '</table>') if rows else ""
 
     # A declined item is retired, like a retired Evidence Item: kept for the record, out of the overview.
     live = [item for item in items if item["state"] != "declined"]
@@ -1815,18 +2097,25 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         delivery_html.append(f'<details class=retired><summary>Declined, kept for the record · {len(retired)}</summary>'
                              f'{listing(retired)}</details>')
 
-    panes = {"goal": goal_html, "design": design_html, "insight": "".join(insight_html),
-             "run": "".join(run_html), "delivery": "".join(delivery_html)}
+    if snapshot.get("csv_url") and any(item.get("ready") for item in live):
+        delivery_html.append(f'<div class=mut><a href="{_escape(snapshot["csv_url"])}">↓ This design task\'s designs · '
+                             f'{sum(1 for item in live if item.get("ready"))} · csv</a></div>')
+    panes = {"goal": goal_html, "design": design_html, "delivery": "".join(delivery_html)}
+    def _rel(path) -> str:
+        try:
+            return str(Path(path).resolve().relative_to(Path(root).resolve()))
+        except (TypeError, ValueError):
+            return str(path or "")
+    page_rel = _rel(snapshot["page"])
+    board_rel = _rel(Path(snapshot["insight"].get("design_board") or Path(snapshot["folder"]).parent.parent) / "board.md")
     for key in panes:
-        scope = [item for item in items if not selected_item or item["id"] == selected_item]
-        if key == "delivery":
-            scope = [item for item in scope if item.get("ready")]
-        copy_kinds = {design_chat_action(item)[1] for item in scope if chat_prompts[item["id"]]}
-        panes[key] = design_run_guide(scope, key, writable=writable and key == "design", copy_kinds=copy_kinds) + panes[key]
+        panel = design_runs_panel(key, snapshot["runs"], root=root, page=page_rel, board=board_rel,
+                                  whole="this design task")
+        panes[key] = f'<div class=space-main>{panes[key]}</div>{panel}'
+    panel_css, panel_js = runs_panel_assets()
     tabs = "".join(f'<button type=button data-space="{key}"{" class=on" if key == selected else ""}>{label}</button>'
-                   for key, label in (("goal", "Goal Space"), ("design", "Design Space"), ("insight", "Insight Space"),
-                                      ("run", "Run Space"), ("delivery", "Delivery Space")))
-    pane_html = "".join(f'<section class="pane{" on" if key == selected else ""}" data-space="{key}">{value}</section>'
+                   for key, label in (("goal", "Design Goal Space"), ("design", "Design Space"), ("delivery", "Delivery Space")))
+    pane_html = "".join(f'<section class="pane split{" on" if key == selected else ""}" data-space="{key}">{value}</section>'
                         for key, value in panes.items())
     ctx = {"path": str(q.get("path") or ""), "file": str(q.get("file") or "")}
     script = (
@@ -1851,8 +2140,8 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
     return (
         '<!doctype html><html lang=en><head><meta charset=utf-8>'
         '<meta name=viewport content="width=device-width,initial-scale=1">'
-        f'<title>🎨 Design · {_escape(snapshot["title"])}</title><style>{_CSS}</style></head><body>'
-        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{design_chat_copy_script()}</body></html>'
+        f'<title>🎨 Design · {_escape(snapshot["title"])}</title><style>{_CSS}{panel_css}</style></head><body>'
+        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{panel_js}{design_chat_copy_script()}</body></html>'
     )
 
 
@@ -1971,6 +2260,9 @@ class DesignMixin:
             return self._design_send(body, 404, head_only)
         page_src = Path(got[0])
         snapshot = design_snapshot(page_src, self.root)
+        if payload["path"]:
+            snapshot["csv_url"] = (f'/_board/design-bundle?path={quote(payload["path"], safe="")}'
+                                   f'&folder={quote(snapshot["folder"].name, safe="")}')
         code = 200 if snapshot["current"] else 410
         body = render_design(
             snapshot,

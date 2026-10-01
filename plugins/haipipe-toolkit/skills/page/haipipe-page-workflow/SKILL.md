@@ -36,7 +36,7 @@ one Run and is never a workflow row.
 Fixed-scope Page writing is one persistent Run. Human feedback is an internal
 Step. Reopening the same target and goal creates a new Version in that Run;
 changing the goal or target is `NEW_RUN`. A separately commissioned later
-Section session may also receive a new `rp-sec-NN` under the Page profile.
+Section session may also receive a new `run-section-<MMDD>-<slug>` under the Page profile.
 Acceptance is the Run exit gate,
 subject to the declared dependency and mechanical close semantics.
 
@@ -140,14 +140,14 @@ editing. One Page owns many sibling Page Runs. RP allocation states its scope
 explicitly:
 
 ```text
-rp-struct-NN          Page Structure Run: SHAPE + SURVEY
-rp-scratch-NN_<target> Human Scratch capture: Section or paragraph group
-rp-sec-NN             Section-level writing
-rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
-rp-revise-NN_<target> Revise: compare two frozen texts of one target, settle each change
+`run-structure-<MMDD>-<slug>`          Page Structure Run: SHAPE + SURVEY
+`run-scratch-<MMDD>-<slug>` Human Scratch capture: Section or paragraph group
+`run-section-<MMDD>-<slug>`             Section-level writing
+`run-paragraph-<MMDD>-<slug>`  Paragraph-level writing
+`run-revise-<MMDD>-<slug>` Revise: compare two frozen texts of one target, settle each change
 ```
 
-`rp-struct-01` is the initial Structure Run. It is one shared Run for the
+`run-structure-<MMDD>-<slug>` is the initial Structure Run. It is one shared Run for the
 Page's SHAPE and SURVEY cycles: it settles direction, coverage/non-coverage,
 high-level section flow, ordered Bullets, paragraph jobs, Point roles, typed
 Evidence Item decisions, and the structure list. It does not write
@@ -155,9 +155,9 @@ adopted prose or execute material evidence work. Several people may contribute
 Steps to this same Run; record `participants` on the Run and `contributors` on
 each Step, and do not create a child Run per person. The full contract is
 `ref/structure-run.md`. After the Structure Run closes, Section Runs use
-`rp-sec-NN`, and fixed paragraph or paragraph-group Runs use
-`rp-para-NN_Pxx[-Pyy]`.
-`rp-struct-02` and later ids are reserved for a genuinely independent
+`run-section-<MMDD>-<slug>`, and fixed paragraph or paragraph-group Runs use
+`run-paragraph-<MMDD>-<slug>`.
+`run-structure-<MMDD>-<slug>` and later ids are reserved for a genuinely independent
 post-closure structural goal, not for a Survey pass or a new participant.
 Scratch is available once a selected Outline exists. It records a person's
 rough thinking at Section (`C1`) or whole paragraph group (`C1.P1`) in the
@@ -167,7 +167,7 @@ and a manually triggered AI Summary closes it. Scratch does not edit Draft prose
 and does not replace the later Structure, Section, or Paragraph Run.
 Human feedback advances Steps inside the selected Run's Version. A chat turn
 or review window alone does not create another Run. A later independently
-commissioned Section drafting/revision session does create a new `rp-sec-NN`
+commissioned Section drafting/revision session does create a new `run-section-<MMDD>-<slug>`
 Run; a complete draft → review/rating → diagnose → revise cycle inside that
 session is one Step, not a new Run. For a paragraph target, reopen the same
 Run in a new Version when the target and goal remain fixed. `rp` means Run of
@@ -256,7 +256,7 @@ only after every planned RP is complete and every required RE Result is bound;
 one Page-level CONTENT pass then adopts all accepted candidates and reruns the
 declared web/LaTeX/Word lanes' fixed Delivery Runs (`run-delivery-<lane>`).
 
-SHAPE and SURVEY remain planning cycles inside the one `rp-struct-01`, not one
+SHAPE and SURVEY remain planning cycles inside the one `run-structure-<MMDD>-<slug>`, not one
 Run each. They can be used inside this independently closable interactive Run.
 `haipipe-writing`
 owns prose revision; `haipipe-page-writing` adopts agreed wording and builds
@@ -357,12 +357,12 @@ projection of actual Run units. Controller operations are listed separately belo
 
 | Run Spec | Run Type | Bounded target / action | Actor | Entry / exit gate | Legal routes | Cardinality | Workspace projection | Run names |
 |---|---|---|---|---|---|---:|---|---|
-| rp-struct-01 | page.interactive-writing.structure | whole-Page map, ordered Bullets, paragraph jobs, Point roles, typed Evidence Item decisions | human / agent / hybrid | entry open; exit requires accepted Shape + Survey contract | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | exactly 1 initial Structure Run per Page | Draft, Evidence, and Run Spaces | structure / SHAPE+SURVEY |
-| rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section or whole paragraph group in the current Outline grammar; no B/symbol target | human | person manually triggers Finish Scratch; AI returns a non-empty Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | structure / SCRATCH |
-| rp-sec-NN | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | structure / SHAPE and writing / WRITE |
-| rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | structure / SHAPE and writing / WRITE |
-| rp-revise-NN_<target> | page.interactive-writing.revise | compare two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) and settle every change | fresh agent / human, never the writer of the candidate | entry requires both inputs by path and version number; exit requires every ledger row decided | SELF / next Step, CLOSE / hand accepted text to the writing Run as NEW_VERSION, NEW_RUN, HOLD | 0..N per target | Run Space Revise card; Draft Space read-only | REVISE |
-| re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | evidence / LAND+EMBED |
+| `run-structure-<MMDD>-<slug>` | page.interactive-writing.structure | whole-Page map, ordered Bullets, paragraph jobs, Point roles, typed Evidence Item decisions | human / agent / hybrid | entry open; exit requires accepted Shape + Survey contract | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | exactly 1 initial Structure Run per Page | Draft, Evidence, and Run Spaces | structure / SHAPE+SURVEY |
+| `run-scratch-<MMDD>-<slug>` | page.interactive-writing.scratch | rough human thinking for Section or whole paragraph group in the current Outline grammar; no B/symbol target | human | person manually triggers Finish Scratch; AI returns a non-empty Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | structure / SCRATCH |
+| `run-section-<MMDD>-<slug>` | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | structure / SHAPE and writing / WRITE |
+| `run-paragraph-<MMDD>-<slug>` | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | structure / SHAPE and writing / WRITE |
+| `run-revise-<MMDD>-<slug>` | page.interactive-writing.revise | compare two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) and settle every change | fresh agent / human, never the writer of the candidate | entry requires both inputs by path and version number; exit requires every ledger row decided | SELF / next Step, CLOSE / hand accepted text to the writing Run as NEW_VERSION, NEW_RUN, HOLD | 0..N per target | Run Space Revise card; Draft Space read-only | REVISE |
+| `run-value-<MMDD>-<slug>`, `run-citation-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>` | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | evidence / LAND+EMBED |
 | run-delivery-<lane> | page.delivery | one lane (webpage, latex, word); one fixed Run per lane, rerun in place | agent / automatic | open any time; Done while the lane's files are at least as new as the Page | SELF (rerun), HOLD | one per lane, never numbered |
 
 ### Controller operations (outside the Run list)
@@ -386,15 +386,15 @@ skill binding, and Result contract:
 
 ```text
 CONTEXT      adapter dispatch; Run Specs resolve planning inputs
-SHAPE        inside shared rp-struct-01; it defines Bullet and Evidence Item contracts
-SURVEY       inside shared rp-struct-01; it inventories/references/reserves the graph
+SHAPE        inside shared `run-structure-<MMDD>-<slug>`; it defines Bullet and Evidence Item contracts
+SURVEY       inside shared `run-structure-<MMDD>-<slug>`; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then one Page RE per item
 EMBED        no Run; it interprets ready Results into the plan
 CONTENT      after the Page release barrier, adopts all agreed Writing Results and reruns the Delivery Runs
 CHECK        no Run; it is a version gate
 ```
 
-For interactive writing, `rp-struct-01` records the human exchange for the
+For interactive writing, `run-structure-<MMDD>-<slug>` records the human exchange for the
 closable Page map through both SHAPE and SURVEY; each sibling Page Run records
 its own independently closable Section or paragraph-group goal. Planning or a
 `fn/Runs` proposal alone still does not allocate a Run. A writing Version's
@@ -426,14 +426,14 @@ Use full real addresses for reuse and rerun:
 global Supporting Run    b01j02t03r04
 Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
-Page Evidence lineage   re-cite-01_prior-work → owner-native Ticket/Result
+Page Evidence lineage   `run-citation-<MMDD>-<slug>` → owner-native Ticket/Result
 Page Delivery Run       run-delivery-webpage | run-delivery-latex | run-delivery-word (fixed)
 Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
 Delegated writing Task   r06_page-writing_c02-p01
-Structure + Bullets      rp-struct-01 or rp-struct-02
-Section-level writing    rp-sec-01 or rp-sec-02
-Paragraph-level writing  rp-para-01_P03 or rp-para-02_P04-P05
+Structure + Bullets      `run-structure-<MMDD>-<slug>` or `run-structure-<MMDD>-<slug>`
+Section-level writing    `run-section-<MMDD>-<slug>` or `run-section-<MMDD>-<slug>`
+Paragraph-level writing  `run-paragraph-<MMDD>-<slug>` or `run-paragraph-<MMDD>-<slug>`
 ```
 
 SURVEY names the real owner/parent for every new local route. The Page's RE is

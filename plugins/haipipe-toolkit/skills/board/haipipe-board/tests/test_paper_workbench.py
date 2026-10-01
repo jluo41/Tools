@@ -129,7 +129,7 @@ def make_board(root):
     (b / "A1-Story" / "Story00-ideation" / "outline").mkdir(parents=True)
     (b / "A1-Story" / "StoryA-desk-idea").mkdir(parents=True)
     (b / "Ba-DESK-Main" / "S-DESK-Main-1-Introduction" / "runs").mkdir(parents=True)
-    (b / "Ba-DESK-Main" / "S-DESK-Main-1-Introduction" / "results" / "rp-struct-01").mkdir(parents=True)
+    (b / "Ba-DESK-Main" / "S-DESK-Main-1-Introduction" / "results" / "run-structure-0901-outline").mkdir(parents=True)
     (b / "board.md").write_text(BOARD, encoding="utf-8")
     s00 = b / "A1-Story" / "Story00-ideation"
     (s00 / "Story00-ideation.md").write_text("# Story00\nstate: 🔴 OPEN\n\n## Opening\nq\n\n## Aims\n- ⬜ A1.1\n", encoding="utf-8")
@@ -138,8 +138,8 @@ def make_board(root):
     (b / "A1-Story" / "StoryA-desk-idea" / "StoryA-desk-idea.md").write_text(STORY, encoding="utf-8")
     sec = b / "Ba-DESK-Main" / "S-DESK-Main-1-Introduction"
     (sec / "S-DESK-Main-1-Introduction.md").write_text("# S-DESK-Main-1-Introduction · §1 Introduction\nstate: DRAFT\n", encoding="utf-8")
-    (sec / "runs" / "rp-struct-01.md").write_text("ticket", encoding="utf-8")
-    (sec / "runs" / "rp-para-02_P01.md").write_text("ticket", encoding="utf-8")
+    (sec / "runs" / "run-structure-0901-outline.md").write_text("ticket", encoding="utf-8")
+    (sec / "runs" / "run-paragraph-0902-p01.md").write_text("ticket", encoding="utf-8")
     (sec / "runs" / "re-display-01_hero.md").write_text("ticket", encoding="utf-8")     # the Local Run E01 names
     (sec / "results" / "re-display-01_hero").mkdir(parents=True)
     (sec / "results" / "re-display-01_hero" / "runtime.yaml").write_text("status: complete\nstep: s003\n", encoding="utf-8")
@@ -150,12 +150,12 @@ def make_board(root):
         "- **Local Run**: Page · Evidence Item · reuse · re-display-01 → results/re-display-01_hero/result.yaml\n"
         "### E02-CITE-prior · C1.P1.B2 · prior work\n- **Verified**: ⬜\n"
         "#### E03-VALUE-old-number · retired from the opening\n- **Label**: OldNum\n"
-        "- **Local Run**: Page · Evidence Item · reuse · re-value-09_old → results/re-value-09_old/result.yaml\n", encoding="utf-8")
-    # a judgment Run on the Story: rclaim ticket + runtime, target E1
+        "- **Local Run**: Page · Evidence Item · reuse · run-value-0903-old → results/run-value-0903-old/result.yaml\n", encoding="utf-8")
+    # a judgment Run on the Story: run-paper-claim ticket + runtime, target E1
     st = b / "A1-Story" / "StoryA-desk-idea"
-    (st / "runs").mkdir(); (st / "results" / "rclaim-01_beyond-rating").mkdir(parents=True)
-    (st / "runs" / "rclaim-01_beyond-rating.md").write_text("---\nfamily: paper\ntarget: E1\nrun: rclaim-01_beyond-rating\n---\n", encoding="utf-8")
-    (st / "results" / "rclaim-01_beyond-rating" / "runtime.yaml").write_text("status: waiting-for-feedback\nstep: s002\n", encoding="utf-8")
+    (st / "runs").mkdir(); (st / "results" / "run-paper-claim-0901-beyond-rating").mkdir(parents=True)
+    (st / "runs" / "run-paper-claim-0901-beyond-rating.md").write_text("---\nfamily: paper\ntarget: E1\nrun: run-paper-claim-0901-beyond-rating\n---\n", encoding="utf-8")
+    (st / "results" / "run-paper-claim-0901-beyond-rating" / "runtime.yaml").write_text("status: waiting-for-feedback\nstep: s002\n", encoding="utf-8")
     # the project's Task home: root/tasks/b01_block/ with both Task shapes
     t = root / "tasks" / "b01_block" / "j01_job" / "t01_task"            # Stata dialect: the task owns runs/ results/
     (t / "runs").mkdir(parents=True); (t / "results" / "r01_first").mkdir(parents=True); (t / "scripts").mkdir()
@@ -699,9 +699,9 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is never expanded
             self.assertNotIn("<summary>Details</summary>", q1)             # plain text, no Details
             # Story Runs: the judgment run joined by its target, named in full
-            self.assertIn('data-name="run-claim-01"', page)
-            self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bE1\b[^"]*"')
-            self.assertRegex(page, r'data-run="rclaim-01_beyond-rating" data-name="run-claim-01" data-targets="[^"]*\bRQ1\b')
+            self.assertIn('data-name="run-paper-claim-0901-beyond-rating"', page)
+            self.assertRegex(page, r'data-run="run-paper-claim-0901-beyond-rating" data-name="run-paper-claim-0901-beyond-rating" data-targets="[^"]*\bE1\b[^"]*"')
+            self.assertRegex(page, r'data-run="run-paper-claim-0901-beyond-rating" data-name="run-paper-claim-0901-beyond-rating" data-targets="[^"]*\bRQ1\b')
             self.assertIn('data-label="Task runs"', page)
             self.assertIn('data-skills="haipipe-task"', page)                # each run type names its skill (JL 260928)
             self.assertIn('data-label="Discovery runs"', page)
@@ -715,7 +715,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("paper-desk-introduction", page)                   # its Codex session
             self.assertIn('id="hero-E01-DISPLAY-hero-figure" data-key="S-DESK-Main-1-Introduction:E01" data-part="main"', page)
             self.assertNotIn('id="hero-E02-CITE-prior"', page)         # not hero: a CITE
-            self.assertIn('data-run="rp-struct-01" data-name="run-structure-01"', page)   # the Section's own runs
+            self.assertIn('data-run="run-structure-0901-outline" data-name="run-structure-0901-outline"', page)   # the Section's own runs
             self.assertIn('data-run="re-display-01_hero"', page)
             # Delivery: formats, views, checks, rounds
             self.assertIn('data-src="/papers/Paper-Test/delivery/latex/Paper-Test-draft.pdf"', page)

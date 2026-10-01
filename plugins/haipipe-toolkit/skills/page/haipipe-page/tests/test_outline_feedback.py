@@ -60,27 +60,27 @@ operation: interactive-writing
 interaction: human-feedback
 target: C1.P1-C1.P2
 paragraphs: P01-P02
-result: results/rp-para-01_P01-P02
-run: rp-para-01_P01-P02
+result: results/run-paragraph-0901-p01-p02
+run: run-paragraph-0901-p01-p02
 ---
 
-# rp-para-01_P01-P02
+# run-paragraph-0901-p01-p02
 
 - Goal: settle the first two paragraphs.
 """
 
-RUNTIME = """run: rp-para-01_P01-P02
+RUNTIME = """run: run-paragraph-0901-p01-p02
 family: page
 operation: interactive-writing
 interaction: human-feedback
 target: C1.P1-C1.P2
 paragraphs: P01-P02
-ticket: runs/rp-para-01_P01-P02.md
-result: results/rp-para-01_P01-P02
+ticket: runs/run-paragraph-0901-p01-p02.md
+result: results/run-paragraph-0901-p01-p02
 status: complete
 version: v001
 step: s001
-version_file: results/rp-para-01_P01-P02/v001.md
+version_file: results/run-paragraph-0901-p01-p02/v001.md
 version_sha256: abc
 worker:
   kind: skill
@@ -91,7 +91,7 @@ supersedes: null
 failure: null
 """
 
-CLOSED_V001 = """Run: rp-para-01_P01-P02
+CLOSED_V001 = """Run: run-paragraph-0901-p01-p02
 Version: v001
 State: closed
 Prior Version: none
@@ -141,7 +141,7 @@ Physicians differ in how they prescribe. That difference reaches patients.
 JL: "P01 and P02 are settled."
 """
 
-WORKING = """# rp-para-01_P01-P02 · working state
+WORKING = """# run-paragraph-0901-p01-p02 · working state
 
 - Current version/step: `v001/s001`.
 - State: `complete`.
@@ -163,8 +163,8 @@ class FeedbackFixture(unittest.TestCase):
         self.plan = self.folder / "outline" / "S-test-outline-v1.1.md"
         self.plan.write_text(PLAN, encoding="utf-8")
         (self.folder / "runs").mkdir()
-        (self.folder / "runs" / "rp-para-01_P01-P02.md").write_text(TICKET, encoding="utf-8")
-        self.results = self.folder / "results" / "rp-para-01_P01-P02"
+        (self.folder / "runs" / "run-paragraph-0901-p01-p02.md").write_text(TICKET, encoding="utf-8")
+        self.results = self.folder / "results" / "run-paragraph-0901-p01-p02"
         self.results.mkdir(parents=True)
         (self.results / "runtime.yaml").write_text(RUNTIME, encoding="utf-8")
         (self.results / "v001.md").write_text(CLOSED_V001, encoding="utf-8")
@@ -226,7 +226,7 @@ class WriteSideTest(FeedbackFixture):
         before_v001 = (self.results / "v001.md").read_bytes()
         result, err = save_feedback(self.page, self.payload())
         self.assertIsNone(err, err)
-        self.assertEqual(result["run"], "rp-para-01_P01-P02")
+        self.assertEqual(result["run"], "run-paragraph-0901-p01-p02")
         self.assertEqual((result["run_version"], result["step"], result["feedback"]), ("v002", "s001", "F01"))
         v002 = (self.results / "v002.md").read_text(encoding="utf-8")
         self.assertIn("Prior Version: v001.md\n", v002)
@@ -247,7 +247,7 @@ class WriteSideTest(FeedbackFixture):
         self.assertRegex(runtime, r"(?m)^status: waiting-for-feedback$")
         self.assertRegex(runtime, r"(?m)^version: v002$")
         self.assertRegex(runtime, r"(?m)^step: s001$")
-        self.assertRegex(runtime, r"(?m)^supersedes: results/rp-para-01_P01-P02/v001.md$")
+        self.assertRegex(runtime, r"(?m)^supersedes: results/run-paragraph-0901-p01-p02/v001.md$")
         self.assertNotIn("sha256", runtime)        # the old record's version_sha256 is dropped
         self.assertRegex(runtime, r"(?m)^  name: haipipe-writing$")   # nested keys survive
         working = (self.results / "working.md").read_text(encoding="utf-8")
@@ -281,37 +281,38 @@ class WriteSideTest(FeedbackFixture):
         result, err = save_feedback(self.page, self.payload(paragraph="C2.P3", bullet="C2.P3.B1",
                                                             comment="Say which years of claims."))
         self.assertIsNone(err, err)
-        self.assertEqual(result["run"], "rp-para-02_P03")
-        ticket = (self.folder / "runs" / "rp-para-02_P03.md").read_text(encoding="utf-8")
+        run = result["run"]                      # a full name, minted today (JL 261001)
+        self.assertRegex(run, r"^run-paragraph-\d{4}-p03$")
+        ticket = next((self.folder / "runs").rglob(run + ".md")).read_text(encoding="utf-8")
         self.assertIn("paragraphs: P03", ticket)
         self.assertIn("Structure description: P03 · C2.P3 · Sources", ticket)
-        v001 = (self.folder / "results" / "rp-para-02_P03" / "v001.md").read_text(encoding="utf-8")
+        v001 = (self.folder / "results" / run / "v001.md").read_text(encoding="utf-8")
         self.assertIn("Prior Version: none", v001)
         self.assertIn("- Target: `C2.P3.B1` · P03", v001)
-        runtime = (self.folder / "results" / "rp-para-02_P03" / "runtime.yaml").read_text(encoding="utf-8")
-        self.assertRegex(runtime, r"(?m)^run: rp-para-02_P03$")
+        runtime = (self.folder / "results" / run / "runtime.yaml").read_text(encoding="utf-8")
+        self.assertRegex(runtime, r"(?m)^run: %s$" % run)
         self.assertRegex(runtime, r"(?m)^status: waiting-for-feedback$")
-        self.assertTrue((self.folder / "results" / "rp-para-02_P03" / "working.md").is_file())
+        self.assertTrue((self.folder / "results" / run / "working.md").is_file())
 
     def test_open_structure_run_takes_paragraph_notes_before_paragraph_runs_exist(self):
-        (self.folder / "runs" / "rp-struct-01.md").write_text(
+        (self.folder / "runs" / "run-structure-0901-outline.md").write_text(
             "---\nfamily: page\noperation: interactive-writing\ninteraction: human-feedback\n"
-            "target: whole Page\nparagraphs: P01-P03\nresult: results/rp-struct-01\nrun: rp-struct-01\n---\n",
+            "target: whole Page\nparagraphs: P01-P03\nresult: results/run-structure-0901-outline\nrun: run-structure-0901-outline\n---\n",
             encoding="utf-8")
-        struct = self.folder / "results" / "rp-struct-01"
+        struct = self.folder / "results" / "run-structure-0901-outline"
         struct.mkdir()
-        (struct / "runtime.yaml").write_text("run: rp-struct-01\nstatus: waiting-for-feedback\nversion: v001\nstep: s002\n",
+        (struct / "runtime.yaml").write_text("run: run-structure-0901-outline\nstatus: waiting-for-feedback\nversion: v001\nstep: s002\n",
                                              encoding="utf-8")
         (struct / "v001.md").write_text(
-            "Run: rp-struct-01\nVersion: v001\nState: open\n\n## Step s001\n\n### Human feedback\n\nx\n\n"
+            "Run: run-structure-0901-outline\nVersion: v001\nState: open\n\n## Step s001\n\n### Human feedback\n\nx\n\n"
             "### Saved result\n\ny\n\n## Step s002\n\n### Human feedback\n\nz\n\n### Saved result\n\nw\n",
             encoding="utf-8")
         result, err = save_feedback(self.page, self.payload(paragraph="C2.P3"))
         self.assertIsNone(err, err)
-        self.assertEqual((result["run"], result["run_version"], result["step"]), ("rp-struct-01", "v001", "s003"))
+        self.assertEqual((result["run"], result["run_version"], result["step"]), ("run-structure-0901-outline", "v001", "s003"))
         text = (struct / "v001.md").read_text(encoding="utf-8")
         self.assertIn("## Step s003", text)
-        self.assertIn("Reviewed output: rp-struct-01 v001/s002", text)
+        self.assertIn("Reviewed output: run-structure-0901-outline v001/s002", text)
 
     def test_validation_rejects_bad_input_without_writing(self):
         snapshot = sorted(p.relative_to(self.folder).as_posix() for p in self.folder.rglob("*"))

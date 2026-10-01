@@ -35,14 +35,14 @@ class NativeDesignBoardGateTest(unittest.TestCase):
         self.assertTrue(any(row[1] == "design-run-contract" for row in report.rows))
 
     def test_orphan_native_result_is_not_hidden_by_absent_board_page(self):
-        orphan = self.case.owner / "results" / "rd20_generate_orphan"
+        orphan = self.case.owner / "results" / "run-design-generate-0918-orphan"
         orphan.mkdir(parents=True)
         report = Report()
         check_design_family(self.case.owner, report)
         self.assertTrue(any(row[1] == "design-run-contract" for row in report.rows))
 
     def test_page_delivery_result_is_not_sent_to_design_gate(self):
-        delivery = self.case.owner / "results" / "rd01_latex"
+        delivery = self.case.owner / "results" / "run-delivery-latex"
         delivery.mkdir(parents=True)
         report = Report()
         check_design_family(self.case.owner, report)

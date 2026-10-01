@@ -8,7 +8,7 @@ Replace every placeholder with an actual value or explicit `not supplied`.
 Record messages verbatim in fenced blocks; use a longer fence when the message
 itself contains backticks. Do not invent a person, timestamp or message id.
 
-## runs/<rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>.md
+## runs/<`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>`
 
 ```yaml
 family: page
@@ -22,7 +22,7 @@ coordinator: <stable identity or not supplied>
 ```
 
 - Goal: <structure/Bullet, Section-level, or paragraph-level writing goal>
-- RP kind: <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>
+- RP kind: <`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>`
 - Structure description: <frozen paragraph job/reader move for each selected PNN; required for prose Runs>
 - Page and Board: <resolved paths>
 - Scope: <map, Section, paragraph/range; excluded and already accepted targets>
@@ -109,7 +109,7 @@ recoverable baseline. Record any external edit before rebasing onto it.>
 Repeat for every item; preserve original annotation indices when supplied.
 If there is no itemized feedback, write `Initial brief; no annotation items`.
 
-For `rp-struct-01`, add the people who actually contributed this Step without
+For `run-structure-<MMDD>-<slug>`, add the people who actually contributed this Step without
 creating a new Run:
 
 ```text
@@ -196,7 +196,7 @@ heading and its own blockquote. Number every sentence for review, but never
 write the labels into the candidate, Version result, or final Content.
 
 ```markdown
-## ✍️ <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · <vNNN/sNNN>
+## ✍️ <`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>` · <vNNN/sNNN>
 
 ### P01 · <C.P> · <Structure description>
 
@@ -261,7 +261,7 @@ seals the Version before any post-run analysis Task is launched.
 ## runtime.yaml · current projection, not human-decision authority
 
 ```yaml
-run: <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>
+run: <`run-structure-<MMDD>-<slug>` | `run-section-<MMDD>-<slug>` | `run-paragraph-<MMDD>-<slug>`
 family: page
 operation: interactive-writing
 interaction: human-feedback

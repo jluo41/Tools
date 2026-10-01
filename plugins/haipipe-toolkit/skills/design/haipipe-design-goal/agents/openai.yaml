@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Goal"
+  short_description: "Write a board's design input: aim, venue, rules, resources, leave out"
+  default_prompt: "Use $haipipe-design-goal to fill one view of the board's design-goal.md, with a source on every line and a ? for each gap."
+policy:
+  allow_implicit_invocation: true

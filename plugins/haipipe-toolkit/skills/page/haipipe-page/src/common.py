@@ -9,7 +9,7 @@ from .outline_version import plan_dir
 
 
 EVIDENCE_LANES = frozenset({"bibex", "display", "materials"})
-LEGACY_EVIDENCE_LANES = frozenset({"probe", "pagex"})
+LEGACY_EVIDENCE_LANES = frozenset({"probe"})
 DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
 OUTLINE_LANES = frozenset({"skill"})
 STUDIO_LANES = frozenset({"chat", "draw"})

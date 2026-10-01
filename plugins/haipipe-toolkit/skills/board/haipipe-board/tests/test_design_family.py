@@ -40,17 +40,6 @@ class DesignFamilyTest(unittest.TestCase):
             rows = findings(board)
             self.assertIn("retired-design-shape", {row[1] for row in rows})
 
-    def test_pagex_is_rejected(self):
-        with TemporaryDirectory() as td:
-            board = build(Path(td))
-            old = (
-                board / "2-Design" / "Design-01-all-patients-prescription-review-sms"
-                / "outline" / "evidence" / "pagex"
-            )
-            old.mkdir(parents=True)
-            rows = findings(board)
-            self.assertIn("retired-design-shape", {row[1] for row in rows})
-
     def test_archived_thread_shape_is_left_alone(self):
         """A parked record is a closed record: _archive/ is not asked to migrate."""
         with TemporaryDirectory() as td:

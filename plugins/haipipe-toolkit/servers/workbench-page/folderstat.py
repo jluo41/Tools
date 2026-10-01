@@ -30,7 +30,7 @@ from urllib.parse import parse_qs, quote, urlparse
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
         "meeting": "🗣", "_runs": "🧾", "_fixture": "📦",
-        "outline": "🧭", "draft": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
+        "outline": "🧭", "draft": "🧭", "workflow": "🪜", "materials": "📥",
         "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
         "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
         "results": "📦", "draft/evidence/supporting-runs": "🧷",
@@ -44,7 +44,7 @@ ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
 # the plan folder, draft/ since Page 0.118.  The old flat lanes remain named here
 # only so Folder can explain their migration destination.
 CATEGORY = {"bibex": "draft/evidence", "display": "draft/evidence",
-            "pagex": "draft/evidence", "materials": "draft/evidence",
+            "materials": "draft/evidence",
             "skill": "draft",
             "latex": "delivery", "word": "delivery", "slide": "delivery",
             "render": "delivery",
@@ -211,7 +211,7 @@ def folder_status(page_src):
         # Category folders show their lanes as first-class rows. Outline keeps
         # one direct-files row for its authored process records, while each
         # evidence lane gets its own explicit path. This prevents the plan's
-        # eight records from being visually merged with bibex/display/PageX
+        # eight records from being visually merged with bibex/display
         # material and avoids counting the same files twice.
         if d.name in ("outline", "draft"):  # the plan folder (draft/ since Page 0.118)
             rows.append(row_for(d, d.name, recursive=False))
@@ -318,9 +318,9 @@ class FolderStatMixin:
                     _age(r["newest"], now), state))
             # A FOLDER IS A TREE, not a sorted list of path strings (JL
             # 260816: "是不是应该加一个 folder structure … 这个排版不是非常
-            # 按照我们的思路来排的"). Flat, `pagex/` read as six unrelated
+            # 按照我们的思路来排的"). Flat, a lane of borrowed links read as unrelated
             # rows with its own store and view wedged alphabetically between
-            # four borrowed pages; nested, the same six say what the folder IS
+            # the pages it borrows; nested, the same rows say what the folder IS
             # — two files it owns, then one folder per page it borrows from.
             items = []
             for depth, kind, label, f in _as_tree(r["list"]):
@@ -338,7 +338,7 @@ class FolderStatMixin:
                 # A SYMLINK MUST NOT READ AS A COPY (JL 260816: "are they
                 # copied or are they the symlink?"). The row reports the
                 # RESOLVED file, so a borrowed 13KB page md looked exactly
-                # like 13KB of duplicated bytes; pagex's whole claim is that
+                # like 13KB of duplicated bytes; a link lane's whole claim is that
                 # it copies nothing, and the one surface that shows the folder
                 # was quietly denying it.
                 #
@@ -354,7 +354,7 @@ class FolderStatMixin:
                         short = "/".join(t.parts[-2:])
                     except ValueError:
                         short = os.readlink(f).split("/")[-1]
-                    # pagex mints links whose place MIRRORS the source, so the
+                    # a link whose place MIRRORS the source is common, so the
                     # short target usually repeats the row's own name. Saying
                     # it twice is the noise the first fix was trying to cure;
                     # the bare mark carries the whole point, and the full

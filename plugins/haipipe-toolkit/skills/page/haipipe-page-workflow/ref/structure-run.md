@@ -12,7 +12,7 @@ metadata:
 # RP Structure · one Run for the Page map
 
 `RP Structure 01` is the human-facing name. Its stable machine id is
-`rp-struct-01`. It is the one Structure Run for the initial Page: it owns the
+`run-structure-<MMDD>-<slug>`. It is the one Structure Run for the initial Page: it owns the
 whole-Page structure list, Outline Bullets, paragraph jobs, Point roles, and the
 evidence decisions that make those Points truthful. There is no separate
 Outline Run or Survey Run hiding behind it.
@@ -22,7 +22,7 @@ Those are Step/cycle labels inside the same Run, not Workflow rows or
 additional Level-4 Runs:
 
 ```text
-rp-struct-01
+`run-structure-<MMDD>-<slug>`
   ├─ SHAPE  → Page map, C/P/B Bullets, Point roles, Evidence Item specs
   ├─ SURVEY → evidence decisions, local/supporting route plans, acceptance needs
   └─ CLOSE  → one frozen Structure result; unlock rp-sec / rp-para candidates
@@ -63,15 +63,15 @@ planned route as landed evidence.
 
 ## Several people, one Structure Run
 
-Several people may work on the same `rp-struct-01`. The collaboration unit is
+Several people may work on the same `run-structure-<MMDD>-<slug>`. The collaboration unit is
 the Run, not the person:
 
-- keep one shared Ticket and one paired `results/rp-struct-01/` folder;
+- keep one shared Ticket and one paired `results/run-structure-<MMDD>-<slug>/` folder;
 - record stable `participants` on the Run metadata and `contributors` on each
   Step or saved result;
 - declare a `coordinator` only when the team needs one; otherwise the Page's
   normal owner/closure rule applies;
-- do not create `rp-struct-02` merely because another person joined or made a
+- do not create `run-structure-<MMDD>-<slug>` merely because another person joined or made a
   review pass;
 - close the shared Run once the declared owner or the agreed group decision
   accepts the Shape and Survey result.
@@ -79,14 +79,14 @@ the Run, not the person:
 Example metadata:
 
 ```yaml
-page_run: rp-struct-01
+page_run: `run-structure-<MMDD>-<slug>`
 participants: [person-a, person-b, person-c]
 coordinator: person-a
 cycles: [SHAPE, SURVEY]
 ```
 
 Each Step still has one bounded scope and one saved result. A new independent
-structural goal after closure gets the next `rp-struct-NN`; a wording-only
+structural goal after closure gets the next `run-structure-<MMDD>-<slug>`; a wording-only
 change belongs to a later Section or Paragraph Run.
 
 ## Files and lifecycle
@@ -94,8 +94,8 @@ change belongs to a later Section or Paragraph Run.
 The Run's read-only Run Space card points to the same small set of artifacts:
 
 ```text
-runs/rp-struct-01.md
-results/rp-struct-01/
+runs/`run-structure-<MMDD>-<slug>`.md
+results/`run-structure-<MMDD>-<slug>`/
   runtime.yaml
   working.md
   v001.md
@@ -118,6 +118,5 @@ allocation and execution; the card does not expose a second “run” button.
 
 ## Naming
 
-New and active Page folders use the typed id `rp-struct-01`. A stored compact
-name such as `rp00_mermaid-structure` is historical input only; it is not a
-valid allocation and must not be used in new packets, links, or folder names.
+New and active Page folders use the full name `run-structure-<MMDD>-<slug>`.
+Older short names are retired; `page.py run-names` renames a Page's runs once.

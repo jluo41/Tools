@@ -13,12 +13,20 @@ import re
 import sys
 import yaml
 
-RUN = re.compile(r"rd[0-9]{2,}_(generate|verify)_[a-z0-9][a-z0-9_-]*")
+# Design Run names: `run-design-<op>-<MMDD>-<slug>` (JL 261001). Older short names are retired.
+RUN = re.compile(r"run-design-(generate|verify)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*")
 # Commission is the current human decision Run; Adopt is legacy audit only.
 # The worker never produces them, so the folder audit checks only their
 # Ticket/Result pairing and a recorded decision, never worker semantics.
-DECISION_RUN = re.compile(r"rd[0-9]{2,}_(commission|adopt)_[a-z0-9][a-z0-9_-]*")
+DECISION_RUN = re.compile(r"run-design-(commission|adopt)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*")
+RUN_GLOBS = ("run-design-*",)
+
+
+def op_of(match):
+    """The operation a Design Run name carries."""
+    return match.group(1)
 ROLES = {"evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff"}
+LINK_SLOT = "{LINK}"
 KINDS = {"max_chars", "contains", "excludes", "starts_with", "ends_with", "semantic", "visual"}
 UNRESOLVED_REASONS = {
     "missing_context", "criterion_ambiguous", "criterion_conflict", "inspection_limit"
@@ -213,7 +221,7 @@ def context(ticket, historical=False):
     need(match is not None, "invalid Design Run stem")
     need(data.get("run") == ticket.stem, "Ticket identity mismatch")
     op = data.get("operation")
-    need(op == match.group(1), "operation does not match Ticket stem")
+    need(op == op_of(match), "operation does not match Ticket stem")
     need(data.get("worker") == "haipipe-design-unit", "unexpected worker")
     string(data.get("actor"), "actor")
     string(data.get("target"), "target")
@@ -308,7 +316,7 @@ def context(ticket, historical=False):
              and manifest.get("operation") == "generate", "target is not a Generate Result")
         target_run = string(manifest.get("run"), "target.run")
         target_match = RUN.fullmatch(target_run)
-        need(target_match is not None and target_match.group(1) == "generate"
+        need(target_match is not None and op_of(target_match) == "generate"
              and path.parent.name == target_run, "target Run/Result identity mismatch")
         producer = string(manifest.get("producer"), "target.producer")
         producers.add(producer)
@@ -377,7 +385,8 @@ def validate(ticket, result=None, historical=False):
                     continue
                 content = path.read_text(encoding="utf-8")
                 value = criterion["value"]
-                passed = (len(content) <= value if kind == "max_chars"
+                # {LINK} is the slot the sending platform fills; it is not counted (JL 261001)
+                passed = (len(content.replace(LINK_SLOT, "")) <= value if kind == "max_chars"
                           else value in content if kind == "contains"
                           else content.lstrip().startswith(value) if kind == "starts_with"
                           else content.rstrip().endswith(value) if kind == "ends_with"
@@ -401,7 +410,7 @@ def decision_run(folder, ticket):
         data = document(ticket)
         need(data.get("schema") == TICKET_SCHEMA, "unsupported Ticket schema")
         need(data.get("run") == ticket.stem, "Ticket identity mismatch")
-        op = DECISION_RUN.fullmatch(ticket.stem).group(1)
+        op = op_of(DECISION_RUN.fullmatch(ticket.stem))
         need(data.get("operation") == op, "operation does not match Ticket stem")
         output = folder / "results" / ticket.stem
         runtime = document(output / "runtime.yaml")
@@ -427,7 +436,7 @@ def audit_folder(folder):
     retired_tickets = sorted((folder / "runs").glob("r*_design_*.yaml"))
     for ticket in retired_tickets:
         issues.append(f"{ticket}: retired Design Run identity is unsupported")
-    tickets = sorted((folder / "runs").glob("rd*_*.yaml"))
+    tickets = sorted(p for pat in RUN_GLOBS for p in (folder / "runs").glob(pat + ".yaml"))
     for ticket in tickets:
         if DECISION_RUN.fullmatch(ticket.stem):
             issues.extend(f"{ticket}: {p}" for p in decision_run(folder, ticket))
@@ -481,7 +490,7 @@ def audit_folder(folder):
                 issues.extend(f"{ticket}: {p}" for p in validate(ticket, output / "result.yaml", historical=True))
         except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError) as exc:
             issues.append(f"{ticket}: {exc}")
-    for output in sorted((folder / "results").glob("rd*_*")):
+    for output in sorted(p for pat in RUN_GLOBS for p in (folder / "results").glob(pat)):
         if output.is_dir() and not (folder / "runs" / (output.name + ".yaml")).is_file():
             issues.append(f"{output}: orphan Result without Ticket")
     for output in sorted((folder / "results").glob("r*_design_*")):

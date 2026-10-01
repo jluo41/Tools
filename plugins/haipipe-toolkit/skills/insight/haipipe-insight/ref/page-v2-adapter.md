@@ -1,7 +1,14 @@
 # Page v2 adapter · Insight semantics over the shared Page lifecycle
 
-Every Application Insight Folder is a Page, but the two workflows answer
-different questions:
+**Scope since 261001.** This adapter governs the board's PAGES: MT00 (Meta),
+the four registers MT01–MT04, every Wisdom page, and the frozen Data,
+Information and Knowledge pages of boards made before reports. A Data,
+Information or Knowledge answer on a current board is a task run plus a report
+(`board-contract.md`, `report.md`), not a Page, and none of this lifecycle
+applies to it.
+
+Every Insight Page is a Page, but the two workflows answer different
+questions:
 
 ```text
 Page workflow     is this one Page ready and closed?
@@ -24,7 +31,7 @@ CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK → CLOSE
 ```
 
 Only Page CHECK may emit Page `CLOSE`. A Page Run such as
-`rp-struct-01` or `rp-para-01_P01` records a selected human-feedback unit;
+`run-structure-<MMDD>-<slug>` or `run-paragraph-<MMDD>-<slug>` records a selected human-feedback unit;
 closing it never closes the Page and never advances a GI gate. An Insight
 dispatch does not allocate a Page Run unless the person actually selected an
 interactive Page-writing goal.
@@ -64,7 +71,7 @@ PARENTS  <exact Page path>@<Page version> · <row-id>[, <row-id>...]
 
 The child additionally records its own operation (`DERIVATION`, claim test, or
 applicability judgment). A parent change reopens only the rows and Queue cells
-that cite it. The two legal same-rung exceptions remain X Information from
+that cite it. The two legal same-rung exceptions remain cross Information from
 mirrored I rows and the pooling-verdict K row from the heterogeneity K row.
 
 A missing calculation needed to finish an existing cell is an Evidence Item of

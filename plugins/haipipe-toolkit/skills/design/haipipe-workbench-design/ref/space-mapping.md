@@ -1,42 +1,101 @@
-# Design workbench · Space ↔ file map and the state fold
+Design workbench: Space to file map and the state fold (Page level)
+=====================================================================
 
-Each Space includes a read-only Run Type guide, followed by a separate latest
-matching-record list. Goal: Commission. Design/Insight/Run: Commission,
-Generate, Verify. Delivery: Generate/Verify for ready items. Each type names
-its canonical identity, bounded work, owner/worker Skills, actor and prerequisites.
-Only eligible native item controls in live Design Space are labeled `Start here`;
-eligible Generate/Verify items additionally offer `Copy request → paste and send`.
-Other guidance is `Shown here · read-only`. Expanding guidance has no side effects.
+This is the Page level of the Design workbench, as served in 0.14.0.
+One Design Folder is one design task, so its designs share one aim.
+The page has three Spaces: Design Goal, Design, and Delivery
+(input, process, output). It is served by `servers/workbench-design/design.py`
+at `/_board/design?path=<board.md>&file=2-Design/<folder>/<folder>.md`.
+`design-board-space-mapping.md` is the same map one grain up.
 
-Open item cards explain the next eligible Run (or current Run/repair wait),
-the released Commission and latest draft, then the latest matching record.
-This description reads the native action-state rules; it cannot authorize a
-Run. Run Space keeps the full ledger, including canonical Type and target;
-Delivery remains read-only. Static cards omit mutation forms and batch controls.
 
-**Copy prompt to chat** appears only in live Design Space for an eligible new
-Generate/Verify or a compatible planned Run. Its preview binds the Board,
-Folder, Page, item, target, Type, Skills, prerequisites, Commission, actual
-matching Run/receipt and next action. Copying only changes the clipboard.
-The prompt rereads state, reuses the queued identity, stops if state changes,
-keeps Commission human-only, requires a fresh independent Verify context,
-and reports one Run's id/receipt. No Commission, running, stale, blocked,
-unresolved, invalid, ready, retired or static state has a prompt. Folder audit
-findings or missing/blocked Insight bindings also suppress it. Revisions must
-first pin feedback/base through the native queue form. Run/Delivery offer no copy.
+The three Spaces
+----------------
 
-| Space | Reads | Shows | Writes through |
+| Space (tab, `space=`) | Reads | Shows | Writes through |
 | --- | --- | --- | --- |
-| Goal Space | the Brief line whose `folder` names this folder (`0-BR-brief/*/BR00-brief.md`, the first table whose header names `audience`, `job` and `venue` together; columns `audience`, `job`, `venue`, `designs`, `insight`, `folder` by header word); `board.md` `reads:` | one sentence (N venue designs for who, their job) · venue · who · their job · how many (wanted · registered · ready, and declined when > 0) · from (the Brief file · design tasks) · the Insight board and its signed count | `haipipe-workbench-design/ref/design-board.md` (adds the line, writes the folder cell), `haipipe-design-brief` (the Brief's prose), the owning board (`reads:`) |
-| Design Space | `draft/<stem>-design-items.md`; every run record's `item:`; the candidate Result's `render_manifest` for a screen's picture | one fixed-height foldable row per item (id · title · the design in one line · state · waiting on); opened, the design on the left, kept in view, with the handoff shown under a ready design and a two-column table on the right: Why this design · From insight to design (Data → Information → Knowledge → Wisdom → Also read → This design) · The bet (only when the item has one) · Rules (✓/✗) · Runs; retired items are folded after the live ones | `haipipe-design` (register), `haipipe-design-workflow` (Commission, Generate, Verify) |
-| Insight Space | the register's `evidence:` lines; the pages they name (`signed:`, the Design Handoff block's `FINDING` / `CONSEQUENCE`, else the first Opening line when it is not a question, else the title); run records' `inputs` (paths); the Insight board's signed pages | per item: insight (label and title, with its role in plain words, e.g. signed insight) · signed (by whom, when) · what it says · rules it implies · pinned in the run record; "needs an insight" in red for an evidence-informed item with none; "Available, unused" for signed pages no item uses, or "none · every signed insight is used by an item" | the Insight workbench (signing), `haipipe-design` (evidence lines) |
-| Run Space | `runs/rdNN_*.yaml`, `scripts/config/`, `results/*/runtime.yaml`, `result.yaml`, `checks.yaml`, `content/*`, Commission `decision.yaml`, `draft/feedback/<run>.md` | per item: run · Run type (`Generate · revise of rdNN` for a revise) · who (human/agent) · when · status · outcome (verdict n/m) · next; folded checks (each named by its rule in words), feedback, and draft text; failed runs and fail verdicts in red, superseded runs grey with their reason; the records check | `haipipe-design-workflow` (Generate, Verify) |
-| Delivery Space | the register (id, title); the candidate whose independent Verify passed; the candidate Result's `render_manifest` (legacy Delivery manifest as fallback) | one table, one row per ready item: item (id · title) · design (the text as sent, with the SMS `link` mark); a folder of ready screens as a picture gallery; no status or receipt | — (read only) |
+| Design Goal Space (`goal`) | the board's `design-goal.md` beside `board.md`; the venue profile `skills/design/venue/venue-<venue>/README.md`; the Brief line whose `folder` names this folder (`0-BR-brief/*/BR00-brief.md`); the register's acceptance lines | the design task in one sentence (N venue designs for who), then the design input as column tables: Aim, Venue, Rules, Resources, Leave out | `haipipe-design-brief` (the Brief and `design-goal.md`), `haipipe-design` (the register) |
+| Design Space (`design`) | the register `draft/<stem>-design-items.md`; its `evidence:` lines and the pages they name; `runs/run-design-*.yaml`; `results/*/runtime.yaml`, `result.yaml`, Commission `decision.yaml`, checks; the candidate Result's `render_manifest` | the task block, then one card per design, with its two folds and its buttons; declined items folded after the live ones; the records check | `haipipe-design` (register), `haipipe-design-workflow` (Commission, Generate, Verify) |
+| Delivery Space (`delivery`) | the register (id, title); each item's candidate whose independent Verify passed; its `render_manifest` | each ready design word for word, or a folder of screens as pictures; declined items folded; the task csv link | none (read only) |
 
-Header (above the Spaces): `Page level · <folder> · ↑ Board level`. A red
-line only for a legacy folder or an unsigned Insight page.
+**Design Goal Space.** `design-goal.md` has five blocks: Aim, Venue, Rules,
+Resources, Leave out. Each block is a title underlined with `---` or `===`.
+Each line is `key: value <- source`. A value of `?` shows as "not stated".
+A section titled `Task · <folder>` overrides a line for this one folder.
+The Venue table shows the venue profile default beside this task's value.
+The defaults are the `- **Key:** value` lines under the profile's
+`## Constraints`. Aim adds "their job" and "how many" from the Brief line:
+wanted, registered, ready, and declined when above 0. Rules adds the
+acceptance lines every live design keeps. The Brief line is the first
+Markdown table whose header names `audience`, `job` and `venue` together.
+Its `designs` and `folder` columns are matched by header word.
+When designs are missing, the Space offers "Ask the agent to draft the
+missing N" (action `draft-request`). An open request shows instead.
 
-## Plain words
+**Design Space.** The task block comes first: who, their job, the venue,
+how many, and the rules every design keeps. Then one card per design.
+The card is named "Design N"; the files say `ITEMNN`. Its closed row has
+four columns:
+
+- Design: number, title, state, waiting on, and the design in one line.
+- Rationale: the goal, and the "because" rule it rests on.
+- Supporting work: insight labels and run ids.
+- Expectation: what should happen, and "wrong if".
+
+An opened card shows the design on the left, kept in view. An SMS shows
+as a bubble on a phone; a screen shows as its picture. The right side
+explains it: why this design, because, from insight to design, the bet,
+and the rules (pass or fail). Each card holds two folds:
+
+- **Insight pages · N**: the register's `evidence:` lines and the pages they
+  name. Per page: label and title, `signed:`, and what it says (the Design
+  Handoff `FINDING`, then `CONSEQUENCE`, and the DO / DO NOT rules it
+  implies), and whether the run record pins it. An item built on evidence
+  with no page named shows a red line.
+- **Runs · N**: every Run of the item, with Run type, who, when, status,
+  outcome (verdict n/m) and next. Checks, feedback and draft text fold
+  inside. Failed runs and fail verdicts show red; superseded runs grey.
+
+The buttons sit under the design. The item's state licenses them:
+**Release commission** and **Hold** (a person, with a name and one
+sentence), **Queue Generate · agent**, **Queue Verify · independent agent**,
+**Queue revise · agent** (with feedback), and **Queue again** for a stale
+queued Run. They post to `/_board/design-act`. An eligible item also has
+**Copy prompt to chat**; copying only changes the clipboard. "open all"
+and "close all" fold every card. There is no bar that acts on every item.
+
+**Delivery Space.** One row per design whose independent Verify passed:
+the text word for word, with the `{LINK}` slot placed where the system puts
+the link. A folder of screens shows as a picture gallery. A declined item
+folds under "Declined, kept for the record · N". The link
+"↓ This design task's designs · N · csv" is
+`/_board/design-bundle?path=<board.md>&folder=<folder>`. Verify pass means
+ready for Delivery. Receipts stay in the card's Runs fold.
+
+**Header.** `Page level · <folder> · ↑ Board level`. A red line shows only
+for a legacy folder or a blocked Insight binding.
+
+
+The Runs panel
+--------------
+
+Every Space has a Runs panel on the right. It is the shared panel the
+Paper and Page workbenches use (`live.runs_panel`). Its run types come from
+`skills/design/haipipe-design-workflow/references/run-cards.md`. Each card
+names a button, an agent, a skill, what the person signs, and a prompt.
+The Workbench Table is `ref/workbench-table.md`; the cards and the table
+must agree. The panel lists each matching run below its type, matched by
+the card's pattern `run-design-(commission|generate|verify)-*`. Delivery lists
+only runs whose outcome is pass. The panel starts nothing. **Copy** hands
+the prompt to a Claude or Codex session.
+
+Page cards: Frame the aim, Pin the venue, Set the rules, Gather resources,
+Set what to leave out (Goal); Map variables, Add a design, Commission,
+Generate, Verify (Design); Passed review, Plan the test (Delivery).
+
+
+Plain words
+-----------
 
 | in the files | on the screen |
 |---|---|
@@ -46,6 +105,7 @@ line only for a legacy folder or an unsigned Insight page.
 | candidate | draft |
 | `check_unit` | records check |
 | `intent` / `move` | goal |
+| `ITEM02` | Design 2 |
 | stance | follows the evidence / challenges the evidence / explores a new direction / a new design |
 | basis | built on evidence / from the brief only |
 | mode | never on screen; it stays in the files |
@@ -53,51 +113,66 @@ line only for a legacy folder or an unsigned Insight page.
 | `R1` (a Brief line id) | the task's full name, `<job> <venue> for <who>` |
 
 The contract word never appears beside its plain word, in parentheses or
-otherwise. The New Design Item form uses the same plain labels (approach,
-built on, expected, wrong if, insights, rules); the contract words are only
-the option values.
+otherwise.
 
-## State fold
 
-Walk an item's Runs in `rdNN` order; the last row wins. A superseded run is
+State fold
+----------
+
+Walk an item's Runs in `sequence:` order; the last row wins. A superseded Run is
 skipped.
 
 | Run seen | status / outcome | item state | waiting on |
 |---|---|---|---|
-| none | | not commissioned | person · commission |
-| Commission | no decision yet | commission open | person · release or hold |
-| Commission | release | commissioned | person · queue the draft |
-| Commission | hold | commission held (a new release decision is offered) | person · release or hold |
+| none | | not commissioned | you · commission |
+| Commission | no decision yet | commission open | you · release or hold |
+| Commission | release | commissioned | you · queue the draft |
+| Commission | hold | commission held (a new release decision is offered) | you · release or hold |
 | Generate | planned | generate queued | agent · generate |
-| Generate | planned, a pinned file changed since | queued run out of date | person · queue again |
+| Generate | planned, a pinned file changed since | queued run out of date | you · queue again |
 | Generate | running | generating | agent · running |
-| Generate | complete | generated | person · queue the review |
-| Generate | failed (the draft failed the records check) | generate failed | person · queue a revise |
+| Generate | complete | generated | you · queue the review |
+| Generate | failed (the draft failed the records check) | generate failed | you · queue a revise |
 | Verify | planned | verify queued | agent · verify |
-| Verify | planned, a pinned file changed since | queued run out of date | person · queue again |
+| Verify | planned, a pinned file changed since | queued run out of date | you · queue again |
 | Verify | running | verifying | agent · running |
-| Verify | complete · pass, exact Result pins still valid | ready | — |
-| Verify | previously passed, candidate/review records changed | records invalid | person · inspect the named records; no handoff |
-| Verify | complete · fail | verify failed | person · queue a revise |
-| Verify | failed (the review itself failed the records check) | verify invalid | person · queue the review again |
-| any | blocked | blocked | person · resolve `<Run id>`: `failure:` |
+| Verify | complete · pass, exact Result pins still valid | ready | none |
+| Verify | previously passed, candidate or review records changed | records invalid | you · inspect the named records |
+| Verify | complete · unresolved | verify unresolved | the named owner · resolve the gap |
+| Verify | complete · fail | verify failed | you · queue a revise |
+| Verify | failed (the review itself failed the records check) | verify invalid | you · queue the review again |
+| any | blocked | blocked | you · resolve `<Run id>`: `failure:` |
 
-"person" is the named human seen on this folder's decision Runs (for example
-`JL`), never a role invented by the tab. "agent" is waited on only while a run
-is queued or running. A blocked Run shows its reason and repair owner, never
-a Commission Release button. A worker hold diagnostic does not record a human
-HOLD decision. Run Space retains all real ids, including explicitly labeled
-historical Adopt records; it never invents a Delivery Run id.
+A step that needs a click says "you", never a name. "agent" is waited on
+only while a Run is queued or running. A blocked Run shows its reason and
+repair owner, never a Release button. A worker hold diagnostic is not a
+human Hold decision. Each Run's `results/<stem>/runtime.yaml` is its
+receipt. Historical `run-design-adopt-*` records stay readable under their real
+ids: adopt reads as ready, decline as declined. Current writers never
+create them, and the server refuses the old Adopt actions.
 
-## Query aliases
 
-`?space=` accepts `goal | design | insight | run | delivery` (default `goal`).
-Old values still resolve: `frame, plan, brief, ask → goal`;
-`intent, draft, items → design`; `signal, evidence, insights → insight`;
-`runs, shape, workflow, runtime, create, review → run`;
-`launch, commit → delivery`. `?item=ITEM02` opens that item's card in Design
-Space, marks its row with an accent bar, and scrolls to it; Insight Space and
-Run Space narrow to it under a line "showing ITEM02 only · show every item".
-After a click, every item button lands back on Design Space at that item; a
-draft request lands on Goal Space. The retired
-`?flow=` parameter is ignored.
+Query aliases
+-------------
+
+`?space=` accepts `goal | design | delivery` (default `goal`). Old values
+still resolve: `frame, plan, brief, ask` open Goal; `intent, draft, items`
+open Design; `insight, signal, evidence, insights` and `run, runs, shape,
+workflow, runtime, create, review` open Design (the retired Insight and
+Run Spaces); `launch, commit` open Delivery. `?item=ITEM02` opens that
+card in Design Space, marks it, and scrolls to it. After a button click the
+page lands back on Design Space at that item; a draft request lands on
+Design Goal Space. The retired `?flow=` parameter is ignored.
+
+
+Retired
+-------
+
+Retired in 0.14.0, kept here in one line each so old notes read right:
+
+- Insight Space and Run Space: their content is the card's two folds.
+- Five Spaces: the page has three.
+- The "Run types in this Space" guide: replaced by the Runs panel.
+- The "New Design Item" form: a design is added from the Runs panel.
+- The Insight board line in the header.
+- Content hashes: the csv has no hash column.

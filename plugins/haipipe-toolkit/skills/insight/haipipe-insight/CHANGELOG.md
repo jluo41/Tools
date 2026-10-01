@@ -1,5 +1,45 @@
 # haipipe-insight · version history
 
+## 2.3.0 · 2026-10-01 · Evidence needs join Logic, Work and Report (JL 261001)
+
+- New `ref/evidence-needs.md`: each question lists evidence needs `<QID>.E<n>` (compute · cite · judge) before any run; the answering page's `answers.yaml` binds each need to result files and the fields its `pass:` names; the page cites `[<QID>.E<n>]` and records `results-read:`; `haipipe-insight-check` returns OK · GAP · STALE · UNBOUND · UNPLANNED per cell and fails an overclaimed ✅.
+- New verbs `plan` and `bind`; `climb`, `report` and `check` use them. Three new skills: `haipipe-insight-evidence-plan`, `haipipe-insight-bind`, `haipipe-insight-check`.
+- The page ticket is no longer called the join; a config's `answers:` is a cross-check derived from the bindings.
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Partitions carry no letters: folders `<n>-<partition>/` (`1-full/` … `9-cross/`), page ids `<L><NN>-<partition>`, Question Groups `QG-<partition>-<L>`, `🚫 full-only`; reserved-letter rule removed; examples made generic.
+
+## 2.1.0 · 2026-10-01 · The answering page is the report; page tickets (JL 261001)
+
+- No `reports/` folder and no board store `_results/`: the answering page's `.md` is the report,
+  and its folder is also a task folder with `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
+  call-through tickets (`RESULT_DIR` = the page's `results/<ticket>/`) and those results.
+- Register cells name the page (`✅ FI02`); the page names the question back (`answers QI2`).
+  The page ticket is the join; a config's `answers:` is a cross-check.
+- Verbs `climb`, `settle`, `report`, `check` and the resource laws follow `ref/report.md` and
+  `ref/board-contract.md`; `ref/partition.md` drops the `RESULT_STORE` dispatch.
+
+## 2.0.0 · 2026-10-01 · One dataset, one board in insights/; Logic · Work · Report (JL 261001)
+
+- A board lives at `<Project>/insights/<Dataset>-InsightBoard/` (the Project's `insights/`
+  world comes back; `haipipe-project`). It holds the registers, `reports/` and the light run
+  results in `_results/`; heavy files go to `ProjectResult` with a pointer.
+- Data and Information are answered by task runs, joined to questions by each config's
+  `answers:` line; the code lives in one DIKW task Block (`b5N_<topic>_dikw`, Jobs j1x–j4x by
+  level). Knowledge claims in a report; Wisdom keeps its page and signed handoff.
+- `ref/board-contract.md` rewritten: three columns, the climb over runs and reports, the three
+  pens (register · report · handoff), the concrete board, the DIKW Block, boards made before
+  reports. Register cells settle as `✅ report`; questions may carry an Expected line.
+- Verbs: `climb` finds or adds the answering config and runs it; `verdict` writes a report;
+  `check` traces every number to a named result.
+
+## 1.7.0 · 2026-10-01 · Reports (JL 261001)
+
+- New `report` verb and `ref/report.md`: one Markdown file per question per partition at
+  `reports/<partition>/<QID>.md` (headline, answer, strength, limit, the runs it read), not a
+  Page Folder. The Insight workbench shows it as the Report column beside Logic and Work.
+
 ## 1.6.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

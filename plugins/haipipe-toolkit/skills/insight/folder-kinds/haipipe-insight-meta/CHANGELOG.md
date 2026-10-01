@@ -1,5 +1,14 @@
 # haipipe-insight-meta · version history
 
+
+## 1.5.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- MT00's partition register has no letter column; partitions are named by one lowercase word.
+
+## 1.4.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- MT00 names the board's ONE extract (the board's identity; a second extract is a second board) and each partition row names the config stem every task uses for the cut.
+
 ## 1.3.0 — 2026-09-20
 
 - Move the resource owner to `insight/folder-kinds/` and remove Phase metadata.

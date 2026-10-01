@@ -22,9 +22,8 @@ box, a CI runner, a live website. The code is here; the machine is not. So the
 only thing that crosses back is TEXT that a person pastes, and the only honest
 workflow is to reason from that text plus the code in this repo.
 
-This is a METHOD, not an engine specialist. It lives in `0_utils` beside
-`field-test`, which runs the same failure-to-rule loop against a PLANNED
-run; this one runs it against a REAL failure. The engine-specific commands live
+This is a METHOD, not an engine specialist. It lives in `0_utils` and runs the
+failure-to-rule loop against a REAL failure. The engine-specific commands live
 in a profile, never in this file.
 
 ```
@@ -417,5 +416,4 @@ Refs
 ```
 ref/profile-cms-stata.md    the CMS secure server: commands, codes, gate, register
 ref/issue-file-template.md  the generic remote-error report shape
-../field-test/       the same loop against a PLANNED run
 ```

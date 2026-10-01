@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 
 from live import design_actions as acts
 from live.design import (
+    with_link,
     because_rule,
     because_words,
     design_contract_status,
@@ -32,7 +33,7 @@ def legacy_fixture(root: Path) -> tuple[Path, Path]:
 
 
 def v2_fixture(root: Path, stem: str = "Design-01-all-patients-prescription-review-sms",
-               specs: list | None = None) -> tuple[Path, Path, dict]:
+               specs: list | None = None, legacy_names: bool = False) -> tuple[Path, Path, dict]:
     """A DesignBoard reading a sibling InsightBoard, laid out like the demo."""
     build_insight_board(root / "DesignWorkbench-Demo-260916-InsightBoard")
     board = root / "DesignWorkbench-Demo-260916-DesignBoard"
@@ -50,7 +51,8 @@ def v2_fixture(root: Path, stem: str = "Design-01-all-patients-prescription-revi
         encoding="utf-8")
     spec = demo_specs()[stem]
     folder = board / "2-Design" / stem
-    runs = build_design_folder(folder, stem, spec["title"], spec["opening"], specs or spec["specs"])
+    runs = build_design_folder(folder, stem, spec["title"], spec["opening"], specs or spec["specs"],
+                               legacy_names=legacy_names)
     return board, folder / f"{stem}.md", runs
 
 
@@ -136,19 +138,29 @@ class DesignItemsTest(unittest.TestCase):
             rendered = render_design(design_snapshot(page, board), "design", "ITEM01")
             for label in ("Hi, it&#x27;s Dr. {NAME}&#x27;s office.", "follows the evidence",
                           "built on evidence", "ready for Delivery",
-                          "Page level", "Queue revise · agent", "New Design Item",
+                          "Page level", "Queue revise · agent", 'data-label="Add a design"',
                           # the explanation reads as blocks, the insight as a flow (JL 260918)
-                          "<th>Why this design</th>", "<th>From insight to design</th>", "<th>The bet</th>",
-                          "<th>Rules</th>", "<table class=explain>",
-                          "<span class=rung>Wisdom</span>", "<b>full-W01</b>", "✅ signed",
+                          # open, the card keeps the closed row's three columns (JL 261001)
+                          "<div class=cardgrid>", '<div class="col why">', '<div class="col eval">',
+                          "<h4 class=colh>Design move</h4>", "<summary>Insight Evidence · ", "<summary>Design Runs</summary>",
+                          "<summary>Acceptance · ", "<summary>Expected effect · ",
+                          "not tested yet, judged at the send",
+                          "<span class=lvl>Wisdom</span>", "<b>Send salience</b>", " · signed",
                           # named criteria (length, optout) still mark their rules: audit M5
                           "5 of 5 pass",
-                          "<span class=rung>This design</span>",
+                          "Rules it implies: DO send",
                           # each item folds into one fixed-height row; the selected one opens (JL 260918)
-                          "<details class=itemfold open><summary><b>ITEM01", "<span class=peek>Hi, it&#x27;s Dr.",
-                          "<details class=itemfold><summary><b>ITEM02", "data-fold=open", "class=itembody", ".itembody .pair .pic{position:sticky",
-                          "expected</span>salience stays the best arm",
-                          "wrong if</span>a concurrently fielded"):
+                          # a card row in three columns, under the design goal in brief (JL 261001)
+                          '<details class="itemfold cardrow" open><summary><span class=c1><span class=line><b>Design 1</b> <span class=glyph',
+                          "<div class=task>", "<div class=cardhead>",
+                          "<span>Rationale</span>", "<span>Evaluation</span>", "<span class=mut>acceptance</span>",
+                          "<span class=mut>· effect not tested yet</span>",
+                          "<span class=mut>Rests on</span> Send salience",
+                          '<details class="itemfold cardrow"><summary><span class=c1><span class=line><b>Design 2</b> <span class=glyph',
+                          "<summary>Design Runs</summary>",
+                          "data-fold=open", "class=itembody", ".itembody .pair .pic{position:sticky",
+                          "Expected</span>salience stays the best arm",
+                          "Wrong if</span>a concurrently fielded"):
                 self.assertIn(label, rendered)
             # the strip of Runs and the all-items bar are gone (JL 260921)
             for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01",
@@ -158,8 +170,8 @@ class DesignItemsTest(unittest.TestCase):
                 self.assertNotIn(jargon, rendered)
             # the design on the left, its explanation on the right; an SMS reads as a phone bubble
             # with the link where the sending system puts it (JL 260918)
-            for label in ('<div class="pair text"><div class=pic><div class=phone>', "<div class=bubble>",
-                          ": <span class=link>link</span> Reply STOP to opt-out</div>", "<div class=facts>"):
+            for label in ('<div class="col pic"><div class=phone>', "<div class=bubble>",
+                          ": <span class=link>{LINK}</span> Reply STOP to opt-out</div>"):
                 self.assertIn(label, rendered)
             # a step that needs a click says "you", never the reader's name (JL 260921)
             for noise in ("current Design Folder", "handoffs signed", "waiting on JL", "register "):
@@ -177,8 +189,8 @@ class DesignItemsTest(unittest.TestCase):
             self.assertNotIn("sha256", ready)        # no content hashes (JL 260928)
             rendered = render_design(snapshot, "delivery").split('data-space="delivery">', 1)[1]
             # Delivery Space lists only designs whose independent Verify passed.
-            self.assertIn("<tr><th>item</th><th>design</th></tr>", rendered)
-            for text in ("ITEM01", "Send the tested winner, verbatim", "Hi, it&#x27;s Dr. {NAME}&#x27;s office.",
+            self.assertIn("<tr><th>design</th><th>the text, word for word</th></tr>", rendered)
+            for text in ("Design 1", "Send the tested winner, verbatim", "Hi, it&#x27;s Dr. {NAME}&#x27;s office.",
                          ):
                 self.assertIn(text, rendered)
             for status in ("adopted", "sha256", "waiting on", "data-action=adopt"):
@@ -235,7 +247,10 @@ class DesignActionsTest(unittest.TestCase):
             out, err = perform_action(page, self.payload(page, action="commission-release", item="ITEM03",
                                                          actor="JL", words="Release ITEM03 for a first draft"))
             self.assertIsNone(err, err)
-            self.assertTrue(out["run"].startswith("rd07_commission_"))
+            # a new run takes the current name; the old run number becomes its sequence (JL 261001)
+            self.assertRegex(out["run"], r"^run-design-commission-\d{4}-design-3$")
+            ticket = (page.parent / "runs" / f'{out["run"]}.yaml').read_text(encoding="utf-8")
+            self.assertIn("\nsequence: 7\n", ticket)
             snapshot = design_snapshot(page, board)
             item = {i["id"]: i for i in snapshot["items"]}["ITEM03"]
             self.assertEqual((item["state"], item["waiting"]), ("commissioned", "you · queue the draft"))
@@ -295,7 +310,7 @@ class DesignActionsTest(unittest.TestCase):
             for gone in ("data-action=adopt", "data-action=decline", "Adopt", "Decline", "Release commission"):
                 self.assertNotIn(gone, rendered)
             self.assertIn("ready for Delivery", rendered)
-            self.assertIn("data-action=add-item", rendered)  # the register stays open
+            self.assertIn('data-label="Add a design"', rendered)  # the register stays open, from the Runs panel
 
     def test_queue_verify_on_an_evidence_informed_item_carries_the_evidence(self):
         with TemporaryDirectory() as td:
@@ -336,6 +351,34 @@ class DesignActionsTest(unittest.TestCase):
             self.assertEqual(err, "unknown action 'revise'")
 
 
+class RunNameTest(unittest.TestCase):
+    """Design Runs are named run-design-<step>-<MMDD>-design-<N> (JL 261001); old rd names rename once."""
+
+    def test_rename_keeps_order_identity_and_every_link(self):
+        import importlib.util
+        with TemporaryDirectory() as td:
+            board, page, runs = v2_fixture(Path(td), legacy_names=True)
+            folder = page.parent
+            before = design_snapshot(page, board)
+            spec = importlib.util.spec_from_file_location(
+                "rename_runs", Path(__file__).resolve().parents[3] / "design" / "haipipe-design-unit" / "scripts" / "rename_runs.py")
+            rename = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(rename)
+            pairs = rename.plan(folder)
+            self.assertTrue(pairs and all(new.startswith("run-design-") for _, new, _ in pairs))
+            rename.apply(folder, pairs)
+            self.assertEqual(list((folder / "runs").glob("rd*_*.yaml")), [])
+            after = design_snapshot(page, board)
+            # Old names no longer pass the records check (JL 261001); renamed, the folder reads
+            # exactly as one built with full names from the start.
+            fresh_board, fresh_page, _ = v2_fixture(Path(td) / "fresh")
+            fresh = design_snapshot(fresh_page, fresh_board)
+            self.assertEqual([i["state"] for i in after["items"]], [i["state"] for i in fresh["items"]])
+            self.assertEqual([r["number"] for r in after["runs"]], [r["number"] for r in before["runs"]])
+            self.assertEqual(len(after["audit"]), len(fresh["audit"]))    # no record is broken by the rename
+            self.assertEqual(rename.plan(folder), [])                     # once only
+
+
 class GoalAndInsightSpaceTest(unittest.TestCase):
     def test_goal_space_reads_the_brief_line_that_names_the_folder(self):
         with TemporaryDirectory() as td:
@@ -346,18 +389,53 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             self.assertEqual((goal["wanted"], goal["registered"], goal["ready"]), (2, 2, 1))
             self.assertEqual(goal["sentence"], "2 prescription review SMS designs for all patients")
             rendered = render_design(snapshot, "goal")
-            for label in ("Goal Space", "Design Space", "Insight Space", "Run Space", "Delivery Space",
-                          "2 prescription review SMS designs for all patients", "2 wanted · 2 registered · 1 ready",
-                          "<th>their job</th>", "· design tasks", "Insight board", "1 of 1 insights currently eligible"):
+            for label in ("Design Goal Space", "Design Space", "Delivery Space", "<h2>The design task</h2>",
+                          "2 prescription review SMS designs for all patients", "2 designs requested · 2 registered · 1 ready",
+                          "<td class=key>Patient task</td>", "<td>Prescription review</td>", "class=runs-panel"):
                 self.assertIn(label, rendered)
+            for gone in ("Insight Space", "Run Space", "Insight board", "Run types in this Space"):  # JL 261001
+                self.assertNotIn(gone, rendered)
             self.assertNotIn("line R1", rendered)  # the Brief's row id is a key, never a name on screen
+
+    def test_design_goal_space_shows_the_design_input_with_its_sources_and_gaps(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            (board / "design-goal.md").write_text(
+                "Design goal\n===========\n\nAim\n---\n\n"
+                "value wanted: more patients review their prescription <- BR00 §3\n"
+                "for whom: all patients <- BR00 §2\n\n"
+                "Venue\n-----\n\nlength: ≤ 140 characters <- register\nlinks: ? <- not stated anywhere\n\n"
+                "Resources\n---------\n\nsend budget: ?\n\n"
+                f"Task · {page.parent.name}\n------\n\nfor whom: all patients · 444,691 invitations <- BR00 §8\n",
+                encoding="utf-8")
+            rendered = render_design(design_snapshot(page, board), "goal")
+            goal = rendered.split('data-space="goal">', 1)[1].split("<section class=runs-panel", 1)[0]
+            for label in ("<h3>Aim</h3>", "more patients review their prescription",
+                          "all patients · 444,691 invitations",           # the task section overrides the board line
+                          "Channel requirements · SMS", "<th>SMS standard</th>", "160 chars per segment",  # the channel profile's own standard
+                          "<h3>Requirements</h3>", "Acceptance checks", "<h3>Inputs and resources</h3>",
+                          '<table class="grid input">', "<th>Specification</th>", "<span class=mut>Not specified</span>"):
+                self.assertIn(label, goal)
+            self.assertNotIn("<td>all patients</td>", goal)
+            self.assertNotIn("inputs not stated yet", goal)               # no gap count on top (JL 261001)
+            for gone in ("BR00 §3", "<th>source</th>", "class=src"):     # no source on screen (JL 261001)
+                self.assertNotIn(gone, goal)
+
+    def test_link_slot_shows_after_the_ask_colon_without_touching_the_text(self):
+        self.assertEqual(with_link("Hi, it's Dr. {NAME}'s office. View now: Reply STOP to opt-out"),
+                         "Hi, it's Dr. {NAME}'s office. View now: {LINK} Reply STOP to opt-out")
+        self.assertEqual(with_link("Dr. {NAME}'s office: Ready? View now: Reply STOP to opt-out"),
+                         "Dr. {NAME}'s office: Ready? View now: {LINK} Reply STOP to opt-out")   # the last colon
+        kept = "Review it: {LINK} Reply STOP to opt-out"
+        self.assertEqual(with_link(kept), kept)                         # a text that carries it stays as it is
+        self.assertEqual(with_link("no colon here"), "no colon here")
 
     def test_goal_space_is_truthful_without_a_brief_line(self):
         with TemporaryDirectory() as td:
             board, page = legacy_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board))
-            self.assertIn("No Brief under 0-BR-brief/", rendered)
-            self.assertIn("none declared by the owning board", rendered)
+            self.assertIn("No design task file under 0-BR-brief/", rendered)
+            self.assertNotIn("Insight board", rendered)          # no insight line at all (JL 261001)
 
     def test_insight_space_says_what_each_insight_says_and_what_is_unused(self):
         with TemporaryDirectory() as td:
@@ -372,8 +450,8 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             self.assertTrue(row["pinned"])
             self.assertEqual(snapshot["insight_space"]["unused"], [])   # the one handoff is used
             rendered = render_design(snapshot, "insight")
-            for label in ("<th>what it says</th>", "signed insight · ", "in the run record",
-                          "then: Design may field"):
+            for label in ("<span class=lvl>Wisdom</span>", "<b>Send salience</b>", " · signed",
+                          "Rules it implies: DO send"):            # the card's Supporting insight ladder
                 self.assertIn(label, rendered)
 
     def test_insight_space_flags_an_item_built_on_evidence_with_none_named(self):
@@ -395,8 +473,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             block = next(b for b in snapshot["insight_space"]["items"] if b["item"]["id"] == "ITEM02")
             self.assertTrue(block["needed"])
             rendered = render_design(snapshot, "insight")
-            self.assertIn("built on evidence, but no insight is named yet", rendered)
-            self.assertIn("needs an insight", rendered)
+            self.assertIn("No insight page named yet.", rendered)
 
 
 class BecauseRuleTest(unittest.TestCase):
@@ -437,7 +514,7 @@ class BecauseRuleTest(unittest.TestCase):
             first = snapshot["items"][0]
             self.assertEqual(first["because_rule"]["state"], "rule")
             rendered = render_design(snapshot, "design")
-            self.assertIn("<th>Because</th>", rendered)
+            self.assertIn("<h4 class=colh>Rule followed</h4>", rendered)
             self.assertIn("send `salience` to the whole population", rendered)
             first["stance"] = "challenge"
             self.assertIn("if it loses, the rule holds", render_design(snapshot, "design"))
@@ -468,7 +545,6 @@ class DesignSignalTest(unittest.TestCase):
             self.assertEqual(snapshot["insight"]["status"], "bound")
             rendered = render_design(snapshot)
             self.assertNotIn("design stays blocked", rendered)
-            self.assertIn("1 of 1 insights currently eligible", rendered)  # Goal Space names the board
 
     def test_unsigned_handoff_warns_in_the_header(self):
         with TemporaryDirectory() as td:
@@ -545,7 +621,7 @@ class BatchAndDraftTest(unittest.TestCase):
             card = render_design(snapshot, "design")
             self.assertIn('<img class=shot src="/2-Design/', card)                 # served beside the board
             self.assertIn("<summary>the HTML behind this screen</summary>", card)  # the source is one click away
-            self.assertIn("<div class=pair>", card)
+            self.assertIn('<div class="col pic"><img class=shot', card)
             self.assertIn("No design is ready yet", render_design(snapshot, "delivery"))
             # A picture of another draft is never shown for this one.
             manifest.write_text(json.dumps([{"item": "ITEM01", "render": "screen-ITEM01-v1.png",
@@ -565,7 +641,7 @@ class BatchAndDraftTest(unittest.TestCase):
             self.assertIn(snapshot["items"][1]["title"], folded)
             self.assertNotIn(snapshot["items"][1]["title"], overview.split('data-space="delivery"')[-1])
             self.assertIn(snapshot["items"][0]["title"], overview)
-            cards = render_design(snapshot, "design").split('data-space="design"')[-1].split('data-space="insight"')[0]
+            cards = render_design(snapshot, "design").split('data-space="design">')[1].split('<section class=runs-panel')[0]
             live, _, folded_cards = cards.partition("<details class=retired>")
             self.assertIn('id="item-ITEM02"', folded_cards)                 # Design Space folds it the same way
             self.assertNotIn('id="item-ITEM02"', live)
@@ -655,7 +731,7 @@ class BatchAndDraftTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "insight")
-            self.assertIn("rules it implies: DO send", rendered)
+            self.assertIn("Rules it implies: DO send", rendered)
             self.assertIn("DO NOT vary the message by age, gender, send day or region", rendered)
 
 
@@ -777,7 +853,8 @@ class AuditFixesTest(unittest.TestCase):
             ver = next(r for r in item["runs"] if r["kind"] == "verify")
             self.assertTrue(str(ver["targets"][0]["path"]).startswith(f'results/{gen["id"]}/'))
             card = render_design(design_snapshot(page, board), "design", "ITEM01")
-            self.assertIn(f'independent review {ver["id"].split("_")[0]}', card)                   # N2
+            from live.design import run_short
+            self.assertIn(f'independent review {run_short(ver["id"])}', card)                      # N2
             self.assertIn("ready for Delivery", card)
 
     def test_a_legacy_ds_folder_is_refused(self):

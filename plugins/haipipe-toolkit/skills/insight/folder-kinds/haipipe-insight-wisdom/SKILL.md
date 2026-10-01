@@ -6,8 +6,8 @@ description: >-
   is the only evidence a DesignBoard may bind. Trigger: insight wisdom,
   counsel, design handoff, folder-kind wisdom, /haipipe-insight-wisdom.
 metadata:
-  version: "1.4.2"
-  last_updated: "2026-09-29"
+  version: "1.8.0"
+  last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: wisdom
   primary_face: page
@@ -28,8 +28,14 @@ exporting the handoff.
 
 ## Position
 
-Wisdom answers `QW` from accepted Knowledge evidence and crosses to
-Design only through a signed handoff. D/I/K prose never crosses directly.
+Wisdom answers `QW` from accepted Knowledge pages and crosses to Design
+only through a signed handoff. It is the one level that stays a Page Folder
+(JL 261001), because a DesignBoard binds its signed handoff by path; it lives
+in its partition's folder of the board (`1-full/W<NN>-full-<slug>/`). Data,
+Information and Knowledge answers never cross directly. A Wisdom
+question's evidence needs are cite (Knowledge needs) and judge only
+(`../../haipipe-insight/ref/evidence-needs.md`), so its page has no `runs/`; a compute need on a QW
+row is misrouted and becomes a Knowledge successor question.
 
 ## Folder Kind
 
@@ -40,8 +46,9 @@ button text, send timing, variants, or another Design artifact.
 ## Input
 
 One registered QW ask; Application audience/context/decision; source versions;
-and unresolved gaps. Its epistemic parent is either named local K rows with
-strength, rivals, and boundary, or one exact
+and unresolved gaps. Its epistemic parent is either named local Knowledge
+pages (`<n>-<partition>/K<NN>-<partition>-<slug>/`) with strength, rivals and boundary, or
+one exact
 `Task Insight instance/item@execution-version/RF<n>` plus Result path,
 accepted by the workflow's pre-climbed
 external-parent assertion. The second form is evidence input, not a handoff.
@@ -49,14 +56,16 @@ external-parent assertion. The second form is evidence input, not a handoff.
 ## Page Face
 
 Use `Context → Knowledge Cited → Counsel → Forbidden Overreach → Design
-Handoff`. Every `W<n>` carries an exact Page v2 `PARENTS` record for its K
-parent. For a bridge Folder, `Knowledge Cited`
+Handoff`. Every `W<n>` names the Knowledge page it rests on, by question id
+and partition (`← QK2 · full`, the page its register cell names), and cites
+the needs it answers (`[QW1.E1]`), bound in the page's `answers.yaml`; on a board made before page tickets, an exact Page
+v2 `PARENTS` record for its K page. For a bridge Folder, `Knowledge Cited`
 names exact external K/W/RF row ids and the item execution through a Supporting
 Result and its local Evidence Run; it does
 not copy them or pretend the RF is local K. The handoff carries finding,
 strength plus the Knowledge owner's evidence-bound strength basis, boundary,
 sources, design consequence, forbidden overreach, gaps, `serves:`, and a final
-`signed:` token. Keep the basis short and tied to the cited K/I rows; do not
+`signed:` token. Keep the basis short and tied to the cited Knowledge pages; do not
 relabel it as a cross-domain probability.
 
 ## Task Face
@@ -103,7 +112,8 @@ Folder's GI conditions still govern citation and register settlement.
 ## Gate and Closure
 
 GI5 passes only for an exported W handoff after the Page reaches CHECK/CLOSE,
-counsel stays inside its exact current K parents, forbidden overreach is
+`haipipe-insight-check` finds no overclaim on its cell, counsel stays inside
+its exact current Knowledge pages, forbidden overreach is
 visible, the handoff reads standalone, and `signed: ✅ <initials> <YYMMDD>`
 records a person's decision. `signed: ⬜` is a clean stop, not permission to
 infer approval. A bridge also requires the external-parent assertion to remain
@@ -116,7 +126,7 @@ does not perform or rename it.
 
 Export only the signed Design Handoff. A DesignBoard freezes its exact
 path/Page-version, signature, and GI6 settlement receipt as input
-and never re-derives from D/I/K Folders. It creates no PageX lane or synthetic
+and never re-derives from Data, Information or Knowledge answers. It creates no PageX lane or synthetic
 Run. A deferring W Folder exports only a
 pointer to the template handoff. A Task RF never crosses this boundary directly:
 the local signed W is the only Design authority.
@@ -124,6 +134,7 @@ the local signed W is the only Design authority.
 ## Files
 
 - Page and handoff: `<WisdomFolder>/<WisdomFolder>.md`
+- Binding: `<WisdomFolder>/answers.yaml` (cite and judge needs only)
 - External-parent binding, when used:
   `<WisdomFolder>/draft/<stem>-evidence-items.md` and its Supporting/local Results
 - Cross-board binding: the consuming Design Page's Evidence Workspace

@@ -1,5 +1,23 @@
 # haipipe-insight-question · version history
 
+## 1.7.0 · 2026-10-01 · Evidence needs on every row (JL 261001)
+
+- **What would answer it** carries the question's evidence needs, `<QID>.E<n>` (compute · cite · judge, with `pass:` / `from:`), and a **Needs agreed** line a person signs. Contract: `haipipe-insight/ref/evidence-needs.md`.
+- GI1 requires needs with kinds legal at the rung; GI6 requires `haipipe-insight-check` to find no overclaim on the cell. A ✅ cell the check fails drops to 🟡.
+- The handoff to the next rung carries the needs.
+
+## 1.6.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Settled cells read `✅ <L><NN>-<partition>`; Question Groups `QG-<partition>-<L>`; refusal token `🚫 full-only`.
+
+## 1.5.0 · 2026-10-01 · Cells name the answering page (JL 261001)
+
+- A settled cell names its answering page (`✅ FI02`, `🟡 <page id> final`); the page names the question back (`answers QI2`). The `✅ report` token and `reports/` path are gone.
+
+## 1.4.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- Register divisions are `#### N · <QID> · <Short Name>` with The ask · Why now · What would answer it · Expected · Where it stands; the Queue row stays short. New optional **Expected** line: a recorded prior, written before any run, never evidence. Cells settle `✅ report`.
+
 ## 1.3.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

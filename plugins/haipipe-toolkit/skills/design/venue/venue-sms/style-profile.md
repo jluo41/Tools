@@ -81,7 +81,7 @@ The tone-by-audience rows above are the full tone rules for this venue.
 ## Recorded identity
 
 The register names `ITEM01`; its Generate Ticket names, for example,
-`rd02_generate_item01`. The paired Result lists `content/sms.txt` by path.
+`run-design-generate-0918-design-1`. The paired Result lists `content/sms.txt` by path.
 The released Commission config owns stance, design intent and acceptance rules;
 `runtime.yaml` records Run lifecycle, and the Item state is derived from Runs.
 These identifiers belong in records, not recipient copy. Independent Verify pass

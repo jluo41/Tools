@@ -169,22 +169,22 @@ Run points to paired `working.md`, root `runtime.yaml` and one append-only
 same Markdown file.
 The workflow, not this presenter, owns the human acceptance and close state.
 
-Current Page Runs use four explicit RP kinds: `rp-struct-NN` for the fused
+Current Page Runs use four explicit RP kinds: `run-structure-<MMDD>-<slug>` for the fused
 SHAPE + SURVEY Structure Run (structure list, Outline Bullets, Point roles, and
-evidence route decisions), `rp-scratch-NN_<target>` for human rough-thinking
-capture, `rp-sec-NN` for Section-level writing, and
-`rp-para-NN_Pxx[-Pyy]` for fixed paragraph or paragraph-group writing. A
+evidence route decisions), `run-scratch-<MMDD>-<slug>` for human rough-thinking
+capture, `run-section-<MMDD>-<slug>` for Section-level writing, and
+`run-paragraph-<MMDD>-<slug>` for fixed paragraph or paragraph-group writing. A
 Scratch target is a Section (`C1`) or whole paragraph group (`C1.P1`) in the
 current Outline grammar. There is no separate subsection node, and B/symbol
-rows are not Scratch targets. The initial Structure Run is `rp-struct-01`; examples of later
-valid identities are `rp-scratch-01_C1.P1`, `rp-struct-02`, `rp-sec-01`, and
-`rp-para-01_P03-P05`. SHAPE and SURVEY are Steps/cycles of `rp-struct-01`,
+rows are not Scratch targets. The initial Structure Run is `run-structure-<MMDD>-<slug>`; examples of later
+valid identities are `run-scratch-<MMDD>-<slug>`, `run-structure-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`, and
+`run-paragraph-<MMDD>-<slug>`. SHAPE and SURVEY are Steps/cycles of `run-structure-<MMDD>-<slug>`,
 never separate planning cards.
 
 Several people may participate in one Structure card. The presenter keeps one
 Run and one paired Result, while the opened detail may show `participants` and
 the current Step's `contributors`. A new participant or review pass does not
-mint another RP identity; `rp-struct-02` requires a genuinely independent
+mint another RP identity; `run-structure-<MMDD>-<slug>` requires a genuinely independent
 post-closure structural goal.
 
 The presenter shows the exact RP kind and preserves the distinction that a
@@ -192,10 +192,10 @@ Scratch Run is a small human capture interaction: Save keeps it open and a
 human-confirmed Summary closes it. It does not edit Draft prose or require a
 review cycle. A complete Section draft → review/rating → diagnose → revise
 cycle is one Step inside the Section Run, not a new Run. A later independently commissioned
-Section session receives another `rp-sec-NN` identity; a same-target
+Section session receives another `run-section-<MMDD>-<slug>` identity; a same-target
 paragraph revisit normally reopens its existing Run in a new Version. The
-Page-local RP sequences are independent from Task `rNN`, so both
-`rp-para-01_P03` and `r01` may exist in one Folder. The presenter never assigns `rp` to delegated
+Page Run names are independent from Task `rNN`, so both
+`run-paragraph-<MMDD>-p03` and `r01` may exist in one Folder. The presenter never gives a Page name to delegated
 paragraph-writing, Discovery, or another Task Run. There is no compatibility
 label or resolver fallback: an identity whose kind or paragraph target does
 not match its scope is shown as Held with an invalid-identity finding.
@@ -210,7 +210,7 @@ record internals in a separate collapsed Technical details region. Do not put
 frontmatter, Goal/Scope/Version metadata, or complete journal dumps in
 the default reading path.
 Historical prose and code blocks must wrap without widening the phone viewport.
-For `rp-struct-01`, open the Result with the Page's Structure text (the same
+For `run-structure-<MMDD>-<slug>`, open the Result with the Page's Structure text (the same
 plain text Draft Space shows at its top, read from the selected Outline): one
 line per division and paragraph, so the saved result is read beside the
 structure it settles. It is plain text and needs no phone-specific projection.
@@ -272,7 +272,7 @@ Structure is the single SHAPE+SURVEY structure card; Scratch is the
 human's rough-thinking capture card; Section is the section-writing card;
 Paragraph is the paragraph-writing card; Revise is the change ledger card. Review
 feedback on a candidate is input to the Section or Paragraph Run, expressed as
-`Paragraph (Review & Modify)`. Revise is its own Run (`rp-revise-NN_<target>`,
+`Paragraph (Review & Modify)`. Revise is its own Run (`run-revise-<MMDD>-<slug>`,
 `haipipe-page-revise`) with two doors: the person edits the paragraph's Draft
 in one box in Draft Space → Revise, and every Save appends one Step whose
 ledger holds one red/green card per changed Bullet with Decision `accept`; or an

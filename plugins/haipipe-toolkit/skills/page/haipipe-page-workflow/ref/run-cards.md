@@ -32,7 +32,7 @@ Run identity.
 💬 PROMPT   /haipipe-page run {page} from CONTEXT: refresh the Context record of {page}.
 ```
 
-## `Page.interactive-writing.structure` · `rp-struct-01`
+## `Page.interactive-writing.structure` · `run-structure-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   whole-Page map, ordered Bullets, paragraph jobs, evidence decisions
@@ -40,14 +40,14 @@ Run identity.
 ⚙ ACTION   SHAPE and SURVEY as internal Steps
 🚪 GATE     Shape and Survey contract explicitly accepted
 🔀 ROUTE    SELF/next Step · NEW_VERSION · writing/evidence Run · NEW_RUN · HOLD
-🧾 RECEIPT  runs/rp-struct-01.md + results/rp-struct-01/runtime.yaml + Version journal
+🧾 RECEIPT  runs/`run-structure-<MMDD>-<slug>`.md + results/`run-structure-<MMDD>-<slug>`/runtime.yaml + Version journal
 🖥 SPACE    Draft · Evidence · Runtime
 🧩 SKILL    haipipe-page-structure
 🔘 BUTTON   Structure revise · Draft · ^(?:rp-struct-|run-structure-) · views table
 💬 PROMPT   /haipipe-page run {page} run-structure: revise ## 1 Structure of {plan} (headings, paragraph jobs, Bullet Points); no sentence changes.
 ```
 
-## `Page.interactive-writing.scratch` · `rp-scratch-NN_<target>`
+## `Page.interactive-writing.scratch` · `run-scratch-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one Section (C1) or whole paragraph group (C1.P1); no B/symbol target
@@ -66,7 +66,7 @@ Scratch does not edit the Outline's Draft prose. The registry is a live
 index beside the plan, while the paired Result is the durable interaction
 receipt. A closed Scratch Run is immutable.
 
-## `Page.interactive-writing.section` · `rp-sec-NN`
+## `Page.interactive-writing.section` · `run-section-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one named Section drafting/revision goal
@@ -81,7 +81,7 @@ receipt. A closed Scratch Run is immutable.
 💬 PROMPT   /haipipe-page revise {page} {target}: review the whole section in ## 3 Draft of {plan}; keep every Point; show Before / After per paragraph.
 ```
 
-## `Page.interactive-writing.paragraph` · `rp-para-NN_Pxx[-Pyy]`
+## `Page.interactive-writing.paragraph` · `run-paragraph-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one fixed paragraph or contiguous paragraph group
@@ -99,7 +99,7 @@ receipt. A closed Scratch Run is immutable.
 Ordinary feedback is a Step. Same-target reopening is a Version. Changed goal
 or target is a new Run.
 
-## `Page.revise` · `rp-revise-NN_<target>`
+## `Page.revise` · `run-revise-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one target's frozen Before and After texts
@@ -107,7 +107,7 @@ or target is a new Run.
 ⚙ ACTION   record every change as a ledger row: Before, After, kind, Why, decision
 🚪 GATE     every difference has a decision
 🔀 ROUTE    SELF/next Step · NEW_RUN · HOLD
-🧾 RECEIPT  change ledger in results/rp-revise-NN_<target>/
+🧾 RECEIPT  change ledger in results/`run-revise-<MMDD>-<slug>`/
 🖥 SPACE    Draft
 🧩 SKILL    haipipe-page-revise
 🔘 BUTTON   Revise edits · Draft · ^(?:rp-revise-|run-revise-) · views revise
@@ -147,7 +147,7 @@ or target is a new Run.
 💬 PROMPT   /haipipe-page export {page} {target}: rerun this lane's one Delivery Run (page.py export --lane), then say which files changed. No new Run id, no receipt, no hash.
 ```
 
-## `Page.auto-writing` · `rp-auto-NN_<target>`
+## `Page.auto-writing` · `run-auto-write-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one paragraph or Section whose Points are settled
@@ -162,7 +162,7 @@ or target is a new Run.
 💬 PROMPT   /haipipe-page auto-write {page} {target}: write the sentences of {target} from its Points, review them against the rubric, rewrite, then show me Before / After.
 ```
 
-## `Page.evidence-embed` · `rp-embed-NN_<target>`
+## `Page.evidence-embed` · `run-evidence-embed-<MMDD>-<slug>`
 
 ```text
 🎯 TARGET   one paragraph or the whole Page whose evidence is accepted

@@ -1,6 +1,11 @@
 # haipipe-design-workflow · version history
 
-0.4.0 current · 260929 · outline/ to draft/ in current-layout prose (JL 260929) (version unchanged at 0.4.0; the Design family version is frozen)
+0.4.0 current · 261001 · Run cards (JL 261001) (version unchanged at 0.4.0; the Design family version is frozen)
+- New `references/run-cards.md`: one card per run type of the Design Workbench Table, in the
+  Paper format plus `🤖 AGENT` and `✍️ SIGNS` lines. This skill routes and gates; it is no
+  card's skill. `table-workbench --check --cards` keeps the cards and the table in step.
+
+0.4.0 · 260929 · outline/ to draft/ in current-layout prose (JL 260929) (version unchanged at 0.4.0; the Design family version is frozen)
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
 
 0.4.0 · 260928 · No content hashes (JL 260928) (version unchanged at 0.4.0; the Design family version is frozen)

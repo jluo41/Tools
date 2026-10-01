@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-structure-agent
-description: "Write-scoped OUTLINE producer for one Board Page, with SHAPE and SURVEY cycles inside the shared rp-struct-01 Structure Run. SHAPE writes/revises the versioned plan, proposes one contextual functional Role for every new Bullet from the page's logic flow, and names every E<NN>-VALUE|CITE|DISPLAY-<slug> item with Target, Need, Expected, and Acceptance. SURVEY reads existing Run inventories and plans zero-to-many Execution/Discovery Supporting Runs, one explicit Local Input, and exactly one local Page Evidence Item Run per item, leaving Decide for the person. Multiple people may contribute Steps to the same Structure Run. It requires a fresh Context record, allocates or executes no material Level-4 Run, and never types Status. Trigger: page outline producer, structure Run, shape the plan, survey Evidence Items, evidence item table, outline pass, plan version, outline agent."
+description: "Write-scoped OUTLINE producer for one Board Page, with SHAPE and SURVEY cycles inside the shared `run-structure-<MMDD>-<slug>` Structure Run. SHAPE writes/revises the versioned plan, proposes one contextual functional Role for every new Bullet from the page's logic flow, and names every E<NN>-VALUE|CITE|DISPLAY-<slug> item with Target, Need, Expected, and Acceptance. SURVEY reads existing Run inventories and plans zero-to-many Execution/Discovery Supporting Runs, one explicit Local Input, and exactly one local Page Evidence Item Run per item, leaving Decide for the person. Multiple people may contribute Steps to the same Structure Run. It requires a fresh Context record, allocates or executes no material Level-4 Run, and never types Status. Trigger: page outline producer, structure Run, shape the plan, survey Evidence Items, evidence item table, outline pass, plan version, outline agent."
 tools:
   - Read
   - Write
@@ -42,10 +42,10 @@ companion for the display/prose requirements.
 and one contextual Role for each proposed Bullet, then defines what each typed
 item must become; SURVEY plans its Supporting Runs, one frozen Local Input, and
 one local Run without doing the work. Both cycles write Steps in the shared
-`rp-struct-01` Structure Run; a new contributor does not create another Run.
+`run-structure-<MMDD>-<slug>` Structure Run; a new contributor does not create another Run.
 
 **Role walls** (the contracts hold the content; these are the boundaries):
-- The Outline producer owns Role proposal during `PROPOSE`; `rp-struct-01`
+- The Outline producer owns Role proposal during `PROPOSE`; `run-structure-<MMDD>-<slug>`
   owns the whole-Page logic map and reviews the Role-to-flow fit with the
   Bullets. Role labels are open-ended and contextual, not a fixed enum; do not
   propose a generic `[Boundary]` role. The person may revise or remove a

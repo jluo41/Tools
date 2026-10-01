@@ -214,12 +214,12 @@ class InteractiveSkillContractTest(unittest.TestCase):
         presenter = (SKILLS / "page/haipipe-workbench-page/ref/run-space.md").read_text()
         for text in (contract, run_contract, presenter):
             with self.subTest(source=text[:40]):
-                self.assertIn("rp-struct-01", text)
-                self.assertRegex(text, r"rp-sec-(?:NN|\d{2})")
-                self.assertRegex(text, r"rp-para-\d{2}_P\d{2}")
+                self.assertIn("run-structure-", text)          # full names (JL 261001)
+                self.assertRegex(text, r"run-section-")
+                self.assertRegex(text, r"run-paragraph-")
         for text in (contract, presenter):
             with self.subTest(scratch_source=text[:40]):
-                self.assertRegex(text, r"rp-scratch-(?:NN|\d{2})")
+                self.assertRegex(text, r"run-scratch-")
         self.assertIn("r01", run_contract + presenter)
         self.assertIn("Delegated Paragraph Writing remains a Task Run", presenter)
         self.assertIn("The four RP kinds are sibling Page Runs", contract)
@@ -247,15 +247,15 @@ class InteractiveSkillContractTest(unittest.TestCase):
 
         for text in (runs_fn, contract, workflow, run_contract):
             with self.subTest(source=text[:40]):
-                self.assertIn("rp-struct-01", text)
+                self.assertIn("run-structure-", text)          # full names (JL 261001)
                 self.assertIn("P01..PN", text)
                 self.assertIn("1 <= K <= N", text)
                 self.assertIn("sibling", text)
 
         self.assertIn("Ten paragraphs may therefore produce 10, 8, or 6", runs_fn)
-        self.assertIn("rp-sec-01", runs_fn)
-        self.assertIn("rp-para-01_P03", runs_fn)
-        self.assertIn("rp-para-02_P04-P05", runs_fn)
+        self.assertIn("run-section-0906-c2", runs_fn)
+        self.assertIn("run-paragraph-0907-p03", runs_fn)
+        self.assertIn("run-paragraph-0907-p04-p05", runs_fn)
         self.assertIn("Section candidates become legal only after", runs_fn)
         self.assertIn(
             "but allocate only the selected next candidate",
@@ -270,7 +270,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
         runs_fn = (SKILLS / "page/haipipe-page/fn/runs.md").read_text()
         for text in (structure, outline, runs_fn):
             with self.subTest(source=text[:40]):
-                self.assertIn("rp-struct-01", text)
+                self.assertIn("run-structure-", text)          # full names (JL 261001)
                 self.assertIn("SHAPE", text)
                 self.assertIn("SURVEY", text)
                 self.assertIn("participants", text)

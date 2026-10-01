@@ -21,7 +21,8 @@ This Design family remains pre-1.0. Only explicit user approval may authorize
 field-test repairs do not independently authorize a major-version jump.
 
 This is a worker like a display renderer, not a Folder owner. The caller
-owns the `rdNN_*` Run identity, input authority, release, scheduling, and
+owns the Run identity (`run-design-<step>-<MMDD>-<slug>`; older `rdNN_*` names are retired and
+read), input authority, release, scheduling, and
 Run closure and Delivery projection.
 
 Read [unit-contract.md](references/unit-contract.md) on every invocation.
@@ -151,8 +152,8 @@ independence. The generator's self-check cannot satisfy this request.
 
 ## Clean break
 
-Accept only `haipipe.design-ticket/v2` with an `rdNN_generate_*` or
-`rdNN_verify_*` identity. Reject v1, `rNN_design_*`, D0–D5 records,
+Accept only `haipipe.design-ticket/v2` with a `run-design-generate-<MMDD>-<slug>` or
+`run-design-verify-<MMDD>-<slug>` identity (JL 261001); older `rdNN_*` names are retired. Reject v1, `rNN_design_*`, D0–D5 records,
 `design/DU*/`, and PageX. They cannot be bases, references, verification
 targets, or implicit authority for this worker. Unsupported Design bytes are
 not readable history, migration inputs, fallback evidence, or compatibility

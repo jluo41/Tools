@@ -24,17 +24,17 @@ another reader Space.
 
 ```text
 Page.context
-  └─▶ Page.structure (`rp-struct-01`)
+  └─▶ Page.structure (`run-structure-<MMDD>-<slug>`)
          ├─ feedback ─▶ SELF / next Step
          ├─ reopen ───▶ NEW_VERSION
          └─ close ────▶ selected Page.writing and/or Page.evidence Runs
 
-Page.scratch (`rp-scratch-NN_<target>`)
+Page.scratch (`run-scratch-<MMDD>-<slug>`)
   ├─ Save ─────▶ SELF / update the open Scratch Run
   ├─ Finish ───▶ owning Structure/Section/Paragraph Run as human input
   └─ reopen ───▶ NEW_RUN (a closed Scratch Run is immutable)
 
-Page.writing (`rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]`)
+Page.writing (`run-section-<MMDD>-<slug>`, `run-paragraph-<MMDD>-<slug>`)
   ├─ feedback ─▶ SELF / next Step
   ├─ reopen ───▶ NEW_VERSION
   ├─ changed target/goal ─▶ NEW_RUN
@@ -52,7 +52,7 @@ Page.check
   └─ finding ─▶ owning Run Spec | HOLD
 ```
 
-`SHAPE` and `SURVEY` are Steps inside `rp-struct-01`. `LAND` and `EMBED` are
+`SHAPE` and `SURVEY` are Steps inside `run-structure-<MMDD>-<slug>`. `LAND` and `EMBED` are
 actions inside Evidence Runs and their binding workflow. Human feedback is a
 Step inside one fixed-scope Writing Run. A Page CHECK may be implemented as a
 bounded Run when it has a Ticket/Result/receipt; the current controller's
@@ -68,7 +68,7 @@ Runs Overview is where those concrete identities and Version/Step state appear.
 | Run Spec | Run Type | Actor | Target/action | Exit Gate | Routes | Cardinality | Space Cells | Run names |
 |---|---|---|---|---|---|---:|---|---|
 | `context` | `Page.context` | agent/hybrid | freeze Page/Folder identity, policy, requirements, related context | Context is resolved/fresh or truthful HOLD | `structure`, `SELF`, `HOLD` | `1` when commissioned as a durable Run; otherwise controller input assembly | Folder inspection; Runtime if instantiated | `CONTEXT/PREPARE` |
-| `structure` | `Page.interactive-writing.structure` | hybrid | whole-Page map, Bullets, paragraph jobs, Evidence Item decisions | accepted Shape + Survey contract | `SELF`, `NEW_VERSION`, selected writing/evidence Specs, `NEW_RUN`, `HOLD` | exactly initial `rp-struct-01`; later ids only for new goals | Draft + Evidence + Runtime | `OUTLINE/SHAPE+SURVEY` |
+| `structure` | `Page.interactive-writing.structure` | hybrid | whole-Page map, Bullets, paragraph jobs, Evidence Item decisions | accepted Shape + Survey contract | `SELF`, `NEW_VERSION`, selected writing/evidence Specs, `NEW_RUN`, `HOLD` | exactly initial `run-structure-<MMDD>-<slug>`; later ids only for new goals | Draft + Evidence + Runtime | `OUTLINE/SHAPE+SURVEY` |
 | `scratch` | `Page.interactive-writing.scratch` | human | rough thinking for one Section or whole paragraph group in the current Outline grammar; no B/symbol target | person manually triggers Finish; AI returns a non-empty Summary | `SELF`, `CLOSE`, `NEW_RUN` | `0..N` per target; closed Run immutable | Draft Scratch + Runtime | `OUTLINE/SCRATCH` |
 | `section-writing` | `Page.interactive-writing.section` | hybrid | one named Section goal | explicit scoped acceptance + ready dependencies | `SELF`, `NEW_VERSION`, delivery/evidence, `NEW_RUN`, `HOLD` | `0..S` selected Runs | Draft + Runtime | `OUTLINE/SHAPE`, `CONTENT/WRITE` |
 | `paragraph-writing` | `Page.interactive-writing.paragraph` | hybrid | one fixed paragraph/group | accepted text + settled Bullets + ready evidence | `SELF`, `NEW_VERSION`, delivery/evidence, `NEW_RUN`, `HOLD` | `0..K`, `1 <= K <= N` | Draft + Evidence + Runtime | `OUTLINE/SHAPE`, `CONTENT/WRITE` |

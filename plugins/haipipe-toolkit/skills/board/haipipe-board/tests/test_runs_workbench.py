@@ -752,7 +752,7 @@ Open the Current Run.
         by_id = {row["run_id"]: row for row in local_runs(self.page)}
         self.assertEqual(by_id["rp-struct-01"]["status"], "Waiting")
         self.assertEqual(by_id["rp-para-01_P01-P03"]["status"], "Held")
-        self.assertTrue(any("requires a closed rp-struct-01" in finding
+        self.assertTrue(any("requires a closed structure Run" in finding
                             for finding in by_id["rp-para-01_P01-P03"]["audit"]))
         body = render(self.page, "", "")
         self.assertIn("<h3>Structure</h3>", body)
@@ -793,7 +793,7 @@ Open the Current Run.
                          "rp01_mermaid-structure")
         self.assertEqual(_page_run_label("rp01_p1"), "rp01_p1")
         self.assertEqual(rows[1]["status"], "Held")
-        self.assertTrue(any("requires a closed rp-struct-01" in finding
+        self.assertTrue(any("requires a closed structure Run" in finding
                             for finding in rows[1]["audit"]))
 
     def test_interactive_page_run_completes_only_with_version_closure(self):

@@ -246,9 +246,8 @@ def _audit_page_run_order(rows: list[dict]) -> None:
         if not _valid_page_run_id(run_id):
             row["status"] = "Held"
             row.setdefault("audit", []).append(
-            "invalid Page Run identity; expected rp-struct-NN, rp-sec-NN, "
-                "rp-scratch-NN_<target>, rp-para-NN_Pxx[-Pyy], rp-revise-NN_<target>, "
-                "rp-auto-NN[_<target>], or rp-embed-NN[_<target>]"
+            "invalid Page Run identity; expected a full name run-<kind>-<MMDD>-<slug> "
+                "(kind: structure, section, paragraph, scratch, revise, auto-write, evidence-embed)"
             )
             continue
         if _is_structure_run(run_id):
@@ -262,7 +261,7 @@ def _audit_page_run_order(rows: list[dict]) -> None:
             continue
         row["status"] = "Held"
         row.setdefault("audit", []).append(
-            "Page Section/Paragraph Run requires a closed rp-struct-01"
+            "Page Section/Paragraph Run requires a closed structure Run"
         )
 
 
@@ -1431,7 +1430,8 @@ def local_runs(page_src: Path) -> list[dict]:
             global_id = readable_global_run(compact) if compact else ticket.stem
             run_id = global_id
         elif (fields.get("family") == "design" or
-              re.fullmatch(r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*",
+              re.fullmatch(r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*"
+                           r"|run-design-(?:commission|generate|verify|adopt)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*",
                            ticket.stem)):
             # Design uses its stable Folder address, never a fabricated Paper
             # or b/j/t identity. Its YAML Ticket is already a supported suffix.
@@ -1439,7 +1439,8 @@ def local_runs(page_src: Path) -> list[dict]:
             global_id = fields.get("global_id") or f"{page_dir.as_posix()}#{ticket.stem}"
             run_id = ticket.stem
             if fields.get("family") == "design" and not re.fullmatch(
-                    r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*",
+                    r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*"
+                    r"|run-design-(?:commission|generate|verify|adopt)-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*",
                     ticket.stem):
                 audit.append("invalid current Design Run identity")
         elif retired_design:

@@ -1,40 +1,39 @@
 ---
 name: haipipe-workbench-design
 description: >-
-  The page-folder Design workbench: one 🎨 Design tab over a current Design
-  Folder, read in time order across five Spaces. Goal Space is the ask (venue,
-  who, their job, how many designs, which Insight board); Design Space is the
-  Design Items with their goal, expected outcome, rules, state, and buttons;
-  Insight Space is the supporting evidence per item (signed insights, what
-  they say, what is still needed); Run Space is each item's Commission →
-  Generate → Verify timeline; Delivery Space is the ready handoff: it lists
-  every design that passed Verify. It reads the contract files and writes
-  only through its own buttons (a person's Commission release/hold, queued
-  Generate and Verify run records, a new register block, a draft request);
-  every other write routes to the owning Design
-  skills. Trigger: design workbench, design tab, design items, design folder,
-  goal space, insight space, /haipipe-workbench-design.
+  The Design workbench. Page level, one Design Folder (one design task), three
+  Spaces: Design Goal states the task once (venue, who, their job, how many designs,
+  the rules every design keeps); Design shows the task above one card per
+  design (Design · Rationale · Evaluation); Delivery is every
+  design that passed Verify, word for word, and the task's csv. Board level, two
+  Spaces: Design Tasks lists the tasks, Theory of Design shows how to design and
+  the board's domain knowledge. Every Space has the shared Runs panel (run types,
+  prompts to copy, each run's result). It writes only through its own buttons
+  (Commission release/hold, queued Generate and Verify run records, a draft
+  request); every other write routes to the owning Design skills. Trigger: design
+  workbench, design tab, design items, design folder, design tasks, theory of
+  design, /haipipe-workbench-design.
 metadata:
-  version: "0.12.3"
+  version: "0.14.0"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-workbench-design · one Design Folder in five Spaces
+# /haipipe-workbench-design · one Design Folder in three Spaces
 
 **LOAD `haipipe-workbench` FIRST.** It owns the shared Page Workbench contract. This
 skill owns the Design category's delta: the Design Item as the row of the
-page, the five Spaces that show it in time order, the contract files each
-Space reads, and where a user action is routed.
+page, the three page Spaces that show it (Design Goal, Design, Delivery) and
+the two board Spaces, the contract files each Space reads, and where a user
+action is routed.
 
 ## Two grains, one workbench
 
 This skill is the **Page level**: one Design Folder. The **Board level**,
 `haipipe-workbench-design/ref/design-board.md` (`/_board/design-board`), stacks every folder's
-snapshot one grain up: the Brief's lines against the folders that exist,
-  every Design Item with who it waits on, every Run newest first, everything
-  ready for Delivery. Board rows link down to the cards here; this page's header links
-back up. Nothing is stored twice.
+snapshot one grain up in two Spaces: Design Tasks (every design task with its
+designs, folder and state) and Theory of Design. Each task row links down to its
+page here; this page's header links back up. Nothing is stored twice.
 
 Folder names say the goal, `Design-NN-<audience>-<job>-<venue>`: each part is
 the first three content words of that Brief cell, filler words (with, within,
@@ -87,101 +86,91 @@ on-screen label and its title (`full-W01 · Send salience`,
 (JL 260918).
 
 Ids are `ITEM01`, `ITEM02` (never `DI`, which reads as the Insight workbench's
-Data → Information). Run slugs follow the id: `rd02_generate_item01`. The
-`rdNN` number counts across the whole folder, not per item, so ITEM02's first
+Data → Information). Runs are named `run-design-<step>-<MMDD>-<slug>`: `run-design-generate-0918-design-1`. The
+`sequence:` number counts across the whole folder, not per item, so ITEM02's first
 Run may be `rd05`.
 
-## The five Spaces, in time order
+## The Spaces and the Runs panel (0.14.0)
 
-Each Space has a folded **Run types in this Space** guide. Its type catalogue
-is separate from **Current matching records**, which lists the latest actual
-Run per item/type with id, actor, status and outcome. Goal shows Commission;
-Design, Insight and Run show Commission/Generate/Verify; Delivery shows the
-Generate/Verify records supporting ready items. A selected item scopes the
-guide. The Run Space ledger retains all actual records, including history.
-
-| Run name / canonical Type | Bounded work | Actor | Owner Skill | Worker Skill |
-|---|---|---|---|---|
-| Commission / `Design.commission` | release or hold one item's exact goal, rules and inputs | named person | `haipipe-design-workflow` | none; human decision |
-| Generate / `Design.generate` | create or revise the released design and self-check every rule | agent | `haipipe-design-workflow` | `haipipe-design-unit` via `haipipe-designer-agent` |
-| Verify / `Design.verify` | independently review exact completed drafts against released criteria | independent agent | `haipipe-design-workflow` | `haipipe-design-unit` via a fresh designer-agent context |
-
-Every open Design Item states its next eligible Run and actor, purpose,
-canonical Type, Skills, prerequisites, released Commission, latest complete
-draft and latest matching record when available. Eligibility follows the
-native action-state rules, including held Commission decisions and stale
-queued-Run replacement. A queued/running Run shows its current actor role;
-blocked, unresolved, invalid-record and ready items gain no start operation.
-
-**Start here** means the item's existing native action is available, subject
-to its gate: the person records Commission release/hold, or queues Generate,
-revision or independent Verify. Queueing does not claim the agent already ran.
-Other Spaces and static views say **Shown here · read-only**. Static views
-hide the item mutation forms. Run Space stays the
-history/status ledger; Delivery stays a read-only projection.
-
-Eligible Generate/Verify items also offer **Copy request → paste and send**,
-with a **Copy prompt to chat** button and a reviewable prompt. It names the
-exact Board, Folder, Page, item, target, Run Type, owner/worker Skills,
-prerequisites, released Commission, matching Run/receipt and next permitted
-action. The button only copies text; the person must paste and send it in chat.
-Reading, expanding or copying never allocates, queues, executes or sends work.
-
-Offer copy for an eligible new Generate/Verify or one compatible planned Run.
-Do not offer it for Commission, running, stale, blocked, unresolved, invalid,
-ready or retired states, a folder with audit findings, missing/blocked Insight
-bindings, or a static view. A revision first uses the native feedback/queue
-form; its queued Run can then be copied with its frozen base and feedback.
-
-The prompt requires a fresh state read, reuses a compatible queued Run instead
-of allocating a duplicate, and stops on changed or ambiguous state. An
-existing-Run request names the exact Run to reuse. It cannot create or change
-the human Commission decision; Verify requires a genuinely fresh independent
-reviewer context. Work stops after one Run and reports its id and receipt.
-Native controls retain their gates. Run and Delivery Spaces offer no copy action.
+JL 261001: one Design Folder is one design task, so its designs share one aim.
 
 ```text
-🎨 Design
-├── Goal Space       what we want: venue · who · their job · how many · which Insight board
-├── Design Space     what we will make: one card per Design Item, with its buttons
-├── Insight Space    what supports it: per item, the signed insights, what they say, what is missing
-├── Run Space        what happened: per item, its Commission → Generate → Verify runs
-└── Delivery Space   what is ready: one verified design per ready item
+🎨 Design · page level (one design task)
+├── Design Goal Space   the design task, once: Aim · Venue · Rules · Resources · Leave out
+├── Design Space        the task block, then one card per design:
+│                       Design · Rationale · Evaluation;
+│                       "Insight pages · N" and "Runs · N" fold inside each card
+└── Delivery Space      every design that passed Verify, word for word · this task's csv
+
+🎨 Design · board level (every design task)
+├── Design Tasks Space      one row per design task · the rules every task keeps · the board csv
+└── Theory of Design Space  ref/design-theory.md, then the board's own design-theory.md
 ```
 
-The header is one line, `Page level · <folder> · ↑ Board level`. A red line
-is added only when something blocks the work: the folder is legacy, or the
-Insight board's page is unsigned. Nothing else lives in the header.
+- Page level: **Design Goal · Design · Delivery** (input, process, output). The URL keys
+  are `goal`, `design`, `delivery`. Old `space=insight` and `space=run` links open Design.
+- Board level: **Design Tasks** (`tasks`) and **Theory of Design** (`theory`). Old
+  `space=goal|design|delivery|run` board links open Design Tasks.
+- Every Space at both levels has the **Runs panel** on the right (see below).
+- The drawing is `servers/workbench-design/studio/design-board-workbench-design.excalidraw`.
+- The Workbench Table (Space · View · Run type · Agent · Skill · Person signs) is
+  `ref/workbench-table.md`, in the `table-workbench` shape. It is the target the views,
+  the run-cards file and the small design skills follow.
 
-**Goal Space** reads the line of the Brief that names this folder
-(`0-BR-brief/*/BR00-brief.md`, the first table whose header names
-`audience`, `job` and `venue` together, columns matched by header word:
-`audience`, `job`, `venue`, `designs`, `insight`, `folder`) and says the ask
-in one sentence:
+The header is one line, `Page level · <folder> · ↑ Board level`. A red line is added
+only when something blocks the work: the folder is legacy, its insight inputs are
+blocked, or the server cannot read run records. Nothing else lives in the header.
 
-```text
-┃ 10 prescription review SMS designs for all patients
-venue      sms
-who        all patients
-their job  prescription review
-how many   10 wanted · 10 registered · 1 ready
-from       BR00-brief.md · design tasks
-Insight board
-DesignWorkbench-Demo-260916-InsightBoard · 1 of 1 insights signed
-```
+**Design Goal Space**
 
-`designs` is the number the Brief asks for; `registered` and `ready` are
-counted from the register and passed Verify records, and `· N declined` is
-added only when an item was declined. The Insight board is the
-one the line's `insight` cell names, else the owning board's `reads:` line;
-a named board that is not found beside the DesignBoard shows in red. With no Brief line the Space says so
-and names the file that would fill it; with no Insight board it says the
-folder designs from the Brief only.
+The Space is the **design input** (Theory of Design §2). Its heading is "The design
+task": the ask in one sentence, then five blocks. Its owner skill is
+`haipipe-design-goal`.
 
-**Design Space** is one foldable row per Design Item that opens into its
-card. A Design Item is one design
-target with its own rules: one SMS, one UI card, one message pool. It plays
-the role on a Design Folder that an Evidence Item plays on an Outline page:
+1. **Aim**: Objective, Patient task, Context, Target audience, Success metrics, Baseline,
+   Deliverables.
+2. **Channel requirements**: this task's lines beside the channel's standard. The
+   standard comes from `skills/design/venue/venue-<venue>/README.md` § Constraints.
+3. **Requirements**: what every design must contain, and the register's acceptance
+   lines as "Acceptance checks".
+4. **Inputs and resources**: what the designs may draw on.
+5. **Exclusions**: what must never appear in the message.
+
+Each block is a two-column table (Item · Specification; the channel table adds the
+channel's standard), in plain professional wording. It reads `design-goal.md` beside
+`board.md`; the file's section titles stay `Aim`, `Venue`, `Rules`, `Resources`,
+`Leave out`. A `Task · <folder>` section overrides a line for one task. A line is
+`Item: specification <- source`; the source stays in the file and is never shown, so
+file ids such as BR00 do not reach the screen (JL 261001). A `?` value shows as "Not
+specified".
+
+The task's name and counts come from the line of the Brief that names this folder
+(`0-BR-brief/*/BR00-brief.md`, the first table whose header names `audience`, `job`
+and `venue` together; columns matched by header word: `audience`, `job`, `venue`,
+`designs`, `folder`). The Deliverables line reads `N designs requested · N registered · N ready`.
+`designs` is the number the Brief asks for. `registered` and `ready` are counted from
+the register and passed Verify records. `· N declined` is added only when an item was
+declined. When the register is short of the Brief's count, the line offers **Ask the
+agent to draft the missing N** (a draft request; see Actions). With no Brief line the
+Space says so and names the file that would fill it.
+
+The Space has no Insight board line. The board.md `reads:` line still exists as data:
+it names the Insight boards whose pages fill a card's Insight pages fold.
+
+`{LINK}` is the link slot, like `{NAME}` (JL 261001). Delivery and the csv show it
+right after the ask's colon, before the opt-out (`with_link`). The stored text is
+unchanged, and a text that already carries `{LINK}` shows as it is. `max_chars` does
+not count it.
+
+**Design Space**
+
+The Space opens with the Design Goal in brief: the task's name, its Objective, Audience,
+how success is measured, the Baseline every design is read against, and the rules every
+design keeps. Then comes one card per Design Item.
+
+A Design Item is one design target with its own rules: one SMS, one UI card, one
+message pool. The screen says `Design 3`; the files keep `ITEM03`. It plays the role
+on a Design Folder that an Evidence Item plays on an Outline page:
 
 | Outline | Design |
 |---|---|
@@ -191,133 +180,153 @@ the role on a Design Folder that an Evidence Item plays on an Outline page:
 | Result | draft + `checks.yaml` |
 | accepted | ready for Delivery (Verify verdict `pass`) |
 
-```text
-                                                                        open all · close all
-▾ ITEM01 · Send the salience wording unchanged   Hi, it's Dr. {NAME}'s office. New prescr…   ✅ ready
-  sms · all patients · prescription review
-  ╭─ Text message ──────────────╮  WHY THIS DESIGN   Send the salience wording unchanged, so the reader
-  │ Hi, it's Dr. {NAME}'s       │                    sees whose office wrote and what to review
-  │ office. New prescription    │                    follows the evidence · built on evidence
-  │ details require your        │  FROM INSIGHT      Data         full-D02 What the 13 variants said
-  │ review: link Reply STOP …   │  TO DESIGN                        ↓
-  ╰─────────────────────────────╯                    Information  full-I02 How readers took each wording
-  ready for Delivery · rd02_generate_item01                         ↓
-                                                     Wisdom       full-W01 Send salience ✅ signed
-  (on a verified item the handoff sits                               ↓
-   here, under the design:                           Also read    Carrier opt-out rules
-   ▸ ready for Delivery)                                             ↓
-                                                     This design  ITEM01 Send the salience wording unchanged
-                                   THE BET           expected  a first-time reader can say who sent it
-                                                               and what to do after one read
-                                                     wrong if  a cold reader cannot name the next step
-                                                               from the text alone
-                                   RULES             2 of 2 pass · independent review rd03
-                                                     ✓ ≤ 160 characters including the opt-out suffix
-                                                     ✓ ends with 'Reply STOP to opt-out' verbatim
-                                   RUNS              Commission ✓ JL → Generate ✓ → Verify ✓
-  ↑ the design and its handoff (left, stays in view) ↑ its explanation (right, scrolls)
-▸ ITEM02 · Name the visit   Hi, it's Dr. {NAME}'s office, after your visit on…   ✅ ready
-```
+Each card's closed row is one short line per column, under one column header (JL 261001:
+the closed row was too wordy; the sentences belong to the open card):
 
-Each item is one fixed-height row (46px): id · title · the design in one line
-(a screen previews its goal) · state · who is waited on. On a phone the preview
-hides and the title takes the row. A row opens into a fixed-height card
-(560px) that scrolls inside, so a long list stays scannable and every card is
-the same size; `open all · close all` sits above the list (JL 260918). The
-card puts the design on the left and its explanation on the right. The design
-stays in view (sticky) while the explanation scrolls past it. After Verify
-passes, the card shows the ready-for-Delivery handoff under the design; only
-Commission still has a person form. On a narrow screen the two columns stack and scroll
-together.
+1. **Design**: `Design N ✅ · title`: the state's emoji right after the number, so the
+   rows scan at a glance; a word follows only when the emoji alone does not say it
+   ("ready" needs none; "generate queued · waiting on you" does).
+2. **Rationale**: "Rests on" its top insight page by name in words, plus how many more
+   (`Rests on Send salience · +3`).
+3. **Evaluation**: `✓ 6/6 acceptance · effect not tested yet`.
 
-The explanation is a bordered two-column table, a small grey label on the
-left and its content on the right, one row per question, never a key-value
-wall:
+`open all · close all` sits above the list. A row opens into a fixed-height card
+(560px) that scrolls inside, so every card is the same size. The card body:
 
-1. **Why this design**: the goal sentence, then the stance and basis in plain
-   words (follows the evidence, challenges the evidence, explores a new
-   direction, a new design; built on evidence, from the brief only). The
-   contract word never appears beside them.
-2. **From insight to design**: a flow of the item's evidence pages by rung,
-   Data → Information → Knowledge → Wisdom → This design. Each insight page
-   shows as its label and its title (`full-W01 Send salience`), linked to the
-   Insight view of that page when the page lies under the server root, and
-   unlinked otherwise; signed pages are marked. A source that is not an
-   insight page (a screenshot, a style sheet) sits on an **Also read** rung.
-   A page the register marks `avoid` carries `· avoid`.
-3. **The bet**: expected · wrong if, only when the item has them.
-4. **Rules**: each rule marked ✓/✗ by the Verify of the draft shown on the
-   card, else by that draft's own self-check, else "not checked yet". Rule N
-   is criterion `rNN`, plus `rNNb`, `rNNc` when the rule quoted several
-   phrases. A hand-written config with its own criterion names shows those
-   criteria in words instead. When the register changed after release, the
-   line says "the register changed after release; drafts still follow the
-   released goal and rules".
-A card carries no strip of Runs and no chain of steps (JL 260921). Its own line
-   already says the state and what is waited on; the Runs themselves live in Run Space.
+1. A line with the item's type, audience and job, and its `ITEMNN` file id.
+2. The item's next eligible Run, when it has one (see "Next Run and copy" below).
+3. The same three columns as the closed row (JL 261001), each growing downward:
+   - **Design**: the SMS bubble (or the screen), "Ready for Delivery · 113 characters ·
+     passed independent review", a light fold **Design Runs** (a small grey line, no summary words: the
+     emoji and the acceptance count already say how far it got; this design's own runs: step, outcome, who and when, the person's words,
+     the run id small), and the native buttons. The runs sit with the design because they
+     are how this exact text was made and checked (JL 261001).
+   - **Rationale**: Design move (open), Rule followed (only when the register names
+     one), then the fold **Insight Evidence · N pages** (the ladder: Wisdom,
+     Knowledge, Information, Data; each page by its name in words, signed or not, its
+     title as the finding, and for a Wisdom page "Rules it implies: DO … · DO NOT …").
+   - **Evaluation**, three folds of one shape, each summary naming it and its verdict:
+     **Acceptance · 6 of 6 pass · independent review** (each rule ✓/✗), **Review notes**
+     (the reviewer's `review.md` lines), and **Expected effect · not tested yet, judged
+     at the send** (Expected · Wrong if · Against the Design Goal's Baseline · Measured
+     by its Success metrics).
+   On a narrow screen the three columns stack.
+4. The insight and the work are different things and both stay: the insight is why the
+   design should work (the Insight board's finished work); Design Runs are how this design was
+   made and checked (its own Commission, Generate and Verify runs).
 
-A screen shows as its rendered picture; an SMS shows as one message bubble
-on a phone, with a `link` mark where the sending system inserts the link
-(just before `Reply STOP to opt-out`), so a reader sees which ask the link
-follows. The design an item shows is its ready candidate, else its latest draft
-while it is still in progress; a draft that failed the check is never shown,
-on the card, in Delivery Space, or in the csv. `?item=ITEM02` opens that
-item's card, marks its row with an accent bar, and scrolls to it. A declined
-item's card is folded after the live ones under `Declined, kept for the
-record · N`. Runs that name no registered item appear below the cards as
-"Runs without an item", and a folded **New Design Item** form closes the
-Space. The form's labels are plain (approach, built on, expected, wrong if,
-insights, rules); the contract words are only the option values.
+Rules are marked ✓/✗ by the Verify of the draft shown, else by that draft's own
+self-check, else "not checked yet". Rule N is criterion `rNN`, plus `rNNb`, `rNNc` when
+the rule quoted several phrases. When the register changed after release, the line says
+"the register changed after release; drafts still follow the released goal and rules".
+A page whose Insight board moved is found by its last three path parts under the
+Project's `insights/` world; both page-id schemes (`FW01-send-salience`,
+`W01-full-send-salience`) read as words.
 
-**Insight Space** is the supporting-evidence view, per item, in the Outline
-sense: each Design Item names the insights it rests on (the register's
-`evidence:` lines, `role · path`), and the Space shows for each one the
-page by its label and title (linked to the Insight view), its role in plain
-words (a `handoff` reads "signed insight"), who signed it and when, what it
-says, and whether a run record names it. What it says is the
-`FINDING` and `CONSEQUENCE` lines of its Design Handoff block; without them,
-the page's first Opening line when that line states something, else the page
-title. An opening question is never shown as what a page says. An item built
-on evidence with no insight named is flagged in red ("needs an insight"); a
-Brief-only item says no insight is needed. Under each insight the Space lists
-**rules it implies**: the page's `DO` / `DO NOT` counsel lines.
-`design_actions.counsel_rules` writes each DO NOT as a "does not …" rule;
-quote the phrase to ban (`does not say 'urgent'`) and it compiles to an
-`excludes` check, leave it unquoted and the reviewer judges it. The Space
-ends with **Available, unused**: signed pages on the Insight board that no
-item uses yet, so the reader knows what else there is to draw on; when every
-signed insight is used it says "none · every signed insight is used by an
-item". With `?item=ITEM02` the Space shows that item only, under a line
-"showing ITEM02 only · show every item".
+A screen shows as its rendered picture. An SMS shows as one message bubble on a
+phone, with a `link` mark where the sending system inserts the link (just before
+`Reply STOP to opt-out`). The design shown is the item's ready candidate, else its
+latest draft while still in progress. A draft that failed the check is never shown,
+on the card, in Delivery Space, or in the csv.
 
-**Run Space** is one timeline table per item. A Generate or Verify row folds
-its `checks.yaml` (rule · status · why), each check named by its rule in
-words, never by `r03`, and, for Generate, the draft text. A
-revise Generate reads `Generate · revise of rdNN` with its feedback quoted. A
-run that failed shows its `failure:` in red; a Verify whose verdict is fail
-is red too, with its checks unfolded; a superseded run is grey with its
-reason. A decision row quotes the person's `words:`. With `?item=` the Space
-narrows the same way as Insight Space. The Space ends with the records check
-(`records check: PASS` or its findings, with folder-relative paths), read
-live and never cured.
+`?item=ITEM02` opens that item's card, marks it with an accent bar, and scrolls to it.
+A declined item's card is folded after the live ones under `Declined, kept for the
+record · N`. Runs that name no registered item appear below the cards as "Runs without
+an item". The Space ends with the records check line (`records check: PASS` or its
+findings, with folder-relative paths), read live and never cured.
 
-**Delivery Space** is a quick handoff of what is ready: one table, one row per
-item whose independent Verify passed, `item` (id, linked to its card, and
-title) · `design` (the text as the recipient sees it; an SMS shows its `link`
-mark, as sent). A design that has not passed Verify is not listed yet.
-Receipts and the audit trail stay in Run Space; item reasoning stays in
-Design Space. A retired historical item remains folded under its record.
+There is no form for a new design on the page. Adding a design is the **Add a design**
+run card in the Design Space's Runs panel.
 
-A **screen** (a UI design) is read as its picture. When
-the Generate Result names `render_manifest` for a picture of the exact draft an item
-shows (`candidate` = that Generate run), the Design Space card puts the
-picture on the left, with the HTML one click away, and Delivery Space shows
-the folder's ready screens as a picture gallery instead of the table. The presenter
-checks that the manifest, source and image exist and are not newer than the Result. Existing `delivery/render/manifest.json`
-is a legacy fallback only when that candidate has no Result-local manifest. A picture of
-an older draft is never shown for a newer one. An acceptance rule with the
-word render, rendered or rendering (for example "judged on the render") and
-no quoted phrase compiles to a `visual` check.
+**Next Run and copy**
+
+Every open Design Item states its next eligible Run and actor, purpose, canonical
+Type, Skills, prerequisites, released Commission, latest complete draft and latest
+matching record when available. Eligibility follows the native action-state rules,
+including held Commission decisions and stale queued-Run replacement. A queued or
+running Run shows its current actor role. Blocked, unresolved, invalid-record and
+ready items gain no start operation. Queueing does not claim the agent already ran.
+Static views hide every write control.
+
+Eligible Generate and Verify items also offer **Copy request → paste and send**, with a
+**Copy prompt to chat** button and a reviewable prompt. It names the exact Board,
+Folder, Page, item, target, Run Type, owner and worker Skills, prerequisites, released
+Commission, matching Run and receipt, and next permitted action. The button only
+copies text; the person must paste and send it in chat. Reading, expanding or copying
+never allocates, queues, executes or sends work.
+
+Copy is offered for an eligible new Generate or Verify, or one compatible planned Run.
+It is not offered for Commission, running, stale, blocked, unresolved, invalid, ready
+or retired states, a folder with audit findings, missing or blocked Insight bindings,
+or a static view. A revision first uses the native feedback and queue form; its queued
+Run can then be copied with its frozen base and feedback.
+
+The prompt requires a fresh state read, reuses a compatible queued Run instead of
+allocating a duplicate, and stops on changed or ambiguous state. It cannot create or
+change the human Commission decision. Verify requires a fresh independent reviewer
+context. Work stops after one Run and reports its id and receipt.
+
+The Run types behind the card's buttons:
+
+| Run name / canonical Type | Bounded work | Actor | Owner Skill | Worker Skill |
+|---|---|---|---|---|
+| Commission / `Design.commission` | release or hold one item's exact goal, rules and inputs | named person | `haipipe-design-workflow` | none; human decision |
+| Generate / `Design.generate` | create or revise the released design and self-check every rule | agent | `haipipe-design-workflow` | `haipipe-design-unit` via `haipipe-designer-agent` |
+| Verify / `Design.verify` | independently review exact completed drafts against released criteria | independent agent | `haipipe-design-workflow` | `haipipe-design-unit` via a fresh designer-agent context |
+
+**Delivery Space**
+
+Delivery is the read-only handoff of what is ready: every item whose independent
+Verify passed, word for word. A text design is one table row, `design` (its number,
+linked to its card, and title) · the text as the recipient sees it (an SMS as its
+bubble, with its `link` mark). A design that has not passed Verify is not listed. A
+declined item is folded under `Declined, kept for the record · N`. The Space ends with
+the task's csv link (`↓ This design task's designs · N · csv`).
+
+A **screen** (a UI design) is read as its picture. When the Generate Result names
+`render_manifest` for a picture of the exact draft an item shows (`candidate` = that
+Generate run), the card puts the picture on the left, with the HTML one click away,
+and Delivery shows the folder's ready screens as a picture gallery instead of the
+table. The presenter checks that the manifest, source and image exist and are not
+newer than the Result. Existing `delivery/render/manifest.json` is a legacy fallback
+only when that candidate has no Result-local manifest. A picture of an older draft is
+never shown for a newer one. An acceptance rule with the word render, rendered or
+rendering and no quoted phrase compiles to a `visual` check.
+
+**Board level: Design Tasks and Theory of Design**
+
+**Design Tasks Space** is one table, design task · designs · folder · state, each task
+linking to its page level. Below it are the "every design task keeps" rules and
+**↓ Download all designs** (one csv). New lines and new folders are started from the
+Runs panel; the page has no form for them.
+
+**Theory of Design Space** renders `ref/design-theory.md` (how to design, the same for
+every board), then the board's own `design-theory.md` beside `board.md` (domain
+knowledge, for example message theories) when present.
+
+**The Runs panel**
+
+Every Space at both levels has the shared Runs panel on the right (`live.runs_panel`,
+the same one the Paper and Page workbenches use). Its run types come from
+`skills/design/haipipe-design-workflow/references/run-cards.md` (`design_run_types` in
+`design.py`), which is the Workbench Table written as cards. Each card names its
+button, agent, skill, what the person signs, and a prompt to copy. Below the types,
+each run shows its prompt, process and result.
+
+The panel starts nothing. **Copy** hands the prompt to a Claude or Codex session,
+which does the work. Examples of cards: Add design tasks and Add a theory (board);
+Frame the aim and Pin the venue (Design Goal); Add a design, Commission, Generate and
+Verify (Design); Passed review (Delivery). The card list in `run-cards.md` is the truth.
+
+**Retired**
+
+These are gone and are not described as current: the Insight Space and the Run Space
+(their content now folds inside each card), the five-Space layout
+(Goal/Design/Insight/Run/Delivery), the Goal's "Insight board" line, the "Insight
+pages the designs use" fold, the "Run types in this Space" guide fold, the "New Design
+Item" and "New design tasks" forms, the board-level Design and Delivery Spaces, the
+old run-guide wording ("Start here", "Shown here · read-only"), Adopt (old Adopt
+records stay readable; no writer creates them), and content hashes (sha256).
 
 ## The register
 
@@ -399,7 +408,7 @@ A rule quoting several phrases makes `rNN`, `rNNb`, `rNNc`. A phrase with only
 "or", "and" or commas before it shares the previous phrase's kind, so
 `no 'urgent', 'act now' or 'hurry'` excludes all three. An apostrophe inside a
 word (`it's`, `doesn't`) is never a quote mark. No state is typed in the
-register. Every `rdNN_*` run record names the item it serves with
+register. Every `run-design-*` run record names the item it serves with
 `item: ITEM01`, and the tab derives the item's state by walking its Runs in
 order:
 
@@ -428,12 +437,13 @@ across an item.
 ## What the tab reads (it owns no storage)
 
 ```text
-0-BR-brief/*/BR00-brief.md              the line that names this folder (Goal Space)
-board.md  reads:                        the Insight board (Goal Space, Insight Space)
+0-BR-brief/*/BR00-brief.md              the line that names this folder (task name, counts)
+design-goal.md (beside board.md)        the five blocks of Design Goal Space
+board.md  reads:                        the Insight boards whose pages fill a card's Insight pages fold
 draft/<stem>-design-items.md          the register (goal, evidence, rules)
 draft/feedback/<run>.md               the feedback a revise Generate was queued with
 draft/<stem>-draft-request.md         an open request for the agent to draft items
-runs/rdNN_<operation>_<slug>.yaml       run record: item, target, actor, config ref, pinned inputs
+runs/run-design-<op>-<MMDD>-<slug>.yaml run record: item, target, actor, config ref, pinned inputs
 scripts/config/<run>.yaml               goal, design_intent, criteria, the rule text, unit
 results/<run>/runtime.yaml              status, actor/worker, times, route, failure
 results/<run>/result.yaml + checks.yaml verdict, artifacts, per-criterion checks
@@ -453,8 +463,8 @@ The surface is text, tables, and folds. Deliberately absent: counters that
 count the surface itself, static flow diagrams that read the same on every
 folder, raw file listings, and any Space whose content is another Space's
 (the card's insight flow names each page by its label and title and links to
-it; what each page says in full, and what is still missing, lives in Insight
-Space).
+it; what each page says, and what is still missing, lives in the card's
+Insight pages fold).
 The card's flow is drawn per item from its own evidence pages, so it differs
 from folder to folder and is not a static diagram. An empty state is one sentence that names the file or Run that would
 fill it.
@@ -469,17 +479,17 @@ waited on:
 
 | Item state | Button | Writes |
 | --- | --- | --- |
-| not commissioned · commission open · commission held | Release commission · Hold (name + words) | `rdNN_commission_*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, named by path. At most one release per item: a second Release is refused; releasing after hold creates a new Commission Run and preserves the old decision |
-| commissioned · revise requested | Queue Generate · agent | planned `rdNN_generate_*` run record, a copy of the released config, and a receipt for `haipipe-designer-agent` |
-| generated · verify invalid | Queue Verify · independent agent | planned `rdNN_verify_*` run record targeting the complete Generate Result; refused when that draft already has a completed valid independent review |
+| not commissioned · commission open · commission held | Release commission · Hold (name + words) | `run-design-commission-*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, named by path. At most one release per item: a second Release is refused; releasing after hold creates a new Commission Run and preserves the old decision |
+| commissioned · revise requested | Queue Generate · agent | planned `run-design-generate-*` run record, a copy of the released config, and a receipt for `haipipe-designer-agent` |
+| generated · verify invalid | Queue Verify · independent agent | planned `run-design-verify-*` run record targeting the complete Generate Result; refused when that draft already has a completed valid independent review |
 | generate failed · verify failed | Queue revise · agent (feedback) | planned Generate run record with `base` + `feedback` inputs, the feedback saved at `draft/feedback/<run>.md` (a challenge bet stays in challenge mode); refused for a draft that passed its review |
 | queued run out of date | Queue again with today's insight files | the old queued run marked `superseded` (reason: the files that changed) and a fresh run that pins today's bytes; a revise keeps its base and feedback |
 | blocked | named Run, reason and repair owner; no Commission button | the caller resolves the input/record problem through the Design workflow before work resumes |
 | records invalid | recorded candidate/review mismatch and repair owner; no queue button | inspect the records check; preserve recorded versions, and use a new Run for changed content |
 | ready | ready for Delivery | no decision Run; the passed Verify pins the exact candidate for handoff |
 | generate queued · verify queued · generating · verifying | none ("queued for the agent") | — |
-| any | New Design Item | one block appended to the register, after the binding check above |
-| register short of the Brief's count | Ask the agent to draft the missing N (Goal Space) | `draft/<stem>-draft-request.md`: the goal, the insights with FINDING / CONSEQUENCE / DO / DO NOT lines, and how many items to draft. The queue runner only lists open requests; a Claude session appends the items with `add_item` and removes the file |
+| any | no on-page form; the `add-item` action is started from the **Add a design** run card | one block appended to the register, after the binding check above |
+| register short of the Brief's count | Ask the agent to draft the missing N (Design Goal Space) | `draft/<stem>-draft-request.md`: the goal, the insights with FINDING / CONSEQUENCE / DO / DO NOT lines, and how many items to draft. The queue runner only lists open requests; a Claude session appends the items with `add_item` and removes the file |
 
 The independent Verify is the Delivery gate. A passed candidate is ready
 without another human decision; a failed draft or failed review can still be
@@ -502,7 +512,7 @@ card every form and button sits in the design column, which stays in view.
 No control acts on every item at once (JL 260921): one decision, one item, one
 sentence on the record. After a click,
 every item button lands back on Design Space at that item; a draft request
-lands on Goal Space.
+lands on Design Goal Space.
 
 A person's name is required on Commission and is recorded as the actor; the
 name field starts filled with the person already seen on this folder's
@@ -562,7 +572,7 @@ owner:
 
 | User intent | Owning skill / route |
 | --- | --- |
-| Add or edit a Design Item | `haipipe-design` (the register) |
+| Add or edit a Design Item | `haipipe-design` (the register); the **Add a design** run card starts it |
 | Add a line to the Brief, or open its folder | `haipipe-workbench-design/ref/design-board.md` (`add-tasks`, `new-folder`) |
 | Change the Brief's prose, needs, or signed inputs | `haipipe-design-brief` |
 | Release or hold a Commission | `haipipe-design-workflow` → `Design.commission` (a person) |
@@ -595,17 +605,18 @@ unless `--force`, which deletes those runs.
 
 From one tab, without opening a file, the reader can answer:
 
-1. What does this folder want: for whom, on which venue, how many designs,
-   drawing on which Insight board?
+1. What does this design task want: its aim, for whom, on which venue, how
+   many designs, the rules every design keeps, and what to leave out? (Design
+   Goal Space)
 2. What is being designed, item by item, and what does each design say?
 3. Why this design: its goal, whether it follows or challenges the evidence,
    what it expects a reader to do, and what would show that wrong.
 4. Which insights support each item, what they say, whether they are signed
-   and pinned, what is still missing, and what else the board offers.
+   and pinned, and what is still missing? (the card's Insight pages fold)
 5. For each item: which Run is it at, who acted, when, with what outcome, and
-   who is it waiting on now?
+   who is it waiting on now? (the card's Runs fold)
 6. Which exact draft (run and path) is ready for Delivery, verified by whom, and does
-   the records check pass on the folder as it stands? (Run Space)
+   the records check pass on the folder as it stands? (Design Space)
 7. At a glance, what designs do we have? (Delivery Space)
 
 See `ref/space-mapping.md` for the Space ↔ file map and the state fold table.

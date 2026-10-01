@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -73,6 +74,10 @@ class FolderBuilder:
         return path
 
     def dump(self, rel: str, obj) -> Path:
+        # A Run ticket carries its place in the folder (`sequence:`), as design_actions writes it.
+        if rel.startswith("runs/") and isinstance(obj, dict) and obj.get("run") in getattr(self, "_seq", {}):
+            obj = {**{k: obj[k] for k in list(obj)[:2]}, "sequence": self._seq[obj["run"]],
+                   **{k: obj[k] for k in list(obj)[2:]}}
         return self.write(rel, yaml.safe_dump(obj, sort_keys=False, allow_unicode=True))
 
     def ref(self, path: Path, root: Path | None = None) -> dict:
@@ -81,8 +86,21 @@ class FolderBuilder:
         return {"path": Path(rel).as_posix()}      # a path, never a content hash (JL 260928)
 
     def next_run(self, operation: str, slug: str) -> str:
+        """A full Design Run name (JL 261001): run-design-<op>-<MMDD>-design-<N>[-k]."""
         self.counter += 1
-        return f"rd{self.counter:02d}_{operation}_{slug}"
+        if getattr(self, "legacy_names", False):
+            return f"rd{self.counter:02d}_{operation}_{slug}"
+        hit = re.match(r"^item0*(\d+)$", slug, re.I)
+        base = f"run-design-{operation}-0918-" + (f"design-{hit.group(1)}" if hit else slug.replace("_", "-"))
+        taken = getattr(self, "_names", set())
+        name, n = base, 1
+        while name in taken:
+            n += 1
+            name = f"{base}-{n}"
+        taken.add(name)
+        self._names = taken
+        self._seq = {**getattr(self, "_seq", {}), name: self.counter}
+        return name
 
     def evidence_inputs(self, spec: ItemSpec) -> list[dict]:
         rows = []
@@ -334,13 +352,14 @@ class FolderBuilder:
 
 
 def build_design_folder(folder: Path, stem: str, title: str, opening: str,
-                        specs: list[ItemSpec], wipe: bool = True) -> dict:
+                        specs: list[ItemSpec], wipe: bool = True, legacy_names: bool = False) -> dict:
     """Write a complete current Design Folder and return the run ids per item."""
     folder = Path(folder)
     if wipe and folder.exists():
         for sub in ("runs", "results", "delivery", "scripts", "outline", "workflow"):
             shutil.rmtree(folder / sub, ignore_errors=True)
     builder = FolderBuilder(folder, stem)
+    builder.legacy_names = legacy_names   # the retired `rdNN_<op>_<slug>` names, for the rename tool's test
     builder.write(f"{stem}.md", (
         f"# {title}\nfolder-kind: design\n\n## Opening\n\n{opening}\n\n"
         "## Outline\n\nDesign Items are registered in `outline/" + stem + "-design-items.md`;\n"
@@ -530,7 +549,7 @@ def demo_runs_at_risk(board: Path = DEMO_BOARD) -> dict[str, int]:
     out = {}
     for stem in demo_specs():
         runs = board / "2-Design" / stem / "runs"
-        count = len(list(runs.glob("rd*_*.yaml"))) if runs.is_dir() else 0
+        count = len(list(runs.glob("run-design-*.yaml"))) if runs.is_dir() else 0
         if count:
             out[stem] = count
     return out

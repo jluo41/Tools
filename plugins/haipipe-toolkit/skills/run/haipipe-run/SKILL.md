@@ -90,8 +90,8 @@ groups. A control-only Workflow invocation can truthfully have `runs: []`.
 
 A Workspace never becomes the execution owner. Do not create a horizontal
 `run-for-<folder-kind>` owner. Use the existing native owner and selected worker.
-When a Workflow declares Workspaces, bind its Cells using
-[workflow-table](../../0_utils/table-workflow/SKILL.md); a standalone Run does
+When a Workflow declares Workspaces, bind its Cells in the
+family's own `ref/workflow-table.md`; a standalone Run does
 not require inventing a Workbench roster or aggregate controller.
 
 A Spec can materialize zero, one, or many instances. Symbolic cardinality is
@@ -117,7 +117,7 @@ A controller `Run()` label is adapter metadata, not an authority or Run node.
 | Same frozen contract failed | preserve failure and append an owner-permitted attempt |
 | Open RP receives feedback within its goal | append a Step |
 | Same RP target is reopened | use its declared Version rule; preserve closed history |
-| Independent later Section writing session is commissioned | Page may allocate the next `rp-sec-NN` even for the same Section |
+| Independent later Section writing session is commissioned | Page may allocate the next `run-section-<MMDD>-<slug>` even for the same Section |
 | Frozen data, goal, target, or acceptance changes materially | new Run; record supersedes only for an actual replacement |
 | Input/authority/profile is missing | report the gap; do not invent a Ticket, identity, approval, or completed Result |
 

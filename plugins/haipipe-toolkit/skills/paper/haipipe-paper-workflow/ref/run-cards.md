@@ -17,9 +17,9 @@ on, `{target}` the selected idea, row or Section, `{paper}` the paper folder.
 Section runs are the Section Page's own runs (`haipipe-page-workflow/ref/run-cards.md`),
 shown under three buttons, one per Page Space.
 
-## `paper.judgment.idea` · `ridea-NN_<slug>`
+## `paper.judgment.idea` · `run-paper-idea-<MMDD>-<slug>`
 
-🔘 BUTTON   Idea review · Ideation · ^ridea-
+🔘 BUTTON   Idea review · Ideation · ^run-paper-idea-
 🧩 SKILL    haipipe-paper-ideation
 💬 PROMPT   /haipipe-paper-ideation review {target} on {page}: judge this idea against its evidence and record its rationale, limits and next question as a new version.
 
@@ -37,21 +37,21 @@ shown under three buttons, one per Page Space.
 🧩 SKILL    haipipe-ideation-select
 💬 PROMPT   /haipipe-ideation-select {page} {target}: put this idea and its venue to the person as the G0 choice; on yes, hand it to the Story.
 
-## Story writing · the Story Page's own `rp-` runs
+## Story writing · the Story Page's own `run-<kind>-…` runs
 
-🔘 BUTTON   Story revise · Story · ^rp- · views spine
+🔘 BUTTON   Story revise · Story · ^run-(structure|scratch|section|paragraph|revise|auto-write|evidence-embed|context)- · views spine
 🧩 SKILL    haipipe-paper-story · haipipe-writing
-💬 PROMPT   /haipipe-page run {page} rp-sec: revise {target} of the Story; keep its eight parts (§1–§8) and change no row another Page owns.
+💬 PROMPT   /haipipe-page run {page} as a new run-section Run: revise {target} of the Story; keep its eight parts (§1–§8) and change no row another Page owns.
 
-## `paper.judgment.claim` · `rclaim-NN_<slug>`
+## `paper.judgment.claim` · `run-paper-claim-<MMDD>-<slug>`
 
-🔘 BUTTON   Claim review · Story · ^rclaim- · views logic-work
+🔘 BUTTON   Claim review · Story · ^run-paper-claim- · views logic-work
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this claim against its evidence, boundaries and open risks; research it needs is a separate run.
 
-## `paper.judgment.task` · `rtask-NN_<slug>`
+## `paper.judgment.task` · `run-paper-task-<MMDD>-<slug>`
 
-🔘 BUTTON   Task review · Story · ^rtask- · views logic-work
+🔘 BUTTON   Task review · Story · ^run-paper-task- · views logic-work
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: review this Task Roadmap row and its study plan; commission supporting work only after its G1 release.
 
@@ -78,9 +78,9 @@ Story when it runs; the button reruns those scripts so the drawings follow the S
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story draw {paper}: rerun each studio/make_*.py so every drawing follows the current Story, then check the drawing in RoadMap Draw; with no script yet, write studio/make_paper_workflow.py as the Story skill describes and run it.
 
-## `paper.judgment.narrative` · `rnarra-NN_<section>`
+## `paper.judgment.narrative` · `run-paper-narrative-<MMDD>-<slug>`
 
-🔘 BUTTON   Narrative review · Sections · ^rnarra- · views table narrative
+🔘 BUTTON   Narrative review · Sections · ^run-paper-narrative- · views table narrative
 🧩 SKILL    haipipe-paper-story
 💬 PROMPT   /haipipe-paper-story review the Section Narrative row of {target} on {page}: check its moves, claims, displays and cut rule against the Section's current draft.
 
@@ -98,7 +98,7 @@ Story when it runs; the button reruns those scripts so the drawings follow the S
 🧩 SKILL    haipipe-page-delivery
 💬 PROMPT   /haipipe-page export {target}: rerun this Section's Delivery Runs (run-delivery-webpage, _latex, _word); say which files changed.
 
-🔘 BUTTON   Page check · Sections · ^rp-check-|^run-check- · views table
+🔘 BUTTON   Page check · Sections · ^run-check- · views table
 🧩 SKILL    haipipe-page-check
 💬 PROMPT   /haipipe-page-check {target}: judge the Section's current built version against its Section Narrative row, evidence and venue; route CLOSE or name what must change.
 
@@ -120,6 +120,6 @@ Story when it runs; the button reruns those scripts so the drawings follow the S
 
 ## `paper.response` · one Round Page per feedback batch
 
-🔘 BUTTON   Response · Delivery · ^rp-|^rd\d+_ · views rounds
+🔘 BUTTON   Response · Delivery · ^run-(structure|scratch|section|paragraph|revise|auto-write|evidence-embed|context|delivery|check)- · views rounds
 🧩 SKILL    haipipe-paper-round
 💬 PROMPT   /haipipe-paper-round respond {target}: answer each routed concern once, link the checked versions and freeze the answer build.

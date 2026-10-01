@@ -11,8 +11,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.8.2"
-  last_updated: "2026-09-29"
+  version: "1.9.0"
+  last_updated: "2026-10-01"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -59,7 +59,8 @@ an authored folder beneath the Task.
 
 Block numbers are stage ranges, fixed across Projects: `b00` raw, `b01`
 source, `b02` record, `b03` case (per dataset), then `b10` aidata, `b11`+ model,
-`b21`+ evaluation, `b31`+ endpoint, `b51`+ auxiliary (per question; a range
+`b21`+ evaluation, `b31`+ endpoint, `b51`+ auxiliary, including an
+InsightBoard's DIKW Block `b5N_<topic>_dikw` (per question; a range
 starts at `x1`, except AIData at `b10`). See
 `ref/hierarchy.md` § Block number ranges.
 

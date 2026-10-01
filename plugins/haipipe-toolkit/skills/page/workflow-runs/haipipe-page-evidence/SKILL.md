@@ -1,10 +1,10 @@
 ---
 name: haipipe-page-evidence
 description: >-
-  The Evidence Runs of a Board Page (`re-value|display|cite-NN_<slug>`):
+  The Evidence Runs of a Board Page (`run-value|display|citation-<MMDD>-<slug>`):
   LAND executes each typed Evidence Item graph (zero-to-many Execution/Discovery
   Supporting Runs, freezes one Local Input, then executes exactly one Page
-  Evidence Run (`RE`) lineage per item) and EMBED
+  Evidence Run lineage per item) and EMBED
   folds the ready local Result into the next outline version. Never plans the outline,
   writes Content, or interprets evidence inside an upstream Run. Trigger: page
   evidence, evidence Run, land evidence items, make supporting runs, make the
@@ -123,8 +123,8 @@ show as one Evidence Card with many Labels.
 ```text
 ALLOWED      operation: evidence-item; item type: VALUE | CITE | DISPLAY
 TARGET       exactly one E<NN>-<TYPE>-<slug>
-PAGE RUN     one typed `re-value-NN_<slug>`, `re-display-NN_<slug>`, or
-             `re-cite-NN_<slug>` identity for this item's Page lineage
+PAGE RUN     one typed `run-value-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>`, or
+             `run-citation-<MMDD>-<slug>` identity for this item's Page lineage
 TICKET       Folder dialect selected by haipipe-run; full owner-native Run id when execution is Task-backed
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
              Run ids, receipt paths, and any governed page-local source pointers
@@ -195,7 +195,7 @@ For every item whose `Decide` is `☑ make`:
    upstream Supporting Run.
 6. **Allocate and execute exactly one Page `RE` lineage.** Reuse the real
    Ticket when SURVEY found one; otherwise allocate the next typed RE id:
-   `re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>`, and
+   `run-value-<MMDD>-<slug>`, `run-display-<MMDD>-<slug>`, or `run-citation-<MMDD>-<slug>`, and
    scaffold its Page · Evidence Item Ticket from the bounded local declaration
    before execution.
    A Task declaration names parent `bNNjNNtNN` and LAND writes back the full

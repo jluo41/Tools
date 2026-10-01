@@ -1698,8 +1698,8 @@ def _evidence_copy_prompt(record: dict[str, object], page_src: pathlib.Path,
         "Evidence Item: " + item_id + (" · " + label if label else ""),
         "Target: " + (target or "not recorded"),
         "Run Type: Page.evidence-item · " + contract["name"],
-        "Run identity: " + {"VALUE": "re-value-NN_<slug>", "CITE": "re-cite-NN_<slug>",
-                            "DISPLAY": "re-display-NN_<slug>"}.get(kind, "owner-native Evidence identity"),
+        "Run identity: " + {"VALUE": "run-value-<MMDD>-<slug>", "CITE": "run-citation-<MMDD>-<slug>",
+                            "DISPLAY": "run-display-<MMDD>-<slug>"}.get(kind, "owner-native Evidence identity"),
         "Bounded work: " + contract["work"],
         "Owner Skill(s): " + contract["owner"],
         "Worker Skill(s): " + contract["workers"],
@@ -2306,9 +2306,9 @@ def _evidence_sections(records: list[dict[str, object]],
                              and str(fields.get("decision", "")).strip() in {"drop", "defer"})) else "")
             contract = _evidence_run_contract(kind) if kind in {"VALUE", "CITE", "DISPLAY"} else None
             run_pattern = {
-                "VALUE": "re-value-NN_<slug>",
-                "CITE": "re-cite-NN_<slug>",
-                "DISPLAY": "re-display-NN_<slug>",
+                "VALUE": "run-value-<MMDD>-<slug>",
+                "CITE": "run-citation-<MMDD>-<slug>",
+                "DISPLAY": "run-display-<MMDD>-<slug>",
             }.get(kind, "")
             contract_details = ""
             if contract:

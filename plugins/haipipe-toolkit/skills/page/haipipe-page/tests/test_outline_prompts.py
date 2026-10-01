@@ -34,12 +34,12 @@ def row(run, status='Waiting', target='C2.P1'):
 
 def test_paragraph_uses_global_index_and_only_selected_excerpt(tmp_path):
     page = page_fixture(tmp_path)
-    records = [row('rp-struct-01', 'Done', 'Page'), row('rp-para-02_P02')]
+    records = [row('run-structure-0901-outline', 'Done', 'Page'), row('run-paragraph-0901-p02')]
     before = {p: p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()}
     with patch('live.outline_prompts.local_runs', return_value=records):
         prompt = RunPrompts(page).prompt('paragraph', 'C2.P1')
     assert prompt.startswith('/haipipe-page run-paragraph C2.P1 (Page-global P02)')
-    assert 'Run: rp-para-02_P02 · Waiting · v002 · s003' in prompt
+    assert 'Run: run-paragraph-0901-p02 · Waiting · v002 · s003' in prompt
     assert 'Next: resume' in prompt
     assert 'Second draft' in prompt and 'First draft' not in prompt
     assert 'Blocker:' not in prompt
@@ -49,7 +49,7 @@ def test_paragraph_uses_global_index_and_only_selected_excerpt(tmp_path):
 
 def test_prompts_are_short(tmp_path):
     page = page_fixture(tmp_path)
-    with patch('live.outline_prompts.local_runs', return_value=[row('rp-struct-01', 'Done', 'Page')]):
+    with patch('live.outline_prompts.local_runs', return_value=[row('run-structure-0901-outline', 'Done', 'Page')]):
         prompts = RunPrompts(page)
         structure = prompts.prompt('structure')
         section = prompts.prompt('section', 'C2')
@@ -66,10 +66,10 @@ def test_prompts_are_short(tmp_path):
 
 def test_ambiguous_open_runs_and_missing_structure_do_not_choose_or_allocate(tmp_path):
     page = page_fixture(tmp_path)
-    with patch('live.outline_prompts.local_runs', return_value=[row('rp-sec-01', target='C2'), row('rp-sec-02', target='C2')]):
+    with patch('live.outline_prompts.local_runs', return_value=[row('run-section-0901-c2', target='C2'), row('run-section-0902-c2', target='C2')]):
         prompt = RunPrompts(page).prompt('section', 'C2')
-    assert 'Run selection is ambiguous: rp-sec-01, rp-sec-02' in prompt
-    assert 'rp-struct-01 is not closed' in prompt
+    assert 'Run selection is ambiguous: run-section-0901-c2, run-section-0902-c2' in prompt
+    assert 'the structure Run is not closed' in prompt
     assert not (tmp_path / 'runs').exists()
 
 
@@ -78,7 +78,7 @@ def test_new_run_prompt_and_structure_entry_without_mermaid(tmp_path):
     prompt = RunPrompts(page).prompt('structure')
     assert prompt.startswith('/haipipe-page run-structure Page')
     assert 'Run: none yet' in prompt
-    assert 'rp-struct-NN' in prompt
+    assert 'run-structure-<MMDD>-<slug>' in prompt
     top = _structure_map(page)
     assert '⧉' not in top  # JL 260927: the Runs panel holds the prompt; no copy chip
     assert 'structure-card' in top and 'Second paragraph' in top

@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-writing
 description: >-
-  The Writing Runs of a Board Page (`rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]`). After all planned Page Runs and required
+  The Writing Runs of a Board Page (`run-section-<MMDD>-<slug>`, `run-paragraph-<MMDD>-<slug>`). After all planned Page Runs and required
   evidence Task Results complete, WRITE adopts human-agreed prose in one Page-level pass,
   integrates authorized evidence, builds declared delivery projections, and
   pre-checks one exact version before independent CHECK. Interactive drafting
@@ -62,8 +62,8 @@ acceptance or a completed Writing Result.
 ## Page release barrier
 
 Do not enter CONTENT merely because one Section or paragraph Page Run closes.
-The release barrier requires the planned `rp-struct-NN`, `rp-sec-NN`, and
-`rp-para-NN_Pxx[-Pyy]` Runs, and every
+The release barrier requires the planned `run-structure-<MMDD>-<slug>`, `run-section-<MMDD>-<slug>`, and
+`run-paragraph-<MMDD>-<slug>` Runs, and every
 required evidence Task Result to be complete and bound. Until then,
 the working Shape and candidate prose remain current in the Draft Space;
 `<page>.md` and `delivery/` remain unchanged and are labelled stale by design.

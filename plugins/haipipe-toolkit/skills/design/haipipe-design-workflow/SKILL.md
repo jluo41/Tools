@@ -3,7 +3,7 @@ name: haipipe-design-workflow
 description: >-
   Native Design Workflow inside one stable Design Folder: a list of Commission,
   Generate and Verify Runs, with routes to the next Run or ready Delivery.
-  Binds it across the Goal/Design/Insight/Run/Delivery Spaces, and
+  Binds it across the Design Goal, Design, and Delivery Spaces, and
   coordinates with but never impersonates the Page workflow.
 metadata:
   version: "0.4.0"
@@ -46,7 +46,8 @@ Design.verify
 Actual current Runs per Design Item: `C Commission + N Generate + J Verify`.
 Count all allocated records, including held, failed, blocked and superseded Runs;
 an attempt inside one Run adds no identity. C=1 when exactly one Commission record exists.
-`rdNN` numbers count across the whole Design Folder.
+Runs are named `run-design-<step>-<MMDD>-<slug>` (JL 261001); their order is the ticket's
+`sequence:`, counted across the whole Design Folder. Older `rdNN_*` names are retired; `haipipe-design-unit/scripts/rename_runs.py` renames a folder's runs once.
 
 There is no HOLD route from the agent side. HOLD is a person's decision at
 Commission. A passed independent review is ready for Delivery; the agent-side
@@ -71,27 +72,31 @@ not a Run.
 
 ## Space bindings
 
-The Design Workbench presents the graph through five Spaces (`Space` is the only
-reader-facing word, JL 260916): Goal (the Brief line and the Insight board),
-Design (the items), Insight (what supports each item), Run, Delivery. Every
-Run names the Design Item it serves with `item: ITEM<NN>`, and the Spaces
-group by that id:
+The Design Workbench presents a Design Folder page through three Spaces
+(`Space` is the only reader-facing word, JL 260916): Design Goal (key `goal`,
+the board's `design-goal.md` and the register's acceptance rules), Design (the
+task, then one card per item), and Delivery. Every Run names the Design Item it
+serves with `item: ITEM<NN>`, and each Design card groups its Runs by that id
+in its Runs fold. Each Space's Runs panel shows the run types from
+`references/run-cards.md`. This skill routes Runs and enforces gates; it is no
+card's skill.
 
-| Run or projection | Design Space | Insight Space | Run Space | Delivery Space |
-|---|---|---|---|---|
-| Commission | the item's goal and acceptance rules it pins; a warning when the register changed after release | the insights the Commission run record names | release/hold row: person, time, words, route | — |
-| Generate | the latest draft that passed the records check, and its self-check marks | — | row: agent, time, verdict n/m, folded checks and draft text; `Generate · revise of rdNN` with its feedback | listed only after Verify passes |
-| Verify | the rule marks of the draft it reviewed | — | row: independent reviewer, time, verdict n/m, folded checks; red when it fails | — |
-| Delivery | ready state and exact Verify-passed candidate | — | the Verify row remains the authority | the ready draft's text is listed for handoff |
+| Run or projection | Design Goal Space | Design Space (card and its Runs fold) | Delivery Space |
+|---|---|---|---|
+| Commission | the acceptance rules the item carries | the goal and rules it pins, a warning when the register changed after release, the Insight pages its run record names; Runs fold: release/hold row with person, time, words, route; Release/Hold buttons | — |
+| Generate | — | the latest draft that passed the records check, and its self-check marks; Runs fold: agent, time, verdict n/m, folded checks and draft text; `Generate · revise of generate 09-18` with its feedback; Queue button | listed only after Verify passes |
+| Verify | — | the rule marks of the draft it reviewed; Runs fold: independent reviewer, time, verdict n/m, folded checks; red when it fails | — |
+| Delivery | — | ready state and exact Verify-passed candidate; the Verify row remains the authority | the ready draft's text, word for word, plus a csv |
 
-Run Space presents the same Run ids, Results, Gates, Routes, and receipts the
-Folder holds. It cannot mint, rename, copy, or recount.
+The Runs fold presents the same Run ids, Results, Gates, Routes, and receipts
+the Folder holds. It cannot mint, rename, copy, or recount. The old Insight
+Space and Run Space are retired; their content lives in each card's folds.
 
 ## Commission Run
 
 The Design Item register lives under `draft/` (`draft/<stem>-design-items.md`); the Commission freezes one of its blocks.
 
-The caller authors `rdNN_commission_<slug>.yaml` for the Design Item it serves
+The caller authors `run-design-commission-<MMDD>-<slug>.yaml` for the Design Item it serves
 (`item: ITEM<NN>`). It pins its config (the goal sentence, stance, basis, mode,
 expected, falsified, the compiled criteria, the raw rule text, unit, and
 `max_iterations`) and the item's evidence files, by path; it does not
@@ -109,7 +114,7 @@ which means a new Design Item.
 ## Generate Runs
 
 For every released independently closable target, allocate one
-`rdNN_generate_<slug>.yaml`. Load `haipipe-design-unit`; generate only what the
+`run-design-generate-<MMDD>-<slug>.yaml`. Load `haipipe-design-unit`; generate only what the
 Ticket permits. The worker writes the paired immutable Result and its checks;
 the caller writes the runtime receipt (`design_actions.name_worker` before
 dispatch, `design_actions.complete_run` after). Internal ideation,
@@ -126,7 +131,7 @@ worker named on the receipt.
 
 ## Verify Runs
 
-Allocate `rdNN_verify_<slug>.yaml` over exact generation Result paths and
+Allocate `run-design-verify-<MMDD>-<slug>.yaml` over exact generation Result paths and
 criteria. Use a genuinely fresh reviewer context. A verification Run returns a
 complete pass/fail/unresolved judgment and never edits the candidate. A
 generation self-check is not independent verification. A draft that already
@@ -194,12 +199,12 @@ re-pins in place. Preserve failed and superseded Results.
 
 ## Clean break
 
-Unsupported Design bytes are not readable history. Historical `rdNN_adopt_*`
+Unsupported Design bytes are not readable history. Historical `run-design-adopt-*`
 records from the retired flow may be read only as legacy Delivery evidence;
 new writers must not create them.
 
-Current grammar is v2 Ticket/Result plus
-`rdNN_commission|generate|verify_*`. Reject v1, `rNN_design_*`,
+Current grammar is v2 Ticket/Result plus `run-design-<commission|generate|verify>-<MMDD>-<slug>`;
+older `rdNN_*` records are retired and renamed once by `rename_runs.py`. Reject v1, `rNN_design_*`,
 D0-D5/GD0-GD6, `design/DU*/`, PageX, and phase-shaped Design folders. Do not
 read them as compatibility history and do not offer migration.
 

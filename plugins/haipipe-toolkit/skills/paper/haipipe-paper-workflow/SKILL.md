@@ -52,7 +52,7 @@ feedback batch → response work + affected owner Runs → G5 closure
 Arrows include control predicates, not extra Run nodes. Accepted dependencies
 can be reused. Section work may proceed as soon as its row is released, while
 other research continues. A compile before the intended set is ready remains
-DRAFT. A full Page controller pass is a Workflow Runtime, not an RP Run.
+DRAFT. A full Page controller pass is a Workflow Runtime, not a Page Run.
 
 The former `workflow-phases/` path was only a compatibility address for the
 four Paper PageType skills; those skills now sit beside the other Paper
@@ -190,11 +190,11 @@ Section's Page workflow still uses the common Evidence graph:
 ### Paper Run naming
 
 Load [`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
-New Page work uses typed RP, RE and RD identities from the shared Page owner;
-external Supporting Runs retain their native identity. Paper judgment and
-compile/response profiles are declared in the Run Spec reference. Existing
-`pm-/pa-/pr-`, compact `rp00/rpNN`, and `pj...` receipts stay readable without
-renumbering and are not new allocation grammars. `RD<NN>` names a Round Page.
+New Page work uses the shared Page Run names (`run-<kind>-<MMDD>-<slug>`);
+Paper judgment Runs are `run-paper-<judgment>-<MMDD>-<slug>`; external Supporting
+Runs retain their native identity. Paper judgment and compile/response profiles
+are declared in the Run Spec reference. Older short names are retired.
+`RD<NN>` names a Round Page.
 
 ## 🧾 Receipts and work status
 
