@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical papers/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.3"
-  last_updated: "2026-09-29"
+  version: "0.7.4"
+  last_updated: "2026-09-30"
   # version history: ./CHANGELOG.md
 ---
 
@@ -108,19 +108,25 @@ candidate packet before any Run is opened.
    One candidate paper = one Run. A Trigger mentioning N papers fans out to N
    Runs.
 5. EXECUTE each pending ticket. Dispatch the appropriate read worker and write
-   the paired Result Card, facts.md, one-entry authoritative <RUNNAME>.bib, and
+   the paired Result Card, facts.md, one-entry sourced <RUNNAME>.bib, and
    the completed runtime receipt. For a paper Subject, the new Result MUST also
    carry `result_contract: paper-source-v2` plus the source-access pair required
    by the Paper Run contract; the compatibility checker does not waive this
    creation-time requirement. Fetch the Bib with
-   `../haipipe-discovery/scripts/paper_bib_fetch.py`, which resolves the entry
-   from Crossref, doi.org, DataCite, arXiv, or a `--publisher-url`, and stamps
+   `../haipipe-discovery/scripts/paper_bib_fetch.py`. For a computer-science
+   venue paper, prefer the exact accepted conference/journal record in dblp:
+   inspect its venue, year, first author, and DOI, then import its browser-saved
+   BibTeX with `--dblp-bib-file --dblp-record`. A CoRR record remains a preprint.
+   Otherwise fetch from the venue/publisher, Crossref, doi.org, DataCite, or
+   arXiv. The fetcher stamps
    `bib.source`, `bib.mode: verbatim_copy`, `bib.source_class` and `bib.record`.
-   Always pass `--expected-year`: it is the only guard that catches a different
-   paper reusing the Subject's exact title. Never compose an entry
+   Always pass `--expected-year`: it can catch a different paper reusing the
+   Subject's exact title. Never compose an entry
    from metadata fields, and never script Google Scholar: it answers `403` and
-   its export omits the DOI. A Scholar or person export enters through
-   `--bib-file --source-url`, recorded as the weaker `person-export` class.
+   its export omits the DOI. Use it only after the venue, dblp, and DOI routes
+   fail, and compare title, full authors, year, venue, and locator against the
+   accepted source before a person signs verification. A Scholar or person
+   export enters through `--bib-file --source-url` as `person-export`.
    PDF and captured Trigger text are optional.
 6. CHECK the Run/Result spine. Hand completed Results to D1 SYNTHESIZE; the
    Outline workbench's citation contract owns the deterministic Task Page Bib

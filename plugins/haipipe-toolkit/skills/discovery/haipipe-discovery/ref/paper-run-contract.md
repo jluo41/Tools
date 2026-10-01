@@ -305,7 +305,7 @@ The paper/source's question, method, results, and contribution.
 - PubMed: record when resolved, otherwise a DOI search.
 - Google Scholar: exact-title search for inspection and BibTeX export.
 - Google: exact-title web search.
-- BibTeX: authoritative export used by this Result.
+- BibTeX: the venue, curated index, or reviewed person export used by this Result.
 - Full text: lawful route when found; otherwise explicitly not found.
 
 ## Retrieval scope
@@ -340,14 +340,15 @@ paper belongs to exactly one paragraph.
 ## Bib authority and aggregation
 
 Each completed Result Bib contains exactly one entry copied verbatim from a
-trusted publisher, Crossref, arXiv, or a person-supplied entry. A machine may
+trusted venue, dblp, DOI/arXiv source, or a person-supplied entry. A machine may
 retrieve, subset, validate, deduplicate, and copy it; it may not invent fields.
 The Result Card's `cite: @Key` MUST equal that entry's key.
 
 ### Identity before entry
 
-A resolved DOI or arXiv identifier is required BEFORE an entry is fetched. A
-title-only lookup returns a different paper: Crossref answers the bibliographic
+A resolved DOI, arXiv identifier, or exact dblp venue record is required BEFORE
+an entry is selected. A title-only lookup can return a different paper:
+Crossref answers the bibliographic
 query `Large Language Models are Zero-Shot Rankers for Recommender Systems`
 with `LLM-BL: Large Language Models are Zero-Shot Rankers for Bug Localization`
 (`10.1109/icpc66645.2025.00064`) ranked FIRST, and the correct
@@ -365,15 +366,56 @@ Tools/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/scripts/paper_b
 `Tools/` is a SYMLINK, so a plain `find Tools -name paper_bib_fetch.py` returns
 nothing and the tooling looks absent. Use `find -L`, or the path above.
 
-The ladder:
+First choose the publication version. Cite the accepted conference or journal
+version when its record is available. For computer-science work, inspect the
+exact dblp `conf/` or `journals/` venue record first: confirm title, first
+author, year, venue, and DOI when present. dblp also indexes CoRR/arXiv as a
+separate publication; a CoRR hit is not evidence that the venue version was
+selected. dblp covers computer science and can lag a newly accepted paper, so
+absence there does not prove absence of a venue publication. When no matching
+dblp venue record exists, use the venue/publisher's BibTeX export or the
+resolved publication DOI. Use arXiv when the Subject really is a preprint.
+Google Scholar is the last manual fallback and requires a full human metadata
+check against the accepted source.
+
+The routes:
 
 ```text
 --doi           Crossref REST transform -> doi.org content negotiation -> DataCite
 --arxiv         arxiv.org/bibtex/<id>
+--dblp-bib-file a browser-saved one-record venue export, with --dblp-record
 --publisher-url a venue's own .bib endpoint, e.g. proceedings.neurips.cc/...-Bibtex.bib
 --bib-file      a person's or Scholar's export, with --source-url
 --resolve-title proposes Crossref + OpenAlex + arXiv candidates, refuses, exits 2
 ```
+
+dblp documents `https://dblp.org/rec/<key>.bib`, but a scripted request may
+receive its bot-check HTML rather than BibTeX. Open the exact record in a
+browser and save its own BibTeX export. Do not bypass that check or submit a
+search/person bibliography containing multiple records. The import checks
+the `DBLP:<key>` citation key, `biburl`, venue entry type, title, and exact year.
+An export DOI must match the known publication DOI; a missing DOI is reported
+for human review. A first-author surname mismatch blocks the import, and a venue
+mismatch is reported for review. For a DOI-known
+accepted venue Result:
+
+```bash
+python3 scripts/paper_bib_fetch.py \
+  --dblp-bib-file <browser-saved-single-record.bib> \
+  --dblp-record https://dblp.org/rec/conf/<venue>/<record> \
+  --title '<accepted title>' --expected-year <year> \
+  --expected-first-author '<surname>' --expected-venue '<venue>' \
+  --expected-doi '<publication DOI>' \
+  --result-dir <results/rNN_...>
+```
+
+For a venue record without a DOI, omit `--expected-doi` and keep the accepted
+venue record as the Subject. `paper_result_build.py` can select
+`--bib-from dblp --dblp-bib-file ... --dblp-record ...` when the venue DOI is
+known; its DOI-driven builder does not represent a DOI-less venue identity.
+Do not pass a preprint DOI to that builder and silently substitute a venue Bib.
+The direct fetcher can import the DOI-less venue export into a separately
+resolved Result.
 
 `--resolve-title` EXITS 2 by design, because refusing to write is its whole
 purpose. In a Run ticket written with `set -euo pipefail` that exit kills the
@@ -423,8 +465,8 @@ similarity guard. `10.65215/2q58a426` is a real 2025 `posted-content` posting by
 the Shenzhen Medical Academy of Research and Translation that reuses the exact
 title `Attention Is All You Need`; it passes both guards with zero findings.
 
-`--expected-year <YYYY>` is therefore the load-bearing guard, and the only one
-that catches a title collision. Pass it on every fetch. The entry's year must
+`--expected-year <YYYY>` is therefore a load-bearing guard for a title
+collision. Pass it on every fetch. The entry's year must
 fall within `--year-tolerance` (default 1) of it, or the fetch is refused.
 
 Two further defences are always on. The fetcher reads the Crossref record and
@@ -446,6 +488,7 @@ on `bib.record` is how that is caught today.
 
 ```text
 authoritative-export   crossref | doi-content-negotiation | datacite | arxiv | publisher
+curated-index-export   dblp exact venue record, manually exported in a browser
 person-export          a person's own export, including google-scholar-export
 ```
 
@@ -456,11 +499,30 @@ untrue, because no person was involved.
 
 Google Scholar is never fetched by a script: it refuses automated clients with
 `403` on the first request, and its export omits the DOI and lowercases the
-title. Its legitimate use is a person opening it in a browser for a Subject that
-Crossref, DataCite, and arXiv all lack, then passing that export through
-`--bib-file --source-url`. The weaker class stays on the receipt so a reader can
-see which Results rest on it. Rate limits count per public IP, so scripted
-Scholar access would also break a person's own browsing from the same network.
+title. Its legitimate use is a person opening it in a browser only after the
+accepted venue, dblp, publisher, DOI, and arXiv routes cannot provide the
+needed entry. Before promotion, compare the complete author list, title,
+publication year, venue, volume/pages or article number, and DOI against the
+accepted record; do not repair uncertain metadata by guessing. Pass that
+export through `--bib-file --source-url`. The weaker class stays on the receipt
+so a reader can see which Results rest on it. Rate limits count per public IP,
+so scripted Scholar access would also break a person's own browsing from the
+same network.
+
+If `bibtex-verifier` is available, run it after rebuilding the Task Bib:
+
+```bash
+bibverify <derived-task.bib> --json --output <review-report.md>
+```
+
+It compares selected
+metadata through Crossref, DataCite, and OpenAlex, so use its per-key findings
+to return to the owning Result Bib. It does not query dblp or certify that a
+claim is supported. A `NOT_FOUND` or `UNVERIFIED` result is a review item,
+especially for a DOI-less dblp venue record, not permission to replace the
+accepted citation with a preprint or a Google Scholar guess. The report never
+sets `bib.verification.status: verified`; the person-reserved check above still
+applies.
 
 Refetching the SAME entry preserves an existing `bib.verification`. A DIFFERENT
 entry resets it to `pending`, because a person's reading of the old entry does
@@ -468,8 +530,8 @@ not carry over to a new one.
 
 Person-supplied metadata is NOT a person-supplied BibTeX entry. Turning a title,
 author list, DOI, or venue fields into BibTeX is composition even when every
-field was provided. Without a complete verbatim entry or an authoritative
-BibTeX export, the Result may retain its Card/facts but MUST stay `blocked` or
+field was provided. Without a complete verbatim entry from an accepted source,
+the Result may retain its Card/facts but MUST stay `blocked` or
 `unresolved`; it cannot claim `complete`.
 
 The Task Page Bib is derived:

@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.19.0"
-  last_updated: "2026-09-29"
+  version: "0.19.3"
+  last_updated: "2026-09-30"
   # version history: ./CHANGELOG.md
 ---
 
@@ -242,13 +242,18 @@ separate Bibex workbench.
    focal claim was verified.
    Runtime must name the Bib source and `mode: verbatim_copy`. Metadata alone
    is not a supplied BibTeX entry and may not be formatted into one. Fetch it
-   with `scripts/paper_bib_fetch.py`: a resolved DOI or arXiv identifier is
-   required first, because Crossref's top hit for a TITLE can be a different
-   paper. Always pass `--expected-year`: a DOI agrees with itself, so a paper
-   reusing the same title otherwise passes every guard. `bib.source_class` is
-   `authoritative-export` for crossref/doi.org/datacite/arxiv/publisher, and
-   `person-export` for a person's own export, including Google Scholar, which
-   no script may fetch.
+   with `scripts/paper_bib_fetch.py`: resolve the accepted conference/journal
+   version first. For computer-science papers, inspect the exact dblp venue
+   record and prefer its one-record BibTeX export; dblp's CoRR/arXiv record is
+   a separate preprint, not the accepted version. Use a venue/publisher export
+   or DOI route when dblp has no matching venue record. Use Google Scholar only
+   as a manually checked last resort. A resolved DOI, arXiv identifier, or
+   exact dblp venue record is required before an entry is written; a title hit
+   is not identity. Always pass `--expected-year` and compare the first author
+   and venue against the accepted record. `bib.source_class` distinguishes
+   `curated-index-export` (dblp), `authoritative-export` (venue/DOI/arXiv),
+   and `person-export` (including Google Scholar). Read
+   `ref/paper-run-contract.md` for the dblp import and fallback commands.
    `complete` is technical Result completeness; citation verification may
    still be `pending`, but then the Task cannot close as `ok` or
    `inconclusive`.

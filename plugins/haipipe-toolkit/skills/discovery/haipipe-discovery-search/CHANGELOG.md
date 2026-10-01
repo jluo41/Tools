@@ -3,6 +3,10 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.4 · 2026-09-30
+
+- For computer-science venue papers, inspect the accepted dblp conference/journal record before choosing BibTeX. Import its exact one-record export through the Discovery fetcher, keep CoRR/arXiv separate, and use Google Scholar only as a manually checked last resort.
+
 ## 0.7.3 · 2026-09-29
 
 - Step 3 RESOLVE: a title is not an identity. Crossref's top bibliographic hit for a title can be a different paper, so a DOI or arXiv identifier is resolved before any Bib is fetched.

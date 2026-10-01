@@ -10,10 +10,10 @@ cards read (haipipe-workbench-paper 0.16.0):
   results/<run>/<run>.bib             one verbatim entry (paper_bib_fetch.py)
   results/<run>/source-access.json    links and identifiers (paper_source_access.py),
   results/<run>/source-access.md      plus `local_pdf` when a free copy was saved
-  results/<run>/abstract.md           the abstract: PubMed, else OpenAlex (paper_source_access.py)
+  results/<run>/abstract.md           the abstract: PubMed, else OpenAlex, else arXiv (--arxiv or an arXiv DOI)
   results/<run>/facts.md              the identity and one fact per abstract sentence
   results/<run>/<run>.md              the Result card: question, readout, limits, reuse
-  results/<run>/paper.pdf             a free copy, when one exists (--pdf-from or OpenAlex)
+  results/<run>/paper.pdf             a free copy, when one exists (--pdf-from, OpenAlex, then arXiv)
 
 The task's question comes from its discovery.yaml. Every path written is relative to
 the Task folder. Nothing here judges relevance: the readout and reuse are inputs.
@@ -30,6 +30,7 @@ import shutil
 import subprocess
 import sys
 import unicodedata
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -55,10 +56,40 @@ def crossref(doi):
     fam = ((m.get("author") or [{}])[0].get("family") or (m.get("author") or [{}])[0].get("name") or "anon")
     journal, venue = html.unescape(journal), html.unescape(venue)
     title = re.sub(r"\s*</(?:sub|sup)>", "", re.sub(r"\s*<(?:sub|sup)>\s*", "", (m.get("title") or [""])[0]))  # HbA<sub>1C</sub> → HbA1C
+    title = re.sub(r"[{}]", "", title)    # a deposited `{GS-Fuse}` keeps its case braces; a reader sees GS-Fuse
     return {"title": html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", title))).strip(),
             "authors": authors, "first_family": fam, "year": year, "journal": journal, "venue": venue.strip(),
             "landing": ((m.get("resource") or {}).get("primary") or {}).get("URL") or "https://doi.org/" + doi,
             "n_authors": len(m.get("author") or [])}
+
+
+def arxiv_id(doi, given=""):
+    """The arXiv id: `--arxiv`, else the one an arXiv DataCite DOI (10.48550/arXiv.<id>) carries."""
+    m = re.match(r"(?i)^10\.48550/arxiv\.(.+)$", doi or "")
+    return (given or (m.group(1) if m else "")).strip()
+
+
+def arxiv(aid):
+    """Identity and abstract from the arXiv API, for a paper Crossref and PubMed do not hold
+    (a machine-learning venue with no DOI, or a DOI with no PubMed abstract)."""
+    import xml.etree.ElementTree as ET
+    ns = {"a": "http://www.w3.org/2005/Atom", "x": "http://arxiv.org/schemas/atom"}
+    root = ET.fromstring(fetch("https://export.arxiv.org/api/query?id_list=" + urllib.parse.quote(aid)).read())
+    e = root.find("a:entry", ns)
+    if e is None or e.find("a:title", ns) is None:
+        raise SystemExit("arXiv has no record for %s" % aid)
+    text = lambda tag: " ".join((e.findtext(tag, "", ns) or "").split())
+    names = [" ".join((a.findtext("a:name", "", ns) or "").split()) for a in e.findall("a:author", ns)]
+    year = int(text("a:published")[:4]) if text("a:published") else None
+    # a conference with no DOI (ICLR, NeurIPS before its proceedings) is named only in the authors' comment
+    said = re.search(r"(?i)\b(?:accepted|published)\s+(?:by|at|to|in|for)\s+(?:the\s+)?(.+?)\s*(?:[.;]|$)", text("x:comment"))
+    venue = text("x:journal_ref") or (
+        "%s · arXiv %s, venue from the authors' comment" % (said.group(1), aid) if said else
+        "arXiv preprint arXiv:%s (%s)" % (aid, year))
+    return {"title": text("a:title"), "authors": "; ".join(names),
+            "first_family": (names[0].split()[-1] if names else "anon"), "year": year,
+            "journal": "arXiv", "venue": venue, "landing": "https://arxiv.org/abs/" + aid,
+            "n_authors": len(names), "abstract": text("a:summary")}
 
 
 def q(s):
@@ -85,9 +116,9 @@ def who(meta):
     return fam if meta["n_authors"] == 1 else ("%s and co-authors" % fam if meta["n_authors"] == 2 else "%s et al." % fam)
 
 
-def save_pdf(result, pdf_from, doi, space_root):
-    """A free copy as paper.pdf: a file already on disk, else OpenAlex's open-access PDF.
-    Returns the local_pdf record or None."""
+def save_pdf(result, pdf_from, doi, space_root, aid=""):
+    """A free copy as paper.pdf: a file already on disk, else OpenAlex's open-access PDF,
+    else the arXiv preprint. Returns the local_pdf record or None."""
     dest = result / "paper.pdf"
     if pdf_from:
         src = (space_root / pdf_from).resolve()
@@ -96,7 +127,10 @@ def save_pdf(result, pdf_from, doi, space_root):
     try:
         w = json.load(fetch("https://api.openalex.org/works/doi:" + urllib.parse.quote(doi)))
     except Exception:
-        return None
+        w = {}
+    if aid:      # the arXiv copy is free for every arXiv paper; tried after OpenAlex's
+        w.setdefault("oa_locations", []).append({"pdf_url": "https://arxiv.org/pdf/" + aid,
+                                                 "version": "submittedVersion"})
     for loc in [w.get("best_oa_location")] + list(w.get("oa_locations") or []):
         url = (loc or {}).get("pdf_url")
         if not url:
@@ -123,7 +157,17 @@ def main():
     ap.add_argument("--reuse", required=True, help="what this study takes from it")
     ap.add_argument("--pdf-from", default="", help="a free copy already on disk, relative to the SPACE root")
     ap.add_argument("--trigger", default="", help="the request that found the paper")
+    ap.add_argument("--arxiv", default="", help="the arXiv id, for an abstract and free copy PubMed and "
+                                                "OpenAlex do not hold (read from a 10.48550/arXiv DOI)")
+    ap.add_argument("--bib-from", choices=("doi", "arxiv", "dblp"), default="doi",
+                    help="verbatim BibTeX source; choose dblp for a confirmed conference/journal record")
+    ap.add_argument("--dblp-bib-file", type=Path, help="browser-saved exact-record dblp .bib export")
+    ap.add_argument("--dblp-record", help="the exact https://dblp.org/rec/... venue record URL")
     a = ap.parse_args()
+    if a.bib_from == "dblp" and (not a.dblp_bib_file or not a.dblp_record):
+        ap.error("--bib-from dblp requires --dblp-bib-file and --dblp-record")
+    if a.bib_from != "dblp" and (a.dblp_bib_file or a.dblp_record):
+        ap.error("--dblp-bib-file and --dblp-record require --bib-from dblp")
 
     task = a.task.resolve()
     space_root = next((p for p in [task] + list(task.parents) if (p / "env.sh").is_file()), None)
@@ -135,17 +179,37 @@ def main():
     qm = re.search(r"(?ms)^question:\s*\|\s*\n(.*?)(?=^\S)", y)
     question = " ".join(x.strip() for x in (qm.group(1) if qm else "").splitlines() if x.strip())
 
-    meta = crossref(a.doi)
-    bib_url = "https://api.crossref.org/works/%s/transform/application/x-bibtex" % urllib.parse.quote(a.doi, safe="")
+    aid = arxiv_id(a.doi, a.arxiv)
+    ax = None
+    try:
+        meta, id_src = crossref(a.doi), "Crossref"
+        bib_url = "https://api.crossref.org/works/%s/transform/application/x-bibtex" % urllib.parse.quote(a.doi, safe="")
+    except urllib.error.HTTPError as err:
+        if err.code != 404 or not aid:      # only a DOI Crossref does not register (a DataCite arXiv DOI)
+            raise
+        meta = ax = arxiv(aid)
+        id_src = "arXiv"
+        bib_url = "https://arxiv.org/bibtex/" + aid   # DataCite keys an arXiv entry by its URL, which \cite cannot take
+    if a.bib_from == "dblp":
+        if id_src != "Crossref":
+            sys.exit("a dblp venue export needs the venue publication DOI, not an arXiv-only identity")
+        bib_url = re.sub(r"\.(?:bib|html)$", "", a.dblp_record.rstrip("/")) + ".bib"
     subprocess.run([sys.executable, str(HERE / "paper_source_access.py"), "--doi", a.doi, "--title", meta["title"],
                     "--bib-url", bib_url, "--output-dir", str(result)], check=True, stdout=subprocess.DEVNULL)
     sa = json.loads((result / "source-access.json").read_text(encoding="utf-8"))
     abstract = (sa.get("abstract") or {}).get("text") or ""
+    abs_src = "OpenAlex" if "openalex.org" in ((sa.get("abstract") or {}).get("source") or "") else "PubMed"
+    if not abstract and aid:                # no PubMed abstract: a machine-learning paper's is on arXiv
+        ax = ax or arxiv(aid)
+        abstract, abs_src = ax["abstract"], "arXiv"
+        sa["abstract"] = {"source": "https://arxiv.org/abs/" + aid, "text": abstract}
+        (result / "abstract.md").write_text("# Retrieved abstract\n\nSource: https://arxiv.org/abs/%s\n\n%s\n"
+                                            % (aid, abstract), encoding="utf-8")
     depth = "abstract" if abstract else "metadata-only"
-    pdf = save_pdf(result, a.pdf_from, a.doi, space_root)
+    pdf = save_pdf(result, a.pdf_from, a.doi, space_root, aid)
     sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "pending",
                             "locator_status": "complete" if abstract else "pending",
-                            "depth_note": ("The Run reads the retrieved abstract (%s). The full text was not read." % ((sa.get("abstract") or {}).get("source") or "source in source-access.json")
+                            "depth_note": ("The Run reads the %s abstract. The full text was not read." % abs_src
                                            if abstract else "No abstract was available; identity and metadata only.")})
     if pdf:
         sa["local_pdf"] = pdf
@@ -184,29 +248,55 @@ def main():
         "  reading_depth: %s" % depth,
         "  claim_support: %s" % ("supported" if abstract else "pending"),
         "  locator_status: %s" % ("complete" if abstract else "pending"),
-        "  scope_note: %s" % q("Only the retrieved abstract was read; every fact is a sentence of it. No full-text claim is made."
-                               if abstract else "No abstract was available; the card rests on metadata only."),
+        "  scope_note: %s" % q("Only the %s abstract was read; every fact is a sentence of it. No full-text claim is made."
+                               % abs_src if abstract else "No abstract was available; the card rests on metadata only."),
         "worker:",
         "  kind: api",
-        "  name: %s" % q("Crossref + PubMed + OpenAlex; haipipe-discovery scripts/paper_result_build.py"),
+        "  name: %s" % q("%s + %s + OpenAlex; haipipe-discovery scripts/paper_result_build.py"
+                         % (id_src, abs_src) if abstract else "%s + OpenAlex; haipipe-discovery scripts/paper_result_build.py" % id_src),
         "  calls:",
-        "    - %s" % q("Crossref works lookup by DOI"),
-        "    - %s" % q("retrieved abstract, PubMed first, else OpenAlex (paper_source_access.py)"),
-        "    - %s" % q("OpenAlex open-access location"),
-        "    - %s" % q("Crossref BibTeX transform through scripts/paper_bib_fetch.py"),
+        "    - %s" % q("%s lookup by %s" % (id_src, "DOI" if id_src == "Crossref" else "arXiv id")),
+        "    - %s" % q("PubMed E-utilities abstract (paper_source_access.py)" if abs_src == "PubMed"
+                       else "OpenAlex abstract_inverted_index (paper_source_access.py; no PubMed abstract)"
+                       if abs_src == "OpenAlex" else "arXiv API abstract (no PubMed record)"),
+        "    - %s" % q("OpenAlex open-access location" + (", then the arXiv PDF" if aid else "")),
+        "    - %s" % q("BibTeX through scripts/paper_bib_fetch.py (%s)" % (
+            "dblp exact venue record" if a.bib_from == "dblp" else
+            "arXiv export" if (id_src == "arXiv" or a.bib_from == "arxiv") else "Crossref, doi.org, then DataCite")),
         "executed_at: %s" % q(now),
         "",
     ])
     (result / "runtime.yaml").write_text(runtime, encoding="utf-8")
-    subprocess.run([sys.executable, str(HERE / "paper_bib_fetch.py"), "--doi", a.doi, "--title", meta["title"],
-                    "--result-dir", str(result)], check=True, stdout=subprocess.DEVNULL)
+    if a.bib_from == "arxiv" and not aid:
+        sys.exit("--bib-from arxiv needs --arxiv or an arXiv DOI")
+    ident = (["--dblp-bib-file", str(a.dblp_bib_file), "--dblp-record", a.dblp_record,
+              "--expected-doi", a.doi] if a.bib_from == "dblp" else
+             ["--arxiv", aid] if (id_src == "arXiv" or a.bib_from == "arxiv") else ["--doi", a.doi])
+    bib = subprocess.run([sys.executable, str(HERE / "paper_bib_fetch.py")] + ident + ["--title", meta["title"],
+                          "--expected-first-author", meta["first_family"],
+                          "--expected-venue", meta["venue"], "--result-dir", str(result)] +
+                         (["--expected-year", str(meta["year"])] if meta["year"] else []),
+                         stdout=subprocess.PIPE, text=True)
+    try:
+        bib_review = json.loads(bib.stdout or "{}")
+    except json.JSONDecodeError:
+        bib_review = {}
+    if bib.returncode != 0:     # no verbatim entry: the Result is not complete, and its receipt must say so
+        findings = bib_review.get("errors") or bib_review.get("warnings") or []
+        why = "; ".join(findings) if findings else bib_review.get("refused", "BibTeX fetch failed")
+        (result / "runtime.yaml").write_text(
+            runtime.replace("status: complete\n", "status: blocked\nblocked_reason: %s\n" % q(
+                "%s (%s); rerun the Ticket" % (why, " ".join(ident)))), encoding="utf-8")
+        sys.exit("blocked %s · %s" % (a.address, why))
+    for warning in bib_review.get("warnings") or []:
+        print("Bib review warning: %s" % warning, file=sys.stderr)
     key = re.search(r"@\w+\s*\{\s*([^,\s]+)", (result / (a.run + ".bib")).read_text(encoding="utf-8")).group(1)
 
     cite = "%s %s" % (who(meta), meta["year"])
     facts = ["# %s · facts from the abstract" % cite, "",
-             "- `F01` · Subject identity: %s, %s; %s; DOI %s%s. Locator: Crossref record." % (
+             "- `F01` · Subject identity: %s, %s; %s; DOI %s%s. Locator: %s record." % (
                  q(meta["title"]), meta["authors"], meta["venue"], a.doi,
-                 ("; PMID %s" % ids["pmid"]) if ids.get("pmid") else "")]
+                 ("; PMID %s" % ids["pmid"]) if ids.get("pmid") else "", id_src)]
     for i, s in enumerate(sentences(abstract), start=2):
         facts.append("- `F%02d` · Abstract sentence: %s Locator: abstract S%d." % (i, q(s), i - 1))
     (result / "facts.md").write_text("\n".join(facts) + "\n", encoding="utf-8")
