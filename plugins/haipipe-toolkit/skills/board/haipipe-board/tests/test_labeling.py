@@ -76,15 +76,17 @@ class LabelingSurfaceTest(unittest.TestCase):
         body = render(self.page, "/demo/board.md", self.file_q,
                       "/demo/board/SL/S-Label-1-demo.html", self.board)
         pane = body.split("data-view=preparation hidden>", 1)[1].split("<div class=pane", 1)[0]
-        self.assertIn("<h2>Corpus</h2>", pane)
+        self.assertIn("<h2>Raw corpus</h2>", pane)
+        self.assertIn("<h2>Items to label</h2>", pane)
         self.assertIn('href="https://example.org/demo"', pane)
+        self.assertIn("folder", pane)                          # no source.yaml: "not recorded"
         self.assertIn("one reply; context is the earlier turns", pane)
-        self.assertIn("one conversation", pane)
         self.assertIn("2 words median, 1 to 3", pane)          # held-back text never counted
         self.assertIn("1 item has none", pane)
-        self.assertIn("2 items to label", pane)
-        self.assertIn("16 Sep 2026", pane)
+        self.assertIn("2 to label", pane)
+        self.assertNotIn("data-items-show", pane)              # HOLD: what was shown cannot be recorded
         self.assertNotIn("held held", body)
+        self.assertNotIn("a b c", body)                        # no item text in the page itself
         self.assertNotIn("already-unitized", body)
 
     def test_missing_lane_reports_contract_without_creating_it(self):

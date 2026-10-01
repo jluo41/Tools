@@ -30,7 +30,7 @@ request into your agent conversation. Copying a request never starts a Run.
 
 | order | Space | views | first question | canonical sources |
 |---|---|---|---|---|
-| 1 | **Data** | Preparation · Contract · Embedding | How is one transcript turned into a checked item, what does the corpus hold, and how does an item become a vector? | `preparation-owner.yaml` (source attachment) · `preparation-ref.yaml` (accepted Result bindings) · `config.yaml` (corpus) · `corpus/manifest.json` · `test/sealed/status.json` · `cache/embeddings/<version>/manifest.json` |
+| 1 | **Data** | Preparation · Contract · Embedding | How is one transcript turned into a checked item, what does the corpus hold, and how does an item become a vector? | `corpus/source.yaml` (raw folder and column mapping) · `preparation-owner.yaml` (source attachment) · `preparation-ref.yaml` (accepted Result bindings) · `config.yaml` (corpus) · `corpus/manifest.json` · `test/sealed/status.json` · `cache/embeddings/<version>/manifest.json` |
 | 2 | **Labeling** | Definition · Rounds · Guideline | What does each label mean and is that confirmed, which items does each round label in chat, and what does the guideline say now? | `config.yaml` (labels) · `gates/g0/receipt.json` · `gates/meaning-revisions/` · `../results/<definition-discussion run>/ledger.yaml` · `rounds/round_NN/human_batch.jsonl` · `rounds/round_NN/sessions/events.jsonl` · `corpus/items.jsonl` (Rounds only) · `policy/current` · `policy/versions/<G>/guideline.md` |
 | 3 | **Quality** | Test · Evaluation · Audit | Is the sealed test safe, and what evidence qualifies an executor and the final corpus? | `test/sealed/status.json` · `test/final/lock.json` · `evaluation/registry.yaml` · `audit/final_*/` |
 | 4 | **Delivery** | Handoff · Scan · Final labels | What is handed over, how is the corpus labeled under it, and what can a reader receive? | `handoff/label-v1.yaml` · `production/run_<n>/` · `corpus/final/D_star.jsonl` |
@@ -291,7 +291,8 @@ appears in the item table of the round's card in `Labeling → Rounds`, so
 the person reads the round while labeling it in chat; an item never shown stays
 "not opened yet" there. `Data → Embedding` may fetch the text of other
 development items, only when the person asks: a group's typical items (action
-`group_examples`) or one picked dot (action `embedding_item_text`). Items
+`group_examples`) or one picked dot (action `embedding_item_text`); `Data →
+Preparation` pages through the items to label (action `item_page`). Items
 waiting in a round are never returned there, so the first look at them, and
 their `show` event, stays with the round. Every such fetch appends one line
 to `labeling/exposure/group_examples.jsonl` (time, human, build, group, item
@@ -309,7 +310,7 @@ door but have no page button, since answers come from the chat. The
 and the open round's `human-calibration` `+ New Run` or `Resume` only copy text; the discussion writes
 through `engine/definition_discussion.py` in chat, never through the door. `Data → Embedding`
 holds five: `build_embedding`, `embedding_status`, `embedding_item`,
-`group_examples`, `embedding_item_text`. Quality and Delivery have no
+`group_examples`, `embedding_item_text`; `Data → Preparation` holds `item_page`. Quality and Delivery have no
 write control, and a Runs panel only copies prompts. The checks behind each action are the
 write-and-authority law in
 `../../label-building-workflow/haipipe-workbench-labeling/SKILL.md`.

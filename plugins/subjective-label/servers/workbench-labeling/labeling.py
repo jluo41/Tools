@@ -1072,18 +1072,99 @@ def _corpus_shape(items: str, mtime_ns: int, size: int, text_field: str,
             "no_context": sum(1 for n in context_words if n == 0), "meta": meta}
 
 
-def _corpus_card(vm: dict) -> str:
-    """What the corpus is and what one item is (Data → Preparation); Contract keeps the counts."""
+def _day_words(value) -> str:
+    """'2026-09-16...' -> '16 Sep 2026'."""
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", str(value or ""))
+    months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+    return f"{int(m.group(3))} {months[int(m.group(2)) - 1]} {m.group(1)}" if m else str(value or "")
+
+
+def _bytes_words(n: int) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024 or unit == "GB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
+    return ""
+
+
+def _corpus_view_module():
+    """Load the subjective-label corpus reader (``corpus_view``)."""
+    job_module = _canonical_job_module()
+    if job_module is None:
+        return None
+    candidate = Path(job_module.__file__).with_name("corpus_view.py")
+    if not candidate.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("haipipe_subjective_label_corpus_view", candidate)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _raw_corpus_card(vm: dict) -> str:
+    """The raw source as a folder, and which raw column became which item field; no row values."""
     config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
     corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
     source = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
     if not source and isinstance(corpus.get("source"), dict):
         source = corpus["source"]
+    name = _esc(source.get("name") or "")
+    if name and source.get("uri"):
+        name = f'<a href="{_esc(source["uri"])}" target=_blank rel=noopener>{name}</a>'
+    if name and source.get("license"):
+        name += f' · {_esc(source["license"])}'
+    module = _corpus_view_module()
+    try:
+        raw = module.raw_source(vm["root"]) if module else {}
+    except (OSError, ValueError) as error:
+        return _card("Raw corpus", _row("source", name) + f'<p class=warn>{_esc(error)}</p>')
+    if not raw:
+        return _card("Raw corpus", _row("source", name) + _row("folder", "not recorded"))
+    folder = _row("folder", f'<code>{_esc(raw["folder"])}/</code>'
+                  + ("" if raw["found"] else ' <span class=warn>not found on this machine</span>'))
+    file_rows = []
+    for f in raw["files"]:
+        n_rows = f"{f['rows']:,}" if "rows" in f else ""
+        file_rows.append(
+            f'<tr><td><code>{_esc(f["path"])}</code></td><td class=num>{_esc(_bytes_words(f["bytes"]))}</td>'
+            f'<td class=num>{_esc(n_rows)}</td><td class=num>{_esc(len(f.get("columns") or []) or "")}</td>'
+            f'<td class=num>{_esc(f.get("keys") or "")}</td></tr>')
+    files = "".join(file_rows)
+    files_table = ('<div class=scroll><table class=items><thead><tr><th>File</th><th>Size</th><th>Rows</th>'
+                   f'<th>Columns</th><th>Items</th></tr></thead><tbody>{files}</tbody></table></div>'
+                   if files else "")
+    main = next((f for f in raw["files"] if f["path"] == raw["file"]), {})
+    used = raw["fields"]
+    mapping = "".join(
+        f'<tr><td><code>{_esc(col)}</code></td><td>→</td><td><code>{_esc(field)}</code></td></tr>'
+        for col, field in used.items())
+    others = [c for c in main.get("columns") or [] if c not in used]
+    rows = [
+        _row("source", name) if name else "",
+        folder,
+        files_table,
+        _row("one row is", _esc(raw["one_row_is"])) if raw["one_row_is"] else "",
+        _row("one item is", f'all rows with the same <code>{_esc(raw["item_key"])}</code>'
+             + (f' ({_esc(main["keys"])} items)' if main.get("keys") else "")) if raw["item_key"] else "",
+        _row("raw column → item field", f'<table class=map><tbody>{mapping}</tbody></table>') if mapping else "",
+        (f'<details class=ctx><summary>other columns ({len(others)}), never shown before you label</summary>'
+         f'<p class=mut>{", ".join(f"<code>{_esc(c)}</code>" for c in others)}</p></details>') if others else "",
+        _row("built", _esc(" · ".join(x for x in (_day_words(raw["built_on"]), raw["built_by"]) if x)))
+        if raw["built_on"] or raw["built_by"] else "",
+    ]
+    return _card("Raw corpus", "".join(rows))
+
+
+def _items_card(vm: dict) -> str:
+    """The items to label: what one item is, the counts, and a table you can page through."""
+    config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
     population = manifest.get("population")
     pop = population if isinstance(population, dict) else {}
     unit = (pop.get("definition") or (population if isinstance(population, str) else "")
             or corpus.get("population") or "")
-    id_field = manifest.get("id_field") or corpus.get("id_field") or "item_id"
     text_field = manifest.get("text_field") or corpus.get("text_field") or "text"
     context_field = manifest.get("context_field") or corpus.get("context_field") or ""
     items = vm["root"] / (manifest.get("items_file") or "corpus/items.jsonl")
@@ -1092,37 +1173,32 @@ def _corpus_card(vm: dict) -> str:
         shape = _corpus_shape(str(items), stat.st_mtime_ns, stat.st_size, text_field, context_field)
     except OSError:
         shape = {}
-    meta = shape.get("meta") or {}
-    name = _esc(source.get("name") or "")
-    if name and source.get("uri"):
-        name = f'<a href="{_esc(source["uri"])}" target=_blank rel=noopener>{name}</a>'
-    if name and source.get("license"):
-        name += f' · {_esc(source["license"])}'
+    n_sealed = manifest.get("n_sealed", (vm.get("sealed") or {}).get("n_items"))
+    if n_sealed is None and isinstance(pop.get("sealed"), int):
+        n_sealed = pop["sealed"]
+    counts = " · ".join(x for x in (
+        f'{shape["n"]} to label' if shape.get("n") else "",
+        f"{n_sealed} held back, never shown" if n_sealed else "") if x)
     context = ""
     if context_field and shape.get("context"):
         context = f'<code>{_esc(context_field)}</code> · {_esc(shape["context"])}'
         if shape.get("no_context"):
             n = shape["no_context"]
             context += f' · {_esc(n)} {"item has" if n == 1 else "items have"} none'
-    prepared = ""
-    if not (vm.get("preparation") or {}).get("linked"):
-        m = re.match(r"(\d{4})-(\d{2})-(\d{2})", str(manifest.get("created_at") or ""))
-        months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
-        when = f"{int(m.group(3))} {months[int(m.group(2)) - 1]} {m.group(1)} · " if m else ""
-        prepared = when + "before Corpus Preparation Runs existed, so no Runs are listed"
-    return _card("Corpus", "".join([
-        _row("source", name) if name else "",
-        _row("source row", _esc(meta.get("row_unit"))) if meta.get("row_unit") else "",
-        _row("encounters", _esc(pop.get("n_encounters"))) if pop.get("n_encounters") else "",
-        _row("raters", _esc(meta.get("rater_count"))) if meta.get("rater_count") else "",
+    table = ""
+    if shape.get("n") and not (vm.get("state") or {}).get("authority_hold"):
+        table = ('<div class=actions><button type=button class=primary data-items-show>Show items</button></div>'
+                 '<div class=scroll data-items-box hidden><table class="items itemtable"><thead><tr><th>Item</th>'
+                 '<th>State</th><th>Conversation before it</th><th>Text to label</th></tr></thead>'
+                 '<tbody data-items-rows></tbody></table></div><div data-items-more></div>')
+    return _card("Items to label", "".join([
         _row("one item is", _esc(unit)) if unit else "",
-        _row("item text", f'<code>{_esc(text_field)}</code> · {_esc(shape["text"])}') if shape.get("text") else "",
+        _row("items", _esc(counts)) if counts else "",
+        _row("text", f'<code>{_esc(text_field)}</code> · {_esc(shape["text"])}') if shape.get("text") else "",
         _row("context", context) if context else "",
-        _row("item id", f"<code>{_esc(id_field)}</code>"),
-        _row("word counts from", _esc(f'{shape["n"]} items to label')) if shape.get("n") else "",
         _row("kept together", "no encounter is split across the held-back test")
         if pop.get("encounter_straddle_across_seal") == [] else "",
-        _row("prepared", _esc(prepared)) if prepared else "",
+        table,
     ]))
 
 
@@ -1142,7 +1218,7 @@ def _preparation_view(vm: dict) -> str:
             f'<div class=actions><button type=button class=primary data-copy="{_esc(prompt)}">'
             "Copy Page-folder request</button></div>",
         ]))
-    corpus = _corpus_card(vm) if has_job else ""
+    corpus = _raw_corpus_card(vm) + _items_card(vm) if has_job else ""
     if prep.get("error"):
         return corpus + _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>')
     if not prep.get("linked"):
@@ -2916,6 +2992,8 @@ details.roundbox.on{border-color:var(--acc)}
 .discrec td.changed{color:var(--ok)}
 h3.sub{font-size:13px;margin:12px 0 2px}
 table.items{width:auto;max-width:100%}
+table.map{width:auto;border-collapse:collapse}
+table.map td{padding:1px 10px 1px 0;border:0;background:none}
 table.items td,table.items th{padding:3px 10px}
 table.items td:not(:nth-child(3)):not(:nth-child(6)){white-space:nowrap}
 table.items td.num{text-align:left}
@@ -2924,6 +3002,9 @@ table.items td:nth-child(6)>*{max-width:18em}
 table.items .pill{font-size:10px}
 table.items td.nowrap{white-space:nowrap}
 table.items .reply{font-weight:500}
+table.items.itemtable td:nth-child(3),table.items.itemtable td:nth-child(4){white-space:normal}
+table.items.itemtable td:nth-child(3)>*{max-width:26em}
+table.items.itemtable td:nth-child(4)>*{max-width:40em}
 table.items details.ctx summary{font-size:11.5px;text-transform:none;letter-spacing:0;margin-top:3px}
 table.items .fb{margin:0 0 3px}
 table.wfmap{font-size:13.5px}
@@ -3431,6 +3512,28 @@ function act(action,body){
  return fetch('/_board/labeling/act',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
   .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok){throw new Error(j.err||('HTTP '+r.status));}return j;});});
 }
+/* ── Data → Preparation: items to label, a page at a time (each page is an exposure) ── */
+(function(){var btn=$('[data-items-show]');if(!btn){return;}
+ var box=$('[data-items-box]'),rows=$('[data-items-rows]'),more=$('[data-items-more]'),offset=0,k=20;
+ function turns(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).map(function(l){
+  var m=l.match(/^([A-Za-z][A-Za-z_ ]{0,20}):\s?(.*)$/),who=m?m[1]:'',body=m?m[2]:l;
+  if(/^(lamda|assistant|bot|chatbot|ai|model|gpt|claude)$/i.test(who.trim())){who='AI';}
+  return '<div class=turn>'+(who?'<b>'+esc(who)+'</b>':'')+'<span>'+esc(body)+'</span></div>';}).join('');}
+ function nTurns(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).length;}
+ function row(it){var waiting=/^waiting in /.test(it.state);
+  var state=waiting?it.state.replace(/^waiting in (\S+)$/,function(_,r){return 'in '+roundWords(r)+', open it in Labeling › Rounds';}):
+   it.state.replace(/^labeled in (\S+)$/,function(_,r){return 'labeled in '+roundWords(r);});
+  return '<tr><td class=nowrap>item '+esc(it.item_id)+'</td><td><span class="pill'+(it.state==='to label'?'':' mut')+'">'+esc(state)+'</span></td>'+
+   '<td>'+(waiting||!it.context?'':'<details class=ctx><summary>'+nTurns(it.context)+' turn'+(nTurns(it.context)===1?'':'s')+'</summary><div class=convo>'+turns(it.context)+'</div></details>')+'</td>'+
+   '<td>'+(waiting?'':'<div class=reply>'+esc(it.text)+'</div>')+'</td></tr>';}
+ function load(){btn.disabled=true;var m=$('button',more);if(m){m.disabled=true;m.textContent='Loading…';}
+  act('item_page',{offset:offset,k:k}).then(function(j){var r=j.result;box.hidden=false;btn.hidden=true;
+   rows.insertAdjacentHTML('beforeend',r.items.map(row).join(''));offset+=r.items.length;
+   more.innerHTML=r.more?'<button type=button class="pill tog">Show '+Math.min(k,r.total-offset)+' more ('+offset+' of '+r.total+' shown)</button>':
+    '<p class=mut>All '+r.total+' items shown.</p>';
+   var b=$('button',more);if(b){b.addEventListener('click',load);}})
+  .catch(function(e){btn.disabled=false;more.innerHTML='<p class=warn>'+esc(e.message)+'</p>';});}
+ btn.addEventListener('click',load);})();
 /* ── G0: confirm meaning ─────────────────────────────────── */
 var attest=$('[data-confirm-attest]'),confirmBtn=$('[data-confirm-meaning]'),confirmMsg=$('[data-confirm-msg]');
 if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.disabled=!attest.checked;});
@@ -3890,6 +3993,12 @@ class LabelingMixin:
                 else:
                     result = {"models": [{k: r.get(k) for k in ("id", "version", "state", "run", "failure", "log_tail")}
                                          for r in embmod.build_status(root)]}
+            elif action == "item_page":
+                viewmod = _corpus_view_module()
+                if viewmod is None:
+                    return 500, {"ok": False, "err": "subjective-label corpus reader unavailable"}
+                result = viewmod.item_page(root, offset=int(p.get("offset") or 0), k=int(p.get("k") or 20),
+                                           human_id=human, channel=channel)
             else:
                 return 400, {"ok": False, "err": f"unknown labeling action: {action!r}"}
         except cal.LabelingRefused as error:
