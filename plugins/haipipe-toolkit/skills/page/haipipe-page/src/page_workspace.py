@@ -127,8 +127,20 @@ def references(path):
     return urls
 
 
-def dependency_files(source, root):
-    """Bounded closure. Fail on missing/escaping local assets before creation."""
+def is_private(root, path):
+    """True when a path inside the Folder sits in a lane a reader never downloads."""
+    parts = Path(path).resolve().relative_to(Path(root).resolve()).parts
+    return bool(parts) and (parts[0].lower() in PRIVATE_LANES
+                            or any(p.lower() in PRIVATE_FILES for p in parts))
+
+
+def dependency_files(source, root, skip_private=False):
+    """Bounded closure. Fail on missing/escaping local assets before creation.
+
+    With ``skip_private`` a link into a private lane (a Discovery Page's
+    ``results/<run>/`` Card, a ``runs/`` ticket) is left as a repository link and
+    not followed or copied; the static export carries only reader files.
+    """
     pending, found = [source], set()
     while pending:
         file = pending.pop()
@@ -152,6 +164,8 @@ def dependency_files(source, root):
             if not asset.is_relative_to(root) or not asset.is_file():
                 raise ValueError(f"Missing or outside-input-directory asset: {url}")
             confined(root, asset.relative_to(root))
+            if skip_private and is_private(root, asset):
+                continue
             pending.append(asset)
     return sorted(found)
 
@@ -352,7 +366,7 @@ def build_page(context, output=None):
     # a static host; disable deep links emitted by the shared Outline table.
     markup = re.sub(r'href="/_board/[^" ]*"', 'href="#static-workspace"', markup)
     markup = re.sub(r'(?=<footer\b)', '<p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p>', markup, count=1)
-    files = dependency_files(context.content or context.source, context.folder)
+    files = dependency_files(context.content or context.source, context.folder, skip_private=True)
     # The generated projection can add assets not named as raw Markdown links
     # (e.g. a Display preview). Include only visible files inside this Folder.
     rendered_refs = _References()
@@ -361,9 +375,11 @@ def build_page(context, output=None):
         parsed = urlsplit(url)
         if parsed.scheme or parsed.netloc or not parsed.path or parsed.path.startswith("/"):
             continue
-        path = render_confined(context.folder, unquote(parsed.path))
+        path = confined(context.folder, unquote(parsed.path))
+        if is_private(context.folder, path):
+            continue  # a repository link (e.g. a Run Card), never exported
         if path.is_file() and path not in files:
-            files.extend(p for p in dependency_files(path, context.folder) if p not in files)
+            files.extend(p for p in dependency_files(path, context.folder, skip_private=True) if p not in files)
     output.mkdir(parents=True, exist_ok=True)
     for path in files:
         render_confined(context.folder, path.relative_to(context.folder))

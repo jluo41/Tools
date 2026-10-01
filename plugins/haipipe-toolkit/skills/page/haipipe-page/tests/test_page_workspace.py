@@ -60,6 +60,24 @@ def test_html_and_static_assets_preserved(tmp_path):
     assert (output.parent / "draft/evidence/materials/assets/theme.css").exists()
 
 
+def test_link_into_results_builds_without_exporting_the_card(tmp_path):
+    # A Discovery Page links each Run Card in results/; the static export skips it.
+    folder = tmp_path / "t01_demo"
+    (folder / "results/r01_demo2026_x").mkdir(parents=True)
+    card = folder / "results/r01_demo2026_x/r01_demo2026_x.md"
+    card.write_text("# Card\n\nSee [facts](facts.md).\n", encoding="utf-8")
+    (card.parent / "facts.md").write_text("# Facts\n", encoding="utf-8")
+    (folder / "t01_demo.md").write_text(
+        "# Demo reading page\nstate: 🔴 OPEN\nowner: CC\nfolder-kind: discovery\n\n"
+        "## Opening\nWhat does the demo source say?\n\n"
+        "## Content\n### 1 · Question and boundary · demo\n"
+        "The [r01 Card](results/r01_demo2026_x/r01_demo2026_x.md) holds the facts.\n",
+        encoding="utf-8")
+    output = build_page(load_page(folder))
+    assert output.is_file()
+    assert not (output.parent / "results").exists()
+
+
 def test_scope_and_overwrite_guards(tmp_path):
     original = tmp_path / "input.txt"
     original.write_text("hello")

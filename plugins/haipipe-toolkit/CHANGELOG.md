@@ -3,6 +3,12 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### page, board: no Aims required; Discovery Pages build · 2026-10-01
+
+- `haipipe-board` 1.1.6: `check.py` no longer requires Aims or warns `no-aims`.
+- `haipipe-page` 0.121.3: the static build skips links into `results/` and other private lanes
+  instead of refusing the Page, so Discovery Pages (which link their Run Cards) build.
+
 ### discovery: Pages drop `## Aims` · 2026-10-01
 
 - Discovery Task Pages follow the `haipipe-page` Page Face, Opening → Content; Aims are

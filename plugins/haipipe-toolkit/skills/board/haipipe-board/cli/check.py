@@ -100,7 +100,9 @@ APPLICATION_BOARD_NAME = re.compile(
 # two owners, and it produced `aim-stated-twice` and `state-without-aim` on the
 # very page that ruled it. A page that still carries `## States` keeps parsing;
 # `retired-section` reports it, and this list no longer DEMANDS it.
-REQUIRED = ["Opening", "Done when"]
+# haipipe-page 0.121: the Page Face is Opening -> Content; Aims are backstage and
+# optional, so a Page with no Aims anywhere is not missing a section (JL 261001).
+REQUIRED = ["Opening"]
 
 # The construct table: source form -> the class the renderer must produce.
 # Kept in this order so the report reads like the table on that page.
@@ -731,8 +733,6 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
             rep.add(ERROR, "missing-section", name, "no `## Content` section")
         if not section_text(text, "Opening").strip():
             rep.add(ERROR, "opening-empty", name, "the technical wrapper needs an Opening")
-        if not aim_progress(page_aims_text(text, path)[0], "")["total"]:
-            rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
         check_group_names(text, name, rep)
         check_file_paths(text, name, rep, path.parent, path=path)
         check_duplicate_sections(text, name, rep)
@@ -882,8 +882,6 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         rep.add(WARN, "partial-with-nothing-open", name,
                 "state is PARTIAL with every Aim closed; either it is SETTLED "
                 "or an Aim is missing (SKILL.md `sync`)")
-    if total == 0:
-        rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
 
     check_opening(text, name, rep)
     check_feedback_coverage(path, text, name, rep)

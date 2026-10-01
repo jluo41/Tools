@@ -155,5 +155,24 @@ class MountedFolderPagesTest(unittest.TestCase):
         self.assertNotIn("missing-section", result.stdout)
 
 
+    def test_page_without_aims_is_not_missing_a_section(self):
+        # haipipe-page 0.121: Opening -> Content; Aims are optional backstage records.
+        page = None
+        for path in self.board.rglob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if "folder-kind: discovery" in text and "\n## Aims" in text:
+                path.write_text(text[: text.index("\n## Aims")] + "\n", encoding="utf-8")
+                page = path
+        self.assertIsNotNone(page)
+        engine = Path(__file__).resolve().parent.parent
+        result = subprocess.run(
+            [sys.executable, str(engine / "cli/check.py"), str(self.board),
+             "--strict", "--no-template"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotIn("missing-section", result.stdout)
+        self.assertNotIn("no-aims", result.stdout)
+
 if __name__ == "__main__":
     unittest.main()

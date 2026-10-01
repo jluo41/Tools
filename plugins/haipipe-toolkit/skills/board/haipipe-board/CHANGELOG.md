@@ -1,3 +1,8 @@
+## 1.1.6 · 2026-10-01 · A Page without Aims is complete in shape (JL 261001: "remove the aims")
+
+- `cli/check.py`: `REQUIRED` is `["Opening"]`. `Done when`/Aims is no longer a required section, and the `no-aims` warning is gone, matching `haipipe-page` 0.121 (Page Face Opening → Content; Aims are optional backstage records). A Page that still carries Aims is checked as before (`open-with-met-aims`, `partial-with-nothing-open`, group names).
+- Test: `tests/test_mounted_folder_pages.py::test_page_without_aims_is_not_missing_a_section`. Board suite: the same 10 failures as before the change (Design, Insight, folder-contract, plan-shape work in progress), no new ones.
+
 ## 1.1.5 · 2026-09-30
 
 - A drawing is never saved by merely being opened. `servers/workbench-studio/assets/xcal-boot.js` now waits for the first gesture (pointer, key or paste) on every scene before it may save, as it already did for linked Page and Group scenes. A plain scene a script wrote leaves out fields Excalidraw fills in on load, so opening it in an editing canvas rewrote the file (seen 260930 on Paper-ScalingGlucose-NatSeries2026 `studio/paper-workflow.excalidraw`, opened in the Paper Workbench's new Story › RoadMap Draw). Checked in headless Chrome on a throwaway board: open only, 0 saves and the file byte-identical; one drawn rectangle, 1 save.

@@ -297,7 +297,7 @@ def _aims(face: str, plan: Path | None, expect_shape: bool) -> SetupCheck:
 def _delivery(page, delivery: Path) -> SetupCheck:
     marker = delivery.parent / ".haipipe-page-export"
     markup = delivery.read_text(encoding="utf-8") if delivery.is_file() else ""
-    expected = dependency_files(page.content or page.source, page.folder)
+    expected = dependency_files(page.content or page.source, page.folder, skip_private=True)
     copied = all(
         (delivery.parent / item.relative_to(page.folder)).is_file()
         and (delivery.parent / item.relative_to(page.folder)).read_bytes() == item.read_bytes()

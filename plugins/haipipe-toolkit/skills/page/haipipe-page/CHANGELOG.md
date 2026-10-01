@@ -1,3 +1,10 @@
+## 0.121.3 · 2026-10-01 · A Page may link its own results/ Cards (JL 261001)
+
+- `src/page_workspace.py`: the static web build no longer fails on a link into a private lane. A Discovery Page links every Run Card in `results/<run>/`; `build_page` refused the whole Page ("Private Page lane cannot be rendered or downloaded"), so `setup` could not run on any Discovery Page. `dependency_files(..., skip_private=True)` leaves such a link as a repository link and does not follow or copy it; `is_private` names the lanes (`PRIVATE_LANES`, `PRIVATE_FILES`, unchanged).
+- `src/page_setup_check.py`: the `static_delivery` check expects the same reader-only file set, so the export it audits is the export the build writes.
+- Test: `tests/test_page_workspace.py::test_link_into_results_builds_without_exporting_the_card`. 139 passed.
+- Known gap, not changed here: `setup <existing-page-folder>` runs in resume-and-build mode and writes no plan, so an existing hand-authored Page gets no Draft Markdown from it; and its setup Task Run is named `rNN_page-setup`, which collides with a Discovery Task's Paper Run numbering.
+
 ## 0.121.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
