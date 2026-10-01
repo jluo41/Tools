@@ -8,8 +8,8 @@ description: >-
   Page. Trigger: delivery run, build the pdf, build the docx, build the web
   page, rebuild delivery, stale delivery, /haipipe-page-delivery.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-28"
+  version: "0.2.1"
+  last_updated: "2026-09-30"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -61,6 +61,10 @@ screens) belongs to the Design contract (`run-delivery-render`).
 - Never assembles a paper: paper-level assembly is `haipipe-paper-assemble`.
 - Older numbered Runs (`rdNN_<lane>`) are history: read them, never add to them.
 - Missing current evidence bindings never fall back to a legacy Bib or display.
+- The LaTeX lane never replaces a `<page>.tex` it did not write. A fragment without the
+  `% GENERATED from` first line holds words that may exist only there (a hand-owned or
+  migrated Section), so md2tex refuses; move the words into the Page and adopt, then
+  delete the fragment and rerun.
 
 ## 📂 Files
 

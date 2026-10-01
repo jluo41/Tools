@@ -1,3 +1,10 @@
+## 0.2.1 · 2026-09-30 · The LaTeX lane keeps words it did not write
+
+- md2tex refuses to overwrite a `<page>.tex` whose first line is not `% GENERATED from`
+  (`servers/workbench-page/exporters/md2tex.py`, `GENERATED_MARK`). Found on 260930: a rebuild
+  of Paper-TimeEventDM replaced six migrated Sections, 404 lines of prose, with the Pages'
+  planning notes; the old guard only caught a lost citation key.
+
 ## 0.2.0 · 2026-09-28 · One fixed Run per lane, no hashes (JL 260928)
 
 - 260929: the fixed names are spelled `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word` (the Page Run naming grammar, `src/run_names.py`); tickets sit in the flat `runs/`.
