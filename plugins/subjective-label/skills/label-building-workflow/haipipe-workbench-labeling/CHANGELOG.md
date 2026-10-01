@@ -4,9 +4,11 @@
 
 - Remove the Studio Chat tab from the Space row; copied requests go into the
   agent conversation. `studio_chat_page_url` is now `generated_page_url`.
-- Data → Preparation shows a `Corpus` card for every job: source, one item,
-  text and context word counts over the items to label, and the prepare date.
-  It replaces the older-job sentence; Contract keeps only the counts.
+- Data → Preparation shows the raw corpus folder (`labeling/corpus/source.yaml`:
+  files, rows, columns, raw column → item field; no row values) and the items
+  to label as a table, 20 at a time, through the new door action `item_page`
+  (`engine/corpus_view.py`; exposure-logged, held-back items never read).
+  Contract keeps only the counts.
 
 ## 0.23.15 · 2026-09-29
 

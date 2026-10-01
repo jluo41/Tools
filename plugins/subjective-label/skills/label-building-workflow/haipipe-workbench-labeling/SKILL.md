@@ -7,7 +7,7 @@ description: >-
   labeling job on the Board (zoom out); a direct Page-folder route also opens the Page
   with four Spaces (Data, Labeling, Quality, Delivery), each with its content on
   the left and a Runs panel on the right, and one write door,
-  POST /_board/labeling/act, for exactly ten engine-checked actions (zoom in).
+  POST /_board/labeling/act, for exactly eleven engine-checked actions (zoom in).
   Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
@@ -55,6 +55,7 @@ drawers    ?drawer=workflow (Phases · SOP · Workflow map) · ?drawer=allruns; 
 actions    POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
            · build_embedding (catalog models only, runs in the background)
            · embedding_status, embedding_item, group_examples, embedding_item_text (reads)
+           · item_page (Data → Preparation item table, reads)
 ```
 
 ## 🖥 Hosting · its own host, or one tab on a Board
@@ -141,10 +142,13 @@ The surface uses one location word: **Space**. In this plugin, "Space" and
 (JL 260928): Schema merged into Contract, Discussion and Label into Definition,
 and Delivery gained Scan, so each of the 26 job-local Run types sits in exactly
 one view. Data → Preparation adds five upstream source-owned Run Types.
-Once a job exists, Data → Preparation opens with a `Corpus` card: the source,
-what one item is, the text and context fields with word counts over the items
-to label only (held-back text is never read), and when the corpus was prepared.
-Data → Contract keeps the counts (items, to label, held back).
+Once a job exists, Data → Preparation shows two cards. `Raw corpus` reads
+`labeling/corpus/source.yaml` and shows the raw folder: each file with size,
+rows, columns and items, what one row is, which raw column became which item
+field, and the other column names (never their values, which hold other
+people's labels). `Items to label` gives what one item is, the counts, word
+counts, and an item table that loads 20 items at a time on `Show items`
+(action `item_page`, logged as an exposure). Data → Contract keeps the counts.
 Preparation is a Data view over source-owned Corpus Runs; it can appear before
 `labeling/config.yaml` exists. `labeling/preparation-owner.yaml` attaches its
 source early so each completed Run appears in the panel. Its accepted package
@@ -290,7 +294,7 @@ write-door action. Chat may inspect and discuss; it cannot cross the gate.
   checkpoint, handoff, scorecard, production run, or audit is rewritten.
 
 The browser is not purely read-only anymore. It has exactly one write door,
-`POST /_board/labeling/act`, with exactly ten actions. Each action exists
+`POST /_board/labeling/act`, with exactly eleven actions. Each action exists
 because its writer and its authority check exist end to end:
 
 | action | where it is pressed | engine call |
@@ -305,6 +309,7 @@ because its writer and its authority check exist end to end:
 | `embedding_item` | `Data → Embedding` · click a dot on the map (read only) | `embedding_build.neighbors` (development items only, no text) |
 | `group_examples` | `Data → Embedding` · `Show typical items` / `Show 3 more` on a group | `embedding_build.group_examples` (items nearest the group centre, with text; items waiting in a round left out; appends to `exposure/group_examples.jsonl`) |
 | `embedding_item_text` | `Data → Embedding` · `Show its text` on a picked dot | `embedding_build.item_text` (refuses an item waiting in a round; appends to `exposure/group_examples.jsonl`) |
+| `item_page` | `Data → Preparation` · `Show items` / `Show 20 more` in Items to label | `corpus_view.item_page` (20 development items at a time with context and text; held-back items never read; an item waiting in a round keeps its text for Rounds; appends to `exposure/group_examples.jsonl`; refuses on HOLD) |
 
 What each call writes, and the event order, is owned by
 `../../label-building-workflow/SKILL.md` (§P0 Contract and §P1 Round).

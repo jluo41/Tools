@@ -22,6 +22,31 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 - Checked: `tests/` 83 passed (3 new: Page without Aims in both layouts; diagram rule still enforced without Aims; 2 migration tests now assert no `## Aims`).
 - Also: frontmatter `version:` was left at 0.19.0 by the 0.19.1 entry; it now reads 0.20.0.
 
+## 0.19.3 · 2026-09-30 · Accepted venue and dblp Bib preference
+
+- Prefer the accepted conference/journal record. For computer-science papers, inspect the exact dblp venue record and import its one-record BibTeX export through `--dblp-bib-file --dblp-record`; CoRR/arXiv remains a separate preprint. When dblp is missing or the venue has no stable record yet, use the venue/publisher or publication DOI. Google Scholar is a manually reviewed last resort.
+- The fetcher binds the dblp export's citation key and `biburl` to the named venue record, checks title/year/DOI where available, blocks first-author discrepancies for review, and stamps `curated-index-export`. The DOI-driven Result builder can select a confirmed dblp export with `--bib-from dblp`.
+- `bibtex-verifier` may precheck the derived Task Bib, but its Crossref/DataCite/OpenAlex coverage does not supersede a checked dblp venue record or the person-only `bib.verification` receipt.
+
+## 0.19.2 · 2026-09-30 · Machine-learning papers through arXiv
+
+- `scripts/paper_result_build.py` takes `--arxiv <id>` and reads the id from a `10.48550/arXiv` DOI. When Crossref
+  has no record (an arXiv-only DOI), identity comes from the arXiv API and the BibTeX from arXiv's export, because
+  DataCite keys the entry by its URL, which `\cite` cannot take. When PubMed has no abstract, the arXiv abstract is
+  used; when OpenAlex has no free copy, the arXiv PDF is saved. The receipt names the real sources. Found on
+  2026-09-30: an ICML 2024 paper (PMLR issues no DOI) failed with HTTP 404, and a KDD 2026 paper was built at
+  metadata depth with no PDF.
+- The card and receipt title drop LaTeX case braces a publisher deposits in Crossref (`{GS-Fuse}` reads GS-Fuse);
+  the BibTeX entry keeps them verbatim.
+- An arXiv-only paper whose authors' comment says "Accepted by ICLR 2026" gets that venue, marked
+  `venue from the authors' comment`, instead of `arXiv preprint`.
+- `scripts/paper_bib_fetch.py` retries the arXiv BibTeX export twice (after 5 s, then 15 s): arXiv throttles it right
+  after the same Run's abstract and PDF downloads, which failed two of seven Runs on 2026-09-30.
+- `--bib-from arxiv` takes the verbatim BibTeX from arXiv's export when the DOI's entry key collides with another
+  Result's in the same Task (two NeurIPS 2024 entries both keyed `Wang_2024`); no entry is ever re-keyed by hand.
+- A failed BibTeX fetch now leaves `status: blocked` and a `blocked_reason` in `runtime.yaml` and exits non-zero;
+  before, the receipt said `complete` with no `.bib` beside it.
+
 ## 0.19.1 · 2026-10-01 · An abstract comes from OpenAlex when PubMed has none
 
 - `scripts/paper_source_access.py`: when PubMed has no abstract, the abstract is rebuilt from OpenAlex's `abstract_inverted_index`, and `abstract.source` names the OpenAlex record. PubMed does not index the business, OR and IS journals (Management Science, ISR, MISQ, Marketing Science, JMR), so 16 of 17 UTD-24 Paper Runs for Paper-MessageTradeOffEgm (`discoveries/b01_sms_engagement_evidence/j05_.../t01_utd_related_papers`) came out metadata-only. A sibling Task had patched the same gap inside each Ticket.

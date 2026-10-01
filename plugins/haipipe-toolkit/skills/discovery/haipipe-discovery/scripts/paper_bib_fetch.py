@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fetch ONE verbatim BibTeX entry for a Discovery Paper/Source Result.
 
-Identity first, entry second.  A resolved DOI or arXiv identifier is required
-before any entry is written, because a title-only lookup silently returns a
-different paper: Crossref answered the bibliographic query "Large Language
+Identity first, entry second.  A resolved DOI, arXiv identifier, or exact dblp
+venue record is required before any entry is written, because title-only
+lookup can return a different paper: Crossref answered the bibliographic query "Large Language
 Models are Zero-Shot Rankers for Recommender Systems" with the unrelated
 "LLM-BL: ... for Bug Localization" (10.1109/icpc66645.2025.00064).  Title mode
 therefore only PROPOSES candidates and refuses to write.
@@ -13,11 +13,11 @@ negotiation, then DataCite.  doi.org is second because publishers may ignore the
 Accept header: 10.1038/s41746-026-03117-z answers 302 text/html there while
 Crossref returns the correct entry.
 
-The script copies an entry; it never composes one.  `--bib-file` carries a
-person-supplied or Google-Scholar-exported entry and is stamped with the weaker
-`person-export` class so a reader can see which Results rest on it.  Google
-Scholar is never fetched: it refuses automated clients (HTTP 403 on the first
-request) and its export omits the DOI.
+The script copies an entry; it never composes one.  A browser-exported,
+exact-record dblp entry enters through `--dblp-bib-file --dblp-record` and
+retains its curated-index provenance.  `--bib-file` carries a person-supplied
+or Google-Scholar-exported entry and is stamped with the weaker
+`person-export` class.  Google Scholar is never fetched by this script.
 """
 
 from __future__ import annotations
@@ -28,6 +28,7 @@ import importlib.util
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -40,6 +41,7 @@ from typing import Any
 USER_AGENT = "haipipe-discovery/0.18.0 (paper bib fetch)"
 BIBTEX_ACCEPT = "application/x-bibtex"
 AUTHORITATIVE = "authoritative-export"
+CURATED_INDEX = "curated-index-export"
 PERSON_EXPORT = "person-export"
 TRUSTED_HOSTS = {
     "api.crossref.org": "crossref",
@@ -137,6 +139,63 @@ def entry_title(entry_text: str) -> str | None:
     return re.sub(r"\s+", " ", re.sub(r"[{}]", "", title)).strip() if title else None
 
 
+def first_author_family(entry_text: str) -> str | None:
+    """Read the first author surname for a review hint, not an identity proof."""
+    authors = field_value(entry_text, "author")
+    if not authors:
+        return None
+    first = re.split(r"\s+and\s+", authors, maxsplit=1, flags=re.IGNORECASE)[0]
+    first = re.sub(r"[{}]", "", first).strip()
+    if not first:
+        return None
+    return (first.split(",", 1)[0] if "," in first else first.split()[-1]) or None
+
+
+def dblp_record_url(url: str) -> tuple[str, str]:
+    """Require one venue record, rather than a person/search export or CoRR."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme != "https" or parsed.netloc != "dblp.org" or parsed.query or parsed.fragment:
+        raise ValueError("dblp-record-must-be-an-exact-https-dblp.org-record")
+    path = re.sub(r"\.(?:bib|html)$", "", parsed.path)
+    match = re.fullmatch(r"/rec/((?:conf|journals)/[A-Za-z0-9_./-]+)", path)
+    if not match or match.group(1).startswith("journals/corr/"):
+        raise ValueError("dblp-record-must-be-a-conference-or-journal-venue-record")
+    key = match.group(1)
+    return f"https://dblp.org/rec/{key}", key
+
+
+def read_dblp_export(path: Path, record_url: str) -> tuple[str, str, dict[str, Any]]:
+    """Read a browser-saved single-record export and check its dblp binding."""
+    canonical, record_key = dblp_record_url(record_url)
+    bibtex = path.read_text(encoding="utf-8").strip() + "\n"
+    entries = parse_entries(bibtex)
+    if len(entries) != 1:
+        raise ValueError(f"dblp-export-entry-count: expected 1, found {len(entries)}")
+    entry_type, key, entry = entries[0]
+    if key != f"DBLP:{record_key}":
+        raise ValueError(f"dblp-export-key-mismatch: {key!r} versus {record_key!r}")
+    if entry_type not in {"article", "inproceedings"}:
+        raise ValueError(f"dblp-export-is-not-a-venue-article: {entry_type}")
+    biburl = field_value(entry, "biburl")
+    if biburl != canonical + ".bib":
+        raise ValueError("dblp-export-biburl-mismatch: use the exact record's BibTeX export")
+    bibsource = field_value(entry, "bibsource")
+    if not bibsource or "dblp" not in bibsource.casefold():
+        raise ValueError("dblp-export-bibsource-missing")
+    venue = field_value(entry, "booktitle") or field_value(entry, "journal")
+    if not venue:
+        raise ValueError("dblp-export-venue-missing")
+    record = {
+        "state": "found",
+        "type": "conference-paper" if entry_type == "inproceedings" else "journal-article",
+        "publisher": field_value(entry, "publisher"),
+        "year": entry_year(entry),
+        "venue": venue,
+        "landing_page": canonical,
+    }
+    return bibtex, canonical + ".bib", record
+
+
 def _clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
@@ -231,9 +290,13 @@ def fetch_by_publisher(url: str, timeout: float) -> tuple[str, str, str] | None:
 
 def fetch_by_arxiv(arxiv_id: str, timeout: float) -> tuple[str, str, str] | None:
     url = f"https://arxiv.org/bibtex/{arxiv_id}"
-    status, _, body = _get(url, timeout)
-    if status == 200 and parse_entries(body):
-        return body.strip() + "\n", url, "arxiv"
+    # arXiv throttles a burst (the Result builder has just fetched the abstract and the PDF), so a
+    # refusal is retried after a pause before the entry is declared missing.
+    for pause in (0, 5, 15):
+        time.sleep(pause)
+        status, _, body = _get(url, timeout)
+        if status == 200 and parse_entries(body):
+            return body.strip() + "\n", url, "arxiv"
     return None
 
 
@@ -414,6 +477,8 @@ def validate(
     expected_title: str | None,
     min_similarity: float,
     expected_year: int | None = None,
+    expected_first_author: str | None = None,
+    expected_venue: str | None = None,
     year_tolerance: int = 1,
     channel: str | None = None,
     record: dict[str, Any] | None = None,
@@ -433,12 +498,25 @@ def validate(
     found_title = entry_title(entry_text)
     facts["doi"] = found_doi
     facts["title"] = found_title
+    first_author = first_author_family(entry_text)
+    facts["first_author_family"] = first_author
+    found_venue = field_value(entry_text, "booktitle") or field_value(entry_text, "journal")
+    facts["venue"] = found_venue
 
-    if expected_doi and found_doi and found_doi != expected_doi.casefold():
-        errors.append(
-            f"bib-doi-mismatch: entry carries {found_doi!r}, asked for "
-            f"{expected_doi.casefold()!r}"
-        )
+    if expected_doi:
+        if channel == "dblp-browser-export" and not found_doi:
+            warnings.append(
+                "dblp-venue-doi-missing: the expected publication DOI cannot be "
+                "cross-checked in this export; inspect the exact venue record "
+                "before person verification"
+            )
+        elif found_doi and found_doi != expected_doi.casefold():
+            errors.append(
+                f"bib-doi-mismatch: entry carries {found_doi!r}, asked for "
+                f"{expected_doi.casefold()!r}"
+            )
+    if expected_title and not found_title:
+        errors.append("bib-title-missing: expected a title in the exported entry")
     if expected_title and found_title:
         agree, raw_ratio = titles_agree(expected_title, found_title, min_similarity)
         ratio = round(raw_ratio, 3)
@@ -457,12 +535,13 @@ def validate(
     found_year = entry_year(entry_text)
     facts["year"] = found_year
     if expected_year is not None:
+        allowed_year_gap = 0 if channel == "dblp-browser-export" else year_tolerance
         if found_year is None:
             errors.append(f"bib-year-missing: expected {expected_year}, entry has none")
-        elif abs(found_year - expected_year) > year_tolerance:
+        elif abs(found_year - expected_year) > allowed_year_gap:
             errors.append(
                 f"bib-year-mismatch: entry says {found_year}, you expected "
-                f"{expected_year} (tolerance {year_tolerance}); an identical title "
+                f"{expected_year} (tolerance {allowed_year_gap}); an identical title "
                 "on a different paper passes every other guard"
             )
     elif expected_doi:
@@ -470,6 +549,31 @@ def validate(
             "no-year-cross-check: a DOI agrees with itself and an identical title "
             "scores 1.0, so pass --expected-year to catch a title collision"
         )
+
+    if expected_first_author:
+        expected_family = re.sub(r"[^\w]+", "", expected_first_author).casefold()
+        found_family = re.sub(r"[^\w]+", "", first_author or "").casefold()
+        if not found_family:
+            finding = "bib-first-author-missing: check the export against the venue record"
+            (errors if channel == "dblp-browser-export" else warnings).append(finding)
+        elif found_family != expected_family:
+            finding = (
+                f"bib-first-author-mismatch: entry says {first_author!r}, "
+                f"expected {expected_first_author!r}; check name order and the venue record"
+            )
+            (errors if channel == "dblp-browser-export" else warnings).append(finding)
+
+    if expected_venue:
+        if not found_venue:
+            warnings.append("bib-venue-missing: check the exported entry against the accepted record")
+        else:
+            agree, ratio = titles_agree(expected_venue, found_venue, 0.80)
+            if not agree:
+                warnings.append(
+                    f"bib-venue-mismatch: entry says {found_venue!r}, expected "
+                    f"{expected_venue!r} (similarity {ratio:.3f}); inspect the "
+                    "accepted venue record before verification"
+                )
 
     if record and record.get("type") in POSTING_TYPES:
         warnings.append(
@@ -579,11 +683,16 @@ def existing_verification(runtime_path: Path) -> str | None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     identity = parser.add_mutually_exclusive_group(required=True)
-    identity.add_argument("--doi", help="Resolved DOI; the preferred identity.")
+    identity.add_argument("--doi", help="Resolved publication DOI when no exact dblp venue export is chosen.")
     identity.add_argument("--arxiv", help="Resolved arXiv identifier.")
     identity.add_argument(
         "--publisher-url",
         help="A venue's own .bib endpoint; stamped authoritative-export/publisher.",
+    )
+    identity.add_argument(
+        "--dblp-bib-file",
+        type=Path,
+        help="Browser-saved BibTeX for one exact dblp venue record; use with --dblp-record.",
     )
     identity.add_argument(
         "--bib-file",
@@ -592,9 +701,13 @@ def main() -> int:
     )
     identity.add_argument(
         "--resolve-title",
-        help="Propose Crossref candidates for a title. Never writes a Result.",
+        help="Propose Crossref, OpenAlex, and arXiv candidates. Never writes a Result.",
     )
     parser.add_argument("--title", help="Expected title; guards against a wrong paper.")
+    parser.add_argument("--dblp-record", help="Exact https://dblp.org/rec/<venue-record> URL for --dblp-bib-file.")
+    parser.add_argument("--expected-doi", help="Known publication DOI to compare with an imported export.")
+    parser.add_argument("--expected-first-author", help="Known first-author surname; a dblp mismatch blocks import.")
+    parser.add_argument("--expected-venue", help="Accepted conference or journal name; mismatch prompts review.")
     parser.add_argument(
         "--source-url", help="Required with --bib-file: where the person got the entry."
     )
@@ -609,8 +722,8 @@ def main() -> int:
     parser.add_argument(
         "--expected-year",
         type=int,
-        help="The Subject's publication year. The ONLY guard that catches a "
-        "different paper carrying an identical title.",
+        help="The Subject's publication year; guards against a different "
+        "paper carrying an identical title.",
     )
     parser.add_argument("--year-tolerance", type=int, default=1)
     parser.add_argument(
@@ -649,7 +762,7 @@ def main() -> int:
                     "mode": "resolve-title",
                     "written": False,
                     "refused": "title-only identity is not a Subject; pick one "
-                    "candidate's DOI, arXiv id, or publisher .bib URL. Skip any "
+                    "candidate's DOI, arXiv id, exact dblp venue record, or publisher .bib URL. Skip any "
                     "row with identifier_conflict: its ids and year disagree.",
                     "channels": channels,
                     "degraded": bool(down),
@@ -665,6 +778,14 @@ def main() -> int:
 
     if args.bib_file and not args.source_url:
         parser.error("--bib-file requires --source-url")
+    if args.dblp_bib_file and not args.dblp_record:
+        parser.error("--dblp-bib-file requires --dblp-record")
+    if args.dblp_record and not args.dblp_bib_file:
+        parser.error("--dblp-record requires --dblp-bib-file")
+    if args.dblp_bib_file and (not args.title or args.expected_year is None):
+        parser.error("--dblp-bib-file requires --title and --expected-year")
+    if args.doi and args.expected_doi and args.doi.casefold() != args.expected_doi.casefold():
+        parser.error("--expected-doi disagrees with --doi")
     if not args.dry_run and not (args.result_dir or args.output):
         parser.error("one of --result-dir or --output is required")
 
@@ -672,7 +793,15 @@ def main() -> int:
     record: dict[str, Any] | None = None
     if args.doi:
         record = crossref_record(args.doi, args.timeout)
-    if args.bib_file:
+    if args.dblp_bib_file:
+        try:
+            bibtex, source, record = read_dblp_export(args.dblp_bib_file, args.dblp_record)
+        except (OSError, ValueError) as exc:
+            print(json.dumps({"written": False, "refused": str(exc)}, ensure_ascii=False, indent=2))
+            return 4
+        channel = "dblp-browser-export"
+        source_class = CURATED_INDEX
+    elif args.bib_file:
         bibtex = args.bib_file.read_text(encoding="utf-8").strip() + "\n"
         source, channel = args.source_url, "person-supplied"
         source_class = PERSON_EXPORT
@@ -693,9 +822,9 @@ def main() -> int:
                         "written": False,
                         "refused": "no authoritative export found",
                         "identity": args.doi or args.arxiv or args.publisher_url,
-                        "next": "open the publisher page or Google Scholar in a "
-                        "browser, export the entry, then pass --bib-file with "
-                        "--source-url",
+                        "next": "For a computer-science venue paper, inspect its exact dblp venue record "
+                        "and import that BibTeX export; otherwise use the venue/publisher export. "
+                        "Use Google Scholar only as a manually checked last resort.",
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -706,17 +835,19 @@ def main() -> int:
 
     errors, warnings, facts = validate(
         bibtex,
-        expected_doi=args.doi,
+        expected_doi=args.expected_doi or args.doi,
         expected_title=args.title,
         min_similarity=args.min_title_similarity,
         expected_year=args.expected_year,
+        expected_first_author=args.expected_first_author,
+        expected_venue=args.expected_venue,
         year_tolerance=args.year_tolerance,
         channel=channel,
         record=record,
     )
     blocked = bool(errors) or (bool(warnings) and args.strict)
     summary: dict[str, Any] = {
-        "identity": args.doi or args.arxiv or args.publisher_url or args.source_url,
+        "identity": args.doi or args.arxiv or args.dblp_record or args.publisher_url or args.source_url,
         "record": record,
         "channel": channel,
         "source": source,

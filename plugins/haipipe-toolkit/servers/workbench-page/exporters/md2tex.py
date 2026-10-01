@@ -50,6 +50,8 @@ md2docx = _util.module_from_spec(_spec)
 _spec.loader.exec_module(md2docx)             # reuse the SAME reader
 
 CITE = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
+# The first line of every fragment this script writes; a file without it is not ours.
+GENERATED_MARK = "% GENERATED from"
 
 
 def keys_of(text):
@@ -443,6 +445,21 @@ def main():
         # board's /_board/latex lane still answered ok:true, so the page silently
         # kept its old prose (20 commands vs 22, zero keys lost).
         prior = dest if os.path.exists(dest) else None
+        # REFUSE TO REPLACE WORDS THIS SCRIPT DID NOT WRITE. A fragment without the
+        # GENERATED header was written by hand or by a migration, so its words may
+        # exist nowhere else. On 260930 an export of Paper-TimeEventDM replaced six
+        # migrated Sections (404 lines of prose) with the Pages' planning notes.
+        # Move the words into the Page (Draft, then `page.py adopt`) first, then
+        # delete the old fragment to let this script own it.
+        if prior:
+            with open(prior, encoding="utf-8") as f:
+                first = f.readline()
+            if not first.startswith(GENERATED_MARK):
+                report.append("REFUSED %s: the existing %s.tex was not written by md2tex "
+                              "(no GENERATED header), so its words may exist only there. "
+                              "Move them into the Page and adopt, then delete the file."
+                              % (stem, stem))
+                continue
         if prior:
             had = keys_of(open(prior, encoding="utf-8").read())
             lost = sorted(had - keys_of(body))
@@ -452,9 +469,9 @@ def main():
                               % (stem, len(lost), ", ".join(lost)))
                 continue
         with open(dest, "w", encoding="utf-8") as f:
-            f.write("%% GENERATED from %s by md2tex.py. Do not hand-edit: sync is\n"
+            f.write("%s %s by md2tex.py. Do not hand-edit: sync is\n"
                     "%% one-way and the next run overwrites this file.\n%s"
-                    % (os.path.relpath(page, root), body))
+                    % (GENERATED_MARK, os.path.relpath(page, root), body))
         wrote.append((stem, n))
 
     print("✅ %s" % outdir)
