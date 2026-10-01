@@ -10,7 +10,7 @@ cards read (haipipe-workbench-paper 0.16.0):
   results/<run>/<run>.bib             one verbatim entry (paper_bib_fetch.py)
   results/<run>/source-access.json    links and identifiers (paper_source_access.py),
   results/<run>/source-access.md      plus `local_pdf` when a free copy was saved
-  results/<run>/abstract.md           the PubMed abstract (paper_source_access.py)
+  results/<run>/abstract.md           the abstract: PubMed, else OpenAlex (paper_source_access.py)
   results/<run>/facts.md              the identity and one fact per abstract sentence
   results/<run>/<run>.md              the Result card: question, readout, limits, reuse
   results/<run>/paper.pdf             a free copy, when one exists (--pdf-from or OpenAlex)
@@ -143,9 +143,9 @@ def main():
     abstract = (sa.get("abstract") or {}).get("text") or ""
     depth = "abstract" if abstract else "metadata-only"
     pdf = save_pdf(result, a.pdf_from, a.doi, space_root)
-    sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "not-assessed",
-                            "locator_status": "complete" if abstract else "metadata-only",
-                            "depth_note": ("The Run reads the PubMed abstract. The full text was not read."
+    sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "pending",
+                            "locator_status": "complete" if abstract else "pending",
+                            "depth_note": ("The Run reads the retrieved abstract (%s). The full text was not read." % ((sa.get("abstract") or {}).get("source") or "source in source-access.json")
                                            if abstract else "No abstract was available; identity and metadata only.")})
     if pdf:
         sa["local_pdf"] = pdf
@@ -182,16 +182,16 @@ def main():
         "  summary: source-access.md",
         "analysis:",
         "  reading_depth: %s" % depth,
-        "  claim_support: %s" % ("supported" if abstract else "not-assessed"),
-        "  locator_status: %s" % ("complete" if abstract else "metadata-only"),
-        "  scope_note: %s" % q("Only the PubMed abstract was read; every fact is a sentence of it. No full-text claim is made."
+        "  claim_support: %s" % ("supported" if abstract else "pending"),
+        "  locator_status: %s" % ("complete" if abstract else "pending"),
+        "  scope_note: %s" % q("Only the retrieved abstract was read; every fact is a sentence of it. No full-text claim is made."
                                if abstract else "No abstract was available; the card rests on metadata only."),
         "worker:",
         "  kind: api",
         "  name: %s" % q("Crossref + PubMed + OpenAlex; haipipe-discovery scripts/paper_result_build.py"),
         "  calls:",
         "    - %s" % q("Crossref works lookup by DOI"),
-        "    - %s" % q("PubMed E-utilities abstract (paper_source_access.py)"),
+        "    - %s" % q("retrieved abstract, PubMed first, else OpenAlex (paper_source_access.py)"),
         "    - %s" % q("OpenAlex open-access location"),
         "    - %s" % q("Crossref BibTeX transform through scripts/paper_bib_fetch.py"),
         "executed_at: %s" % q(now),

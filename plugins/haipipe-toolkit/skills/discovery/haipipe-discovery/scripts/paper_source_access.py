@@ -108,6 +108,11 @@ def _openalex(doi: str, timeout: float) -> dict[str, Any]:
     work = results[0]
     oa = work.get("open_access") or {}
     best = work.get("best_oa_location") or {}
+    # OpenAlex stores an abstract as word -> positions; rebuild the text. It covers the
+    # business, OR and IS journals PubMed does not index.
+    inverted = work.get("abstract_inverted_index") or {}
+    words = {i: w for w, places in inverted.items() for i in places}
+    abstract = _clean_text(" ".join(words[i] for i in sorted(words))) if words else None
     primary = work.get("primary_location") or {}
     return {
         "state": "found",
@@ -117,6 +122,7 @@ def _openalex(doi: str, timeout: float) -> dict[str, Any]:
         "landing_page_url": best.get("landing_page_url")
         or primary.get("landing_page_url"),
         "pdf_url": best.get("pdf_url"),
+        "abstract": abstract,
     }
 
 
@@ -172,7 +178,14 @@ def build_record(
         full_text_kind = "openalex-landing"
 
     exact_title = f'"{title}"'
-    reading_depth = "abstract" if pubmed.get("abstract") else "metadata-only"
+    # PubMed first; OpenAlex when PubMed has no abstract (non-medical journals).
+    if pubmed.get("abstract"):
+        abstract_text, abstract_source = pubmed["abstract"], pubmed.get("record_url")
+    elif openalex.get("abstract"):
+        abstract_text, abstract_source = openalex["abstract"], openalex.get("record_url")
+    else:
+        abstract_text, abstract_source = None, None
+    reading_depth = "abstract" if abstract_text else "metadata-only"
     return {
         "schema_version": 1,
         "subject": {"kind": "paper", "title": title, "doi": doi},
@@ -207,8 +220,8 @@ def build_record(
             "openalex": openalex.get("id"),
         },
         "abstract": {
-            "source": pubmed.get("record_url") if pubmed.get("abstract") else None,
-            "text": pubmed.get("abstract"),
+            "source": abstract_source,
+            "text": abstract_text,
         },
     }
 

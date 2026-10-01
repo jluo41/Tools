@@ -8,6 +8,12 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.19.1 · 2026-10-01 · An abstract comes from OpenAlex when PubMed has none
+
+- `scripts/paper_source_access.py`: when PubMed has no abstract, the abstract is rebuilt from OpenAlex's `abstract_inverted_index`, and `abstract.source` names the OpenAlex record. PubMed does not index the business, OR and IS journals (Management Science, ISR, MISQ, Marketing Science, JMR), so 16 of 17 UTD-24 Paper Runs for Paper-MessageTradeOffEgm (`discoveries/b01_sms_engagement_evidence/j05_.../t01_utd_related_papers`) came out metadata-only. A sibling Task had patched the same gap inside each Ticket.
+- `scripts/paper_result_build.py`: with no abstract, `claim_support` and `locator_status` are `pending`, the values `paper_runs.py check` accepts; it wrote `not-assessed` and `metadata-only`, which the checker rejected on every such Result. The depth and scope notes say "retrieved abstract" and name its source instead of "PubMed abstract".
+- Checked: `tests/test_paper_source_access.py` and `tests/test_paper_runs.py` pass (42); the 17 Runs rebuilt at abstract depth and `paper_runs.py check` reports STRUCTURE_OK.
+
 ## 0.19.0 · 2026-09-30 · A Paper Run's Ticket rebuilds its Result from the DOI
 
 - `scripts/paper_result_build.py` (new): one DOI plus the readout and reuse lines → the whole Paper Result the Paper Workbench's Related Papers cards read: `runtime.yaml` (identity, venue string from Crossref, reading depth), the one-entry Bib (through `paper_bib_fetch.py`), `source-access.json`/`.md` and `abstract.md` (through `paper_source_access.py`), `facts.md` (identity plus one fact per abstract sentence), the Result card, and `paper.pdf` when a free copy exists (`--pdf-from` a file already on disk, else OpenAlex's open-access PDF; `local_pdf.version` is published, accepted or preprint). A Ticket calls it, so rerunning the Ticket rebuilds the Result (JL 260930: Paper-CGMtoHbA1c's Related Papers tab was empty). PubMed Central and publisher sites answer scripts with a bot check; the script does not try to get past it, and such a card links the free full text instead.
