@@ -2,17 +2,18 @@
 name: haipipe-insight-check
 description: >-
   Check that every answered cell of an InsightBoard fits its question: each
-  evidence need planned on the register, bound in the page's answers.yaml to
-  files of a current ok result that carry its pass condition, and cited in the
-  page text. Returns OK, GAP, STALE, UNBOUND or UNPLANNED per cell and flags a
+  evidence need planned on the register with its work spec, bound in the
+  page's answers.yaml to a current ok result that writes the spec's files and
+  columns through a config that lists the need, and cited by a realized page
+  sentence through its Evidence Item. Returns OK, GAP, STALE, UNBOUND or UNPLANNED per cell and flags a
   ✅ cell that overclaims. Read-only. The Insight workbench's "Check
   alignment" and "Review an answer" runs. Trigger: check alignment, insight
   check, does the work fit the question, overclaim, stale page, check
   evidence needs, /haipipe-insight-check.
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-01"
+  version: "0.5.0"
+  last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md
 ---
 
@@ -23,6 +24,26 @@ The check is mechanical and read-only: it never edits a page, a binding, a
 result or a register cell.
 
 ## Run it
+
+A Prototype and Instance board (`../haipipe-insight/ref/prototype-contract.md`):
+
+```bash
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/insight/haipipe-insight-check/ref/check_instance.py <instance>
+    --strict               # 🟡 and STALE cells fail too
+```
+
+It checks every Prototype question file v2 (question, name, ask, Why now, What
+would answer it, partitions and power, live needs and their specs, cites one
+rung below, script and SPEC line; retired needs are kept and never run or
+cited), prints question-review suspects as notes (Q1 the ask joins two
+questions, Q2 a need no judge reads, Q4 a cause word in a Data or Information
+ask, Q6 two questions compute the same table; haipipe-insight-question judges
+them), and computes every Instance cell: — not asked · 🚫 refused · 🟡 owed · ✅ <YYMMDD>
+(the page's latest CHECK closed CLOSE after its results, results-read current,
+every need cited) · STALE (the script, question file or shared src changed).
+Exit 1 on any problem.
+
+A board made before it (registers and a task Block):
 
 ```bash
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/insight/haipipe-insight-check/ref/check_evidence.py <board>
@@ -38,16 +59,19 @@ Exit 0: no overclaim. Exit 1: a `✅` cell is GAP, STALE or UNBOUND (or, under
 ## What it checks, per cell that names a page
 
 ```text
-planned   the question has live need lines; kinds are legal at its rung;
-          compute has pass:, cite and judge have from:, a cite stays within
-          the rung rule
+planned   the question has live need lines; every compute need has all seven
+          work-spec keys and pass:; kinds are legal at its rung; cite and
+          judge have from:, a cite stays within the rung rule
 bound     the page's answers.yaml has the question and every live need
-fit       compute: the ticket is in runs/, its runtime.yaml says ok, each file
-          exists, each field is a column of the CSV header or a dotted key of
-          the JSON · cite: the cited page exists and binds the borrowed need ·
-          refused: only on a 🟡 or 🚫 cell
-cited     each need's id appears as [<QID>.E<n>] in the page text (a cite need
-          may carry the borrowed id)
+fit       compute: the ticket is in runs/, its runtime.yaml says ok, every spec
+          output file is bound and exists, every spec column is in its CSV
+          header or JSON keys, the spec's cut is the page's partition, and the
+          config the ticket calls lists the need id under answers: · cite: the
+          cited page exists and binds the borrowed need · refused: only on a 🟡
+          or 🚫 cell, and bound to its probe run
+cited     a realized Page sentence carries the need: through an Evidence Item
+          whose **Need** names it, a Bullet `Evidence: none · judge <id>`, or an
+          inline [<id>] tag on an older page; an item's Artifact is a bound file
 current   no bound result ended after the page's results-read: line
 agreed    reported, never failed: a ⬜ Needs agreed line is a note
 ```
@@ -74,5 +98,7 @@ the page is fixed; this skill only reports it.
 
 ## Files
 
-- `ref/check_evidence.py` · the check
+- `ref/check_evidence.py` · the check of a board made before Prototypes
+- `ref/check_instance.py` · the check of a Prototype and one Instance
+- `tests/test_check_instance.py` · a toy Prototype and Instance, a fit run and each way it breaks
 - `tests/test_check_evidence.py` · a fixture board, one fit answer and each way it breaks

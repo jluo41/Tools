@@ -6,15 +6,15 @@ description: >-
   the rules every design keeps); Design shows the task above one card per
   design (Design · Rationale · Evaluation); Delivery is every
   design that passed Verify, word for word, and the task's csv. Board level, two
-  Spaces: Design Tasks lists the tasks, Theory of Design shows how to design and
-  the board's domain knowledge. Every Space has the shared Runs panel (run types,
+  Spaces: Design Tasks lists the tasks, Theory of Design shows how to design, the
+  design methods and the papers behind them. Every Space has the shared Runs panel (run types,
   prompts to copy, each run's result). It writes only through its own buttons
   (Commission release/hold, queued Generate and Verify run records, a draft
   request); every other write routes to the owning Design skills. Trigger: design
   workbench, design tab, design items, design folder, design tasks, theory of
   design, /haipipe-workbench-design.
 metadata:
-  version: "0.14.0"
+  version: "0.14.11"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -93,6 +93,8 @@ Run may be `rd05`.
 ## The Spaces and the Runs panel (0.14.0)
 
 JL 261001: one Design Folder is one design task, so its designs share one aim.
+JL 261002: one Design page is one design task done by one design method, returning N
+designs; comparing methods takes one page per method on the same task.
 
 ```text
 🎨 Design · page level (one design task)
@@ -104,7 +106,7 @@ JL 261001: one Design Folder is one design task, so its designs share one aim.
 
 🎨 Design · board level (every design task)
 ├── Design Tasks Space      one row per design task · the rules every task keeps · the board csv
-└── Theory of Design Space  ref/design-theory.md, then the board's own design-theory.md
+└── Theory of Design Space  four views: Design theory · Design methods · Methods studio · Papers
 ```
 
 - Page level: **Design Goal · Design · Delivery** (input, process, output). The URL keys
@@ -201,10 +203,27 @@ the closed row was too wordy; the sentences belong to the open card):
      emoji and the acceptance count already say how far it got; this design's own runs: step, outcome, who and when, the person's words,
      the run id small), and the native buttons. The runs sit with the design because they
      are how this exact text was made and checked (JL 261001).
-   - **Rationale**: Design move (open), Rule followed (only when the register names
-     one), then the fold **Insight Evidence · N pages** (the ladder: Wisdom,
-     Knowledge, Information, Data; each page by its name in words, signed or not, its
-     title as the finding, and for a Wisdom page "Rules it implies: DO … · DO NOT …").
+   - **Rationale**: Design move (open), then two folds, the design's own parts first
+     (JL 261001). **Design elements · 1 new of 6**: the shown draft split into its
+     elements against the Design Goal's `Starting text`, each with its support: kept
+     (the chain's rows when the stance is follow, else "as sent"), ★ new, ★ removed or
+     ★ changed (licensed by the named rows when the design explores; "none" plus its
+     Limits when it follows), or Design Goal (a `{LINK}` slot, the opt-out). A sentence
+     is cut into kept and new parts only when every part has three words or more;
+     otherwise it stays whole, marked changed. Kept parts are backed as part of the
+     message as tested, never one by one. When the draft's Generate wrote the element
+     record (`elements.yaml`, named in its `result.yaml` as `elements`), the fold shows
+     it first, as the designer recorded it: each element's words, where it came from
+     (requirements, internal or external insight, intuition), the rule, row or theory
+     it rests on, and whether it was reasoned (System 2) or intuitive (System 1), with
+     its because and the options weighed (JL 261002). **Evidence chain · W1 → K1 → I1 → D8**: where
+     those supports come from, from each row the design acts on (`because:`) down the
+     links the insight pages record, one quoted row per rung ("▲ because", "▲ shown
+     by", "▲ counted from"), each page by its name in words and linked, the other
+     parents of a row as "also rests on", then the Limits (named DO NOT rows) and the
+     pages cited but not on the chain ("Also cited"). Neither fold is written by a
+     Design Run: the workbench reads them from the register, the insight pages, the
+     Design Goal and the shown draft.
    - **Evaluation**, three folds of one shape, each summary naming it and its verdict:
      **Acceptance · 6 of 6 pass · independent review** (each rule ✓/✗), **Review notes**
      (the reviewer's `review.md` lines), and **Expected effect · not tested yet, judged
@@ -300,9 +319,50 @@ linking to its page level. Below it are the "every design task keeps" rules and
 **↓ Download all designs** (one csv). New lines and new folders are started from the
 Runs panel; the page has no form for them.
 
-**Theory of Design Space** renders `ref/design-theory.md` (how to design, the same for
-every board), then the board's own `design-theory.md` beside `board.md` (domain
-knowledge, for example message theories) when present.
+**Theory of Design Space** has four views, one shown at a time (URL `view=`):
+**Design theory** renders `ref/design-theory.md` (how to design, the same for every
+board); **Design methods** renders `ref/design-methods.md` (three inputs, Design and the
+Exp: design requirements, internal insights and external insights go into Design, and the
+Exp tests it; two loops, the Revise loop inside Design (Method, Generate, Evaluate, back
+until it passes) and the Learning loop through the Exp (its data becomes the next internal
+insights), after Hevner 2007's design and relevance cycles; the tests T0 to T4, what the evidence says, the map of O'Cathain's eight
+categories) and draws its index table as thirteen **design method cards**,
+one file each in `ref/methods/`, grouped into six families by where the design's how
+comes from (Requirements only, With external insights, With internal insights, With both
+insights, Making internal insights now, Making internal insights next). Closed, a card is the method's
+name, whether any study tests it (counted from its `evidence` papers), its move, its
+reasoning (abduction, induction, deduction), what it reads, each input coloured by kind,
+what it returns, and where it comes from, each source linked. Open, **What the literature says** (rationale, context,
+the steps its authors specify, strengths, limitations, as O'Cathain et al. 2019 describe
+approaches) stands beside **Applied to AI** (the agent, its steps, what it returns, how a
+second agent verifies it, the AI risk, the evidence on AI, the skill that would run it),
+then its tests and its papers. A card whose head says `status: future` (By co-design) is a
+method to add later: dashed, tagged "future · not run yet". A bracketed source (`[Prestwich 2013]`) opens that paper's
+card in the Papers view; `(ours)` marks the workbench's own judgment. **Methods studio** opens `ref/design-methods.excalidraw` (three inputs → Design → Exp, the
+Revise and Learning loops, design elements, the six families, the thirteen cards closed, an open card's two sides, O'Cathain's categories, the tests and the
+open bet) in the
+self-hosted Excalidraw canvas, loaded only when shown; edits save back to that file, which
+the canvas may write through the root-level `Tools` link. **Papers** reads the
+workbench's own `ref/design-papers.md` table (`group · role · key · paper · venue · doi ·
+why here · pdf`), the same for every board, and shows it as the Paper workbench shows a
+Story's Related Papers: one band per `group` (a design method, `all methods` or `tests`)
+with its count, one card per paper. A band shows its key papers (★ in `key`, at least one
+per group) and folds the rest under "N more papers"; a band with no key paper shows all
+of them. Closed, a card is the title, then who · year · journal, a **PDF** badge when its
+full text is inside, a **UTD24** mark when the journal is on the UT Dallas list of 24
+business journals, and its role (`classic`, `review`, `evidence`); the head counts the
+papers by role, in UTD24 journals and with a PDF, and **Show only the N papers with a
+PDF** hides the rest and opens the folds. Open, a card is why it is here, its links (the
+PDF in a new tab, the publisher page, the Paper Run), the abstract (folded) and the PDF
+itself, loaded only when the card opens. The PDF is the row's `pdf` file in `ref/papers/`,
+kept there only under an open license (CC BY; `ref/papers/README.md` lists each), else the
+free copy of a Discovery Paper Run in the board's Project that holds the same DOI, which
+also lends its abstract and Paper Run link. Without either the card says to read it on
+the publisher page; a book with no DOI says so. The Runs panel's **Add a paper** run
+(Discovery orchestrator, `haipipe-discovery`) makes a Paper Run and adds the row. All four views are general
+(JL 261001): one channel's knowledge, such as an SMS board's message theories in its
+`design-theory.md`, is a resource of the Design Goal and is not shown here; its **Add a
+theory** run sits in the page's Design Goal Space.
 
 **The Runs panel**
 
@@ -344,7 +404,7 @@ basis: evidence-informed           # brief-only · evidence-informed
 mode: compose                      # compose · revise · brainstorm · theory-driven · challenge
 expected: a first-time reader can say who sent it and what to do after one read
 falsified: a cold reader cannot name the next step from the text alone
-because: FW01 · W1                 # the one insight rule it acts on · none
+because: W01-full · W1, W3          # the insight rows it acts on · none
 evidence:
 - handoff · ../../../A00_SMSR2Full-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
 acceptance:
@@ -357,14 +417,18 @@ acceptance:
 with two spaces); the roles are `evidence`, `handoff`, `inspiration`,
 `reference`, and `avoid` (`base` and `feedback` are written by revise runs).
 
-`because` names the one insight rule the item acts on, as `<page id> · <row>`
-(`because: FW02 · W1`). The card's **Because** row prints that rule's DO / DO NOT
-sentence from the page, found among the item's `evidence` first, then on the same
-Insight board. `because: none`, or a `brief-only` item with no line, reads "AI
-idea, not from an insight". An `evidence-informed` item with no line reads "no rule
-named"; a rule not on the page reads "no such rule". A `challenge` item adds "if it
-loses, the rule holds". The design bundle csv carries the same line in its last
-column, `because`. The line is display only: a Commission does not pin it.
+`because` names the insight rows the item acts on, as `<page id> · <row>[, <row>]`,
+several pages split by `;` (`because: W01-full · W1, W3`; the older `FW02 · W1` still
+reads). The card's Rationale starts its **Evidence chain** at each named DO row and
+walks down the links the insight pages record on their `←` lines (Wisdom, Knowledge,
+Information, Data, each row quoted by its id); a named DO NOT row is a **Limit**. The
+rows are found among the item's `evidence` first, then on the same Insight board.
+`because: none`, or a `brief-only` item with no line, reads "AI idea, not from an
+insight". An `evidence-informed` item with no line starts at the DO rows of its cited
+Wisdom pages and says so; a row not on its page reads "no such row on the cited page".
+A `challenge` item adds "if it loses, the rule holds". The design bundle csv carries the
+first row in its last column, `because`. The line is display only: a Commission does
+not pin it.
 
 `expected` and `falsified` judge design quality: what a reader can do or
 understand with the draft. They may name what a later experiment will check,

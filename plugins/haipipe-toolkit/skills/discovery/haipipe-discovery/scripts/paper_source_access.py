@@ -21,6 +21,7 @@ from typing import Any
 
 
 USER_AGENT = "haipipe-discovery/0.9.3 (paper source access)"
+MIN_ABSTRACT_WORDS = 30
 
 
 def _get(url: str, timeout: float) -> bytes:
@@ -39,6 +40,12 @@ def _get_json(url: str, timeout: float) -> tuple[dict[str, Any] | None, str]:
 
 def _clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
+
+
+# The article's own identifiers. A bare `.//ArticleIdList` also matches every cited
+# reference's list, so a PMC id or DOI from the reference list would pass as this paper's
+# (Ashokkumar 2026, PMID 42420458, carried its reference 1's PMC id).
+OWN_IDS = "./PubmedArticle/PubmedData/ArticleIdList/ArticleId"
 
 
 def _pubmed(doi: str, timeout: float) -> dict[str, Any]:
@@ -77,7 +84,20 @@ def _pubmed(doi: str, timeout: float) -> dict[str, Any]:
     try:
         root = ET.fromstring(_get(fetch_api, timeout))
     except (urllib.error.URLError, TimeoutError, ET.ParseError):
-        record["state"] = "found-record-only"
+        # The search hit cannot be checked against the DOI (see below), so it is not kept.
+        record.update(state="unverified-record", pmid=None, record_url=None)
+        return record
+
+    # `<doi>[AID]` is not an exact match: PubMed answers `10.1086/699976[AID]` (JPE)
+    # with `10.3389/fpsyg.2021.699976`, a different paper sharing the suffix. A record
+    # whose DOI disagrees is not this paper's, so neither its PMID nor its abstract is kept.
+    record_dois = [
+        (node.text or "").strip().casefold()
+        for node in root.findall(OWN_IDS)
+        if node.attrib.get("IdType", "").casefold() == "doi"
+    ]
+    if record_dois and doi.strip().casefold() not in record_dois:
+        record.update(state="doi-mismatch", pmid=None, record_url=None)
         return record
 
     abstract_parts: list[str] = []
@@ -89,7 +109,7 @@ def _pubmed(doi: str, timeout: float) -> dict[str, Any]:
     if abstract_parts:
         record["abstract"] = "\n\n".join(abstract_parts)
 
-    for node in root.findall(".//ArticleIdList/ArticleId"):
+    for node in root.findall(OWN_IDS):
         if node.attrib.get("IdType", "").casefold() == "pmc" and node.text:
             record["pmcid"] = node.text.strip().upper()
             break
@@ -97,22 +117,24 @@ def _pubmed(doi: str, timeout: float) -> dict[str, Any]:
 
 
 def _openalex(doi: str, timeout: float) -> dict[str, Any]:
-    query = urllib.parse.urlencode(
-        {"filter": f"doi:https://doi.org/{doi}", "per-page": "1"}
-    )
-    api_url = f"https://api.openalex.org/works?{query}"
+    # One work by its DOI, not a filtered search: OpenAlex charges searches against a
+    # daily budget shared by the whole network and answers 429 once it is spent, while a
+    # single-work lookup still answers (2026-10-02).
+    api_url = "https://api.openalex.org/works/doi:" + urllib.parse.quote(doi, safe="/")
     payload, state = _get_json(api_url, timeout)
-    results = (payload or {}).get("results") or []
-    if not results:
+    if not (payload or {}).get("id"):
         return {"state": "not-found" if state == "ok" else state}
-    work = results[0]
+    work = payload
     oa = work.get("open_access") or {}
     best = work.get("best_oa_location") or {}
     # OpenAlex stores an abstract as word -> positions; rebuild the text. It covers the
     # business, OR and IS journals PubMed does not index.
     inverted = work.get("abstract_inverted_index") or {}
     words = {i: w for w, places in inverted.items() for i in places}
-    abstract = _clean_text(" ".join(words[i] for i in sorted(words))) if words else None
+    # A repository's boilerplate ("International audience") or a one-line teaser is
+    # not an abstract: under MIN_ABSTRACT_WORDS words the Run stays metadata-only.
+    abstract = (_clean_text(" ".join(words[i] for i in sorted(words)))
+                if len(words) >= MIN_ABSTRACT_WORDS else None)
     primary = work.get("primary_location") or {}
     return {
         "state": "found",

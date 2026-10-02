@@ -10,6 +10,7 @@ Verify), and a new register row; they live in
 """
 from __future__ import annotations
 
+import difflib
 import html
 import importlib.util
 import re
@@ -45,15 +46,6 @@ _STEP = {"commission": "Commission", "generate": "Generate",
 _ITEM_FIELDS = ("type", "audience", "job", "goal", "stance", "basis", "mode",
                 "expected", "falsified", "because")
 _ITEM_LISTS = ("acceptance", "evidence")
-# contract words -> what a reader understands at first glance; the contract word stays in the files
-_PLAIN = {
-    ("stance", "follow"): "follows the evidence", ("stance", "challenge"): "challenges the evidence",
-    ("stance", "explore"): "explores a new direction", ("stance", "generate"): "a new design",
-    ("basis", "evidence-informed"): "built on evidence", ("basis", "brief-only"): "from the design task only",
-    ("mode", "compose"): "written fresh", ("mode", "revise"): "revised from an earlier draft",
-    ("mode", "challenge"): "written to test the evidence", ("mode", "brainstorm"): "many rough options",
-    ("mode", "theory-driven"): "derived from a stated theory",
-}
 
 
 def _read(path: Path) -> str:
@@ -455,7 +447,8 @@ def _evidence_rows(folder: Path, item: dict) -> list[dict]:
     return out
 
 
-_BECAUSE = re.compile(r"^([A-Z][DIKW]\d{2})\s*[·:\s]\s*([A-Z]\d+)$")
+# `because: W01-full · W1, W3` (or the older `FW02 · W1`): the insight rows a design acts on.
+_BECAUSE = re.compile(r"^([DIKW]\d{2}-[a-z]+|[A-Z][DIKW]\d{2})\s*[·:\s]\s*([A-Z]\d+(?:\s*,\s*[A-Z]\d+)*)$")
 
 
 def because_rule(item: dict) -> dict:
@@ -469,17 +462,12 @@ def because_rule(item: dict) -> dict:
     out = {"state": "unnamed", "ref": raw, "page": None, "rule": None}
     if raw.lower() in ("none", "no insight", "-") or (not raw and item.get("basis") != "evidence-informed"):
         return {**out, "state": "ai"}
-    hit = _BECAUSE.match(raw)
+    hit = _BECAUSE.match(raw.split(";")[0].strip())
     if not hit:
         return out if not raw else {**out, "state": "unknown"}
-    pid, rid = hit.groups()
+    pid, rid = hit.group(1), re.split(r"\s*,\s*", hit.group(2))[0]
     out["ref"] = f"{pid} · {rid}"
-    files = [r["file"] for r in item.get("evidence_rows", []) if r["exists"]]
-    page = next((f for f in files if f.stem.startswith(pid + "-")), None)
-    for f in files if page is None else ():
-        page = next(iter(sorted(f.parent.parent.parent.glob(f"*/{pid}-*/{pid}-*.md"))), None)
-        if page:
-            break
+    page = _cited_page(item, pid)
     if page is None:
         return {**out, "state": "unknown"}
     from live.design_actions import counsel_lines
@@ -1045,9 +1033,13 @@ details.itemfold.cardrow .line{display:-webkit-box;-webkit-line-clamp:2;-webkit-
 ul.runs{list-style:none;margin:0;padding:0}ul.runs li{padding:6px 0;border-bottom:1px dashed var(--line)}ul.runs li:last-child{border-bottom:0}
 ul.runs .rl{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;font-size:13px}ul.runs .rid{font-size:11px;color:var(--mut)}
 ul.runs .said{font-size:12.5px;color:var(--mut);font-style:italic;margin:2px 0}ul.runs li.old{opacity:.6}
-ul.ladder{list-style:none;margin:0;padding:0}ul.ladder li{display:flex;gap:12px;padding:5px 0;border-bottom:1px dashed var(--line)}ul.ladder li:last-child{border-bottom:0}
-ul.ladder .lvl{flex:0 0 92px;font-size:11.5px;color:var(--mut);padding-top:2px}ul.ladder .pg{flex:1;min-width:0}
-ul.ladder .finding{display:block;font-size:12.5px;color:var(--mut);line-height:1.4}
+.chain{margin:2px 0 8px}.chain .node,.node.limit{padding:3px 0}.chain .step{font-size:11px;color:var(--mut);margin:1px 0 1px 4px}
+.node .rid{font:650 12px ui-monospace,Menlo,monospace;margin-right:6px}.node .says{font-size:13px;line-height:1.45}
+.node .pg{font-size:12px;color:var(--mut);margin-left:0}.also{font-size:12px;color:var(--mut);margin:2px 0 4px;line-height:1.45}
+.cardgrid table.elems{display:table;table-layout:fixed;overflow:visible;width:100%;border-collapse:collapse;font-size:13px;margin:2px 0 6px}table.elems th{text-align:left;font-size:11px;color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:3px 4px}
+table.elems td{vertical-align:top;padding:4px;border-bottom:1px dashed var(--line);line-height:1.4;overflow-wrap:anywhere}table.elems th:last-child,table.elems td.elsup{width:34%}
+table.elems .ids{display:block;font-size:11.5px;color:var(--mut)}.el-new{color:var(--bad);font-weight:600}s.el-gone{color:var(--mut)}
+.el-from{font-weight:600}.el-from.requirements{color:var(--acc)}.el-from.internal{color:var(--ok)}.el-from.external{color:#7048e8}.el-from.intuition{color:var(--bad)}.el-how{color:var(--mut)}
 .task .tl{display:flex;gap:10px;margin:2px 0}.task .tl>.mut{flex:0 0 130px}
 span.link{font:600 12px ui-monospace,Menlo,monospace;color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);border-radius:4px;padding:0 3px}
 .cardhead{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:4px;color:var(--mut);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--line)}
@@ -1685,60 +1677,426 @@ def _bet_changed(item: dict, released: dict) -> bool:
         or (frozen_rules is not None and list(frozen_rules) != list(item["acceptance"])))
 
 
-def _because_html(item: dict, root: Path | None = None) -> str:
-    """The one rule this design acts on, in its own words, or an honest label when there is none."""
-    b = item.get("because_rule") or because_rule(item)
-    if b["state"] == "ai":
-        return '<div class=mut>AI idea, not from an insight</div>'
-    if b["state"] == "unnamed":
-        return '<div class=bad>no rule named · add <code>because: &lt;page&gt; · &lt;row&gt;</code></div>'
-    if b["state"] == "unknown":
-        return f'<div class=bad>{_escape(b["ref"])} · no such rule on the cited page</div>'
-    lab = insight_label(b["page"])
-    tag = f'<b>{_escape(lab["shown"] or b["ref"].split(" ")[0])} · {_escape(b["rule"]["id"])}</b>'
-    href = _insight_href(root, b["page"])
-    if href:
-        tag = f'<a href="{_escape(href)}">{tag}</a>'
-    verb = "DO" if b["rule"]["do"] else "DO NOT"
-    note = ('<div class=mut>written to test this rule: if it loses, the rule holds</div>'
-            if item.get("stance") == "challenge" else "")
-    return f'<div>{tag} <span class=mut>{verb}</span> {_escape(b["rule"]["text"])}</div>{note}'
+# ------------------------------------------------------------ evidence chain --
+# The Rationale column says why a design is what it is (JL 261001), in two folds: the
+# evidence chain, from the insight rows the design acts on down to the data, and each
+# element of the design with what supports it. Every line is a row quoted from an insight
+# page by its id, and every link between rows is one the insight pages already record.
+
+_LINEAGE = re.compile(r"^(?:([DIKW]\d+(?:\.\.[DIKW]\d+)?)|\s+)\s*←\s+(.+?)\s*$")
+_REF_TOKEN = re.compile(r"(?<![\w-])(?:([DIKW]\d{2}-[a-z]+)(?![a-z0-9])|([DIKW]\d+(?:\.\.[DIKW]?\d+)?)(?![\w-]))")
+_PAGE_STEM_ID = re.compile(r"^([DIKW]\d{2}-[a-z]+|[A-Z][DIKW]\d{2})-")
+_STEP_WORD = {"K": "because", "I": "shown by", "D": "counted from"}
 
 
-def _support_ladder(item: dict, root: Path | None = None) -> str:
-    """The insight pages a design rests on, top down (JL 261001): the counsel (Wisdom) first,
-    then the claim (Knowledge), the pattern (Information) and the observation (Data). Each
-    page by its name in words, its level, whether it is signed, and its finding in a line."""
-    pages = [r for r in item["evidence_rows"] if r["role"] in _SUPPORT_ROLES]
-    if not pages:
-        return ('<div class=mut>From the design goal alone; no insight page is needed.</div>'
-                if item["basis"] != "evidence-informed" else '<div class=mut>No insight page named yet.</div>')
-    out = []
-    for rung in "WKID?":
-        for r in (p for p in pages if _rung(p) == rung):
-            name = f"<b>{_escape(_page_words(r))}</b>"
-            href = _insight_href(root, r["file"]) if r["exists"] and rung != "?" else ""
-            if href:
-                name = f'<a href="{_escape(href)}">{name}</a>'
-            level = _RUNG_WORD.get(rung, "Source")
-            mark = (" · signed" if r["signed"].startswith("signed") else " · unsigned" if r["signed"] else "")
-            mark += " · to avoid" if r["role"] == "avoid" else ""
-            title, counsel = "", ""
-            if r["exists"]:
-                text = _read(r["file"])
-                m = _H1.search(text)
-                title = m.group(1).strip() if m else ""
-                says = _handoff_says(text) if rung == "W" else {"counsel": []}
-                if says["counsel"]:
-                    # a Wisdom page's counsel is the rule a design acts on: shown in its own words
-                    counsel = ('<span class=finding>Rules it implies: ' + " · ".join(
-                        ("DO " if c["do"] else "DO NOT ") + name_refs(_escape(c["text"]), r["file"])
-                        for c in says["counsel"]) + '</span>')
+def _page_id(page: Path) -> str:
+    """`W01-full-send-salience.md` -> `W01-full`; the older `FW01-send-salience.md` -> `FW01`."""
+    hit = _PAGE_STEM_ID.match(page.stem)
+    return hit.group(1) if hit else page.stem
+
+
+def _level(pid: str) -> str:
+    return pid[0] if re.match(r"^[DIKW]\d", pid) else pid[1:2]
+
+
+def _expand(token: str) -> list[str]:
+    """`I4..I12` -> I4 … I12; any other token as it is."""
+    hit = re.match(r"^([DIKW])(\d+)\.\.[DIKW]?(\d+)$", token)
+    if not hit or not 0 <= int(hit.group(3)) - int(hit.group(2)) <= 60:
+        return [token]
+    return [f"{hit.group(1)}{n}" for n in range(int(hit.group(2)), int(hit.group(3)) + 1)]
+
+
+def _row_lineage(text: str) -> dict[str, list[tuple[str, list[str]]]]:
+    """`K1  ←  I02-full · I1, I2, I13-full   note` lines: row id -> [(page id, [row ids])].
+    A line that starts with `←` goes on with the row above; a whole page cited has no rows."""
+    out: dict[str, list[tuple[str, list[str]]]] = {}
+    ids: list[str] = []
+    for line in text.splitlines():
+        hit = _LINEAGE.match(line)
+        if not hit:
+            ids = []
+            continue
+        if hit.group(1):
+            ids = _expand(hit.group(1))
+        found, cur = [], None
+        for page, row in _REF_TOKEN.findall(re.split(r"\s{2,}", hit.group(2))[0]):
+            if page:
+                cur = (page, [])
+                found.append(cur)
+            elif cur is not None:
+                cur[1].extend(_expand(row))
+        for rid in ids:
+            out.setdefault(rid, []).extend(found)
+    return out
+
+
+def _row_texts(text: str) -> dict[str, str]:
+    """Row id -> its words on the page. A row of a fenced grid, its wrapped lines joined; a
+    table row (one line, numbers in its cells) is read with its column names; else a
+    paragraph that opens with the id in bold (`**D8, the cell grid.**`)."""
+    rows: dict[str, str] = {}
+    for block in re.findall(r"(?ms)^```\w*\n(.*?)^```", text):
+        header, last, col, raw = [], None, 0, {}
+        for line in block.splitlines():
+            if re.match(r"^id\s{2,}", line):
+                header = re.split(r"\s{2,}", line.strip())[1:]
+                continue
+            hit = re.match(r"^([DIKW]\d+)\s{2,}(.+?)\s*$", line)
+            if hit and "←" not in line:
+                last = None
+                if hit.group(1) in rows or hit.group(1) in raw:
+                    continue
+                raw[hit.group(1)] = {"cells": re.split(r"\s{2,}", hit.group(2)), "more": [], "header": header}
+                last, col = hit.group(1), hit.start(2)
+            elif last and "←" not in line and line.strip() and not line[:col].strip() and line[col:col + 1].strip():
+                raw[last]["more"].append(re.split(r"\s{2,}", line[col:].strip())[0])
             else:
-                title = "Page not found on the Insight board."
-            out.append(f'<li><span class=lvl>{level}</span><span class=pg>{name}<span class=mut>{mark}</span>'
-                       f'{("<span class=finding>" + _escape(title) + "</span>") if title else ""}{counsel}</span></li>')
-    return f'<ul class=ladder>{"".join(out)}</ul>'
+                last = None
+        for rid, r in raw.items():
+            cells, head = r["cells"], r["header"]
+            numbers = all(re.search(r"\d|^[—✅❌🟡🚫⬜]$", c) for c in cells[1:])
+            if not r["more"] and len(cells) >= 3 and len(head) == len(cells) and numbers:
+                pairs = [f"{h} {c}" for h, c in zip(head[1:], cells[1:])
+                         if h.lower() not in ("file", "from", "source", "run")]
+                rows[rid] = " · ".join([cells[0], *pairs])
+            else:
+                rows[rid] = " ".join([cells[0], *r["more"]])
+    for hit in re.finditer(r"\*\*`?([DIKW]\d+)`?([^*\n]*)\*\*", text):
+        rows.setdefault(hit.group(1), (hit.group(1) + hit.group(2)).strip())
+    return rows
+
+
+def _compact(rows: list[str]) -> str:
+    """[I2, I3, I4, I7] -> `I2..I4, I7`: a run of rows said as a range, as the pages write it."""
+    out, i = [], 0
+    while i < len(rows):
+        j = i
+        while (j + 1 < len(rows) and re.match(r"^[DIKW]\d+$", rows[j]) and rows[j + 1][:1] == rows[j][:1]
+               and rows[j + 1][1:].isdigit() and int(rows[j + 1][1:]) == int(rows[j][1:]) + 1):
+            j += 1
+        out.append(f"{rows[i]}..{rows[j]}" if j - i >= 2 else ", ".join(rows[i:j + 1]))
+        i = j + 1
+    return ", ".join(out)
+
+
+def _board_page(board: Path | None, pid: str) -> Path | None:
+    hits = sorted(board.glob(f"*/{pid}-*/{pid}-*.md")) if board else []
+    return hits[0] if hits else None
+
+
+def _cited_page(item: dict, pid: str) -> Path | None:
+    """An insight page by its id: among the item's evidence first, then on the same board."""
+    files = [r["file"] for r in item.get("evidence_rows", []) if r["exists"]]
+    page = next((f for f in files if f.stem.startswith(pid + "-")), None)
+    for f in files if page is None else ():
+        page = _board_page(_nearest_board(f), pid)
+        if page:
+            break
+    return page
+
+
+def because_rows(item: dict, missing: list[str] | None = None) -> list[dict]:
+    """Every insight row the `because:` line names, in order (`W01-full · W1, W3`; pages
+    split by `;`): {page, pid, id, do, text}, `do` None for a row that is not counsel.
+    A named row not found on its page is left out and, given `missing`, listed there."""
+    from live.design_actions import counsel_lines
+    out = []
+    for part in (item.get("because") or "").split(";"):
+        part = part.strip()
+        if not part or part.lower() in ("none", "no insight", "-"):
+            continue
+        hit = _BECAUSE.match(part)
+        page = _cited_page(item, hit.group(1)) if hit else None
+        if page is None:
+            missing is not None and missing.append(part)
+            continue
+        text = _read(page)
+        counsel, rows = {c["id"]: c for c in counsel_lines(text)}, _row_texts(text)
+        for rid in re.split(r"\s*,\s*", hit.group(2)):
+            c = counsel.get(rid)
+            words = (("DO " if c["do"] else "DO NOT ") + c["text"]) if c else rows.get(rid, "")
+            if words:
+                out.append({"page": page, "pid": hit.group(1), "id": rid, "do": c["do"] if c else None, "text": words})
+            elif missing is not None:
+                missing.append(f"{hit.group(1)} · {rid}")
+    return out
+
+
+def _chain_heads(item: dict) -> tuple[list[dict], bool]:
+    """The rows a chain starts from: the `because:` rows, else the DO rows of the cited
+    Wisdom pages (False: the register names no rows)."""
+    named = because_rows(item)
+    if named or (item.get("because") or "").strip():
+        return named, True
+    from live.design_actions import counsel_lines
+    heads = []
+    for r in item.get("evidence_rows", []):
+        if r["role"] == "handoff" and r["exists"]:
+            heads += [{"page": r["file"], "pid": _page_id(r["file"]), "id": c["id"], "do": True,
+                       "text": "DO " + c["text"]} for c in counsel_lines(_read(r["file"])) if c["do"]]
+    return heads, False
+
+
+def _walk(page: Path, rid: str, limit: int = 5) -> list[dict]:
+    """One row and its first-cited parents down to the data, the way the insight board walks
+    a cell: [{page, pid, id, text, also}], `also` the other parents of each row as
+    (page id, page file or None, its rows)."""
+    board, out, seen = _nearest_board(page), [], set()
+    while page is not None and len(out) < limit and (page, rid) not in seen:
+        seen.add((page, rid))
+        text = _read(page)
+        node = {"page": page, "pid": _page_id(page), "id": rid, "also": [],
+                "text": _row_texts(text).get(rid, "") if rid else ""}
+        out.append(node)
+        nxt = None
+        for ref, rows in (_row_lineage(text).get(rid, []) if rid else []):
+            target = _board_page(board, ref)
+            if nxt is None and target is not None:
+                nxt = (target, rows[0] if rows else "")
+                node["also"] += [(ref, target, _compact(rows[1:]))] if rows[1:] else []
+            else:
+                node["also"].append((ref, target, _compact(rows)))
+        if nxt is None:
+            break
+        page, rid = nxt
+    return out
+
+
+def _code(escaped: str) -> str:
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
+
+
+def _page_link(root: Path | None, page: Path) -> str:
+    name = _escape(_page_words({"name": page.name}))
+    href = _insight_href(root, page)
+    signed = _SIGNED.search(_read(page))
+    mark = " · signed" if signed and signed.group(1) == "✅" else ""
+    return (f'<a href="{_escape(href)}">{name}</a>' if href else name) + f'<span class=mut>{mark}</span>'
+
+
+def evidence_chain(item: dict) -> dict:
+    """{chains: [[node]], limits: [row], named, also: [evidence row]} for the Rationale column."""
+    heads, named = _chain_heads(item)
+    missing: list[str] = []
+    because_rows(item, missing)
+    chains, limits = [], []
+    for h in heads:
+        if h["do"] is False:
+            limits.append(h)
+            continue
+        nodes = _walk(h["page"], h["id"])
+        if nodes:
+            nodes[0]["text"] = h["text"]
+            chains.append(nodes)
+    on_chain = {n["page"].resolve() for c in chains for n in c} | {h["page"].resolve() for h in limits}
+    also = [r for r in item.get("evidence_rows", []) if r["role"] in _SUPPORT_ROLES
+            and r["exists"] and r["file"].resolve() not in on_chain]
+    return {"chains": chains, "limits": limits, "named": named, "also": also, "missing": missing,
+            "backing": [h for h in heads if h["do"]]}
+
+
+def _chain_html(item: dict, root: Path | None, ev: dict) -> tuple[str, str]:
+    """(summary, body) of the Evidence chain fold."""
+    bad = "".join(f'<div class=bad>{_escape(m)} · no such row on the cited page</div>' for m in ev["missing"])
+    if not ev["chains"] and not ev["limits"] and bad:
+        return "row not found", bad
+    if not ev["chains"] and not ev["limits"]:
+        b = item.get("because_rule") or because_rule(item)
+        if b["state"] == "ai":
+            return "none", '<div class=mut>An AI idea, not from an insight: no insight row stands behind it.</div>'
+        return "none", ('<div class=mut>No insight row named yet. A line '
+                        '<code>because: &lt;page&gt; · &lt;row&gt;</code> for this design starts the chain.</div>')
+    parts = [bad] if bad else []
+    if not ev["named"]:
+        parts.append('<div class=mut>No row is named for this design, so these are the DO rows of the cited Wisdom pages.</div>')
+    if item.get("stance") == "challenge":
+        parts.append('<div class=mut>Written to test this rule: if it loses, the rule holds.</div>')
+    for chain in ev["chains"]:
+        steps = []
+        for i, n in enumerate(chain):
+            step = (f'<div class=step>▲ {_STEP_WORD.get(_level(n["pid"]), "rests on")}</div>' if i else "")
+            says = f'<span class=says>{_code(name_refs(_escape(n["text"]), n["page"]))}</span>' if n["text"] else ""
+            rid = f'<span class=rid>{_escape(n["id"])}</span>' if n["id"] else ""
+            also = ('<div class=also>also rests on ' + " · ".join(
+                (_page_link(root, page) if page else _escape(ref)) + (f" {_escape(rows)}" if rows else "")
+                for ref, page, rows in n["also"]) + '</div>' if n["also"] else "")
+            steps.append(f'{step}<div class=node>{rid}{says}<div class=pg>{_page_link(root, n["page"])}</div>{also}</div>')
+        parts.append(f'<div class=chain>{"".join(steps)}</div>')
+    if ev["limits"]:
+        parts.append('<h4 class=colh>Limits</h4>' + "".join(
+            f'<div class="node limit"><span class=rid>{_escape(h["id"])}</span>'
+            f'<span class=says>{_code(name_refs(_escape(h["text"]), h["page"]))}</span>'
+            f'<div class=pg>{_page_link(root, h["page"])}</div></div>' for h in ev["limits"]))
+    if ev["also"]:
+        parts.append('<div class=also><b>Also cited</b> · ' + " · ".join(
+            f'{_page_link(root, r["file"])} <span class=mut>({_RUNG_WORD.get(_rung(r), "source")})</span>'
+            for r in ev["also"]) + '</div>')
+    chains = ev["chains"]
+    summary = (" → ".join(n["id"] or _page_id(n["page"]) for n in chains[0]) if len(chains) == 1
+               else f'{len(chains)} chains' if chains else "limits only")
+    return summary, "".join(parts)
+
+
+# ------------------------------------------------------------ design elements --
+
+_SLOT_TOKEN = re.compile(r"^\{[A-Z]+\}$")
+_ABBREV = {"dr.", "mr.", "mrs.", "ms.", "st.", "jr.", "sr.", "e.g.", "i.e."}
+
+
+def _norm(token: str) -> str:
+    return token.lower().strip(".,:;!?\"'“”‘’")
+
+
+def design_elements(base: str, text: str, opt_out: str = "") -> list[dict]:
+    """The design split into its elements against the starting text (JL 261001): one per
+    sentence, clause or slot of the design, [{kind, parts: [(kind, words)]}]. An element is
+    kept (the starting text's own words), new, removed, goal (a slot such as {LINK}, or the
+    opt-out, that the design goal requires) or changed. A sentence is cut into its kept and
+    new parts only when every part has three words or more; otherwise it stays whole,
+    `changed`, with its new and removed words marked inside it."""
+    a, b = base.split(), with_link(text.strip()).split()
+    match = difflib.SequenceMatcher(None, [_norm(t) for t in a], [_norm(t) for t in b], autojunk=False)
+    stream = []
+    for op, i1, i2, j1, j2 in match.get_opcodes():
+        stream += ([(t, "kept") for t in b[j1:j2]] if op == "equal"
+                   else [(t, "removed") for t in a[i1:i2]] + [(t, "new") for t in b[j1:j2]])
+    sentences, cur = [], []
+    for tok, kind in stream:
+        if kind != "removed" and _SLOT_TOKEN.match(tok):
+            sentences += ([cur] if cur else []) + [[(tok, kind)]]
+            cur = []
+            continue
+        cur.append((tok, kind))
+        if kind != "removed" and re.search(r"[.:!?]$", tok) and tok.lower() not in _ABBREV:
+            sentences.append(cur)
+            cur = []
+    sentences += [cur] if cur else []
+    out = []
+    for sentence in sentences:
+        runs: list[tuple[str, list[str]]] = []
+        for tok, kind in sentence:
+            if runs and runs[-1][0] == kind:
+                runs[-1][1].append(tok)
+            else:
+                runs.append((kind, [tok]))
+        if len(runs) == 1 or all(len(toks) >= 3 for _, toks in runs):
+            for kind, toks in runs:
+                words = " ".join(toks)
+                goal = kind == "new" and (_SLOT_TOKEN.match(words) or (opt_out and words == opt_out))
+                out.append({"kind": "goal" if goal else kind, "parts": [(kind, words)]})
+        else:
+            out.append({"kind": "changed", "parts": [(kind, " ".join(toks)) for kind, toks in runs]})
+    return out
+
+
+def _ids(rows: list[dict]) -> str:
+    """Row ids for the Support column; with their page when the rows sit on more than one."""
+    pages = {r["pid"] for r in rows}
+    return " · ".join(r["id"] if len(pages) == 1 else f'{r["pid"]} · {r["id"]}' for r in rows)
+
+
+_FROM = {"requirements": "requirements", "internal": "internal insight", "external": "external insight",
+         "intuition": "intuition"}
+
+
+def element_record(item: dict) -> list[dict]:
+    """The designer's own element record for the shown draft (JL 261002: "how to choose each
+    element … the reasoning of the designer … sometimes the element might come from the
+    intuitive … we can document both"): `elements.yaml`, named in its result.yaml as
+    `elements`, one entry per element with its words, where it came from, the rule, row or
+    theory it rests on, and whether it was reasoned or intuitive. Empty when there is none."""
+    shown = shown_design(item)
+    run = next((r for r in item.get("runs") or [] if shown and r["id"] == shown.get("run")), None)
+    if run is None or yaml is None:
+        return []
+    ref = _yaml(run["result_dir"] / "result.yaml").get("elements")
+    path = run["result_dir"] / str(ref.get("path")) if isinstance(ref, dict) and ref.get("path") else None
+    if path is None or not path.is_file():
+        return []
+    try:
+        data = yaml.safe_load(_read(path))
+    except yaml.YAMLError:
+        return []
+    return [e for e in data if isinstance(e, dict)] if isinstance(data, list) else []
+
+
+def _record_html(record: list[dict]) -> str:
+    """The element record as the designer wrote it: words, where each came from, how it was chosen."""
+    rows = []
+    for e in record:
+        frm = str(e.get("from") or "").strip().lower()
+        how = str(e.get("thinking") or "").strip().lower()
+        src = str(e.get("source") or "").strip()
+        why = str(e.get("because") or "").strip()
+        alts = e.get("alternatives") if isinstance(e.get("alternatives"), list) else []
+        role = str(e.get("element") or "").strip()
+        rows.append(
+            f'<tr><td>{f"<span class=ids>{_escape(role)}</span>" if role else ""}{_escape(str(e.get("words") or ""))}</td>'
+            f'<td class=elsup><span class="el-from {_escape(frm)}">{_escape(_FROM.get(frm, frm or "not said"))}</span>'
+            f'{f" · <span class=el-how>{_escape(how)}</span>" if how else ""}'
+            f'{f"<span class=ids>{_escape(src)}</span>" if src and src.lower() != "none" else ""}'
+            f'{f"<span class=ids>because {_escape(why)}</span>" if why else ""}'
+            f'{"<span class=ids>weighed: " + _escape(" · ".join(map(str, alts))) + "</span>" if alts else ""}</td></tr>')
+    reasoned = sum(str(e.get("thinking") or "").lower() == "reasoned" for e in record)
+    intuitive = sum(str(e.get("thinking") or "").lower() == "intuitive" for e in record)
+    return ('<div class=mut>As the designer recorded it: where each element came from, and whether it was '
+            f'reasoned (System 2) or intuitive (System 1). {reasoned} reasoned · {intuitive} intuitive.</div>'
+            f'<table class=elems><tr><th>Element</th><th>From · how</th></tr>{"".join(rows)}</table>')
+
+
+def _elements_html(item: dict, goal: dict, ev: dict) -> tuple[str, str]:
+    """(summary, body) of the Design elements fold: each element of the design and what supports it.
+
+    A kept element rests on the chain when the design follows the evidence (stance follow);
+    otherwise it is the starting text as sent. A new, removed or changed element is licensed
+    by the named rows when the design explores; a design that follows the evidence has no
+    row for its change, and its limits are said beside it."""
+    shown = shown_design(item)
+    base = (goal or {}).get("starting text", "")
+    if not shown or not (shown.get("text") or "").strip():
+        return "after the first draft", '<div class=mut>Shown once a draft exists, element by element against the starting text.</div>'
+    if not base:
+        record = element_record(item)          # the designer's own record needs no starting text
+        return (f"{len(record)} recorded" if record else "no starting text"), (_record_html(record) if record else "") + (
+            '<div class=mut>The design goal names no starting text '
+            '(<code>Starting text:</code> under Resources), so the elements cannot be compared.</div>')
+    quoted = re.search(r'"([^"]+)"', (goal or {}).get("opt-out", ""))
+    opt_out = quoted.group(1) if quoted else ""
+    elements = design_elements(base, shown["text"], opt_out)
+    follow, backing = item.get("stance") == "follow", ev["backing"]
+    measured = [n["id"] for c in ev["chains"] for n in c if _level(n["pid"]) == "I" and n["id"]][:1]
+    if follow:
+        change = "none" + "".join(f" · {h['id']}" for h in ev["limits"])
+    else:
+        change = ("licensed · " + _ids(backing)) if backing and ev["named"] else "not named" if backing else "none"
+    rows, kept_rows = [], False
+    for e in elements:
+        words = " ".join(w for k, w in e["parts"] if k != "removed")
+        cell = " ".join(f'<span class=el-new>{_escape(w)}</span>' if k == "new"
+                        else f'<s class=el-gone>{_escape(w)}</s>' if k == "removed" else _escape(w)
+                        for k, w in e["parts"]) if e["kind"] in ("new", "removed", "changed") else _escape(words)
+        if e["kind"] == "goal":
+            why = "<span class=ids>Design Goal</span>"
+        elif e["kind"] == "kept":
+            ids = ("Design Goal" if opt_out and words == opt_out
+                   else " · ".join([_ids(backing)] + measured) if follow and backing else "as sent")
+            kept_rows |= ids not in ("Design Goal", "as sent")
+            why = f'kept<span class=ids>{_escape(ids)}</span>'
+        else:
+            why = f'<span class=el-new>★ {e["kind"]}</span><span class=ids>{_escape(change)}</span>'
+        rows.append(f'<tr><td>{cell}</td><td class=elsup>{why}</td></tr>')
+    counts = " · ".join(f"{n} {k}" for k in ("new", "changed", "removed")
+                        if (n := sum(e["kind"] == k for e in elements)))
+    summary = f"{counts} of {len(elements)}" if counts else "all kept"
+    note = ('<div class=mut>Kept parts are backed as part of the message as it was tested, not one by one.</div>'
+            if kept_rows else "")
+    record = element_record(item)
+    if record:
+        summary += f" · {len(record)} recorded"
+    against = ('<div class=mut>Against the starting text:</div>' if record else "")
+    return summary, (_record_html(record) if record else "") + (
+        f'{against}<table class=elems><tr><th>Element</th><th>Support</th></tr>{"".join(rows)}</table>{note}')
 
 
 def _review_notes(item: dict) -> str:
@@ -1780,21 +2138,17 @@ def _design_runs_list(item: dict) -> str:
     return f'<ul class=runs>{"".join(rows)}</ul>' if rows else ""
 
 
-def _rationale_col(item: dict, root: Path | None) -> str:
-    """The open card's middle column (JL 261001): why this design. The design move and the rule
-    it follows stay open; the Insight Evidence it rests on folds. How the design was made
-    (its Design Runs) sits with the design, in the first column."""
-    pairs = [(k, v) for k, v in (("stance", item["stance"]), ("basis", item["basis"])) if v]
-    why = " · ".join(_PLAIN.get((k, v), f"{k} {_escape(v)}") for k, v in pairs)
+def _rationale_col(item: dict, root: Path | None, goal: dict | None = None) -> str:
+    """The open card's middle column (JL 261001): why this design. The design move stays open;
+    under it two folds: first the Design elements, each part of the design and what supports
+    it, then the Evidence chain those supports come from. How the design was made (its Design
+    Runs) sits with the design, in the first column."""
     out = ('<h4 class=colh>Design move</h4>'
-           f'<p class=goal>{_escape(item["goal"]) or "<span class=mut>No design move recorded.</span>"}</p>'
-           + (f'<div class=mut>{why}</div>' if why else ""))
-    b = item.get("because_rule") or because_rule(item)
-    if b["state"] != "unnamed":           # a design with no named rule says nothing here
-        out += f'<h4 class=colh>Rule followed</h4>{_because_html(item, root)}'
-    pages = [r for r in item["evidence_rows"] if r["role"] in _SUPPORT_ROLES]
-    out += (f'<details class=sub><summary>Insight Evidence · {len(pages)} page{"s" if len(pages) != 1 else ""}</summary>'
-            f'{_support_ladder(item, root)}</details>')
+           f'<p class=goal>{_escape(item["goal"]) or "<span class=mut>No design move recorded.</span>"}</p>')
+    ev = evidence_chain(item)
+    for label, (summary, body) in (("Design elements", _elements_html(item, goal or {}, ev)),
+                                   ("Evidence chain", _chain_html(item, root, ev))):
+        out += f'<details class=sub><summary>{label} · <span class=mut>{_escape(summary)}</span></summary>{body}</details>'
     return out
 
 
@@ -1939,7 +2293,7 @@ def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: 
     # Open, the card keeps the closed row's three columns (JL 261001): the design with its
     # buttons, then its rationale, then its evaluation. The design column stays in view.
     body = (f'<div class=cardgrid><div class="col pic">{design}{runs}{actions}<div class=msg></div></div>'
-            f'<div class="col why">{_rationale_col(item, root)}</div>'
+            f'<div class="col why">{_rationale_col(item, root, aim)}</div>'
             f'<div class="col eval">{_evaluation_col(item, aim)}</div></div>')
     # One fixed-height row per item that opens into a fixed-height card (JL 260918): the row
     # names the item, previews the design in one line, and says where it stands.
@@ -2024,7 +2378,8 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
     writable = snapshot["current"] and not snapshot.get("static")
     chat_prompts = {item["id"]: design_chat_prompt(snapshot, item) for item in items}
     inp = design_input(Path(snapshot["folder"]).parent.parent, Path(snapshot["folder"]))
-    aim = {k.lower(): v for k, v, _ in inp["blocks"].get("Aim", [])}
+    # every design-input line by its key: the aim, and the starting text and opt-out the elements read
+    aim = {k.lower(): v for block in ("Venue", "Resources", "Aim") for k, v, _ in inp["blocks"].get(block, [])}
     design_html = _task_block(snapshot, items, aim)
 
     if items:

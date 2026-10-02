@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, a Claude and Codex session per Section,
   complete-paper assembly, compiling, or review rounds.
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-09-29"
+  version: "1.5.1"
+  last_updated: "2026-10-02"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -163,7 +163,7 @@ screen's own rules are in `haipipe-workbench-paper`.
 | Story › Spine | §1 Identity, §2 Pitch, §4 Stakes | `haipipe-paper-story` |
 | Story › RoadMap Draw | the drawings in `studio/` | `haipipe-paper-story` (draw) |
 | Story › High-level logic + Low-level work | each question: hypotheses, claims, contributions, then its Task and Discovery work | `haipipe-paper-story`; the work in `haipipe-task`, `haipipe-discovery` |
-| Story › Related Papers | one card per §5.3 related paper | `haipipe-paper-story`; its Paper Runs in `haipipe-discovery` |
+| Story › Related Papers | one card per §5.3 related paper: why we keep it, its logic beside its work, its PDF | `haipipe-paper-story` (keep, bears on); its Paper Runs and `logic-work.yaml` in `haipipe-discovery` |
 | Sections › Main, Appendix | each Section in compile order: Table, Narrative, Evidence | `haipipe-paper-section` and each Section Page |
 | Delivery › LaTeX, Word, Cover letter | the built manuscript, its files and checks | `haipipe-paper-assemble` |
 | Delivery › Rounds | one card per feedback Round | `haipipe-paper-round` |

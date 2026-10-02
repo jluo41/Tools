@@ -1,5 +1,13 @@
 # haipipe-insight-question · version history
 
+## 1.9.0 · 2026-10-02 · The question review, Q1-Q7 (JL 261002)
+
+- GI1 adds the question review: one thing, logic, consumer, rung, answerable, new, open. A reviewer agent proposes keep, split, merge or move with reasons; a person signs; a signed change retires the old question, never edits it. The check only flags Q1, Q2, Q4 and Q6 suspects. On a Prototype board the question file v2 holds the register division's fields.
+
+## 1.8.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- The register's need lines carry each compute need's work spec on indented lines; planned before any run or task is looked at.
+
 ## 1.7.0 · 2026-10-01 · Evidence needs on every row (JL 261001)
 
 - **What would answer it** carries the question's evidence needs, `<QID>.E<n>` (compute · cite · judge, with `pass:` / `from:`), and a **Needs agreed** line a person signs. Contract: `haipipe-insight/ref/evidence-needs.md`.

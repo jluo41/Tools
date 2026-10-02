@@ -24,7 +24,7 @@ A config never names a board or a result folder, and the board has no store.
 
 | Space | Tabs | What it shows |
 |---|---|---|
-| Scope | Dataset · Partitions · Questions | the extract (MT00), its cuts with their configs, the four registers' counts and the Ask box |
+| Scope | Dataset · Partitions · Methods · Questions | the extract (MT00), its cuts with their configs, the methods an answer is found and an inquiry designed by with their papers and studio (below), the four registers' counts and the Ask box |
 | Insight | Questions | one High/Low table per partition (below) |
 | Check | Gates · Checks · Runtime | the picked question's seven gates, `cli/check.py`, the workflow runtime index |
 | Delivery | Handoff | the signed Wisdom answers and their current eligibility |
@@ -32,6 +32,19 @@ A config never names a board or a result folder, and the board has no store.
 Each Space has its Runs panel on the right: run types on top (with their
 skill), the runs of the chosen type, a prompt to copy. Picking a question
 narrows every panel to it. Nothing in a panel starts, sends or writes.
+
+## Scope › Methods · how an answer is found, how an inquiry is designed
+
+A Scope tab beside Dataset, Partitions and Questions. Four views, one at a time, picked from a pill bar (`mview=` in the URL), drawn as the
+Design workbench draws its Theory of Design Space: Discovery methods
+(`ref/insight-discovery-methods.md`: how an answer is found from data), Design methods
+(`ref/insight-design-methods.md`: how an inquiry is designed before any data is read) and
+Methods studio (`ref/insight-methods.excalidraw` in the Excalidraw canvas, editable and saved
+back, as the Design board's Theory › Methods studio) and Papers (`ref/insight-papers.md`). Each methods file lists one card per method
+(`ref/methods/discovery/`, `ref/methods/design/`): closed, the move, what it reads and
+returns, its tests and whether any study tests it; open, What the literature says beside
+Applied to AI. A bracketed source opens its paper's card. The files are the workbench's
+own, the same for every board; no board writes them.
 
 ## Insight › Questions · one table per partition
 
@@ -41,7 +54,7 @@ has three columns:
 ```text
 LOGIC · the question        WORK · the runs                 REPORT · the answering page
 Question 4             ✅   › Task  Rates                   page I<NN>-full
-<question title>             1 run · answers 9 more …       <the page's headline finding>
+<question title>             E1 compute · … → <files>       <the page's objective title>
 builds on Data question 3      j21 information_<topic>      <what the task computes>, …
                                  t01 rates ▸ 1 run
                                    run_b5Nj21t01r01_full_rates ok → results
@@ -57,14 +70,16 @@ builds on Data question 3      j21 information_<topic>      <what the task compu
   run's partition (MT00's config column). A Knowledge or Wisdom page with no
   `runs/` of its own shows the runs behind the pages it cites.
 - **Evidence needs** (`../../haipipe-insight/ref/evidence-needs.md`) are the
-  join the three columns are meant to meet at: Logic lists a question's needs,
-  Work each need's bound files from the page's `answers.yaml`, Report each
-  need's citing sentence, with `haipipe-insight-check`'s verdict on the cell
-  (a red GAP, a 🟡 STALE). As served at 0.6.0 the board does not read needs
-  yet: Work lists the page's tickets. That is the next server change.
+  join the three columns meet at: Logic's More lists the question's needs and
+  whether they are agreed; Work lists each need with what the page's
+  `answers.yaml` binds to it (its files, `made on the page` for a judge need,
+  a cited page, or a red `not bound`), then only the runs those needs are
+  bound to; Report shows the page's answer. A page without `answers.yaml`
+  falls back to its tickets.
 - **Report** shows the answering page the register cell names, labelled
-  "page <id>" (`haipipe-insight` `ref/report.md`): headline, one or two
-  sentences, strength and limit; the headline opens the whole page.
+  "page <id>" (`haipipe-insight` `ref/report.md`): its objective title, which
+  opens the whole page, then for a Page Face page (`folder-kind:` declared) the
+  Opening's answer sentences and its `strength:`.
   A refused cell says why in words (`Answered on Full`, `Too few rows`,
   `Defers to Full`, `No answer`).
 - Every audience table lists the same questions in the same order; only the

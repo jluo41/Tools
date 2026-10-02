@@ -154,6 +154,27 @@ class LinkedLiveTest(unittest.TestCase):
             self.assertTrue(canonical.is_file())
             self.assertEqual(legacy.read_bytes(), before)
 
+    def test_a_plain_scene_saves_through_a_folder_linked_in_at_the_root(self):
+        # the design workbench keeps its methods drawing under Tools/, which on one machine
+        # is a link to ../Tools-SPACE (JL 261002: the methods studio); a link deeper down,
+        # or a path that climbs out, is still refused
+        with tempfile.TemporaryDirectory() as tmp:
+            root, elsewhere = Path(tmp) / "SPACE", Path(tmp) / "Tools-SPACE"
+            (root / "proj").mkdir(parents=True)
+            scene = {"type": "excalidraw", "version": 2, "elements": [], "appState": {}, "files": {}}
+            write_scene(elsewhere / "ref" / "methods.excalidraw", scene)
+            (root / "Tools").symlink_to(elsewhere)
+            (root / "proj" / "deep").symlink_to(elsewhere)
+            live = Live(root)
+            box = {"id": "b", "type": "rectangle", "x": 0, "y": 0, "width": 10, "height": 10}
+            ok = live.save_excalidraw({"board": "Tools/ref/methods.excalidraw", "elements": [box]})
+            self.assertTrue(ok["ok"], ok)
+            self.assertEqual(read_scene(elsewhere / "ref" / "methods.excalidraw")["elements"][0]["id"], "b")
+            for rel in ("proj/deep/ref/methods.excalidraw", "../Tools-SPACE/ref/methods.excalidraw",
+                        "Tools/../../Tools-SPACE/ref/methods.excalidraw"):
+                refused = live.save_excalidraw({"board": rel, "elements": [box]})
+                self.assertFalse(refused["ok"], rel)
+
     def test_linked_save_refuses_a_flat_folded_page_scene(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

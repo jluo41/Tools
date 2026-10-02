@@ -11,50 +11,94 @@ A question, its work and its report have three different grains: a question
 is one ask, a task run computes many groupings for many questions, and one
 page may answer several questions. Joined only through the page (register
 cell → page → tickets), nothing says WHICH output answers WHICH part of the
-ask, so a page can cite real files that do not answer its question, and every
-gate still passes because every number traces. Evidence needs make the join
-explicit at the grain of the ask:
+ask, and work drifts toward whatever task already exists. Evidence needs make
+the join explicit at the grain of the ask, and the work spec makes the work
+follow the question rather than the other way round:
 
 ```text
-LOGIC    register   QK2 · What would answer it        E1 compute · E2 judge
-            │                                           │
-WORK     page       answers.yaml  QK2.E1 → results/<ticket>/<file> [fields]
-            │                                           │
-REPORT   page .md   "… the gain sits at or below zero [QK2.E1] …"
+LOGIC    register   QK2 · E1 compute + its work spec · E2 judge
+            │                     │
+WORK     page       answers.yaml  QK2.E1 → results/<ticket>/<spec output file>
+            │                     │
+REPORT   page       Evidence Item E01-VALUE-… · Need: QK2.E1 → the Bullet → the sentence
 ```
 
 One id, `<QID>.E<n>`, runs through all three. The question says what would
-answer it before any run exists; the work binds each need to the narrowest
-files that answer it; the report cites each need where it answers it.
+answer it and how it must be computed before any task is looked at; the work
+binds each need to the run that computes exactly that; the page plans one
+Evidence Item per need and adopts the sentences that realize it.
 
-## 1 · The needs, in the register (Logic)
+## 1 · The needs and their work specs, in the register (Logic)
 
 Under each question's `**What would answer it**:` paragraph, the register
-lists its needs, one line each:
+lists its needs, one line each. Every compute need carries its work spec on
+the indented lines below it:
 
 ```markdown
+**The ask**: <the question in one sentence>
 **What would answer it**: <one paragraph: the evidence in words>
 - E1 · compute · <what a run must produce> · pass: <what a result must show to count>
+    cut: <partition> | the cell's partition | cross
+    unit: <what one row is, e.g. one sent invitation>
+    measure: <the quantity the ask names>
+    by: <the grouping or the contrast>
+    uncertainty: <the interval or test, e.g. Wilson 95% interval per cell>
+    rivals: <the rivals adjusted for, or none>
+    output: <file named for the measure>.csv [<column>, …] ; <file>.json [<dotted.key>, …]
 - E2 · cite · <what is borrowed from a lower question> · from: QI3.E1
 - E3 · judge · <the reading the page must make> · from: E1, E2
 **Needs agreed**: ⬜
 ```
 
+**Hard rules: the question owns its run.** A plan is made for its ask, never
+for the tasks that happen to exist. These hold before any binding, and the
+check enforces each one mechanically:
+
 ```text
-compute   a number or table a run must produce. Binds to a page ticket and the
-          files of its result. Legal at Data, Information and Knowledge
-          (a Knowledge compute need is an adjudication test: a gain with its
-          uncertainty, an adjusted contrast, a held-out score, a size
-          calculation). `pass:` is required.
-cite      a need already answered for another question, named by its full id
-          (`from: QI3.E1`). Binds to the page(s) that bind that need. The
-          cited question's rung is the same or one below (Wisdom cites
-          Knowledge; the cross group's two exceptions stand, board-contract.md).
-judge     a reading the page makes from named needs (`from: E1, E2` or full
-          ids). Binds no file. Legal at Knowledge and Wisdom only: Data and
-          Information make no claims.
+1  one run, one question   a run's config lists the needs of ONE question; code may be
+                           shared, the run is the question's own, named for its measure
+2  coverage adds no need   a phrase of the ask is covered by an existing need, a partial
+                           (why it cannot close) or a refusal; a word the needs do not
+                           reach is a question for the review (is the ask one thing?),
+                           never a reason to add a need. The needs a question's asker
+                           wrote are kept; a carried question keeps its needs one for one
+3  needs form a logic      each need is one thing, and together they make one argument
+                           from the observed to the claim; "one thing" and "a logic" are
+                           review tests (haipipe-insight-question GI1 Q1, Q2) that
+                           propose a split or a merge for a person to sign
+4  propose before search   the drafter writes the run proposal (inputs, the computation
+                           in one sentence, the output file and its header) from the
+                           register and the extract's column list alone, before reading
+                           any task, config or result; the drafter has not read the tasks
+5  reuse only identical    an existing run is reused only when it already writes the
+                           proposed files and columns and nothing the ask does not name;
+                           fitting it by adding a column for another question is a new run
 ```
 
+A Data or Information ask states no cause ("does X move engagement"). The check
+flags a cause word in a Data or Information ask as a review note (Q4 rung); the
+question review proposes the rewording to an association ("does engagement
+differ by X") or a Knowledge successor with its adjusted contrast, and a person
+signs it. The ask is never reworded silently.
+
+```text
+compute   a number or table a run must produce. Legal at Data, Information and
+          Knowledge (a Knowledge compute need is an adjudication test: a gain with
+          its uncertainty, an adjusted contrast, a held-out score, a size
+          calculation). `pass:` and all seven spec keys are required.
+cite      a need already answered for another question, named by its full id
+          (`from: QI3.E1`). The cited question's rung is one below (Information
+          cites Data, Knowledge cites Information, Wisdom cites Knowledge); the
+          same rung only on a cross page, the board's two exceptions (the cross
+          contrast reads mirrored Information, the pooling verdict reads the
+          heterogeneity claim).
+judge     a reading the page makes from named needs (`from: E1, E2` or full ids).
+          Legal at Knowledge and Wisdom only: Data and Information make no claims.
+```
+
+- **The spec comes first.** It is written from the ask alone, before any task,
+  config or result is opened. It says what the computation IS; whether a task
+  already does it is decided afterwards, against the spec.
 - **One need, one thing.** Usually one to four per question. A rival a
   Knowledge question names ("…rather than age") is its own compute need (an
   adjusted contrast), never a sentence the page reasons away.
@@ -66,15 +110,26 @@ judge     a reading the page makes from named needs (`from: E1, E2` or full
   "how much would X gain", "separate A from B", "survive in every stratum":
   each names a computation, so the need is `compute` at its rung, whatever
   pages already exist.
-- **Agreement.** An agent may draft the needs; a person agrees them:
-  `**Needs agreed**: ✅ <initials> <YYMMDD>`. Agreeing fixes what counts as an
-  answer before work starts, as the Expected line fixes the prior.
-- **Frozen once bound.** After the first bound result lands, a need is never
-  edited in place: append `· retired: <reason>` and add a new id. A retired
-  need keeps its citations as history and is not checked.
-- A question with no need lines is **unplanned**: legal on a board made
-  before this contract, reported by the check, and closed by backfilling
-  needs from its prose.
+- **An extract-level property** (a column inventory, the catalog) is computed
+  once for the whole extract: its spec's `cut:` is `the whole extract`, and a
+  partition page may bind it.
+- **A refusal is computed.** "The extract has no field for this" or "the design
+  never varies this" is a compute need whose run shows the absence (a column
+  inventory, a probe of the sent text); a refusal read off another page is not
+  evidence.
+- **Agreement, by an independent agent.** One agent drafts the needs and
+  specs; a different agent that did not draft them reviews each against its ask
+  (does every forcing word have a compute need, does every spec compute what the
+  ask names, does every `pass:` admit a null) and either agrees them,
+  `**Needs agreed**: ✅ <YYMMDD>`, or returns fixes to the drafter. No person is a
+  gate on the plan. A board is read by the public, so the mark carries the date
+  and no name or initials. Agreeing fixes what counts as an answer, and how it is
+  computed, before work starts.
+- **Frozen once bound.** After the first bound result lands, a need or its spec
+  is never edited in place: append `· retired: <reason>` and add a new id.
+- A question with no need lines, or a compute need with no spec, is
+  **unplanned**: legal on a board made before this contract, reported by the
+  check, and closed by planning it.
 
 ## 2 · The binding, in the page folder (Work)
 
@@ -86,42 +141,68 @@ Each answering page folder holds `answers.yaml`, authored by the bind step
 QI4:
   E1:
     ticket: run_bNNjNNtNNrNN_<partition>_<task>
-    files: [<table>.csv]
-    fields: [<column the pass condition names>, …]
+    files: [<spec output file>.csv]
   E2:
     pages: [I03-<partition>]
 QK2:
-  E1: {ticket: run_bNNjNNtNNrNN_<partition>_<task>, files: [<table>.csv], fields: [ci_lo_pp, ci_hi_pp]}
+  E1: {ticket: run_bNNjNNtNNrNN_<partition>_<task>, files: [<spec output file>.csv]}
   E2: judge
-  E3: {refused: "<why no run can produce it here>"}
+  E3: {refused: "<why the answer is an absence>", ticket: run_bNNjNNtNNrNN_<partition>_<probe>, files: [<probe table>.csv]}
 ```
 
+- **The question's own run, or new work.** A compute need binds a run whose
+  config serves that question alone (hard rule 1) and that writes exactly the
+  proposed files and columns (hard rule 5). An existing task's code may be
+  reused through a new config of its own for the question; an existing run of
+  another question is never extended to fit. Otherwise a new task is built
+  from the proposal (`haipipe-task`, in the rung's Job). New computation is
+  released when the reviewing agent has agreed the need's spec; the bind step
+  never releases its own.
 - **compute** binds `ticket` (a file in the page's `runs/`, its result in
-  `results/<ticket>/`), `files` (the narrowest files that answer the need:
-  `rates_by_weekday.csv`, not the whole result) and optional `fields`
-  (columns of a CSV header, or dotted keys of a JSON file, that carry what
-  `pass:` names). `fields` is the mechanical fit test.
+  `results/<ticket>/`) and `files`, which include every spec output file. A
+  cross page that reads one run per partition binds `tickets: [<ticket>, …]`
+  instead; every listed ticket must hold the files. The
+  required columns are the spec's; an optional `fields:` list adds more.
 - **cite** binds `pages`; omitted, it resolves to the page the register names
   for the cited question on this page's partition.
 - **judge** binds the word `judge`.
-- **refused** binds a reason. Legal only on a cell that settles `🟡 … final` or
-  `🚫`; a ✅ cell has no refused need.
-- One run may serve many needs and many pages; one need binds where its
-  answer is. A task config's `answers:` names the questions its calling pages
-  bind, derived from `answers.yaml`; it is a cross-check, never the join.
+- **refused** binds a reason AND the probe run that shows it (`ticket`,
+  `files`). Legal only on a cell that settles `🟡 … final` or `🚫`.
+- **The called config lists the needs it serves**: `answers: [QK2.E1, QI4.E1]`,
+  one id per need any page binds to it. It is re-derived from the board's
+  `answers.yaml` files (`haipipe-insight-bind` ref/sync_config_answers.py) and
+  checked from the need's side; it is never the join.
+- One run serves one question's needs, on every page of that question; one
+  need binds where its answer is.
 
-## 3 · The citations, in the report (Report)
+## 3 · The report, through the page's Evidence Items (Report)
 
-The page cites each need it answers, at the sentence that answers it:
+The answering page is a `haipipe-page` Page Face written through its own flow
+(`ref/report.md`). Each compute or cite need becomes Evidence Items in the
+page's `draft/<stem>-evidence-items.md`: one item per bound file, every item of
+the need carrying the same `**Need**:` id. The plan cites each item from the
+Bullet that reads it:
 
 ```markdown
-One weekday sits <x>pp below the reference day beside the calendar trend [QI4.E1]
-(`results/run_bNNjNNtNNrNN_full_<task>/<table>.csv`).
+### E01-VALUE-<slug> · C2.P2.B1 · <what the item supplies>
+
+- **Need**: QK2.E1
+- **Artifact**: `results/<ticket>/<spec output file>` · <the columns read>
+- **Expected**: <the need's pass condition>
+- **Accept**: <the observable check>
+- **Supporting Runs**: Execution · bound · <ticket>
+- **Status**: landed
 ```
 
-- Every bound need of every question the page answers is cited at least once.
-- A cite need is cited by its own id or by the id it borrows (`[QI3.E1]`).
-- A judge need is cited where the reading is made, after its `from:` needs.
+- A need is **cited** when a Page sentence realizes (`<!-- realizes: … -->`) a
+  Bullet whose Evidence Item carries `**Need**:` with its id. A cite need's item
+  names the borrowed id too (`**Need**: QK2.E2 ← QI3.E1`).
+- A judge need has no item: its Bullet reads `Evidence: none · judge <QID>.E<n>
+  from E1, E2` and a realized sentence makes the reading.
+- The item's Artifact names a file the binding binds for that need; the two
+  never disagree.
+- An inline `[<QID>.E<n>]` tag in a sentence is also read, for pages written
+  before this contract; new pages keep ids out of the prose.
 - `results-read: <YYYY-MM-DDTHH:MM:SSZ>` in the page header records when the
   writer last read the page's results. A bound result whose `runtime.yaml`
   `ended:` is later makes the page **stale**: its reading is owed again.
@@ -129,22 +210,26 @@ One weekday sits <x>pp below the reference day beside the calendar trend [QI4.E1
 ## 4 · The check
 
 `haipipe-insight-check` (`ref/check_evidence.py <board>`) reads the registers,
-each answering page, its `answers.yaml`, tickets, results and text, and
-returns one verdict per register cell that names a page:
+each answering page, its `answers.yaml`, tickets, results, Evidence Items, plan
+and text, and the configs the tickets call, and returns one verdict per
+register cell that names a page:
 
 ```text
-OK          every need planned, bound, fit, cited and current
-GAP         a need is unbound, its ticket or file is missing, its run is not ok,
-            a field is absent, a citation is missing, or a kind breaks its rung
+OK          every need planned with its spec, bound, fit, cited and current
+GAP         a need or spec is incomplete, unbound, its ticket or file is missing,
+            its run is not ok, a spec column is absent, its config does not list
+            it, its cut is not the page's, a refusal has no probe run, a citation
+            is missing, or a kind breaks its rung
 STALE       a bound result ended after the page's results-read
 UNBOUND     the page has no answers.yaml entry for the question
-UNPLANNED   the question has no need lines (a board made before this contract)
+UNPLANNED   the question has no need lines, or a compute need has no spec
 ```
 
 A cell marked `✅` whose verdict is GAP, STALE or UNBOUND is an **overclaim**:
 the check exits 1. UNPLANNED is reported and fails only under `--strict`. The
 check is mechanical; a person or a different agent from the page's writer
-runs it (make and judge apart).
+runs it (make and judge apart). It does not judge the prose: that is the
+page's own CHECK (`ref/report.md`).
 
 ## 5 · Where each rung stands
 
@@ -163,9 +248,10 @@ never a WEAK claim.
 
 ## 6 · Backfilling a board made before this contract
 
-For each question: write its needs from the prose (`haipipe-insight-evidence-plan`),
-have a person agree them, bind each need on the answering page
-(`haipipe-insight-bind`, which commissions any missing run through
-`haipipe-task`), add the citations and `results-read:` to the page, then run
-the check. A cell the check finds overclaimed drops to `🟡` in the register
-until its page is rewritten.
+For each question: plan its needs and specs from the prose
+(`haipipe-insight-evidence-plan`), have an independent agent agree them, bind each need on
+the answering page (`haipipe-insight-bind`, which commissions any missing run
+through `haipipe-task`), sync the configs' `answers:`, rewrite the page through
+the `haipipe-page` flow (`ref/report.md`), then run both checks. A cell the
+check finds overclaimed drops to `🟡` in the register until its page is
+rewritten.

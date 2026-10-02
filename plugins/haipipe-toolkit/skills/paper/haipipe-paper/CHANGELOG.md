@@ -1,3 +1,7 @@
+## 1.5.1 · 2026-10-02 · Related Papers says why we keep a paper
+
+- "What the person sees": the Related Papers card now shows why the paper is kept (P-board `keep`, `bears on`; haipipe-paper-story 0.18.0) and the paper's logic beside its work (`logic-work.yaml`; haipipe-discovery 0.21.0, haipipe-workbench-paper 0.21.0).
+
 ## 1.5.0 · 2026-09-30 · The door names what the Workbench shows
 
 - New table "What the person sees": each Paper Workbench tab (Ideation; Story › Spine, RoadMap Draw, High-level logic + Low-level work, Related Papers; Sections; Delivery › LaTeX, Word, Cover letter, Rounds) and the skill that owns it, so a person naming a tab reaches its owner (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Workbench).

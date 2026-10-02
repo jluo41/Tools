@@ -3,6 +3,11 @@
 Read when scaffolding a board, answering a question, writing a report, or
 settling a register.
 
+A board made from 261002 on is a Prototype and an Instance
+(`prototype-contract.md`): the code sits in the Prototype's question folders,
+the Instance holds one page folder per question × partition, and status is
+computed. This file describes boards made before it, which keep their layout.
+
 ## One dataset, one board, one folder (JL 261001)
 
 An InsightBoard reads exactly one prepared extract. It lives in the Project's

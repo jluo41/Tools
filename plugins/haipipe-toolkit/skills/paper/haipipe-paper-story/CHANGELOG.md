@@ -1,3 +1,8 @@
+## 0.18.0 · 2026-10-02 · The P-board says why we keep a paper
+
+- Two optional P-board columns: `keep` (why this study keeps the paper, shown on the card as "Why we keep it") and `bears on` (this study's questions with one verdict each: supports, limits, contradicts, method, frames). JL 261002: "make the related works be something we should keep … add a table like its High Logic and Low Work".
+- The paper's own logic and work lives in its Paper Run's `logic-work.yaml` (haipipe-discovery 0.21.0), not in the Story, so every Story citing the Run reads the same account.
+
 ## 0.17.0 · 2026-09-30 · Story parts are §N; C-numbers are claims; draw mode
 
 - A Story part is written `§N` or by its name (§7, the Task Roadmap), as the Story file's own headings are, never `C1`-`C8`; `C1`, `C2` … are claim ids only, and `C1.P1.B1` stays the Page's Bullet address (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench, which shows Question N, Hypothesis 1a and Claim 1a). Swept through this skill, `ref/integration.md` and the other paper skills.

@@ -721,7 +721,12 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                 "under 110: status word, what stands, then `open:` with a short list or a count; "
                 "facts belong in States, reasons in Log")
 
-    if not re.search(r"^owner:\s*\S", text, re.M):
+    # An InsightBoard answering Page is read by the public and carries no
+    # person's name (haipipe-insight ref/report.md § What Insight adds), so its
+    # folder kind exempts it from the owner line.
+    answering = re.search(r"(?m)^folder-kind:\s*(?:data|information|knowledge|wisdom)\s*$",
+                          text.split("\n## ", 1)[0])
+    if not answering and not re.search(r"^owner:\s*\S", text, re.M):
         rep.add(ERROR, "no-owner", name, "no `owner:` line, so nobody is named as responsible")
 
     if imported_content is not None:

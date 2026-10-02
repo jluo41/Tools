@@ -49,7 +49,7 @@ basis: evidence-informed           # brief-only · evidence-informed
 mode: compose                      # compose · revise · brainstorm · theory-driven · challenge
 expected: a first-time reader can say who sent it and what to do after one read
 falsified: a cold reader cannot name the next step from the text alone
-because: FW01 · W1                 # the one insight rule it acts on · none
+because: W01-full · W1, W3          # the insight rows it acts on · none
 evidence:
 - handoff · ../../../A00_SMSR2Full-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
 acceptance:
@@ -63,14 +63,18 @@ acceptance:
 `inspiration`, `reference`, and `avoid` (`base` and `feedback` are written by
 revise runs). On screen a `handoff` reads "signed insight".
 
-`because` names the one insight rule the item acts on, as `<page id> · <row>`
-(`because: FW02 · W1`). The card's **Because** row prints that rule's DO / DO NOT
-sentence from the page, found among the item's `evidence` first, then on the same
-Insight board. `because: none`, or a `brief-only` item with no line, reads "AI
-idea, not from an insight". An `evidence-informed` item with no line reads "no rule
-named"; a rule not on the page reads "no such rule". A `challenge` item adds "if it
-loses, the rule holds". The design bundle csv carries the same line in its last
-column, `because`. The line is display only: a Commission does not pin it.
+`because` names the insight rows the item acts on, as `<page id> · <row>[, <row>]`,
+several pages split by `;` (`because: W01-full · W1, W3`; the older `FW02 · W1` still
+reads). The card's Rationale starts its **Evidence chain** at each named DO row and
+walks down the links the insight pages record on their `←` lines (Wisdom, Knowledge,
+Information, Data, each row quoted by its id); a named DO NOT row is a **Limit**. The
+rows are found among the item's `evidence` first, then on the same Insight board.
+`because: none`, or a `brief-only` item with no line, reads "AI idea, not from an
+insight". An `evidence-informed` item with no line starts at the DO rows of its cited
+Wisdom pages and says so; a row not on its page reads "no such row on the cited page".
+A `challenge` item adds "if it loses, the rule holds". The design bundle csv carries the
+first row in its last column, `because`. The line is display only: a Commission does
+not pin it.
 
 `expected` and `falsified` judge design quality. They may name what a later
 experiment will check, but Design Runs judge design quality only, so
@@ -120,7 +124,7 @@ Design Workbench presents a Design Folder page through three Spaces:
 | Space | Shows |
 |---|---|
 | Design Goal (key `goal`) | the board's `design-goal.md` (Aim, Venue, Rules, Resources, Leave out; owner skill `haipipe-design-goal`), the venue profile defaults, and the register's acceptance rules |
-| Design | the task, then one card per Design Item in four columns (Design · Rationale · Supporting work · Expectation); each card folds its Insight pages and its Runs (the item's Commission → Generate → Verify timeline), with Commission Release/Hold and Queue buttons |
+| Design | the task, then one card per Design Item in three columns (Design · Rationale · Evaluation); Rationale folds the Evidence chain and the Design elements, Design folds its Runs (the item's Commission → Generate → Verify timeline), with Commission Release/Hold and Queue buttons |
 | Delivery | each item whose independent Verify passed, word for word, plus a csv |
 
 A board presents two Spaces:
@@ -128,7 +132,7 @@ A board presents two Spaces:
 | Space | Shows |
 |---|---|
 | Design Tasks | the task list, the shared rules, and a csv |
-| Theory of Design | `haipipe-workbench-design/ref/design-theory.md` plus the board's `design-theory.md` |
+| Theory of Design | three general views: `ref/design-theory.md`, `ref/design-methods.md`, and the board's `design-papers.md` |
 
 Each Space has a Runs panel that reads
 `haipipe-design-workflow/references/run-cards.md`. The Workbench Table is

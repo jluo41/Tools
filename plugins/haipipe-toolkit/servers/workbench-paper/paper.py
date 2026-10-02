@@ -1366,6 +1366,8 @@ def _idea_card(d, i, x):
     rq = _first("research question", "question")
     hyp = _first("hypothesis", "one-sentence")
     label, sub = (rq, esc(x["title"])) if rq else (x["title"], esc(hyp))
+    if rq and " ".join(x["title"].split()).rstrip("?").lower() == " ".join(rq.split()).rstrip("?").lower():
+        sub = esc(hyp)        # the table's idea cell is the question itself: say the guess, not the question twice
     verdict = x.get("verdict") or "⬜ open"
     went = x.get("went") if x.get("went") not in (None, "", "—", "-") else ""
     rows = [(k, _field_html(v)) for k, v in substance]
@@ -1936,6 +1938,39 @@ def _yaml_block(text, block):
     return out
 
 
+def _scalar_yaml(v):
+    """One YAML scalar as `yaml.safe_dump` writes it: plain, 'single' ('' escapes) or "double"."""
+    v = v.strip()
+    if len(v) > 1 and v[0] == v[-1] == "'":
+        return v[1:-1].replace("''", "'")
+    if len(v) > 1 and v[0] == v[-1] == '"':
+        try:
+            return json.loads(v)
+        except ValueError:
+            return v[1:-1]
+    return v
+
+
+def logic_work_data(path):
+    """A Paper Run's logic-work.yaml (haipipe-discovery 0.20): top-level `key: value` scalars and
+    `key:` lists of `- item` strings, as the Discovery builder writes them. {} when absent."""
+    out, key = {}, None
+    for line in read(path).splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        m = re.match(r"^-\s+(.*)$", line) or re.match(r"^\s+-\s+(.*)$", line)
+        if m and key:
+            out.setdefault(key, [])
+            if isinstance(out[key], list):
+                out[key].append(_scalar_yaml(m.group(1)))
+            continue
+        m = re.match(r"^([\w-]+):\s*(.*)$", line)
+        if m:
+            key = m.group(1)
+            out[key] = _scalar_yaml(m.group(2)) if m.group(2).strip() else []
+    return out
+
+
 def paper_card_data(run):
     """What one Paper Run's Result folder says about its paper."""
     subj = _yaml_block(read(run / "runtime.yaml"), "subject")
@@ -1948,8 +1983,13 @@ def paper_card_data(run):
     doi = subj.get("doi", "")
     return {"title": subj.get("title", ""), "authors": subj.get("authors", ""), "venue": subj.get("venue", ""),
             "abstract": abstract, "pdf": (run / "paper.pdf") if (run / "paper.pdf").is_file() else None,
+            # other open PDFs the Run holds (a supplement, a peer-review file, an earlier version): linked, never
+            # shown as the paper, because they are not the article
+            "more_pdfs": sorted(x for x in run.glob("*.pdf") if x.name != "paper.pdf"),
             "publisher": (acc.get("links") or {}).get("publisher") or ("https://doi.org/" + doi if doi else ""),
-            "card": run / (run.name + ".md")}
+            "card": run / (run.name + ".md"),
+            # the paper's own logic and work, written by the Run's ticket (JL 261002)
+            "lw": logic_work_data(run / "logic-work.yaml")}
 
 
 def _first_author(authors):
@@ -1972,12 +2012,45 @@ def venue_name(d):
 
 def _short_venue(v):
     """`Nature Machine Intelligence 8, 220-233 (2026) · Article` → (`Nature Machine Intelligence`, `2026`);
-    `NeurIPS 2022 · Conference paper` → (`NeurIPS`, `2022`); `arXiv preprint 2001.08361 (2020)` → (`arXiv`, `2020`)."""
+    `NeurIPS 2022 · Conference paper` → (`NeurIPS`, `2022`); `arXiv preprint 2001.08361 (2020)` → (`arXiv`, `2020`);
+    `Nature 656(8126), 115-122 (2026)` → (`Nature`, `2026`): a parenthesized issue number is not a year."""
     v = v or ""
-    year = re.search(r"\((\d{4})\)", v) or re.search(r"\b((?:19|20)\d{2})\b", v)
+    year = re.search(r"\(((?:19|20)\d{2})\)", v) or re.search(r"\b((?:19|20)\d{2})\b", v)
     name = "arXiv" if v.startswith("arXiv") else re.sub(r"\s*\b(?:19|20)\d{2}\b", "", re.sub(
         r"\s+\d+,.*$", "", re.sub(r"\s*\(\d{4}\)", "", v.split(" · ")[0]))).strip()
     return name, year.group(1) if year else ""
+
+
+BEARS = (("support", "ok", "supports"), ("contradict", "bad", "contradicts"), ("limit", "warn", "limits"),
+         ("method", "acc", "method"), ("frame", "mut", "frames"))
+
+
+def _bears(cell):
+    """`Q1 limits; Q2 supports` → one chip per question, coloured by its verdict (JL 261002)."""
+    chips = []
+    for part in [x.strip() for x in re.split(r"[;,·]", cell or "") if x.strip()]:
+        m = re.match(r"^(\S+)\s+(.*)$", part)
+        q, verb = (m.group(1), m.group(2)) if m else (part, "")
+        cls, word = next(((c, w) for k, c, w in BEARS if k in verb.lower()), ("mut", verb or "bears on"))
+        chips.append('<span class="rp-bear rp-bear-%s"><b>%s</b> %s</span>' % (cls, esc(q), esc(word)))
+    return '<div class="rp-bears">%s</div>' % "".join(chips) if chips else ""
+
+
+def _lw_table(lw):
+    """The paper's own logic beside its work (JL 261002: "a table like its High Logic and Low
+    Work"): left what it asks, finds and contributes; right the data and method that do the
+    work. Read from the Run's logic-work.yaml; nothing is shown when the Run has none."""
+    if not lw.get("question"):
+        return ""
+    pill = lambda k: '<span class="item-kind">%s</span>' % esc(k)
+    item = lambda k, txt: '<div class="lw-c"><div class="lw-top">%s</div><div class="lw-body">%s</div></div>' % (pill(k), esc(txt))
+    lst = lambda k, xs: "".join(item("%s %d" % (k, i + 1), x) for i, x in enumerate(xs if isinstance(xs, list) else [xs]))
+    src = {"pdf": "the PDF", "full-text": "the full text", "supplement": "the supplement", "abstract": "the abstract only"}
+    head = _lw_row("", "Their logic", "Their work · read from %s" % esc(src.get(lw.get("read_from"), lw.get("read_from") or "?")), "lw-head")
+    rows = [_lw_row("", item("Question", lw["question"]), item("Data", lw.get("data", ""))),
+            _lw_row("", lst("Finding", lw.get("findings") or []), lst("Method", lw.get("method") or [])),
+            _lw_row("", item("Contribution", lw.get("contribution", "")), "")]
+    return '<div class="lw rp-lw">%s%s</div>' % (head, "".join(rows))
 
 
 def _paper_card(d, s, row):
@@ -2005,12 +2078,21 @@ def _paper_card(d, s, row):
     acts = [('<a href="%s" target="_blank" rel="noopener">Open the PDF in a new tab ↗</a>' % esc(url)) if url else "",
             ('<a href="%s" target="_blank" rel="noopener">Publisher page ↗</a>' % esc(m["publisher"])) if m.get("publisher") else "",
             _file_link(d, m["card"], "Paper Run ↗") if m.get("card") is not None and m["card"].is_file() else ""]
-    body = [('<p class="rp-why">%s</p>' % esc(_cell(heads, row, "why"))) if _cell(heads, row, "why") else "",
+    acts += ['<a href="%s" target="_blank" rel="noopener">%s ↗</a>' % (esc(_tree_url(d, x)), esc(x.stem.replace("-", " ").capitalize()))
+             for x in m.get("more_pdfs", [])]
+    # why OUR paper keeps this one (JL 261002): the P-board's `keep` cell, else its `why it matters`;
+    # `bears on` marks each of our questions it supports, limits or contradicts
+    keep, why = _cell(heads, row, "keep"), _cell(heads, row, "why")
+    body = [('<div class="rp-keep"><div class="rp-keep-h">Why we keep it</div><p>%s</p>%s</div>'
+             % (esc(keep), _bears(_cell(heads, row, "bears"))) if keep else
+             ('<p class="rp-why">%s</p>%s' % (esc(why), _bears(_cell(heads, row, "bears")))) if why else _bears(_cell(heads, row, "bears"))),
+            _lw_table(m.get("lw") or {}),
             '<div class="rp-acts">%s</div>' % "".join('<span>%s</span>' % a for a in acts if a)]
     if m.get("abstract"):
         body.append('<details class="rp-absd"><summary>Abstract</summary><p>%s</p></details>' % esc(m["abstract"]))
     body.append('<iframe class="rp-frame" title="%s" data-pdf="%s"></iframe>' % (esc("PDF · " + title), esc(url)) if url else
-                '<div class="rp-nopdf mut">No free full text. Read it on the publisher page; it may need a subscription.</div>')
+                ('<div class="rp-nopdf mut">No free full text of the article. The open files are linked above.</div>' if m.get("more_pdfs") else
+                 '<div class="rp-nopdf mut">No free full text. Read it on the publisher page; it may need a subscription.</div>'))
     return ('<details class="rp-card" data-key="%s">%s<div class="rp-body">%s</div></details>'
             % (esc(pid), summary, "".join(body)), bool(pdf), m.get("venue", ""))
 
@@ -2844,6 +2926,14 @@ a.bj-run:hover .idtag{{color:var(--acc);text-decoration:underline}}
 .rp-marks{{display:flex;gap:10px;flex:none}} .rp-q{{color:var(--acc);font-weight:600}}
 .rp-body{{padding:6px 14px 14px calc(14px + 1em + 6px)}}
 .rp-why{{font-size:14.5px;line-height:1.55;margin:4px 0 6px}}
+.rp-keep{{border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:8px;background:var(--soft);padding:8px 12px;margin:4px 0 10px}}
+.rp-keep-h{{font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}}
+.rp-keep>p{{font-size:14.5px;line-height:1.55;margin:4px 0 0}}
+.rp-bears{{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}}
+.rp-bear{{font-size:12.5px;padding:1px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card)}}
+.rp-bear-ok{{color:var(--ok)}} .rp-bear-warn{{color:var(--warn)}} .rp-bear-bad{{color:#c92a2a}} .rp-bear-acc{{color:var(--acc)}} .rp-bear-mut{{color:var(--mut)}}
+.rp-lw{{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:4px 0 10px}}
+.rp-lw .lw-row+.lw-row{{border-top:1px solid var(--line)}} .rp-lw .lw-c{{margin:0}} .rp-lw .lw-c+.lw-c{{margin-top:8px}}
 .rp-acts{{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}}
 .rp-absd>summary{{cursor:pointer;font-size:13.5px;color:var(--mut)}} .rp-absd>p{{font-size:14px;line-height:1.55;margin:6px 0 0}}
 .rp-nopdf{{font-size:13.5px;margin-top:8px}}

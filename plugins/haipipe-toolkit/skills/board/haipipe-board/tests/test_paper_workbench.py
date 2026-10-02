@@ -588,6 +588,51 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("No free full text.", p2)
             self.assertIn("no Paper Run at b01j01t01r09", rp)
 
+    def test_related_paper_card_shows_why_we_keep_it_and_its_logic_and_work(self):
+        """JL 261002: a related-paper card says why OUR paper keeps it (the P-board's `keep`
+        cell, with `bears on` marks per question) and shows the paper's own logic beside its
+        work, read from the Paper Run's logic-work.yaml, like Story › High-level logic."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            b = make_board(root)
+            story = b / "A1-Story" / "StoryA-desk-idea" / "StoryA-desk-idea.md"
+            story.write_text(story.read_text(encoding="utf-8") + (
+                "\n| P | paper | role | question | why it matters | keep | bears on | Discovery Run |\n"
+                "|---|---|---|---|---|---|---|---|\n"
+                "| P1 | Smith et al. 2020 | closest | all | A summary. | Our baseline: it never grades the field. "
+                "| RQ1 limits; RQ2 supports | b01.j01.t01.r01 |\n"
+                "| P2 | Jones 2021 | caution | RQ1 | A caution. |  |  | b01.j01.t01.r02 |\n"), encoding="utf-8")
+            res = root / "discoveries" / "b01_evidence_board" / "j01_landscape_inquiry" / "t01_prior_work" / "results"
+            r1, r2 = res / "r01_smith2020", res / "r02_jones2021"
+            r1.mkdir(parents=True, exist_ok=True)
+            r2.mkdir(parents=True, exist_ok=True)
+            (r1 / "runtime.yaml").write_text('subject:\n  title: "Traits"\n  authors: "Ann Smith"\n', encoding="utf-8")
+            (r1 / "logic-work.yaml").write_text(
+                "run: r01_smith2020\naddress: b01.j01.t01.r01\nread_from: pdf\nkind: empirical\n"
+                "question: Can a trait predict it?\ndata: '2,000 people, 3 sites'\n"
+                "method:\n- Survey the trait\n- 'Regress: the outcome on it'\n"
+                "findings:\n- \"r = 0.4, \\\"moderate\\\"\"\n- It holds out of sample\ncontribution: A trait measure\n",
+                encoding="utf-8")
+            (r2 / "runtime.yaml").write_text('subject:\n  title: "A caution"\n  authors: "Cy Jones"\n', encoding="utf-8")
+            page = render_paper(b, root, "/papers/Paper-Test/board.md")
+            rp = page[page.index('<div class="rp-list">'):page.index('<section class=runs-panel data-space="story"')]
+            p1 = rp[rp.index('data-key="P1"'):rp.index('data-key="P2"')]
+            self.assertIn('<div class="rp-keep"><div class="rp-keep-h">Why we keep it</div>'
+                          '<p>Our baseline: it never grades the field.</p>', p1)
+            self.assertNotIn("A summary.", p1)                     # `keep` wins over `why it matters`
+            self.assertIn('<span class="rp-bear rp-bear-warn"><b>RQ1</b> limits</span>', p1)
+            self.assertIn('<span class="rp-bear rp-bear-ok"><b>RQ2</b> supports</span>', p1)
+            self.assertIn('Their work · read from the PDF', p1)
+            for kind, text in (("Question", "Can a trait predict it?"), ("Data", "2,000 people, 3 sites"),
+                               ("Method 2", "Regress: the outcome on it"), ("Finding 1", 'r = 0.4, &quot;moderate&quot;'),
+                               ("Finding 2", "It holds out of sample"), ("Contribution", "A trait measure")):
+                self.assertIn('<span class="item-kind">%s</span></div><div class="lw-body">%s</div>' % (kind, text), p1)
+            self.assertLess(p1.index("Their logic"), p1.index('class="rp-acts"'))
+            p2 = rp[rp.index('data-key="P2"'):]
+            self.assertIn('<p class="rp-why">A caution.</p>', p2)   # no `keep`: the old line stays
+            self.assertNotIn("rp-lw", p2)                           # no logic-work.yaml: no table
+            self.assertNotIn("rp-bears", p2)
+
     def test_roster_headings_with_a_description_or_no_folder(self):
         from live.paper import board_pages
         groups = board_pages("## Pages\n\n### Story · the idea pool and the blueprint\n\nStory00-ideation.md\n\n"

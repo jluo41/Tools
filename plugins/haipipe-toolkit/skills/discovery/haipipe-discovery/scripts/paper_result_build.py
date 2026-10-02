@@ -14,6 +14,8 @@ cards read (haipipe-workbench-paper 0.16.0):
   results/<run>/facts.md              the identity and one fact per abstract sentence
   results/<run>/<run>.md              the Result card: question, readout, limits, reuse
   results/<run>/paper.pdf             a free copy, when one exists (--pdf-from, OpenAlex, then arXiv)
+  results/<run>/logic-work.yaml       the paper's own logic and work, when the Task holds the authored
+                                      readout scripts/readouts/<run>/logic-work.yaml
 
 The task's question comes from its discovery.yaml. Every path written is relative to
 the Task folder. Nothing here judges relevance: the readout and reuse are inputs.
@@ -57,6 +59,9 @@ def crossref(doi):
     journal, venue = html.unescape(journal), html.unescape(venue)
     title = re.sub(r"\s*</(?:sub|sup)>", "", re.sub(r"\s*<(?:sub|sup)>\s*", "", (m.get("title") or [""])[0]))  # HbA<sub>1C</sub> → HbA1C
     title = re.sub(r"[{}]", "", title)    # a deposited `{GS-Fuse}` keeps its case braces; a reader sees GS-Fuse
+    sub = ((m.get("subtitle") or [""])[0] or "").strip()
+    if sub and sub.lower() not in title.lower():     # a book's `Frame Innovation` + `Create New Thinking by Design`:
+        title = "%s: %s" % (title.rstrip(" :"), sub)  # its BibTeX entry carries both, and so should the card
     return {"title": html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", title))).strip(),
             "authors": authors, "first_family": fam, "year": year, "journal": journal, "venue": venue.strip(),
             "landing": ((m.get("resource") or {}).get("primary") or {}).get("URL") or "https://doi.org/" + doi,
@@ -81,6 +86,9 @@ def arxiv(aid):
     text = lambda tag: " ".join((e.findtext(tag, "", ns) or "").split())
     names = [" ".join((a.findtext("a:name", "", ns) or "").split()) for a in e.findall("a:author", ns)]
     year = int(text("a:published")[:4]) if text("a:published") else None
+    # arxiv.org/bibtex dates its entry by the LATEST version (<updated>), not the first posting,
+    # so the Bib year guard compares against that; the arXiv id itself is the identity check.
+    bib_year = int(text("a:updated")[:4]) if text("a:updated") else year
     # a conference with no DOI (ICLR, NeurIPS before its proceedings) is named only in the authors' comment
     said = re.search(r"(?i)\b(?:accepted|published)\s+(?:by|at|to|in|for)\s+(?:the\s+)?(.+?)\s*(?:[.;]|$)", text("x:comment"))
     venue = text("x:journal_ref") or (
@@ -89,7 +97,36 @@ def arxiv(aid):
     return {"title": text("a:title"), "authors": "; ".join(names),
             "first_family": (names[0].split()[-1] if names else "anon"), "year": year,
             "journal": "arXiv", "venue": venue, "landing": "https://arxiv.org/abs/" + aid,
-            "n_authors": len(names), "abstract": text("a:summary")}
+            "n_authors": len(names), "abstract": text("a:summary"), "bib_year": bib_year}
+
+
+# The paper's own logic and work (haipipe-discovery 0.20): what it asks, the data and method it
+# uses, what it finds and contributes. Authored by the Discovery creator after reading the paper,
+# kept at <task>/scripts/readouts/<run>/logic-work.yaml, and copied into the Result by the ticket.
+# It carries only the paper's own content; why a consumer keeps the paper stays on the consumer's side.
+LW_TEXT = ("question", "data", "contribution")
+LW_LIST = ("method", "findings")
+LW_READ = ("pdf", "full-text", "supplement", "abstract")
+
+
+def logic_work(task, run, address):
+    """Validate the authored readout and return the Result's logic-work.yaml text, or None."""
+    src = task / "scripts" / "readouts" / run / "logic-work.yaml"
+    if not src.is_file():
+        return None
+    import yaml          # only a Run that has a readout needs PyYAML
+    spec = yaml.safe_load(src.read_text(encoding="utf-8")) or {}
+    bad = [k for k in LW_TEXT if not str(spec.get(k) or "").strip()]
+    bad += [k for k in LW_LIST if not (isinstance(spec.get(k), list) and all(str(x).strip() for x in spec[k]) and spec[k])]
+    if spec.get("read_from") not in LW_READ:
+        bad.append("read_from (one of %s)" % ", ".join(LW_READ))
+    if bad:
+        sys.exit("logic-work readout %s is missing or malformed: %s" % (src, ", ".join(bad)))
+    out = {"run": run, "address": address, "source": str(src.relative_to(task)),
+           "read_from": spec["read_from"], "kind": spec.get("kind", ""),
+           "question": spec["question"], "data": spec["data"], "method": list(spec["method"]),
+           "findings": list(spec["findings"]), "contribution": spec["contribution"]}
+    return yaml.safe_dump(out, sort_keys=False, allow_unicode=True, width=1000)
 
 
 def q(s):
@@ -116,9 +153,42 @@ def who(meta):
     return fam if meta["n_authors"] == 1 else ("%s and co-authors" % fam if meta["n_authors"] == 2 else "%s et al." % fam)
 
 
-def save_pdf(result, pdf_from, doi, space_root, aid=""):
+def _pdf_text(path, pages=3):
+    """The first pages' text (pypdf, else pdftotext), or None when neither can read it."""
+    try:
+        from pypdf import PdfReader
+        reader = PdfReader(str(path))
+        return len(reader.pages), " ".join((pg.extract_text() or "") for pg in reader.pages[:pages])
+    except Exception:
+        pass
+    if shutil.which("pdftotext") and shutil.which("pdfinfo"):
+        info = subprocess.run(["pdfinfo", str(path)], capture_output=True, text=True).stdout
+        n = re.search(r"(?m)^Pages:\s+(\d+)", info)
+        text = subprocess.run(["pdftotext", "-f", "1", "-l", str(pages), str(path), "-"],
+                              capture_output=True, text=True).stdout
+        return (int(n.group(1)) if n else 0), text
+    return None
+
+
+def is_the_paper(path, title):
+    """A listed free copy can be something else: OpenAlex lists a library's one-page table of
+    contents as the open copy of a book. The copy must have at least two pages and carry most
+    of the title's words (60 percent, of words over three letters) on its first pages."""
+    got = _pdf_text(path)
+    if got is None:                 # nothing here can read a PDF: keep it, unchecked
+        return True
+    n, text = got
+    words = [w for w in re.findall(r"[a-z0-9]+", (title or "").lower()) if len(w) > 3]
+    have = set(re.findall(r"[a-z0-9]+", text.lower()))
+    need = -(-len(words) * 3 // 5)  # ceil(60%)
+    return n >= 2 and sum(w in have for w in words) >= need
+
+
+def save_pdf(result, pdf_from, doi, space_root, aid="", pmcid="", title=""):
     """A free copy as paper.pdf: a file already on disk, else OpenAlex's open-access PDF,
-    else the arXiv preprint. Returns the local_pdf record or None."""
+    else the arXiv preprint, else Europe PMC's copy of a PubMed Central article (a
+    publisher that refuses a script, such as Science Advances, still deposits there).
+    Returns the local_pdf record or None."""
     dest = result / "paper.pdf"
     if pdf_from:
         src = (space_root / pdf_from).resolve()
@@ -131,6 +201,9 @@ def save_pdf(result, pdf_from, doi, space_root, aid=""):
     if aid:      # the arXiv copy is free for every arXiv paper; tried after OpenAlex's
         w.setdefault("oa_locations", []).append({"pdf_url": "https://arxiv.org/pdf/" + aid,
                                                  "version": "submittedVersion"})
+    if pmcid:    # last: the PubMed Central deposit, rendered by Europe PMC
+        w.setdefault("oa_locations", []).append({"pdf_url": "https://europepmc.org/api/getPdf?pmcid=%s" % pmcid,
+                                                 "version": "publishedVersion"})
     for loc in [w.get("best_oa_location")] + list(w.get("oa_locations") or []):
         url = (loc or {}).get("pdf_url")
         if not url:
@@ -141,6 +214,9 @@ def save_pdf(result, pdf_from, doi, space_root, aid=""):
             continue
         if data[:4] == b"%PDF":
             dest.write_bytes(data)
+            if title and not is_the_paper(dest, title):
+                dest.unlink()
+                continue
             ver = ("preprint" if (loc.get("version") == "submittedVersion" or "rxiv" in url) else
                    "accepted" if loc.get("version") == "acceptedVersion" else "published")
             return {"path": "paper.pdf", "version": ver, "source": url}
@@ -163,6 +239,10 @@ def main():
                     help="verbatim BibTeX source; choose dblp for a confirmed conference/journal record")
     ap.add_argument("--dblp-bib-file", type=Path, help="browser-saved exact-record dblp .bib export")
     ap.add_argument("--dblp-record", help="the exact https://dblp.org/rec/... venue record URL")
+    ap.add_argument("--bib-key", default="", help="a citation key in place of the exporter's, when it "
+                                                   "collides with another Result's in this Task")
+    ap.add_argument("--set-aside-abstract", default="", metavar="REASON",
+                    help="the retrieved abstract is not this paper's (say why); the Run stays metadata-only")
     a = ap.parse_args()
     if a.bib_from == "dblp" and (not a.dblp_bib_file or not a.dblp_record):
         ap.error("--bib-from dblp requires --dblp-bib-file and --dblp-record")
@@ -197,6 +277,10 @@ def main():
     subprocess.run([sys.executable, str(HERE / "paper_source_access.py"), "--doi", a.doi, "--title", meta["title"],
                     "--bib-url", bib_url, "--output-dir", str(result)], check=True, stdout=subprocess.DEVNULL)
     sa = json.loads((result / "source-access.json").read_text(encoding="utf-8"))
+    if a.set_aside_abstract:            # a person read the retrieved text and found it is not this paper's
+        sa["abstract"] = {"source": (sa.get("abstract") or {}).get("source"), "text": None,
+                          "set_aside": a.set_aside_abstract}
+        (result / "abstract.md").unlink(missing_ok=True)
     abstract = (sa.get("abstract") or {}).get("text") or ""
     abs_src = "OpenAlex" if "openalex.org" in ((sa.get("abstract") or {}).get("source") or "") else "PubMed"
     if not abstract and aid:                # no PubMed abstract: a machine-learning paper's is on arXiv
@@ -206,7 +290,8 @@ def main():
         (result / "abstract.md").write_text("# Retrieved abstract\n\nSource: https://arxiv.org/abs/%s\n\n%s\n"
                                             % (aid, abstract), encoding="utf-8")
     depth = "abstract" if abstract else "metadata-only"
-    pdf = save_pdf(result, a.pdf_from, a.doi, space_root, aid)
+    pdf = save_pdf(result, a.pdf_from, a.doi, space_root, aid, (sa.get("identifiers") or {}).get("pmcid") or "",
+                   meta["title"])
     sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "pending",
                             "locator_status": "complete" if abstract else "pending",
                             "depth_note": ("The Run reads the %s abstract. The full text was not read." % abs_src
@@ -214,6 +299,14 @@ def main():
     if pdf:
         sa["local_pdf"] = pdf
     (result / "source-access.json").write_text(json.dumps(sa, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # paper_source_access.py wrote the human summary before this Run read the abstract;
+    # carry the updated retrieval state into it so the .md never disagrees with the .json.
+    access_md = (result / "source-access.md").read_text(encoding="utf-8")
+    for label, key in (("Reading depth", "reading_depth"), ("Claim support", "claim_support"),
+                       ("Locator", "locator_status")):
+        access_md = re.sub(r"(?m)^- \*\*%s:\*\* .*$" % label,
+                           lambda _m, label=label, key=key: "- **%s:** %s" % (label, sa["retrieval"][key]), access_md)
+    (result / "source-access.md").write_text(access_md, encoding="utf-8")
     if pdf:
         with (result / "source-access.md").open("a", encoding="utf-8") as f:
             f.write("\n- **Local copy:** paper.pdf (%s), source %s\n" % (pdf["version"], pdf["source"]))
@@ -249,7 +342,8 @@ def main():
         "  claim_support: %s" % ("supported" if abstract else "pending"),
         "  locator_status: %s" % ("complete" if abstract else "pending"),
         "  scope_note: %s" % q("Only the %s abstract was read; every fact is a sentence of it. No full-text claim is made."
-                               % abs_src if abstract else "No abstract was available; the card rests on metadata only."),
+                               % abs_src if abstract else "The retrieved abstract was set aside: %s" % a.set_aside_abstract
+                               if a.set_aside_abstract else "No abstract was available; the card rests on metadata only."),
         "worker:",
         "  kind: api",
         "  name: %s" % q("%s + %s + OpenAlex; haipipe-discovery scripts/paper_result_build.py"
@@ -272,10 +366,13 @@ def main():
     ident = (["--dblp-bib-file", str(a.dblp_bib_file), "--dblp-record", a.dblp_record,
               "--expected-doi", a.doi] if a.bib_from == "dblp" else
              ["--arxiv", aid] if (id_src == "arXiv" or a.bib_from == "arxiv") else ["--doi", a.doi])
+    arxiv_bib = id_src == "arXiv" or a.bib_from == "arxiv"
+    bib_year = ((ax or arxiv(aid)).get("bib_year") if arxiv_bib and aid else None) or meta["year"]
     bib = subprocess.run([sys.executable, str(HERE / "paper_bib_fetch.py")] + ident + ["--title", meta["title"],
                           "--expected-first-author", meta["first_family"],
                           "--expected-venue", meta["venue"], "--result-dir", str(result)] +
-                         (["--expected-year", str(meta["year"])] if meta["year"] else []),
+                         (["--key", a.bib_key] if a.bib_key else []) +
+                         (["--expected-year", str(bib_year)] if bib_year else []),
                          stdout=subprocess.PIPE, text=True)
     try:
         bib_review = json.loads(bib.stdout or "{}")
@@ -322,12 +419,19 @@ def main():
         "- Claim support: %s." % ("supported for the abstract only; nothing about the full text is claimed" if abstract else "not assessed"),
         "- Locator: %s." % ("complete; each fact in `facts.md` names its abstract sentence" if abstract else "metadata only"), "",
         "## Limits", "",
-        "Abstract depth only; the paper body was not read%s. Numbers and claims are the authors' own." % (
-            ", even though a local PDF is saved" if pdf else ""), "",
+        ("Abstract depth only; the paper body was not read%s. Numbers and claims are the authors' own." % (
+            ", even though a local PDF is saved" if pdf else "") if abstract else
+         "Metadata only; neither the abstract nor the paper body was read%s, so this Result supports no "
+         "claim about the paper's content." % (", even though a local PDF is saved" if pdf else "")), "",
         "## Reuse", "", a.reuse, "",
     ])
     (result / (a.run + ".md")).write_text(card, encoding="utf-8")
-    print("built %s · %s · %s · %s" % (a.address, cite, depth, ("pdf " + pdf["version"]) if pdf else "no pdf"))
+    lw = logic_work(task, a.run, a.address)
+    (result / "logic-work.yaml").unlink(missing_ok=True)
+    if lw:
+        (result / "logic-work.yaml").write_text(lw, encoding="utf-8")
+    print("built %s · %s · %s · %s%s" % (a.address, cite, depth, ("pdf " + pdf["version"]) if pdf else "no pdf",
+                                        " · logic-work" if lw else ""))
 
 
 if __name__ == "__main__":

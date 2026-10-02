@@ -5,15 +5,16 @@ description: >-
   the 🔎 Insight Board, one dataset and four Spaces (Scope · Insight · Check ·
   Delivery), with Insight › Questions as one table per partition in three
   columns (Logic: the questions at D, I, K, W; Work: the answering page's
-  tickets and runs; Report: the answering page) and a
+  tickets and runs; Report: the answering page), Scope › Methods (discovery
+  and design method cards with their papers), and a
   Runs panel beside each Space. A run or a page opens in a pop-out; there is no
   page-level workbench. Read-only over the board on disk; every write stays with
   haipipe-insight and haipipe-insight-workflow. Trigger: insight tab, insight
   board tab, insight workbench, show the register, which cell answers this
   page, insight gates, /haipipe-workbench-insight.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-01"
+  version: "0.10.0"
+  last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -66,12 +67,40 @@ the routes     /_board/insight-board?path=<board>/board.md&file=board.md    the 
 One dataset, four Spaces; `ref/insight-board.md` has the contract. Insight ›
 Questions is one table per partition in three columns: Logic, the questions
 asked at Data, Information, Knowledge and Wisdom, by level and number (no
-QD/QI/QK/QW codes on screen); Work, the runs that answer them, read from the
-answering page's `runs/` tickets first and falling back to each task config's
-`answers:` line; Report, the answering page itself, labelled "page <id>"
+QD/QI/QK/QW codes on screen); Work, the runs that answer them: each evidence need with what the answering page's
+`answers.yaml` binds to it, then only the runs those needs use (a page without
+bindings falls back to its `runs/` tickets, then to each task config's
+`answers:` line); Report, the answering page itself, labelled "page <id>"
 (`haipipe-insight` `ref/report.md`). Check Space reads handoff eligibility
 from exact owner receipts (`insight_handoff.py`, `workflow/handoff.yaml`) and
 never grants it.
+
+## 🧬 A Prototype and Instance board
+
+A board made the Prototype way (`../haipipe-insight/ref/prototype-contract.md`)
+is drawn by the same renderer: `servers/workbench-insight/instance_reader.py`
+reads it into the snapshot the board already renders, and nothing on screen
+changes. A question's Logic cell shows its carried short question and name,
+and More shows the ask, Why now, What would answer it, any other carried field
+and its live needs; the Dataset view shows `0-Meta/meta.md`, the meta page the
+Prototype was carried with; a cell's mark is computed by
+`haipipe-insight-check` `ref/check_instance.py`; a Work line opens one
+partition's run.
+
+## 📚 Scope › Methods
+
+A Scope tab beside Dataset, Partitions and Questions (JL 261002: how a question will
+be answered is set up before any run, with the data and the cuts), with four views:
+Discovery methods (how an answer is found from data), Design methods (how an inquiry
+is designed before any data is read), Methods studio and Papers. It reads
+`ref/insight-discovery-methods.md`, `ref/insight-design-methods.md`, their cards in
+`ref/methods/` and `ref/insight-papers.md`, and renders them with the Design
+workbench's card and paper renderers (`designboard.method_cards`, `papers_page`), so a
+card and a paper card look the same in both workbenches. Methods studio is the
+Design board's Theory › Methods studio for Insight: `ref/insight-methods.excalidraw`
+in the self-hosted Excalidraw canvas, editable, saved back to that file, with Open
+full screen; the frame loads only when the view is shown. The Scope Runs panel offers
+Add a method and Add a paper (`haipipe-discovery`).
 
 ## 🪟 Pop-outs, no page-level workbench
 
@@ -93,6 +122,8 @@ server derives it from `path=`.
 
 - `ref/insight-board.md` · one dataset, four Spaces, the High/Low table, the pop-outs
 - `ref/workbench-table.md` · the Workbench Table (`table-workbench` shape, `--check` passes)
+- `ref/insight-discovery-methods.md`, `ref/insight-design-methods.md`, `ref/methods/` · the method cards
+- `ref/insight-papers.md` · the papers behind the methods (verified DOIs)
 - `../haipipe-insight/ref/evidence-needs.md` · the join the Work column will show per need
 - `../../../servers/workbench-insight/studio/insight-workbench-design.excalidraw` · the design drawing
 - `../haipipe-insight/SKILL.md` · the Insight door and its vocabulary

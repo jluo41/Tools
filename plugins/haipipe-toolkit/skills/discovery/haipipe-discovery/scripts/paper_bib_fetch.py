@@ -616,6 +616,7 @@ def build_bib_block(
     fetched_at: str,
     verification: str | None,
     record: dict[str, Any] | None = None,
+    key_from: str | None = None,
 ) -> str:
     lines = [
         "bib:",
@@ -625,6 +626,8 @@ def build_bib_block(
         f"  channel: {channel}",
         f"  fetched_at: {fetched_at!r}".replace("'", '"'),
     ]
+    if key_from:    # the exporter's own key, renamed with --key; every field is still verbatim
+        lines.append(f"  key_from: {key_from!r}".replace("'", '"'))
     # The accepted record's own type/publisher/year, so a reviewer can see a
     # same-title decoy without re-querying anything.
     if record and record.get("state") == "found":
@@ -732,9 +735,17 @@ def main() -> int:
         help="Refuse on a warning too. Off by default: an arXiv preprint has no "
         "DOI, so the no-DOI warning must not block the commonest fetch.",
     )
+    parser.add_argument(
+        "--key",
+        help="Citation key to use instead of the exporter's, when two papers in one Task get the "
+        "same key (Crossref keys both of an author's 2019 papers `O_Cathain_2019`). Only the key "
+        "changes; the receipt keeps the exporter's key as key_from.",
+    )
     parser.add_argument("--no-runtime", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    if args.key and not re.fullmatch(r"[A-Za-z][A-Za-z0-9_:.-]*", args.key):
+        parser.error("--key must be a plain citation key (letters, digits, _ : . -)")
 
     if args.resolve_title:
         channels, candidates = propose_titles(args.resolve_title, args.timeout)
@@ -865,6 +876,14 @@ def main() -> int:
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0 if args.dry_run and not errors else (4 if blocked else 0)
 
+    key_from = None
+    if args.key:
+        head = re.search(r"@\w+\s*\{\s*([^,\s]+)", bibtex)
+        if head and head.group(1) != args.key:
+            key_from = head.group(1)
+            bibtex = bibtex[: head.start(1)] + args.key + bibtex[head.end(1) :]
+            summary["key"] = {"from": key_from, "to": args.key}
+
     if args.result_dir:
         bib_path = args.result_dir / f"{args.result_dir.name}.bib"
         runtime_path = args.result_dir / "runtime.yaml"
@@ -886,6 +905,7 @@ def main() -> int:
             fetched_at=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
             verification=keep,
             record=record,
+            key_from=key_from,
         )
         summary["runtime"] = stamp_runtime(runtime_path, block, keep_verification=keep)
     print(json.dumps(summary, ensure_ascii=False, indent=2))

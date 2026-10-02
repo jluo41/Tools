@@ -40,11 +40,11 @@ card's skill. A `(new)` name is planned and not built yet.
 
 ## Board · Theory of Design
 
-🔘 BUTTON   Add a theory · Theory · - · views domain
+🔘 BUTTON   Add a paper · Theory · - · views papers
 🤖 AGENT    haipipe-discovery-orchestrator-agent
-🧩 SKILL    haipipe-design-theory (new)
+🧩 SKILL    haipipe-discovery
 ✍️ SIGNS    the source check
-💬 PROMPT   /haipipe-design-theory {board}: add one theory a design here could rest on to the board's design-theory.md: what it says, the one variable it moves and a checked published source. Show me the row first.
+💬 PROMPT   /haipipe-discovery add one paper behind this board's design methods as a Paper Run in the Project's Discovery, check its record (title, authors, year, journal, DOI), then add its row to the design workbench's ref/design-papers.md (group · role · key · paper · venue · doi · why here · pdf); when the Run saved a free copy under an open license (CC BY), copy it into ref/papers/, name it in the row's pdf cell and list it in ref/papers/README.md. Show me the row first.
 
 
 ## Page · Design Goal · the five blocks of the board's design-goal.md
@@ -72,6 +72,12 @@ card's skill. A `(new)` name is planned and not built yet.
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-design-goal resources for {page}: list what the designer may draw on (starting text, past designs and what became of them, theory, budget) in the design-goal.md beside {board}, each with its source.
+
+🔘 BUTTON   Add a theory · Goal · - · views resources
+🤖 AGENT    haipipe-discovery-orchestrator-agent
+🧩 SKILL    haipipe-design-theory (new)
+✍️ SIGNS    the source check
+💬 PROMPT   /haipipe-design-theory {board}: add one theory a design here could rest on to the board's design-theory.md: what it says, the one variable it moves and a checked published source. Show me the row first.
 
 🔘 BUTTON   Set what to leave out · Goal · - · views leave-out
 🤖 AGENT    haipipe-designer-agent

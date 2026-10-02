@@ -11,8 +11,8 @@ description: >-
   logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
   /haipipe-paper-story.
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-09-30"
+  version: "0.18.0"
+  last_updated: "2026-10-02"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -305,7 +305,7 @@ stands beside, one row each, each held as a Discovery Paper Run (a §6 row names
 Discovery Task that holds them):
 
 ```text
-P | paper | role | question | why it matters | Discovery Run
+P | paper | role | question | why it matters | keep | bears on | Discovery Run
 ```
 
 `role` is `closest`, `question`, `background` or `caution`; `question` is an RQ id
@@ -316,6 +316,16 @@ line says in plain words what the paper shows for this study, from what was read
 abstract, or the PDF when the row says so). The Paper Workbench draws the P-board as
 Story › Related Papers: the target venue's papers first, then other venues, one card
 per row with the Run's `paper.pdf` inside.
+
+`keep` and `bears on` are optional (JL 261002: "make the related works be something we
+should keep"). `keep` says why THIS study keeps the paper: what it takes from it, or
+what it must answer. It is about this study, not a summary of the paper, and the card
+shows it as "Why we keep it" in place of the why line. `bears on` marks this study's
+questions, separated by `;`, each with one verdict: `supports`, `limits`,
+`contradicts`, `method` (a method borrowed) or `frames`, as in `RQ1 limits; RQ2
+supports`. The paper's own logic and work is not written here: it is the Paper Run's
+`logic-work.yaml` (haipipe-discovery 0.21.0), so every Story that cites the Run shows
+the same reading.
 
 “Established” requires inspected evidence with adequate scope. User-reported
 availability is a labeled planning input until verified; a path or receipt

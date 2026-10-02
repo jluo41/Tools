@@ -6,7 +6,7 @@ description: >-
   is the only evidence a DesignBoard may bind. Trigger: insight wisdom,
   counsel, design handoff, folder-kind wisdom, /haipipe-insight-wisdom.
 metadata:
-  version: "1.8.0"
+  version: "1.9.0"
   last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: wisdom
@@ -17,7 +17,7 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Context → Knowledge Cited → Counsel → Forbidden Overreach → Design Handoff"
+    shape: "Page Face (haipipe-page flow): Content one division per need (cite: the Knowledge relied on; judge: counsel, forbidden overreach), then the Design Handoff division"
 ---
 
 # /haipipe-insight-wisdom · counsel, then hand off
@@ -55,8 +55,11 @@ external-parent assertion. The second form is evidence input, not a handoff.
 
 ## Page Face
 
-Use `Context → Knowledge Cited → Counsel → Forbidden Overreach → Design
-Handoff`. Every `W<n>` names the Knowledge page it rests on, by question id
+The page is a `haipipe-page` Page Face written through that skill's flow
+(`../../haipipe-insight/ref/report.md` § The flow). Its Content follows its
+needs: the cite needs name the Knowledge relied on, the judge needs give the
+counsel and the forbidden overreach, and the last division is the Design
+Handoff. Every `W<n>` names the Knowledge page it rests on, by question id
 and partition (`← QK2 · full`, the page its register cell names), and cites
 the needs it answers (`[QW1.E1]`), bound in the page's `answers.yaml`; on a board made before page tickets, an exact Page
 v2 `PARENTS` record for its K page. For a bridge Folder, `Knowledge Cited`

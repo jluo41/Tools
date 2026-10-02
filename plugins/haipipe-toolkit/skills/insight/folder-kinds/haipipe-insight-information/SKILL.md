@@ -8,7 +8,7 @@ description: >-
   says what they show. Trigger: insight information, derive pattern,
   folder-kind information, /haipipe-insight-information.
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: information
@@ -17,7 +17,7 @@ metadata:
   legacy_page_type: information
   group-token: "I"
   report:
-    shape: "headline (the pattern) → the numbers that show it → nulls and contradictions → limit"
+    shape: "Page Face: objective title; Opening answers (the pattern); Content one division per need: the numbers → nulls and contradictions → limit"
 ---
 
 # /haipipe-insight-information · derive the pattern
@@ -42,11 +42,10 @@ Knowledge claim and does not belong here. Covariates are cuts inside a run
 
 ## The run · Work
 
-- A task in a `j2N_information_<topic>` Job of the Project's DIKW Block. One
-  computation answers several questions when they differ only in a `by`
-  column (`t01_rates` answers "rate by group", "by age band", "by weekday"…):
-  the config's `answers:` lists all of them, and each question binds only the
-  files of its own grouping.
+- A task in a `j2N_information_<topic>` Job of the Project's DIKW Block,
+  chosen or built from each need's work spec, never the other way round. One
+  run may serve several needs when each spec is met exactly by its own output
+  file (a grouping per need); the config's `answers:` lists those need ids.
 - One config per dataset × partition, stem `rNN_<dataset>_<cut>`; the
   partition is the config's `population.where`, read against MT00's
   partition register. Thresholds come from the Job's shared file, never
@@ -56,9 +55,9 @@ Knowledge claim and does not belong here. Covariates are cuts inside a run
   page's `results/<ticket>/` and `RUN_TICKET` to itself. One task run may feed
   several pages, each through its own ticket and result.
 - The join is the evidence need: the page's `answers.yaml` binds each compute
-  need (`QI<n>.E<k>`) to the narrowest files that answer it, with the fields
-  its `pass:` names: an interval column when it asks uncertainty, a trend term
-  when it asks to separate two causes (`../../haipipe-insight/ref/evidence-needs.md`). A run that computes
+  need (`QI<n>.E<k>`) to the run that computes its work spec exactly: an
+  interval column when the spec asks uncertainty, a trend term when it asks to
+  separate two causes (`../../haipipe-insight/ref/evidence-needs.md`). A run that computes
   the topic but not what `pass:` names does not fit; commission the missing
   computation (`haipipe-insight-bind`). `answers:` is a cross-check, never the join.
 - The result keeps the receipt, the aggregate tables (with counts and
@@ -71,12 +70,16 @@ Knowledge claim and does not belong here. Covariates are cuts inside a run
 
 ## The page · Report
 
-The page's `.md` is the report, written by a Report run from its own results. Shape: headline (the pattern,
-in plain words: "Weekday barely moves clicks") → the numbers that show it, each
-cited as `results/<ticket>/<file>` and shown by an embedded `fig_*.png` → nulls and contradictions, never silently
-empty → the limit (unit, window, floor). Each need is cited where it is
-answered (`[QI4.E1]`). It asserts no strength, cause or recommendation. Its
-`runs:` header names every ticket it read and `results-read:` when.
+The page is a `haipipe-page` Page Face written through that skill's flow
+(`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
+adopt`, `page.py health`, a page CHECK by another agent. The Opening asks the
+question in plain words and answers with the pattern ("Weekday barely moves
+clicks"); Content has one division per need: the numbers that show it, read
+from the need's bound files and shown by the run's figures, then nulls and
+contradictions, never silently empty, then the limit (unit, window, floor).
+Each need is one Evidence Item carrying `**Need**:`; no id appears in the
+prose. It asserts no strength, cause or recommendation. The header carries
+`answers:` and `results-read:`.
 
 ## Gate and closure
 

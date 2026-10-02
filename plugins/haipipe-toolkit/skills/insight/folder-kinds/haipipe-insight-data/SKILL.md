@@ -9,7 +9,7 @@ description: >-
   data, observations, Data, folder-kind data, legacy page-type data,
   /haipipe-insight-data.
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: data
@@ -18,7 +18,7 @@ metadata:
   legacy_page_type: data
   group-token: "D"
   report:
-    shape: "headline → what was observed (counts, unit, window) → coverage and gaps"
+    shape: "Page Face: objective title; Opening answers (the observation); Content one division per need: counts, unit, window → coverage and gaps"
 ---
 
 # /haipipe-insight-data · record what was observed
@@ -47,16 +47,17 @@ Information.
   shape, catalogs, balance checks). The task is dataset-neutral; one config
   per dataset × partition, stem `rNN_<dataset>_<cut>`.
 - The config names the board's extract (`input.parquet_path`), the cut
-  (`population.where`) and the questions its calling pages bind
-  (`answers: [QD1]`, derived from their `answers.yaml`).
+  (`population.where`) and the needs its calling pages bind
+  (`answers: [QD1.E1]`, re-derived from their `answers.yaml`).
 - The answering page calls it through its own ticket
   `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets `RESULT_DIR` to the
   page's `results/<ticket>/` and `RUN_TICKET` to itself; the result holds the
   tables, `metrics.json`, the Look step's `fig_*.png` and `runtime.yaml`
   (written before the work, finalized after its result gate passes).
 - The join is the evidence need: the page's `answers.yaml` binds each
-  compute need of the question (`QD<n>.E<k>`) to the narrowest files of this
-  result, with the fields its `pass:` names (`../../haipipe-insight/ref/evidence-needs.md`). The config's
+  compute need of the question (`QD<n>.E<k>`) to this result only when the
+  run computes the need's work spec exactly (cut, unit, measure, grouping,
+  uncertainty, rivals, output columns) (`../../haipipe-insight/ref/evidence-needs.md`). The config's
   `answers:` is a cross-check, never the join.
 - Only aggregate, light output in the result; a file over 10 MB or a
   row-level table goes to
@@ -68,13 +69,14 @@ Information.
 
 ## The page · Report (brief)
 
-The page's `.md` says the observation in words, briefly: the denominators
-every later answer divides by, a catalog correction. Shape:
-headline (the observation, not the topic) → counts with unit and window →
-coverage and gaps, with the figures embedded from its results. Each need is
-cited where it is answered (`[QD1.E1]`). Its `runs:` header names every ticket
-it read and `results-read:` when it read them; every number traces to a file in
-one of those results.
+The page is a `haipipe-page` Page Face written through that skill's flow
+(`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
+adopt`, `page.py health`, a page CHECK by another agent. For Data it is brief:
+the Opening asks what was observed, in plain words, and answers with the
+observation; Content has one division per need, each giving the counts with
+unit and window, then coverage and gaps, with the run's figures. Each need is
+one Evidence Item carrying `**Need**:`; no id appears in the prose. The header
+carries `answers:` and `results-read:`.
 
 ## Gate and closure
 

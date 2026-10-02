@@ -35,12 +35,12 @@ missing N" (action `draft-request`). An open request shows instead.
 **Design Space.** The task block comes first: who, their job, the venue,
 how many, and the rules every design keeps. Then one card per design.
 The card is named "Design N"; the files say `ITEMNN`. Its closed row has
-four columns:
+three columns, and the open card keeps them:
 
-- Design: number, title, state, waiting on, and the design in one line.
-- Rationale: the goal, and the "because" rule it rests on.
-- Supporting work: insight labels and run ids.
-- Expectation: what should happen, and "wrong if".
+- Design: number, title and state; open, the SMS and its Design Runs.
+- Rationale: what it rests on; open, the design move, the Evidence chain from the
+  `because:` rows, and the Design elements with what supports each.
+- Evaluation: the acceptance count; open, Acceptance, Review notes and Expected effect.
 
 An opened card shows the design on the left, kept in view. An SMS shows
 as a bubble on a phone; a screen shows as its picture. The right side

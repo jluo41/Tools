@@ -108,7 +108,9 @@ Each rule must be checkable on the text alone. The design items register's
 
 **Resources.** What the designer may draw on: the starting text, past designs and
 what became of them, the board's Theory of Design and message theories, and the
-budget (arms, time, people).
+budget (arms, time, people). `Starting text:` holds the starting message word for
+word; each card's Design elements are read against it, so a design's kept, new and
+removed words show without anyone listing them.
 
 **Leave out.** Things that must never appear in the message. The channel, the send
 and the experiment are not listed here; they are fixed elsewhere.

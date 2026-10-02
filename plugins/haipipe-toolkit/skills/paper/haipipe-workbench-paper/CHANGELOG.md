@@ -1,3 +1,9 @@
+## 0.21.0 · 2026-10-02 · A related-paper card says why we keep it and shows its logic beside its work
+
+- Story › Related Papers, open card: a "Why we keep it" box from the P-board's optional `keep` cell (else the `why it matters` line), with a chip per question from `bears on` (`RQ1 limits; RQ2 supports`); then "Their logic | Their work", the paper's question, findings and contribution beside its data and method, from the Paper Run's `logic-work.yaml` (haipipe-discovery 0.21.0), drawn with the High-level logic + Low-level work row layout. JL 261002: "make the related works be something we should keep … add a table like its High Logic and Low Work".
+- `paper.py`: `logic_work_data` (reads the builder's YAML without a YAML dependency), `_bears`, `_lw_table`; `paper_card_data` returns `lw`. Every other PDF in a Run's Result is linked by name and never shown as the article.
+- Test: `test_related_paper_card_shows_why_we_keep_it_and_its_logic_and_work`; 16 passed.
+
 ## 0.20.0 · 2026-09-30 · A run opens its results in a pop-out
 
 - High-level logic + Low-level work: each run line under a work item's R is a link that opens the run's results in a pop-out over the page (JL 260930: "for a run, how could we have a popout window to show the results of that run's results"); a Task run's card in the Runs panel gains "Open the results ↗" (`runs_panel.py`: an optional `_open` on a row). Esc or a click outside closes it; "Open in its own tab ↗" keeps it.

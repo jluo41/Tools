@@ -96,6 +96,13 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    `textarea`), never a styled `div`: a div that looks like a field is not
    counted as a tap target and its edge is never measured. A changed screen is
    a new version; a written picture is never overwritten.
+   When a criterion observes `elements.yaml`, the Generate also writes the
+   element record (`references/unit-contract.md` § Optional element record):
+   one entry per element of the design with its words, where it came from
+   (requirements, internal, external or intuition), the rule, row or theory it
+   rests on, and whether it was reasoned or intuitive. Name it in
+   `result.yaml` as `elements`. A hunch is recorded as intuition, never
+   dressed as a reason.
 5. Iterate within the config's `max_iterations` (the workbench writes 2; it is
    the budget inside this one Generate run, and nothing counts revise runs
    across an item). Preserve useful alternatives and check

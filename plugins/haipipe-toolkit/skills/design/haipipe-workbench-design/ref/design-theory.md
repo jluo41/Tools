@@ -5,9 +5,11 @@ How to design anything, not only a message: an aim, constraints and resources go
 in; there is no list of options to pick from. So the designer frames a principle,
 generates options, predicts, checks, chooses and tests. The result is new knowledge.
 
-The board level Theory of Design Space renders this file. A board may add its own
-domain knowledge (for example message theories) in `design-theory.md` beside its
-`board.md`; that file is shown below this one, in the same format.
+The board level Theory of Design Space renders this file as its Design theory view,
+beside Design methods (`design-methods.md`) and Papers. All three are general. A
+board's knowledge of one channel (for example an SMS board's message theories, in the
+`design-theory.md` beside its `board.md`) is a resource of its Design Goal, not shown
+here.
 
 Sources are named as the drawing lists them and still need checking before they
 are cited in a paper.
@@ -20,16 +22,18 @@ are cited in a paper.
               you know         you look for
 Deduction     what + how       the result         predict
 Induction     what + result    the how            explain
-Abduction     result + how     the what           choose
-Design        the result       the what AND       create
+Abduction-1   result + how     the what           solve
+Abduction-2   the result       the what AND       create
               (the value)      the how            both
 ```
 
-Dorst 2011, after Peirce. Insight works on the second row: from what was sent and
-what happened, explain how it worked. Picking the best of a fixed set is the third
-row: selection, not design. Round 1 was run that way: 1 of 13 written texts.
+Dorst 2011, after Peirce: three kinds of reasoning, and abduction in two forms.
+Insight works on the second row: from what was sent and what happened, explain how it
+worked. The third row, abduction-1, solves a problem whose how is known; picking the
+best of a fixed set comes closest to it: selection, not design. Round 1 was run that
+way: 1 of 13 written texts.
 
-Design is the last row. Only the value is known; neither the artifact nor the
+Design in the full sense is the last row, abduction-2. Only the value is known; neither the artifact nor the
 principle that would make it work is. There is no option set to search: the
 designer frames a principle, then makes options from it.
 
@@ -65,6 +69,12 @@ Knowledge    the result, back into Resources
 
 Check judges quality: does it keep the constraints? Only the test judges value:
 did it create what we aimed at?
+
+The Design methods view names these inputs by where they come from: the design
+requirements (Aim and Constraints, the Design Goal), internal insights (Resources learned
+from our own data) and external insights (Resources from the literature and theory).
+Each method reads the requirements and some of the insights; the test is the Exp, whose
+data becomes the next internal insights.
 
 
 3 · The theory behind each step
@@ -120,10 +130,10 @@ These hold for any artifact: a message, a screen, a form, a policy.
 theory        workbench
 Aim           board: Design Tasks Space · page: Design Goal Space
 Constraints   the design task's "every design keeps" rules
-Resources     Theory of Design Space · each card's Supporting work
-1 Frame       a card's Rationale: the rule it follows (because)
+Resources     Theory of Design Space · the Design Goal's Resources
+1 Frame       a card's Rationale: the rows it acts on (because), their Evidence chain
 2 Generate    a Generate Run, from the Runs panel
-3 Predict     a card's Expectation: expected, and wrong if
+3 Predict     a card's Evaluation › Expected effect: expected, and wrong if
 4 Check       a Verify Run, by a fresh reviewer
 5 Choose      page Delivery Space: the designs that passed
 6 Test        the send, outside the workbench

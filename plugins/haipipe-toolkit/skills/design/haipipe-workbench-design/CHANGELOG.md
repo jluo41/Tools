@@ -1,5 +1,187 @@
 # Changelog
 
+## 0.14.11 · 2026-10-02 · Both insights, design elements, a methods pilot (JL 261002)
+
+- A sixth family, **With both insights**, and a 13th card, **By theory and insight**
+  (JL: "how about the family that use both external and internal insights?"): follow a
+  signed insight that a named theory explains; where they disagree, the insight decides
+  for this audience and the gap becomes a question for the next Exp. With the first
+  three families it makes a 2 × 2 of external and internal insights. The cards after By
+  tailoring renumber 10 to 13.
+- **Design elements** (JL: "how to choose each element … the reasoning of the designer
+  … sometimes … the intuitive … we can document both"): `design-methods.md` §2 says a
+  design is a set of elements, each with where it came from (requirements, internal,
+  external, intuition) and how it was chosen (reasoned, System 2; intuitive, System 1,
+  recorded as a hunch and never warrant), after Evans & Stanovich 2013 (Paper Run r65)
+  and MacLean 1991. The run contract gains an optional element record
+  (`elements.yaml`); the card's Design elements fold shows it, as the designer recorded
+  it, above the comparison with the starting text.
+- The methods pilot is registered in Design-01 of the board under study: four items with
+  one open goal, one bet and the same rules, differing only in `basis` × `mode`: By goal
+  (brief-only, compose), By theory (brief-only, theory-driven, the board's message
+  theories as reference), By insight (evidence-informed, compose) and By theory and
+  insight (evidence-informed, theory-driven). Each commissions the element record by a
+  semantic rule. They wait for a person's release.
+- The Methods studio drawing shows six family columns and an element-by-element example.
+
+## 0.14.10 · 2026-10-02 · Revise loop and Learning loop (JL 261002)
+
+- Two loops named (JL: the evaluation "serve as the inner loop" and goes "back to the
+  Method if it think it is not good"; "Exp will be the outer loop"). The **Revise loop**
+  (inner) is Method, Generate and Evaluate, repeated until the design passes: a broken
+  rule goes back to Generate, a weak reason (critique or pretest) back to Method. The
+  **Learning loop** (outer) starts at Ready: the Exp tests the design in use and its data
+  becomes the next internal insights. The names follow Hevner 2007's tight Design Cycle
+  inside a Relevance Cycle; its Rigor Cycle is the external insights.
+- The step "Test now" is now **Evaluate**. The test codes leave the format diagram: T0
+  to T3 are Evaluate, in the Revise loop; T4 is the Exp, in the Learning loop
+  (`design-methods.md` §3, "How a design is evaluated", with a `where` column). Cards say
+  "tested in Evaluate … in the Exp" (`method_cards(..., now=)`); other boards keep "now".
+- Hevner 2007 joins the papers table without a DOI (its journal issues none; checked in
+  the AIS eLibrary), so it opens no Paper Run.
+- Both drawings show the two loops.
+
+## 0.14.9 · 2026-10-02 · Three inputs, Design, Exp (JL 261002)
+
+- The format is now **design requirements + internal insights + external insights →
+  Design → Exp** (JL: "internal insights, which from the internal data, and then external
+  insights, like the open domain knowledges, the literatures, and also design
+  requirements"). The requirements are the Design Goal; internal insights are signed on an
+  InsightBoard from our own data (past experiments, readers' records); external insights
+  are the literature and theory. The Exp is the test in use (T4, renamed from Field), and
+  its data is the next round's internal insights.
+- Reasoning sits in fixed places (Dorst 2011): induction makes insights, Design is
+  abduction (abduction-2 with no insight, abduction-1 with one), the test now is
+  deduction. `design-theory.md` names the two abductions in its table.
+- Five families by where the design's how comes from, replacing From the goal, From what
+  is known and From trying: Requirements only (By goal, By principle); With external
+  insights (By theory, By implementation); With internal insights (By insight, By
+  precedent, By revising, By tailoring); Making internal insights now (By user test, By
+  co-design); Making internal insights next (By exploring, By slots). The cards renumber
+  1 to 12 in that order.
+- Two new cards: **By revising** (change one tested design where its result says;
+  Nielsen 1993, Kohavi et al. 2009) and **By tailoring** (a design per segment of readers,
+  per reader later; Hawkins et al. 2008, Noar et al. 2007, Nahum-Shani et al. 2018), each
+  paper a Paper Run (r60 to r64).
+- A card's head gains `reasoning:`; its `reads:` names the inputs, and the view colours
+  each by kind (requirements, internal, external). Design methods says "in the Exp" where
+  other boards keep "in use" (`method_cards(..., in_use=)`).
+- The Methods studio drawing is redrawn for the new format and families; the workbench
+  drawing's Design methods panel follows.
+
+## 0.14.8 · 2026-10-02 · Ten methods, every O'Cathain category placed (JL 261002)
+
+- Two new method cards. **By implementation** (7, From what is known): design for reach,
+  adoption, delivery and lasting effect, from RE-AIM (Glasgow et al. 1999) and the
+  overview's implementation-based approach. **By co-design** (10, From trying): design
+  with the people it is for, from the overview's partnership approach and Voorberg et
+  al. 2015; its AI form is a simulated patient panel that helps decide (JL: "we can use a
+  LM to simulate the patient … that is a future design"), so it carries `status: future`.
+- The cards renumber: By user test is 8, By exploring 9. Families: 1 to 3, 4 to 7, 8 to 10.
+- `design-methods.md` §2 maps all eight O'Cathain categories to where each lives here
+  (stepped = the shared loop; intervention-specific = a board's Design Goal; combination
+  = By exploring); none is left without a place.
+- By slots adds MOST's three phases (preparation, optimisation, evaluation) from the full
+  text of the overview.
+- A future card is dashed and tagged "future · not run yet". Papers: two rows, each a
+  Paper Run (r58, r59) with abstract and verbatim BibTeX.
+- The Methods studio drawing shows the ten cards and the category map.
+
+## 0.14.7 · 2026-10-02 · Methods studio (JL 261002)
+
+- A fourth Theory view, **Methods studio** ("add a new studio … put it in the excalidraw
+  to explain these methods"): `ref/design-methods.excalidraw`, drawn once (the shared
+  loop, the three families of method cards with their status, an open card's two sides,
+  T0 to T4, the bet), opened in the self-hosted Excalidraw canvas as the Paper
+  workbench's RoadMap Draw is, and loaded only when the view is shown.
+- Saving it works on a machine where `Tools` is a link: the studio workbench's
+  `excalidraw-save` now accepts a scene inside a folder linked in at the root itself
+  (`under_root`); a link deeper down, or a path that climbs out, is still refused.
+- The shared loop's second step is **Method**, not Frame (JL 261002: "why we call it a
+  frame?"): it is where a method is chosen and what it reads is read. Frame stays the
+  word for Dorst's frame creation, in Design theory and the By principle card.
+
+## 0.14.6 · 2026-10-02 · Method cards read against O'Cathain et al. 2019 in full (JL 261002)
+
+- Each card gains a `taxonomy` line: its category among O'Cathain's eight approaches, or
+  why it has none (By goal, By principle, By exploring) or sits outside them (By
+  precedent, adaptation).
+- The cards' literature side adds what the full text says, cited `[O'Cathain 2019
+  taxonomy]`: research waste (By goal); understand the real issues first (By principle);
+  efficiency-based designs, factorial and micro-randomised (By slots); mapping
+  determinants to techniques, authors' reports of effect, several theories (By theory);
+  assessing the evidence base (By insight); adaptation (By precedent); think-aloud and
+  diverse samples, randomised-trial reports, slow iteration (By user test); divergent then
+  convergent, several rough prototypes narrowed to one (By exploring).
+- `design-methods.md` §2: why partnership and implementation-based have no card, the
+  seven domains mapped onto the shared loop, and the paper's six questions for choosing.
+- A citation that names two papers of one author and year picks one by a title word.
+
+## 0.14.5 · 2026-10-02 · Design method cards (JL 261002)
+
+- The Design methods view draws the eight methods as cards, one file each in
+  `ref/methods/` ("make each of them a card (design method card)"), grouped into three
+  families by where a design's reason comes from. `design-methods.md` section 2 is now
+  their index table; its two earlier tables are folded into the cards.
+- A card, open, sets What the literature says (rationale, context, the authors' steps,
+  strengths, limitations; O'Cathain et al. 2019, Table 2) beside **Applied to AI** (the
+  agent, its steps, returns, verify, AI risk, evidence on AI, skill) ("add a new thing
+  about how this can be applied to AI").
+- Every bracketed source, and every "comes from" source with its idea, links to the
+  paper's card in the Papers view, which opens on it (paper cards carry an id).
+- Closed, a card says whether any study tests the method; four say none does yet.
+- The doc reader draws pipe tables as tables.
+
+## 0.14.4 · 2026-10-02 · Papers live in the workbench, with their PDFs (JL 261002)
+
+- The Papers view reads the workbench's own `ref/design-papers.md`, the same for every
+  board ("put them in the Tools of the workbench of the design"); the board-level
+  `design-papers.md` is gone. Its last column is `pdf`, a file in `ref/papers/`.
+- `ref/papers/` keeps the 10 full texts under CC BY, listed with their licenses in
+  `ref/papers/README.md`; a paper under any other license is not kept there.
+- A card without its own copy borrows the free copy, abstract and Paper Run link of a
+  Discovery Paper Run in the board's Project that holds the same DOI.
+- A card with its PDF carries a **PDF** badge, and **Show only the N papers with a PDF**
+  hides the rest and opens the folds (JL 261002: "I can still not see the papers").
+- A file reached through a folder linked under the root (`Tools`) gets a server path.
+
+## 0.14.3 · 2026-10-02 · Papers: each card reads its Paper Run and shows the PDF (JL 261002)
+
+- A row's `record` names its Discovery Paper Run by compact address (`b01j01t01r09`);
+  the card reads that Result under the Project's `discoveries/`: its abstract (folded)
+  and, when a lawful free copy was saved, `paper.pdf` shown in the open card (loaded on
+  open) and in a new tab. 📄 marks a card with its PDF inside; the head counts Paper Runs
+  and PDFs. A legacy topic note (`S02/02 · S007`) still links after the address.
+- A card says which case it is: no free full text, no DOI and so no Paper Run, or not yet
+  a Paper Run.
+
+## 0.14.2 · 2026-10-02 · Theory of Design: three views, and Papers (JL 261001)
+
+- The Theory of Design Space shows one view at a time, all general: Design theory,
+  Design methods (new `ref/design-methods.md`: the shared loop, eight methods, the T0 to
+  T4 tests, what the evidence says), Papers (URL `view=`). The board's own message
+  theories are no longer shown here; Add a theory moves to the Design Goal's Resources. Papers reads the board's `design-papers.md` and renders it as the Paper
+  workbench's Related Papers: a band per design method, a card per paper (title; who ·
+  year · journal; role), why it is here and its links inside.
+- Its Runs panel adds **Add a paper** (Discovery orchestrator, `haipipe-discovery`): it
+  turns one row into a Paper Run and fills the row's `record`.
+- A card in a UTD24 journal carries a UTD24 mark, and the head counts them (JL 261002).
+- A `key` column marks the papers a board's methods rest on most; each band shows those
+  and folds the rest under "N more papers" (JL 261002).
+- The reader of these files joins a list item that wraps onto an indented line.
+
+## 0.14.1 · 2026-10-01 · Rationale: Evidence chain and Design elements (JL 261001)
+
+- The card's Rationale is the Design move and two folds, the Design elements first. **Evidence chain**: from each
+  row the design acts on (`because:`) down the links the insight pages record on their
+  `←` lines, one quoted row per rung, to the data; named DO NOT rows are Limits; cited
+  pages off the chain are "Also cited". **Design elements**: the shown draft against the
+  Design Goal's `Starting text`, each element kept, new, removed, changed or required by
+  the Design Goal, with the rows that support it. Replaces the Insight Evidence ladder,
+  the Rule followed block and the stance/basis words.
+- `because:` reads the current page ids and several rows (`W01-full · W1, W3`; pages
+  split by `;`); a named row not on its page says so.
+
 ## 0.14.0 · 2026-10-01 · Workbench Table (JL 261001)
 
 - `ref/workbench-table.md`: Level · Space · View · Run type · Agent · Skill · Person signs for

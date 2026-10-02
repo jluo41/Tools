@@ -1,10 +1,32 @@
 # haipipe-insight · version history
 
+## 2.7.0 · 2026-10-02 · Question file v2 and the carry-over (JL 261002)
+
+- Question file v2 (`ref/prototype-contract.md`): `question` (the short wording), `name`, `ask`, `source` (where it was carried from), `partitions` (asked, not_elsewhere, power), live and retired `needs` in the register's own spec fields (cut, unit, measure, by, uncertainty, rivals, output), `agreed`; Why now and What would answer it as prose. `0-Meta` holds `meta.md`, `partitions.md` (filters, then the reasons) and `thresholds.yaml` with one board-wide `power.smallest_effect_pp`; a question may override it with `effect` and `effect_reason`.
+- New `ref/carry_over.py`: a register board becomes a Prototype word for word (Queue wording, name, ask, why now, what would answer it, every need, agreed); ids `Q<L><n>` → `<L><NN>`; a logic refusal (full-only, defer) is not asked there, a data refusal is asked and refused again by its run; `--check` compares every field and rebuilds each division byte for byte; two runs write the same bytes.
+- `ref/evidence-needs.md`: coverage adds no need; "one thing" and "needs form a logic" are question-review tests; a cause word in a Data or Information ask is a review note, never a silent rewording.
+- `ref/run_question.py`: live needs only; json outputs by dotted key, one json file shared by several needs; the report header names the question. `ref/scaffold_instance.py --prototype --extract` writes a new Instance's board.md. `ref/write_answer_page.py`: an Instance page has one division per partition, in partitions.md order.
+
+## 2.6.0 · 2026-10-02 · Prototype and Instance boards (JL 261002)
+
+- New `ref/prototype-contract.md`: a Prototype board (`insights/Prototype-Insight-<Topic>/`) holds the partitions and `0-Meta/` (input, partitions, thresholds) and one folder per question, `<L><NN>-<name>/` in its rung folder `1-Data` … `4-Wisdom` (its question file and its one script; a need is `<L><NN>.E<n>`); an Instance board (`insights/Instance-Insight-<Dataset>/`) names the Prototype and one extract and holds one page folder per question × partition the Prototype asks. Each question says whether it generalizes to a partition: `partitions.meaning` (logic) and `partitions.power` (the minimum detectable effect at the partition's n, computed before any contrast). Status is computed, never typed.
+- New `ref/run_question.py` (the one runner: resolve, receipt, filter, power, script, output gate, write) and `ref/scaffold_instance.py` (page folders and their `runs/compute.sh`). No B-J-T-R inside a Prototype; the question id is the address.
+- New `ref/record_check.py`: records a read-only check agent's verdict as the page's check Run and, on CLOSE, approves the plan (a v0 plan is promoted to v1.0). `ref/write_answer_page.py` writes Instance pages (header `question:` and `partition:`, no `state:`, items read `results/compute/`). Layout: `0-Meta/` plus rung folders `1-Data` … `4-Wisdom`; question folders `<L><NN>-<name>`, needs `<L><NN>.E<n>`, Instance pages `<L><NN>-<partition>-<name>`.
+
+## 2.5.0 · 2026-10-02 · The question owns its run (JL 261002)
+
+- `ref/evidence-needs.md` gains five hard rules: one run serves one question; a compute spec's `measure:` and `by:` quote the ask (`· ask: "…"`); `**Ask covered**:` maps every phrase of the ask to a need, `partial:` or `refused:`; the run is proposed from the register and column list before any task is read; reuse only on an identical output. A Data or Information ask states no cause. Binding no longer prefers extending an existing run.
+
+## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- Work specs: every compute need carries cut, unit, measure, grouping or contrast, uncertainty, rivals and output columns, written from the ask before any task is searched; binding is exact-match only; configs list need ids; refusals need a probe run. `ref/report.md` defines no page shape of its own: every answering page at every level is a haipipe-page Page written through its flow (plan with one Evidence Item and division per need, Draft, adopt, health, page CHECK).
+
 ## 2.3.0 · 2026-10-01 · Evidence needs join Logic, Work and Report (JL 261001)
 
 - New `ref/evidence-needs.md`: each question lists evidence needs `<QID>.E<n>` (compute · cite · judge) before any run; the answering page's `answers.yaml` binds each need to result files and the fields its `pass:` names; the page cites `[<QID>.E<n>]` and records `results-read:`; `haipipe-insight-check` returns OK · GAP · STALE · UNBOUND · UNPLANNED per cell and fails an overclaimed ✅.
 - New verbs `plan` and `bind`; `climb`, `report` and `check` use them. Three new skills: `haipipe-insight-evidence-plan`, `haipipe-insight-bind`, `haipipe-insight-check`.
 - The page ticket is no longer called the join; a config's `answers:` is a cross-check derived from the bindings.
+- `ref/report.md` § Shape: the answering page is a Page Face (`haipipe-page`): an objective title, an Opening that carries the answer, one Content division per evidence need; `state:` holds the state word only, `answers:` and `strength:` are their own lines; Aims, States, Files and Log move to `draft/records/`. Replaces the rule that the headline states the finding.
 
 ## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 

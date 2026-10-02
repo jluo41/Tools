@@ -1,5 +1,14 @@
 # haipipe-design-unit · version history
 
+## 0.4.1 current · 2026-10-02 · Optional element record (JL 261002) (version unchanged at 0.4.1; the Design family version is frozen)
+
+- A Generate may write `elements.yaml` when a criterion commissions it: one entry per
+  element of the design with its words, where it came from (`requirements`, `internal`,
+  `external`, `intuition`), the rule, row or theory it rests on, and whether it was
+  `reasoned` or `intuitive`. It is named in `result.yaml` as `elements` and is held to
+  the Result's file time like content. An intuitive element is a labeled hunch and never
+  warrant. `check_unit.py` is unchanged: it already allows the extra file.
+
 ## 0.4.1 current · 2026-10-01 · {LINK} is not counted (JL 261001) (version unchanged at 0.4.1; the Design family version is frozen)
 
 - `{LINK}` is the slot the sending platform fills with the real link, like `{NAME}`.

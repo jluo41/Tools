@@ -155,16 +155,21 @@ GI1  question registered      the cell's row carries target, raiser, what-would-
 GI2  observations citable   the answering page's ticket for the QD question has a
                           current `ok` receipt for the board's extract in the page's
                           `results/<ticket>/`; haipipe-insight-check finds every need
-                          bound, fit, cited and current; unit, window and coverage are stated (QA
-                          note or page); no interpretation has entered
-GI3  derivation citable   the same for a QI question (needs included), and its page (required for
+                          planned with its work spec, bound, fit, cited and current; the
+                          page is adopted from its Draft, `page.py health` has no FAIL and
+                          a page CHECK by an agent that did not write it passed; unit,
+                          window and coverage are stated; no interpretation has entered
+GI3  derivation citable   the same for a QI question (needs, specs, health and page CHECK
+                          included), and its page (required for
                           Information) traces every number to a file in its own results and keeps
                           nulls visible (cross contrast: mirrored Information results of
                           each partition, the one exception)
 GI4  parent/verdict ready   the Knowledge page passed a fresh-context check: every
                           number traces to a current named result, haipipe-insight-check
                           finds every need bound, fit, cited and current (no compute
-                          need reasoned away), strength, rivals and boundary are stated · OR the pre-climbed external-parent
+                          need reasoned away, every refusal shown by a probe run),
+                          `page.py health` has no FAIL, a page CHECK by a different agent
+                          passed, strength, rivals and boundary are stated · OR the pre-climbed external-parent
                           bridge passes all five bridge assertions · on
                           partition-major the cross group's current POOL, SPLIT, or
                           UNDETERMINED verdict page cites the predeclared shared

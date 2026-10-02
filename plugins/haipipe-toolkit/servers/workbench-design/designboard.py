@@ -233,8 +233,8 @@ def _used_by(snapshot: dict, users: list[tuple]) -> str:
 # ----------------------------------------------------------------- render --
 
 _CSS = """
-:root{--fg:#1c1c1c;--mut:#6f6f6b;--line:#e4e4e7;--bg:#fff;--acc:#3e5c84;--bad:#b3541e;--ok:#3a7d44;--soft:#f5f6f8}
-@media(prefers-color-scheme:dark){:root{--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--bg:#161719;--acc:#7d9cc4;--bad:#e0955a;--ok:#7dbb87;--soft:#20242a}}
+:root{--fg:#1c1c1c;--mut:#6f6f6b;--line:#e4e4e7;--bg:#fff;--acc:#3e5c84;--bad:#b3541e;--ok:#3a7d44;--soft:#f5f6f8;--ext:#7a4f9a}
+@media(prefers-color-scheme:dark){:root{--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--bg:#161719;--acc:#7d9cc4;--bad:#e0955a;--ok:#7dbb87;--soft:#20242a;--ext:#b896d6}}
 *{box-sizing:border-box}body{margin:0;padding:16px 18px;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:1100px}
 h1{font-size:17px;margin:0 0 2px;font-weight:650}h2{font-size:14px;margin:18px 0 6px;font-weight:650}
 .mut{color:var(--mut);font-size:12.5px}.bad{color:var(--bad)}.ok{color:var(--ok)}
@@ -262,7 +262,58 @@ details.taskblock{border:1px solid var(--line);border-radius:6px;padding:8px 12p
 .task{border:1px solid var(--acc);border-radius:8px;background:var(--soft);padding:8px 12px;margin:10px 0}
 article.theory{max-width:980px}article.theory h1{font-size:16px;margin:8px 0 6px}article.theory h2{margin:22px 0 6px}
 article.theory p{margin:6px 0;line-height:1.55}pre.theory{margin:8px 0;padding:10px 12px;background:var(--soft);border-radius:6px;font:12px/1.5 ui-monospace,Menlo,monospace;overflow-x:auto}
-article.theory.domain{border-top:1px solid var(--line);margin-top:28px;padding-top:8px}
+.views{display:flex;gap:6px;margin:4px 0 12px}.views button{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);border-radius:14px;padding:3px 11px;background:transparent;color:var(--mut);cursor:pointer}
+.views button.on{color:var(--fg);border-color:var(--acc);background:var(--soft)}.view{display:none}.view.on{display:block}
+.rp-head{font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 2px}
+details.rp-venues{margin:0 0 10px}details.rp-more{margin:2px 0 4px}details.rp-more>summary{font-size:12.5px;color:var(--mut);padding:2px 0}details.rp-more[open]>summary{margin-bottom:4px}details.rp-venues>div{margin-top:4px;line-height:1.6}
+.lw-k{font:700 11.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);margin:14px 0 6px}.lw-kn{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85;margin-left:6px}
+.rp-group{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 4px}
+.rp-card+.rp-card{border-top:1px solid var(--line)}
+.rp-card>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:6px;align-items:baseline;padding:10px 14px}
+.rp-card>summary::-webkit-details-marker{display:none}.rp-card>summary:hover,.rp-card[open]>summary{background:var(--soft)}
+.bjt-chev{color:var(--mut);display:inline-block;width:1em;text-align:center;transition:transform .12s ease}.rp-card[open]>summary .bjt-chev{transform:rotate(90deg)}
+.lw-sum{min-width:0}.rp-title{font-weight:600;font-size:14.5px;line-height:1.4;color:var(--fg)}
+.rp-sub{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:2px;font-size:13px;color:var(--mut)}
+.rp-marks{display:flex;gap:10px;flex:none}.rp-utd{font:700 10.5px -apple-system,sans-serif;color:#9c6500;border:1px solid #e3c27a;border-radius:4px;padding:0 4px;letter-spacing:.03em}.rp-q{color:var(--acc);font-weight:600}.rp-q.rp-evidence{color:var(--ok)}.rp-q.rp-classic{color:var(--mut)}
+.rp-body{padding:6px 14px 14px calc(14px + 1em + 6px)}.rp-why{font-size:14.5px;line-height:1.55;margin:4px 0 6px}
+.rp-acts{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}.rp-nopdf{font-size:13.5px;margin-top:8px}
+details.rp-absd>summary{font-size:13px;color:var(--mut);cursor:pointer}details.rp-absd>p{font-size:13.5px;line-height:1.55;margin:4px 0 6px}
+.st-bar{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0 0 6px;font-size:13px}
+.st-frame{display:block;width:100%;height:calc(100vh - 210px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.rp-frame{display:block;width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}
+table.mdt{display:table;width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13.5px}
+table.mdt td:first-child{font-weight:600;white-space:nowrap}
+.mcards{margin:8px 0 16px}.mc-fam{font-size:13px;margin:14px 0 6px;padding:5px 10px;background:var(--soft);border-radius:6px}
+details.mcard{border:1px solid var(--line);border-radius:10px;margin:0 0 8px;background:var(--bg)}
+details.mcard>summary{color:var(--fg);list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:6px;align-items:baseline;padding:11px 14px}
+details.mcard>summary::-webkit-details-marker{display:none}details.mcard>summary:hover,details.mcard[open]>summary{background:var(--soft)}
+details.mcard[open]>summary .bjt-chev{transform:rotate(90deg)}
+.mc-top{display:flex;align-items:baseline;gap:8px}.mnum{color:var(--mut);font-weight:500}.mc-name{font-weight:650;font-size:15px}
+.mc-status{margin-left:auto;font:600 11.5px -apple-system,sans-serif;white-space:nowrap}.mc-status.ok{color:var(--ok)}.mc-status.gap{color:var(--bad)}.mc-status.future{color:var(--acc)}
+details.mcard.future{border-style:dashed;border-color:var(--acc)}
+.mc-move{margin:2px 0 6px;font-size:14px;line-height:1.45}
+.mc-io,.mc-from,.mc-tests,.mc-papers{font-size:12.5px;line-height:1.7}.mc-io .arrow{color:var(--mut);margin:0 6px}
+.lbl{display:inline-block;min-width:7.2em;margin-right:4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.mc-io .lbl+.chip{margin-left:0}.mc-from .src{white-space:normal}
+/* the three inputs a design reads: its requirements, internal insights, external insights */
+.chip.in-req{border-color:var(--acc);color:var(--acc)}.chip.in-int{border-color:var(--ok);color:var(--ok)}.chip.in-ext{border-color:var(--ext);color:var(--ext)}
+.mc-body{padding:4px 14px 14px calc(14px + 1em + 6px)}
+.mc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin:6px 0 10px}
+@media(max-width:900px){.mc-cols{grid-template-columns:minmax(0,1fr)}}
+.mc-col{border:1px solid var(--line);border-radius:8px;padding:10px 12px}.mc-col.ai{border-color:var(--acc);background:var(--soft)}
+.mc-h{font:700 11.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 6px}.mc-col.ai .mc-h{color:var(--acc)}
+.mc-col dl{margin:0}.mc-col dt{font-weight:650;font-size:12.5px;margin:6px 0 1px}.mc-col dd{margin:0;font-size:13px;line-height:1.5}
+.mc-col .line{margin:0 0 3px}.mc-tests .when{margin:0 4px 0 14px}.mc-tests .lbl+.when{margin-left:0}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:0 7px;margin:1px 3px 2px 0;font-size:12px;white-space:nowrap}
+a.pchip{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:0 7px;margin:1px 3px 2px 0;font-size:12px;white-space:nowrap;background:var(--bg)}
+a.pchip:hover{border-color:var(--acc);text-decoration:none}a.pchip .rp-pdf{margin-left:5px;font-size:9.5px;padding:0 4px}
+.tcode{font:700 11px ui-monospace,Menlo,monospace;color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:0 3px;cursor:help}
+.when{display:inline-block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+a.cite{white-space:nowrap}a.cite .rp-pdf{margin-left:3px;font-size:9px;padding:0 3px}.ours{color:var(--mut);font-style:italic}
+.rp-pdf{font:700 10.5px -apple-system,sans-serif;color:#fff;background:var(--acc);border-radius:4px;padding:1px 5px;letter-spacing:.03em}
+.rp-tools{margin:2px 0 8px}.rp-only{font:600 12.5px -apple-system,sans-serif;border:1px solid var(--acc);color:var(--acc);background:transparent;border-radius:14px;padding:3px 11px;cursor:pointer}
+.rp-only[aria-pressed=true]{background:var(--acc);color:#fff}
+.rp-list.only-pdf .rp-card:not(.has-pdf),.rp-list.only-pdf .rp-band:not(.has-pdf),.rp-list.only-pdf details.rp-more>summary{display:none}
 @media(max-width:640px){body{padding:12px}td,th{padding:5px 6px}.form{grid-template-columns:1fr}.form .full{grid-column:1}}
 @media(max-width:720px){main table{display:block;max-width:100%;overflow-x:auto}main table code{white-space:nowrap;word-break:normal}}
 """
@@ -275,10 +326,23 @@ def _page_url(snapshot: dict, rel: str, space: str = "design", item: str = "") -
 
 
 THEORY = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-theory.md"
+METHODS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-methods.md"
+# The methods studio (JL 261002: "add a new studio … put it in the excalidraw to explain
+# these methods"): one Excalidraw drawing of the loop, the families and the ten cards,
+# opened in the self-hosted canvas and saved back to this file.
+STUDIO = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-methods.excalidraw"
 
 
-def _plain_md(text: str) -> str:
-    """The ASCII doc style (underlined titles, paragraphs, `- ` lists, fenced blocks) as HTML."""
+def _pipe_rows(lines: list[str]) -> tuple[list[str], list[list[str]]]:
+    """A pipe table's header words (lower case) and its body rows."""
+    cells = [[c.strip() for c in ln.strip().strip("|").split("|")] for ln in lines]
+    body = [r for r in cells[1:] if not all(re.fullmatch(r":?-{2,}:?", c) for c in r if c)]
+    return [c.lower() for c in cells[0]], body
+
+
+def _plain_md(text: str, table=None) -> str:
+    """The ASCII doc style (underlined titles, paragraphs, `- ` lists, fenced blocks, pipe
+    tables) as HTML. `table(head, rows)` may render a table it knows; None falls back."""
     out, para, items, lines = [], [], [], text.splitlines()
 
     def inline(t: str) -> str:
@@ -306,6 +370,18 @@ def _plain_md(text: str) -> str:
             out.append("<pre class=theory>" + _e("\n".join(lines[i + 1:j])) + "</pre>")
             i = j + 1
             continue
+        if line.startswith("|"):
+            flush()
+            j = i
+            while j < len(lines) and lines[j].startswith("|"):
+                j += 1
+            head, rows = _pipe_rows(lines[i:j])
+            html_table = table(head, rows) if table else None
+            out.append(html_table or (
+                "<table class=mdt><thead><tr>" + "".join(f"<th>{inline(h)}</th>" for h in head) + "</tr></thead><tbody>"
+                + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table>"))
+            i = j
+            continue
         if line.strip() and re.fullmatch(r"[=-]{3,}", nxt.strip()):
             flush()
             out.append(f'<{"h1" if nxt.startswith("=") else "h2"}>{inline(line.strip())}</{"h1" if nxt.startswith("=") else "h2"}>')
@@ -315,6 +391,8 @@ def _plain_md(text: str) -> str:
             if para:
                 flush()
             items.append(line[2:].strip())
+        elif items and not para and line.startswith("  ") and line.strip():
+            items[-1] += " " + line.strip()          # a list item that wraps goes on, indented
         elif not line.strip():
             flush()
         else:
@@ -324,19 +402,401 @@ def _plain_md(text: str) -> str:
     return "".join(out)
 
 
-def theory_page(board: Path) -> str:
-    """The Theory of Design Space: the general theory, then the board's own domain knowledge."""
-    parts = []
-    for path, cls in ((THEORY, "theory"), (board / "design-theory.md", "theory domain")):
+# The Theory of Design Space has three views (JL 261001), all of them general: how to
+# design, the methods a design can be made by, and the papers behind both. Knowledge of
+# one channel (message theories for SMS) is not design theory and is not shown here.
+THEORY_VIEWS = (("design-theory", "Design theory"), ("methods", "Design methods"), ("studio", "Methods studio"),
+                ("papers", "Papers"))
+
+
+def studio_html(root: Path, drawing: Path = STUDIO) -> str:
+    """Theory › Methods studio: the methods drawing in the Excalidraw canvas, editable, as
+    the Paper workbench's RoadMap Draw shows a Story's drawing. It loads only when shown."""
+    rel = _href(root, drawing) if Path(drawing).is_file() else ""
+    if not rel:
+        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>ref/design-methods.excalidraw</code>.</div>'
+    url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
+    return ('<div class=st-bar><span class=mut>One task, thirteen ways to design it: three inputs, Design and the Exp, '
+            'the Revise and Learning loops, six families, the cards and the tests. Edits save to '
+            '<code>ref/design-methods.excalidraw</code>.</span>'
+            f'<a href="{_e(url)}" target="_blank" rel="noopener">Open full screen ↗</a></div>'
+            # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
+            f'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" data-src="{_e(url)}"></iframe>')
+
+
+def theory_page(board: Path, root: Path | None = None, view: str = "design-theory") -> str:
+    """The Theory of Design Space: one view at a time, its name in a bar above it."""
+    def article(path: Path, cls: str, empty: str) -> str:
         if path.is_file():
-            parts.append(f'<article class="{cls}">{_plain_md(path.read_text(encoding="utf-8"))}</article>')
-    return "".join(parts) or '<div class=empty>No design theory file is present.</div>'
+            return f'<article class="{cls}">{_plain_md(path.read_text(encoding="utf-8"))}</article>'
+        return f'<div class=empty>{empty}</div>'
+    views = {"design-theory": article(THEORY, "theory", "No design theory file is present."),
+             "methods": (f'<article class="theory">{_plain_md(_read(METHODS), method_cards(board, root or board, METHODS, PAPERS, in_use="in the Exp", now="in Evaluate"))}</article>'
+                         if METHODS.is_file() else '<div class=empty>No design methods file is present.</div>'),
+             "studio": studio_html(root or board, STUDIO),
+             "papers": papers_page(board, root or board, PAPERS)}
+    view = view if view in views else "design-theory"
+    bar = "".join(f'<button type=button data-view="{k}"{" class=on" if k == view else ""}>{_e(label)}</button>'
+                  for k, label in THEORY_VIEWS)
+    return (f'<div class=views>{bar}</div>'
+            + "".join(f'<div class="view{" on" if k == view else ""}" data-view="{k}">{views[k]}</div>' for k, _ in THEORY_VIEWS))
 
 
-def render_design_board(snapshot: dict, space: str = "tasks") -> str:
+# Theory › Papers (JL 261001): the papers behind the theory, one card each, as the Paper
+# workbench shows a Story's Related Papers: closed, the title and then who, when and
+# which journal; open, why it is here, its links and its full text. The rows are the
+# workbench's own `ref/design-papers.md`, the same for every board (JL 261002: "put them
+# in the Tools of the workbench of the design"); a row's `pdf` names its copy in
+# `ref/papers/`, kept only when its license lets it be shared.
+PAPERS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-papers.md"
+PAPER_ROLES = ("classic", "review", "evidence")
+# The UT Dallas list of 24 leading business journals (JL 261002: "is there a paper from
+# the UTD24 list?"): a card in one of them carries the mark, and the head counts them.
+UTD24 = ("the accounting review", "journal of accounting and economics", "journal of accounting research",
+         "journal of finance", "journal of financial economics", "review of financial studies",
+         "information systems research", "informs journal on computing", "mis quarterly",
+         "journal of consumer research", "journal of marketing", "journal of marketing research", "marketing science",
+         "management science", "operations research", "journal of operations management",
+         "manufacturing & service operations management", "production and operations management",
+         "academy of management journal", "academy of management review", "administrative science quarterly",
+         "organization science", "journal of international business studies", "strategic management journal")
+
+
+def is_utd24(venue: str) -> bool:
+    name = re.sub(r"^the\s+", "", (venue or "").strip().lower())
+    return name in {re.sub(r"^the\s+", "", v) for v in UTD24}
+
+
+def paper_rows(table: Path = PAPERS) -> list[dict]:
+    """The papers table: one dict per row, keyed by the header words."""
+    rows, head = [], []
+    for line in _read(Path(table)).splitlines():
+        if not line.strip().startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not head:
+            head = [c.lower() for c in cells]
+        elif not all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+            rows.append(dict(zip(head, cells + [""] * (len(head) - len(cells)))))
+    return rows
+
+
+def _href(root: Path, path: Path) -> str:
+    """A plain server path for a file under the SPACE root, or reached through a folder
+    linked in under it (`Tools` -> `../Tools-SPACE`); '' when it is neither."""
+    root, path = Path(root), Path(path).resolve()
+    try:
+        return "/" + path.relative_to(root.resolve()).as_posix()
+    except ValueError:
+        pass
+    for link in (c for c in root.iterdir() if c.is_symlink()):
+        try:
+            return "/" + (Path(link.name) / path.relative_to(link.resolve())).as_posix()
+        except ValueError:
+            continue
+    return ""
+
+
+def paper_runs(board: Path) -> dict[str, Path]:
+    """DOI -> the Discovery Paper Run that holds it in the board's Project (its Bib, its
+    abstract and, when a free copy exists, paper.pdf), so a card can read it."""
+    out: dict[str, Path] = {}
+    for rt in sorted(Path(board).parent.parent.glob("discoveries/b*/j*/t*/results/r*/runtime.yaml")):
+        doi = re.search(r'(?m)^\s+doi:\s*"?([^"\s]+)"?\s*$', _read(rt))
+        if doi:
+            out.setdefault(doi.group(1).lower(), rt.parent)
+    return out
+
+
+def _run_abstract(run: Path) -> str:
+    """The retrieved abstract, without its heading and source line."""
+    return " ".join(ln.strip() for ln in _read(run / "abstract.md").splitlines()
+                    if ln.strip() and not ln.lstrip().startswith(("#", "Source:", ">")))
+
+
+def _paper_pdf(row: dict, table: Path, run: Path | None) -> Path | None:
+    """The paper's full text: its copy beside the table, else its Paper Run's free copy."""
+    kept = Path(table).parent / row["pdf"] if row.get("pdf") else None
+    if kept is not None and kept.is_file():
+        return kept
+    return run / "paper.pdf" if run is not None and (run / "paper.pdf").is_file() else None
+
+
+def _paper_card(root: Path, row: dict, table: Path, run: Path | None) -> str:
+    who_year, _, title = row.get("paper", "").partition(" · ")
+    year = (re.search(r"(\d{4})\s*$", who_year) or re.search(r"(\d{4})", who_year))
+    names = (who_year[:year.start()] if year else who_year).strip(" :")
+    # one author by name, two as `A & B`, three or more as `A et al.`, as a citation says them
+    first = names if "," not in names else names.split(",")[0].strip() + " et al."
+    who = " · ".join(x for x in (first, year.group(1) if year else "", row.get("venue", "")) if x)
+    role = row.get("role", "").lower()
+    doi = row.get("doi", "")
+    pdf = _paper_pdf(row, table, run)
+    card = run / f"{run.name}.md" if run is not None else None
+    pdf_url = _href(root, pdf) if pdf is not None else ""
+    acts = [f'<a href="{_e(pdf_url)}" target="_blank" rel="noopener">Open the PDF in a new tab ↗</a>' if pdf_url else "",
+            f'<a href="https://doi.org/{_e(doi)}" target="_blank" rel="noopener">Publisher page ↗</a>' if doi else "",
+            f'<a href="{_e(_href(root, card))}" target="_blank" rel="noopener">Paper Run ↗</a>'
+            if card is not None and card.is_file() and _href(root, card) else ""]
+    abstract = _run_abstract(run) if run is not None else ""
+    if pdf_url:
+        tail = f'<iframe class="rp-frame" title="{_e("PDF · " + (title or row.get("paper", "")))}" data-pdf="{_e(pdf_url)}"></iframe>'
+    elif doi:
+        tail = '<div class="rp-nopdf mut">No free full text here. Read it on the publisher page; it may need a subscription.</div>'
+    else:
+        tail = '<div class="rp-nopdf mut">A book or report with no DOI: read it in print or on its publisher\'s page.</div>'
+    return (f'<details class="rp-card{" has-pdf" if pdf_url else ""}" id="{paper_id(row)}"><summary><span class="bjt-chev">▸</span><div class="lw-sum">'
+            f'<div class="rp-title">{_e(title or row.get("paper", ""))}</div>'
+            f'<div class="rp-sub"><span>{_e(who)}</span><span class="rp-marks">'
+            + ('<span class=rp-pdf title="the PDF opens inside this card">PDF</span>' if pdf_url else "")
+            + ('<span class=rp-utd title="on the UTD24 journal list">UTD24</span>' if is_utd24(row.get("venue", "")) else "")
+            + f'<span class="rp-q rp-{_e(role)}">{_e(role)}</span></span></div>'
+            '</div></summary><div class="rp-body">'
+            + (f'<p class="rp-why">{_e(row.get("why here", ""))}</p>' if row.get("why here") else "")
+            + '<div class="rp-acts">' + "".join(f"<span>{a}</span>" for a in acts if a) + '</div>'
+            + (f'<details class="rp-absd"><summary>Abstract</summary><p>{_e(abstract)}</p></details>' if abstract else "")
+            + f'{tail}</div></details>')
+
+
+def papers_page(board: Path, root: Path, table: Path = PAPERS) -> str:
+    """Theory › Papers: one band per design method, in the file's order, each a count and
+    one box of cards; the journals they come from are named above the bands."""
+    rows = paper_rows(table)
+    if not rows:
+        return ('<div class=empty>No related paper yet: the design workbench keeps them in '
+                '<code>ref/design-papers.md</code> (group · role · key · paper · venue · doi · why here · pdf).</div>')
+    groups: dict[str, list[dict]] = {}
+    for row in rows:
+        # a paper may serve two methods (`by a; by b`): it shows once, in its first group
+        groups.setdefault(row.get("group", "").split(";")[0].strip() or "other", []).append(row)
+    roles = " · ".join(f"{sum(r.get('role', '').lower() == k for r in rows)} {k}" for k in PAPER_ROLES)
+    index = paper_runs(board)
+    run_of = {id(r): index.get(r.get("doi", "").lower()) for r in rows}
+    pdfs = sum(_paper_pdf(r, table, run_of[id(r)]) is not None for r in rows)
+    venues: dict[str, int] = {}
+    for row in rows:
+        venues[row.get("venue", "") or "—"] = venues.get(row.get("venue", "") or "—", 0) + 1
+    utd = sum(is_utd24(r.get("venue", "")) for r in rows)
+    keys = sum(bool(r.get("key")) for r in rows)
+    head = (f'<div class="rp-head">{len(rows)} papers · {keys} key · {roles} · {utd} in UTD24 journals · {pdfs} with a PDF</div>'
+            + (f'<div class=rp-tools><button type=button class=rp-only aria-pressed=false>Show only the {pdfs} papers with a PDF</button></div>'
+               if pdfs else "")
+            + f'<details class=rp-venues><summary>{len(venues)} journals and publishers</summary><div class=mut>'
+            + " · ".join(f"{_e(v)} ({n})" for v, n in sorted(venues.items(), key=lambda kv: (-kv[1], kv[0])))
+            + '</div></details>')
+    card = lambda r: _paper_card(root, r, table, run_of[id(r)])
+    # each band shows its key papers (★ in `key`) and folds the rest (JL 261002: "collapse the
+    # less important papers"); a band with no key paper shows all of its papers
+    def band(group: str, rs: list[dict]) -> str:
+        top = [r for r in rs if r.get("key")] or rs
+        rest = [r for r in rs if r not in top]
+        cards = [card(r) for r in top], [card(r) for r in rest]
+        has = any("rp-card has-pdf" in c for c in cards[0] + cards[1])
+        more = (f'<details class=rp-more><summary>{len(rest)} more paper{"s" if len(rest) != 1 else ""}</summary>'
+                f'<div class="rp-group">{"".join(cards[1])}</div></details>' if rest else "")
+        return (f'<section class="rp-band{" has-pdf" if has else ""}">'
+                f'<div class="lw-k">{_e(group[:1].upper() + group[1:])}<span class="lw-kn">{len(rs)}</span></div>'
+                f'<div class="rp-group">{"".join(cards[0])}</div>{more}</section>')
+    bands = "".join(band(g, rs) for g, rs in groups.items())
+    return f'<div class="rp-list">{head}{bands}</div>'
+
+
+def paper_id(row: dict) -> str:
+    """A paper card's anchor: its DOI, else its citation, as `paper-<slug>`."""
+    return "paper-" + re.sub(r"[^a-z0-9]+", "-", (row.get("doi") or row.get("paper", "")).lower()).strip("-")[:80]
+
+
+def short_cite(row: dict) -> str:
+    """`Dow, Glassco, Kass et al. 2010 · …` -> `Dow et al. 2010`; `A & B 2001` stays."""
+    who_year = row.get("paper", "").partition(" · ")[0]
+    year = re.search(r"(\d{4})\s*$", who_year) or re.search(r"(\d{4})", who_year)
+    names = (who_year[:year.start()] if year else who_year).strip(" :")
+    names = names.split(",")[0].strip() + " et al." if "," in names else names
+    return f"{names} {year.group(1)}" if year else names
+
+
+def method_card_fields(path: Path) -> dict:
+    """One method card file: its name, then the `key: value` fields of its head and of its
+    two parts, What the literature says (`lit`) and Applied to AI (`ai`). A value may wrap
+    onto indented lines."""
+    lines = _read(path).splitlines()
+    out = {"name": lines[0].strip() if lines else Path(path).stem, "head": {}, "lit": {}, "ai": {}}
+    part, key = "head", None
+    for i, line in enumerate(lines):
+        nxt = lines[i + 1] if i + 1 < len(lines) else ""
+        if line.strip() and re.fullmatch(r"-{3,}", nxt.strip()):
+            part, key = ("ai" if line.strip().lower().startswith("applied") else "lit"), None
+            continue
+        m = re.match(r"^([A-Za-z][A-Za-z ]*):\s+(.*)$", line)
+        if m and m.group(1).lower() in CARD_KEYS:
+            key = m.group(1).lower()
+            out[part][key] = m.group(2).strip()
+        elif key and line.startswith("  ") and line.strip():
+            out[part][key] += " " + line.strip()
+        elif not line.strip():
+            key = None
+    return out
+
+
+CARD_KEYS = {"family", "reasoning", "move", "status", "taxonomy", "comes from", "reads", "returns", "test now", "test in use", "rationale", "context",
+             "steps", "strengths", "limitations", "agent", "verify", "risk", "evidence on ai", "skill"}
+LIT_FIELDS = (("rationale", "Rationale"), ("context", "Context"), ("steps", "Steps"),
+              ("strengths", "Strengths"), ("limitations", "Limitations"))
+AI_FIELDS = (("agent", "The agent"), ("steps", "Steps"), ("returns", "Returns"), ("verify", "Verify"),
+             ("risk", "AI risk"), ("evidence on ai", "Evidence on AI"), ("skill", "Skill"))
+
+
+def method_cards(board: Path, root: Path, doc_path: Path, table: Path = PAPERS, in_use: str = "in use", now: str = "now"):
+    """The Design methods view's renderer for its card index (JL 261002: "make each of them
+    a card (design method card)", "add a new thing about how this can be applied to AI").
+    The index table names one card file per method. Closed, a card is the method's name,
+    whether any study tests it, its move, what it reads and returns, and where it comes
+    from. Open, What the literature says (as O'Cathain et al. 2019 describe approaches)
+    stands beside Applied to AI, and the method's papers close it. Every paper links to
+    its card in the Papers view, PDF and all. What a card reads is coloured by input
+    (JL 261002): design requirements, internal insights, external insights; `now` and
+    `in_use` name where the two kinds of test happen ("in Evaluate", the Revise loop, and
+    "in the Exp", the Learning loop, for design methods)."""
+    doc_path = Path(doc_path)
+    doc = _read(doc_path)
+    papers = paper_rows(table)
+    index = paper_runs(board)
+    by_group: dict[str, list[dict]] = {}
+    for r in papers:
+        for g in r.get("group", "").lower().split(";"):       # and counts on every card it serves
+            by_group.setdefault(g.strip(), []).append(r)
+    tests = {}
+    for line in doc.splitlines():                       # T0 … T4 and what each asks, for the badges
+        m = re.match(r"^\|\s*(T\d)\s+([^|]+?)\s*\|\s*([^|]+?)\s*\|", line)
+        if m:
+            tests[m.group(1)] = f"{m.group(1)} {m.group(2)}: {m.group(3)}"
+
+    def chip(r: dict) -> str:
+        has = _paper_pdf(r, table, index.get(r.get("doi", "").lower())) is not None
+        return (f'<a class="pchip to-paper" href="#{paper_id(r)}" title="{_e(r.get("paper", ""))}">{_e(short_cite(r))}'
+                + ('<span class=rp-pdf>PDF</span>' if has else "") + '</a>')
+
+    def find(cite: str) -> dict | None:
+        """The papers-table row a citation names: the same first author and year, if only one."""
+        first_word = lambda t: t.replace(",", " ").split()[0].lower() if t.strip() else ""
+        year = re.search(r"\b\d{4}\b", cite)
+        hits = [p for p in papers if first_word(p.get("paper", "")) == first_word(cite)
+                and (year is None or re.search(rf"\b{year.group(0)}\b", p.get("paper", "").partition(" · ")[0]))]
+        if len(hits) > 1:                   # `O'Cathain 2019 taxonomy`: a title word picks one of two
+            rest = [w for w in re.findall(r"[a-z]{4,}", cite.lower()) if w not in first_word(cite)]
+            hits = [p for p in hits if all(w in p.get("paper", "").partition(" · ")[2].lower() for w in rest)] if rest else hits
+        return hits[0] if len(hits) == 1 else None
+
+    def cited(entry: str) -> str:
+        """`Newell & Simon 1972, generate and test` -> the paper's link, then the idea it gives;
+        an unmatched source stays text."""
+        cite, _, idea = entry.strip().partition(", ")
+        hit = find(cite)
+        head = chip(hit) if hit else f'<span class=chip>{_e(cite)}</span>'
+        return f'<span class=src>{head}{(" " + _e(idea)) if idea else ""}</span>'
+
+    def prose(text: str) -> str:
+        """A cell's text with each `[Author Year]` linked to its paper card, `(ours)` muted
+        and test codes badged."""
+        def link(m):
+            parts = []
+            for c in m.group(1).split(";"):
+                hit = find(c.strip())
+                has = hit is not None and _paper_pdf(hit, table, index.get(hit.get("doi", "").lower())) is not None
+                parts.append(f'<a class="cite to-paper" href="#{paper_id(hit)}" title="{_e(hit.get("paper", ""))}">{_e(c.strip())}'
+                             + ('<span class=rp-pdf>PDF</span>' if has else "") + '</a>' if hit else _e(c.strip()))
+            return "[" + "; ".join(parts) + "]"
+        links: list[str] = []
+
+        def stash(m):                       # set each linked citation aside while the text is escaped
+            links.append(link(m))
+            return f"\x00{len(links) - 1}\x00"
+        out = _e(re.sub(r"\[([^\]]+)\]", stash, text))
+        out = re.sub(r"\bT\d\b", lambda m: f'<span class=tcode title="{_e(tests.get(m.group(0), ""))}">{m.group(0)}</span>', out)
+        out = out.replace("(ours)", '<span class=ours title="this workbench\'s own judgment">(ours)</span>')
+        return re.sub(r"\x00(\d+)\x00", lambda m: links[int(m.group(1))], out)
+
+    def lines(text: str, steps: bool = False) -> str:
+        """Steps one per line (`1. … 2. …`); otherwise one sentence per line."""
+        numbered = steps and re.search(r"\b1\.\s", text)
+        parts = re.split(r"\s(?=\d\.\s)", text) if numbered else re.split(r"(?<=\.)\s+(?=[A-Z])", text)
+        return "".join(f"<div class=line>{prose(p)}</div>" for p in parts if p.strip())
+
+    def ranked(rs: list[dict]) -> list[dict]:
+        return sorted(rs, key=lambda r: (not r.get("key"), r.get("role", "").lower() != "evidence"))
+
+    def tested(cell: str) -> str:
+        return re.sub(r"\bT\d\b", lambda m: f'<span class=tcode title="{_e(tests.get(m.group(0), ""))}">{m.group(0)}</span>',
+                      _e(cell))
+
+    def card(n: int, f: dict) -> str:
+        name, h, lit, ai = f["name"], f["head"], f["lit"], f["ai"]
+        group = by_group.get(name.lower(), [])
+        studies = sum(p.get("role", "").lower() == "evidence" for p in group)
+        future = h.get("status", "").lower().startswith("future")
+        status = (f'<span class="mc-status future" title="{_e(h["status"])}">future · not run yet</span>' if future else
+                  f'<span class="mc-status ok">tested in {studies} stud{"y" if studies == 1 else "ies"}</span>' if studies
+                  else '<span class="mc-status gap">no study tests it yet</span>')
+        def kind(x: str) -> str:            # an input's chip is coloured by its kind; any other stays plain
+            w = x.lower()
+            return next((f'class="chip {c}"' for c, k in (("in-req", "design requirements"), ("in-int", "internal insights"),
+                                                          ("in-ext", "external insights")) if w.startswith(k)), "class=chip")
+        reads = "".join(f"<span {kind(x.strip())}>{_e(x.strip())}</span>" for x in h.get("reads", "").split("·") if x.strip())
+        frm = '<span class=mut> · </span>'.join(cited(e) for e in h.get("comes from", "").split(";") if e.strip())
+        skill, _, note = ai.get("skill", "").partition(" ")
+
+        def dl(fields: tuple, part: dict) -> str:
+            rows = []
+            for key, label in fields:
+                if key == "skill" and skill:
+                    body = f'<code>{_e(skill)}</code>' + (f' <span class=mut>{_e(note)}</span>' if note else "")
+                elif part.get(key):
+                    body = lines(part[key], steps=key == "steps")
+                else:
+                    continue
+                rows.append(f"<dt>{_e(label)}</dt><dd>{body}</dd>")
+            return "<dl>" + "".join(rows) + "</dl>"
+        slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+        return (f'<details class="mcard{" future" if future else ""}" id="method-{slug}"><summary><span class="bjt-chev">▸</span><div class=mc-sum>'
+                f'<div class=mc-top><span class=mnum>{n}</span><span class=mc-name>{_e(name)}</span>{status}</div>'
+                f'<div class=mc-move>{_e(h.get("move", ""))}</div>'
+                + (f'<div class=mc-from><span class=lbl>reasoning</span>{_e(h["reasoning"])}</div>' if h.get("reasoning") else "")
+                +                 f'<div class=mc-io><span class=lbl>reads</span>{reads}<span class=arrow>→</span>'
+                f'<span class=lbl>returns</span>{_e(h.get("returns", ""))}</div>'
+                + (f'<div class=mc-from><span class=lbl>comes from</span>{frm}</div>' if frm else "")
+                + (f'<div class=mc-from><span class=lbl>taxonomy</span>{prose(h["taxonomy"])}</div>' if h.get("taxonomy") else "")
+                + '</div></summary><div class=mc-body><div class=mc-cols>'
+                f'<div class=mc-col><div class=mc-h>What the literature says</div>{dl(LIT_FIELDS, lit)}</div>'
+                f'<div class="mc-col ai"><div class=mc-h>Applied to AI</div>{dl(AI_FIELDS, ai)}</div></div>'
+                f'<div class=mc-tests><span class=lbl>tested</span><span class=when>{_e(now)}</span> {tested(h.get("test now", ""))}'
+                f'<span class=when>{_e(in_use)}</span> {tested(h.get("test in use", ""))}</div>'
+                + (f'<div class=mc-papers><span class=lbl>papers</span>{"".join(chip(p) for p in ranked(group))}</div>' if group else "")
+                + '</div></details>')
+
+    def render(head: list[str], rows: list[list[str]]):
+        if head != ["family", "method", "card"]:
+            return None
+        out, family = [], None
+        for n, r in enumerate(rows, start=1):
+            path = doc_path.parent / r[2] if len(r) > 2 else None
+            if path is None or not path.is_file():
+                out.append(f'<div class="mcard missing">{n} · {_e(r[1] if len(r) > 1 else "")}: no card at <code>{_e(r[2] if len(r) > 2 else "")}</code></div>')
+                continue
+            f = method_card_fields(path)
+            label, _, gloss = f["head"].get("family", r[0]).partition(":")
+            if label.strip() != family:
+                family = label.strip()
+                out.append(f'<div class=mc-fam><b>{_e(family)}</b>'
+                           + (f' <span class=mut>· {_e(gloss.strip())}</span>' if gloss.strip() else "") + '</div>')
+            out.append(card(n, f))
+        return f'<div class=mcards>{"".join(out)}</div>'
+    return render
+
+
+def render_design_board(snapshot: dict, space: str = "tasks", view: str = "design-theory") -> str:
     aliases = {"goal": "tasks", "brief": "tasks", "frame": "tasks", "plan": "tasks", "design": "tasks",
                "items": "tasks", "run": "tasks", "runs": "tasks", "delivery": "tasks", "ready": "tasks",
-               "theories": "theory", "knowledge": "theory"}
+               "theories": "theory", "knowledge": "theory", "methods": "theory", "studio": "theory", "papers": "theory"}
     selected = aliases.get(space, space) if space else "tasks"
     if selected not in ("tasks", "theory"):
         selected = "tasks"
@@ -390,7 +850,7 @@ def render_design_board(snapshot: dict, space: str = "tasks") -> str:
                       f'↓ Download all designs · {count} · csv</a></div>')
 
     # Theory of Design Space: how to design, then this board's domain knowledge ----
-    theory_html = theory_page(Path(snapshot["board"]))
+    theory_html = theory_page(Path(snapshot["board"]), Path(snapshot["root"]), view)
 
     # The board level has two Spaces (JL 261001): the design tasks, and the theory
     # every design draws on. Every design, run and delivery lives at the page level.
@@ -415,6 +875,29 @@ def render_design_board(snapshot: dict, space: str = "tasks") -> str:
         "ps.forEach(function(p){p.classList.toggle('on',p.dataset.space===s)});"
         "if(w){var u=new URL(location.href);u.searchParams.set('space',s);history.replaceState({},'',u)}}"
         "bs.forEach(function(b){b.onclick=function(){sel(b.dataset.space,true)}});"
+        # a Space's views (Theory: Design theory · Design methods · Papers): one shown at a time, kept in the URL
+        "function loadFrames(pane){pane.querySelectorAll('.view.on iframe.st-frame[data-src]').forEach(function(f){"
+        "if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)})}"
+        "document.querySelectorAll('.pane').forEach(loadFrames);"
+        "document.querySelectorAll('.views button').forEach(function(b){b.onclick=function(){"
+        "var pane=b.closest('.pane');pane.querySelectorAll('.views button').forEach(function(x){x.classList.toggle('on',x===b)});"
+        "pane.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',v.dataset.view===b.dataset.view)});"
+        "loadFrames(pane);"
+        "var u=new URL(location.href);u.searchParams.set('view',b.dataset.view);history.replaceState({},'',u)}});"
+        # a paper's PDF loads only when its card opens; toggle does not bubble, so listen in capture
+        "document.addEventListener('toggle',function(ev){var w=ev.target;if(!(w.matches&&w.matches('details.rp-card')))return;"
+        "var f=w.open&&w.querySelector('iframe[data-pdf]');if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf)},true);"
+        # a paper named in the Design methods table opens its card in the Papers view
+        "function toPaper(id){var c=document.getElementById(id);if(!c)return;var b=document.querySelector('.views button[data-view=papers]');"
+        "if(b&&!b.classList.contains('on'))b.click();var f=c.closest('details.rp-more');if(f)f.open=true;c.open=true;"
+        "c.scrollIntoView({block:'start'});history.replaceState({},'',location.pathname+location.search+'#'+id)}"
+        "document.querySelectorAll('a.to-paper').forEach(function(a){a.onclick=function(e){e.preventDefault();"
+        "toPaper(a.getAttribute('href').slice(1))}});"
+        "if(location.hash.indexOf('#paper-')===0)toPaper(location.hash.slice(1));"
+        # "Show only the papers with a PDF": hide the rest, and open the folds so every PDF card shows
+        "document.querySelectorAll('.rp-only').forEach(function(b){b.onclick=function(){var l=b.closest('.rp-list'),"
+        "on=!l.classList.contains('only-pdf');l.classList.toggle('only-pdf',on);b.setAttribute('aria-pressed',on);"
+        "if(on)l.querySelectorAll('details.rp-more').forEach(function(d){d.open=true})}});"
         "document.querySelectorAll('button.do').forEach(function(b){b.onclick=function(){"
         "var box=b.closest('[data-act]'),msg=b.parentNode.querySelector('.msg'),body={path:BOARD,action:b.dataset.action,row:b.dataset.row||''};"
         "if(box){box.querySelectorAll('input,textarea,select').forEach(function(f){if(f.name)body[f.name]=f.value})}"
@@ -708,7 +1191,8 @@ class DesignBoardMixin:
             # a bare link is a question with a good answer (the list); a wrong name is a 404
             return self._design_board_send(body, 404 if raw else 200, head_only)
         snapshot = design_board_snapshot(board, self.root)
-        body = render_design_board(snapshot, (query.get("space") or ["goal"])[0]).encode("utf-8")
+        body = render_design_board(snapshot, (query.get("space") or ["goal"])[0],
+                                   (query.get("view") or ["design-theory"])[0]).encode("utf-8")
         return self._design_board_send(body, 200, head_only)
 
     def design_bundle_view(self, head_only=False):

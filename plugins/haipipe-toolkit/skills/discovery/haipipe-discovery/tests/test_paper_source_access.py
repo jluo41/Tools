@@ -35,6 +35,29 @@ class PaperSourceAccessTest(unittest.TestCase):
         )
         self.assertEqual("metadata-only", record["retrieval"]["reading_depth"])
 
+    def test_openalex_reads_one_work_by_doi_and_drops_boilerplate_abstracts(self) -> None:
+        seen = []
+
+        def fake(url, timeout):
+            seen.append(url)
+            words = {"International": [0], "audience": [1]} if "short" in url else \
+                {"w%d" % i: [i] for i in range(40)}
+            return {"id": "https://openalex.org/W1", "abstract_inverted_index": words,
+                    "open_access": {"is_oa": True}, "best_oa_location": {"pdf_url": "https://example.org/p.pdf"}}, "ok"
+
+        real = paper_source_access._get_json
+        paper_source_access._get_json = fake
+        try:
+            short = paper_source_access._openalex("10.1000/short", 1.0)
+            full = paper_source_access._openalex("10.1000/full", 1.0)
+        finally:
+            paper_source_access._get_json = real
+        # a single-work lookup, not a filtered search (searches run out of budget first)
+        self.assertEqual("https://api.openalex.org/works/doi:10.1000/short", seen[0])
+        self.assertIsNone(short["abstract"])
+        self.assertEqual(40, len(full["abstract"].split()))
+        self.assertEqual("https://example.org/p.pdf", full["pdf_url"])
+
     def test_markdown_exposes_required_human_links_and_scope(self) -> None:
         record = {
             "links": {

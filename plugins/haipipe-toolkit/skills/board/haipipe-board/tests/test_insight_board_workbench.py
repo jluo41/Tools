@@ -188,6 +188,42 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             groom = groom_snapshot(board, snap)
             self.assertFalse(groom["bindable_handoffs"])
 
+    def test_insight_space_has_a_methods_subspace_with_cards_and_papers(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            apps = root / "examples-x" / "Project-Demo" / "applications"
+            apps.mkdir(parents=True)
+            board = board_fixture(apps)
+            ref = root / "ref"
+            (ref / "methods").mkdir(parents=True)
+            (ref / "methods" / "01-by-look.md").write_text(
+                "By look\n=======\n\nfamily: From the data: look first\nmove: Plot every field before asking.\n"
+                "reads: data\nreturns: candidate patterns\ntest now: T0 spec\n\n"
+                "What the literature says\n------------------------\n\nrationale: Look before you test [Tukey 1977].\n",
+                encoding="utf-8")
+            (ref / "discovery.md").write_text(
+                "Discovery methods\n=================\n\n| family | method | card |\n|---|---|---|\n"
+                "| From the data | By look | methods/01-by-look.md |\n", encoding="utf-8")
+            (ref / "papers.md").write_text(
+                "| group | role | key | paper | venue | doi | why here | pdf |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| by look | classic | ★ | Tukey 1977 · Exploratory Data Analysis | Addison-Wesley |  | look first |  |\n"
+                "| by look | evidence |  | Doe, Roe & Poe 2020 · A test of looking | Management Science | 10.1/x | it was tested |  |\n",
+                encoding="utf-8")
+            with patch("live.insightboard.DISCOVERY_METHODS", ref / "discovery.md"), \
+                    patch("live.insightboard.DESIGN_METHODS", ref / "missing.md"), \
+                    patch("live.insightboard.METHOD_PAPERS", ref / "papers.md"):
+                html = render_insight_board(board_snapshot(board, root), "insight", "QW1", "full")
+            self.assertIn('data-view="methods">Methods</button>', html)        # a sub-space beside Questions
+            for k in ("discovery", "design", "papers"):
+                self.assertIn(f'data-mview="{k}"', html)
+            self.assertIn('id="method-by-look"', html)                          # a card per index row
+            self.assertIn("tested in 1 study", html)                             # its evidence row counts
+            self.assertIn('class="cite to-paper"', html)                         # [Tukey 1977] opens its paper
+            self.assertIn("No design methods file yet", html)                    # a missing file says so
+            self.assertIn("2 papers · 1 key", html)
+            self.assertIn("rp-utd", html)                                        # Management Science is UTD24
+            self.assertIn("Add a paper", html)                                   # the Runs panel offers it
+
     def test_runtime_inventory_counts_shared_native_run_once_and_refreshes(self):
         with TemporaryDirectory() as td:
             root = Path(td)

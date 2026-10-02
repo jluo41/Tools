@@ -3,6 +3,8 @@
 
 ## 2.3.0 · 2026-10-01 · Evidence needs in the gates (JL 261001)
 
+- Every answering page, at every level, is written through the `haipipe-page` flow (structure, write, check); the Wisdom-only exemption in `ref/run-workflow.md` is gone (JL reversed the earlier "support tickets plus a report" rule). GI2-GI4 also require `page.py health` without FAIL and a page CHECK by an agent that did not write the page; GI4 requires every refusal to be shown by a probe run.
+
 - GI1 requires evidence needs with kinds legal at the rung; GI2, GI3 and GI4 require `haipipe-insight-check` to find every need bound, fit, cited and current (GI4: no compute need reasoned away); GI6 settles only without an overclaim. Contract: `haipipe-insight/ref/evidence-needs.md`.
 
 ## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)

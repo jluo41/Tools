@@ -1,9 +1,14 @@
 # haipipe-insight-information · version history
 
 
+## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- The page is a haipipe-page Page written through its flow (plan, Draft, adopt, health, page CHECK by another agent); each need is one Evidence Item carrying `**Need**:`, with no id in the prose. Binding follows each need's work spec exactly; configs list need ids.
+
 ## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
 
 - The join is the evidence need: each question binds only its own grouping's files, with the fields its `pass:` names; a run on the topic that lacks them does not fit. GI3 uses `haipipe-insight-check`; the page cites `[QI<n>.E<k>]` and records `results-read:`.
+- Page shape follows `ref/report.md` § Shape (a Page Face: objective title, the Opening answers, one division per need), replacing the finding-as-headline rule.
 
 ## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 

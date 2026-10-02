@@ -34,6 +34,27 @@ _DRAW_LOCK_GUARD = threading.Lock()
 _DRAW_LOCKS = {}
 
 
+def under_root(root, rel, resolved):
+    """Is `resolved` (the file `rel` names) inside --root? A folder linked in at the root
+    itself counts as inside: the owner put it there (`Tools` -> `../Tools-SPACE`, where the
+    design workbench keeps its methods drawing). A link deeper down is not followed out."""
+    root = Path(root)
+    try:
+        resolved.relative_to(root.resolve())
+        return True
+    except ValueError:
+        pass
+    parts = Path(rel).parts
+    link = root / parts[0] if parts else None
+    if link is None or parts[0] in ("..", ".") or not link.is_symlink():
+        return False
+    try:
+        resolved.relative_to(link.resolve())
+        return True
+    except ValueError:
+        return False
+
+
 def legacy_folded_page_scene(path):
     """Whether ``path`` is a retired flat lane beneath a folded Page."""
     path = Path(path)
@@ -614,9 +635,7 @@ class XcalMixin:
         if not isinstance(els, list):
             return {"ok": False, "err": "elements must be a list"}
         f = (self.root / rel).resolve()
-        try:
-            f.relative_to(self.root.resolve())
-        except ValueError:
+        if not under_root(self.root, rel, f):
             return {"ok": False, "err": "outside --root"}
         if f.suffix != ".excalidraw" or not f.exists():
             return {"ok": False, "err": f"no scene at {rel!r}"}

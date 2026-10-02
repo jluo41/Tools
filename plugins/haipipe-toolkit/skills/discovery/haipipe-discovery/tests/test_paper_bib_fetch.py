@@ -408,5 +408,33 @@ class RuntimeStampTest(unittest.TestCase):
             self.assertNotIn("status: verified", text)
 
 
+
+class KeyRenameTest(unittest.TestCase):
+    def test_a_colliding_key_is_renamed_and_every_field_stays_verbatim(self) -> None:
+        # Crossref keys both of an author's 2019 papers `O_Cathain_2019`; the Task Bib refuses
+        # two entries under one key, so the second Result takes its own key
+        import contextlib
+        import io
+        with tempfile.TemporaryDirectory() as td:
+            src, result = Path(td) / "export.bib", Path(td) / "r02_luo2026_traits"
+            src.write_text(CROSSREF_ONE_LINE, encoding="utf-8")
+            result.mkdir()
+            (result / "runtime.yaml").write_text("run: r02_luo2026_traits\nstatus: planned\n", encoding="utf-8")
+            argv = ["paper_bib_fetch.py", "--bib-file", str(src), "--source-url", "https://example.org/export.bib",
+                    "--title", "Mapping patient-perceived physician traits from nationwide online reviews with LLMs",
+                    "--expected-year", "2026", "--key", "Luo_2026_traits", "--result-dir", str(result)]
+            old_argv, sys.argv = sys.argv, argv
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, paper_bib_fetch.main())
+            finally:
+                sys.argv = old_argv
+            bib = (result / "r02_luo2026_traits.bib").read_text(encoding="utf-8")
+            self.assertEqual(CROSSREF_ONE_LINE.replace("{Luo_2026,", "{Luo_2026_traits,", 1), bib)
+            runtime = (result / "runtime.yaml").read_text(encoding="utf-8")
+            self.assertIn('  key_from: "Luo_2026"', runtime)
+            self.assertIn("  mode: verbatim_copy", runtime)
+
+
 if __name__ == "__main__":
     unittest.main()

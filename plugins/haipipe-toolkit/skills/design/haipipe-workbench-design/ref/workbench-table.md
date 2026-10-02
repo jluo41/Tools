@@ -13,11 +13,13 @@ enforces the gates; it is no row's Skill.
 | board | Design Tasks | Task list | Add design tasks | haipipe-designer-agent | haipipe-design-brief | the task list |
 | board | Design Tasks | Shared rules | Set shared rules | haipipe-designer-agent | haipipe-design-brief | the rules |
 | board | Theory of Design | Design theory | none | none | none | none |
-| board | Theory of Design | Domain | Add a theory | haipipe-discovery-orchestrator-agent | haipipe-design-theory (new) | the source check |
+| board | Theory of Design | Design methods | none | none | none | none |
+| board | Theory of Design | Papers | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
 | page | Design Goal | Aim | Frame the aim | haipipe-designer-agent | haipipe-design-goal | the aim |
 | page | Design Goal | Venue | Pin the venue | haipipe-designer-agent | haipipe-design-goal | none |
 | page | Design Goal | Rules | Set the rules | haipipe-designer-agent | haipipe-design-goal | the rules |
 | page | Design Goal | Resources | Gather resources | haipipe-designer-agent | haipipe-design-goal | none |
+| page | Design Goal | Resources | Add a theory | haipipe-discovery-orchestrator-agent | haipipe-design-theory (new) | the source check |
 | page | Design Goal | Leave out | Set what to leave out | haipipe-designer-agent | haipipe-design-goal | the rules |
 | page | Design | Variables | Map variables | haipipe-designer-agent | haipipe-design-frame (new) | none |
 | page | Design | Cards | Add a design | haipipe-designer-agent | haipipe-design-frame (new) | none |

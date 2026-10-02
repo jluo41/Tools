@@ -6,10 +6,14 @@ from tempfile import TemporaryDirectory
 
 from live import design_actions as acts
 from live.design import (
+    _row_lineage,
+    _row_texts,
+    _walk,
     with_link,
     because_rule,
     because_words,
     design_contract_status,
+    design_elements,
     design_snapshot,
     is_current_design_page,
     modern_file,
@@ -136,19 +140,20 @@ class DesignItemsTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "design", "ITEM01")
-            for label in ("Hi, it&#x27;s Dr. {NAME}&#x27;s office.", "follows the evidence",
-                          "built on evidence", "ready for Delivery",
+            for label in ("Hi, it&#x27;s Dr. {NAME}&#x27;s office.", "ready for Delivery",
                           "Page level", "Queue revise · agent", 'data-label="Add a design"',
                           # the explanation reads as blocks, the insight as a flow (JL 260918)
                           # open, the card keeps the closed row's three columns (JL 261001)
                           "<div class=cardgrid>", '<div class="col why">', '<div class="col eval">',
-                          "<h4 class=colh>Design move</h4>", "<summary>Insight Evidence · ", "<summary>Design Runs</summary>",
+                          # Rationale: the design move, then the Evidence chain and the Design elements (JL 261001)
+                          "<h4 class=colh>Design move</h4>", "<summary>Evidence chain · ", "<summary>Design elements · ",
+                          "<summary>Design Runs</summary>",
                           "<summary>Acceptance · ", "<summary>Expected effect · ",
                           "not tested yet, judged at the send",
-                          "<span class=lvl>Wisdom</span>", "<b>Send salience</b>", " · signed",
+                          "<span class=rid>W1</span>", "DO send <code>salience</code> to the whole population",
+                          "Send salience<span class=mut> · signed</span>",
                           # named criteria (length, optout) still mark their rules: audit M5
                           "5 of 5 pass",
-                          "Rules it implies: DO send",
                           # each item folds into one fixed-height row; the selected one opens (JL 260918)
                           # a card row in three columns, under the design goal in brief (JL 261001)
                           '<details class="itemfold cardrow" open><summary><span class=c1><span class=line><b>Design 1</b> <span class=glyph',
@@ -161,6 +166,30 @@ class DesignItemsTest(unittest.TestCase):
                           "data-fold=open", "class=itembody", ".itembody .pair .pic{position:sticky",
                           "Expected</span>salience stays the best arm",
                           "Wrong if</span>a concurrently fielded"):
+                self.assertIn(label, rendered)
+            # the Design elements come first, then the Evidence chain they rest on (JL 261001)
+            self.assertLess(rendered.index("<summary>Design elements · "), rendered.index("<summary>Evidence chain · "))
+            self.assertNotIn("As the designer recorded it", rendered)              # no record, no record table
+
+    def test_design_elements_show_the_designers_record(self):
+        # JL 261002: each element is chosen by reasoning (System 2) or by intuition (System 1),
+        # and comes from the requirements, an internal or an external insight; document both
+        with TemporaryDirectory() as td:
+            board, page, runs = v2_fixture(Path(td))
+            result_dir = page.parent / "results" / runs["ITEM01"]["generate"]
+            (result_dir / "elements.yaml").write_text(
+                "- element: sender\n  words: \"Hi, it's Dr. {NAME}'s office.\"\n  from: requirements\n"
+                "  source: \"Design Goal: personalization\"\n  thinking: reasoned\n  because: a known sender reads as safe\n"
+                "- element: the ask\n  words: New prescription details require your review\n  from: intuition\n"
+                "  source: none\n  thinking: intuitive\n", encoding="utf-8")
+            manifest = result_dir / "result.yaml"
+            manifest.write_text(manifest.read_text(encoding="utf-8") + "elements: {path: elements.yaml}\n", encoding="utf-8")
+            rendered = render_design(design_snapshot(page, board), "design", "ITEM01")
+            for label in ("As the designer recorded it", "1 reasoned · 1 intuitive", "2 recorded</",
+                          '<span class="el-from requirements">requirements</span> · <span class=el-how>reasoned</span>',
+                          "<span class=ids>Design Goal: personalization</span>",
+                          "<span class=ids>because a known sender reads as safe</span>",
+                          '<span class="el-from intuition">intuition</span> · <span class=el-how>intuitive</span>'):
                 self.assertIn(label, rendered)
             # the strip of Runs and the all-items bar are gone (JL 260921)
             for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01",
@@ -450,8 +479,8 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             self.assertTrue(row["pinned"])
             self.assertEqual(snapshot["insight_space"]["unused"], [])   # the one handoff is used
             rendered = render_design(snapshot, "insight")
-            for label in ("<span class=lvl>Wisdom</span>", "<b>Send salience</b>", " · signed",
-                          "Rules it implies: DO send"):            # the card's Supporting insight ladder
+            for label in ("<span class=rid>W1</span>", "Send salience<span class=mut> · signed</span>",
+                          "DO send <code>salience</code>"):        # the card's Evidence chain
                 self.assertIn(label, rendered)
 
     def test_insight_space_flags_an_item_built_on_evidence_with_none_named(self):
@@ -473,7 +502,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             block = next(b for b in snapshot["insight_space"]["items"] if b["item"]["id"] == "ITEM02")
             self.assertTrue(block["needed"])
             rendered = render_design(snapshot, "insight")
-            self.assertIn("No insight page named yet.", rendered)
+            self.assertIn("No insight row named yet.", rendered)
 
 
 class BecauseRuleTest(unittest.TestCase):
@@ -514,10 +543,14 @@ class BecauseRuleTest(unittest.TestCase):
             first = snapshot["items"][0]
             self.assertEqual(first["because_rule"]["state"], "rule")
             rendered = render_design(snapshot, "design")
-            self.assertIn("<h4 class=colh>Rule followed</h4>", rendered)
-            self.assertIn("send `salience` to the whole population", rendered)
+            # the named rule heads the Evidence chain, in its own words
+            self.assertIn("<summary>Evidence chain · <span class=mut>W1</span></summary>", rendered)
+            self.assertNotIn("No row is named for this design", rendered)
+            self.assertIn("DO send <code>salience</code> to the whole population", rendered)
             first["stance"] = "challenge"
             self.assertIn("if it loses, the rule holds", render_design(snapshot, "design"))
+            first["because"] = "FW01 · W9"
+            self.assertIn("FW01 · W9 · no such row on the cited page", render_design(snapshot, "design"))
 
 
 class DesignSignalTest(unittest.TestCase):
@@ -727,12 +760,89 @@ class BatchAndDraftTest(unittest.TestCase):
                                               "action": "draft-request", "item": "__all__", "actor": "JL"})
             self.assertIn("already open", err)
 
-    def test_insight_space_lists_the_rules_the_page_implies(self):
+    def test_evidence_chain_starts_at_the_do_rows_and_names_its_limits(self):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "insight")
-            self.assertIn("Rules it implies: DO send", rendered)
+            # no row named: the chain starts from the cited Wisdom page's DO rows, and says so
+            self.assertIn("DO send <code>salience</code> to the whole population", rendered)
+            self.assertIn("No row is named for this design", rendered)
+            register = plan_folder(page.parent) / f"{page.stem}-design-items.md"
+            register.write_text(register.read_text(encoding="utf-8").replace(
+                "basis: evidence-informed\n", "basis: evidence-informed\nbecause: FW01 · W1, W2\n", 1), encoding="utf-8")
+            rendered = render_design(design_snapshot(page, board), "design")
+            # a named DO NOT row is a limit of the design, not a link in its chain
+            self.assertIn("<h4 class=colh>Limits</h4>", rendered)
             self.assertIn("DO NOT vary the message by age, gender, send day or region", rendered)
+
+
+class EvidenceChainTest(unittest.TestCase):
+    """The Rationale column's two folds (JL 261001): the chain the insight pages record,
+    walked down from a Wisdom row, and the design's elements against its starting text."""
+
+    def board(self, root: Path) -> Path:
+        pages = {
+            "1-full/W01-full-send-salience": "# Send salience\n\n```text\nid   counsel                        from\n"
+                                             "W1   DO send `salience` to all.     K01-full · K1\n```\n\n"
+                                             "```text\nW1  ←  K01-full · K1        the best arm\n```\n",
+            "1-full/K01-full-arm-separation": "# Arm separation\n\n```text\nK1  `salience` outperforms every\n"
+                                              "    other arm.                     STRONG\n```\n\n"
+                                              "```text\nK1  ←  I02-full · I1, I2, I13-full   rates\n    ←  I11-full · I1   spread\n```\n",
+            "1-full/I02-full-arm-performance": "# Arm performance\n\n```text\nid    arm         n        click %   auth %\n"
+                                               "I1    salience    34,458   66.0572   54.8755\n"
+                                               "I2    progress    34,407   64.4520   —\n```\n\n"
+                                               "```text\nI1..I2      ←   D03-full · D8 cell grid      k and n\n```\n",
+            "1-full/D03-full-funnel-counts": "# Funnel counts\n\n**D8, the cell grid.** Ten files.\n",
+        }
+        (root / "board.md").write_text("# Board\n", encoding="utf-8")
+        for rel, text in pages.items():
+            folder = root / rel
+            folder.mkdir(parents=True)
+            (folder / f"{folder.name}.md").write_text(text, encoding="utf-8")
+        return root
+
+    def test_lineage_and_rows_are_read_as_the_pages_write_them(self):
+        with TemporaryDirectory() as td:
+            board = self.board(Path(td))
+            k01 = (board / "1-full/K01-full-arm-separation/K01-full-arm-separation.md").read_text(encoding="utf-8")
+            self.assertEqual(_row_lineage(k01)["K1"], [("I02-full", ["I1", "I2"]), ("I13-full", []), ("I11-full", ["I1"])])
+            self.assertEqual(_row_texts(k01)["K1"], "`salience` outperforms every other arm.")   # STRONG is a side column
+            i02 = (board / "1-full/I02-full-arm-performance/I02-full-arm-performance.md").read_text(encoding="utf-8")
+            self.assertEqual(_row_texts(i02)["I1"], "salience · n 34,458 · click % 66.0572 · auth % 54.8755")
+            self.assertEqual(_row_lineage(i02)["I2"], [("D03-full", ["D8"])])               # a range on the left
+
+    def test_a_chain_walks_the_first_cited_parent_down_to_the_data(self):
+        with TemporaryDirectory() as td:
+            board = self.board(Path(td))
+            chain = _walk(board / "1-full/W01-full-send-salience/W01-full-send-salience.md", "W1")
+            self.assertEqual([(n["pid"], n["id"]) for n in chain],
+                             [("W01-full", "W1"), ("K01-full", "K1"), ("I02-full", "I1"), ("D03-full", "D8")])
+            self.assertEqual([(ref, rows) for ref, _page, rows in chain[1]["also"]],
+                             [("I02-full", "I2"), ("I13-full", ""), ("I11-full", "I1")])
+            self.assertEqual(chain[3]["text"], "D8, the cell grid.")
+
+    def test_elements_say_what_is_kept_new_removed_and_required(self):
+        base = "Hi, it's Dr. {NAME}'s office. New prescription details require your review: Reply STOP to opt-out"
+        stop = "Reply STOP to opt-out"
+
+        def kinds(text):
+            return [(e["kind"], " ".join(w for k, w in e["parts"] if k != "removed"))
+                    for e in design_elements(base, text, stop)]
+        # one added phrase of three words: its sentence is cut into kept and new parts; {LINK} is the goal's
+        self.assertEqual(kinds("Hi, it's Dr. {NAME}'s office. New prescription details from your visit "
+                               "require your review: Reply STOP to opt-out"),
+                         [("kept", "Hi, it's Dr. {NAME}'s office."), ("kept", "New prescription details"),
+                          ("new", "from your visit"), ("kept", "require your review:"), ("goal", "{LINK}"),
+                          ("kept", "Reply STOP to opt-out")])
+        # a sentence reworded in small pieces stays whole, marked changed
+        self.assertEqual(kinds("Hi, it's Dr. {NAME}'s office. One more step for your new prescription. "
+                               "The details require your review: {LINK} Reply STOP to opt-out")[1:3],
+                         [("changed", "One more step for your new prescription."),
+                          ("changed", "The details require your review:")])
+        # words taken out stay inside their sentence, struck
+        removed = design_elements(base, "Hi, new prescription details require your review: Reply STOP to opt-out", stop)[0]
+        self.assertEqual(removed["kind"], "changed")
+        self.assertIn(("removed", "it's Dr. {NAME}'s office."), removed["parts"])
 
 
 class AuditFixesTest(unittest.TestCase):

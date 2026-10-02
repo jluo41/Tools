@@ -195,6 +195,32 @@ The presenter reads Generate render evidence directly; Delivery lists it only
 after independent Verify passes. A Verify may render into its own Result but
 never add a picture to a completed Generate Result.
 
+### Optional element record
+
+A design is made of elements: for a message, its sender, its greeting, the news,
+the ask, the reason, the link and the opt-out. When a criterion commissions it
+(a semantic rule that observes `elements.yaml`), a Generate writes one entry per
+element of the design, in reading order, and names the file in `result.yaml` as
+`elements: {path: elements.yaml}`:
+
+```yaml
+- element: sender                  # the part's role in the design
+  words: "Hi, it's Dr. {NAME}'s office."
+  from: requirements               # requirements | internal | external | intuition
+  source: "Design Goal: personalization"   # the rule, insight row or theory; none for intuition
+  thinking: reasoned               # reasoned (System 2) | intuitive (System 1)
+  because: the goal requires the provider placeholder, and a known sender reads as safe
+  alternatives: ["Your doctor's office"]   # options weighed, when there were any
+```
+
+`from` says which input the element rests on; `thinking` says how it was chosen.
+A reasoned element writes its `because`. An intuitive element is a labeled hunch:
+it records the hunch and names no source, and it never becomes warrant; its
+`because` may stay empty. Record the observable choice, not private
+chain-of-thought. Write the file before `result.yaml`; like content, it must
+not be newer. The Verify checks it against the commissioned criterion, and the
+workbench's Design elements fold shows it beside the text.
+
 ## Lifecycle
 
 Allocation creates caller-owned `runtime.yaml` with run/family/operation/target,

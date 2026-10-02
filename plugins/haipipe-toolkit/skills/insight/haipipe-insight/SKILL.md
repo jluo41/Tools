@@ -14,8 +14,8 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.3.0"
-  last_updated: "2026-10-01"
+  version: "2.7.0"
+  last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -152,6 +152,25 @@ RF never reaches Design directly.
 
 ## Resource laws
 
+**A new board is a Prototype and an Instance** (`ref/prototype-contract.md`,
+JL 261002): `insights/Prototype-Insight-<Topic>/` holds the partitions and one
+folder per question, `<L><NN>-<name>/` in its rung folder (`1-Data` … `4-Wisdom`), with its question file
+v2 (the short question, its name, the ask, Why now, What would answer it, the
+partitions it is asked on, live and retired needs with specs) and its one script;
+a board made the register way becomes a Prototype through `ref/carry_over.py`,
+word for word, never redrafted;
+`insights/Instance-Insight-<Dataset>/` mirrors it (`0-Meta`, `1-Data` … `4-Wisdom`,
+the same question folders): each holds a tracked copy of the question's `scripts/`
+(`prototype.lock`), one run per partition (`runs/<partition>.sh`), its `results/` and
+generated `reports/` per partition, and one page for the question. The runner
+(`ref/run_question.py`) checks power before any contrast (the board-wide smallest
+effect unless a question overrides it with a reason) and gates the output
+against the spec; `ref/scaffold_instance.py` makes the question folders, `ref/sync_instance.py` tracks the
+scripts between the boards, `ref/record_check.py` records a page CHECK;
+`haipipe-insight-check` `ref/check_instance.py` computes every cell. No task
+Block, no `answers.yaml`, no hand-kept grid. The laws below describe boards
+made before it, which keep their layout.
+
 - One board owns one source extract and lives at
   `<Project>/insights/<Dataset>-InsightBoard/`. A subgroup is a partition; a
   child board requires a SPLIT verdict and its own consumer.
@@ -161,11 +180,18 @@ RF never reaches Design directly.
   `runs/<ticket>.sh` call the task's own ticket with `RESULT_DIR` set to the
   page's `results/<ticket>/`. The board has no store.
 - **The evidence need is the join** (`ref/evidence-needs.md`). Each question
-  lists its needs `<QID>.E<n>` (compute · cite · judge) before any run; the
-  answering page's `answers.yaml` binds each need to the narrowest result files
-  whose fields carry its `pass:`; the page text cites `[<QID>.E<n>]`. A cell is
-  ✅ only when `haipipe-insight-check` finds every need bound, fit, cited and
-  current. A config's `answers:` is a cross-check derived from the bindings.
+  lists its needs `<QID>.E<n>` (compute · cite · judge) before any run, and
+  every compute need carries a work spec (cut, unit, measure, grouping or
+  contrast, uncertainty, rivals, output columns) written from the ask alone.
+  Work follows the spec: the question owns its run (one run, one question;
+  spec words quoted from the ask; every ask phrase covered; the run proposed
+  before any task is read; reuse only on an identical output). The page's
+  `answers.yaml` binds each need; the called config lists the need ids it serves.
+- **The report is a `haipipe-page` Page** (`ref/report.md`), at every level:
+  each need is one Evidence Item and one Content division, the Content is
+  adopted from the Draft, and the page passes `page.py health` and a page CHECK
+  by another agent. A cell is ✅ only when that holds and
+  `haipipe-insight-check` finds every need bound, fit, cited and current.
 - D and I are answered by runs; K claims on a page from named results; W
   counsels on a page from named K pages. `cross` permits the declared mirrored-I
   contrast and K-from-K pooling verdict: `POOL`, `SPLIT`, or evidence-supported
@@ -197,10 +223,10 @@ meta | sources      create/resume the one MT00 (`haipipe-insight-meta`)
 question | ask      register one question from plain words: the verb decides level, partitions
                     and lineage, then writes the row (`haipipe-insight-question`) ·
                     NEVER answer it there
-plan                plan one question's evidence needs on its row, for a person to agree
-                    (`haipipe-insight-evidence-plan`)
+plan                plan one question's evidence needs and their work specs on its row,
+                    for a person to agree (`haipipe-insight-evidence-plan`)
 bind                bind one page's needs to result files in its answers.yaml, writing and
-                    running tickets; new computation waits for a person's release
+                    running tickets; new computation runs once a reviewer agent agrees its spec
                     (`haipipe-insight-bind`)
 climb | chain       open or extend the frontier rung for one question (`haipipe-insight-workflow` + selected Folder owner):
                     plan its needs, bind each to a task run's files (adding the run when none
@@ -217,9 +243,9 @@ settle              flip the register cell ✅ <page id>, 🚫 with a reason, or
 handoff             draft the W page's Design Handoff division · ✋ a person signs its
                     `signed:` row — `signed: ✅ <initials> <YYMMDD>`, never a machine ·
                     the door RECORDS a signature the person states, never decides one
-report              write or refresh the answering page's .md from its own results/
-                    (headline, answer, strength, limit, the runs it read, each need cited,
-                    results-read:) · ref/report.md ·
+report              write or refresh the answering page through the haipipe-page flow:
+                    plan (one Evidence Item and division per need), Draft, `page.py adopt`,
+                    `page.py health`, a page CHECK by another agent · ref/report.md ·
                     the level's folder skill writes it; it never settles a cell
 check | review      CHECK selected answering pages and Wisdom pages in a fresh context:
                     `haipipe-insight-check` (needs bound, fit, cited, current; a failing ✅ is an
@@ -228,7 +254,7 @@ check | review      CHECK selected answering pages and Wisdom pages in a fresh c
 workflow | run      execute selected Run Specs and controls (§Execution): pin → dispatch → receipt → settle
 ```
 
-New Supporting computation is released by a person through the owning Page's
+New Supporting computation is released by an independent reviewer agent that agreed its spec, through the owning Page's
 SURVEY `Decide`; a W handoff is signed by a person. Prior explicit durable
 release may be consumed, never inferred. Page passes use `mode: copilot` and
 retain their native outline, evidence-verification and acceptance rules.

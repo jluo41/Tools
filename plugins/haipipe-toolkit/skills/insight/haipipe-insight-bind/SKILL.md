@@ -11,7 +11,7 @@ description: >-
   /haipipe-insight-bind.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md
 ---
@@ -29,40 +29,54 @@ Project's DIKW task Block (`tasks/b5N_<topic>_dikw/`).
 
 ## Steps
 
-1. **List the needs.** Every live need of every question the page answers.
-   Unagreed needs may be bound; say so in the reply.
-2. **compute · search before building.** Read the Block's task pages and
-   configs and the outputs their workers declare. A need is met by a file
-   only when its columns or keys carry what `pass:` names: an interval when
-   the need asks uncertainty, an adjusted rate when it asks adjustment, a
-   held-out score when it asks prediction. A file about the same topic that
-   lacks them does not fit.
-3. **compute · nothing fits.** Propose the smallest change: a grouping added
-   to an existing config, a new config of an existing task, or a new task in
-   the rung's Job (`j3N_knowledge_<topic>` for a Knowledge test), through
-   `haipipe-task`. New computation is released by a person; stop for that
-   release, never infer it.
-4. **Ticket and run.** Write the page ticket
+1. **List the needs and their specs.** Every live need of every question the
+   page answers, with each compute need's work spec. A compute need without a
+   spec goes back to `haipipe-insight-evidence-plan`: nothing is bound before
+   the spec exists. Unagreed needs may be bound; say so in the reply.
+2. **compute · match the spec exactly.** Read the Block's task pages, configs
+   and the outputs their workers declare, against the spec, in this order:
+   the cut (the config's `population`), the unit (what one row is), the
+   measure, the grouping or contrast, the uncertainty, the rivals, then the
+   spec's output file and columns. A run fits only when every item matches. A
+   run on the same topic that misses one does not fit, however close.
+3. **compute · nothing fits.** A run fits only if its config serves this
+   question alone and it already writes the proposed files and columns, with
+   nothing the ask does not name (`haipipe-insight` ref/evidence-needs.md, hard
+   rules 1 and 5). Otherwise give the question its own run: a new config of an
+   existing task when that task's code computes exactly the proposal, else a
+   new task built from the proposal in the rung's Job (`j3N_knowledge_<topic>`
+   for a Knowledge test), through `haipipe-task`. Never extend another
+   question's run with a column or a grouping to make it fit. New computation
+   runs only once an independent reviewer agent has agreed the need's spec; the
+   bind step never releases its own work.
+4. **A refusal gets a probe run.** A need that will be refused ("no field",
+   "never varied") is bound to the run that shows the absence; write its
+   `refused:` reason beside that `ticket` and its `files`.
+5. **Ticket and run.** Write the page ticket
    `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh` (it sets `RESULT_DIR` and
    `RUN_TICKET` and execs the task's own ticket) and run it. The result is
    generated; never edit it.
-5. **Write `answers.yaml`.** compute: `ticket`, `files` (the narrowest files,
-   `<table>_by_<grouping>.csv` rather than the whole result) and `fields`
-   (the columns or dotted JSON keys that carry `pass:`). cite: `pages`, or
-   omit to use the register's page for the cited question on this partition.
-   judge: `judge`. refused: a reason, only for a cell that will settle 🟡 or 🚫.
-6. **Sync the header.** The page's `runs:` line lists its tickets; the called
-   configs' `answers:` lists are re-derived from the board's `answers.yaml`
-   files (a cross-check, never the join).
-7. **Check.** Run `haipipe-insight-check` for the page. Report each need's
+6. **Write `answers.yaml`.** compute: `ticket` and `files` (every spec output
+   file; an optional `fields:` adds columns beyond the spec's). cite: `pages`,
+   or omit to use the register's page for the cited question on this
+   partition. judge: `judge`. refused: `refused:` plus the probe's `ticket`
+   and `files`, only for a cell that will settle 🟡 or 🚫.
+7. **Sync the configs.** Run `ref/sync_config_answers.py <board>`: it rewrites
+   each called config's `answers:` line to the need ids the board's
+   `answers.yaml` files bind to it (`answers: [QK2.E1, QI4.E1]`). The page's
+   `runs:` header lists its tickets.
+8. **Check.** Run `haipipe-insight-check` for the page. Report each need's
    binding and any GAP left; a GAP for an uncited need is expected until the
-   page is written.
+   page is written through `haipipe-page` (`haipipe-insight` `ref/report.md`).
 
 ## Rules
 
 - Never answer a compute need by pointing at another page's prose: that is a
   GAP, not a cite. A cite binds a need the other page itself binds.
-- Bind where the answer is: one run may serve many needs and many pages.
+- Never fit the spec to an existing run: when they disagree, the run changes or
+  a new one is built; the spec changes only through a retired need and a new id.
+- One run, one question: a run serves the needs of one question, on every page
+  that answers it; a second question gets its own run, even from the same code.
 - Never write the page's text, its `results-read:` line or a register cell.
 - Aggregate output only; heavy output goes to `HEAVY_DIR` with a `heavy.yaml`
   pointer (AGENTS.md rule 10).

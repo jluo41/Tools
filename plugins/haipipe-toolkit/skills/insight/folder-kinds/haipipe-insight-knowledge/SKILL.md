@@ -6,7 +6,7 @@ description: >-
   from named results and Information pages, never advising. Trigger: insight
   knowledge, claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   last_updated: "2026-10-01"
   workflow: haipipe-insight-workflow
   folder_kind: knowledge
@@ -15,7 +15,7 @@ metadata:
   legacy_page_type: knowledge
   group-token: "K"
   report:
-    shape: "headline (the claim) → evidence cited → strength → rivals → boundary; the pooling verdict cites the heterogeneity page"
+    shape: "Page Face: objective title; Opening answers (the claim); Content one division per need, the judge need last (strength → rivals → boundary); the pooling verdict cites the heterogeneity page"
 ---
 
 # /haipipe-insight-knowledge · make the bounded claim
@@ -46,14 +46,19 @@ population/window/unit boundary.
 
 ## The page
 
-The answering page's `.md` (`<n>-<partition>/K<NN>-<partition>-<slug>/K<NN>-<partition>-<slug>.md`,
-`haipipe-insight` `ref/report.md`) is the report, written by a Report run. A
-page may answer several QK questions; the register cell names it. Shape:
-headline (the claim) → evidence cited (each number with its ticket and result
-file `results/<ticket>/<file>` and its need `[QK<n>.E<k>]`; each Information
-page by its id) → strength → rivals → boundary. One proposition per page section; strength is `STRONG |
-MODERATE | WEAK` plus a reason, in the header's `strength:` line. Rivals and
-boundary are required; weak claims remain legal when honestly typed.
+The answering page (`<n>-<partition>/K<NN>-<partition>-<slug>/`) is a
+`haipipe-page` Page Face written through that skill's flow
+(`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
+adopt`, `page.py health`, a page CHECK by another agent. A page may answer
+several QK questions; the register cell names it. The Opening asks the question
+in plain words and answers with the claim. Content has one division per need:
+each compute need's evidence from its bound files, each cite need's Information
+in plain words, and last the judge division, which holds the proposition, its
+strength and the reason, the rivals with their disposition, and the boundary.
+One proposition per judge division; `strength:` in the header is `STRONG |
+MODERATE | WEAK`. Rivals and boundary are required; weak claims remain legal
+when honestly typed. Each compute or cite need is one Evidence Item carrying
+`**Need**:`; no id appears in the prose.
 
 ### Strength rubric
 
@@ -95,6 +100,11 @@ own ticket `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh` (`RESULT_DIR` set to
 the page's `results/<ticket>/`) and binds it in `answers.yaml`. The Information
 it rests on is a cite need; the proposition, strength and boundary are judge
 needs. A page whose question has only cite and judge needs has no `runs/`.
+
+**A refusal is computed.** "No field measures this" or "the design never
+varies this" is a compute need whose probe run shows the absence (a column
+inventory, a classification of the sent text); a refusal read off another
+page is not evidence.
 
 **A compute need answered by reasoning is a GAP, never a WEAK claim.** When
 the ask names a test and no run computes it, the page does not argue its way

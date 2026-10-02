@@ -1,9 +1,14 @@
 # haipipe-insight-knowledge · version history
 
 
+## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- The page is a haipipe-page Page written through its flow (plan, Draft, adopt, health, page CHECK by another agent); each need is one Evidence Item carrying `**Need**:`, with no id in the prose. Binding follows each need's work spec exactly; configs list need ids ; a refusal needs a probe run.
+
 ## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
 
 - A claim computes whenever its question has a compute need (a gain with uncertainty, an adjusted contrast for a named rival, a held-out score, a size); a compute need answered by reasoning is a GAP, never a WEAK claim. Rivals the ask names are compute needs. GI4 uses `haipipe-insight-check`.
+- Page shape follows `ref/report.md` § Shape (a Page Face: objective title, the Opening answers, one division per need), replacing the finding-as-headline rule.
 
 ## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 

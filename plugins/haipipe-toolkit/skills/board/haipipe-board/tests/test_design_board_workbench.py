@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from live.design import brief_rows, design_snapshot
+from live import designboard
 from live.designboard import (
     add_tasks,
     bundle_csv,
@@ -13,6 +14,7 @@ from live.designboard import (
     design_boards,
     is_design_board,
     new_folder,
+    papers_page,
     render_design_board,
     resolve_board,
 )
@@ -163,6 +165,193 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             static = render_design_board(design_board_snapshot(board, Path(td), static=True))
             self.assertNotIn("New Design Folder", static)
             self.assertNotIn("<pre class=theory>Deduction", static)
+
+    def test_theory_space_has_three_views_and_papers_read_the_workbench_table(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            snap = design_board_snapshot(board, Path(td))
+            table = Path(td) / "ref" / "design-papers.md"       # the workbench's own table, here a temp one
+            real, designboard.PAPERS = designboard.PAPERS, table
+            self.addCleanup(setattr, designboard, "PAPERS", real)
+            drawing = Path(td) / "Tools" / "ref" / "design-methods.excalidraw"   # and its methods drawing
+            drawing.parent.mkdir(parents=True)
+            drawing.write_text('{"type": "excalidraw", "elements": []}', encoding="utf-8")
+            real_studio, designboard.STUDIO = designboard.STUDIO, drawing
+            self.addCleanup(setattr, designboard, "STUDIO", real_studio)
+            theory = render_design_board(snap, "theory")
+            # three general views, one shown at a time (JL 261001): no channel's own theories here
+            for label in ('<button type=button data-view="design-theory" class=on>Design theory</button>',
+                          '<button type=button data-view="methods">Design methods</button>',
+                          '<button type=button data-view="studio">Methods studio</button>',
+                          '<button type=button data-view="papers">Papers</button>',
+                          '<div class="view on" data-view="design-theory">', "No related paper yet"):
+                self.assertIn(label, theory)
+            self.assertIn("3 · Thirteen methods", theory)
+            self.assertIn("2 · Design elements", theory)                # JL 261002: each element, reasoned or intuitive
+            self.assertIn("1 · Three inputs, Design, Exp", theory)          # JL 261002: requirements + insights → Design → Exp
+            self.assertIn("<span class=when>in the Exp</span>", theory)
+            self.assertIn("<span class=when>in Evaluate</span>", theory)                # JL 261002: the Revise loop
+            self.assertIn("The Revise loop (inner)", theory)
+            # the methods studio: the drawing in the Excalidraw canvas, loaded when shown (data-src)
+            self.assertRegex(theory, r'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" '
+                                     r'data-src="/_excalidraw/\?board=[^"]+design-methods\.excalidraw&amp;edit=1"></iframe>')
+            self.assertNotIn("message theories", theory.split('data-view="papers"', 1)[0].split("<nav", 1)[0])
+            table.parent.mkdir(exist_ok=True)
+            table.write_text(
+                "Related papers\n==============\n\n"
+                "| group | role | key | paper | venue | doi | why here | pdf |\n|---|---|---|---|---|---|---|---|\n"
+                "| all methods | classic | ★ | Simon 1969 · The Sciences of the Artificial | MIT Press | 10.7551/mitpress/12107.001.0001 | it satisfices | none |\n"
+                "| by theory | evidence | ★ | Prestwich, Sniehotta & Whittington 2013 · Does theory influence the effectiveness of health behavior interventions? | Health Psychology | 10.1037/a0032853 | theory use not reliably linked to effect | none |\n"
+                "| by theory | classic |  | Michie, van Stralen & West 2011 · The behaviour change wheel | Implementation Science | 10.1186/1748-5908-6-42 | from behaviour to intervention functions | none |\n"
+                "| by exploring | classic |  | Loch, Terwiesch & Thomke 2001 · Parallel and sequential testing of design alternatives | Management Science | 10.1287/mnsc.47.5.663.10480 | parallel or serial | none |\n",
+                encoding="utf-8")
+            papers = render_design_board(snap, "theory", "papers")
+            # the Paper workbench's Related Papers card: the title, then who, when and which journal
+            for label in ('<div class="view on" data-view="papers">',
+                          '<div class="rp-head">4 papers · 2 key · 3 classic · 0 review · 1 evidence · 1 in UTD24 journals · 0 with a PDF</div>',
+                          '<div class="lw-k">By exploring<span class="lw-kn">1</span></div>',
+                          '<div class="lw-k">All methods<span class="lw-kn">1</span></div>',
+                          '<div class="lw-k">By theory<span class="lw-kn">2</span></div>',
+                          '<div class="rp-title">The Sciences of the Artificial</div>',
+                          "<span>Simon · 1969 · MIT Press</span>", "<span>Prestwich et al. · 2013 · Health Psychology</span>", "<span>Michie et al. · 2011 · Implementation Science</span>",
+                          'href="https://doi.org/10.1037/a0032853"', "theory use not reliably linked to effect",
+                          "4 journals and publishers", "No free full text here"):
+                self.assertIn(label, papers)
+            self.assertIn("Add a paper", papers)            # its Runs panel offers the run that adds one
+            # a band shows its key papers and folds the rest; a band with none shows them all (JL 261002)
+            theory_band = papers.split('<div class="lw-k">By theory', 1)[1].split('<div class="lw-k">', 1)[0]
+            self.assertIn("<details class=rp-more><summary>1 more paper</summary>", theory_band)
+            self.assertLess(theory_band.index("Does theory influence"), theory_band.index("rp-more"))
+            self.assertNotIn("rp-more", papers.split('<div class="lw-k">By exploring', 1)[1].split("</section>", 1)[0])
+            # a UTD24 journal is marked on its card (JL 261002), the others are not
+            self.assertEqual(papers.count('<span class=rp-utd title="on the UTD24 journal list">UTD24</span>'), 1)
+
+    def test_design_methods_view_shows_one_card_per_method_with_ai_beside_the_literature(self):
+        # JL 261002: "make each of them a card (design method card)" and add "how this can be
+        # applied to AI": the doc's index names one card file per method
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = root / "Proj" / "designs" / "B00_Demo"
+            board.mkdir(parents=True)
+            ref = root / "ref"
+            (ref / "methods").mkdir(parents=True)
+            doc = ref / "design-methods.md"
+            doc.write_text("Design methods\n==============\n\n2 · Eight methods\n-----------------\n\n"
+                           "| family | method | card |\n|---|---|---|\n"
+                           "| From what is known | By theory | methods/04-by-theory.md |\n"
+                           "| From trying | By exploring | methods/08-by-exploring.md |\n\n"
+                           "| test | asks | when | source |\n|---|---|---|---|\n"
+                           "| T1 Fidelity | does what its method claims it does | now | x |\n", encoding="utf-8")
+            (ref / "methods" / "04-by-theory.md").write_text(
+                "By theory\n=========\n\nfamily: From what is known: the AI reads knowledge before it designs\n"
+                "move: Choose a named theory and use its technique.\ncomes from: Michie 2011, Behaviour Change Wheel\n"
+                "reads: goal · named theories\nreturns: the design and its mechanism\ntest now: T1 technique present\n"
+                "test in use: T4 against the control\n\n\nWhat the literature says\n------------------------\n\n"
+                "rationale: Link the intervention to the behaviour [Michie 2011].\n"
+                "steps: 1. Name the behaviour. 2. Choose a\n  technique.\n"
+                "limitations: Theory use was not linked to effect [Prestwich 2013].\n\n\n"
+                "Applied to AI\n-------------\n\nagent: The agent reads a closed list of techniques.\n"
+                "risk: It names a theory it does not use (ours).\nevidence on AI: No study tests it yet (ours).\n"
+                "skill: haipipe-design-by-theory (proposed)\n", encoding="utf-8")
+            table = ref / "design-papers.md"
+            table.write_text(
+                "| group | role | key | paper | venue | doi | why here | pdf |\n|---|---|---|---|---|---|---|---|\n"
+                "| by theory | classic | ★ | Michie, van Stralen & West 2011 · The behaviour change wheel | Implementation Science | 10.1186/1748-5908-6-42 | functions |  |\n"
+                "| by theory | evidence | ★ | Prestwich, Sniehotta & Whittington 2013 · Does theory influence | Health Psychology | 10.1037/a0032853 | not linked |  |\n",
+                encoding="utf-8")
+            render = designboard.method_cards(board, root, doc, table)
+            page = designboard._plain_md(doc.read_text(encoding="utf-8"), render)
+            self.assertEqual(page.count("<details class=\"mcard\""), 1)                  # the card that exists
+            self.assertIn('no card at <code>methods/08-by-exploring.md</code>', page)  # the one that does not
+            self.assertIn("<div class=mc-fam><b>From what is known</b> <span class=mut>· the AI reads knowledge before it designs</span></div>", page)
+            self.assertIn('<span class="mc-status ok">tested in 1 study</span>', page)
+            self.assertIn('<div class=mc-h>What the literature says</div>', page)
+            self.assertIn('<div class="mc-col ai"><div class=mc-h>Applied to AI</div>', page)
+            for label in ("Rationale", "Steps", "Limitations", "The agent", "AI risk", "Evidence on AI", "Skill"):
+                self.assertIn(f"<dt>{label}</dt>", page)
+            self.assertIn("<div class=line>1. Name the behaviour.</div><div class=line>2. Choose a technique.</div>", page)
+            # a bracketed source links to its paper card; (ours) is marked; a test code is badged
+            self.assertIn('<a class="cite to-paper" href="#paper-10-1037-a0032853"', page)
+            self.assertIn('<span class=ours title="this workbench\'s own judgment">(ours)</span>', page)
+            self.assertIn('<span class=tcode title="T1 Fidelity: does what its method claims it does">T1</span>', page)
+            self.assertIn("<code>haipipe-design-by-theory</code> <span class=mut>(proposed)</span>", page)
+            self.assertIn('Behaviour Change Wheel', page)                            # comes from: link and idea
+            self.assertIn('<table class=mdt>', page)                                  # other tables stay tables
+            # a method to add later is marked so, dashed (JL 261002: co-design "can be one thing so we can add in the future")
+            (ref / "methods" / "10-by-co-design.md").write_text(
+                "By co-design\n============\n\nfamily: From trying\nmove: Design with the people it is for.\n"
+                "status: future: a method to add later\nreads: goal · the people it is for\n", encoding="utf-8")
+            doc.write_text(doc.read_text(encoding="utf-8").replace(
+                "| From trying | By exploring | methods/08-by-exploring.md |",
+                "| From trying | By co-design | methods/10-by-co-design.md |"), encoding="utf-8")
+            later = designboard._plain_md(doc.read_text(encoding="utf-8"), designboard.method_cards(board, root, doc, table))
+            self.assertIn('<details class="mcard future" id="method-by-co-design">', later)
+            self.assertIn('<span class="mc-status future" title="future: a method to add later">future · not run yet</span>', later)
+            # JL 261002: a design reads design requirements, internal insights and external insights;
+            # each input is coloured by its kind, the card says how it reasons, and the test in use is the Exp
+            (ref / "methods" / "10-by-co-design.md").write_text(
+                "By co-design\n============\n\nfamily: Making internal insights now: induction in small loops\n"
+                "reasoning: induction from people's choices\nmove: Design with the people it is for.\n"
+                "reads: design requirements · internal insights: signed rows · external insights: theory · the people it is for\n"
+                "test in use: T4 against the control\n", encoding="utf-8")
+            inputs = designboard._plain_md(doc.read_text(encoding="utf-8"),
+                                           designboard.method_cards(board, root, doc, table, in_use="in the Exp"))
+            for chip in ('<span class="chip in-req">design requirements</span>', '<span class="chip in-int">internal insights: signed rows</span>',
+                         '<span class="chip in-ext">external insights: theory</span>', '<span class=chip>the people it is for</span>'):
+                self.assertIn(chip, inputs)
+            self.assertIn("<div class=mc-from><span class=lbl>reasoning</span>induction from people&#x27;s choices</div>", inputs)
+            self.assertIn("<span class=when>in the Exp</span>", inputs)
+            self.assertIn("<span class=when>in use</span>", later)                    # other boards keep their word
+            self.assertIn("<span class=when>now</span>", later)
+
+    def test_a_paper_card_shows_its_pdf_from_the_workbench_or_its_paper_run(self):
+        # JL 261002: "find these papers' PDF files and embed them", "put them in the Tools of
+        # the workbench of the design": a row's `pdf` names its copy beside the table; without
+        # one, a Paper Run in the board's Project that holds the same DOI lends its own copy
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = root / "Proj" / "designs" / "B00_Demo"
+            board.mkdir(parents=True)
+            ref = root / "Tools" / "ref"
+            (ref / "papers").mkdir(parents=True)
+            (ref / "papers" / "dow2010_parallel.pdf").write_bytes(b"%PDF-1.4\n")
+            table = ref / "design-papers.md"
+            table.write_text(
+                "| group | role | key | paper | venue | doi | why here | pdf |\n|---|---|---|---|---|---|---|---|\n"
+                "| by exploring | evidence | ★ | Dow, Glassco & Kass 2010 · Parallel prototyping | ACM TOCHI | 10.1145/1879831.1879836 | parallel beats serial | papers/dow2010_parallel.pdf |\n"
+                "| by exploring | evidence |  | Doshi & Hauser 2024 · Generative AI and creativity | Science Advances | 10.1126/sciadv.adn5290 | AI ideas converge |  |\n"
+                "| by exploring | evidence |  | Loch & Terwiesch 2001 · Parallel and sequential testing | Management Science | 10.1287/mnsc.47.5.663.10480 | parallel or serial |  |\n"
+                "| tests | classic | ★ | Sobek, Ward & Liker 1999 · Set-based concurrent engineering | Sloan Management Review |  | keep options alive |  |\n",
+                encoding="utf-8")
+            task = root / "Proj" / "discoveries" / "b01_x" / "j01_y" / "t01_z"
+            for run, doi, pdf in (("r01_doshi2024_creativity", "10.1126/sciadv.adn5290", True),
+                                  ("r02_loch2001_testing", "10.1287/mnsc.47.5.663.10480", False)):
+                res = task / "results" / run
+                res.mkdir(parents=True)
+                (res / "runtime.yaml").write_text(f'run: {run}\nsubject:\n  kind: paper\n  doi: "{doi}"\n', encoding="utf-8")
+                (res / f"{run}.md").write_text("# card\n", encoding="utf-8")
+                (res / "abstract.md").write_text("# Retrieved abstract\n\nSource: x\n\nIdeas from an LLM made stories alike.\n",
+                                                 encoding="utf-8")
+                if pdf:
+                    (res / "paper.pdf").write_bytes(b"%PDF-1.4\n")
+            page = papers_page(board, root, table)
+            self.assertIn("4 papers · 2 key · 1 classic · 0 review · 3 evidence · 1 in UTD24 journals · 2 with a PDF", page)
+            kept = "/Tools/ref/papers/dow2010_parallel.pdf"
+            lent = "/Proj/discoveries/b01_x/j01_y/t01_z/results/r01_doshi2024_creativity/paper.pdf"
+            # each PDF loads only when its card opens (data-pdf, not src), and opens in a tab too
+            for url, title in ((kept, "Parallel prototyping"), (lent, "Generative AI and creativity")):
+                self.assertIn(f'<iframe class="rp-frame" title="PDF · {title}" data-pdf="{url}"></iframe>', page)
+                self.assertIn(f'<a href="{url}" target="_blank" rel="noopener">Open the PDF in a new tab ↗</a>', page)
+            # a card with its PDF says so in words, and the view can show only those
+            self.assertEqual(page.count('<span class=rp-pdf title="the PDF opens inside this card">PDF</span>'), 2)
+            self.assertEqual(page.count('<details class="rp-card has-pdf" id='), 2)
+            self.assertIn("Show only the 2 papers with a PDF", page)
+            self.assertIn('<section class="rp-band has-pdf">', page)
+            self.assertIn('<section class="rp-band">', page)                     # Tests has no PDF
+            self.assertIn("<summary>Abstract</summary><p>Ideas from an LLM made stories alike.</p>", page)
+            self.assertIn('r02_loch2001_testing.md" target="_blank" rel="noopener">Paper Run ↗</a>', page)
+            self.assertIn("No free full text here", page)                        # a Run without a free copy
+            self.assertIn("A book or report with no DOI", page)                  # no DOI, no Run
 
 
 class DesignBoardWritesTest(unittest.TestCase):

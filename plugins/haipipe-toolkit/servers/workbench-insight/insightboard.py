@@ -23,6 +23,7 @@ from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
+from host_paths import SKILLS
 from src.folder_contract import resolved_folder_kind
 from .insight_handoff import eligibility as handoff_eligibility, watch_paths as handoff_watch_paths
 from .insight_run_specs import (definition as read_insight_definition, describe as describe_run_field,
@@ -90,7 +91,7 @@ def _section(text: str, title: str) -> str:
 def is_insight_board(board_root: Path) -> bool:
     board_root = Path(board_root)
     declared = _field(_read(board_root / "board.md"), "board-kind").lower()
-    return declared in {"insight", "insight-board"} \
+    return declared in {"insight", "insight-board", "insight-instance", "insight-prototype"} \
         or bool(_INSIGHT_BOARD.search(board_root.name)) \
         or (board_root / "0-MT-meta").is_dir()
 
@@ -972,6 +973,15 @@ def _task_calls(snap: dict) -> list[dict]:
 def groom_snapshot(board_root: Path, snapshot: dict | None = None) -> dict:
     """Read-only audit: the mechanical checker plus the partial registers."""
     board_root = Path(board_root)
+    if snapshot and snapshot.get("layout") == "instance":
+        # an Instance: haipipe-insight-check ref/check_instance.py, problems FAIL, notes WARN
+        checks = ([{"level": "FAIL", "code": "instance", "where": board_root.name, "message": m}
+                   for m in snapshot["instance_problems"]]
+                  + [{"level": "WARN", "code": "instance-note", "where": board_root.name, "message": m}
+                     for m in snapshot["instance_notes"]])
+        return {"checks": checks or [{"level": "PASS", "code": "instance-check-clean", "where": board_root.name,
+                                      "message": "check_instance.py returned no problem and no note"}],
+                "queue": [], "handoffs": [], "bindable_handoffs": []}
     snapshot = snapshot or board_snapshot(board_root, board_root, static=True)
     checks = []
     try:
@@ -1084,6 +1094,8 @@ def page_tickets(snap: dict, page: dict | None) -> list[dict]:
 
 
 def _run_url(snap: dict, run: dict) -> str:
+    if run.get("url"):                      # an Instance run (instance_reader)
+        return run["url"]
     task = run["task_path"].resolve().relative_to(_tasks_root(snap).resolve()).as_posix()
     return (f"/_board/insight-run?board={quote(snap['board'].name)}"
             f"&task={quote(task, safe='/')}&call={quote(run['call'])}"
@@ -1092,6 +1104,8 @@ def _run_url(snap: dict, run: dict) -> str:
 
 def _pop_url(snap: dict, page: dict) -> str:
     """A page opens as a document in the pop-out; there is no page-level workbench."""
+    if page.get("url"):                     # an Instance page or spec (instance_reader)
+        return page["url"]
     if snap["static"]:
         return _page_link(snap, page)
     return f"/_board/insight?board={quote(snap['board'].name)}&page={quote(page['id'])}"
@@ -1157,7 +1171,7 @@ def _task_name(name: str) -> str:
 def _idname(name: str) -> str:
     """`j21_information_funnel` -> idtag `j21` + `information_funnel`."""
     head, _, tail = name.partition("_")
-    return f'<span class=idtag>{_e(head)}</span> {_e(tail or head)}'
+    return f'<span class=idtag>{_e(head)}</span>' + (f' {_e(tail)}' if tail else "")
 
 
 def _run_note(run: dict) -> str:
@@ -1191,15 +1205,93 @@ def _run_lines(snap: dict, runs: list[dict]) -> str:
     return "".join(out)
 
 
+def _bindings(page: dict | None, qid: str) -> dict:
+    """The page's answers.yaml entry for one question: need id -> binding
+    (haipipe-insight ref/evidence-needs.md § 2).  Empty when the page binds none."""
+    if not page:
+        return {}
+    path = page["path"].parent / "answers.yaml"
+    if not path.is_file():
+        return {}
+    try:
+        import yaml
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+    entry = data.get(qid)
+    return entry if isinstance(entry, dict) else {}
+
+
+def _needs_list(snap: dict, q: dict, binding: dict) -> str:
+    """Each evidence need of the question with what the page binds to it."""
+    rows = []
+    for eid, kind, text in question_notes(snap).get(q["id"], {}).get("needs") or []:
+        b = binding.get(eid)
+        if b is None:
+            where, cls = "not bound", " class=gap"
+        elif b == "judge":
+            where, cls = "made on the page", ""
+        elif isinstance(b, dict) and "refused" in b:
+            where, cls = f'refused · {_e(str(b["refused"]))}', ""
+        elif isinstance(b, dict) and ("ticket" in b or "tickets" in b):
+            where = " · ".join(_e(f) for f in b.get("files") or []) or "no files"
+            if b.get("tickets"):
+                where += f' · {len(b["tickets"])} runs'
+            cls = ""
+        elif isinstance(b, dict) and "pages" in b:
+            where, cls = "from page " + _e(", ".join(b["pages"])), ""
+        else:
+            where, cls = "from the cited question's page", ""
+        rows.append(f'<li{cls}><b>{_e(eid)}</b> {_e(kind)} · {_inline(text)}'
+                    f'<span class=wk-bind> → {where}</span></li>')
+    return f'<ul class=wk-needs>{"".join(rows)}</ul>' if rows else ""
+
+
+def _instance_binding(snap: dict, q: dict, pid: str) -> dict:
+    """An Instance question's needs, bound the way answers.yaml binds them: a compute need to
+    this partition's run and its spec files, a cite to the cited need, a judge to the page."""
+    spec = question_notes(snap).get(q["id"], {}).get("spec") or {}
+    rec = next((r["receipt_data"] for r in work_runs(snap) if r.get("qid") == q.get("qid") and r["partition"] == pid), {})
+    out = {}
+    for nid, n in (spec.get("needs") or {}).items():
+        if n.get("kind") == "compute":
+            out[nid] = ({"refused": rec.get("reason", "")} if rec.get("status") == "refused"
+                        else {"ticket": pid, "files": list(n.get("output") or {})})
+        elif n.get("kind") == "cite":
+            out[nid] = {"pages": [str(n.get("from", ""))]}
+        elif n.get("kind") == "judge":
+            out[nid] = "judge"
+    return out
+
+
 def _work_cell(snap: dict, q: dict, pid: str, answered: dict) -> str:
-    """The Work column of one question in one partition: the task and the runs that
-    answer it.  A Knowledge or Wisdom answer has no run of its own yet: the runs
-    behind it, along its citations.  What the answer says is the Report column."""
+    """The Work column of one question in one partition.  When the answering page
+    binds the question's evidence needs (answers.yaml), each need is listed with
+    what answers it, and only the runs those needs are bound to are shown.
+    Otherwise: the page's tickets, or for a Knowledge or Wisdom answer with no run
+    of its own, the runs behind the pages it cites.  The Report column says what
+    the answer is."""
     cell = q["cells"].get(pid, _parse_cell("·"))
     page = snap["by_id"].get(cell.get("page", ""))
-    if cell["mark"] == "·" or (cell["mark"] == "🚫" and not page):
+    if cell["mark"] == "·" or (cell["mark"] == "🚫" and not page and snap.get("layout") != "instance"):
         return '<p class=wk-none>—</p>'
+    if snap.get("layout") == "instance":
+        binding = _instance_binding(snap, q, pid)
+        runs = [r for r in work_runs(snap) if r.get("qid") == q.get("qid") and r["partition"] == pid]
+        return (f'<details class=wk open><summary><span class=kind>Task Work</span></summary>'
+                f'{_needs_list(snap, q, binding)}'
+                + (f'<div class=bj>{_run_lines(snap, runs)}</div>' if runs else "")
+                + '</details>')
     work = work_runs(snap)
+    binding = _bindings(page, q["id"])
+    if binding:
+        bound = {t for b in binding.values() if isinstance(b, dict)
+                 for t in ([b["ticket"]] if b.get("ticket") else []) + list(b.get("tickets") or [])}
+        runs = [r for r in page_tickets(snap, page) if r["call"] in bound]
+        return (f'<details class=wk open><summary><span class=kind>Task Work</span></summary>'
+                f'{_needs_list(snap, q, binding)}'
+                + (f'<div class=bj>{_run_lines(snap, runs)}</div>' if runs else "")
+                + '</details>')
     own = page_tickets(snap, page) or [
         r for r in work if q["id"] in r["answers"] and (pid == CROSS or r["partition"] == pid)]
     lv = q["id"][1]
@@ -1263,10 +1355,20 @@ def report(snap: dict, qid: str, pid: str) -> dict | None:
     page = snap["by_id"].get(((row or {}).get("cells", {}).get(pid) or {}).get("page", ""))
     if not page:
         return None
-    # Only the headline: an old page's Opening says what the page does ("The prepared
-    # SMSR2v1 cut, read once and described"), not what was found (JL 261001).
+    # An old page's Opening says what the page does, not what was found, so it shows
+    # only its headline (JL 261001).  A Page Face page (`folder-kind:` declared,
+    # haipipe-insight ref/report.md § Shape) has an objective title and answers in
+    # its Opening's first paragraph, so that answer is shown under the title.
+    head = _header(page["text"])
     strength = _STRENGTH.search(page["state"])
-    return {"headline": page["title"], "text": "", "strength": strength.group(1) if strength else "",
+    strength = head.get("strength") or (strength.group(1) if strength else "")
+    text = ""
+    if head.get("folder-kind"):
+        opening = re.search(r"(?ms)^## Opening[ \t]*\n(.*?)(?=^\*\*|^## |\Z)", page["text"])
+        if opening:
+            first = opening.group(1).strip().split("\n\n")[0]
+            text = _sentences(re.sub(r"\s*\[Q[DIKW]\d+\.E\d+\]", "", first), 3)
+    return {"headline": page["title"], "text": text, "strength": strength,
             "limit": "", "url": _pop_url(snap, page), "source": "page", "page": page["id"]}
 
 
@@ -1296,6 +1398,8 @@ def _report_cell(snap: dict, q: dict, pid: str) -> str:
 
 _DIVISION = re.compile(r"(?m)^#{3,4}\s+\d+\s+·\s+(Q[DIKW]\d+)\s+·\s+(.+?)\s*$")
 _FIELD = re.compile(r"(?m)^\*\*([^*]{2,60})\*\*:\s*(.+?)\s*$")
+# an evidence need under "What would answer it" (haipipe-insight ref/evidence-needs.md)
+_NEED = re.compile(r"(?m)^- (E\d+) · (compute|cite|judge) · (.+?)\s*$")
 
 
 def question_notes(snap: dict) -> dict[str, dict]:
@@ -1318,7 +1422,10 @@ def question_notes(snap: dict) -> dict[str, dict]:
             out[m.group(1)] = {"_reg": reg["id"], "name": m.group(2),
                                "ask": fields.get("the ask", ""), "why": fields.get("why now", ""),
                                "answer": fields.get("what would answer it", ""),
-                               "expect": next((v for k, v in fields.items() if "expect" in k), "")}
+                               "expect": next((v for k, v in fields.items() if "expect" in k), ""),
+                               "needs": [(e, kind, rest.split(" · ")[0]) for e, kind, rest in _NEED.findall(body)
+                                         if "retired:" not in rest],
+                               "agreed": fields.get("needs agreed", "")}
     snap["notes"] = out
     return out
 
@@ -1331,9 +1438,14 @@ def _logic_cell(snap: dict, q: dict, cell: dict, base: list[str]) -> str:
     rows = [(label, note.get(key, "")) for label, key in
             (("The ask", "ask"), ("Why it matters", "why"), ("What would answer it", "answer"), ("Expected", "expect"))]
     rows = [(label, text) for label, text in rows if text]
+    needs = note.get("needs") or []
+    need_dd = ("".join(f'<li><b>{_e(e)}</b> {_e(kind)} · {_inline(text)}</li>' for e, kind, text in needs)
+               if needs else "")
     more = ('<details class=q-more><summary>More</summary><dl>'
             + "".join(f'<dt>{_e(label)}</dt><dd>{_inline(text[:1].upper() + text[1:])}</dd>' for label, text in rows)
-            + '</dl></details>') if rows else ""
+            + (f'<dt>Evidence needs <span class=mut>{"agreed" if note.get("agreed", "").startswith("✅") else "not agreed"}</span></dt>'
+               f'<dd><ul class=q-needs>{need_dd}</ul></dd>' if needs else "")
+            + '</dl></details>') if rows or needs else ""
     # the mark sits right after its label (JL 261001): the status belongs to the question
     return (f'<div class=q-top><span class=kind>Question {_e(q["id"][2:])}</span>'
             f'<span class=mark>{_e(cell["mark"] if cell["mark"] != "·" else "")}</span></div>'
@@ -1457,6 +1569,8 @@ def _run_rows(snap: dict, level: str) -> list[dict]:
 
 def _report_rows(snap: dict) -> list[dict]:
     """Every report file on the board, keyed to its question and partition."""
+    if "report_rows" in snap:               # an Instance: each run's generated report (instance_reader)
+        return snap["report_rows"]
     names = {p["name"]: p["id"] for p in snap["partitions"]}
     out = []
     for path in sorted((snap["board"] / "reports").glob("*/Q[DIKW]*.md")):
@@ -1475,6 +1589,12 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
              "prompt": f"/haipipe-task: prepare the extract this board reads; MT00 records it ({rel})."},
             {"label": "Ask", "skill": "haipipe-insight-question", "rows": [],
              "prompt": f'/haipipe-insight application {rel} question "<your question>"'},
+            {"label": "Add a method", "skill": "haipipe-workbench-insight", "rows": [],
+             "prompt": "/haipipe-workbench-insight: add a <discovery|design> method card under ref/methods/, "
+                       "list it in its methods file and give it papers in ref/insight-papers.md."},
+            {"label": "Add a paper", "skill": "haipipe-discovery", "rows": [],
+             "prompt": "/haipipe-discovery: find and verify the paper behind <method>, then add its row to the "
+                       "insight workbench's ref/insight-papers.md (group = the method)."},
         ],
         "insight": [
             {"label": "Data runs", "skill": "haipipe-task", "rows": _run_rows(snap, "D"),
@@ -1549,8 +1669,9 @@ def _render_scope(snap: dict) -> str:
            '<div class="field full"><textarea id=ask-text required placeholder="e.g. does the send hour change which message works best?"></textarea></div>'
            '<div class="full actions"><button class="btn primary" type=submit>Ask</button><span class=status id=ask-status></span></div></form>'
            '<div id=ask-out hidden><p class=mut>Give this to Claude Code (copied to your clipboard):</p><p><code id=ask-cmd></code></p></div>')
-    return (_tabs([("dataset", "Dataset"), ("partitions", "Partitions"), ("questions", "Questions")])
-            + _view("dataset", _render_input_data(snap), True) + _view("partitions", partitions) + _view("questions", ask))
+    return (_tabs([("dataset", "Dataset"), ("partitions", "Partitions"), ("methods", "Methods"), ("questions", "Questions")])
+            + _view("dataset", _render_input_data(snap), True) + _view("partitions", partitions)
+            + _view("methods", _render_methods(snap)) + _view("questions", ask))
 
 
 def _gate_blocks(snap: dict) -> str:
@@ -1595,6 +1716,58 @@ def _render_delivery(snap: dict) -> str:
             + _view("handoff", f'<h2>Handoff</h2><p class=lead>{ready} signed Wisdom answer{"" if ready == 1 else "s"} ready for design. '
                     'Only a signed, current handoff leaves this board.</p>'
                     f'<table><tr><th>Wisdom answer</th><th>Serves</th><th>Current eligibility</th></tr>{hrows}</table>', True))
+
+
+# Insight › Methods (JL 261002: "add a new subspace under Insight, about Insight Discovery
+# Method, and Design Method"): how an answer is found from data, how an inquiry is designed
+# before data is read, and the papers behind both. The files are the workbench's own, the
+# same for every board; the cards and paper cards are drawn as the Design workbench draws
+# its Theory of Design Space.
+METHODS_REF = SKILLS / "insight" / "haipipe-workbench-insight" / "ref"
+DISCOVERY_METHODS = METHODS_REF / "insight-discovery-methods.md"
+DESIGN_METHODS = METHODS_REF / "insight-design-methods.md"
+METHOD_PAPERS = METHODS_REF / "insight-papers.md"
+# The methods studio (JL 261002, as the Design board's Theory › Methods studio): one Excalidraw
+# drawing of how discovery and design methods meet, opened in the self-hosted canvas and saved back.
+METHOD_STUDIO = METHODS_REF / "insight-methods.excalidraw"
+METHOD_VIEWS = (("discovery", "Discovery methods"), ("design", "Design methods"), ("studio", "Methods studio"),
+                ("papers", "Papers"))
+
+
+def _studio_html(root: Path) -> str:
+    """Scope › Methods › Methods studio: the drawing in the Excalidraw canvas, editable. It loads only when shown."""
+    from .designboard import _href
+    rel = _href(root, METHOD_STUDIO) if METHOD_STUDIO.is_file() else ""
+    if not rel:
+        return f'<p class=note>No methods drawing yet: the insight workbench keeps it as <code>ref/{METHOD_STUDIO.name}</code>.</p>'
+    url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
+    return ('<div class=st-bar><span class=mut>How an answer is found and how an inquiry is designed: the shared loop, '
+            f'the discovery and design methods and where they meet. Edits save to <code>ref/{METHOD_STUDIO.name}</code>.</span>'
+            f'<a href="{_e(url)}" target="_blank" rel="noopener">Open full screen ↗</a></div>'
+            # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
+            f'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" data-src="{_e(url)}"></iframe>')
+
+
+def _render_methods(snap: dict, view: str = "discovery") -> str:
+    """One view at a time, its name in a pill bar above it."""
+    from .designboard import _plain_md, method_cards, papers_page
+    board, root = snap["board"], Path(snap["root"])
+
+    def doc(path: Path, what: str) -> str:
+        if not path.is_file():
+            return f'<p class=note>No {what} file yet: the insight workbench keeps it as <code>ref/{path.name}</code>.</p>'
+        return f'<article class=mdoc>{_plain_md(_read(path), method_cards(board, root, path, METHOD_PAPERS))}</article>'
+    views = {"discovery": doc(DISCOVERY_METHODS, "discovery methods"),
+             "design": doc(DESIGN_METHODS, "design methods"),
+             "studio": _studio_html(root),
+             "papers": papers_page(board, root, METHOD_PAPERS) if METHOD_PAPERS.is_file() else
+                       f'<p class=note>No papers file yet: the insight workbench keeps it as <code>ref/{METHOD_PAPERS.name}</code>.</p>'}
+    view = view if view in views else "discovery"
+    bar = "".join(f'<button type=button data-mview="{k}"{" class=on" if k == view else ""}>{_e(label)}</button>'
+                  for k, label in METHOD_VIEWS)
+    return (f'<div class=mlib><div class=mviews>{bar}</div>'
+            + "".join(f'<div class="mview{" on" if k == view else ""}" data-mview="{k}">{views[k]}</div>'
+                      for k, _ in METHOD_VIEWS) + '</div>')
 
 
 def render_insight_board(snapshot: dict, space: str = "insight",
@@ -1731,7 +1904,7 @@ details.lvl{border-bottom:1px solid var(--line)}details.lvl>summary{cursor:point
 .q-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.q-title{margin:4px 0 0}.wk-title{margin:4px 0 0}.q-name{font-size:15px}
 .lvl-src{float:right;font-weight:400;font-size:13px}
 details.q-more{margin-top:4px;font-size:13.5px}details.q-more>summary{cursor:pointer;color:var(--acc);list-style:none}details.q-more>summary::before{content:'› '}details.q-more[open]>summary::before{content:'⌄ '}
-.q-more dl{margin:4px 0 0}.q-more dt{color:var(--mut);font-size:12.5px;margin-top:6px}.q-more dd{margin:1px 0 0}.kind{display:inline-block;font:650 12px -apple-system,sans-serif;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 8px;margin-right:4px}.q-text{margin-top:3px}.q-sub,.wk-sub{display:block;color:var(--mut);font-size:13px;margin-top:2px}
+.q-more dl{margin:4px 0 0}.wk-needs{margin:2px 0 6px;padding-left:18px;font-size:13.5px}.wk-needs li{margin:2px 0}.wk-needs li.gap{color:#c0392b}.wk-bind{color:var(--mut)}.q-needs{margin:2px 0 0;padding-left:18px}.q-needs li{margin:2px 0}.q-more dt{color:var(--mut);font-size:12.5px;margin-top:6px}.q-more dd{margin:1px 0 0}.kind{display:inline-block;font:650 12px -apple-system,sans-serif;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 8px;margin-right:4px}.q-text{margin-top:3px}.q-sub,.wk-sub{display:block;color:var(--mut);font-size:13px;margin-top:2px}
 .wk-none{color:var(--mut);font-size:14px;margin:0}.wk-page{margin:4px 0}details.wk>summary{cursor:pointer;list-style:none}details.wk>summary::-webkit-details-marker{display:none}details.wk>summary::before{content:'› ';color:var(--mut)}details.wk[open]>summary::before{content:'⌄ '}
 .bj{padding:4px 0 2px 14px;font-size:13.5px}.bj-b{margin-top:4px}.bj-j{margin-left:16px}.bj-tr{margin-left:32px}.bj-tr.bj-flat{margin-left:16px}.bj-tr>summary{cursor:pointer;list-style:none}.bj-tr>summary::-webkit-details-marker{display:none}.bj-runs{margin-left:18px}.bj-run{display:block;text-decoration:none;color:inherit;padding:1px 0;overflow-wrap:anywhere}.bj-run:hover{color:var(--acc)}.idtag{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
 .rp{flex:0 0 clamp(260px,28vw,420px);border:1px solid var(--line);border-radius:10px;background:var(--soft);padding:12px;position:sticky;top:8px;min-width:0;max-height:calc(100vh - 16px);overflow:auto}
@@ -1747,6 +1920,53 @@ details.q-more{margin-top:4px;font-size:13.5px}details.q-more>summary{cursor:poi
 .pop-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:50}.pop-bg[hidden]{display:none}.pop-box{width:min(1100px,94vw);height:88vh;background:var(--bg);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
 .pop-bar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid var(--line)}.pop-title{font-weight:650;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pop-x{border:0;background:transparent;font-size:20px;cursor:pointer;color:var(--fg)}.pop-frame{flex:1;border:0;width:100%}
 @media(max-width:820px){.gates{grid-template-columns:repeat(4,1fr)}}
+.mlib{max-width:1100px}.mviews{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.mviews button{font:600 12.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:14px;padding:3px 11px;background:transparent;color:var(--mut);cursor:pointer}
+.mviews button.on{color:var(--fg);border-color:var(--acc);background:var(--soft)}.mview{display:none}.mview.on{display:block}
+.st-bar{display:flex;gap:14px;align-items:baseline;justify-content:space-between;margin:0 0 8px}.st-bar a{white-space:nowrap}
+.mlib .mview[data-mview=studio]{max-width:none}.st-frame{display:block;width:100%;height:calc(100vh - 260px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}
+article.mdoc{font-size:14.5px}article.mdoc h1{font-size:17px;margin:4px 0 6px}article.mdoc h2{font-size:15px;margin:22px 0 6px}article.mdoc p{margin:6px 0;line-height:1.55}
+pre.theory{margin:8px 0;padding:10px 12px;background:var(--soft);border-radius:6px;font:12px/1.5 ui-monospace,Menlo,monospace;overflow-x:auto}
+table.mdt{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13.5px}table.mdt th,table.mdt td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.mdt td:first-child{font-weight:600;white-space:nowrap}
+.mlib .rp-head{display:block;font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 2px}
+.mlib .rp-tools{margin:2px 0 8px}.mlib .rp-only{font:600 12.5px -apple-system,sans-serif;border:1px solid var(--acc);color:var(--acc);background:transparent;border-radius:14px;padding:3px 11px;cursor:pointer}.mlib .rp-only[aria-pressed=true]{background:var(--acc);color:#fff}
+.rp-list.only-pdf .rp-card:not(.has-pdf),.rp-list.only-pdf .rp-band:not(.has-pdf),.rp-list.only-pdf details.rp-more>summary{display:none}
+details.rp-venues{margin:0 0 10px}details.rp-more{margin:2px 0 4px}details.rp-more>summary{font-size:12.5px;color:var(--mut);padding:2px 0;cursor:pointer}details.rp-venues>summary{font-size:12.5px;color:var(--acc);cursor:pointer}details.rp-venues>div{margin-top:4px;line-height:1.6}
+.lw-k{font:700 11.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);margin:14px 0 6px}.lw-kn{font-weight:500;text-transform:none;letter-spacing:0;opacity:.85;margin-left:6px}
+.rp-group{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 4px}.rp-card+.rp-card{border-top:1px solid var(--line)}
+.rp-card>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:6px;align-items:baseline;padding:10px 14px}
+.rp-card>summary::-webkit-details-marker{display:none}.rp-card>summary:hover,.rp-card[open]>summary{background:var(--soft)}
+.bjt-chev{color:var(--mut);display:inline-block;width:1em;text-align:center;transition:transform .12s ease}.rp-card[open]>summary .bjt-chev,details.mcard[open]>summary .bjt-chev{transform:rotate(90deg)}
+.lw-sum{min-width:0}.mlib .rp-title{margin:0;font-weight:600;font-size:14.5px;line-height:1.4;color:var(--fg)}
+.rp-sub{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:2px;font-size:13px;color:var(--mut)}
+.rp-marks{display:flex;gap:10px;flex:none}.rp-utd{font:700 10.5px -apple-system,sans-serif;color:#9c6500;border:1px solid #e3c27a;border-radius:4px;padding:0 4px;letter-spacing:.03em}.rp-pdf{font:700 10.5px -apple-system,sans-serif;color:#fff;background:var(--acc);border-radius:4px;padding:1px 5px;letter-spacing:.03em}
+.rp-q{color:var(--acc);font-weight:600}.rp-q.rp-evidence{color:var(--ok)}.rp-q.rp-classic{color:var(--mut)}
+.mlib .rp-body{padding:6px 14px 14px calc(14px + 1em + 6px)}.rp-why{font-size:14.5px;line-height:1.55;margin:4px 0 6px}
+.rp-acts{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}.rp-nopdf{font-size:13.5px;margin-top:8px}
+details.rp-absd>summary{font-size:13px;color:var(--mut);cursor:pointer}details.rp-absd>p{font-size:13.5px;line-height:1.55;margin:4px 0 6px}
+.rp-frame{display:block;width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}
+.mcards{margin:8px 0 16px}.mc-fam{font-size:13px;margin:14px 0 6px;padding:5px 10px;background:var(--soft);border-radius:6px}
+details.mcard{border:1px solid var(--line);border-radius:10px;margin:0 0 8px;background:var(--bg)}
+details.mcard>summary{color:var(--fg);list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:6px;align-items:baseline;padding:11px 14px}
+details.mcard>summary::-webkit-details-marker{display:none}details.mcard>summary:hover,details.mcard[open]>summary{background:var(--soft)}
+details.mcard.future{border-style:dashed;border-color:var(--acc)}
+.mc-top{display:flex;align-items:baseline;gap:8px}.mnum{color:var(--mut);font-weight:500}.mc-name{font-weight:650;font-size:15px}
+.mc-status{margin-left:auto;font:600 11.5px -apple-system,sans-serif;white-space:nowrap}.mc-status.ok{color:var(--ok)}.mc-status.gap{color:var(--warn)}.mc-status.future{color:var(--acc)}
+.mc-move{margin:2px 0 6px;font-size:14px;line-height:1.45}
+.mc-io,.mc-from,.mc-tests,.mc-papers{font-size:12.5px;line-height:1.7}.mc-io .arrow{color:var(--mut);margin:0 6px}
+.lbl{display:inline-block;min-width:7.2em;margin-right:4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.mc-body{padding:4px 14px 14px calc(14px + 1em + 6px)}
+.mc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin:6px 0 10px}
+@media(max-width:900px){.mc-cols{grid-template-columns:minmax(0,1fr)}}
+.mc-col{border:1px solid var(--line);border-radius:8px;padding:10px 12px}.mc-col.ai{border-color:var(--acc);background:var(--soft)}
+.mc-h{font:700 11.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 6px}.mc-col.ai .mc-h{color:var(--acc)}
+.mc-col dl{margin:0}.mc-col dt{font-weight:650;font-size:12.5px;margin:6px 0 1px}.mc-col dd{margin:0;font-size:13px;line-height:1.5}
+.mc-col .line{margin:0 0 3px}.mc-tests .when{margin:0 4px 0 14px}.mc-tests .lbl+.when{margin-left:0}
+.mlib .chip{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:0 7px;margin:1px 3px 2px 0;font-size:12px;white-space:nowrap}
+a.pchip{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:0 7px;margin:1px 3px 2px 0;font-size:12px;white-space:nowrap;background:var(--bg);text-decoration:none}
+a.pchip:hover{border-color:var(--acc)}a.pchip .rp-pdf{margin-left:5px;font-size:9.5px;padding:0 4px}
+.tcode{font:700 11px ui-monospace,Menlo,monospace;color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:0 3px;cursor:help}
+.when{display:inline-block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+a.cite{white-space:nowrap}a.cite .rp-pdf{margin-left:3px;font-size:9px;padding:0 3px}.ours{color:var(--mut);font-style:italic}
 @media(max-width:600px){body{padding:12px}.spaces{flex-wrap:nowrap;overflow-x:auto}.shell{padding:10px}}
 """
 
@@ -1792,6 +2012,13 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&bg&&!bg.h
 var f=document.getElementById('askform');if(f){f.onsubmit=function(ev){ev.preventDefault();var q=document.getElementById('ask-text').value.replace(/\\s+/g,' ').trim();if(!q)return;
 var cmd='/haipipe-insight application '+f.dataset.root+' question "'+q.replace(/"/g,"'")+'"';document.getElementById('ask-cmd').textContent=cmd;document.getElementById('ask-out').hidden=false;
 var st=document.getElementById('ask-status');if(navigator.clipboard){navigator.clipboard.writeText(cmd).then(function(){st.textContent='copied'},function(){st.textContent='select and copy the line below'})}else{st.textContent='select and copy the line below'}}}
+function mview(box,k,w){box.querySelectorAll('.mviews button').forEach(function(x){x.classList.toggle('on',x.dataset.mview===k)});box.querySelectorAll('.mview').forEach(function(v){v.classList.toggle('on',v.dataset.mview===k)});box.querySelectorAll('.mview.on iframe.st-frame[data-src]').forEach(function(f){if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)});if(w)setUrl('mview',k)}
+document.querySelectorAll('.mlib').forEach(function(box){box.querySelectorAll('.mviews button').forEach(function(b){b.onclick=function(){mview(box,b.dataset.mview,true)}})});
+try{var mv=new URL(location.href).searchParams.get('mview');if(mv)document.querySelectorAll('.mlib').forEach(function(box){if(box.querySelector('.mview[data-mview="'+mv+'"]'))mview(box,mv,false)})}catch(e){}
+document.addEventListener('toggle',function(ev){var w=ev.target;if(!(w.matches&&w.matches('details.rp-card')))return;var f=w.open&&w.querySelector('iframe[data-pdf]');if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf)},true);
+function toPaper(id){var c=document.getElementById(id);if(!c)return;var box=c.closest('.mlib');if(box)mview(box,'papers',true);var f=c.closest('details.rp-more');if(f)f.open=true;c.open=true;c.scrollIntoView({block:'start'})}
+document.querySelectorAll('a.to-paper').forEach(function(a){a.onclick=function(e){e.preventDefault();toPaper(a.getAttribute('href').slice(1))}});
+document.querySelectorAll('.rp-only').forEach(function(b){b.onclick=function(){var l=b.closest('.rp-list'),on=!l.classList.contains('only-pdf');l.classList.toggle('only-pdf',on);b.setAttribute('aria-pressed',on);if(on)l.querySelectorAll('details.rp-more').forEach(function(d){d.open=true})}});
 space(body.dataset.space,false);pick(body.dataset.sel||'');
 })();</script>"""
 
@@ -1823,6 +2050,25 @@ class InsightBoardMixin:
                 return None
             body = render_board_list(Path(self.root), raw).encode("utf-8")
             return self._insight_board_send(body, 404, head_only)
+        from .instance_reader import board_kind, instances_of, legacy_snapshot, render_file
+        kind = board_kind(board)
+        if kind:
+            # a Prototype and Instance board (haipipe-insight ref/prototype-contract.md): the same
+            # workbench, its data read by instance_reader; a file opens in the pop-out
+            wanted = (query.get("file") or [""])[0]
+            if wanted:
+                code, page = render_file(board, Path(self.root), wanted)
+                return self._insight_board_send(page.encode("utf-8"), code, head_only)
+            if kind == "insight-prototype":
+                inst = instances_of(board)
+                if len(inst) != 1:
+                    return self._insight_board_send(render_board_list(Path(self.root), raw).encode("utf-8"), 404, head_only)
+                board = inst[0]                      # a Prototype is read through its one Instance
+            body = render_insight_board(
+                legacy_snapshot(board, Path(self.root)), (query.get("space") or ["insight"])[0],
+                (query.get("q") or query.get("question") or [""])[0],
+                (query.get("p") or query.get("partition") or [""])[0]).encode("utf-8")
+            return self._insight_board_send(body, 200, head_only)
         snapshot = board_snapshot(board, self.root, raw)
         body = render_insight_board(
             snapshot, (query.get("space") or ["insight"])[0],
@@ -1874,6 +2120,13 @@ class InsightBoardMixin:
         board = self._insight_target((query.get("board") or [""])[0])
         if board is None:
             return self._insight_board_send("<p>No such InsightBoard.</p>".encode("utf-8"), 404, head_only)
+        from .instance_reader import board_kind, render_run
+        if board_kind(board) == "insight-instance":
+            try:
+                body = render_run(board, Path(self.root), (query.get("task") or [""])[0], (query.get("call") or [""])[0])
+            except (FileNotFoundError, ValueError) as exc:
+                return self._insight_board_send(f"<p>No such run on this board: {_e(exc)}</p>".encode("utf-8"), 404, head_only)
+            return self._insight_board_send(body.encode("utf-8"), 200, head_only)
         snapshot = board_snapshot(board, self.root)
         try:
             body = render_insight_run(snapshot, (query.get("task") or [""])[0], (query.get("call") or [""])[0],

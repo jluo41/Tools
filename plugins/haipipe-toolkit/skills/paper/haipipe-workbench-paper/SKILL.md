@@ -8,8 +8,8 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.20.0"
-  last_updated: "2026-09-30"
+  version: "0.21.0"
+  last_updated: "2026-10-02"
 ---
 
 # /haipipe-workbench-paper · the Paper-level work console
@@ -329,6 +329,32 @@ the Discovery Paper Run that holds the paper, and the card reads that Run's Resu
 folder: `runtime.yaml` (title, authors, venue), `abstract.md`, `source-access.json`
 (the publisher link) and `paper.pdf`. The venue is the H1 of board.md's `venue-page`, before its colon; a card
 sits under it when its Run's venue string starts with that name.
+
+An open card (JL 261002: "add a table like its High Logic and Low Work") shows, in order:
+**Why we keep it**, from the P-board's `keep` cell (else its `why it matters` line), with
+one chip per question from `bears on` (supports, limits, contradicts, method, frames);
+then **Their logic | Their work**, the paper's question, findings and contribution
+beside its data and method, read from the Run's `logic-work.yaml` and headed with what
+the reading was made from; then the links (the PDF, the publisher, the Paper Run, and
+every other PDF in the Result, such as a supplement or an earlier version); then the
+abstract, folded; then the article PDF. A Run without `logic-work.yaml` shows no table.
+
+```text
+▾ <paper title>
+  <First author> et al. · <year> · <venue>                         RQ1 📄
+  ┌ WHY WE KEEP IT ───────────────────────────────────────────────────────┐
+  │ <keep cell>                                                           │
+  │ [RQ1 limits] [RQ2 supports]                                           │
+  └───────────────────────────────────────────────────────────────────────┘
+  THEIR LOGIC                          │ THEIR WORK · READ FROM THE PDF
+  Question  <what it asks>             │ Data      <archive, sample, scale>
+  Finding 1 <with its number>          │ Method 1  <first step>
+  Finding 2 …                          │ Method 2  …
+  Contribution <what it adds>          │
+  Open the PDF ↗ · Publisher page ↗ · Paper Run ↗ · Supplementary information ↗
+  ▸ Abstract
+  [ the article PDF ]
+```
 
 ```text
 45 PAPERS · 38 WITH A PDF

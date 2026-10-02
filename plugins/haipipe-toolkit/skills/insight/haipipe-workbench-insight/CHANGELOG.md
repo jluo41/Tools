@@ -1,11 +1,30 @@
+## 0.10.0 · 2026-10-02 · Carried questions and their runs (JL 261002)
+
+- A Prototype and Instance board shows its carried short question and name in the Logic cell, and the ask, Why now, What would answer it and any other carried field under More; the Dataset view reads `0-Meta/meta.md`; a register page reads `<rung>/rung.md`. Layout unchanged.
+- Workbench Table: Scope › Questions gains Carry a board over and Review the questions (a person signs a change); Insight › Work's Bind the work and Run a ticket become Write the question's script, Review the script and Run a partition; Settle the cell is gone (status is computed).
+
+## 0.9.0 · 2026-10-02 · Methods move to Scope, with a Methods studio (JL 261002)
+
+- Methods is a Scope tab (Dataset · Partitions · Methods · Questions); Insight keeps Questions. Its views: Discovery methods · Design methods · Methods studio · Papers. Methods studio embeds `ref/insight-methods.excalidraw` in the Excalidraw canvas, as the Design board's Theory › Methods studio does. The Workbench Table's Add a method and Add a paper rows move to Scope; the design drawing's Part 2 follows. Card and index wording names Scope › Methods.
+
+## 0.8.0 · 2026-10-02 · Insight › Methods (JL 261002)
+
+- New sub-space Insight › Methods beside Questions, with three views: Discovery methods, Design methods, Papers. Cards and paper cards use the Design workbench's renderers. New files: `ref/insight-discovery-methods.md`, `ref/insight-design-methods.md`, `ref/methods/discovery/`, `ref/methods/design/`, `ref/insight-papers.md`.
+- Runs panel (Insight Space): Add a method, Add a paper.
+
 ## 0.5.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 
 - Register example uses the partition-name page id (`I<NN>-full`) and generic task/run names.
+
+## 0.7.0 · 2026-10-01 · Work column by need (JL 261001)
+
+- Server: the Work column lists each evidence need with what the page's `answers.yaml` binds to it, a red `not bound` for a gap, and only the runs those needs use; pages without bindings keep the ticket view. Part 1 of the studio drawing is read from `ref/workbench-table.md` with table-workbench's reader; Part 4 shows page folders, not the retired store.
 
 ## 0.6.0 · 2026-10-01 · Workbench Table and evidence needs (JL 261001)
 
 - `ref/workbench-table.md`: the Insight Workbench Table (16 rows, `table-workbench --check` passes; planned: the two Insight agents and `haipipe-insight-partition`). "Plan the evidence", "Bind the work" and "Check alignment" are the rows that keep question and work aligned.
 - `ref/insight-board.md`: the three columns meet at the evidence need; the served board does not read `answers.yaml` yet (next server change).
+- Server: a Page Face page (`folder-kind:` declared) shows its Opening's answer and its `strength:` line in the Report column; the Logic panel lists the question's evidence needs and whether they are agreed.
 
 ## 0.3.0 · 2026-10-01 · Logic · Work · Report (JL 261001)
 

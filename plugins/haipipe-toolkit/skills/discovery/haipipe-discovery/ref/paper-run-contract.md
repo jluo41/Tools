@@ -110,6 +110,7 @@ does not receive its own Run identity.
 │   └── evidence/
 │       └── bibex/<task>.bib            DERIVED union of completed Result bibs
 ├── scripts/                           optional reusable instrument
+│   └── readouts/<RUNNAME>/logic-work.yaml   optional authored logic-and-work readout
 ├── runs/
 │   ├── r01_chen2025_trace.sh          executable D1 ticket
 │   └── rp00_mermaid-structure.md      optional Page-owned interaction record
@@ -125,7 +126,9 @@ does not receive its own Run identity.
         ├── trigger.md                 optional captured trigger
         ├── runtime.yaml               state + provenance + subject identity
         ├── raw.md                     optional extraction/worker output
-        └── paper.pdf                  optional
+        ├── logic-work.yaml            optional: the paper's own logic and work
+        ├── *.pdf                      optional companions (supplement, review file, earlier version)
+        └── paper.pdf                  optional: the article itself
 ```
 
 `scripts/` exists only when the Task Page owns a reusable instrument. Low-level
@@ -337,6 +340,35 @@ Content divisions and Paper Results are many-to-many. Topic synthesis reads
 the Cards and `facts.md`; it does not make the folder hierarchy pretend that a
 paper belongs to exactly one paragraph.
 
+## Logic and work readout
+
+A Paper Result may carry `logic-work.yaml`: the paper's own argument beside the
+work that carries it, the shape a consumer's workbench draws as "their logic |
+their work". The Discovery creator writes it after reading the paper, as an
+authored readout at `scripts/readouts/<RUNNAME>/logic-work.yaml`;
+`scripts/paper_result_build.py` validates it and copies it into the Result when
+the ticket runs. Never edit the Result copy: change the readout and rerun the
+ticket.
+
+```yaml
+read_from: pdf            # pdf | full-text | supplement | abstract: what was read
+kind: empirical           # empirical | conceptual | method | dataset | review
+question: "What the paper asks, in one sentence"
+data: "What it uses: archive, sample, scale"
+method:                   # how the work is done, in order
+  - "One step"
+findings:                 # what it finds, each with its number when it has one
+  - "One finding"
+contribution: "What it adds"
+```
+
+The Result copy adds `run`, `address`, and `source` (the readout path). The
+readout holds only the paper's own content. Why a consumer keeps the paper, and
+which of the consumer's questions it supports or limits, belong to the
+consumer (a paper Story's P-board), never to the Discovery Result. `read_from`
+says what the readout author read; it does not change the Run's
+`analysis.reading_depth`, which records what the Run itself retrieved.
+
 ## Bib authority and aggregation
 
 Each completed Result Bib contains exactly one entry copied verbatim from a
@@ -523,6 +555,12 @@ especially for a DOI-less dblp venue record, not permission to replace the
 accepted citation with a preprint or a Google Scholar guess. The report never
 sets `bib.verification.status: verified`; the person-reserved check above still
 applies.
+
+Two Results in one Task can receive the same exporter key (Crossref keys both of an
+author's 2019 papers `O_Cathain_2019`), and the derived Task Bib refuses a key
+conflict. The later Result then takes its own key with `paper_bib_fetch.py --key`
+(`paper_result_build.py --bib-key`): only the key changes, every field stays as
+exported, and the receipt records the exporter's key as `bib.key_from`.
 
 Refetching the SAME entry preserves an existing `bib.verification`. A DIFFERENT
 entry resets it to `pending`, because a person's reading of the old entry does

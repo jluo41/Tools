@@ -20,8 +20,8 @@ existing owners and identity grammars:
 | Spec template | Owner / native identity | Bounded target and inputs | Result / exit | Cardinality and routes |
 |---|---|---|---|---|
 | `support.<target>` | `haipipe-task`; the answering page's ticket `run_bNNjNNtNNrNN_<partition>_<task>` (or a Discovery paper-run) | one page ticket in `<page>/runs/`: it sets `RESULT_DIR` to `<page>/results/<ticket>/` and `RUN_TICKET` to itself, then runs the task's own ticket in the DIKW Block, whose config names the board's ONE extract, the cut and `answers:` (a cross-check); the page's `answers.yaml` binds the evidence needs it serves to its files | `<page>/results/<ticket>/` (tables, `metrics.json`, `fig_*.png`) + `runtime.yaml` | 0..N per page; one task run may feed several pages, each through its own ticket and result; ready → `report` Specs, truthful failure → HOLD or declared retry |
-| `report.<QID>.<partition>` | the level's folder skill (`haipipe-insight-data` · `-information` · `-knowledge`, which also writes the pooling verdict); `run-report-<MMDD>-<qid>-<cut>` | one answering page: its own current results its `runs:` header names (and, for Knowledge, the Information pages it cites) | the answering page's `.md` written or refreshed, citing each need and passing `haipipe-insight-check` (`haipipe-insight` `ref/report.md`, `ref/evidence-needs.md`) | 0..1 per page; every answering page states what its results show (Data: what was observed, briefly); close → GI2/GI3/GI4 predicate, then SETTLE |
-| `evidence.<page>.<item>` | Wisdom pages (and boards made before page tickets) only · `haipipe-page-evidence`; Page RE lineage plus its native Ticket address | one decided VALUE/CITE/DISPLAY item and frozen Local Input | typed accepted Result + native receipt, required verification satisfied | one per commissioned make-item; ready → dependent writing/delivery, failure → HOLD or declared retry |
+| `report.<QID>.<partition>` | the level's folder skill (`haipipe-insight-data` · `-information` · `-knowledge` · `-wisdom`; Knowledge also writes the pooling verdict) through the `haipipe-page` flow; its Page Runs keep their native names (`run-structure-…`, `run-section-…`, `run-check-…`) | one answering page: its questions' agreed needs and specs, the bound current results, and the pages its cite needs name | the Page Face adopted from its Draft (`page.py adopt`), `page.py health` without FAIL, a page CHECK by a different agent, and `haipipe-insight-check` OK (`haipipe-insight` `ref/report.md`, `ref/evidence-needs.md`) | 0..1 per page at every level; close → GI2/GI3/GI4 predicate, then SETTLE |
+| `evidence.<page>.<item>` | `haipipe-page-evidence`, for an Evidence Item a bound task result does not already supply (a citation, a display unit); Page RE lineage plus its native Ticket address | one decided VALUE/CITE/DISPLAY item and frozen Local Input | typed accepted Result + native receipt, required verification satisfied | only when an item needs its own Page Evidence Run; a need bound in `answers.yaml` uses its task result as the item's Supporting Run |
 | `structure.<page>` | shared Page writing owner; `run-structure-<MMDD>-<slug>` | explicitly commissioned whole-Page map, Shape and Survey target | accepted structure Result + receipt | only when commissioned; close → selected writing targets/evidence obligations |
 | `write.<page>.<scope>` | shared Page writing owner; `run-section-<MMDD>-<slug>` or `run-paragraph-<MMDD>-<slug>` | one selected section/paragraph goal, exact parent rows and ready evidence | accepted writing Result + receipt | 0..N selected scopes; owner-defined SELF/NEW_VERSION/CLOSE/NEW_RUN routes |
 | `deliver.<page>.<target>` | shared Page delivery owner; fixed `run-delivery-<lane>` | one Page delivery lane | the lane's files at least as new as the Page | 0..N declared targets; close → Page CHECK control, failure → repair or HOLD |
@@ -40,11 +40,13 @@ it again. An open matching Run resumes through its owner and is indexed with
 `participation: managed`. Proposed work has a Spec and target, but no invented
 Run id before the owner creates its Ticket and receipt.
 
-`structure`, `write` and `deliver` apply to Wisdom pages (and to legacy
-answer pages being repaired); a Data, Information or Knowledge answer is its
-page's `support` tickets plus a `report` (JL 261001). A page whose evidence
-needs are only cite and judge (every Wisdom page) has no `support` Spec; a
-Knowledge compute need always has one.
+Every answering page, at every level, is written through the `haipipe-page`
+flow (JL 261001, reversing the earlier "support tickets plus a report" rule for
+Data, Information and Knowledge): its `structure`, `write` and `check` Page Runs
+and optional `deliver` lanes, with the page's `support` tickets as the
+Supporting Runs of its Evidence Items. A page whose evidence needs are only cite
+and judge (every Wisdom page) has no `support` Spec; a Knowledge compute need
+always has one.
 
 Registration, evidence planning (need lines and their agreement), binding
 (`answers.yaml`), the evidence check, partition registration, Page controller
