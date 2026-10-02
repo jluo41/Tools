@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.14.12 · 2026-10-02 · The element matrix (JL 261002)
+
+- The Design Space shows an **element matrix** above the cards (JL: "I want to see how
+  design element played an important role here"): one row per design with a draft, one
+  column per element the Design Goal names (`Elements:` under Resources), and `added`.
+  `·` kept, `★ <words>` changed, `removed`; a last row counts how many designs changed
+  each element. A design's element record is read first (`record_reading`); otherwise a
+  word comparison with the starting text (`slot_reading`). A task whose designs each
+  change one element reads as a one-element-at-a-time comparison at a glance.
+- The board's Design Goal gains its `Elements:` line.
+
 ## 0.14.11 · 2026-10-02 · Both insights, design elements, a methods pilot (JL 261002)
 
 - A sixth family, **With both insights**, and a 13th card, **By theory and insight**
@@ -16,7 +27,7 @@
   and MacLean 1991. The run contract gains an optional element record
   (`elements.yaml`); the card's Design elements fold shows it, as the designer recorded
   it, above the comparison with the starting text.
-- The methods pilot is registered in Design-01 of the board under study: four items with
+- A methods pilot is registered in one Design folder: four items with
   one open goal, one bet and the same rules, differing only in `basis` × `mode`: By goal
   (brief-only, compose), By theory (brief-only, theory-driven, the board's message
   theories as reference), By insight (evidence-informed, compose) and By theory and

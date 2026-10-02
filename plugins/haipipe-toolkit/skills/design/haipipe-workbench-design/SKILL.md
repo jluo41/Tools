@@ -14,7 +14,7 @@ description: >-
   workbench, design tab, design items, design folder, design tasks, theory of
   design, /haipipe-workbench-design.
 metadata:
-  version: "0.14.11"
+  version: "0.14.12"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -99,7 +99,7 @@ designs; comparing methods takes one page per method on the same task.
 ```text
 🎨 Design · page level (one design task)
 ├── Design Goal Space   the design task, once: Aim · Venue · Rules · Resources · Leave out
-├── Design Space        the task block, then one card per design:
+├── Design Space        the task block, the element matrix, then one card per design:
 │                       Design · Rationale · Evaluation;
 │                       "Insight pages · N" and "Runs · N" fold inside each card
 └── Delivery Space      every design that passed Verify, word for word · this task's csv
@@ -168,7 +168,14 @@ not count it.
 
 The Space opens with the Design Goal in brief: the task's name, its Objective, Audience,
 how success is measured, the Baseline every design is read against, and the rules every
-design keeps. Then comes one card per Design Item.
+design keeps. Then the **element matrix** (JL 261002: "make the design element be the
+first citizen"): one row per design with a draft, one column per element the Design Goal
+names (`Elements:` under Resources), and an `added` column. A cell is `·` when the design
+kept the starting text's element, `★ <words>` when it changed it, `removed` when it
+dropped it; the last row counts how many designs changed each element. A design's own
+element record (`elements.yaml`) is read first, with where each element came from and how
+it was chosen; a design without one is read by a word comparison with the starting text.
+No `Elements:` line, no matrix. Then comes one card per Design Item.
 
 A Design Item is one design target with its own rules: one SMS, one UI card, one
 message pool. The screen says `Design 3`; the files keep `ITEM03`. It plays the role

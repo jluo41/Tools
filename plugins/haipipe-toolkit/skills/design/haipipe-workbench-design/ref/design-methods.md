@@ -105,6 +105,11 @@ hunch. Keeping each question, its options and the criteria that chose among them
 design space analysis (MacLean 1991); the record keeps the observable choice, not a
 private chain of thought.
 
+The Design Goal names the starting text's elements (Resources › Elements), and the Design
+Space opens with an element matrix: every design read slot by slot against them, ★ where
+it changed an element, with a count of how many designs changed each one. So a page shows
+at a glance which elements its designs explored and which they never touched.
+
 The methods differ in which sources their elements may draw on. By goal's elements come
 from the requirements and from intuition; By theory adds external insights; By insight
 adds internal ones; By theory and insight draws on both. So the record lets a comparison

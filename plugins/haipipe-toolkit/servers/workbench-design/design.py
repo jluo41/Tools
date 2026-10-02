@@ -2252,6 +2252,21 @@ def slot_reading(base: str, slots: list[tuple[str, str]], text: str) -> dict:
     return {"slots": out, "added": added}
 
 
+def record_reading(slots: list[tuple[str, str]], record: dict) -> dict:
+    """A design's element record read slot by slot: a slot it names is same when its words are
+    the starting text's, else changed; a slot it leaves out is removed; an element that names no
+    slot is added. Same shape as `slot_reading`."""
+    same = lambda x, y: [_norm(t) for t in x.split()] == [_norm(t) for t in y.split()]
+    names = {name.lower() for name, _ in slots}
+    out = {}
+    for name, phrase in slots:
+        rec = record.get(name.lower())
+        words = str(rec.get("words") or "").strip() if rec else ""
+        out[name] = (("same" if same(words, phrase) else "changed"), words) if rec else ("removed", "")
+    added = [(k, str(e.get("words") or "")) for k, e in record.items() if k not in names]
+    return {"slots": out, "added": added}
+
+
 def _element_matrix_html(items: list[dict], aim: dict) -> str:
     """The page's designs, one row each, read slot by slot against the starting text: ★ what
     a design changed, · what it kept, and a last row counting how many designs changed each slot."""
@@ -2268,8 +2283,9 @@ def _element_matrix_html(items: list[dict], aim: dict) -> str:
     rows, counts = [], {name: 0 for name, _ in slots}
     added_n = 0
     for item, draft in drafts:
-        reading = slot_reading(base, slots, draft["text"])
         record = {str(e.get("element") or "").strip().lower(): e for e in element_record(item)}
+        # the designer's own record is the first source; the word comparison reads the rest
+        reading = record_reading(slots, record) if record else slot_reading(base, slots, draft["text"])
         cells = []
         for name, _ in slots:
             status, words = reading["slots"][name]

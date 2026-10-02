@@ -171,6 +171,42 @@ class DesignItemsTest(unittest.TestCase):
             self.assertLess(rendered.index("<summary>Design elements · "), rendered.index("<summary>Evidence chain · "))
             self.assertNotIn("As the designer recorded it", rendered)              # no record, no record table
 
+    def test_element_matrix_reads_each_design_slot_by_slot(self):
+        # JL 261002: "make the design element be the first citizen", "see how design element
+        # played an important role": the Design Goal names the starting text's parts, and every
+        # design is read slot by slot against them
+        from live.design import _element_matrix_html, element_slots, record_reading, slot_reading
+        base = "Hi, it's Dr. {NAME}'s office. New prescription details require your review: Reply STOP to opt-out"
+        aim = {"starting text": base,
+               "elements": 'greeting = "Hi," · sender = "it\'s Dr. {NAME}\'s office." · news = "New prescription '
+                           'details" · ask = "require your review:" · link = "{LINK}" · opt-out = "Reply STOP to opt-out"'}
+        slots = element_slots(aim)
+        self.assertEqual([n for n, _ in slots], ["greeting", "sender", "news", "ask", "link", "opt-out"])
+        kept = slot_reading(base, slots, base)
+        self.assertTrue(all(status == "same" for status, _ in kept["slots"].values()))   # {LINK} too
+        added = slot_reading(base, slots, base.replace("details require", "details from your visit require"))
+        self.assertEqual(added["added"], [("news", "from your visit")])
+        removed = slot_reading(base, slots, "Hi, new prescription details require your review: Reply STOP to opt-out")
+        self.assertEqual(removed["slots"]["sender"], ("removed", ""))
+        changed = slot_reading(base, slots, base.replace("it's Dr. {NAME}'s office.", "Dr. {NAME} here."))
+        self.assertEqual(changed["slots"]["sender"], ("changed", "Dr. {NAME} here."))
+        # a design's own element record comes first
+        rec = record_reading(slots, {"greeting": {"words": "Hi,"}, "sender": {"words": "Your doctor's office."},
+                                     "reason": {"words": "so you can check it first"}})
+        self.assertEqual(rec["slots"]["greeting"], ("same", "Hi,"))
+        self.assertEqual(rec["slots"]["sender"], ("changed", "Your doctor's office."))
+        self.assertEqual(rec["slots"]["news"], ("removed", ""))
+        self.assertEqual(rec["added"], [("reason", "so you can check it first")])
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            items = design_snapshot(page, board)["items"]
+            html = _element_matrix_html(items, aim)
+            for label in ("<details class=elmatrix open><summary>Design elements · ",
+                          "<th>greeting</th><th>sender</th><th>news</th><th>ask</th><th>link</th><th>opt-out</th><th>added</th>",
+                          '<a href="#item-ITEM01" data-item="ITEM01">Design 1</a>', "<tr class=elcount><th>changed in</th>"):
+                self.assertIn(label, html)
+            self.assertEqual(_element_matrix_html(items, {"starting text": base}), "")   # no slots named, no matrix
+
     def test_design_elements_show_the_designers_record(self):
         # JL 261002: each element is chosen by reasoning (System 2) or by intuition (System 1),
         # and comes from the requirements, an internal or an external insight; document both
