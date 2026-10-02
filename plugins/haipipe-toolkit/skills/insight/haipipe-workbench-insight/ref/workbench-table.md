@@ -20,7 +20,7 @@ routes Runs and evaluates the GI gates; it is no row's Skill.
 | board | Scope | Questions | Review the questions | haipipe-insight-reviewer-agent (new) | haipipe-insight-question | a change |
 | board | Insight | Question | Plan the evidence | haipipe-insight-agent (new) | haipipe-insight-evidence-plan | none |
 | board | Insight | Question | Review the evidence plan | haipipe-insight-reviewer-agent (new) | haipipe-insight-evidence-plan | none |
-| board | Insight | Work | Write the question's script | haipipe-task-creator-agent | haipipe-insight | none |
+| board | Insight | Work | Write the script | haipipe-task-creator-agent | haipipe-insight | none |
 | board | Insight | Work | Review the script | haipipe-task-reviewer-agent | haipipe-insight | none |
 | board | Insight | Work | Run a partition | haipipe-task-orchestrator-agent | haipipe-insight | none |
 | board | Insight | Data report | Write the Data report | haipipe-insight-agent (new) | haipipe-insight-data | none |
@@ -42,7 +42,7 @@ Notes
   move, and a person signs any change (`haipipe-insight-question`).
 - **The alignment rows.** "Plan the evidence" writes each question's evidence
   needs before any run, and "Review the evidence plan" has a different agent agree
-  them; on a Prototype board the question owns its code, so "Write the question's
+  them; on a Prototype board the question owns its code, so "Write the
   script" writes `scripts/<name>.py` from its live needs, a different agent reviews
   it, and "Run a partition" runs `runs/<partition>.sh` into `results/` and a
   generated `reports/` (`../../haipipe-insight/ref/prototype-contract.md`). "Check

@@ -194,6 +194,11 @@ def legacy_snapshot(board: Path, root: Path) -> dict:
                           "page_type": _LEVEL[letter], "identity_error": "", "rung": "", "level": _LEVEL[letter],
                           "partition": "", "receipt_field": "", "url": file_url(board, page_md, root)})
         cells = {p: _cell(m, page_id) for p, m in grid.get(qid, {}).items() if m != "—"}
+        carried = (q.get("source") or {}).get("cells") or {}
+        for p, m in grid.get(qid, {}).items():          # not asked here: the old board's refusal, as it read
+            if m == "—" and str(carried.get(p, "")).startswith("🚫 "):
+                reason = carried[p][2:].strip()
+                cells[p] = {"mark": "🚫", "page": "", "note": reason, "raw": f"🚫 {reason}"}
         questions.append({"id": lid, "question": q.get("question") or q.get("ask", ""), "register": reg,
                           "cells": cells, "folder": pq.name, "qid": qid})
         extra = {k: v for k, v in re.findall(r"(?m)^\*\*([^*]{2,60})\*\*:\s*(.+?)\s*$", prose)

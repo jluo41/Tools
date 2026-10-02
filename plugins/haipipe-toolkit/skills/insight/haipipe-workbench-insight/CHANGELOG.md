@@ -1,7 +1,7 @@
 ## 0.10.0 · 2026-10-02 · Carried questions and their runs (JL 261002)
 
 - A Prototype and Instance board shows its carried short question and name in the Logic cell, and the ask, Why now, What would answer it and any other carried field under More; the Dataset view reads `0-Meta/meta.md`; a register page reads `<rung>/rung.md`. Layout unchanged.
-- Workbench Table: Scope › Questions gains Carry a board over and Review the questions (a person signs a change); Insight › Work's Bind the work and Run a ticket become Write the question's script, Review the script and Run a partition; Settle the cell is gone (status is computed).
+- Workbench Table: Scope › Questions gains Carry a board over and Review the questions (a person signs a change); Insight › Work's Bind the work and Run a ticket become Write the script, Review the script and Run a partition; Settle the cell is gone (status is computed).
 
 ## 0.9.0 · 2026-10-02 · Methods move to Scope, with a Methods studio (JL 261002)
 

@@ -1039,6 +1039,7 @@ ul.runs .said{font-size:12.5px;color:var(--mut);font-style:italic;margin:2px 0}u
 .cardgrid table.elems{display:table;table-layout:fixed;overflow:visible;width:100%;border-collapse:collapse;font-size:13px;margin:2px 0 6px}table.elems th{text-align:left;font-size:11px;color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:3px 4px}
 table.elems td{vertical-align:top;padding:4px;border-bottom:1px dashed var(--line);line-height:1.4;overflow-wrap:anywhere}table.elems th:last-child,table.elems td.elsup{width:34%}
 table.elems .ids{display:block;font-size:11.5px;color:var(--mut)}.el-new{color:var(--bad);font-weight:600}s.el-gone{color:var(--mut)}
+.elmatrix{margin:8px 0 12px}.elmatrix>summary{font-weight:600;color:var(--fg)}.elscroll{overflow-x:auto}table.elmat{border-collapse:collapse;font-size:12.5px;margin:6px 0;width:100%}table.elmat th,table.elmat td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}table.elmat th{font-size:11px;color:var(--mut);font-weight:600;white-space:nowrap}table.elmat td.el-same{color:var(--mut);text-align:center}table.elmat td.el-changed{color:var(--bad);font-weight:600}table.elmat td.el-removed{color:var(--mut)}table.elmat td.el-missing{color:var(--mut);text-align:center}table.elmat tr.elcount td{color:var(--mut);font-size:11.5px}
 .el-from{font-weight:600}.el-from.requirements{color:var(--acc)}.el-from.internal{color:var(--ok)}.el-from.external{color:#7048e8}.el-from.intuition{color:var(--bad)}.el-how{color:var(--mut)}
 .task .tl{display:flex;gap:10px;margin:2px 0}.task .tl>.mut{flex:0 0 130px}
 span.link{font:600 12px ui-monospace,Menlo,monospace;color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);border-radius:4px;padding:0 3px}
@@ -2186,6 +2187,122 @@ def design_number(item_id: str) -> str:
     return f"Design {hit.group(1)}" if hit else str(item_id)
 
 
+# ----------------------------------------------------------- element matrix --
+# JL 261002: "how to make the design element be the first citizen", "I want to see how design
+# element played an important role here". The Design Goal names the starting text's parts
+# (Resources › Elements); every design is read slot by slot against them, so the page shows
+# which elements each design changed, and which the task explored at all.
+
+_SLOT_PART = re.compile(r'([A-Za-z][A-Za-z -]*?)\s*=\s*"([^"]+)"')
+
+
+def element_slots(aim: dict) -> list[tuple[str, str]]:
+    """The Design Goal's `Elements:` line, `greeting = "Hi," · sender = "…"`: the starting
+    text named part by part, in reading order."""
+    return [(m.group(1).strip(), m.group(2)) for m in _SLOT_PART.finditer((aim or {}).get("elements", ""))]
+
+
+def slot_reading(base: str, slots: list[tuple[str, str]], text: str) -> dict:
+    """One design read slot by slot against the starting text: {"slots": {name: (status,
+    words)}, "added": [(after, words)]}. A slot is same (its words kept), changed (other
+    words in its place), or removed; words the design adds between two slots are added
+    after the slot before them. A slot whose words are not in the starting text is missing."""
+    a, b = with_link(base).split(), with_link(text.strip()).split()
+    na, nb = [_norm(t) for t in a], [_norm(t) for t in b]
+    span, pos = {}, 0
+    for name, phrase in slots:                        # where each slot sits in the starting text
+        words = [_norm(t) for t in phrase.split()]       # as written: a colon here takes no {LINK}
+        for k in range(pos, len(na) - len(words) + 1):
+            if na[k:k + len(words)] == words:
+                span[name], pos = (k, k + len(words)), k + len(words)
+                break
+    owner = {i: name for name, (s, e) in span.items() for i in range(s, e)}
+    kept = {name: [] for name in span}
+    words_of = {name: [] for name in span}
+    changed, added = set(), []
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, na, nb, autojunk=False).get_opcodes():
+        if op == "equal":
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                if i in owner:
+                    words_of[owner[i]].append(b[j])
+                    kept[owner[i]].append(i)
+            continue
+        hit = [owner[i] for i in range(i1, i2) if i in owner]
+        if op == "insert":
+            inside = owner.get(i1) if owner.get(i1) and owner.get(i1 - 1) == owner.get(i1) else None
+            if inside:
+                changed.add(inside)
+                words_of[inside] += b[j1:j2]
+            else:
+                added.append((owner.get(i1 - 1, "start"), " ".join(b[j1:j2])))
+            continue
+        for name in dict.fromkeys(hit):
+            changed.add(name)
+        if hit and j2 > j1:
+            words_of[hit[0]] += b[j1:j2]
+    out = {}
+    for name, _ in slots:
+        if name not in span:
+            out[name] = ("missing", "")
+        elif name not in changed:
+            out[name] = ("same", " ".join(words_of[name]))
+        else:
+            words = " ".join(words_of[name]).strip()
+            out[name] = ("changed", words) if words else ("removed", "")
+    return {"slots": out, "added": added}
+
+
+def _element_matrix_html(items: list[dict], aim: dict) -> str:
+    """The page's designs, one row each, read slot by slot against the starting text: ★ what
+    a design changed, · what it kept, and a last row counting how many designs changed each slot."""
+    slots = element_slots(aim)
+    base = (aim or {}).get("starting text", "")
+    drafts = [(i, shown_design(i)) for i in items if i["state"] != "declined"]
+    drafts = [(i, d) for i, d in drafts if d and (d.get("text") or "").strip()]
+    if not slots or not base:
+        return ""
+    if not drafts:
+        return ('<details class=elmatrix><summary>Design elements · no draft yet</summary><div class=mut>'
+                'Once a design has a draft, it is read here slot by slot against the starting text.</div></details>')
+    head = "".join(f"<th>{_escape(name)}</th>" for name, _ in slots) + "<th>added</th>"
+    rows, counts = [], {name: 0 for name, _ in slots}
+    added_n = 0
+    for item, draft in drafts:
+        reading = slot_reading(base, slots, draft["text"])
+        record = {str(e.get("element") or "").strip().lower(): e for e in element_record(item)}
+        cells = []
+        for name, _ in slots:
+            status, words = reading["slots"][name]
+            rec = record.get(name.lower())
+            tag = ""
+            if rec:
+                frm, how = str(rec.get("from") or "").lower(), str(rec.get("thinking") or "").lower()
+                tag = (f'<span class="ids el-from {_escape(frm)}">{_escape(_FROM.get(frm, frm))}'
+                       f'{" · " + _escape(how) if how else ""}</span>')
+            if status in ("changed", "removed"):
+                counts[name] += 1
+            cells.append(f'<td class="el-{status}" title="{_escape(words)}">'
+                         + ({"same": "·", "missing": "–", "removed": "<s>removed</s>"}.get(status)
+                            or f"★ {_escape(words)}") + tag + "</td>")
+        extra = reading["added"]
+        added_n += bool(extra)
+        cells.append('<td class="el-changed">' + "<br>".join(f"★ {_escape(w)}" for _, w in extra) + "</td>"
+                     if extra else '<td class="el-same">·</td>')
+        rows.append(f'<tr><th><a href="#item-{_escape(item["id"])}" data-item="{_escape(item["id"])}">'
+                    f'{_escape(design_number(item["id"]))}</a> <span class=glyph>{item.get("glyph", "")}</span></th>'
+                    + "".join(cells) + "</tr>")
+    total = len(drafts)
+    foot = ("".join(f"<td>{counts[name]} of {total}</td>" for name, _ in slots) + f"<td>{added_n} of {total}</td>")
+    explored = sum(1 for n in counts.values() if n) + (1 if added_n else 0)
+    return ('<details class=elmatrix open><summary>Design elements · '
+            f'{total} design{"s" if total != 1 else ""} × {len(slots)} slots · {explored} explored</summary>'
+            '<div class=mut>Each design read slot by slot against the starting text (Design Goal › Resources › '
+            'Elements): ★ what it changed, · what it kept. Where a design recorded its elements, each cell says '
+            'where the element came from and how it was chosen.</div>'
+            f'<div class=elscroll><table class=elmat><tr><th>design</th>{head}</tr>{"".join(rows)}'
+            f'<tr class=elcount><th>changed in</th>{foot}</tr></table></div></details>')
+
+
 def shared_rules(items: list[dict]) -> list[str]:
     """The rules every live design keeps, in the order the first one lists them."""
     live = [i for i in items if i["state"] != "declined" and i["acceptance"]]
@@ -2381,6 +2498,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
     # every design-input line by its key: the aim, and the starting text and opt-out the elements read
     aim = {k.lower(): v for block in ("Venue", "Resources", "Aim") for k, v, _ in inp["blocks"].get(block, [])}
     design_html = _task_block(snapshot, items, aim)
+    design_html += _element_matrix_html(items, aim)
 
     if items:
         # A declined item is retired: its card stays for the record, folded after the live ones.

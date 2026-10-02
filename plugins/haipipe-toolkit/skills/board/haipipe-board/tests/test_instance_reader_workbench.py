@@ -50,6 +50,7 @@ def boards(tmp_path):
         """))
     meta = {"id": "I01", "rung": "information", "question": "rows per group?", "name": "Rows Per Group",
             "ask": "how many rows are in each group?", "partitions": {"asked": "all"},
+            "source": {"cells": {"full": "🟡 I01-full", "alpha": "🚫 full-only"}},
             "needs": {"E1": {"kind": "compute", "what": "the row count", "pass": "a count", "cut": "the cell's partition",
                              "unit": "one row", "measure": "row count", "by": "group", "uncertainty": "none",
                              "rivals": "none", "output": {"row_counts.csv": ["partition", "n_rows"]}},
@@ -116,3 +117,11 @@ def test_the_logic_cell_shows_the_carried_question(boards):
     meta = snap["by_id"]["MT00"]
     assert meta["rel"] == "0-Meta/meta.md" and "One toy extract." in meta["text"]
     assert "A register." in snap["questions"][0]["register"]["text"]
+
+
+def test_a_carried_refusal_shows_where_the_question_is_not_asked(boards):
+    root, proto, inst = boards
+    f = proto / "2-Information" / "I01-row-count" / "I01-row-count.md"
+    f.write_text(f.read_text().replace("asked: all", "asked: [full]\n  not_elsewhere: a property of the extract"))
+    snap = legacy_snapshot(inst, root)
+    assert snap["questions"][0]["cells"]["alpha"] == {"mark": "🚫", "page": "", "note": "full-only", "raw": "🚫 full-only"}
