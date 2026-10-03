@@ -661,6 +661,40 @@ class BatchAndDraftTest(unittest.TestCase):
             self.assertEqual(renamed_folder(board, page.parent.name), page.parent.name)
             self.assertEqual(renamed_folder(board, "Design-09-nothing-here"), "Design-09-nothing-here")
 
+    def test_a_new_item_asks_for_the_element_record_when_the_goal_names_elements(self):
+        # JL 261002: the element is a first citizen; with the Design Goal's `Elements:` line,
+        # every new item asks its Generate for elements.yaml under those names
+        fields = {"title": "Open design", "goal": "Try one", "type": "sms", "audience": "all patients",
+                  "job": "prescription review", "stance": "generate", "basis": "brief-only",
+                  "acceptance": "≤ 140 characters including the opt-out suffix"}
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            self.assertEqual(acts.goal_element_rule(page.parent), "")          # no Elements line, no rule
+            acts.add_item(page.parent, page.stem, dict(fields, title="Without slots"))
+            register = acts._register_path(page.parent, page.stem).read_text(encoding="utf-8")
+            self.assertNotIn("elements.yaml", register)
+            (board / "design-goal.md").write_text(
+                "Design goal\n===========\n\n\nResources\n---------\n\n"
+                "Starting text: Hi, it's Dr. {NAME}'s office. New prescription details require your review: "
+                "Reply STOP to opt-out <- the starting point\n"
+                'Elements: greeting = "Hi," · sender = "it\'s Dr. {NAME}\'s office." · news = "New prescription '
+                'details" · ask = "require your review:" · link = "{LINK}" · opt-out = "Reply STOP to opt-out" '
+                "<- the starting text, part by part\n", encoding="utf-8")
+            rule = acts.goal_element_rule(page.parent)
+            self.assertIn("the Design Goal's elements keep their names (greeting, sender, news, ask, link, opt-out)", rule)
+            out = acts.add_item(page.parent, page.stem, dict(fields, title="With slots"))
+            block = acts._register_path(page.parent, page.stem).read_text(encoding="utf-8").split(
+                f"## {out['item']}")[1]
+            self.assertIn("- semantic: every element recorded | observe: read the Result's elements.yaml", block)
+            self.assertEqual(block.count("elements.yaml"), 2)                    # observe and not-verifiable, once
+            # an item that already asks for the record keeps its own rule
+            own = "semantic: my record | observe: read elements.yaml | pass: it is there | fail: it is not | not-verifiable: no text"
+            out = acts.add_item(page.parent, page.stem, dict(fields, title="Own rule",
+                                                              acceptance=fields["acceptance"] + "\n" + own))
+            block = acts._register_path(page.parent, page.stem).read_text(encoding="utf-8").split(
+                f"## {out['item']}")[1]
+            self.assertNotIn("every element recorded", block)
+
     def test_decision_forms_are_folded_until_opened(self):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")

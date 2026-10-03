@@ -113,7 +113,9 @@ word; each card's Design elements are read against it, so a design's kept, new a
 removed words show without anyone listing them. `Elements:` names the starting text's
 parts in reading order, `greeting = "Hi," · sender = "…" · news = "…" · ask = "…" · link =
 "{LINK}" · opt-out = "…"`; each phrase is quoted as it stands in the starting text. The
-Design Space reads every design slot by slot against them (the element matrix).
+Design Space reads every design slot by slot against them (the element matrix), and
+every Design Item added after the line exists asks its Generate for the element record
+under these names (a rule the add-item action appends).
 
 **Leave out.** Things that must never appear in the message. The channel, the send
 and the experiment are not listed here; they are fixed elsewhere.

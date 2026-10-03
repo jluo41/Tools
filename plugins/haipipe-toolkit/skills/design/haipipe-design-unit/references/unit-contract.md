@@ -213,6 +213,12 @@ element of the design, in reading order, and names the file in `result.yaml` as
   alternatives: ["Your doctor's office"]   # options weighed, when there were any
 ```
 
+Element names: when the board's Design Goal names its elements (`Elements:` under
+Resources), the workbench gives every new Design Item a rule that commissions this
+record and lists those names; an entry for one of them keeps its name (`sender`, not
+`from`), and any other element is named for its role. The Design Space's element matrix
+reads the record by these names.
+
 `from` says which input the element rests on; `thinking` says how it was chosen.
 A reasoned element writes its `because`. An intuitive element is a labeled hunch:
 it records the hunch and names no source, and it never becomes warrant; its

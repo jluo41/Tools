@@ -1,5 +1,10 @@
 # haipipe-design-unit · version history
 
+## 0.4.1 current · 2026-10-02 · Element names from the Design Goal (JL 261002) (version unchanged at 0.4.1; the Design family version is frozen)
+
+- When the Design Goal names its elements, the commissioning rule lists those names and
+  the element record keeps them; any other element is named for its role.
+
 ## 0.4.1 current · 2026-10-02 · Optional element record (JL 261002) (version unchanged at 0.4.1; the Design family version is frozen)
 
 - A Generate may write `elements.yaml` when a criterion commissions it: one entry per

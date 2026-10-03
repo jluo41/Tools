@@ -14,7 +14,7 @@ description: >-
   workbench, design tab, design items, design folder, design tasks, theory of
   design, /haipipe-workbench-design.
 metadata:
-  version: "0.14.12"
+  version: "0.14.13"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -175,7 +175,10 @@ kept the starting text's element, `★ <words>` when it changed it, `removed` wh
 dropped it; the last row counts how many designs changed each element. A design's own
 element record (`elements.yaml`) is read first, with where each element came from and how
 it was chosen; a design without one is read by a word comparison with the starting text.
-No `Elements:` line, no matrix. Then comes one card per Design Item.
+No `Elements:` line, no matrix. With the line, the add-item action makes the record
+required: every new Design Item gets one more rule, "every element recorded", which
+commissions `elements.yaml` and lists the Design Goal's element names (an item whose own
+rule already reads `elements.yaml` keeps it). Then comes one card per Design Item.
 
 A Design Item is one design target with its own rules: one SMS, one UI card, one
 message pool. The screen says `Design 3`; the files keep `ITEM03`. It plays the role

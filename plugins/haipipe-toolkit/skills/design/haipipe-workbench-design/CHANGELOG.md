@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.13 · 2026-10-02 · The element record is required (JL 261002)
+
+- When the board's Design Goal names its elements, `add_item` appends one rule to every
+  new Design Item: "every element recorded", a semantic rule that commissions
+  `elements.yaml` and lists the Design Goal's element names (`goal_element_rule`). The
+  Generate writes the record under those names, the Verify checks it, and the element
+  matrix reads it first. An item that already has its own `elements.yaml` rule keeps it;
+  a board without the line is unchanged.
+
 ## 0.14.12 · 2026-10-02 · The element matrix (JL 261002)
 
 - The Design Space shows an **element matrix** above the cards (JL: "I want to see how

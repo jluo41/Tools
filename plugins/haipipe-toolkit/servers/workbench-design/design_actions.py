@@ -132,6 +132,28 @@ def next_item_id(register_text: str) -> str:
     return f"ITEM{max(numbers, default=0) + 1:02d}"
 
 
+# JL 261002: the design element is a first citizen. When the board's Design Goal names the
+# starting text's elements (`Elements:` under Resources), every new Design Item asks its
+# Generate for the element record under those names, as a rule its Verify checks.
+ELEMENT_RULE = (
+    "semantic: every element recorded | observe: read the Result's elements.yaml beside the text | "
+    "pass: each element of the text has one entry naming its words, where it came from (requirements, "
+    "internal insight, external insight or intuition), the rule, row or theory it rests on, and whether it "
+    "was reasoned or intuitive; the Design Goal's elements keep their names ({names}), and any other element "
+    "is named for its role | fail: an element of the text has no entry, an entry names no source or no kind "
+    "of thinking, or a Design Goal element goes under another name | not-verifiable: elements.yaml is missing")
+
+
+def goal_element_rule(folder: Path) -> str:
+    """The element-record rule for a new item in this Design Folder, or "" when the board's
+    Design Goal names no elements."""
+    from live.design import design_input, element_slots
+    inp = design_input(Path(folder).parent.parent, Path(folder))
+    aim = {k.lower(): v for rows in inp["blocks"].values() for k, v, _ in rows}
+    slots = element_slots(aim)
+    return ELEMENT_RULE.format(names=", ".join(name for name, _ in slots)) if slots else ""
+
+
 def add_item(folder: Path, stem: str, fields: dict) -> dict:
     """Append one Design Item block to the register (goal and rules only, no state)."""
     title = (fields.get("title") or "").strip()
@@ -162,6 +184,9 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
                   if line.strip("- ").strip()]
     if not acceptance:
         raise ActionError("a Design Item needs at least one acceptance rule")
+    element_rule = goal_element_rule(folder)
+    if element_rule and not any("elements.yaml" in rule for rule in acceptance):
+        acceptance.append(element_rule)
     try:
         compile_criteria(acceptance)
     except ValueError as exc:
