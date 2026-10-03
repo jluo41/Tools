@@ -8,8 +8,8 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-10-02"
+  version: "0.22.0"
+  last_updated: "2026-10-03"
 ---
 
 # /haipipe-workbench-paper · the Paper-level work console
@@ -39,20 +39,24 @@ The design is drawn in `servers/workbench-paper/studio/paper-workbench-design.ex
 
 ## 🔗 Default Workbench Link
 
-When returning a link for a Paper Board, return the complete Paper Workbench
-route by default:
+When returning a link for a Paper Board, return the short address by default,
+as every workbench does (`servers/README.md` "Adding a workbench", rule 4; JL 261003):
 
 ```text
-/_board/paper?path=<URL-encoded Paper>/board.md&file=board.md
+<DOMAIN>/w/<paper-board-folder>                 the Paper Workbench
+<DOMAIN>/w/<paper-board-folder>/<Section stem>  one Section's Page workbench
 ```
 
-Both query parameters are required. `path` identifies the owning Board source;
-`file=board.md` states that this is a Board-level surface rather than a
-Page-level Draft route. Use the configured reader-facing origin (the `--public-url` the board
-server was started with; find the listening port before quoting a link, and
-never hand a remote reader `127.0.0.1`) and keep the complete query in one
-Markdown link. Add a hash only when the reader asks for a particular place.
-The route is `#<space>[/<tab>][/<view>]`:
+The server redirects it to the full route
+`/_board/paper?path=<URL-encoded Paper>/board.md&file=board.md` (or
+`/_board/draft?path=…&file=…` for a Section) and composes `path` and `file`
+itself; the full route still answers and stays the form for scripts and tests.
+`<DOMAIN>` is the origin the reader uses (the `--public-url` the board server was
+started with; find the listening port before quoting a link, and never hand a
+remote reader `127.0.0.1`). Follow the redirect and read one real value off the
+response before returning the link, and keep it in one Markdown link. Add a hash
+only when the reader asks for a particular place; the hash rides on the
+redirected page. The route is `#<space>[/<tab>][/<view>]`:
 
 ```text
 ideation
@@ -118,6 +122,23 @@ views, the content on the left and its Runs panel on the right at every width
 (the same `runs_panel.py` markup, a panel folds to a strip). Nothing on screen
 explains itself: no source lines, counts, hints, crumbs or copy-to-chat chips
 (JL 260927).
+
+**Shared shell (JL 261003).** Above the Spaces the page wears the shell every
+workbench shares (`servers/README.md` "Adding a workbench";
+`_host/tests/test_workbench_conformance.py`): the title,
+one band (desk · Story version · N questions · N Sections · built or not built yet,
+`paper._shell_band`), then the Space row with the shared Guide first and plain names
+(Ideation · Story · Sections · Delivery). Each Space's tabs, Views and content sit in
+one box; its Runs panel starts folded to the strip and opens on a click. The colors
+and tab sizes are the Insight workbench's, kept once in `space_views.SPACE_CSS`; the
+Spine shows each division by name, never its C-code. Guide reads the `paper` entry of
+`workbench-shared/guide_families.py`: `description`, the Workbench Table
+`ref/workbench-table.md` (each working row is one `run-cards.md` button; its 🤖 AGENT,
+🧩 SKILL and ✍️ SIGNS lines agree, `table-workbench --check --cards`), the papers
+`ref/paper-papers.md` (`table-papers`), and RoadMap Draw's **Workbench design**,
+`servers/workbench-paper/studio/paper-workbench-design.excalidraw`, written by
+`paper-workbench-design.py` (Part 0 the shared shell, then each Space's sub-spaces, runs
+and skills, each Space as shown, and what each reads; rerun it, never edit the scene).
 
 Reading rules (JL 260918): base type 16px; label/value rows are a two-column
 table with cell edges and a shaded label cell, never text nested in text; every
@@ -312,7 +333,7 @@ first `Story<X>`) when it exists, else the first drawing there, else the Story's
 new. The canvas is the server's self-hosted Excalidraw
 (`/_excalidraw/?board=<path>&edit=1`), loaded when the tab shows; every stroke saves
 through `/_board/excalidraw-save`. The server writes the empty file the first time the
-canvas opens (`mint_board_scene` in `servers/workbench-studio/xcal.py`: a plain scene,
+canvas opens (`mint_board_scene` in `servers/workbench-shared/xcal.py`: a plain scene,
 only in a `studio/` folder beside a `board.md`); rendering the page writes nothing. With more
 than one `.excalidraw` in `studio/`, each is a button above the canvas, the Story's own first;
 "Open full screen ↗" opens the same canvas in its own tab. One tab holds the pen: a second
@@ -507,8 +528,8 @@ existence, a generated PDF, or a Run-Type row marked `recorded`.
   `haipipe-workbench` contract first.
 - The Paper Board exposes one `Paper` Workbench entry, not a generic Console
   entry and not a second Draft entry.
-- Its direct link has the form
-  `/_board/paper?path=<board.md>&file=board.md`, and it answers on any Board
+- Its link is the short `/w/<paper-board-folder>`, which redirects to
+  `/_board/paper?path=<board.md>&file=board.md`; that route answers on any Board
   whose board.md says `dialect: paper` with no other file present.
 - Ideation, Story, Sections, and Delivery are the visible Spaces, each with a
   Runs panel on the right; their tabs and views remain views over authority records.

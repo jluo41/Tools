@@ -114,6 +114,21 @@ or target is a new Run.
 💬 PROMPT   /haipipe-page-revise {page} {target}: read the change ledger of {run} against ## 3 Draft of {plan}; settle every Before / After and say which changes to keep.
 ```
 
+## `Page.roadmap` · `run-roadmap-<MMDD>`
+
+```text
+🎯 TARGET   the whole Page: the logic of its argument
+👤 ACTOR    agent drafts the logic tree; the person edits it on the canvas
+⚙ ACTION   read the plan's Bullets, write the logic as a tree (claim → the reasons it rests on → Bullets), draw it with draw-logic-tree (ref/draw_logic_tree.py --logic); later, revise the drawing where the person asks
+🚪 GATE     every Bullet is a leaf; the person accepts the logic
+🔀 ROUTE    SELF · CLOSE · Structure revise when the logic exposes a missing or misplaced Bullet
+🧾 RECEIPT  studio/<stem>-roadmap.excalidraw (the source of the logic; never replaced without asking)
+🖥 SPACE    Draft · RoadMap Draw view
+🧩 SKILL    draw-logic-tree
+🔘 BUTTON   Draw the logic · Draft · ^run-roadmap- · views roadmap
+💬 PROMPT   /draw-logic-tree draw the logic of {page} in its RoadMap: read {plan}, write the Section's argument as a tree (its claim on top, the reasons it rests on below, every Bullet a leaf) and draw it with draw_logic_tree.py --logic; if studio/{page}-roadmap.excalidraw exists, change only what I ask and keep my edits.
+```
+
 ## `Page.evidence-item` · `re-value|cite|display-*`
 
 ```text

@@ -8,7 +8,10 @@ Part 1 answers the main question (JL 260928): which Spaces and sub-spaces the
 paper has, which runs each sub-space holds, in what order, and which skill each
 run uses. Part 2 draws each Space as the workbench shows it (content on the
 left, the Runs panel on the right, same grammar as the Page workbench drawing).
-Part 3 lists what changed and what each Space reads.
+Part 3 lists what changed and what each Space reads. Part 0 (JL 261003) draws the shell
+every workbench shares: title, band, the Space row with Guide first and plain names, one
+box per Space, the Runs panel folded to a strip; Guide › RoadMap Draw shows this drawing
+as the Paper family's "Workbench design".
 """
 import json
 import random
@@ -85,18 +88,36 @@ text("title", 48, 24, "Paper Workbench · design", 34)
 text("subtitle", 48, 74, "Question first: each Space answers one question; each sub-space holds its runs "
      "in order; each run names the skill that does the work.", 18, MUTED)
 
+# ---- part 0 · the shell every workbench shares (JL 261003) --------------------
+S0 = 128
+text("p0-title", 48, S0, "0 · The shell every workbench shares", 28)
+rect("p0-screen", 48, S0 + 52, 2400, 330, RULE)
+text("p0-h1", 72, S0 + 72, "📄 <paper title>      /w/<paper-board-folder>", 24)
+button("p0-band", 72, S0 + 116, 2352, 42, "band · desk · Story version · N questions · N Sections · "
+       "built or not built yet      e.g.  ManSci · Story v0.5 · 5 questions · 19 Sections · not built yet", size=16)
+for n, (lab, w) in enumerate((("Guide", 110), ("Ideation", 130), ("Story", 110), ("Sections", 130), ("Delivery", 130))):
+    button(f"p0-space-{n}", 72 + sum((110, 130, 110, 130, 130)[:n]) + n * 12, S0 + 176, w, 44, lab, sel=n == 2)
+rect("p0-box", 72, S0 + 236, 2190, 126, RULE)
+text("p0-box-note", 96, S0 + 252,
+     "one box per Space: its tabs and View row first (a rule under it, no \"View\" label), then its content\n"
+     "Guide: Description · Method · RoadMap Draw (this drawing + the Workbench Table) · Related Paper\n"
+     "No `all boards · board index` line; Spine shows Identity · Pitch · Stakes by name, never C-codes; "
+     "a Section's state is its word (🟡 Partial)", 17, MUTED)
+button("p0-runs", 2278, S0 + 236, 146, 126, "◂ Runs", size=17, dashed=True)
+text("p0-runs-note", 2278, S0 + 368, "folded until opened", 14, MUTED)
+
 # ---- part 1 · Space → sub-space → runs in order → skill ----------------------
-P1 = 128
+P1 = S0 + 420
 text("p1-title", 48, P1, "1 · Spaces, sub-spaces, runs in order, and the skill of each run", 28)
 
 MAP = [
-    ("Ideation Space", "What paper should we write?", [
+    ("Ideation", "What paper should we write?", [
         ("Ideas", [("1", "Generate ideas", "haipipe-ideation-generate", ""),
                    ("2", "Test idea", "haipipe-ideation-test", "novelty · pressure · journal fit"),
                    ("3", "Idea review", "haipipe-paper-ideation", ""),
                    ("4", "Select idea", "haipipe-ideation-select", "G0 · the person decides")]),
     ], "hands on: the chosen idea and its venue → the Story"),
-    ("Story Space", "What does the paper ask, and what must it find out?", [
+    ("Story", "What does the paper ask, and what must it find out?", [
         ("Spine", [("1", "Story revise", "haipipe-paper-story · haipipe-writing", "Identity · Pitch · Stakes")]),
         ("RoadMap Draw", []),
         ("High-level logic + Low-level work", [("2", "Task review", "haipipe-paper-story", "T<n> and D<n> under a hypothesis: is each the right question?"),
@@ -105,14 +126,14 @@ MAP = [
                        ("5", "Claim review", "haipipe-paper-story", "RQ → its claims, after 3 and 4")]),
         ("Related Papers", [("4", "Discovery runs", "haipipe-discovery", "P<n> → its Paper Run; the card opens the PDF")]),
     ], "hands on: C8 rows → Sections · Task and Discovery Results → Evidence Items"),
-    ("Sections Space", "Does each Section say it right, with evidence?", [
+    ("Sections", "Does each Section say it right, with evidence?", [
         ("Narrative view", [("1", "Narrative review", "haipipe-paper-story", "the Section's C8 row")]),
         ("Table view", [("2", "Draft runs", "haipipe-page-structure → haipipe-page-writing", "then haipipe-page-revise"),
                         ("4", "Delivery runs", "haipipe-page-delivery", "run-delivery-webpage · latex · word"),
                         ("5", "Page check", "haipipe-page-check", "one exact version")]),
         ("Evidence view", [("3", "Evidence runs", "haipipe-page-evidence", "binds Task and Discovery Results")]),
     ], "tabs Main · Appendix pick the Sections · hands on: each Section's current files → Delivery"),
-    ("Delivery Space", "Is the manuscript ready to send?", [
+    ("Delivery", "Is the manuscript ready to send?", [
         ("LaTeX · Word", [("1", "Build", "haipipe-paper-assemble", "compile order from the Story"),
                           ("3", "Check", "haipipe-paper-assemble", "the build and the letter's checks; then you send")]),
         ("Cover letter", [("2", "Cover letter", "haipipe-paper-assemble", "words on the RD02 Round page; built with the manuscript")]),
@@ -178,16 +199,16 @@ def space(key, i, title, tabs, sel_tab, reads, views, sel_view, draw_content, ty
         button(f"{key}-tab-{n}", tx, Y0 + 76, tw, 50, tab, sel=n == sel_tab, size=19)
         tx += tw + 12
     text(f"{key}-reads", x0 + 24, Y0 + 148, reads, 16, MUTED)
-    if views:
-        text(f"{key}-view-label", x0 + 24, Y0 + 188, "View", 17, MUTED)
+    if views:                                       # the View row needs no label (JL 261003)
         for n, v in enumerate(views):
-            button(f"{key}-view-{n}", x0 + 72 + n * 122, Y0 + 176, 112, 42, v, sel=n == sel_view)
+            button(f"{key}-view-{n}", x0 + 24 + n * 122, Y0 + 176, 112, 42, v, sel=n == sel_view)
     cx, cy = x0 + 24, Y0 + 272
     rect(f"{key}-content", cx, cy, 552, 410)
     draw_content(key, cx, cy)
     rx, ry = x0 + 600, Y0 + 272
     rect(f"{key}-runs", rx, ry, 552, 410, bg=PANEL)
     text(f"{key}-runs-title", rx + 18, ry + 22, "Runs", 22)
+    text(f"{key}-runs-fold", rx + 90, ry + 28, "shown open here; on the page it starts folded", 13, MUTED)
     for n, label in enumerate(types):
         button(f"{key}-type-{n}", rx + 18, ry + 70 + n * 50, 180, 40, label, sel=n == sel_type,
                size=14, dashed=label.startswith("+"))
@@ -228,7 +249,7 @@ def ideation_content(key, cx, cy):
     text(f"{key}-more", x, cy + 262, "▸ i2 · …\n▸ i3 · …", 14, MUTED)
 
 
-space("ideation", 0, "Ideation Space", ["Ideas"], 0,
+space("ideation", 0, "Ideation", ["Ideas"], 0,
       "Reads Story00-ideation.md · Ideas (ranked) · Idea divisions", [], None,
       ideation_content,
       ["1 Generate ideas", "2 Test idea", "3 Idea review · 1", "4 Select idea", "+ New Run"], 2,
@@ -258,7 +279,7 @@ def story_content(key, cx, cy):
          "▸ Not under a question", 12, mono=True)
 
 
-space("story", 1, "Story Space", ["Spine", "RoadMap Draw", "High-level logic + Low-level work", "Related Papers"], 2,
+space("story", 1, "Story", ["Spine", "RoadMap Draw", "High-level logic + Low-level work", "Related Papers"], 2,
       "Reads StoryA-….md · Spine ### 1, 2, 4 · RoadMap Draw studio/ · logic + work ### 3, 5, 6 (D, Q), 7 (T)", [], None,
       story_content,
       ["2 Task review · 0", "3 Task runs · 22", "4 Discovery runs · 53", "5 Claim review · 1", "+ New Run"], 1,
@@ -273,19 +294,19 @@ space("story", 1, "Story Space", ["Spine", "RoadMap Draw", "High-level logic + L
 
 def sections_content(key, cx, cy):
     x = cx + 18
-    text(f"{key}-row0", x, cy + 30, "▸ 0 · Abstract              v2.2   PARTIAL", 13, mono=True)
+    text(f"{key}-row0", x, cy + 30, "▸ 0 · Abstract              v2.2   🟡 Partial", 13, mono=True)
     rect(f"{key}-row1-sel", x - 8, cy + 58, 526, 30, BLUE, "#e7f5ff")
-    text(f"{key}-row1-head", x, cy + 64, "▸ 1 · Introduction          v2.6   DRAFT     Open ↗", 13, BLUE, mono=True)
+    text(f"{key}-row1-head", x, cy + 64, "▸ 1 · Introduction          v2.6   🔨 Draft   Open ↗", 13, BLUE, mono=True)
     text(f"{key}-rows", x, cy + 98,
-         "▸ 2 · Literature Review     v1.3   PARTIAL\n"
-         "▸ 3 · Theory                v2.4   DRAFT\n"
-         "▸ 4 · Empirical Strategy    v1.5   PARTIAL\n"
-         "▸ 5 · Results               v1.5   CHECK\n"
-         "▸ 6 · Discussion            v1.3   PARTIAL\n"
-         "▸ 7 · Conclusion            v1.2   PARTIAL", 13, mono=True)
+         "▸ 2 · Literature Review     v1.3   🟡 Partial\n"
+         "▸ 3 · Theory                v2.4   🔨 Draft\n"
+         "▸ 4 · Empirical Strategy    v1.5   🟡 Partial\n"
+         "▸ 5 · Results               v1.5   ✅ Check\n"
+         "▸ 6 · Discussion            v1.3   🟡 Partial\n"
+         "▸ 7 · Conclusion            v1.2   🟡 Partial", 13, mono=True)
 
 
-space("sections", 2, "Sections Space", ["Main", "Appendix"], 0,
+space("sections", 2, "Sections", ["Main", "Appendix"], 0,
       "Reads StoryA-….md ### 8 (order, narrative) · each Section Page", ["Table", "Narrative", "Evidence"], 0,
       sections_content,
       ["1 Narrative review", "2 Draft runs · 23", "3 Evidence runs · 72", "4 Delivery runs · 3",
@@ -310,7 +331,7 @@ def delivery_content(key, cx, cy):
          "Related work and disclosures ……\n……………………………………………", 14, MUTED)
 
 
-space("delivery", 3, "Delivery Space", ["LaTeX", "Word", "Cover letter", "Rounds"], 2,
+space("delivery", 3, "Delivery", ["LaTeX", "Word", "Cover letter", "Rounds"], 2,
       "Reads delivery/paper-build.toml · build-manifest.json (cover_letter) · read only",
       ["Preview", "Artifacts", "Checks"], 0,
       delivery_content,
@@ -327,7 +348,7 @@ for i in range(3):
 
 # ---- part 3 · what changed, what each Space reads ------------------------------
 SY = Y0 + FH + 90
-text("change-title", 48, SY, "3 · What changes (JL 260928, 260929)", 28)
+text("change-title", 48, SY, "3 · What changes (JL 260928, 260929, 261003)", 28)
 rect("change-box", 48, SY + 56, 1320, 470)
 text("change-table", 72, SY + 82,
      "Before                                       Now\n"
@@ -344,7 +365,9 @@ text("change-table", 72, SY + 82,
      "Evidence cards said contract only            state from the item's Result; names like Evalue03\n"
      "No cover letter                              Delivery › Cover letter: the RD02 Round page's words,\n"
      "                                             built with the manuscript (run-delivery-coverletter)\n"
-     "New: Select idea (Ideation 4) · Page check (Sections 5) · T5 (main association)", 17, INK, mono=True)
+     "New: Select idea (Ideation 4) · Page check (Sections 5) · T5 (main association)\n"
+     "261003: the shared shell (Part 0); Guide › Description · Method · RoadMap Draw ·\n"
+     "        Related Paper; Workbench Table and papers table; /w/ link", 17, INK, mono=True)
 
 FX = 48 + 1320 + 64
 text("files-title", FX, SY, "What each Space reads", 28)

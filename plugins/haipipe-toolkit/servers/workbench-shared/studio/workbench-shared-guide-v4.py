@@ -256,7 +256,6 @@ def main():
              "elements": ui.E, "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}}
     path = HERE / "workbench-shared-guide-v4.excalidraw"
     path.write_text(json.dumps(scene, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    ui.write_svg(HERE / "workbench-shared-guide-v4.svg")
     if args.previews:
         ui.write_previews(HERE, args.font, args.mono_font, PREVIEWS)
     print(f"Wrote {path.name}: {len(ui.E)} elements, {len(ui.FRAMES)} frames")

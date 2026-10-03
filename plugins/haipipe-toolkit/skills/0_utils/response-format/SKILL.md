@@ -6,15 +6,16 @@ description: >-
   scan points state the takeaways, a short readable ASCII sketch draws the content
   when useful, and plain prose paragraphs carry the detail. Changed files follow
   the explanation, one short line each saying what changed. Each ordinary section
-  ends with a fully bold Question association. The last section is always the summary and next steps, without a
-  Question association; there is no file section. This is a reference spec and
+  answers one question, named in its heading as `(Q: <address>)`. The last
+  section is always the summary and next steps, without a Question; there is no
+  file section. This is a reference spec and
   does not self-activate. Trigger: response format, reply format, outline format,
   bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-10-02"
+  version: "0.13.0"
+  last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -56,8 +57,8 @@ current input and the relevant session context, in a natural discussion order.
 Then associate each ordinary section with the question it advances. Its content
 starts with a NUMBERED list of one-line points, followed by a concise ASCII sketch
 when there is a useful relationship to draw, then plain prose for whatever needs
-explaining. Changed files follow the explanation. Put the Question association
-at the bottom, with the whole line bold. Summary and Next has no Question line.
+explaining. Changed files follow the explanation. Each section answers ONE question,
+named at the end of its heading as `(Q: <address>)`. Summary and Next has none.
 The list is what the reader scans, the sketch is what the reader sees, and the
 prose is ordinary paragraphs, with no keys and no repeated titles. Never interleave
 these content layers.
@@ -65,7 +66,7 @@ these content layers.
 ```
 <the answer, one line>
 
-## 1. [emoji] Short Headline ······························
+## 1. [emoji] Short Headline (Q: Session · <the question this section answers>)
 
 1. **Short title**: the takeaway, the so-what
 2. **Next title**: another takeaway
@@ -77,8 +78,6 @@ The paragraph that explains them, in plain prose, after the whole list. It
 covers what the points could not hold, and it is often not needed at all.
 
 (changed file lines, if any)
-
-**Related question: Session · <the question this section answers>**
 ```
 
 
@@ -89,31 +88,36 @@ Determine the reply's content and section order from the user's input first;
 match those sections to questions afterwards. A Board register supplies possible
 associations, not an outline for ordinary chat. Keep the normal numbered sections
 at the same level; do not wrap them in additional Question headings or regroup
-them by Board order. Display the association as a short footer after the section's
-content and any changed file lines.
+them by Board order. Display the association at the end of the section's heading,
+so the reader sees which question a section answers before reading it.
 
-Every ordinary section ends with a Question line, separated from preceding content
-by a blank line. Bold the entire line, including the label, id, question wording
-and any link text. Keep the actual question visible rather than showing only an
-id. Use the language of the reply for these labels. Choose the appropriate form:
+**One question per section** (2026-10-03). Each ordinary section answers exactly one
+question. When a section's content serves two questions, it is really two sections:
+split it. Several sections may answer the same question, so a question can span
+sections, but a section never spans questions.
 
-- **Recorded:** `**Related question: [Q01 · <question wording>](<verified report target>)**`.
-  Use the actual question identity and question or Report link. Include the owning
-  Block, and Project when needed, on an optional `Belongs to:` line immediately
-  above the Question line; together they form the footer. Q01 is local to a Block, so distinguish equal ids from different
-  Blocks. Use clickable links only for known existing targets.
-- **Session:** `**Related question: Session · <question from the user's input>**`.
+Every ordinary section heading ends with its one question in parentheses:
+`## N. [emoji] Short Headline (Q: <address>)` (2026-10-03; it replaced the bold
+`Question:` footer line at the bottom of the section, which the reader met only
+after the content). Keep the address short so the heading stays one line.
+Choose the form:
+
+- **Recorded:** `(Q: [<owner>/<block>/QNN-<slug>](<verified report target>))`,
+  for example `(Q: Tools/designs/b01_utils/Q01-point_or_restate)`. `<owner>` is the
+  Project folder name, or `Tools/designs` for a skill Block; `<block>` is the Block
+  folder without its `tasks/` parent; `QNN-<slug>` comes from the report folder
+  `qNN_<slug>`. The address already names the owner, so there is no `Belongs to:`
+  line, and the question wording lives in the report, not in the heading. Link it
+  only to a known existing target; otherwise write the address unlinked.
+- **Session:** `(Q: Session · <question from the user's input>)`.
   Use this for an unregistered user question or when its recorded counterpart is
   unknown. No Block lookup or id allocation is required to answer ordinary chat.
-- **Proposed:** `**Related question: Proposed · <new candidate question>**`.
+- **Proposed:** `(Q: Proposed · <new candidate question>)`.
   Use this for a distinct question inferred or proposed during the discussion.
-  Add a target Block only when known. A proposed question has no invented Q id or
-  link; assign a stable id through the owner when it is actually recorded.
+  A proposed question has no invented Q id or link; assign a stable id through the
+  owner when it is actually recorded.
 
-Several sections may refer to the same Q. A section that substantively supports
-several recorded questions may list those associations on its Question line,
-with enough ownership context to distinguish them. Related Projects may be listed
-on the ownership line when useful; they do not change the question's owner.
+Several sections may refer to the same Q; one section never lists two.
 Section numbers and Q ids are independent.
 
 The agreed Block report placement is `report/Q01`, `report/Q02`, beside `studio/`.
@@ -121,13 +125,13 @@ For an existing question, link its real record even when it uses an older layout
 A layout example or a planned path is not evidence that a Report exists. This
 format neither creates records nor migrates their storage.
 
-Keep the Question line specific to what the section advances, and preserve the
+Keep the `(Q: ...)` address specific to what the section advances, and preserve the
 user's latest clarifications. Ordinary follow-ups can refine the same question.
 For matching evolving session questions, identifying candidates, or deciding
 whether clarification is needed, use [ask-questions](../ask-questions/SKILL.md).
 Simple attribution from an explicit user question can be done directly.
 
-The final **Summary and Next** has no Question or ownership line. It summarizes
+The final **Summary and Next** has no `(Q: ...)` in its heading. It summarizes
 the whole reply and may mention Q ids naturally in its points or prose. A trivial
 answer consisting only of line 1 needs no Question association.
 
@@ -141,8 +145,8 @@ of what the points are about (see "The sketch"). Then plain prose for whatever
 needs more context. A
 reader who stops after the numbers already has the point; a reader who stops after
 the sketch has seen it. A section whose work changed files adds a fourth layer:
-its file lines (see "Files live in their section"). The fully bold Question footer
-comes last in every ordinary section. Summary and Next omits that footer.
+its file lines (see "Files live in their section"). The section's question is
+already named in its heading, so nothing follows the file lines.
 
 ```
 scan point   N. **Short title**: one takeaway. ONE line, <= 14 words
@@ -151,7 +155,6 @@ sketch       a ```text block: draws the thing, one step per line, emoji on its
 prose        plain paragraphs after the whole list. no keys, no titles.
              as detailed as the point deserves. skip it when it adds nothing
 file lines   - `name` (where): change in <= 8 words. only if the section changed files
-question     fully bold Related question line, last; omit from Summary and Next
 ```
 
 1. **Numbers, not dashes**: the scan layer is `1.` `2.` `3.`, never `-`.
@@ -190,10 +193,10 @@ Rules, all countable
 --------------------
 
 ```
-heading -> scan -> sketch -> explain -> files -> question   ordinary section ORDER
-summary: heading -> scan -> sketch -> explain               no question or ownership line
+heading (Q: ...) -> scan -> sketch -> explain -> files     ordinary section ORDER
+summary: heading -> scan -> sketch -> explain               no (Q: ...)
 question match follows drafting  user's input drives content and section order
-question footer is fully bold    label and question wording; after content and changed files
+one question per section        `(Q: <address>)` at the end of the heading
 1. 2. 3. not -                   numbered scan layer; dashes mean inventory
 1 authored line per scan point   short phrase; viewport wrapping is outside the writer's control
 <= 14 words per scan point       title included. count them
@@ -206,9 +209,9 @@ prose runs as long as it needs   this layer is where detail belongs
 one step per line                readable first; several short lines beat one long
 emoji nodes, no separators       a blank line around it; no rules, no borders
 ## N. sections                   numbered 1, 2, 3 ...; the summary is the last
-heading ends in · dots           padded to 56 columns, every heading the same
+heading ends at the (Q: ...)     no dot padding, no other trailing marks
 a sketch draws, never restates   the list redrawn in boxes is not a sketch
-body prose follows scan          optional ownership and bold Question form the footer
+body prose follows scan          no footer: the question is in the heading
 a file line says what changed    `name` (where): change, <= 8 words, one line
 ```
 
@@ -219,11 +222,10 @@ which is the only place it reads well.
 Sections
 --------
 
-- **Header shape** — `## N. [emoji] Short Headline ····`: the section's number (1,
-  2, 3 ... in reading order; 2026-10-02), one emoji, a 2 to 5 word headline in title
-  case, then a light line of dots (`·`) padding the heading to 56 columns (at least
-  4 dots; an emoji counts as 2), so every heading ends in the same column and the
-  dots separate the sections. Not kebab-case; write it like a headline a human scans.
+- **Header shape** — `## N. [emoji] Short Headline (Q: <address>)`: the section's
+  number (1, 2, 3 ... in reading order; 2026-10-02), one emoji, a 2 to 5 word
+  headline in title case, then the section's one question in parentheses, and
+  nothing after it (the trailing dot padding was dropped 2026-10-03 as clutter). Not kebab-case; write it like a headline a human scans.
   With numbered sections, "2.3" names section 2, point 3.
 - **Emoji palette**, suggestive and not fixed — 🧩 short answer · 🎯 recommendation ·
   ⚠️ caveat or risk · 🛠️ how-to · 📋 summary and next (the last section) ·
@@ -238,8 +240,8 @@ Sections
   things stand now and what comes next, most important first; its prose holds the
   detail. It is the section a reader who skipped everything else reads, so it
   carries the real state and the real next step, never a list of files. A question
-  for the user belongs here too, as the next step it blocks. It has no Question
-  association or ownership line.
+  for the user belongs here too, as the next step it blocks. Its heading has no
+  `(Q: ...)`.
 - **Honest headlines** — the headline names what is under it. Never pad to hit a count.
 
 The sketch (2026-10-02)
@@ -249,7 +251,7 @@ A reader takes in the first line and the pictures first. Keep a sketch between
 the scan list and the prose whenever it helps draw the section's content. It is
 an ASCII drawing, in the shapes of `/diagram-ascii`, laid out to be read: one step
 per line, a short note beside each, several lines when that reads better than one
-long line. The Question footer supplements this diagram; it does not replace it.
+long line. The heading's `(Q: ...)` supplements this diagram; it does not replace it.
 
 ```text
 📥 raw row          FoodName, ExternalSourceID, FoodID
@@ -336,7 +338,7 @@ A list of bare paths at the end of a reply answers "which files" and nothing els
 So a changed file is written down next to the work that changed it, as short as it
 can be while still saying what changed.
 
-1. **In the section**: changed files follow the explanation, before the Question footer.
+1. **In the section**: changed files follow the explanation and end the section.
 2. **Name, where, change**: ``- `name` (where): change``, the change in 8 words or fewer.
 3. **👀 means read it**: add `Check:` and what to confirm, 8 words or fewer.
 4. **Outputs too**: a notebook or result goes under the section that made it.
@@ -384,7 +386,7 @@ reply each sketch is its own ```text block.
 ```
 Yes, and one cheap test settles it.
 
-## 1. 🧩 Short Answer ·····································
+## 1. 🧩 Short Answer (Q: Session · Does this claim hold, and when does it apply?)
 
 1. **Claim holds**: the back-test resolves direction before any build
 2. **The catch**: a skill alone cannot make a behavior always-on
@@ -401,9 +403,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question: Session · Does this claim hold, and when does the skill apply?**
-
-## 2. 🛠️ What I Changed ···································
+## 2. 🛠️ What I Changed (Q: Session · Why did empty days produce empty cases?)
 
 1. **Builder fixed**: the trigger now skips days with no readings
 2. **Rebuilt**: the generated function matches the builder again
@@ -417,9 +417,7 @@ no readings. It now skips them, and the rebuild picked that up.
 - 👀 `builder_x.py` (`build_cases`): skip days with zero readings. Check: skip before window cut
 - `fn_case/x.py`: regenerated from the builder
 
-**Related question: Session · Why did empty days produce cases with no readings?**
-
-## 3. 📋 Summary and Next ·································
+## 3. 📋 Summary and Next
 1. **Now**: empty days no longer make cases; the CaseSet is rebuilt
 2. **Next**: pick the model, Bedrock (BAA-covered) or a local in-VPC model
 

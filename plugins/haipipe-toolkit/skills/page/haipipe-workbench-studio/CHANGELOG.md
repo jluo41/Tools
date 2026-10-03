@@ -1,3 +1,9 @@
+## 0.5.0 · 2026-10-02 · served from servers/workbench-shared
+
+- The Studio runtime moved from `servers/workbench-studio/` to `servers/workbench-shared/`, beside the read-only Guide, because every workbench reuses it: Paper Story › RoadMap Draw, Task Roadmap Studio, a Page's 🎨 Studio tab and Guide's canvases all open drawings through `xcal.py` and `excalidraw_proxy.py`. Moved with `git mv`: `xcal.py`, `excalidraw_proxy.py`, `autodraw.py`, `chat.py`, `turnring.py`, `term.py`, `autodeck.py`, `assets/xcal-boot.js`, `assets/js/10-drawer/*`, `assets/css/86-*.css`, `assets/vendor/xterm/`. Module names, `/_board/*` routes and the assembled `board.js`/`board.css` are unchanged (byte-identical apart from two comment paths).
+- `_host/host_registry.WORKBENCH_ROUTES`: the `studio` row is now `shared`, named after its folder; `--only shared` is what keeps the terminal and chat on an `--only` host (`--only studio` is now refused with the list of names).
+- The skill keeps its name; `servers/README.md` notes it as the one contract served from a differently named folder.
+
 ## 0.4.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

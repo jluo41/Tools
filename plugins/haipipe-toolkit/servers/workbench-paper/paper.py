@@ -1,23 +1,22 @@
 """📄 Paper · the Board-level Paper Workbench, live and storage-less.
 
-    GET /_board/paper?path=<board.md>&file=board.md[#<space>[/<view>]]
+    GET /_board/paper?path=<board.md>&file=board.md[#<space>[/<tab>][/<view>]]
 
-The Paper Workbench is the Board-altitude sibling of the 📃 Page tab. Page shows one
-Page's plan, evidence and runs; this shows one paper Board's journey through
-five Spaces (haipipe-workbench-paper, JL 260916 "like haipipe-workbench-page,
-you should have haipipe-workbench-paper"):
+The Paper Workbench is the Board-altitude sibling of the 📃 Page workbench. Page shows
+one Page's plan, evidence and runs; this shows one paper Board's journey
+(haipipe-workbench-paper, JL 260916). It wears the shared workbench shell (servers/README.md
+"Adding a workbench", JL 261003): the title, a band (desk ·
+Story version · questions · Sections · build state), then the Space row with the shared
+Guide first, each Space's tabs, Views and content in one box, and the shared Runs panel
+folded to a strip on the right.
 
-    Setup      board.md · the scaffold folders · one Codex session row per
-               Section Page (JL 260916: Ideation, Story and Supporting work
-               stay in the current session)
-    Ideation   Story00-ideation: the Ideas (ranked) table when the page has
-               one, else the plan's `Idea <n>:` divisions · evidence items ·
-               the I3 admission receipt
-    Story      every Story<Letter> page: §1–§8 · RQ / E / D / T / Section
-               rows · compile order
-    Run        every page's runs/ + results/ · gates G0–G5 read from the files
-               haipipe-paper-workflow names · the Workflow map projected from
-               haipipe-workbench-paper/ref/space-mapping.md
+    Guide      Description · Method · RoadMap Draw · Related Paper, from the `paper`
+               entry of workbench-shared/guide_families.py
+    Ideation   Story00-ideation: the Ideas (ranked) table, else the plan's `Idea <n>:`
+               divisions · evidence items · the I3 admission
+    Story      Spine · RoadMap Draw · High-level logic + Low-level work · Related Papers
+    Sections   Main · Appendix × Table · Narrative · Evidence, in §8 compile order
+    Delivery   LaTeX · Word · Cover letter · Rounds × Preview · Artifacts · Checks
 
 LIVE AND STORAGE-LESS, the Outline precedent: rendered from Markdown on every
 open, so it can never be stale, and it needs no per-paper file. The earlier
@@ -2277,8 +2276,8 @@ def _not_ready_ids(rd):
 # servers/workbench-paper/studio/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
-SPACES = (("ideation", "Ideation Space"), ("story", "Story Space"),
-          ("sections", "Sections Space"), ("delivery", "Delivery Space"))
+SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every
+          ("sections", "Sections"), ("delivery", "Delivery"))          # workbench's (JL 261003)
 STORY_TABS = (("spine", "Spine"), ("roadmap-draw", "RoadMap Draw"),                           # JL 260930
               ("logic-work", "High-level logic + Low-level work"),                        # JL 260929
               ("related", "Related Papers"))                                             # JL 260930
@@ -2357,7 +2356,7 @@ def _bucket(kinds, rows, place):
 def _panel(d, space, kinds, buckets, fill, whole):
     from live.runs_panel import panel_markup
     return panel_markup(space, kinds, buckets, base=Path(d["root"]),
-                        fill=lambda row: row.get("_fill") or fill, whole=whole)
+                        fill=lambda row: row.get("_fill") or fill, whole=whole, folded=True)
 
 
 def _tag(rows, keys=(), fill=None):
@@ -2569,8 +2568,8 @@ def _spine_html(d):
             if paras:
                 rows.append(("", prose(paras)))
             rows += [(sub, prose(pg)) for sub, pg in subs if pg]
-            out.append('<div class="card spine-card" data-key="C%d"><h2>C%d · %s<span class="tally">%s</span></h2>%s</div>'
-                       % (n, n, esc(title), _link(d, s["rel"], "Open ↗", focus="C%d" % n),
+            out.append('<div class="card spine-card" data-key="C%d"><h2>%s<span class="tally">%s</span></h2>%s</div>'
+                       % (n, esc(title), _link(d, s["rel"], "Open ↗", focus="C%d" % n),
                           _kv(rows, "spine-row") or '<div class="space-empty">Empty.</div>'))
     return "".join(out) or '<div class="space-empty">No Story yet.</div>'
 
@@ -2624,6 +2623,15 @@ def section_rows(d):
     return out
 
 
+def _state_word(state):
+    """`🟡 PARTIAL - prose inherited, evidence items not landed` → `🟡 Partial`: the state
+    word only (JL 261003: "this is too detailed, could we make it light?"); the whole
+    line stays in the cell's tooltip."""
+    head = re.split(r"\s+[-–—·]\s+|[:,(]", state or "", maxsplit=1)[0].strip()
+    m = re.match(r"^(\W*?)\s*([A-Za-z][\w ]*)$", head)
+    return ("%s %s" % (m.group(1), m.group(2).strip().capitalize())).strip() if m else head
+
+
 def _section_table(d, rows):
     out = []
     for r in rows:
@@ -2631,9 +2639,10 @@ def _section_table(d, rows):
                   if r["page"] else "")
         out.append('<div class="sec-row" data-key="%s" tabindex="0" title="%s"><span class="sec-num">%s</span>'
                    '<span class="sec-name">%s</span><span class="sec-ver">%s</span>'
-                   '<span class="sec-state %s">%s</span>%s</div>'
+                   '<span class="sec-state %s" title="%s">%s</span>%s</div>'
                    % (esc(r["id"]), esc(r["id"]), esc(r["num"]), esc(r["name"]), esc(r["version"]),
-                      _status_cls(r["state"]) if r["page"] else "warn", esc(r["state"]), opener))
+                      _status_cls(r["state"]) if r["page"] else "warn", esc(r["state"]),
+                      esc(_state_word(r["state"])), opener))
     return '<div class="sec-list">%s</div>' % "".join(out) if out else '<div class="space-empty">No Section yet.</div>'
 
 
@@ -2847,6 +2856,9 @@ h1{{font-size:20px;margin:0 0 2px}} .mut{{color:var(--mut)}}
 .card h2{{font-size:17px;margin:0 0 8px;display:flex;gap:8px;align-items:baseline}}
 .card h2 .tally{{margin-left:auto;flex:none;font-size:13px;font-weight:500}}
 .spine-card{{cursor:pointer}}
+/* inside the Space's one box a Spine division is a row, not a second box (JL 260929) */
+.space-main .spine-card{{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 4px 14px;margin:0}}
+.space-main .spine-card:last-child{{border-bottom:0}}
 .runs-selected.spine-card,.item-card.runs-selected{{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}}
 table.grid{{width:100%;font-size:14.5px;line-height:1.55;border:1px solid var(--line);border-radius:9px;
  border-collapse:separate;border-spacing:0;overflow:hidden;margin:6px 0 12px}}
@@ -2935,7 +2947,7 @@ code{{font:12.5px ui-monospace,Menlo,monospace}}
 .sec-row:hover{{background:var(--soft)}}
 .sec-row.runs-selected{{background:transparent;box-shadow:inset 3px 0 0 var(--acc)}}
 .sec-num,.sec-ver{{font:500 13px ui-monospace,Menlo,monospace;color:var(--mut)}} .sec-name{{font-weight:600}}
-.sec-state{{font-size:13px;overflow-wrap:anywhere}} .sec-open{{font-size:13px;text-align:right;white-space:nowrap}}
+.sec-state{{font-size:13px;white-space:nowrap}} .sec-state.ok,.sec-state.warn{{font-weight:500}} .sec-open{{font-size:13px;text-align:right;white-space:nowrap}}
 .item-cards{{display:grid;gap:9px;margin:0 0 12px}}
 .item-card{{border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden;margin:0}}
 .item-card:hover{{border-color:#b8c4d2}}
@@ -2978,6 +2990,7 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 .runs-panel button,.run-list button{{font-size:12px!important}} .run-state{{font-size:12px}} .space-views-label{{font-size:12px}}
 </style></head><body data-paper="{paper_id}">
 <h1>📄 {title}</h1>
+<div class="wb-band">{band}</div>
 <div class="spaces">{space_chips}</div>
 {panels}
 <div id="rr-pop" hidden><div class="rr-box" role="dialog" aria-label="Run results"><header><span class="rr-title"></span>
@@ -3108,6 +3121,21 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 </script></body></html>"""
 
 
+def _shell_band(d):
+    """The band under the title: what this paper is and where it stands, read from its files."""
+    s = d["stories"][0]["text"] if d["stories"] else ""
+    desk = scalar(s, "desk") or paper_desk(d)
+    version = scalar(s, "version")
+    questions = len(d["story"][0]["qb"]) if d["story"] else 0
+    sections = section_rows(d)
+    built = (d.get("delivery") or {}).get("built") or ""
+    parts = [desk, "Story %s" % version if version else "no Story yet" if not d["story"] else "",
+             "%d questions" % questions if questions else "",
+             "%d Sections" % len(sections) if sections else "",
+             "built %s" % built if built else "not built yet"]
+    return " · ".join(x for x in parts if x)
+
+
 def render_paper(board, root, path_param):
     from live.runs_panel import PANEL_CSS, PANEL_JS
     from live.space_views import SPACE_CSS
@@ -3121,6 +3149,7 @@ def render_paper(board, root, path_param):
               + render_sections(d, kinds.get("sections", [])) + render_delivery(d, kinds.get("delivery", [])))
     default = "story" if d["story"] else "ideation"
     document = _PAGE.format(title=esc(d["title"]), space_chips=chips, panels=panels, default_space=default,
+                        band=esc(_shell_band(d)),
                         space_css=SPACE_CSS, panel_css=PANEL_CSS, panel_js=PANEL_JS, work_item_css=WORK_ITEM_CSS,
                         paper_id=esc(d["board"].name))
     from live.workbench_guide import mount_guide

@@ -1,11 +1,13 @@
 Related papers
 ==============
 
+Shape and check: `skills/0_utils/table-papers/SKILL.md` (the shared Related Paper rule).
+
 The papers behind the Insight workbench's methods: for each discovery method in
 `insight-discovery-methods.md` and each design method in `insight-design-methods.md`, its
 classical source, the recent reviews that cover it, and the studies that test whether it
-works, including studies of AI agents doing the work. The Scope Space's Methods
-tab shows this file as its Papers view, the same for every board.
+works, including studies of AI agents doing the work. The shared Guide's
+Related Paper View shows this file, the same for every board.
 
 Each row is one paper. `group` is the method it supports, in lower case (or `all methods
 (discovery)`, `all methods (design)`, or a `tests` group for the papers behind T0 to T4);

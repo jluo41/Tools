@@ -32,7 +32,7 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE.parents[2] / "haipipe-insight" / "ref"))
 from check_evidence import CAUSAL  # noqa: E402
 from run_question import (META, QFOLDER, RUNG_DIR, GateError, asked_partitions, entry_script,  # noqa: E402
-                          expected_outputs, front, live_needs, question_folders, sha256, shared_paths)
+                          expected_outputs, front, live_needs, question_folders, sha256, shared_digest, shared_paths)
 from scaffold_instance import TICKET  # noqa: E402
 from sync_instance import status as sync_status  # noqa: E402
 
@@ -90,6 +90,16 @@ def check_question(qid, qdir, q, qs, thresholds, partitions, prose=""):
         p.append(f"{qid}: id is {q.get('id')!r}, not {qid}, the start of its folder name")
     if RUNG.get(q.get("rung")) != letter:
         p.append(f"{qid}: rung {q.get('rung')!r} is not the letter {letter}")
+    if q.get("retired"):                                   # history: kept word for word, never run or cited
+        succ = q.get("superseded_by")
+        if not isinstance(succ, list):
+            p.append(f"{qid}: a retired question names its successors (superseded_by: [<id>, …], or [])")
+        for sid in succ or []:
+            if sid not in qs:
+                p.append(f"{qid}: superseded_by {sid}, which the Prototype does not hold")
+        if any(qdir.glob("scripts/*.py")):
+            p.append(f"{qid}: a retired question keeps no scripts/")
+        return p, notes
     for k in ("question", "name", "ask"):
         if not str(q.get(k) or "").strip():
             p.append(f"{qid}: no {k} (the short question, its name, the ask)")
@@ -164,7 +174,7 @@ def check_question(qid, qdir, q, qs, thresholds, partitions, prose=""):
                 target = qs.get(sq, (None, None))[1]
                 if not target or "_error" in target or sn not in (target.get("needs") or {}):
                     p.append(f"{full}: cites {src}, which the Prototype does not hold")
-                elif target["needs"][sn].get("retired"):
+                elif target["needs"][sn].get("retired") or target.get("retired"):
                     p.append(f"{full}: cites {src}, which is retired")
                 else:
                     gap = ORDER.index(letter) - ORDER.index(sq[0])
@@ -209,7 +219,7 @@ def same_tables(qs):
     """Q6 new: two questions whose live needs compute the same table (file and columns)."""
     seen, notes = {}, []
     for qid, (_, q) in qs.items():
-        for nid, n in live_needs(q or {}).items() if q and "_error" not in q else []:
+        for nid, n in live_needs(q or {}).items() if q and "_error" not in q else []:  # retired questions have none
             for f, cols in (n.get("output") or {}).items() if n.get("kind") == "compute" else []:
                 key = (f, tuple(cols))
                 if key in seen and seen[key][0] != qid:
@@ -300,7 +310,7 @@ def check_partition(qf, qid, q, pq, part, shared, page):
         p.append(f"{qf.name} · {part}: ran before {qid}'s needs were agreed")
     stale = (rec.get("spec_sha256") != sha256(pq / f"{pq.name}.md")
              or rec.get("scripts_sha256") != sha256(qf / "scripts")
-             or rec.get("shared_sha256") != sha256(*shared))
+             or rec.get("shared_sha256") != shared_digest(pq.parent.parent, pq.parent.name, qf / "scripts", q))
     if stale:
         return "STALE", p
     if status == "refused":
@@ -397,7 +407,7 @@ def run(instance, strict=False):
                             f"(run scaffold_instance.py)")
         page, pp = page_state(qf, qid, q) if qf.is_dir() else (("", set(), {}, {}, None), [])
         problems += pp
-        shared = shared_paths(prototype, pq.parent.name)
+        shared = shared_paths(prototype, pq.parent.name, qf / "scripts")
         row = {}
         for name in names:
             if name not in asked:

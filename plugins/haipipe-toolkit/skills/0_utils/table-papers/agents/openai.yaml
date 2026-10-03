@@ -1,0 +1,6 @@
+interface:
+  display_name: "Related Paper Table"
+  short_description: "group · role · key · paper · venue · doi · why here · pdf, for one workbench"
+  default_prompt: "Use $table-papers to write or check a workbench's Related Paper table: one checked row per paper, at least one key paper per group, and a full text only under an open license."
+policy:
+  allow_implicit_invocation: true

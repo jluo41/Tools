@@ -1,12 +1,11 @@
 By tailoring
 ============
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by tailoring`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by tailoring`. A
+claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: With internal insights: induction, then abduction-1; the how comes from our own
+family: Internal Insights: induction, then abduction-1; the how comes from our own
   data, as signed insights
 reasoning: induction on the reader: their data → what fits them; then abduction-1 → a
   design for them

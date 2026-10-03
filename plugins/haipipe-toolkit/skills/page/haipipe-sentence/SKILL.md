@@ -223,4 +223,4 @@ haipipe-sentence/
 ```
 
 Reads `haipipe-board/ref/board-form.md` → Body grammar as the authority; owns no scripts.
-The named next step (QC1b §1): the drawer's lane instructions in `servers/workbench-studio/chat.py` become this contract's consumer instead of a second prose copy.
+The named next step (QC1b §1): the drawer's lane instructions in `servers/workbench-shared/chat.py` become this contract's consumer instead of a second prose copy.

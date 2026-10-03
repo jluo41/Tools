@@ -16,8 +16,8 @@ servers/
 │                        exporters/ holds the md2tex, md2docx and docx2pdf writers
 ├── workbench-paper/     📄 the Paper workbench
 ├── workbench-task/      📋 Task Questions: Logic / Work / Report and freeform Studio
-├── workbench-shared/    🧭 Guide: family skills, methods, UI and folder maps; folding diagrams
-├── workbench-studio/    🎨 chat, terminal, draw (Excalidraw), slides, vendored xterm
+├── workbench-shared/    🧭 what every workbench reuses: 🎨 Studio (draw/Excalidraw, chat,
+│                        terminal, slides, vendored xterm) and the read-only Guide Space
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
 └── workbench-design/    🎨 Design Folder and Design Board
 plugins/subjective-label/servers/
@@ -31,12 +31,13 @@ A **skill** named `haipipe-workbench-<x>` is the contract: what the lane holds
 on disk and who writes it (`skills/page/haipipe-workbench-page` says what
 `outline/`, `runs/`, `results/` and `delivery/` hold). A **workbench** folder
 named `workbench-<x>` is that contract's served face, where a person works on
-it in the browser. Same name on both sides:
+it in the browser. Same name on both sides, except the Studio contract, which
+every workbench reuses and so is served from `workbench-shared/`:
 
 | skill (`skills/`) | workbench (`servers/`) |
 |---|---|
 | `page/haipipe-workbench-page` (Outline · Run Space · Delivery · Folder) | `workbench-page/` |
-| `page/haipipe-workbench-studio` | `workbench-studio/` |
+| `page/haipipe-workbench-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench-shared/` |
 | `design/haipipe-workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `paper/haipipe-workbench-paper` | `workbench-paper/` |
 | `task/haipipe-workbench-task` | `workbench-task/` |
@@ -110,6 +111,40 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | One standalone Page Folder | `python skills/page/haipipe-page/cli/page.py serve <page>` (imports `servers/haipipe-page/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
 | Static Board projection | `python skills/board/haipipe-board/cli/build.py <board>` (reads the asset bundle through `src/assets.py`) |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
+
+## Adding a workbench · what every workbench does the same way
+
+A new workbench follows the shared rules below, and `_host/tests/test_workbench_conformance.py`
+fails until it does (JL 261003: "make sure other new workbench UI will do the same thing").
+Families older than a rule are listed in that test's `GAPS` with what they still miss.
+
+1. **Same shell.** Header, band, then the Space row with Guide mounted first by
+   `mount_guide()`; each Space's View tabs and content sit in one box. Use the colors and
+   tab sizes the Insight workbench and Guide use; do not restyle them per workbench.
+   Spaces run Guide → setup → work → Delivery (`workbench-shared/README.md` § Space order).
+2. **One Guide, four Views.** Description · Method · RoadMap Draw · Related Paper, filled
+   from the family's entry in `workbench-shared/guide_families.py`:
+   - `description`: what the workbench does, in a short paragraph;
+   - `method`: its steps as text;
+   - `table`: the Workbench Table, `ref/workbench-table.md` beside its skill
+     (Space · View · Run type · Agent · Skill · Person signs; `skills/0_utils/table-workbench`);
+   - a `roadmap-draw` explain titled **Workbench design**: one generated drawing of the
+     workbench (`studio/<name>.py` writes `studio/<name>.excalidraw`, Studio style, never
+     edited by hand);
+   - `papers_table` (or the family's own papers page as a `related-paper` explain): its
+     papers in `ref/<name>-papers.md`, checked by `skills/0_utils/table-papers`.
+3. **Inside Guide, no window-sized heights.** A page shown in Guide (one that posts
+   `haipipe-explain-height`) gives every canvas and PDF frame a fixed pixel height; a
+   `vh` height grows the frame without end and the canvas keeps zooming.
+4. **Short address.** A Board's workbench answers at `<DOMAIN>/w/<board>`; a route row
+   in `host_registry.WORKBENCH_ROUTES` and the folder name `workbench-<name>` are enough.
+5. **No icon of its own.** The host answers `/favicon*` only for the Excalidraw app, so
+   every workbench tab shows the browser's default icon. Do not add one.
+6. **Runs on the right.** Every working Space, Guide included, puts its runs in the shared
+   Runs panel to the right of its content: `workbench-page/runs_panel.py` (`panel_markup`,
+   `PANEL_CSS`, `PANEL_JS`, and `SPLIT_CSS` for the layout), fed by the family's run cards or
+   Workbench Table. It stays on the right at every width and folds to a vertical "◂ Runs"
+   tab. Guide's panel lists the Workbench Table rows whose Space is Guide.
 
 ## Rules
 

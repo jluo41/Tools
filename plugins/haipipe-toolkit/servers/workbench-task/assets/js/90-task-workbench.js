@@ -3,13 +3,15 @@
   var app = document.getElementById('task-workbench');
   if (!app) return;
   var config = JSON.parse(document.getElementById('tw-config').textContent);
-  var search = document.getElementById('tw-search'), auto = document.getElementById('tw-auto');
   var panels = Array.from(app.querySelectorAll('[data-panel]'));
   var params = new URL(location.href).searchParams;
-  var views = ['task', 'studio', 'related-paper', 'progress'];
+  // Spaces and their Views come from the page (task_views.SPACES); a View key is `view=`.
+  var spaces = config.spaces, spaceOf = {}, lastView = {};
+  Object.keys(spaces).forEach(function (s) { spaces[s].forEach(function (v) { spaceOf[v] = s; }); lastView[s] = spaces[s][0]; });
+  lastView.task = 'task';
   var view = params.get('view') || params.get('space') || 'task';
-  view = ({runs:'task', scope:'progress'})[view] || view;
-  if (!views.includes(view)) view = 'task';
+  view = ({scope:'block', check:'runs'})[view] || view;
+  if (!spaceOf[view]) view = 'task';
   var storageKey = 'task-workbench:' + config.path;
   var editing = null, formChanged = false;
   var runDialog = document.getElementById('tw-run-dialog');
@@ -27,51 +29,32 @@
   document.getElementById('tw-run-close').addEventListener('click', function () { runDialog.close(); });
   runDialog.addEventListener('click', function (event) { if (event.target === runDialog) runDialog.close(); });
   runDialog.addEventListener('close', function () { runFrame.removeAttribute('src'); });
-  search.value = params.get('q') || '';
-  auto.checked = params.get('auto') === '1';
   function status(message) { document.getElementById('tw-status').textContent = message; }
   function saveURL() {
     var url = new URL(location.href);
     url.searchParams.set('view', view); url.searchParams.delete('space');
-    [['q', search.value], ['auto', auto.checked ? '1' : '']].forEach(function (pair) {
-      if (pair[1]) url.searchParams.set(pair[0], pair[1]); else url.searchParams.delete(pair[0]);
-    });
     history.replaceState(null, '', url);
-  }
-  function filter() {
-    var term = search.value.trim().toLowerCase(), visible = 0, total = 0;
-    app.querySelectorAll('[data-search]').forEach(function (row) {
-      row.hidden = !!term && !row.dataset.search.includes(term);
-      if (row.closest('[data-panel]').dataset.panel === view) { total++; if (!row.hidden) visible++; }
-    });
-    document.getElementById('tw-no-match').hidden = !total || visible > 0 || view === 'studio';
-    saveURL();
   }
   function select(next) {
     view = next;
     status('');
-    panels.forEach(function (panel) { panel.hidden = panel.dataset.panel !== view; });
-    app.querySelectorAll('[data-view]').forEach(function (tab) { tab.setAttribute('aria-current', String(tab.dataset.view === view)); });
-    app.querySelector('.tw-toolbar').hidden = view === 'studio';
-    filter();
-  }
-  app.querySelectorAll('[data-view]').forEach(function (tab) {
-    tab.addEventListener('click', function (event) {
-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-      event.preventDefault(); select(tab.dataset.view);
+    var space = spaceOf[view]; lastView[space] = view;
+    app.querySelectorAll('[data-space-pane]').forEach(function (pane) { pane.classList.toggle('on', pane.dataset.spacePane === space); });
+    app.querySelectorAll('nav.spaces [data-space]').forEach(function (b) {
+      b.classList.toggle('on', b.dataset.space === space); b.setAttribute('aria-selected', String(b.dataset.space === space));
     });
+    panels.forEach(function (panel) { panel.classList.toggle('on', panel.dataset.panel === view); });
+    app.querySelectorAll('.wtab[data-view]').forEach(function (tab) { tab.classList.toggle('on', tab.dataset.view === view); });
+    saveURL();
+  }
+  app.querySelectorAll('.wtab[data-view]').forEach(function (tab) {
+    tab.addEventListener('click', function () { select(tab.dataset.view); });
   });
   app.querySelectorAll('[data-question]').forEach(function (a) {
     a.addEventListener('click', function (event) {
-      event.preventDefault(); select('task'); search.value = ''; filter();
+      event.preventDefault(); select('task');
       var q = document.getElementById('question-' + a.dataset.question);
       if (q) { q.open = true; q.scrollIntoView({block:'start'}); }
-    });
-  });
-  app.querySelectorAll('[data-copy]').forEach(function (button) {
-    button.addEventListener('click', async function () {
-      try { await navigator.clipboard.writeText(button.dataset.copy); status('Context copied.'); }
-      catch (_) { var box = document.createElement('textarea'); box.value = button.dataset.copy; app.append(box); box.select(); status('Select and copy this context to your session.'); }
     });
   });
   function foldKey(row) { return row.dataset.board || row.id; }
@@ -154,9 +137,8 @@
     if (editing || formChanged || runDialog.open) { status('Finish editing or close the Run result before refreshing.'); return; }
     remember(); saveURL(); location.reload();
   }
-  search.addEventListener('input', filter); auto.addEventListener('change', saveURL);
-  document.getElementById('tw-refresh').addEventListener('click', refresh);
-  document.getElementById('tw-task-space').addEventListener('click', function () { select(view); });
+  app.querySelectorAll('nav.spaces [data-space]').forEach(function (b) {
+    b.addEventListener('click', function () { select(lastView[b.dataset.space]); });
+  });
   select(view);
-  setInterval(function () { if (auto.checked && !editing && !formChanged && !runDialog.open && !document.hidden && !['INPUT','TEXTAREA','SELECT','IFRAME'].includes(document.activeElement.tagName) && !String(window.getSelection())) refresh(); }, 30000);
 })();

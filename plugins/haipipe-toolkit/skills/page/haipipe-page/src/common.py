@@ -178,7 +178,7 @@ def scene_text(scene) -> str:
     """The ONE way an Excalidraw scene is serialized (JL 260816).
 
     Two writers used to disagree: `cli/draw.py` wrote `indent=2` with raw
-    UTF-8, `servers/workbench-studio/xcal.py` wrote `indent=1` with escapes, so a scene the split
+    UTF-8, `servers/workbench-shared/xcal.py` wrote `indent=1` with escapes, so a scene the split
     had saved never round-tripped through the CLI and every `draw.py retire`
     read the difference as a phantom concurrent edit. Both call this now, so a
     scene keeps one shape whichever hand last touched it. Raw UTF-8 keeps a

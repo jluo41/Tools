@@ -1,10 +1,9 @@
 By exploring
 ============
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by exploring`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by exploring`. A
+claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
 family: Making internal insights next: the design is built so the Exp teaches; the
   induction comes after it

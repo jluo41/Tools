@@ -9,8 +9,8 @@ description: >-
   ordinary chat remains driven by the user's input. Trigger: ask questions,
   session questions, question association, propose a question, 提问, 追问, 问题归属.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-02"
+  version: "0.1.2"
+  last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,11 +25,11 @@ the reply's content, section order, or an extra layer of Question headings.
 For presentation in this workspace, read
 [response-format](../response-format/SKILL.md). It owns the exact reply shape:
 scan points, a useful sketch when possible, explanation and any changed files,
-then a fully bold Related question footer at the bottom of each ordinary section.
-Bold the question wording as well as its label and any linked id. The final
-Summary and Next has no Question or ownership line. Question matching follows
-drafting; the footer makes that association visible without interrupting the
-normal discussion. Preserve meaningful diagrams alongside the footer.
+and each ordinary section's ONE question at the end of its heading
+(`## N. [emoji] Headline (Q: owner/block/QNN-slug)`, `(Q: Session · ...)` or
+`(Q: Proposed · ...)`). The final Summary and Next has none. Question matching
+follows drafting; the heading makes that association visible without
+interrupting the normal discussion. Preserve meaningful diagrams below it.
 
 ## Understand the question before asking
 
@@ -63,11 +63,10 @@ Use the forms defined by response-format:
   State the ask, its source or reason, and the target Block when known. Present
   it as a proposal rather than an accepted user decision or recorded question.
 
-Several sections may advance the same Q. One section may support several Qs or
-Projects when the content warrants it; show enough ownership context to keep
-the links unambiguous. Preserve the normally written sections and their order.
+Several sections may advance the same Q, but each section answers exactly one
+question; content that serves two questions is split into two sections. Preserve the normally written sections and their order.
 Attach associations to those sections rather than rebuilding the reply as a
-Board inventory. No Question association belongs on Summary and Next.
+Board inventory. No `(Q: ...)` belongs on Summary and Next.
 
 Use only known ids and existing link targets. Where a path was supplied but has
 not been verified, identify it as supplied or intended and avoid presenting it
@@ -89,7 +88,7 @@ or ask in chat when that is the available interface. Continue independent work
 while waiting; a missing required answer remains unresolved.
 
 Asking a person for information and associating a section with a Question are
-different actions. A Question line gives the reader context; it does not imply
+different actions. A `(Q: ...)` heading gives the reader context; it does not imply
 that the user must answer another prompt.
 
 ## Continue into a Report when requested

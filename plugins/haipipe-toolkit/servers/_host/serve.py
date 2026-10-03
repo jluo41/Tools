@@ -145,6 +145,7 @@ from live.design import DesignMixin
 from live.designboard import DesignBoardMixin
 from live.taskboard import TaskBoardMixin
 from live.workbench_guide import WorkbenchGuideMixin
+from live.shared_workbench import SharedWorkbenchMixin
 from live.insightboard import InsightBoardMixin
 from live.outline import OutlineMixin
 from live.paper import PaperWorkbenchMixin
@@ -175,7 +176,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -201,6 +202,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
     # collides with anything a board serves.
     EXCAL_PATHS = ("/_excalidraw", "/assets/", "/favicon", "/manifest.webmanifest",
                    "/apple-touch-icon.png", "/sitemap.xml")
+    EXCAL_ICONS = ("/favicon", "/apple-touch-icon.png")
     # An image pasted into a scene is a base64 dataURL, and Excalidraw keeps it
     # INSIDE the file. One screenshot is megabytes of base64 that git then
     # re-diffs on every stroke, so here the bytes go to a sidecar folder beside
@@ -335,6 +337,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.task_board_view()
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view()
+        if self.path.split("?", 1)[0] == "/_board/shared":
+            return self.shared_view()
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
             # 🎨 every design on the board with its state, as one csv; the send system takes the adopted rows
             return self.design_bundle_view()
@@ -393,6 +397,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.proxy_term()
         if ".excalidraw" in self.path.partition("?")[0]:
             return self.serve_frame()
+        if self.path.startswith(self.EXCAL_ICONS) and "/_excalidraw" not in (self.headers.get("Referer") or ""):
+            # A workbench page has no icon of its own: the browser's default, not Excalidraw's mark
+            # (JL 261003: "just the default one"). Only the Excalidraw app still gets its icons.
+            return self.send_error(404, "no icon")
         if self.path.startswith(self.EXCAL_PATHS):
             return self.proxy_excalidraw()
         # Last stop before the static handler: send the text compressed if the
@@ -458,6 +466,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.task_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/shared":
+            return self.shared_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_excalidraw/_haipipe-xcal.js":
             return self.proxy_excalidraw(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
@@ -855,7 +865,7 @@ if __name__ == "__main__":
     if unknown:
         ap.error("--only: unknown workbench %s; choose from %s"
                  % (", ".join(unknown), ", ".join(sorted(WORKBENCH_ROUTES))))
-    if only and "studio" not in only:
+    if only and "shared" not in only:
         a.no_terminal = True      # an --only host is a reader or annotator door, not a shell
     config = load_server_config(a.root)
     config_dir = server_config_dir(a.root)

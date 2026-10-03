@@ -8,8 +8,8 @@ description: >-
   workbench, workbench folder, workbench roster, workbench tab, add a workbench,
   /haipipe-workbench.
 metadata:
-  version: "1.12.4"
-  last_updated: "2026-09-29"
+  version: "1.12.5"
+  last_updated: "2026-10-03"
 ---
 
 # /haipipe-workbench · a page's material, as one contract
@@ -36,6 +36,12 @@ category's surface while retaining its named storage, writer, and gate. A
 folder absent from the roster is not Board material and the checker may warn.
 Adding a new top-level Workbench is one roster update plus one drawer
 registration—the shell is never edited for it.
+
+A new served workbench also follows the shared look and Guide rules (same shell and
+box, the four Guide Views with a Workbench Table, a **Workbench design** drawing and a
+papers table, fixed heights inside Guide, `/w/` address, no icon of its own): the
+checklist is `servers/README.md` § Adding a workbench, and
+`servers/_host/tests/test_workbench_conformance.py` fails until it is met.
 
 Two words, two things: a **workbench** is the lane a Page owns on disk and the
 contract an agent writes to (`haipipe-workbench-page` says what `draft/`,
@@ -85,7 +91,7 @@ receive their applicable registry from the Page server and use the compact
 Page-owned pane. `order` fixes the reader-facing sequence independently of
 asset load order. A host omits a Workbench whose real presenter or writer is not
 available; a disabled imitation is not applicability.
-Server-side builders live as one `live/` module per concern and one `/_board/<workbench>` route (`servers/workbench-studio/autodeck.py` and `/_board/autodeck` are the slide's pair).
+Server-side builders live as one `live/` module per concern and one `/_board/<workbench>` route (`servers/workbench-shared/autodeck.py` and `/_board/autodeck` are the slide's pair).
 
 ## 🚧 Boundary
 

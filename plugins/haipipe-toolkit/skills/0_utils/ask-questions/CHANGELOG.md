@@ -1,6 +1,11 @@
 ask-questions — Changelog
 ========================
 
+## [0.1.2] — 2026-10-03
+
+- Follow response-format 0.13.0: a section's question sits at the end of its
+  heading as `(Q: <address>)`, not in a footer line.
+
 ## [0.1.1] — 2026-10-02
 
 - Follow response-format's fully bold related Question footer at the section's

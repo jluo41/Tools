@@ -131,7 +131,7 @@ def source_links(text, page, root, source_url):
 def report_snapshot(raw, qid, board, root, only, source_url, page_url):
     result = dict(path=words(raw), present=False, title="", answer="", status="open",
                   page_state="", evidence=[], evidence_text="", limits="", next="",
-                  url="", workbench_url="", source_url="", issues=[], changed_evidence=False)
+                  url="", workbench_url="", source_url="", issues=[], changed_evidence=False, drawings=[])
     if not result["path"]:
         return result
     rel = Path(result["path"])
@@ -170,6 +170,10 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
                 if re.fullmatch(r"t\d{2}_[\w]+", folder.name):
                     evidence_link["url"] = page_url(folder / (folder.name + ".md"), board, root, "runs", only)
                     break
+    # A drawing the report links to opens read-only in the shared Excalidraw viewer.
+    result["drawings"] = [{"title": link["title"],
+                           "url": "/_excalidraw/?" + urlencode({"board": link["path"]})}
+                          for link in result["evidence"] if link["path"].endswith(".excalidraw") and link["mtime"] is not None]
     result["limits"] = plain(report_section(body, {"limits", "boundaries", "gaps"}))
     result["next"] = plain(report_section(body, {"next", "next actions"}))
     result["url"] = page_url(page, board, root, "draft", only)

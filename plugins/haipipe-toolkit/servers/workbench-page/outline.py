@@ -310,11 +310,11 @@ details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7
    gap between `C1.P1` and its title (JL 260914 screenshot). */
 details.paragraph-group>summary .addr{{min-width:0;margin-right:0}}
 .paragraph-bullets{{padding:0;border-top:1px solid var(--line)}}
-.point-group{{padding:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0}}
+.point-group{{padding:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:0}}
 .point-plan,.point-preview{{min-width:0;overflow-wrap:anywhere}}
 .point-plan{{padding:12px 14px 12px 0}}
 .point-preview{{padding:12px 0 12px 16px;border-left:1px solid var(--line)}}
-.preview-columns{{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0;font:500 12px/1.5 system-ui,sans-serif;color:var(--mut);padding:8px 0;border-bottom:1px solid var(--line)}}
+.preview-columns{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:0;font:500 12px/1.5 system-ui,sans-serif;color:var(--mut);padding:8px 0;border-bottom:1px solid var(--line)}}
 .preview-columns>span:last-child{{padding-left:16px}}
 .point-preview>.preview-copy{{font:16px/1.65 Georgia,serif;color:var(--fg);text-transform:none;letter-spacing:normal;padding:0;white-space:pre-wrap;min-height:44px;display:block}}
 .resolved-evidence{{display:inline;margin:0 1px;vertical-align:baseline}}
@@ -537,23 +537,24 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
 <h1>📃 {title}</h1>
 {board_link}
+{band}
 <div class=spaces>
- <button class="space on" data-space=bullet data-default=div>Draft Space</button>
- <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
- <button class=space data-space=delivery data-default=delivery>Delivery Space</button>
+ <button class="space on" data-space=bullet data-default=div>Draft</button>
+ <button class=space data-space=evidence data-default=evidence>Evidence</button>
+ <button class=space data-space=delivery data-default=delivery>Delivery</button>
 </div>
 <div class="lens show draft-lens space-split" id=lens-div data-draft-mode={draft_mode}>
  <div class=space-main>
- {structure}
- {draft_reads}
- <div class=draft-mode-switcher role=group aria-label="Draft view">
-  <span class=draft-mode-label>View</span>
+ <div class=draft-mode-switcher role=group aria-label="Draft view" title="{draft_reads}">
   <button type=button class="draft-mode-tab{table_on}" data-draft-mode=table>Table</button>
   <button type=button class="draft-mode-tab{reading_on}" data-draft-mode=reading>Reading</button>
   <button type=button class="draft-mode-tab{scratch_on}" data-draft-mode=scratch>Scratch</button>
+  <button type=button class="draft-mode-tab{roadmap_on}" data-draft-mode=roadmap>RoadMap Draw</button>
   <button type=button class="draft-mode-tab{revise_on}" data-draft-mode=revise>Revise</button>
  </div>
+ <div class=draft-structure>{structure}</div>
  {by_div}
+ <div class=draft-roadmap>{roadmap}</div>
  </div>
  {runs_draft}
 </div>
@@ -566,7 +567,7 @@ var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',w
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
     requestedSeg=params.get('seg')||'',
     requestedFocus=params.get('focus')||'', requestedRun=params.get('run')||'',
-    requestedDraftMode=['scratch','reading','revise'].indexOf(params.get('view'))>=0?params.get('view'):'table';
+    requestedDraftMode=['scratch','reading','roadmap','revise'].indexOf(params.get('view'))>=0?params.get('view'):'table';
 /* v4 keeps old workspace URLs readable while exposing four plain spaces. */
 if(requested==='prog')requested='div';
 if(requested==='workspace')requested=(requestedSeg==='runs'||requestedRun)?'run':'evidence';
@@ -626,9 +627,13 @@ document.querySelectorAll('.space').forEach(function(c){{
   c.addEventListener('click',function(){{activateLens(c.dataset.default);}});
 }});
 function activateDraftMode(mode,writeUrl){{
-  mode=['scratch','reading','revise'].indexOf(mode)>=0?mode:'table';
+  mode=['scratch','reading','roadmap','revise'].indexOf(mode)>=0?mode:'table';
   var lens=document.getElementById('lens-div');
   if(lens)lens.setAttribute('data-draft-mode',mode);
+  /* RoadMap Draw loads its canvas the first time it shows */
+  if(mode==='roadmap')document.querySelectorAll('#lens-div iframe.page-roadmap-frame').forEach(function(f){{
+    if(!f.getAttribute('src')&&f.dataset.src)f.setAttribute('src',f.dataset.src);
+  }});
   document.querySelectorAll('.draft-mode-tab').forEach(function(x){{
     x.classList.toggle('on',x.dataset.draftMode===mode);
   }});
@@ -2948,9 +2953,53 @@ _BOARD_LEVEL_ROUTES = {
 }
 
 
-def _board_line(link):
-    """The Board-level link on its own line under the title, or nothing (standalone)."""
-    return '<div class=mut>%s</div>' % link.replace(' \u00b7 ', '', 1) if link else ""
+def _board_line(link, page_src=None, root=None):
+    """The `↑ Board level` link on its own line under the title, or nothing (standalone).
+    No `all boards · board index` line (JL 261003: "I think we can delete this")."""
+    return '<div class="wb-links mut">%s</div>' % link.replace(' \u00b7 ', '', 1) if link else ""
+
+
+def page_roadmap_html(page_src, root):
+    """Draft › RoadMap Draw (JL 261003: "the logic just go to the roadmap draw"): the
+    Section's logic as a tree, `studio/<stem>-roadmap.excalidraw`. The drawing is the source:
+    an agent draws its first version (skill `draw-logic-tree`), and the
+    person edits it here on the canvas (edit=1; each stroke saves through Studio). A fixed
+    canvas height; rendering writes nothing."""
+    if page_src is None or root is None:
+        return ""
+    scene = Path(page_src).parent / "studio" / ("%s-roadmap.excalidraw" % Path(page_src).stem)
+    if not scene.is_file():
+        return ('<div class=space-empty>No RoadMap yet. Draw the logic in the Runs panel copies the '
+                'prompt that draws this Section&#39;s logic tree.</div>')
+    try:
+        rel = scene.resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        return ""
+    url = _e("/_excalidraw/?board=%s&edit=1" % quote(rel, safe="/"))
+    # no referrer: Excalidraw refuses a same-site embed, as on Paper's RoadMap Draw
+    return ('<div class=rd-bar><a class=rd-open href="%s" target=_blank rel=noopener>Open full screen ↗</a></div>'
+            '<iframe class=page-roadmap-frame title="RoadMap Draw" referrerpolicy=no-referrer data-src="%s">'
+            '</iframe>' % (url, url))
+
+
+def _page_band(page_src):
+    """The band under the title: the page's kind, its state and its plan version, read
+    from the page and its draft/ folder. Empty for a standalone page."""
+    if page_src is None:
+        return ""
+    try:
+        text = Path(page_src).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    def field(key):
+        got = re.search(r"(?m)^%s:\s*(.+?)\s*$" % re.escape(key), text)
+        return re.sub(r"[*_`]+", "", got.group(1)).strip() if got else ""
+    plan = latest_outline(plan_dir(Path(page_src).parent), Path(page_src).stem)
+    state = field("state").split(" - ")[0].split(" · ")[0].strip()
+    parts = [field("page-type") or field("folder-kind"), state,
+             "draft %s" % version_tag(plan) if plan else "no draft yet"]
+    parts = [x for x in parts if x]
+    return '<div class="wb-band">%s</div>' % _e(" · ".join(parts)) if parts else ""
 
 
 def board_level_link(page_src, root):
@@ -2998,12 +3047,13 @@ def board_level_link(page_src, root):
 def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False,
            draft_mode="table", asset_base=None):
     """-> the full html page: both lenses rendered, chips toggle."""
-    if draft_mode not in {"table", "reading", "scratch", "revise"}:
+    if draft_mode not in {"table", "reading", "scratch", "roadmap", "revise"}:
         draft_mode = "table"
     table_on = " on" if draft_mode == "table" else ""
     reading_on = " on" if draft_mode == "reading" else ""
     scratch_on = " on" if draft_mode == "scratch" else ""
     revise_on = " on" if draft_mode == "revise" else ""
+    roadmap_on = " on" if draft_mode == "roadmap" else ""
     # Say it in words a tired reader can take in the first time (JL 260816).
     # "3 loose lines" and "aligned" are this workbench's own shorthand, and a
     # reader meeting the tab for the first time has no reason to know either.
@@ -3070,7 +3120,8 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
         delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
     document = _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         page_stem=_e(page_src.stem if page_src is not None else "standalone"),
-                        board_link=_board_line(board_level_link(page_src, root)),
+                        board_link=_board_line(board_level_link(page_src, root), page_src, root),
+                        band=_page_band(page_src),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
                         structure=structure,
                         draft_mode=draft_mode,
@@ -3078,6 +3129,8 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
                         reading_on=reading_on,
                         scratch_on=scratch_on,
                         revise_on=revise_on,
+                        roadmap_on=roadmap_on,
+                        roadmap=page_roadmap_html(page_src, root),
                         structure_css=STRUCTURE_CSS,
                         evidence_url=html.escape(evidence_url, quote=True),
                         run_url=html.escape(run_url, quote=True),
@@ -3114,15 +3167,18 @@ def _runs_parts(page_src, *, evidence_url="", delivery_url="", path_q="", file_q
     plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     plan_name = ("%s/%s" % (plan.parent.name, plan.name)) if plan else "no plan yet"
     return {
-        "runs_draft": panel_html(page_src, "draft", rows, types, plan_name=plan_name),
+        # each Runs panel starts as the folded strip, as on every workbench (JL 261003)
+        "runs_draft": panel_html(page_src, "draft", rows, types, plan_name=plan_name, folded=True),
         "runs_evidence": panel_html(page_src, "evidence", rows, types, plan_name=plan_name,
-                                    run_tabs=run_tabs(page_src), supporting=supporting),
-        "runs_delivery": panel_html(page_src, "delivery", rows, types, plan_name=plan_name),
+                                    run_tabs=run_tabs(page_src), supporting=supporting, folded=True),
+        "runs_delivery": panel_html(page_src, "delivery", rows, types, plan_name=plan_name, folded=True),
         "runs_css": PANEL_CSS,
         "runs_js": PANEL_JS,
         "space_css": SPACE_CSS,
         "space_js": SPACE_JS,
-        "draft_reads": draft_reads_html(page_src),
+        # which file and `##` section each view reads: the View row's tooltip, not a line
+        # on screen (JL 261003: the Draft Space laid out as Guide's View row)
+        "draft_reads": html.escape(re.sub(r"<[^>]+>", "", draft_reads_html(page_src)), quote=True),
         "evidence_space": evidence_space_html(page_src, card_url=evidence_url, supporting=supporting),
         "delivery_space": delivery_space_html(page_src, checks_url=delivery_url, path_q=path_q,
                                               file_q=file_q, asset_base=asset_base),
@@ -3155,7 +3211,7 @@ class OutlineMixin:
                 if po.get("aims"):
                     o["aims"] = po["aims"]
         draft_mode = (q.get("view") or ["table"])[0]
-        if draft_mode not in {"table", "reading", "scratch", "revise"}:
+        if draft_mode not in {"table", "reading", "scratch", "roadmap", "revise"}:
             draft_mode = "table"
         page = render(page_src.stem, o, page_src, self.root, p["path"], p["file"],
                       read_only=getattr(self.server, "read_only", False),

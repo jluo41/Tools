@@ -63,7 +63,7 @@ Serialized `run`, `cycle` and `next_cycle` fields are Run names and step names, 
 | Workbench | Lane |
 |---|---|
 | `haipipe-workbench-page` | Context, Bullet, Evidence Item records; Run Space (Execution, Discovery, and Page Run tickets/results); LaTeX, Word, Slides, Render; Folder roster and meta-surface. Served by `servers/workbench-page` |
-| `haipipe-workbench-studio` | Chat and Draw. Served by `servers/workbench-studio` |
+| `haipipe-workbench-studio` | Chat and Draw. Served by `servers/workbench-shared` |
 
 Evidence VALUE, CITE, DISPLAY, and historical Page-link outcomes are typed
 Evidence Items, not separate workbenches. Supporting Runs come from Execution or

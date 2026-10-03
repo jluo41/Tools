@@ -1,0 +1,6 @@
+interface:
+  display_name: "Draw Logic Tree"
+  short_description: "claim → reasons → Bullets, top to bottom, on a Page's RoadMap canvas"
+  default_prompt: "Use $draw-logic-tree to draw, revise or check the logic of one Page: the claim on top, the reasons it rests on below, every Bullet a leaf on one shared row, colored by its evidence."
+policy:
+  allow_implicit_invocation: true

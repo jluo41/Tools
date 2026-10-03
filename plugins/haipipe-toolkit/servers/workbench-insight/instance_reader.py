@@ -172,7 +172,7 @@ def legacy_snapshot(board: Path, root: Path) -> dict:
     pages, questions, work, notes, report_rows, rows_of, registers = [], [], [], {}, [], {}, {}
     for pq in rq.question_folders(proto):
         q, prose = _front(pq / f"{pq.name}.md")
-        if not q:
+        if not q or q.get("retired"):                   # a retired question is history: not on the board
             continue
         qid, lid, letter = pq.name[:3], legacy_qid(pq.name[:3]), pq.name[0]
         iq = board / pq.parent.name / pq.name
@@ -251,6 +251,225 @@ def legacy_snapshot(board: Path, root: Path) -> dict:
         "work": work, "notes": notes, "report_rows": report_rows,
         "instance_problems": problems, "instance_notes": check_notes, "prototype": proto,
     }
+
+
+
+def render_prototype(board: Path, root: Path) -> str:
+    """Scope › Prototype: the design this Instance reads its extract through (JL 261002: Scope is the
+    board's own data to understand, and the Prototype is part of it). Laid out for the reader
+    (JL 261003: "not well designed"): what the Prototype is with four numbers; one table by rung of
+    questions, needs, scripts and this board's copies; only the copies that need action; the design
+    files last. Read-only: a question changes by a signed change, a script by sync_instance.py."""
+    ci, rq, sy = _tools()
+    board, root = Path(board).resolve(), Path(root).resolve()
+    meta = _front(board / "board.md")[0]
+    proto = (board / meta.get("prototype", "")).resolve()
+    if not (proto / "board.md").is_file():
+        return '<p class=note>This board does not name a Prototype in its <code>board.md</code>.</p>'
+    link = lambda path, label: (f'<a class=pop href="{_e(file_url(board, path, root))}" data-pop="{_e(label)}">'
+                                f'{_e(label)}</a>' if path.exists() else f'<span class=mut>{_e(label)} · missing</span>')
+    title = _title(_front(proto / "board.md")[1], proto.name)
+
+    # the questions by rung, and this board's script copies by rung
+    rungs = {}
+    for pq in rq.question_folders(proto):
+        q = _front(pq / f"{pq.name}.md")[0]
+        r = rungs.setdefault(pq.parent.name, {"live": 0, "retired": 0, "scripts": 0, "needs": 0, "copies": {}})
+        if q.get("retired"):
+            r["retired"] += 1
+            continue
+        r["live"] += 1
+        r["scripts"] += bool(list((pq / "scripts").glob("*.py")))
+        r["needs"] += sum(1 for n in (q.get("needs") or {}).values() if not (n or {}).get("retired"))
+    rows = sy.status(board)
+    for iq, _, st, _ in rows:
+        c = rungs.setdefault(iq.parent.name, {"live": 0, "retired": 0, "scripts": 0, "needs": 0, "copies": {}})["copies"]
+        c[st] = c.get(st, 0) + 1
+    total = lambda k: sum(r[k] for r in rungs.values())
+    in_sync = sum(1 for *_, st, _ in rows if st == "in sync")
+
+    tile = lambda n, label: f'<div class=ptile><b>{n}</b><span>{_e(label)}</span></div>'
+    head = (f'<h2>Meta</h2><div class=pcard><div class=ptitle>{link(proto / "board.md", proto.name)}</div>'
+            f'<div class=psub>{_e(title)}</div>'
+            '<p class=lead>The design this board reads its extract through: the partitions, the questions and their '
+            'scripts, and no data. This board holds one run per partition and one page per question.</p>'
+            '<div class=ptiles>' + tile(total("live"), "live questions") + tile(total("needs"), "live needs")
+            + tile(total("scripts"), "with a script")
+            + tile(f'{in_sync}/{len(rows)}' if rows else "—", "copies in sync") + '</div></div>')
+
+    state_mark = {"in sync": "✅", "new in prototype": "⬇️", "prototype changed": "🔄",
+                  "instance changed": "✏️", "both changed": "❗"}
+    def copies(c):
+        if not c:
+            return '<span class=mut>—</span>'
+        return " · ".join(f'{state_mark.get(st, "")} {n} {_e(st)}' for st, n in sorted(c.items(), key=lambda kv: kv[0] != "in sync"))
+    table = ('<h3>By rung</h3><table><tr><th>Rung</th><th class=num>Questions</th><th class=num>Needs</th>'
+             '<th class=num>Scripts</th><th>This board\'s copies</th><th class=num>Retired</th></tr>'
+             + "".join(f'<tr><td>{link(proto / name / "rung.md", name)}</td><td class=num>{r["live"]}</td>'
+                       f'<td class=num>{r["needs"]}</td><td class=num>{r["scripts"] or "—"}</td>'
+                       f'<td>{copies(r["copies"])}</td><td class=num>{r["retired"] or "—"}</td></tr>'
+                       for name, r in sorted(rungs.items()))
+             + '</table><p class=mut>A question changes only by a signed change: the old one is retired, never edited.</p>')
+
+    # only the copies that need something, grouped by what they need
+    act = {"new in prototype": "In the Prototype, not copied here yet",
+           "prototype changed": "Changed in the Prototype since the copy",
+           "instance changed": "Changed here; a different agent reviews it",
+           "both changed": "Changed in both; merge by hand"}
+    groups = {}
+    for iq, name, st, rev in rows:
+        if st in act:
+            groups.setdefault(st, []).append((iq, name, rev))
+    if groups:
+        todo = '<h3>Needs action</h3>'
+        for st, items in groups.items():
+            chips = "".join(f'<span class=chip title="{_e(name)}{" · reviewed" if rev else ""}">'
+                            f'{link(proto / iq.parent.name / iq.name / f"{iq.name}.md", iq.name.split("-")[0])}</span>'
+                            for iq, name, rev in items)
+            todo += (f'<div class=pact><div><b>{state_mark[st]} {len(items)} · {_e(act[st])}</b></div>'
+                     f'<div class=pchips>{chips}</div></div>')
+        todo += '<p class=mut>Settle a copy with <code>sync_instance.py</code> (haipipe-insight): --diff, --pull, --reviewed.</p>'
+    elif rows:
+        todo = '<p class=note>✅ Every script copy matches the Prototype.</p>'
+    else:
+        todo = '<p class=note>No question has scripts yet.</p>'
+
+    shared = sorted(proto.glob("src/*.py")) + sorted(proto.glob("[1-4]-*/src/*.py"))
+    files = ('<h3>Design files</h3><table>'
+             '<tr><th>Partitions and data</th><td>' + " · ".join(link(proto / rq.META / n, n) for n in
+                                                    ("meta.md", "partitions.md", "thresholds.yaml")) + '</td></tr>'
+             '<tr><th>Rung rules</th><td>' + " · ".join(link(f, f.parent.name) for f in sorted(proto.glob("[1-4]-*/rung.md")))
+             + '</td></tr>'
+             + (f'<tr><th>Shared code</th><td><details><summary>{len(shared)} modules two or more questions use</summary>'
+                + "<br>".join(link(f, f.relative_to(proto).as_posix()) for f in shared) + '</details></td></tr>' if shared else '')
+             + '</table>')
+    return head + table + todo + _partitions_html(proto) + _settings_html(proto) + files
+
+
+def _where_text(rule: dict) -> str:
+    """One filter condition in words: {column: age, lte: 35} -> `age ≤ 35`."""
+    ops = {"eq": "=", "ne": "≠", "lt": "<", "lte": "≤", "gt": ">", "gte": "≥", "in": "in"}
+    col = rule.get("column", "?")
+    for k, sym in ops.items():
+        if k in rule:
+            v = rule[k]
+            v = int(v) if isinstance(v, float) and v.is_integer() else v
+            return f"{col} {sym} {v}"
+    return col
+
+
+def _partitions_html(proto: Path) -> str:
+    """0-Meta/partitions.md as a table: each partition and who it holds, in words."""
+    rows = (_front(proto / "0-Meta" / "partitions.md")[0].get("partitions") or [])
+    if not rows:
+        return ''
+    body = "".join(
+        f'<tr><td class=mono>{_e(r.get("name", ""))}</td><td>'
+        + (_e("every row") if not r.get("where") and not r.get("of") else
+           _e("compares " + ", ".join(r["of"])) if r.get("of") else
+           _e(" · ".join(_where_text(w) for w in r["where"]))) + '</td></tr>' for r in rows)
+    return ('<h3>Partitions</h3><table><tr><th>Partition</th><th>Who it holds</th></tr>' + body +
+            '</table><p class=mut>Row counts for this board are in Scope › Partitions.</p>')
+
+
+def _settings_html(proto: Path) -> str:
+    """0-Meta/thresholds.yaml as a table: one row per section, its values side by side."""
+    path = proto / "0-Meta" / "thresholds.yaml"
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        return ''
+    flat = lambda v: (", ".join(f"{k} {flat(x)}" for k, x in v.items()) if isinstance(v, dict)
+                      else "not set" if v is None else str(v))
+    body = "".join(f'<tr><td class=mono>{_e(k)}</td><td>{_e(flat(v))}</td></tr>' for k, v in data.items())
+    return ('<h3>Shared settings</h3><table><tr><th>Section</th><th>Values</th></tr>' + body + '</table>'
+            '<p class=mut>A question names a section here and never restates a value.</p>')
+
+
+_RUNG_LABEL = {"1-Data": "Data", "2-Information": "Information", "3-Knowledge": "Knowledge", "4-Wisdom": "Wisdom"}
+
+
+def _prose(body: str, label: str) -> str:
+    m = re.search(r"\*\*" + re.escape(label) + r"\*\*:\s*(.+?)(?:\n\s*\n|\Z)", body, re.S)
+    return " ".join(m.group(1).split()) if m else ""
+
+
+def _rung_html(board: Path, root: Path, proto: Path, rung: Path, states: dict, n_parts: int) -> str:
+    """One rung of the Prototype: its opening question, then one folding row per live question
+    (id, name, the short question, partitions, script, agreed), then the retired ones folded."""
+    ci, rq, sy = _tools()
+    link = lambda path, label: (f'<a class=pop href="{_e(file_url(board, path, root))}" data-pop="{_e(label)}">'
+                                f'{_e(label)}</a>' if path.exists() else f'<span class=mut>{_e(label)}</span>')
+    text = (rung / "rung.md").read_text(encoding="utf-8") if (rung / "rung.md").is_file() else ""
+    opening = re.search(r"(?m)^## Opening\s*\n+(.+)", text)
+    shared = sorted((rung / "src").glob("*.py"))
+    out = [f'<h2>{_e(_RUNG_LABEL.get(rung.name, rung.name))}</h2>']
+    if opening:
+        out.append(f'<p class=pquote>{_e(opening.group(1).strip())}</p>')
+    out.append('<p class=mut>' + link(rung / "rung.md", "rung.md") + ': the opening, writing rule and law of this rung'
+               + (' · shared code: ' + " · ".join(link(f, f.name) for f in shared) if shared else '') + '</p>')
+    live, retired = [], []
+    for pq in rq.question_folders(proto):
+        if pq.parent != rung:
+            continue
+        q, body = _front(pq / f"{pq.name}.md")
+        (retired if q.get("retired") else live).append((pq, q, body))
+    mark = {"in sync": "✅ script in sync", "new in prototype": "⬇️ not copied here",
+            "prototype changed": "🔄 update waiting", "instance changed": "✏️ changed here", "both changed": "❗ both changed"}
+    for pq, q, body in live:
+        asked = (q.get("partitions") or {}).get("asked") or []
+        if isinstance(asked, str):                       # `asked: all` names every partition
+            asked = [asked]
+        where = ("all partitions" if asked == ["all"] or (n_parts and len(asked) >= n_parts - 1 and "cross" not in asked)
+                 else " · ".join(asked) or "not asked")
+        scripts = sorted((pq / "scripts").glob("*.py"))
+        st = states.get(pq.name)
+        script = (mark.get(st, st) if st else "⬜ script not written") if scripts else (
+            "📝 judged on its page" if rung.name.startswith("4-") else "⬜ script not written")
+        agreed = "✅ agreed" if str(q.get("agreed", "")).startswith("✅") else "⬜ not agreed"
+        tags = "".join(f'<span class=chip>{_e(t)}</span>' for t in (where, script, agreed))
+        parts = [f'<p><b>Ask</b>: {_e(q.get("ask", ""))}</p>']
+        for label in ("Why now", "What would answer it"):
+            t = _prose(body, label)
+            if t:
+                parts.append(f'<p><b>{label}</b>: {_e(t)}</p>')
+        parts.append('<p class=mut>' + " · ".join([link(pq / f"{pq.name}.md", "question file")]
+                                                  + [link(f, f.name) for f in scripts]) + '</p>')
+        out.append(f'<details class=pq><summary><span class=pqid>{_e(q.get("id", pq.name[:3]))}</span>'
+                   f'<span class=pqname>{_e(q.get("name", pq.name))}</span>'
+                   f'<span class=pqq>{_e(q.get("question", ""))}</span><span class=pqtags>{tags}</span></summary>'
+                   f'<div class=pqbody>{"".join(parts)}</div></details>')
+    if not live:
+        out.append('<p class=note>No live question on this rung yet.</p>')
+    if retired:
+        out.append(f'<details class=pretired><summary>Retired · {len(retired)}</summary><table>'
+                   '<tr><th>Question</th><th>Replaced by</th><th>Why</th></tr>' + "".join(
+                       f'<tr><td>{link(pq / f"{pq.name}.md", str(q.get("id", "")) + " " + str(q.get("name", "")))}</td>'
+                       f'<td class=mono>{_e(", ".join(q.get("superseded_by") or []) or "—")}</td>'
+                       f'<td>{_e(str(q.get("retired", "")))}</td></tr>' for pq, q, _ in retired)
+                   + '</table></details>')
+    return "".join(out)
+
+
+def prototype_views(board: Path, root: Path) -> list[tuple[str, str, str]]:
+    """The Prototype Space (JL 261003: "give the Prototype a SPACE ... Meta, D, I, K, W as the
+    views"): Meta, then one View per rung. Returns [(key, label, html)]."""
+    ci, rq, sy = _tools()
+    board, root = Path(board).resolve(), Path(root).resolve()
+    proto = (board / (_front(board / "board.md")[0].get("prototype") or "")).resolve()
+    views = [("meta", "Meta", render_prototype(board, root))]
+    if not (proto / "board.md").is_file():
+        return views
+    states = {}
+    for iq, _, st, _ in sy.status(board):
+        prev = states.get(iq.name)
+        states[iq.name] = st if prev in (None, "in sync") else prev     # the worst state of a question's scripts
+    n_parts = len(_front(proto / "0-Meta" / "partitions.md")[0].get("partitions") or [])
+    for rung in sorted(proto.glob("[1-4]-*")):
+        if rung.is_dir():
+            label = _RUNG_LABEL.get(rung.name, rung.name)
+            views.append((label.lower(), label, _rung_html(board, root, proto, rung, states, n_parts)))
+    return views
 
 
 def _allowed(board: Path) -> list[Path]:

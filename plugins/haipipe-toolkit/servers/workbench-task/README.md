@@ -19,20 +19,19 @@ Workbench, Folder map and RoadMap Draw. The **Task** Space has four Views:
 Questions are content inside the Task View. Jobs and Tasks without a Question
 remain visible under **Not under a Question**. An existing Block needs no
 migration; an empty Question register does not hide its execution records.
-Search, folding state, View selection and optional 30-second refresh are browser
-state. **Copy context to session** carries a Question's goal, work paths,
-report path, answer, limits and next action into a conversation. Automatic and
-manual refresh pause while an embedded drawing is being edited, a resource
-form has unsaved changes, or a Run result is open.
+The page uses the shared workbench shell, as Insight, Design and the Shared
+Workbench draw it: a title with "all boards · board index", the Block band, the
+Space row with Guide first, and each Space's View tabs and content in one box
+beside its Runs panel (`servers/README.md` § Adding a workbench). Folding state
+and the selected View are browser state; a browser reload rereads the sources.
 
-Work rows share Paper's type pill, short name, explanation and count styling
-through `workbench-shared/work_items.py`. Expanding a row reveals plain indented
-folder levels; expanding its Task reveals Runs. A Run opens its exact native
-Result in a pop-out with an own-tab link. Technical links and audit findings
-are under **Task details**. Work order follows the Question register; optional
-`stage` supplies a display label and `role` explains its contribution. These
-fields change no execution state. Without them, the row reads the Task's
-`task-type` (or Task) and Opening. Shared work names its other Questions.
+Work follows Insight's Task Work: one light tree per Question, Block → Job →
+Task → Run, each level written once and Runs folded. A Run's exact native Result
+and a Task Page open in the shared pop-out with an own-tab link. No status
+appears there; Progress keeps execution status. Work order follows
+the Question register; optional `role` is the Task line's hover text. These
+fields change no execution state. The Report column shows the report's title,
+opening the report in the same pop-out, and the first paragraph of its Opening.
 
 ## Sources and authoring
 
@@ -130,17 +129,23 @@ partial and open), ordinary report Pages, six Tasks, synthetic Run receipts,
 one placeholder resource and three blank native drawings. These are illustrative
 records, not actual project execution, evidence approval or Page CHECK.
 
-## Editable design
+## Guide and the Workbench design
+
+Guide's four Views come from the `task` entry in
+`workbench-shared/guide_families.py`: Description and Method are text there;
+RoadMap Draw draws the Workbench Table
+(`skills/task/haipipe-workbench-task/ref/workbench-table.md`, checked by
+`table-workbench --check`) and opens the **Workbench design** drawing;
+Related Paper shows `ref/task-papers.md` (checked by `table-papers --online`).
 
 [task-workbench-design.excalidraw](studio/task-workbench-design.excalidraw)
-is the native design source in the Paper / Page / Insight Studio style.
-Frames: Structure, Task, Studio, RelatedPaper, Progress and Guide. It uses
-illustrative content and documents the implemented source ownership.
-Edit its generator and regenerate:
+is generated; never edit it by hand. Its frames are "Spaces, runs and skills"
+(drawn from the Workbench Table), "The workbench" and "Where things live".
+Change the generator or the table, then regenerate:
 
 ```sh
-python plugins/haipipe-toolkit/servers/workbench-task/studio/task-workbench-design.py
+.venv/bin/python Tools/plugins/haipipe-toolkit/servers/workbench-task/studio/task-workbench-design.py
 ```
 
 On a Studio-enabled host, open
-`/_excalidraw/?board=<root-relative-scene-path>&frame=Task`.
+`/_excalidraw/?board=Tools/plugins/haipipe-toolkit/servers/workbench-task/studio/task-workbench-design.excalidraw&frame=The workbench`.

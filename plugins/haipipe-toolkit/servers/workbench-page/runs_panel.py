@@ -283,7 +283,7 @@ def _support_rows(runs: list[dict]) -> list[dict]:
 
 def panel_html(page_src: Path, space: str, rows: list[dict], types: list[dict], *,
                plan_name: str, extra: str = "", run_tabs: dict[str, str] | None = None,
-               supporting: list[dict] | None = None) -> str:
+               supporting: list[dict] | None = None, folded: bool = False) -> str:
     """One Space's Runs panel: run types on the left, the selected run on the right.
 
     On the Evidence Space, `supporting` (the Page's Supporting Runs) is one more run
@@ -333,7 +333,7 @@ def panel_html(page_src: Path, space: str, rows: list[dict], types: list[dict], 
                       "prompt": "/haipipe-page run {page} {run} again: {target}."})
         buckets.append(other)
     return panel_markup(space, kinds, buckets, base=base, fill=lambda row: fill, extra=extra,
-                        named=len(mine) + (2 if space == "evidence" and supporting else 0))
+                        named=len(mine) + (2 if space == "evidence" and supporting else 0), folded=folded)
 
 
 def _waiting(rows) -> int:
@@ -341,31 +341,41 @@ def _waiting(rows) -> int:
 
 
 def panel_markup(space: str, kinds: list[dict], buckets: list[list[dict]], *, base: Path, fill,
-                 extra: str = "", whole: str = "the whole page", named: int | None = None) -> str:
+                 extra: str = "", whole: str = "the whole page", named: int | None = None,
+                 folded: bool = False, card=None) -> str:
     """The Runs panel HTML for run types `kinds` and their rows `buckets`.
+
+    `folded` starts the panel as the narrow "◂ Runs" strip until the person opens it
+    (the Insight default, JL 261003); a person's own fold or open is remembered over it.
 
     `fill(row)` gives the prompt placeholders of one row (`{page}`, `{plan}`, ...);
     `whole` is what "+ New Run" says when nothing is selected; the first `named`
     kinds may be the default type (an "Other" bucket after them never is).
+
+    `card(row, index, kind, base, fill)` draws one run's card in place of the default, for a
+    family whose cards decide Resume or Rerun themselves (Labeling); it keeps the
+    `run-card data-type=<index> ... hidden` hooks the script reads. A kind may name its run
+    type id as `op` (shown as `data-op`); a view with no kind, or a kind whose prompt is
+    empty, offers no "+ New Run".
     """
     # Open on the type that has a run waiting for the person, else the busiest one.
     named_ = list(range(min(named if named is not None else len(kinds), len(kinds)))) or list(range(len(kinds)))
     first = max(named_, key=lambda i: (_waiting(buckets[i]), len(buckets[i])), default=0)
     default_fill = fill({})
     buttons = "".join(
-        '<button type=button class="run-type%s" data-type="%d" data-label="%s" data-prompt="%s" '
+        '<button type=button class="run-type%s" data-type="%d"%s data-label="%s" data-prompt="%s" '
         'data-skills="%s" data-views="%s" data-waiting="%d" data-count="%d">'
         '%s <span class=run-count>%d</span></button>'
-        % (" on" if i == first else "", i, _e(k["label"]),
+        % (" on" if i == first else "", i, ' data-op="%s"' % _e(k["op"]) if k.get("op") else "", _e(k["label"]),
            _e(_fill(k["prompt"], button=k["label"], **default_fill)), _e(" · ".join(k.get("skills") or [])),
            _e(k.get("views", "")),
            _waiting(buckets[i]), len(buckets[i]), _e(k["label"]), len(buckets[i]))
         for i, k in enumerate(kinds))
-    cards = "".join(_card_html(row, i, kinds[i], base, fill(row))
+    cards = "".join((card or _card_html)(row, i, kinds[i], base, fill(row))
                     for i, rows_ in enumerate(buckets) for row in rows_)
     waiting = sum(_waiting(rows_) for rows_ in buckets)
     return (
-        '<section class=runs-panel data-space="%s" data-waiting="%d" data-whole="%s">'
+        '<section class=runs-panel data-space="%s" data-waiting="%d" data-whole="%s"%s>'
         '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button>'
         '<b>Runs</b>%s</div>'
         '<div class=runs-body><div class=runs-types>%s'
@@ -377,7 +387,7 @@ def panel_markup(space: str, kinds: list[dict], buckets: list[list[dict]], *, ba
         '<pre class=run-prompt></pre></details></article>'
         '<div class=run-empty hidden>No runs yet.<p class=run-skill hidden></p></div>'
         '</div></div></section>'
-        % (_e(space), waiting, _e(whole), extra, buttons, cards))
+        % (_e(space), waiting, _e(whole), " data-fold=1" if folded else "", extra, buttons, cards))
 
 
 PANEL_CSS = """
@@ -428,6 +438,27 @@ PANEL_CSS = """
 @media (max-width:700px){.runs-body{grid-template-columns:1fr}}
 """
 
+# The Runs panel beside a Space, shared by every workbench (JL 261003: "always put the run in
+# the right panel"): `<div class="split"><div class="space-main">content</div>{panel}</div>`.
+# The content sits in one box; the panel stays on the right at every width and folds to a
+# narrow vertical "◂ Runs" tab. First written in the Design workbench (design.py).
+SPLIT_CSS = """
+.split:not(.pane),.pane.on.split{display:flex;align-items:flex-start;gap:16px}
+.split>.space-main{flex:1 1 auto;min-width:0;border:1px solid #e3e3e6;border-radius:10px;padding:12px 16px 16px}
+.split>.space-main>h2:first-child,.split>.space-main>.views:first-child{margin-top:0}
+@media(prefers-color-scheme:dark){.split>.space-main{border-color:#2c2e33}}
+@media(max-width:520px){.split>.space-main{padding:10px}}
+.split>.runs-panel{flex:0 0 clamp(260px,28vw,440px);margin:0;position:sticky;top:8px;
+ max-height:calc(100vh - 16px);display:flex;flex-direction:column;overflow:hidden}
+.split>.runs-panel .runs-bar{flex-wrap:wrap}
+.split>.runs-panel .runs-body{overflow:auto;min-height:0;grid-template-columns:1fr}
+.split>.runs-panel .runs-types{flex-direction:row;flex-wrap:wrap}
+.split>.runs-panel .run-type{gap:8px}
+.split>.runs-panel.folded{flex-basis:42px}
+.split>.runs-panel.folded .runs-bar{writing-mode:vertical-rl;flex-wrap:nowrap;padding:10px 9px;gap:10px}
+@media(max-width:900px){.split:not(.pane),.pane.on.split{gap:8px}.split>.runs-panel{flex-basis:clamp(200px,34vw,300px)}}
+"""
+
 PANEL_JS = r"""
 (function(){
  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
@@ -464,6 +495,9 @@ PANEL_JS = r"""
   var on=p.querySelector('.run-type.on'),newMode=on&&on.classList.contains('run-new');
   var target=p.dataset.target||'',view=p.dataset.view||'',list=p.querySelector('.run-list');
   var type=newMode?p.dataset.lastType:(on?on.dataset.type:'0');
+  /* no run type here, or one with no prompt to start (a gate not passed yet): no "+ New Run" */
+  var startable=p.querySelector('.run-type[data-type="'+type+'"]'),nb=p.querySelector('.run-new');
+  if(nb)nb.hidden=!startable||startable.hidden||!startable.dataset.prompt;
   var cards=[].slice.call(p.querySelectorAll('.run-card[data-type="'+type+'"]'))
    .filter(function(c){return matches(c,target)&&inView(c,view);});
   /* each type counts the runs of the selected target (and view), not the whole list */
@@ -517,7 +551,8 @@ PANEL_JS = r"""
   fold.addEventListener('click',function(ev){ev.stopPropagation();setFold(!p.classList.contains('folded'));});
   p.querySelector('.runs-bar').addEventListener('click',function(ev){
    if(p.classList.contains('folded')&&!ev.target.closest('input,button'))setFold(false);});
-  if(store('runs-fold:'+space)==='1')setFold(true);
+  var kept=store('runs-fold:'+space);
+  if(kept==='1'||(kept!=='0'&&p.dataset.fold==='1'))setFold(true);
   p.querySelectorAll('.run-type').forEach(function(b){b.addEventListener('click',function(){
    p.querySelectorAll('.run-type').forEach(function(x){x.classList.remove('on');});b.classList.add('on');render(p);});});
   render(p);

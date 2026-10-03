@@ -529,7 +529,8 @@ def brief_rows(brief_text: str) -> list[dict]:
             continue
         if all(set(c) <= set("-: ") for c in cells):
             continue
-        row = {"id": "", "audience": "", "job": "", "venue": "", "folder": "", "designs": 0, "insight": ""}
+        row = {"id": "", "audience": "", "job": "", "venue": "", "folder": "", "designs": 0, "insight": "",
+               "method": ""}
         for key, value in zip(header, cells):
             for name in ("audience", "job", "venue", "folder", "insight"):
                 if name in key:
@@ -538,6 +539,8 @@ def brief_rows(brief_text: str) -> list[dict]:
                 row["designs"] = int(value) if value.strip().isdigit() else 0
             if key in ("row", "id", "#", "line", "page"):
                 row["id"] = value
+            if "method" in key:                     # the one design method a page uses (JL 261003)
+                row["method"] = "" if value.strip() in ("—", "-", "–", "none", "(none)") else value.strip()
         if row["folder"] in ("—", "-", "–", "none", "(none)"):
             row["folder"] = ""
         row["folder"] = row["folder"].strip("`")
@@ -636,7 +639,7 @@ def design_input(board: Path | None, folder: Path) -> dict:
     return {"path": path, "blocks": blocks}
 
 
-def _input_html(root: Path, row: dict, inp: dict, counts: str, rules: list[str]) -> str:
+def _input_html(root: Path, row: dict, inp: dict, counts: str, rules: list[str], lead: str = "") -> str:
     """The Design Goal Space: the task's design input as column tables, as in the Paper workbench."""
     # The screen shows the specification only; where each line came from stays in the
     # file after `<-` (JL 261001: no source column, no file ids on screen).
@@ -658,7 +661,7 @@ def _input_html(root: Path, row: dict, inp: dict, counts: str, rules: list[str])
     if job and not any(k.lower() == "patient task" for k, _, _ in blocks.get("Aim", [])):
         aim.insert(1, line("Patient task", job[:1].upper() + job[1:]))
     aim.append(f'<tr><td class=key>Deliverables</td><td>{counts}</td></tr>')
-    out.append(grid("Aim", ("Item", "Specification"), aim))
+    views = {"aim": [grid("Aim", ("Item", "Specification"), aim)], "requirements": [], "resources": [], "leave-out": []}
     venue = row["venue"] or ""
     defaults = {k: v[:1].upper() + v[1:] for k, v in venue_defaults(venue).items()}
     used, rows = set(), []
@@ -669,15 +672,22 @@ def _input_html(root: Path, row: dict, inp: dict, counts: str, rules: list[str])
     rows += [f'<tr><td class=key>{_escape(_VENUE_LABEL.get(k, k))}</td><td class=mut>As the channel standard</td>'
              f'<td class=mut>{_escape(v)}</td></tr>' for k, v in defaults.items() if k not in used]
     name = venue.upper() if len(venue) <= 4 else venue.title()
-    out.append(grid(f"Channel requirements · {_escape(name)}", ("Requirement", "This task", f"{name} standard"), rows)
+    views["requirements"].append(grid(f"Channel requirements · {_escape(name)}", ("Requirement", "This task", f"{name} standard"), rows)
                if rows else f'<h3>Channel requirements · {_escape(name)}</h3><div class=empty>No channel profile for {_escape(venue)}.</div>')
     rule_rows = [line(k, v) for k, v, _ in blocks.get("Rules", [])]
     if rules:
         rule_rows.append(f'<tr><td class=key>Acceptance checks</td><td>{"<br>".join(_escape(r) for r in rules)}</td></tr>')
-    out.append(grid("Requirements", ("Item", "Specification"), rule_rows))
-    for title, heading in (("Resources", "Inputs and resources"), ("Leave out", "Exclusions")):
-        if blocks.get(title):
-            out.append(grid(heading, ("Item", "Specification"), [line(k, v) for k, v, _ in blocks[title]]))
+    views["requirements"].append(grid("Rules", ("Item", "Specification"), rule_rows))
+    for key, title, heading in (("resources", "Resources", "Inputs and resources"), ("leave-out", "Leave out", "Exclusions")):
+        views[key].append(grid(heading, ("Item", "Specification"), [line(k, v) for k, v, _ in blocks[title]])
+                          if blocks.get(title) else f'<div class=empty>No {title.lower()} block in design-goal.md.</div>')
+    # one view at a time, as the Guide's tabs (JL 261003: "the view could be Aim, Requirement, etc.")
+    labels = (("aim", "Aim"), ("requirements", "Requirements"), ("resources", "Resources"), ("leave-out", "Leave out"))
+    # the View tabs head the Space, as Insight's Questions · Studio; `lead` (the task) sits under them
+    out.append('<div class=views>' + "".join(f'<button type=button data-view="{k}"{" class=on" if k == "aim" else ""}>{v}</button>'
+                                             for k, v in labels) + '</div>' + lead
+               + "".join(f'<div class="view{" on" if k == "aim" else ""}" data-view="{k}">{"".join(views[k])}</div>'
+                         for k, _ in labels))
     if not inp["path"]:
         out.append('<div class=bad>No design-goal.md beside board.md: only the task line is shown.</div>')
     return "".join(out)
@@ -975,14 +985,22 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
 # ------------------------------------------------------------------ render --
 
 _CSS = """
-:root{--fg:#1c1c1c;--mut:#6f6f6b;--line:#e4e4e7;--bg:#fff;--acc:#3e5c84;--bad:#b3541e;--ok:#3a7d44;--soft:#f5f6f8}
-@media(prefers-color-scheme:dark){:root{--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--bg:#161719;--acc:#7d9cc4;--bad:#e0955a;--ok:#7dbb87;--soft:#20242a}}
+:root{--fg:#1c1c1c;--mut:#6f6f6b;--line:#e4e4e7;--bg:#fff;--acc:#3e5c84;--bad:#b3541e;--ok:#3a7d44;--soft:#f5f6f8;--acc-soft:#e6edf5}
+@media(prefers-color-scheme:dark){:root{--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--bg:#161719;--acc:#7d9cc4;--bad:#e0955a;--ok:#7dbb87;--soft:#20242a;--acc-soft:#22304a}}
 *{box-sizing:border-box}body{margin:0;padding:16px 18px;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:1100px}
-h1{font-size:17px;margin:0 0 2px;font-weight:650}h2{font-size:14px;margin:18px 0 6px;font-weight:650}
+h1{font-size:18px;margin:0 0 2px;font-weight:700}h2{font-size:14px;margin:18px 0 6px;font-weight:650}
 .mut{color:var(--mut);font-size:12.5px}.bad{color:var(--bad)}.ok{color:var(--ok)}
-.tabs{display:flex;gap:4px;margin:12px 0 4px;border-bottom:1px solid var(--line)}
-.tabs button{font:600 12.5px -apple-system,sans-serif;border:0;border-bottom:2px solid transparent;padding:6px 10px;cursor:pointer;background:transparent;color:var(--mut)}
-.tabs button.on{color:var(--fg);border-bottom-color:var(--acc)}
+/* the header's band of facts, one line, as every workbench draws it (JL 261003) */
+.dataset{margin:10px 0 4px;padding:8px 14px;border:1px solid var(--acc);border-radius:10px;background:var(--acc-soft);color:var(--acc);font-size:14px}
+/* a View tab, the same look as a Space tab (JL 261003) */
+.views{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 10px;margin:0 0 12px;border-bottom:1px solid var(--line)}.views button{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;background:#fff;color:#1e1e1e;cursor:pointer}
+.views button.on{background:#e7f5ff;color:#1864ab;border-color:#1864ab}.view{display:none}.view.on{display:block}
+@media(prefers-color-scheme:dark){.views button{background:#191c21;color:#edf0f4;border-color:#414852}.views button.on{background:#253749;color:#91caff;border-color:#91caff}}
+/* one tab style for every workbench (JL 261003), the Guide's: a Space tab is a filled pill when on */
+.tabs{display:flex;gap:6px;margin:12px 0 8px;flex-wrap:wrap}
+.tabs button{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;cursor:pointer;background:#fff;color:#1e1e1e}
+.tabs button.on{background:#e7f5ff;color:#1864ab;border-color:#1864ab}
+@media(prefers-color-scheme:dark){.tabs button{background:#191c21;color:#edf0f4;border-color:#414852}.tabs button.on{background:#253749;color:#91caff;border-color:#91caff}}
 .pane{display:none}.pane.on{display:block}
 table{border-collapse:collapse;width:100%;margin:4px 0 8px}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{color:var(--mut);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
@@ -1026,7 +1044,8 @@ h4.colh{margin:12px 0 4px;font:650 11px -apple-system,sans-serif;letter-spacing:
 .cardgrid>.col>h4.colh:first-child{margin-top:2px}
 details.sub{border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:6px 10px}details.sub>summary{font-size:13px;color:var(--fg);font-weight:600}
 details.sub[open]>summary{margin-bottom:6px}ul.notes{margin:0;padding-left:18px;font-size:13px;line-height:1.5}ul.notes li{margin:3px 0}
-@media(max-width:860px){.cardgrid{grid-template-columns:1fr}.cardgrid>.col.pic{position:static}}
+/* three columns left to right at every width (JL 261003); a narrow screen only tightens the gaps */
+@media(max-width:860px){.cardgrid{gap:8px}.cardgrid>.col.pic{position:static}.cardgrid>.col{overflow-wrap:anywhere}}
 details.runsfold{margin:6px 0 8px}details.runsfold>summary{font-size:12px;color:var(--mut);font-weight:400}
 details.runsfold[open]>summary{margin-bottom:4px}
 details.itemfold.cardrow .line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -1046,7 +1065,7 @@ span.link{font:600 12px ui-monospace,Menlo,monospace;color:var(--acc);background
 .cardhead{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:4px;color:var(--mut);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--line)}
 .task{border:1px solid var(--acc);border-radius:8px;background:var(--soft);padding:10px 14px;margin:6px 0 12px;line-height:1.55}.taskhead{font-weight:650;color:var(--acc);font-size:15px}
 details.inner{margin:8px 0 0}
-@media(max-width:860px){details.itemfold.cardrow>summary,.cardhead{grid-template-columns:1fr}.cardhead span+span{display:none}}
+@media(max-width:860px){details.itemfold.cardrow>summary,.cardhead{gap:8px}details.itemfold.cardrow>summary>span{overflow-wrap:anywhere}}
 details.itemfold>summary{list-style:none;display:flex;gap:12px;align-items:center;height:46px;cursor:pointer;color:var(--fg);font-size:14px;overflow:hidden}
 details.itemfold>summary::-webkit-details-marker{display:none}details.itemfold>summary::before{content:"▸";color:var(--mut);flex:0 0 10px}
 details.itemfold[open]>summary::before{content:"▾"}details.itemfold>summary:hover{background:var(--soft)}
@@ -1312,6 +1331,11 @@ def runs_panel_assets() -> tuple[str, str]:
 body{max-width:1560px}
 .pane.on.split{display:flex;align-items:flex-start;gap:16px}
 .split>.space-main{flex:1 1 auto;min-width:0}
+/* each Space's content in one box, as the Guide's (JL 261003; workbench-shared's .wg-shell) */
+.split>.space-main{border:1px solid #e3e3e6;border-radius:10px;padding:12px 16px 16px}
+.split>.space-main>h2:first-child,.split>.space-main>.views:first-child{margin-top:0}
+@media(prefers-color-scheme:dark){.split>.space-main{border-color:#2c2e33}}
+@media(max-width:520px){.split>.space-main{padding:10px}}
 .split>.runs-panel{flex:0 0 clamp(260px,28vw,440px);margin:0;position:sticky;top:8px;
  max-height:calc(100vh - 16px);display:flex;flex-direction:column;overflow:hidden}
 .split>.runs-panel .runs-bar{flex-wrap:wrap}
@@ -1320,8 +1344,8 @@ body{max-width:1560px}
 .split>.runs-panel .run-type{gap:8px}
 .split>.runs-panel.folded{flex-basis:42px}
 .split>.runs-panel.folded .runs-bar{writing-mode:vertical-rl;flex-wrap:nowrap;padding:10px 9px;gap:10px}
-@media(max-width:900px){.pane.on.split{display:block}.split>.runs-panel{position:static;max-height:none;margin-top:14px}
- .split>.runs-panel.folded .runs-bar{writing-mode:horizontal-tb}}
+/* the Runs panel stays on the right at every width (JL 261003: "always put the run in the right panel") */
+@media(max-width:900px){.pane.on.split{gap:8px}.split>.runs-panel{flex-basis:clamp(200px,34vw,300px)}}
 """
     return css, "<script>" + PANEL_JS + "</script>"
 
@@ -2466,16 +2490,31 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
     if selected_item not in ids:
         selected_item = ""
     q = query or {}
-    board_link = (f' · <a href="/_board/design-board?path={quote(str(q["path"]), safe="")}">↑ Board level</a>'
-                  if q.get("path") else "")
+    # the owning board, two folders up (2-Design/<page>/): a /w/ link passes the page itself as path
+    board_md = Path(snapshot["folder"]).parent.parent / "board.md"
+    try:
+        board_rel = "/" + board_md.resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        board_rel = ""
+    board_link = (f' · <a href="/_board/design-board?path={quote(board_rel, safe="")}">↑ Board level</a>'
+                  if board_rel and board_md.is_file() else "")
+    # the header as the Insight board and the Shared Workbench draw it (JL 261003: "could you align
+    # them?"): the title, where to go next, one band of facts, then the Space tabs
+    goal = snapshot.get("goal") or {}
+    name = snapshot["folder"].name
+    facts = ["-".join(name.split("-")[:2]) if name.startswith("Design-") else name]
+    if goal.get("wanted"):
+        facts.append(f'{goal["wanted"]} designs asked')
+    facts += [f'{goal.get("registered", len(items))} registered', f'{goal.get("ready", 0)} ready']
     header = (
         f'<h1>🎨 {_escape(snapshot["title"])}</h1>'
-        f'<div class=mut>Page level · <code>{_escape(snapshot["folder"].name)}</code>{board_link}</div>'
+        # only the Board-level link; no `all boards · board index` line (JL 261003: "could you remove this?")
+        + (f'<div class=mut>{board_link.replace(" · ", "", 1)}</div>' if board_link else "")
+        + f'<div class=dataset title="{_escape(name)}">{_escape(" · ".join(facts))}</div>'
     )
     if not snapshot["current"]:
         header += f'<div class=bad>{_escape(snapshot["reason"])}</div>'
-    if snapshot["insight"]["status"] == "blocked":
-        header += f'<div class=bad>{_signal_line(snapshot["insight"])}</div>'
+    # no insight-eligibility line in the header (JL 261003: "just remove them")
     if not snapshot["yaml"]:
         header += '<div class=bad>PyYAML is not installed for this server; Run records cannot be read.</div>'
 
@@ -2497,10 +2536,10 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
             counts += (f' <span class=act data-item="__all__"><button class=do data-action=draft-request>'
                        f'Ask the agent to draft the missing {missing}</button><span class=msg></span></span>')
         board_dir = Path(snapshot["folder"]).parent.parent
-        goal_html = ('<h2>The design task</h2>'
-                     f'<pre class=text>{_escape(goal["sentence"])}</pre>'
-                     + _input_html(root, row, design_input(board_dir, Path(snapshot["folder"])), counts,
-                                   shared_rules(items)))
+        goal_html = _input_html(root, row, design_input(board_dir, Path(snapshot["folder"])), counts,
+                                shared_rules(items),
+                                lead='<h2>The design task</h2>'
+                                     f'<pre class=text>{_escape(goal["sentence"])}</pre>')
     elif goal["brief"]:
         goal_html = (f'<div class=empty>No line in {_href(root, goal["brief"], goal["brief"].name)} names this folder yet; '
                      'add a row (audience · job · venue · designs · folder) and the goal appears here.</div>')
@@ -2603,7 +2642,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         panes[key] = f'<div class=space-main>{panes[key]}</div>{panel}'
     panel_css, panel_js = runs_panel_assets()
     tabs = "".join(f'<button type=button data-space="{key}"{" class=on" if key == selected else ""}>{label}</button>'
-                   for key, label in (("goal", "Design Goal Space"), ("design", "Design Space"), ("delivery", "Delivery Space")))
+                   for key, label in (("goal", "Design Task"), ("design", "Design Item"), ("delivery", "Delivery")))
     pane_html = "".join(f'<section class="pane split{" on" if key == selected else ""}" data-space="{key}">{value}</section>'
                         for key, value in panes.items())
     ctx = {"path": str(q.get("path") or ""), "file": str(q.get("file") or "")}
@@ -2614,6 +2653,13 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         "ps.forEach(function(p){p.classList.toggle('on',p.dataset.space===s)});"
         "if(w){var u=new URL(location.href);u.searchParams.set('space',s);history.replaceState({},'',u)}}"
         "bs.forEach(function(b){b.onclick=function(){sel(b.dataset.space,true)}});"
+        # a Space's View tabs (Design Task: Aim · Requirements · Resources · Leave out), one shown, kept in the URL
+        "function view(v,w){document.querySelectorAll('.views button').forEach(function(x){var box=x.closest('.space-main');"
+        "if(!box||!box.querySelector('.view[data-view=\"'+v+'\"]'))return;x.classList.toggle('on',x.dataset.view===v);"
+        "box.querySelectorAll('.view').forEach(function(d){d.classList.toggle('on',d.dataset.view===v)})});"
+        "if(w){var u=new URL(location.href);u.searchParams.set('view',v);history.replaceState({},'',u)}}"
+        "document.querySelectorAll('.views button').forEach(function(x){x.onclick=function(){view(x.dataset.view,true)}});"
+        "try{var vw=new URL(location.href).searchParams.get('view');if(vw)view(vw,false)}catch(e){}"
         "var me=document.querySelector('.pane.on .item.sel');if(me)me.scrollIntoView({block:'start'});"
         "document.querySelectorAll('[data-fold]').forEach(function(a){a.onclick=function(e){e.preventDefault();"
         "document.querySelectorAll('details.itemfold').forEach(function(d){d.open=a.dataset.fold==='open'})}});"

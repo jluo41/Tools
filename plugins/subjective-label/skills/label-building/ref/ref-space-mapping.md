@@ -10,15 +10,16 @@ the shared Run Spec graph and native Run receipts.
 
 ## Two levels
 
-The Board level (`GET /_board/labeling-board?path=<board.md>`) lists one card
+The Board level (`<DOMAIN>/w/<board-slug>`, which redirects to
+`/_board/labeling-board?path=<board.md>`) lists one card
 per Page with an attached preparation owner, a linked accepted package, or a `labeling/` job; a
 card opens that Page's surface below.
 It also gives empty `S-Label-*` Pages a separate **Pages before Contract** link.
 A flat Board source first needs its own Page folder; an already-folded Page can
 start upstream work. Neither state invents a job or a Run.
-The Page header's `← All labeling jobs` link returns to the Board level. The
-Board level has no Spaces and no writes. The rest of this file is the Page
-level.
+The `all labeling jobs` link under the Page's title returns to the Board level.
+The Board level has Guide and one Jobs Space and no writes. The rest of this file
+is the Page level.
 
 The dedicated Labeling host also opens a canonical Page folder directly at
 `/workbench/labeling?file=<Page>/<Page>.md`, relative to its served root. That
@@ -123,6 +124,52 @@ loaded them; current Tickets do not record Skill identities or versions.
 | 25 | `audit-analyze` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-audit` |
 | 26 | `dstar-materialize` | `subjective-label-workflow`, `label-scanning`, `label-scanning-workflow`, `subjective-label-final-labels` |
 
+## Run Type agents
+
+Each row names the agent that carries out one Run Type and the decision the person
+signs on it. The agent prepares the Run and calls the engine's checked writer; the
+engine still owns execution and authorization, and the person never does a Run, only
+signs what is theirs. A row that checks or measures another row's output (`unit-check`,
+`round-measure`, `executor-score`, `scan-preflight`, `audit-analyze`) names an agent that
+did not make it; the two checks belong to one checker that makes nothing. `(new)` marks an agent planned but not written yet. The Workbench Table
+(`label-building-workflow/haipipe-workbench-labeling/ref/workbench-table.md`) is
+generated from this table, `## Corpus Preparation Run Types`, `## Run Type skills` and the
+`view` column of the Workflow map; change a row here, then rerun its generator.
+
+| step | Run Type | agent | person signs |
+|---|---|---|---|
+| 0a | `source-normalize` | corpus-preparer-agent (new) | none |
+| 0b | `unit-recipe` | corpus-preparer-agent (new) | the labeling unit: target, context and grouping |
+| 0c | `unit-materialize` | corpus-preparer-agent (new) | none |
+| 0d | `unit-check` | labeling-checker-agent (new) | none |
+| 0e | `initial-group-reserve` | corpus-preparer-agent (new) | the held-back test groups (custodian) |
+| 1 | `corpus-contract` | moderator-agent | the contract: target, labeler and custodian |
+| 2 | `test-reserve` | sampler-agent | the sealed test set (custodian) |
+| 3 | `embedding-build` | embedder-agent | the embedding model |
+| 4 | `discovery-search` | haipipe-discovery-orchestrator-agent | none |
+| 5 | `definition-discussion` | moderator-agent | each label's meaning (G0) |
+| 6 | `guideline-seed` | moderator-agent | none |
+| 7 | `round-prepare` | sampler-agent | release of the round |
+| 8 | `weak-prelabel` | labeler-panel-agent | none |
+| 9 | `human-calibration` | moderator-agent | each item's final label |
+| 10 | `guideline-learn` | moderator-agent | the guideline draft |
+| 11 | `round-measure` | disagreement-analyzer-agent | none |
+| 12 | `round-close` | gallery-keeper-agent | the checkpoint and its guideline |
+| 13 | `handoff-freeze` | gallery-keeper-agent | the frozen handoff |
+| 14 | `test-gold-lock` | gallery-keeper-agent | the blind test answers |
+| 15 | `executor-predict` | labeler-panel-agent | none |
+| 16 | `executor-score` | validator-agent | none |
+| 17 | `executor-select` | validator-agent | the selected executor |
+| 18 | `scan-preflight` | labeling-checker-agent (new) | the frozen production plan |
+| 19 | `scan-shard` | labeler-panel-agent | none |
+| 20 | `risk-route` | classifier-agent | none |
+| 21 | `human-review` | moderator-agent | each reviewed item's label |
+| 22 | `reconcile` | gallery-keeper-agent | none |
+| 23 | `audit-sample` | sampler-agent | none |
+| 24 | `audit-human-gold` | moderator-agent | the audit labels |
+| 25 | `audit-analyze` | validator-agent | none |
+| 26 | `dstar-materialize` | gallery-keeper-agent | release of the final labels |
+
 ## SOP
 
 This is the supported first-use path in the current build. It ends after round 1:
@@ -208,7 +255,7 @@ prerequisites, and a matching Ticket/status are not rendered inside this matrix.
 | 18 | P4 | `scan-preflight` | Check one frozen production plan | not built yet | — | — | — | Not built · Scan | `production/run_<n>/preflight.json` | Delivery · Scan |
 | 19 | P4 | `scan-shard` | Label one frozen corpus shard | not built yet | — | — | — | Not built · Scan | `production/run_<n>/` | Delivery · Scan |
 | 20 | P4 | `risk-route` | Route risky production items to review | not built yet | — | — | — | Not built · Scan | `production/run_<n>/risk_queue.jsonl` | Delivery · Scan |
-| 21 | P4 | `human-review` | Review one frozen production risk queue | not built yet | — | — | — | Not built · Scan review of the risk queue; not calibration Rounds | `production/run_<n>/human_final.jsonl` | Delivery · Scan |
+| 21 | P4 | `human-review` | You label one production risk queue | not built yet | — | — | — | Not built · Scan review of the risk queue; not calibration Rounds | `production/run_<n>/human_final.jsonl` | Delivery · Scan |
 | 22 | P4 | `reconcile` | Reconcile reviewed items into a candidate corpus | not built yet | — | — | — | Not built · Scan; the candidate corpus is not D* | `production/run_<n>/run_report.md` | Delivery · Scan |
 | 23 | P5 | `audit-sample` | Draw from one frozen audit design | not built yet | — | — | Not built · no audit sample is produced | — | `audit/final_<n>/sample.jsonl` | Quality · Audit |
 | 24 | P5 | `audit-human-gold` | Blind-label one audit sample | not built yet | — | — | Not built · Quality/Audit only; not calibration Rounds | — | `audit/final_<n>/human_gold.jsonl` | Quality · Audit |

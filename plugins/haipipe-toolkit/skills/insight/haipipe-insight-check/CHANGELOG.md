@@ -4,6 +4,9 @@
 
 - `ref/check_instance.py` reads question file v2: requires question, name, ask, Why now and What would answer it; the compute spec is the register's (cut, unit, measure, by, uncertainty, rivals, output); retired needs are history; a cite of a retired need is a problem; power uses the board-wide smallest effect or a reasoned override. Coverage and cause words are no longer problems: Q1, Q2, Q4 and Q6 suspects are notes for the question review.
 - New `tests/test_carry_over.py` (the carry-over on a toy register board); `tests/test_check_instance.py` moved to v2, with retired needs, json keys, the effect override, one division per partition and a new Instance board.
+- STALE follows the shared modules a question's scripts import, not the whole `src/` (test: a run rests only on the modules it imports).
+- A retired question names its successors (`superseded_by`), keeps no scripts, and computes "—" everywhere; a cite of any need of a retired question is a problem.
+- STALE follows only the thresholds sections a question's code names (test added).
 
 ## 0.4.0 · 2026-10-02 · Prototype and Instance boards (JL 261002)
 

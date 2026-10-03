@@ -1,7 +1,7 @@
 By question type
 ================
 
-One discovery method card. The Insight workbench shows it in Scope › Methods ›
+One discovery method card. The Insight workbench shows it in the shared Guide › Method ›
 Discovery methods; its papers are the rows of `../../insight-papers.md` whose
 `group` is `by question type`. A claim names its source in brackets; "(ours)" marks the
 workbench's own judgment.

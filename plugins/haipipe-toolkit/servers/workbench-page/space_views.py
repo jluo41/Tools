@@ -503,6 +503,41 @@ details.paragraph-group[open]>summary.prow::before{content:"▾"}
 .space-split>.runs-panel .run-type{gap:8px}
 .space-split>.runs-panel.folded{flex-basis:42px}
 .space-split>.runs-panel.folded .runs-bar{writing-mode:vertical-rl;flex-wrap:nowrap;padding:10px 9px;gap:10px}
+/* The shared workbench shell (servers/README.md "Adding a workbench", rule 1; JL 261003):
+   the Insight workbench's title, band, Space row and tab sizes, and each Space's
+   tabs, views and content in one box. Page and Paper read this; neither restyles it. */
+:root{--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff;--acc-soft:#e6edf5;--box-line:#e3e3e6}
+@media(prefers-color-scheme:dark){:root{--tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749;
+ --acc-soft:#22304a;--box-line:#2c2e33}}
+body>h1{font-size:18px;margin:0 0 2px}
+.wb-links{color:var(--mut);font-size:13px}.wb-links a{color:var(--acc)}
+.wb-band{margin:10px 0 4px;padding:8px 14px;border:1px solid var(--acc);border-radius:10px;
+ background:var(--acc-soft);color:var(--acc);font-size:14px;line-height:1.5}
+.spaces{display:flex;gap:6px;margin:12px 0 8px;flex-wrap:wrap}
+.spaces .space{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;
+ padding:6px 14px;cursor:pointer;background:var(--bg);color:var(--fg);white-space:nowrap}
+.spaces .space.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+.space-split>.space-main{border:1px solid var(--box-line);border-radius:10px;padding:12px 16px 16px}
+.space-tabs{gap:6px;padding:0 0 10px;margin:0 0 12px;border-bottom:1px solid var(--box-line)}
+.space-tab,.space-view{font:400 16px system-ui,sans-serif;border-color:var(--tab-line);border-radius:6px;
+ padding:5px 12px;background:transparent;color:var(--fg)}
+.space-tab.on,.space-view.on,.space-view.shown{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+.space-views{gap:6px;margin:0 0 12px}
+/* Draft: the View row first, as Guide's (a rule under it, no "View" label); the Structure
+   fold belongs to Table, the view that reads `## 1 Structure` (JL 261003). */
+.draft-lens>.space-main>.draft-mode-switcher{gap:6px;margin:0 0 12px;padding:0 0 12px;border-bottom:1px solid var(--box-line)}
+.draft-mode-switcher .draft-mode-label{display:none}
+.draft-lens:not([data-draft-mode="table"]) .draft-structure{display:none}
+.draft-roadmap{display:none}
+.draft-lens[data-draft-mode="roadmap"] .draft-roadmap{display:block}
+.draft-lens[data-draft-mode="roadmap"]>.space-main>:not(.draft-mode-switcher):not(.draft-roadmap){display:none}
+.draft-roadmap .rd-bar{display:flex;justify-content:flex-end;margin:0 0 8px;font-size:13px}
+.page-roadmap-frame{display:block;width:100%;height:640px;border:1px solid var(--box-line);border-radius:8px;background:#fff}
+.draft-mode-switcher .draft-mode-tab{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;
+ padding:5px 12px;background:transparent;color:var(--fg)}
+.draft-mode-switcher .draft-mode-tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+@media(max-width:600px){.spaces{flex-wrap:nowrap;overflow-x:auto}.spaces .space{font-size:15px;padding:5px 10px}
+ .space-split>.space-main{padding:10px}}
 """
 
 SPACE_JS = r"""

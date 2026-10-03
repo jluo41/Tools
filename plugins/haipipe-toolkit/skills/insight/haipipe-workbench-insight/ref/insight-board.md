@@ -20,12 +20,13 @@ that page's `results/<ticket>/`), or, as a fallback, when its config reads the
 board's extract (`input.parquet_path`); the workbench lists only its own runs.
 A config never names a board or a result folder, and the board has no store.
 
-## The four Spaces
+## The Spaces
 
 | Space | Tabs | What it shows |
 |---|---|---|
-| Scope | Dataset · Partitions · Methods · Questions | the extract (MT00), its cuts with their configs, the methods an answer is found and an inquiry designed by with their papers and studio (below), the four registers' counts and the Ask box |
-| Insight | Questions | one High/Low table per partition (below) |
+| Scope | Dataset · Partitions · Questions | the extract (MT00), its cuts with their row counts and configs, the questions' counts and the Ask box |
+| Prototype | Meta · Data · Information · Knowledge · Wisdom | the design every board of this kind reads through: the summary, partitions and settings, then each rung's questions with needs, script and sign-off |
+| Insight | Questions · Studio | one High/Low table per partition (below) |
 | Check | Gates · Checks · Runtime | the picked question's seven gates, `cli/check.py`, the workflow runtime index |
 | Delivery | Handoff | the signed Wisdom answers and their current eligibility |
 
@@ -33,18 +34,17 @@ Each Space has its Runs panel on the right: run types on top (with their
 skill), the runs of the chosen type, a prompt to copy. Picking a question
 narrows every panel to it. Nothing in a panel starts, sends or writes.
 
-## Scope › Methods · how an answer is found, how an inquiry is designed
+## The family's methods live in the Guide
 
-A Scope tab beside Dataset, Partitions and Questions. Four views, one at a time, picked from a pill bar (`mview=` in the URL), drawn as the
-Design workbench draws its Theory of Design Space: Discovery methods
+The method cards and their papers are the family's, the same for every board, so they
+are not a Scope tab. The shared Guide shows them: Method holds Discovery methods
 (`ref/insight-discovery-methods.md`: how an answer is found from data), Design methods
-(`ref/insight-design-methods.md`: how an inquiry is designed before any data is read) and
-Methods studio (`ref/insight-methods.excalidraw` in the Excalidraw canvas, editable and saved
-back, as the Design board's Theory › Methods studio) and Papers (`ref/insight-papers.md`). Each methods file lists one card per method
+(`ref/insight-design-methods.md`: how an inquiry is designed before any data is read)
+and the Methods studio (`ref/insight-methods.excalidraw`, view only); Related Paper
+holds `ref/insight-papers.md`. Each methods file lists one card per method
 (`ref/methods/discovery/`, `ref/methods/design/`): closed, the move, what it reads and
 returns, its tests and whether any study tests it; open, What the literature says beside
-Applied to AI. A bracketed source opens its paper's card. The files are the workbench's
-own, the same for every board; no board writes them.
+Applied to AI. A bracketed source opens its paper's card. No board writes these files.
 
 ## Insight › Questions · one table per partition
 

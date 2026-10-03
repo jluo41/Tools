@@ -1,5 +1,6 @@
 """The Board-level Design workbench: the Brief's design tasks × folders × items, one grain up from the Page."""
 
+import re
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -7,6 +8,7 @@ from tempfile import TemporaryDirectory
 from live.design import brief_rows, design_snapshot
 from live import designboard
 from live.designboard import (
+    render_theory_embed,
     add_tasks,
     bundle_csv,
     bundle_rows,
@@ -137,8 +139,13 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             board = board_fixture(Path(td))
             snap = design_board_snapshot(board, Path(td))
             rendered = render_design_board(snap)
-            # two Spaces at the board level, a header with no counts (JL 261001)
-            for label in ("Design Tasks Space", "Theory of Design Space", "<div class=mut>Board level</div>",
+            # the header in the Insight board's style (JL 261003): links, one band of facts, Space buttons
+            for label in (">Design Tasks</button>", '<nav class="tabs spaces">',
+                          "<div class=dataset>", " design tasks · ",
+                          # one View per method family (JL 261003), and each task's method
+                          '<button type=button data-view="all" class=on>All</button>', ">Goal Only</button>",
+                          ">Making internal insights next</button>", "<h2>Design tasks · Goal Only</h2>",   # the All table per family
+                          "not designed this way yet", "Its methods: By goal · By principle", "<th>method</th>", "not declared",
                           "<h2>Design tasks</h2>", "<th>design task</th>",
                           "Prescription review SMS for young male, age 35 or under",
                           "no folder yet", "New Design Folder", "class=runs-panel", 'data-label="Add design tasks"',
@@ -147,7 +154,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             for jargon in ("roster", "Roster", "handoffs signed", "check_unit", "candidate", "DS01",
                            "<b>R3</b>", "<th>line</th>"):  # a task shows by its full name, not its row id
                 self.assertNotIn(jargon, rendered)
-            nav = rendered.split("<nav class=tabs>", 1)[1].split("</nav>", 1)[0]
+            nav = rendered.split("<nav class=\"tabs spaces\">", 1)[1].split("</nav>", 1)[0]
             for gone in ("Goal Space", ">Design Space<", "Delivery Space"):    # the theory text may name them
                 self.assertNotIn(gone, nav)
             for gone in ("<h2>Insight board</h2>", "<th>insight board</th>",
@@ -158,13 +165,62 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                 self.assertNotIn(count, head)
             for old in ("run", "delivery", "goal", "design"):              # an old link opens Design Tasks
                 self.assertIn('data-space="tasks" class=on', render_design_board(snap, old))
-            theory = render_design_board(snap, "theory")
-            self.assertIn('data-space="theory" class=on', theory)
+            # JL 261002: the theory explains the family, so it is Guide › Methods, which frames
+            # this page; the board keeps one working Space
+            self.assertNotIn("Theory of Design Space", nav)
+            self.assertNotIn('data-space="theory"', rendered)
+            theory = render_theory_embed(snap, "design-theory")
             self.assertIn("<h1>Theory of Design</h1>", theory)
+            only = render_theory_embed(snap, "papers", ["papers"])                 # Guide › Related Paper
+            self.assertNotIn('<div class=views>', only)                              # one view, no view bar
+            self.assertIn('<div class="view on" data-view="papers">', only)
+            self.assertNotIn('data-view="methods"', only)
             self.assertIn("1 · The design problem: abduction", theory)
+            self.assertIn("haipipe-explain-height", theory)                  # it tells its Guide frame its height
             static = render_design_board(design_board_snapshot(board, Path(td), static=True))
             self.assertNotIn("New Design Folder", static)
             self.assertNotIn("<pre class=theory>Deduction", static)
+
+    def test_guide_frames_the_theory_page_and_the_ui_design(self):
+        # JL 261002: Guide is Description · Method · RoadMap Draw · Related Paper. Design's
+        # Method gives its six steps first, then one page: the theory, the method cards and
+        # the methods drawing, with no view named Design methods (JL 261003), RoadMap Draw with one drawing of skills, method, workbench and folders, and Related
+        # Paper with its papers page; an earlier View key still opens the View that holds it.
+        from live.workbench_guide import guide_html
+        context = {"path": "/Demo/board.md", "file": "board.md"}
+        description = guide_html("design", "description", context, embedded=True)
+        self.assertIn("one task done by one design method", description)
+        method = guide_html("design", "method", context, embedded=True)
+        self.assertLess(method.index("Set the Design Task"), method.index('class="wg-explain-frame"'))   # steps first
+        self.assertLess(method.index("Pick the method"), method.index("Run the Exp"))
+        self.assertIn('src="/_board/design-board?embed=theory&amp;view=method&amp;views=method'
+                      '&amp;path=%2FDemo%2Fboard.md"', method)
+        self.assertNotIn("Design methods", method)
+        roadmap = guide_html("design", "roadmap-draw", context, embedded=True)
+        self.assertLess(roadmap.index('class="wg-explain-frame"'), roadmap.index('data-drawing="roadmap-draw"'))
+        self.assertIn("design-workbench-ui.excalidraw", roadmap)
+        self.assertIn('referrerpolicy="no-referrer"', roadmap)
+        papers = guide_html("design", "related-paper", context, embedded=True)
+        self.assertIn("view=papers&amp;views=papers", papers)
+        self.assertNotIn("No related papers are declared", papers)            # its own page leads, no false note
+
+    def test_theory_subset_keeps_the_order_it_is_given(self):
+        import tempfile
+        from live.designboard import theory_page
+        with tempfile.TemporaryDirectory() as td:
+            board = Path(td) / "board.md"; board.write_text("# Demo\n", encoding="utf-8")
+            html = theory_page(board, Path(td), view="methods", only=["methods", "studio", "design-theory"])
+        bar = re.findall(r'<button type=button data-view="([a-z-]+)"', html.split("</div>")[0])
+        self.assertEqual(bar, ["methods", "studio", "design-theory"])
+        with tempfile.TemporaryDirectory() as td:
+            board = Path(td) / "board.md"; board.write_text("# Demo\n", encoding="utf-8")
+            one = theory_page(board, Path(td), view="method", only=["method"])        # Guide's one page
+            plain = theory_page(board, Path(td))                                        # Method only when asked
+        self.assertNotIn("class=views", one)
+        self.assertIn("1 · The design problem: abduction", one)
+        self.assertIn("10 · Thirteen methods", one)
+        self.assertIn("The methods drawing", one)
+        self.assertNotIn('data-view="method"', plain)
 
     def test_theory_space_has_three_views_and_papers_read_the_workbench_table(self):
         with TemporaryDirectory() as td:
@@ -178,7 +234,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             drawing.write_text('{"type": "excalidraw", "elements": []}', encoding="utf-8")
             real_studio, designboard.STUDIO = designboard.STUDIO, drawing
             self.addCleanup(setattr, designboard, "STUDIO", real_studio)
-            theory = render_design_board(snap, "theory")
+            theory = render_theory_embed(snap, "design-theory")
             # three general views, one shown at a time (JL 261001): no channel's own theories here
             for label in ('<button type=button data-view="design-theory" class=on>Design theory</button>',
                           '<button type=button data-view="methods">Design methods</button>',
@@ -186,9 +242,9 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           '<button type=button data-view="papers">Papers</button>',
                           '<div class="view on" data-view="design-theory">', "No related paper yet"):
                 self.assertIn(label, theory)
-            self.assertIn("3 · Thirteen methods", theory)
-            self.assertIn("2 · Design elements", theory)                # JL 261002: each element, reasoned or intuitive
-            self.assertIn("1 · Three inputs, Design, Exp", theory)          # JL 261002: requirements + insights → Design → Exp
+            self.assertIn("10 · Thirteen methods", theory)               # JL 261003: the cards follow the theory
+            self.assertIn("8 · Design elements", theory)                # JL 261002: each element, reasoned or intuitive; now theory
+            self.assertIn("6 · The shared loop: three inputs, Design, Exp", theory)          # JL 261002: requirements + insights → Design → Exp
             self.assertIn("<span class=when>in the Exp</span>", theory)
             self.assertIn("<span class=when>in Evaluate</span>", theory)                # JL 261002: the Revise loop
             self.assertIn("The Revise loop (inner)", theory)
@@ -205,7 +261,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                 "| by theory | classic |  | Michie, van Stralen & West 2011 · The behaviour change wheel | Implementation Science | 10.1186/1748-5908-6-42 | from behaviour to intervention functions | none |\n"
                 "| by exploring | classic |  | Loch, Terwiesch & Thomke 2001 · Parallel and sequential testing of design alternatives | Management Science | 10.1287/mnsc.47.5.663.10480 | parallel or serial | none |\n",
                 encoding="utf-8")
-            papers = render_design_board(snap, "theory", "papers")
+            papers = render_theory_embed(snap, "papers")
             # the Paper workbench's Related Papers card: the title, then who, when and which journal
             for label in ('<div class="view on" data-view="papers">',
                           '<div class="rp-head">4 papers · 2 key · 3 classic · 0 review · 1 evidence · 1 in UTD24 journals · 0 with a PDF</div>',
@@ -217,7 +273,8 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           'href="https://doi.org/10.1037/a0032853"', "theory use not reliably linked to effect",
                           "4 journals and publishers", "No free full text here"):
                 self.assertIn(label, papers)
-            self.assertIn("Add a paper", papers)            # its Runs panel offers the run that adds one
+            # Guide frames this page to read, not to run (JL 261002): no Runs panel, no "Add a paper"
+            self.assertNotIn("class=runs-panel", papers)
             # a band shows its key papers and folds the rest; a band with none shows them all (JL 261002)
             theory_band = papers.split('<div class="lw-k">By theory', 1)[1].split('<div class="lw-k">', 1)[0]
             self.assertIn("<details class=rp-more><summary>1 more paper</summary>", theory_band)

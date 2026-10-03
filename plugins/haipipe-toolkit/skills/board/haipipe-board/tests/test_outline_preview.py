@@ -128,7 +128,7 @@ class OutlinePreviewTest(unittest.TestCase):
                               'S-test/S-test.md')
         self.assertIn('data-draft-mode=table', page)
         self.assertIn('data-draft-mode=reading', page)
-        self.assertIn("requestedDraftMode=['scratch','reading','revise'].indexOf(params.get('view'))>=0", page)
+        self.assertIn("requestedDraftMode=['scratch','reading','roadmap','revise'].indexOf(params.get('view'))>=0", page)
         # Page 0.118+: the Draft card has no Sources row.
         self.assertNotIn('<details class=source-details>', card)
         self.assertNotIn('<details class=preview-editor open', card)
@@ -140,7 +140,7 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertNotIn('Comment', card)
 
     def test_mobile_keeps_two_columns_and_metadata_is_omitted(self):
-        self.assertIn('grid-template-columns:minmax(0,2fr) minmax(0,3fr)', _PAGE)
+        self.assertIn('grid-template-columns:minmax(0,1fr) minmax(0,3fr)', _PAGE)  # Bullet : Draft = 1 : 3 (JL 261003)
         self.assertNotIn('.point-group{{grid-template-columns:minmax(0,1fr);', _PAGE)
         self.assertNotIn("content:'Content preview'", _PAGE)
         self.assertNotIn('<details class=page-details>', _PAGE)

@@ -1,7 +1,7 @@
 Papers kept here
 ================
 
-The full texts the Papers view shows inside a card. Only a copy whose license lets it be
+The full texts Guide › Related Paper shows inside a card. Only a copy whose license lets it be
 shared is kept here: each one is published under the Creative Commons Attribution
 license (CC BY 4.0), which its own first or last page states, and is credited by its row
 in `../design-papers.md` (authors, year, title, journal, DOI). A paper under any other

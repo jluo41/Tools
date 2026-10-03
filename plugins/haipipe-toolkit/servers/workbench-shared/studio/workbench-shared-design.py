@@ -1,12 +1,12 @@
-"""Generate the shared Workbench UI proposal in Excalidraw and SVG.
+"""Generate the shared Workbench UI proposal as an Excalidraw scene.
 
 Matches the geometry and colors of the Paper / Insight design studios.
-Only --previews needs Pillow; the scene and SVG use the standard library.
+Only --previews needs Pillow; the scene uses the standard library. Previews
+are local and git-ignored.
 The examples are illustrative. This script does not register a server route.
 """
 
 import argparse
-import html
 import json
 import random
 from pathlib import Path
@@ -354,52 +354,6 @@ def block_map(x, y):
          "One shared Space: Guide. View names are a proposal; content and storage follow the native owner contracts.", 17, MUTED)
 
 
-def svg_element(item):
-    kind, x, y = item["type"], item["x"], item["y"]
-    stroke = item["strokeColor"]
-    if kind == "rectangle":
-        dash = ' stroke-dasharray="8 6"' if item["strokeStyle"] == "dashed" else ""
-        bg = "none" if item["backgroundColor"] == "transparent" else item["backgroundColor"]
-        return (f'<rect x="{x}" y="{y}" width="{item["width"]}" height="{item["height"]}" '
-                f'rx="10" fill="{bg}" stroke="{stroke}" stroke-width="2"{dash}/>')
-    if kind == "text":
-        size = item["fontSize"]
-        family = "Courier New, monospace" if item["fontFamily"] == 3 else "Comic Sans MS, Arial, sans-serif"
-        centered = item["textAlign"] == "center"
-        if centered:
-            x += item["width"] / 2
-        anchor = "middle" if centered else "start"
-        result = [f'<text x="{x}" y="{y + size}" font-family="{family}" font-size="{size}" '
-                  f'fill="{stroke}" text-anchor="{anchor}">']
-        for i, value in enumerate(item["text"].split("\n")):
-            result.append(f'<tspan x="{x}" dy="{0 if i == 0 else size * 1.25}">{html.escape(value)}</tspan>')
-        return "".join(result) + "</text>"
-    if kind in ("line", "arrow"):
-        points = " ".join(f"{x + px},{y + py}" for px, py in item["points"])
-        marker = f' marker-end="url(#arrow-{stroke[1:]})"' if item.get("endArrowhead") else ""
-        return f'<polyline points="{points}" fill="none" stroke="{stroke}" stroke-width="2"{marker}/>'
-    return ""
-
-
-def write_svg(path, title="Shared Workbench UI design proposal",
-              description="Workbench UI design with named Spaces and Views."):
-    width = max(f["x"] + f["width"] for f in FRAMES) + 48
-    height = max(f["y"] + f["height"] for f in FRAMES) + 48
-    defs = []
-    for color in (BLUE, MUTED):
-        defs.append(f'<marker id="arrow-{color[1:]}" markerWidth="8" markerHeight="8" '
-                    f'refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">'
-                    f'<path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="{color}" stroke-width="2"/></marker>')
-    pieces = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-              f'viewBox="0 0 {width} {height}" role="img">',
-              f"<title>{html.escape(title)}</title>",
-              f"<desc>{html.escape(description)}</desc>",
-              "<defs>" + "".join(defs) + "</defs>",
-              f'<rect width="{width}" height="{height}" fill="#ffffff"/>']
-    pieces.extend(svg_element(item) for item in E)
-    path.write_text("\n".join(pieces) + "\n</svg>\n", encoding="utf-8")
-
-
 def write_previews(directory, font_path, mono_path, names=None):
     from PIL import Image, ImageDraw, ImageFont
 
@@ -473,7 +427,6 @@ def main():
              "elements": E, "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}}
     scene_path = output / "workbench-shared-design.excalidraw"
     scene_path.write_text(json.dumps(scene, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    write_svg(output / "workbench-shared-design.svg")
     if args.previews:
         write_previews(output, args.font, args.mono_font)
     print(f"Wrote {scene_path.name}: {len(E)} elements, {len(FRAMES)} frames")

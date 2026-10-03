@@ -125,3 +125,6 @@ def test_a_carried_refusal_shows_where_the_question_is_not_asked(boards):
     f.write_text(f.read_text().replace("asked: all", "asked: [full]\n  not_elsewhere: a property of the extract"))
     snap = legacy_snapshot(inst, root)
     assert snap["questions"][0]["cells"]["alpha"] == {"mark": "🚫", "page": "", "note": "full-only", "raw": "🚫 full-only"}
+    from live.insightboard import _work_cell
+    assert _work_cell(snap, snap["questions"][0], "alpha", {}) == "<p class=wk-none>—</p>"
+    assert "Task Work" in _work_cell(snap, snap["questions"][0], "full", {})

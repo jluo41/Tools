@@ -26,7 +26,7 @@ QX-group/
 Studio lane; flat `<page>/draw/` remains readable migration input.
 Every group has one `group.excalidraw`, even when its own canvas is empty; every page has one source, even when its drawing is still empty.
 A page whose scene file is missing gets an empty one MINTED on the first open
-(`servers/workbench-studio/xcal.py`), so the editor never falls back to a leftover buffer. If only
+(`servers/workbench-shared/xcal.py`), so the editor never falls back to a leftover buffer. If only
 a retired flat folded-Page scene exists, first open copies its content to
 `studio/draw/` and leaves the old file unchanged; every subsequent write goes
 to the canonical copy.
@@ -74,7 +74,7 @@ A cross-group or ownerless element stops migration instead of being guessed into
 
 ## ✨ Generated drawings · the second writer and its style
 
-The ✨ Draw it button on Studio's Draw segment POSTs `/_board/autodraw`; `servers/workbench-studio/autodraw.py` runs `claude -p` over the page's own `.md` and writes the scene server-side.
+The ✨ Draw it button on Studio's Draw segment POSTs `/_board/autodraw`; `servers/workbench-shared/autodraw.py` runs `claude -p` over the page's own `.md` and writes the scene server-side.
 An empty ask draws the page's `## Diagram` figure as a real scene; a typed ask draws that instead.
 When the page carries an ascii figure, the SERVER places it verbatim at the top of the scene as one gray monospace text element, and the drawn version goes below it (JL 260816: the copy is deterministic, because ascii retyped by a model comes back bent).
 A generated scene carries a `haipipe.autodraw` stamp and may be regenerated freely; a scene a person drew by hand carries no stamp, and the writer refuses it.
@@ -89,11 +89,11 @@ The style contract every generated scene follows (JL 260816):
 📏 size      under 40 elements · span near 900x600 from (0,0)
 ```
 
-The enforcing copy of this contract is the prompt inside `servers/workbench-studio/autodraw.py`; a style change lands in both places in one commit.
+The enforcing copy of this contract is the prompt inside `servers/workbench-shared/autodraw.py`; a style change lands in both places in one commit.
 
 ## 📡 Surface · the live editor's guarantees
 
-The live editor (`servers/workbench-studio/xcal.py`) recognizes linked sources by schema and keeps the legacy `board.excalidraw` route for old boards.
+The live editor (`servers/workbench-shared/xcal.py`) recognizes linked sources by schema and keeps the legacy `board.excalidraw` route for old boards.
 Every linked save carries the revision the browser opened; a stale revision gets a visible conflict, never an overwrite.
 Loading and toolbar navigation never arm autosave: the first non-toolbar human gesture is the snapshot point, so entering or leaving an owner cannot rewrite either source.
 Pasted Page image bytes land under `studio/draw/assets/<owner>/`; Group image
@@ -106,9 +106,9 @@ contract for new drawing work.
 
 - `../../../../board/haipipe-board/cli/draw.py`
   split · sync · compose · verify · retire.
-- `../../../../servers/workbench-studio/xcal.py`
+- `../../../../servers/workbench-shared/xcal.py`
   The live editor's save path, owner modes, and the mint.
-- `../../../../servers/workbench-studio/autodraw.py`
+- `../../../../servers/workbench-shared/autodraw.py`
   The ✨ writer: the generation route and the enforcing style prompt.
 - `../../haipipe-workbench/ref/roster.md`
   The `draw/` lane row this category owns.

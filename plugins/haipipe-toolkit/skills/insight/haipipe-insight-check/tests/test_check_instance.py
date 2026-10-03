@@ -348,3 +348,76 @@ def test_scaffold_writes_a_new_instance_board(board):
     assert meta == {"board-kind": "insight-instance", "prototype": "../Prototype-Insight-Toy", "extract": "data/x.parquet"}
     assert (new / "2-Information" / IF / "runs" / "alpha.sh").is_file()
     assert rq.run(new / "2-Information" / IF, "full")["status"] == "ok"
+
+
+def test_a_run_rests_only_on_the_shared_modules_its_scripts_import(board):
+    _, proto, inst = board
+    (proto / "src").mkdir()
+    (proto / "src" / "helpers.py").write_text("def n(df):\n    return len(df)\n")
+    for f in (qpath(proto, IF) / "scripts" / "rate_by_group.py",):
+        f.write_text("import helpers  # noqa\n" + f.read_text())
+    run_all(inst)
+    (proto / "src" / "unrelated.py").write_text("X = 1\n")
+    _, grid, _ = ci.run(inst)
+    assert grid[D]["full"] == "🟡" and grid[I]["full"] == "🟡"
+    (proto / "src" / "helpers.py").write_text("def n(df):\n    return int(len(df))\n")
+    _, grid, _ = ci.run(inst)
+    assert grid[I]["full"] == "STALE" and grid[D]["full"] == "🟡"
+
+
+def test_a_retired_question_is_asked_nowhere_and_names_its_successors(board):
+    _, proto, inst = board
+    run_all(inst)
+    f = qpath(proto, IF) / f"{IF}.md"
+    edit(f, lambda m: m.update(retired="split into two questions"))
+    problems, grid, _ = ci.run(inst)
+    assert any("names its successors" in p for p in problems)
+    assert any("keeps no scripts" in p for p in problems)
+    assert any("does not ask I01 on full" in p for p in problems)          # its old tickets are flagged
+    edit(f, lambda m: m.update(superseded_by=[]))
+    for x in (qpath(proto, IF) / "scripts").glob("*.py"):
+        x.unlink()
+    import shutil
+    shutil.rmtree(qpath(inst, IF))
+    problems, grid, _ = ci.run(inst)
+    assert grid[I] == {"full": "—", "alpha": "—", "cross": "—"}
+    assert not any(p.startswith("I01") for p in problems)
+
+
+def test_a_cross_run_also_reads_the_whole_extract(board):
+    _, proto, inst = board
+    f = qpath(proto, IF) / f"{IF}.md"
+    edit(f, lambda m: m["partitions"].update(asked="cross", not_elsewhere="it compares partitions", power="none"))
+    (qpath(proto, IF) / "scripts" / "rate_by_group.py").write_text(SCRIPT_I.replace(
+        't = df.groupby("g")["y"].agg(["size", "mean"]).reset_index()',
+        'assert df is None and set(ctx.partitions) == {"alpha"} and len(ctx.full) == 4000\n'
+        '    t = ctx.full.groupby("g")["y"].agg(["size", "mean"]).reset_index()'))
+    out = run_all(inst)
+    assert out["I01-cross"] == "ok"
+
+
+def test_a_run_rests_only_on_the_threshold_sections_its_code_names(board):
+    _, proto, inst = board
+    run_all(inst)
+    t = proto / "0-Meta" / "thresholds.yaml"
+    t.write_text(t.read_text() + "unrelated:\n  floor: 7\n")
+    _, grid, _ = ci.run(inst)
+    assert grid[D]["full"] == "🟡" and grid[I]["full"] == "🟡"
+    (qpath(proto, IF) / "scripts" / "rate_by_group.py").write_text(SCRIPT_I + '\nKEY = "unrelated"\n')
+    sy.main([str(inst), "--pull"])
+    run_all(inst)
+    t.write_text(t.read_text().replace("floor: 7", "floor: 8"))
+    _, grid, _ = ci.run(inst)
+    assert grid[I]["full"] == "STALE" and grid[D]["full"] == "🟡"
+
+
+def test_a_later_rung_may_import_an_earlier_rungs_module_and_rests_on_it(board):
+    _, proto, inst = board
+    (proto / "1-Data" / "src").mkdir()
+    (proto / "1-Data" / "src" / "data_helpers.py").write_text("def k():\n    return 1\n")
+    f = qpath(proto, IF) / "scripts" / "rate_by_group.py"
+    f.write_text("import data_helpers  # noqa\n" + f.read_text())
+    assert run_all(inst)["I01-full"] == "ok"
+    (proto / "1-Data" / "src" / "data_helpers.py").write_text("def k():\n    return 2\n")
+    _, grid, _ = ci.run(inst)
+    assert grid[I]["full"] == "STALE" and grid[D]["full"] == "🟡"

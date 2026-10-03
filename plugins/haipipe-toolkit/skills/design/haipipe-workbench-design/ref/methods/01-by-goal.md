@@ -1,12 +1,11 @@
 By goal
 =======
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by goal`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by goal`. A claim
+names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Requirements only: abduction-2; the AI invents the how and the design from the
+family: Goal Only: abduction-2; the AI invents the how and the design from the
   design requirements alone
 reasoning: abduction-2, left unsaid: requirements → a design; its how is never written
   down

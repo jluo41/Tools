@@ -90,17 +90,58 @@ def question_folders(board):
                 yield d
 
 
-def shared_paths(prototype, rung=None):
-    """What a script rests on besides its own files: the Prototype's meta and its shared functions."""
+IMPORT = re.compile(r"^\s*(?:from|import)\s+([A-Za-z_]\w*)", re.M)
+
+
+def _imported(files, roots):
+    """The shared modules (src/<name>.py or src/<name>/) these files import, and what those import."""
+    found, todo = [], list(files)
+    while todo:
+        f = todo.pop()
+        for name in IMPORT.findall(Path(f).read_text(encoding="utf-8")):
+            for root in roots:
+                for cand in (root / f"{name}.py", root / name):
+                    if cand.exists() and cand not in found:
+                        found.append(cand)
+                        todo += [cand] if cand.is_file() else sorted(cand.rglob("*.py"))
+    return sorted(found)
+
+
+def shared_digest(prototype, rung, scripts, question=None):
+    """The sha256 of what a run rests on besides its own files: partitions.md, the src/ modules its scripts
+    import, and only the thresholds.yaml sections its code names (a quoted section name, or the top-level
+    seed through ctx.seed), so a key added for another question leaves this run current."""
     prototype = Path(prototype)
-    paths = [prototype / META / "partitions.md", prototype / META / "thresholds.yaml", prototype / "src"]
-    if rung:
-        paths.append(prototype / rung / "src")
-    return [p for p in paths if p.exists()]
+    paths = shared_paths(prototype, rung, scripts)
+    files = [f for f in paths if f.name != "thresholds.yaml"]
+    text = "".join(Path(f).read_text(encoding="utf-8") for f in
+                   sorted(Path(scripts).glob("*.py")) + [f for f in files if f.suffix == ".py"])
+    tfile = prototype / META / "thresholds.yaml"
+    th = (yaml.safe_load(tfile.read_text()) or {}) if tfile.is_file() else {}
+    powered = isinstance(((question or {}).get("partitions") or {}).get("power"), dict)
+    used = {k: v for k, v in th.items() if re.search(rf"[\"']{re.escape(str(k))}[\"']", text)
+            or (k == "seed" and ".seed" in text) or (k == "power" and powered)}
+    h = hashlib.sha256(sha256(*files).encode())
+    h.update(yaml.safe_dump(used, sort_keys=True).encode())
+    return h.hexdigest()
+
+
+def shared_paths(prototype, rung=None, scripts=None):
+    """What a script rests on besides its own files: the Prototype's partitions and thresholds, and
+    the shared modules (rung src/, top src/) its scripts import. Without `scripts`, every shared module."""
+    prototype = Path(prototype)
+    others = [prototype / d / "src" for d in RUNG_DIR.values() if d != rung]       # a later rung may reuse an earlier one's
+    roots = [r for r in ([prototype / rung / "src"] if rung else []) + [prototype / "src"] + others if r.is_dir()]
+    paths = [p for p in (prototype / META / "partitions.md", prototype / META / "thresholds.yaml") if p.exists()]
+    if scripts is None:
+        return paths + roots
+    return paths + _imported(sorted(Path(scripts).glob("*.py")), roots)
 
 
 def asked_partitions(q, partitions):
-    """The partitions a question is asked on, in partitions.md order."""
+    """The partitions a question is asked on, in partitions.md order; a retired question, none."""
+    if q.get("retired"):
+        return []
     asked = (q.get("partitions") or {}).get("asked", "all")
     names = [p["name"] for p in partitions]
     if asked == "all":
@@ -255,7 +296,9 @@ def power_rows(q, frames, thresholds):
 
 # ── the gate and the report ──────────────────────────────────────────────────
 def live_needs(q):
-    """The needs a run and a page answer today: every need not retired."""
+    """The needs a run and a page answer today: every need not retired (none on a retired question)."""
+    if q.get("retired"):
+        return {}
     return {nid: n for nid, n in (q.get("needs") or {}).items() if not n.get("retired")}
 
 
@@ -377,7 +420,7 @@ def run(qfolder, partition):
     out, rep = r["qfolder"] / "results" / partition, r["qfolder"] / "reports" / partition
     _clear(out)
     _clear(rep)
-    shared = shared_paths(r["prototype"], r["rung"])
+    shared = shared_paths(r["prototype"], r["rung"], r["scripts"])
     proto_scripts = r["pq_dir"] / "scripts"
     receipt = {
         "status": "running", "question": r["qid"], "partition": partition,
@@ -386,7 +429,7 @@ def run(qfolder, partition):
         "spec": rel(r["qfile"]), "spec_sha256": sha256(r["qfile"]),
         "scripts": rel(r["scripts"]), "scripts_sha256": sha256(r["scripts"]),
         "prototype_scripts_sha256": sha256(proto_scripts) if proto_scripts.is_dir() else None,
-        "shared_sha256": sha256(*shared),
+        "shared_sha256": shared_digest(r["prototype"], r["rung"], r["scripts"], r["q"]),
         "git_sha": subprocess.run(["git", "-C", str(r["qfolder"]), "rev-parse", "--short", "HEAD"],
                                   capture_output=True, text=True).stdout.strip() or "unknown",
         "started": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -401,8 +444,9 @@ def run(qfolder, partition):
     try:
         tfile = r["prototype"] / META / "thresholds.yaml"
         thresholds = (yaml.safe_load(tfile.read_text()) or {}) if tfile.is_file() else {}
-        for p in (r["prototype"] / "src", r["prototype"] / r["rung"] / "src", r["scripts"]):
-            if p.is_dir():
+        others = [r["prototype"] / d / "src" for d in RUNG_DIR.values() if d != r["rung"]]
+        for p in (*others, r["prototype"] / "src", r["prototype"] / r["rung"] / "src", r["scripts"]):
+            if p.is_dir():                                   # the last inserted is searched first: scripts, own rung, top
                 sys.path.insert(0, str(p))
         mod = {}
         exec(compile(r["script"].read_text(encoding="utf-8"), str(r["script"]), "exec"), mod)
@@ -423,6 +467,7 @@ def run(qfolder, partition):
             raise Refused("underpowered: " + "; ".join(f"{x['partition']} MDE {x['mde']:.2f} > {x['effect']}" for x in weak))
         df = frames[partition] if partition != "cross" else None
         ctx = Ctx(r, df, thresholds, partitions=frames if df is None else None, extract=root / r["extract"])
+        ctx.full = full if df is None else None          # a cross run also reads the whole extract (its reference)
         tables = mod["run"](df, ctx)
         gate(tables, r["q"], read_cols, frames)
         for f, t in tables.items():

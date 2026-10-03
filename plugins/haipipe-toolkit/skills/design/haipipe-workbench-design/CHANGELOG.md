@@ -1,5 +1,80 @@
 # Changelog
 
+## 0.14.18 · 2026-10-03 · Design Task, with four views; one look for tabs and boxes (JL 261003)
+
+- The page's Spaces are Design Task · Design Item · Delivery (no "Space" on the tab, as the
+  board's Design Tasks). Design Task shows four View tabs: Aim · Requirements (the channel
+  requirements and the rules) · Resources · Leave out; `?view=` opens one. The file stays
+  `design-goal.md`, read the same way.
+- The board header follows the Insight board's: the title, all boards · board index, one
+  band of facts; the records-check line is gone from it.
+- Space and View tabs take the shared Guide's look (400 16px, a filled pill when on), and
+  each working Space sits in one box like the Guide's. The design card keeps its three
+  columns at every width.
+- The page header follows it too (all boards · ↑ Board level, which now opens the owning
+  board from a /w/ link; a band of facts); the insight-eligibility line is gone, and the
+  Runs panel stays on the right at every width.
+- Guide › Related Paper is untitled, so its papers show unfolded; the RoadMap drawing is
+  titled Workbench design.
+
+## 0.14.17 · 2026-10-03 · Guide › Method holds the theory itself (JL 261003)
+
+- JL: "move the design theory things to here. We do not [want] the things named Design
+  methods; here is the new Method view to hold that information". Guide › Method is the six
+  steps, then one page with no sub-tabs: the theory (`design-theory.md`, sections 1 to 9,
+  the shared loop now section 6), the method cards (`design-methods.md`, retitled "The
+  method cards", sections 10 to 12) and the methods drawing. The theory page's new `method`
+  view composes them; it shows only when asked for (`views=method`).
+- No view, heading or card line is called Design methods any more.
+
+## 0.14.16 · 2026-10-03 · Guide › Method reads like Insight's (JL 261003)
+
+- JL: "for the Design, its guide is very very bad", against Insight's Method. Design's six
+  steps now lead the View and are actions (Set the Design Goal · Pick the method · Generate
+  N designs · Evaluate · Release · Run the Exp); the framed page follows them, its sub-tabs
+  in the order Design methods · Methods studio · Design theory (`views=` sets the order).
+- `design-methods.md` is 131 lines, not 240: the shared loop with one paragraph, then the
+  thirteen cards, the tests and the evidence. The reasoning, the two loops, the design
+  elements, the six families and O'Cathain's map moved to `design-theory.md`, sections 6-9.
+- `workbench-table.md`: Guide rows in place of the old Theory of Design rows, and a Folder
+  column; Guide › RoadMap Draw shows it, with a Workflow block from the entry's new `flow`.
+
+## 0.14.15 · 2026-10-02 · Guide is Description · Method · RoadMap Draw · Related Paper (JL 261002)
+
+- JL: "we don't need the skills set"; "all the four just to one RoadMap Draw, and then add
+  the Related paper"; "Descriptions, then Method, and then RoadMap, and then Related Paper".
+  The shared Guide now has those four Views; the Design entry gives a `description` and
+  frames three pages: Method (Design theory · Design methods · Methods studio), RoadMap
+  Draw (`design-workbench-ui.excalidraw`, now one drawing of the skills, the method, the
+  workbench and the folders) and Related Paper (the Papers view alone).
+- The theory embed takes `views=<comma list>` to show a subset of its views. Old
+  `space=theory|methods|studio` links forward to `guide=method`, `space=papers` to
+  `guide=related-paper`.
+- Docs, the 13 cards and the reference files say Guide › Method and Guide › Related Paper.
+
+## 0.14.14 · 2026-10-02 · The theory moves into the shared Guide (JL 261002)
+
+- JL: "follow the design here, workbench-shared, to update workbench-design"; "work on the
+  guide space first"; "this is the guide I want to keep" (Design theory · Design methods ·
+  Methods studio · Papers). The theory explains the family, so it is Guide › Methods now:
+  Guide frames this board's theory page (`/_board/design-board?embed=theory`,
+  `render_theory_embed`) at the top of the View, its four views unchanged, the methods
+  studio still saving to `ref/design-methods.excalidraw`. The generated method flow folds
+  beneath it.
+- The board keeps one working Space, Design Tasks. An old `space=theory|methods|studio|
+  papers` link forwards to `guide=methods` (303). The theory script is one constant,
+  `_THEORY_JS`, used by the framed page.
+- The Design family's Guide entry (`servers/workbench-shared/guide_families.py`): five
+  skills; six method steps (requirements, insights, method, Generate, Evaluate and the
+  Revise loop, Ready and the Exp and the Learning loop); Spaces at both levels; folders
+  with element records. Its new optional `explain` field (view → route, params, title,
+  "first") lets a family's own page lead or follow a Guide View; only Design uses it.
+- Guide › Workbench shows the generated UI map, then the UI design drawing
+  `servers/workbench-design/studio/design-workbench-ui.excalidraw`: eight screens in
+  workbench-shared's style, generated by `design-workbench-ui.py` from its drawing pieces.
+- The 13 method cards, `design-methods.md`, `design-theory.md`, `design-papers.md` and the
+  board docs say Guide › Methods where they said the Theory of Design Space.
+
 ## 0.14.13 · 2026-10-02 · The element record is required (JL 261002)
 
 - When the board's Design Goal names its elements, `add_item` appends one rule to every

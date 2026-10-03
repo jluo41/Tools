@@ -1,10 +1,12 @@
 Related papers
 ==============
 
+Shape and check: `skills/0_utils/table-papers/SKILL.md` (the shared Related Paper rule).
+
 The papers behind the Theory of Design: for each design method in
 `design-methods.md`, its classical source, the recent reviews that cover it, and the
-studies that test whether it works. The board level Theory of Design Space shows this
-file as its Papers view, the same for every board.
+studies that test whether it works. Guide › Related Paper shows this file, the same
+for every board.
 
 Each row is one paper. `group` is the design method it supports (or `all methods`, or
 `tests`); `role` is `classic`, `review` or `evidence`; `key` is ★ for the papers the

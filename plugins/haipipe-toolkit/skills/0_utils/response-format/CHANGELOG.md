@@ -1,6 +1,37 @@
 response-format — Changelog
 ===========================
 
+## [0.13.0] — 2026-10-03
+
+- The question moves into the section heading:
+  `## N. [emoji] Short Headline (Q: <address>)`, for example
+  `## 2. ✅ Shown as Steps Now (Q: Session · <question>)`. The reader sees the
+  question before the content. The bold `Question:` footer line is dropped.
+- Address forms are unchanged inside the parentheses: recorded
+  `<owner>/<block>/QNN-<slug>` (linked when its report exists), `Session · ...`,
+  `Proposed · ...`. Summary and Next still has none.
+- ask-questions follows.
+
+## [0.12.0] — 2026-10-03
+
+- One question per section: each ordinary section answers exactly one question;
+  content serving two questions is split into two sections. Several sections may
+  still share one question.
+- The footer line starts with `Question:`, the whole line bold:
+  `Question: Tools/designs/b01_utils/Q01-point_or_restate`,
+  `Question: Session · <question>`, `Question: Proposed · <question>`.
+- ask-questions follows both rules.
+
+## [0.11.0] — 2026-10-03
+
+- Drop the `·` dot padding after section headings: a heading ends at its headline.
+- Shorten the Question footer to one bold address line. Recorded:
+  `<owner>/<block>/QNN-<slug>` (e.g. `Tools/designs/b01_utils/Q01-point_or_restate`),
+  linked when its report exists; no `Related question:` label, no `Belongs to:`
+  line, no repeated question wording. Session and Proposed keep their wording:
+  `Session · <question>`, `Proposed · <question>`.
+- ask-questions points to the new footer form.
+
 ## [0.10.1] — 2026-10-02
 
 - Move the related Question to the bottom of each ordinary section, after its

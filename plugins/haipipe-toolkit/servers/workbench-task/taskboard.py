@@ -268,6 +268,71 @@ def task_snapshot(task: Path, board: Path, root: Path, only=()) -> dict:
             "source_url": _source_url(page, root)}
 
 
+# What a workspace file is, by suffix: data is named and sized, never linked (a raw extract is
+# read through its Task, not opened in a browser); the rest opens in the shared pop-out.
+_WS_KIND = {".parquet": "data", ".csv": "data", ".tsv": "data", ".feather": "data", ".pkl": "data",
+            ".txt": "doc", ".md": "doc", ".json": "doc", ".yaml": "doc", ".yml": "doc",
+            ".excalidraw": "drawing", ".png": "figure", ".svg": "figure", ".jpg": "figure", ".pdf": "figure",
+            ".py": "script"}
+
+
+def _size(n: int) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024 or unit == "GB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
+
+
+def _ws_files(folder: Path, root: Path) -> list[dict]:
+    """The files of one workspace folder and of its studio/ (one level each), by kind."""
+    out = []
+    for base in (folder, folder / "studio"):
+        if not base.is_dir():
+            continue
+        for f in sorted(base.iterdir()):
+            kind = _WS_KIND.get(f.suffix.lower())
+            if not kind or not f.is_file() or f.name.startswith(".") or not _inside(f, root):
+                continue
+            rel = f.relative_to(root).as_posix()
+            url = ("" if kind == "data" else
+                   "/_excalidraw/?" + urlencode({"board": rel}) if kind == "drawing" else
+                   "/" + quote(rel) if static_path_allowed(root, f) else "")
+            out.append({"name": f.relative_to(folder).as_posix(), "kind": kind, "size": _size(f.stat().st_size),
+                        "url": url})
+    return out
+
+
+def workspace_resources(board: Path, root: Path, jobs: list[dict], project: str) -> list[dict]:
+    """The _WorkSpace folders this Block reads or writes, from its own declarations.
+
+    A Job's `src/config-defaults.yaml` names its input: `raw_store` + `cohort` is one raw-store
+    folder, and any other value starting with `_WorkSpace/` that is a folder counts too. Heavy Run
+    output is `_WorkSpace/ProjectResult/<Project>/<Block path below tasks/>`. Read-only."""
+    stores: dict[str, dict] = {}
+
+    def add(folder: Path, role: str, job: str = ""):
+        if not folder.is_dir() or not _inside(folder, root):
+            return
+        rel = folder.relative_to(root).as_posix()
+        entry = stores.setdefault(rel, {"path": rel, "role": role, "jobs": [], "files": _ws_files(folder, root)})
+        if job and job not in entry["jobs"]:
+            entry["jobs"].append(job)
+
+    for job in jobs:
+        defaults = _yaml(board / job["name"] / "src" / "config-defaults.yaml", [], "Job defaults", board)
+        if not isinstance(defaults, dict):
+            continue
+        if isinstance(defaults.get("raw_store"), str) and isinstance(defaults.get("cohort"), str):
+            add(root / defaults["raw_store"] / defaults["cohort"], "input", job["name"])
+        for key, value in defaults.items():
+            if key != "raw_store" and isinstance(value, str) and value.startswith("_WorkSpace/"):
+                add(root / value, "input", job["name"])
+    tasks_dir = next((p for p in board.parents if p.name == "tasks"), None)
+    if tasks_dir is not None and project:
+        add(root / "_WorkSpace" / "ProjectResult" / project / board.relative_to(tasks_dir), "heavy output")
+    return list(stores.values())
+
+
 def task_board_snapshot(board: Path, root: Path, only=()) -> dict:
     board, root = board.resolve(), root.resolve()
     if not _inside(board, root) or not is_task_board(board):
@@ -286,13 +351,14 @@ def task_board_snapshot(board: Path, root: Path, only=()) -> dict:
     runs = [dict(r, task_id=t["id"], task_title=t["title"], job=t["job"], runs_url=t["runs_url"])
             for t in tasks for r in t["runs"]]
     owner = project_owner(board, root)
+    workspace = workspace_resources(board, root, jobs, owner.get("project") or "")
     snap = {"title": title.group(1) if title else board.name, "block": board.name,
             "project": owner["project"], "path": (board.relative_to(root) / "board.md").as_posix(),
             "spine": _field(text, "spine"), "close": _field(text, "close"),
             "source_url": _source_url(board / "board.md", root),
             "board_url": _source_url(board / "board/index.html", root),
             "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
-            "jobs": jobs, "tasks": tasks, "runs": runs,
+            "jobs": jobs, "tasks": tasks, "runs": runs, "workspace": workspace,
             "totals": {"jobs": len(jobs), "tasks": len(tasks),
                        "complete": sum(t["complete"] for t in tasks), "runs": sum(t["total"] for t in tasks),
                        "attention": sum(bool(t["issues"]) for t in tasks)}}
@@ -338,7 +404,7 @@ def _task_html(task: dict) -> str:
 
 def render_task_board(snap: dict, space="task") -> str:
     from live.task_views import render
-    return render(snap, {"runs": "task", "scope": "progress"}.get(space, space))
+    return render(snap, space)
 
 
 class TaskBoardMixin:

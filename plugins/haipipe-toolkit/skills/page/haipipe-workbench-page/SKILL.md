@@ -14,8 +14,8 @@ description: >-
   file, record shape, evidence bundle, delivery tab, folder tab, stale
   workbench, /haipipe-workbench-page.
 metadata:
-  version: "0.94.2"
-  last_updated: "2026-09-29"
+  version: "0.95.0"
+  last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,15 +33,32 @@ survives only in old routes and internal ids.
 
 ```text
 📃 <page title>
-[Draft Space] [Evidence Space] [Delivery Space]
-┌ content, left ───────────────────────────────────────┐ ┌ Runs, right ──────────────┐
-│ Draft     ▸ Structure · View: Table Reading Scratch Revise │ │ the run types of THIS view │
+↑ Board level
+[ band: page kind · state · draft version ]
+[Guide] [Draft] [Evidence] [Delivery]
+┌ one box per Space: tabs, Views, content ──────────────┐ ┌ Runs, right ──────────────┐
+│ Draft     Table Reading Scratch RoadMap-Draw Revise · ▸ Structure │ │ the run types of THIS view │
 │ Evidence  Citations Displays Values Supporting Runs         │ │ + New Run                  │
 │           View: All items · Card · Source                   │ │ one run: name · state ·    │
 │ Delivery  Web LaTeX Word Slides (each with its state)       │ │ Rerun · ▸ Prompt (Copy) ·  │
 │           View: Preview · Artifacts · Checks                │ │ process · results          │
 └──────────────────────────────────────────────────────┘ └──── ▸ folds to a strip ──┘
 ```
+
+**Shared shell (JL 261003).** The page wears the shell every workbench shares
+(`servers/README.md` "Adding a workbench"; `_host/tests/test_workbench_conformance.py`):
+the title, the `↑ Board level` link when the Board has a Board-level workbench
+(no `all boards · board index` line, JL 261003), a band read from the page (`page-type`, `state`, the
+latest draft version), then the Space row with the shared Guide first and plain Space
+names. Each Space's Views and content sit in one box (`.space-split>.space-main`), and
+its Runs panel starts folded to the strip until the person opens it (`panel_html(...,
+folded=True)`; a person's own fold or open is remembered). The shell's colors and tab
+sizes are the Insight workbench's, kept once in `space_views.SPACE_CSS`, which Page and
+Paper share. Guide reads the `page` entry of `workbench-shared/guide_families.py`:
+`description`, the Workbench Table `ref/workbench-table.md`, the papers
+`ref/page-papers.md` (`table-papers`), and RoadMap Draw's **Workbench design**,
+`servers/workbench-page/studio/page-workbench-design.excalidraw`, the design authority
+below (hand-made; Part 0 is the shared shell).
 
 Design authority: `servers/workbench-page/studio/page-workbench-design.excalidraw`.
 Change the drawing and the code together, and check every view in real Chrome at
@@ -130,13 +147,16 @@ sealed Results carry it). People read the type-first short name
 
 ## 📝 Draft Space
 
+The View row comes first, as Guide's (a rule under it, no "View" label; the file
+and section each view reads is its tooltip); the Structure card shows in Table only.
+
 1. **Structure card**: one folded line, `▸ Structure`. Open, it shows the
    Structure Overview (a division by its title, a paragraph by its title, its
    sentences and job, and the question leading on). Click the text to edit it
    as a box; Save (`action: structure`) renames or reorders headings in all
    three sections and saves the `→` lines. A paragraph that holds points cannot
    be dropped or re-addressed here; that is `run-structure` work.
-2. **Reads line**: which file and section each view reads.
+2. **Reads**: which file and section each view reads, as the View row's tooltip.
 3. **Table**: each Bullet's Point (section 1) beside its sentence (section 3). Read-only.
 4. **Reading**: the sentences as prose (section 3). Read-only.
 5. **Scratch**: the person's rough notes (section 2). Clicking a heading opens
@@ -144,7 +164,18 @@ sealed Results carry it). People read the type-first short name
    only); later autosaves change only the notes; `Finish Scratch` asks for a
    short Summary and is the close (`results/`, one log line). It never edits
    Draft prose.
-6. **Revise**: one box per paragraph, pre-filled with its Draft (or the Page's
+6. **RoadMap Draw**: the Section's logic as a tree (JL 261003: "the logic just go to the
+   roadmap draw"), on an editable canvas at a fixed 640px height: the claim on top, each
+   box splitting into the reasons it rests on, the Bullets as leaves (role and gist;
+   solid green when their Evidence Items are verified, dashed orange while one waits).
+   Every Bullet starts on one shared row; a Bullet that supports another sits one row
+   below it (JL 261003).
+   The drawing `studio/<stem>-roadmap.excalidraw` is the source of the logic: an agent
+   draws its first version (Runs › Draw the logic; skill `0_utils/draw-logic-tree`, which
+   owns the tree's rules and its `--check-scene`), then the person edits it here and every
+   stroke saves through Studio. It never replaces an existing RoadMap without `--force`.
+   With no drawing the View says so; rendering writes nothing.
+7. **Revise**: one box per paragraph, pre-filled with its Draft (or the Page's
    own sentences where no Draft exists), one sentence per line, a blank line
    between points. `Save` or Cmd+Enter (`action: revise`) writes the changed
    Draft fields only. The first Save on a paragraph opens its Revise run,

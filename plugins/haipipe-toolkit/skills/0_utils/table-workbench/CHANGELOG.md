@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 · 2026-10-03 · Guide rows need no card
+
+- `--check --cards` skips rows whose Space is Guide: Guide's Runs panel (workbench-shared) reads its run types from the table, so they never have a run card (asked by the Paper workbench session; its 2 Guide rows were the only findings).
+
+## 0.2.0 · 2026-10-02 · Folder column (JL 261002)
+
+- Optional eighth column Folder: where the run writes, or none. `read_table` accepts the seven
+  columns with or without it; `--check` flags an empty Folder cell; blocks print `writes`.
+
 ## 0.1.0 · 2026-10-01 · Cards check (JL 261001)
 
 - `--check --cards <run-cards.md>`: every run type of the table is one card with the same

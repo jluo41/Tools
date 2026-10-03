@@ -13,7 +13,7 @@ The two Spaces
 | Space (tab, `space=`) | Reads | Shows | Links down to |
 | --- | --- | --- | --- |
 | Design Tasks Space (`tasks`) | the Brief's design task list (`0-BR-brief/BR00-brief/BR00-brief.md`, the table with `audience`, `job`, `venue`, `designs`, `folder`, `insight` columns); each `2-Design/*/` folder's register, and its independent Verify results for the counts and the csv | one row per task: design task (full name `<job> <venue> for <who>`, never its line id) · designs · folder · state; a **New Design Folder** button on a row with no folder; folders no design task lists; "every design task keeps" (the shared rules); **↓ Download all designs · N · csv** | the task name opens the folder's Page Design Space; the folder cell opens its Design Goal Space |
-| Theory of Design Space (`theory`) | `skills/design/haipipe-workbench-design/ref/design-theory.md`, then the board's own `design-theory.md` beside `board.md` | the general theory of design, then the board's domain knowledge, both rendered from ASCII docs | none |
+| Guide › Method and Guide › Related Paper (was the Theory of Design Space, `theory`; old links forward) | `skills/design/haipipe-workbench-design/ref/design-theory.md`, then the board's own `design-theory.md` beside `board.md` | the general theory of design, then the board's domain knowledge, both rendered from ASCII docs | none |
 
 Header: the board title and "Board level" only. A records-check warning
 is added only when the check has findings across folders.

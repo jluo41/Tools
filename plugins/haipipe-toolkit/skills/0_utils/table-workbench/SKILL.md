@@ -12,7 +12,7 @@ description: >-
   /table-workbench.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.0"
+  version: "0.2.1"
   last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md
 ---
@@ -31,7 +31,12 @@ Run type    the button in that Space's Runs panel
 Agent       who does the run: an agent, never a person
 Skill       how the agent does it: one small skill for that view
 Person signs  the decision the person owns on that run, or none
+Folder      optional: where the run writes, or none (a verdict only)
 ```
+
+**Folder** is an optional eighth column. A table has it on every row or on none; when
+it is there, `--check` flags an empty cell, `--format blocks` prints a `writes` line, and
+the shared Guide's RoadMap Draw shows it beside Agent and Skill.
 
 The skill is the method; the agent is the actor. Every run names both. The
 person never does a run; the person signs what is theirs (an aim, a rule, a
@@ -73,7 +78,7 @@ instance is the Design workbench:
 When the workbench's Runs panel reads a run-cards file, that file and this table
 must agree: each `🔘 BUTTON` is one row's Run type, its `🤖 AGENT`, `🧩 SKILL` and
 `✍️ SIGNS` lines are that row's Agent, Skill and Person signs. `--check --cards`
-checks both directions.
+checks both directions. Guide rows have no card: Guide's Runs panel reads them from this table.
 
 
 Render and check

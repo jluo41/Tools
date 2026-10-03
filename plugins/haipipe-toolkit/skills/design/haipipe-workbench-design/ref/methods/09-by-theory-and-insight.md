@@ -1,12 +1,12 @@
 By theory and insight
 =====================
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by theory and insight`. A claim names its source in brackets;
-"(ours)" marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by theory and
+insight`. A claim names its source in brackets; "(ours)" marks the workbench's own
+judgment.
 
-family: With both insights: abduction-1 on two hows that must agree; our own data and
+family: Both Insights: abduction-1 on two hows that must agree; our own data and
   the literature together
 reasoning: abduction-1 on two hows: requirements + a signed insight (what worked here) +
   a theory (why it worked) → a design both support; a disagreement goes to the next Exp

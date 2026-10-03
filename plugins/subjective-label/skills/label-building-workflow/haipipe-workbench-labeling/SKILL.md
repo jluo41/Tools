@@ -11,8 +11,8 @@ description: >-
   Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
-  version: "0.23.16"
-  last_updated: "2026-09-29"
+  version: "0.25.0"
+  last_updated: "2026-10-03"
 ---
 
 # /haipipe-workbench-labeling · one job, one folder, one operated surface
@@ -36,21 +36,30 @@ one page folder
 ├── runs/                        full `run-labeling-...` Tickets, beside labeling/
 └── results/                     one folder per Ticket, same name
 
-🏷 Board level · GET /_board/labeling-board?path=<board.md>
+🏷 Board level · <DOMAIN>/w/<board-slug>   (→ /_board/labeling-board?path=<board.md>)
+shell      title · band (jobs, waiting, next) · Guide · Jobs
 all jobs   one card per Page that owns labeling/ · jobs that wait for you first
-           click a card → the Page level below · "← All labeling jobs" comes back
+           click a card → the Page level below · "all labeling jobs" comes back
 empty      S-Label-* Pages without a job appear under "Pages before Contract"
            and link to their Page-level Preparation View, without allocating a Run;
            flat Board sources first ask for a canonical Page folder
 
-🏷 Page level · the title, the Space tabs, then one Space
+🏷 Page level · <DOMAIN>/w/<board-slug>/<page-id>/labeling
+shell      title · all labeling jobs
+           band: phase · round (n of m labeled) · guideline · HOLD
+           Guide first, then the four Spaces; each Space's View tabs and content in one box
+Guide      Description · Method · RoadMap Draw · Related Paper (shared Guide, `labeling` entry)
+each Space a brief at the top (label over value), then its View tabs; every View ends with
+           "Steps in this view": its Run types in step order, what each writes, its state here
+           (ref/view-structure.md has every View block by block)
 Data       Preparation · Contract · Embedding
 Labeling   Definition · Rounds · Guideline
 Quality    Test · Evaluation · Audit
 Delivery   Handoff · Scan · Final labels
-Runs       the right side of every Space, at every width: the current view's Run types
-           in step order · the selected Run (its Run Type's declared Skills, Resume/Rerun, ▸ Prompt +
-           Copy, Running process, Results); ▸/◂ folds it to a strip
+Runs       the shared Runs panel (haipipe-toolkit live.runs_panel) on the right of every
+           Space, folded to a "◂ Runs" strip until opened: the current view's Run types in
+           step order · the selected Run (its Run Type's declared Skills, Resume/Rerun,
+           ▸ Prompt + Copy, Running process, Results)
 drawers    ?drawer=workflow (Phases · SOP · Workflow map) · ?drawer=allruns; no button
 actions    POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
            · build_embedding (catalog models only, runs in the background)
@@ -111,8 +120,8 @@ adapter (`_board_pages`) and nothing else of the Board grammar, and the
 | Page | any real job Page | the four Spaces and their Runs panels; label definitions and Confirm meaning in `Labeling → Definition`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
 
 A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
-the Page level in the same pane. The Page header's `← All labeling jobs` link
-goes back to `/_board/labeling-board?path=<board.md>`. Cards sort by what waits
+the Page level in the same pane. The `all labeling jobs` link under the Page's
+title goes back to `/_board/labeling-board?path=<board.md>`. Cards sort by what waits
 for the human: labeling in progress, then meaning confirmation, then a round to
 start, then judged, repair, and read-only (HOLD) jobs. The Board level reads
 each job through the same view model as the Page level (`_view_model`,
@@ -153,10 +162,14 @@ Preparation is a Data view over source-owned Corpus Runs; it can appear before
 `labeling/config.yaml` exists. `labeling/preparation-owner.yaml` attaches its
 source early so each completed Run appears in the panel. Its accepted package
 is later linked through `labeling/preparation-ref.yaml`, while private candidates and the protected
-group frame remain with the source owner. There is no Run Space and no page bar
-(v3, 260927, as the Page workbench): the page is its title, the Space tabs,
-then one Space. Each Space is its content
-on the left and its Runs panel on the right at every width; the panel stays in
+group frame remain with the source owner. There is no Run Space and no page bar.
+The page wears the shell every workbench shares (haipipe-toolkit
+`servers/README.md` "Adding a workbench"): the title, an `all labeling jobs`
+link back to the Board level (no `all boards · board index` line), a band that says where the job stands (phase, the
+open round and how many of its items are labeled, the guideline version, HOLD; never
+item text), then the Space row with the shared Guide first, in the Insight
+workbench's colors and tab sizes. Each Space is one box holding its View tabs and
+content, with the shared Runs panel on its right at every width; the panel stays in
 view while the page scrolls. Two drawers have no button and open only from the
 URL: `?drawer=workflow` shows the Phases card (P0-P5 as compatibility capability
 tags), the SOP and the Workflow map, both projected from
@@ -174,9 +187,37 @@ its state, a `Run Type skills` line naming the declared set (from
 `## Run Type skills` in `ref/ref-space-mapping.md`), `Resume` (an open Run,
 same Ticket) or `Rerun` (a closed one,
 new full `run-...` name), a folded `▸ Prompt` whose `Copy` works while folded, Running process
-and Results. `+ New Run` shows an open prompt for the selected type. Every button
-only copies a prompt; none starts a Run. `▸/◂` folds the panel to a thin strip,
+and Results. `+ New Run` shows an open prompt for the selected type, and is absent
+while that type has no prompt (its step is not next, a gate is not passed, or the job
+is on HOLD). Every button only copies a prompt; none starts a Run. The panel is the
+shared one every workbench uses; Labeling passes its own Run cards to it
+(`panel_markup(..., card=)`) so Resume and Rerun stay gated by HOLD, G0 and the
+round's state. It starts folded to a `◂ Runs` strip; `▸/◂` opens or folds it,
 remembered per Space in this browser.
+
+## 🧭 Guide · how the family works
+
+Guide is the first tab of both levels, mounted by the shared `mount_guide()` from
+the `labeling` entry of haipipe-toolkit `servers/workbench-shared/guide_families.py`.
+Its four Views read only family files, never a job:
+
+```text
+Description    one paragraph: what the workbench does
+Method         the steps: prepare, set up, confirm meanings (G0), label in rounds,
+               check against the held-back test, deliver
+RoadMap Draw   "Workbench design": servers/workbench-labeling/studio/labeling-workbench-ui.excalidraw,
+               generated by labeling-workbench-ui.py beside it (never edited by hand)
+               + the Workbench Table, ref/workbench-table.md
+Related Paper  ref/labeling-papers.md, checked by table-papers
+```
+
+The Workbench Table (Level · Space · View · Run type · Agent · Skill · Person
+signs) is generated by `ref/make_workbench_table.py` from
+`label-building/ref/ref-space-mapping.md`: the Space roster, the Run types and
+their words and View, the declared Skills, and `## Run Type agents` (who does each
+Run type and what the person signs). Change a row there, rerun the script, then run
+table-workbench's `render_workbench_table.py --check`. Adding a paper is a
+Discovery run; the table and its check belong to table-papers.
 
 The content and its Runs pick each other (v4, as the Page workbench's Card ↔
 Runs): showing a build in `Data → Embedding` selects that build's
@@ -471,4 +512,9 @@ second job root, and no write lands outside the folded lane.
 - `../../label-building-workflow/SKILL.md` · P0 fence/create/discuss/confirm and P1
   CARD, PREPARE, JUDGE order, including the events file
 - `../../subjective-label-workflow/SKILL.md` · P0-P5, G0-G6, receipt chain
+- `ref/view-structure.md` · every View block by block: what it reads and shows today, and what would complete it
+- `ref/workbench-table.md` · the Workbench Table, generated by `ref/make_workbench_table.py`
+- `ref/labeling-papers.md` · Guide › Related Paper, checked by table-papers
+- `servers/workbench-labeling/studio/labeling-workbench-ui.py` · the Workbench design drawing;
+  `labeling-shared-rules.md` beside it records how the shared rules were met
 - the Board-engine paths in the implementation list above

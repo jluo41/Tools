@@ -42,6 +42,7 @@ Prototype-Insight-<Topic>/
 ├── 2-Information/I01-<name>/ …
 ├── 3-Knowledge/K01-<name>/ …
 ├── 4-Wisdom/W01-<name>/            the question file only, no script
+├── studio/                       optional: the Prototype's drawings (the workbench's Prototype › RoadMap Draw)
 └── src/                        functions shared across rungs, when two rungs need one
 ```
 
@@ -143,6 +144,26 @@ one rung below (the same rung only from a cross question); a judge reads live
 needs. A need is never edited once a result is bound to it: it gets
 `retired: <reason>` and a new id.
 
+**A signed change** (the question review proposes, a person signs) is applied without
+editing any carried word in place:
+
+```yaml
+# a need replaced: the old need stays, a successor need gets the next id
+  E3: {kind: compute, what: …, retired: "split into D05 (signed ✅ 261002)"}
+  E5: {kind: compute, what: …, supersedes: E3}
+# a question replaced (split, merge, move, reworded ask): the old file stays as history
+retired: moved to Information as I19 (signed ✅ 261002)
+superseded_by: [I19]                 # [] when nothing replaces it
+# the new question names where it came from
+source: {from: [D04], signed: ✅ 261002, review: <the review file>}
+changes:                             # every signed change to a question, in order
+  - {signed: ✅ 261002, change: <the signed line, as worded>}
+```
+
+A retired question is asked nowhere, has no live needs, keeps no scripts, and is not on
+the workbench; its ids are never reused. New and changed needs start `agreed: ⬜` until an
+agent that did not draft them agrees them.
+
 **What the check does not do.** It never adds a need to cover a word of the
 ask, and it never rewords an ask. Whether a question is good is the question
 review's (`haipipe-insight-question` GI1, Q1-Q7): the check only flags
@@ -197,7 +218,7 @@ questions' meaning. Carry it, never redraft it:
 SPEC = "<L><NN>"                  # the question it answers; the runner checks it
 COLUMNS = ["<col>", …]            # the extract columns it reads, or "all" (the filter's are added)
 
-def run(df, ctx):                 # cross questions get ctx.partitions = {name: df}
+def run(df, ctx):                 # cross questions get ctx.partitions = {name: df} and ctx.full (the whole extract)
     ...
     return {"<file>.csv": table, …}
 ```
@@ -209,7 +230,8 @@ whether a column is constant in this partition, and `ctx.beside(<file>)` for a
 file the extract's preparation wrote beside it (its manifest, its data
 dictionary); `ctx.extract` is the extract's path. `ctx.wilson`, `ctx.holm` and
 `ctx.thresholds` (0-Meta/thresholds.yaml) are provided. Functions two scripts
-share sit in the Prototype's `src/` and are imported by name.
+share sit in the Prototype's `src/` (or a rung's `src/`) and are imported by name; every rung's `src/` is
+importable, the question's own rung first, and the receipt follows every module a script imports.
 
 ## The Instance
 
@@ -283,7 +305,10 @@ cell whose scripts differ from the Prototype's with ⚑.
 ```text
 1 resolve   question folder → Instance → Prototype spec; the partition from the ticket's name
 2 receipt   results/<partition>/runtime.yaml: running · ticket · extract · sha256 of the spec,
-            the Instance scripts, the Prototype scripts, and 0-Meta + src/; provenance/ copies
+            the Instance scripts, the Prototype scripts, and the shared files the run rests on
+            (partitions.md; only the src/ modules its scripts import, followed through their imports;
+            only the thresholds.yaml sections its code names, plus power for a powered question);
+            provenance/ copies
 3 load      COLUMNS + the filter's columns, from the extract board.md names
 4 filter    the partition's where (cross: every listed partition)
 5 power     partition_power.csv, from n and the base rate, before any contrast;
@@ -308,7 +333,7 @@ to `_WorkSpace/ProjectResult/<Project>/insights/<Instance>/<rung>/<question>/<pa
 ✅ <YYMMDD>     the page's latest CHECK closed CLOSE after this partition's run ended,
                results-read: is not older, and every need is cited
 STALE          the spec, the Instance scripts, 0-Meta's partitions or thresholds, or a
-               src/ changed since the run (sha256)
+               src/ module the scripts import changed since the run (sha256)
 ⚑ (suffix)     the Instance scripts differ from the Prototype's
 ```
 

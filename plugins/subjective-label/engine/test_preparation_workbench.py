@@ -13,7 +13,12 @@ import test_definition_discussion as discussion_fixtures
 import yaml
 
 PLUGIN = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location(
+# The rendered page mounts the shared Guide and Runs panel from the shared host's `live`
+# namespace (servers/README.md declares that dependency); use it when it is checked out beside.
+HOST = PLUGIN.parent / "haipipe-toolkit" / "servers" / "_host"
+if (HOST / "host_paths.py").is_file() and str(HOST) not in sys.path:
+    sys.path.insert(0, str(HOST))
+SPEC =importlib.util.spec_from_file_location(
     "subjective_label_workbench_preparation_test",
     PLUGIN / "servers" / "workbench-labeling" / "labeling.py",
 )

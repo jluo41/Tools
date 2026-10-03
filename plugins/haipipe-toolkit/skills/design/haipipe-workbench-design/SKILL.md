@@ -2,19 +2,20 @@
 name: haipipe-workbench-design
 description: >-
   The Design workbench. Page level, one Design Folder (one design task), three
-  Spaces: Design Goal states the task once (venue, who, their job, how many designs,
+  Spaces: Design Task states the task once (venue, who, their job, how many designs,
   the rules every design keeps); Design shows the task above one card per
   design (Design · Rationale · Evaluation); Delivery is every
-  design that passed Verify, word for word, and the task's csv. Board level, two
-  Spaces: Design Tasks lists the tasks, Theory of Design shows how to design, the
-  design methods and the papers behind them. Every Space has the shared Runs panel (run types,
+  design that passed Verify, word for word, and the task's csv. Board level, one
+  working Space, Design Tasks, which lists the tasks. The shared Guide (both levels)
+  explains the family: how to design and the design methods live in Guide › Method,
+  the papers behind them in Guide › Related Paper. Every working Space has the shared Runs panel (run types,
   prompts to copy, each run's result). It writes only through its own buttons
   (Commission release/hold, queued Generate and Verify run records, a draft
   request); every other write routes to the owning Design skills. Trigger: design
   workbench, design tab, design items, design folder, design tasks, theory of
   design, /haipipe-workbench-design.
 metadata:
-  version: "0.14.13"
+  version: "0.14.18"
   last_updated: "2026-09-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -31,8 +32,8 @@ action is routed.
 
 This skill is the **Page level**: one Design Folder. The **Board level**,
 `haipipe-workbench-design/ref/design-board.md` (`/_board/design-board`), stacks every folder's
-snapshot one grain up in two Spaces: Design Tasks (every design task with its
-designs, folder and state) and Theory of Design. Each task row links down to its
+snapshot one grain up in one working Space, Design Tasks (every design task with its
+designs, folder and state), beside the shared Guide. Each task row links down to its
 page here; this page's header links back up. Nothing is stored twice.
 
 Folder names say the goal, `Design-NN-<audience>-<job>-<venue>`: each part is
@@ -98,23 +99,37 @@ designs; comparing methods takes one page per method on the same task.
 
 ```text
 🎨 Design · page level (one design task)
-├── Design Goal Space   the design task, once: Aim · Venue · Rules · Resources · Leave out
-├── Design Space        the task block, the element matrix, then one card per design:
+├── Design Task         the design task, once, in four views: Aim · Requirements · Resources · Leave out
+├── Design Item        the task block, the element matrix, then one card per design:
 │                       Design · Rationale · Evaluation;
 │                       "Insight pages · N" and "Runs · N" fold inside each card
-└── Delivery Space      every design that passed Verify, word for word · this task's csv
+└── Delivery           every design that passed Verify, word for word · this task's csv
 
 🎨 Design · board level (every design task)
-├── Design Tasks Space      one row per design task · the rules every task keeps · the board csv
-└── Theory of Design Space  four views: Design theory · Design methods · Methods studio · Papers
+├── Guide (shared)          Description · Method (six steps, then one page: the theory, the
+│                           method cards, the methods drawing) · RoadMap Draw (skills, method, workbench, folders in one
+│                           drawing) · Related Paper (the papers, PDF and all)
+└── Design Tasks Space      one row per design task · the rules every task keeps · the board csv
 ```
 
 - Page level: **Design Goal · Design · Delivery** (input, process, output). The URL keys
   are `goal`, `design`, `delivery`. Old `space=insight` and `space=run` links open Design.
-- Board level: **Design Tasks** (`tasks`) and **Theory of Design** (`theory`). Old
-  `space=goal|design|delivery|run` board links open Design Tasks.
+- Board level: **Design Tasks** (`tasks`), beside the shared **Guide** (JL 261002: "follow
+  the design here, workbench-shared"). The theory of design explains the family, so it is
+  Guide › Method; an old `space=theory|methods|studio` link forwards to `guide=method`,
+  and `space=papers` to `guide=related-paper`. Old `space=goal|design|delivery|run` board links open Design Tasks.
+- Guide is mounted at both levels by `workbench-shared`; the Design family's entry in
+  `servers/workbench-shared/guide_families.py` gives its skills, method steps, Spaces,
+  folders, a `description`, and three framed pages (`explain`): Guide › Method gives six steps,
+  then frames one page (`/_board/design-board?embed=theory&view=method&views=method`):
+  `design-theory.md` (sections 1 to 9), the method cards (`design-methods.md`, 10 to 12)
+  and the methods drawing, Guide › Related Paper frames its Papers view
+  alone (`views=papers`), and Guide › RoadMap Draw frames the one drawing of skills,
+  method, workbench and folders `servers/workbench-design/studio/design-workbench-ui.excalidraw` (generated by
+  `design-workbench-ui.py` from workbench-shared's drawing pieces).
 - Every Space at both levels has the **Runs panel** on the right (see below).
-- The drawing is `servers/workbench-design/studio/design-board-workbench-design.excalidraw`.
+- The UI design drawing is `servers/workbench-design/studio/design-workbench-ui.excalidraw`;
+  the earlier `design-board-workbench-design.excalidraw` stays as its predecessor.
 - The Workbench Table (Space · View · Run type · Agent · Skill · Person signs) is
   `ref/workbench-table.md`, in the `table-workbench` shape. It is the target the views,
   the run-cards file and the small design skills follow.
@@ -322,14 +337,14 @@ only when that candidate has no Result-local manifest. A picture of an older dra
 never shown for a newer one. An acceptance rule with the word render, rendered or
 rendering and no quoted phrase compiles to a `visual` check.
 
-**Board level: Design Tasks and Theory of Design**
+**Board level: Design Tasks, and the theory in Guide › Method**
 
 **Design Tasks Space** is one table, design task · designs · folder · state, each task
 linking to its page level. Below it are the "every design task keeps" rules and
 **↓ Download all designs** (one csv). New lines and new folders are started from the
 Runs panel; the page has no form for them.
 
-**Theory of Design Space** has four views, one shown at a time (URL `view=`):
+**The theory page** (`/_board/design-board?embed=theory&view=`, with `views=` naming a subset; Guide › Method frames the first three, Guide › Related Paper the last) has four views, one shown at a time:
 **Design theory** renders `ref/design-theory.md` (how to design, the same for every
 board); **Design methods** renders `ref/design-methods.md` (three inputs, Design and the
 Exp: design requirements, internal insights and external insights go into Design, and the
@@ -338,7 +353,7 @@ until it passes) and the Learning loop through the Exp (its data becomes the nex
 insights), after Hevner 2007's design and relevance cycles; the tests T0 to T4, what the evidence says, the map of O'Cathain's eight
 categories) and draws its index table as thirteen **design method cards**,
 one file each in `ref/methods/`, grouped into six families by where the design's how
-comes from (Requirements only, With external insights, With internal insights, With both
+comes from (Goal Only, External Insights, Internal Insights, With both
 insights, Making internal insights now, Making internal insights next). Closed, a card is the method's
 name, whether any study tests it (counted from its `evidence` papers), its move, its
 reasoning (abduction, induction, deduction), what it reads, each input coloured by kind,

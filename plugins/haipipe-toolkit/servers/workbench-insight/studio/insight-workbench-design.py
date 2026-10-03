@@ -11,6 +11,11 @@ Space as the workbench shows it, content left, Runs panel right. Part 3: Insight
 Questions, one High/Low table per partition: logic left (the questions asked at
 D, I, K and W), work right (the runs that answer them). Part 4: one dataset, one
 workbench; what changes; what each Space reads.
+
+The Parts are named Excalidraw frames, and the shared Guide opens one per View, view only:
+"Spaces, runs and skills" (Part 1) in Skill set, "The workbench" (Parts 2-3) in Workbench,
+"Where things live" (Parts 4-5) in Folder map, "How a question is asked" in Methods
+(workbench-shared guide_families.py, family insight, explain). A frame name is an address.
 """
 import json
 import random
@@ -96,7 +101,7 @@ def chips(key, x, y, labels, sel, size=16, h=40):
 
 
 FW, FH, GAP = 1176, 820, 32
-X = [48 + i * (FW + GAP) for i in range(4)]
+X = [48 + i * (FW + GAP) for i in range(5)]     # Part 2 has five Spaces; the other Parts use four columns
 PARTS = ["Full", "Young male", "Young female", "Older", "Midlife male", "Midlife female", "Cross"]
 
 # ---- title and the one dataset -------------------------------------------------
@@ -109,11 +114,12 @@ text("ds-text", 72, 128,
      "Dataset  SMSR2v1 · 20250616_SMSR2v1_min_2025-07-03 · one row = one sent invitation · 444,691 rows · "
      "122 columns · 13 messages · 2025-06-16 → 2025-07-03", 19, BLUE)
 text("ds-rule", 72, 154,
-     "Every Space reads this one extract. Partitions are cuts of it. A new extract is a new workbench "
-     "(SMSR3Full → A03_SMSR3Full-InsightBoard).", 15, MUTED)
+     "Every Space reads this one extract. Partitions are cuts of it. A new extract is a new Instance "
+     "of the same Prototype (Instance-Insight-SMSR3Full).", 15, MUTED)
 
 # ---- part 1 · Space → sub-space → runs in order → skill ----------------------
 P1 = 222
+F1 = len(E)
 text("p1-title", 48, P1, "1 · Spaces, sub-spaces, runs in order, and the skill of each run", 28)
 
 # Part 1 is drawn from the Workbench Table, never kept by hand beside it
@@ -127,6 +133,8 @@ from render_workbench_table import read_table  # noqa: E402
 
 TABLE = _PLUGIN / "skills" / "insight" / "haipipe-workbench-insight" / "ref" / "workbench-table.md"
 SPACE_TEXT = {   # what each Space asks, and what it hands on: prose the table does not hold
+    "Prototype": ("What is asked, how, and by which code?",
+                  "hands on: questions and scripts → this board's runs (JL 261003: its own Space)"),
     "Scope": ("Which data, which cuts, which questions?", "hands on: the questions → Insight › Questions"),
     "Insight": ("What does each question need, and what answers it?",
                 "tabs Full · Young male · … · Cross pick the partition · hands on: Wisdom answers → Delivery"),
@@ -138,13 +146,14 @@ SPACE_TEXT = {   # what each Space asks, and what it hands on: prose the table d
 def _map_from_table(rows):
     spaces = []
     for r in rows:
-        if r["Level"] != "board":
+        if r["Level"] != "board" or r["Space"] == "Guide":    # Guide is shared: its runs are named below
             continue
         if not spaces or spaces[-1][0] != r["Space"]:
             spaces.append((r["Space"], []))
         views = spaces[-1][1]
-        if not views or views[-1][0] != r["View"]:
-            views.append((r["View"], []))
+        view = "D · I · K · W" if r["View"].count(" · ") == 3 else r["View"]   # the four rung Views share their runs
+        if not views or views[-1][0] != view:
+            views.append((view, []))
         views[-1][1].append(r)
     out = []
     for space, views in spaces:
@@ -166,6 +175,8 @@ def _map_from_table(rows):
 
 
 MAP = _map_from_table(read_table(TABLE))
+GUIDE_RUNS = [r for r in read_table(TABLE) if r["Level"] == "board" and r["Space"] == "Guide"
+              and r["Run type"] != "none"]
 
 
 def _height(subs):
@@ -177,8 +188,9 @@ def _height(subs):
 
 
 BH = max(_height(subs) for _t, _a, subs, _h in MAP) + 76
+XM = [48 + i * (FW + GAP) for i in range(len(MAP))]     # Part 1 has one column per working Space
 for i, (title, asks, subs, hands) in enumerate(MAP):
-    x0, y0 = X[i], P1 + 56
+    x0, y0 = XM[i], P1 + 56
     rect(f"m{i}-box", x0, y0, FW, BH)
     text(f"m{i}-title", x0 + 24, y0 + 22, title, 28)
     text(f"m{i}-asks", x0 + 24, y0 + 64, asks, 19, BLUE)
@@ -198,15 +210,18 @@ for i, (title, asks, subs, hands) in enumerate(MAP):
     text(f"m{i}-hands", x0 + 24, y0 + BH - 52, hands, 16, MUTED)
 
 mid = P1 + 56 + 60
-for i in range(3):
-    arrow(f"m-link{i}", X[i] + FW + 2, mid, [[0, 0], [GAP - 4, 0]], BLUE)
+for i in range(len(MAP) - 1):
+    arrow(f"m-link{i}", XM[i] + FW + 2, mid, [[0, 0], [GAP - 4, 0]], BLUE)
 text("m-rules", 48, P1 + 56 + BH + 28,
      "Drawn from haipipe-workbench-insight/ref/workbench-table.md. The number is the order inside a Space; · marks a view with no run; * marks a planned skill or agent. "
-     "A question is written first; a run answers it, and the run's config names that question (answers: [QI2, …]).\n"
-     "Each run names its skill. Creating a config never starts a run: the person presses Run.", 17)
+     "A question is written first; it owns its script, and a run is that question on one partition (runs/<partition>.sh).\n"
+     "Each run names its skill. Writing a script never starts a run: the person presses Run.\n"
+     "Guide, shared by every workbench, holds the method and the papers: "
+     + " · ".join(f'{r["View"]} → {r["Run type"]} ({r["Skill"].replace(" (new)", "*")})' for r in GUIDE_RUNS) + ".", 17)
 
 # ---- part 2 · each Space as the workbench shows it ----------------------------
 P2 = P1 + 56 + BH + 130
+F2 = len(E)
 text("p2-title", 48, P2, "2 · Each Space: content on the left, its Runs panel on the right", 28)
 Y0 = P2 + 56
 
@@ -254,6 +269,24 @@ def kv(key, x, y, rows, lw=150, w=516, size=13):
         text(f"{key}-vt{n}", x + lw + 8, y + n * h + 7, v, size)
 
 
+def prototype_content(key, cx, cy):
+    """Prototype › Knowledge: one folding row per question (JL 261003: the Prototype gets its own Space)."""
+    text(f"{key}-q", cx + 18, cy + 18, "What must be established as holding, with its rivals named?", 15)
+    rows = [("K01", "Psychological Triggers", "which triggers work here?", "all partitions · 4 needs"),
+            ("K02", "Segmentation", "should messages be segmented?", "full · 2 needs"),
+            ("K03", "Communication Timing", "when should a message be sent?", "all partitions · 3 needs"),
+            ("K04", "Medication Type", "differ by medication type?", "all partitions · 5 needs"),
+            ("K05", "Optimization Framework", "what framework should optimize?", "full · 3 needs")]
+    for n, (qid, name, q, tags) in enumerate(rows):
+        y = cy + 56 + n * 62
+        rect(f"{key}-row{n}", cx + 18, y, 516, 52)
+        text(f"{key}-id{n}", cx + 30, y + 8, qid, 14, BLUE, mono=True)
+        text(f"{key}-name{n}", cx + 74, y + 7, name, 15)
+        text(f"{key}-qq{n}", cx + 74, y + 29, q, 12, MUTED)
+        text(f"{key}-tags{n}", cx + 300, y + 8, tags + "\n✅ script in sync · ✅ agreed", 12, MUTED)
+    text(f"{key}-retired", cx + 18, cy + 372, "▸ Retired · 2 (K07 → K17, K18 · K13 → K04, K02)", 13, MUTED)
+
+
 def scope_content(key, cx, cy):
     kv(f"{key}-kv", cx + 18, cy + 24, [
         ("Extract", "20250616_SMSR2v1_min_2025-07-03"),
@@ -264,19 +297,31 @@ def scope_content(key, cx, cy):
         ("Outcomes", "messaged → clicked → authenticated"),
         ("Cut of", "SMSR2Full (751,110 rows, to 2025-07-17)"),
         ("Partitions", "Full + 5 cuts · Cross compares them"),
-        ("Results", "in each page folder: results/<ticket>/"),
+        ("Results", "in each question folder: results/<partition>/"),
         ("Files", "manifest.json · data_dictionary.csv"),
     ])
 
 
-space("scope", 0, "Scope Space", ["Dataset", "Partitions", "Methods", "Questions"], 0, [], None, scope_content,
-      ["1 Prepare extract", "2 Ask", "3 Method · paper", "+ New Run"], 1,
+space("prototype", 1, "Prototype Space", ["Meta", "Data", "Information", "Knowledge", "Wisdom", "RoadMap Draw"], 3, [], None,
+      prototype_content,
+      ["1 Carry a board", "2 Register a cut", "3 Review questions", "4 Plan evidence", "5 Write script",
+       "6 Review script"], 4,
+      {"name": "run-script-1003-k02-segmentation", "skill": "haipipe-insight",
+       "prompt": "Write the Prototype script for K02\nfrom its live needs: gain.csv with\nthe columns its spec names.",
+       "process": "Done · reviewed by another agent",
+       "results": "3-Knowledge/K02-segmentation/scripts/"},
+      "Meta → the summary, the partitions in words, the shared settings, the design files\n"
+      "Data · Information · Knowledge · Wisdom → one folding row per question; retired ones folded\n"
+      "The Prototype holds the design and no data; every board of this kind reads through it.")
+
+
+space("scope", 0, "Scope Space", ["Dataset", "Partitions", "Questions"], 0, [], None, scope_content,
+      ["1 Prepare extract", "2 Ask", "+ New Run"], 1,
       {"name": "run-ask-1001-message-order", "skill": "haipipe-insight-question",
        "prompt": "Register this question: does the\norder of messages matter? Pick the\nlevel and partitions; do not answer.",
        "process": "Done · Knowledge question 17,\nFull only",
        "results": "MT03 · one new row"},
       "Dataset → 1 Prepare extract · Questions → 2 Ask\n"
-      "Methods → Discovery methods · Design methods · Methods studio · Papers → 3 Add a method or a paper\n"
       "Partitions: Full, Young male, Young female, Older, Midlife male, Midlife female, Cross.\n"
       "No dataset switcher: this workbench has one extract.")
 
@@ -301,10 +346,10 @@ def insight_content(key, cx, cy):
          "▸ Wisdom        │                │", 12, INK, mono=True)
 
 
-space("insight", 1, "Insight Space", ["Questions"], 0, PARTS, 0, insight_content,
+space("insight", 2, "Insight Space", PARTS, 0, [], None, insight_content,
       ["3 Data runs · 4", "4 Information runs · 1", "5 Report", "6 Pool or split", "+ New Run"], 1,
       {"name": "03_funnel_rates · smsr2v1", "skill": "haipipe-task",
-       "prompt": "/haipipe-task run D02_extract_profile/\n03_funnel_rates with configs/smsr2v1;\nJL presses Run.",
+       "prompt": "run 2-Information/I02-variant-\nperformance/runs/full.sh;\nJL presses Run.",
        "process": "Done · status ok · answers\nInformation questions 1-6, 15-18",
        "results": "<page>/results/\nrun_b51j21t01r01_full_funnel_rates/"},
       "Questions → 3 Data runs · 4 Information runs · 5 Report · 6 Pool or split (Cross)\n"
@@ -327,7 +372,7 @@ def check_content(key, cx, cy):
          "the owner closes it, never the screen.", 13, MUTED)
 
 
-space("check", 2, "Check Space", ["Gates", "Checks"], 0, [], None, check_content,
+space("check", 3, "Check Space", ["Gates", "Checks", "Runtime"], 0, [], None, check_content,
       ["1 Mechanical check", "2 Answer review", "+ New Run"], 0,
       {"name": "run-check-1001-numbers", "skill": "haipipe-insight-check",
        "prompt": "Check every number on the board\nagainst the run file it cites.",
@@ -350,7 +395,7 @@ def delivery_content(key, cx, cy):
     ])
 
 
-space("delivery", 3, "Delivery Space", ["Handoff"], 0, [], None, delivery_content,
+space("delivery", 4, "Delivery Space", ["Handoff"], 0, [], None, delivery_content,
       ["1 Handoff draft", "· Sign", "+ New Run"], 0,
       {"name": "run-handoff-1001-wisdom-1", "skill": "haipipe-insight-wisdom",
        "prompt": "Draft the Design Handoff from the\nWisdom report; leave signed: for\nthe person.",
@@ -359,8 +404,8 @@ space("delivery", 3, "Delivery Space", ["Handoff"], 0, [], None, delivery_conten
       "Handoff → 1 Handoff draft · Sign is a control: the person writes signed:.\n"
       "Design reads only a signed, current handoff.")
 
-for i in range(3):
-    arrow(f"link{i}", X[i] + FW + 2, Y0 + 346, [[0, 0], [GAP - 4, 0]], BLUE if i == 0 else MUTED)
+for i in range(4):
+    arrow(f"link{i}", X[i] + FW + 2, Y0 + 346, [[0, 0], [GAP - 4, 0]], BLUE if i <= 1 else MUTED)
 
 # ---- part 3 · Insight › Questions: one High/Low table per partition ------------
 P3 = Y0 + FH + 90
@@ -419,13 +464,13 @@ table("full", 0, 0, "Full · 444,691 rows",
       "\n"
       "▸ Wisdom questions       2  ✅",
       "\n\n\n"
-      "⌄ Task  Funnel rates\n"
-      "  1 run · answers 9 more\n"
-      "    D02 extract_profile\n"
-      "      03 funnel_rates ▸ 1 run\n"
-      "        smsr2v1  ok   ↗\n"
-      "› Task  Funnel rates\n"
-      "  1 run · smsr2v1 · ok\n"
+      "⌄ Question 2's run\n"
+      "  1 partition · full\n"
+      "    2-Information ›\n"
+      "      I02-variant-performance\n"
+      "        full  ok   ↗\n"
+      "› Question 4's run\n"
+      "  1 partition · full · ok\n"
       "\n\n\n\n"
       "› Runs behind it\n"
       "  5 runs, from the\n"
@@ -449,7 +494,7 @@ table("full", 0, 0, "Full · 444,691 rows",
       "\n\n"
       "No answer · the extract has no\n"
       "cultural measure",
-      "Full is the template: every question is asked here first. Its runs are the smsr2v1 calls.",
+      "Full is the template: every question is asked here first. Each question's run here is runs/full.sh.",
       marks=[(182 + 3 * R - 4, 5 * R + 6)])
 
 table("young", 1, 1, "Young male · 53,342 rows",
@@ -478,12 +523,12 @@ table("young", 1, 1, "Young male · 53,342 rows",
       "  Question 1                ✅\n"
       "  Which messages to exploit?",
       "\n—\n\n\n"
-      "› Task  Funnel rates\n"
-      "  1 run · youngmale · ok\n"
+      "› Question 3's run\n"
+      "  1 partition · youngmale · ok\n"
       "\n\n\n"
-      "⌄ Task  Funnel rates\n"
-      "    D02 extract_profile\n"
-      "      03 funnel_rates ▸ 1 run\n"
+      "⌄ Question 2's run\n"
+      "    2-Information ›\n"
+      "      I02-variant-performance\n"
       "        youngmale  ok   ↗\n"
       "\n\n"
       "—\n\n\n\n"
@@ -533,12 +578,12 @@ table("cross", 2, 6, "Cross · compares the cuts",
       "  builds on Knowledge\n"
       "  question 15",
       "\n"
-      "› Task  Expected balance\n"
-      "  06 balance_expected\n"
-      "  ▸ 6 runs\n"
+      "› Question 4's run\n"
+      "  1-Data › D04-expected-balance\n"
+      "  ▸ cross · 5 partitions\n"
       "\n\n"
-      "No run names it under\n"
-      "answers: yet\n"
+      "› Question 14's run\n"
+      "  cross  ok   ↗\n"
       "\n\n\n"
       "—\n"
       "\n\n\n"
@@ -567,15 +612,15 @@ def popout(key, i):
     text(f"{key}-title", x0 + 24, TY + 22, "A run opens its results · pop-out", 26)
     rect(f"{key}-sheet", x0 + 48, TY + 80, FW - 96, TH - 190, INK, "#ffffff")
     sx, sy = x0 + 80, TY + 104
-    text(f"{key}-h1", sx, sy, "smsr2v1", 26)
+    text(f"{key}-h1", sx, sy, "full", 26)
     text(f"{key}-where", sx, sy + 44,
-         "1-full/<page>/results/run_bNNjNNtNNrNN_full_<task>/", 13, MUTED, mono=True)
-    for n, lab in enumerate(["Run script ↗", "Config ↗", "answers.yaml ↗"]):
+         "2-Information/I02-variant-performance/results/full/", 13, MUTED, mono=True)
+    for n, lab in enumerate(["Run script ↗", "Script ↗", "Report ↗"]):
         text(f"{key}-link{n}", sx + n * 160, sy + 76, lab, 15, BLUE)
     text(f"{key}-receipt", sx, sy + 118, "Receipt", 20)
     text(f"{key}-rt", sx, sy + 150,
-         "status: ok\nconfig: configs/smsr2v1.yaml\nanswers: [QI1, QI2, QI3, QI4, QI5, QI6, QI15 … QI18]", 13, INK, mono=True)
-    text(f"{key}-tables", sx, sy + 228, "Tables · 24", 20)
+         "status: ok · question: I02 · partition: full\nspec_sha256 · scripts_sha256 · shared_sha256\nticket: 2-Information/I02-variant-performance/runs/full.sh", 13, INK, mono=True)
+    text(f"{key}-tables", sx, sy + 228, "Tables · 3", 20)
     text(f"{key}-csv", sx, sy + 260, "rates_by_arm.csv", 15, BLUE)
     text(f"{key}-rows", sx, sy + 288,
          "arm                sent     clicked %\n"
@@ -584,8 +629,8 @@ def popout(key, i):
          "default            34,…     62.47\n"
          "…                  13 rows", 14, INK, mono=True)
     text(f"{key}-more", sx, sy + 404,
-         "overall_rates.csv · rates_by_age_band.csv · rates_by_gender.csv · …\n"
-         "Other files · metrics.json · grouping_audit.csv", 14, MUTED)
+         "partition_power.csv · the spec's other files\n"
+         "Other files · provenance/ (the exact spec and scripts) · reports/full/report.md", 14, MUTED)
     text(f"{key}-close", x0 + FW - 340, TY + 96, "Esc closes · Open in its own tab ↗", 14, MUTED)
     text(f"{key}-foot", x0 + 24, TY + TH - 90,
          "No page in between: the run's results are the evidence, and the Report column says what they\n"
@@ -598,20 +643,21 @@ for i in range(3):
 
 # ---- part 4 · one dataset; what changes; what each Space reads ----------------
 P4 = TY + TH + 90
+F4 = len(E)
 text("p4-title", 48, P4, "4 · One dataset, one workbench", 28)
 rect("one-box", 48, P4 + 56, FW, 520)
 text("one-text", 72, P4 + 82,
      "1. The workbench is born from one extract: MT00 names it, the banner\n"
      "   shows it on every Space, and there is no dataset switcher.\n\n"
      "2. A partition is a cut of that extract, never a second dataset:\n"
-     "   one config per task, its population block names the cut.\n\n"
-     "3. Task folders are shared functions. A config's store: line names\n"
-     "   its board, so this workbench lists only its own calls\n"
-     "   (smsr2v1, youngmale, … and not smsr3full).\n\n"
-     "4. A config's answers: line names the questions its run answers.\n"
-     "   That line joins the Logic side to the Work side.\n\n"
-     "5. A new extract is a new workbench: SMSR3Full → A03. Round 3\n"
-     "   checking round 2 is a comparison between two workbenches,\n"
+     "   0-Meta/partitions.md names its filter; a run is one partition.\n\n"
+     "3. Each question owns its code: the Prototype holds the question\n"
+     "   and its script, the Instance a tracked copy of the script\n"
+     "   (prototype.lock; a difference shows as ⚑).\n\n"
+     "4. A run is runs/<partition>.sh in the question's own folder:\n"
+     "   its results/ and reports/ answer that question only.\n\n"
+     "5. A new extract is a new Instance of the same Prototype. Round 3\n"
+     "   checking round 2 is a comparison between two Instances,\n"
      "   not a partition of either.", 17, INK)
 
 CX = X[1]
@@ -623,8 +669,8 @@ text("change-table", CX + 24, P4 + 82,
      "6 Spaces: Scope, Insight, Evidence, Check,      4 Spaces, a Runs panel beside each: Scope, Insight,\n"
      "  Run, Delivery                                   Check, Delivery (Evidence → the Work side; Run → the panels)\n"
      "Question × partition grid                       one High/Low table per partition; logic left, work right\n"
-     "D/I/K/W answer pages (D03-full, I02-full …)     Work: each need's bound results · Report: the page itself,\n"
-     "                                                  one small file per question per cut, written by a Report run\n"
+     "D/I/K/W answer pages (D03-full, I02-full …)     Work: the question's runs, one per partition · Report: one page\n"
+     "                                                  per question, one section per partition, checked by another agent\n"
      "Page-level Insight view (This page, Cites,      retired: a run line opens its results in a pop-out\n"
      "  Cited by, Gates, Log)\n"
      "QK2, FD02, B, C … on screen                     Knowledge questions › Question 2 · Young male; codes stay in files\n"
@@ -637,24 +683,24 @@ rect("files-box", RX, P4 + 56, FW, 520)
 text("files-map", RX + 24, P4 + 82,
      "UI tab               reads                     runs live in\n"
      "\n"
-     "Scope › Dataset      MT00 · manifest.json       7-AgentStore/A0-DIKW-\n"
+     "Scope › Dataset      0-Meta/meta.md · manifest  7-AgentStore/A0-DIKW-\n"
      "                                                Prepare/<extract>/\n"
-     "Scope › Partitions   MT00 § Partition Register  configs/<call>.yaml\n"
-     "Scope › Questions    MT01 – MT04 Queues         (rows, no runs)\n"
-     "Insight › Questions  MT01 – MT04 + each         <page>/answers.yaml + results/\n"
-     "                     config's answers: line     <board>/<job>/<task>/\n"
-     "                                                results/<call>/\n"
+     "Scope › Partitions   0-Meta/partitions.md       (filters, no runs)\n"
+     "Scope › Questions    each <L><NN>-<name>.md     (questions, no runs)\n"
+     "Insight › Questions  the question files + the   <question>/runs/<partition>.sh\n"
+     "                     checker's computed grid    <question>/results/<partition>/\n"
+     "                                                <question>/reports/<partition>/\n"
      "Check › Gates        the GI records             _runs/insight/\n"
-     "Check › Checks       haipipe-insight-check      page CHECK runs\n"
-     "Insight › Report     <page>.md (haipipe-page)   the page flow + CHECK\n"
+     "Check › Checks       check_instance.py          page CHECK runs\n"
+     "Insight › Report     <question>.md, one page    the page flow + CHECK\n"
      "Delivery › Handoff   the Wisdom report          its Design Handoff",
      15, BLUE, mono=True)
 
 # ---- part 5 · how one run attaches to its dataset and its result -------------
 P5 = P4 + 680
-text("p5-title", 48, P5, "5 · One run: which dataset it reads, which cut, which questions, where its result lands", 28)
-text("p5-sub", 48, P5 + 44, "The run's stem names everything it is: r02_smsr2v1_youngmale is its config, its ticket and its "
-     "result folder. The config names the dataset and the cut; the board names where the result goes.", 18, MUTED)
+text("p5-title", 48, P5, "5 · One run: one question on one partition, and where its result lands", 28)
+text("p5-sub", 48, P5 + 44, "The ticket's name is the partition: runs/youngmale.sh in the question's folder writes "
+     "results/youngmale/ and reports/youngmale/. The Instance names the dataset; the Prototype names the cut.", 18, MUTED)
 BY, BH5 = P5 + 100, 330
 
 
@@ -671,56 +717,56 @@ box("ds", X[0], BY, FW, BH5, "1 · The dataset · read, never written",
     "├── 20250616_SMSR2v1_min_2025-07-03_dikw_input.parquet\n"
     "├── manifest.json            source set · end date · version\n"
     "└── data_dictionary.csv\n\n"
-    "one prepared extract = one InsightBoard (MT00 names it)\n"
+    "one prepared extract = one Instance (board.md names it)\n"
     "444,691 rows · one row = one sent invitation",
     sub="prepared before the board exists; every run of this board reads it")
-box("task", X[1], BY, FW, BH5, "2 · The run · authored, in the Task folder",
-    "tasks/b51_sms_dikw/j21_information_funnel/t01_funnel_rates/\n"
-    "├── scripts/funnel_rates.py               the code, dataset-neutral\n"
-    "├── scripts/config/r02_smsr2v1_youngmale.yaml\n"
-    "│     input.parquet_path: …/20250616_SMSR2v1/…parquet   ← 1\n"
-    "│     population.where: gender = M · age ≤ 35           ← the cut\n"
-    "│     answers: [QI4.E1, QI9.E1, …]  from the pages' answers.yaml\n"
-    "└── runs/r02_smsr2v1_youngmale.sh          the ticket you press\n\n"
-    "the config names the needs it serves; the page ticket calls it",
-    BLUE, "#f3f8fd", sub="one config + one ticket per dataset × cut; same stem rNN_<dataset>_<cut>")
-box("res", X[2], BY, FW, BH5, "3 · The result · generated, in the page folder",
-    "2-youngmale/I04-youngmale-<slug>/            ← 4\n"
-    "├── runs/run_b51j21t01r02_youngmale_funnel_rates.sh\n"
-    "├── answers.yaml   QI4.E1 → rates_by_weekday.csv …\n"
-    "└── results/run_b51j21t01r02_youngmale_funnel_rates/\n"
-    "    ├── runtime.yaml   status · ticket · config · git sha\n"
-    "    ├── rates_by_weekday.csv · rates_by_hour.csv · …\n"
-    "    └── metrics.json · fig_*.png\n\n"
-    "RESULT_DIR = the page's results/<ticket>/",
+box("task", X[1], BY, FW, BH5, "2 · The question · authored, in the Prototype",
+    "Prototype-Insight-SMS/2-Information/I04-temporal-dynamics/\n"
+    "├── I04-temporal-dynamics.md      question · ask · needs · specs\n"
+    "└── scripts/temporal_dynamics.py  SPEC = \"I04\" · run(df, ctx)\n"
+    "0-Meta/partitions.md\n"
+    "│     youngmale: gender = M · age ≤ 35           ← the cut\n"
+    "0-Meta/thresholds.yaml  floors · power.smallest_effect_pp\n"
+    "Instance: a copy of scripts/ + prototype.lock (⚑ if they differ)\n\n"
+    "the question owns its code; no task, no config, no answers:",
+    BLUE, "#f3f8fd", sub="one question = one folder = one script; a partition is never a config")
+box("res", X[2], BY, FW, BH5, "3 · The run · generated, in the Instance",
+    "2-Information/I04-temporal-dynamics/          ← 4\n"
+    "├── runs/youngmale.sh            the ticket you press\n"
+    "├── results/youngmale/\n"
+    "│   ├── runtime.yaml   status · spec, scripts, shared sha256\n"
+    "│   ├── partition_power.csv · rates_by_weekday.csv · …\n"
+    "│   └── provenance/    the exact spec and scripts it ran\n"
+    "└── reports/youngmale/report.md   generated from results/\n\n"
+    "one run per partition; the question's page reads them all",
     GREEN, "#f4fbf5", sub="never edited by hand; rerun the ticket to change it")
 box("wb", X[3], BY, FW, BH5, "5 · The workbench · reads, never writes",
     "Insight › Questions › Young male\n\n"
     "LOGIC                 WORK                     REPORT\n"
-    "Information           Task  Funnel rates       Report  …\n"
-    "question 2            t01_funnel_rates\n"
-    "                        r02_smsr2v1_youngmale ok ↗\n\n"
-    "answers.yaml puts each need beside its files;\n"
-    "↗ opens 3 (runtime.yaml, tables, figures) in the pop-out",
-    sub="the row is joined by the evidence need, bound on the page")
-box("board", X[0], BY + BH5 + 80, FW, 250, "4 · The board · holds the questions and the pages",
-    "insights/SMSR2v1-InsightBoard/\n"
-    "├── board.md      one extract, no store\n"
-    "├── 0-MT-meta/    MT00 extract · partitions · MT01–MT04 needs\n"
-    "└── 2-youngmale/I04-youngmale-<slug>/   page · runs/ · results/\n\n"
-    "the page ticket calls the task ticket with RESULT_DIR = its results/",
-    sub="the Task never names a board; the page hands it a path")
-box("two", X[2], BY + BH5 + 80, FW, 250, "Same Task, another dataset → another board",
-    "scripts/config/r11_smsr3full_full.yaml\n"
-    "  input.parquet_path: …/20250829_SMSR3Full/…parquet\n"
-    "→ insights/SMSR3Full-InsightBoard/1-full/<page>/\n"
-    "    results/run_b51j21t01r11_full_funnel_rates/\n\n"
-    "one dataset · one board · its pages hold its results",
+    "Information           Question 4's run         Report  …\n"
+    "question 4            2-Information ›\n"
+    "                        youngmale  ok ↗\n\n"
+    "the checker computes each cell from its run and page;\n"
+    "↗ opens 3 (runtime.yaml, tables, report) in the pop-out",
+    sub="the cell is computed: a run, a page, a CHECK by another agent")
+box("board", X[0], BY + BH5 + 80, FW, 250, "4 · The Instance · holds the runs and the pages",
+    "insights/Instance-Insight-SMSR2v1/\n"
+    "├── board.md      prototype: · extract:\n"
+    "├── 0-Meta/status.md   the grid, written by the checker\n"
+    "└── 2-Information/I04-temporal-dynamics/   runs · results · page\n\n"
+    "the same folders as the Prototype, at the same paths",
+    sub="it mirrors the Prototype: 0-Meta, 1-Data … 4-Wisdom")
+box("two", X[2], BY + BH5 + 80, FW, 250, "Same Prototype, another dataset → another Instance",
+    "insights/Instance-Insight-SMSR3Full/\n"
+    "  board.md  extract: …/20250829_SMSR3Full/…parquet\n"
+    "→ 2-Information/I04-temporal-dynamics/\n"
+    "    results/full/ · reports/full/\n\n"
+    "one dataset · one Instance · its pages hold its results",
     MUTED, sub="the code is shared; the result is not")
 box("heavy", X[3], BY + BH5 + 80, FW, 250, "Heavy output stays out of results/",
     "a model, an array, a row-level table, any file > 10 MB\n"
-    "→ _WorkSpace/ProjectResult/<Project>/<page path>/results/<ticket>/\n"
-    "  results/<run>/heavy.yaml points to it   (AGENTS.md rule 10)\n\n"
+    "→ _WorkSpace/ProjectResult/<Project>/insights/<Instance>/…/<partition>/\n"
+    "  results/<partition>/heavy.yaml points to it   (AGENTS.md rule 10)\n\n"
     "receipts write paths relative to the SPACE root (rule 7)",
     MUTED, sub="the result stays light")
 mid5 = BY + BH5 // 2
@@ -728,13 +774,13 @@ arrow("a-ds-task", X[0] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], BLUE)
 arrow("a-task-res", X[1] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], GREEN)
 arrow("a-res-wb", X[2] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], MUTED)
 arrow("a-board-task", X[0] + FW // 2, BY + BH5 + 78, [[0, 0], [0, -40], [X[1] - X[0], -40], [X[1] - X[0], -76]], INK)
-text("a-board-label", X[0] + FW // 2 + 20, BY + BH5 + 14, "RESULT_STORE (the board hands the run its store)", 15, INK)
+text("a-board-label", X[0] + FW // 2 + 20, BY + BH5 + 14, "board.md prototype: names the question's Prototype", 15, INK)
 arrow("a-task-two", X[1] + FW - 120, BY + BH5 + 2, [[0, 0], [0, 140], [X[2] - X[1] - FW + 118, 140]], MUTED)
 text("p5-rules", 48, BY + BH5 + 360,
-     "1. The stem is the identity: config, ticket and result folder share rNN_<dataset>_<cut>.   "
-     "2. The dataset and the cut live in the config, never in the code.\n"
-     "3. The board decides the place: RESULT_STORE = the board's store; the result is RESULT_STORE/<block>/<job>/<task>/results/<run>/.   "
-     "4. runtime.yaml writes the attachment down: config, input, store, git sha.", 17)
+     "1. The ticket's name is the partition: runs/<partition>.sh writes results/<partition>/ and reports/<partition>/.   "
+     "2. The cut lives in partitions.md, the code in the question's scripts/.\n"
+     "3. The receipt is written before the work and finalized after the gate: spec, scripts and shared files by sha256.   "
+     "4. A rerun replaces its result; a changed spec or script makes it STALE.", 17)
 
 
 text("footer", 48, BY + BH5 + 450, "Design drawing: illustrative states from A00 (SMSR2v1), not live data. "
@@ -747,8 +793,8 @@ QX = [X[3] + FW + 300 + i * (FW + GAP) for i in range(4)]
 QY = 222
 text("qa-title", QX[0], QY, "How a question is asked · who asks it, how it is made small, who checks it, who signs it", 28)
 text("qa-sub", QX[0], QY + 44, "A question asks one thing, and its evidence needs form a logic: each need is a premise, and the "
-     "logic line says how they lead to the answer. Today no one checks a question's size: D01 asked four things with eight "
-     "unrelated needs.", 18, MUTED)
+     "logic line says how they lead to the answer. A carried question keeps its words; the review judges it by Q1-Q7 and "
+     "proposes, and the person signs.", 18, MUTED)
 QB, QH = QY + 100, 430
 box("qa-src", QX[0], QB, FW, QH, "1 · Where a question comes from",
     "a decision a DesignBoard must make        what the designer needs to know\n"
@@ -764,35 +810,36 @@ box("qa-src", QX[0], QB, FW, QH, "1 · Where a question comes from",
     "                                          never a question as written\n\n"
     "a raw ask names where it came from and what will use its answer",
     sub="the asker raises a raw ask; the asker never answers it")
-box("qa-shape", QX[1], QB, FW, QH, "2 · Make it small · the shaper",
-    "split the raw ask at every 'and', comma and second verb\n\n"
-    "each small question gets:\n"
+box("qa-shape", QX[1], QB, FW, QH, "2 · Shape it · the shaper",
+    "a carried question keeps its words: question, name, ask,\n"
+    "why now, what would answer it, every need (carry_over.py)\n\n"
+    "a new question gets:\n"
+    "  question   the short wording a reader scans\n"
     "  ask        one thing, in plain words\n"
     "  rung       D · I · K · W; a D or I ask states no cause\n"
-    "  logic      one line: how its needs lead to the answer\n"
-    "  needs      at most three, each one used in the logic\n"
-    "  partitions asked where it means the same, and why not elsewhere\n"
-    "  parent     the raw ask or finding it came from\n"
-    "  consumer   the decision or higher question that reads it\n\n"
-    "the shaper plans from the ask and the column list only;\n"
+    "  why now    who waits on the answer, and what it replicates\n"
+    "  answer     what would answer it, then its needs\n"
+    "  partitions asked where it means the same, and why not elsewhere\n\n"
+    "the shaper plans from the question and the column list;\n"
     "it never reads results to fit a question to them",
     BLUE, "#f3f8fd", sub="haipipe-insight-agent · skill haipipe-insight-question")
-box("qa-review", QX[2], QB, FW, QH, "3 · Check it · the reviewer, another agent",
-    "one thing?        the ask has no 'and', no list, one verb\n"
-    "logic follows?    the answer follows from these needs, and\n"
-    "                  every need is used\n"
-    "small?            three needs or fewer\n"
-    "rung legal?       no cause at D or I; cites one rung below\n"
-    "new?              not a duplicate of a question already asked\n"
-    "placed?           parent and consumer named\n\n"
-    "AGREE, or FIX with the exact split or wording;\n"
+box("qa-review", QX[2], QB, FW, QH, "3 · Review it · Q1-Q7, another agent",
+    "Q1 one thing     the ask asks one question\n"
+    "Q2 logic         the needs form one argument; a judge\n"
+    "                 reads every need it rests on\n"
+    "Q3 consumer      Why now names who waits on the answer\n"
+    "Q4 rung          no cause at D or I; cites one rung below\n"
+    "Q5 answerable    a field exists, or the refusal is computed\n"
+    "Q6 new           no question already asks it\n"
+    "Q7 open          a null and 'do nothing' stay admissible\n\n"
+    "keep, split, merge or move, each with its reason;\n"
     "a reviewer never reviews a question it shaped",
     GREEN, "#f4fbf5", sub="haipipe-insight-reviewer-agent")
 box("qa-sign", QX[3], QB, FW, QH, "4 · Sign it, then it lands",
-    "the person signs the question list         ✅ <YYMMDD>\n"
-    "  may refuse a question, merge two, or ask for a split\n\n"
+    "the person signs each change the review proposes   ✅ <YYMMDD>\n"
+    "  a split, a merge, a move or a rewording; never by a rule\n\n"
+    "→ the old question is retired with its reason, never edited\n"
     "→ Prototype question file  <rung>/<L><NN>-<name>/\n"
-    "    ask · rung · logic · partitions · needs · agreed\n"
     "→ the needs' specs and the script follow (the evidence plan)\n"
     "→ each Instance scaffolds it and runs it, partition by partition\n\n"
     "a question is never answered on the screen that asked it",
@@ -805,15 +852,15 @@ box("qa-roles", QX[0], QB2, FW, QH2, "5 · Who is in charge",
     "role       who                        does                        never\n\n"
     "asker      a person, or the insight   raises a raw ask from a     answers it\n"
     "           agent from a source        source above\n"
-    "shaper     haipipe-insight-agent      splits it into small        reads results to\n"
-    "           (haipipe-insight-question) questions with their logic  fit the question\n"
-    "reviewer   haipipe-insight-reviewer-  checks size, logic, rung,   reviews what it\n"
-    "           agent                      newness and placement       shaped\n"
-    "signer     the person                 signs the question list     writes the spec\n\n"
+    "shaper     haipipe-insight-agent      shapes a new question;      reads results to\n"
+    "           (haipipe-insight-question) keeps a carried one's words fit the question\n"
+    "reviewer   haipipe-insight-reviewer-  judges Q1-Q7, proposes      reviews what it\n"
+    "           agent                      keep, split, merge, move    shaped\n"
+    "signer     the person                 signs each proposed change  writes the spec\n\n"
     "the person owns the list; the agents propose and check",
-    sub="today: the asks came from Gen 1's chapters; no role checked their size")
-box("qa-example", QX[1], QB2, 2 * FW + GAP, QH2, "6 · Example · D01 re-asked as small questions whose needs form a logic",
-    "raw ask   what is in this extract, at what shape, with what missingness and what column types?   (four asks, eight needs)\n\n"
+    sub="a carried question keeps its words until a signed change replaces it")
+box("qa-example", QX[1], QB2, 2 * FW + GAP, QH2, "6 · Example · what a split proposal looks like (D01, a proposal, not applied)",
+    "raw ask   what is in this extract, at what shape, with what missingness and what column types?   (four asks, four live needs)\n\n"
     "small question                         needs                                             logic\n"
     "What is one row?                       rows per invitation key · rows per patient key    invitation key unique, patient key repeats\n"
     "                                                                                         ⇒ one row is one invitation\n"
@@ -827,7 +874,7 @@ box("qa-example", QX[1], QB2, 2 * FW + GAP, QH2, "6 · Example · D01 re-asked a
     "                                                                                         ⇒ a code, not a share",
     BLUE, "#f3f8fd", sub="each question: one ask, two or three needs, every need used in its logic")
 box("qa-open", QX[3], QB2, FW, QH2, "7 · To decide together",
-    "1. does the person sign each question, or the list per rung?\n\n"
+    "1. decided: the person signs each change, never the list\n\n"
     "2. must every question name a consumer before it is asked?\n\n"
     "3. when does a finding become a new question, and when\n"
     "   only a note on the page that found it?\n\n"
@@ -838,10 +885,10 @@ box("qa-open", QX[3], QB2, FW, QH2, "7 · To decide together",
     "   enough there?",
     "#e8590c", sub="open; nothing here is built yet")
 text("qa-rules", QX[0], QB2 + QH2 + 36,
-     "1. One question asks one thing.   2. Its needs form a logic: at most three, each used in the logic line.   "
-     "3. An ask joined by 'and' or a list is split.\n"
-     "4. A Data or Information ask states no cause.   5. A question names its parent and its consumer.   "
-     "6. The shaper never reads results; the reviewer never reviews its own; the person signs.", 17)
+     "1. A carried question keeps its words.   2. A question asks one thing, and its needs form a logic.   "
+     "3. The review proposes keep, split, merge or move.\n"
+     "4. A Data or Information ask states no cause.   5. A person signs every change; the old question is retired, never edited.   "
+     "6. The shaper never reads results; the reviewer never reviews its own.", 17)
 
 
 def _qa_bounds(e):
@@ -851,14 +898,51 @@ def _qa_bounds(e):
     return e["x"], e["y"], e["x"] + e["width"], e["y"] + e["height"]
 
 
-_qa = [_qa_bounds(e) for e in E[QA0:]]
-_qf = base("frame-ask", "frame", min(b[0] for b in _qa) - 32, min(b[1] for b in _qa) - 32,
-           max(b[2] for b in _qa) - min(b[0] for b in _qa) + 64, max(b[3] for b in _qa) - min(b[1] for b in _qa) + 64,
-           rounded=False)
-_qf["name"] = "How a question is asked"
-for e in E[QA0:]:
-    e["frameId"] = "frame-ask"
-E.append(_qf)
+def frame(id_, name, start, end, pad=32):
+    """One named Excalidraw frame around E[start:end]. The Guide opens a frame by its name
+    (`/_excalidraw/?board=<this file>&frame=<name>`), so a name is a public address: keep it."""
+    box = [_qa_bounds(e) for e in E[start:end]]
+    f = base(id_, "frame", min(b[0] for b in box) - pad, min(b[1] for b in box) - pad,
+             max(b[2] for b in box) - min(b[0] for b in box) + 2 * pad,
+             max(b[3] for b in box) - min(b[1] for b in box) + 2 * pad, rounded=False)
+    f["name"] = name
+    for e in E[start:end]:
+        e["frameId"] = id_
+    return f
+
+
+# The Parts as frames, each the drawing of one Guide View (workbench-shared guide_families.py,
+# family insight, explain): Part 1 the Skill set, Parts 2-3 the Workbench, Parts 4-5 the Folder
+# map, and "How a question is asked" the Methods. Frames are appended after every Part is drawn.
+# Frames stand apart (JL 261002): each group of elements is moved whole so every frame sits
+# FRAME_GAP from the next, leaving room for the frame's name above it; nothing inside a Part moves.
+FRAME_PAD, FRAME_GAP = 40, 240
+
+
+def _shift(start, end, dx, dy):
+    for e in E[start:end]:
+        e["x"] += dx
+        e["y"] += dy
+
+
+def _top_left(start, end):
+    box = [_qa_bounds(e) for e in E[start:end]]
+    return min(b[0] for b in box), min(b[1] for b in box)
+
+
+_header_bottom = max(_qa_bounds(e)[3] for e in E[:F1])
+_frames, _y = [], _header_bottom + FRAME_GAP
+for _id, _name, _s, _e in (("frame-skills", "Spaces, runs and skills", F1, F2),
+                           ("frame-workbench", "The workbench", F2, F4),
+                           ("frame-folders", "Where things live", F4, QA0)):
+    _x0, _y0 = _top_left(_s, _e)
+    _shift(_s, _e, 48 - _x0, _y + FRAME_PAD - _y0)
+    _frames.append(frame(_id, _name, _s, _e, pad=FRAME_PAD))
+    _y = _frames[-1]["y"] + _frames[-1]["height"] + FRAME_GAP
+_right = max(f["x"] + f["width"] for f in _frames)
+_x0, _y0 = _top_left(QA0, len(E))
+_shift(QA0, len(E), _right + FRAME_GAP + FRAME_PAD - _x0, _frames[0]["y"] + FRAME_PAD - _y0)
+E += _frames + [frame("frame-ask", "How a question is asked", QA0, len(E), pad=FRAME_PAD)]
 
 OUT.write_text(json.dumps({"type": "excalidraw", "version": 2, "source": "haipipe-insight-workbench-design",
                            "elements": E, "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None},

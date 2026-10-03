@@ -1,12 +1,11 @@
 By implementation
 =================
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by implementation`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by implementation`. A
+claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: With external insights: abduction-1; the how comes from the literature, other
+family: External Insights: abduction-1; the how comes from the literature, other
   people's data already turned into knowledge
 reasoning: abduction-1: requirements + what is known about delivery → a design and its
   plan for use

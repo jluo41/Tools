@@ -10,8 +10,8 @@ goal, the claim and its target quantity, or the population and its power. Discov
 methods (the other view) say how an answer is found once the design is agreed; these say
 how the design itself is made.
 
-The Scope Space renders this file as its Methods › Design methods view. The papers named here
-are listed, with their journals, in its Papers view (`insight-papers.md`).
+The shared Guide shows this file in its Method View, as Design methods. The papers named here
+are listed, with their journals, in its Related Paper View (`insight-papers.md`).
 
 
 1 · The shared loop

@@ -347,6 +347,10 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
     """
     root = root.resolve()
     board = board_by_slug(root, slug)
+    if board is None and slug == "shared":
+        # The Shared Workbench has no Board: `/w/shared[/<guide view>]` opens its own site.
+        view = (anchor or "").strip().strip("/").lower()
+        return "/w/shared" + (f"?guide={quote(view)}" if view else ""), "ok"
     if board is None:
         return None, "no such board"
     rel = board.relative_to(root).as_posix()
@@ -752,6 +756,9 @@ class HomeMixin:
         reachable at (127.0.0.1, the Tailscale IP, a configured public URL).
         Extra query (`?run=…`, `&lens=…`) is carried across.
         """
+        if slug == "shared" and not anchor and board_by_slug(self.root.resolve(), slug) is None:
+            # The Shared Workbench is served at its short address itself; the bar keeps /w/shared.
+            return self.shared_view(head_only=self.command == "HEAD")
         target, reason = resolve_workbench(self.root, slug, anchor, tab)
         if target is None:
             return self.send_error(404, reason)

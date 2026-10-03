@@ -1,5 +1,13 @@
 """🏷 Labeling · four Spaces over one page-local labeling/ job, a Runs panel beside each, plus one write door.
 
+It wears the shell every workbench shares (haipipe-toolkit servers/README.md "Adding a
+workbench"): the title, an `all labeling jobs` link, a band (phase · round · guideline ·
+HOLD), then the Space row with the shared Guide first (the `labeling`
+entry of workbench-shared/guide_families.py), each Space's View tabs and content in one
+box, and the shared Runs panel (live.runs_panel) folded to a strip on its right. Labeling
+passes its own Run cards to that panel so Resume and Rerun stay gated. The Board level
+(`/w/<board>`) wears the same title and band, with Guide and one Jobs Space.
+
 Data · Labeling · Quality · Delivery are views over canonical files; the
 overview never renders item text and never upgrades an observed file to a
 passed gate.  Labeling → Definition holds the label definitions and Confirm meaning.  Round item text
@@ -1038,7 +1046,7 @@ def _data_space(vm: dict) -> dict[str, str]:
             _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
             _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
         ]))
-    return {"preparation": _preparation_view(vm), "contract": corpus + schema,
+    return {"preparation": _preparation_view(vm), "contract": _contract_detail(vm) + corpus + schema,
             "embedding": _embedding_view(vm)}
 
 
@@ -1189,7 +1197,7 @@ def _items_card(vm: dict) -> str:
     if shape.get("n") and not (vm.get("state") or {}).get("authority_hold"):
         table = ('<div class=actions><button type=button class=primary data-items-show>Show items</button></div>'
                  '<div class=scroll data-items-box hidden><table class="items itemtable"><thead><tr><th>Item</th>'
-                 '<th>State</th><th>Conversation before it</th><th>Text to label</th></tr></thead>'
+                 '<th>The conversation, then the reply to label</th></tr></thead>'
                  '<tbody data-items-rows></tbody></table></div><div data-items-more></div>')
     return _card("Items to label", "".join([
         _row("one item is", _esc(unit)) if unit else "",
@@ -2070,8 +2078,9 @@ def _label_definitions(vm: dict) -> str:
     rows = "".join(
         f'<tr><td class=nowrap><b>{_esc(v)}</b></td><td>{_esc(meanings.get(v) or "")}</td></tr>' for v in values)
     between_rows = "".join(
-        f'<tr><td class=nowrap><code>{_esc(r)}</code></td><td>{_esc(region_meanings.get(r) or "")}</td></tr>'
-        for r in between)
+        f'<tr><td class=nowrap><code>{_esc(r)}</code></td><td>'
+        + (_esc(region_meanings[r]) if region_meanings.get(r) else '<span class=mut>not defined yet</span>')
+        + '</td></tr>' for r in between)
     return _card("Label definitions", "".join([
         _row("question", _esc(construct.get("question") or construct.get("name") or "")),
         _row("judge", _esc(construct.get("seed"))) if construct.get("seed") else "",
@@ -2213,7 +2222,6 @@ def _labeling_space(vm: dict) -> dict[str, str]:
     label = _label_definitions(vm)
     labeling_now = cal.get("current_round") and not (vm["canonical"] or {}).get("hold")
     app = "" if labeling_now else '<div id=label-app aria-live=polite><p class=mut>Loading…</p></div>'
-    rounds_html = app + (_rounds_view(vm) if cal.get("rounds") else "")
     current = (root / "policy" / "current")
     policy = current.read_text(encoding="utf-8").strip() if current.is_file() else ""
     guideline = root / "policy" / "versions" / policy / "guideline.md" if policy else None
@@ -2222,7 +2230,9 @@ def _labeling_space(vm: dict) -> dict[str, str]:
         guide = _card(f"Guideline {policy}", f'<div class=guide>{_guideline_html(text)}</div>')
     else:
         guide = _card("Guideline", "<p class=mut>No guideline version is readable yet.</p>")
-    return {"definition": label + _discussion_view(vm) + _meaning_gate(vm), "rounds": rounds_html, "guideline": guide}
+    return {"definition": label + _discussion_view(vm) + _meaning_gate(vm) + _meaning_history(vm),
+            "rounds": app + _rounds_summary(vm) + (_rounds_view(vm) if cal.get("rounds") else ""),
+            "guideline": _guideline_versions(vm) + guide}
 
 
 def _quality_space(vm: dict) -> dict[str, str]:
@@ -2258,7 +2268,7 @@ _RUN_WORDS = {  # the same words as the `in words` column of ref-space-mapping.m
     "executor-score": "Score one closed set of predictions",
     "executor-select": "Select from the complete scorecard set", "scan-preflight": "Check one frozen production plan",
     "scan-shard": "Label one frozen corpus shard", "risk-route": "Route risky production items to review",
-    "human-review": "Review one frozen production risk queue",
+    "human-review": "You label one production risk queue",
     "reconcile": "Reconcile reviewed items into a candidate corpus",
     "audit-sample": "Draw from one frozen audit design", "audit-human-gold": "Blind-label one audit sample",
     "audit-analyze": "Analyze one completed audit sample", "dstar-materialize": "Publish an accepted audited corpus",
@@ -2681,7 +2691,12 @@ def _skills_line(skills: list[str]) -> str:
     return f'<p class=run-skill>Run Type skills {names}</p>'
 
 
-def _run_card(vm: dict, run: dict, skills: list[str] | None = None, *, built: bool = True) -> str:
+def _run_card(vm: dict, run: dict, skills: list[str] | None = None, *, built: bool = True,
+              index: int = 0) -> str:
+    """One Run's card in the shared Runs panel (`index` is its run type's place there).
+
+    Labeling draws its own card so Resume and Rerun stay gated by HOLD, G0 and the
+    round's state; the shared panel's script reads only the `run-card data-type` hooks."""
     action, again = _run_again(vm, run, built=built)
     ask = again or _run_ask(vm, run)
     status = str(run["status"])
@@ -2707,8 +2722,9 @@ def _run_card(vm: dict, run: dict, skills: list[str] | None = None, *, built: bo
                      '<details class=run-prompt-box><summary>Prompt '
                      f'<button type=button class=run-copy data-copy="{_esc(ask)}">Copy</button></summary>')
     return (
-        f'<article class=run-card data-op="{_esc(run["operation"])}" data-run="{_esc(run["run"])}" '
-        f'data-name="{_esc(run["label"])}" data-target="{_esc(run.get("target") or "")}" hidden>'
+        f'<article class=run-card data-op="{_esc(run["operation"])}" data-type="{index}" data-run="{_esc(run["run"])}" '
+        f'data-name="{_esc(run["label"])}" data-target="{_esc(run.get("target") or "")}" '
+        f'data-targets="{_esc(run.get("target") or "")}" data-state="{_esc(status.split(" ")[0])}" data-views="" hidden>'
         f'<header><b title="{_esc(run["run"])}">{_esc(run["name"])}</b>'
         f'<span class="run-state st-{_esc("blocked" if blocked_history else status.split(" ")[0])}">{_esc(words)}</span>'
         f'{action_button}</header>{blocked_note}'
@@ -2736,12 +2752,14 @@ def _next_preparation_operation(vm: dict) -> str | None:
 
 
 def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
-    """One Space's Runs panel, on the right: the current view's Run types, then the selected Run."""
+    """One Space's Runs panel, on the right: the shared panel (live.runs_panel), folded at first.
+
+    Each Run type's "+ New Run" prompt is gated here: empty while its step is not next, a gate
+    is not passed, or the job is on HOLD, and then the panel offers no "+ New Run"."""
+    from live.runs_panel import panel_markup
     where = _job_where(vm)
-    buttons, cards = [], []
+    kinds, buckets = [], []
     for t in types:
-        runs = list(reversed(t["runs"]))  # newest first
-        waiting = sum(1 for r in runs if r["status"] == "running" and r.get("worker_kind") == "human")
         if t.get("family") == "corpus":
             prep = vm.get("preparation") or {}
             owner = (prep.get("reference") or prep.get("owner_reference") or {}).get("owner")
@@ -2775,24 +2793,18 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
                       and not (vm.get("canonical") or {}).get("hold") else "")
         else:
             prompt = ""  # embedding-build and round-prepare start through checked view actions
-        buttons.append(
-            f'<button type=button class=run-type data-op="{_esc(t["op"])}" data-views="{_esc(" ".join(t["views"]))}" '
-            f'data-waiting="{waiting}" data-prompt="{_esc(prompt)}" data-skills="{_esc("|".join(t.get("skills") or []))}" '
-            f'title="{_esc(t["op"])}">'
-            f'{_esc(t["words"])} <span class=run-count>{len(runs)}</span></button>')
-        cards.extend(_run_card(vm, r, t.get("skills") or [], built=t.get("built", True)) for r in runs)
-    return (
-        f'<section class=runs-panel data-space={sid}>'
-        '<div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Runs</b></div>'
-        f'<div class=runs-body><div class=runs-types>{"".join(buttons)}'
-        '<button type=button class="run-type run-new">+ New Run</button></div>'
-        f'<div class=runs-detail><div class=run-list hidden></div>{"".join(cards)}'
-        '<article class="run-card run-card-new" hidden><header><b>New run</b></header>'
-        '<p class=run-skill hidden></p><details class=run-prompt-box open><summary>Prompt '
-        '<button type=button class=run-copy data-copy="">Copy</button></summary>'
-        '<pre class=run-prompt></pre></details></article>'
-        '<div class=run-empty hidden>No runs yet.</div></div></div></section>'
-    )
+        kinds.append({"label": t["words"], "op": t["op"], "prompt": prompt, "skills": t.get("skills") or [],
+                      "views": " ".join(t["views"]), "built": t.get("built", True)})
+        # newest first; a Run waiting for the person counts as waiting in the shared panel
+        buckets.append([dict(r, _run=r, status="waiting" if r["status"] == "running"
+                             and r.get("worker_kind") == "human" else r["status"])
+                        for r in reversed(t["runs"])])
+
+    def card(row: dict, index: int, kind: dict, base: Path, fill: dict) -> str:
+        return _run_card(vm, row["_run"], kind["skills"], built=kind["built"], index=index)
+
+    return panel_markup(sid, kinds, buckets, base=vm["root"].parent, fill=lambda row: {},
+                        whole="this job", folded=True, card=card)
 
 
 def _delivery_space(vm: dict) -> dict[str, str]:
@@ -2806,6 +2818,314 @@ def _delivery_space(vm: dict) -> dict[str, str]:
     return {"handoff": handoff, "scan": scan, "final": final}
 
 
+# ── The detail of each Space and View (view-structure.md): a brief at the top of every Space,
+#    the fuller Contract, Definition, Rounds and Guideline blocks, and the steps of every View.
+#    Each block reads a job file or a row of ref-space-mapping.md; none shows item text, and
+#    none treats an observed file as a passed gate.
+
+def _facts(pairs: list[tuple[str, str]]) -> str:
+    """A Space's brief: label over value, in one wrapping row."""
+    return "<dl class=brief>" + "".join(
+        f'<div><dt>{_esc(k)}</dt><dd>{v}</dd></div>' for k, v in pairs if v) + "</dl>"
+
+
+def _current_policy(root: Path) -> str:
+    current = root / "policy" / "current"
+    return current.read_text(encoding="utf-8").strip() if current.is_file() else ""
+
+
+def _space_brief(vm: dict, sid: str) -> str:
+    """Where this Space stands, from the job's files: counts and states, never item text."""
+    root, canonical, cal = vm["root"], vm["canonical"] or {}, vm["cal"] or {}
+    manifest, sealed = vm["manifest"], vm["sealed"]
+    if not (root / "config.yaml").is_file():
+        prep = vm.get("preparation") or {}
+        done = len({r["operation"] for r in prep.get("runs") or [] if r.get("status") == "complete"})
+        return _facts([("job", "no Contract yet"),
+                       ("corpus preparation", f"{done} of 5 steps" if prep.get("attached") else "not attached")]) \
+            if sid == "data" else ""
+    rounds = cal.get("rounds") or []
+    labeled = sum(int(r.get("finals") or 0) for r in rounds)
+    if sid == "data":
+        emb = vm.get("embedding") or {}
+        n_dev = manifest.get("n_eligible")
+        return _facts([
+            ("items", _esc(_thousands(manifest.get("n_items"))) if manifest.get("n_items") is not None else ""),
+            ("to label", _esc(_thousands(n_dev)) if n_dev is not None else ""),
+            ("held back", _esc(_thousands(manifest.get("n_sealed", sealed.get("n_items")))) if sealed else ""),
+            ("contract", '<span class=ok>valid</span>' if canonical.get("p0_contract_integrity_valid")
+             else '<span class=warn>not valid</span>'),
+            ("embedding builds", _esc(len(emb.get("builds") or [])) if isinstance(emb, dict) else "0"),
+        ])
+    if sid == "labeling":
+        current = cal.get("current_round") or {}
+        policy = _current_policy(root)
+        return _facts([
+            ("meanings (G0)", '<span class=ok>confirmed</span>' if canonical.get("g0_passed")
+             else '<span class=warn>not confirmed</span>'),
+            ("meaning changes", _esc(canonical.get("meaning_revisions") or 0)),
+            ("rounds", _esc(len(rounds))),
+            ("open round", _esc(f"{_round_words(current['round_id'])} · {current.get('finals', 0)} of "
+                                f"{current.get('batch_size', 0)}") if current.get("round_id") else "none"),
+            ("labeled", _esc(labeled)),
+            ("guideline", _esc(policy) if policy else "none"),
+        ])
+    if sid == "quality":
+        scorecards = list((root / "evaluation" / "scorecards").glob("*")) if (root / "evaluation" / "scorecards").is_dir() else []
+        audits = sorted((root / "audit").glob("final_*")) if (root / "audit").is_dir() else []
+        return _facts([
+            ("held-back test", _esc(f"{sealed.get('n_items')} items · " + (
+                "locked" if (root / "test" / "final" / "lock.json").is_file() else "sealed, not locked"))
+             if sealed else "none"),
+            ("models scored", _esc(len(scorecards)) if scorecards else "none"),
+            ("audits", _esc(len(audits)) if audits else "none"),
+        ])
+    if sid == "delivery":
+        runs = sorted((root / "production").glob("run_*")) if (root / "production").is_dir() else []
+        return _facts([
+            ("handoff", '<span class=ok>frozen</span>' if (root / "handoff" / "label-v1.yaml").is_file() else "not frozen"),
+            ("production runs", _esc(len(runs)) if runs else "none"),
+            ("final labels", '<span class=ok>released</span>' if (root / "corpus" / "final" / "D_star.jsonl").is_file()
+             else "not released"),
+        ])
+    return ""
+
+
+_STEP_STATE = {"complete": ("ok", "done"), "running": ("acc", "in progress"), "failed": ("warn", "failed")}
+
+
+def _view_steps(vm: dict, sid: str, vid: str) -> str:
+    """Steps in this view: every Run type the Workflow map gives this View, in step order, with
+    what it writes and its state on this job (its latest Run, else `not built yet` or `not started`)."""
+    ref = _space_mapping_ref()
+    if not ref or (not (vm["root"] / "config.yaml").is_file() and (sid, vid) != ("data", "preparation")):
+        return ""   # before the Contract only Preparation has steps to show
+    text = ref.read_text(encoding="utf-8")
+    space = next((name for key, name, _ in SPACES if key == sid), "")
+    view = next((vname for key, _, views in SPACES if key == sid for v, vname in views if v == vid), "")
+    runs_by_op: dict[str, list[dict]] = {}
+    for r in vm["runs"]:
+        runs_by_op.setdefault(str(r["operation"]), []).append(r)
+    rows = []
+    # A job set up from an already-fenced source never acquires source-owned Preparation Runs.
+    legacy_prep = (vm["root"] / "config.yaml").is_file() and not (vm.get("preparation") or {}).get("attached")
+    if (sid, vid) == ("data", "preparation"):
+        headers, cells = _md_table(text, "Corpus Preparation Run Types")
+        col = {h.lower(): i for i, h in enumerate(headers)}
+        for row in cells:
+            rows.append((row[col["step"]], row[col["run type"]].strip("`"), row[col["in words"]],
+                         row[col["writes to"]] if "writes to" in col else "", False))
+        for r in (vm.get("preparation") or {}).get("runs") or []:
+            runs_by_op.setdefault(str(r["operation"]), []).append(r)
+    headers, cells = _md_table(text, "Workflow map")
+    col = {h.lower(): i for i, h in enumerate(headers)}
+    for row in cells:
+        if row[col["view"]].strip() == f"{space} · {view}":
+            rows.append((row[col["step"]], row[col["run type"]].strip("`"), row[col["in words"]],
+                         row[col["writes to"]], row[col["started by"]].strip() == "not built yet"))
+    if not rows:
+        return ""
+    body = []
+    for step, op, words, writes, unbuilt in rows:
+        mine = runs_by_op.get(op) or []
+        if mine:
+            last = mine[-1]
+            cls, word = _STEP_STATE.get(str(last["status"]).split(" ")[0], ("mut", str(last["status"])))
+            state = f'<span class={cls}>{_esc(word)}</span> · <code>{_esc(last.get("name") or last["run"])}</code>'
+            if len(mine) > 1:
+                state += f' <span class=mut>· {len(mine)} runs</span>'
+        elif unbuilt:
+            state = '<span class=mut>not built yet</span>'
+        elif (sid, vid) == ("data", "preparation") and legacy_prep:
+            state = '<span class=mut>not used: this job was set up from a fenced source</span>'
+        else:
+            state = '<span class=mut>not started</span>'
+        body.append(f'<tr><td class=num>{_esc(step)}</td><td>{_esc(words)}<br><code class=mut>{_esc(op)}</code></td>'
+                    f'<td>{_code_spans(writes)}</td><td>{state}</td></tr>')
+    return ('<div class="card steps-card"><h2>Steps in this view</h2><div class=scroll><table class=steptable>'
+            '<thead><tr><th>Step</th><th>Run type</th><th>Writes</th><th>On this job</th></tr></thead>'
+            f'<tbody>{"".join(body)}</tbody></table></div></div>')
+
+
+def _code_spans(text: str) -> str:
+    """`a` · `b` from the map, as code, everything else escaped."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", _esc(text))
+
+
+def _contract_detail(vm: dict) -> str:
+    """Data → Contract: the job itself and its labels, from config.yaml and the P0 receipt."""
+    root, config, canonical = vm["root"], vm["config"] or {}, vm["canonical"] or {}
+    if not (root / "config.yaml").is_file():
+        return ""
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    uncertainty = config.get("uncertainty") if isinstance(config.get("uncertainty"), dict) else {}
+    receipt = _read_json(root / "gates" / "p0-contract" / "receipt.json")
+    contract_runs = [r for r in vm["runs"] if r["operation"] == "corpus-contract"]
+    mode = {"single_human_semantic_authority": "one person decides every label",
+            "external_annotation_import": "imported labels, for reference only"}.get(
+        str(authority.get("mode") or ""), str(authority.get("mode") or ""))
+    job = _card("The job", "".join([
+        _row("job", f'<code>{_esc(receipt.get("job_id") or "")}</code>') if receipt.get("job_id") else "",
+        _row("target", f'<code>{_esc(construct.get("name") or "")}</code>'),
+        _row("question", _esc(construct.get("question") or "")),
+        _row("labels decided by", _esc(" · ".join(x for x in (authority.get("human_id"), mode) if x))),
+        _row("test kept by", _esc(canonical.get("sealed_custodian") or (vm["sealed"] or {}).get("custodian") or "")),
+        _row("created", _esc(_when(receipt.get("created_at")))) if receipt.get("created_at") else "",
+        _row("by Run", f'<code>{_esc(contract_runs[-1]["name"])}</code>') if contract_runs else "",
+        _row("contract check", '<span class=ok>valid</span>' if canonical.get("p0_contract_integrity_valid")
+             else '<span class=warn>' + _esc("; ".join(canonical.get("p0_integrity_errors") or ["not valid"])) + '</span>'),
+    ]))
+    values = [str(v) for v in labels.get("values") or []]
+    scheme = _card("Labels", "".join([
+        _row("labels", _esc(" · ".join(values))) if values else "",
+        _row("kind", _esc(" · ".join(x for x in (labels.get("type"), f'none = {labels["none_value"]}'
+                                                  if labels.get("none_value") else "") if x))),
+        _row("regions", _esc(" · ".join(str(r) for r in regions.get("values") or []))) if regions.get("values") else "",
+        _row("how sure", _esc(" · ".join(str(u) for u in uncertainty.get("levels") or []))) if uncertainty.get("levels") else "",
+        _row("meanings", "in Labeling → Definition"),
+    ])) if values else ""
+    return job + scheme
+
+
+def _meaning_history(vm: dict) -> str:
+    """Labeling → Definition: every recorded change to the label meanings, newest first."""
+    module = _canonical_job_module()
+    try:
+        revisions = module.meaning_revisions(vm["root"]) if module is not None else []
+    except Exception:  # the page must still render
+        revisions = []
+    g0 = _read_json(vm["root"] / "gates" / "g0" / "receipt.json")
+    rows = []
+    for rev in reversed(revisions):
+        before = rev.get("before") if isinstance(rev.get("before"), dict) else {}
+        after = rev.get("after") if isinstance(rev.get("after"), dict) else {}
+        changed = [k for k in sorted(set(before) | set(after)) if before.get(k) != after.get(k)]
+        rows.append(f'<tr><td class=num>{_esc(rev.get("seq"))}</td><td>{_esc(_when(rev.get("revised_at")))}</td>'
+                    f'<td>{_esc(rev.get("human_id"))}</td><td>{_esc(", ".join(changed) or "none")}</td>'
+                    f'<td><code>{_esc(rev.get("run") or "")}</code></td></tr>')
+    confirmed = (f'<p class=mut>Meanings confirmed (G0) {_esc(_when(g0.get("confirmed_at") or g0.get("created_at")))}'
+                 f'{" by " + _esc(g0.get("human_id")) if g0.get("human_id") else ""}.</p>') if g0 else ""
+    if not rows:
+        return _card("Meaning history", "<p class=mut>No change since the Contract.</p>" + confirmed)
+    return _card("Meaning history", '<div class=scroll><table class=steptable><thead><tr><th>#</th><th>When</th>'
+                 '<th>By</th><th>Labels changed</th><th>Run</th></tr></thead>'
+                 f'<tbody>{"".join(rows)}</tbody></table></div>' + confirmed)
+
+
+def _round_events(root: Path, round_id: str) -> list[dict]:
+    path = root / "rounds" / round_id / "sessions" / "events.jsonl"
+    if not path.is_file():
+        return []
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(event, dict):
+            out.append(event)
+    return out
+
+
+def _rounds_summary(vm: dict) -> str:
+    """Labeling → Rounds: all rounds in one table, then how the final labels fall (counts only)."""
+    root, cal, config = vm["root"], vm["cal"] or {}, vm["config"] or {}
+    rounds = cal.get("rounds") or []
+    if not rounds:
+        return ""
+    values = [str(v) for v in ((config.get("labels") or {}).get("values") or [])]
+    table, spread = [], []
+    for r in rounds:
+        rid = r.get("round_id") or ""
+        manifest = _load_mapping(root / "rounds" / rid / "manifest.yaml")
+        draw = manifest.get("draw") if isinstance(manifest.get("draw"), dict) else {}
+        finals = [e for e in _round_events(root, rid) if e.get("kind") == "final"]
+        changed = sum(1 for e in finals if str((e.get("payload") or {}).get("change_type") or "none") != "none")
+        state = {"judging": "labeling", "judged": "all labeled"}.get(str(r.get("state")), str(r.get("state") or ""))
+        how = " · ".join(x for x in (str(draw.get("method") or ""), f'seed {draw["seed"]}' if draw.get("seed") is not None else "") if x)
+        table.append(
+            f'<tr><td>{_esc(_round_words(rid))}</td><td>{_esc(state)}</td>'
+            f'<td class=num>{_esc(r.get("finals", 0))} of {_esc(r.get("batch_size", 0))}</td>'
+            f'<td class=num>{_esc(changed)}</td>'
+            f'<td>{_esc(how)}</td>'
+            f'<td>{_esc(manifest.get("policy_version") or "")}</td></tr>')
+        counts = {v: 0 for v in values}
+        for e in finals:
+            label = str((e.get("payload") or {}).get("class_label") or "")
+            counts[label] = counts.get(label, 0) + 1
+        spread.append(f'<tr><td>{_esc(_round_words(rid))}</td>'
+                      + "".join(f'<td class=num>{_esc(counts.get(v, 0))}</td>' for v in values)
+                      + f'<td class=num>{_esc(len(finals))}</td></tr>')
+    head = "".join(f"<th>{_esc(v)}</th>" for v in values)
+    return _card("All rounds", (
+        '<div class=scroll><table class=steptable><thead><tr><th>Round</th><th>State</th><th>Labeled</th>'
+        '<th>Changed after the reveal</th><th>How drawn</th><th>Guideline</th></tr></thead>'
+        f'<tbody>{"".join(table)}</tbody></table></div>'
+        '<h3 class=sub>How the final labels fall</h3>'
+        f'<div class=scroll><table class=steptable><thead><tr><th>Round</th>{head}<th>All</th></tr></thead>'
+        f'<tbody>{"".join(spread)}</tbody></table></div>'))
+
+
+def _guideline_versions(vm: dict) -> str:
+    """Labeling → Guideline: every version, which rounds used it, the current one marked."""
+    root, cal = vm["root"], vm["cal"] or {}
+    base = root / "policy" / "versions"
+    if not base.is_dir():
+        return ""
+    current = _current_policy(root)
+    used: dict[str, list[str]] = {}
+    for r in cal.get("rounds") or []:
+        manifest = _load_mapping(root / "rounds" / str(r.get("round_id")) / "manifest.yaml")
+        if manifest.get("policy_version"):
+            used.setdefault(str(manifest["policy_version"]), []).append(_round_words(r.get("round_id")))
+    rows = []
+    for folder in sorted(p for p in base.iterdir() if p.is_dir() and not p.is_symlink()):
+        manifest = _load_mapping(folder / "manifest.yaml")
+        status = str(manifest.get("status") or "")
+        rows.append(f'<tr><td><code>{_esc(folder.name)}</code>{" <b class=ok>current</b>" if folder.name == current else ""}</td>'
+                    f'<td>{_esc(status.replace("-", " "))}</td><td>{_esc(manifest.get("parent") or "none")}</td>'
+                    f'<td>{_esc(manifest.get("created_by") or "")}</td><td>{_esc(", ".join(used.get(folder.name, [])) or "none")}</td></tr>')
+    return _card("Versions", '<div class=scroll><table class=steptable><thead><tr><th>Version</th><th>Status in its manifest</th>'
+                 '<th>From</th><th>Made by</th><th>Used by</th></tr></thead>'
+                 f'<tbody>{"".join(rows)}</tbody></table></div>')
+
+
+def _shell_links(path_q: str, standalone: bool) -> str:
+    """The line under the title: `all labeling jobs`, back to the Board level. A Page opened
+    without a Board has none (no `all boards · board index` line: the Board tab already has them)."""
+    if standalone or not path_q:
+        return ""
+    return (f'<div class="wb-links mut"><a href="/_board/labeling-board?path={_esc(quote(path_q))}">'
+            'all labeling jobs</a></div>')
+
+
+def _shell_band(vm: dict, hold: bool) -> str:
+    """The band under the title: where this job stands, read from its files (no item text)."""
+    canonical, cal = vm["canonical"] or {}, vm["cal"] or {}
+    phase = canonical.get("phase") or cal.get("phase") or ""
+    parts = [f"{phase} {dict(PHASES).get(phase, '')}".strip() if phase else "no Contract yet"]
+    current = cal.get("current_round") or {}
+    rounds = cal.get("rounds") or []
+    if current.get("round_id"):
+        parts.append(f"{_round_words(current['round_id'])}: {current.get('finals', 0)} of "
+                     f"{current.get('batch_size', 0)} labeled")
+    elif rounds:
+        parts.append(f"{_round_words(rounds[-1].get('round_id'))} {rounds[-1].get('state') or ''}".strip())
+    else:
+        parts.append("no round yet")
+    current_policy = vm["root"] / "policy" / "current"
+    policy = current_policy.read_text(encoding="utf-8").strip() if current_policy.is_file() else ""
+    parts.append(f"guideline {policy}" if policy else "no guideline yet")
+    state = vm["state"]
+    reason = canonical.get("hold_reason") or state.get("authority_reason")
+    parts.append(f'<span class=warn>HOLD · {_esc(_hold_words(reason))}</span>' if hold and reason else
+                 '<span class=warn>HOLD</span>' if hold else "no HOLD")
+    return " · ".join(x if x.startswith("<span") else _esc(x) for x in parts)
+
+
 def _script_json(value) -> str:
     return (json.dumps(value, ensure_ascii=False)
             .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026"))
@@ -2813,6 +3133,7 @@ def _script_json(value) -> str:
 
 def render(page_src: Path, path_q: str, file_q: str, page_q: str,
            board_dir: Path | None, *, standalone: bool = False) -> str:
+    from live.runs_panel import PANEL_CSS, PANEL_JS, SPLIT_CSS
     vm = _view_model(page_src)
     state, canonical, config = vm["state"], vm["canonical"], vm["config"]
     if not standalone and not generated_page_url(path_q, file_q, page_q, board_dir):
@@ -2830,7 +3151,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
     drawers = _drawers(vm)
     space_buttons = "".join(
         f'<button class=space type=button role=tab id=tab-{sid} aria-controls=panel-{sid} '
-        f'aria-selected=false data-space={sid}>{_esc(name)} Space</button>'
+        f'aria-selected=false data-space={sid}>{_esc(name)}</button>'
         for sid, name, _ in SPACES
     )
     sections = []
@@ -2840,12 +3161,13 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
             for vid, vname in views
         )
         panes = "".join(
-            f'<div class=pane data-space={sid} data-view={vid} hidden>{panels[sid][vid]}</div>'
+            f'<div class=pane data-space={sid} data-view={vid} hidden>{panels[sid][vid]}{_view_steps(vm, sid, vid)}</div>'
             for vid, _ in views
         )
         sections.append(
             f'<section class=panel id=panel-{sid} role=tabpanel aria-labelledby=tab-{sid} data-space={sid} hidden>'
-            f'<div class=space-split><div class=space-main><div class=views role=group>{chips}</div>{panes}</div>'
+            f'<div class=split><div class=space-main><div class=views role=group>{chips}</div>'
+            f'{_space_brief(vm, sid)}{panes}</div>'
             f'{_runs_panel(vm, sid, types[sid])}</div></section>'
         )
 
@@ -2874,21 +3196,19 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
         "batch_default": ((config.get("rounds") or {}).get("round1") or {}).get("human_batch_size") or 20,
         "spaces": {sid: [vid for vid, _ in views] for sid, _, views in SPACES},
     }
-    back_link = ('' if standalone else
-                 f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>')
     document = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        f'<title>Labeling · {_esc(page_src.stem)}</title><style>{_CSS}</style></head><body>'
-        f'<h1 class=pagetitle title="{_esc(next_line)}">'
-        f'{back_link}'
-        f' 🏷 {_esc(title)}</h1>'
+        f'<title>Labeling · {_esc(page_src.stem)}</title><style>{_CSS}{PANEL_CSS}{SPLIT_CSS}{_PANEL_CSS_AFTER}</style></head><body>'
+        f'<h1 class=pagetitle title="{_esc(next_line)}">🏷 {_esc(title)}</h1>'
+        f'{_shell_links(path_q, standalone)}'
+        f'<div class=wb-band>{_shell_band(vm, hold)}</div>'
         f'<section class=drawer data-drawer-panel=workflow hidden>{drawers["workflow"]}</section>'
         f'<section class=drawer data-drawer-panel=allruns hidden>{drawers["allruns"]}</section>'
         f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}</nav>'
         + "".join(sections) +
         f'<script type=application/json id=labeling-boot>{_script_json(boot)}</script>'
-        f'<script>{_JS}</script></body></html>'
+        f'<script>{PANEL_JS}</script><script>{_JS}</script></body></html>'
     )
     from live.workbench_guide import mount_guide
     return mount_guide(document, "labeling", {"path": path_q, "file": file_q},
@@ -2896,39 +3216,54 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
 
 
 _CSS = """
-:root{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff;
- --warn:#b3541e;--ok:#3a7d44;--acc:#3e5c84;--soft:#f6f7f9}
-@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;
- --mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--warn:#e0955a;--ok:#7dbb87;
- --acc:#7d9cc4;--soft:#1b1d21}}
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--card:#fff;--soft:#f4f5f7;
+ --acc:#3e5c84;--acc-soft:#e6edf5;--ok:#3a7d44;--warn:#b3541e;
+ --tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--line:#2c2e33;
+ --card:#1d1f23;--soft:#212429;--acc:#8aa7cc;--acc-soft:#22304a;--ok:#7dbb87;--warn:#e0955a;
+ --tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749}}
 /* the hidden attribute always wins over a display rule below (SVG and canvas both lost to it once) */
 [hidden]{display:none!important}
 *{box-sizing:border-box}
 body{margin:0;padding:16px;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-h1{font-size:17px;margin:0 0 2px;overflow-wrap:anywhere} .mut{color:var(--mut);font-size:13px}
+h1{font-size:18px;margin:0 0 2px;overflow-wrap:anywhere} .mut{color:var(--mut);font-size:13px}
 a{color:var(--acc)}
 .planmeta{margin:2px 0 7px;color:var(--mut);font-size:12.5px;line-height:1.45}
 .planmeta a{text-decoration:none}.planmeta a:hover{text-decoration:underline}
 .sep{opacity:.45;padding:0 4px}
 .lead{font-size:14.5px;margin:6px 0 0;color:var(--fg)}
 .next.hold{color:var(--warn)}
-.spaces{display:flex;gap:5px;margin:10px 0 6px;flex-wrap:wrap}
-.space{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);
- border-radius:8px;padding:3px 9px;cursor:pointer;background:var(--card);
- color:var(--fg);white-space:nowrap;flex:0 0 auto}
-.space.on{border-color:var(--acc);color:var(--acc)}
-.views{display:flex;align-items:center;gap:5px;margin:2px 0 12px;flex-wrap:wrap}
+/* The shared workbench shell (haipipe-toolkit servers/README.md "Adding a workbench", rule 1):
+   the Insight workbench's title, links, band, Space row and tab sizes; each Space's View tabs
+   and content sit in one box (SPLIT_CSS), its Runs panel on the right. */
+.wb-links{color:var(--mut);font-size:13px}.wb-links a{color:var(--acc)}
+.wb-band{margin:10px 0 4px;padding:8px 14px;border:1px solid var(--acc);border-radius:10px;
+ background:var(--acc-soft);color:var(--acc);font-size:14px;line-height:1.5}
+.spaces{display:flex;gap:6px;margin:12px 0 8px;flex-wrap:wrap}
+.space{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;
+ padding:6px 14px;cursor:pointer;background:var(--bg);color:var(--fg);white-space:nowrap;flex:0 0 auto}
+.space.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+.views{display:flex;align-items:center;gap:6px;padding:0 0 10px;margin:0 0 12px;flex-wrap:wrap;
+ border-bottom:1px solid var(--line)}
 .vlabel{font:600 10px/1.5 system-ui,sans-serif;color:var(--mut);
  text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
-.chip{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
- border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;
- background:var(--card);color:var(--mut)}
-.chip.on{border-color:var(--acc);color:var(--acc)}
+.chip{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;
+ padding:5px 12px;cursor:pointer;background:transparent;color:var(--fg)}
+.chip.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
 .ok{color:var(--ok);font-weight:600} .warn{color:var(--warn);font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;
  padding:10px 14px;margin:0 0 10px}
 .card.focus{border-color:var(--acc)}
+/* a Space's brief, under its View tabs (the View tabs open the box, as on Page): label over value */
+dl.brief{display:flex;flex-wrap:wrap;gap:6px 26px;margin:0 0 12px;padding:0 0 10px;border-bottom:1px solid var(--line)}
+dl.brief>div{min-width:0}
+dl.brief dt{font:600 11px/1.4 system-ui,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+dl.brief dd{margin:1px 0 0;font-size:15px}
+table.steptable td code.mut{font-size:11px;color:var(--mut)}
+table.steptable td.num{text-align:left;white-space:nowrap}
+.space-main .card{border:0;border-top:1px solid var(--line);border-radius:0;padding:12px 0 4px;margin:0;background:none}
+.space-main .pane>.card:first-child{border-top:0;padding-top:0}
 .card h2{font-size:15px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .tally{margin-left:auto;flex:none;font:600 11px ui-monospace,Menlo,monospace;color:var(--mut)}
 .tally{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 6px;font-size:12px}
@@ -3005,9 +3340,15 @@ table.items td:nth-child(6)>*{max-width:18em}
 table.items .pill{font-size:10px}
 table.items td.nowrap{white-space:nowrap}
 table.items .reply{font-weight:500}
-table.items.itemtable td:nth-child(3),table.items.itemtable td:nth-child(4){white-space:normal}
-table.items.itemtable td:nth-child(3)>*{max-width:26em}
-table.items.itemtable td:nth-child(4)>*{max-width:40em}
+table.items.itemtable{width:100%}
+table.items.itemtable td.itemid{white-space:nowrap;width:1%}
+table.items.itemtable td.itemid .pill{margin-top:4px;display:inline-block}
+table.items.itemtable td.itemread{white-space:normal}
+table.items.itemtable td.itemread>*{max-width:none}
+.itemconvo .turn{grid-template-columns:4.2em 1fr;font-size:14px}
+.itemreply{display:grid;grid-template-columns:7.5em 1fr;gap:8px;margin-top:6px;padding:8px 10px;border-left:3px solid var(--acc);
+ background:color-mix(in srgb,var(--acc) 7%,var(--card));border-radius:0 8px 8px 0;font-size:15px;line-height:1.55}
+.itemreply b{font:600 11px/1.9 system-ui,sans-serif;color:var(--acc);text-transform:uppercase;letter-spacing:.04em}
 table.items details.ctx summary{font-size:11.5px;text-transform:none;letter-spacing:0;margin-top:3px}
 table.items .fb{margin:0 0 3px}
 table.wfmap{font-size:13.5px}
@@ -3038,7 +3379,7 @@ table.defs td:nth-child(2){min-width:16em;max-width:44em}
 pre.prompt{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px/1.5 ui-monospace,Menlo,monospace;background:var(--soft);
  border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:4px 0 10px}
 .convo{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:0 0 10px;
- max-height:46vh;overflow:auto}
+ max-height:420px;overflow:auto}
 .turn{display:grid;grid-template-columns:5.4em 1fr;gap:6px;font-size:14px;line-height:1.55;padding:1px 0;overflow-wrap:anywhere}
 .turn b{font:600 11px -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;padding-top:3px}
 .line{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
@@ -3052,7 +3393,7 @@ code.wp{border:1px solid var(--line);border-radius:5px;padding:0 4px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
 .dot.faint{background:var(--mut);opacity:.3}
 .rid .dot{width:8px;height:8px}
-svg.map{display:block;width:100%;height:auto;margin:4px auto 6px;max-width:calc(72vh * 1000 / 600);border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+svg.map{display:block;width:100%;height:auto;margin:4px auto 6px;max-width:1000px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
 svg.map .pt{fill:var(--gc);fill-opacity:.85;stroke:var(--card);stroke-width:1.5}
 svg.map .pt.drawn{stroke:var(--fg);stroke-width:2.5}
 svg.map .pt:hover{stroke:var(--acc);stroke-width:3}
@@ -3068,7 +3409,7 @@ svg.map .pt.nb{stroke:var(--acc);stroke-width:2.5}
 svg.map .links line{stroke:var(--acc);stroke-opacity:.55;stroke-width:1.5}
 .mapwrap[data-show=round] svg.map .pt:not(.drawn){opacity:.12}
 .zoomctl{margin-left:auto;display:inline-flex;gap:5px;flex-wrap:wrap}
-canvas.map3d{display:block;width:100%;margin:4px auto 6px;max-width:calc(72vh * 1000 / 600);border:1px solid var(--line);border-radius:8px;
+canvas.map3d{display:block;width:100%;margin:4px auto 6px;max-width:1000px;border:1px solid var(--line);border-radius:8px;
  background:var(--bg);cursor:grab;touch-action:none}
 canvas.map3d.dragging{cursor:grabbing}
 .embform{margin:6px 0 2px}
@@ -3131,52 +3472,18 @@ button.leg .kw{opacity:.75}
 
 
 _CSS += """/* v3 (JL 260927, as the Page workbench): no page bar; each Space is its content on the left and its
-   Runs panel on the right at every width. The panel stays in view while the page scrolls; folded, it
-   is a thin strip. A view lists only its own Run types. */
-.pagetitle{display:flex;align-items:center;gap:8px;margin:0 0 6px}
-.pagetitle .back{text-decoration:none;font-weight:700}
+   Runs panel on the right at every width. Workflow and All runs open only from ?drawer=. */
+.pagetitle{margin:0 0 2px}
 .drawer{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0 0;background:var(--card)}
-.space-split{display:flex;align-items:flex-start;gap:16px}
-.space-main{flex:1 1 auto;min-width:0}
-.runs-panel{flex:0 0 clamp(260px,30vw,600px);position:sticky;top:8px;max-height:calc(100vh - 16px);
- display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--card)}
-.runs-panel button{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
- border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;background:var(--card);color:var(--fg)}
-.runs-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;font:13px/1.4 system-ui,sans-serif}
-.runs-bar .runs-fold{padding:0 7px}
-.runs-body{overflow:auto;min-height:0;display:flex;flex-direction:column;gap:10px;padding:0 12px 12px}
-.runs-types{display:flex;flex-wrap:wrap;gap:6px}
-.run-type{display:flex;gap:8px;align-items:center}
-.run-type.on{border-color:var(--acc)!important;color:var(--acc)!important}
-.run-type .run-count{color:var(--mut);font-weight:500}
-.run-new{border-style:dashed!important}
-.runs-detail{border:1px solid var(--line);border-radius:9px;padding:10px 12px;min-width:0}
-.run-list{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;margin-bottom:8px;padding-bottom:2px}
-.run-list button{flex:none;font:500 11px ui-monospace,Menlo,monospace!important;padding:1px 6px!important}
-.run-list button.on{border-color:var(--acc);color:var(--acc)}
-.run-card header{display:flex;align-items:center;gap:8px}
+"""
+
+
+# After the shared PANEL_CSS: Labeling's own run states (a blocked history, a failed Run).
+_PANEL_CSS_AFTER = """
 .run-card header b{font-size:13px;overflow-wrap:anywhere}
-.run-card header .run-copy{margin-left:auto}
-.run-prompt-box{margin:0}
-.run-prompt-box>summary{display:flex;align-items:center;gap:6px;margin:10px 0 4px;padding:0;cursor:pointer;list-style:none;
- font:600 12px system-ui,sans-serif;text-transform:none;letter-spacing:normal;color:var(--fg)}
-.run-prompt-box>summary::-webkit-details-marker{display:none}
-.run-prompt-box>summary:before{content:"▸";color:var(--acc);width:10px}
-.run-prompt-box[open]>summary:before{content:"▾"}
-.run-prompt-box>summary .run-copy{margin-left:auto}
-.run-card h4{margin:10px 0 4px;font:600 12px system-ui,sans-serif}
-.run-process{color:var(--mut);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
-.run-prompt{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:7px 9px;border-radius:7px;max-height:40vh;overflow:auto;
- background:var(--soft);font:12px/1.5 ui-monospace,Menlo,monospace}
-.run-results{font-size:12px;overflow-wrap:anywhere}.run-results ul{margin:4px 0 0;padding-left:18px}
-.run-state{font:600 10.5px/1.4 system-ui,sans-serif;border-radius:5px;padding:1px 6px;border:1px solid var(--line);color:var(--mut)}
+.run-results{font-size:12px;overflow-wrap:anywhere}
 .run-state.st-running{color:var(--ok);border-color:var(--ok)}
-.run-state.st-blocked{color:var(--warn);border-color:var(--warn)}
-.run-state.st-failed{color:var(--warn);border-color:var(--warn)}
-.run-empty{color:var(--mut);font-size:12px}
-.runs-panel.folded{flex-basis:42px;cursor:pointer}
-.runs-panel.folded .runs-body{display:none}
-.runs-panel.folded .runs-bar{writing-mode:vertical-rl;padding:10px 9px;gap:10px}
+.run-state.st-blocked,.run-state.st-failed{color:var(--warn);border-color:var(--warn)}
 """
 
 
@@ -3204,60 +3511,24 @@ $$('.space').forEach(function(b){b.addEventListener('click',function(){select(b.
  b.addEventListener('keydown',function(e){var ids=Object.keys(spaces),i=ids.indexOf(b.dataset.space);
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();var n=ids[(i+(e.key==='ArrowRight'?1:ids.length-1))%ids.length];select(n,null,true);$('#tab-'+n).focus();}});});
 $$('.chip').forEach(function(c){c.addEventListener('click',function(){select(c.dataset.space,c.dataset.view,true);});});
-/* ── Runs panel, right of each Space: a view lists only its own Run types; pick a type, then a run ── */
-function runsRender(p){
- var on=$('.run-type.on',p),newMode=on&&on.classList.contains('run-new'),list=$('.run-list',p),empty=$('.run-empty',p);
- var source=newMode?$('.run-type[data-op="'+p.dataset.lastOp+'"]',p):on;
- $('.run-new',p).hidden=!source||!source.dataset.prompt;
- $$('.run-card',p).forEach(function(c){c.hidden=true;});list.innerHTML='';list.hidden=true;empty.hidden=true;
- var op=newMode?p.dataset.lastOp:(on?on.dataset.op:'');
- if(newMode){var src=$('.run-type[data-op="'+op+'"]',p),card=$('.run-card-new',p),text=src?src.dataset.prompt:'';
-  $('.run-prompt',card).textContent=text;$('.run-copy',card).dataset.copy=text;
-  var sk=$('.run-skill',card),skills=src&&src.dataset.skills?src.dataset.skills.split('|'):[];
-  sk.innerHTML=skills.length?'Run Type skills '+skills.map(function(skill){return '<code>'+esc(skill)+'</code>';}).join(' · '):'';
-  sk.hidden=!skills.length;
-  card.hidden=false;return;}
- p.dataset.lastOp=op||'';
- var cards=op?$$('.run-card[data-op="'+op+'"]',p):[];
- if(!cards.length){var pendingSkills=on&&on.dataset.skills?on.dataset.skills.split('|'):[];
-  empty.innerHTML='No runs yet.'+(pendingSkills.length?'<p class=run-skill>Run Type skills '+
-   pendingSkills.map(function(skill){return '<code>'+esc(skill)+'</code>';}).join(' · ')+'</p>':'');
-  empty.hidden=false;return;}
- var first=cards.filter(function(c){return c.dataset.target&&c.dataset.target===p.dataset.want;})[0]||cards[0];
- function show(c){cards.forEach(function(x){x.hidden=x!==c;});}
- cards.forEach(function(c){var b=document.createElement('button');b.type='button';b.textContent=c.dataset.name;b.title=c.dataset.run;
-  b.addEventListener('click',function(){show(c);$$('button',list).forEach(function(x){x.classList.toggle('on',x===b);});
-   p.dataset.want=c.dataset.target||'';
-   document.dispatchEvent(new CustomEvent('labeling:run',{detail:{space:p.dataset.space,op:c.dataset.op,target:c.dataset.target||''}}));});
-  if(c===first){b.classList.add('on');}list.appendChild(b);});
- list.hidden=cards.length<2;show(first);}
-/* the content picks its run: a build or a round selects the matching run in the panel (as the Page's Card ↔ Runs) */
+/* ── Runs panel: the shared one (live.runs_panel PANEL_JS). Choosing a view scopes it
+   (space-scope); a round or a build in the content picks its run, and a run picks its round. ── */
+var quiet=false;
+function visibleCard(p){return $$('.run-card[data-op]',p).filter(function(c){return !c.hidden;})[0];}
 function runsWant(space,target){var p=$('.runs-panel[data-space="'+space+'"]');if(!p||!target){return;}
- var shown=$$('.run-card[data-op]',p).filter(function(c){return !c.hidden;})[0];
- p.dataset.want=target;if(shown&&shown.dataset.target===target){return;}
- function has(b){return b&&!b.hidden&&b.dataset.op&&$$('.run-card[data-op="'+b.dataset.op+'"]',p).some(function(c){return c.dataset.target===target;});}
- var on=$('.run-type.on',p);
- if(on&&!on.classList.contains('run-new')&&!has(on)){var alt=$$('.run-type[data-op]',p).filter(has)[0];
-  if(alt){$$('.run-type',p).forEach(function(x){x.classList.toggle('on',x===alt);});}}
- if($('.run-type.on',p)){runsRender(p);}}
-function runsFor(space,view){var p=$('.runs-panel[data-space="'+space+'"]');if(!p){return;}
- var best=null;
- $$('.run-type[data-op]',p).forEach(function(b){b.hidden=(b.dataset.views||'').split(' ').indexOf(view)<0;
-  if(!b.hidden&&(!best||+b.dataset.waiting>+best.dataset.waiting)){best=b;}});
- $('.run-new',p).hidden=!best||!best.dataset.prompt;
- $$('.run-type',p).forEach(function(b){b.classList.toggle('on',b===best);});
- runsRender(p);}
-$$('.runs-panel').forEach(function(p){
- $$('.run-type',p).forEach(function(b){b.addEventListener('click',function(){
-  $$('.run-type',p).forEach(function(x){x.classList.toggle('on',x===b);});runsRender(p);
-  var c=$$('.run-card[data-op]',p).filter(function(x){return !x.hidden;})[0];
-  if(c&&c.dataset.target){document.dispatchEvent(new CustomEvent('labeling:run',{detail:{space:p.dataset.space,op:c.dataset.op,target:c.dataset.target}}));}});});
- var fold=$('.runs-fold',p),foldKey='labeling-runs-fold:'+p.dataset.space;
- function setFold(on,remember){p.classList.toggle('folded',on);fold.textContent=on?'◂':'▸';
-  if(remember){try{localStorage.setItem(foldKey,on?'1':'0');}catch(e){}}}
- fold.addEventListener('click',function(ev){ev.stopPropagation();setFold(!p.classList.contains('folded'),true);});
- $('.runs-bar',p).addEventListener('click',function(){if(p.classList.contains('folded')){setFold(false,true);}});
- try{if(localStorage.getItem(foldKey)==='1'){setFold(true,false);}}catch(e){}});
+ var shown=visibleCard(p);if(shown&&shown.dataset.target===target){return;}
+ var card=$$('.run-card[data-op]',p).filter(function(c){var b=$('.run-type[data-type="'+c.dataset.type+'"]',p);
+  return c.dataset.target===target&&b&&!b.hidden;})[0];if(!card){return;}
+ quiet=true;
+ try{var type=$('.run-type[data-type="'+card.dataset.type+'"]',p);if(!type.classList.contains('on')){type.click();}
+  var pick=$$('.run-list button',p).filter(function(b){return b.title===card.dataset.run;})[0];if(pick){pick.click();}}
+ finally{quiet=false;}}
+function runsFor(space,view){var chip=$('.chip[data-space="'+space+'"][data-view="'+view+'"]');
+ document.dispatchEvent(new CustomEvent('space-scope',{detail:{space:space,view:view,label:chip?chip.textContent:'',mode:view}}));}
+document.addEventListener('click',function(ev){if(quiet||!ev.target.closest){return;}
+ var hit=ev.target.closest('.runs-panel .run-list button,.runs-panel .run-type:not(.run-new)');if(!hit){return;}
+ var p=hit.closest('.runs-panel'),c=visibleCard(p);
+ if(c&&c.dataset.target){document.dispatchEvent(new CustomEvent('labeling:run',{detail:{space:p.dataset.space,op:c.dataset.op,target:c.dataset.target}}));}});
 function roundLight(target){$$('details.roundbox').forEach(function(d){d.classList.toggle('on',d.dataset.target===target);});}
 $$('details.roundbox').forEach(function(d){d.addEventListener('toggle',function(){
  if(d.open){roundLight(d.dataset.target);runsWant('labeling',d.dataset.target);}});});
@@ -3524,11 +3795,13 @@ function act(action,body){
   return '<div class=turn>'+(who?'<b>'+esc(who)+'</b>':'')+'<span>'+esc(body)+'</span></div>';}).join('');}
  function nTurns(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).length;}
  function row(it){var waiting=/^waiting in /.test(it.state);
-  var state=waiting?it.state.replace(/^waiting in (\S+)$/,function(_,r){return 'in '+roundWords(r)+', open it in Labeling › Rounds';}):
+  var state=waiting?it.state.replace(/^waiting in (\S+)$/,function(_,r){return 'in '+roundWords(r);}):
    it.state.replace(/^labeled in (\S+)$/,function(_,r){return 'labeled in '+roundWords(r);});
-  return '<tr><td class=nowrap>item '+esc(it.item_id)+'</td><td><span class="pill'+(it.state==='to label'?'':' mut')+'">'+esc(state)+'</span></td>'+
-   '<td>'+(waiting||!it.context?'':'<details class=ctx><summary>'+nTurns(it.context)+' turn'+(nTurns(it.context)===1?'':'s')+'</summary><div class=convo>'+turns(it.context)+'</div></details>')+'</td>'+
-   '<td>'+(waiting?'':'<div class=reply>'+esc(it.text)+'</div>')+'</td></tr>';}
+  /* one item, read whole: the earlier turns, then the reply to label */
+  return '<tr><td class=itemid>item '+esc(it.item_id)+'<br><span class="pill'+(it.state==='to label'?'':' mut')+'">'+esc(state)+'</span></td>'+
+   '<td class=itemread>'+(waiting?'<p class=mut>Drawn into an open round: you see it first in Labeling › Rounds, so you judge it blind.</p>':
+    (it.context?'<div class=itemconvo>'+turns(it.context)+'</div>':'')+
+    '<div class=itemreply><b>Reply to label</b><span>'+esc(it.text)+'</span></div>')+'</td></tr>';}
  function load(){btn.disabled=true;var m=$('button',more);if(m){m.disabled=true;m.textContent='Loading…';}
   act('item_page',{offset:offset,k:k}).then(function(j){var r=j.result;box.hidden=false;btn.hidden=true;
    rows.insertAdjacentHTML('beforeend',r.items.map(row).join(''));offset+=r.items.length;
@@ -3676,6 +3949,8 @@ def _job_row(page_src: Path, page: dict, path_q: str) -> dict:
         "source": source.get("name") or "", "n_dev": n_dev, "n_sealed": n_sealed,
         "human": authority.get("human_id") or "", "kind": kind, "badge": badge, "rank": rank,
         "labeled": labeled, "current": current, "rounds": len(rounds),
+        "phase": " ".join(x for x in (str(canonical.get("phase") or ""), dict(PHASES).get(str(canonical.get("phase") or ""), "")) if x),
+        "g0": bool(canonical.get("g0_passed")) if canonical else None,
         "runs": len(vm["runs"]) + len(prep.get("runs") or []),
         "next": next_line, "labeling_url": labeling_url, "page_url": page_url,
     }
@@ -3738,6 +4013,10 @@ def render_board(board_dir: Path, path_q: str) -> str:
             _row("Target", f"<code>{_esc(job.get('target') or '')}</code>") if job.get("target") else "",
             _row("Data", _esc(" · ".join(data_bits))) if data_bits else "",
             _row("Labeler", _esc(job.get("human"))) if job.get("human") else "",
+            _row("Phase", _esc(job.get("phase"))) if job.get("phase") else "",
+            _row("Meanings", '<span class=ok>confirmed (G0)</span>' if job.get("g0") else "not confirmed")
+            if job.get("g0") is not None else "",
+            _row("Rounds", _esc(f'{job["rounds"]} · {job["labeled"]} labeled')) if job.get("rounds") else "",
         ]
         rows.append(_row("Next", _esc(job["next"])))
         return (
@@ -3768,22 +4047,32 @@ def render_board(board_dir: Path, path_q: str) -> str:
         empty = f'<div class=card><h2>Pages before Contract</h2>{links}</div>'
     name = Path(board_dir).name
     tally = f'{len(waiting)} waiting · {len(jobs)} jobs'
-    return (
+    # The shared shell (servers/README.md "Adding a workbench", rule 1): title, band, then the
+    # Space row with Guide first; this level has one Space, its jobs, in one box.
+    document = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>Labeling · {_esc(name)}</title><style>{_CSS}{_BOARD_CSS}</style></head><body>'
         '<h1>🏷 Labeling · all jobs</h1>'
-        f'<p class="lead next"><b>Next:</b> {_esc(headline)}</p>'
-        f'<div class=card style="margin-top:10px"><h2>Labeling jobs<span class=tally>{_esc(tally)}</span></h2>'
-        f'{groups}</div>{empty}'
+        f'<div class=wb-band>{_esc(tally)} · <b>Next:</b> {_esc(headline)}</div>'
+        '<nav class=spaces role=tablist aria-label="Labeling Spaces">'
+        '<button class="space on" type=button role=tab aria-selected=true data-space=jobs>Jobs</button></nav>'
+        '<section class="panel board-jobs" data-space=jobs><div class=space-main>'
+        '<div class=card><h2>Labeling jobs</h2>'
+        f'{groups}</div>{empty}</div></section>'
         '</body></html>'
     )
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "labeling", {"path": path_q, "file": "board.md"},
+                       "nav.spaces", "section.panel")
 
 
 _BOARD_CSS = """
 a.rec{display:block;color:var(--fg);text-decoration:none;border-radius:6px;margin:0 -6px;padding:8px 6px 6px}
 a.rec:hover,a.rec:focus-visible{background:color-mix(in srgb,var(--acc) 6%,var(--card));outline:none}
 .rgrp:first-of-type{margin-top:4px}
+.board-jobs>.space-main{border:1px solid var(--line);border-radius:10px;padding:12px 16px 16px}
+.board-jobs>.space-main>.card:first-child{border-top:0;padding-top:0}
 """
 
 

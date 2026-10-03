@@ -1,5 +1,38 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.25.0 · 2026-10-03
+
+- Show the detail of each Space and View (`ref/view-structure.md`): a brief at the
+  top of every Space; "Steps in this view" at the end of every View (Run types in
+  step order, what each writes, `done`/`in progress` with its Run, `not built yet`
+  or `not started`), so the later Views are no longer blank; Data › Contract gains
+  The job and Labels; Definition gains Meaning history and `not defined yet`;
+  Rounds gains All rounds and How the final labels fall (counts only); Guideline
+  gains Versions; each job card on the board level adds Phase, Meanings, Rounds.
+- The Workbench design drawing (Guide › RoadMap Draw) now follows the Insight
+  drawing: four named frames, Spaces, runs and skills (from the Workbench Table),
+  The workbench (each Space as the page shows it), Every View (all twelve, block
+  by block, with their steps) and Where things live. The example job is made up.
+
+## 0.24.0 · 2026-10-03
+
+- Wear the shell every workbench shares (haipipe-toolkit `servers/README.md`
+  "Adding a workbench"): title, an `all labeling jobs` link (the old `←`
+  link; no `all boards · board index` line), a band (phase · round · guideline · HOLD), plain Space
+  names, each Space's View tabs and content in one box, Insight's tokens and tab
+  sizes. The Board level gets the same title and band, with Guide and one
+  Jobs Space.
+- Use the shared Runs panel (`live.runs_panel.panel_markup`), folded at first;
+  Labeling keeps its own gated Run cards through `card=`, and a type with no
+  prompt offers no `+ New Run`.
+- No window-sized heights: the map stops at 1000 px wide, the conversation box at 420 px.
+- Guide gains its description, the generated Workbench Table
+  (`ref/workbench-table.md` from `ref/make_workbench_table.py`), the Workbench
+  design drawing (`studio/labeling-workbench-ui.py`) and `ref/labeling-papers.md`.
+  The old run-table drawing (`studio/labeling-workbench-run-table.*`,
+  `labeling-workbench-design.excalidraw`) is retired.
+- `human-review` is worded `You label one production risk queue`.
+
 ## 0.23.16 · 2026-09-30
 
 - Remove the Studio Chat tab from the Space row; copied requests go into the

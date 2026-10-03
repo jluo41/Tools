@@ -198,7 +198,8 @@ class LabelingSurfaceTest(unittest.TestCase):
         # Runs panel on the right; Workflow and All runs open only from ?drawer=
         self.assertNotIn("Workflow Space", body)
         self.assertNotIn("Run Space", body)
-        for hook in ("data-drawer-panel=workflow", "data-drawer-panel=allruns", "class=space-split"):
+        # 261003 (servers/README.md "Adding a workbench"): the shared shell; content and Runs in `.split`
+        for hook in ("data-drawer-panel=workflow", "data-drawer-panel=allruns", "class=split", "class=wb-band"):
             self.assertIn(hook, body)
         for gone in ("data-focus", "class=pagebar", "chipx", "data-drawer=workflow"):
             self.assertNotIn(gone, body)
@@ -801,7 +802,10 @@ class LabelingBoardLevelTest(unittest.TestCase):
         self.base.make_contract()
         body = render(self.base.page, "/demo/board.md", self.base.file_q,
                       "/demo/board/SL/S-Label-1-demo.html", self.base.board)
-        self.assertIn('href="/_board/labeling-board?path=/demo/board.md" title="All labeling jobs">←</a>', body)
+        # 261003: the back link sits in the shared links line under the title
+        self.assertIn('<a href="/_board/labeling-board?path=/demo/board.md">all labeling jobs</a>', body)
+        self.assertNotIn(">all boards</a>", body)   # no `all boards · board index` line (261003)
+        self.assertNotIn(">board index</a>", body)
 
     def test_registry_offers_board_level_only_on_index_or_dash(self):
         script = LABELING_JS.read_text(encoding="utf-8")
@@ -845,7 +849,10 @@ class LabelingReviewFixesTest(unittest.TestCase):
     def test_hidden_always_hides_and_the_map_fits_the_window(self):
         from live.labeling import _CSS
         self.assertIn("[hidden]{display:none!important}", _CSS)
-        self.assertIn("max-width:calc(72vh * 1000 / 600)", _CSS)
+        # 261003 (servers/README.md "Adding a workbench", rule 3): no window-sized heights; the
+        # 1000 × 600 map stops at 1000 px wide, about 600 px tall, inside any laptop window
+        self.assertIn("max-width:1000px", _CSS)
+        self.assertNotRegex(_CSS, r"\d\s*vh\b")
 
     def test_guideline_renders_markdown_instead_of_showing_it(self):
         from live.labeling import _guideline_html
@@ -955,7 +962,10 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual(all_skills["test-gold-lock"][1:3], ["label-scanning", "label-scanning-workflow"])
         panel = _runs_panel(vm, "data", types["data"])
         self.assertIn("Run Type skills <code>subjective-label-workflow</code>", panel)
-        self.assertIn('data-skills="subjective-label-workflow|label-building|label-building-workflow|subjective-label-contract"', panel)
+        # 261003: the shared Runs panel (live.runs_panel) joins a type's skills with ` · `
+        self.assertIn('data-skills="subjective-label-workflow · label-building · label-building-workflow · '
+                      'subjective-label-contract"', panel)
+        self.assertIn("data-fold=1", panel)            # folded to the "◂ Runs" strip at first
         self.assertEqual([t["op"] for t in types["labeling"]][:2], ["definition-discussion", "round-prepare"])
         self.assertEqual(views["human-calibration"], ("labeling", ["rounds"]))
         self.assertEqual(len(types["data"][1]["runs"]) if types["data"][1]["op"] == "embedding-build" else 1, 1)

@@ -141,7 +141,7 @@ class DesignItemsTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "design", "ITEM01")
             for label in ("Hi, it&#x27;s Dr. {NAME}&#x27;s office.", "ready for Delivery",
-                          "Page level", "Queue revise · agent", 'data-label="Add a design"',
+                          "Queue revise · agent", 'data-label="Add a design"',
                           # the explanation reads as blocks, the insight as a flow (JL 260918)
                           # open, the card keeps the closed row's three columns (JL 261001)
                           "<div class=cardgrid>", '<div class="col why">', '<div class="col eval">',
@@ -278,7 +278,7 @@ class DesignItemsTest(unittest.TestCase):
             self.assertIn("No Design Run records", rendered)
             self.assertIn("No design is ready yet", rendered)
             self.assertNotIn("nothing waiting", rendered)
-            self.assertIn("Page level", rendered)
+            self.assertIn("<div class=dataset", rendered)        # the header's band of facts (JL 261003)
 
 
 def verified_spec() -> ItemSpec:
@@ -454,7 +454,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             self.assertEqual((goal["wanted"], goal["registered"], goal["ready"]), (2, 2, 1))
             self.assertEqual(goal["sentence"], "2 prescription review SMS designs for all patients")
             rendered = render_design(snapshot, "goal")
-            for label in ("Design Goal Space", "Design Space", "Delivery Space", "<h2>The design task</h2>",
+            for label in (">Design Task</button>", ">Design Item</button>", ">Delivery</button>", "<button type=button data-view=\"requirements\">Requirements</button>", "<h2>The design task</h2>",
                           "2 prescription review SMS designs for all patients", "2 designs requested · 2 registered · 1 ready",
                           "<td class=key>Patient task</td>", "<td>Prescription review</td>", "class=runs-panel"):
                 self.assertIn(label, rendered)
@@ -478,7 +478,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             for label in ("<h3>Aim</h3>", "more patients review their prescription",
                           "all patients · 444,691 invitations",           # the task section overrides the board line
                           "Channel requirements · SMS", "<th>SMS standard</th>", "160 chars per segment",  # the channel profile's own standard
-                          "<h3>Requirements</h3>", "Acceptance checks", "<h3>Inputs and resources</h3>",
+                          "<h3>Rules</h3>", "Acceptance checks", "<h3>Inputs and resources</h3>",
                           '<table class="grid input">', "<th>Specification</th>", "<span class=mut>Not specified</span>"):
                 self.assertIn(label, goal)
             self.assertNotIn("<td>all patients</td>", goal)
@@ -615,12 +615,12 @@ class DesignSignalTest(unittest.TestCase):
             rendered = render_design(snapshot)
             self.assertNotIn("design stays blocked", rendered)
 
-    def test_unsigned_handoff_warns_in_the_header(self):
+    def test_unsigned_handoff_shows_no_header_line(self):
         with TemporaryDirectory() as td:
             root, page = self.signal_fixture(Path(td), signed=False)
             snapshot = design_snapshot(page, root)
             self.assertEqual(snapshot["insight"]["status"], "blocked")
-            self.assertIn("design stays blocked", render_design(snapshot))
+            self.assertNotIn("design stays blocked", render_design(snapshot))   # no eligibility line (JL 261003)
 
 
 if __name__ == "__main__":

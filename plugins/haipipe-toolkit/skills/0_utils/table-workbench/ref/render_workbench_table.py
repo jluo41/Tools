@@ -3,7 +3,8 @@
     python render_workbench_table.py <workbench-table.md> [--format md|blocks] [--check [--cards <run-cards.md>]]
 
 The table is the one Markdown table in the file whose header is exactly
-Level | Space | View | Run type | Agent | Skill | Person signs.
+Level | Space | View | Run type | Agent | Skill | Person signs, optionally followed by
+| Folder (where the run writes; `none` when it writes nothing).
 """
 from __future__ import annotations
 
@@ -13,6 +14,7 @@ import sys
 from pathlib import Path
 
 COLUMNS = ["Level", "Space", "View", "Run type", "Agent", "Skill", "Person signs"]
+OPTIONAL = ["Folder"]       # where the run writes; a table either has it on every row or not at all
 JUDGE = re.compile(r"\b(verify|review|check|judge)\b", re.I)
 NEW = re.compile(r"\s*\(new\)\s*$")
 
@@ -29,13 +31,15 @@ def read_table(path: Path) -> list[dict]:
     lines = path.read_text(encoding="utf-8").splitlines()
     for i, line in enumerate(lines):
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if cells == COLUMNS:
+        if cells in (COLUMNS, COLUMNS + OPTIONAL):
             rows = []
             for row in lines[i + 2:]:
                 if not row.strip().startswith("|"):
                     break
                 values = [c.strip() for c in row.strip().strip("|").split("|")]
-                rows.append(dict(zip(COLUMNS, values + [""] * (len(COLUMNS) - len(values)))))
+                row = dict(zip(cells, values + [""] * (len(cells) - len(values))))
+                row["_columns"] = cells
+                rows.append(row)
             return rows
     raise SystemExit(f"{path}: no table with the header {' | '.join(COLUMNS)}")
 
@@ -51,6 +55,11 @@ def known_names(plugins: Path) -> tuple[set[str], set[str]]:
     return skills, agents
 
 
+def columns(rows: list[dict]) -> list[str]:
+    """The table's own columns: the seven, plus Folder when the table has it."""
+    return rows[0]["_columns"] if rows else COLUMNS
+
+
 def check(rows: list[dict], plugins: Path) -> tuple[list[str], list[str]]:
     skills, agents = known_names(plugins)
     problems, planned = [], []
@@ -58,7 +67,7 @@ def check(rows: list[dict], plugins: Path) -> tuple[list[str], list[str]]:
               if r["Agent"] != "none" and not JUDGE.search(r["Run type"])}
     for n, r in enumerate(rows, 1):
         where = f'row {n} ({r["Level"]} · {r["Space"]} · {r["View"]} · {r["Run type"]})'
-        for col in COLUMNS:
+        for col in columns(rows):
             if not r[col]:
                 problems.append(f"{where}: empty {col}")
         agent, skill = NEW.sub("", r["Agent"]), NEW.sub("", r["Skill"])
@@ -98,7 +107,9 @@ def read_cards(path: Path) -> list[dict]:
 def check_cards(rows: list[dict], cards: list[dict]) -> list[str]:
     """Each run type of the table is one card with the same agent, skill and signs, and back."""
     cols = ("Agent", "Skill", "Person signs")
-    want = {r["Run type"]: r for r in rows if r["Run type"] != "none"}
+    # Guide's run types are read from this table by Guide's own Runs panel (workbench-shared),
+    # so a Guide row never has a run card (JL 261003)
+    want = {r["Run type"]: r for r in rows if r["Run type"] != "none" and r["Space"] != "Guide"}
     have = {c["Run type"]: c for c in cards}
     out = [f"run type {k!r} is in the table but has no card" for k in want if k not in have]
     out += [f"card {k!r} is not in the table" for k in have if k not in want]
@@ -109,8 +120,9 @@ def check_cards(rows: list[dict], cards: list[dict]) -> list[str]:
 
 
 def render_md(rows: list[dict]) -> str:
-    out = ["| " + " | ".join(COLUMNS) + " |", "|" + "---|" * len(COLUMNS)]
-    out += ["| " + " | ".join(r[c] for c in COLUMNS) + " |" for r in rows]
+    cols = columns(rows)
+    out = ["| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)]
+    out += ["| " + " | ".join(r[c] for c in cols) + " |" for r in rows]
     return "\n".join(out)
 
 
@@ -124,6 +136,8 @@ def render_blocks(rows: list[dict]) -> str:
         sign = "" if r["Person signs"] == "none" else f'   signs: {r["Person signs"]}'
         out.append(f'  {r["View"]} › {r["Run type"]}{sign}')
         out.append(f'      agent {r["Agent"]}   skill {r["Skill"]}')
+        if r.get("Folder") not in (None, "", "none"):
+            out.append(f'      writes {r["Folder"]}')
     return "\n".join(out).lstrip()
 
 

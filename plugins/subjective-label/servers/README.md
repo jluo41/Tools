@@ -5,7 +5,8 @@ servers/
 ├── _host/serve.py             this package's host: the shared haipipe host run with --only labeling
 └── workbench-labeling/        🏷 the served face of haipipe-workbench-labeling
     ├── labeling.py            LabelingMixin: labeling-board, labeling, and the one write door
-    └── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
+    ├── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
+    └── studio/labeling-workbench-ui.py   writes the Guide's "Workbench design" drawing beside it
 ```
 
 ## Two ways to serve it
@@ -50,6 +51,11 @@ call the Board parser.
 The shared Guide Space is mounted through
 `haipipe-toolkit/servers/workbench-shared`. Its methods and UI diagrams describe
 the labeling family; folder links retain this host's private-source boundary.
+Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench-page/runs_panel.py`
+(`panel_markup`, `PANEL_CSS`, `PANEL_JS`, `SPLIT_CSS`), with Labeling's own gated Run
+cards passed in. Both follow the rules every workbench shares
+(`haipipe-toolkit/servers/README.md` "Adding a workbench"); how they were met is
+recorded in `workbench-labeling/studio/labeling-shared-rules.md`.
 The engine under `../engine/` imports nothing from haipipe-toolkit. So:
 
 - **runtime**: independent. The labeling host is its own process and origin.

@@ -9,33 +9,45 @@ counsel), `haipipe-insight-reviewer-agent` judges and never checks its own
 page. Runs come from `haipipe-task`'s orchestrator. `haipipe-insight-workflow`
 routes Runs and evaluates the GI gates; it is no row's Skill.
 
-| Level | Space | View | Run type | Agent | Skill | Person signs |
-|---|---|---|---|---|---|---|
-| board | Scope | Dataset | Record the extract | haipipe-insight-agent (new) | haipipe-insight-meta | none |
-| board | Scope | Partitions | Register a cut | haipipe-insight-agent (new) | haipipe-insight-partition (new) | the cut |
-| board | Scope | Methods | Add a method | haipipe-insight-agent (new) | haipipe-workbench-insight | none |
-| board | Scope | Methods | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | none |
-| board | Scope | Questions | Ask | haipipe-insight-agent (new) | haipipe-insight-question | the question |
-| board | Scope | Questions | Carry a board over | haipipe-insight-agent (new) | haipipe-insight | none |
-| board | Scope | Questions | Review the questions | haipipe-insight-reviewer-agent (new) | haipipe-insight-question | a change |
-| board | Insight | Question | Plan the evidence | haipipe-insight-agent (new) | haipipe-insight-evidence-plan | none |
-| board | Insight | Question | Review the evidence plan | haipipe-insight-reviewer-agent (new) | haipipe-insight-evidence-plan | none |
-| board | Insight | Work | Write the script | haipipe-task-creator-agent | haipipe-insight | none |
-| board | Insight | Work | Review the script | haipipe-task-reviewer-agent | haipipe-insight | none |
-| board | Insight | Work | Run a partition | haipipe-task-orchestrator-agent | haipipe-insight | none |
-| board | Insight | Data report | Write the Data report | haipipe-insight-agent (new) | haipipe-insight-data | none |
-| board | Insight | Information report | Write the Information report | haipipe-insight-agent (new) | haipipe-insight-information | none |
-| board | Insight | Knowledge report | Write the Knowledge report | haipipe-insight-agent (new) | haipipe-insight-knowledge | none |
-| board | Insight | Report | Check alignment | haipipe-insight-reviewer-agent (new) | haipipe-insight-check | none |
-| board | Insight | Cross | Pool or split | haipipe-insight-agent (new) | haipipe-insight-knowledge | none |
-| board | Check | Gates | none | none | none | none |
-| board | Check | Checks | Review an answer | haipipe-page-check-agent | haipipe-insight-check | none |
-| board | Delivery | Counsel | Write the counsel | haipipe-insight-agent (new) | haipipe-insight-wisdom | none |
-| board | Delivery | Handoff | Draft the handoff | haipipe-insight-agent (new) | haipipe-insight-wisdom | the handoff |
+| Level | Space | View | Run type | Agent | Skill | Person signs | Folder |
+|---|---|---|---|---|---|---|---|
+| board | Guide | Description | none | none | none | none | none |
+| board | Guide | Method | Add a method | haipipe-insight-agent (new) | haipipe-workbench-insight | none | Tools › haipipe-workbench-insight/ref/methods/ |
+| board | Guide | RoadMap Draw | none | none | none | none | none |
+| board | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | none | Tools › haipipe-workbench-insight/ref/insight-papers.md |
+| board | Scope | Dataset | Record the extract | haipipe-insight-agent (new) | haipipe-insight-meta | none | Prototype › 0-Meta/meta.md |
+| board | Scope | Partitions | none | none | none | none | none |
+| board | Scope | Questions | Ask | haipipe-insight-agent (new) | haipipe-insight-question | the question | Prototype › <q>/<L><NN>-<name>.md |
+| board | Prototype | Meta | Carry a board over | haipipe-insight-agent (new) | haipipe-insight | none | Prototype › board.md · 0-Meta/ · <rung>/rung.md · <q>/ |
+| board | Prototype | Meta | Register a cut | haipipe-insight-agent (new) | haipipe-insight-partition (new) | the cut | Prototype › 0-Meta/partitions.md |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Review the questions | haipipe-insight-reviewer-agent (new) | haipipe-insight-question | a change | Prototype › <q>/<L><NN>-<name>.md (a signed change) |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Plan the evidence | haipipe-insight-agent (new) | haipipe-insight-evidence-plan | none | Prototype › <q>/<L><NN>-<name>.md (needs) |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Review the evidence plan | haipipe-insight-reviewer-agent (new) | haipipe-insight-evidence-plan | none | Prototype › <q>/<L><NN>-<name>.md (agreed:) |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Write the script | haipipe-task-creator-agent | haipipe-insight | none | Prototype › <q>/scripts/ |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Review the script | haipipe-task-reviewer-agent | haipipe-insight | none | none |
+| board | Prototype | RoadMap Draw | none | none | none | none | none |
+| board | Insight | each partition | Run a partition | haipipe-task-orchestrator-agent | haipipe-insight | none | Instance › <q>/results/<partition>/ · reports/<partition>/ |
+| board | Insight | each partition | Write the Data report | haipipe-insight-agent (new) | haipipe-insight-data | none | Instance › <q>/<L><NN>-<name>.md · draft/ |
+| board | Insight | each partition | Write the Information report | haipipe-insight-agent (new) | haipipe-insight-information | none | Instance › <q>/<L><NN>-<name>.md · draft/ |
+| board | Insight | each partition | Write the Knowledge report | haipipe-insight-agent (new) | haipipe-insight-knowledge | none | Instance › <q>/<L><NN>-<name>.md · draft/ |
+| board | Insight | each partition | Check alignment | haipipe-insight-reviewer-agent (new) | haipipe-insight-check | none | none |
+| board | Insight | each partition | Pool or split | haipipe-insight-agent (new) | haipipe-insight-knowledge | none | Instance › <q>/<L><NN>-<name>.md (the cross section) |
+| board | Check | Gates | none | none | none | none | none |
+| board | Check | Checks | Review an answer | haipipe-page-check-agent | haipipe-insight-check | none | Instance › <q>/runs/run-check-<MMDD>-<slug>.md |
+| board | Check | Runtime | none | none | none | none | none |
+| board | Delivery | Handoff | Write the counsel | haipipe-insight-agent (new) | haipipe-insight-wisdom | none | Instance › 4-Wisdom/W<NN>-<name>/W<NN>-<name>.md |
+| board | Delivery | Handoff | Draft the handoff | haipipe-insight-agent (new) | haipipe-insight-wisdom | the handoff | Instance › 4-Wisdom/W<NN>-<name>/W<NN>-<name>.md (signed:) |
 
 Notes
 -----
 
+- **The Views.** Every View is a tab the workbench shows (JL 261003): Guide's four, the
+  Prototype's Meta, its four rungs (one row stands for all four: the same runs on each) and
+  RoadMap Draw, Scope's three, Insight's partitions (one row stands for every partition),
+  Check's three, Delivery's Handoff. The Work and Report columns live inside each partition's table.
+- **The Folder column.** Where the run writes. `<q>` is a question folder,
+  `<rung>/<L><NN>-<name>`; `Prototype ›` and `Instance ›` name the board it is in
+  (`haipipe-insight/ref/prototype-contract.md`); `none` writes no file, only a verdict.
 - **The question rows.** "Carry a board over" moves a register board's
   questions into a Prototype word for word (`../../haipipe-insight/ref/carry_over.py`);
   "Review the questions" judges each by Q1-Q7 and proposes keep, split, merge or

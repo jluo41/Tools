@@ -1,10 +1,9 @@
 By user test
 ============
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by user test`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by user test`. A
+claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
 family: Making internal insights now: induction in small loops; the AI learns from
   readers while it designs

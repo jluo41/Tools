@@ -1,8 +1,9 @@
 """Create explanatory drawings, their Guide Views and a RoadMap Draw View.
 
 Paper supplies the concrete family example, matching Guide v4. These drawings
-explain roles and methods; they contain no live instance state. Scene and SVG
-generation use the standard library. Optional PNG previews require Pillow.
+explain roles and methods; they contain no live instance state. Scene
+generation uses the standard library. Optional PNG previews require Pillow and
+are local and git-ignored.
 """
 
 import argparse
@@ -220,14 +221,13 @@ def write_scene(stem, title, description, args, preview_names):
              "elements": ui.E, "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}}
     (HERE / (stem + ".excalidraw")).write_text(
         json.dumps(scene, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    ui.write_svg(HERE / (stem + ".svg"), title=title, description=description)
     if args.previews:
         ui.write_previews(HERE, args.font, args.mono_font, preview_names)
     print(f"Wrote {stem}.excalidraw: {len(ui.E)} elements, {len(ui.FRAMES)} frames")
 
 
 def drawing_row(key, entry, x, y, w, opened=False, renderer=None,
-                filename=None, template=False):
+                filename=None):
     """One full-width fold; an open drawing remains directly under its header."""
     height = 596 if opened else 88
     rect(key + "-row", x, y, w, height, RULE, "#ffffff")
@@ -235,7 +235,7 @@ def drawing_row(key, entry, x, y, w, opened=False, renderer=None,
     text(key + "-label", x + 50, y + 14, entry["label"], 22, BLUE)
     text(key + "-purpose", x + 50, y + 53, entry["question"], 16, MUTED)
     text(key + "-state", x + w - 240, y + 19,
-         "Template ready" if template else "Family example", 15, GREEN)
+         "Family example", 15, GREEN)
     if opened:
         line(key + "-header-rule", x + 16, y + 88, w - 32)
         text(key + "-required", x + 18, y + 105,
@@ -282,7 +282,7 @@ def roadmap_preview(x, y):
     guide.heading(key, x, y, "Guide / RoadMap Draw",
                   "A single-column drawing View · each row expands its own embedded canvas")
     cx, cy = guide.shell(key, x, y, "Paper", "Guide", guide.GUIDE_VIEWS, "RoadMap Draw",
-                         "RoadMap Draw", "Four defined Guide diagram types · each has a question, required content and a prepared template")
+                         "RoadMap Draw", "Four defined Guide diagram types · each has a question and required content")
     for element in ui.E:
         if element["id"] == key + "-screen":
             element["height"] = 1280

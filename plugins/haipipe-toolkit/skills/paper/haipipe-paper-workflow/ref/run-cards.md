@@ -9,8 +9,11 @@ A `🔘 BUTTON` line is `label · Space · ticket pattern · views <names>`. The
 pattern is a regular expression on the ticket file name; `-` means the button
 only copies a prompt, because its runs live with another owner. `views` names
 the tabs or views the button shows in (none = every view of the Space).
-`🧩 SKILL` names the skill(s) that do the work; the Runs panel shows them on every
-run of that button (JL 260928: each run says which skill it uses).
+`🧩 SKILL` names the one skill that does the work; the Runs panel shows it on every
+run of that button (JL 260928: each run says which skill it uses). `🤖 AGENT` names
+who does the run and `✍️ SIGNS` what the person signs on it, or `none`; the three
+lines match the button's row in `haipipe-workbench-paper/ref/workbench-table.md`,
+which `table-workbench --check --cards` checks (JL 261003).
 `💬 PROMPT` is the text the button copies; `{page}` is the Page the run sits
 on, `{target}` the selected idea, row or Section, `{paper}` the paper folder.
 
@@ -21,38 +24,52 @@ shown under three buttons, one per Page Space.
 
 🔘 BUTTON   Idea review · Ideation · ^run-paper-idea-
 🧩 SKILL    haipipe-paper-ideation
+🤖 AGENT    haipipe-board-reviewer-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-paper-ideation review {target} on {page}: judge this idea against its evidence and record its rationale, limits and next question as a new version.
 
 ## Idea generation and tests · owned by `haipipe-ideation`
 
 🔘 BUTTON   Generate ideas · Ideation · -
 🧩 SKILL    haipipe-ideation-generate
+🤖 AGENT    haipipe-ideation-agent (new)
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-ideation-generate {page}: propose new candidate ideas for this paper and write each one as an Idea Card.
 
 🔘 BUTTON   Test idea · Ideation · -
 🧩 SKILL    haipipe-ideation-test
+🤖 AGENT    haipipe-ideation-agent (new)
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-ideation-test {page} {target}: run the novelty and pressure tests on this idea and record the Result on its card.
 
 🔘 BUTTON   Select idea · Ideation · -
 🧩 SKILL    haipipe-ideation-select
+🤖 AGENT    haipipe-ideation-agent (new)
+✍️ SIGNS    the admitted idea (G0)
 💬 PROMPT   /haipipe-ideation-select {page} {target}: put this idea and its venue to the person as the G0 choice; on yes, hand it to the Story.
 
 ## Story writing · the Story Page's own `run-<kind>-…` runs
 
 🔘 BUTTON   Story revise · Story · ^run-(structure|scratch|section|paragraph|revise|auto-write|evidence-embed|context)- · views spine
-🧩 SKILL    haipipe-paper-story · haipipe-writing
+🧩 SKILL    haipipe-paper-story
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    the Story version
 💬 PROMPT   /haipipe-page run {page} as a new run-section Run: revise {target} of the Story; keep its eight parts (§1–§8) and change no row another Page owns.
 
 ## `paper.judgment.claim` · `run-paper-claim-<MMDD>-<slug>`
 
 🔘 BUTTON   Claim review · Story · ^run-paper-claim- · views logic-work
 🧩 SKILL    haipipe-paper-story
+🤖 AGENT    haipipe-board-reviewer-agent
+✍️ SIGNS    the claim state (G2)
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this claim against its evidence, boundaries and open risks; research it needs is a separate run.
 
 ## `paper.judgment.task` · `run-paper-task-<MMDD>-<slug>`
 
 🔘 BUTTON   Task review · Story · ^run-paper-task- · views logic-work
 🧩 SKILL    haipipe-paper-story
+🤖 AGENT    haipipe-board-reviewer-agent
+✍️ SIGNS    release of Task work (G1)
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: review this Task Roadmap row and its study plan; commission supporting work only after its G1 release.
 
 ## Supporting work · Task runs and Discovery runs, owned by their folders
@@ -63,10 +80,14 @@ button of its owner.
 
 🔘 BUTTON   Task runs · Story · - · views logic-work
 🧩 SKILL    haipipe-task
+🤖 AGENT    haipipe-task-orchestrator-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-task {target}: create or continue the Task folder (BJTR) that answers this question on {page}, write its address on the row, and build its run tickets; JL presses Run.
 
 🔘 BUTTON   Discovery runs · Story · - · views logic-work related
 🧩 SKILL    haipipe-discovery
+🤖 AGENT    haipipe-discovery-orchestrator-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-discovery {target}: create or continue the Discovery folder (BJTR) that answers this question on {page}, write its address on the row, and add its Paper Runs.
 
 ## Story drawings · the RoadMap Draw tab, owned by the Story
@@ -76,50 +97,70 @@ Story when it runs; the button reruns those scripts so the drawings follow the S
 
 🔘 BUTTON   Redraw · Story · - · views roadmap-draw
 🧩 SKILL    haipipe-paper-story
+🤖 AGENT    haipipe-studio-agent (new)
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-paper-story draw {paper}: rerun each studio/make_*.py so every drawing follows the current Story, then check the drawing in RoadMap Draw; with no script yet, write studio/make_paper_workflow.py as the Story skill describes and run it.
 
 ## `paper.judgment.narrative` · `run-paper-narrative-<MMDD>-<slug>`
 
 🔘 BUTTON   Narrative review · Sections · ^run-paper-narrative- · views table narrative
 🧩 SKILL    haipipe-paper-story
+🤖 AGENT    haipipe-board-reviewer-agent
+✍️ SIGNS    release of one Section (G3)
 💬 PROMPT   /haipipe-paper-story review the Section Narrative row of {target} on {page}: check its moves, claims, displays and cut rule against the Section's current draft.
 
 ## Section Page runs · Draft, Evidence and Delivery Spaces of each Section
 
 🔘 BUTTON   Draft runs · Sections · - · views table
-🧩 SKILL    haipipe-paper-section · haipipe-page-writing
+🧩 SKILL    haipipe-paper-section
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page run {target} from Draft: continue this Section's Draft in its own Page workbench.
 
 🔘 BUTTON   Evidence runs · Sections · - · views table evidence
 🧩 SKILL    haipipe-page-evidence
+🤖 AGENT    haipipe-page-evidence-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page evidence {target}: land and verify this Section's open Evidence Items, then bind their Results.
 
 🔘 BUTTON   Delivery runs · Sections · - · views table
 🧩 SKILL    haipipe-page-delivery
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page export {target}: rerun this Section's Delivery Runs (run-delivery-webpage, _latex, _word); say which files changed.
 
 🔘 BUTTON   Page check · Sections · ^run-check- · views table
 🧩 SKILL    haipipe-page-check
+🤖 AGENT    haipipe-page-check-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page-check {target}: judge the Section's current built version against its Section Narrative row, evidence and venue; route CLOSE or name what must change.
 
 ## `paper.compile` · the manuscript build
 
 🔘 BUTTON   Build · Delivery · - · views preview artifacts
 🧩 SKILL    haipipe-paper-assemble
+🤖 AGENT    haipipe-paper-assemble-agent (new)
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-paper-assemble build {paper}: regenerate delivery/ from the Section Pages in compile order, then write build-manifest.json.
 
 🔘 BUTTON   Check · Delivery · - · views checks
 🧩 SKILL    haipipe-paper-assemble
+🤖 AGENT    haipipe-page-check-agent
+✍️ SIGNS    submission readiness (G4)
 💬 PROMPT   /haipipe-paper-assemble check {paper}: audit the last build against its manifest and name every stale page, unresolved reference and failed check.
 
 ## `paper.coverletter` · the submission cover letter
 
 🔘 BUTTON   Cover letter · Delivery · - · views cover
 🧩 SKILL    haipipe-paper-assemble
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    the letter
 💬 PROMPT   /haipipe-paper-assemble coverletter {paper}: draft or revise the "Cover letter" division on the submission Round page from the approved Abstract and Story, rebuild delivery/ so run-delivery-coverletter writes the letter PDF and DOCX, and report its checks.
 
 ## `paper.response` · one Round Page per feedback batch
 
 🔘 BUTTON   Response · Delivery · ^run-(structure|scratch|section|paragraph|revise|auto-write|evidence-embed|context|delivery|check)- · views rounds
 🧩 SKILL    haipipe-paper-round
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    every response answered (G5)
 💬 PROMPT   /haipipe-paper-round respond {target}: answer each routed concern once, link the checked versions and freeze the answer build.

@@ -2,18 +2,20 @@
 name: haipipe-workbench-insight
 description: >-
   The served face of the Insight family, paired with servers/workbench-insight:
-  the 🔎 Insight Board, one dataset and four Spaces (Scope · Insight · Check ·
-  Delivery), with Insight › Questions as one table per partition in three
+  the 🔎 Insight Board, one dataset and five Spaces after the shared Guide (Scope ·
+  Prototype · Insight · Check · Delivery), with the Insight Space's Views being its partitions, each one table in three
   columns (Logic: the questions at D, I, K, W; Work: the answering page's
-  tickets and runs; Report: the answering page), Scope › Methods (discovery
-  and design method cards with their papers), and a
-  Runs panel beside each Space. A run or a page opens in a pop-out; there is no
+  tickets and runs; Report: the answering page), the Prototype Space (Meta and
+  one View per rung: each question, its needs, script and sign-off; RoadMap Draw: the Prototype's own
+  working drawings, saved through the shared Studio), the shared Guide (how
+  the Insight family works: Description, Method with the discovery and design
+  method cards, RoadMap Draw, Related Paper), and a Runs panel beside each Space. A run or a page opens in a pop-out; there is no
   page-level workbench. Read-only over the board on disk; every write stays with
   haipipe-insight and haipipe-insight-workflow. Trigger: insight tab, insight
   board tab, insight workbench, show the register, which cell answers this
   page, insight gates, /haipipe-workbench-insight.
 metadata:
-  version: "0.10.0"
+  version: "0.14.0"
   last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -87,20 +89,67 @@ Prototype was carried with; a cell's mark is computed by
 `haipipe-insight-check` `ref/check_instance.py`; a Work line opens one
 partition's run.
 
-## 📚 Scope › Methods
+## 📚 Scope and Prototype
 
-A Scope tab beside Dataset, Partitions and Questions (JL 261002: how a question will
-be answered is set up before any run, with the data and the cuts), with four views:
-Discovery methods (how an answer is found from data), Design methods (how an inquiry
-is designed before any data is read), Methods studio and Papers. It reads
-`ref/insight-discovery-methods.md`, `ref/insight-design-methods.md`, their cards in
-`ref/methods/` and `ref/insight-papers.md`, and renders them with the Design
-workbench's card and paper renderers (`designboard.method_cards`, `papers_page`), so a
-card and a paper card look the same in both workbenches. Methods studio is the
-Design board's Theory › Methods studio for Insight: `ref/insight-methods.excalidraw`
-in the self-hosted Excalidraw canvas, editable, saved back to that file, with Open
-full screen; the frame loads only when the view is shown. The Scope Runs panel offers
-Add a method and Add a paper (`haipipe-discovery`).
+The Spaces follow the shared order Guide → setup → work → Delivery
+(`servers/workbench-shared/README.md` § Space order). Two Spaces set up: **Scope**,
+this board's own data (Dataset · Partitions · Questions, with the Ask box), and
+**Prototype**, the design every board of this kind reads through (JL 261003). Scope comes
+first: the data, then what is asked of it and by which code, then the answers.
+
+The Prototype Space (`instance_reader.prototype_views`) has five Views:
+
+1. **Meta**: the Prototype's name and title with four numbers (live questions, live needs,
+   questions with a script, copies in sync); one table by rung (questions, needs, scripts,
+   this board's copies, retired); only the copies that need action, as chips by state; the
+   partitions in words; the shared settings; the design files, shared code folded.
+2. **Data · Information · Knowledge · Wisdom**: the rung's opening question and its
+   `rung.md`, then one folding row per live question: id, name, the short question, and
+   chips for partitions asked, needs, script state and sign-off. Open, a row shows the ask,
+   Why now, What would answer it, the needs table and its files. Retired questions fold
+   at the bottom with what replaced them.
+
+The family's methods and papers are not board data: they live in the shared Guide. The
+Prototype Space's Runs panel lists the design runs in method order (carry a board over,
+register a cut, review the questions, plan the evidence, write and review the script).
+
+## 🎨 Prototype › RoadMap Draw
+
+The Insight Space's Views are its partitions, Full to Cross (JL 261003); it has no
+Studio View. The working drawings belong to the Prototype, so every board of this kind
+sees the same ones: a question map, a roadmap, a sketch. It follows the shared Workbench design
+(`servers/workbench-shared/README.md`, "Task alignment"): a freeform list of folding
+rows, one per `studio/<name>.excalidraw` beside the Prototype's `board.md` (the served
+board's own when it reads through no Prototype), with no
+drawing type, template or metadata. A row's canvas loads when it opens, view only;
+Edit drawing hands it the pen and Finish editing gives it back; Open full screen opens
+the same file; open rows are remembered in the browser tab. Add drawing creates
+`studio/<name>.excalidraw` (a space is saved as `_`). The scenes are opened, minted and
+saved by the shared Studio routes (`workbench-shared/xcal.py`), never by this
+presenter, which stays read-only. A static build lists the drawings without a canvas.
+
+## 🧭 Guide
+
+The shared Guide Space (`servers/workbench-shared/guide_families.py`, family
+`insight`) sits before Scope and explains the family only, the same on every board, in
+four Views:
+
+1. **Description**: what the Insight Workbench does, its skills and its Spaces.
+2. **Method**: the Prototype → Instance steps, then the family's method cards:
+   Discovery methods (`ref/insight-discovery-methods.md`), Design methods
+   (`ref/insight-design-methods.md`) and the Methods studio
+   (`ref/insight-methods.excalidraw`), served view only by
+   `/_board/insight-board?embed=methods&view=method` (`render_methods_embed`).
+3. **RoadMap Draw**: the whole design drawing
+   (`servers/workbench-insight/studio/insight-workbench-design.excalidraw`), view only:
+   skills and runs, the workbench, where things live, how a question is asked. Its
+   generator is the drawing's only writer.
+4. **Related Paper**: `ref/insight-papers.md` as paper cards, served by
+   `embed=methods&view=papers`.
+
+The folder map resolves from an Instance board (its Prototype through
+`../Prototype-Insight-*`). Guide never signs a question change or a handoff. This
+Prototype's own drawings are in Prototype › RoadMap Draw.
 
 ## 🪟 Pop-outs, no page-level workbench
 

@@ -1,3 +1,7 @@
+## 1.12.5 · 2026-10-03 · a new served workbench follows the shared rules
+
+- Points to the checklist in `servers/README.md` § Adding a workbench and to the conformance test `servers/_host/tests/test_workbench_conformance.py` (JL 261003: "make sure other new workbench UI will do the same thing").
+
 ## 1.12.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

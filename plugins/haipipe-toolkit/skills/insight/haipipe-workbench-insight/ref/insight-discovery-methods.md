@@ -10,8 +10,8 @@ or by the analyst's own choices (Gelman & Loken 2014). Design methods (the other
 say how the inquiry is planned before any data is read; these say how the answer is
 found once it is.
 
-The Scope Space renders this file as its Methods › Discovery methods view. The papers named here
-are listed, with their journals, in its Papers view (`insight-papers.md`).
+The shared Guide shows this file in its Method View, as Discovery methods. The papers named here
+are listed, with their journals, in its Related Paper View (`insight-papers.md`).
 
 
 1 · The shared loop

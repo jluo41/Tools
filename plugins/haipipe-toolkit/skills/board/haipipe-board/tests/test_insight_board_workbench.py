@@ -30,6 +30,7 @@ from live.insightboard import (
     is_insight_board,
     page_cells,
     page_tickets,
+    render_methods_embed,
     render_insight_board,
     render_insight_page,
     render_insight_run,
@@ -188,7 +189,7 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             groom = groom_snapshot(board, snap)
             self.assertFalse(groom["bindable_handoffs"])
 
-    def test_insight_space_has_a_methods_subspace_with_cards_and_papers(self):
+    def test_methods_and_papers_live_in_the_guide_embed_not_in_scope(self):
         with TemporaryDirectory() as td:
             root = Path(td)
             apps = root / "examples-x" / "Project-Demo" / "applications"
@@ -212,17 +213,25 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             with patch("live.insightboard.DISCOVERY_METHODS", ref / "discovery.md"), \
                     patch("live.insightboard.DESIGN_METHODS", ref / "missing.md"), \
                     patch("live.insightboard.METHOD_PAPERS", ref / "papers.md"):
-                html = render_insight_board(board_snapshot(board, root), "insight", "QW1", "full")
-            self.assertIn('data-view="methods">Methods</button>', html)        # a sub-space beside Questions
-            for k in ("discovery", "design", "papers"):
-                self.assertIn(f'data-mview="{k}"', html)
-            self.assertIn('id="method-by-look"', html)                          # a card per index row
-            self.assertIn("tested in 1 study", html)                             # its evidence row counts
-            self.assertIn('class="cite to-paper"', html)                         # [Tukey 1977] opens its paper
-            self.assertIn("No design methods file yet", html)                    # a missing file says so
-            self.assertIn("2 papers · 1 key", html)
-            self.assertIn("rp-utd", html)                                        # Management Science is UTD24
-            self.assertIn("Add a paper", html)                                   # the Runs panel offers it
+                html = render_insight_board(board_snapshot(board, root), "scope", "QW1", "full")
+                method = render_methods_embed(root, "method")
+                papers = render_methods_embed(root, "papers")
+            # Scope is this board's own data; the family's methods and papers are the Guide's
+            self.assertIn('data-space="prototype">Prototype</button>', html)   # its own Space (JL 261003)
+            self.assertNotIn('data-view="prototype"', html)                     # no longer a Scope tab
+            self.assertLess(html.index('data-space="scope">'), html.index('data-space="prototype">'))
+            self.assertNotIn('data-view="methods"', html)
+            self.assertNotIn("Add a method", html)
+            self.assertNotIn("Add a paper", html)
+            for k in ("discovery", "design"):                                    # Guide › Method
+                self.assertIn(f'data-mview="{k}"', method)
+            self.assertNotIn('data-mview="papers"', method)
+            self.assertIn('id="method-by-look"', method)                         # a card per index row
+            self.assertIn("tested in 1 study", method)                           # its evidence row counts
+            self.assertIn("No design methods file yet", method)                  # a missing file says so
+            self.assertIn('data-mview="papers"', papers)                         # Guide › Related Paper
+            self.assertIn("2 papers · 1 key", papers)
+            self.assertIn("rp-utd", papers)                                      # Management Science is UTD24
 
     def test_runtime_inventory_counts_shared_native_run_once_and_refreshes(self):
         with TemporaryDirectory() as td:

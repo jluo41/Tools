@@ -72,8 +72,8 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
             "S-Test", parse_outline(self.page.read_text(encoding="utf-8")),
             self.page, self.folder, "/board.md", "S-Test/S-Test.md",
         )
-        # Page 0.118: runs sit under each Space.
-        for name in ("Draft Space", "Evidence Space", "Delivery Space"):
+        # Page 0.118: runs sit under each Space. Plain Space names, as every workbench (JL 261003).
+        for name in ("Draft", "Evidence", "Delivery"):
             self.assertEqual(body.count(">" + name + "</button>"), 1)
         self.assertNotIn(">Run Space</button>", body)
         self.assertNotIn("class=pagebar", body)  # JL 260927: no Page bar

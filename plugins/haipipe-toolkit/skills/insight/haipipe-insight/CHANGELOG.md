@@ -1,11 +1,19 @@
 # haipipe-insight · version history
 
+## 2.7.1 · 2026-10-02 · An Instance may keep studio/ (JL 261002)
+
+- `ref/prototype-contract.md`: the Instance tree names the optional `studio/`, the board's own drawings shown in the workbench's Insight › Studio.
+
 ## 2.7.0 · 2026-10-02 · Question file v2 and the carry-over (JL 261002)
 
 - Question file v2 (`ref/prototype-contract.md`): `question` (the short wording), `name`, `ask`, `source` (where it was carried from), `partitions` (asked, not_elsewhere, power), live and retired `needs` in the register's own spec fields (cut, unit, measure, by, uncertainty, rivals, output), `agreed`; Why now and What would answer it as prose. `0-Meta` holds `meta.md`, `partitions.md` (filters, then the reasons) and `thresholds.yaml` with one board-wide `power.smallest_effect_pp`; a question may override it with `effect` and `effect_reason`.
 - New `ref/carry_over.py`: a register board becomes a Prototype word for word (Queue wording, name, ask, why now, what would answer it, every need, agreed); ids `Q<L><n>` → `<L><NN>`; a logic refusal (full-only, defer) is not asked there, a data refusal is asked and refused again by its run; `--check` compares every field and rebuilds each division byte for byte; two runs write the same bytes.
 - `ref/evidence-needs.md`: coverage adds no need; "one thing" and "needs form a logic" are question-review tests; a cause word in a Data or Information ask is a review note, never a silent rewording.
 - `ref/run_question.py`: live needs only; json outputs by dotted key, one json file shared by several needs; the report header names the question. `ref/scaffold_instance.py --prototype --extract` writes a new Instance's board.md. `ref/write_answer_page.py`: an Instance page has one division per partition, in partitions.md order.
+- `ref/run_question.py` `shared_paths`: a run rests only on the shared `src/` modules its scripts import (followed through their imports), so adding a module for one question no longer makes every run STALE.
+- A signed change retires a need (`retired:`, successor `supersedes:`) or a whole question (`retired:`, `superseded_by:`), records `changes:` and the new question's `source: {from, signed}`; a retired question is asked nowhere and has no live needs (`asked_partitions`, `live_needs`).
+- A cross run also gets `ctx.full`, the whole extract with the script's columns, so a cross question can compare each partition with the extract it is cut from.
+- `shared_digest`: a run rests only on the thresholds.yaml sections its scripts and imported modules name (and `power` for a powered question), so a key added for one question leaves every other run current.
 
 ## 2.6.0 · 2026-10-02 · Prototype and Instance boards (JL 261002)
 

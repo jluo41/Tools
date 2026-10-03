@@ -1,12 +1,76 @@
-# Workbench Shared · Guide runtime and UI design studio
+# Workbench Shared · Studio and Guide, reused by every Workbench
 
-This folder implements the shared **Guide Space** and holds its UI design
-artifacts. Guide has four explanatory Views, a dedicated **RoadMap Draw**
-View, and a predefined drawing catalog with seven starter templates.
+This folder holds what every Workbench family reuses instead of owning a copy:
+
+| Component | Writes? | Contract | What it serves |
+|---|---|---|---|
+| **Studio** | Yes, through its own routes | [haipipe-workbench-studio](../../skills/page/haipipe-workbench-studio/SKILL.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
+| **Guide** | Never | This README | Family explanations: skills, methods, UI and folder maps, RoadMap Draw |
+
+Any Workbench that shows a drawing (Paper Story › RoadMap Draw, Task Roadmap
+Studio, a Page's 🎨 Studio tab, Guide's own canvases) opens it through
+Studio's `xcal.py` and `excalidraw_proxy.py`. A family owns *which* drawing
+and *where* it lives; Studio owns how a scene is opened, minted and saved.
+Guide embeds the same canvas in its isolated viewing mode and never saves.
+
+## Studio
+
+| File | Responsibility |
+|---|---|
+| [xcal.py](xcal.py) | `/_board/excalidraw` editor routes, scene minting (`mint_board_scene`) and `/_board/excalidraw-save`. |
+| [excalidraw_proxy.py](excalidraw_proxy.py) | Proxy to the local Excalidraw service; injects [assets/xcal-boot.js](assets/xcal-boot.js), which arms a save only after the first gesture. |
+| [autodraw.py](autodraw.py) | `/_board/autodraw`: `claude -p` authors a scene from the Page's `.md`. |
+| [chat.py](chat.py), [turnring.py](turnring.py) | The GUI chat: sessions, the SDK turn, context priming, the turn ring. |
+| [term.py](term.py) | The TUI: PTYs, parking, and the vendored xterm under `assets/vendor/xterm/`. |
+| [autodeck.py](autodeck.py) | `/_board/autodeck`: `claude -p` authors the Page's slide deck. |
+| `assets/js/10-drawer/`, `assets/css/86-*.css` | Drawer parts, concatenated into `board.js` / `board.css` by `_host/host_assets.py`. |
+
+Its routes form the `shared` row of `_host/host_registry.WORKBENCH_ROUTES`;
+a `--only` host without `shared` serves no terminal, chat or drawing save.
+The lane contracts are [ref/draw.md](../../skills/page/haipipe-workbench-studio/ref/draw.md)
+and [ref/chat.md](../../skills/page/haipipe-workbench-studio/ref/chat.md).
+
+## Guide
+
+A new workbench family fills its Guide by the checklist in `../README.md` § Adding a workbench.
+
+Guide has four Views: **Description** (what the Workbench does), **Method**
+(its steps, as text), **RoadMap Draw** (one drawing of its skills, method,
+Workbench and folders) and **Related Paper**. The `studio/`
+folder below holds Guide's UI design artifacts, not the Studio runtime.
 
 The design follows the existing Paper and Insight studios: white surfaces,
 light gray panels, blue selected tabs, and named Spaces and Views. The View
 row stays directly below the Space row, leaving the content its full width.
+
+## Space order
+
+Every workbench lists its Spaces in one order (JL 261003):
+
+```text
+Guide  ->  setup  ->  work  ->  Delivery
+shared     the input      the processing     shared
+name       and its        and its output     name
+           design
+```
+
+1. **Guide** comes first and has the same name everywhere: it explains the family.
+2. **Setup** Spaces follow: what is fixed before the work starts. Each keeps its own
+   name, because each family sets up something different; a family without a setup step
+   starts with its work.
+3. **Work** Spaces come next, in the order the work flows: input, then processing,
+   then output.
+4. **Delivery** comes last and has the same name everywhere: what is finished leaves here.
+
+| Family | Setup | Work | Delivery |
+|---|---|---|---|
+| Insight | Scope (the data) · Prototype (the questions and their scripts) | Insight · Check | Delivery |
+| Labeling | Data | Labeling · Quality | Delivery |
+| Design (page) | Design Task | Design Item | Delivery |
+| Paper | none | Ideation · Story · Sections | Delivery |
+| Page | none | Draft · Evidence | Delivery |
+
+"Setup" names a role, not a tab: tabs keep their family's own words.
 
 ## Revised sharing boundary
 
@@ -22,11 +86,10 @@ an obligatory roster of Goal / Design / Studio / Progress / Checklist Views.
 ```text
 Workbench
 ├── Guide Space                         family explanations
-│   ├── Skill set View
-│   ├── Methods View
-│   ├── Workbench View
-│   ├── Folder map View
-│   └── RoadMap Draw View                the family's explanatory diagrams
+│   ├── Description View                what this Workbench does
+│   ├── Method View                     its steps, as text
+│   ├── RoadMap Draw View               skills · method · Workbench · folders, one drawing
+│   └── Related Paper View              the papers it builds on
 └── Family-owned working Spaces         this instance's work
     └── Their own Views
         ├── Questions, answers and evidence
@@ -41,7 +104,7 @@ Workbench
 | 3 · Specialized instance work | The same family-owned working Spaces and Views | Domain-specific questions, evidence, work and products. |
 
 Selecting a Space replaces the View row with that Space's Views. Guide has
-four explanatory Views plus RoadMap Draw; each working Space retains its
+its four Views; each working Space retains its
 family's composition.
 Guide mounts beside each family's own working Spaces. Their working content,
 actions and source writers remain owned by that family.
@@ -57,18 +120,26 @@ available only when the optional `subjective-label` package is present.
 |---|---|
 | [guide_families.py](guide_families.py) | Family-owned skill sources, methods, working Space descriptions and folder conventions. |
 | [workbench_guide.py](workbench_guide.py) | Guide presenter, source resolver, deterministic Excalidraw scenes and SVG projection. |
+| [shared_workbench.py](shared_workbench.py) | The Shared Workbench's own site, laid out like the other workbenches, with Guide as its only Space. |
 | [assets/guide-mount.js](assets/guide-mount.js) | Guide button, the View frame directly under the Space row, and return to the native working surface. |
 | [assets/guide.js](assets/guide.js) | Independent drawing folds, lazy canvas loading, fold memory and frame height. |
 
 `/_board/guide?family=<family>&path=<native-source>&file=<source-file>` opens
-Guide. `view=` selects `skill-set`, `methods`, `workbench`, `folder-map` or
-`roadmap-draw`; `embed=1` renders the View row directly beneath the native
+Guide. Without `path` and `file` it is the family-only Guide: drawings and
+explanations come from the registry and folder patterns stay unresolved.
+`/_board/shared?guide=<view>` is the Shared Workbench's own site: the same
+header, band and Space row as the other workbenches, with Guide mounted as
+its only Space and explaining this Workbench (the `shared` family entry).
+`view=` selects `description`, `method`, `roadmap-draw` or `related-paper`;
+the earlier keys (`skill-set`, `methods`, `workbench`, `folder-map`) still open
+the View that now holds their content, and a family's `explain` pages for those
+keys appear there. `embed=1` renders the View row directly beneath the native
 Space row. A native Workbench URL can select Guide with `guide=<view>`.
 All links are origin-relative.
 
-The family registry supplies the four explanatory diagrams. The current
-instance supplies only the path-resolution context. **Source** links open
-declared skill contracts; **Folder map** links resolve the declared pattern
+The family registry supplies the Description, Method steps, RoadMap and
+`papers`. The current instance supplies only the path-resolution context.
+**Source** links open declared skill contracts; folder links resolve the declared pattern
 within the selected instance. Missing or private paths explain why there is
 no accessible source. Paths outside the served root and native private lanes
 remain under their existing custodians. Guide creates no instance ledger.
@@ -83,7 +154,7 @@ files continue to use their own writers.
 ### Dependencies
 
 The runtime is hosted through `../_host` and its `live` namespace. Canvases
-reuse `../workbench-studio/excalidraw_proxy.py` and `assets/xcal-boot.js`.
+reuse this folder's Studio `excalidraw_proxy.py` and `assets/xcal-boot.js`.
 The proxy defaults to the existing local Excalidraw service on port 5610;
 `EXCALIDRAW_ORIGIN` can select another existing service. An unavailable
 service displays the proxy's startup instruction. SVG and Excalidraw
@@ -147,7 +218,11 @@ for drawing and chat.
 
 All example questions, names, counts and states are illustrative.
 
-## Explanatory Views and RoadMap Draw
+## Explanatory Views and RoadMap Draw · earlier five-View design
+
+The scenes in this section record the earlier design, with Skill set, Methods,
+Workbench and Folder map as separate Views. Guide now shows them as one
+RoadMap drawing; see **Guide** above.
 
 The design studio supplies editable Excalidraw examples. Each explanatory View's drawing is a
 collapsible row above vertically stacked written explanations.
@@ -167,20 +242,18 @@ The design artifacts below use the Paper family, matching v4's Guide example. Th
 family roles and structure. Switching Paper instances keeps these explanations;
 another Workbench family supplies diagrams based on its own contracts.
 
-| Guide View | Drawing explains | Editable scene | UI preview |
-|---|---|---|---|
-| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](studio/guide-skill-set.excalidraw) | [In Guide](studio/guide-view-skill-set.png) |
-| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](studio/guide-methods.excalidraw) | [In Guide](studio/guide-view-methods.png) |
-| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](studio/guide-workbench.excalidraw) | [In Guide](studio/guide-view-workbench.png) |
-| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](studio/guide-folder-map.excalidraw) | [In Guide](studio/guide-view-folder-map.png) |
-| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](studio/guide-roadmap-draw.excalidraw) | [In Guide](studio/guide-view-roadmap-draw.png) |
+| Guide View | Drawing explains | Editable scene |
+|---|---|---|
+| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](studio/guide-skill-set.excalidraw) |
+| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](studio/guide-methods.excalidraw) |
+| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](studio/guide-workbench.excalidraw) |
+| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](studio/guide-folder-map.excalidraw) |
+| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](studio/guide-roadmap-draw.excalidraw) |
 
-- [All five Guide Views](studio/guide-views-with-drawings.excalidraw)
-- [Vector overview of those Views](studio/guide-views-with-drawings.svg)
+- [All five Guide Views, as they appear in Guide](studio/guide-views-with-drawings.excalidraw)
 - [Drawing generator](studio/guide-view-drawings.py)
 
-Each standalone drawing also has a same-named SVG and PNG. Diagram nodes are
-grouped for editing. RoadMap Draw embeds the four existing diagram files in
+Diagram nodes are grouped for editing. RoadMap Draw embeds the four existing diagram files in
 their own rows. It explains the
 family's skill and Workbench design; instance-owned working roadmaps stay with
 their family's working Spaces. The runtime creates family-specific scenes from
@@ -203,40 +276,35 @@ does not move folders or change record ownership. The same source links also
 appear below the diagram for keyboard and screen-reader access. External
 stores are named as conventions; Guide does not follow them outside the root.
 
-## Predefined drawing types and prepared templates
+## Predefined drawing types
 
 [drawing-catalog.json](drawing-catalog.json) defines the drawing types. Each
-entry fixes a reader question, required elements, expected source owners,
-placement and an editable starter template. Diagram types are shared across
-Workbench families; their concrete names, relationships, sources and states
-come from the selected family or instance.
+entry fixes a reader question, required elements, expected source owners and
+placement. Diagram types are shared across Workbench families; their concrete
+names, relationships, sources and states come from the selected family or
+instance. Guide draws its four types at run time from `guide_families.py`.
 
-| Placement | Type | Reader question | Required content | Prepared template |
-|---|---|---|---|---|
-| Guide | Skill map | Which skills do what, and how do they cooperate? | Named skills, responsibilities, owners and labeled relationships. | [Template](studio/templates/guide-skill-map.excalidraw) |
-| Guide | Method flow | How does this family turn a question into an answer? | Question, reasoning, evidence needs, optional work, interpretation, answer, limits and revision. | [Template](studio/templates/guide-method-flow.excalidraw) |
-| Guide | UI map | Where do I go to do or read something? | Guide and working Spaces, their Views and purposes, Space row followed by View row. | [Template](studio/templates/guide-ui-map.excalidraw) |
-| Guide | Folder map | Which files and owners supply each part of the UI? | Family sources, View-to-owner-to-path mapping and native work/product ownership. | [Template](studio/templates/guide-folder-map.excalidraw) |
-| Owning working Draw / Studio | Question map | What matters, what is answered, and what remains open? | Goal, questions, current answer or its absence, evidence, open issues and optional Work references. | [Template](studio/templates/work-question-map.excalidraw) |
-| Owning working Draw / Studio | Design map | How is the proposed solution structured, and why? | Scope, components, boundaries, flows, decisions, question references and acceptance criteria. | [Template](studio/templates/work-design-map.excalidraw) |
-| Owning working Draw / Studio | Work roadmap | What comes next, what depends on what, and when is it ready? | Milestones, dependencies, deliverables, readiness criteria, related questions, native owners and available owner state. | [Template](studio/templates/work-roadmap.excalidraw) |
+| Placement | Type | Reader question | Required content |
+|---|---|---|---|
+| Guide | Skill map | Which skills do what, and how do they cooperate? | Named skills, responsibilities, owners and labeled relationships. |
+| Guide | Method flow | How does this family turn a question into an answer? | Question, reasoning, evidence needs, optional work, interpretation, answer, limits and revision. |
+| Guide | UI map | Where do I go to do or read something? | Guide and working Spaces, their Views and purposes, Space row followed by View row. |
+| Guide | Folder map | Which files and owners supply each part of the UI? | Family sources, View-to-owner-to-path mapping and native work/product ownership. |
+| Owning working Draw / Studio | Question map | What matters, what is answered, and what remains open? | Goal, questions, current answer or its absence, evidence, open issues and optional Work references. |
+| Owning working Draw / Studio | Design map | How is the proposed solution structured, and why? | Scope, components, boundaries, flows, decisions, question references and acceptance criteria. |
+| Owning working Draw / Studio | Work roadmap | What comes next, what depends on what, and when is it ready? | Milestones, dependencies, deliverables, readiness criteria, related questions, native owners and available owner state. |
 
 The four Guide diagrams are the expected family introduction. The three
-working types are **optional starter templates**. Their required content
-describes the chosen template; the shared drawing component imposes no type
-selection, source binding, status field or metadata form on a working Studio.
-Each family owns its working Space and View composition and drawing semantics.
-
-The shared catalog describes both groups in successive single-column sections.
-Guide's drawing list offers its four explanatory types. Working types are used
-in their owning working Spaces when that owner chooses a template.
-A Question map can reference reasoning or a Report without BJTR execution;
-a Work roadmap can name human review or design work as well as native Runs.
+working types are optional references; the shared drawing component imposes
+no type selection, source binding, status field or metadata form on a working
+Studio. Each family owns its working Space and View composition and drawing
+semantics. A missing Guide drawing stays visible as **Not prepared**, naming
+the missing source.
 
 **Task alignment:** Task's Roadmap Studio is a freeform single-column list,
 with freely named Drawing 1 / Drawing 2 / Drawing 3 rows and an Add drawing
 action. Opening a row embeds its Excalidraw; several rows may stay open. It
-requires no Topic hierarchy, registered type or template content fields.
+requires no Topic hierarchy, registered type or content fields.
 The shared capability is the folding row and embedded drawing surface.
 Guide's Folder map explains the family's folder conventions; a Task drawing
 may freely sketch a current Question's actual folders and paths. Question
@@ -245,45 +313,14 @@ drawing list does not require the contents of every working View to use one
 column. Task's working UI and its save actions are implemented by the Task
 Workbench; Guide supplies its family explanations and folder conventions.
 
-### Preparation and use
-
-The following steps apply to Guide and deliberately chosen typed templates.
-Freeform working drawings can be created directly without these steps.
-
-1. Select a defined diagram type and the family or native instance owner.
-2. Bind its source records. Keep a missing drawing visible as **Not prepared**,
-   naming the missing source. **Not applicable** includes a concise reason.
-3. Fill the prepared template or redraw the existing scene. Keep its reader
-   question and required content; node counts and concrete layout can adapt.
-
-The seven starter templates are prepared, with explicit replacement slots.
-Their availability does not mean the corresponding family or instance drawing
-has been filled. Unknown answers, sources or states stay explicit. Each arrow
-names its relationship. Current question state and native execution state keep
-their respective owner meanings.
-
 A family-specific extension declares an id, reader question, required
-elements, sources, placement and starter template before becoming a standard
-template. Freeform working drawings need no type registration. Generated
-diagrams remain owned by their generators; preserve separately
-edited scenes before regenerating.
-
-- [Drawing type catalog design](studio/drawing-type-catalog.excalidraw)
-- [Catalog preview](studio/drawing-type-catalog.png)
-- [Template generator](studio/drawing-templates.py)
-
-Each template also has a same-named SVG and PNG preview. This is a design
-contract and prepared artifact set; it does not create an instance ledger or
-change native skill contracts.
+elements, sources and placement before becoming a standard type. Freeform
+working drawings need no type registration. Generated diagrams remain owned
+by their generators; preserve separately edited scenes before regenerating.
 
 ## Current artifacts · Guide v4
 
 - [Editable Excalidraw scene](studio/workbench-shared-guide-v4.excalidraw)
-- [Vector overview](studio/workbench-shared-guide-v4.svg)
-- [Guide / Workbench](studio/v4-01-guide.png)
-- [Paper / Story / collapsed Questions](studio/v4-02-paper-questions.png)
-- [Paper / expanded Question and Work](studio/v4-03-paper-question-work.png)
-- [Insight / Questions](studio/v4-04-insight-questions.png)
 - [Generator](studio/workbench-shared-guide-v4.py)
 
 The generator owns these generated artifacts. Keep independently edited
@@ -292,11 +329,12 @@ Excalidraw copies under another filename before regenerating.
 ```sh
 python3 plugins/haipipe-toolkit/servers/workbench-shared/studio/workbench-shared-guide-v4.py
 python3 plugins/haipipe-toolkit/servers/workbench-shared/studio/guide-view-drawings.py
-python3 plugins/haipipe-toolkit/servers/workbench-shared/studio/drawing-templates.py
 ```
 
-This writes the scene and SVG using the Python standard library. Add
-`--previews` with Pillow installed to render PNG previews. Optional `--font`
+`studio/` keeps only the Excalidraw scenes and their generators. Each generator
+writes its scene with the Python standard library. Add `--previews` with Pillow
+installed to render local PNG previews; `studio/.gitignore` keeps PNG and SVG
+out of git. Optional `--font`
 and `--mono-font` paths control preview fonts; the scene uses the same
 Excalidraw font IDs as the existing Paper and Insight drawings.
 

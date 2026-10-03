@@ -97,10 +97,12 @@ never listed. This is a design handoff, not leave to send; downstream
 owners decide distribution.
 
 
-Theory of Design Space
-----------------------
+Theory of Design: Guide › Method
+--------------------------------
 
-Key `theory`. It renders `skills/design/haipipe-workbench-design/ref/design-theory.md`
+It was a board Space (key `theory`); since 261002 it is the shared Guide's Methods view,
+which frames `/_board/design-board?embed=theory`, and an old `space=theory` link forwards
+there. It renders `skills/design/haipipe-workbench-design/ref/design-theory.md`
 first: how to design, the same for every board. Then it renders the
 board's own `design-theory.md` beside `board.md`, when present: domain
 knowledge, for example message theories. Both are ASCII docs.

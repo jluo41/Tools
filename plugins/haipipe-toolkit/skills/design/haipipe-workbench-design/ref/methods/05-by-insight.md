@@ -1,12 +1,11 @@
 By insight
 ==========
 
-One design method card. The Design workbench shows it in the Theory of Design
-Space's Design methods view; its papers are the rows of `../design-papers.md`
-whose `group` is `by insight`. A claim names its source in brackets; "(ours)"
-marks the workbench's own judgment.
+One design method card. Guide › Method shows it among its method cards; its
+papers are the rows of `../design-papers.md` whose `group` is `by insight`. A claim
+names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: With internal insights: induction, then abduction-1; the how comes from our own
+family: Internal Insights: induction, then abduction-1; the how comes from our own
   data, as signed insights
 reasoning: abduction-1 on our own induction: requirements + signed insights, the how → a
   design

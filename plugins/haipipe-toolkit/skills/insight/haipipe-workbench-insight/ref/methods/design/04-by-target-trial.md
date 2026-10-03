@@ -1,7 +1,7 @@
 By target trial
 ===============
 
-One design method card. The Insight workbench shows it in Scope › Methods › Design
+One design method card. The Insight workbench shows it in the shared Guide › Method › Design
 methods; its papers are the rows of `../../insight-papers.md` whose `group` is
 `by target trial`. A claim names its source in brackets; "(ours)" marks the workbench's
 own judgment.
