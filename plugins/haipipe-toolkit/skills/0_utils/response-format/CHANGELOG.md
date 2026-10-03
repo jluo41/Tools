@@ -1,6 +1,71 @@
 response-format — Changelog
 ===========================
 
+## [0.10.1] — 2026-10-02
+
+- Move the related Question to the bottom of each ordinary section, after its
+  content and changed file lines. Bold the full label, id, wording and link text.
+- Keep meaningful ASCII diagrams between scan points and explanation when
+  useful; the Question footer supplements them. Summary and Next remains independent.
+- Update the section template, recorded / Session / Proposed forms and examples.
+- Fresh-context validation confirmed fully bold linked footers, useful diagrams,
+  input-driven section order and a Summary and Next without attribution.
+
+## [0.10.0] — 2026-10-02
+
+- Form normal chat sections from the user's input first, then associate them
+  with questions. Preserve section order and use no additional Question wrapper.
+- Put the Question association immediately after each ordinary section title,
+  before its scan points. Support verified recorded links, Session questions,
+  Proposed questions and optional Block / Project context.
+- Keep Summary and Next independent, without Question or ownership lines.
+- Link to ask-questions for evolving question matching and clarification;
+  distinguish the agreed report/Q01 placement from actual existing link targets.
+- Fresh-context use confirmed ordering, recorded links, equal ids in different
+  Blocks, proposed candidates and Session fallback across three discussion cases.
+  Follow-up review clarified multilingual brevity and limited Git reporting to
+  actual task edits; active instructions now use neutral reader wording.
+
+## [0.9.3] — 2026-10-02
+
+- The heading line is dots (`·`), not `─`: `## 1. ✅ What's in Place ······`. JL: "could you make it to be the
+  dots?"
+
+## [0.9.2] — 2026-10-02
+
+- Each section heading ends in a light `─` line padded to 56 columns, so headings end in one column and the
+  line separates the sections: `## 1. ✅ What's in Place ──────`. JL: "for the heading, could we add the light
+  separation".
+
+## [0.9.1] — 2026-10-02
+
+- No separator lines around the sketch: the fenced block already stands apart, so a blank line above and below
+  is enough. JL: "or we don't need the separation, just leave the space?"
+
+## [0.9.0] — 2026-10-02
+
+- Sections are numbered: `## N. [emoji] Short Headline`, 1, 2, 3 in reading order, the summary last; "2.3" names
+  section 2, point 3. JL: "for the index, could we have index, like 1, 2, 3, 4 as well."
+- The sketch sits between two dotted `·` rules (was `┈`) and is laid out to be read: one step per line with a
+  short note beside it, up to 10 lines and 72 columns (was 6 lines, 90 columns). JL: "could we make it with
+  dots? and make it readable, it could be several lines."
+
+## [0.8.1] — 2026-10-02
+
+- The sketch gets emoji and a light rule: a line of `┈` as wide as the sketch above and below it, no side
+  borders; one emoji in front of each node (✅ 🔶 ⬜ 🙋 ❗ for state, 📥 📤 🔎 📄 🧮 🎯 for things); rows that line up
+  carry the same number of emoji. JL: "how could I have the diagram with the emoji and have the light separator?"
+
+## [0.8.0] — 2026-10-02
+
+- Every section carries one sketch between its scan list and its prose: a very concise ASCII drawing (at most 6
+  lines, 90 columns) of the thing the points are about: a flow, a before and after, a mini comparison, a share
+  bar, a state line or a small tree. JL: "in each section, could we add the very concise diagram-ascii to explain
+  the content of it?"
+- A sketch draws, never restates the list; a section with nothing to draw has none. The four bigger-block cases
+  (folder tree, compared table, verbatim output, file:line report) stay and may stand in for the sketch.
+- Section order is now scan -> sketch -> explain -> files; the example shows a sketch in each section.
+
 ## [0.7.0] — 2026-09-27
 
 - The last section of every substantive reply is `## 📋 Summary and Next`: where things stand and what comes next (JL 260927).
