@@ -3068,7 +3068,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
         evidence_url = "/_board/evidence?path=%s&file=%s&embed=1" % encoded
         run_url = "/_board/runs?path=%s&file=%s&embed=1" % encoded
         delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
-    return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
+    document = _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         page_stem=_e(page_src.stem if page_src is not None else "standalone"),
                         board_link=_board_line(board_level_link(page_src, root)),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
@@ -3085,6 +3085,10 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
                         **_runs_parts(page_src, evidence_url=evidence_url,
                                       delivery_url=delivery_url, path_q=path_q,
                                       file_q=file_q, asset_base=asset_base))
+    if page_src is None or not path_q:
+        return document
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "page", {"path": path_q, "file": file_q}, ".spaces", ".lens")
 
 
 def _runs_parts(page_src, *, evidence_url="", delivery_url="", path_q="", file_q="",

@@ -3138,9 +3138,12 @@ def render_paper(board, root, path_param):
     panels = (render_ideation(d, kinds.get("ideation", [])) + render_story(d, kinds.get("story", []))
               + render_sections(d, kinds.get("sections", [])) + render_delivery(d, kinds.get("delivery", [])))
     default = "story" if d["story"] else "ideation"
-    return _PAGE.format(title=esc(d["title"]), space_chips=chips, panels=panels, default_space=default,
+    document = _PAGE.format(title=esc(d["title"]), space_chips=chips, panels=panels, default_space=default,
                         space_css=SPACE_CSS, panel_css=PANEL_CSS, panel_js=PANEL_JS,
                         paper_id=esc(d["board"].name))
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "paper", {"path": path_param, "file": "board.md"},
+                       ".spaces", ".panel[data-space]")
 
 
 

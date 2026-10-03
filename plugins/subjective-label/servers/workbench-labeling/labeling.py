@@ -2876,7 +2876,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
     }
     back_link = ('' if standalone else
                  f'<a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}" title="All labeling jobs">←</a>')
-    return (
+    document = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>Labeling · {_esc(page_src.stem)}</title><style>{_CSS}</style></head><body>'
@@ -2890,6 +2890,9 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
         f'<script type=application/json id=labeling-boot>{_script_json(boot)}</script>'
         f'<script>{_JS}</script></body></html>'
     )
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "labeling", {"path": path_q, "file": file_q},
+                       "nav.spaces", "section.panel")
 
 
 _CSS = """

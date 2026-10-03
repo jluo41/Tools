@@ -1793,7 +1793,7 @@ def render_insight_board(snapshot: dict, space: str = "insight",
                     f'{_runs_panel(k, kinds[k])}</div></section>' for k, _ in _SPACES)
     links = ('<a class=board-index href="index.html">board index</a>' if snap["static"] else
              f'<a href="/">all boards</a> · <a href="/{_e(snap["relative"])}/board/index.html">board index</a>')
-    return _spell_ids(snap, "".join([
+    document = _spell_ids(snap, "".join([
         '<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">',
         f'<title>🔎 {_e(snap["title"])}</title><style>{_CSS}</style></head>'
         f'<body data-space="{_e(space)}" data-sel="{_e(sel)}"><main>',
@@ -1801,6 +1801,11 @@ def render_insight_board(snapshot: dict, space: str = "insight",
         '<div class=dataset title="{1}">{0}</div>'.format(*map(_e, _dataset_line(snap))),
         nav, panes, _POP, "</main>", _JS, "</body></html>",
     ]))
+    if snap["static"]:
+        return document
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "insight", {"path": (snap["relative"] + "/board.md").lstrip("/"), "file": "board.md"},
+                       "nav.spaces", ".pane")
 
 
 # ─── pop-outs: a run's results, a page as a document ────────────────────────

@@ -906,12 +906,17 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
         ".then(function(r){return r.json()}).then(function(j){if(!j.ok){msg.className='msg bad';msg.textContent=j.err||'refused';b.disabled=false;return}"
         "location.href=j.url}).catch(function(e){msg.className='msg bad';msg.textContent=String(e);b.disabled=false})}});})();</script>"
     )
-    return (
+    document = (
         '<!doctype html><html lang=en><head><meta charset=utf-8>'
         '<meta name=viewport content="width=device-width,initial-scale=1">'
         f'<title>🎨 Design Board · {_e(snapshot["title"])}</title><style>{_CSS}{panel_css}</style></head><body>'
         f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{panel_js}</body></html>'
     )
+    if snapshot["static"]:
+        return document
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "design", {"path": board_path, "file": "board.md"},
+                       "nav.tabs", "main")
 
 
 def board_path_of(snapshot: dict) -> str:

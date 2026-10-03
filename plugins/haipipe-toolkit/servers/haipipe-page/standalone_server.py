@@ -40,6 +40,8 @@ from live.folderstat import FolderStatMixin  # noqa: E402
 from live.outline import OutlineMixin  # noqa: E402
 from live.runs import RunsTabMixin  # noqa: E402
 from live.value import ValueMixin  # noqa: E402
+from live.workbench_guide import WorkbenchGuideMixin  # noqa: E402
+from live.excalidraw_proxy import ExcalidrawProxyMixin  # noqa: E402
 
 ASSETS = Path(__file__).resolve().parent / 'assets'
 MAX_BODY = 4 * 1024 * 1024
@@ -104,7 +106,7 @@ def _relative(value):
 
 
 class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
-                  RunsTabMixin, DeliveryTabMixin,
+                  RunsTabMixin, DeliveryTabMixin, WorkbenchGuideMixin, ExcalidrawProxyMixin,
                   SimpleHTTPRequestHandler):
     """No directory listings, Board discovery, subprocesses or terminal APIs."""
 
@@ -112,6 +114,7 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
     # build/author routes are deliberately not advertised or called.
     delivery_interactive = False
     delivery_asset_base = ""
+    only = frozenset({"page", "labeling"})
 
     def __init__(self, *args, **kwargs):
         self.root = self.server_context.folder.resolve()  # set on bound subclass
@@ -249,6 +252,15 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
             raise ValueError('File is not an editable Page source')
         return path
 
+    def guide_path_allowed(self, path):
+        """Guide links obey this Page's existing download and private-lane rules."""
+        try:
+            bounded = self._bounded(path.relative_to(self.root).as_posix())
+            return (bounded.is_dir() or bounded.suffix.lower() in PUBLIC_SUFFIXES
+                    or self._registered_download(bounded))
+        except (ValueError, OSError):
+            return False
+
     def _login(self, supplied=None):
         if self.server.token is None:
             return self._send(303, '', Location='/')
@@ -355,7 +367,15 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
             if parsed.path == '/w' or parsed.path.startswith('/w/'):
                 return self._workbench_short(parsed)
             route = parsed.path.replace('/_page/', '/_board/', 1)
+            if parsed.path == '/_excalidraw/_haipipe-xcal.js':
+                return self.proxy_excalidraw(head_only=self.command == 'HEAD')
+            if parsed.path.startswith('/assets/') and not (self.root / parsed.path.lstrip('/')).exists():
+                _relative(parsed.path.lstrip('/'))
+                if Path(parsed.path).suffix.lower() not in {'.js', '.css', '.woff', '.woff2', '.ttf', '.svg', '.png'}:
+                    raise ValueError('Unknown canvas asset')
+                return self.proxy_excalidraw(head_only=self.command == 'HEAD')
             views = {'/_board/draft': self.outline_view,
+                     '/_board/guide': self.guide_view,
                      '/_board/outline': self.outline_view,
                      '/_board/evidence': self.evidence_tab_view,
                      '/_board/value': self.value_view,

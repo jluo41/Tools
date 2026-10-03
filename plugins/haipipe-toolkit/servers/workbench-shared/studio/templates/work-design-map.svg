@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1528" height="768" viewBox="0 0 1528 768" role="img">
+<title>Design map · starter template</title>
+<desc>How is the proposed solution structured, and why?</desc>
+<defs><marker id="arrow-1864ab" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#1864ab" stroke-width="2"/></marker><marker id="arrow-495057" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#495057" stroke-width="2"/></marker></defs>
+<rect width="1528" height="768" fill="#ffffff"/>
+
+<text x="24" y="48" font-family="Comic Sans MS, Arial, sans-serif" font-size="30" fill="#1e1e1e" text-anchor="start"><tspan x="24" dy="0">Design map · starter template</tspan></text>
+<text x="24" y="85" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#495057" text-anchor="start"><tspan x="24" dy="0">How is the proposed solution structured, and why?</tspan></text>
+<text x="1132" y="43" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#d9480f" text-anchor="start"><tspan x="1132" dy="0">Template · not filled</tspan></text>
+<rect x="378" y="124" width="744" height="160" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="394" y="147" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="394" dy="0">Design boundary · &lt;scope&gt;</tspan></text>
+<rect x="44" y="162" width="264" height="106" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="58" y="191" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1864ab" text-anchor="start"><tspan x="58" dy="0">Inputs</tspan></text>
+<text x="58" y="220" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="58" dy="0">&lt;input contract&gt;</tspan><tspan x="58" dy="18.75">&lt;source owner&gt;</tspan></text>
+<rect x="418" y="162" width="278" height="106" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="432" y="191" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1864ab" text-anchor="start"><tspan x="432" dy="0">Component · &lt;name&gt;</tspan></text>
+<text x="432" y="220" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="432" dy="0">&lt;responsibility&gt;</tspan><tspan x="432" dy="18.75">&lt;contract / interface&gt;</tspan></text>
+<rect x="794" y="162" width="278" height="106" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="808" y="191" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1864ab" text-anchor="start"><tspan x="808" dy="0">Component · &lt;name&gt;</tspan></text>
+<text x="808" y="220" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="808" dy="0">&lt;responsibility&gt;</tspan><tspan x="808" dy="18.75">&lt;contract / interface&gt;</tspan></text>
+<rect x="1178" y="162" width="206" height="106" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1192" y="191" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1864ab" text-anchor="start"><tspan x="1192" dy="0">Outputs</tspan></text>
+<text x="1192" y="220" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1192" dy="0">&lt;product&gt;</tspan><tspan x="1192" dy="18.75">&lt;acceptance&gt;</tspan></text>
+<polyline points="312,215 414,215" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<text x="330" y="195" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="330" dy="0">&lt;flow&gt;</tspan></text>
+<polyline points="700,215 790,215" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<text x="718" y="195" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="718" dy="0">&lt;flow&gt;</tspan></text>
+<polyline points="1076,215 1174,215" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<text x="1094" y="195" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="1094" dy="0">&lt;flow&gt;</tspan></text>
+<rect x="44" y="336" width="646" height="104" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="58" y="366" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="58" dy="0">Decisions and questions</tspan></text>
+<text x="58" y="394" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="58" dy="0">Decision: &lt;choice + rationale + source&gt;</tspan><tspan x="58" dy="18.75">Open question: &lt;issue and native reference&gt;</tspan></text>
+<rect x="738" y="336" width="646" height="104" rx="10" fill="#f3f0ff" stroke="#6741d9" stroke-width="2"/>
+<text x="752" y="366" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#6741d9" text-anchor="start"><tspan x="752" dy="0">Constraints and acceptance</tspan></text>
+<text x="752" y="394" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="752" dy="0">Constraint: &lt;boundary or limit&gt;</tspan><tspan x="752" dy="18.75">Ready when: &lt;criterion and native review owner&gt;</tspan></text>
+<rect x="24" y="506" width="1432" height="178" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="40" y="539" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1864ab" text-anchor="start"><tspan x="40" dy="0">What this drawing must contain</tspan></text>
+<text x="40" y="569" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Named design scope · Components and boundaries · Inputs, outputs and labeled relationships · Decision and question references · Constraints</tspan><tspan x="40" dy="18.75">and acceptance criteria</tspan></text>
+<text x="40" y="634" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Fill from: Owning design record · Question and decision records · Current input and output contracts</tspan></text>
+<text x="40" y="668" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Replace the slots from the owning records. Add or remove nodes as needed; keep the drawing&#x27;s defined purpose and required content.</tspan></text>
+</svg>

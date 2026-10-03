@@ -1,0 +1,341 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3120" height="2912" viewBox="0 0 3120 2912" role="img">
+<title>Shared Workbench UI design proposal</title>
+<desc>One shared Guide Space with explanation and instance Views, alongside family-owned Spaces.</desc>
+<defs><marker id="arrow-1864ab" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#1864ab" stroke-width="2"/></marker><marker id="arrow-495057" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#495057" stroke-width="2"/></marker></defs>
+<rect width="3120" height="2912" fill="#ffffff"/>
+<text x="48" y="54" font-family="Comic Sans MS, Arial, sans-serif" font-size="34" fill="#1e1e1e" text-anchor="start"><tspan x="48" dy="0">Workbench Shared · UI design studio</tspan></text>
+<text x="48" y="97" font-family="Comic Sans MS, Arial, sans-serif" font-size="21" fill="#495057" text-anchor="start"><tspan x="48" dy="0">One shared Guide Space: 1 Family explanation + 2 Instance Views.    Other Spaces: 3 Family-owned UI.</tspan></text>
+<text x="48" y="132" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="48" dy="0">Design proposal · illustrative content and states</tspan></text>
+
+<text x="72" y="222" font-family="Comic Sans MS, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start"><tspan x="72" dy="0">Shared Workbench UI · composition</tspan></text>
+<text x="72" y="253" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="72" dy="0">Choose a Space first, then its View. Guide is the one shared Space; this family&#x27;s other Spaces stay its own.</tspan></text>
+<rect x="72" y="284" width="1432" height="630" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="92" y="327" font-family="Comic Sans MS, Arial, sans-serif" font-size="23" fill="#1e1e1e" text-anchor="start"><tspan x="92" dy="0">Labeling Workbench</tspan></text>
+<text x="92" y="350" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Block b01_example</tspan></text>
+<rect x="1136" y="306" width="208" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1240.0" y="331.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="1240.0" dy="0">Switch Block  v</tspan></text>
+<rect x="1356" y="306" width="128" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1420.0" y="331.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="1420.0" dy="0">Folder &gt;</tspan></text>
+<text x="92" y="404" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Space</tspan></text>
+<rect x="152" y="378" width="82" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="193.0" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="193.0" dy="0">Guide</tspan></text>
+<rect x="242" y="378" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="283.0" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="283.0" dy="0">Data</tspan></text>
+<rect x="332" y="378" width="102.4" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="383.2" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="383.2" dy="0">Labeling</tspan></text>
+<rect x="442.4" y="378" width="93.1" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="488.95" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="488.95" dy="0">Quality</tspan></text>
+<rect x="543.5" y="378" width="102.4" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="594.7" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="594.7" dy="0">Delivery</tspan></text>
+<polyline points="92,436 1484,436" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="92" y="477" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="92" dy="0">View</tspan></text>
+<rect x="152" y="452" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="207.85" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="207.85" dy="0">Skill set</tspan></text>
+<rect x="271.7" y="452" width="111.7" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="327.55" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="327.55" dy="0">Workbench</tspan></text>
+<rect x="391.4" y="452" width="121.0" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="451.9" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="451.9" dy="0">Folder map</tspan></text>
+<rect x="520.4" y="452" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="561.4" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="561.4" dy="0">Goal</tspan></text>
+<rect x="610.4" y="452" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="652.3" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="652.3" dy="0">Design</tspan></text>
+<rect x="702.1999999999999" y="452" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="744.0999999999999" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="744.0999999999999" dy="0">Studio</tspan></text>
+<rect x="793.9999999999999" y="452" width="102.4" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="845.1999999999999" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="845.1999999999999" dy="0">Progress</tspan></text>
+<rect x="904.3999999999999" y="452" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="960.2499999999999" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="960.2499999999999" dy="0">Checklist</tspan></text>
+<rect x="92" y="506" width="890" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="110" y="546" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#1e1e1e" text-anchor="start"><tspan x="110" dy="0">Guide Space · how this Workbench is organized</tspan></text>
+<text x="110" y="576" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="110" dy="0">Guide contains both the family explanation and the shared Block Views.</tspan></text>
+<rect x="110" y="606" width="418" height="168" rx="10" fill="#e7f5ff" stroke="#ced4da" stroke-width="2"/>
+<text x="126" y="637" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1864ab" text-anchor="start"><tspan x="126" dy="0">1 · About this Workbench</tspan></text>
+<text x="126" y="664" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="126" dy="0">Skill set · Workbench · Folder map</tspan><tspan x="126" dy="20.0"></tspan><tspan x="126" dy="20.0">Shared explanation for this family.</tspan><tspan x="126" dy="20.0">Kept when the Block changes.</tspan></text>
+<rect x="546" y="606" width="418" height="168" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="562" y="637" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#2b8a3e" text-anchor="start"><tspan x="562" dy="0">2 · This Block</tspan></text>
+<text x="562" y="664" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="562" dy="0">Goal · Design · Studio</tspan><tspan x="562" dy="20.0">Progress · Checklist</tspan><tspan x="562" dy="20.0"></tspan><tspan x="562" dy="20.0">Shared View structure; instance content.</tspan></text>
+<text x="110" y="814" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="110" dy="0">Choose Guide first. All eight shared Views are inside it.</tspan></text>
+<rect x="1004" y="506" width="480" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="1022" y="546" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#6741d9" text-anchor="start"><tspan x="1022" dy="0">3 · Labeling&#x27;s own Spaces</tspan></text>
+<rect x="1022" y="568" width="444" height="190" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1038" y="599" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#6741d9" text-anchor="start"><tspan x="1038" dy="0">Each Space opens its own Views</tspan></text>
+<text x="1038" y="625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1038" dy="0">Data        Preparation · Contract · Embedding</tspan><tspan x="1038" dy="18.75">Labeling    Definition · Rounds · Guideline</tspan><tspan x="1038" dy="18.75">Quality     Test · Evaluation · Audit</tspan><tspan x="1038" dy="18.75">Delivery    Handoff · Scan · Final</tspan></text>
+<text x="1022" y="800" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1022" dy="0">Paper supplies its own Space / View roster.</tspan><tspan x="1022" dy="20.0">Guide joins that roster as one shared Space.</tspan></text>
+<text x="92" y="895" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Labeling Workbench  /  b01_example  /  Guide  /  Workbench</tspan></text>
+<rect x="72" y="946" width="464" height="172" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="88" y="980" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1864ab" text-anchor="start"><tspan x="88" dy="0">1 · Inside Guide: explanation</tspan></text>
+<text x="88" y="1014" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="88" dy="0">Skill set · Workbench · Folder map</tspan><tspan x="88" dy="20.0">Documents describe this family.</tspan><tspan x="88" dy="20.0">Switch Block: keep the explanation.</tspan><tspan x="88" dy="20.0">Switch family: load its explanation.</tspan></text>
+<rect x="556" y="946" width="464" height="172" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="572" y="980" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#2b8a3e" text-anchor="start"><tspan x="572" dy="0">2 · Inside Guide: Block Views</tspan></text>
+<text x="572" y="1014" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="572" dy="0">Goal · Design · Studio</tspan><tspan x="572" dy="20.0">Progress · Checklist</tspan><tspan x="572" dy="20.0">Same Views across Block instances.</tspan><tspan x="572" dy="20.0">Content comes from the current owner.</tspan></text>
+<rect x="1040" y="946" width="464" height="172" rx="10" fill="#f3f0ff" stroke="#6741d9" stroke-width="2"/>
+<text x="1056" y="980" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#6741d9" text-anchor="start"><tspan x="1056" dy="0">3 · Family-owned Spaces</tspan></text>
+<text x="1056" y="1014" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1056" dy="0">Here: Data · Labeling · Quality</tspan><tspan x="1056" dy="20.0">Delivery, with their own Views.</tspan><tspan x="1056" dy="20.0">Paper supplies its own Space roster.</tspan><tspan x="1056" dy="20.0">Each family&#x27;s structure stays its own.</tspan></text>
+
+<text x="1616" y="222" font-family="Comic Sans MS, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start"><tspan x="1616" dy="0">1 · Guide Space</tspan></text>
+<text x="1616" y="253" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="1616" dy="0">The family explanation is shared across instances; Folder map can show the active instance path.</tspan></text>
+<rect x="1616" y="284" width="1432" height="630" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="1636" y="327" font-family="Comic Sans MS, Arial, sans-serif" font-size="23" fill="#1e1e1e" text-anchor="start"><tspan x="1636" dy="0">Task Workbench</tspan></text>
+<text x="1636" y="350" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Block b01_example</tspan></text>
+<rect x="2680" y="306" width="208" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2784.0" y="331.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="2784.0" dy="0">Switch Block  v</tspan></text>
+<rect x="2900" y="306" width="128" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2964.0" y="331.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="2964.0" dy="0">Folder &gt;</tspan></text>
+<text x="1636" y="404" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Space</tspan></text>
+<rect x="1696" y="378" width="82" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1737.0" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="1737.0" dy="0">Guide</tspan></text>
+<rect x="1786" y="378" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1827.0" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1827.0" dy="0">Runs</tspan></text>
+<rect x="1876" y="378" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1917.0" y="404.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1917.0" dy="0">Scope</tspan></text>
+<polyline points="1636,436 3028,436" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="1636" y="477" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">View</tspan></text>
+<rect x="1696" y="452" width="111.7" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1751.85" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="1751.85" dy="0">Skill set</tspan></text>
+<rect x="1815.7" y="452" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1871.55" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1871.55" dy="0">Workbench</tspan></text>
+<rect x="1935.4" y="452" width="121.0" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1995.9" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1995.9" dy="0">Folder map</tspan></text>
+<rect x="2064.4" y="452" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2105.4" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2105.4" dy="0">Goal</tspan></text>
+<rect x="2154.4" y="452" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2196.3" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2196.3" dy="0">Design</tspan></text>
+<rect x="2246.2000000000003" y="452" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2288.1000000000004" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2288.1000000000004" dy="0">Studio</tspan></text>
+<rect x="2338.0000000000005" y="452" width="102.4" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2389.2000000000003" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2389.2000000000003" dy="0">Progress</tspan></text>
+<rect x="2448.4000000000005" y="452" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2504.2500000000005" y="478.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2504.2500000000005" dy="0">Checklist</tspan></text>
+<rect x="1636" y="506" width="890" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="1654" y="544" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#1e1e1e" text-anchor="start"><tspan x="1654" dy="0">HAI Pipe Task · skill set</tspan></text>
+<rect x="1654" y="566" width="854" height="76" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1670" y="597" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1864ab" text-anchor="start"><tspan x="1670" dy="0">Workflow · haipipe-workflow</tspan></text>
+<text x="1670" y="623" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1670" dy="0">Coordinates the workflow, Spec and owner boundaries.</tspan></text>
+<rect x="1654" y="654" width="854" height="76" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1670" y="685" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1864ab" text-anchor="start"><tspan x="1670" dy="0">Work · haipipe-task</tspan></text>
+<text x="1670" y="711" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1670" dy="0">Owns Block / Job / Task / Run identity and lifecycle.</tspan></text>
+<rect x="1654" y="742" width="854" height="76" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1670" y="773" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1864ab" text-anchor="start"><tspan x="1670" dy="0">UI · Workbench skills</tspan></text>
+<text x="1670" y="799" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1670" dy="0">haipipe-workbench-task: Block     haipipe-workbench-page: Task Page</tspan></text>
+<rect x="2548" y="506" width="480" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="2566" y="542" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1e1e1e" text-anchor="start"><tspan x="2566" dy="0">Views inside Guide Space</tspan></text>
+<text x="2566" y="585" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="2566" dy="0">Skill set</tspan></text>
+<text x="2686" y="583" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Family skills and their roles</tspan></text>
+<text x="2566" y="618" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="2566" dy="0">Workbench</tspan></text>
+<text x="2686" y="616" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">UI structure and design rationale</tspan></text>
+<text x="2566" y="651" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="2566" dy="0">Folder map</tspan></text>
+<text x="2686" y="649" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Folders and owner mapping</tspan></text>
+<text x="2566" y="684" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2566" dy="0">Goal</tspan></text>
+<text x="2686" y="682" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Overview · Rules</tspan></text>
+<text x="2566" y="717" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2566" dy="0">Design</tspan></text>
+<text x="2686" y="715" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Roadmap · Decisions</tspan></text>
+<text x="2566" y="750" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2566" dy="0">Studio</tspan></text>
+<text x="2686" y="748" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Draw above Chat</tspan></text>
+<text x="2566" y="783" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2566" dy="0">Progress</tspan></text>
+<text x="2686" y="781" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Jobs · Tasks · Runs</tspan></text>
+<text x="2566" y="816" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2566" dy="0">Checklist</tspan></text>
+<text x="2686" y="814" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2686" dy="0">Checks · Readings</tspan></text>
+<text x="1636" y="895" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Family · Task     Active Block · b01_example     Guide content · family skill / reference documents</tspan></text>
+<rect x="1616" y="946" width="890" height="172" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1632" y="979" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1864ab" text-anchor="start"><tspan x="1632" dy="0">Folder map · active path example</tspan></text>
+<text x="1632" y="1011" font-family="Courier New, monospace" font-size="15" fill="#1e1e1e" text-anchor="start"><tspan x="1632" dy="0">tasks/b01_example/</tspan><tspan x="1632" dy="18.75">  board.md</tspan><tspan x="1632" dy="18.75">  j01_inputs/t01_inventory/</tspan><tspan x="1632" dy="18.75">    t01_inventory.md   scripts/config/r01_example.yaml</tspan><tspan x="1632" dy="18.75">    runs/r01_example.sh   results/r01_example/   studio/</tspan></text>
+<rect x="2530" y="946" width="518" height="172" rx="10" fill="#ffffff" stroke="#1864ab" stroke-width="2"/>
+<text x="2546" y="979" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1864ab" text-anchor="start"><tspan x="2546" dy="0">When the instance changes</tspan></text>
+<text x="2546" y="1013" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="2546" dy="0">Block A -&gt; Block B in Task Workbench:</tspan><tspan x="2546" dy="20.0">keep this explanation; update the active path.</tspan><tspan x="2546" dy="20.0"></tspan><tspan x="2546" dy="20.0">Task -&gt; Labeling Workbench:</tspan><tspan x="2546" dy="20.0">keep the Guide Views; load Labeling&#x27;s documents.</tspan></text>
+
+<text x="72" y="1286" font-family="Comic Sans MS, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start"><tspan x="72" dy="0">2 · Guide Space / Progress View</tspan></text>
+<text x="72" y="1317" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="72" dy="0">Guide &gt; Progress shows this Block&#x27;s native Jobs, Tasks and Runs using the common View structure.</tspan></text>
+<rect x="72" y="1348" width="1432" height="630" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="92" y="1391" font-family="Comic Sans MS, Arial, sans-serif" font-size="23" fill="#1e1e1e" text-anchor="start"><tspan x="92" dy="0">Task Workbench</tspan></text>
+<text x="92" y="1414" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Block b01_example</tspan></text>
+<rect x="1136" y="1370" width="208" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1240.0" y="1395.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="1240.0" dy="0">Switch Block  v</tspan></text>
+<rect x="1356" y="1370" width="128" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1420.0" y="1395.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="1420.0" dy="0">Folder &gt;</tspan></text>
+<text x="92" y="1468" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Space</tspan></text>
+<rect x="152" y="1442" width="82" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="193.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="193.0" dy="0">Guide</tspan></text>
+<rect x="242" y="1442" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="283.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="283.0" dy="0">Runs</tspan></text>
+<rect x="332" y="1442" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="373.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="373.0" dy="0">Scope</tspan></text>
+<polyline points="92,1500 1484,1500" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="92" y="1541" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="92" dy="0">View</tspan></text>
+<rect x="152" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="207.85" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="207.85" dy="0">Skill set</tspan></text>
+<rect x="271.7" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="327.55" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="327.55" dy="0">Workbench</tspan></text>
+<rect x="391.4" y="1516" width="121.0" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="451.9" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="451.9" dy="0">Folder map</tspan></text>
+<rect x="520.4" y="1516" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="561.4" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="561.4" dy="0">Goal</tspan></text>
+<rect x="610.4" y="1516" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="652.3" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="652.3" dy="0">Design</tspan></text>
+<rect x="702.1999999999999" y="1516" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="744.0999999999999" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="744.0999999999999" dy="0">Studio</tspan></text>
+<rect x="793.9999999999999" y="1516" width="102.4" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="845.1999999999999" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="845.1999999999999" dy="0">Progress</tspan></text>
+<rect x="904.3999999999999" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="960.2499999999999" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="960.2499999999999" dy="0">Checklist</tspan></text>
+<rect x="92" y="1570" width="890" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="110" y="1608" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#1e1e1e" text-anchor="start"><tspan x="110" dy="0">Progress · j01_inputs</tspan></text>
+<rect x="110" y="1625" width="78" height="30" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="149.0" y="1645.25" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="middle"><tspan x="149.0" dy="0">Jobs</tspan></text>
+<rect x="196" y="1625" width="78" height="30" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="235.0" y="1645.25" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#1864ab" text-anchor="middle"><tspan x="235.0" dy="0">Tasks</tspan></text>
+<rect x="282" y="1625" width="78" height="30" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="321.0" y="1645.25" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="middle"><tspan x="321.0" dy="0">Runs</tspan></text>
+<text x="432" y="1646" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="432" dy="0">4 Tasks · 2 executions complete · 1 current reading</tspan></text>
+<text x="110" y="1686" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="110" dy="0">Task</tspan></text>
+<text x="442" y="1686" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="442" dy="0">Execution</tspan></text>
+<text x="618" y="1686" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="618" dy="0">Report / Page</tspan></text>
+<text x="804" y="1686" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="804" dy="0">Reading</tspan></text>
+<polyline points="110,1700 964,1700" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="110" y="1729" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="110" dy="0">t01 Input inventory</tspan></text>
+<text x="442" y="1729" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="442" dy="0">Complete</tspan></text>
+<text x="618" y="1729" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="618" dy="0">Current</tspan></text>
+<text x="804" y="1729" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="804" dy="0">Pending</tspan></text>
+<rect x="102" y="1751" width="870" height="37" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="110" y="1772" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="110" dy="0">t02 Contract draft</tspan></text>
+<text x="442" y="1772" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="442" dy="0">Running</tspan></text>
+<text x="618" y="1772" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="618" dy="0">Previous</tspan></text>
+<text x="804" y="1772" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="start"><tspan x="804" dy="0">Reopened</tspan></text>
+<text x="110" y="1815" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="110" dy="0">t03 Review sample</tspan></text>
+<text x="442" y="1815" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="442" dy="0">Waiting</tspan></text>
+<text x="618" y="1815" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="618" dy="0">Missing</tspan></text>
+<text x="804" y="1815" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="804" dy="0">Not started</tspan></text>
+<text x="110" y="1858" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="110" dy="0">t04 Export review</tspan></text>
+<text x="442" y="1858" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="442" dy="0">Complete</tspan></text>
+<text x="618" y="1858" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="618" dy="0">Current</tspan></text>
+<text x="804" y="1858" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="804" dy="0">Passed</tspan></text>
+<text x="110" y="1901" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="110" dy="0">Execution, Report / Page currency and reading are separate facts.</tspan></text>
+<rect x="1004" y="1570" width="480" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="1022" y="1608" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#1e1e1e" text-anchor="start"><tspan x="1022" dy="0">Runs · t02 Contract draft</tspan></text>
+<rect x="1022" y="1630" width="444" height="38" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1244.0" y="1655.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1864ab" text-anchor="middle"><tspan x="1244.0" dy="0">r02_example</tspan></text>
+<text x="1022" y="1706" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1864ab" text-anchor="start"><tspan x="1022" dy="0">Recorded execution state · running</tspan></text>
+<text x="1022" y="1739" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1022" dy="0">Latest native receipt, when available</tspan><tspan x="1022" dy="18.75">A receipt alone does not show live liveness.</tspan></text>
+<polyline points="1022,1782 1466,1782" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="1022" y="1822" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="1022" dy="0">&gt; Prompt                        Copy</tspan><tspan x="1022" dy="21.25">&gt; Process                       Open</tspan><tspan x="1022" dy="21.25">&gt; Results                       Open</tspan></text>
+<text x="92" y="1959" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="92" dy="0">Task Workbench  /  b01_example  /  Guide  /  Progress     Selected Task · t02 Contract draft</tspan></text>
+<rect x="72" y="2010" width="706" height="172" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="88" y="2044" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#2b8a3e" text-anchor="start"><tspan x="88" dy="0">Shared structure · instance content</tspan></text>
+<text x="88" y="2078" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="88" dy="0">Block A and Block B keep Guide and its Progress View.</tspan><tspan x="88" dy="20.0">Jobs, Tasks, prompts, receipts and Results come from each Block.</tspan><tspan x="88" dy="20.0">Selection opens the native owner; the shared UI projects its records.</tspan></text>
+<rect x="798" y="2010" width="706" height="172" rx="10" fill="#ffffff" stroke="#2b8a3e" stroke-width="2"/>
+<text x="814" y="2044" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#2b8a3e" text-anchor="start"><tspan x="814" dy="0">Guide / Checklist keeps the gates visible</tspan></text>
+<text x="814" y="2078" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="814" dy="0">Checks / Readings show the owner&#x27;s current evidence and gates.</tspan><tspan x="814" dy="20.0">Completed execution can still have a pending or reopened reading.</tspan><tspan x="814" dy="20.0">Task closure follows its owner contract and current Results.</tspan></text>
+
+<text x="1616" y="1286" font-family="Comic Sans MS, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start"><tspan x="1616" dy="0">2 · Guide Space / Studio View</tspan></text>
+<text x="1616" y="1317" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="1616" dy="0">Follow the existing Studio: drawing above chat, both visible in one room.</tspan></text>
+<rect x="1616" y="1348" width="1432" height="630" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="1636" y="1391" font-family="Comic Sans MS, Arial, sans-serif" font-size="23" fill="#1e1e1e" text-anchor="start"><tspan x="1636" dy="0">Task Workbench</tspan></text>
+<text x="1636" y="1414" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Block b01_example</tspan></text>
+<rect x="2680" y="1370" width="208" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2784.0" y="1395.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="2784.0" dy="0">Switch Block  v</tspan></text>
+<rect x="2900" y="1370" width="128" height="38" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2964.0" y="1395.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="2964.0" dy="0">Folder &gt;</tspan></text>
+<text x="1636" y="1468" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Space</tspan></text>
+<rect x="1696" y="1442" width="82" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1737.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="1737.0" dy="0">Guide</tspan></text>
+<rect x="1786" y="1442" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1827.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1827.0" dy="0">Runs</tspan></text>
+<rect x="1876" y="1442" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1917.0" y="1468.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1917.0" dy="0">Scope</tspan></text>
+<polyline points="1636,1500 3028,1500" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="1636" y="1541" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">View</tspan></text>
+<rect x="1696" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1751.85" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1751.85" dy="0">Skill set</tspan></text>
+<rect x="1815.7" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1871.55" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1871.55" dy="0">Workbench</tspan></text>
+<rect x="1935.4" y="1516" width="121.0" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1995.9" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="1995.9" dy="0">Folder map</tspan></text>
+<rect x="2064.4" y="1516" width="82" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2105.4" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2105.4" dy="0">Goal</tspan></text>
+<rect x="2154.4" y="1516" width="83.8" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2196.3" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2196.3" dy="0">Design</tspan></text>
+<rect x="2246.2000000000003" y="1516" width="83.8" height="42" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="2288.1000000000004" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#1864ab" text-anchor="middle"><tspan x="2288.1000000000004" dy="0">Studio</tspan></text>
+<rect x="2338.0000000000005" y="1516" width="102.4" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2389.2000000000003" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2389.2000000000003" dy="0">Progress</tspan></text>
+<rect x="2448.4000000000005" y="1516" width="111.7" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2504.2500000000005" y="1542.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2504.2500000000005" dy="0">Checklist</tspan></text>
+<rect x="2764" y="1516" width="264" height="42" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2896.0" y="1543.0" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle"><tspan x="2896.0" dy="0">Open full screen &gt;</tspan></text>
+<rect x="1636" y="1570" width="890" height="204" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1652" y="1600" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#1e1e1e" text-anchor="start"><tspan x="1652" dy="0">Draw · roadmap.excalidraw</tspan></text>
+<rect x="2386" y="1580" width="122" height="32" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2447.0" y="1601.625" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="middle"><tspan x="2447.0" dy="0">Draw it</tspan></text>
+<rect x="1672" y="1642" width="174" height="50" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="1759.0" y="1673.75" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#495057" text-anchor="middle"><tspan x="1759.0" dy="0">Goal</tspan></text>
+<polyline points="1848,1667 1879,1667" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<rect x="1883" y="1642" width="174" height="50" rx="10" fill="#e7f5ff" stroke="#1864ab" stroke-width="2"/>
+<text x="1970.0" y="1673.75" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#1864ab" text-anchor="middle"><tspan x="1970.0" dy="0">Plan</tspan></text>
+<polyline points="2059,1667 2090,1667" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<rect x="2094" y="1642" width="174" height="50" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2181.0" y="1673.75" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#495057" text-anchor="middle"><tspan x="2181.0" dy="0">Work</tspan></text>
+<polyline points="2270,1667 2301,1667" fill="none" stroke="#1864ab" stroke-width="2" marker-end="url(#arrow-1864ab)"/>
+<rect x="2305" y="1642" width="174" height="50" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2392.0" y="1673.75" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#495057" text-anchor="middle"><tspan x="2392.0" dy="0">Check</tspan></text>
+<polyline points="2392,1694 2392,1736 1970,1736 1970,1694" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="2046" y="1752" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="2046" dy="0">revise from the check</tspan></text>
+<rect x="1636" y="1786" width="890" height="134" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="1652" y="1816" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#1e1e1e" text-anchor="start"><tspan x="1652" dy="0">Chat · current discussion</tspan></text>
+<text x="1652" y="1851" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="start"><tspan x="1652" dy="0">Person   Link the draft to its checks.</tspan></text>
+<text x="1652" y="1879" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1652" dy="0">Agent     Show the reading gate after Work.</tspan></text>
+<rect x="2548" y="1570" width="480" height="350" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="2566" y="1608" font-family="Comic Sans MS, Arial, sans-serif" font-size="22" fill="#1e1e1e" text-anchor="start"><tspan x="2566" dy="0">Studio · t01_inventory</tspan></text>
+<rect x="2566" y="1630" width="444" height="104" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2582" y="1661" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1864ab" text-anchor="start"><tspan x="2582" dy="0">Kept drawing</tspan></text>
+<text x="2582" y="1688" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="2582" dy="0">t01_inventory/studio/draw/</tspan><tspan x="2582" dy="20.0">roadmap.excalidraw</tspan></text>
+<rect x="2566" y="1750" width="444" height="104" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="2582" y="1781" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1e1e1e" text-anchor="start"><tspan x="2582" dy="0">Kept conversation</tspan></text>
+<text x="2582" y="1808" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="2582" dy="0">t01_inventory/studio/chat/</tspan><tspan x="2582" dy="20.0">The same native owner as the drawing</tspan></text>
+<text x="2566" y="1891" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="2566" dy="0">Owner selection changes both panes together.</tspan></text>
+<text x="1636" y="1959" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="1636" dy="0">Task Workbench  /  b01_example  /  Guide  /  Studio     Selected owner · j01_inputs / t01_inventory</tspan></text>
+<rect x="1616" y="2010" width="706" height="172" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="1632" y="2044" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#2b8a3e" text-anchor="start"><tspan x="1632" dy="0">Shared Studio layout</tspan></text>
+<text x="1632" y="2078" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="1632" dy="0">Guide&#x27;s Studio View contains Draw above Chat, both visible.</tspan><tspan x="1632" dy="20.0">The person&#x27;s discussion can refer to what is on the canvas.</tspan><tspan x="1632" dy="20.0">Keep the established Studio composition and lane ownership.</tspan></text>
+<rect x="2342" y="2010" width="706" height="172" rx="10" fill="#ffffff" stroke="#2b8a3e" stroke-width="2"/>
+<text x="2358" y="2044" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#2b8a3e" text-anchor="start"><tspan x="2358" dy="0">Block scope selects a native owner</tspan></text>
+<text x="2358" y="2078" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start"><tspan x="2358" dy="0">This example opens a Task&#x27;s existing studio/draw and studio/chat.</tspan><tspan x="2358" dy="20.0">Switching owners loads that owner&#x27;s drawing and conversation.</tspan><tspan x="2358" dy="20.0">A future Block-owned Studio needs an explicit storage contract.</tspan></text>
+
+<text x="72" y="2350" font-family="Comic Sans MS, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start"><tspan x="72" dy="0">Guide Space / Block Views · shared structure, instance content</tspan></text>
+<text x="72" y="2381" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="72" dy="0">All five working Views live inside Guide, alongside its Skill set, Workbench and Folder map Views.</tspan></text>
+<rect x="72" y="2416" width="576" height="308" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="90" y="2457" font-family="Comic Sans MS, Arial, sans-serif" font-size="25" fill="#2b8a3e" text-anchor="start"><tspan x="90" dy="0">Goal View</tspan></text>
+<text x="90" y="2490" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="90" dy="0">Overview · Rules</tspan></text>
+<polyline points="90,2510 630,2510" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="90" y="2545" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="90" dy="0">What are we trying to do?</tspan></text>
+<text x="90" y="2585" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="90" dy="0">Current goal and scope</tspan><tspan x="90" dy="21.25">Acceptance rules</tspan><tspan x="90" dy="21.25">Inputs and constraints</tspan></text>
+<text x="90" y="2695" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="90" dy="0">Read the goal&#x27;s native owner.</tspan></text>
+<rect x="672" y="2416" width="576" height="308" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="690" y="2457" font-family="Comic Sans MS, Arial, sans-serif" font-size="25" fill="#2b8a3e" text-anchor="start"><tspan x="690" dy="0">Design View</tspan></text>
+<text x="690" y="2490" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="690" dy="0">Roadmap · Decisions</tspan></text>
+<polyline points="690,2510 1230,2510" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="690" y="2545" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="690" dy="0">How will the work fit together?</tspan></text>
+<text x="690" y="2585" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="690" dy="0">The working design</tspan><tspan x="690" dy="21.25">Dependencies and alternatives</tspan><tspan x="690" dy="21.25">Decisions and their reasons</tspan></text>
+<text x="690" y="2695" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="690" dy="0">Read the design&#x27;s native owner.</tspan></text>
+<rect x="1272" y="2416" width="576" height="308" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="1290" y="2457" font-family="Comic Sans MS, Arial, sans-serif" font-size="25" fill="#2b8a3e" text-anchor="start"><tspan x="1290" dy="0">Studio View</tspan></text>
+<text x="1290" y="2490" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="1290" dy="0">Draw above Chat</tspan></text>
+<polyline points="1290,2510 1830,2510" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="1290" y="2545" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="1290" dy="0">Where do we think together?</tspan></text>
+<text x="1290" y="2585" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="1290" dy="0">Kept drawing</tspan><tspan x="1290" dy="21.25">Kept conversation</tspan><tspan x="1290" dy="21.25">Selected owner context</tspan></text>
+<text x="1290" y="2695" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="1290" dy="0">Open the selected owner&#x27;s Studio.</tspan></text>
+<rect x="1872" y="2416" width="576" height="308" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="1890" y="2457" font-family="Comic Sans MS, Arial, sans-serif" font-size="25" fill="#2b8a3e" text-anchor="start"><tspan x="1890" dy="0">Progress View</tspan></text>
+<text x="1890" y="2490" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="1890" dy="0">Jobs · Tasks · Runs</tspan></text>
+<polyline points="1890,2510 2430,2510" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="1890" y="2545" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="1890" dy="0">What has happened so far?</tspan></text>
+<text x="1890" y="2585" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="1890" dy="0">Native membership and order</tspan><tspan x="1890" dy="21.25">Execution receipts and Results</tspan><tspan x="1890" dy="21.25">Declared Reports / Pages</tspan></text>
+<text x="1890" y="2695" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="1890" dy="0">Read the Block&#x27;s native hierarchy.</tspan></text>
+<rect x="2472" y="2416" width="576" height="308" rx="10" fill="#ebfbee" stroke="#2b8a3e" stroke-width="2"/>
+<text x="2490" y="2457" font-family="Comic Sans MS, Arial, sans-serif" font-size="25" fill="#2b8a3e" text-anchor="start"><tspan x="2490" dy="0">Checklist View</tspan></text>
+<text x="2490" y="2490" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#1e1e1e" text-anchor="start"><tspan x="2490" dy="0">Checks · Readings</tspan></text>
+<polyline points="2490,2510 3030,2510" fill="none" stroke="#ced4da" stroke-width="2"/>
+<text x="2490" y="2545" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#2b8a3e" text-anchor="start"><tspan x="2490" dy="0">What still needs to be checked?</tspan></text>
+<text x="2490" y="2585" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="2490" dy="0">Required checks</tspan><tspan x="2490" dy="21.25">Current reading gates</tspan><tspan x="2490" dy="21.25">Evidence and open questions</tspan></text>
+<text x="2490" y="2695" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#2b8a3e" text-anchor="start"><tspan x="2490" dy="0">Read the checks&#x27; native owners.</tspan></text>
+<text x="72" y="2782" font-family="Comic Sans MS, Arial, sans-serif" font-size="19" fill="#1e1e1e" text-anchor="start"><tspan x="72" dy="0">Switch instance: keep Guide and its Views; resolve new content.    Switch family: load its explanation and its own other Spaces.</tspan></text>
+<text x="72" y="2822" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="72" dy="0">One shared Space: Guide. View names are a proposal; content and storage follow the native owner contracts.</tspan></text>
+</svg>

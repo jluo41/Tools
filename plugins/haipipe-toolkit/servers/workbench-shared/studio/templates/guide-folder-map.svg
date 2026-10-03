@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1528" height="768" viewBox="0 0 1528 768" role="img">
+<title>Folder map · starter template</title>
+<desc>Which files and owners supply each part of the UI?</desc>
+<defs><marker id="arrow-1864ab" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#1864ab" stroke-width="2"/></marker><marker id="arrow-495057" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 4 L 0 8" fill="none" stroke="#495057" stroke-width="2"/></marker></defs>
+<rect width="1528" height="768" fill="#ffffff"/>
+
+<text x="24" y="48" font-family="Comic Sans MS, Arial, sans-serif" font-size="30" fill="#1e1e1e" text-anchor="start"><tspan x="24" dy="0">Folder map · starter template</tspan></text>
+<text x="24" y="85" font-family="Comic Sans MS, Arial, sans-serif" font-size="18" fill="#495057" text-anchor="start"><tspan x="24" dy="0">Which files and owners supply each part of the UI?</tspan></text>
+<text x="1132" y="43" font-family="Comic Sans MS, Arial, sans-serif" font-size="16" fill="#d9480f" text-anchor="start"><tspan x="1132" dy="0">Template · not filled</tspan></text>
+<text x="44" y="141" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="44" dy="0">Space / View</tspan></text>
+<text x="328" y="141" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="328" dy="0">Native owner</tspan></text>
+<text x="720" y="141" font-family="Comic Sans MS, Arial, sans-serif" font-size="17" fill="#495057" text-anchor="start"><tspan x="720" dy="0">Folder / file · source convention</tspan></text>
+<rect x="44" y="160" width="218" height="36" rx="10" fill="#e7f5ff" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="183" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#1864ab" text-anchor="start"><tspan x="54" dy="0">Guide</tspan></text>
+<rect x="328" y="160" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="183" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;family contract owner&gt;</tspan></text>
+<rect x="720" y="160" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="182" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;repo: skill / method / Workbench source paths&gt;</tspan></text>
+<polyline points="266,184 324,184" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="175" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,184 716,184" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="175" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">defined in</tspan></text>
+<rect x="44" y="202" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="225" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;working View&gt;</tspan></text>
+<rect x="328" y="202" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="225" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;native content owner&gt;</tspan></text>
+<rect x="720" y="202" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="224" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;instance-relative source folder / file&gt;</tspan></text>
+<polyline points="266,226 324,226" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="217" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,226 716,226" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="217" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="44" y="244" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="267" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;another View&gt;</tspan></text>
+<rect x="328" y="244" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="267" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;native content owner&gt;</tspan></text>
+<rect x="720" y="244" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="266" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;instance-relative source folder / file&gt;</tspan></text>
+<polyline points="266,268 324,268" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="259" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,268 716,268" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="259" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="44" y="286" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="309" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;working Draw&gt;</tspan></text>
+<rect x="328" y="286" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="309" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;drawing owner&gt;</tspan></text>
+<rect x="720" y="286" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="308" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;native .excalidraw path&gt;</tspan></text>
+<polyline points="266,310 324,310" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="301" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,310 716,310" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="301" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="44" y="328" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="351" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;related Work&gt;</tspan></text>
+<rect x="328" y="328" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="351" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;native work owner&gt;</tspan></text>
+<rect x="720" y="328" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="350" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;work home: configuration / Ticket / Result&gt;</tspan></text>
+<polyline points="266,352 324,352" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="343" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,352 716,352" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="343" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="44" y="370" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="393" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;product View&gt;</tspan></text>
+<rect x="328" y="370" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="393" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;native product owner&gt;</tspan></text>
+<rect x="720" y="370" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="392" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;product folder / file&gt;</tspan></text>
+<polyline points="266,394 324,394" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="385" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,394 716,394" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="385" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="44" y="412" width="218" height="36" rx="10" fill="#ebfbee" stroke="#ced4da" stroke-width="2"/>
+<text x="54" y="435" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#2b8a3e" text-anchor="start"><tspan x="54" dy="0">&lt;external reference&gt;</tspan></text>
+<rect x="328" y="412" width="300" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="338" y="435" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="338" dy="0">&lt;external owner&gt;</tspan></text>
+<rect x="720" y="412" width="664" height="36" rx="10" fill="#ffffff" stroke="#ced4da" stroke-width="2"/>
+<text x="730" y="434" font-family="Courier New, monospace" font-size="13" fill="#495057" text-anchor="start"><tspan x="730" dy="0">&lt;external: declared source path&gt;</tspan></text>
+<polyline points="266,436 324,436" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="273" y="427" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="273" dy="0">reads</tspan></text>
+<polyline points="632,436 716,436" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow-495057)"/>
+<text x="636" y="427" font-family="Comic Sans MS, Arial, sans-serif" font-size="12" fill="#495057" text-anchor="start"><tspan x="636" dy="0">stored at</tspan></text>
+<rect x="24" y="506" width="1432" height="178" rx="10" fill="#f8f9fa" stroke="#ced4da" stroke-width="2"/>
+<text x="40" y="539" font-family="Comic Sans MS, Arial, sans-serif" font-size="20" fill="#1864ab" text-anchor="start"><tspan x="40" dy="0">What this drawing must contain</tspan></text>
+<text x="40" y="569" font-family="Comic Sans MS, Arial, sans-serif" font-size="15" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Family definition sources · View to native owner mapping · Source paths or path patterns · Native configuration, Ticket, Result and product</tspan><tspan x="40" dy="18.75">ownership</tspan></text>
+<text x="40" y="634" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Fill from: Family storage contract · Workbench source readers</tspan></text>
+<text x="40" y="668" font-family="Comic Sans MS, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start"><tspan x="40" dy="0">Replace the slots from the owning records. Add or remove nodes as needed; keep the drawing&#x27;s defined purpose and required content.</tspan></text>
+</svg>

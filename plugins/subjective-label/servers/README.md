@@ -47,6 +47,9 @@ and reads a Board's page list through one adapter, `_board_pages()`, which is
 the only place it touches the Board grammar (`haipipe-toolkit/skills/board/haipipe-board/src`).
 The dedicated Page-folder route uses its own checked resolver and does not
 call the Board parser.
+The shared Guide Space is mounted through
+`haipipe-toolkit/servers/workbench-shared`. Its methods and UI diagrams describe
+the labeling family; folder links retain this host's private-source boundary.
 The engine under `../engine/` imports nothing from haipipe-toolkit. So:
 
 - **runtime**: independent. The labeling host is its own process and origin.

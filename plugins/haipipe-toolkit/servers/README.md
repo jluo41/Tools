@@ -15,6 +15,7 @@ servers/
 │                        runs, delivery (latex/word/bibex exports), folder status, plugview;
 │                        exporters/ holds the md2tex, md2docx and docx2pdf writers
 ├── workbench-paper/     📄 the Paper workbench
+├── workbench-shared/    🧭 Guide: family skills, methods, UI and folder maps; folding diagrams
 ├── workbench-studio/    🎨 chat, terminal, draw (Excalidraw), slides, vendored xterm
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
 └── workbench-design/    🎨 Design Folder and Design Board
@@ -68,6 +69,15 @@ server prints them at startup, labelled `configured` (`--public-url`, env
 `server_config.py` reads the generic keys `SPACE_NAME`, `DOMAIN`, `BIND_HOST`,
 `TAILSCALE_ADDRESS`, `PORT`, `AUTH_FILE`, `ACCESS_MODE`, `NO_AUTH`; a
 deployment may prefix them (`<PREFIX>_DOMAIN`).
+
+Every family has one **Guide Space**. Its `Skill set`, `Methods`, `Workbench`,
+`Folder map` and `RoadMap Draw` Views appear directly below the Space row.
+Diagrams are independently folding rows in one column. Guide reads declared
+family definitions and resolves folder conventions inside the current
+instance; working questions, progress and drawing writers stay with their
+native family. See [Guide runtime and design studio](workbench-shared/README.md).
+The shared host, standalone Page host and dedicated Labeling host reuse the
+read-only Excalidraw proxy; Labeling remains an optional package.
 
 ## What a server folder is
 

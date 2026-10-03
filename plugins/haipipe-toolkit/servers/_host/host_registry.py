@@ -66,7 +66,7 @@ WORKBENCH_ROUTES = {
                          "design-bundle"}),
     "labeling": frozenset({"labeling", "labeling-board"}),
 }
-ALWAYS_ROUTES = frozenset({"health", "asset"})
+ALWAYS_ROUTES = frozenset({"health", "asset", "guide"})
 
 
 def route_allowed(path: str, only) -> bool:
@@ -79,6 +79,9 @@ def route_allowed(path: str, only) -> bool:
     """
     p = path.split("?", 1)[0]
     if not only:
+        return True
+    if p == "/_excalidraw/_haipipe-xcal.js":
+        # Guide's read-only canvas uses the existing storage-isolating boot script.
         return True
     if p in ("", "/", "/boards") or p.startswith(("/b/", "/w/", "/boards/")):
         return True

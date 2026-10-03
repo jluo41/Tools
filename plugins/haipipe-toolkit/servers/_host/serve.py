@@ -143,6 +143,7 @@ from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.design import DesignMixin
 from live.designboard import DesignBoardMixin
+from live.workbench_guide import WorkbenchGuideMixin
 from live.insightboard import InsightBoardMixin
 from live.outline import OutlineMixin
 from live.paper import PaperWorkbenchMixin
@@ -173,7 +174,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, WorkbenchGuideMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -329,6 +330,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/design-board":
             # 🎨 the same workbench one grain up: the Brief's design tasks × folders × items
             return self.design_board_view()
+        if self.path.split("?", 1)[0] == "/_board/guide":
+            return self.guide_view()
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
             # 🎨 every design on the board with its state, as one csv; the send system takes the adopted rows
             return self.design_bundle_view()
@@ -448,6 +451,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.design_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-board":
             return self.design_board_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/guide":
+            return self.guide_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_excalidraw/_haipipe-xcal.js":
+            return self.proxy_excalidraw(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
             return self.design_bundle_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/insight-board":

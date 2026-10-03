@@ -85,6 +85,7 @@
   if (!board) return start();               // not our URL: leave the app alone
   var frame = q.get("frame") || "";
   var edit = q.get("edit") === "1";
+  var guide = q.get("guide") === "1";
   var mode = q.get("mode") || "";
   var K_EL = "excalidraw", K_ST = "excalidraw-state";
   var LOCK = "haipipe-xcal-edit", LOCK_MS = 6000;
@@ -237,7 +238,8 @@
     if (blocked) {
       say("👁 read-only · another tab is editing " + (blocked.frame || "the board"), "bad");
     } else if (!edit) {
-      say("👁 read-only · pan and zoom · ✏️ Edit on the page to draw");
+      say(guide ? "👁 Guide · pan and zoom · family definition" :
+          "👁 read-only · pan and zoom · ✏️ Edit on the page to draw");
     } else if (linked && runtime.ownerKind === "group" && mode === "arrange") {
       say("🧭 Arrange Instance · saves placement to Group " + runtime.owner);
     } else if (linked) {

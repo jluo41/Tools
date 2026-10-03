@@ -3,6 +3,18 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### workbench: shared Guide Space · 2026-10-02
+
+- Add Guide Views for skills, methods, Workbench structure, folder mapping
+  and RoadMap Draw. Views sit below the Space row; drawings fold independently
+  in one column and retain their loaded canvas when collapsed.
+- Resolve declared family sources and instance folder conventions through
+  native access boundaries. Reuse the read-only Excalidraw proxy in the
+  shared host and standalone Page host; working writers keep their owners.
+- Include the design studio, explanatory diagrams and optional drawing
+  templates. This is the first runtime version; richer diagram relationships
+  and real-instance acceptance remain follow-up work.
+
 ### page, board: no Aims required; Discovery Pages build · 2026-10-01
 
 - `haipipe-board` 1.1.6: `check.py` no longer requires Aims or warns `no-aims`.

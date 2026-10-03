@@ -2626,12 +2626,14 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         "msg.className='msg ok';msg.textContent='written '+(j.run||j.item||'');location.href=j.url})"
         ".catch(function(e){msg.className='msg bad';msg.textContent=String(e);b.disabled=false})}});})();</script>"
     )
-    return (
+    document = (
         '<!doctype html><html lang=en><head><meta charset=utf-8>'
         '<meta name=viewport content="width=device-width,initial-scale=1">'
         f'<title>🎨 Design · {_escape(snapshot["title"])}</title><style>{_CSS}{panel_css}</style></head><body>'
         f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{panel_js}{design_chat_copy_script()}</body></html>'
     )
+    from live.workbench_guide import mount_guide
+    return mount_guide(document, "design", ctx, "nav.tabs", "main")
 
 
 def _json(obj) -> str:
