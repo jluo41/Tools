@@ -4,6 +4,10 @@ board-kind: task-block
 spine: <one sentence naming the Block's topic and boundary>
 close: <what must be true for this Block Board to close>
 
+<!-- For question-driven Blocks, add the optional Questions and Related
+resources registers from ref/block-questions.md. Reports live in
+reports/qNN_<topic>/qNN_<topic>.md; freeform drawings live in studio/. -->
+
 ## Topic
 
 <Why these Jobs belong to one Block and what this Block excludes.>

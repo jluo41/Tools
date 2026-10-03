@@ -15,6 +15,23 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   templates. This is the first runtime version; richer diagram relationships
   and real-instance acceptance remain follow-up work.
 
+### task: Question-driven Block workbench · 2026-10-02
+
+- Align Task Work rows with Paper through a shared presentation module:
+  type/name/explanation, plain Block → Job → Task → Run folds and exact Run
+  Result pop-outs. `haipipe-workbench-task` 0.2.1 and `haipipe-task` 1.10.1
+  document optional Work labels and shared-Question references.
+- Add Task, Roadmap Studio, Related Paper and Progress Views with stacked
+  Question cards and Logic / Work / Report columns. Reuse existing Job/Task
+  folders, workflow records, Ticket/Result readers and native Excalidraw.
+- Connect SPACE Home, `/w/<block>` and the Board Workbench menu. Task Blocks
+  open before a static build; existing authentication remains in effect.
+- Add `haipipe-workbench-task` 0.2.0 and a synthetic demo; `haipipe-task` 1.10.0
+  owns Questions, resource links and report placement under Block `reports/`.
+  Ordinary report Pages reuse Page writing and CHECK; Run completion never
+  supplies a Question answer. Shared Guide supplies the family instructions.
+- Correct the Page skill's Task Result path example (`haipipe-page` 0.121.4).
+
 ### page, board: no Aims required; Discovery Pages build · 2026-10-01
 
 - `haipipe-board` 1.1.6: `check.py` no longer requires Aims or warns `no-aims`.

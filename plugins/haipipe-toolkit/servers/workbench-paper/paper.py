@@ -1792,11 +1792,9 @@ def _work_item(d, T, it, labels, also=()):
     fr = [labels.get(h, _label("Hypothesis", h)) for h in it["for"]]
     tags = "".join(x for x in (('<span class="lw-for">for %s</span>' % esc(_and(fr))) if fr else "",
                                _also(also), '<span class="lw-size">%s</span>' % esc(size)) if x)
-    return ('<details class="lw-w" data-key="%s" data-for="%s"><summary><span class="bjt-chev">›</span><div class="lw-sum">'
-            '<div class="lw-wline"><span class="item-kind">%s</span><span class="lw-wq">%s</span></div>%s'
-            '<div class="lw-tags">%s</div></div></summary><div class="lw-folders">%s</div></details>'
-            % (esc(it["w"]), esc(" ".join(it["for"])), esc(c["stage"].capitalize()), esc(c["name"]),
-               ('<div class="lw-wtext">%s</div>' % esc(c["text"])) if c.get("text") else "", tags, folders))
+    from live.work_items import work_item
+    return work_item(c["stage"].capitalize(), c["name"], c.get("text", ""), tags, folders,
+                     key=it["w"], for_keys=" ".join(it["for"]))
 
 
 def _band(kind, label, note=""):
@@ -2884,27 +2882,12 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .lw-k-contrib{{color:var(--warn)}}
 .lw-k-found{{color:var(--mut)}}
 .lw-c{{margin:0 0 16px}} .lw-g+.lw-g{{margin-top:22px}}
-.lw-w{{padding:6px 8px;margin:0 -8px 6px;border-radius:8px}} .lw-w>summary:hover .lw-wq{{color:var(--acc)}}
-.lw-w>summary{{list-style:none;cursor:pointer;display:grid;grid-template-columns:1em minmax(0,1fr);gap:4px;align-items:baseline}}
-.lw-w>summary::-webkit-details-marker{{display:none}} .lw-w[open]>summary .bjt-chev{{transform:rotate(90deg)}}
-.lw-sum{{min-width:0}} .lw-folders{{margin:4px 0 2px 1.3em}}
-.lw-wline{{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline}} .lw-wq{{font-weight:600;font-size:14.5px}}
-.lw-wtext{{font-size:14px;margin-top:2px}}
-.lw-tags{{display:flex;gap:4px 12px;flex-wrap:wrap;margin:3px 0 0}} .lw-for{{color:var(--acc);font-size:12.5px;font-weight:600}}
-.lw-also,.lw-size{{color:var(--mut);font-size:12.5px}}
+{work_item_css}
 .lw-h{{cursor:pointer;border-radius:7px;padding:5px 8px;margin:0 -8px 6px}} .lw-h:hover{{background:var(--soft)}}
 .lw-say{{color:var(--mut);font-size:14px;line-height:1.5;margin-top:3px}}
 .lw-text{{font-size:14.5px}}
 .lw-hline{{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:baseline;line-height:1.45}}
 .lw-top{{display:flex;justify-content:space-between;align-items:center;gap:8px}} .lw-body{{margin-top:3px;font-size:15px;line-height:1.5}} .lw-name{{font-weight:650}} .lw-mark{{font-size:14px}}
-.bj-home,.bj-none{{font-size:12.5px}}
-.bj-b,.bj-j,.bj-t{{font-size:14px;line-height:1.55;display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}}
-.bj-j{{margin-left:16px}} .bj-t{{margin-left:32px}}
-.bj-tr>summary{{list-style:none;cursor:pointer}} .bj-tr>summary::-webkit-details-marker{{display:none}}
-.bj-rs{{color:var(--mut);font-size:12.5px}} .bj-rs::before{{content:"▸ "}} .bj-tr[open]>summary .bj-rs::before{{content:"▾ "}}
-.bj-rn{{font-size:12.5px}} .bj-runs{{margin-left:48px}}
-.bj-run{{display:block;font-size:12.5px;line-height:1.7;color:inherit;text-decoration:none}}
-a.bj-run:hover .idtag{{color:var(--acc);text-decoration:underline}}
 #rr-pop{{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}}
 #rr-pop[hidden]{{display:none}}
 .rr-box{{width:min(1240px,94vw);height:90vh;background:var(--bg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25)}}
@@ -2961,8 +2944,6 @@ code{{font:12.5px ui-monospace,Menlo,monospace}}
 .item-summary{{display:grid;grid-template-columns:1.1em auto minmax(0,1fr) auto fit-content(34%);align-items:start;gap:10px;padding:12px 13px;min-width:0}}
 .item-chevron{{color:var(--mut);font-size:18px;line-height:1.2;transition:transform .12s ease}}
 .item-card[open]>summary .item-chevron{{transform:rotate(90deg)}}
-.item-kind{{color:var(--acc);font:650 12px ui-monospace,Menlo,monospace;border:1px solid var(--acc);border-radius:999px;
- padding:1px 8px;white-space:nowrap}}
 .item-main{{min-width:0;display:grid}}
 .item-label{{font-weight:650;font-size:15.5px;line-height:1.4}} .item-title{{color:var(--mut);font-size:13.5px}}
 .item-where{{color:var(--mut);font-size:12px;white-space:nowrap}} .item-status{{font-weight:650;font-size:14px;line-height:1.4;overflow-wrap:anywhere}}
@@ -3130,6 +3111,7 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 def render_paper(board, root, path_param):
     from live.runs_panel import PANEL_CSS, PANEL_JS
     from live.space_views import SPACE_CSS
+    from live.work_items import WORK_ITEM_CSS
     d = collect(board, path_param)
     d["root"] = Path(root).resolve()
     d["sessions"] = session_rows(d)          # needs root for the pair lookup
@@ -3139,7 +3121,7 @@ def render_paper(board, root, path_param):
               + render_sections(d, kinds.get("sections", [])) + render_delivery(d, kinds.get("delivery", [])))
     default = "story" if d["story"] else "ideation"
     document = _PAGE.format(title=esc(d["title"]), space_chips=chips, panels=panels, default_space=default,
-                        space_css=SPACE_CSS, panel_css=PANEL_CSS, panel_js=PANEL_JS,
+                        space_css=SPACE_CSS, panel_css=PANEL_CSS, panel_js=PANEL_JS, work_item_css=WORK_ITEM_CSS,
                         paper_id=esc(d["board"].name))
     from live.workbench_guide import mount_guide
     return mount_guide(document, "paper", {"path": path_param, "file": "board.md"},

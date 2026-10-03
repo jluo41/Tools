@@ -1,3 +1,8 @@
+## 0.121.4 · 2026-10-02 · Task Result path documentation
+
+- Correct the generic Folder tree's Task Result example to the Task owner's
+  `$OUTPUT_ROOT/<task>/results/<run>/` contract. Page-owned Results remain local.
+
 ## 0.121.3 · 2026-10-01 · A Page may link its own results/ Cards (JL 261001)
 
 - `src/page_workspace.py`: the static web build no longer fails on a link into a private lane. A Discovery Page links every Run Card in `results/<run>/`; `build_page` refused the whole Page ("Private Page lane cannot be rendered or downloaded"), so `setup` could not run on any Discovery Page. `dependency_files(..., skip_private=True)` leaves such a link as a repository link and does not follow or copy it; `is_private` names the lanes (`PRIVATE_LANES`, `PRIVATE_FILES`, unchanged).

@@ -185,11 +185,14 @@ def discover_boards(root: Path, *, include_page_state: bool = True) -> list[dict
         ready = (board / "board" / "index.html").is_file()
         kind, icon = board_kind(board, root)
         owner = project_owner(board, root)
+        task_workbench = bool(re.search(r"(?m)^board-kind:\s*task-block\s*$", text))
+        href = ("/_board/task-board?path=" + quote(f"{rel}/board.md", safe="/")
+                if task_workbench else "/" + quote((board.relative_to(root) / "board" / "index.html").as_posix(), safe="/"))
         cards.append({"title": title, "spine": spine, "path": rel,
                       "pages": len(pages), "settled": settled, "ready": ready,
                       "kind": kind, "icon": icon,
                       "slug": board_slug(board.name, board.parent.name),
-                      "href": "/" + quote((board.relative_to(root) / "board" / "index.html").as_posix(), safe="/"),
+                      "href": href, "workbench_ready": task_workbench,
                       **owner})
     return sorted(cards, key=lambda c: (
         0 if c["project_scope"] == "project" else 1,
@@ -303,6 +306,8 @@ def board_workbench_route(board: Path) -> str | None:
     if m and m.group(1) == "paper":
         return "paper"
     kind = (_BOARD_KIND.search(text) or [None, ""])[1]
+    if kind == "task-block":
+        return "task-board"
     if kind in {"labeling", "labeling-board"}:
         return "labeling-board"
     try:
@@ -353,7 +358,7 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
         route = board_workbench_route(board)
         if route is None:
             return None, ("this Board declares no board-level workbench "
-                          "(no `dialect: paper`, Design, Insight, or labeling Board)")
+                          "(no Task Block, `dialect: paper`, Design, Insight, or labeling Board)")
         return ("/_board/%s?path=%s&file=board.md"
                 % (route, quote(f"{rel}/board.md", safe="/"))), "ok"
     if tab not in WORKBENCH_TABS:
@@ -454,7 +459,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
     """Render a compact, mobile-first directory for the boards in one SPACE.
 
     Home is an entry index, not a status dashboard.  Only Boards with a
-    generated index are shown because every visible row must be actionable.
+    generated index or a live Task workbench are shown, so every row is actionable.
     The source metadata remains available to the search index and to the
     Board itself, but it is deliberately not repeated in the directory.
     Project grouping is derived from the same ownership metadata as before;
@@ -462,7 +467,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
     files or a second registry.
     """
     cards = discover_boards(root, include_page_state=False)
-    open_cards = [card for card in cards if card["ready"]]
+    open_cards = [card for card in cards if card["ready"] or card.get("workbench_ready")]
     section_groups: dict[str, dict[str, list[dict[str, object]]]] = {}
     for card in open_cards:
         section = home_section(card)

@@ -21,3 +21,10 @@ Plan/Build/Execute/Report controller status may be summarized separately without
 
 Return `status`, `summary`, `artifacts`, `next`, `task_folder`, `report_path`, and `actual_runs`.
 If execution was manual or is still pending, say so and identify the missing receipt instead of marking it complete.
+
+## Question Report routing
+
+This file owns P-B-E-R execution reporting. A request to write the answer to
+a Block Question uses `ref/block-questions.md` and the report's `haipipe-page`
+workflow at `reports/qNN_<topic>/`; it does not run this stage merely because
+the interface calls the answer a Report.

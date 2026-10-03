@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.121.3"
-  last_updated: "2026-10-01"
+  version: "0.121.4"
+  last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -443,7 +443,7 @@ uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 │                  (run-<kind>-<MMDD>-<slug>, run-delivery-<lane>); THE ONE execution door
 ├── results/       canonical Page Evidence Results and Folder-local Results.
 │                  A canonical Task Page resolves
-│                  generated output at `$OUTPUT_ROOT/results/<task>/<run>/`
+│                  generated output at `$OUTPUT_ROOT/<task>/results/<run>/`
 │              ─── the UPPER, PAGE part ───
 ├── delivery/      what leaves the page: web/ · latex/ · word/ · slide/ · render/
 └── studio/        the HUMAN's room on the page (JL 260831): closest to
@@ -460,7 +460,7 @@ compatibility receipts under `workflow/receipts/`; executable work commonly stor
 `plan.yaml` and `report.yaml`. Run Space is an Outline projection over this
 shared Task Face. It presents Page Writing, Page Evidence, and Supporting Runs.
 A native Run pairs its ticket with either a Folder-local Result or the Task
-dialect's resolved `$OUTPUT_ROOT/results/<task>/<run>/`, but the Page surface
+dialect's resolved `$OUTPUT_ROOT/<task>/results/<run>/`, but the Page surface
 shows the Result first when its card opens; scripts, config, and notebooks
 stay in Folder/detail inspection. Run is never a top-level Page Workbench or a
 lifecycle owner.

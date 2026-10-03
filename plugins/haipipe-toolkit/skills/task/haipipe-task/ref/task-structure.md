@@ -10,6 +10,9 @@ tasks/
 └── bNN_<block>/
     ├── board.md
     ├── diagram/
+    ├── studio/                        optional Block-owned Excalidraw drawings
+    ├── reports/qNN_<topic>/           ordinary report Page, not a tNN Task
+    │   └── qNN_<topic>.md
     └── jNN_<job>/
         ├── src/
         │   └── config-defaults.yaml
@@ -60,7 +63,11 @@ material: no worker, ticket, config or Result lives there.
 - Must contain `board.md` with `board-kind: task-block`.
 - Direct executable children are Jobs named `jNN_*`.
 - May contain `diagram/` for the shared narrative.
-- Must not contain code, config, Tickets, Results, notebooks, or batchers.
+- May contain `studio/*.excalidraw` and Question Report Pages in `reports/`
+  (`ref/block-questions.md`). A report Folder may hold its Page-owned Draft,
+  Runs and Results under the Page contract; it acquires no native Task address.
+- The Block root must not contain code, config, Tickets, Results, notebooks,
+  or batchers. Executable Task work stays under Jobs and Tasks.
 - Board rows, when explicit, use full relative Page paths:
   `jNN_<job>/tNN_<task>/tNN_<task>.md`.
 
@@ -143,6 +150,8 @@ is selected by `_meta.notebook: full | thin | off` in the Run config.
 ## Documentation
 
 - Block overview: `board.md` and optional `diagram/`.
+- Block Questions and Report Pages: `board.md` → `reports/qNN_<topic>/`.
+- Block ideation drawings: `studio/*.excalidraw`.
 - Task explanation: same-stem Task Page plus `draft/`.
 - Job-specific operational detail: optional `diagram/`.
 - Generated status pages are rebuilt from the tree; do not hand-copy an

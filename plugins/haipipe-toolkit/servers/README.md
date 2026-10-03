@@ -15,6 +15,7 @@ servers/
 │                        runs, delivery (latex/word/bibex exports), folder status, plugview;
 │                        exporters/ holds the md2tex, md2docx and docx2pdf writers
 ├── workbench-paper/     📄 the Paper workbench
+├── workbench-task/      📋 Task Questions: Logic / Work / Report and freeform Studio
 ├── workbench-shared/    🧭 Guide: family skills, methods, UI and folder maps; folding diagrams
 ├── workbench-studio/    🎨 chat, terminal, draw (Excalidraw), slides, vendored xterm
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
@@ -38,6 +39,7 @@ it in the browser. Same name on both sides:
 | `page/haipipe-workbench-studio` | `workbench-studio/` |
 | `design/haipipe-workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `paper/haipipe-workbench-paper` | `workbench-paper/` |
+| `task/haipipe-workbench-task` | `workbench-task/` |
 | `insight/haipipe-workbench-insight` (+ `ref/insight-board.md`, the Board grain) | `workbench-insight/` |
 | `subjective-label/skills/label-building-workflow/haipipe-workbench-labeling` | `subjective-label/servers/workbench-labeling/` |
 
@@ -69,6 +71,11 @@ server prints them at startup, labelled `configured` (`--public-url`, env
 `server_config.py` reads the generic keys `SPACE_NAME`, `DOMAIN`, `BIND_HOST`,
 `TAILSCALE_ADDRESS`, `PORT`, `AUTH_FILE`, `ACCESS_MODE`, `NO_AUTH`; a
 deployment may prefix them (`<PREFIX>_DOMAIN`).
+
+Task Blocks (`board-kind: task-block`) open at `/w/<block-folder>` or
+`/_board/task-board?path=<block>/board.md`. SPACE Home links directly to their
+live Workbench without a static build. See [Task Workbench](workbench-task/README.md)
+for Question reports, the four working Views and the synthetic demo.
 
 Every family has one **Guide Space**. Its `Skill set`, `Methods`, `Workbench`,
 `Folder map` and `RoadMap Draw` Views appear directly below the Space row.

@@ -74,6 +74,13 @@ When the Block is cohesive and its shared narrative is ready, create
 progress, and design records, then bundle the canvas. Do not invent diagram
 content merely to fill the folder.
 
+For a question-driven Block, follow `ref/block-questions.md`: register the
+Questions in `board.md`, place their Report Pages in `reports/`, and use
+`studio/` for freeform Excalidraw drawings. Create these when requested or when
+the Block's questions are known; do not prefill invented questions or answers.
+The Workbench presents these alongside the existing Task tree. Report Page
+Folders are documentation and do not become executable Tasks or Job groups.
+
 
 Step 4 - Optionally create the first Job
 ----------------------------------------

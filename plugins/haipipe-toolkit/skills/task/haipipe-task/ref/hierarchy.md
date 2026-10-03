@@ -35,13 +35,18 @@ Executable work under `tasks/` always passes through Block, Job, and Task.
 ```text
 tasks/bNN_<block>/
 ├── board.md                    board-kind: task-block
+├── studio/                     optional freeform Block drawings
+├── reports/qNN_<topic>/         ordinary Page answering a Block Question
 ├── jNN_<job>/
 ├── jNN_<job>/
 └── diagram/                    optional shared narrative
 ```
 
-A Block contains Jobs and documentation only. It has no code, config, Ticket,
-Result, notebook, or batch lane. The tree owns Board membership and default
+A Block contains Jobs and documentation, including its Question Report Pages
+(`ref/block-questions.md`). A report may have Page-owned writing/evidence Runs
+inside its own Folder; it is not a `tNN` Task and gets no BJTR execution address.
+The Block root has no code, config, Ticket, Result, notebook, or batch lane.
+The tree owns executable Board membership and default
 order:
 
 ```text

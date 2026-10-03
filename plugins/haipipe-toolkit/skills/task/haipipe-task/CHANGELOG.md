@@ -1,3 +1,16 @@
+## 1.10.1 · 2026-10-02 · Work presentation labels
+
+- Document optional `work[].stage` and `role` for Paper-aligned Work lines.
+  Keep authored order and native Task types; never infer a label from a folder.
+
+## 1.10.0 · 2026-10-02 · Block Questions and Report Pages
+
+- Optional Question and resource registers in `board.md`; Block-owned report
+  Pages in `reports/` beside freeform `studio/` drawings. Reports use the Page
+  writing lifecycle and retain native evidence references.
+- Separate Question answers from P-B-E-R execution reports; add a preserving
+  scaffold helper and document the Task Workbench's four working Views.
+
 ## 1.9.0 · 2026-10-01 · The DIKW Block (JL 261001)
 
 - `ref/hierarchy.md` § Block number ranges: an InsightBoard's code lives in an auxiliary

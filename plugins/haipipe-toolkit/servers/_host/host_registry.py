@@ -57,6 +57,7 @@ WORKBENCH_ROUTES = {
                        "value", "display", "probe", "latex", "word", "bibex", "bibex-entry",
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
     "paper": frozenset({"paper"}),
+    "task": frozenset({"task-board"}),
     "studio": frozenset({"chat", "chat-keep", "sessions", "session-log", "session-name",
                          "stop", "excalidraw", "excalidraw-save", "autodraw", "autodeck",
                          "diagram", "term", "terms", "term-probe", "term-type", "killall",

@@ -5,14 +5,15 @@ description: >-
   Task Folders. Task Folder = Page Folder at the tNN Task level. The hierarchy
   is Project → bNN Block/Board → jNN Job/Group → tNN Task Folder/Page → rNN Run.
   Use for Task Board work, Plan → Build → Execute → Report, Run/Result
-  interpretation, block or job iteration, and task-side Insight routing.
+  interpretation, Block Questions and their Report Pages, block or job
+  iteration, and task-side Insight routing.
   Trigger: task, job, block, task folder, Task Board, plan, build, execute,
   report, run, audit, insight, GPU queue, GPU training, OOM retry,
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.9.0"
-  last_updated: "2026-10-01"
+  version: "1.10.1"
+  last_updated: "2026-10-02"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -34,6 +35,8 @@ Project
 └── tasks/
     └── bNN_<block>/                       Block = Task Board
         ├── board.md                       board-kind: task-block
+        ├── studio/                        optional freeform Block drawings
+        ├── reports/qNN_<topic>/            Block Question's ordinary Page Folder
         └── jNN_<job>/                     Job = Board Group
             ├── src/                       code shared by two or more Tasks
             ├── tNN_<task>/                Task Folder = Page Folder = Board Page
@@ -183,8 +186,15 @@ Its Result envelope and receipt still live under
 
 ## Question and Insight routing
 
-A question is an ordinary Run request. Reuse an exact immutable Run Result
-first. When evidence is missing, enter the shallowest honest lifecycle depth
+For a Block Question or its readable Report, load `ref/block-questions.md`.
+The Block's `board.md` registers the question, its logic, native work references
+and `reports/qNN_<topic>/qNN_<topic>.md`. This Report is written through
+`haipipe-page`; it is independent of P-B-E-R's `workflow/report.yaml`.
+Reasoning or existing evidence can answer a Question without allocating work.
+Open the question-driven interface through `../haipipe-workbench-task/SKILL.md`.
+
+A request for new executable evidence is an ordinary Run request. Reuse an
+exact immutable Run Result first. When evidence is missing, enter the shallowest honest lifecycle depth
 and create a new Run identity. A consumer records full Supporting Run ids and
 owns any Local Run needed to produce its focal evidence item.
 

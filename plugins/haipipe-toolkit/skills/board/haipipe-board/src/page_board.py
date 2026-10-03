@@ -824,6 +824,7 @@ def render(meta, qs):
                       boarddir=esc(board_rel(meta.get("dir", ""))),
                       board_paper=esc(meta.get("board_paper", "")),
                       board_dialect=esc(meta.get("dialect", "")),
+                      board_kind=esc(meta.get("board_kind", "")),
                       bsession=esc(meta.get("session", "")))
 
 
@@ -877,7 +878,7 @@ TPL = """<!DOCTYPE html>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <style>
 {css}
-</style></head><body class="single" data-board="{boarddir}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+</style></head><body class="single" data-board="{boarddir}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}" data-board-kind="{board_kind}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 
 {overview}
 
@@ -963,7 +964,7 @@ TREE_TPL = """<!DOCTYPE html>
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <link rel="stylesheet" href="{root}_assets/board.css?v={css_stamp}">
-</head><body class="single split" data-board="{boarddir}" data-board-root="{root}" data-xcal="{xcal}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+</head><body class="single split" data-board="{boarddir}" data-board-root="{root}" data-xcal="{xcal}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}" data-board-kind="{board_kind}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 <nav class="sitebar" aria-label="Breadcrumb"><a href="/boards">🏠 Boards</a><span class="sb-sep">›</span><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
 {body}
 </div><div id="popcards">{popcards}</div>
@@ -1365,6 +1366,7 @@ def render_tree(meta, qs, out_dir, only=None):
             boarddir=esc(board_rel(meta.get("dir", ""))),
             board_paper=esc(meta.get("board_paper", "")),
                       board_dialect=esc(meta.get("dialect", "")),
+            board_kind=esc(meta.get("board_kind", "")),
             bsession=esc(meta.get("session", "")))
 
     # one file per page, inside its group's folder.
