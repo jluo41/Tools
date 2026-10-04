@@ -126,6 +126,18 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    from the family's entry in `workbench-shared/guide_families.py`:
    - `description`: what the workbench does, in a short paragraph;
    - `method`: its steps as text;
+   - `method_doc` and `method_drawing`, with a `method` explain to `/_board/guide?mode=method`
+     marked `"only"` (2026-10-03; Guide's own step list is then hidden, and stays in
+     `method` for the RoadMap drawing): "The method in one picture" (the editable canvas
+     `ref/<name>-methods.excalidraw`), then one document `ref/<name>-method.md` with the steps
+     as its spine (JL 261003, as Design's): 1 · the steps, one table (`step | what happens |
+     methods | where in the workbench | who signs`); then "Step N in depth" sections, each
+     with its `family | method | card` table (cards in `ref/methods/<family>/`) and the
+     `test | asks | when | source` rows of its own steps; then Why it works; then Reference,
+     folded (terms and people with checked links, coined Chinese marked as ours). Every part
+     is a fold, open at first except Reference. One made-up
+     example throughout; no file notes on screen. `workbench-shared/studio/method-canvas.py`
+     draws the canvas's first version from the document; after that the canvas is the source;
    - `table`: the Workbench Table, `ref/workbench-table.md` beside its skill
      (Space · View · Run type · Agent · Skill · Person signs; `skills/0_utils/table-workbench`);
    - a `roadmap-draw` explain titled **Workbench design**: one generated drawing of the

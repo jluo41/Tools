@@ -39,7 +39,7 @@ def base(id_, type_, x, y, w, h, stroke=INK, bg="transparent", dashed=False, rou
 
 def text(id_, x, y, s, size=16, color=INK, mono=False):
     lines = s.split("\n")
-    w = max(len(l) for l in lines) * size * (0.6 if mono else 0.56)
+    w = max(len(l) for l in lines) * size * 0.62   # Comic Shanns and Cascadia are ~0.6em a glyph; a narrower box clips
     e = base(id_, "text", x, y, w, len(lines) * size * 1.25, stroke=color, rounded=False)
     e.update(text=s, originalText=s, fontSize=size, fontFamily=3 if mono else 8,
              textAlign="left", verticalAlign="top", containerId=None, autoResize=True,
@@ -379,6 +379,7 @@ text("files-map", FX + 24, SY + 82,
      "Story › Spine          StoryA-….md · ### 1, 2, 4               StoryA-…/runs/\n"
      "Story › RoadMap Draw   studio/<Story stem>.excalidraw           (the canvas saves to it)\n"
      "Story › logic + work   StoryA-….md · ### 3, 5, 6, 7            StoryA-…/runs/\n"
+     "Story › Report         reports/qNN_<topic>/qNN_<topic>.md       reports/qNN_<topic>/runs/\n"
      "Story › Related Papers StoryA-….md · #### 5.3 P rows           discoveries/…/results/<run>/paper.pdf\n"
      "                       task/ · discoveries/                    task/, discoveries/<BJTR>/runs/\n"
      "Sections › Table       StoryA-….md · ### 8.2 + each Page       each Page's runs/\n"

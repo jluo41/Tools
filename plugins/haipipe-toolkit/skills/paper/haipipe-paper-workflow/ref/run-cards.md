@@ -64,6 +64,23 @@ shown under three buttons, one per Page Space.
 ✍️ SIGNS    the claim state (G2)
 💬 PROMPT   /haipipe-paper-story review {target} on {page}: judge this claim against its evidence, boundaries and open risks; research it needs is a separate run.
 
+## The question's Report · `reports/qNN_<topic>/` (JL 261003)
+
+A Report answers one Story question from the closed Runs of its work; its runs live in
+the Report Page's own `runs/`, so these buttons copy a prompt.
+
+🔘 BUTTON   Write the report · Story · - · views logic-work
+🧩 SKILL    haipipe-page-writing
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-page-writing write the Report for {target} in reports/qNN_<topic>/ of {paper}: from the closed Runs of its work, say what they show, which hypotheses hold and which claims follow; cite each Result; set answer-status (open, partial, answered) and never call a hypothesis shown that no Run tests.
+
+🔘 BUTTON   Review the report · Story · - · views logic-work
+🧩 SKILL    haipipe-page-check
+🤖 AGENT    haipipe-page-check-agent
+✍️ SIGNS    the answer (G2)
+💬 PROMPT   /haipipe-page-check the Report for {target} in reports/ of {paper}: check every number against its cited Result and every "shown" against a Run that tests it; return answered, partial, or back to writing.
+
 ## `paper.judgment.task` · `run-paper-task-<MMDD>-<slug>`
 
 🔘 BUTTON   Task review · Story · ^run-paper-task- · views logic-work

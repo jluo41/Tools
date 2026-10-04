@@ -18,8 +18,9 @@ WORLD_DIRS = {
     "discoveries",
     "diagram",
     "papers",
-    "applications",
-    "external",
+    "insights",      # Prototype-Insight-<Topic>/ (Block level) + Instance-Insight-<Dataset>/
+    "designs",
+    "external",      # applications/ is legacy since 261001: migration debt, not a world
 }
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs"}
 

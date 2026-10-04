@@ -2960,26 +2960,51 @@ def _board_line(link, page_src=None, root=None):
 
 
 def page_roadmap_html(page_src, root):
-    """Draft › RoadMap Draw (JL 261003: "the logic just go to the roadmap draw"): the
-    Section's logic as a tree, `studio/<stem>-roadmap.excalidraw`. The drawing is the source:
-    an agent draws its first version (skill `draw-logic-tree`), and the
-    person edits it here on the canvas (edit=1; each stroke saves through Studio). A fixed
-    canvas height; rendering writes nothing."""
+    """Draft › RoadMap Draw, two cards (JL 261003). **Logic**: the Section's logic tree,
+    `studio/<stem>-roadmap.excalidraw`, the person's drawing: an agent draws its first
+    version (skill `draw-logic-tree`) and the person edits it here (edit=1; each stroke saves
+    through Studio). **Section map**: where each part sits, `studio/<stem>-sections.excalidraw`,
+    generated from the plan and its Evidence Items (skill `excalidraw-section`), so it opens
+    view only and says when the plan changed after it was drawn. Rendering writes nothing."""
     if page_src is None or root is None:
         return ""
-    scene = Path(page_src).parent / "studio" / ("%s-roadmap.excalidraw" % Path(page_src).stem)
-    if not scene.is_file():
-        return ('<div class=space-empty>No RoadMap yet. Draw the logic in the Runs panel copies the '
-                'prompt that draws this Section&#39;s logic tree.</div>')
-    try:
-        rel = scene.resolve().relative_to(Path(root).resolve()).as_posix()
-    except ValueError:
-        return ""
-    url = _e("/_excalidraw/?board=%s&edit=1" % quote(rel, safe="/"))
-    # no referrer: Excalidraw refuses a same-site embed, as on Paper's RoadMap Draw
-    return ('<div class=rd-bar><a class=rd-open href="%s" target=_blank rel=noopener>Open full screen ↗</a></div>'
-            '<iframe class=page-roadmap-frame title="RoadMap Draw" referrerpolicy=no-referrer data-src="%s">'
-            '</iframe>' % (url, url))
+    folder, stem = Path(page_src).parent, Path(page_src).stem
+
+    def rel(path):
+        try:
+            return path.resolve().relative_to(Path(root).resolve()).as_posix()
+        except ValueError:
+            return ""
+
+    def card(title, body, opened):
+        return ('<details class=rd-card%s><summary>%s</summary>%s</details>'
+                % (" open" if opened else "", _e(title), body))
+
+    def frame(path, edit, label):
+        url = _e("/_excalidraw/?board=%s%s" % (quote(rel(path), safe="/"), "&edit=1" if edit else ""))
+        # no referrer: Excalidraw refuses a same-site embed, as on Paper's RoadMap Draw
+        return ('<div class=rd-bar><a class=rd-open href="%s" target=_blank rel=noopener>Open full screen ↗</a></div>'
+                '<iframe class=page-roadmap-frame title="%s" referrerpolicy=no-referrer data-src="%s"></iframe>'
+                % (url, _e(label), url))
+
+    logic = folder / "studio" / ("%s-roadmap.excalidraw" % stem)
+    logic_body = frame(logic, True, "Logic") if logic.is_file() and rel(logic) else (
+        '<div class=space-empty>No logic drawing yet. Draw the logic in the Runs panel copies the '
+        'prompt that draws this Section&#39;s logic tree.</div>')
+    smap = folder / "studio" / ("%s-sections.excalidraw" % stem)
+    if smap.is_file() and rel(smap):
+        plan = latest_outline(plan_dir(folder), stem)
+        items = folder / "draft" / ("%s-evidence-items.md" % stem)
+        newer = [p.name for p in (plan, items) if p is not None and p.is_file()
+                 and p.stat().st_mtime > smap.stat().st_mtime]
+        note = ('<p class=rd-stale>❗ %s changed after this map was drawn: Redraw the Section map in the '
+                'Runs panel.</p>' % _e(" and ".join(newer))) if newer else ""
+        map_body = note + frame(smap, False, "Section map")
+    else:
+        map_body = ('<div class=space-empty>No Section map yet. Redraw the Section map in the Runs panel '
+                    'copies the prompt that draws it from the plan.</div>')
+    return card("Logic · why the claim holds (your drawing)", logic_body, True) + \
+        card("Section map · where each part sits (generated)", map_body, True)
 
 
 def _page_band(page_src):
@@ -2995,7 +3020,10 @@ def _page_band(page_src):
         got = re.search(r"(?m)^%s:\s*(.+?)\s*$" % re.escape(key), text)
         return re.sub(r"[*_`]+", "", got.group(1)).strip() if got else ""
     plan = latest_outline(plan_dir(Path(page_src).parent), Path(page_src).stem)
-    state = field("state").split(" - ")[0].split(" · ")[0].strip()
+    # the state's word only, no emoji (JL 261003: "I don't want 🟡"): `🟡 PARTIAL - prose
+    # inherited, …` reads `Partial`
+    state = re.split(r"\s+[-–—·]\s+|[:,(]", field("state"), maxsplit=1)[0]
+    state = re.sub(r"^[^A-Za-z]+", "", state).strip().capitalize()
     parts = [field("page-type") or field("folder-kind"), state,
              "draft %s" % version_tag(plan) if plan else "no draft yet"]
     parts = [x for x in parts if x]

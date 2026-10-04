@@ -132,7 +132,7 @@ A board presents two Spaces:
 | Space | Shows |
 |---|---|
 | Design Tasks | the task list, the shared rules, and a csv |
-| Theory of Design | three general views: `ref/design-theory.md`, `ref/design-methods.md`, and the board's `design-papers.md` |
+| Theory of Design | Guide › Method: one document, `ref/design-method.md`, with the method cards; Guide › Related Paper: `ref/design-papers.md` |
 
 Each Space has a Runs panel that reads
 `haipipe-design-workflow/references/run-cards.md`. The Workbench Table is

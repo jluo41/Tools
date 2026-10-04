@@ -1,4 +1,4 @@
-"""Write the methods studio drawing by input (JL 261002): design requirements, internal
+"""Write the methods drawing, the top of Guide › Method (JL 261002; 261003: "put it at the top"): design requirements, internal
 insights and external insights → Design → Exp, then thirteen cards in six families. A one-off
 author script; the drawing is then edited in Excalidraw. Study counts are read from the
 papers table, as the Design methods view counts them."""
@@ -57,13 +57,34 @@ for line in PAPERS.read_text(encoding="utf-8").splitlines():
             studies[g.strip()] = studies.get(g.strip(), 0) + 1
 
 # title -----------------------------------------------------------------
-text(40, 24, "Design methods · one task, thirteen ways to design it", 36)
+text(40, 24, "How we design · the method in one picture", 36)   # JL 261003: no "Design methods" title
 text(40, 78, "Three inputs go into Design, and the Exp tests it. Methods differ in which inputs they read before "
              "designing and in what they must return with the design.", 18, "#495057")
 
 # 1 · three inputs → Design → Exp --------------------------------------------
-Y0, IW, IH, IG = 140, 360, 92, 14
-inputs = [("Design requirements", "the Design Goal: what it must do and keep", "approved by a person · given, not inferred", REQ),
+# 0 · the four kinds of reasoning (JL 261003: "add the Reasoning method to the Draw"): what each
+# knows and finds, a soup example, and where it sits in this method
+RY = 136
+text(40, RY, "Four kinds of reasoning · the thing + the rule → the result; ✓ known, ? found", 20, "#343a40")
+RSN = [("Deduction · predict", "演绎", "[thing ✓] + [rule ✓] → [result ?]", "salt added + salt makes it salty → it will be salty",
+        "here: Evaluate checks a design before it is sent", ("#f8f9fa", "#495057")),
+       ("Induction · learn a rule", "归纳", "[thing ✓] + [rule ?] → [result ✓]", "5 salted bowls were all salty → salt makes soup salty",
+        "here: an Insight board learns from past data", INT),
+       ("Abduction-1 · solve", "溯因 1", "[thing ?] + [rule ✓] → [result ✓]", "want salty soup + know salt works → add salt",
+        "here: External or Internal Insights, the rule is known", EXT),
+       ("Abduction-2 · create", "溯因 2", "[thing ?] + [rule ?] → [result ✓]", "want happy guests → invent a rule (warm soup) → make it",
+        "here: Goal Only, the rule must be invented", REQ)]
+RW, RH = 437, 138
+for i, (name, zh, form, ex, here, (bg, st)) in enumerate(RSN):
+    x = 40 + i * (RW + 12)
+    box(x, RY + 38, RW, RH, bg=bg, stroke=st)
+    text(x + 14, RY + 48, f"{name} · {zh}", 18, st)        # the Chinese term beside the name, never clipped
+    text(x + 14, RY + 78, form, 15, "#343a40")
+    text(x + 14, RY + 102, wrap(ex, 54), 13, "#495057")
+    text(x + 14, RY + 140, here, 13, st)
+text(40, RY + 38 + RH + 14, "In one loop:  learn (induction)  →  make (abduction)  →  check (deduction)  →  test (the Exp)  →  learn again", 17, "#1864ab")
+Y0, IW, IH, IG = RY + RH + 110, 360, 92, 14
+inputs = [("Design requirements", "the Design Task: what it must do and keep", "approved by a person · given, not inferred", REQ),
           ("Internal insights", "our own data: past Exps, readers' records", "signed on an InsightBoard · our induction", INT),
           ("External insights", "the literature and theory: other people's data", "cited · other people's induction", EXT)]
 DX, DW = 470, 1010
@@ -78,14 +99,18 @@ for i, (a, b, c, (bg, st)) in enumerate(inputs):
 box(DX, DY, DW, DH, bg="#f8f9fa", stroke="#343a40")
 text(DX + 18, DY + 12, "Design", 24)
 text(DX + 118, DY + 19, "abduction: from the requirements (the result wanted) and an insight (the how), the design (the what)", 14, "#495057")
-steps = [("Method", "choose one; read the inputs it reads"), ("Generate", "the design, and what it returns"),
-         ("Evaluate", "before sending: the rules, a critique, a pretest"), ("Ready", "a person approves")]
+steps = [("Method", "choose one; read the inputs it reads", "pick where the rule comes from"),
+         ("Generate", "the design, and what it returns", "make · abduction"),
+         ("Evaluate", "before sending: the rules, a critique, a pretest", "check · deduction"),
+         ("Ready", "a person approves", "")]
 sx, sw, sh, sg = DX + 20, 222, 104, 24
-for i, (a, b) in enumerate(steps):
+for i, (a, b, tag) in enumerate(steps):
     hi = a in ("Method", "Generate")
     box(sx, DY + 60, sw, sh, bg="#e7f5ff" if hi else "#ffffff", stroke="#1864ab" if hi else "#495057")
     text(sx + 12, DY + 70, a, 18)
     text(sx + 12, DY + 96, wrap(b, 30), 12, "#495057")
+    if tag:
+        text(sx + 12, DY + 60 + sh - 22, tag, 13, "#1864ab")
     if i < len(steps) - 1:
         arrow(sx + sw + 3, DY + 60 + sh / 2, [[0, 0], [sg - 6, 0]])
     sx += sw + sg
@@ -93,9 +118,11 @@ for i, (a, b) in enumerate(steps):
 # goes back to Generate, a weak reason to Method
 RV = "#e8590c"
 mc, gc, ec = DX + 20 + sw / 2, DX + 20 + (sw + sg) + sw / 2, DX + 20 + 2 * (sw + sg) + sw / 2
-arrow(ec + 12, DY + 168, [[0, 0], [0, 22], [gc - ec - 12, 22], [gc - ec - 12, 0]], RV)
+# the two loops nest, never cross (JL 261003): the short one back to Generate leaves from the
+# inner side of Evaluate, the long one back to Method from the outer side
+arrow(ec - 12, DY + 168, [[0, 0], [0, 22], [gc - ec + 12, 22], [gc - ec + 12, 0]], RV)
 text(gc + 14, DY + 194, "a broken rule: back to Generate", 12, RV)
-arrow(ec - 12, DY + 168, [[0, 0], [0, 50], [mc - ec + 12, 50], [mc - ec + 12, 0]], RV)
+arrow(ec + 12, DY + 168, [[0, 0], [0, 50], [mc - ec - 12, 50], [mc - ec - 12, 0]], RV)
 text(mc + 14, DY + 222, "a weak reason: back to Method", 12, RV)
 text(DX + 20, DY + 248, "Revise loop (inner): Method, Generate, Evaluate, until it passes · minutes, many rounds · "
                         "gives back a revised design", 15, RV)
@@ -107,7 +134,7 @@ arrow(DX + DW + 6, EY + EH / 2, [[0, 0], [EX - DX - DW - 14, 0]], "#343a40")
 box(EX, EY, EW, EH, bg="#fff9db", stroke="#e67700")
 text(EX + 16, EY + 12, "Exp", 24, "#e67700")
 text(EX + 16, EY + 48, wrap("tested in use: a randomized trial against the control", 30), 14, "#343a40")
-text(EX + 16, EY + 100, wrap("observes the result; what it records is new internal data", 30), 13, "#868e96")
+text(EX + 16, EY + 100, wrap("observes the real result; induction then learns the next rule from it", 30), 13, "#868e96")
 # the Exp's data goes back as internal data
 by = DY + DH + 34
 iy = Y0 + IH + IG + IH / 2
@@ -116,32 +143,28 @@ arrow(EX + EW / 2, EY + EH + 4, [[0, 0], [0, by - EY - EH - 4], [20 - EX - EW / 
 text(560, by + 8, "Learning loop (outer): the Exp's data becomes the next internal insights · weeks, once a round · "
                  "gives back an insight", 15, INT[1])
 
-# 2 · five families ----------------------------------------------------------
+# 2 · three families by where the rule comes from (JL 261003) ----------------------------------------------------------
 FY = by + 92
 COLW, GAP = 284, 15
 CX = [40 + i * (COLW + GAP) for i in range(6)]
 line = lambda x0, x1, y, c: base("line", x0, y, x1 - x0, 0, stroke=c, round=None, points=[[0, 0], [x1 - x0, 0]],
                                  lastCommittedPoint=None, startBinding=None, endBinding=None, startArrowhead=None, endArrowhead=None)
-text(CX[0], FY - 50, "Abduction · reads none of our own data", 17, "#495057")
-line(CX[0], CX[1] + COLW, FY - 22, "#adb5bd")
-text(CX[2], FY - 50, "Induction · learns from our own data: before, during and after Design", 17, "#495057")
-line(CX[2], CX[5] + COLW, FY - 22, "#adb5bd")
 
 R = ("req", "design requirements")
 fams = [
- ("Requirements only", "abduction-2: the how is invented", "+ nothing else", REQ, [
+ ("Goal Only", "abduction-2: the how is invented", "+ nothing else", REQ, [
    (1, "By goal", "Write the design straight from the requirements; keep the first that passes the rules.", [R],
     "The baseline every other method must beat.", "Newell & Simon 1972 · Simon 1969", "none: no approach develops from the goal alone", False),
    (2, "By principle", "Frame what the requirements really ask, then design to that frame.", [R],
     "Freeze the frame before the first draft.", "Schön 1983 · Dorst 2015", "the first activity of human-centred design", False)]),
- ("With external insights", "abduction-1, on other people's induction", "+ the literature and theory", EXT, [
+ ("External Insights", "abduction-1, on other people's induction", "+ the literature and theory", EXT, [
    (3, "By theory", "Use the technique a named theory prescribes; predict the one variable it moves.",
     [R, ("ext", "external insights: named theories")],
     "A second agent codes the technique blind (T1).", "Bartholomew 1998 · Michie 2011", "evidence and theory-based", False),
    (4, "By implementation", "Design for real-world use: who it reaches, who delivers it, whether it lasts.",
     [("req", "design requirements: the delivery setting"), ("ext", "external insights: RE-AIM")],
     "Reach and adoption are measured in the Exp, not reasoned.", "Glasgow 1999 (RE-AIM)", "implementation-based", False)]),
- ("With internal insights", "our induction, then abduction-1", "+ our signed insights", INT, [
+ ("Internal Insights", "our induction, then abduction-1", "+ our signed insights", INT, [
    (5, "By insight", "Make each part of the design follow from a signed insight.",
     [R, ("int", "internal insights: signed rows")],
     "The Evidence chain checks each cited row (T1).", "Sackett 1996 · MacLean 1991", "evidence and theory-based", False),
@@ -155,7 +178,7 @@ fams = [
     [R, ("int", "internal insights: who the reader is")],
     "Readers' records are protected health information.", "Hawkins 2008 · Noar 2007 · Nahum-Shani 2018",
     "tailoring to sub-groups, found by experiment", False)]),
- ("With both insights", "abduction-1 on two hows that agree", "+ our signed insights and theory", ("#fff0f6", "#c2255c"), [
+ ("Both Insights", "abduction-1 on two hows that agree", "+ our signed insights and theory", ("#fff0f6", "#c2255c"), [
    (9, "By theory and insight", "Follow a signed insight that a named theory explains; predict the variable it moves.",
     [R, ("int", "internal insights: signed rows"), ("ext", "external insights: named theories")],
     "Name the theory's prediction before writing.", "Michie 2011 · Bartholomew 1998 · Sackett 1996",
@@ -175,13 +198,26 @@ fams = [
     [R, ("", "the artifact's slots")],
     "A word diff checks only one slot changed.", "Zwicky 1969 · Suh 1990 · Collins 2018", "efficiency-based", False)]),
 ]
+# the thirteen cards by name, then three families over six columns: Goal Only (2), External (1), Internal (3)
+card = {c[1]: c for _, _, _, _, cards in fams for c in cards}
+FAMS = [("Goal Only", "the rule is invented · abduction-2 · create", "the task only; or several designs, the Exp picks", REQ,
+         [["By goal", "By principle"], ["By exploring", "By slots"]]),
+        ("External Insights", "from research · abduction-1 · solve", "+ the literature and theory", EXT,
+         [["By theory", "By implementation"]]),
+        ("Internal Insights", "the rule comes from our data · abduction-1 · solve", "+ signed insights, past designs, or readers", INT,
+         [["By insight", "By precedent", "By revising"], ["By tailoring", "By theory and insight"], ["By user test", "By co-design"]])]
+columns, col = [], 0
+for fam, reason, reads, (fbg, fst), cols in FAMS:
+    x0, x1 = CX[col], CX[col + len(cols) - 1] + COLW
+    box(x0, FY, x1 - x0, 96, bg=fbg, stroke=fst)
+    text(x0 + 14, FY + 10, fam, 21, fst)
+    text(x0 + 14, FY + 42, reason, 14, "#343a40")
+    text(x0 + 14, FY + 66, reads, 13, "#868e96")
+    for names in cols:
+        columns.append((col, [card[n] for n in names])); col += 1
 bottom = 0
-for col, (fam, reason, reads, (fbg, fst), cards) in enumerate(fams):
+for col, cards in columns:
     x = CX[col]
-    box(x, FY, COLW, 96, bg=fbg, stroke=fst)
-    text(x + 14, FY + 10, fam, 19, fst)
-    text(x + 14, FY + 40, reason, 14, "#343a40")
-    text(x + 14, FY + 64, reads, 13, "#868e96")
     y = FY + 112
     for n, name, move, ins, ai, frm, tax, future in cards:
         mv = wrap(move, 31)
@@ -216,11 +252,11 @@ text(420, y + 6, "each Generate records where each element came from and how it 
                  "· an illustration, not a pilot design", 14, "#868e96")
 y += 40
 cols = [("element", 150), ("words", 560), ("from · source", 560), ("how chosen", 470)]
-ex = [("sender", "Hi, it's Dr. {NAME}'s office.", ("req", "requirements · Design Goal: personalization"), "reasoned · System 2"),
+ex = [("sender", "Hi, it's Dr. {NAME}'s office.", ("req", "requirements · Design Task: personalization"), "reasoned · System 2"),
       ("news", "New prescription details are ready.", ("int", "internal insight · a signed row on what worked"), "reasoned · System 2"),
       ("reason", "Check them before your next visit", ("ext", "external insight · Reason (because)"), "reasoned · System 2"),
       ("ask", "Take a look:", ("", "intuition · none"), "intuitive · System 1: a hunch, never warrant"),
-      ("link, opt-out", "{LINK} Reply STOP to opt-out", ("req", "requirements · Design Goal: links, opt-out"), "reasoned · System 2")]
+      ("link, opt-out", "{LINK} Reply STOP to opt-out", ("req", "requirements · Design Task: links, opt-out"), "reasoned · System 2")]
 x = 40
 for name, w in cols:
     text(x + 10, y, name, 13, "#868e96")
@@ -288,10 +324,21 @@ for i, (a, b, c) in enumerate(tests):
     x += 362
 y += 200
 box(40, y, 1780, 96, bg="#fff9db", stroke="#e67700")
-text(60, y + 14, "The bet", 20, "#e67700")
-text(60, y + 44, "No approach has been compared with another (O'Cathain 2019). Design one task by several methods and compare them "
-                 "in the Revise loop (T0 to T2) and in the Exp (T4):\ndoes reading more inputs give better designs, and do internal insights beat external ones?", 16)
+text(60, y + 14, "The open question · which method gives better designs?", 20, "#e67700")
+text(60, y + 44, "No approach has been compared with another (O'Cathain 2019). Design one task by several methods, check them in "
+                 "Evaluate (T0 to T2), and let the Exp (T4) answer:\ndoes reading more give better designs, and do our own insights beat the literature?", 16)
 
+# never overwrite edits made on the canvas (JL 261003): an element saved from Excalidraw has a
+# version above 1. Keep the previous file in the temp folder, and stop unless FORCE=1 is set.
+import os, shutil, tempfile
+if Path(OUT).is_file():
+    old = json.load(open(OUT, encoding="utf-8"))
+    edited = [e for e in old.get("elements", []) if not e.get("isDeleted") and e.get("version", 1) > 1]
+    prev = Path(tempfile.gettempdir()) / (Path(OUT).name + ".prev")    # outside the repo
+    shutil.copyfile(OUT, prev)
+    if edited and os.environ.get("FORCE") != "1":
+        sys.exit(f"{len(edited)} elements were edited on the canvas; kept {prev}. Fold the edits into "
+                 "this script, or rerun with FORCE=1 to overwrite them.")
 json.dump({"type": "excalidraw", "version": 2, "source": "haipipe-design-methods-studio", "elements": els,
            "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}},
           open(OUT, "w"), ensure_ascii=False, indent=2)

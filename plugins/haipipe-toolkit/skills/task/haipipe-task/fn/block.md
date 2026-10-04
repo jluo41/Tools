@@ -74,7 +74,7 @@ When the Block is cohesive and its shared narrative is ready, create
 progress, and design records, then bundle the canvas. Do not invent diagram
 content merely to fill the folder.
 
-For a question-driven Block, follow `ref/block-questions.md`: register the
+For a question-driven Block, follow `haipipe-question` (`skills/question/haipipe-question/ref/block-questions.md`): register the
 Questions in `board.md`, place their Report Pages in `reports/`, and use
 `studio/` for freeform Excalidraw drawings. Create these when requested or when
 the Block's questions are known; do not prefill invented questions or answers.

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+import json
 import re
 import tomllib
 from urllib.parse import unquote, urlsplit, urlencode
@@ -154,8 +155,11 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
     answers = [p.strip() for p in field(body, "answers").split(",")]
     if qid not in answers:
         result["issues"].append(f"Report answers does not name {qid}")
-    opening = section(body, "Opening").split("\n\n", 1)[0]
-    result["answer"] = plain(opening)
+    opening = section(body, "Opening")
+    result["answer"] = plain(opening.split("\n\n", 1)[0])
+    # Delivery shows an answered report's whole Opening and its Answer, word for word
+    result["opening"] = [plain(part) for part in opening.split("\n\n") if plain(part)]
+    result["answer_text"] = [plain(part) for part in report_section(body, {"answer"}).split("\n\n") if plain(part)]
     evidence = report_section(body, {"evidence"})
     result["evidence_text"] = plain(evidence)
     result["evidence"] = source_links(evidence, page, root, source_url)
@@ -208,6 +212,18 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
     return result
 
 
+def generated(path, board):
+    """A drawing a script writes names the script in its `source` (as Insight's question map): it
+    shows view only, and `stale` when board.md, its source, is newer than it."""
+    try:
+        source = json.loads(path.read_text(encoding="utf-8")).get("source", "")
+    except (OSError, ValueError):
+        return {}
+    if not str(source).endswith(".py"):
+        return {}
+    return {"source": str(source), "stale": (board / "board.md").stat().st_mtime > path.stat().st_mtime}
+
+
 def extend_snapshot(board, root, snap, only, source_url, page_url):
     body = read(board / "board.md", board)
     rows, issues = register(body, "Questions", "questions")
@@ -224,7 +240,8 @@ def extend_snapshot(board, root, snap, only, source_url, page_url):
         question = {"id": qid, "title": words(row.get("title")) or row["question"],
                     "block_path": snap["path"],
                     "question": row["question"], "hypothesis": words(row.get("hypothesis")),
-                    "acceptance": words(row.get("acceptance")), "work": [], "issues": []}
+                    "acceptance": words(row.get("acceptance")), "group": words(row.get("group")),
+                    "work": [], "issues": []}
         work = row.get("work", [])
         if not isinstance(work, list):
             question["issues"].append("work must be a list of Task paths")
@@ -270,8 +287,9 @@ def extend_snapshot(board, root, snap, only, source_url, page_url):
     if inside(studio, board) and studio.is_dir():
         for path in sorted(studio.glob("*.excalidraw")):
             if inside(path, studio) and path.is_file() and source_url(path, root):
-                drawings.append({"title": path.stem.replace("_", " "),
-                                 "path": path.relative_to(root).as_posix()})
+                drawings.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
+                                 "path": path.relative_to(root).as_posix(), **generated(path, board)})
+        drawings.sort(key=lambda d: not d.get("source"))       # a generated drawing (the question map) first
     snap.update(questions=questions, resources=clean_resources, drawings=drawings,
                 source_issues=issues, unassigned=[t for t in snap["tasks"] if t["id"] not in assigned],
                 studio_path=(board.relative_to(root) / "studio").as_posix(),

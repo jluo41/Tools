@@ -533,6 +533,8 @@ body>h1{font-size:18px;margin:0 0 2px}
 .draft-lens[data-draft-mode="roadmap"]>.space-main>:not(.draft-mode-switcher):not(.draft-roadmap){display:none}
 .draft-roadmap .rd-bar{display:flex;justify-content:flex-end;margin:0 0 8px;font-size:13px}
 .page-roadmap-frame{display:block;width:100%;height:640px;border:1px solid var(--box-line);border-radius:8px;background:#fff}
+.draft-roadmap details.rd-card{margin:0 0 14px}.draft-roadmap details.rd-card>summary{cursor:pointer;font-weight:650;font-size:15px;margin:0 0 8px}
+.draft-roadmap .rd-stale{margin:0 0 6px;font-size:13px;color:#b3541e}
 .draft-mode-switcher .draft-mode-tab{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;
  padding:5px 12px;background:transparent;color:var(--fg)}
 .draft-mode-switcher .draft-mode-tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}

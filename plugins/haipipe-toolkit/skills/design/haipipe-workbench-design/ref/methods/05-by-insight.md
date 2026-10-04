@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by insight`. A claim
 names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Internal Insights: induction, then abduction-1; the how comes from our own
-  data, as signed insights
+family: Internal Insights: abduction-1 on our own induction; the how comes from our own
+  data: signed insights, past designs, or readers who try the drafts
 reasoning: abduction-1 on our own induction: requirements + signed insights, the how → a
   design
 move: Make each part of the design follow from a signed insight.

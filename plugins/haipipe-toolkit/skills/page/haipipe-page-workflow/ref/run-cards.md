@@ -14,7 +14,9 @@ Run identity.
 🔀 ROUTE    legal next Run Spec/control outcome
 🧾 RECEIPT  durable terminal record
 🖥 SPACE    Workspace bindings
-🧩 SKILL    the skill(s) the run uses; the Runs panel shows them on each run
+🧩 SKILL    the one skill the button's run uses; the Runs panel shows it on each run
+🤖 AGENT    who does the run
+✍️ SIGNS    what the person signs on it, or none
 ```
 
 ## `Page.context`
@@ -27,8 +29,10 @@ Run identity.
 🔀 ROUTE    SELF · Page.structure · HOLD
 🧾 RECEIPT  Context record and controller/Run receipt
 🖥 SPACE    Folder inspection; Runtime only when independently commissioned
-🧩 SKILL    haipipe-page-context
 🔘 BUTTON   Context · Draft · ^(?:rp-context-|run-context-) · views table
+🧩 SKILL    haipipe-page-context
+🤖 AGENT    haipipe-page-context-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page run {page} from CONTEXT: refresh the Context record of {page}.
 ```
 
@@ -42,8 +46,10 @@ Run identity.
 🔀 ROUTE    SELF/next Step · NEW_VERSION · writing/evidence Run · NEW_RUN · HOLD
 🧾 RECEIPT  runs/`run-structure-<MMDD>-<slug>`.md + results/`run-structure-<MMDD>-<slug>`/runtime.yaml + Version journal
 🖥 SPACE    Draft · Evidence · Runtime
-🧩 SKILL    haipipe-page-structure
 🔘 BUTTON   Structure revise · Draft · ^(?:rp-struct-|run-structure-) · views table
+🧩 SKILL    haipipe-page-structure
+🤖 AGENT    haipipe-page-structure-agent
+✍️ SIGNS    the plan
 💬 PROMPT   /haipipe-page run {page} run-structure: revise ## 1 Structure of {plan} (headings, paragraph jobs, Bullet Points); no sentence changes.
 ```
 
@@ -57,8 +63,10 @@ Run identity.
 🔀 ROUTE    SELF · CLOSE / owning Run Spec · NEW_RUN
 🧾 RECEIPT  selected Outline `## Scratch` registry + paired ticket/result/runtime.yaml
 🖥 SPACE    Draft · Scratch view; Run Space
-🧩 SKILL    haipipe-page-scratch
 🔘 BUTTON   Scratch · Draft · ^(?:rp-scratch-|run-scratch-) · views scratch
+🧩 SKILL    haipipe-page-scratch
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page scratch {page} {target}: read my notes under {target} in ## 2 Scratch of {plan} and summarize what to write there.
 ```
 
@@ -76,8 +84,10 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Runtime
-🧩 SKILL    haipipe-page-writing · haipipe-writing
 🔘 BUTTON   Section revise · Draft · ^(?:rp-sec-.*\.md$|run-section-) · views revise
+🧩 SKILL    haipipe-page-writing
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page revise {page} {target}: review the whole section in ## 3 Draft of {plan}; keep every Point; show Before / After per paragraph.
 ```
 
@@ -91,8 +101,10 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Evidence · Runtime
-🧩 SKILL    haipipe-page-writing · haipipe-writing
 🔘 BUTTON   Paragraph revise · Draft · ^(?:rp-para-|run-paragraph-) · views revise
+🧩 SKILL    haipipe-page-writing
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page revise {page} {target}: revise the sentences of {target} in ## 3 Draft of {plan}; keep each Point; show Before / After per sentence.
 ```
 
@@ -109,8 +121,10 @@ or target is a new Run.
 🔀 ROUTE    SELF/next Step · NEW_RUN · HOLD
 🧾 RECEIPT  change ledger in results/`run-revise-<MMDD>-<slug>`/
 🖥 SPACE    Draft
-🧩 SKILL    haipipe-page-revise
 🔘 BUTTON   Revise edits · Draft · ^(?:rp-revise-|run-revise-) · views revise
+🧩 SKILL    haipipe-page-revise
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    the edits kept
 💬 PROMPT   /haipipe-page-revise {page} {target}: read the change ledger of {run} against ## 3 Draft of {plan}; settle every Before / After and say which changes to keep.
 ```
 
@@ -124,9 +138,28 @@ or target is a new Run.
 🔀 ROUTE    SELF · CLOSE · Structure revise when the logic exposes a missing or misplaced Bullet
 🧾 RECEIPT  studio/<stem>-roadmap.excalidraw (the source of the logic; never replaced without asking)
 🖥 SPACE    Draft · RoadMap Draw view
-🧩 SKILL    draw-logic-tree
 🔘 BUTTON   Draw the logic · Draft · ^run-roadmap- · views roadmap
-💬 PROMPT   /draw-logic-tree draw the logic of {page} in its RoadMap: read {plan}, write the Section's argument as a tree (its claim on top, the reasons it rests on below, every Bullet a leaf) and draw it with draw_logic_tree.py --logic; if studio/{page}-roadmap.excalidraw exists, change only what I ask and keep my edits.
+🧩 SKILL    draw-logic-tree
+🤖 AGENT    haipipe-studio-agent (new)
+✍️ SIGNS    the logic
+💬 PROMPT   /draw-logic-tree draw the logic of {page} in its RoadMap: read {plan}, write the Section's argument as a tree read left to right (its claim at the left, the reasons it rests on beside it, every Bullet a row) and draw it with draw_logic_tree.py --logic; if studio/{page}-roadmap.excalidraw exists, change only what I ask and keep my edits.
+```
+
+## `Page.section-map` · `run-sectionmap-<MMDD>`
+
+```text
+🎯 TARGET   the Section map: paragraphs, each Bullet a row, a Text column and evidence cards
+👤 ACTOR    agent
+⚙ ACTION   rerun excalidraw_section.py from the plan and its Evidence Items; never edit the map
+🚪 GATE     every plan Bullet and every Evidence Item is drawn
+🔀 ROUTE    SELF
+🧾 RECEIPT  studio/<stem>-sections.excalidraw (generated; its source names the script)
+🖥 SPACE    Draft · RoadMap Draw view
+🔘 BUTTON   Redraw the Section map · Draft · ^run-sectionmap- · views roadmap
+🧩 SKILL    excalidraw-section
+🤖 AGENT    haipipe-studio-agent (new)
+✍️ SIGNS    none
+💬 PROMPT   /excalidraw-section redraw the Section map of {page}: run excalidraw_section.py on {page} from {plan} and its Evidence Items; never edit the map by hand.
 ```
 
 ## `Page.evidence-item` · `re-value|cite|display-*`
@@ -139,11 +172,18 @@ or target is a new Run.
 🔀 ROUTE    SELF · writing/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  owner-native Ticket/Result + Page RE runtime receipt
 🖥 SPACE    Evidence · Runtime
-🧩 SKILL    haipipe-page-evidence
-🧩 SKILL    Build figure / table: haipipe-page-evidence · haipipe-display
 🔘 BUTTON   Bind / update citation · Evidence · ^(?:re-cite-|run-citation-) · views citations
+🧩 SKILL    haipipe-page-evidence
+🤖 AGENT    haipipe-page-evidence-agent
+✍️ SIGNS    the source check
 🔘 BUTTON   Build figure / table · Evidence · ^(?:re-display-|run-display-) · views displays
+🧩 SKILL    Build figure / table: haipipe-display
+🤖 AGENT    haipipe-display-unit-agent
+✍️ SIGNS    accepting the display
 🔘 BUTTON   Bind / update value · Evidence · ^(?:re-value-|run-value-) · views values
+🧩 SKILL    Bind / update value: haipipe-page-evidence
+🤖 AGENT    haipipe-page-evidence-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page evidence {page} {target}: land and verify this evidence item against its Acceptance line in the Evidence Markdown, then bind its Result.
 ```
 
@@ -157,8 +197,10 @@ or target is a new Run.
 🔀 ROUTE    SELF · Page.check · HOLD
 🧾 RECEIPT  none typed: the files in delivery/<lane>/ and their file time
 🖥 SPACE    Delivery
-🧩 SKILL    haipipe-page-delivery
 🔘 BUTTON   Build · Delivery · ^run-delivery- · views preview artifacts
+🧩 SKILL    haipipe-page-delivery
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page export {page} {target}: rerun this lane's one Delivery Run (page.py export --lane), then say which files changed. No new Run id, no receipt, no hash.
 ```
 
@@ -172,8 +214,10 @@ or target is a new Run.
 🔀 ROUTE    SELF · Page.interactive-writing.paragraph · NEW_VERSION · HOLD
 🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ (versions, rubric, runtime)
 🖥 SPACE    Draft · Runtime
-🧩 SKILL    haipipe-page-writing · haipipe-writing
 🔘 BUTTON   Auto write · Draft · ^(?:rp-auto-|run-auto-write-)|^rp-sec-.*\.sh$ · views reading
+🧩 SKILL    haipipe-page-writing
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    adopting the draft
 💬 PROMPT   /haipipe-page auto-write {page} {target}: write the sentences of {target} from its Points, review them against the rubric, rewrite, then show me Before / After.
 ```
 
@@ -188,8 +232,10 @@ or target is a new Run.
 🔀 ROUTE    SELF · NEW_VERSION · Page.interactive-writing.paragraph · HOLD
 🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ + the new plan version
 🖥 SPACE    Draft · Evidence · Runtime
-🧩 SKILL    haipipe-page-evidence
 🔘 BUTTON   Evidence embed · Draft · ^(?:rp-embed-|run-evidence-embed-) · views table
+🧩 SKILL    haipipe-page-evidence
+🤖 AGENT    haipipe-page-evidence-agent
+✍️ SIGNS    none
 💬 PROMPT   /haipipe-page embed {page} {target}: take the accepted evidence for {target} from the Evidence Markdown; write its Answered lines into ## 1 Structure and its citation keys into ## 3 Draft of {plan}; show Before / After; save as an evidence version.
 ```
 
@@ -203,8 +249,11 @@ Draft views (`table reading scratch revise`), the Evidence tabs (`citations
 displays values`) or the Delivery views (`preview artifacts checks`) where the
 button shows, so each view lists only its own runs (JL 260927). In Delivery the
 format tab (Web, LaTeX, Word, Slides) picks the builds of that format and fills
-`{target}`. `🧩 SKILL a · b` names the skills every button of the card uses;
-`🧩 SKILL <button label>: a · b` names one button's. `💬 PROMPT` is the text a
+`{target}`. Under each button, `🧩 SKILL`, `🤖 AGENT` and `✍️ SIGNS` agree with its row of
+`haipipe-workbench-page/ref/workbench-table.md` (`table-workbench --check --cards`); a
+card's first `🧩 SKILL` is every button's, and `🧩 SKILL <button label>: a` names one
+button's own (2026-10-03: one skill per button; a writing skill a run also needs is
+loaded by that skill). `💬 PROMPT` is the text a
 person copies to start that run in a Claude or Codex session; the panel fills in
 `{page}`, `{plan}`, `{target}`, `{button}` and `{run}`.
 
@@ -223,8 +272,10 @@ The order and the design drawing: `servers/workbench-page/studio/page-workbench-
 🔀 ROUTE    CLOSE · owning Run Spec · HOLD
 🧾 RECEIPT  check Result and Workflow Runtime route record
 🖥 SPACE    read-only Draft · Evidence · Runtime · Delivery
-🧩 SKILL    haipipe-page-check
 🔘 BUTTON   Check · Delivery · ^(?:rp-check-|run-check-) · views checks
+🧩 SKILL    haipipe-page-check
+🤖 AGENT    haipipe-page-check-agent
+✍️ SIGNS    release
 💬 PROMPT   /haipipe-page check {page}: judge the current built version read-only and route any finding.
 ```
 

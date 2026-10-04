@@ -8,7 +8,7 @@ description: >-
   than one Page's outline. Trigger: Paper Workbench, paper workbench, paper console,
   paper work console, paper spaces, /haipipe-workbench-paper.
 metadata:
-  version: "0.22.0"
+  version: "0.26.0"
   last_updated: "2026-10-03"
 ---
 
@@ -135,7 +135,9 @@ Spine shows each division by name, never its C-code. Guide reads the `paper` ent
 `workbench-shared/guide_families.py`: `description`, the Workbench Table
 `ref/workbench-table.md` (each working row is one `run-cards.md` button; its 🤖 AGENT,
 🧩 SKILL and ✍️ SIGNS lines agree, `table-workbench --check --cards`), the papers
-`ref/paper-papers.md` (`table-papers`), and RoadMap Draw's **Workbench design**,
+`ref/paper-papers.md` (`table-papers`),
+Method's page `ref/paper-method.md` with its cards in `ref/methods/` and its editable
+methods canvas `ref/paper-methods.excalidraw` (the canvas is the source), and RoadMap Draw's **Workbench design**,
 `servers/workbench-paper/studio/paper-workbench-design.excalidraw`, written by
 `paper-workbench-design.py` (Part 0 the shared shell, then each Space's sub-spaces, runs
 and skills, each Space as shown, and what each reads; rerun it, never edit the scene).
@@ -229,9 +231,13 @@ High-level logic + Low-level work  (`#story/logic-work`)
             one tree, split down the middle (JL 260929): one block per research
             question, the question across the top; left, its hypotheses,
             potential claims and potential contributions, each item under its
-            own pill, no group labels; right, its work: the foundation every
-            question shares, then this question's own. Last, "Not under a
-            question"
+            own pill, no group labels; middle, its work: the foundation every
+            question shares, then this question's own; right, its Report
+            (JL 261003): `reports/qNN_<topic>/` beside `studio/`, its state
+            (Answered · Partial · Open), its answer in a line, Open ↗, or "No
+            report yet". Three columns at every width. A hypothesis shows ✅ only
+            when its question's Report says answered, else 📝 (stated, not yet
+            shown). Last, "Not under a question"
 Related Papers  (`#story/related`)
             one card per §5.3 related paper, the target venue first; open a
             card to read its PDF

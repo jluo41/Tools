@@ -202,16 +202,15 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
                 "reads: data\nreturns: candidate patterns\ntest now: T0 spec\n\n"
                 "What the literature says\n------------------------\n\nrationale: Look before you test [Tukey 1977].\n",
                 encoding="utf-8")
-            (ref / "discovery.md").write_text(
-                "Discovery methods\n=================\n\n| family | method | card |\n|---|---|---|\n"
-                "| From the data | By look | methods/01-by-look.md |\n", encoding="utf-8")
+            (ref / "method.md").write_text(
+                "Insight method\n==============\n\n| family | method | card |\n|---|---|---|\n"
+                "| Look first | By look | methods/01-by-look.md |\n", encoding="utf-8")
             (ref / "papers.md").write_text(
                 "| group | role | key | paper | venue | doi | why here | pdf |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| by look | classic | ★ | Tukey 1977 · Exploratory Data Analysis | Addison-Wesley |  | look first |  |\n"
                 "| by look | evidence |  | Doe, Roe & Poe 2020 · A test of looking | Management Science | 10.1/x | it was tested |  |\n",
                 encoding="utf-8")
-            with patch("live.insightboard.DISCOVERY_METHODS", ref / "discovery.md"), \
-                    patch("live.insightboard.DESIGN_METHODS", ref / "missing.md"), \
+            with patch("live.insightboard.METHOD_DOC", ref / "method.md"), \
                     patch("live.insightboard.METHOD_PAPERS", ref / "papers.md"):
                 html = render_insight_board(board_snapshot(board, root), "scope", "QW1", "full")
                 method = render_methods_embed(root, "method")
@@ -223,12 +222,18 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             self.assertNotIn('data-view="methods"', html)
             self.assertNotIn("Add a method", html)
             self.assertNotIn("Add a paper", html)
-            for k in ("discovery", "design"):                                    # Guide › Method
-                self.assertIn(f'data-mview="{k}"', method)
+            # Guide › Method is one page, as Design's (JL 261003): no tabs; the method file, then the drawing
+            self.assertNotIn("<button type=button data-mview", method)
             self.assertNotIn('data-mview="papers"', method)
+            self.assertNotIn("<h1>Insight method</h1>", method)                  # the View names it
+            # every section a fold card, the drawing first (JL 261003: "make each section collapsable")
+            self.assertIn("<details class=msec><summary><strong>Methods drawing</strong></summary>", method)
+            self.assertLess(method.index("Methods drawing"), method.index('id="method-by-look"'))
+            self.assertNotIn("Edits save to", method)                            # no file notes on screen
+            for old in ("Discovery methods", "Design methods"):                  # the Design and Discovery families' words
+                self.assertNotIn(old, method)
             self.assertIn('id="method-by-look"', method)                         # a card per index row
             self.assertIn("tested in 1 study", method)                           # its evidence row counts
-            self.assertIn("No design methods file yet", method)                  # a missing file says so
             self.assertIn('data-mview="papers"', papers)                         # Guide › Related Paper
             self.assertIn("2 papers · 1 key", papers)
             self.assertIn("rp-utd", papers)                                      # Management Science is UTD24

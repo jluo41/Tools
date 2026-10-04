@@ -18,6 +18,8 @@ Paper-<Slug>/
 ├── Bb-<desk>-Appendix/              named Appendix Section Pages
 ├── Bc-<desk>-Round/                 RD<NN> feedback Round Pages
 ├── studio/                          drawings: make_<name>.py writes <name>.excalidraw
+├── reports/                         one Report Page per Story question
+│   └── qNN_<topic>/qNN_<topic>.md   answers: RQ<n> · answer-status: open | partial | answered
 └── delivery/                        generated complete-paper projection
     ├── paper-build.toml             order, venue profile, output names
     ├── latex/                       master, fragments, displays, bib, PDF
@@ -25,7 +27,17 @@ Paper-<Slug>/
 ```
 
 `A1-Story/` contains the idea pool and one Story per surviving idea. Section
-and Round groups sit at the paper root. A second desk continues with the next
+and Round groups sit at the paper root.
+
+`reports/` and `studio/` are board-level folders, not Page groups: board.md lists
+neither (JL 261003: "just like the studio and reports, like other board level
+folder"). A Report answers one Story question from the closed Runs of its work, in
+the shape `haipipe-question` gives every board's questions (`state:`, `answers: RQ<n>`, `answer-status:`,
+an Opening whose first paragraph is the answer, then Answer · Evidence · Limits ·
+Next under Content, and a `page.toml`). It is the G2 record: a hypothesis shows ✅
+in the Paper Workbench only when its question's Report says `answered`; before
+that it shows 📝 (stated, not yet shown). Sections cite the Report's finding
+rather than re-arguing it. A second desk continues with the next
 free group letter. There is no `0-paperboard/` wrapper in the current layout.
 
 ## Naming and routing invariants

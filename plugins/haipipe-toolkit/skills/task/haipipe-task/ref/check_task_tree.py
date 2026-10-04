@@ -266,7 +266,12 @@ def check(root):
                 # as owing a ticket, and its configs as orphans.
                 # runs/<group>/rNN_* is accepted one level down: the Stata reg jobs file tickets by trait (JL 260909)
                 tickets = sorted(p for p in list(runs.glob("*")) + list(runs.glob("*/*")) if p.is_file() and p.suffix in (".sh", ".ps1", ".cmd")) if runs.is_dir() else []
-                if not any(TICKET.match(p.stem) for p in tickets):
+                # A labeling Task (b6N, `task-type: labeling`, JL 261003) is run by the
+                # subjective-label engine: its Runs are `run-labeling-*.yaml` records the
+                # engine writes, not rNN_ tickets, so it owes no rNN_ ticket.
+                page = t/f"{t.name}.md"
+                labeling = page.is_file() and re.search(r'^task-type:\s*labeling\s*$', page.read_text(errors="replace")[:4096], re.M)
+                if not labeling and not any(TICKET.match(p.stem) for p in tickets):
                     bad("R02", t.name, "no runs/ ticket in rNN_ grammar: every task owes at least one")
                 for k in tickets:
                     if not TICKET.match(k.stem):

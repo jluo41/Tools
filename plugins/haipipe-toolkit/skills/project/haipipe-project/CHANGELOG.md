@@ -4,6 +4,18 @@ haipipe-project — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.6.0] -- 2026-10-03
+
+- `insights/` holds an Insight topic as two boards (JL 261003):
+  `Prototype-Insight-<Topic>/`, Block level (board.md, 0-Meta/, 1-Data … 4-Wisdom/
+  question folders with their scripts, and the Block's `studio/` with the generated
+  `question-map.excalidraw`), and `Instance-Insight-<Dataset>/`, one per dataset.
+  The older `<Dataset>-InsightBoard/` keeps its layout until carried over.
+- `ref/project-structure.md` gains an `insights/` section; the root tree, the
+  boundary table and SKILL.md follow. Internals stay with `haipipe-insight`.
+- `scripts/audit_projects.py` knows `insights/` and `designs/` as worlds; `applications/`
+  is no longer one (legacy since 261001: declared migration debt).
+
 ## [0.4.0] -- 2026-09-04
 
 - Replace name-selected project kinds with independent `profile` and

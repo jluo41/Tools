@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.5.0 · 2026-10-03
+
+- The page follows the Insight Workbench (the Haipipe-Insight-v5 work): the title alone in
+  the header, the Spaces Guide · Scope · Task · Check · Delivery, every View opened by a
+  heading and one lead line, Insight's colors, sizes and class names (`.hl` table, `.kind`,
+  `.q-more`, `.bj` tree, `details.draw`, the pop box), and the Runs panel folded at first.
+- Task › each group: the register's optional `group:` makes one Task View per group, each
+  a table with a row per Question (Logic │ Task Work │ Report), replacing the stacked
+  cards; a heading and no lead, as Insight's partition Views. Clicking a row narrows the
+  Task Runs panel to that Question's Runs and names it in the prompts.
+- Scope › RoadMap Draw replaces Task › Studio. Its first row is the question map, written
+  only by `servers/workbench-task/studio/question_map.py` and shown view only, with a
+  stale note when board.md is newer.
+- Delivery › Reports: the answered reports, word for word, with their evidence.
+- Guide › Method is the shared method page: `ref/task-method.md` (the eight steps, Run
+  and Report methods, the tests T0 to T8, why it works, Reference), seven method cards in
+  `ref/methods/`, and `ref/task-methods.excalidraw`, first drawn by
+  `workbench-shared/studio/method-canvas.py`. `ref/task-papers.md` is grouped by card.
+- Workbench Table: Ask a Question uses `haipipe-question-asking`, Review the questions
+  `haipipe-question-review`; Draw and "Draw the question map" sit in Scope › RoadMap Draw;
+  Task rows are "each group"; Delivery › Reports runs "Build the report".
+
 ## 0.4.0 · 2026-10-03
 
 - Three working Spaces in the shared shell: Scope (Block · Questions · Resources), Task

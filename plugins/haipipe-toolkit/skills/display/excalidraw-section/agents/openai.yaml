@@ -1,0 +1,6 @@
+interface:
+  display_name: "Section Map"
+  short_description: "paper → Sections → paragraphs → Bullets → evidence, left to right"
+  default_prompt: "Use $excalidraw-section to draw a paper's Sections, or one Section, as a map read left to right: Sections in order, paragraphs, each Bullet a row, a Text column to write in, and an evidence card per Evidence Item."
+policy:
+  allow_implicit_invocation: true

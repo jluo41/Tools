@@ -23,6 +23,8 @@ typical items, so a later round can tell a fresh item from one already seen.
 """
 from __future__ import annotations
 
+import re
+
 import csv
 import importlib.util
 import json
@@ -121,7 +123,11 @@ def raw_source(job_root: Path) -> dict:
 
 
 def _order(item_id: str) -> tuple:
-    return (0, int(item_id), "") if item_id.isdigit() else (1, 0, item_id)
+    """Numbers in their natural order: `dices-10:t02` before `dices-100:t06`."""
+    if item_id.isdigit():
+        return (0, int(item_id), ())
+    return (1, 0, tuple((0, int(part), "") if part.isdigit() else (1, 0, part)
+                        for part in re.split(r"(\d+)", item_id) if part))
 
 
 def item_page(job_root: Path, *, offset: int = 0, k: int = 20, human_id: str | None = None,
@@ -137,6 +143,7 @@ def item_page(job_root: Path, *, offset: int = 0, k: int = 20, human_id: str | N
     corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
     text_field = str(corpus.get("text_field") or "text")
     context_field = str(corpus.get("context_field") or "context_prev")
+    after_field = str(corpus.get("context_after_field") or "")   # optional: text after the main one
     rows = [row for row in cal._corpus_rows(job_root)
             if row.get("population_status") == "eligible" and row.get("item_id") is not None]
     rows.sort(key=lambda row: _order(str(row["item_id"])))
@@ -149,11 +156,16 @@ def item_page(job_root: Path, *, offset: int = 0, k: int = 20, human_id: str | N
     page = []
     for row in rows[offset:offset + k]:
         item_id = str(row["item_id"])
+        # the conversation an item belongs to, so a reader sees each conversation once
+        conversation = str(row.get("conversation_id") or item_id.split(":", 1)[0])
         if item_id in waiting:
-            page.append({"item_id": item_id, "state": f"waiting in {waiting[item_id]}"})
+            page.append({"item_id": item_id, "conversation_id": conversation,
+                         "state": f"waiting in {waiting[item_id]}"})
             continue
-        page.append({"item_id": item_id, "state": labeled.get(item_id, "to label"),
-                     "context": str(row.get(context_field) or ""), "text": str(row.get(text_field) or "")})
+        page.append({"item_id": item_id, "conversation_id": conversation,
+                     "state": labeled.get(item_id, "to label"),
+                     "context": str(row.get(context_field) or ""), "text": str(row.get(text_field) or ""),
+                     "after": str(row.get(after_field) or "") if after_field else ""})
     shown = [entry["item_id"] for entry in page if "text" in entry]
     if shown:
         emb._record_exposure(job_root, human_id=human_id, channel=channel,

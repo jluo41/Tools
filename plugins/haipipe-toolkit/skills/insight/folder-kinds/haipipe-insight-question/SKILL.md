@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.9.0"
-  last_updated: "2026-10-02"
+  version: "1.10.0"
+  last_updated: "2026-10-03"
   workflow: haipipe-insight-workflow
   folder_kind: question
   primary_face: page
@@ -172,32 +172,20 @@ Folder's GI conditions still govern citation and register settlement.
 
 ## The question review (Q1-Q7)
 
-Whether a question is a GOOD question is judged before its needs are run, by
-a reviewer agent that did not write it, on seven tests. The check
-(`haipipe-insight-check`) only flags suspects for Q1, Q2, Q4 and Q6 as notes;
-the review reads the question.
+Whether a question is a GOOD question is judged before its needs are run, by a reviewer
+agent that did not write it, through `haipipe-question-review` (the seven tests, the
+keep / split / merge / move verdict, a person signs, a signed change retires). An Insight
+question is an ask in that skill's sense; its topic, when it has one, is a board Question
+(`haipipe-question`). What Insight adds:
 
-```text
-Q1 one thing     the ask asks one question; two joined by "and" are two questions
-Q2 logic         the needs form one argument from the observed to the answer: each need
-                 is read by the next (a judge reads every compute and cite it rests on)
-Q3 consumer      Why now names who waits on the answer (a higher question, a design,
-                 a replication target) and what they do with it
-Q4 rung          the ask belongs at its rung: Data observes, Information derives with no
-                 cause word, Knowledge claims with rivals, Wisdom counsels
-Q5 answerable    the extract can carry it (a field exists, a partition is not
-                 degenerate on it) or the refusal is itself computed
-Q6 new           no other question already asks it or computes the same table
-Q7 open          no preferred answer: a null and "do nothing" stay admissible
-```
-
-The review writes one verdict per question, `keep`, `split`, `merge` or
-`move`, each with its reason, and for a split the small questions and the one
-line of logic that joins them. **It proposes; a person signs.** Nothing is
-split, merged, moved or reworded by a rule or by the reviewer. A signed change
-retires the old question with its reason (`retired:` on its needs, a
-successor id) and never edits it in place; a carried question
-(`ref/carry_over.py`) keeps its words until a signed change replaces them.
+- **Q4 level is the rung**: Data observes, Information derives with no cause word,
+  Knowledge claims with rivals, Wisdom counsels.
+- **Q5 answerable is the extract**: a field exists, a partition is not degenerate on it,
+  or the refusal is itself computed.
+- **A retired question** keeps `retired:` on its needs and names its successor id; a
+  carried question (`ref/carry_over.py`) keeps its words until a signed change replaces them.
+- The check (`haipipe-insight-check`) only flags suspects for Q1, Q2, Q4 and Q6 as notes;
+  the review reads the question.
 
 ## Gate and Closure
 

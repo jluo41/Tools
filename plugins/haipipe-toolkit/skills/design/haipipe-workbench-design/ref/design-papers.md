@@ -4,7 +4,7 @@ Related papers
 Shape and check: `skills/0_utils/table-papers/SKILL.md` (the shared Related Paper rule).
 
 The papers behind the Theory of Design: for each design method in
-`design-methods.md`, its classical source, the recent reviews that cover it, and the
+`design-method.md`, its classical source, the recent reviews that cover it, and the
 studies that test whether it works. Guide › Related Paper shows this file, the same
 for every board.
 

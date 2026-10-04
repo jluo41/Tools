@@ -6,7 +6,7 @@
 state: 🔴 OPEN
 owner: <who>
 folder-kind: task
-task-type: <data|raw|algo|fit|eval|display|individual|agent|endpoint|page|stata>
+task-type: <data|raw|algo|fit|eval|display|individual|agent|endpoint|page|stata|labeling>
 task: .
 
 ## Opening

@@ -46,7 +46,8 @@ class RunsPanelTest(unittest.TestCase):
         # The studio drawing's order puts Context in the Table view (JL 260929).
         self.assertEqual(views["Context"], "table")
         skills = {t["label"]: t["skills"] for t in types}
-        self.assertEqual(skills["Build figure / table"], ["haipipe-page-evidence", "haipipe-display"])
+        # one skill per button (2026-10-03); haipipe-display loads the evidence skill it needs
+        self.assertEqual(skills["Build figure / table"], ["haipipe-display"])
         self.assertEqual(skills["Bind / update value"], ["haipipe-page-evidence"])
         # Each view lists only its own run types (JL 260927).
         self.assertEqual(views["Paragraph revise"], "revise")

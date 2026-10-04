@@ -1,3 +1,9 @@
+## 1.6.0 · 2026-10-03 · A Report per Story question, in reports/
+
+- `ref/paper-structure.md`: the paper root gains `reports/qNN_<topic>/qNN_<topic>.md`, one Report Page per Story question, a board-level folder beside `studio/` and not a Page group (JL 261003: "should we have the reports folder in the paper board as well"; "just like the studio and reports, like other board level folder"). Same shape as a Task Block's reports (`answers: RQ<n>`, `answer-status: open | partial | answered`, Opening = the answer).
+- A Report is the G2 record: Story › High-level logic + Low-level work gains a Report column (haipipe-workbench-paper 0.23.0), and a hypothesis shows ✅ only when its question's Report says answered, else 📝.
+- First Report: Paper-MessageTradeOffEgm `reports/q01_each_message_average/` (partial: E01 reproduced exactly; 1b's clustered variance not yet checked).
+
 ## 1.5.1 · 2026-10-02 · Related Papers says why we keep a paper
 
 - "What the person sees": the Related Papers card now shows why the paper is kept (P-board `keep`, `bears on`; haipipe-paper-story 0.18.0) and the paper's logic beside its work (`logic-work.yaml`; haipipe-discovery 0.21.0, haipipe-workbench-paper 0.21.0).

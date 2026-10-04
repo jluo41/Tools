@@ -37,12 +37,16 @@ narrows every panel to it. Nothing in a panel starts, sends or writes.
 ## The family's methods live in the Guide
 
 The method cards and their papers are the family's, the same for every board, so they
-are not a Scope tab. The shared Guide shows them: Method holds Discovery methods
-(`ref/insight-discovery-methods.md`: how an answer is found from data), Design methods
-(`ref/insight-design-methods.md`: how an inquiry is designed before any data is read)
-and the Methods studio (`ref/insight-methods.excalidraw`, view only); Related Paper
-holds `ref/insight-papers.md`. Each methods file lists one card per method
-(`ref/methods/discovery/`, `ref/methods/design/`): closed, the move, what it reads and
+are not a Scope tab. The shared Guide shows them: Method is one page, the drawing first
+(`ref/insight-methods.excalidraw`, editable), then `ref/insight-method.md` with the six
+steps as its spine: the steps in one table (what happens, where, who decides), steps 1, 3
+and 5 in depth (question-asking, question-answering and question-results reading methods, named after a question's Logic,
+Work and Report, each with a decision tree and its cards), checking (T0 to T8, each at its
+step, and the evidence), why it works, and the Reference, folded (terms and people with
+checked links, the type and task map, where the rules come from). Related Paper holds
+`ref/insight-papers.md`.
+The method file lists one card per method (`question/haipipe-question-asking/methods/`, `ref/methods/answer/`,
+`ref/methods/read/`): closed, the move, what it reads and
 returns, its tests and whether any study tests it; open, What the literature says beside
 Applied to AI. A bracketed source opens its paper's card. No board writes these files.
 

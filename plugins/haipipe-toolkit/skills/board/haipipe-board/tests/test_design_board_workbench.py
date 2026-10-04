@@ -144,7 +144,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           "<div class=dataset>", " design tasks · ",
                           # one View per method family (JL 261003), and each task's method
                           '<button type=button data-view="all" class=on>All</button>', ">Goal Only</button>",
-                          ">Making internal insights next</button>", "<h2>Design tasks · Goal Only</h2>",   # the All table per family
+                          ">Internal Insights</button>", "<h2>Design tasks · Goal Only</h2>",   # the All table per family
                           "not designed this way yet", "Its methods: By goal · By principle", "<th>method</th>", "not declared",
                           "<h2>Design tasks</h2>", "<th>design task</th>",
                           "Prescription review SMS for young male, age 35 or under",
@@ -170,12 +170,12 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             self.assertNotIn("Theory of Design Space", nav)
             self.assertNotIn('data-space="theory"', rendered)
             theory = render_theory_embed(snap, "design-theory")
-            self.assertIn("<h1>Theory of Design</h1>", theory)
+            self.assertIn("<h1>Method</h1>", theory)                       # one Method document (JL 261003)
             only = render_theory_embed(snap, "papers", ["papers"])                 # Guide › Related Paper
             self.assertNotIn('<div class=views>', only)                              # one view, no view bar
             self.assertIn('<div class="view on" data-view="papers">', only)
             self.assertNotIn('data-view="methods"', only)
-            self.assertIn("1 · The design problem: abduction", theory)
+            self.assertIn("5.1 · Design makes a situation better", theory)
             self.assertIn("haipipe-explain-height", theory)                  # it tells its Guide frame its height
             static = render_design_board(design_board_snapshot(board, Path(td), static=True))
             self.assertNotIn("New Design Folder", static)
@@ -191,8 +191,8 @@ class DesignBoardSnapshotTest(unittest.TestCase):
         description = guide_html("design", "description", context, embedded=True)
         self.assertIn("one task done by one design method", description)
         method = guide_html("design", "method", context, embedded=True)
-        self.assertLess(method.index("Set the Design Task"), method.index('class="wg-explain-frame"'))   # steps first
-        self.assertLess(method.index("Pick the method"), method.index("Run the Exp"))
+        self.assertNotIn("Set the Design Task", method)          # the page carries the steps (JL 261003: "merge")
+        self.assertIn('class="wg-explain-frame"', method)
         self.assertIn('src="/_board/design-board?embed=theory&amp;view=method&amp;views=method'
                       '&amp;path=%2FDemo%2Fboard.md"', method)
         self.assertNotIn("Design methods", method)
@@ -217,9 +217,13 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             one = theory_page(board, Path(td), view="method", only=["method"])        # Guide's one page
             plain = theory_page(board, Path(td))                                        # Method only when asked
         self.assertNotIn("class=views", one)
-        self.assertIn("1 · The design problem: abduction", one)
-        self.assertIn("10 · Thirteen methods", one)
-        self.assertIn("The methods drawing", one)
+        for part in ("<details class=sec-fold><summary><strong>1 · The six steps</strong>",   # each part folds,
+                     "<details class=sec-fold><summary><strong>2 · Step 2 in depth: pick the method</strong>",  # all closed at first
+                     "<h3>2.2 · Which method when</h3>", "3 · Step 3 in depth: what a design records",
+                     "4 · Steps 4 and 6 in depth", "<summary><strong>5 · Why it works</strong>",
+                     "<details class=sec-fold><summary><strong>Reference</strong>"):
+            self.assertIn(part, one)                                    # the six steps as the spine (JL 261003)
+        self.assertLess(one.index("<summary><strong>Method design</strong>"), one.index("1 · The six steps"))   # the drawing card first
         self.assertNotIn('data-view="method"', plain)
 
     def test_theory_space_has_three_views_and_papers_read_the_workbench_table(self):
@@ -242,9 +246,9 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           '<button type=button data-view="papers">Papers</button>',
                           '<div class="view on" data-view="design-theory">', "No related paper yet"):
                 self.assertIn(label, theory)
-            self.assertIn("10 · Thirteen methods", theory)               # JL 261003: the cards follow the theory
-            self.assertIn("8 · Design elements", theory)                # JL 261002: each element, reasoned or intuitive; now theory
-            self.assertIn("6 · The shared loop: three inputs, Design, Exp", theory)          # JL 261002: requirements + insights → Design → Exp
+            self.assertIn("2.3 · The thirteen method cards", theory)    # JL 261003: step 2 holds the cards
+            self.assertIn("3 · Step 3 in depth: what a design records", theory)   # JL 261002: each element, reasoned or intuitive
+            self.assertIn("R6 · The loop in full", theory)              # JL 261002: requirements + insights → Design → Exp
             self.assertIn("<span class=when>in the Exp</span>", theory)
             self.assertIn("<span class=when>in Evaluate</span>", theory)                # JL 261002: the Revise loop
             self.assertIn("The Revise loop (inner)", theory)

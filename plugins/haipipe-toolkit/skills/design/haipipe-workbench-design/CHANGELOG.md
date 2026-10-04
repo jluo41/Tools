@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.14.20 · 2026-10-03 · Guide › Method built on the six steps (JL 261003)
+
+- JL: "why we still have this? I am thinking to merge this together"; "let's rethink the overall
+  layout". Guide's own step list is off for Design (`explain` placement "only", a new opt-in in
+  workbench_guide.py); the page carries the steps. The page: the picture, 1 The six steps (one
+  table: what happens, where in the workbench, who), 2 Step 2 in depth (families, which method
+  when, the cards), 3 Step 3 in depth (the element record), 4 Steps 4 and 6 in depth (the tests,
+  the evidence), 5 Why it works (Simon, the four reasonings), Reference folded. Nothing cut.
+- Parts are larger than their sub-sections on the page (article.theory h2 18px, h3 14.5px).
+- Every part folds, in Guide's card style (JL 261003: "make each section collapsable"): the
+  drawing card "Method design" and 1 The six steps open, the rest closed.
+- The methods drawing adds a row for the four kinds of reasoning (what each knows and finds, a
+  soup example, where it sits here, its Chinese term) and groups the 13 cards under the three
+  families (Goal Only over two columns, External Insights one, Internal Insights three).
+
+## 0.14.19 · 2026-10-03 · Guide › Method in five parts, one document (JL 261003)
+
+- JL: "the structure of the method is not smooth"; "I want A to E, could you make the E to be
+  the references?"; "we still need to have the draw". Guide › Method is the six steps, the
+  methods drawing (at the top, redrawn: no "Design methods" title, Design Task), then one
+  document, `ref/design-method.md`: A What design is · B The design methods · C How a design is
+  checked · D In the workbench · E Reference, folded. It replaces `design-theory.md` and
+  `design-methods.md`; nothing was dropped, the reference material moved into E.
+- Three families, by where the rule comes from: Goal Only (By goal, By principle, By
+  exploring, By slots), External Insights (By theory, By implementation), Internal Insights
+  (the other seven). By theory and insight carries `also: External Insights` and shows in
+  both board Views. B2 is a which-method-when guide.
+- Plain explanations: Simon's sentence in plain words, the reasonings as sums, messages and
+  soup diagrams with Chinese terms; terms and people with verified links; web links render.
+- The Method page builds no board snapshot and only the views it shows (6.6 s to 0.05 s).
+
 ## 0.14.18 · 2026-10-03 · Design Task, with four views; one look for tabs and boxes (JL 261003)
 
 - The page's Spaces are Design Task · Design Item · Delivery (no "Space" on the tab, as the

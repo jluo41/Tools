@@ -1,5 +1,14 @@
 # haipipe-insight · version history
 
+## 2.8.1 · 2026-10-03 · report.md names both layouts
+
+- `ref/report.md` opens by naming the Prototype layout (one page per question, a section per partition, `runs/<partition>.sh`) beside the register board's, which it goes on to describe; before, a writer reading only it would make one page per partition.
+
+## 2.8.0 · 2026-10-03 · The Prototype is the Block, with its studio (JL 261003)
+
+- `ref/prototype-contract.md`: the Prototype carries the Block's `studio/`, no longer optional; an Instance shows its Prototype's.
+- New `ref/question_map.py <Prototype>`: writes `studio/question-map.excalidraw` from the question files, one frame per rung, one box per live question, one arrow per reuse (`cite` need), a dashed box for a question linked to no other; retired questions counted on the frame. Generated: rerun after a question changes, never edit it.
+
 ## 2.7.1 · 2026-10-02 · An Instance may keep studio/ (JL 261002)
 
 - `ref/prototype-contract.md`: the Instance tree names the optional `studio/`, the board's own drawings shown in the workbench's Insight › Studio.

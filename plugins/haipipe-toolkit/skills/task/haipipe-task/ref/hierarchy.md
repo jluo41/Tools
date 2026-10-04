@@ -43,7 +43,7 @@ tasks/bNN_<block>/
 ```
 
 A Block contains Jobs and documentation, including its Question Report Pages
-(`ref/block-questions.md`). A report may have Page-owned writing/evidence Runs
+(`haipipe-question` (`skills/question/haipipe-question/ref/block-questions.md`)). A report may have Page-owned writing/evidence Runs
 inside its own Folder; it is not a `tNN` Task and gets no BJTR execution address.
 The Block root has no code, config, Ticket, Result, notebook, or batch lane.
 The tree owns executable Board membership and default
@@ -73,7 +73,18 @@ b21 to b29   evaluation   fairness, calibration, external validation of a model
 b31 to b39   endpoint     inference Fns, Endpoint_Set packaging, deployment
 b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies,
                           and DIKW question-answering Blocks for InsightBoards
+b61 to b69   labeling     one Block per labeling schema (subjective-label);
+                          one Job per corpus role, one Task per corpus
 ```
+
+- **A labeling Block (JL 261003)** is one labeling schema: `b6N_<schema>/` holds
+  `board.md`, `schema.yaml` (the question, the labels and their meanings, by version)
+  and the Block's `reports/`. Its Jobs group corpora by role, `j01_building_corpus` (the one
+  corpus the meaning is taught on) and `j02_scanning_corpora` (corpora labeled under the frozen
+  guideline); each Task Folder is one corpus Page (`task-type: labeling`), whose
+  `labeling/` lane, engine Runs (`run-labeling-*`) and Results are the subjective-label
+  engine's. Turning a raw corpus into transcripts is ordinary data work in `b00` (raw,
+  read-only profiling) and `b01` (source), one Job per corpus.
 
 - **A DIKW Block (JL 261001)** holds the code InsightBoards run:
   `b5N_<topic>_dikw/`, Jobs grouped by DIKW level so the work reads in the same

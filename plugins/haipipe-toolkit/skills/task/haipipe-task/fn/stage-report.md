@@ -25,6 +25,6 @@ If execution was manual or is still pending, say so and identify the missing rec
 ## Question Report routing
 
 This file owns P-B-E-R execution reporting. A request to write the answer to
-a Block Question uses `ref/block-questions.md` and the report's `haipipe-page`
+a Block Question uses `haipipe-question` (`skills/question/haipipe-question/ref/block-questions.md`) and the report's `haipipe-page`
 workflow at `reports/qNN_<topic>/`; it does not run this stage merely because
 the interface calls the answer a Report.

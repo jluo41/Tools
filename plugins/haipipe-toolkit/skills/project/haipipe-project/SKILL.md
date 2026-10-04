@@ -9,8 +9,8 @@ description: >-
   migrations. Child-world internals remain owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-10-01"
+  version: "0.6.0"
+  last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,7 +30,7 @@ examples/ProjNN-<domain>-<purpose>/
 ├── discoveries/    optional/lazy · external-evidence bank
 ├── diagram/        optional/lazy · story, Boards, and meetings
 ├── papers/         optional/lazy · academic consumers
-├── insights/       optional/lazy · one InsightBoard per dataset
+├── insights/       optional/lazy · Insight Prototypes (Blocks) and Instances
 ├── designs/        optional/lazy · Design boards and folders
 └── external/       optional/lazy · pinned, read-only upstream material
 ```
@@ -83,16 +83,36 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 tasks/          → haipipe-task       BJTR execution; Task = Page; Run = identity
 discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 papers/         → haipipe-paper      academic consumer
-insights/       → haipipe-insight    <Dataset>-InsightBoard/, one per extract
+insights/       → haipipe-insight    Prototype-Insight-<Topic>/ + Instance-Insight-<Dataset>/
 designs/        → haipipe-design     Design boards and Design Folders
 diagram/        → haipipe-board / haipipe-page plus Project story surfaces
 external/       → this skill owns only the read-only root boundary
 ```
 
 Insight and Design are peer worlds (JL 261001: "no more applications"). An
-InsightBoard reads one dataset and keeps its questions, reports and light run
-results inside its `insights/<Dataset>-InsightBoard/` folder; the code it runs
-stays in `tasks/`. A Design board reads a signed Insight handoff. `applications/`
+Insight topic is two boards (JL 261003). The Prototype is Block level: the
+design, its partitions, one folder per question with its own script, and the
+Block's `studio/`, holding no data. An Instance reads one dataset through one
+Prototype and keeps the script copies, runs, results and answering pages. A new
+dataset is a new Instance of the same Prototype.
+
+```text
+insights/
+├── Prototype-Insight-<Topic>/      the Block: the design, no data
+│   ├── board.md                    board-kind: insight-prototype
+│   ├── 0-Meta/                     meta.md · partitions.md · thresholds.yaml
+│   ├── 1-Data/ … 4-Wisdom/         one folder per question: its file and scripts/
+│   └── studio/                     the Block's studio: question-map.excalidraw
+│                                   (generated) and hand sketches
+├── Instance-Insight-<Dataset>/     one extract read through one Prototype:
+│                                   script copies, runs, results, the pages
+└── <Dataset>-InsightBoard/         older register-kind board, until carried over
+```
+
+The internals (question file, run, sync between the two boards) belong to
+`haipipe-insight` (`ref/prototype-contract.md`). An older register-kind board,
+`<Dataset>-InsightBoard/`, keeps its layout and runs its code from `tasks/`. A
+Design board reads a signed Insight handoff. `applications/`
 is legacy: old boards move to `insights/_old/` and `designs/_old/`. Task-side
 consumer-neutral Insight Pages still live on their Task Board. `results/` is
 never a canonical Project-root directory.

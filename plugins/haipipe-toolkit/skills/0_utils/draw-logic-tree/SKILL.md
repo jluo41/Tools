@@ -1,21 +1,22 @@
 ---
 name: draw-logic-tree
 description: >-
-  Draw, revise or check the logic of one Page as a top-down tree on its RoadMap canvas:
-  the claim on top, each box splitting into the reasons it rests on, the Page's Bullets as
-  leaves on one shared row, colored by their evidence. The drawing is the source of the
+  Draw, revise or check the logic of one Page as a tree read left to right on its RoadMap
+  canvas: the claim at the left, each box splitting into the reasons it rests on, the
+  Page's Bullets as leaves, each its own row in one column with room to write beside it,
+  colored by their evidence. The drawing is the source of the
   logic (the person edits it on the canvas); this skill writes its first version, revises
   only what is asked, and checks an edited drawing against the rules. Use for a Section's
   argument map, Draft › RoadMap Draw, "draw the logic", "make the logic clear", logic tree,
   argument tree, claim and reasons, /draw-logic-tree.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.0"
+  version: "0.4.0"
   last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md
 ---
 
-# /draw-logic-tree · claim → reasons → Bullets, top to bottom
+# /draw-logic-tree · claim → reasons → Bullets, left to right
 
 A **logic tree** shows why a Page's claim holds, so that reading the boxes alone tells
 what the Page argues (JL 261003: "concise and high level, after reading the structure of
@@ -25,15 +26,16 @@ Draft › RoadMap Draw shows on an editable canvas (JL 261003: "the logic just g
 roadmap draw").
 
 ```text
-              One price, the opt-out, settles which message to send · B8      ← the claim
-        ┌──────────────────────┼─────────────────────────┐
-  Why a rule is needed   How messages are measured   What decides the choice  ← reasons
-     ┌─────┴─────┐                 │                      │
- The firm's goal  Goal unseen      │                 Why it happens          ← parts
-   ┌──┴──┐          │          ┌───┴───┐        │      ┌──┴──┐
-  B1    B2         B3         B4      B5       B7     B9    B10              ← Bullets, one row
-                                       │
-                                      B6                                     ← a Bullet under a Bullet
+claim         reasons          parts              Bullets, each its own row    room to write
+                             ┌ The firm's goal ──┬ B1 · Setting           │
+            ┌ Why a rule ────┤                   └ B2 · Objective         │
+            │  is needed     └ Goal unseen ─────── B3 · Measurement gap   │
+One price,  ├ How messages ──────────────────────┬ B4 · Design            │
+the opt-out │  are measured                      └ B5 · Method            │
+settles…·B8 │                                       └ B6 · Precision      │  ← under the
+            └ What decides ──────────────────────┬ B7 · Frontier          │    Bullet it
+               the choice    └ Why it happens ───┼ B9 · Mechanism         │    supports
+                                                 └ B10 · Cost             │
 ```
 
 
@@ -47,12 +49,23 @@ Rules
    name.
 3. **Every Bullet is a box.** A Bullet leaf shows `B<n> · <role>` and the gist of its
    sentence; a claim box may name its Bullet instead.
-4. **Bullets start on one row.** The Bullets that hang from a reason share one row, just
-   under the deepest reason; a Bullet that supports another Bullet sits one row below it
-   (JL 261003: "make the Bullet point to be in the same start in the same level").
-5. **Evidence is the outline, not more boxes.** A Bullet whose Evidence Items are all
-   verified, or that needs none, is solid green; one still waiting is dashed orange; the
-   items stay in the Evidence Space. Reasons and the claim are blue.
+4. **Each Bullet is a row, in one column.** Left to right is the default (JL 261003: "where
+   is the left to right? and each bullet to be a row"): the claim at the left, every first
+   Bullet in one shared column at the right, read top to bottom in
+   the Section's order, and a supporting Bullet below it, stepped in, so nothing sits right
+   of the column and that space stays free for writing each point's content (JL 261003:
+   "from left to right… this might be better", "I want to write the content in the right
+   side of each point"). A Bullet's box is wide there, so its
+   sentence reads in full.
+   Drawn top down (`--direction tb`), the same rule turns: the Bullets share one row under
+   the deepest reason, and a supporting Bullet sits one row below it.
+5. **Evidence is a card on the Bullet's row.** Right of the Bullets come two columns (JL
+   261003, sketched on the Abstract's canvas): **Text**, left empty for the person to write
+   each point's content, then **Evidence**, one card per Evidence Item on its Bullet's row
+   (`E<nn> · VALUE|CITE|DISPLAY · label`, what it needs, where it comes from). A card is
+   solid green once verified, dashed orange while waiting, and so is its Bullet's outline.
+   A claim that names a Bullet carries that Bullet's cards under the claim. Reasons and the
+   claim are blue.
 6. **Studio style.** Transparent boxes, colored strokes, every label bound inside its box,
    every connector bound at both ends, Comic Shanns (`haipipe-workbench-studio/ref/draw.md`).
    Connectors run down from the parent and across just above the child's row.
@@ -98,6 +111,33 @@ Without `--logic` the script draws a plain tree of the plan's paragraphs and Bul
 starting point when the logic is not yet clear.
 
 
+Refresh the evidence cards
+--------------------------
+
+The cards come from the Page's Evidence Items (`draft/<stem>-evidence-items.md`); when an
+item is bound or verified, redraw only them. `--cards` replaces every element whose id
+starts `ev-` and leaves the person's boxes, moves and Text column exactly as they are:
+
+```bash
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/ref/draw_logic_tree.py <page.md> --cards
+```
+
+
+Turn a drawing on its side
+--------------------------
+
+The person's drawing holds the logic, so a new direction is drawn from it, not from an old
+outline: `--from-scene` reads the boxes and connectors of the current RoadMap (siblings in
+the order the person placed them) and redraws that logic. Draw a preview beside it first;
+the RoadMap itself is replaced only when the person picks the new direction.
+
+```bash
+D=Tools/plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/ref/draw_logic_tree.py
+.venv/bin/python $D <page.md> --from-scene --direction lr --out <page folder>/studio/<stem>-roadmap-lr-preview.excalidraw
+.venv/bin/python $D <page.md> --from-scene --direction lr --force     # only when the person says so
+```
+
+
 Check a drawing
 ---------------
 
@@ -105,8 +145,9 @@ Check a drawing
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/ref/draw_logic_tree.py <page.md> --check-scene
 ```
 
-It fails on a plan Bullet that no box names, Bullets under a reason that do not share a
-row, a Bullet that does not sit below the Bullet it supports, a filled shape, and a
+It fails on a plan Bullet that no box names, an Evidence Item with no card, Bullets under a reason that do not share a
+row (a column, when the drawing runs left to right), a Bullet that does not sit below the
+Bullet it supports, a filled shape, and a
 connector not bound at both ends. Run it after the person edits the canvas and before a
 release that cites the logic.
 

@@ -469,6 +469,18 @@ def is_labeling_run_page(page_src: Path) -> bool:
     return bool(re.search(r"(?m)^page-type:\s*labeling\s*$", head))
 
 
+def is_labeling_corpus_page(page_src: Path) -> bool:
+    """A Page meant to hold one labeling job before it has one: an `S-Label-*` Page, or a
+    Task Page of a labeling Block (`task-type: labeling` or `page-type: labeling`)."""
+    if page_src.name.startswith("S-Label-") and page_src.name != "S-Label-Dash.md":
+        return True
+    try:
+        head = page_src.read_text(encoding="utf-8", errors="ignore")[:4096]
+    except OSError:
+        return False
+    return bool(re.search(r"(?m)^(task-type|page-type):\s*labeling\s*$", head))
+
+
 def is_labeling_surface_page(page_src: Path) -> bool:
     """True for every real Page that can own an optional labeling/ lane.
 
@@ -1111,6 +1123,77 @@ def _corpus_view_module():
     return module
 
 
+def _corpus_source(vm: dict) -> dict:
+    config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    packaged = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
+    described = corpus.get("source") if isinstance(corpus.get("source"), dict) else {}
+    return {**packaged, **{k: v for k, v in described.items() if v}}
+
+
+def _code_popup(vm: dict) -> str:
+    """The script that made the items, read-only in a pop-out: `corpus.source.code` names it,
+    relative to the SPACE root (the nearest folder above the job holding env.sh)."""
+    rel = str(_corpus_source(vm).get("code") or "").strip()
+    if not rel or rel.startswith("/") or ".." in Path(rel).parts or Path(rel).suffix not in {".py", ".yaml", ".sh", ".md"}:
+        return ""
+    space = next((p for p in Path(vm["root"]).parents if (p / "env.sh").is_file()), None)
+    path = space / rel if space else None
+    if path is None or not path.is_file():
+        return f' <span class=mut>· code: <code>{_esc(rel)}</code> (not found on this host)</span>'
+    try:
+        text = path.read_text(encoding="utf-8")[:200_000]
+    except OSError:
+        return ""
+    return (f' <button type=button class="pill tog" data-code-open>View code</button>'
+            f'<dialog class=codepop data-code-dialog><header><code>{_esc(rel)}</code>'
+            f'<button type=button class="pill tog" data-code-close>Close</button></header>'
+            f'<pre><code>{_esc(text)}</code></pre></dialog>')
+
+
+def _data_card(vm: dict) -> str:
+    """What data this job labels, said first: the dataset, what it is, one item, its size,
+    any ground truth kept apart, and the Run that made it. A missing fact says what to add."""
+    config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    source = _corpus_source(vm)
+    name = _esc(source.get("name") or "")
+    if name and source.get("uri"):
+        name = f'<a href="{_esc(source["uri"])}" target=_blank rel=noopener>{name}</a>'
+    name = " · ".join(x for x in (name, _esc(source.get("version") or ""), _esc(source.get("license") or "")) if x)
+    population = manifest.get("population")
+    pop = population if isinstance(population, dict) else {}
+    unit = (corpus.get("population") or pop.get("definition")
+            or (population if isinstance(population, str) else ""))
+    n_dev = manifest.get("n_eligible", manifest.get("n_items"))
+    if not isinstance(n_dev, int):   # the package does not say: count the items file
+        items = vm["root"] / (manifest.get("items_file") or "corpus/items.jsonl")
+        try:
+            stat = items.stat()
+            n_dev = _corpus_shape(str(items), stat.st_mtime_ns, stat.st_size,
+                                  manifest.get("text_field") or corpus.get("text_field") or "text",
+                                  manifest.get("context_field") or corpus.get("context_field") or "").get("n")
+        except OSError:
+            n_dev = None
+    n_sealed = manifest.get("n_sealed", (vm.get("sealed") or {}).get("n_items"))
+    size = " · ".join(x for x in (
+        f"{n_dev:,} to label" if isinstance(n_dev, int) else "",
+        f"{n_sealed:,} held back for the test, never shown" if isinstance(n_sealed, int) and n_sealed else "") if x)
+    missing = lambda key, what: (f'<span class=warn>not described yet</span> <span class=mut>· add '
+                                 f'<code>corpus.source.{key}</code> ({what})</span>')
+    rows = [
+        _row("dataset", name or missing("name", "its name, link and license")),
+        _row("what it is", _esc(source.get("description") or "") or missing("description", "one sentence: whose text, how much, from where")),
+        _row("one item", _esc(unit)) if unit else "",
+        _row("size", _esc(size)) if size else "",
+        _row("ground truth", _esc(source.get("ground_truth"))
+             + ' <span class=mut>· kept apart, never shown while you label</span>') if source.get("ground_truth") else "",
+        _row("made by", _esc(source.get("made_by")) + _code_popup(vm)) if source.get("made_by") else "",
+        _row("stored at", f'<code>{_esc(source.get("store"))}</code>') if source.get("store") else "",
+    ]
+    return _card("The data", "".join(rows))
+
+
 def _raw_corpus_card(vm: dict) -> str:
     """The raw source as a folder, and which raw column became which item field; no row values."""
     config, manifest = vm.get("config") or {}, vm.get("manifest") or {}
@@ -1129,7 +1212,7 @@ def _raw_corpus_card(vm: dict) -> str:
     except (OSError, ValueError) as error:
         return _card("Raw corpus", _row("source", name) + f'<p class=warn>{_esc(error)}</p>')
     if not raw:
-        return _card("Raw corpus", _row("source", name) + _row("folder", "not recorded"))
+        return ""   # no raw-folder record: "The data" above already names the dataset
     folder = _row("folder", f'<code>{_esc(raw["folder"])}/</code>'
                   + ("" if raw["found"] else ' <span class=warn>not found on this machine</span>'))
     file_rows = []
@@ -1150,7 +1233,6 @@ def _raw_corpus_card(vm: dict) -> str:
         for col, field in used.items())
     others = [c for c in main.get("columns") or [] if c not in used]
     rows = [
-        _row("source", name) if name else "",
         folder,
         files_table,
         _row("one row is", _esc(raw["one_row_is"])) if raw["one_row_is"] else "",
@@ -1196,18 +1278,59 @@ def _items_card(vm: dict) -> str:
     table = ""
     if shape.get("n") and not (vm.get("state") or {}).get("authority_hold"):
         table = ('<div class=actions><button type=button class=primary data-items-show>Show items</button></div>'
-                 '<div class=scroll data-items-box hidden><table class="items itemtable"><thead><tr><th>Item</th>'
-                 '<th>The conversation, then the reply to label</th></tr></thead>'
-                 '<tbody data-items-rows></tbody></table></div><div data-items-more></div>')
+                 '<div data-items-box hidden><div class=itemfilter data-items-filter></div><div data-items-note></div>'
+                 '<div class=scroll><table class="items itemgrid"><thead><tr><th>Item id</th><th>Item text</th>'
+                 '<th>State</th></tr></thead>'
+                 '<tbody data-items-rows></tbody></table></div></div><div data-items-more></div>')
     return _card("Items to label", "".join([
-        _row("one item is", _esc(unit)) if unit else "",
-        _row("items", _esc(counts)) if counts else "",
         _row("text", f'<code>{_esc(text_field)}</code> · {_esc(shape["text"])}') if shape.get("text") else "",
         _row("context", context) if context else "",
         _row("kept together", "no encounter is split across the held-back test")
         if pop.get("encounter_straddle_across_seal") == [] else "",
         table,
     ]))
+
+
+_PREP_STEPS = (
+    ("source-normalize", "Read the transcripts", "accept each conversation, set malformed ones aside"),
+    ("unit-recipe", "Choose what one item is", "which reply is labeled, and how much conversation comes with it"),
+    ("unit-materialize", "Make the items", "one item per chosen reply"),
+    ("unit-check", "Check the items", "unique ids, context cut before the reply, nothing missing"),
+    ("initial-group-reserve", "Hold back a test set", "whole conversations set aside, never shown while labeling"),
+)
+
+
+def _items_flow_card(vm: dict) -> str:
+    """For a job made from ready items: corpus → items_transform → items → held back → this job."""
+    manifest = vm.get("manifest") or {}
+    source = _corpus_source(vm)
+    n_dev = manifest.get("n_eligible", manifest.get("n_items"))
+    n_sealed = manifest.get("n_sealed", (vm.get("sealed") or {}).get("n_items"))
+    total = n_dev + n_sealed if isinstance(n_dev, int) and isinstance(n_sealed, int) else None
+    steps = [
+        ("Corpus", source.get("name") or "the dataset"),
+        ("items_transform", source.get("made_by") or "the script that decides what one item is"),
+        ("Items", f"{total:,} items" if total else "one item per unit to label"),
+        ("Hold back a test set", f"{n_sealed:,} items, never shown while you label" if isinstance(n_sealed, int) else ""),
+        ("This job", f"{n_dev:,} items to label" if isinstance(n_dev, int) else ""),
+    ]
+    rows = "".join(f'<li class=done><span class=mark>{"↓" if i else "●"}</span><b>{_esc(a)}</b>'
+                   f'<span class=mut>{_esc(b)}</span></li>' for i, (a, b) in enumerate(steps))
+    return _card("From corpus to items", f'<ol class=prepsteps>{rows}</ol>')
+
+
+def _prep_steps(prep: dict) -> str:
+    """The five Preparation steps and the link, in order: done, next, or not yet."""
+    done = {run.get("operation") for run in prep.get("runs") or [] if run.get("status") == "complete"}
+    linked, rows, next_set = bool(prep.get("linked")), [], False
+    for op, words, what in _PREP_STEPS + (("link", "Link to this job", "the accepted items become this job's corpus"),):
+        ok = linked or op in done
+        cls = "done" if ok else ("next" if not next_set else "todo")
+        next_set = next_set or not ok
+        mark = {"done": "✓", "next": "→", "todo": "·"}[cls]
+        rows.append(f'<li class={cls}><span class=mark>{mark}</span><b>{_esc(words)}</b>'
+                    f'<span class=mut>{_esc(what)}</span></li>')
+    return f'<ol class=prepsteps>{"".join(rows)}</ol>'
 
 
 def _preparation_view(vm: dict) -> str:
@@ -1226,13 +1349,15 @@ def _preparation_view(vm: dict) -> str:
             f'<div class=actions><button type=button class=primary data-copy="{_esc(prompt)}">'
             "Copy Page-folder request</button></div>",
         ]))
-    corpus = _raw_corpus_card(vm) + _items_card(vm) if has_job else ""
+    data = _data_card(vm) if has_job else ""
+    rest = _raw_corpus_card(vm) + _items_card(vm) if has_job else ""
+    corpus = data + rest
     if prep.get("error"):
-        return corpus + _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>')
+        return data + _card("Corpus Preparation", f'<p class=warn>{_esc(prep["error"])}</p>') + rest
     if not prep.get("linked"):
         if not prep.get("attached"):
             if corpus:
-                return corpus
+                return data + _items_flow_card(vm) + rest
             prompt = ("Use /subjective-label-preparation for the Page whose labeling folder is at "
                       f"{_job_where(vm)}. Identify the transcript JSONL and source owner, attach "
                       "that owner to this Page, then work through the five Corpus Preparation "
@@ -1243,25 +1368,27 @@ def _preparation_view(vm: dict) -> str:
                          "Copy setup request</button></div>")
         owner_ref = prep["owner_reference"]
         completed = len({run["operation"] for run in prep["runs"] if run["status"] == "complete"})
-        return corpus + _card("Corpus Preparation", "".join([
-            _row("source", f'<code>{_esc(owner_ref["source_id"])}</code>'),
-            _row("owner", f'<code>{_esc(owner_ref["owner"])}</code>'),
-            _row("Run Types finished", _esc(f"{completed} of 5")),
+        return data + _card("Corpus Preparation", "".join([
+            _prep_steps(prep),
             _row("next", _esc(_next_step(vm)[0])),
-        ]))
+            f'<details class=ctx><summary>ids · {completed} of 5 steps done</summary>'
+            + _row("source", f'<code>{_esc(owner_ref["source_id"])}</code>')
+            + _row("owner", f'<code>{_esc(owner_ref["owner"])}</code>') + '</details>',
+        ])) + rest
     receipt = prep["receipt"]
     ref = prep["reference"]
     rows = [
-        _row("source", f'<code>{_esc(receipt["snapshot_id"])}</code>'),
-        _row("recipe", f'<code>{_esc(receipt["recipe_id"])}</code>'),
-        _row("item set", f'<code>{_esc(receipt["item_set_id"])}</code>'),
-        _row("partition", f'<code>{_esc(receipt["partition_id"])}</code>'),
-        _row("development", _esc(receipt["n_eligible"])),
-        _row("held back", _esc(receipt["n_sealed"])),
-        _row("status", '<span class=ok>accepted · whole source groups kept together</span>'),
-        _row("owner", f'<code>{_esc(ref["owner"])}</code>'),
+        _prep_steps(prep),
+        _row("result", f'<span class=ok>accepted</span> · {_esc(receipt["n_eligible"])} items to label · '
+             f'{_esc(receipt["n_sealed"])} held back · whole conversations kept together'),
+        '<details class=ctx><summary>ids</summary>'
+        + _row("source", f'<code>{_esc(receipt["snapshot_id"])}</code>')
+        + _row("recipe", f'<code>{_esc(receipt["recipe_id"])}</code>')
+        + _row("item set", f'<code>{_esc(receipt["item_set_id"])}</code>')
+        + _row("partition", f'<code>{_esc(receipt["partition_id"])}</code>')
+        + _row("owner", f'<code>{_esc(ref["owner"])}</code>') + '</details>',
     ]
-    return corpus + _card("Corpus Preparation", "".join(rows))
+    return data + _card("Corpus Preparation", "".join(rows)) + rest
 
 
 def _meaning_gate(vm: dict) -> str:
@@ -2909,7 +3036,7 @@ def _view_steps(vm: dict, sid: str, vid: str) -> str:
     rows = []
     # A job set up from an already-fenced source never acquires source-owned Preparation Runs.
     legacy_prep = (vm["root"] / "config.yaml").is_file() and not (vm.get("preparation") or {}).get("attached")
-    if (sid, vid) == ("data", "preparation"):
+    if (sid, vid) == ("data", "preparation") and not legacy_prep:
         headers, cells = _md_table(text, "Corpus Preparation Run Types")
         col = {h.lower(): i for i, h in enumerate(headers)}
         for row in cells:
@@ -3350,6 +3477,28 @@ table.items.itemtable td.itemread>*{max-width:none}
  background:color-mix(in srgb,var(--acc) 7%,var(--card));border-radius:0 8px 8px 0;font-size:15px;line-height:1.55}
 .itemreply b{font:600 11px/1.9 system-ui,sans-serif;color:var(--acc);text-transform:uppercase;letter-spacing:.04em}
 table.items details.ctx summary{font-size:11.5px;text-transform:none;letter-spacing:0;margin-top:3px}
+.itemfilter{display:flex;gap:6px;margin:10px 0 4px}
+table.itemgrid{width:100%;table-layout:fixed}
+table.items.itemgrid td:nth-child(n)>*,table.items.itemgrid td:nth-child(n){max-width:none}
+table.itemgrid th:nth-child(1){width:8em}table.itemgrid th:nth-child(3){width:10em}
+table.items.itemgrid td:nth-child(n){vertical-align:top;white-space:normal;overflow-wrap:anywhere;font-size:14px;line-height:1.5}
+table.items.itemgrid td .turn{grid-template-columns:4.2em 1fr;font-size:14px}
+table.items.itemgrid .plain{font-size:14px;line-height:1.55;white-space:normal}
+dialog.codepop{width:1100px;max-width:94%;max-height:760px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--card);color:inherit}
+dialog.codepop::backdrop{background:rgba(0,0,0,.35)}
+dialog.codepop header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+dialog.codepop pre{margin:0;padding:12px 14px;overflow:auto;max-height:700px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+table.items.itemgrid details.plainctx>summary{font:400 13px/1.5 inherit;text-transform:none;letter-spacing:0;color:var(--mut);cursor:pointer;margin:0 0 2px}
+table.items.itemgrid details.plainctx .plain{margin:2px 0 6px}
+table.itemgrid td.itemid{white-space:normal}
+ol.prepsteps{list-style:none;margin:2px 0 10px;padding:0}
+ol.prepsteps li{display:grid;grid-template-columns:1.6em 13em 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}
+ol.prepsteps li:last-child{border-bottom:0}
+ol.prepsteps .mark{font-weight:700;text-align:center}
+ol.prepsteps li.done .mark{color:var(--ok)}
+ol.prepsteps li.next .mark,ol.prepsteps li.next b{color:var(--acc)}
+ol.prepsteps li.todo{color:var(--mut)}
+@media(max-width:560px){ol.prepsteps li{grid-template-columns:1.6em 1fr}ol.prepsteps li .mut{grid-column:2}}
 table.items .fb{margin:0 0 3px}
 table.wfmap{font-size:13.5px}
 table.wfmap tr.phaserow td{background:var(--soft);font:700 11.5px/1.4 -apple-system,sans-serif;color:var(--fg);
@@ -3786,30 +3935,49 @@ function act(action,body){
  return fetch('/_board/labeling/act',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
   .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok){throw new Error(j.err||('HTTP '+r.status));}return j;});});
 }
-/* ── Data → Preparation: items to label, a page at a time (each page is an exposure) ── */
+/* ── Data → Preparation: items to label, a page at a time (each page is an exposure) ──
+   One table, one row per item: who it is, its state, what the person said last, the reply to
+   label, and the earlier turns folded. Items drawn into an open round stay out of the table,
+   counted on one line, so they are judged blind in Labeling › Rounds. */
 (function(){var btn=$('[data-items-show]');if(!btn){return;}
- var box=$('[data-items-box]'),rows=$('[data-items-rows]'),more=$('[data-items-more]'),offset=0,k=20;
- function turns(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).map(function(l){
-  var m=l.match(/^([A-Za-z][A-Za-z_ ]{0,20}):\s?(.*)$/),who=m?m[1]:'',body=m?m[2]:l;
-  if(/^(lamda|assistant|bot|chatbot|ai|model|gpt|claude)$/i.test(who.trim())){who='AI';}
-  return '<div class=turn>'+(who?'<b>'+esc(who)+'</b>':'')+'<span>'+esc(body)+'</span></div>';}).join('');}
- function nTurns(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).length;}
- function row(it){var waiting=/^waiting in /.test(it.state);
-  var state=waiting?it.state.replace(/^waiting in (\S+)$/,function(_,r){return 'in '+roundWords(r);}):
-   it.state.replace(/^labeled in (\S+)$/,function(_,r){return 'labeled in '+roundWords(r);});
-  /* one item, read whole: the earlier turns, then the reply to label */
-  return '<tr><td class=itemid>item '+esc(it.item_id)+'<br><span class="pill'+(it.state==='to label'?'':' mut')+'">'+esc(state)+'</span></td>'+
-   '<td class=itemread>'+(waiting?'<p class=mut>Drawn into an open round: you see it first in Labeling › Rounds, so you judge it blind.</p>':
-    (it.context?'<div class=itemconvo>'+turns(it.context)+'</div>':'')+
-    '<div class=itemreply><b>Reply to label</b><span>'+esc(it.text)+'</span></div>')+'</td></tr>';}
+ var box=$('[data-items-box]'),rows=$('[data-items-rows]'),note=$('[data-items-note]'),bar=$('[data-items-filter]'),
+  more=$('[data-items-more]'),offset=0,k=20,all=[],filter='all';
+ function speaker(w){w=String(w||'').trim();if(/^(lamda|assistant|bot|chatbot|ai|model|gpt|claude)$/i.test(w)){return 'AI';}
+  if(/^user$/i.test(w)){return 'Person';}return w?w.charAt(0).toUpperCase()+w.slice(1):'';}
+ function split(c){return String(c||'').split('\n').filter(function(l){return l.trim();}).map(function(l){
+  var m=l.match(/^([A-Za-z][A-Za-z_ ]{0,20}):\s?(.*)$/);return m?{who:speaker(m[1]),text:m[2]}:{who:'',text:l};});}
+ function shown(it){return !/^waiting in /.test(it.state);}
+ function keep(it){return shown(it)&&(filter==='all'||(filter==='to label'?it.state==='to label':it.state!=='to label'));}
+ function stateWords(s){return s.replace(/^labeled in (\S+)$/,function(_,r){return 'labeled in '+roundWords(r);});}
+ /* the whole item as plain text: the context before it (folded), Main, the context after it (folded) */
+ function lines(c){return String(c||'').split('\n').filter(function(l){return l.trim();});}
+ function fold(name,c){var ls=lines(c);if(!ls.length){return '';}
+  return '<details class=plainctx><summary>'+name+' · '+ls.length+(ls.length===1?' line':' lines')+'</summary><div class=plain>'+
+   ls.map(esc).join('<br>')+'</div></details>';}
+ function row(it){var body=fold('Before context',it.context)+'<div class=plain>Main: '+esc(it.text)+'</div>'+fold('After context',it.after);
+  return '<tr><td class=itemid>'+esc(it.item_id)+'</td><td>'+body+'</td>'+
+   '<td><span class="pill'+(it.state==='to label'?'':' mut')+'">'+esc(stateWords(it.state))+'</span></td></tr>';}
+ function render(){var hidden=all.filter(function(it){return !shown(it);}).length,n={'all':0,'to label':0,'labeled':0};
+  all.filter(shown).forEach(function(it){n.all++;n[it.state==='to label'?'to label':'labeled']++;});
+  note.innerHTML=hidden?'<p class=mut>'+hidden+(hidden===1?' item is':' items are')+' in an open round and '+(hidden===1?'is':'are')+
+   ' left out of this table: you see '+(hidden===1?'it':'them')+' first in Labeling › Rounds and judge blind.</p>':'';
+  bar.innerHTML=['all','to label','labeled'].map(function(f){return '<button type=button class="pill tog'+(f===filter?' on':'')+'" data-f="'+f+'">'+f+' · '+n[f]+'</button>';}).join('');
+  var picked=all.filter(keep);
+  rows.innerHTML=picked.length?picked.map(row).join(''):'<tr><td colspan=3 class=mut>No item matches.</td></tr>';}
+ bar.addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(b){filter=b.getAttribute('data-f');render();}});
  function load(){btn.disabled=true;var m=$('button',more);if(m){m.disabled=true;m.textContent='Loading…';}
   act('item_page',{offset:offset,k:k}).then(function(j){var r=j.result;box.hidden=false;btn.hidden=true;
-   rows.insertAdjacentHTML('beforeend',r.items.map(row).join(''));offset+=r.items.length;
-   more.innerHTML=r.more?'<button type=button class="pill tog">Show '+Math.min(k,r.total-offset)+' more ('+offset+' of '+r.total+' shown)</button>':
+   all=all.concat(r.items);offset+=r.items.length;render();
+   more.innerHTML=r.more?'<button type=button class="pill tog">Show '+Math.min(k,r.total-offset)+' more ('+offset+' of '+r.total+' items)</button>':
     '<p class=mut>All '+r.total+' items shown.</p>';
    var b=$('button',more);if(b){b.addEventListener('click',load);}})
   .catch(function(e){btn.disabled=false;more.innerHTML='<p class=warn>'+esc(e.message)+'</p>';});}
  btn.addEventListener('click',load);})();
+/* ── The data: the script that made the items, read-only in a pop-out ── */
+(function(){var o=$('[data-code-open]'),d=$('[data-code-dialog]');if(!o||!d){return;}
+ o.addEventListener('click',function(){d.showModal();});
+ $('[data-code-close]',d).addEventListener('click',function(){d.close();});
+ d.addEventListener('click',function(e){if(e.target===d){d.close();}});})();
 /* ── G0: confirm meaning ─────────────────────────────────── */
 var attest=$('[data-confirm-attest]'),confirmBtn=$('[data-confirm-meaning]'),confirmMsg=$('[data-confirm-msg]');
 if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.disabled=!attest.checked;});
@@ -3968,7 +4136,7 @@ def board_jobs(board_dir: Path, path_q: str, probe: bool = False) -> dict:
         if (not (lane / "config.yaml").is_file()
                 and not (lane / "preparation-ref.yaml").is_file()
                 and not (lane / "preparation-owner.yaml").is_file()):
-            if page_src.name.startswith("S-Label-"):
+            if is_labeling_corpus_page(page_src):
                 labeling_url, _ = _job_urls(path_q, page)
                 candidate = _page_folder_candidate(page_src)
                 ready = candidate.is_file() and not candidate.is_symlink()

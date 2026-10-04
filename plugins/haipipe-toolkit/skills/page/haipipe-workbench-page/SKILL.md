@@ -14,7 +14,7 @@ description: >-
   file, record shape, evidence bundle, delivery tab, folder tab, stale
   workbench, /haipipe-workbench-page.
 metadata:
-  version: "0.95.0"
+  version: "0.98.0"
   last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -56,7 +56,9 @@ folded=True)`; a person's own fold or open is remembered). The shell's colors an
 sizes are the Insight workbench's, kept once in `space_views.SPACE_CSS`, which Page and
 Paper share. Guide reads the `page` entry of `workbench-shared/guide_families.py`:
 `description`, the Workbench Table `ref/workbench-table.md`, the papers
-`ref/page-papers.md` (`table-papers`), and RoadMap Draw's **Workbench design**,
+`ref/page-papers.md` (`table-papers`),
+Method's page `ref/page-method.md` with its cards in `ref/methods/` and its editable
+methods canvas `ref/page-methods.excalidraw` (the canvas is the source), and RoadMap Draw's **Workbench design**,
 `servers/workbench-page/studio/page-workbench-design.excalidraw`, the design authority
 below (hand-made; Part 0 is the shared shell).
 
@@ -165,11 +167,12 @@ and section each view reads is its tooltip); the Structure card shows in Table o
    short Summary and is the close (`results/`, one log line). It never edits
    Draft prose.
 6. **RoadMap Draw**: the Section's logic as a tree (JL 261003: "the logic just go to the
-   roadmap draw"), on an editable canvas at a fixed 640px height: the claim on top, each
-   box splitting into the reasons it rests on, the Bullets as leaves (role and gist;
-   solid green when their Evidence Items are verified, dashed orange while one waits).
-   Every Bullet starts on one shared row; a Bullet that supports another sits one row
-   below it (JL 261003).
+   roadmap draw"), on an editable canvas at a fixed 640px height, read left to right: the
+   claim at the left, each box splitting into the reasons it rests on, the Bullets as
+   leaves (role and gist; solid green when their Evidence Items are verified, dashed
+   orange while one waits). Each Bullet is its own row in one column, a Bullet that
+   supports another just under it, stepped in, and the space right of the column stays
+   free for writing (JL 261003).
    The drawing `studio/<stem>-roadmap.excalidraw` is the source of the logic: an agent
    draws its first version (Runs › Draw the logic; skill `0_utils/draw-logic-tree`, which
    owns the tree's rules and its `--check-scene`), then the person edits it here and every

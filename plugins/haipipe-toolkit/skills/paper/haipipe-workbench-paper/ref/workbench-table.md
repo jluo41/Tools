@@ -19,7 +19,7 @@ planned but not built yet.
 | Level | Space | View | Run type | Agent | Skill | Person signs |
 |---|---|---|---|---|---|---|
 | board | Guide | Description | none | none | none | none |
-| board | Guide | Method | none | none | none | none |
+| board | Guide | Method | Add a method | haipipe-page-writing-agent | haipipe-workbench-paper | none |
 | board | Guide | RoadMap Draw | Redraw the Workbench design | haipipe-studio-agent (new) | haipipe-workbench-paper | none |
 | board | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
 | board | Ideation | Ideas | Generate ideas | haipipe-ideation-agent (new) | haipipe-ideation-generate | none |
@@ -30,6 +30,8 @@ planned but not built yet.
 | board | Story | RoadMap Draw | Redraw | haipipe-studio-agent (new) | haipipe-paper-story | none |
 | board | Story | High-level logic + Low-level work | Task runs | haipipe-task-orchestrator-agent | haipipe-task | none |
 | board | Story | High-level logic + Low-level work | Task review | haipipe-board-reviewer-agent | haipipe-paper-story | release of Task work (G1) |
+| board | Story | High-level logic + Low-level work | Write the report | haipipe-page-writing-agent | haipipe-page-writing | none |
+| board | Story | High-level logic + Low-level work | Review the report | haipipe-page-check-agent | haipipe-page-check | the answer (G2) |
 | board | Story | High-level logic + Low-level work | Claim review | haipipe-board-reviewer-agent | haipipe-paper-story | the claim state (G2) |
 | board | Story | Related Papers | Discovery runs | haipipe-discovery-orchestrator-agent | haipipe-discovery | none |
 | board | Sections | Table | Draft runs | haipipe-page-writing-agent | haipipe-paper-section | none |
@@ -54,3 +56,8 @@ Notes
 - **Section runs are the Section Page's.** Draft, Evidence, Delivery runs and
   Page check run on one Section Page through `haipipe-workbench-page`; this
   screen only lists them under the selected Section.
+- **Add a method.** Guide › Method's run writes one card in `ref/methods/<family>/`, adds
+  its row to `paper-method.md`, and its papers to `paper-papers.md` (checked
+  `--online` first). The methods canvas, `paper-methods.excalidraw`, is then edited on
+  the canvas: it is the source, and `method-canvas.py --force` redraws it only when the
+  person asks.

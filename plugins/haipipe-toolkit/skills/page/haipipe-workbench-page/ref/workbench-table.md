@@ -19,13 +19,14 @@ which makes nothing on this screen and cannot approve a version it produced.
 | Level | Space | View | Run type | Agent | Skill | Person signs |
 |---|---|---|---|---|---|---|
 | page | Guide | Description | none | none | none | none |
-| page | Guide | Method | none | none | none | none |
+| page | Guide | Method | Add a method | haipipe-page-writing-agent | haipipe-workbench-page | none |
 | page | Guide | RoadMap Draw | Redraw the Workbench design | haipipe-studio-agent (new) | haipipe-workbench-page | none |
 | page | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
 | page | Draft | Table | Context | haipipe-page-context-agent | haipipe-page-context | none |
 | page | Draft | Table | Structure revise | haipipe-page-structure-agent | haipipe-page-structure | the plan |
 | page | Draft | Scratch | Scratch | haipipe-page-writing-agent | haipipe-page-scratch | none |
 | page | Draft | RoadMap Draw | Draw the logic | haipipe-studio-agent (new) | draw-logic-tree | the logic |
+| page | Draft | RoadMap Draw | Redraw the Section map | haipipe-studio-agent (new) | excalidraw-section | none |
 | page | Draft | Revise | Section revise | haipipe-page-writing-agent | haipipe-page-writing | none |
 | page | Draft | Revise | Paragraph revise | haipipe-page-writing-agent | haipipe-page-writing | none |
 | page | Draft | Revise | Revise edits | haipipe-page-writing-agent | haipipe-page-revise | the edits kept |
@@ -48,3 +49,8 @@ Notes
 - **One Page, many families.** Section Pages, Task Pages, Discovery Pages and
   Insight pages all open this workbench; a family adds its own runs on its own
   Board screen, never here.
+- **Add a method.** Guide › Method's run writes one card in `ref/methods/<family>/`, adds
+  its row to `page-method.md`, and its papers to `page-papers.md` (checked
+  `--online` first). The methods canvas, `page-methods.excalidraw`, is then edited on
+  the canvas: it is the source, and `method-canvas.py --force` redraws it only when the
+  person asks.

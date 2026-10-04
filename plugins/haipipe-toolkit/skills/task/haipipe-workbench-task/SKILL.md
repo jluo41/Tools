@@ -1,25 +1,31 @@
 ---
 name: haipipe-workbench-task
 description: >-
-  Open and interpret a question-driven Task Block Workbench: Task cards with
-  Logic, Work and Report, freeform Roadmap Studio drawings, Related Paper and
-  Progress. Use for visual tracking across one tasks/bNN_* Block and opening
-  its Question reports. Execution belongs to haipipe-task; report writing to
-  haipipe-page.
+  Open and interpret a question-driven Task Block Workbench, in the Insight
+  Workbench's style: Scope (Block, Questions, Resources, RoadMap Draw with the
+  generated question map), Task (one table per register group, a row per
+  Question: Logic, Task Work, Report), Check and Delivery, each with the shared
+  Runs panel, and the shared Guide with its Method page. Use for visual
+  tracking across one tasks/bNN_* Block and opening its Question reports.
+  Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-02"
+  version: "0.5.0"
+  last_updated: "2026-10-03"
 ---
 
 # Task Block Workbench
 
 One `tasks/bNN_*/board.md` declaring `board-kind: task-block` opens one
-Workbench. Guide explains the family. Task Space holds this Block's work.
-Guide's four Views (Description, Method, RoadMap Draw, Related Paper) come from
-the `task` entry of `workbench-shared/guide_families.py`, this skill's
-`ref/workbench-table.md` and `ref/task-papers.md`, and the generated
-`servers/workbench-task/studio/task-workbench-design.excalidraw` ("Workbench design").
-Space navigation is followed immediately by its View navigation.
+Workbench, drawn in the Insight Workbench's style (`servers/workbench-insight/`):
+the title alone in the header, the Block band, the Spaces Guide · Scope · Task ·
+Check · Delivery, every View opened by a heading and one lead line, and each
+Space's content in one box beside its Runs panel. Guide explains the family;
+its four Views (Description, Method, RoadMap Draw, Related Paper) come from the
+`task` entry of `workbench-shared/guide_families.py`. Method is the shared method
+page: `ref/task-methods.excalidraw` first, then `ref/task-method.md` as fold
+cards with its Run and Report method cards (`ref/methods/`); Related Paper is
+`ref/task-papers.md`; RoadMap Draw opens the generated
+`servers/workbench-task/studio/task-workbench-design.excalidraw`.
 
 ## Open
 
@@ -43,73 +49,73 @@ and its native save API. `--only task,page` supplies Questions, reports and
 execution drill-downs but disables drawing routes. The shared Guide remains
 available. Preserve the existing host's authentication settings.
 
-## Four working Views
+## Spaces and Views
 
 | Space › View | Contents | Source |
 |---|---|---|
-| Scope › Block | The spine, close condition and Jobs | `board.md` |
-| Scope › Questions | The Question register: id, topic, question, linked Tasks | `board.md` Questions |
+| Scope › Block | The spine, close condition, Jobs and board.md, as label and value rows | `board.md` |
+| Scope › Questions | The Question register: id, group, topic, question, linked Tasks | `board.md` Questions |
 | Scope › Resources | Workspace data: each `_WorkSpace` folder a Job declares (`raw_store` + `cohort`, or a `_WorkSpace/` path, in `src/config-defaults.yaml`) and the Block's ProjectResult folder, its files by kind (data named and sized only; documents, figures, drawings and scripts pop out); then the Related resources and the add form | Job defaults; `board.md` Related resources |
-| Task › Questions | Stacked collapsible Question cards; **Logic left / Task Work middle / Report right** | `board.md` Questions; native Tasks; report Pages |
-| Task › Studio | One freeform drawing per collapsible row, embedded Excalidraw and full-screen editing | Block `studio/*.excalidraw` |
+| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, each a folding row | Block `studio/*.excalidraw` |
+| Task › each group | One table per register `group:` (one, Questions, when there is none): a row per Question, **Logic │ Task Work │ Report** | `board.md` Questions; native Tasks; report Pages |
 | Check › Runs | Every Run and its receipt status | Native Ticket/Result reader |
 | Check › Tasks | Each Task Folder's run counts and audit findings | Native Task reader |
-| Check › Reports | Each report's answer status, evidence warnings and next action | Same snapshot as Task; no second progress file |
+| Check › Reports | Each report's answer status, evidence warnings and next action | Same snapshot; no second progress file |
+| Delivery › Reports | Each report whose `answer-status` is `answered`: its Opening and Answer word for word, its evidence and drawings | report Pages |
 
-Each Space has the shared Runs panel on the right (`servers/workbench-page/runs_panel.py`):
-its run types are this skill's `ref/workbench-table.md` rows for that Space, each with its
-agent, skill and a prompt to copy; Task's "Run a Task" lists every native Run with its
-status. The panel starts nothing. Earlier `view=` keys still open: `related-paper` is
-Scope › Resources and `progress` is Check › Reports.
+Each Space has the shared Runs panel on the right (`servers/workbench-page/runs_panel.py`),
+folded at first as Insight's: its run types are this skill's `ref/workbench-table.md` rows
+for that Space, each with its agent, skill and a prompt to copy; Task's "Run a Task" lists
+every native Run with its status. Clicking a Question row (outside its links) selects it:
+the Task panel narrows to that Question's Runs and names it in each prompt. The panel
+starts nothing. Earlier `view=` keys still open: `task` is the first group, `studio` is
+Scope › RoadMap Draw, `related-paper` is Scope › Resources, `progress` is Check › Reports.
 
-The Work column follows Insight's Task Work: one light tree per Question,
-Block → Job → Task → Run, each level written once. Jobs appear in the order the
-register first names them; a Task line folds its Runs and its Task Page, and
-each opens in the shared pop-out with an own-tab link. A Task line says only how many
-Runs it folds; execution status belongs to Progress. `role` shows as
-the Task line's hover text, falling back to the Task's Opening.
+A row follows Insight's partition table. Logic shows "Question N", the title and the
+question, with "What we expect" (hypothesis) and "What would answer it" (acceptance) under
+a folded **More**. Task Work is one light tree, Block → Job → Task → Run, each level written
+once, a Task folding its Runs and its Task Page, each opening in the shared pop-out with an
+own-tab link; the fold's line counts Tasks and Runs, never their status. Report shows the
+report's title (the pop-out to the Page reader), the first paragraph of its Opening, any
+`.excalidraw` it links under Evidence (read-only in the Excalidraw viewer), and a tag
+"report qNN". No status, path, Limits or Next appear in the table; Check keeps them.
 
-Work order follows `board.md`. Optional `work[].stage` is kept for other
-readers; the tree does not show it. Do not infer types or progress from names.
-One Task may support several Questions; unassigned Tasks stay under **Not under a Question**.
-Questions can be answered by reasoning or existing evidence without BJTR work.
-A Block with no Question register retains its existing work in that fold.
-
-The Report column follows Insight's Report cell: the report's title, which
-opens the existing Page reader for `reports/qNN_<topic>/qNN_<topic>.md` in the
-same pop-out, then the first paragraph of its Opening. No status, path,
-Evidence, Limits or Next are shown there; Progress keeps them. An `.excalidraw` file the report links under
-Evidence is listed below the Opening and opens read-only in the shared
-Excalidraw viewer, in the same pop-out; the drawing stays where its Run wrote it. `page.toml` explicitly registers each report.
-`answer-status` is the declared Question
-answer; `state:` remains the Page's own state. A changed linked evidence file
-is flagged for rereading without silently changing either field. This display
-is not a Page CHECK, evidence certification, adoption or release.
+Work order follows `board.md`. Optional `work[].stage` is kept for other readers; the
+table does not show it, and `role` is the Task line's hover text, falling back to the
+Task's Opening. Do not infer types or progress from names. One Task may support several
+Questions; Tasks under no Question close the last group's table under **Not under a
+Question**. Questions can be answered by reasoning or existing evidence without BJTR work.
+`page.toml` explicitly registers each report. `answer-status` is the declared Question
+answer; `state:` remains the Page's own state. A changed linked evidence file is flagged
+for rereading without silently changing either field. This display is not a Page CHECK,
+evidence certification, adoption or release.
 
 For creating a Question, writing a Report or adding a resource, read
-`../haipipe-task/ref/block-questions.md`. Task owns the Block register and work
-references; Page owns the Report writing flow. Keep report Page Folders out of
-native Task iteration and BJTR counters. The resource form adds only its
-register entry; it does not download a paper or execute a Discovery workflow.
+`../../question/haipipe-question/ref/block-questions.md` (the register, its optional
+`group:`, report folders). A Question is shaped by `haipipe-question-asking` and judged by
+`haipipe-question-review`; Page owns the Report writing flow. Keep report Page Folders out
+of native Task iteration and BJTR counters. The resource form adds only its register
+entry; it does not download a paper or execute a Discovery workflow.
 
-## Freeform drawing
+## RoadMap Draw
 
-Names and contents are freeform: ideation, possible workflows, paths or other
-useful sketches. There is no required type, Topic hierarchy or metadata form.
-**Add drawing** opens a new native Block scene. Expanding an existing row
-loads its viewer; **Edit drawing** takes the native editor's pen. The existing
-Excalidraw lock permits one editing surface at a time. Collapsing retains its
-mounted canvas; finish editing before refreshing. Full-screen opens the same
-file and obeys that lock. No drawings or reports are created just by opening
-the Workbench page.
+The first row is the question map, `studio/question-map.excalidraw`, written only by
+`servers/workbench-task/studio/question_map.py <block>` from the register: one frame per
+group, a row per Question (Question → its Tasks with their Jobs → its report). It shows
+view only and says when `board.md` is newer than it (rerun the script). The rows after it
+are freeform: ideation, possible workflows, paths or other useful sketches, with no
+required type or metadata. **Add drawing** opens a new native Block scene. Expanding a row
+loads its viewer; **Edit drawing** takes the native editor's pen. The existing Excalidraw
+lock permits one editing surface at a time. Full-screen opens the same file and obeys that
+lock. No drawings or reports are created just by opening the Workbench page.
 
 ## Continue with a session
 
 A session edits the Question register, Reports and native work through their
 owning skills; a browser reload rereads them. Question/drawing folds persist in this
-browser session. The page keeps the shared workbench shell (title, band, Space row with
-Guide first, one box per Space with the Runs panel on the right) and its colors and tab
-sizes; it adds no search or refresh controls of its own.
+browser session. The page keeps Insight's shell (title, band, Space row with Guide first,
+one box per Space with the Runs panel on the right), its colors, tab sizes and class
+names; it adds no search or refresh controls of its own.
 
 Keep execution, Question answers and Page acceptance distinct:
 

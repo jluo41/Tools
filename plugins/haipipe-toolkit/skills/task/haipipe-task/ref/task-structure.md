@@ -64,7 +64,7 @@ material: no worker, ticket, config or Result lives there.
 - Direct executable children are Jobs named `jNN_*`.
 - May contain `diagram/` for the shared narrative.
 - May contain `studio/*.excalidraw` and Question Report Pages in `reports/`
-  (`ref/block-questions.md`). A report Folder may hold its Page-owned Draft,
+  (`haipipe-question` (`skills/question/haipipe-question/ref/block-questions.md`)). A report Folder may hold its Page-owned Draft,
   Runs and Results under the Page contract; it acquires no native Task address.
 - The Block root must not contain code, config, Tickets, Results, notebooks,
   or batchers. Executable Task work stays under Jobs and Tasks.

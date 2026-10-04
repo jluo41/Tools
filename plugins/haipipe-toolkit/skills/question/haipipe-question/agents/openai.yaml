@@ -1,0 +1,6 @@
+interface:
+  display_name: "Board Question"
+  short_description: "a board's questions: topic size, reports/qNN_<topic>/, register"
+  default_prompt: "Use $haipipe-question to propose, size, create or find a board's questions: each one a topic in reports/qNN_<topic>/ that grows into its report."
+policy:
+  allow_implicit_invocation: true

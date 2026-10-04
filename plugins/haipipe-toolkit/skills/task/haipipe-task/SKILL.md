@@ -64,7 +64,8 @@ Block numbers are stage ranges, fixed across Projects: `b00` raw, `b01`
 source, `b02` record, `b03` case (per dataset), then `b10` aidata, `b11`+ model,
 `b21`+ evaluation, `b31`+ endpoint, `b51`+ auxiliary, including an
 InsightBoard's DIKW Block `b5N_<topic>_dikw` (per question; a range
-starts at `x1`, except AIData at `b10`). See
+starts at `x1`, except AIData at `b10`), and `b61`+ labeling, one Block per
+labeling schema. See
 `ref/hierarchy.md` § Block number ranges.
 
 Read `ref/hierarchy.md` before acting. It is the conceptual authority.
@@ -186,7 +187,8 @@ Its Result envelope and receipt still live under
 
 ## Question and Insight routing
 
-For a Block Question or its readable Report, load `ref/block-questions.md`.
+For a Block Question or its readable Report, load `haipipe-question` (`skills/question/haipipe-question/ref/block-questions.md`);
+it owns the register, the question's size and its report folder.
 The Block's `board.md` registers the question, its logic, native work references
 and `reports/qNN_<topic>/qNN_<topic>.md`. This Report is written through
 `haipipe-page`; it is independent of P-B-E-R's `workflow/report.yaml`.

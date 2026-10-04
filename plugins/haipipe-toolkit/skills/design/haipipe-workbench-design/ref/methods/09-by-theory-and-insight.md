@@ -6,8 +6,9 @@ papers are the rows of `../design-papers.md` whose `group` is `by theory and
 insight`. A claim names its source in brackets; "(ours)" marks the workbench's own
 judgment.
 
-family: Both Insights: abduction-1 on two hows that must agree; our own data and
-  the literature together
+family: Internal Insights: abduction-1 on our own induction; the how comes from our own
+  data: signed insights, past designs, or readers who try the drafts
+also: External Insights (it reads a named theory as well as our signed insights)
 reasoning: abduction-1 on two hows: requirements + a signed insight (what worked here) +
   a theory (why it worked) → a design both support; a disagreement goes to the next Exp
 move: Make the design follow a signed insight that a named theory explains, and predict

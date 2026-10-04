@@ -1,5 +1,28 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.26.0 · 2026-10-03
+
+- Guide › Method follows the steps-first layout Design adopted: the six steps, then the
+  shared Method page from `ref/labeling-method.md` (the drawing on top; 1 · the six
+  steps as one table; Step 1, Step 3, Step 4 and Steps 5 and 6 in depth; 6 · why it
+  works; Reference folded). Thirteen method cards in `ref/methods/`, grouped by the step
+  they serve; six tests (T0 meaning, T1 blind, T2 person is gold, T3 sealed, T4
+  independent, T5 audit); one made-up example throughout. `ref/labeling-papers.md` is
+  regrouped by method card and gains Aroyo & Welty 2015, Tversky & Kahneman 1974 and
+  Panickssery et al. 2024 (check: PASS online). The drawing
+  `ref/labeling-methods.excalidraw` was drawn once by the shared `method-canvas.py`.
+- The page replaces Guide's own step list (`"only"`, as Paper, Page, Insight and Design) and
+  shows Design's folding cards: Method design first, then one card per part, every card
+  closed at first (the shared `method_page_html` now emits Design's `draw-fold` and
+  `sec-fold` cards, for every family that uses it). RoadMap Draw is the same list of closed
+  cards: Workbench design (its canvas loads when opened), RoadMap and the Workbench Table.
+- The methods drawing follows Paper's: top to bottom, one frame per Space (Data, Labeling,
+  Quality, Delivery) with its Views; each step a row (the step, our methods, its tests, its
+  runs with agent and skill from `workbench-table.md`); on the right, Label Studio, Prodigy
+  and Argilla for the same step, and the coverage. `labeling-method.md` gains the tables the
+  shared `method-canvas.py` reads (steps with methods and runs, Spaces and Views, tests by
+  step, R2 the tools compared); the drawing was redrawn from it (`--force`, asked for).
+
 ## 0.25.0 · 2026-10-03
 
 - Show the detail of each Space and View (`ref/view-structure.md`): a brief at the

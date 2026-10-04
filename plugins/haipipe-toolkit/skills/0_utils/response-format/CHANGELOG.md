@@ -1,6 +1,59 @@
 response-format — Changelog
 ===========================
 
+## [0.17.0] — 2026-10-03
+
+- Questions get their own skillset, `skills/question/` (JL 261003: "should I put all the
+  question related skills into here"). The granularity tests and the topic/decision table
+  move to `haipipe-question`; this skill keeps one paragraph and points to it, and creating
+  a proposed question's folder goes through `haipipe-question`. `ask-questions` moved to
+  `skills/question/ask-questions/`; its link here follows.
+
+## [0.16.0] — 2026-10-03
+
+- Granularity made checkable (JL 261003: "pay attention to the question granularity"):
+  a topic/decision pair table, a sketch of sections feeding one topic, and five tests
+  (report test, reuse test, too narrow, too broad, reuse first). "Keep the Related
+  question specific" is replaced by "keep it at topic level; the Why says what this
+  section adds".
+- A proposed question proposes its folder (JL 261003: "propose to generate the
+  questions folder under the report as well"): Summary and Next offers to create
+  `<board>/reports/qNN_<topic>/`, with the next free NN; created only when the user
+  agrees, through the board's own skill.
+- Board is owner and block (`Tools/designs b01_utils`, `<Project> b02_record`); project
+  names in the examples replaced by placeholders. The example's proposed question is
+  lifted to a topic: "How are records cut into cases?".
+
+## [0.15.0] — 2026-10-03
+
+- The Related question names the board and the question so its report can be found
+  (JL 261003: "the question to find the board name and the question name, as concise
+  as possible"): `**Related question:** [<Board> · QNN <question name>](<report
+  path>): <why>`. The Session form is removed (JL 261003: "why you have the session
+  question? … link the questions in certain boards' reports folder"); with no fitting
+  report, `Proposed · <Board> · <question>`, unlinked.
+- Then simplified (JL 261003: "(proposed) Tools/designs b01_utils \"short and brief description
+  of the question\""): `[<Board> QNN "<short question>"](<report>): <why>`, and
+  `(proposed) <Board> "<short question>": <why>`.
+- Wording (JL 261003: "the reports/ is the questions, reports is a list of questions"):
+  the line links a board's question (`reports/qNN_<topic>`), and the skill says question, not report.
+- Granularity (JL 261003: "the question is not like the specific question, it is a topic
+  question … eventually it can develop the report"): a Related question names the board's
+  topic the section adds to, reused first; a narrow decision stays in the points and the Why.
+
+## [0.14.0] — 2026-10-03
+
+- The question leaves the heading and becomes the section's last element, the
+  Related question line: `**Related question:** <address>. **Why:** <what this
+  section gives it>` (JL 261003: "add the 6, to remove the questions to the section
+  element as the related questions, and explain why this section is related to a
+  question"). The heading is a plain `## N. [emoji] Short Headline` again.
+- A section's elements are now six: heading, scan points, sketch (optional), prose,
+  file lines (only when files changed), Related question. The Why is one line of 20
+  words or fewer and names the section's contribution (answers, narrows, evidences,
+  raises), never the question restated. Address forms are unchanged: recorded,
+  `Session · …`, `Proposed · …`. Summary and Next has no Related question.
+
 ## [0.13.0] — 2026-10-03
 
 - The question moves into the section heading:

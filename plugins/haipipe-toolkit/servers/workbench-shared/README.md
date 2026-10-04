@@ -7,8 +7,8 @@ This folder holds what every Workbench family reuses instead of owning a copy:
 | **Studio** | Yes, through its own routes | [haipipe-workbench-studio](../../skills/page/haipipe-workbench-studio/SKILL.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
 | **Guide** | Never | This README | Family explanations: skills, methods, UI and folder maps, RoadMap Draw |
 
-Any Workbench that shows a drawing (Paper Story › RoadMap Draw, Task Roadmap
-Studio, a Page's 🎨 Studio tab, Guide's own canvases) opens it through
+Any Workbench that shows a drawing (Paper Story › RoadMap Draw, Task Scope ›
+RoadMap Draw, a Page's 🎨 Studio tab, Guide's own canvases) opens it through
 Studio's `xcal.py` and `excalidraw_proxy.py`. A family owns *which* drawing
 and *where* it lives; Studio owns how a scene is opened, minted and saved.
 Guide embeds the same canvas in its isolated viewing mode and never saves.
@@ -69,6 +69,7 @@ name       and its        and its output     name
 | Design (page) | Design Task | Design Item | Delivery |
 | Paper | none | Ideation · Story · Sections | Delivery |
 | Page | none | Draft · Evidence | Delivery |
+| Task | Scope (the Block, its Questions, data and drawings) | Task · Check | Delivery |
 
 "Setup" names a role, not a tab: tabs keep their family's own words.
 
@@ -207,7 +208,7 @@ closed Work keeps its role and references visible.
 |---|---|
 | Paper / Story / High-level logic + low-level work | Collapsible Questions. An open Question shows reasoning beside Work; BJTR is nested together inside that Work. |
 | Insight / Insight / Questions | Keep the partition's Logic / Work / Report columns and DIKW folds. The Question and its answer lead; related Runs and Reports stay alongside it. |
-| Task / Task / Task | Vertically stacked collapsible Questions; each open card has Logic / Work / Report columns. Report Pages live in `reports/`, beside the Block's freeform `studio/` drawings. |
+| Task / Task / each group | Insight's partition table: one View per register `group:`, a row per Question with Logic / Work / Report columns. Report Pages live in `reports/`; the Block's drawings, the generated question map first, are Scope › RoadMap Draw (`studio/`). |
 | Other family-owned working Views | Place goals, design questions, Studio, evidence and checks according to the family's native workflow. |
 
 The components may be reused across families. The layout, question semantics,
@@ -301,7 +302,7 @@ Studio. Each family owns its working Space and View composition and drawing
 semantics. A missing Guide drawing stays visible as **Not prepared**, naming
 the missing source.
 
-**Task alignment:** Task's Roadmap Studio is a freeform single-column list,
+**Task alignment:** Task's Scope › RoadMap Draw is a freeform single-column list (after its generated question map),
 with freely named Drawing 1 / Drawing 2 / Drawing 3 rows and an Add drawing
 action. Opening a row embeds its Excalidraw; several rows may stay open. It
 requires no Topic hierarchy, registered type or content fields.

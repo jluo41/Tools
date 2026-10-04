@@ -23,7 +23,7 @@ metadata:
 Version governance: this Design skill starts at the family version `0.4.0`. Only
 explicit user approval may authorize `1.0.0`.
 
-Theory of Design §2 (`skills/design/haipipe-workbench-design/ref/design-theory.md`):
+Theory of Design §2 (`skills/design/haipipe-workbench-design/ref/design-method.md`):
 a design starts from an **aim**, **constraints** and **resources**, and there is no
 list of options to pick from. This skill writes those inputs down once per board,
 so every design on it starts from the same stated input, with each line's source.

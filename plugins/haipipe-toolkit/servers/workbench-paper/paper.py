@@ -196,7 +196,39 @@ def collect(board, path_param):
     d["hero"] = hero_evidence(d)
     d["supporting"] = supporting_tree(d)
     d["gates"] = gates(d)
+    d["reports"] = paper_reports(d)
     return d
+
+
+_REPORT_DIR = re.compile(r"^q(\d{2})_[a-z0-9_]+$")
+_REPORT_STATUS = {"answered": ("Answered", "ok"), "partial": ("Partial", "warn"), "open": ("Open", "mut")}
+
+
+def paper_reports(d):
+    """The paper's `reports/qNN_<topic>/qNN_<topic>.md` Report Pages (JL 261003: a board-level
+    folder like `studio/`, one Report per Story question, as a Task Block keeps them), keyed
+    by question number. A Report names what it answers (`answers: RQ1`) and how far
+    (`answer-status: open | partial | answered`); its answer is the Opening's first paragraph."""
+    out, home = {}, Path(d["board"]) / "reports"
+    if not home.is_dir():
+        return out
+    for folder in sorted(home.iterdir()):
+        m = _REPORT_DIR.match(folder.name)
+        page = folder / (folder.name + ".md")
+        if not (m and page.is_file()):
+            continue
+        text = read(page)
+        answers = [a.strip() for a in scalar(text, "answers").split(",") if a.strip()]
+        nums = {_num(a) for a in answers if re.search(r"\d", a)} or {str(int(m.group(1)))}
+        opening = re.search(r"(?ms)^## Opening\s*\n(.*?)(?=^## |\Z)", text)
+        first = (opening.group(1).strip().split("\n\n", 1)[0] if opening else "")
+        rep = {"rel": "reports/%s/%s" % (folder.name, page.name), "stem": folder.name,
+               "title": next((l[2:].strip() for l in text.splitlines() if l.startswith("# ")), folder.name),
+               "status": scalar(text, "answer-status", "open").strip().lower(),
+               "answer": clean(re.sub(r"(?m)^\*\*[^*]+\*\*:.*$", "", first))}
+        for n in nums:
+            out.setdefault(n, rep)
+    return out
 
 
 def paper_desk(d):
@@ -1743,9 +1775,27 @@ def _and(labels):
     return ", ".join(labels[:-1]) + " and " + labels[-1]
 
 
-def _lw_row(key, left, right, cls="lw-g"):
-    return ('<div class="lw-row %s"%s><div class="lw-l">%s</div><div class="lw-r">%s</div></div>'
-            % (cls, (' data-key="%s"' % esc(key)) if key else "", left, right))
+def _lw_row(key, left, right, cls="lw-g", report=None):
+    """One row of the split: logic left, work right, and with `report` a third column, the
+    question's Report (JL 261003: "following the question --> Work and report")."""
+    third = '<div class="lw-p">%s</div>' % report if report is not None else ""
+    return ('<div class="lw-row %s%s"%s><div class="lw-l">%s</div><div class="lw-r">%s</div>%s</div>'
+            % (cls, " lw-3" if report is not None else "", (' data-key="%s"' % esc(key)) if key else "",
+               left, right, third))
+
+
+def _report_cell(d, q):
+    """The Report column of one question: its state, its answer in a line, Open ↗."""
+    r = (d.get("reports") or {}).get(_num(q["id"]))
+    if not r:
+        return '<div class="lw-say">No report yet.</div>'
+    word, cls = _REPORT_STATUS.get(r["status"], (r["status"].capitalize() or "Open", "mut"))
+    answer = r["answer"] if len(r["answer"]) <= 260 else r["answer"][:257].rsplit(" ", 1)[0] + "…"
+    return ('<div class="lw-c"><div class="lw-top"><span class="item-kind">Report</span>'
+            '<span class="lw-rstate %s">%s</span></div><div class="lw-body">%s</div>'
+            '<div class="lw-say">%s · <a href="%s">Open ↗</a></div></div>'
+            % (cls, esc(word), esc(answer) or "No answer recorded yet.", esc(r["stem"]),
+               esc(outline_url(d["path"], r["rel"]))))
 
 
 def _label(kind, rid):
@@ -1826,7 +1876,11 @@ def _q_block(d, T, q):
     # downstream task") lists them first, and shows only the groups it fills
     tasks = q.get("tasks") or []          # the RQ table has none
     groups = [([_band("task", "Tasks")] + [_hyp_line("", x["kind"], x["text"]) for x in tasks]) if tasks else []]
-    groups.append([_hyp_line(h["id"], labels[h["id"]], h["phrase"], _mark([T["tests"][x]["state"] for x in h["tests"]]))
+    # a ✅ needs the question's Report to say answered (JL 261003); before that the prose
+    # states it but nothing has shown it: 📝
+    answered = ((d.get("reports") or {}).get(_num(q["id"])) or {}).get("status") == "answered"
+    shown = lambda m: "📝" if m == "✅" and not answered else m
+    groups.append([_hyp_line(h["id"], labels[h["id"]], h["phrase"], shown(_mark([T["tests"][x]["state"] for x in h["tests"]])))
                    for h in q["hyps"]] or ([] if tasks else [none("Hypothesis", "hypotheses")]))
     groups.append(['<div class="lw-c"><div class="lw-top"><span class="item-kind">%s</span></div><div class="lw-body">%s</div>'
                    '<div class="lw-say">from %s</div></div>' % (esc(_label("Claim", c["id"])), _nx(c["text"]),
@@ -1857,7 +1911,7 @@ def _q_block(d, T, q):
             '<div class="lw-qtop"><span class="item-kind">Question %s</span>%s</div>'
             '<div class="lw-qtext">%s</div></div></summary>%s</details>'
             % (esc(q["id"]), esc(_num(q["id"])), ('<span class="lw-qname">%s</span>' % esc(name)) if name else "",
-               esc(q["text"]), _lw_row("", "".join(left), "".join(right))))
+               esc(q["text"]), _lw_row("", "".join(left), "".join(right), report=_report_cell(d, q))))
 
 
 def _rest_block(d, T):
@@ -1875,7 +1929,8 @@ def _rest_block(d, T):
         return ""
     return ('<details class="qc lw-q lw-rest"><summary><span class="bjt-chev">›</span>'
             '<span class="lw-qtext">Not under a question</span></summary>%s</details>'
-            % _lw_row("", "".join(left) or '<div class="lw-say">every §5 row has a hypothesis</div>', "".join(right)))
+            % _lw_row("", "".join(left) or '<div class="lw-say">every §5 row has a hypothesis</div>', "".join(right),
+                      report=""))
 
 
 def logic_work_html(d):
@@ -1894,7 +1949,7 @@ def logic_work_html(d):
         blocks.append(_rest_block(d, T))
     if not blocks:
         return '<div class="space-empty">No research question yet.</div>'
-    head = _lw_row("", "High-level logic", "Low-level work · B → J → T → R", "lw-head")
+    head = _lw_row("", "High-level logic", "Low-level work · B → J → T → R", "lw-head", report="Report")
     return '<div class="lw">%s%s</div>' % (head, "".join(blocks))
 
 
@@ -2166,10 +2221,19 @@ def roadmap_html(d):
     own = studio / (stem + ".excalidraw")
     files = sorted(studio.glob("*.excalidraw"), key=lambda f: (f.name != own.name, f.name)) if studio.is_dir() else []
     files = files or [own]
-    urls = [(f, "/_excalidraw/?board=%s&edit=1" % quote(_tree_url(d, f).lstrip("/"), safe="/")) for f in files]
+
+    def generated(f):
+        """A drawing a script writes (its `source` names the script, as excalidraw-section's paper
+        map does) opens view only: it is redrawn from its files, never edited (JL 261003)."""
+        try:
+            return str(json.loads(f.read_text(encoding="utf-8")).get("source", "")).endswith(".py")
+        except (OSError, ValueError, AttributeError):
+            return False
+    urls = [(f, "/_excalidraw/?board=%s%s" % (quote(_tree_url(d, f).lstrip("/"), safe="/"),
+                                              "" if generated(f) else "&edit=1")) for f in files]
     chips = "".join('<button type=button class="rd-file%s" data-src="%s">%s</button>'
-                    % (" on" if i == 0 else "", esc(u), esc(f.stem)) for i, (f, u) in enumerate(urls)) \
-        if len(urls) > 1 else ""
+                    % (" on" if i == 0 else "", esc(u), esc(f.stem + (" · generated" if generated(f) else "")))
+                    for i, (f, u) in enumerate(urls)) if len(urls) > 1 else ""
     return ('<div class="rd-bar">%s<a class="rd-open" href="%s" target="_blank" rel="noopener">Open full screen ↗</a></div>'
             # no referrer, as the Draw panel does: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
             '<iframe class="rd-frame" title="RoadMap Draw" referrerpolicy="no-referrer" data-src="%s"></iframe>'
@@ -2873,6 +2937,9 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 /* Story › High-level logic + Low-level work: one tree, split down the middle (JL 260929) */
 .lw{{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}}
 .lw-row{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.lw-row.lw-3{{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.72fr)}}
+.lw-p{{padding:7px 14px;border-left:1px solid var(--line);min-width:0}} .lw-g>.lw-p{{padding-top:0;padding-bottom:10px}}
+.lw-rstate{{font-size:13px;font-weight:600}} .lw-rstate.ok{{color:var(--ok)}} .lw-rstate.warn{{color:var(--warn)}} .lw-rstate.mut{{color:var(--mut)}}
 .lw-l{{padding:7px 14px;min-width:0}} .lw-r{{padding:7px 14px;border-left:1px solid var(--line);min-width:0}}
 .lw-head{{background:var(--soft);border-bottom:1px solid var(--line);font:700 12px -apple-system,sans-serif;
  text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}}
@@ -2937,8 +3004,7 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .rd-file.on{{border-color:var(--acc);color:var(--acc);font-weight:600}}
 .rd-frame{{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}}
 .rp-frame{{display:block;width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}}
-@media(max-width:1100px){{.lw-row{{grid-template-columns:minmax(0,1fr)}}
- .lw-r{{border-left:0;padding-left:40px}} .lw-head .lw-r{{display:none}}}}
+/* Logic beside its work at every width (JL 261003: "always be two columns no matter of the page width") */
 code{{font:12.5px ui-monospace,Menlo,monospace}}
 .sec-list{{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}}
 .sec-row{{display:grid;grid-template-columns:2.4em minmax(0,1fr) 4.5em 12em 4.5em;gap:10px;align-items:baseline;

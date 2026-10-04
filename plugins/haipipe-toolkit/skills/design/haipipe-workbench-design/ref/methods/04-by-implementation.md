@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by implementation`. A
 claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: External Insights: abduction-1; the how comes from the literature, other
-  people's data already turned into knowledge
+family: External Insights: abduction-1; the how comes from the literature and theory,
+  other people's data
 reasoning: abduction-1: requirements + what is known about delivery → a design and its
   plan for use
 move: Design for real-world use from the start: who it reaches, who adopts and delivers

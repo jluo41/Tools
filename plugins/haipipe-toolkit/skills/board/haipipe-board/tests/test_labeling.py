@@ -76,10 +76,11 @@ class LabelingSurfaceTest(unittest.TestCase):
         body = render(self.page, "/demo/board.md", self.file_q,
                       "/demo/board/SL/S-Label-1-demo.html", self.board)
         pane = body.split("data-view=preparation hidden>", 1)[1].split("<div class=pane", 1)[0]
-        self.assertIn("<h2>Raw corpus</h2>", pane)
+        self.assertIn("<h2>The data</h2>", pane)               # what the data is, said first
+        self.assertNotIn("<h2>Raw corpus</h2>", pane)          # no source.yaml: no empty "not recorded" card
         self.assertIn("<h2>Items to label</h2>", pane)
         self.assertIn('href="https://example.org/demo"', pane)
-        self.assertIn("folder", pane)                          # no source.yaml: "not recorded"
+        self.assertIn("corpus.source.description", pane)       # a missing fact says what to add
         self.assertIn("one reply; context is the earlier turns", pane)
         self.assertIn("2 words median, 1 to 3", pane)          # held-back text never counted
         self.assertIn("1 item has none", pane)
@@ -386,6 +387,26 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertTrue(is_labeling_surface_page(ordinary))
         self.assertEqual(labeling_chat_hold(dash), (False, ""))
         self.assertEqual(labeling_chat_hold(ordinary), (False, ""))
+
+    def test_a_labeling_task_page_in_a_task_block_is_listed_before_its_job(self):
+        from live.labeling import board_jobs
+        block = Path(self.tmp.name) / "proj" / "tasks" / "b61_demo_schema"
+        corpus = block / "j01_building" / "t01_demo_corpus"
+        other = block / "j01_building" / "t02_demo_data"
+        corpus.mkdir(parents=True)
+        other.mkdir(parents=True)
+        (block / "board.md").write_text(
+            "# Demo schema\nboard-kind: task-block\nspine: s\nclose: c\n\n"
+            "## Topic\n\nt\n\n## Pipeline\n\np\n\n## Pages\n", encoding="utf-8")
+        (corpus / "t01_demo_corpus.md").write_text(
+            "# Demo corpus\nstate: 🔴 OPEN\nfolder-kind: task\ntask-type: labeling\ntask: .\n\n## Opening\n\no\n",
+            encoding="utf-8")
+        (other / "t02_demo_data.md").write_text(
+            "# Demo data\nstate: 🔴 OPEN\nfolder-kind: task\ntask-type: data\ntask: .\n\n## Opening\n\no\n",
+            encoding="utf-8")
+        data = board_jobs(block, "/proj/tasks/b61_demo_schema/board.md")
+        self.assertEqual(data["jobs"], [])
+        self.assertEqual([row["title"] for row in data["empty"]], ["Demo corpus"])
 
     def test_flat_board_source_resolves_folded_page_task_lane(self):
         board = Path(self.tmp.name) / "board"
@@ -1022,3 +1043,55 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertIn("some separation", _group_clarity({"k": 4, "silhouette_by_k": {"4": 0.33}}))
         self.assertIn("clear", _group_clarity({"k": 4, "silhouette_by_k": {"4": 0.62}}))
         self.assertEqual(_group_clarity({"k": 4}), "")
+
+
+class LabelingMethodPageTest(unittest.TestCase):
+    """Guide › Method: the six steps first, the steps in depth with their cards, then Reference."""
+
+    def test_method_page_reads_steps_first_and_shows_every_card(self):
+        import re
+        from live.guide_families import FAMILIES
+        from live.workbench_guide import REPOSITORY, family_profile, method_page_html
+        profile = FAMILIES["labeling"]
+        if not (REPOSITORY / profile["method_doc"]).is_file():
+            self.skipTest("the subjective-label plugin is not beside this Tools checkout")
+        self.assertEqual(profile["explain"]["method"][1], {"family": "labeling", "mode": "method"})
+        page = method_page_html("labeling", family_profile("labeling", {}))
+        # Design's card style: the drawing card, then one folding card per part, all closed at first
+        self.assertIn("<details class=draw-fold><summary><strong>Method design</strong>", page)
+        parts = re.findall(r"<details class=sec-fold( open)?><summary><strong>(.*?)</strong>", page)
+        self.assertEqual(parts[0], ("", "1 · The six steps"))
+        self.assertEqual(parts[-1], ("", "Reference"))
+        self.assertTrue(all(not shown for shown, _ in parts))
+        self.assertLess(page.index("Method design"), page.index("1 · The six steps"))
+        self.assertEqual(page.count('class="mcard'), 13)
+        self.assertNotIn("mcard missing", page)
+        steps = [name for name, _ in profile["method"]]
+        for step in steps:  # the Guide's steps and the page's step table say the same
+            self.assertIn(f"<td>{step}</td>", page)
+
+    def test_roadmap_draw_is_a_list_of_closed_cards(self):
+        import re
+        from live.workbench_guide import guide_html
+        page = guide_html("labeling", "roadmap-draw", {"path": "", "file": ""})
+        cards = re.findall(r'<details class="wg-drawing[^"]*" data-drawing="([^"]+)"( open)?>', page)
+        self.assertIn(("roadmap-draw-explain", ""), cards)      # Workbench design, closed
+        self.assertIn(("workbench-table", ""), cards)           # the Workbench Table, closed
+        self.assertTrue(all(not shown for _, shown in cards))
+        self.assertIn('class="wg-explain-frame"', page)
+        self.assertNotIn('class="wg-explain-frame" title="Labeling · roadmap-draw" src=', page)  # loads on open
+
+    def test_guide_drawings_load_through_guides_own_route(self):
+        """A `--only labeling` host refuses /_excalidraw/, so Guide serves the declared drawings itself."""
+        from live.guide_families import FAMILIES
+        from live.workbench_guide import family_drawing, guide_html, method_page_html, family_profile
+        profile = FAMILIES["labeling"]
+        self.assertEqual(family_drawing(profile, "method"), profile["method_drawing"])
+        self.assertTrue(family_drawing(profile, "explain-roadmap-draw").endswith("labeling-workbench-ui.excalidraw"))
+        self.assertIsNone(family_drawing(profile, "../../etc/passwd"))
+        page = method_page_html("labeling", family_profile("labeling", {}), editable=False)
+        self.assertIn('data-src="/_board/guide?mode=drawing&amp;guide=1', page)
+        self.assertNotIn("Edit full screen", page)                       # an --only host cannot save
+        roadmap = guide_html("labeling", "roadmap-draw", {"path": "", "file": ""})
+        self.assertIn("mode=drawing&amp;guide=1", roadmap)
+        self.assertNotIn('data-src="/_excalidraw/', roadmap)

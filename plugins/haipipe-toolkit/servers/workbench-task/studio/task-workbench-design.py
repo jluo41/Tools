@@ -7,8 +7,9 @@ The drawing is generated: change this file, then run it (a generated file change
 It follows the Insight workbench drawing (servers/workbench-insight/studio/), same sizes,
 colours and grammar. One workbench is one Task Block. Part 1: the working Spaces, their
 views, the runs of each in order and the skill of each run, read from the Workbench Table.
-Part 2: the Task Space as the workbench shows it: stacked Question cards, each Logic │
-Task Work │ Report, and the Runs panel on the right. Part 3: where each part lives on disk.
+Part 2: the Task Space as the workbench shows it, in the Insight style: one table per register
+group, a row per Question, Logic │ Task Work │ Report, and the Runs panel on the right. Part 3:
+where each part lives on disk.
 
 The Parts are named Excalidraw frames. Guide › RoadMap Draw opens this file as
 "Workbench design" (workbench-shared guide_families.py, family task). A frame name is an
@@ -89,7 +90,7 @@ def chips(key, x, y, labels, sel, size=16, h=40):
 
 
 FW, GAP = 1176, 32
-X = [48 + i * (FW + GAP) for i in range(3)]
+X = [48 + i * (FW + GAP) for i in range(4)]
 
 # ---- title -----------------------------------------------------------------------
 text("title", 48, 24, "Task Workbench · design", 34)
@@ -107,11 +108,13 @@ from render_workbench_table import read_table  # noqa: E402
 
 TABLE = _PLUGIN / "skills" / "task" / "haipipe-workbench-task" / "ref" / "workbench-table.md"
 SPACE_TEXT = {   # what each Space asks, and what it hands on: prose the table does not hold
-    "Scope": ("What is this Block for, and which Questions does it ask?",
-              "hands on: the Questions → Task › Questions"),
+    "Scope": ("What is this Block for, what does it ask and read?",
+              "hands on: the Questions → Task, one View per group"),
     "Task": ("What answers each Question?", "hands on: written reports → Check › Reports"),
     "Check": ("Did each run finish, and can each report be trusted?",
-              "hands on: a failed check routes back to the Task or report that owns it"),
+              "hands on: a failed check routes back; a passed one → Delivery"),
+    "Delivery": ("Which answers are ready to leave the Block?",
+                 "hands on: a released report, built as web, LaTeX and Word"),
 }
 
 
@@ -189,38 +192,39 @@ text("m-rules", 48, P1 + 56 + BH + 28,
 # ---- part 2 · the Task Space as the workbench shows it ---------------------------
 P2 = P1 + 56 + BH + 150
 F2 = len(E)
-text("p2-title", 48, P2, "2 · The Task Space: Question cards on the left, its Runs panel on the right", 28)
-Y0, W2 = P2 + 56, 3 * FW + 2 * GAP
+text("p2-title", 48, P2, "2 · The Task Space: one table per group, a row per Question; its Runs panel on the right", 28)
+Y0, W2 = P2 + 56, 4 * FW + 3 * GAP
 rect("ws-box", 48, Y0, W2, 1010)
 text("ws-head", 72, Y0 + 22, "<Block title>", 30)
 text("ws-band", 72, Y0 + 64, "<Project> / tasks / bNN_<block> · its spine, one line", 16, MUTED)
-chips("ws-space", 72, Y0 + 100, ["Guide", "Scope", "Task", "Check"], 2, size=19, h=50)
-chips("ws-view", 72, Y0 + 168, ["Questions", "Studio"], 0, size=15, h=38)
+chips("ws-space", 72, Y0 + 100, ["Guide", "Scope", "Task", "Check", "Delivery"], 2, size=19, h=50)
+chips("ws-view", 72, Y0 + 168, ["<group 1>", "<group 2>"], 0, size=15, h=38)
 
-CW = 2400                                          # the cards; the Runs panel takes the rest
+CW = 3000                                          # the table; the Runs panel takes the rest
 cx, cy = 72, Y0 + 236
-rect("q1-card", cx, cy, CW, 600)
-text("q1-head", cx + 20, cy + 16, "Q01 · <one main topic>", 22)
-text("q1-ask", cx + 20, cy + 50, "<the question, one line>", 16, MUTED)
-cols = [("Logic", ["Hypothesis", "<what we expect, and why>", "", "Acceptance", "<what would count as the answer>"]),
-        ("Task Work", ["b01 <block>", "  j01 <job>", "    t01 <task>  ▸ 2 runs", "      r01_<run>          ⧉",
-                       "      r11_<run>          ⧉", "      Task Page          ⧉", "    t02 <task>  ▸ 1 run",
-                       "  j02 <job>", "    t01 <task>  ▸ 1 run"]),
-        ("Report", ["<report title>   ⧉", "<the Opening's first paragraph: the answer",
-                    " in plain words>", "", "Drawing · <name>   ⧉"])]
+rect("q-table", cx, cy, CW, 690)
+text("q-group", cx + 20, cy + 16, "<group 1> · 8 Questions", 22)
 colw = CW / 3
-for n, (head, rows) in enumerate(cols):
+for n, head in enumerate(["Logic · the question", "Work · the Tasks and Runs", "Report · what it says"]):
+    text(f"q-head{n}", cx + 24 + n * colw, cy + 60, head, 16, MUTED)
+line("q-rule0", cx, cy + 92, CW)
+cols = [["(Question 1)", "<one main topic>", "<the question, one line>", "› More: what we expect · what would answer it"],
+        ["(Task Work)  8 Tasks · 14 runs", "b01 <block>", "  j01 <job>", "    t01 <task>  ▸ 2 runs",
+         "      r01_<run>          ⧉", "      Task Page          ⧉", "    t02 <task>  ▸ 1 run"],
+        ["(Report)", "<report title>   ⧉", "<the Opening's first paragraph>", "Drawing · <name>   ⧉", "report q01"]]
+for n, rows in enumerate(cols):
     x = cx + n * colw
     if n:
-        E.append(base(f"q1-col{n}", "line", x, cy + 96, 0, 480, stroke=RULE, rounded=False))
-        E[-1].update(points=[[0, 0], [0, 480]], lastCommittedPoint=None, startBinding=None, endBinding=None,
+        E.append(base(f"q1-col{n}", "line", x, cy + 104, 0, 300, stroke=RULE, rounded=False))
+        E[-1].update(points=[[0, 0], [0, 300]], lastCommittedPoint=None, startBinding=None, endBinding=None,
                      startArrowhead=None, endArrowhead=None)
-    text(f"q1-h{n}", x + 24, cy + 106, head, 22)
-    text(f"q1-b{n}", x + 24, cy + 152, "\n".join(rows), 17, INK, mono=n == 1)
-rect("q2-card", cx, cy + 624, CW, 64)
-text("q2-head", cx + 20, cy + 644, "Q02 · <another topic>   (closed: its answer in one line)", 20, MUTED)
-rect("q3-card", cx, cy + 704, CW, 64)
-text("q3-head", cx + 20, cy + 724, "Q11 · <a topic across Jobs>   (closed)", 20, MUTED)
+    text(f"q1-b{n}", x + 24, cy + 112, "\n".join(rows), 17, INK, mono=n == 1)
+line("q-rule1", cx, cy + 430, CW)
+text("q2-row", cx + 24, cy + 450, "(Question 2)  <another topic>        │  (Task Work) …        │  (Report) …", 18, MUTED)
+line("q-rule2", cx, cy + 510, CW)
+text("q3-row", cx + 24, cy + 530, "(Question 3)  <another topic>        │  (Task Work) …        │  (Report) …", 18, MUTED)
+line("q-rule3", cx, cy + 590, CW)
+text("q4-row", cx + 24, cy + 610, "▸ Not under a Question · N Tasks", 18, MUTED)
 
 rx = cx + CW + 40
 rect("runs", rx, cy, W2 - CW - 88, max(768, 110 + 50 * len([r for r in ROWS if r["Space"] == "Task" and r["Run type"] != "none"])), bg=PANEL)
@@ -236,10 +240,10 @@ text("runs-skill", dx + 16, cy + 114, f'Skill {PICK["Skill"]} · agent {PICK["Ag
 text("runs-prompt", dx + 16, cy + 150, "Prompt  [Copy]\n/haipipe-task: run <job>/<task>/runs/<run>.sh", 14, MUTED)
 text("runs-list", dx + 16, cy + 230, "Runs of the picked Question\nr01_<run>   complete   ⧉\nr11_<run>   complete   ⧉\n"
      "r01_<run>   running    ⧉", 14, INK, mono=True)
-text("runs-note", dx + 16, cy + 360, "Status lives here, never in the cards.\nPicking a Question narrows the list.\n"
+text("runs-note", dx + 16, cy + 360, "Status lives here, never in the table.\nPicking a Question row narrows the list.\n"
      "Copy hands the prompt to a session;\nnothing here starts a run.", 14, MUTED)
-text("ws-notes", 72, Y0 + 1020 - 50, "A card opens to Logic │ Task Work │ Report. Task Work writes each level once and folds the "
-     "Runs; a Run, a Task Page, the report and a drawing open in one pop-out with an own-tab link. No status in the card.",
+text("ws-notes", 72, Y0 + 1020 - 50, "A row is Logic │ Task Work │ Report, as Insight's partition table. Task Work writes each level once and "
+     "folds the Runs; a Run, a Task Page, the report and a drawing open in one pop-out with an own-tab link. No status in the table.",
      16, MUTED)
 
 # ---- part 3 · where things live --------------------------------------------------
@@ -251,7 +255,8 @@ tree = ("tasks/bNN_<block>/\n"
         "├── reports/qNN_<topic>/           one report Page per Question (Opening → Content)\n"
         "│   ├── qNN_<topic>.md · page.toml\n"
         "│   └── runs/                      the Page's own runs (CHECK)\n"
-        "├── studio/<name>.excalidraw       freeform Block drawings (Task › Studio)\n"
+        "├── studio/question-map.excalidraw generated by question_map.py (Scope › RoadMap Draw)\n"
+        "├── studio/<name>.excalidraw       freeform Block drawings (Scope › RoadMap Draw)\n"
         "└── jNN_<job>/\n"
         "    ├── src/                        the Job's shared workers (CODE_REVIEW.md beside them)\n"
         "    └── tNN_<task>/\n"
@@ -261,9 +266,9 @@ tree = ("tasks/bNN_<block>/\n"
         "        ├── scripts/config/rNN_<run>.yaml\n"
         "        ├── runs/rNN_<run>.sh        the Ticket: the only writer of its Result\n"
         "        └── results/rNN_<run>/       under $OUTPUT_ROOT: receipt · tables · fig_*.png · drawings")
-rect("tree-box", 48, P3 + 56, W2, 470)
+rect("tree-box", 48, P3 + 56, W2, 500)
 text("tree", 80, P3 + 84, tree, 20, INK, mono=True)
-text("tree-notes", 80, P3 + 56 + 470 + 24,
+text("tree-notes", 80, P3 + 56 + 500 + 24,
      "Guide's Method and Related Paper live with the skill (haipipe-workbench-task/ref/), the same for every Block. "
      "Heavy Run output goes to _WorkSpace/ProjectResult/; the Result keeps heavy.yaml.", 17, MUTED)
 

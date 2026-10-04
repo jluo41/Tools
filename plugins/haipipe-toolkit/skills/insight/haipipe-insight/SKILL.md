@@ -14,7 +14,7 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.7.1"
+  version: "2.8.1"
   last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -158,7 +158,9 @@ folder per question, `<L><NN>-<name>/` in its rung folder (`1-Data` … `4-Wisdo
 v2 (the short question, its name, the ask, Why now, What would answer it, the
 partitions it is asked on, live and retired needs with specs) and its one script;
 a board made the register way becomes a Prototype through `ref/carry_over.py`,
-word for word, never redrafted;
+word for word, never redrafted; the Prototype is the Block and keeps the Block's
+`studio/`, where `ref/question_map.py` draws the question map (every question, its
+reuse arrows) from the question files;
 `insights/Instance-Insight-<Dataset>/` mirrors it (`0-Meta`, `1-Data` … `4-Wisdom`,
 the same question folders): each holds a tracked copy of the question's `scripts/`
 (`prototype.lock`), one run per partition (`runs/<partition>.sh`), its `results/` and

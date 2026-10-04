@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by precedent`. A
 claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Internal Insights: induction, then abduction-1; the how comes from our own
-  data, as signed insights
+family: Internal Insights: abduction-1 on our own induction; the how comes from our own
+  data: signed insights, past designs, or readers who try the drafts
 reasoning: analogy: a past design and its result → adapted to new requirements
 move: Find the closest past design and adapt it to these requirements.
 taxonomy: Adaptation: an intervention shown to work is adapted to a new sub-population,

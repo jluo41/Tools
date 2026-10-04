@@ -386,7 +386,9 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn('<div class="lw-h" data-key="1a"><div class="lw-top"><span class="item-kind">Hypothesis 1a</span>'
                           '<span class="lw-mark">🔨</span></div><div class="lw-body"><b class="lw-name">Holds beyond the rating</b>:'
                           ' the trait adds to the star rating.</div>', html_)
-            self.assertIn('<span class="lw-mark">✅</span>', html_)                   # 1b's test is established
+            # 1b's test is established, but no Report answers Question 1 yet: stated, not shown (JL 261003)
+            self.assertIn('<span class="lw-mark">📝</span>', html_)
+            self.assertNotIn('<span class="lw-mark">✅</span>', html_)
             self.assertIn('<span class="item-kind">Claim 1a</span></div><div class="lw-body"><b class="lw-name">Beyond the rating</b>', html_)
             self.assertNotIn(">C1<", html_)                                           # the old id stays in the file only
             self.assertIn('<div class="lw-say">from Hypothesis 1a</div>', html_)
@@ -664,7 +666,8 @@ class PaperWorkbenchTest(unittest.TestCase):
         kinds = paper_run_types()
         self.assertEqual(sorted(kinds), ["delivery", "ideation", "sections", "story"])
         self.assertEqual([k["label"] for k in kinds["story"]],
-                         ["Story revise", "Claim review", "Task review", "Task runs", "Discovery runs", "Redraw"])
+                         ["Story revise", "Claim review", "Write the report", "Review the report", "Task review",
+                          "Task runs", "Discovery runs", "Redraw"])
         self.assertEqual(kinds["story"][-1]["views"], "roadmap-draw")   # RoadMap Draw's own card
         self.assertTrue(all(k["prompt"] for ks in kinds.values() for k in ks))   # each button copies a prompt
         self.assertEqual(kinds["delivery"][-1]["views"], "rounds")
@@ -681,6 +684,36 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual((rows[0]["num"], rows[0]["name"], rows[0]["state"]), ("1", "Introduction", "DRAFT"))
             self.assertEqual(rows[1]["state"], "not set up")               # a §8 row with no Section Page yet
             self.assertEqual(rows[0]["session"]["pair"], "paper-desk-introduction")
+
+    def test_a_report_per_question_fills_the_report_column(self):
+        # JL 261003: reports/qNN_<topic>/ at the board level, like studio/; Story › Logic + Work
+        # gains a Report column, and a question with no Report says so
+        from live.paper import logic_work_html
+        with tempfile.TemporaryDirectory() as tmp:
+            b = make_board(Path(tmp))
+            rep = b / "reports" / "q01_does_it_hold"
+            rep.mkdir(parents=True)
+            (rep / "q01_does_it_hold.md").write_text(
+                "# Question 1 · Does it hold?\npage-type: report\nstate: 🟢 ANSWERED\nanswers: RQ1\n"
+                "answer-status: answered\n\n## Opening\n\nIt holds: the estimate is 0.42 on the full cohort.\n\n"
+                "**Where this Page sits:** the Report for Question 1.\n\n## Content\n", encoding="utf-8")
+            (b / "reports" / "notes").mkdir()                          # not qNN_<topic>: ignored
+            d = collect(b, "/papers/Paper-Test/board.md")
+            d["root"] = Path(tmp).resolve()                             # as render_paper sets it
+            self.assertEqual(list(d["reports"]), ["1"])
+            self.assertEqual(d["reports"]["1"]["status"], "answered")
+            self.assertEqual(d["reports"]["1"]["answer"], "It holds: the estimate is 0.42 on the full cohort.")
+            html = logic_work_html(d)
+            self.assertIn('lw-3', html)
+            self.assertIn('>Report<', html)
+            self.assertIn('Answered', html)
+            self.assertIn('It holds: the estimate is 0.42 on the full cohort.', html)
+            self.assertIn('reports%2Fq01_does_it_hold%2Fq01_does_it_hold.md', html)
+            shutil.rmtree(b / "reports")
+            d = collect(b, "/papers/Paper-Test/board.md")
+            d["root"] = Path(tmp).resolve()
+            self.assertEqual(d["reports"], {})
+            self.assertIn("No report yet.", logic_work_html(d))
 
     def test_render_needs_no_console_and_links_back_to_outline(self):
         with tempfile.TemporaryDirectory() as tmp:

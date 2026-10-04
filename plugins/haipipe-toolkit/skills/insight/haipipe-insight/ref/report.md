@@ -6,7 +6,14 @@ runs compute, the report says what the answer is.
 
 ## What it is
 
-The report IS the answering page: one Page Folder per question per partition
+**Two layouts.** On a Prototype board (`prototype-contract.md`) the answering page is one
+per question, `<rung>/<L><NN>-<name>/<L><NN>-<name>.md` in the Instance, with one section
+per partition in `partitions.md` order; its runs are `runs/<partition>.sh`, its evidence
+`results/<partition>/` and the generated `reports/<partition>/report.md`. The layout below
+is a register board's, made before the Prototype; such boards keep it. The flow and what
+Insight adds to the Page Face are the same for both.
+
+On a register board the report IS the answering page: one Page Folder per question per partition
 (`<L><NN>-<partition>-<slug>/`), at every level, Data, Information, Knowledge
 and Wisdom. There is no separate report file and no Insight page shape. The
 page is a `haipipe-page` Page Face and is written through that skill's own

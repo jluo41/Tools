@@ -200,7 +200,7 @@ settings:
   ticket_args: $TICKET_ARGS_JSON
 notebook: $NOTEBOOK_RECORD
 duration: $duration
-headline: $headline
+headline: $(printf '%s' "$headline" | python3 -c 'import json, sys; print(json.dumps(sys.stdin.read()))')
 EOF
   mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
 }

@@ -63,7 +63,7 @@ examples/<project>/
 ├── discoveries/          LAZY · external-evidence executor
 ├── diagram/              LAZY · Project story and Board/view surfaces
 ├── papers/               LAZY · academic consumers
-├── insights/             LAZY · one InsightBoard per dataset
+├── insights/             LAZY · Insight Prototypes (Blocks) and Instances
 ├── designs/              LAZY · Design boards and Design Folders
 └── external/             LAZY · read-only upstream repositories/assets
 ```
@@ -78,7 +78,7 @@ submodules, are legacy debt and are not renamed without an explicit migration.
 
 ```text
 external/ ──▶ discoveries/ ──┐
-                             ├──▶ insights/ (one board per dataset) ──▶ papers/
+                             ├──▶ insights/ (Prototype ──▶ Instance) ──▶ papers/
 tasks/ ──────────────────────┘                                      └──▶ designs/
 ```
 
@@ -88,14 +88,14 @@ tasks/ ──────────────────────┘    
 | `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
 | `diagram/` | navigation and interpretation surfaces | Project story plus project-level Boards and meetings |
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
-| `insights/` | one InsightBoard per dataset: questions, reports, light run results | `haipipe-insight`; code stays in `tasks/` |
+| `insights/` | a Prototype (Block: questions, scripts, studio) and one Instance per dataset (runs, results, pages) | `haipipe-insight`; see `insights/` below |
 | `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 
-An InsightBoard is a world of its own (JL 261001), one folder per dataset; a
-Task-side Insight Page stays on its Task Board. Reusable findings flow to Paper
-and Design through their contracts. Raw Task Results never move to the Project
-root; a board's light results live in its own `_results/`.
+Insight is a world of its own (JL 261001); a Task-side Insight Page stays on
+its Task Board. Reusable findings flow to Paper and Design through their
+contracts. Raw Task Results never move to the Project root; an Instance's light
+results live in its question folders, heavy output in `ProjectResult`.
 
 ## Profiles
 
@@ -150,6 +150,39 @@ incrementally; no routine update moves an active Board.
 
 Block-local `board.md` remains under its owning `tasks/bNN_.../` Block and does
 not move to the Project diagram tree.
+
+## `insights/`
+
+An Insight topic is two boards (JL 261003). The Prototype is Block level: the
+topic's design, its partitions and one folder per question with that question's
+own script, plus the Block's `studio/`. It holds no data. An Instance reads one
+dataset through one Prototype; a new dataset is a new Instance, a new subject
+with a different input a new Prototype.
+
+```text
+insights/
+├── Prototype-Insight-<Topic>/      the Block: the design, no data
+│   ├── board.md                    board-kind: insight-prototype
+│   ├── 0-Meta/                     meta.md · partitions.md · thresholds.yaml
+│   ├── 1-Data/ … 4-Wisdom/         one folder per question: its file and scripts/
+│   └── studio/                     the Block's studio: question-map.excalidraw
+│                                   (generated) and hand sketches
+├── Instance-Insight-<Dataset>/     one extract read through one Prototype:
+│                                   script copies, runs, results, the pages
+└── <Dataset>-InsightBoard/         older register-kind board, until carried over
+```
+
+- **The Prototype is the Block.** Inside it there is no B-J-T-R: the rung is the
+  Job, the question folder the Task, an Instance's partition run the Run.
+- **The studio lives at Block level.** `studio/` sits beside the Prototype's
+  `board.md`; `question-map.excalidraw` is generated from the question files
+  and never edited, and each hand sketch is its own file. An Instance has no
+  studio of its own; the workbench shows its Prototype's.
+- **Older boards.** A register-kind `<Dataset>-InsightBoard/` keeps its layout
+  until it is carried over into a Prototype; it is not migration debt.
+
+The internals belong to `haipipe-insight` (`ref/prototype-contract.md`); a
+Project audit checks only that `insights/` holds these folder kinds.
 
 ## Root prohibitions and debt
 

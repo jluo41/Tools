@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by slots`. A claim
 names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Making internal insights next: the design is built so the Exp teaches; the
-  induction comes after it
+family: Goal Only: abduction-2; the design reads only the task, so the how is invented,
+  or several hows are sent and the Exp picks
 reasoning: abduction on one slot at a time; the Exp's factorial data does the induction,
   slot by slot
 move: Split the artifact into slots, list the options for each, change one slot at a

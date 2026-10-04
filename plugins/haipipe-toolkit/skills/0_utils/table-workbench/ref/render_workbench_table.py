@@ -100,7 +100,10 @@ def read_cards(path: Path) -> list[dict]:
             continue
         for mark, col in (("🤖 AGENT", "Agent"), ("🧩 SKILL", "Skill"), ("✍️ SIGNS", "Person signs")):
             if card is not None and line.startswith(mark):
-                card[col] = line[len(mark):].strip()
+                value = line[len(mark):].strip()
+                # `🧩 SKILL <button label>: a` names one button's skill (the Runs panel's form)
+                own = card["Run type"] + ":"
+                card[col] = value[len(own):].strip() if value.startswith(own) else value
     return cards
 
 

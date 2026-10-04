@@ -16,6 +16,8 @@ ref/                        📜 THE CONSTITUTION · display-unit-output-contrac
                                + display-intake-contract.md; every renderer obeys them
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
+excalidraw-section/         🗺 working drawing · paper → Sections → paragraphs → Bullets
+                               → evidence cards, left to right, generated from the plans
 html-to-svg/ · icon-to-svg/ 🔧 converters
 figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and

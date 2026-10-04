@@ -34,6 +34,27 @@ def url(**values):
     return "/_board/guide?" + urlencode(values)
 
 
+# A family's declared drawings, view only, through Guide's own route (JL 261003: a `--only
+# labeling` host refuses /_excalidraw/, so the methods canvas and the Workbench design came up
+# 404). `method` is the entry's method_drawing; `explain-<view>` is the board an `explain`
+# drawing names. Only these declared files are served, never an arbitrary path.
+def family_drawing(profile, key):
+    if key == "method":
+        return profile.get("method_drawing") or None
+    if key.startswith("explain-"):
+        explain = (profile.get("explain") or {}).get(key[len("explain-"):])
+        if explain and explain[0] == "/_excalidraw/":
+            board = str(explain[1].get("board", ""))
+            return board[len("Tools/"):] if board.startswith("Tools/") else None
+    return None
+
+
+def drawing_url(family, key, file=""):
+    # `file` names the declared drawing, so the address says which file it shows; Guide checks it
+    return url(mode="drawing", guide="1", board=url(mode="drawing-scene", family=family, drawing=key).lstrip("/"),
+               family=family, drawing=key, file=file)
+
+
 def script_json(value):
     return json.dumps(value, ensure_ascii=False).replace("<", "\\u003c")
 
@@ -323,7 +344,7 @@ def drawing_row(family, view, context, opened=False):
             '</div></details>')
 
 
-def explain_html(profile, view, context):
+def explain_html(profile, view, context, family=None):
     """A family's own explanation page for one Guide View (its optional `explain` entry:
     view -> (route, params)), opened inside Guide. The family's presenter renders and owns
     it; Guide only frames it, for the instance the context names."""
@@ -333,15 +354,17 @@ def explain_html(profile, view, context):
     route, params, title = (tuple(explain) + ("", ""))[:3]
     drawing = route == "/_excalidraw/"
     # a design drawing opens read-only in Guide's viewing mode (guide=1), at a fixed canvas height
-    source = route + "?" + urlencode(dict(params, guide="1") if drawing else dict(params, path=context.get("path") or ""))
+    source = (drawing_url(family, "explain-" + view, family_drawing(profile, "explain-" + view) or "") if drawing and family else
+              route + "?" + urlencode(dict(params, guide="1") if drawing else dict(params, path=context.get("path") or "")))
     size = "height:550px" if drawing else "min-height:70vh"
-    # a titled explanation folds like the RoadMap card, open at first (JL 261003: "why this draw
-    # cannot be hidden?"); an untitled one is the View's body and stays open
-    head, tail = ((f'<details class="wg-drawing wg-explain" data-drawing="{esc(view)}-explain" open><summary><span><strong>' + esc(title)
+    # a titled explanation folds like the RoadMap card, closed at first so the View opens as a list
+    # of cards (JL 261003: "why this draw cannot be hidden?", "make it into this style"), and its
+    # frame loads when the card opens (guide.js); an untitled one is the View's body and stays open
+    head, tail = ((f'<details class="wg-drawing wg-explain" data-drawing="{esc(view)}-explain"><summary><span><strong>' + esc(title)
                    + '</strong></span></summary><div class="wg-drawing-body">', '</div></details>') if title else
                   ('<section class="wg-explain">', '</section>'))
     return (head +
-            f'<iframe class="wg-explain-frame" title="{esc(profile["label"])} · {esc(view)}" src="{esc(source)}" '
+            f'<iframe class="wg-explain-frame" title="{esc(profile["label"])} · {esc(view)}" {"data-src" if title else "src"}="{esc(source)}" '
             # no referrer: the Excalidraw viewer refuses a same-site embed that sends one
             'referrerpolicy="no-referrer" '
             f'style="display:block;width:100%;{size};border:0"></iframe>'
@@ -408,10 +431,11 @@ def workbench_table(profile):
             tds.append(f'<td>{cell(row["Folder"])}</td>')
         body.append("<tr>" + "".join(tds) + "</tr>")
     head = "".join(f"<th>{c}</th>" for c in TABLE_HEAD + (("Folder",) if folder else ()))
-    return ('<section class="wg-explanation"><h2>Workbench Table</h2>'
-            '<p>Every run a person can start, by Space and View: the agent that does it, the skill that tells it how'
-            + (', and the folder it writes.' if folder else '.') + '</p>'
-            f'<div class="wg-table"><table><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div></section>')
+    # a closed card like the drawings beside it, its name only (JL 261003: "make it into this
+    # style", "remove this, we don't need this")
+    return ('<details class="wg-drawing" data-drawing="workbench-table"><summary><span><strong>Workbench Table</strong>'
+            '</span></summary><div class="wg-drawing-body">'
+            f'<div class="wg-table"><table><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div></div></details>')
 
 
 def guide_runs(profile, view):
@@ -454,10 +478,10 @@ def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", 
 
     def lead(keys):
         """A family's own explanation pages for these View keys: before the View's body or after it."""
-        first = "".join(explain_html(profile, key, context) for key in keys
-                        if len(explain.get(key) or ()) > 3 and explain[key][3] == "first")
-        after = "".join(explain_html(profile, key, context) for key in keys
-                        if explain.get(key) and not (len(explain[key]) > 3 and explain[key][3] == "first"))
+        first = "".join(explain_html(profile, key, context, family) for key in keys
+                        if len(explain.get(key) or ()) > 3 and explain[key][3] in ("first", "only"))
+        after = "".join(explain_html(profile, key, context, family) for key in keys
+                        if explain.get(key) and not (len(explain[key]) > 3 and explain[key][3] in ("first", "only")))
         return first, after
 
     section = lambda title, text: f'<section class="wg-explanation"><h2>{esc(title)}</h2><p>{esc(text)}</p></section>'
@@ -468,7 +492,11 @@ def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", 
         content += after
     elif view == "method":
         first, after = lead(["method", "methods"])
-        content = first + "".join(section(f"{i}. {name}", body) for i, (name, body) in enumerate(profile["method"], 1)) + after
+        # "only": the family's page carries its own steps, so Guide's list would repeat them (JL 261003,
+        # Design: "why we still have this? I am thinking to merge this together")
+        only = (explain.get("method") or ())[3:4] == ("only",)
+        steps = "" if only else "".join(section(f"{i}. {name}", body) for i, (name, body) in enumerate(profile["method"], 1))
+        content = first + steps + after
     elif view == "roadmap-draw":
         first, after = lead(["roadmap-draw", "skill-set", "workbench", "folder-map"])
         folders = "".join((f'<li><a href="{esc(url(mode="folder", family=family, row=i, **context))}" target="_blank" '
@@ -515,6 +543,83 @@ def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", 
             f'<script type="application/json" id="wg-boot">{script_json(boot)}</script><script>{js}</script></body></html>')
 
 
+# Guide › Method's family page (JL 261003: "create a method canvas as they do"): the family's
+# method file with its method cards, then its methods canvas, as Insight's and Design's pages show
+# them. A family names `method_doc` and `method_drawing` in its guide_families.py entry and points
+# its `explain["method"]` here (mode=method); the cards and the papers are drawn by the Design
+# workbench's renderer, so every family's cards look the same. The canvas opens editable: it is
+# the source, and edits save back to the skill's ref/.
+def method_page_html(family, profile, editable=True):
+    from live.designboard import _CSS, _plain_md, method_cards
+    doc = REPOSITORY / profile["method_doc"]
+    papers = REPOSITORY / profile.get("papers_table", "")
+    if doc.is_file():
+        cards = method_cards(REPOSITORY, REPOSITORY.parent, doc, papers) if papers.is_file() else None
+        page = re.sub(r"<h1>.*?</h1>", "", _plain_md(doc.read_text(encoding="utf-8"), cards), count=1)
+        # every part folds, in the card style of Design's Method page (JL 261003: "make each
+        # section collapsable", "this is not updated following others"), and every card starts
+        # closed, so the page opens as a list of its parts (JL 261003: "make it into this style")
+        lead, *parts = re.split(r"(?=<h2>)", page)
+
+        def fold(part):
+            title = re.match(r"<h2>(.*?)</h2>", part)
+            name = re.sub(r"<[^>]+>", "", title.group(1))
+            return (f'<details class=sec-fold><summary><strong>{name}</strong>'
+                    f'</summary><div class=sec-body>{part[title.end():]}</div></details>')
+        page = lead + "".join(fold(part) for part in parts)
+        body = f'<article class=theory>{page}</article>'
+    else:
+        body = f'<div class=empty>No method file yet: this family keeps it as <code>{esc(profile["method_doc"])}</code>.</div>'
+    drawing = profile.get("method_drawing", "")
+    if drawing and (REPOSITORY / drawing).is_file():
+        # view only inside Guide; it is edited full screen, in its own tab (JL 261003: an editable
+        # methods canvas open in Guide beside a Page's editable RoadMap shared the browser's
+        # drawing storage, and the RoadMap saved the methods drawing into its own file)
+        src = drawing_url(family, "method", drawing)
+        edit = "/_excalidraw/?board=" + quote("Tools/" + drawing, safe="/") + "&edit=1"
+        # no file notes on screen (JL 261003): the bar holds only the way to open it full screen;
+        # a host that cannot edit (`--only`) shows no edit link
+        canvas = ('<div class=st-bar><span></span>'
+                  + (f'<a href="{esc(edit)}" target="_blank" rel="noopener">Edit full screen ↗</a>' if editable else '')
+                  + '</div>'
+                  # no referrer: Excalidraw refuses a same-site embed that sends one
+                  f'<iframe class=st-frame title="{esc(profile["label"])} methods" referrerpolicy="no-referrer" '
+                  f'data-src="{esc(src)}"></iframe>'
+                  # the canvas loads only near view: it takes focus as it loads, and a canvas loaded at
+                  # once scrolls Guide down to it and leaves the page blank above (as Insight's does)
+                  "<script>(function(){var fs=document.querySelectorAll('iframe.st-frame[data-src]'),"
+                  "go=function(f){if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)};"
+                  "if(!window.IntersectionObserver){fs.forEach(go);return}"
+                  "var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)"
+                  "{go(e.target);io.unobserve(e.target)}})},{rootMargin:'400px'});fs.forEach(function(f){io.observe(f)});"
+                  # a reader may have left the drawing card closed: opening it loads the canvas (as Design's does)
+                  "document.addEventListener('toggle',function(ev){var d=ev.target;if(d.matches&&d.matches('details.draw-fold')&&d.open)"
+                  "d.querySelectorAll('iframe.st-frame[data-src]').forEach(go)},true)})()</script>")
+    else:
+        canvas = (f'<div class=empty>No methods drawing yet: draw it from the method file with '
+                  f'<code>servers/workbench-shared/studio/method-canvas.py</code>.</div>')
+    height = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
+              "height:document.documentElement.scrollHeight},location.origin)}"
+              "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"
+              "addEventListener('load',post);document.addEventListener('toggle',post,true)})()</script>")
+    # a reader's folds are kept per family and part, so the page opens as it was left
+    remember = ("<script>(function(){document.querySelectorAll('details.sec-fold,details.draw-fold').forEach(function(d,i){"
+                f"var k='method-fold:{esc(family)}:'+i;try{{var v=localStorage.getItem(k);if(v!==null)d.open=v==='1'}}catch(e){{}}"
+                "d.addEventListener('toggle',function(){try{localStorage.setItem(k,d.open?'1':'0')}catch(e){}})})})()</script>")
+    # the page sits inside Guide: a pinch over it must not zoom the tab (guide-mount.js says why)
+    no_pinch = ("<script>addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},{passive:false})</script>")
+    return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
+            # inside Guide the frame takes this page's height, so nothing here is sized by the viewport
+            f'<title>{esc(profile["label"])} · Method</title><style>{_CSS}body{{max-width:none;padding:2px 2px 12px}}'
+            '.st-frame{height:640px;min-height:0}'
+            # the folding cards (draw-fold, sec-fold) are Design's, from its _CSS above
+            'article.theory h3{font-size:14.5px;margin:18px 0 6px}</style></head><body><main>'
+            # the picture first, in the card Guide › RoadMap Draw gives "Workbench design", then the
+            # document's parts (JL 261003, as Design's Method page)
+            '<details class=draw-fold><summary><strong>Method design</strong></summary>'
+            f'<div class=draw-body>{canvas}</div></details>{body}</main>{remember}{height}{no_pinch}</body></html>')
+
+
 class WorkbenchGuideMixin:
     def guide_path_allowed(self, path):
         from host_registry import static_path_allowed
@@ -539,6 +644,31 @@ class WorkbenchGuideMixin:
             return self.guide_send("Guide family is not served by this host.", 404, head_only=head_only)
         try:
             contract_path(family, 0)  # optional plugins must actually be present
+            if mode == "method":
+                return self.guide_send(method_page_html(family, family_profile(family, {}), editable=not only),
+                                       head_only=head_only)
+            if mode in ("drawing", "drawing-scene"):
+                key = get("drawing")
+                rel = family_drawing(family_profile(family, {}), key)
+                if not rel or not (REPOSITORY / rel).is_file():
+                    return self.guide_send("This family's Guide declares no such drawing.", 404, head_only=head_only)
+                if mode == "drawing-scene":
+                    return self.guide_send((REPOSITORY / rel).read_text(encoding="utf-8"),
+                                           content_type="application/json; charset=utf-8", head_only=head_only)
+                canonical = drawing_url(family, key, rel)
+                if query != parse_qs(urlparse(canonical).query):
+                    self.send_response(303)
+                    self.send_header("Location", canonical)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                # the same viewer and storage isolation as mode=canvas, read only (guide=1)
+                original = self.path
+                self.path = "/_excalidraw/?" + urlparse(original).query
+                try:
+                    return self.proxy_excalidraw(head_only=head_only)
+                finally:
+                    self.path = original
             if mode == "source":
                 path = contract_path(family, int(get("source", "0")), {"file": get("file")})
                 body = f'<!doctype html><meta charset="utf-8"><title>{esc(path.name)}</title><h1>{esc(path.relative_to(REPOSITORY))}</h1><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{esc(path.read_text(encoding="utf-8"))}</pre>'

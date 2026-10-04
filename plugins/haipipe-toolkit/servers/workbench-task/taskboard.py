@@ -466,7 +466,7 @@ class TaskBoardMixin:
         if action == "add-resource":
             from argparse import Namespace
             import importlib.util
-            script = Path(__file__).resolve().parents[2] / "skills/task/haipipe-task/ref/block_questions.py"
+            script = Path(__file__).resolve().parents[2] / "skills/question/haipipe-question/ref/block_questions.py"
             values = {name: payload.get(name, "") for name in ("title", "url", "contribution", "notes")}
             ids = payload.get("questions", [])
             if (any(not isinstance(value, str) or len(value) > 10000 for value in values.values())

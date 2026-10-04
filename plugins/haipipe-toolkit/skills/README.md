@@ -134,6 +134,9 @@ There is no `QA/` directory, QA answer bank, QA digest, QA command, or QA
 binding in this contract. Questions are ordinary bounded Run requests: reuse
 an existing immutable Result or open the shallowest new Run. The consuming
 Page, not the executor, records the Supporting/Local relationship.
+A board's own Questions are a different thing: topics recorded in its
+`reports/qNN_<topic>/` folders, each answered by a report Page. They are owned
+by `question/haipipe-question`.
 
 
 Current skill buckets
@@ -142,6 +145,8 @@ Current skill buckets
 ```text
 0_connect / 0_utils   connectors and shared helpers
 board                 Board format, renderer, Page/Folder contracts
+question              questions on any board: a topic and its asks, reports/qNN_<topic>/, the register,
+                      shaping an ask (question-asking methods), reviewing it (Q1-Q7), chat matching
 project               project container setup
 task                  internal execution and task-domain families
 discovery             Search, Review, and Synthesize external evidence

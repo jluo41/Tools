@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by user test`. A
 claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Making internal insights now: induction in small loops; the AI learns from
-  readers while it designs
+family: Internal Insights: abduction-1 on our own induction; the how comes from our own
+  data: signed insights, past designs, or readers who try the drafts
 reasoning: abduction, deduction and induction in small loops: draft, show readers,
   learn, revise
 move: Show drafts to readers, real or simulated, and revise on what they do.

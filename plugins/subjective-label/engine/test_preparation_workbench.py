@@ -197,7 +197,7 @@ def test_legacy_job_does_not_offer_retroactive_preparation_runs(tmp_path) -> Non
     (tmp_path / "config.yaml").write_text("schema_version: subjective-label/v2\n", encoding="utf-8")
     vm = {"root": tmp_path, "runs": [], "preparation": {"attached": False, "linked": False}}
     view = workbench._preparation_view(vm)
-    assert "<h2>Raw corpus</h2>" in view
+    assert "<h2>The data</h2>" in view
     assert "<h2>Items to label</h2>" in view
     assert not [t for t in workbench._run_types(vm)["data"] if t.get("family") == "corpus"]
 

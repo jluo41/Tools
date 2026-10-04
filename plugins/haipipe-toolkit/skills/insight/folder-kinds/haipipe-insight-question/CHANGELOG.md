@@ -1,5 +1,9 @@
 # haipipe-insight-question · version history
 
+## 1.10.0 · 2026-10-03 · The review moves to the question world (JL 261003)
+
+- The seven tests and the verdict now live in `question/haipipe-question-review`, written for any board's ask; this skill keeps what Insight adds: Q4 is the rung, Q5 is the extract, retired needs and successor ids, carried words. An Insight question is an ask; its topic, if any, is a `haipipe-question` board Question.
+
 ## 1.9.0 · 2026-10-02 · The question review, Q1-Q7 (JL 261002)
 
 - GI1 adds the question review: one thing, logic, consumer, rung, answerable, new, open. A reviewer agent proposes keep, split, merge or move with reasons; a person signs; a signed change retires the old question, never edits it. The check only flags Q1, Q2, Q4 and Q6 suspects. On a Prototype board the question file v2 holds the register division's fields.

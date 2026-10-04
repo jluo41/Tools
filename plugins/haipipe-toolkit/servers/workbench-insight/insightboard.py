@@ -1606,7 +1606,7 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
              "prompt": f"/haipipe-insight carry a register board over into this board's Prototype ({rel})."},
             {"label": "Register a cut", "skill": "haipipe-insight-partition (new)", "rows": [],
              "prompt": f"/haipipe-insight add a partition to the Prototype's 0-Meta/partitions.md, with its filter and why ({rel})."},
-            {"label": "Review the questions", "skill": "haipipe-insight-question", "rows": [],
+            {"label": "Review the questions", "skill": "haipipe-question-review", "rows": [],
              "prompt": f"/haipipe-insight review the Prototype's questions by Q1-Q7 and propose keep, split, merge or move ({rel})."},
             {"label": "Plan the evidence", "skill": "haipipe-insight-evidence-plan", "rows": [],
              "prompt": f"/haipipe-insight-evidence-plan {{question}}: write its needs, each with a full work spec ({rel})."},
@@ -1614,6 +1614,9 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
              "prompt": f"/haipipe-insight write the Prototype script for {{question}} from its live needs ({rel})."},
             {"label": "Review the script", "skill": "haipipe-insight", "rows": [],
              "prompt": f"/haipipe-insight review the script of {{question}}: an agent that did not write it ({rel})."},
+            {"label": "Draw the question map", "skill": "haipipe-insight", "rows": [],
+             "prompt": "/haipipe-insight redraw the Prototype's question map: run ref/question_map.py on the "
+                       "Prototype board; it writes studio/question-map.excalidraw, never edited by hand."},
         ],
         "scope": [
             {"label": "Prepare extract", "skill": "haipipe-task", "rows": [],
@@ -1764,20 +1767,18 @@ def _render_delivery(snap: dict) -> str:
                     f'<table><tr><th>Wisdom answer</th><th>Serves</th><th>Current eligibility</th></tr>{hrows}</table>', True))
 
 
-# Insight › Methods (JL 261002: "add a new subspace under Insight, about Insight Discovery
-# Method, and Design Method"): how an answer is found from data, how an inquiry is designed
-# before data is read, and the papers behind both. The files are the workbench's own, the
-# same for every board; the cards and paper cards are drawn as the Design workbench draws
-# its Theory of Design Space.
+# Guide › Method (JL 261003: "update the Guide > Method completely"): one file, the Insight method,
+# naming its methods after the three columns of every question: question-asking (Logic, before any data
+# is read), question-answering (Work, the run) and question-results reading (Report, the page). Not "design" or "discovery": those are the
+# Design and Discovery families. The files are the workbench's own, the same for every board; the cards
+# and paper cards are drawn as the Design workbench draws its methods.
 METHODS_REF = SKILLS / "insight" / "haipipe-workbench-insight" / "ref"
-DISCOVERY_METHODS = METHODS_REF / "insight-discovery-methods.md"
-DESIGN_METHODS = METHODS_REF / "insight-design-methods.md"
+METHOD_DOC = METHODS_REF / "insight-method.md"
 METHOD_PAPERS = METHODS_REF / "insight-papers.md"
-# The methods studio (JL 261002, as the Design board's Theory › Methods studio): one Excalidraw
-# drawing of how discovery and design methods meet, opened in the self-hosted canvas and saved back.
+# The methods drawing (JL 261002, as the Design family's): one Excalidraw drawing of the loop and the
+# question-asking, question-answering and question-results reading methods, opened in the self-hosted canvas and saved back.
 METHOD_STUDIO = METHODS_REF / "insight-methods.excalidraw"
-METHOD_VIEWS = (("discovery", "Discovery methods"), ("design", "Design methods"), ("studio", "Methods studio"),
-                ("papers", "Papers"))
+METHOD_VIEWS = (("method", "Method"), ("papers", "Papers"))
 
 
 def _studio_html(root: Path, editable: bool = True) -> str:
@@ -1787,20 +1788,17 @@ def _studio_html(root: Path, editable: bool = True) -> str:
     if not rel:
         return f'<p class=note>No methods drawing yet: the insight workbench keeps it as <code>ref/{METHOD_STUDIO.name}</code>.</p>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + ("&edit=1" if editable else "")
-    saves = f' Edits save to <code>ref/{METHOD_STUDIO.name}</code>.' if editable else ""
-    return ('<div class=st-bar><span class=mut>How an answer is found and how an inquiry is designed: the shared loop, '
-            f'the discovery and design methods and where they meet.{saves}</span>'
+    return ('<div class=st-bar><span class=mut>The six steps, and the question-asking, question-answering and question-results reading methods of '
+            'steps 1, 3 and 5. You can edit it here.</span>'
             f'<a href="{_e(url)}" target="_blank" rel="noopener">Open full screen ↗</a></div>'
             # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
             f'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" data-src="{_e(url)}"></iframe>')
 
 
-# Insight › Studio: this board's own working drawings (workbench-shared README, "Task alignment"):
-# a freeform list of folding rows, one per studio/<name>.excalidraw beside board.md. A row's canvas
+# Prototype › RoadMap Draw: the Prototype's studio/ (workbench-shared README, "Task alignment"): a
+# freeform list of folding rows, one per studio/<name>.excalidraw beside its board.md. A row's canvas
 # loads when it opens, view only; Edit drawing hands it the pen. The shared Studio routes (xcal.py)
-# mint and save the scene. No drawing type, template or metadata is required. The family's own
-# explanatory drawings stay in Guide.
-_DRAW_NAME = r"[A-Za-z0-9][A-Za-z0-9_ \-]{0,79}"
+# save the scene. The family's own explanatory drawings stay in Guide.
 
 
 def _board_drawings(snap: dict) -> tuple[str, list[dict]]:
@@ -1836,8 +1834,8 @@ def _generated(path: Path, board: Path) -> dict:
 def _render_studio(snap: dict) -> str:
     folder, drawings = _board_drawings(snap)
     lead = ('<h2>RoadMap Draw</h2><p class=lead>The Prototype\'s studio: the question map, drawn from the question '
-            'files, then your own sketches. Every board that reads this Prototype sees the same ones. Each drawing '
-            'opens on its own, and several can stay open. How the Insight family works is in Guide.</p>')
+            'files, then any sketch in its studio/. Every board that reads this Prototype sees the same ones. Each '
+            'drawing opens on its own, and several can stay open. How the Insight family works is in Guide.</p>')
     if snap["static"] or not folder:
         rows = "".join(f'<li><span class=mono>{_e(d["path"])}</span></li>' for d in drawings)
         return lead + (f'<ul>{rows}</ul>' if rows else '<p class=note>No drawings yet.</p>') + \
@@ -1859,36 +1857,43 @@ def _render_studio(snap: dict) -> str:
                 # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
                 f'<iframe class=st-frame title="{_e(d["title"])}" referrerpolicy=no-referrer data-src="{_e(url)}"></iframe>'
                 '</details>')
-    empty = ('<p class=note id=draw-none>No drawings yet. Add one to sketch the questions, '
-             'what is answered so far, or what comes next.</p>')
+    empty = ('<p class=note id=draw-none>No drawings yet: run "Draw the question map" in the Runs panel.</p>')
+    # no Add drawing form (JL 261003: "I don't need this"): the studio's drawings are the generated
+    # question map and any sketch a run writes into studio/
     return (lead + f'<div class=draw-list data-studio="{_e(folder)}">'
-            + ("".join(row(d) for d in drawings) or empty)
-            + '<form class=draw-add><input name=name required maxlength=80 placeholder="Drawing 1" '
-              f'pattern="{_DRAW_NAME}" aria-label="Drawing name"> <button type=submit>+ Add drawing</button> '
-              f'<span class=mut role=status></span><div class=mut>Saved as <span class=mono>{_e(folder)}/&lt;name&gt;.excalidraw</span></div></form></div>')
+            + ("".join(row(d) for d in drawings) or empty) + '</div>')
 
 
-def _render_methods(snap: dict, view: str = "discovery", only: tuple = (), editable: bool = True) -> str:
-    """One view at a time, its name in a pill bar above it; `only` keeps those views."""
+def _render_methods(snap: dict, view: str = "method", only: tuple = (), editable: bool = True) -> str:
+    """Guide › Method or Guide › Related Paper, one per page; `only` keeps those views."""
     from .designboard import _plain_md, method_cards
     from .related_papers import papers_page   # the shared Related Paper renderer (table-papers)
     board, root = snap["board"], Path(snap["root"])
 
-    def doc(path: Path, what: str) -> str:
-        if not path.is_file():
-            return f'<p class=note>No {what} file yet: the insight workbench keeps it as <code>ref/{path.name}</code>.</p>'
-        return f'<article class=mdoc>{_plain_md(_read(path), method_cards(board, root, path, METHOD_PAPERS))}</article>'
-    views = {"discovery": doc(DISCOVERY_METHODS, "discovery methods"),
-             "design": doc(DESIGN_METHODS, "design methods"),
-             "studio": _studio_html(root, editable),
-             "papers": papers_page(board, root, METHOD_PAPERS) if METHOD_PAPERS.is_file() else
-                       f'<p class=note>No papers file yet: the insight workbench keeps it as <code>ref/{METHOD_PAPERS.name}</code>.</p>'}
+    def method() -> str:
+        # one page, as the Design family's (JL 261003): the drawing, then the six steps as the spine, the
+        # steps that need detail in depth, why it works, and the reference. Every section is a fold card in
+        # the Guide's RoadMap style ("I want the style like this"; "make each section collapsable"); the
+        # six steps open, the rest closed, so the page opens as its outline. No tab bar.
+        def fold(title: str, body: str, open_: bool = False) -> str:
+            return (f'<details class=msec{" open" if open_ else ""}><summary><strong>{title}</strong></summary>'
+                    f'<div class=msec-body>{body}</div></details>')
+        drawing = fold("Methods drawing", _studio_html(root, editable))
+        if not METHOD_DOC.is_file():
+            return drawing + f'<p class=note>No method file yet: the insight workbench keeps it as <code>ref/{METHOD_DOC.name}</code>.</p>'
+        html = re.sub(r"<h1>.*?</h1>", "", _plain_md(_read(METHOD_DOC), method_cards(board, root, METHOD_DOC, METHOD_PAPERS)), count=1)
+        parts = re.split(r"<h2>(.*?)</h2>", html)            # [before, title, body, title, body, ...]
+        cards = "".join(fold(parts[k], parts[k + 1], open_=(k == 1)) for k in range(1, len(parts), 2))
+        return drawing + f'<article class=mdoc>{parts[0]}{cards}</article>'
+    views = {"method": method,
+             "papers": (lambda: papers_page(board, root, METHOD_PAPERS) if METHOD_PAPERS.is_file() else
+                        f'<p class=note>No papers file yet: the insight workbench keeps it as <code>ref/{METHOD_PAPERS.name}</code>.</p>')}
     shown = [(k, label) for k, label in METHOD_VIEWS if not only or k in only]
     view = view if view in dict(shown) else shown[0][0]
     bar = "".join(f'<button type=button data-mview="{k}"{" class=on" if k == view else ""}>{_e(label)}</button>'
                   for k, label in shown) if len(shown) > 1 else ""
     return (f'<div class=mlib><div class=mviews>{bar}</div>'
-            + "".join(f'<div class="mview{" on" if k == view else ""}" data-mview="{k}">{views[k]}</div>'
+            + "".join(f'<div class="mview{" on" if k == view else ""}" data-mview="{k}">{views[k]()}</div>'
                       for k, _ in shown) + '</div>')
 
 
@@ -1908,14 +1913,15 @@ _NO_PINCH = ("<script>addEventListener('wheel',function(e){if(e.ctrlKey)e.preven
 
 
 def render_methods_embed(root: Path, view: str = "method") -> str:
-    """`method`: Discovery methods · Design methods · Methods drawing (view only); `papers`: the papers."""
+    """`method`: one page, the Insight method (question-asking, question-answering, question-results reading), then the methods drawing (its
+    canvas editable, as the Design family's); `papers`: the papers."""
     snap = {"board": Path(root), "root": Path(root)}
     body = (_render_methods(snap, "papers", only=("papers",)) if view == "papers" else
-            _render_methods(snap, "discovery", only=("discovery", "design", "studio"), editable=False))
+            _render_methods(snap, "method", only=("method",)))
     return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
             # inside Guide this page's frame takes the page's own height, so nothing here is sized by the
             # viewport: a 100vh canvas would grow the frame, which grows the canvas, without end (JL 261003)
-            f'<title>🔎 Insight · {_e(view)}</title><style>{_CSS}body{{max-width:none;padding:2px 2px 12px}}.st-frame{{height:640px;min-height:0}}.rp-frame{{height:720px}}</style></head>'
+            f'<title>🔎 Insight · {_e(view)}</title><style>{_CSS}body{{max-width:none;padding:2px 2px 12px}}.shell{{border:0;padding:0;border-radius:0}}.st-frame{{height:640px;min-height:0}}.rp-frame{{height:720px}}</style></head>'
             f'<body data-space=scope><main><div class=shell>{body}</div></main>{_JS}{_EXPLAIN_HEIGHT}{_NO_PINCH}</body></html>')
 
 
@@ -2075,7 +2081,7 @@ details.q-more{margin-top:4px;font-size:13.5px}details.q-more>summary{cursor:poi
 .mviews button.on{color:var(--fg);border-color:var(--acc);background:var(--soft)}.mview{display:none}.mview.on{display:block}
 .st-bar{display:flex;gap:14px;align-items:baseline;justify-content:space-between;margin:0 0 8px}.st-bar a{white-space:nowrap}
 .mlib .mview[data-mview=studio]{max-width:none}.st-frame{display:block;width:100%;height:calc(100vh - 260px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}
-article.mdoc{font-size:14.5px}article.mdoc h1{font-size:17px;margin:4px 0 6px}article.mdoc h2{font-size:15px;margin:22px 0 6px}article.mdoc p{margin:6px 0;line-height:1.55}
+article.mdoc{font-size:14.5px}article.mdoc h1{font-size:17px;margin:4px 0 6px}article.mdoc h2{font-size:18px;margin:30px 0 8px}article.mdoc h3{font-size:15px;margin:18px 0 6px}article.mdoc p{margin:6px 0;line-height:1.55}
 pre.theory{margin:8px 0;padding:10px 12px;background:var(--soft);border-radius:6px;font:12px/1.5 ui-monospace,Menlo,monospace;overflow-x:auto}
 table.mdt{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13.5px}table.mdt th,table.mdt td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.mdt td:first-child{font-weight:600;white-space:nowrap}
 .mlib .rp-head{display:block;font:700 12px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:0 0 2px}
@@ -2118,7 +2124,7 @@ a.pchip:hover{border-color:var(--acc)}a.pchip .rp-pdf{margin-left:5px;font-size:
 .tcode{font:700 11px ui-monospace,Menlo,monospace;color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:0 3px;cursor:help}
 .when{display:inline-block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
 a.cite{white-space:nowrap}a.cite .rp-pdf{margin-left:3px;font-size:9px;padding:0 3px}.ours{color:var(--mut);font-style:italic}
-details.draw{border:1px solid var(--line);border-radius:8px;margin:0 0 10px;overflow:hidden}details.draw>summary{cursor:pointer;padding:10px 14px;font-weight:650;background:var(--soft)}details.draw[open]>summary{border-bottom:1px solid var(--line)}details.draw>.st-bar{padding:8px 12px 0}details.draw>.st-frame{border:0;border-radius:0;border-top:1px solid var(--line)}form.draw-add{margin:14px 0 0}form.draw-add input{font:13px -apple-system,sans-serif;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:220px}
+details.msec{border:1px solid var(--tab-line);border-radius:8px;margin:0 0 12px;background:var(--bg)}details.msec>summary{padding:14px 16px;cursor:pointer}details.msec>summary strong{color:var(--tab-on);font-size:18px;font-weight:500}.msec-body{padding:0 16px 14px}details.draw{border:1px solid var(--line);border-radius:8px;margin:0 0 10px;overflow:hidden}details.draw>summary{cursor:pointer;padding:10px 14px;font-weight:650;background:var(--soft)}details.draw[open]>summary{border-bottom:1px solid var(--line)}details.draw>.st-bar{padding:8px 12px 0}details.draw>.st-frame{border:0;border-radius:0;border-top:1px solid var(--line)}
 @media(max-width:600px){body{padding:12px}.spaces{flex-wrap:nowrap;overflow-x:auto}.shell{padding:10px}}
 """
 
@@ -2166,6 +2172,7 @@ var cmd='/haipipe-insight application '+f.dataset.root+' question "'+q.replace(/
 var st=document.getElementById('ask-status');if(navigator.clipboard){navigator.clipboard.writeText(cmd).then(function(){st.textContent='copied'},function(){st.textContent='select and copy the line below'})}else{st.textContent='select and copy the line below'}}}
 function mview(box,k,w){box.querySelectorAll('.mviews button').forEach(function(x){x.classList.toggle('on',x.dataset.mview===k)});box.querySelectorAll('.mview').forEach(function(v){v.classList.toggle('on',v.dataset.mview===k)});box.querySelectorAll('.mview.on iframe.st-frame[data-src]').forEach(function(f){if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)});if(w)setUrl('mview',k)}
 document.querySelectorAll('.mlib').forEach(function(box){box.querySelectorAll('.mviews button').forEach(function(b){b.onclick=function(){mview(box,b.dataset.mview,true)}})});
+document.addEventListener('toggle',function(e){var d=e.target;if(!(d.matches&&d.matches('details.msec')&&d.open))return;d.querySelectorAll('iframe.st-frame[data-src]').forEach(function(f){if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)})},true);   // a fold's canvas loads when it opens
 try{var mv=new URL(location.href).searchParams.get('mview');if(mv)document.querySelectorAll('.mlib').forEach(function(box){if(box.querySelector('.mview[data-mview="'+mv+'"]'))mview(box,mv,false)})}catch(e){}
 document.addEventListener('toggle',function(ev){var w=ev.target;if(!(w.matches&&w.matches('details.rp-card')))return;var f=w.open&&w.querySelector('iframe[data-pdf]');if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf)},true);
 function toPaper(id){var c=document.getElementById(id);if(!c)return;var box=c.closest('.mlib');if(box)mview(box,'papers',true);var f=c.closest('details.rp-more');if(f)f.open=true;c.open=true;c.scrollIntoView({block:'start'})}
@@ -2175,10 +2182,9 @@ space(body.dataset.space,false);pick(body.dataset.sel||'');
 })();</script>"""
 
 
-# Insight › Studio: a row's canvas loads when it opens, view only; Edit drawing reloads it with the pen and
-# Finish editing gives the pen back. Open rows are remembered for this board in the browser tab. Add drawing
-# asks the shared Studio route for studio/<name>.excalidraw (it mints an empty scene) and reopens on it. A space
-# is saved as _ (the route takes the path as written, so %20 would land in the file name); the row shows it again.
+# Prototype › RoadMap Draw: a row's canvas loads when it opens, view only; Edit drawing reloads it with the pen
+# and Finish editing gives the pen back (a generated drawing has no Edit). Open rows are remembered for this board
+# in the browser tab.
 _STUDIO_JS = """<script>(function(){
 var list=document.querySelector('.draw-list');if(!list)return;
 var key='insight-draw-open:'+list.dataset.studio,editing=null,saved={};
@@ -2192,17 +2198,6 @@ list.querySelectorAll('details.draw').forEach(function(r){
  var b=r.querySelector('.draw-edit');if(b)b.onclick=function(){if(editing===r){stop();return}stop();editing=r;r.open=true;
   r.querySelector('iframe').setAttribute('src',r.querySelector('iframe').dataset.src+'&edit=1');b.textContent='Finish editing'};
  load(r)});
-var form=list.querySelector('form.draw-add');if(form)form.onsubmit=function(ev){ev.preventDefault();
- var n=form.elements.name.value.trim(),st=form.querySelector('[role=status]');
- if(!/^[A-Za-z0-9][A-Za-z0-9_ -]{0,79}$/.test(n)){st.textContent='Use letters, numbers, spaces, underscores or hyphens.';return}
- var path=list.dataset.studio+'/'+n.replace(/ /g,'_')+'.excalidraw',have=list.querySelector('details.draw[data-board="'+path.replace(/"/g,'')+'"]');
- if(have){have.open=true;have.scrollIntoView({block:'center'});return}
- st.textContent='Opening…';
- fetch('/'+path.split('/').map(encodeURIComponent).join('/'),{credentials:'same-origin'})
- .then(function(r){return r.json().then(function(s){if(!r.ok||s.type!=='excalidraw')throw new Error(s.err||'Could not open this drawing.')})})
- .then(function(){saved[path]=true;try{sessionStorage.setItem(key,JSON.stringify(saved))}catch(e){}
-  var u=new URL(location.href);u.searchParams.set('space','insight');u.searchParams.set('view','studio');location.href=u.toString()})
- .catch(function(e){st.textContent=e.message})};
 })();</script>"""
 
 

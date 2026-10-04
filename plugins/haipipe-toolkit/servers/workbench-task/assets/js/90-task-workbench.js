@@ -6,12 +6,12 @@
   var panels = Array.from(app.querySelectorAll('[data-panel]'));
   var params = new URL(location.href).searchParams;
   // Spaces and their Views come from the page (task_views.SPACES); a View key is `view=`.
-  var spaces = config.spaces, spaceOf = {}, lastView = {};
+  var spaces = config.spaces, spaceOf = {}, lastView = {}, aliases = config.aliases || {};
   Object.keys(spaces).forEach(function (s) { spaces[s].forEach(function (v) { spaceOf[v] = s; }); lastView[s] = spaces[s][0]; });
-  lastView.task = 'task';
-  var view = params.get('view') || params.get('space') || 'task';
-  view = ({scope:'block', check:'runs'})[view] || view;
-  if (!spaceOf[view]) view = 'task';
+  var first = spaces.task[0];
+  var view = params.get('view') || params.get('space') || first;
+  view = aliases[view] || view;
+  if (!spaceOf[view]) view = first;
   var storageKey = 'task-workbench:' + config.path;
   var editing = null, formChanged = false;
   var runDialog = document.getElementById('tw-run-dialog');
@@ -50,11 +50,25 @@
   app.querySelectorAll('.wtab[data-view]').forEach(function (tab) {
     tab.addEventListener('click', function () { select(tab.dataset.view); });
   });
+  // A Question row is selected by a click outside its links (Insight's .hl-row): the Task Runs
+  // panel narrows to that Question's Runs and names it in each prompt (space-target).
+  function pick(row) {
+    var same = row && row.classList.contains('on');
+    app.querySelectorAll('.hl-row.on').forEach(function (r) { r.classList.remove('on'); });
+    if (row && !same) row.classList.add('on');
+    document.dispatchEvent(new CustomEvent('space-target', {detail: {space: 'task', target: row && !same ? row.dataset.key : ''}}));
+  }
+  app.querySelectorAll('.hl-row').forEach(function (row) {
+    row.addEventListener('click', function (event) { if (!event.target.closest('a,summary,button')) pick(row); });
+  });
   app.querySelectorAll('[data-question]').forEach(function (a) {
     a.addEventListener('click', function (event) {
-      event.preventDefault(); select('task');
-      var q = document.getElementById('question-' + a.dataset.question);
-      if (q) { q.open = true; q.scrollIntoView({block:'start'}); }
+      var row = document.getElementById('question-' + a.dataset.question);
+      if (!row) return;
+      event.preventDefault();
+      var panel = row.closest('[data-panel]'); if (panel) select(panel.dataset.panel);
+      if (!row.classList.contains('on')) pick(row);
+      row.scrollIntoView({block:'center'});
     });
   });
   function foldKey(row) { return row.dataset.board || row.id; }
@@ -70,16 +84,18 @@
   function stopEditing() {
     if (!editing) return;
     var frame = editing.querySelector('iframe'); frame.src = frame.dataset.src;
-    editing.querySelector('[data-edit-drawing]').textContent = 'Edit drawing'; editing = null;
+    editing.querySelector('.draw-edit').textContent = 'Edit drawing'; editing = null;
   }
   function prepareDrawing(row) {
     row.addEventListener('toggle', function () { loadDrawing(row); remember(); });
-    row.querySelector('[data-edit-drawing]').disabled = !config.studioEnabled;
-    row.querySelector('[data-edit-drawing]').addEventListener('click', function () {
+    var edit = row.querySelector('.draw-edit');
+    if (!edit) { loadDrawing(row); return; }          // a generated drawing is view only
+    edit.disabled = !config.studioEnabled;
+    edit.addEventListener('click', function () {
       if (editing === row) { stopEditing(); status('Drawing viewer opened. Refresh is available.'); return; }
       stopEditing(); editing = row; row.open = true;
       row.querySelector('iframe').src = row.querySelector('iframe').dataset.src + '&edit=1';
-      row.querySelector('[data-edit-drawing]').textContent = 'Finish editing';
+      edit.textContent = 'Finish editing';
       status('The native Excalidraw editor saves this drawing. Automatic refresh is paused while editing.');
     });
     loadDrawing(row);
@@ -89,7 +105,7 @@
     app.querySelectorAll('details').forEach(function (d) { if (Object.prototype.hasOwnProperty.call(folds, foldKey(d))) d.open = folds[foldKey(d)]; });
   } catch (_) { /* Use the document defaults. */ }
   app.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', remember); });
-  app.querySelectorAll('.tw-drawing').forEach(prepareDrawing);
+  app.querySelectorAll('details.draw[data-board]').forEach(prepareDrawing);
   var drawingForm = document.getElementById('tw-add-drawing');
   drawingForm.querySelector('button').disabled = !config.studioEnabled;
   drawingForm.addEventListener('submit', async function (event) {
@@ -98,22 +114,23 @@
     var name = drawingForm.elements.name.value.trim();
     if (!/^[A-Za-z0-9][A-Za-z0-9_ -]{0,79}$/.test(name)) { drawingForm.querySelector('[role=status]').textContent = 'Use a name with letters, numbers, spaces, underscores or hyphens.'; return; }
     var path = config.studio + '/' + name + '.excalidraw';
-    var existing = Array.from(app.querySelectorAll('.tw-drawing')).find(function (d) { return d.dataset.board === path; });
+    var existing = Array.from(app.querySelectorAll('details.draw[data-board]')).find(function (d) { return d.dataset.board === path; });
     if (existing) { existing.open = true; existing.scrollIntoView({block:'center'}); return; }
     var button = drawingForm.querySelector('button'); button.disabled = true;
     try {
       var response = await fetch('/' + path.split('/').map(encodeURIComponent).join('/'), {credentials:'same-origin'});
       var scene = await response.json();
       if (!response.ok || scene.type !== 'excalidraw') throw new Error(scene.err || 'Could not open this drawing.');
-      var row = document.createElement('details'); row.className = 'tw-drawing'; row.dataset.board = path;
+      var row = document.createElement('details'); row.className = 'draw'; row.dataset.board = path;
       var summary = document.createElement('summary'); summary.textContent = name; row.append(summary);
-      var body = document.createElement('div'); body.className = 'tw-drawing-body';
-      var bar = document.createElement('div'); bar.className = 'tw-links';
-      var edit = document.createElement('button'); edit.type = 'button'; edit.dataset.editDrawing = ''; edit.textContent = 'Edit drawing'; bar.append(edit);
+      var bar = document.createElement('div'); bar.className = 'st-bar';
+      var left = document.createElement('span');
+      var edit = document.createElement('button'); edit.type = 'button'; edit.className = 'draw-edit'; edit.textContent = 'Edit drawing'; left.append(edit);
+      var where = document.createElement('span'); where.className = 'mono mut'; where.textContent = ' ' + path; left.append(where); bar.append(left);
       var source = '/_excalidraw/?' + new URLSearchParams({board:path});
       var full = document.createElement('a'); full.href = source + '&edit=1'; full.target = '_blank'; full.rel = 'noopener'; full.textContent = 'Open full screen ↗'; bar.append(full);
-      var frame = document.createElement('iframe'); frame.title = name; frame.referrerPolicy = 'no-referrer'; frame.dataset.src = source;
-      body.append(bar, frame); row.append(body); document.getElementById('tw-drawings').append(row);
+      var frame = document.createElement('iframe'); frame.className = 'st-frame'; frame.title = name; frame.referrerPolicy = 'no-referrer'; frame.dataset.src = source;
+      row.append(bar, frame); document.getElementById('tw-drawings').append(row);
       var empty = document.getElementById('tw-no-drawings'); if (empty) empty.remove();
       prepareDrawing(row); row.open = true; edit.click(); remember(); drawingForm.reset();
     } catch (error) { drawingForm.querySelector('[role=status]').textContent = error.message; }

@@ -5,8 +5,8 @@ One design method card. Guide › Method shows it among its method cards; its
 papers are the rows of `../design-papers.md` whose `group` is `by principle`. A
 claim names its source in brackets; "(ours)" marks the workbench's own judgment.
 
-family: Goal Only: abduction-2; the AI invents the how and the design from the
-  design requirements alone
+family: Goal Only: abduction-2; the design reads only the task, so the how is invented,
+  or several hows are sent and the Exp picks
 reasoning: abduction-2, made explicit: requirements → a frame, which is the how → a
   design
 move: Frame what the requirements really ask, then design to that frame.

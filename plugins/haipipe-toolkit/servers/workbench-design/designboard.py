@@ -266,6 +266,13 @@ details.taskblock{border:1px solid var(--line);border-radius:6px;padding:8px 12p
 .task{border:1px solid var(--acc);border-radius:8px;background:var(--soft);padding:8px 12px;margin:10px 0}
 article.theory{max-width:980px}article.theory h1{font-size:16px;margin:8px 0 6px}article.theory h2{margin:22px 0 6px}
 article.theory p{margin:6px 0;line-height:1.55}pre.theory{margin:8px 0;padding:10px 12px;background:var(--soft);border-radius:6px;font:12px/1.5 ui-monospace,Menlo,monospace;overflow-x:auto}
+/* the Method page: a part (A · …) above its sub-sections (A1 · …) (Paper session, 261003) */
+article.theory h2{font-size:18px;margin:28px 0 8px;padding-top:12px;border-top:1px solid var(--line)}article.theory h3{font-size:14.5px;margin:18px 0 6px;font-weight:650}
+details.draw-fold,details.sec-fold{margin:4px 0 12px;border:1px solid #dee2e6;border-radius:8px}details.sec-fold>summary{padding:14px 16px;cursor:pointer}details.sec-fold>summary strong{color:#1864ab;font-size:18px;font-weight:500}.sec-body{padding:0 18px 14px}.sec-body>h3:first-child{margin-top:4px}@media(prefers-color-scheme:dark){details.sec-fold{border-color:#414852}details.sec-fold>summary strong{color:#91caff}}
+details.draw-fold>summary{padding:14px 16px;cursor:pointer}details.draw-fold>summary strong{color:#1864ab;font-size:18px;font-weight:500}
+details.draw-fold>summary span{display:block;color:var(--mut);font-size:14px;margin-top:3px;margin-left:18px}.draw-body{padding:0 12px 12px}
+@media(prefers-color-scheme:dark){details.draw-fold{border-color:#414852}details.draw-fold>summary strong{color:#91caff}}
+details.ref-fold{margin:22px 0 0;border-top:1px solid var(--line);padding-top:10px}details.ref-fold>summary{cursor:pointer;font-weight:650;font-size:15px}
 ul.fam-methods{margin:4px 0 10px;padding-left:18px}ul.fam-methods li{margin:3px 0}
 /* a View (sub-Space) tab, the same look as a Space tab (JL 261003) */
 .views{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 10px;margin:0 0 12px;border-bottom:1px solid var(--line)}.views button{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;background:#fff;color:#1e1e1e;cursor:pointer}
@@ -332,8 +339,11 @@ def _page_url(snapshot: dict, rel: str, space: str = "design", item: str = "") -
     return url + (f"&item={quote(item)}" if item else "")
 
 
-THEORY = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-theory.md"
-METHODS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-methods.md"
+# Guide › Method is one document (JL 261003): the six steps, then steps 2, 3, 4 and 6 in depth,
+# why it works, and the reference, folded. The older
+# view keys (design-theory, methods) read the same file.
+METHODS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-method.md"
+THEORY = METHODS
 # The methods studio (JL 261002: "add a new studio … put it in the excalidraw to explain
 # these methods"): one Excalidraw drawing of the loop, the families and the ten cards,
 # opened in the self-hosted canvas and saved back to this file.
@@ -355,6 +365,9 @@ def _plain_md(text: str, table=None) -> str:
     def inline(t: str) -> str:
         t = _e(t)
         t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+        # a web link, [text](https://...), opens in a new tab (JL 261003: the people's wiki pages)
+        t = re.sub(r"\[([^\]]+)\]\((https?://(?:[^()\s]|\([^()\s]*\))+)\)",   # a DOI may hold (05)
+                   r'<a href="\2" target=_blank rel=noopener>\1</a>', t)
         return re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", t)
 
     def flush():
@@ -389,9 +402,10 @@ def _plain_md(text: str, table=None) -> str:
                 + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table>"))
             i = j
             continue
-        if line.strip() and re.fullmatch(r"[=-]{3,}", nxt.strip()):
+        if line.strip() and re.fullmatch(r"=+|-+|~+", nxt.strip()) and len(nxt.strip()) >= 3:
             flush()
-            out.append(f'<{"h1" if nxt.startswith("=") else "h2"}>{inline(line.strip())}</{"h1" if nxt.startswith("=") else "h2"}>')
+            tag = {"=": "h1", "-": "h2", "~": "h3"}[nxt.strip()[0]]       # ~~~ under a title: a sub-section
+            out.append(f'<{tag}>{inline(line.strip())}</{tag}>')
             i += 2
             continue
         if line.startswith("- "):
@@ -426,8 +440,8 @@ def studio_html(root: Path, drawing: Path = STUDIO) -> str:
     if not rel:
         return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>ref/design-methods.excalidraw</code>.</div>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
-    return ('<div class=st-bar><span class=mut>One task, thirteen ways to design it: three inputs, Design and the Exp, '
-            'the Revise and Learning loops, six families, the cards and the tests. Edits save to '
+    return ('<div class=st-bar><span class=mut>The four kinds of reasoning, three inputs, Design and the Exp, the Revise '
+            'and Learning loops, three families, the cards and the tests. Edits save to '
             '<code>ref/design-methods.excalidraw</code>.</span>'
             f'<a href="{_e(url)}" target="_blank" rel="noopener">Open full screen ↗</a></div>'
             # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
@@ -442,15 +456,36 @@ def theory_page(board: Path, root: Path | None = None, view: str = "design-theor
         if path.is_file():
             return f'<article class="{cls}">{_plain_md(path.read_text(encoding="utf-8"))}</article>'
         return f'<div class=empty>{empty}</div>'
-    views = {"design-theory": article(THEORY, "theory", "No design theory file is present."),
-             "methods": (f'<article class="theory">{_plain_md(_read(METHODS), method_cards(board, root or board, METHODS, PAPERS, in_use="in the Exp", now="in Evaluate"))}</article>'
-                         if METHODS.is_file() else '<div class=empty>No design methods file is present.</div>'),
-             "studio": studio_html(root or board, STUDIO),
-             "papers": papers_page(board, root or board, PAPERS)}
-    if not only or "method" in only:
+    # build only the views this page shows (JL 261003: "why it takes such a long time"): the papers
+    # view reads every Paper Run, about six seconds, and Guide › Method never shows it
+    builders = {
+        "design-theory": lambda: article(THEORY, "theory", "No design theory file is present."),
+        "methods": lambda: (f'<article class="theory">{_plain_md(_read(METHODS), method_cards(board, root or board, METHODS, PAPERS, in_use="in the Exp", now="in Evaluate"))}</article>'
+                            if METHODS.is_file() else '<div class=empty>No design methods file is present.</div>'),
+        "studio": lambda: studio_html(root or board, STUDIO),
+        "papers": lambda: papers_page(board, root or board, PAPERS)}
+    wanted = set(only) if only else {k for k, _ in THEORY_VIEWS if k != "method"}
+    if "method" in wanted:
+        wanted |= {"methods", "studio"}
+    views = {k: build() for k, build in builders.items() if k in wanted}
+    if "method" in wanted:
         untitled = lambda h: re.sub(r"<h1>.*?</h1>", "", h, count=1)
-        views["method"] = (untitled(views["design-theory"]) + untitled(views["methods"])
-                           + '<h2 class=method-draw>The methods drawing</h2>' + views["studio"])
+        # the drawing first, the method in one picture (JL 261003: "maybe put it at the top?")
+        page = untitled(views["methods"])
+        # every part folds, in the drawing's card style (JL 261003: "make each section collapsable"),
+        # and every card starts closed, as on the shared Method page ("make it into this style")
+        inner = page[page.find(">") + 1:page.rfind("</article>")] if page.startswith("<article") else page
+        bits = re.split(r"(<h2>.*?</h2>)", inner)
+        cards = bits[0]
+        for title_html, body in zip(bits[1::2], bits[2::2]):
+            title = re.sub(r"<[^>]+>", "", title_html)
+            cards += (f'<details class=sec-fold><summary><strong>{title}</strong>'
+                      f'</summary><div class=sec-body>{body}</div></details>')
+        page = f'<article class="theory">{cards}</article>'
+        # the drawing in a folding card, as Guide › RoadMap Draw shows "Workbench design" (JL 261003)
+        # no subtitle under the card's name (JL 261003: "do not add this, delete it")
+        views["method"] = ('<details class=draw-fold><summary><strong>Method design</strong>'
+                           f'</summary><div class=draw-body>{views["studio"]}</div></details>' + page)
     labels = dict(THEORY_VIEWS)        # `only` also sets the order (Guide's Method: methods first, theory last)
     plain = [(k, v) for k, v in THEORY_VIEWS if k != "method"]    # Method shows only when asked for
     shown = [(k, labels[k]) for k in only if k in labels] if only else plain
@@ -502,7 +537,7 @@ def method_card_fields(path: Path) -> dict:
     return out
 
 
-CARD_KEYS = {"family", "reasoning", "move", "status", "taxonomy", "comes from", "reads", "returns", "test now", "test in use", "rationale", "context",
+CARD_KEYS = {"family", "also", "reasoning", "move", "status", "taxonomy", "comes from", "reads", "returns", "test now", "test in use", "rationale", "context",
              "steps", "strengths", "limitations", "agent", "verify", "risk", "evidence on ai", "skill"}
 LIT_FIELDS = (("rationale", "Rationale"), ("context", "Context"), ("steps", "Steps"),
               ("strengths", "Strengths"), ("limitations", "Limitations"))
@@ -663,6 +698,7 @@ def method_cards(board: Path, root: Path, doc_path: Path, table: Path = PAPERS, 
 _THEORY_JS = (
     # a Space's views (Theory: Design theory · Design methods · Papers): one shown at a time, kept in the URL
     "function loadFrames(pane){pane.querySelectorAll('.view.on iframe.st-frame[data-src]').forEach(function(f){"
+    "if(f.closest('details:not([open])'))return;"          # a closed card's canvas loads when it opens
     "if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)})}"
     "document.querySelectorAll('.pane').forEach(loadFrames);"
     "document.querySelectorAll('.views button').forEach(function(b){b.onclick=function(){"
@@ -671,6 +707,8 @@ _THEORY_JS = (
     "loadFrames(pane);"
     "var u=new URL(location.href);u.searchParams.set('view',b.dataset.view);history.replaceState({},'',u)}});"
     # a paper's PDF loads only when its card opens; toggle does not bubble, so listen in capture
+    "document.addEventListener('toggle',function(ev){var d=ev.target;if(d.matches&&d.matches('details.draw-fold')&&d.open)"
+    "d.querySelectorAll('iframe.st-frame[data-src]').forEach(function(f){if(!f.getAttribute('src'))f.setAttribute('src',f.dataset.src)})},true);"
     "document.addEventListener('toggle',function(ev){var w=ev.target;if(!(w.matches&&w.matches('details.rp-card')))return;"
     "var f=w.open&&w.querySelector('iframe[data-pdf]');if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf)},true);"
     # a paper named in the Design methods table opens its card in the Papers view
@@ -729,7 +767,10 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
     if designs:
         facts.append(f"{designs} designs")
     header = (
-        f'<h1>🎨 {_e(snapshot["title"])}</h1>'   # no `all boards · board index` line (JL 261003: "could you remove this?")
+        # the board's short name, the words before its title's colon (JL 261003: "this is too long");
+        # the full title stays in the hover
+        f'<h1 title="{_e(snapshot["title"])}">🎨 {_e(snapshot["title"].split(":", 1)[0].strip() or snapshot["title"])}</h1>'
+        # no `all boards · board index` line (JL 261003: "could you remove this?")
         f'<div class=dataset>{_e(" · ".join(facts))}</div>'
     )                                    # no records-check line in the header (JL 261003: "remove this out")
 
@@ -753,7 +794,11 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
         name = _e(design_title(row))
         if row["snapshot"] is not None:
             name = f'<a href="{_e(_page_url(snapshot, row["snapshot"]["rel"], "design"))}">{name}</a>'
-        method = _e(row.get("method") or "") or '<span class=mut>not declared</span>'
+        method = row.get("method") or ""
+        # a page from before methods mixes them (JL 261003): shown, kept out of every family View
+        method = ('<span class=mut title="designed before methods existed; kept out of the method comparison">'
+                  'mixed · before methods</span>' if method.lower() == "mixed" else
+                  _e(method) or '<span class=mut>not declared</span>')
         return (f'<tr data-row="{_e(row["id"])}"><td><b>{name}</b></td><td>{method}</td><td>{_e(progress)}</td>'
                 f'<td>{folder_cell}</td>'
                 f'<td class="{"bad" if not row["snapshot"] else ""}">{_e(row["status"])} {action}</td></tr>')
@@ -786,6 +831,8 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
     titles = list(dict.fromkeys(design_title(r) for r in rows))
     for n, (label, fam) in enumerate(families.items(), start=1):
         names = {m["name"].lower() for m in fam["methods"]}
+        names |= {m["name"].lower() for f in families.values() for m in f["methods"]
+                  if m["head"].get("also", "").lower().startswith(label.lower())}
         body_rows = []
         for title in titles:
             hits = [r for r in rows if design_title(r) == title and (r.get("method") or "").lower() in names]
@@ -1152,11 +1199,13 @@ class DesignBoardMixin:
             self.send_header("Content-Length", "0")
             self.end_headers()
             return
-        snapshot = design_board_snapshot(board, self.root)
         if embed == "theory":
+            # the theory page reads only the board's place, never its pages, items or runs: building
+            # the whole board snapshot first took about six seconds (JL 261003: "such a long time")
             only = [v for v in ((query.get("views") or [""])[0]).split(",") if v] or None
-            body = render_theory_embed(snapshot, view or "methods", only).encode("utf-8")
+            body = render_theory_embed({"board": board, "root": self.root}, view or "methods", only).encode("utf-8")
         else:
+            snapshot = design_board_snapshot(board, self.root)
             body = render_design_board(snapshot, space, view or "design-theory").encode("utf-8")
         return self._design_board_send(body, 200, head_only)
 
