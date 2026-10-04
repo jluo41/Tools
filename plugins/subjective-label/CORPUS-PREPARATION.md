@@ -167,6 +167,17 @@ acceptance.
 
 ## Files and Workbench projection
 
+Inside a SPACE (the nearest folder holding `env.sh`), two storage rules hold. Every path a
+record keeps (a Run's `raw_path` and `config_path`, a package receipt's `owner` and
+`package`, a Page's `preparation-owner.yaml` and `preparation-ref.yaml`) is written relative
+to the SPACE root, never as `/Users/<name>/...` (AGENTS.md rule 7), and read back with
+`resolve_stored`; an older absolute record still reads, and two records that differ only in
+how a path is written agree (`same_reference`). Every `*.private.*` artifact (normalized
+conversations, rejects, candidate items, lineage) is written to and read from
+`_WorkSpace/LabelingStore/_custody/<its path from the SPACE root>`, so the corpus text never
+sits in a git-tracked folder; the Run's Result still lists it by its path in the owner.
+Outside a SPACE both rules fall away and the files stay where the paths say.
+
 Space and View are interface locations, not required folder names. The
 upstream owner keeps canonical Tickets, Results, full candidate data and
 custody artifacts in its own native locations. The Labeling Page stores a

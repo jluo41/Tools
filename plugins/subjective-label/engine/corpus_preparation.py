@@ -26,6 +26,63 @@ _spec.loader.exec_module(job)
 
 RUN_TYPES = ("source-normalize", "unit-recipe", "unit-materialize", "unit-check", "initial-group-reserve")
 NORMALIZER = "transcript-turns-v1"
+PATH_FIELDS = ("owner", "package", "receipt")
+CUSTODY = Path("_WorkSpace") / "LabelingStore" / "_custody"
+
+
+# Paths and private text inside a SPACE (AGENTS.md rule 7: no /Users/<name>/ in a tracked file).
+# A record keeps a path relative to the SPACE root, the nearest folder holding env.sh; a
+# `*.private.*` file lives under _WorkSpace/LabelingStore/_custody/ at the same relative place,
+# so the corpus text never sits in a git-tracked folder. Outside a SPACE nothing changes.
+def space_root(path: Path) -> Path | None:
+    path = Path(path).resolve()
+    for folder in (path, *path.parents):
+        if (folder / "env.sh").is_file():
+            return folder
+    return None
+
+
+def stored_path(path: Path) -> str:
+    """A path as a record keeps it: relative to the SPACE root when inside one."""
+    resolved = Path(path).resolve()
+    root = space_root(resolved)
+    if root is not None and resolved.is_relative_to(root):
+        return resolved.relative_to(root).as_posix()
+    return str(resolved)
+
+
+def resolve_stored(value: object, anchor: Path) -> Path:
+    """A recorded path back to a real one, found from `anchor`; an old absolute record reads as is."""
+    path = Path(str(value or ""))
+    if not str(value or "") or path.is_absolute():
+        return path
+    root = space_root(Path(anchor))
+    return (root / path).resolve() if root is not None else path
+
+
+def same_reference(old: dict, new: dict, anchor: Path) -> bool:
+    """Two reference records agree when they differ only in how a path is written."""
+    if not isinstance(old, dict) or set(old) != set(new):
+        return False
+    for key, value in new.items():
+        if key in PATH_FIELDS:
+            if resolve_stored(old[key], anchor).resolve() != resolve_stored(value, anchor).resolve():
+                return False
+        elif old[key] != value:
+            return False
+    return True
+
+
+def custody(path: Path) -> Path:
+    """Where a `*.private.*` artifact really lives; every other path is itself."""
+    path = Path(path)
+    if ".private." not in path.name:
+        return path
+    resolved = path.resolve()
+    root = space_root(resolved.parent)
+    if root is None or resolved.is_relative_to((root / "_WorkSpace").resolve()):
+        return path
+    return root / CUSTODY / resolved.relative_to(root)
 
 
 def _owner_record(owner: Path, source_id: str) -> dict:
@@ -42,13 +99,15 @@ def attach(owner: Path, source_id: str, page_file: Path) -> dict:
     page_ref = page_file.parent / "labeling" / "preparation-owner.yaml"
     if (page_file.parent / "labeling" / "config.yaml").is_file() and not page_ref.is_file():
         raise RuntimeError("cannot attach a new preparation owner to an established Labeling job")
-    reference = {**record, "owner": str(owner)}
-    for path, data in ((owner / "source.yaml", job.yaml_bytes(record)),
-                       (page_ref, job.yaml_bytes(reference))):
-        if path.exists() and (not path.is_file() or path.read_bytes() != data):
-            raise RuntimeError(f"refusing to overwrite changed preparation owner: {path}")
-    job.write_once(owner / "source.yaml", job.yaml_bytes(record))
-    job.write_once(page_ref, job.yaml_bytes(reference))
+    reference = {**record, "owner": stored_path(owner)}
+    source_file = owner / "source.yaml"
+    if source_file.exists() and (not source_file.is_file() or source_file.read_bytes() != job.yaml_bytes(record)):
+        raise RuntimeError(f"refusing to overwrite changed preparation owner: {source_file}")
+    if page_ref.exists() and not (page_ref.is_file() and same_reference(job.load_mapping(page_ref), reference, page_ref)):
+        raise RuntimeError(f"refusing to overwrite changed preparation owner: {page_ref}")
+    job.write_once(source_file, job.yaml_bytes(record))
+    if not page_ref.exists():
+        job.write_once(page_ref, job.yaml_bytes(reference))
     return {"page": str(page_file), "owner": str(owner), "source_id": record["source_id"],
             "preparation_owner_ref": str(page_ref)}
 
@@ -96,8 +155,9 @@ def _run(owner: Path, operation: str, target: str, *, inputs: dict, artifacts: d
     for path, data in artifacts.items():
         if not path.is_relative_to(owner) or path.is_symlink():
             raise ValueError(f"artifact outside preparation owner: {path}")
-        if path.exists() and (not path.is_file() or path.read_bytes() != data):
-            raise RuntimeError(f"refusing to overwrite changed artifact: {path}")
+        real = custody(path)
+        if real.exists() and (not real.is_file() or real.read_bytes() != data):
+            raise RuntimeError(f"refusing to overwrite changed artifact: {real}")
     for path in (owner / "runs").glob("*.yaml"):
         try:
             old = job.load_mapping(path)
@@ -110,7 +170,7 @@ def _run(owner: Path, operation: str, target: str, *, inputs: dict, artifacts: d
                 and all(result.get(key) == value for key, value in receipt.items())
                 and {entry.get("path") for entry in result.get("artifacts") or []
                      if isinstance(entry, dict)} == {p.relative_to(owner).as_posix() for p in artifacts}):
-            if any(not p.is_file() or p.read_bytes() != data for p, data in artifacts.items()):
+            if any(not custody(p).is_file() or custody(p).read_bytes() != data for p, data in artifacts.items()):
                 raise RuntimeError(f"accepted Corpus Run {path.stem} has missing or changed artifacts")
             return {"run": path.stem, **receipt}
     now = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -130,7 +190,7 @@ def _run(owner: Path, operation: str, target: str, *, inputs: dict, artifacts: d
     result = {"run": stem, "family": "corpus", "operation": operation, "status": "complete",
               "artifacts": [{"path": p.relative_to(owner).as_posix()} for p in artifacts], **receipt}
     for path, data in artifacts.items():
-        job.write_once(path, data)
+        job.write_once(custody(path), data)
     job.write_once(owner / "runs" / f"{stem}.yaml", job.yaml_bytes(ticket))
     job.write_once(owner / "results" / stem / "runtime.yaml", job.yaml_bytes(runtime))
     job.write_once(owner / "results" / stem / "result.yaml", job.yaml_bytes(result))
@@ -189,7 +249,7 @@ def normalize(owner: Path, raw: Path, source_id: str) -> dict:
                 "normalized_digest": _digest(data), "n_conversations": len(good),
                 "n_groups": len({r["split_group_id"] for r in good}), "n_rejected": len(rejected)}
     return {"snapshot_id": snapshot, **_run(owner, "source-normalize", source_id,
-        inputs={"raw_path": str(raw.resolve()), "raw_digest": _digest(raw_data)},
+        inputs={"raw_path": stored_path(raw), "raw_digest": _digest(raw_data)},
         artifacts={owner / "source.yaml": job.yaml_bytes(owner_record),
                    folder / "normalized.private.jsonl": data,
                    folder / "rejects.private.jsonl": _jsonl(rejected),
@@ -249,7 +309,7 @@ def _candidate_rows(normalized: list[dict], recipe_data: dict) -> tuple[list[dic
 def materialize(owner: Path, snapshot: str, recipe_id: str) -> dict:
     owner = owner.resolve()
     folder = owner / "versions" / snapshot
-    normalized = _rows(folder / "normalized.private.jsonl")
+    normalized = _rows(custody(folder / "normalized.private.jsonl"))
     recipe_data = job.load_mapping(folder / "recipes" / f"{recipe_id}.yaml")
     if recipe_data.get("snapshot_id") != snapshot or recipe_data.get("recipe_id") != recipe_id:
         raise ValueError("recipe does not bind the requested source snapshot")
@@ -279,8 +339,8 @@ def check(owner: Path, snapshot: str, itemset: str) -> dict:
     target = folder / "itemsets" / itemset
     manifest = job.load_mapping(target / "manifest.public.json")
     recipe_data = job.load_mapping(folder / "recipes" / f"{manifest['recipe_id']}.yaml")
-    normalized = _rows(folder / "normalized.private.jsonl")
-    actual = _rows(target / "items.private.jsonl")
+    normalized = _rows(custody(folder / "normalized.private.jsonl"))
+    actual = _rows(custody(target / "items.private.jsonl"))
     expected, lineage = _candidate_rows(normalized, recipe_data)
     for row in expected:
         row["item_set_id"] = itemset
@@ -311,8 +371,8 @@ def reserve(owner: Path, snapshot: str, itemset: str, config_path: Path,
     qa = job.load_mapping(target / "qa.public.json")
     if qa.get("status") != "accepted" or qa.get("candidate_digest") != manifest.get("candidate_digest"):
         raise RuntimeError("an accepted QA receipt bound to this item set is required")
-    normalized = _rows(folder / "normalized.private.jsonl")
-    items = _rows(target / "items.private.jsonl")
+    normalized = _rows(custody(folder / "normalized.private.jsonl"))
+    items = _rows(custody(target / "items.private.jsonl"))
     if (_digest(_jsonl(normalized)) != source_manifest.get("normalized_digest")
             or manifest.get("snapshot_id") != snapshot or qa.get("item_set_id") != itemset):
         raise RuntimeError("source snapshot, item set, and QA do not bind the same inputs")
@@ -369,7 +429,7 @@ def reserve(owner: Path, snapshot: str, itemset: str, config_path: Path,
                                 "release only after G* freezes, by the custodian"],
               "text_location": "source custody only; no sealed text in fenced package"}
     receipt = {"schema": "subjective-label/preparation-receipt-v2", "status": "accepted",
-               "owner": str(owner), "snapshot_id": snapshot, "recipe_id": manifest["recipe_id"],
+               "owner": stored_path(owner), "snapshot_id": snapshot, "recipe_id": manifest["recipe_id"],
                "item_set_id": itemset, "partition_id": partition,
                "source_manifest_digest": _digest((folder / "manifest.public.json").read_bytes()),
                "normalized_digest": source_manifest["normalized_digest"],
@@ -396,12 +456,12 @@ def reserve(owner: Path, snapshot: str, itemset: str, config_path: Path,
     }
     result = _run(owner, "initial-group-reserve", itemset,
         inputs={"snapshot_id": snapshot, "item_set_id": itemset, "seed": seed,
-                "sealed_groups": sealed_groups, "config_path": str(config_path.resolve()),
+                "sealed_groups": sealed_groups, "config_path": stored_path(config_path),
                 "config_digest": _digest(config_path.read_bytes()), "custodian": custodian},
-        artifacts=artifacts, receipt={"partition_id": partition, "package": str(package),
+        artifacts=artifacts, receipt={"partition_id": partition, "package": stored_path(package),
                                       "accepted": True, "n_eligible": len(eligible_rows),
                                       "n_sealed": len(protected_rows)})
-    return {"package": str(package), "partition_id": partition, **result}
+    return {"partition_id": partition, **result, "package": str(package)}
 
 
 def _verify_legacy_package(package: Path, owner: Path, receipt: dict) -> dict:
@@ -442,7 +502,7 @@ def verify_package(package: Path) -> dict:
                                        "subjective-label/preparation-receipt-v2"}
             or receipt.get("status") != "accepted"):
         raise RuntimeError("source package lacks an accepted preparation receipt")
-    owner = Path(str(receipt.get("owner") or "")).resolve()
+    owner = resolve_stored(receipt.get("owner"), package).resolve()
     snapshot = str(receipt["snapshot_id"])
     itemset = str(receipt["item_set_id"])
     partition = str(receipt["partition_id"])
@@ -466,15 +526,16 @@ def verify_package(package: Path) -> dict:
         (package / "test" / "sealed" / "manifest.protected.jsonl", "protected_digest"),
     )
     for path, field in checks:
+        path = custody(path)
         if not path.is_file() or _digest(path.read_bytes()) != receipt.get(field):
             raise RuntimeError(f"preparation binding mismatch: {field}")
     source_manifest = job.load_mapping(checks[0][0])
     if job.load_mapping(owner / "source.yaml") != _owner_record(owner, source_manifest["source_id"]):
         raise RuntimeError("preparation owner disagrees with its source snapshot")
-    normalized = _rows(checks[1][0])
+    normalized = _rows(custody(checks[1][0]))
     recipe_data = job.load_mapping(checks[2][0])
     item_manifest = job.load_mapping(checks[3][0])
-    items = _rows(checks[4][0])
+    items = _rows(custody(checks[4][0]))
     qa = job.load_mapping(checks[5][0])
     frame = job.load_mapping(checks[6][0])
     protected_groups = owner / "partitions" / partition / "frame.protected.jsonl"
@@ -562,9 +623,9 @@ def preparation_reference(owner: Path, package: Path, receipt: dict) -> dict:
         if not candidates:
             raise RuntimeError(f"accepted preparation has no {operation} Result")
         upstream_runs.append(sorted(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))[-1].stem)
-    return {"schema": "subjective-label/preparation-ref-v1", "owner": str(owner.resolve()),
-            "package": str(package.resolve()),
-            "receipt": str((package / "preparation-receipt.json").resolve()),
+    return {"schema": "subjective-label/preparation-ref-v1", "owner": stored_path(owner),
+            "package": stored_path(package),
+            "receipt": stored_path(package / "preparation-receipt.json"),
             "snapshot_id": receipt["snapshot_id"], "recipe_id": receipt["recipe_id"],
             "item_set_id": receipt["item_set_id"], "partition_id": receipt["partition_id"],
             "qa_digest": receipt["qa_digest"], "frame_digest": receipt["frame_digest"],
@@ -574,7 +635,7 @@ def preparation_reference(owner: Path, package: Path, receipt: dict) -> dict:
 def link(owner: Path, package: Path, page_file: Path) -> dict:
     owner = owner.resolve()
     receipt = verify_package(package)
-    if Path(receipt["owner"]).resolve() != owner:
+    if resolve_stored(receipt["owner"], package).resolve() != owner:
         raise RuntimeError("package is not owned by this Corpus Preparation folder")
     page_file = job.require_page_folder(page_file)
     source = job.load_mapping(owner / "versions" / receipt["snapshot_id"] / "manifest.public.json")
@@ -583,18 +644,20 @@ def link(owner: Path, package: Path, page_file: Path) -> dict:
     if source_file.exists() and job.load_mapping(source_file) != owner_record:
         raise RuntimeError("preparation owner no longer matches its source snapshot")
     page_owner_ref = page_file.parent / "labeling" / "preparation-owner.yaml"
-    owner_reference = {**owner_record, "owner": str(owner)}
-    if page_owner_ref.exists() and job.load_mapping(page_owner_ref) != owner_reference:
+    owner_reference = {**owner_record, "owner": stored_path(owner)}
+    if page_owner_ref.exists() and not same_reference(job.load_mapping(page_owner_ref), owner_reference, page_owner_ref):
         raise RuntimeError("Page is already attached to another preparation owner")
     page_ref = page_file.parent / "labeling" / "preparation-ref.yaml"
     reference = preparation_reference(owner, package, receipt)
     if (page_file.parent / "labeling" / "config.yaml").is_file() and not page_ref.is_file():
         raise RuntimeError("cannot add preparation provenance after a Labeling Contract")
-    if page_ref.exists() and job.load_mapping(page_ref) != reference:
+    if page_ref.exists() and not same_reference(job.load_mapping(page_ref), reference, page_ref):
         raise RuntimeError("Page is already linked to another preparation package")
     job.write_once(source_file, job.yaml_bytes(owner_record))
-    job.write_once(page_owner_ref, job.yaml_bytes(owner_reference))
-    job.write_once(page_ref, job.yaml_bytes(reference))
+    if not page_owner_ref.exists():
+        job.write_once(page_owner_ref, job.yaml_bytes(owner_reference))
+    if not page_ref.exists():
+        job.write_once(page_ref, job.yaml_bytes(reference))
     return {"page": str(page_file), "preparation_ref": str(page_ref), "package": str(package)}
 
 

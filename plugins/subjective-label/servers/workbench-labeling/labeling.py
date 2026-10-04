@@ -729,6 +729,15 @@ def _embedding_module():
     return module
 
 
+def _stored(value, anchor: Path) -> Path:
+    """A path a preparation record keeps, back to a real one: new records keep it relative to the
+    SPACE root (AGENTS.md rule 7); an old absolute record reads as is."""
+    module = _preparation_module()
+    if module is not None and hasattr(module, "resolve_stored"):
+        return module.resolve_stored(value, anchor)
+    return Path(str(value or ""))
+
+
 @lru_cache(maxsize=1)
 def _preparation_module():
     domain = _canonical_job_module()
@@ -972,24 +981,27 @@ def _preparation_state(root: Path) -> dict:
     if not ref:
         if not owner_ref:
             return {"attached": False, "linked": False, "runs": []}
-        owner = Path(str(owner_ref.get("owner") or ""))
+        owner = _stored(owner_ref.get("owner"), owner_file)
         source_id = str(owner_ref.get("source_id") or "")
         expected = {"schema": "subjective-label/preparation-owner-v1", "source_id": source_id}
         if (not owner.is_absolute() or owner.name != "corpus-preparation" or owner.is_symlink()
                 or not source_id or _load_mapping(owner / "source.yaml") != expected
-                or owner_ref != {**expected, "owner": str(owner)}):
+                or set(owner_ref) != {*expected, "owner"}
+                or any(owner_ref.get(k) != v for k, v in expected.items())):
             return {"attached": True, "linked": False, "owner_reference": owner_ref,
                     "runs": [], "error": "preparation owner reference is invalid or changed"}
         return {"attached": True, "linked": False, "owner_reference": owner_ref,
                 "runs": _run_rows(root, owner=owner, family="corpus")}
-    owner = Path(str(ref.get("owner") or ""))
-    package = Path(str(ref.get("package") or ""))
+    owner = _stored(ref.get("owner"), accepted_file)
+    package = _stored(ref.get("package"), accepted_file)
     if (not owner.is_absolute() or owner.name != "corpus-preparation"
             or not package.is_relative_to(owner / "packages") or owner.is_symlink()):
         return {"attached": True, "linked": True, "reference": ref, "runs": [],
                 "error": "preparation reference has an invalid owner or package path"}
     owner_record = _load_mapping(owner / "source.yaml")
-    if owner_ref and (owner_ref != {**owner_record, "owner": str(owner)}
+    if owner_ref and (set(owner_ref) != {*owner_record, "owner"}
+                      or any(owner_ref.get(k) != v for k, v in owner_record.items())
+                      or _stored(owner_ref.get("owner"), owner_file).resolve() != owner.resolve()
                       or owner_record.get("schema") != "subjective-label/preparation-owner-v1"):
         return {"attached": True, "linked": True, "reference": ref, "runs": [],
                 "error": "preparation owner and accepted package references disagree"}
@@ -999,7 +1011,7 @@ def _preparation_state(root: Path) -> dict:
                 "error": "Corpus Preparation engine is unavailable"}
     try:
         receipt = module.verify_package(package)
-        if ref != module.preparation_reference(owner, package, receipt):
+        if not module.same_reference(ref, module.preparation_reference(owner, package, receipt), accepted_file):
             raise RuntimeError("Page preparation reference disagrees with its package or Runs")
     except (OSError, ValueError, KeyError, RuntimeError) as error:
         return {"attached": True, "linked": True, "reference": ref, "runs": [],

@@ -692,18 +692,18 @@ def create_contract(
         preparation = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(preparation)
         preparation_receipt = preparation.verify_package(source_job)
-        preparation_ref = preparation.preparation_reference(
-            Path(preparation_receipt["owner"]), source_job, preparation_receipt
-        )
+        # the receipt keeps the owner relative to the SPACE root (AGENTS.md rule 7)
+        source_owner = preparation.resolve_stored(preparation_receipt["owner"], source_job)
+        preparation_ref = preparation.preparation_reference(source_owner, source_job, preparation_receipt)
         owner_ref = job_root / "preparation-owner.yaml"
         if owner_ref.exists():
-            source_owner = Path(preparation_receipt["owner"])
             owner_record = load_mapping(source_owner / "source.yaml")
-            expected_owner_ref = {**owner_record, "owner": str(source_owner)}
-            if load_mapping(owner_ref) != expected_owner_ref:
+            expected_owner_ref = {**owner_record, "owner": preparation.stored_path(source_owner)}
+            if not preparation.same_reference(load_mapping(owner_ref), expected_owner_ref, owner_ref):
                 raise RuntimeError("Page preparation owner disagrees with the requested source package")
         existing_ref = job_root / "preparation-ref.yaml"
-        if existing_ref.exists() and load_mapping(existing_ref) != preparation_ref:
+        if existing_ref.exists() and not preparation.same_reference(load_mapping(existing_ref), preparation_ref,
+                                                                    existing_ref):
             raise RuntimeError("Page preparation reference disagrees with the requested source package")
     elif (job_root / "preparation-ref.yaml").exists() or (job_root / "preparation-owner.yaml").exists():
         raise RuntimeError("Page has a Corpus Preparation owner, but this source has no accepted preparation receipt")

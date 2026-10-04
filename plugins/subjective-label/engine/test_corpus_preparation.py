@@ -227,3 +227,29 @@ def test_contract_refuses_tampered_preparation_before_writing_page(tmp_path: Pat
                             page_file=state["page"], job_id="example", target="example",
                             human_id="human", created_at="2026-09-29")
     assert not (state["page"].parent / "labeling/config.yaml").exists()
+
+
+def test_inside_a_space_records_keep_relative_paths_and_private_text_leaves_the_project(tmp_path: Path) -> None:
+    """AGENTS.md rule 7: no absolute path in a record; corpus text never in a git-tracked folder."""
+    space = tmp_path / "space"
+    space.mkdir()
+    (space / "env.sh").write_text("# the SPACE root\n", encoding="utf-8")
+    state = _prepare(space)
+    owner, page, package = state["owner"], state["page"], Path(state["package"])
+    assert package.is_absolute()                          # the caller still gets a real path
+    assert not list(owner.rglob("*.private.*"))            # no private text beside the records
+    custody = space / "_WorkSpace" / "LabelingStore" / "_custody"
+    kept = sorted(p.name for p in custody.rglob("*.private.*"))
+    assert kept == ["items.private.jsonl", "lineage.private.jsonl",
+                    "normalized.private.jsonl", "rejects.private.jsonl"]
+    prep.link(owner, package, page)
+    job.create_contract(source_job=package, job_root=page.parent / "labeling", page_file=page,
+                        job_id="example", target="example", human_id="human", created_at="2026-09-29")
+    records = [*owner.rglob("*.yaml"), *owner.rglob("*.json"), *package.rglob("*.json"),
+               *(page.parent / "labeling").glob("preparation-*.yaml")]
+    for record in records:
+        assert str(tmp_path) not in record.read_text(encoding="utf-8"), record
+    ref = yaml.safe_load((page.parent / "labeling" / "preparation-ref.yaml").read_text())
+    assert ref["owner"] == "source/corpus-preparation"
+    assert prep.resolve_stored(ref["package"], page) == package.resolve()
+    assert job.status(page.parent / "labeling")["p0_contract_integrity_valid"] is True
