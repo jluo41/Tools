@@ -9,8 +9,8 @@ description: >-
   tracking across one tasks/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.5.3"
-  last_updated: "2026-10-04"
+  version: "0.5.4"
+  last_updated: "2026-10-05"
 ---
 
 # Task Block Workbench

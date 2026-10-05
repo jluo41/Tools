@@ -39,7 +39,7 @@ except ImportError:
         return None
 
 
-_TICKET_SUFFIXES = {".sh", ".ps1", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
+_TICKET_SUFFIXES = {".sh", ".ps1", ".cmd", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
 _TICKET_NAME = re.compile(
     r"(?:^rp-(?:struct|sec|para)-\d{2}(?:_P\d{2}(?:-P\d{2})?)?"
     r"|^rp-scratch-\d{2}_[A-Za-z0-9._-]+"
@@ -181,7 +181,7 @@ def _fields(runtime: Path | None) -> dict[str, str]:
     return {name: field(name) for name in
             ("run", "global_id", "status", "target", "result", "ticket", "family",
              "operation", "interaction", "mode", "version", "step", "outcome", "summary",
-             "target_scope", "participants", "coordinator", "contributors", "store")}
+             "target_scope", "participants", "coordinator", "contributors", "store", "host")}
 
 
 def _writing_operation(fields: dict[str, str]) -> bool:
@@ -1196,11 +1196,24 @@ def _version_closed(runtime: Path, version: str) -> bool:
     return bool(hit and _section_body(hit.group(1), "Human close"))
 
 
+def _declares_outputs(runtime: Path) -> bool:
+    """True when a receipt lists a non-empty `outputs:` (inline list or YAML block)."""
+    try:
+        text = runtime.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return bool(re.search(r"^outputs:[ \t]*(?:\[[ \t]*[^\]\s]|\r?\n[ \t]*- )", text, re.M))
+
+
 def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if runtime is None:
         # An open run (ticket only) is running; anything else without a receipt is held.
         return "Running" if fields.get("status", "").lower() in {"open", "running"} else "Held"
     status = fields.get("status", "").lower()
+    # A receipt a laptop selftest seeded (host: laptop-selftest) proves the code path,
+    # not an execution: the Run is still planned until its real receipt replaces it.
+    if "selftest" in fields.get("host", "").lower():
+        return "Ready"
     if status in {"ready", "planned", "ticket", "queued"}:
         return "Ready"
     if status in {"running", "started"}:
@@ -1214,7 +1227,7 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
         return "Failed"
     if status in {"blocked", "held", "rerun", "incomplete"}:
         return "Held"
-    if status in {"complete", "completed", "done"}:
+    if status in {"complete", "completed", "done", "ok"}:  # ok: the Databricks runner's word
         if fields.get("family", "").lower() == "paper" and fields.get("operation") == "judgment":
             return "Done" if _version_closed(runtime, fields.get("version", "")) else "Held"
         if fields.get("operation") == "paragraph-writing":
@@ -1232,6 +1245,9 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
                     and _version_closed(runtime, version) else "Held")
         has_output = any(child.is_file() and child.name not in {"runtime.yaml", "receipt.yaml"}
                          for child in runtime.parent.iterdir())
+        # A server-only Run keeps its output where it was written (row-level data never
+        # leaves the server); a receipt that lists those `outputs:` is its Result.
+        has_output = has_output or _declares_outputs(runtime)
         return "Done" if has_output else "Held"
     return "Held"
 

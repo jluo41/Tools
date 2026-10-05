@@ -177,7 +177,7 @@ def _run_row(row: dict, root: Path) -> dict:
     if status == "failed" and not issues:
         issues.append(str(receipt.get("failure") or "Run failed"))
     if status == "blocked" and not issues:
-        issues.append("Complete receipt has no available Result" if raw in {"complete", "completed", "done"}
+        issues.append("Complete receipt has no available Result" if raw in {"complete", "completed", "done", "ok"}
                       else "Run is blocked or its receipt needs review")
     # The shared reader can include absolute paths in an audit of duplicate
     # stores. Keep the finding, and use its existing Page detail for inspection.

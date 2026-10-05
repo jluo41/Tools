@@ -1,3 +1,11 @@
+## 1.10.3 · 2026-10-05 · S8 looks names up across the Project
+
+- `ref/check_task_tree.py` S8: names are looked up across the whole Project, not only
+  `tasks/`, so a Task Page linking a Discovery Page or its Paper Run in `discoveries/` no
+  longer reads as a name that does not exist (REACH-SPACE b01_reach_jhu: 211 of 220 S8
+  findings were such links). A generator that quotes code verbatim may mark the fence
+  `<!-- s8-skip -->`.
+
 ## 1.10.2 · 2026-10-03 · Project tree names cowork/
 
 - ref/hierarchy.md: the Project tree shows `cowork/` in place of the retired

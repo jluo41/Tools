@@ -1035,7 +1035,10 @@ def tree_reroot(html, up, src_dir=None, board_root=None):
         try:
             rel = candidate.relative_to(source_root).as_posix()
         except ValueError:
-            return None
+            # A link that leaves the Board (a Task Page citing discoveries/) is
+            # rebased to the Board root too; without it the page-relative ../
+            # chain was prefixed with the hop and climbed two folders too far.
+            rel = Path(os.path.relpath(candidate, source_root)).as_posix()
         suffix = url[len(bare):]
         return up + quote(rel, safe="/:") + suffix
 
@@ -1404,9 +1407,11 @@ def render_tree(meta, qs, out_dir, only=None):
         gdir = out_dir / gtok
         gdir.mkdir(exist_ok=True)
         f = gdir / tree_page_name(q)
-        crumb = (f' <span class="sb-sep">›</span> '
-                 f'<a href="../{gtok}.html">{esc(gtok)}</a>'
-                 f' <span class="sb-sep">›</span> <b>{esc(q["id"])}</b>')
+        # No group page is written for the unnamed group (the loop below skips it),
+        # so an ungrouped page's crumb names no group rather than linking a missing file.
+        crumb = ((f' <span class="sb-sep">›</span> '
+                  f'<a href="../{gtok}.html">{esc(gtok)}</a>' if gtok != "_ungrouped" else "")
+                 + f' <span class="sb-sep">›</span> <b>{esc(q["id"])}</b>')
         # The tab carries the ID first (JL 260801). A browser tab shows maybe
         # 20 characters, and with a dozen board tabs open the titles all begin
         # with the same kind of phrase; the id is the one token that tells them

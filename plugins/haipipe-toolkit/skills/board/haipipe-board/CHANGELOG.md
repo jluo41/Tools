@@ -1,3 +1,14 @@
+## 1.1.8 · 2026-10-05 · Links that leave the Board, and ungrouped breadcrumbs
+
+- `src/page_board.py` `tree_reroot.sourced_url`: a Page link that leaves the Board (a Task
+  Page citing `../../../../discoveries/...`) is rebased to the Board root with
+  `os.path.relpath`; before, the page-relative `../` chain was prefixed with the hop and
+  climbed two folders too far (REACH-SPACE b01_reach_jhu: 19 dead links, now 0). Tests:
+  `test_tree_reroot.py` 5 passed, the board suites 58 passed.
+- A Page in no `## Pages` group (a Block report under `reports/`) no longer gets a breadcrumb
+  link to `../_ungrouped.html`, a group page the builder never writes; its crumb names no
+  group (REACH-SPACE: 51 dead links over 15 Blocks, now 0).
+
 ## 1.1.7 · 2026-10-03 · Project-level Boards live in cowork/
 
 - A project-level Board lives under the Project's `cowork/` (JL 261003: "no more

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.4 · 2026-10-05 · Databricks receipts read truthfully
+
+- `servers/workbench-page/runs.py`: a `.cmd` ticket is a ticket; a receipt `status: ok` (the
+  Databricks runner's word) is complete; a receipt listing a non-empty `outputs:` is its
+  Result when the output stays on the server by rule; a receipt whose `host` is a selftest
+  reads as planned, not complete. `servers/workbench-task/taskboard.py` names `ok` in the
+  receipt message. Tests: `servers/workbench-task/tests/test_run_receipts.py` (5). On
+  REACH-SPACE, Check now shows b01_reach_jhu 125 complete (was 0), PD2D b00 61 complete,
+  ADHD b00's 28 selftest seeds as planned.
+
 ## 0.5.3 · 2026-10-04
 
 - Report cell: a drawing the report links under Evidence shows as its `.png` preview when

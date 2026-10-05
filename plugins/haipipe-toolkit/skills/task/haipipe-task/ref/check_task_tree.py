@@ -216,8 +216,12 @@ def check(root):
     # S8 a doc may not name a folder, ticket or script that does not exist. Every
     # rename in this tree so far left a page pointing at the old name, and a page
     # nobody can follow is worse than no page.
+    # Names are looked up across the whole Project, not only tasks/: a Task Page may
+    # link a Discovery Page or its Paper Run in the sibling discoveries/ world.
+    scope = (root.parent.parent if root.name.startswith("b") and root.parent.name == "tasks"
+             else root.parent if root.name == "tasks" else root)
     live = set()
-    for p in root.parent.rglob("*") if root.name.startswith("b") else root.rglob("*"):
+    for p in scope.rglob("*"):
         if any(x in p.parts for x in ("results", ".git")): continue
         live.add(p.name); live.add(p.stem)
     TOKEN = re.compile(r'\b([bjtr]\d\d_[A-Za-z0-9_][A-Za-z0-9_.-]*[A-Za-z0-9_]|[a-z][a-z0-9_]*\.(?:ps1|cmd))\b')   # a stem may carry - and . (r01_v2026-07); .cmd JL 260908
