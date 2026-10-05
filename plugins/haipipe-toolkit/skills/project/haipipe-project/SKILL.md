@@ -4,13 +4,13 @@ description: >-
   Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-nlp/.
   Owns the Project boundary, README.md, project.yaml, project profile and Git
   mode, and the optional top-level worlds tasks/, discoveries/, cowork/,
-  papers/, insights/, designs/, and external/, plus platforms/ for code repos. Use for new projects, repository
+  papers/, insights/, designs/, labelings/, and external/, plus platforms/ for code repos. Use for new projects, repository
   topology, project structure reviews, compliance previews, or root-level
   migrations. Child-world internals remain owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-10-03"
+  version: "0.10.0"
+  last_updated: "2026-10-05"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,6 +36,7 @@ examples/ProjNN-<domain>-<purpose>/
 ├── papers/         optional/lazy · academic consumers
 ├── insights/       optional/lazy · Insight Prototypes (Blocks) and Instances
 ├── designs/        optional/lazy · Design boards and folders
+├── labelings/      optional/lazy · one Block per dataset, one Job per label on it
 └── external/       optional/lazy · pinned, read-only upstream material
 ```
 
@@ -89,6 +90,7 @@ discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 papers/         → haipipe-paper      academic consumer
 insights/       → haipipe-insight    Prototype-Insight-<Topic>/ + Instance-Insight-<Dataset>/
 designs/        → haipipe-design     Design boards and Design Folders
+labelings/      → subjective-label   bNN_<dataset>/ Blocks; jNN_<dataset>_<label>/ Jobs
 cowork/         → this skill owns the boundary; haipipe-cowork owns each bNN_ Block
 platforms/      → each repo owns its code; this skill owns only the link
 external/       → this skill owns only the read-only root boundary
