@@ -747,6 +747,33 @@ def inline(s):
                 return (f'<object class="figpdf" data="{src}" '
                         f'type="application/pdf"><a class="fp" href="{src}">'
                         f'open {alt or "PDF"}</a></object>')
+            # A YouTube link in image form plays through YouTube's own
+            # embedded player, the way YouTube allows other sites to show its
+            # videos (JL 261004: walkthroughs beside the team's own videos).
+            # youtube-nocookie sets no cookie until play; the link under the
+            # frame opens the video on YouTube.
+            yt = re.match(r"https?://(?:www\.|m\.)?(?:youtube\.com/(?:watch\?(?:[^#]*?&(?:amp;)?)?v=|shorts/|embed/)"
+                          r"|youtu\.be/)([\w-]{11})", src)
+            if yt:
+                return (f'<span class="figyt"><iframe src="https://www.youtube-nocookie.com/embed/{yt.group(1)}" '
+                        f'title="{alt or "YouTube video"}" loading="lazy" allowfullscreen '
+                        f'allow="encrypted-media; picture-in-picture; fullscreen" '
+                        f'referrerpolicy="strict-origin-when-cross-origin"></iframe>'
+                        f'<a class="fp" href="{src}" target="_blank" rel="noopener">'
+                        f'{alt or "open on YouTube"} ↗</a></span>')
+            # A video plays in place, from the same Markdown image form
+            # (JL 261004: a Question report shows the setup videos it is
+            # about). preload="metadata" fetches only the length and first
+            # frame until the reader presses play; the link under the player
+            # opens the file alone and is the path for a browser without one.
+            if re.search(r"\.(?:mp4|m4v|webm|mov)(?:[?#].*)?$", src, re.I):
+                # `#t=0.5` shows a real frame before play; Safari shows none otherwise.
+                start = src if "#" in src else src + "#t=0.5"
+                return (f'<span class="figvideo"><video controls '
+                        f'preload="metadata" playsinline src="{start}" '
+                        f'title="{alt or "video"}"></video><a class="fp" '
+                        f'href="{src}" target="_blank" rel="noopener">'
+                        f'{alt or "open the video"}</a></span>')
             # An html file embeds LIVE, in its own browsing context. The
             # iframe's src is a source file the build never rewrites, so its
             # scripts run intact (an html-ppt slide, a demo) while the board

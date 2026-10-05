@@ -6,8 +6,8 @@ description: >-
   inline, or make a complex relationship easier to scan. Ordinary replies stay
   natural and concise; reply blocks are optional, never the default.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-20"
+  version: "0.5.1"
+  last_updated: "2026-10-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -39,6 +39,13 @@ The user's requested format always wins.
 Use an ASCII diagram only when it materially clarifies a relationship, flow,
 hierarchy, state change, or folder structure. A short factual answer, status
 update, or handoff normally needs no diagram.
+
+Exception, by request: where `/response-format` is the active reply format, each
+section carries one SKETCH between its scan list and its prose: the smallest form
+of a shape below (a flow, a before and after, a mini comparison, a share bar, a
+state line, a small tree), one step per line, up to 10 lines and 72 columns, drawing the thing and
+never restating the list, with an emoji on each node and no separator lines
+or borders. The full rules live in `/response-format`, "The sketch".
 
 The former two-box reply is retained only as an OPTIONAL operational pattern.
 Use it when the user explicitly asks for a card-style summary, or when a reply

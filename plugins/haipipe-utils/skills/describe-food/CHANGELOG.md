@@ -2,6 +2,27 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.7.0 — 2026-10-02
+--------------------------------------------------------------------------------
+
+The word check: score_candidate now asks whether the query's OWN words agree with
+the candidate (foodnorm.usda_db.word_check, on by default; FOODNORM_WORD_CHECK=off
+turns it off). STOPWORDS strips "whole", "fresh" and the cooking words for recall,
+and that also made "Whole Milk" score as plain "milk" and pick "Milk, NFS". Three
+terms: the share of the query's own words in the description (NAME_FILLER left
+out), numbers that agree (1% milkfat is not 2%, 85% lean is not 70%; the tokenizer
+reads letters only), and a penalty for an alcoholic drink the query never asked
+for ("Ginger Ale" -> "Whiskey and ginger ale").
+
+Graded on the WellDoc answer key (b51 t20: FatSecret codes whose logged numbers a
+USDA food reproduces at one of USDA's own portion weights), weights chosen on one
+half and checked on the other: first pick right on the test half 74.1% -> 77.1%
+of codes (72.9% -> 78.7% of rows); 49 codes fixed, 3 broken (t20 r02). Unit tests
+pass off and on; the WellDoc benchmark, every test row: 0 of 11 cells regress,
+item_list error 23.23 -> 22.54 pp (t20 r03). Answers already frozen do not change;
+the next freeze carries it.
+
+
 0.6.1 — 2026-09-30
 --------------------------------------------------------------------------------
 

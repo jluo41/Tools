@@ -74,6 +74,11 @@ def render_report(report, board, root, board_path):
     markup = re.sub(r'\b(href|src|poster)="([^"]*)"', source_attribute, markup)
     document = markup + separator + scripts
     document = document.replace('<details class="sect content">', '<details class="sect content" open>')
+    # A Content section that holds a video starts open, so its players show without a click
+    # (JL 261004: the setup videos in a CoWork Question report).
+    head_part, *sections = document.split('<details class="csec">')
+    document = head_part + ''.join(('<details class="csec" open>' if '<video' in part.split('</details>', 1)[0]
+                                    else '<details class="csec">') + part for part in sections)
     back = '/_board/task-board?' + urlencode({"path": board_path, "view": "task"})
     controls = (f'<a href="{e(back)}">← Task</a> '
                 + link(report["workbench_url"], 'Page Workbench')
@@ -111,7 +116,7 @@ def idname(name):
 
 
 def qnumber(qid):
-    """Q01 -> "Question 1": the id stays in the row's tag and links (as Insight's)."""
+    """Q01 -> "Question 1": the id stays in the row's tag and links (as Insight's); Q-food-1 shows as itself."""
     return "Question " + str(int(qid[1:])) if qid[1:].isdigit() else qid
 
 
@@ -158,7 +163,10 @@ def report_html(question):
     tag = Path(report["path"]).stem.split("_", 1)[0]
     return (label + f'<p class="rp-title">{pop(report["url"], report["title"] or report["path"])}</p>'
             + (f'<p class="rp-text">{e(report["answer"])}</p>' if report["answer"] else '')
-            + ''.join(f'<p class="rp-draw">{pop(d["url"], d["title"], "Drawing · " + d["title"])}</p>'
+            + ''.join(f'<a class="rp-thumb" data-run-result="Drawing · {e(d["title"])}" href="{e(d["url"])}" '
+                      f'target="_blank" rel="noopener" title="Open {e(d["title"])}">'
+                      f'<img src="{e(d["png"])}" alt="{e(d["title"])}" loading="lazy"></a>' if d.get("png") else
+                      f'<p class="rp-draw">{pop(d["url"], d["title"], "Drawing · " + d["title"])}</p>'
                       for d in report.get("drawings", []))
             + f'<p class="rp-tags">report {e(tag)}</p>')
 
@@ -171,7 +179,9 @@ def question_row(question):
     if q["issues"]:
         dl += f'<dt>Register findings</dt><dd>{issues(q["issues"])}</dd>'
     logic = (f'<div class="hl-l"><div class="q-top"><span class="kind">{e(qnumber(q["id"]))}</span></div>'
-             f'<div class="q-title"><b class="q-name">{e(q["title"])}</b></div><div class="q-text">{e(q["question"])}</div>'
+             f'<div class="q-title"><b class="q-name">{e(q["title"])}</b></div>'
+             + (f'<div class="q-text">{e(q["question"])}</div>' if q["question"] != q["title"] else '')
+             + (f'<div class="q-aim"><b>Aim</b> {e(q["aim"])}</div>' if q.get("aim") else '')
              + (f'<details class="q-more"><summary>More</summary><dl>{dl}</dl></details>' if dl else '') + '</div>')
     return (f'<div class="hl-row" id="question-{e(q["id"])}" data-key="{e(q["id"])}" data-label="{e(q["id"])} · {e(q["title"])}">'
             f'{logic}<div class="hl-r">{work_html(q)}</div><div class="hl-p">{report_html(q)}</div></div>')
@@ -420,8 +430,8 @@ def render(snap, view="task"):
     css = ((HERE / 'assets/css/90-task-workbench.css').read_text() + '\n' + PANEL_CSS + SPLIT_CSS
            + '.split{--card:var(--bg)}')
     js = (HERE / 'assets/js/90-task-workbench.js').read_text()
-    content = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>📋 {e(snap['title'])}</title><link rel="icon" href="data:,"><style>{css}</style></head>
-<body class="tw"><main id="task-workbench"><header><h1>📋 {e(snap['title'])}</h1></header>
+    content = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>📋 Task · {e(snap['title'])}</title><link rel="icon" href="data:,"><style>{css}</style></head>
+<body class="tw"><main id="task-workbench"><header><h1>📋 Task · {e(snap['title'])}</h1></header>
 <div class="dataset" title="{e(snap['spine'])}">{e(band)}</div>
 <nav class="spaces" aria-label="Spaces">{space_row}</nav>
 <div class="tw-source-issues">{issues(snap['source_issues'])}</div>

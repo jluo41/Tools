@@ -12,15 +12,28 @@ presents them. What makes a good Question (a topic, not a decision) is
 ```text
 tasks/bNN_<block>/
 ├── board.md                         Question and resource registers
-├── studio/*.excalidraw              freeform Block drawings
+├── studio/*.excalidraw              drawings the whole Block shares (the question map)
 ├── reports/
 │   └── q01_<topic>/
 │       ├── q01_<topic>.md            ordinary same-stem Page: Opening → Content
 │       ├── page.toml                explicit registration with the native Page reader
+│       ├── studio/                  this report's own drawings; scripts in studio/_build/
 │       ├── draft/                   created by the normal Page writing flow
 │       └── runs/, results/          only the Page's own Runs, when needed
 └── jNN_<job>/tNN_<task>/             executable work and its native Results
 ```
+
+A report's drawings live in its own folder (JL 261004): a drawing that belongs to one
+report is saved as `reports/qNN_<topic>/studio/<name>.excalidraw`, and its build script, when
+a script draws it, in `reports/qNN_<topic>/studio/_build/`. The Block's `studio/` keeps only
+the drawings the whole Block shares: the question map and any drawing several Questions or
+Jobs use. `--drawing <name>` makes a blank drawing in the report's `studio/` and lists it
+under `### Evidence`; the workbenches also show any drawing found there, linked or not.
+
+A CoWork Block (`cowork/bNN_<topic>/board.md`, `board-kind: cowork-block`, owned by
+`haipipe-cowork`) keeps the same register and `reports/` folder. There a Question's
+`work:` names files inside the Block (a ticket page, a design note) instead of Task
+Folders; the helper below checks that each named file exists.
 
 A report Folder is reading material, not an executable `tNN` Task. It gets no
 BJTR address and creates no Job, native `rNN`, or Task workflow. Page-owned
@@ -34,8 +47,19 @@ Results and Task Pages; do not copy them into another result registry.
 ## Register in board.md
 
 Use one YAML fence in each optional section. Existing Blocks need no migration;
-unassigned Tasks remain visible. Question ids are stable within the Block;
-reordering cards does not rename their ids or report files.
+unassigned Tasks remain visible. An id is `Q` and two or more digits (`Q01`), or
+`Q-<word>-<number>` with a lower-case word (`Q-food-1`, `Q-exercise-2`; JL 261004), for a
+register cut by a word such as an event type. Its report folder is the id in lower case
+(`q01_<topic>`, `q-food-1_<topic>`). The Workbench shows `Q01` as "Question 1" and a
+named id as itself. Question ids are stable within the Block; reordering cards does not
+rename their ids or report files. `title` is optional: without one the question is the
+title and is shown once. A good entry reads as a slug, then the question, then its aim
+(JL 261004): `title` is the topic in two or three words; `question` is one short question
+read at a glance, about 12 words, with no brackets and no "done when" (JL 261004: long
+questions are hard to read on the card); `acceptance` holds its parts and what counts as
+done, in short sentences (no numbers or verdicts), shown under More; and the optional `aim`
+says what answering it achieves, one line, so a series of questions reads as a story where
+each aim feeds the next. The Workbench shows the aim under the question.
 
 ````markdown
 ## Questions
@@ -46,6 +70,7 @@ questions:
     title: Comparable conditions
     group: Setup
     question: Can both methods use the same data and evaluation rules?
+    aim: Compare the two methods on equal terms.
     hypothesis: Identical inputs and rules allow a fair comparison.
     acceptance: Record the data version, split and metric.
     work:
@@ -95,10 +120,21 @@ python <skill>/ref/block_questions.py add-question <block> \
   --acceptance 'Record the data version, split and metric.' \
   --work j01_data_checks/t01_source_audit
 
+python <skill>/ref/block_questions.py add-report <block> \
+  --id Q-food-1 --slug input_forms --drawing api_food
+
 python <skill>/ref/block_questions.py add-resource <block> \
   --title 'Evaluation reference' --url https://example.test/evaluation \
   --question Q01 --contribution 'A reference protocol for this comparison.'
 ```
+
+`add-report` frames the report of a Question already in the register and writes its
+`report:` line; `--evidence 'label|path'` (repeatable, a file inside the Block) lists that
+file under the frame's `### Evidence`, percent-encoded, so a linked `.excalidraw` shows in
+the Workbench's Report column. `--drawing <name>` (repeatable) makes the report's own blank
+drawing at `reports/<id>_topic/studio/<name>.excalidraw` and lists it the same way. Evidence links are pointers, not an answer: the
+frame keeps `answer-status: open` and writes no `results-read:`, so Check shows "Evidence
+review time is not recorded" until someone reads the evidence.
 
 The helper depends on the same plugin's `servers/workbench-task/task_questions.py`
 and PyYAML. It refuses duplicate ids, existing report folders and invalid work

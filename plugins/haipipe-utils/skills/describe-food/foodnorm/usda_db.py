@@ -15,6 +15,7 @@ Scoring exists to undo that.
 import sqlite3
 import re
 from .constants import USDA_DB, STOPWORDS
+from . import constants as _C
 
 # How many rows the two FTS tiers may RECALL. It is a recall cap, not a quality
 # decision: the tiers' own docstring says they only recall and that
@@ -207,7 +208,43 @@ def score_candidate(query: str, cand, prefer_cooked: bool = True) -> float:
     elif dt in ("foundation_food", "sr_legacy_food"):
         score += 0.3
 
+    if _C.WORD_CHECK:
+        score += word_check(query, cand["description"])
+
     return score
+
+
+_NUMBER = re.compile(r"\d+(?:\.\d+)?")
+
+
+def word_check(query: str, description: str) -> float:
+    """Do the query's OWN words agree with the candidate? Three terms, all off unless constants.WORD_CHECK.
+
+    1. Own words: the share of the query's words found in the description, counting the words STOPWORDS strips
+       ("whole", "poached", "steamed") and leaving out NAME_FILLER. "Whole Milk" -> "Milk, whole", not
+       "Milk, NFS"; "Poached Egg" -> "Egg, whole, boiled or poached", not "Egg, white, cooked, fat added".
+    2. Numbers: 1% milkfat is not 2%, and 85% lean is not 70%. The tokenizer reads letters only, so before this
+       the two were the same food.
+    3. Alcohol: a drink the query never asked for ("Ginger Ale" -> "Whiskey and ginger ale", "Coffee with
+       Cream" -> a 34-proof liqueur).
+
+    Graded on b51 t20's answer key (1,194 FatSecret codes; chosen on one half, checked on the other).
+    """
+    q_tok = USDADatabase.tokenize(query)
+    d_tok = USDADatabase.tokenize(description)
+    d_set = _stem(d_tok)
+    extra = 0.0
+    own = [t for t in q_tok if t not in _C.NAME_FILLER]
+    if own:
+        own_set = _stem(own)
+        extra += _C.OWN_WORDS_WEIGHT * len(own_set & d_set) / len(own_set)
+    q_num, d_num = set(_NUMBER.findall(query)), set(_NUMBER.findall(description))
+    if q_num:
+        hit = len(q_num & d_num)
+        extra += _C.NUMBER_WEIGHT * hit - (_C.NUMBER_WEIGHT if (d_num and not hit) else 0.0)
+    if (set(d_tok) & _C.ALCOHOL_WORDS) and not (set(q_tok) & _C.ALCOHOL_WORDS):
+        extra -= _C.ALCOHOL_PENALTY
+    return extra
 
 
 class USDADatabase:

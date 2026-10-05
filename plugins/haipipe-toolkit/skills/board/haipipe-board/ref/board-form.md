@@ -23,8 +23,11 @@ their source trees. See `haipipe-workbench-design/ref/design-board.md` and
 
 ## Generic Board tree
 
+Project-level Boards sit in the Project's `cowork/`; task and paper owners keep
+`diagram/` (haipipe-project 0.7.0 retired the Project-root `diagram/`).
+
 ```text
-<owner>/diagram/<NN>-<topic>-<YYMMDD>/
+<owner>/<cowork|diagram>/<NN>-<topic>-<YYMMDD>/
 ├── board.md
 ├── 1-QA-<group-slug>/
 │   ├── draw/group.excalidraw

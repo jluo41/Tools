@@ -12,8 +12,8 @@ description: >-
   /haipipe-question.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-03"
+  version: "0.4.1"
+  last_updated: "2026-10-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -27,12 +27,20 @@ Every board kind uses the same shape: a Task Block (`tasks/bNN_<block>/`), a Pap
 ```text
 <board>/
 ├── board.md                    the question register (Questions, Related resources)
-├── studio/                     freeform drawings
+├── studio/                     drawings the whole Block shares (the question map)
 └── reports/
     └── q01_<topic>/
         ├── q01_<topic>.md      the report Page: Opening, then Answer · Evidence · Limits · Next
-        └── page.toml           registers the Page with the Page reader
+        ├── page.toml           registers the Page with the Page reader
+        └── studio/             this report's own drawings (the rule below)
 ```
+
+A report's drawings live in its own folder (JL 261004): a drawing that belongs to one
+report is saved as `reports/qNN_<topic>/studio/<name>.excalidraw`, and its build script, when
+a script draws it, in `reports/qNN_<topic>/studio/_build/`. The Block's `studio/` keeps only
+the drawings the whole Block shares: the question map and any drawing several Questions or
+Jobs use. `--drawing <name>` makes a blank drawing in the report's `studio/` and lists it
+under `### Evidence`; the workbenches also show any drawing found there, linked or not.
 
 
 A question is a topic
@@ -87,8 +95,11 @@ nothing.
 
 To create one:
 
-1. **Pick the id**: the next free `QNN` in the register; ids never move or get reused.
-2. **Name the folder**: `qNN_<topic>`, the topic in two or three snake_case words.
+1. **Pick the id**: the next free `QNN` in the register, or `Q-<word>-<number>` when the
+   register is cut by a word such as an event type (`Q-food-1`, `Q-exercise-2`; JL 261004);
+   ids never move or get reused.
+2. **Name the folder**: the id in lower case, then the topic in two or three snake_case
+   words: `q07_<topic>` or `q-food-1_<topic>`.
 3. **Register it**: add the entry to `board.md`'s `## Questions` register.
 4. **Frame the report**: the same-stem `.md` with `answers:` and `answer-status: open`, and `page.toml`.
 5. **Write through Page**: the answer is written by the Page flow, never typed into the frame.
@@ -100,7 +111,17 @@ an existing folder and a work path that is not a Task):
 python Tools/plugins/haipipe-toolkit/skills/question/haipipe-question/ref/block_questions.py \
   add-question <block> --id Q02 --slug <topic> --title '<short question>' \
   --question '<the question>' [--hypothesis …] [--acceptance …] [--work jNN_<job>/tNN_<task>]
+
+# a report for a Question already in the register (steps 2 and 4, and its report: line)
+python …/block_questions.py add-report <block> --id Q-food-1 --slug input_forms \
+  [--title '<title>'] [--evidence '<label>|<path in the Block>'] [--drawing api_food]
 ```
+
+`--evidence 'label|path'` (either command, repeatable) lists a file inside the Block under
+the frame's `### Evidence`: a Task Result, a source Page, or a drawing, which the workbench
+then shows in the Report column. `--drawing <name>` (repeatable) makes the report's own
+drawing in `reports/<id>_topic/studio/` and lists it the same way. It is a pointer for the writer, not an
+answer; `answer-status` stays `open` and no `results-read:` is written until someone reads it.
 
 A Paper board has no register block yet: its questions are the Story's research
 questions (`RQ<n>`), and a report names them in `answers:`

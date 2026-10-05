@@ -7,7 +7,7 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.1.6"
+  version: "1.1.7"
   last_updated: "2026-10-01"
   # version history: ./CHANGELOG.md
 ---
@@ -105,8 +105,10 @@ creating or changing Board structure.
     └── insight.html               generated Board-level Insight workbench page, InsightBoards only
 ```
 
-Boards created for a task, project, or paper normally live under that owner's
-`diagram/<NN>-<topic>-<YYMMDD>/`. Skill-design Boards live under the workbench's
+Boards created for a task or paper normally live under that owner's
+`diagram/<NN>-<topic>-<YYMMDD>/`; a project-level Board lives under the
+Project's `cowork/<NN>-<topic>-<YYMMDD>/` (the Project-root `diagram/` is
+retired, haipipe-project 0.7.0; Boards already there stay readable). Skill-design Boards live under the workbench's
 `skills/diagrams/`. The date records creation and never changes. Group-folder
 numbers mirror `## Pages` order; Page identity never depends on that number.
 

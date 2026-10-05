@@ -3,13 +3,13 @@ name: haipipe-project
 description: >-
   Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-nlp/.
   Owns the Project boundary, README.md, project.yaml, project profile and Git
-  mode, and the optional top-level worlds tasks/, discoveries/, diagram/,
-  papers/, insights/, designs/, and external/. Use for new projects, repository
+  mode, and the optional top-level worlds tasks/, discoveries/, cowork/,
+  papers/, insights/, designs/, and external/, plus platforms/ for code repos. Use for new projects, repository
   topology, project structure reviews, compliance previews, or root-level
   migrations. Child-world internals remain owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
+  version: "0.9.1"
   last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -28,7 +28,11 @@ examples/ProjNN-<domain>-<purpose>/
 ├── project.yaml    required machine contract
 ├── tasks/          optional/lazy · computational evidence bank
 ├── discoveries/    optional/lazy · external-evidence bank
-├── diagram/        optional/lazy · story, Boards, and meetings
+├── cowork/         optional/lazy · coordination text: tickets, people, emails,
+│                   meetings, design notes; one CoWork Block per topic,
+│                   bNN_<topic>/board.md + jNN_<job>/ Jobs (haipipe-cowork)
+├── platforms/      optional/lazy · project-owned code repos as submodules
+│                   (software and hybrid profiles only)
 ├── papers/         optional/lazy · academic consumers
 ├── insights/       optional/lazy · Insight Prototypes (Blocks) and Instances
 ├── designs/        optional/lazy · Design boards and folders
@@ -85,7 +89,8 @@ discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 papers/         → haipipe-paper      academic consumer
 insights/       → haipipe-insight    Prototype-Insight-<Topic>/ + Instance-Insight-<Dataset>/
 designs/        → haipipe-design     Design boards and Design Folders
-diagram/        → haipipe-board / haipipe-page plus Project story surfaces
+cowork/         → this skill owns the boundary; haipipe-cowork owns each bNN_ Block
+platforms/      → each repo owns its code; this skill owns only the link
 external/       → this skill owns only the read-only root boundary
 ```
 
@@ -116,6 +121,11 @@ Design board reads a signed Insight handoff. `applications/`
 is legacy: old boards move to `insights/_old/` and `designs/_old/`. Task-side
 consumer-neutral Insight Pages still live on their Task Board. `results/` is
 never a canonical Project-root directory.
+
+`diagram/` is retired (JL 261003: "no more diagram"). Coordination text and
+project-level Boards go to `cowork/`; code the Project owns goes to
+`platforms/`, one submodule per repo. An existing `diagram/` is declared
+migration debt, like `applications/`; no routine update moves its Boards.
 
 ## Safe update law
 

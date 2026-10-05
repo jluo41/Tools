@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Audit the haipipe-project/v1 contract at Project-root depth only."""
+"""Audit the haipipe-project/v1 contract at Project-root depth, plus cowork/ topic folders."""
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
+import re
 from typing import Iterable
 
 
@@ -16,13 +17,18 @@ STATES = {"active", "paused", "archived"}
 WORLD_DIRS = {
     "tasks",
     "discoveries",
-    "diagram",
+    "cowork",        # coordination text + project Boards; diagram/ retired 261003 (declared debt)
     "papers",
     "insights",      # Prototype-Insight-<Topic>/ (Block level) + Instance-Insight-<Dataset>/
     "designs",
     "external",      # applications/ is legacy since 261001: migration debt, not a world
 }
-CODE_DIRS = {"src", "tests", "scripts", "configs", "docs"}
+CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
+# cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
+COWORK_BLOCK_DIRS = {"studio", "reports", "_old"}
+COWORK_JOB_DIRS = {"design", "materials", "emails", "meetings", "_old"}
+COWORK_BLOCK = re.compile(r"b\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
+COWORK_JOB = re.compile(r"j\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 
 
 @dataclass
@@ -100,6 +106,48 @@ def observed_git_mode(project: Path) -> str:
     return "submodule" if (project / ".git").is_file() else "workspace"
 
 
+def cowork_topic_findings(cowork: Path) -> list[str]:
+    """Each cowork/bNN_<topic>/ Block: board.md (board-kind: cowork-block), only studio/, reports/,
+    _old/ and jNN_<job>/ Jobs at its top, and each Job a jNN_<job>.md page (job-kind: cowork-job)
+    with only the Job folder names inside. An old N-<Topic>/ folder is a finding (haipipe-cowork)."""
+    found: list[str] = []
+    if not cowork.is_dir():
+        return found
+    for topic in sorted(cowork.iterdir()):
+        if topic.is_dir() and topic.name[:1].isdigit() and "-" in topic.name:
+            found.append(f"cowork/{topic.name}/ is an old topic folder; make it a bNN_<topic>/ Block")
+            continue
+        if not (topic.is_dir() and COWORK_BLOCK.fullmatch(topic.name)):
+            continue
+        board = topic / "board.md"
+        text = board.read_text(encoding="utf-8", errors="ignore") if board.is_file() else ""
+        if not text:
+            found.append(f"cowork/{topic.name}/ has no board.md")
+        elif not re.search(r"(?m)^board-kind:[ \t]*cowork-block[ \t]*$", text):
+            found.append(f"cowork/{topic.name}/board.md does not declare board-kind: cowork-block")
+        for name, hint in (("README.md", "a Block's README is its board.md"), ("PEOPLE.md", "people go in j00_people/")):
+            if (topic / name).is_file():
+                found.append(f"cowork/{topic.name}/{name}: {hint}")
+        for sub in sorted(topic.iterdir()):
+            if not sub.is_dir() or sub.name.startswith(".") or sub.name in COWORK_BLOCK_DIRS:
+                continue
+            if not COWORK_JOB.fullmatch(sub.name):
+                found.append(f"cowork/{topic.name}/{sub.name}/ is not a Block folder; move it into a Job")
+                continue
+            page = sub / f"{sub.name}.md"
+            ptext = page.read_text(encoding="utf-8", errors="ignore") if page.is_file() else ""
+            if not ptext:
+                found.append(f"cowork/{topic.name}/{sub.name}/ has no job page {sub.name}.md")
+            elif not re.search(r"(?m)^job-kind:[ \t]*cowork-job[ \t]*$", ptext):
+                found.append(f"cowork/{topic.name}/{sub.name}/{sub.name}.md does not declare job-kind: cowork-job")
+            for inner in sorted(sub.iterdir()):
+                if inner.is_dir() and not inner.name.startswith(".") and inner.name not in COWORK_JOB_DIRS:
+                    found.append(f"cowork/{topic.name}/{sub.name}/{inner.name}/ is not a Job folder name")
+        if not (topic / "j00_people").is_dir():
+            found.append(f"cowork/{topic.name}/ has no j00_people/ (who to ask)")
+    return found
+
+
 def audit(project: Path) -> Result:
     errors: list[str] = []
     debts: list[str] = []
@@ -163,6 +211,8 @@ def audit(project: Path) -> Result:
     for name in sorted(declared_legacy):
         if (project / name).exists() and name not in debts:
             debts.append(name)
+
+    errors.extend(cowork_topic_findings(project / "cowork"))
 
     migration_status = str(manifest.migration.get("status", "")).strip()
     if debts and migration_status not in {"needed", "planned"}:

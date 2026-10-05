@@ -49,6 +49,30 @@ owning skill.
 Commit and push inside the Project, then commit the workspace `.gitmodules`
 entry and submodule pointer. Report both commits separately.
 
+## Adopt an existing Project folder
+
+When the Project folder already exists in the workspace (a `workspace`
+Project becoming its own repo, first done for Project-Samsung on 2026-10-04),
+adopt it in place; never recreate or copy it:
+
+1. Scan what will be pushed: keys, passwords, participant data, files over
+   5 MB. A note holding a credential stays out through the Project's `.gitignore`.
+2. Copy the workspace root `.gitignore` rules that matter inside the Project
+   (for example `_old/`) into the Project's own `.gitignore`; workspace rules
+   stop applying once the Project is its own repo.
+3. Set `git_mode: submodule`, `git init -b main`, re-add nested code repos
+   with `git submodule add <url> <path>` (git adds the existing repo), commit.
+4. Create the repository (private unless confirmed), add `origin`, push.
+5. In the workspace, drop the nested repos' index entries with
+   `git update-index --force-remove <path>` (files untouched) and their
+   `.gitmodules` blocks, then `git submodule add <url> <project-path>`.
+   Commit only these paths; other sessions' staged work stays staged.
+6. Move the git data to the absorbed layout every Project uses: the
+   Project's into `.git/modules/<project-path>/`, nested repos' into
+   `.git/modules/<project-path>/modules/<sub-path>/`, each `.git` a pointer
+   file. Set each `core.worktree` by editing its `config` file: `git config`
+   refuses while the old worktree path is broken. Back up the git data first.
+
 ## Nested Paper repositories
 
 A Paper may be a submodule inside `papers/`. Its pointer is owned by the

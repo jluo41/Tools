@@ -1,3 +1,8 @@
+## 0.121.5 · 2026-10-03 · Project-level Boards live in cowork/
+
+- ref/glossary.md: a project-level Board sits in `<project>/cowork/`; the
+  Project-root `diagram/` is retired (haipipe-project 0.7.0).
+
 ## 0.121.4 · 2026-10-02 · Task Result path documentation
 
 - Correct the generic Folder tree's Task Result example to the Task owner's

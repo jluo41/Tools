@@ -313,6 +313,60 @@ class BaseMixin:
         self.wfile.write(body)
         return True
 
+    # ── part of a file (JL 261004) ───────────────────────────────────────
+    # A video plays only when the server answers `Range: bytes=` with 206 and
+    # just those bytes: Safari (Mac, iPhone, iPad) will not start a <video>
+    # otherwise, and every browser needs it to jump ahead. Narrow like
+    # try_gzip: GET only, media files only, one byte range.
+    RANGE_SUFFIX = (".mp4", ".m4v", ".mov", ".webm", ".m4a", ".mp3", ".wav")
+
+    def try_range(self):
+        """Serve part of a static media file. True if it was handled here."""
+        if self.command != "GET":
+            return False
+        want = re.fullmatch(r"\s*bytes=(\d*)-(\d*)\s*", self.headers.get("Range") or "")
+        clean = self.path.split("?", 1)[0].split("#", 1)[0]
+        if not want or want.groups() == ("", "") or not clean.lower().endswith(self.RANGE_SUFFIX):
+            return False
+        try:
+            fs = Path(self.translate_path(self.path))
+            st = fs.stat()
+        except OSError:
+            return False
+        if not fs.is_file():
+            return False
+        size, (first, last) = st.st_size, want.groups()
+        if first:
+            start, end = int(first), min(int(last) if last else size - 1, size - 1)
+        else:                                            # bytes=-N: the last N bytes
+            start, end = max(size - int(last), 0), size - 1
+        if start > end:
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return True
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(str(fs)))
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.send_header("Last-Modified", self.date_time_string(st.st_mtime))
+        self.end_headers()
+        with fs.open("rb") as source:
+            source.seek(start)
+            left = end - start + 1
+            while left > 0:
+                chunk = source.read(min(1 << 16, left))
+                if not chunk:
+                    break
+                try:
+                    self.wfile.write(chunk)
+                except (BrokenPipeError, ConnectionResetError):
+                    break                                # the player moved on; normal while seeking
+                left -= len(chunk)
+        return True
+
     def guess_type(self, path):
         # .md 当纯文本发（utf-8），这样点卡片头那个「📄 QX.md」链接是**在浏览器里直接显示
         # 原始 markdown**，而不是弹下载。默认 mimetypes 会给 text/markdown，有的浏览器会下载。

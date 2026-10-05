@@ -1,3 +1,8 @@
+## 0.5.1 — 2026-10-02
+
+- Points to `/response-format`'s per-section sketch: these shapes laid out one step per line, up to 10 lines and
+  72 columns, emoji on the nodes, no separator lines, after a section's scan list and before its prose.
+
 ## 0.5.0 — 2026-09-20
 
 - Make emoji optional and prioritize readable, accessible labels.

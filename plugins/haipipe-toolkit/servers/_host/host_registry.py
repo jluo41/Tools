@@ -58,6 +58,8 @@ WORKBENCH_ROUTES = {
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
     "paper": frozenset({"paper"}),
     "task": frozenset({"task-board"}),
+    "cowork": frozenset({"cowork-board"}),
+    "discovery": frozenset({"discovery-board"}),
     # workbench-shared: Studio's draw, chat and terminal routes (Guide is in ALWAYS_ROUTES).
     "shared": frozenset({"chat", "chat-keep", "sessions", "session-log", "session-name",
                          "stop", "excalidraw", "excalidraw-save", "autodraw", "autodeck",

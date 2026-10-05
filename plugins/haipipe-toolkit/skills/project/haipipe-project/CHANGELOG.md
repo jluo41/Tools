@@ -4,6 +4,60 @@ haipipe-project — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.9.1] -- 2026-10-04
+
+- CoWork Blocks hold Jobs (JL 261004: "we should have the job, otherwise the work is
+  hard to do"): `board.md`, `studio/`, `reports/`, `_old/` stay at the top; everything
+  else lives in `jNN_<job>/` (one line of work, its `jNN_<job>.md` page header holding
+  state, waiting-on, since, next), including `j00_people/` (who to ask). The Tickets
+  register and the Block-level `ticket/`, `design/`, `materials/`, `emails/`,
+  `meetings/` and `PEOPLE.md` are gone. The audit checks the new rule.
+
+## [0.9.0] -- 2026-10-04
+
+- `cowork/` topics are CoWork Blocks, `bNN_<topic>/` with a `board.md`
+  (`board-kind: cowork-block`), owned by the new `haipipe-cowork` skill and
+  opened by `haipipe-workbench-cowork` (JL 261004: "make the block as well").
+  Ranges: `b0x` gates, `b1x` systems, `b2x` partners, `b3x` study operations.
+  `board.md` replaces a topic's `README.md`; `reports/` joins the shared names;
+  tickets live in each Block (Tickets register, `ticket/Timeline.md`,
+  `ticket/CHECKLIST.md`), so the cowork root no longer has `Tickets/`.
+- `scripts/audit_projects.py` checks each Block: `board.md` with the kind, no
+  `README.md`, only the shared names; an old `N-<Topic>/` folder is a finding.
+- Project-Samsung migrated: `0-IRB` → `b01_irb`, `1-Azure-Account` →
+  `b11_azure_account`, `1-Epic-Streaming` → `b12_epic_streaming`,
+  `1-SmartWatch-Connector` → `b13_smartwatch_connector`, `2-WellDocApp` →
+  `b21_welldoc_app`.
+
+## [0.8.0] -- 2026-10-04
+
+- `cowork/` topic folders are numbered `N-<Topic>/` and share one subfolder
+  set (JL 261004: "share the same subfolders as much as possible"):
+  `README.md` (required), `PEOPLE.md`, `design/`, `materials/`, `ticket/`,
+  `emails/`, `meetings/`, `studio/`, `_old/`, each only when it has files.
+  The cowork root keeps `README.md`, `PEOPLE.md`, `Tickets/` and `_old/`.
+  Replaces "topic folders are free-form" in `ref/project-structure.md`.
+- `scripts/audit_projects.py` checks each `cowork/N-<Topic>/`: a README and
+  only the shared names; anything else (for example `docs/`) fails the audit.
+- First applied to examples-4-agent/Project-Samsung/cowork (0-IRB,
+  1-Azure-Account, 1-Epic-Streaming, 1-SmartWatch-Connector, 2-WellDocApp).
+- `fn/repo-project.md`: "Adopt an existing Project folder", the six steps
+  used to make Project-Samsung its own repo (JHU-CDHAI/Project-Samsung).
+
+## [0.7.0] -- 2026-10-03
+
+- `diagram/` is retired (JL 261003: "no more diagram"). An existing `diagram/`
+  is declared migration debt; project-level Boards move to `cowork/` when
+  migrated, Task and Insight Boards to their owning world.
+- New lazy world `cowork/`: coordination text (tickets, people, emails,
+  meetings, design notes, drawings) and project-level Boards. Office files,
+  recordings and files over 5 MB stay local through `cowork/.gitignore`.
+- New profile-owned code folder `platforms/` (software/hybrid): one submodule
+  per owned repo, mirroring the SPACE root `platforms/`.
+- First Project on this layout: examples-4-agent/Project-Samsung.
+- `scripts/audit_projects.py`: `cowork` is a world, `platforms` a code folder,
+  `diagram` no longer a world.
+
 ## [0.6.0] -- 2026-10-03
 
 - `insights/` holds an Insight topic as two boards (JL 261003):

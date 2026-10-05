@@ -182,6 +182,9 @@ Limits); see `ref/page-types.md`.
 
 ## Form the Board along the way
 
+The live view of a Block is `haipipe-workbench-discovery` (`/w/<block>`): its papers with
+their Result cards, Run receipts, citations still to verify, Questions and BibTeX.
+
 The Block is the Board container from its first durable write. The Task Folder
 is the Page Folder inside that Board. Do not wait for synthesis to create the
 Board view:

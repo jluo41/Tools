@@ -32,8 +32,8 @@ examples/<id>/
 `README.md` states the mission in one short opening and lists only real entry
 points. `project.yaml` uses schema `haipipe-project/v1`.
 
-Do not create empty `tasks/`, `discoveries/`, `diagram/`, `papers/`,
-`applications/`, or `external/`. When the user also requests first content,
+Do not create empty `tasks/`, `discoveries/`, `cowork/`, `papers/`,
+`insights/`, `designs/`, `external/`, or `platforms/`. When the user also requests first content,
 route that content to its owning skill, which materializes the corresponding
 world.
 

@@ -24,6 +24,7 @@ tests/
 scripts/
 configs/
 docs/
+platforms/        one submodule per owned repo (app, service, deploy scripts)
 pyproject.toml or another build manifest
 ```
 

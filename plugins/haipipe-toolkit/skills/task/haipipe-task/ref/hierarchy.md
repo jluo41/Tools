@@ -24,7 +24,7 @@ read from the path; none is mapped or computed.
 ```text
 examples/<project>/
 ├── tasks/       all Task Blocks
-├── diagram/     project-level narrative
+├── cowork/      project-level coordination text and Boards (diagram/ retired)
 └── papers/      optional paper work
 ```
 
@@ -35,7 +35,7 @@ Executable work under `tasks/` always passes through Block, Job, and Task.
 ```text
 tasks/bNN_<block>/
 ├── board.md                    board-kind: task-block
-├── studio/                     optional freeform Block drawings
+├── studio/                     optional drawings the whole Block shares
 ├── reports/qNN_<topic>/         ordinary Page answering a Block Question
 ├── jNN_<job>/
 ├── jNN_<job>/

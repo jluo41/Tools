@@ -8,7 +8,10 @@
   // Spaces and their Views come from the page (task_views.SPACES); a View key is `view=`.
   var spaces = config.spaces, spaceOf = {}, lastView = {}, aliases = config.aliases || {};
   Object.keys(spaces).forEach(function (s) { spaces[s].forEach(function (v) { spaceOf[v] = s; }); lastView[s] = spaces[s][0]; });
-  var first = spaces.task[0];
+  // `home` is the working Space a bare address opens; `route` takes the page's POSTs (the CoWork
+  // workbench reuses this script with home 'work' and its own route)
+  var home = config.home || 'task', route = config.route || '/_board/task-board';
+  var first = spaces[home][0];
   var view = params.get('view') || params.get('space') || first;
   view = aliases[view] || view;
   if (!spaceOf[view]) view = first;
@@ -22,6 +25,9 @@
       event.preventDefault();
       document.getElementById('tw-run-title').textContent = a.dataset.runResult;
       document.getElementById('tw-run-new').href = a.href;
+      // Excalidraw refuses a same-site embed ("I'm not a pretzel!"): a drawing opens with no referrer,
+      // as the RoadMap Draw frames do; other pop-outs keep the default
+      runFrame.referrerPolicy = new URL(a.href, location.href).pathname.indexOf('/_excalidraw/') === 0 ? 'no-referrer' : '';
       runFrame.src = a.href;
       runDialog.showModal();
     });
@@ -56,7 +62,7 @@
     var same = row && row.classList.contains('on');
     app.querySelectorAll('.hl-row.on').forEach(function (r) { r.classList.remove('on'); });
     if (row && !same) row.classList.add('on');
-    document.dispatchEvent(new CustomEvent('space-target', {detail: {space: 'task', target: row && !same ? row.dataset.key : ''}}));
+    document.dispatchEvent(new CustomEvent('space-target', {detail: {space: home, target: row && !same ? row.dataset.key : ''}}));
   }
   app.querySelectorAll('.hl-row').forEach(function (row) {
     row.addEventListener('click', function (event) { if (!event.target.closest('a,summary,button')) pick(row); });
@@ -143,7 +149,7 @@
     var fields = new FormData(resourceForm);
     var payload = {path:config.path, action:'add-resource', title:fields.get('title'), url:fields.get('url'), contribution:fields.get('contribution'), notes:fields.get('notes'), questions:String(fields.get('questions') || '').split(/[\s,]+/).filter(Boolean)};
     try {
-      var response = await fetch('/_board/task-board', {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body:JSON.stringify(payload)});
+      var response = await fetch(route, {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body:JSON.stringify(payload)});
       var result = await response.json(); if (!response.ok || !result.ok) throw new Error(result.err || 'Could not save resource.');
       formChanged = false; resourceForm.reset(); resourceForm.querySelector('[role=status]').textContent = 'Saved. Refresh to read the updated resource list.';
       if (!editing) refresh();

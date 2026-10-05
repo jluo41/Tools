@@ -10,8 +10,9 @@ from urllib.parse import unquote, urlsplit, urlencode
 
 import yaml
 
-QUESTION_ID = re.compile(r"Q[0-9]{2,}")
-PAGE_STEM = re.compile(r"q[0-9]{2,}_[a-z0-9][a-z0-9_]*")
+# Q01, or Q-<word>-<number> such as Q-food-1 (JL 261004); a report folder is the id in lower case.
+QUESTION_ID = re.compile(r"Q(?:[0-9]{2,}|-[a-z][a-z0-9]*-[0-9]+)")
+PAGE_STEM = re.compile(r"q(?:[0-9]{2,}|-[a-z][a-z0-9]*-[0-9]+)_[a-z0-9][a-z0-9_]*")
 MAX_TEXT = 1024 * 1024
 
 
@@ -138,7 +139,7 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
     rel = Path(result["path"])
     if (rel.is_absolute() or len(rel.parts) != 3 or rel.parts[0] != "reports"
             or not PAGE_STEM.fullmatch(rel.parts[1]) or rel.name != rel.parts[1] + ".md"):
-        result["issues"].append("Report must be reports/qNN_topic/qNN_topic.md")
+        result["issues"].append("Report must be reports/<id>_topic/<id>_topic.md, e.g. q01_topic or q-food-1_topic")
         return result
     page = board / rel
     body = read(page, board / "reports") if inside(page, board) else ""
@@ -175,9 +176,22 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
                     evidence_link["url"] = page_url(folder / (folder.name + ".md"), board, root, "runs", only)
                     break
     # A drawing the report links to opens read-only in the shared Excalidraw viewer.
+    # A drawing the report links shows as its preview picture when its .png sits beside it (as CoWork's).
     result["drawings"] = [{"title": link["title"],
-                           "url": "/_excalidraw/?" + urlencode({"board": link["path"]})}
+                           "url": "/_excalidraw/?" + urlencode({"board": link["path"]}),
+                           "png": source_url(root / (link["path"][:-len(".excalidraw")] + ".png"), root)
+                           if (root / (link["path"][:-len(".excalidraw")] + ".png")).is_file() else ""}
                           for link in result["evidence"] if link["path"].endswith(".excalidraw") and link["mtime"] is not None]
+    # The report's own drawings live in its folder (reports/<id>_topic/studio/, JL 261004); show them even
+    # before the report links them.
+    linked = {link["path"] for link in result["evidence"]}
+    own = page.parent / "studio"
+    if inside(own, page.parent) and own.is_dir():
+        for path in sorted(own.glob("*.excalidraw")):
+            rel = path.resolve().relative_to(Path(root).resolve()).as_posix()
+            if inside(path, own) and path.is_file() and rel not in linked:
+                result["drawings"].append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
+                                           "url": "/_excalidraw/?" + urlencode({"board": rel})})
     result["limits"] = plain(report_section(body, {"limits", "boundaries", "gaps"}))
     result["next"] = plain(report_section(body, {"next", "next actions"}))
     result["url"] = page_url(page, board, root, "draft", only)
@@ -239,7 +253,8 @@ def extend_snapshot(board, root, snap, only, source_url, page_url):
         seen.add(qid)
         question = {"id": qid, "title": words(row.get("title")) or row["question"],
                     "block_path": snap["path"],
-                    "question": row["question"], "hypothesis": words(row.get("hypothesis")),
+                    "question": row["question"], "aim": words(row.get("aim")),
+                    "hypothesis": words(row.get("hypothesis")),
                     "acceptance": words(row.get("acceptance")), "group": words(row.get("group")),
                     "work": [], "issues": []}
         work = row.get("work", [])

@@ -138,6 +138,29 @@ STOPWORDS = {
     "broiled", "sauteed"
 }
 
+# The word check in score_candidate (0.7.0, 2026-10-02): the query's own words, read before STOPWORDS strips
+# them, must agree with the candidate. STOPWORDS drops "whole", "fresh" and the cooking words for RECALL, which
+# also made "Whole Milk" score as "milk" and pick "Milk, NFS". Graded on the WellDoc answer key (b51 t20): a
+# food whose logged numbers a USDA food reproduces at one of USDA's own portion weights.
+# FOODNORM_WORD_CHECK=off turns it off; read at call time through this module, so a caller may also set
+# constants.WORD_CHECK.
+WORD_CHECK = os.environ.get("FOODNORM_WORD_CHECK", "on").strip().lower() not in ("off", "0", "false", "no")
+OWN_WORDS_WEIGHT = 4.0      # x the share of the query's own words found in the candidate
+NUMBER_WEIGHT = 2.0         # + per number the two share (1% milkfat, 85% lean); - once when they share none
+ALCOHOL_PENALTY = 3.0       # an alcoholic drink the query never asked for ("Whiskey and ginger ale")
+# Words that name no food: function words, serving words, and marketing words ("Classic Style Pretzel Thins"
+# matched a gravy on "classic" and "style").
+NAME_FILLER = {
+    "and", "or", "with", "of", "the", "a", "an", "in", "on", "from", "for", "to", "w", "oz", "g", "cup", "cups",
+    "small", "medium", "large", "serving", "piece", "slice", "pieces", "slices",
+    "classic", "style", "original", "simply", "natural", "premium", "deluxe", "select", "favorite", "signature",
+    "homestyle", "traditional", "famous", "real", "brand",
+}
+ALCOHOL_WORDS = {
+    "alcoholic", "liqueur", "proof", "whiskey", "beer", "wine", "vodka", "rum", "tequila", "brandy", "cocktail",
+    "margarita", "sangria", "liquor", "bourbon", "scotch", "champagne", "daiquiri", "mimosa",
+}
+
 # FTS5 retrieval scoring thresholds
 MIN_COVERAGE = 0.8  # token coverage needed for GOOD classification
 MIN_FTS_CANDIDATES = 3  # if FTS5 returns fewer, mark as MISS

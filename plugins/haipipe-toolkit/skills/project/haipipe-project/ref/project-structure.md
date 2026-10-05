@@ -61,11 +61,12 @@ examples/<project>/
 │
 ├── tasks/                LAZY · internal computational executor
 ├── discoveries/          LAZY · external-evidence executor
-├── diagram/              LAZY · Project story and Board/view surfaces
+├── cowork/               LAZY · coordination text and project-level Boards
 ├── papers/               LAZY · academic consumers
 ├── insights/             LAZY · Insight Prototypes (Blocks) and Instances
 ├── designs/              LAZY · Design boards and Design Folders
-└── external/             LAZY · read-only upstream repositories/assets
+├── external/             LAZY · read-only upstream repositories/assets
+└── platforms/            LAZY · software/hybrid only: owned code repos (submodules)
 ```
 
 LAZY means “create on first use,” not “missing capability.” Empty directories
@@ -86,11 +87,12 @@ tasks/ ──────────────────────┘    
 |---|---|---|
 | `tasks/` | computational evidence bank | `haipipe-task`; Block → Job → Task → Run |
 | `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
-| `diagram/` | navigation and interpretation surfaces | Project story plus project-level Boards and meetings |
+| `cowork/` | coordination: who we work with and what we wait on | tickets, people, emails, meetings, design notes, drawings, project-level Boards; see `cowork/` below |
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
 | `insights/` | a Prototype (Block: questions, scripts, studio) and one Instance per dataset (runs, results, pages) | `haipipe-insight`; see `insights/` below |
 | `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
+| `platforms/` | code the Project owns | one submodule per repo; software/hybrid only; see `platforms/` below |
 
 Insight is a world of its own (JL 261001); a Task-side Insight Page stays on
 its Task Board. Reusable findings flow to Paper and Design through their
@@ -109,7 +111,7 @@ contracts.
 | `hybrid` | yes | a software artifact plus research Tasks/Discoveries/Papers; Tasks call the package instead of duplicating it |
 
 For `software` and `hybrid`, conventional root directories such as `src/`,
-`tests/`, `scripts/`, `configs/`, and `docs/` are profile-owned. Generated
+`tests/`, `scripts/`, `configs/`, `docs/`, and `platforms/` are profile-owned. Generated
 `results/` remains forbidden at the Project root in every profile.
 
 ## Git modes
@@ -134,22 +136,63 @@ Heavy data remains outside the repository in configured stores. `external/`
 may contain metadata or a code/reference checkout, not an uncontrolled data
 dump.
 
-## `diagram/`
+## `cowork/`
 
-`diagram/` is no longer restricted to two static ASCII files. It may contain:
+`cowork/` holds the text a Project coordinates with: tickets and checklists,
+people, emails kept as Markdown, meeting notes, design notes, drawings, and
+project-level Boards (what blocks the work, who we wait on).
 
-```text
-diagram/
-├── project/       mission, boundary, architecture, durable decisions
-├── boards/        project-level Task/Insights and other Board surfaces
-└── meetings/      optional meeting records tied to this Project
-```
+Its root holds the map and what crosses Blocks: `README.md` (every Block, the
+goal, how the Blocks connect), `PEOPLE.md` (the team across Blocks, and an index
+of each Block's `PEOPLE.md`) and `_old/` for archived project-level Boards.
+Material that serves every Block uses the same names as a Block folder
+(`meetings/`, `studio/`, `emails/`).
 
-Existing flat Board folders remain readable. New work may adopt these zones
-incrementally; no routine update moves an active Board.
+Each coordination topic is a **CoWork Block**, `bNN_<topic>/`, with a
+`board.md` declaring `board-kind: cowork-block`, and the work inside a Block is
+split into **Jobs** (JL 261004). `haipipe-cowork` owns the Block: its number ranges
+(`b0x` gates such as `b01_irb`, `b1x` systems we build or connect, `b2x` partners,
+`b3x` study operations), its `board.md` header and Questions register, and its Jobs;
+`haipipe-workbench-cowork` opens it.
 
-Block-local `board.md` remains under its owning `tasks/bNN_.../` Block and does
-not move to the Project diagram tree.
+| Name | Holds |
+|---|---|
+| `board.md` | required: header (state, spine, close, status), text, Questions register |
+| `studio/` | drawings, decks, video; their build scripts in `studio/_build/` |
+| `reports/` | a Question's report Page, `reports/qNN_<topic>/` (haipipe-question) |
+| `_old/` | replaced material; do not use |
+| `j00_people/` | required: who to ask for help (a Job with state 📇 REFERENCE) |
+| `jNN_<job>/` | one line of work: `jNN_<job>.md` (its header holds state, waiting-on, since, next), `Timeline.md`, `CHECKLIST.md`, and `design/`, `materials/`, `emails/`, `meetings/` only when it has them |
+
+No other names at a Block's top level: not `README.md` (the Block's README is its
+`board.md`), `PEOPLE.md`, `ticket/`, `design/`, `materials/`, `emails/` or
+`meetings/` (those live inside a Job). There is no `tNN` level in cowork; work that
+runs code is a Task Block in `tasks/`. Code is never here; it lives in `platforms/`.
+An old numbered topic folder (`N-<Topic>/`) is an audit finding until it becomes a Block.
+
+- Text and small images are tracked. Office files, recordings and anything
+  over 5 MB stay local through `cowork/.gitignore`; co-edited documents keep
+  one copy in their shared drive.
+- No participant data, no keys, ever: git keeps history.
+- Drawings are rebuilt by their scripts, kept beside them (for example
+  `studio/_build/`), never edited by hand.
+- Block-local `board.md` stays under its owning `tasks/bNN_.../` Block.
+
+## `platforms/`
+
+`platforms/` holds the code a `software` or `hybrid` Project owns, one
+submodule per repository (an app, a service, deploy scripts), mirroring the
+SPACE's own root `platforms/`. Each repo owns its history and secrets rules
+(git-ignored key files stay inside the repo). Shared tools used by many
+Projects stay at the SPACE root; upstream code the Project does not own goes
+to `external/`.
+
+## Retired: `diagram/`
+
+`diagram/` is retired (JL 261003: "no more diagram"). An existing `diagram/`
+is migration debt: declare it in `project.yaml` (`migration.legacy_paths`).
+When migrated, project-level Boards move to `cowork/`, and Task or Insight
+Boards to their owning world. No routine update moves an active Board.
 
 ## `insights/`
 

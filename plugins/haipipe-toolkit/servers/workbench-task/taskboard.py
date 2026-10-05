@@ -417,7 +417,7 @@ class TaskBoardMixin:
         if board is None:
             links = "".join(f'<li><a href="/_board/task-board?{_e(urlencode({"path": (b.relative_to(root) / "board.md").as_posix()}))}">{_e(b.name)}</a></li>' for b in task_boards(root))
             code = 404 if raw else 200
-            body = f'<!doctype html><meta charset="utf-8"><title>Task Workbench</title><h1>Task Blocks</h1><ul>{links or "<li>No Task Blocks under this root.</li>"}</ul>'
+            body = f'<!doctype html><meta charset="utf-8"><title>📋 Task · Blocks</title><h1>📋 Task · Blocks</h1><ul>{links or "<li>No Task Blocks under this root.</li>"}</ul>'
         else:
             snap = task_board_snapshot(board, Path(self.root), getattr(self, "only", ()))
             report_id = (query.get("report") or [""])[0]

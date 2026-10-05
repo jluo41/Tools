@@ -9,8 +9,8 @@ description: >-
   tracking across one tasks/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-10-03"
+  version: "0.5.3"
+  last_updated: "2026-10-04"
 ---
 
 # Task Block Workbench
@@ -71,14 +71,17 @@ the Task panel narrows to that Question's Runs and names it in each prompt. The 
 starts nothing. Earlier `view=` keys still open: `task` is the first group, `studio` is
 Scope › RoadMap Draw, `related-paper` is Scope › Resources, `progress` is Check › Reports.
 
-A row follows Insight's partition table. Logic shows "Question N", the title and the
-question, with "What we expect" (hypothesis) and "What would answer it" (acceptance) under
+A row follows Insight's partition table. Logic shows "Question N", the title, the
+question and its aim (when the register gives one), with "What we expect" (hypothesis) and "What would answer it" (acceptance) under
 a folded **More**. Task Work is one light tree, Block → Job → Task → Run, each level written
 once, a Task folding its Runs and its Task Page, each opening in the shared pop-out with an
 own-tab link; the fold's line counts Tasks and Runs, never their status. Report shows the
 report's title (the pop-out to the Page reader), the first paragraph of its Opening, any
-`.excalidraw` it links under Evidence (read-only in the Excalidraw viewer), and a tag
-"report qNN". No status, path, Limits or Next appear in the table; Check keeps them.
+`.excalidraw` it links under Evidence (shown as its `.png` preview when one sits beside it,
+as CoWork's, and opened read-only in the Excalidraw viewer; a picture is drawn by the
+`excalidraw-report` skill), and a tag
+"report qNN". A named id (`Q-food-1`) shows as itself, and a Question with no `title`
+shows its question once. No status, path, Limits or Next appear in the table; Check keeps them.
 
 Work order follows `board.md`. Optional `work[].stage` is kept for other readers; the
 table does not show it, and `role` is the Task line's hover text, falling back to the

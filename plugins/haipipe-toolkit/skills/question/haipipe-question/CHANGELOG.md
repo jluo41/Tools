@@ -1,6 +1,47 @@
 haipipe-question — Changelog
 ============================
 
+## [0.4.1] — 2026-10-04
+
+- Short questions (JL 261004: "the sentence length is too long here, hard to read at a
+  glance"): `question` is one question of about 12 words, no brackets and no "done when";
+  its parts and what counts as done move to `acceptance`, in short sentences
+  (`ref/block-questions.md`). First applied to Project-Samsung's b13 register.
+
+## [0.5.0] — 2026-10-04
+
+- A report's drawings live in its own folder (JL 261004, "make this the rule"):
+  `reports/qNN_<topic>/studio/<name>.excalidraw`, a script that draws one in
+  `reports/qNN_<topic>/studio/_build/`. The Block's `studio/` keeps only drawings the whole
+  Block shares (the question map, drawings several Questions or Jobs use).
+- `ref/block_questions.py --drawing <name>` (add-question and add-report) makes the blank
+  drawing there and lists it under `### Evidence`; given `--evidence` is now checked before
+  anything is written. `servers/workbench-task/task_questions.py` shows a report's own
+  drawings even before the report links them (Task, CoWork and Discovery workbenches).
+  Test: `servers/workbench-cowork/tests/test_coworkboard.py::test_a_reports_drawing_lives_in_its_report_folder`.
+
+## [0.4.0] — 2026-10-04
+
+- CoWork Blocks (`board-kind: cowork-block`, haipipe-cowork) hold Questions too:
+  `ref/block_questions.py` accepts them, and there `--work` names a file inside the
+  Block (a ticket page, a design note). First used for Project-Samsung's
+  `b01_irb` (Q01, Q02) and `b11_azure_account` (Q01 to Q03).
+
+## [0.3.0] — 2026-10-04
+
+- Named ids (JL 261004): a Question id may be `Q-<word>-<number>` (`Q-food-1`,
+  `Q-exercise-2`) beside `Q01`; its report folder is the id in lower case
+  (`q-food-1_<topic>`). `task_questions.py` (`QUESTION_ID`, `PAGE_STEM`) and the
+  `block_questions.py` helper accept both; first used by b51_externalstore's register.
+- `block_questions.py add-report`: frames the report of a Question already in the register
+  (add-question refuses an existing id) and writes its `report:` line. `--evidence
+  'label|path'` on either command lists a Block file under the frame's `### Evidence`,
+  so a `studio/` drawing shows in the Task Workbench's Report column; it writes no answer
+  and no `results-read:`. Test: `test_add_report_frames_a_registered_question_with_its_drawing`.
+- `aim:` (JL 261004, "each question serve an aim"): an optional register line saying what
+  answering the question achieves; the Task Workbench shows it under the question. A good
+  entry is a slug (`title`), the full question, then the aim.
+
 ## [0.2.0] — 2026-10-03
 
 - A topic holds asks (JL 261003): a board Question is a topic recorded here; an ask is one

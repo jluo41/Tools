@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.3 · 2026-10-04
+
+- Report cell: a drawing the report links under Evidence shows as its `.png` preview when
+  one sits beside the `.excalidraw` (JL 261004: "they make the draw to be the preview"), as
+  the CoWork workbench does; clicking it opens the drawing in the pop-out. Without a `.png`
+  it stays a text link. `task_questions.py` (`png`), `task_views.py` (`.rp-thumb`),
+  `90-task-workbench.css`. Test: `test_add_report_frames_a_registered_question_with_its_drawing`.
+  First used by b51_externalstore, whose `studio/_build/make.sh` writes the previews.
+
+## 0.5.2 · 2026-10-04
+
+- `assets/js/90-task-workbench.js` reads `home` (the working Space a bare address opens,
+  default `task`) and `route` (where its forms POST, default `/_board/task-board`) from
+  the page config, so the CoWork Workbench reuses the script unchanged. Task pages are
+  unaffected.
+
+## 0.5.1 · 2026-10-04
+
+- Named Question ids (JL 261004): `Q-food-1` and `Q-exercise-2` open beside `Q01` (rule
+  in `servers/workbench-task/task_questions.py`, owned by `haipipe-question`); the Logic
+  cell shows a named id as itself, and a Question with no `title` prints its question
+  once instead of twice. Guide's Task › Report folder row matches `reports/q*_*/*.md`.
+  Test: `test_named_question_ids_and_a_question_without_a_title`.
+- The pop-out opens a drawing (`/_excalidraw/…`, e.g. a report's linked `.excalidraw`) with
+  no referrer, as the RoadMap Draw frames and the Design and Insight pop-outs do; it showed
+  Excalidraw's "I'm not a pretzel!" refusal (`assets/js/90-task-workbench.js`).
+- A register `aim:` shows under the question in the Logic cell ("Aim …", `.q-aim`).
+
 ## 0.5.0 · 2026-10-03
 
 - The page follows the Insight Workbench (the Haipipe-Insight-v5 work): the title alone in

@@ -1,3 +1,9 @@
+## 1.10.2 · 2026-10-03 · Project tree names cowork/
+
+- ref/hierarchy.md: the Project tree shows `cowork/` in place of the retired
+  Project-root `diagram/` (haipipe-project 0.7.0). Block, Job and Task
+  `diagram/` folders are unchanged.
+
 ## 1.10.1 · 2026-10-02 · Work presentation labels
 
 - Document optional `work[].stage` and `role` for Paper-aligned Work lines.

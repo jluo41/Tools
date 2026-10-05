@@ -29,7 +29,8 @@ SPINE = re.compile(r"^spine:\s*(.+?)\s*$", re.M)
 STATE = re.compile(r"^state:\s*(✅|🟡|🔴|⏸️)", re.M)
 BOARD_KINDS = (
     ("Task Board", "📋"),
-    ("Discovery Board", "🔎"),
+    ("Discovery Board", "🔭"),
+    ("CoWork Board", "📨"),
     ("Paper Board", "📄"),
     ("Design Board", "🎨"),
     ("Skill Board", "🧩"),
@@ -55,7 +56,9 @@ def board_kind(board: Path, root: Path) -> tuple[str, str]:
     if "plugins" in parts and "skills" in parts and "diagrams" in parts:
         return "Skill Board", "🧩"
     if "discoveries" in parts:
-        return "Discovery Board", "🔎"
+        return "Discovery Board", "🔭"
+    if "cowork" in parts:                       # a CoWork Block (haipipe-cowork), not a Task Board
+        return "CoWork Board", "📨"
     if board.name.lower().endswith("-designboard"):
         return "Design Board", "🎨"
     if "papers" in parts or "paper" in parts or "0-lifecycle" in parts:
@@ -185,9 +188,12 @@ def discover_boards(root: Path, *, include_page_state: bool = True) -> list[dict
         ready = (board / "board" / "index.html").is_file()
         kind, icon = board_kind(board, root)
         owner = project_owner(board, root)
-        task_workbench = bool(re.search(r"(?m)^board-kind:\s*task-block\s*$", text))
-        href = ("/_board/task-board?path=" + quote(f"{rel}/board.md", safe="/")
-                if task_workbench else "/" + quote((board.relative_to(root) / "board" / "index.html").as_posix(), safe="/"))
+        block_kind = re.search(r"(?m)^board-kind:\s*(task-block|cowork-block|discovery-block)\s*$", text)
+        task_workbench = bool(block_kind)
+        route = {"task-block": "task-board", "cowork-block": "cowork-board",
+                 "discovery-block": "discovery-board"}.get(block_kind.group(1) if block_kind else "")
+        href = ("/_board/" + route + "?path=" + quote(f"{rel}/board.md", safe="/")
+                if route else "/" + quote((board.relative_to(root) / "board" / "index.html").as_posix(), safe="/"))
         cards.append({"title": title, "spine": spine, "path": rel,
                       "pages": len(pages), "settled": settled, "ready": ready,
                       "kind": kind, "icon": icon,
@@ -308,6 +314,10 @@ def board_workbench_route(board: Path) -> str | None:
     kind = (_BOARD_KIND.search(text) or [None, ""])[1]
     if kind == "task-block":
         return "task-board"
+    if kind == "cowork-block":
+        return "cowork-board"
+    if kind == "discovery-block":
+        return "discovery-board"
     if kind in {"labeling", "labeling-board"}:
         return "labeling-board"
     try:
@@ -362,7 +372,7 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
         route = board_workbench_route(board)
         if route is None:
             return None, ("this Board declares no board-level workbench "
-                          "(no Task Block, `dialect: paper`, Design, Insight, or labeling Board)")
+                          "(no Task, CoWork or Discovery Block, `dialect: paper`, Design, Insight, or labeling Board)")
         return ("/_board/%s?path=%s&file=board.md"
                 % (route, quote(f"{rel}/board.md", safe="/"))), "ok"
     if tab not in WORKBENCH_TABS:

@@ -15,7 +15,8 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 ## 🧱 Things that exist on disk
 
 - **Board** — one topic, one folder, one markdown page per question or stage.
-  `<project>/diagram/<NN>-<Name>-<date>/`
+  `<project>/cowork/<NN>-<Name>-<date>/` for a project-level Board (Boards under
+  the retired `<project>/diagram/` stay readable)
 - **Page** — one question (Q) or one lifecycle stage (S), and the folder that
   holds everything it owns. `<board>/<group>/<PageId>-<slug>/<PageId>-<slug>.md`
 - **Folder kind** — the stable domain kind whose declared resource owner or canonical

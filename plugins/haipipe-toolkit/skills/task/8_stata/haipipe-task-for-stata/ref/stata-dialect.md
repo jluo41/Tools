@@ -421,7 +421,7 @@ surfaces as the `{LNN}` JOB-level alphabet below. The actual BLOCK letters
 stay project-specific as always (OpioidRx uses A=external/cms, B=case-data,
 R=one regression topic per block — a third scheme, and the project's own
 scheme wins).
-Document it in the project's `diagram/` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
+Document it in the project's `README.md` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
 `regen_task_log.py`'s `LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate for these folders; the type hint it prints is cosmetic and does not affect correctness.
 
 ### Job `{LNN}` stage-letter alphabet
@@ -439,7 +439,7 @@ D   reg     coef tables (.tex/.csv)   results/      (LIGHT)
 
 So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic `cms` stage (run once, reused) sits alone with `NN` as a plain sequence (`A01`, `A02`).
 These job letters reuse `A/B/C/D` (which mean training/eval/display/data at the BLOCK level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the BLOCK letter.
-Note it in the project `diagram/` so it reads clearly.
+Note it in the project `README.md` so it reads clearly.
 
 
 RUNNAME grammar by stage (stages unified in this skill since 2.0.0; SKILL.md carries the authoritative grammars)

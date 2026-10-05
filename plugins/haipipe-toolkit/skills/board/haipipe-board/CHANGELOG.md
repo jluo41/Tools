@@ -1,3 +1,8 @@
+## 1.1.7 · 2026-10-03 · Project-level Boards live in cowork/
+
+- A project-level Board lives under the Project's `cowork/` (JL 261003: "no more
+  diagram"); task and paper owners keep `diagram/`. SKILL.md and ref/board-form.md.
+
 ## 1.1.6 · 2026-10-01 · A Page without Aims is complete in shape (JL 261001: "remove the aims")
 
 - `cli/check.py`: `REQUIRED` is `["Opening"]`. `Done when`/Aims is no longer a required section, and the `no-aims` warning is gone, matching `haipipe-page` 0.121 (Page Face Opening → Content; Aims are optional backstage records). A Page that still carries Aims is checked as before (`open-with-met-aims`, `partial-with-nothing-open`, group names).

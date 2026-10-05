@@ -54,6 +54,18 @@ questions:
     links questions at topic size, and a proposed question can become a folder.
   work: []
   report: reports/q02_questions/q02_questions.md
+- id: Q03
+  title: How does a pull sync every repo?
+  question: How does one pull bring DrFirst-SPACE, the Tools-SPACE clone behind its
+    Tools symlink, and every submodule up to date, and what breaks along the way?
+  hypothesis: 'A per-repo loop works where git submodule commands fail: fast-forward
+    the root, restore the Tools symlink, fast-forward each submodule on its own branch,
+    then relink skills; a root pin can still name a commit never pushed.'
+  acceptance: Answered when the steps are written once, each failure seen so far (empty
+    Tools folder, missing ignore setting, unpushed pin, false fetch errors) has its
+    fix, and one more pull runs from the steps alone.
+  work: []
+  report: reports/q03_repo_sync/q03_repo_sync.md
 ```
 
 ## Related resources

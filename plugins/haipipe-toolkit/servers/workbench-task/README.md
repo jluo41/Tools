@@ -31,6 +31,8 @@ with an own-tab link. No status appears in the table; Check keeps execution stat
 order follows the Question register; optional `role` is the Task line's hover text. These
 fields change no execution state. The Report column shows the report's title, opening the
 report in the same pop-out, the first paragraph of its Opening, and a "report qNN" tag.
+A Question id is `Q01` or a named `Q-food-1` (its report folder `q-food-1_<topic>/`).
+A linked drawing with a `.png` beside it shows as that preview picture (skill excalidraw-report).
 
 ## Sources and authoring
 

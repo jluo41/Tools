@@ -12,7 +12,7 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.10.1"
+  version: "1.10.2"
   last_updated: "2026-10-02"
   folder_owner: canonical
   folder_kind: task
@@ -35,8 +35,8 @@ Project
 └── tasks/
     └── bNN_<block>/                       Block = Task Board
         ├── board.md                       board-kind: task-block
-        ├── studio/                        optional freeform Block drawings
-        ├── reports/qNN_<topic>/            Block Question's ordinary Page Folder
+        ├── studio/                        optional drawings the whole Block shares
+        ├── reports/qNN_<topic>/            Block Question's ordinary Page Folder; its drawings in its studio/
         └── jNN_<job>/                     Job = Board Group
             ├── src/                       code shared by two or more Tasks
             ├── tNN_<task>/                Task Folder = Page Folder = Board Page

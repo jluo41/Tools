@@ -144,6 +144,8 @@ from live.folderstat import FolderStatMixin
 from live.design import DesignMixin
 from live.designboard import DesignBoardMixin
 from live.taskboard import TaskBoardMixin
+from live.coworkboard import CoworkBoardMixin
+from live.discoveryboard import DiscoveryBoardMixin
 from live.workbench_guide import WorkbenchGuideMixin
 from live.shared_workbench import SharedWorkbenchMixin
 from live.insightboard import InsightBoardMixin
@@ -176,7 +178,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -335,6 +337,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.design_board_view()
         if self.path.split("?", 1)[0] == "/_board/task-board":
             return self.task_board_view()
+        if self.path.split("?", 1)[0] == "/_board/cowork-board":
+            return self.cowork_board_view()
+        if self.path.split("?", 1)[0] == "/_board/discovery-board":
+            return self.discovery_board_view()
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view()
         if self.path.split("?", 1)[0] == "/_board/shared":
@@ -407,6 +413,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         # browser asked for that (QD5 C2 P5). Falls through untouched otherwise.
         if self.reject_private_static(fallback=True):
             return
+        if self.try_range():                     # a video asking for part of itself (live/base.py)
+            return
         if self.try_gzip():
             return
         return SimpleHTTPRequestHandler.do_GET(self)
@@ -464,6 +472,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.design_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/task-board":
             return self.task_board_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/cowork-board":
+            return self.cowork_board_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/discovery-board":
+            return self.discovery_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/shared":
@@ -606,6 +618,14 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/task-board":
             res, err = self.plug_task_board(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/cowork-board":
+            res, err = self.plug_cowork_board(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/discovery-board":
+            res, err = self.plug_discovery_board(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/design-board-act":  # add design tasks · open a Design Folder for a line

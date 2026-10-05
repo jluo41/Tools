@@ -6,7 +6,8 @@ close: <what must be true for this Block Board to close>
 
 <!-- For question-driven Blocks, add the optional Questions and Related
 resources registers from haipipe-question's ref/block-questions.md. Reports live in
-reports/qNN_<topic>/qNN_<topic>.md; freeform drawings live in studio/. -->
+reports/qNN_<topic>/qNN_<topic>.md, a report's own drawings in reports/qNN_<topic>/studio/; drawings
+the whole Block shares live in studio/. -->
 
 ## Topic
 

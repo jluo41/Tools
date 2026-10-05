@@ -4,7 +4,7 @@ description: "Unified Stata-engine job specialist: handles all 4 stages internal
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [job]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

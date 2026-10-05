@@ -16,6 +16,8 @@ servers/
 │                        exporters/ holds the md2tex, md2docx and docx2pdf writers
 ├── workbench-paper/     📄 the Paper workbench
 ├── workbench-task/      📋 Task Questions: Logic / Work / Report and freeform Studio
+├── workbench-cowork/    📨 CoWork Blocks: Jobs, who we wait on, Questions, emails, meetings
+├── workbench-discovery/ 🔭 Discovery Blocks: papers, Result cards, citations to verify, BibTeX
 ├── workbench-shared/    🧭 what every workbench reuses: 🎨 Studio (draw/Excalidraw, chat,
 │                        terminal, slides, vendored xterm) and the read-only Guide Space
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
@@ -41,6 +43,8 @@ every workbench reuses and so is served from `workbench-shared/`:
 | `design/haipipe-workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `paper/haipipe-workbench-paper` | `workbench-paper/` |
 | `task/haipipe-workbench-task` | `workbench-task/` |
+| `cowork/haipipe-workbench-cowork` | `workbench-cowork/` |
+| `discovery/haipipe-workbench-discovery` | `workbench-discovery/` |
 | `insight/haipipe-workbench-insight` (+ `ref/insight-board.md`, the Board grain) | `workbench-insight/` |
 | `subjective-label/skills/label-building-workflow/haipipe-workbench-labeling` | `subjective-label/servers/workbench-labeling/` |
 
@@ -77,6 +81,16 @@ Task Blocks (`board-kind: task-block`) open at `/w/<block-folder>` or
 `/_board/task-board?path=<block>/board.md`. SPACE Home links directly to their
 live Workbench without a static build. See [Task Workbench](workbench-task/README.md)
 for Question reports, the four working Views and the synthetic demo.
+
+CoWork Blocks (`board-kind: cowork-block`, `cowork/bNN_<topic>/`) open the same way at
+`/w/<block-folder>` or `/_board/cowork-board?path=<block>/board.md`; every Block of a
+Project at `/_board/cowork-board?path=<Project>/cowork`. The page reuses the Task
+Workbench's stylesheet and script (`skills/cowork/haipipe-workbench-cowork`).
+
+Discovery Blocks (`board-kind: discovery-block`, `discoveries/bNN_<block>/`) open the same
+way at `/w/<block-folder>` or `/_board/discovery-board?path=<block>/board.md`; every Block of
+a Project at `?path=<Project>/discoveries`. Task, CoWork and Discovery stay separate
+workbenches with one look (JL 261004).
 
 Every family has one **Guide Space**. Its `Skill set`, `Methods`, `Workbench`,
 `Folder map` and `RoadMap Draw` Views appear directly below the Space row.
