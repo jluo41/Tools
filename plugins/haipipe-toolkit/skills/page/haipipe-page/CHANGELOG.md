@@ -1,3 +1,13 @@
+## 0.121.6 · 2026-10-05 · A Supporting Run is named from the Page's own Project
+
+- `src/evidence_lines.py` `_local_run_name`: `page.py adopt` names a `> Supporting Run:` from the
+  Page's own Project and world first (`tasks/` for Execution, `discoveries/` for Discovery), and
+  falls back to the SPACE-wide `run_registry` only when that finds nothing. A compact address is
+  not unique across a SPACE: on REACH-SPACE `b01j01t01r01` is a census Run in Project-0's
+  `tasks/` and a Paper Run in two other Projects' `discoveries/`, and the registry named the Paper
+  Runs `r01_slaby2022_adhd_phenotype` and `r02_gruschow2016_adhd_ehr_validation` under the census
+  Runs in a Block report (11 lines). Test: `tests/test_evidence_lines_scope.py`; 140 passed.
+
 ## 0.121.5 · 2026-10-03 · Project-level Boards live in cowork/
 
 - ref/glossary.md: a project-level Board sits in `<project>/cowork/`; the

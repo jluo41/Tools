@@ -57,6 +57,32 @@ def _supporting(declared: str) -> list[tuple[str, str]]:
     return out
 
 
+_COMPACT = re.compile(r"b(\d+)j(\d+)t(\d+)r(\d+)")
+
+
+def _local_run_name(page_src: Path, compact: str, run_kind: str) -> str:
+    """The Run's ticket stem looked up in the Page's own Project and world first.
+
+    A compact address is not unique across a SPACE: `b01j01t01r01` is a census Run in
+    one Project's `tasks/` and a Paper Run in another's `discoveries/` (REACH-SPACE
+    261005), and the SPACE-wide registry keeps only one of them. An Execution Run lives
+    in `tasks/`, a Discovery Run in `discoveries/`; '' when the Project has no single match.
+    """
+    match = _COMPACT.fullmatch(compact or "")
+    if not match:
+        return ""
+    world = "discoveries" if run_kind.strip().lower().startswith("discovery") else "tasks"
+    project = next((d for d in Path(page_src).resolve().parents
+                    if (d / world).is_dir() and ((d / "project.yaml").is_file() or (d / "README.md").is_file())),
+                   None)
+    if project is None:
+        return ""
+    b, j, t, r = match.groups()
+    hits = {p.stem for p in (project / world).glob(f"b{b}_*/j{j}_*/t{t}_*/runs/r{r}_*")
+            if p.is_file() and not p.name.startswith(".")}
+    return hits.pop() if len(hits) == 1 else ""
+
+
 def derive(page_src: Path, blocks: list) -> dict[str, list[str]] | None:
     """Bullet address → its evidence lines, in the order the Bullet names its items,
     Supporting Run lines last. None when no Bullet names an Evidence Item: such a
@@ -86,8 +112,10 @@ def derive(page_src: Path, blocks: list) -> dict[str, list[str]] | None:
             for compact, run_kind in _supporting(row.get("supporting_runs", "")):
                 runs.setdefault(compact, (run_kind, []))[1].append(full)
         for compact, (run_kind, fed) in runs.items():
-            ticket = (registry.get(compact) or {}).get("ticket", "")
-            name = Path(ticket).stem if ticket else ""
+            name = _local_run_name(page_src, compact, run_kind)
+            if not name:
+                ticket = (registry.get(compact) or {}).get("ticket", "")
+                name = Path(ticket).stem if ticket else ""
             lines.append("> Supporting Run: %s%s · %s · %s"
                          % (compact, (" · " + name) if name else "", run_kind, ", ".join(fed)))
         out[address] = lines
