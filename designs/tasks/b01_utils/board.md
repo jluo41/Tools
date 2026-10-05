@@ -66,6 +66,26 @@ questions:
     fix, and one more pull runs from the steps alone.
   work: []
   report: reports/q03_repo_sync/q03_repo_sync.md
+- id: Q04
+  title: Can one Project live in two SPACEs?
+  question: 'Can one Project be a submodule of two SPACEs at once, and what has to
+    stay in step: paths, data stores, receipts, pushes?'
+  hypothesis: Code and pages travel through git; the _WorkSpace data store, old receipts
+    and push order do not, so one SPACE must own the active work.
+  acceptance: A rule for which SPACE owns a shared Project, how its data store is
+    copied, and the push order for a rename or move.
+  work: []
+  report: reports/q04_project_two_spaces/q04_project_two_spaces.md
+- id: Q05
+  title: Where does labeling work live in a Project?
+  question: Where does labeling work live in a Project, and what are its Block, Job,
+    Task and Run?
+  hypothesis: labelings/ beside tasks/; a Block is any grouping, and one labeling
+    of one dataset with one label is the unit the engine runs.
+  acceptance: One layout used by all labeling Projects, each level named, and the
+    labeling workbench opening every labeling Page in it.
+  work: []
+  report: reports/q05_labeling_world/q05_labeling_world.md
 ```
 
 ## Related resources
