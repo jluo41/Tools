@@ -36,7 +36,7 @@ examples/ProjNN-<domain>-<purpose>/
 ├── papers/         optional/lazy · academic consumers
 ├── insights/       optional/lazy · Insight Prototypes (Blocks) and Instances
 ├── designs/        optional/lazy · Design boards and folders
-├── labelings/      optional/lazy · one Block per dataset, one Job per label on it
+├── labelings/      optional/lazy · labeling Blocks; a Job is one dataset with one label
 └── external/       optional/lazy · pinned, read-only upstream material
 ```
 
@@ -90,7 +90,7 @@ discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 papers/         → haipipe-paper      academic consumer
 insights/       → haipipe-insight    Prototype-Insight-<Topic>/ + Instance-Insight-<Dataset>/
 designs/        → haipipe-design     Design boards and Design Folders
-labelings/      → subjective-label   bNN_<dataset>/ Blocks; jNN_<dataset>_<label>/ Jobs
+labelings/      → subjective-label   bNN_<block>/ Blocks; a Job jNN_<dataset>_<label>/
 cowork/         → this skill owns the boundary; haipipe-cowork owns each bNN_ Block
 platforms/      → each repo owns its code; this skill owns only the link
 external/       → this skill owns only the read-only root boundary

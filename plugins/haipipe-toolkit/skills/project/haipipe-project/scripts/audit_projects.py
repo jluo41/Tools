@@ -21,7 +21,7 @@ WORLD_DIRS = {
     "papers",
     "insights",      # Prototype-Insight-<Topic>/ (Block level) + Instance-Insight-<Dataset>/
     "designs",
-    "labelings",     # one Block per dataset (bNN_<dataset>), one Job per label on it (JL 261005)
+    "labelings",     # labeling Blocks; a Job is one dataset with one label (JL 261005)
     "external",      # applications/ is legacy since 261001: migration debt, not a world
 }
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}

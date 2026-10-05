@@ -65,7 +65,7 @@ examples/<project>/
 ├── papers/               LAZY · academic consumers
 ├── insights/             LAZY · Insight Prototypes (Blocks) and Instances
 ├── designs/              LAZY · Design boards and Design Folders
-├── labelings/            LAZY · one Block per dataset, one Job per label on it
+├── labelings/            LAZY · labeling Blocks; a Job is one dataset with one label
 ├── external/             LAZY · read-only upstream repositories/assets
 └── platforms/            LAZY · software/hybrid only: owned code repos (submodules)
 ```
@@ -92,7 +92,7 @@ tasks/ ──────────────────────┘    
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
 | `insights/` | a Prototype (Block: questions, scripts, studio) and one Instance per dataset (runs, results, pages) | `haipipe-insight`; see `insights/` below |
 | `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
-| `labelings/` | labeling: one Block per dataset (`bNN_<dataset>`), one Job per label on it (`jNN_<dataset>_<label>`, holding `schema.yaml`), whose Task Page holds the engine's `labeling/` lane | `subjective-label`; the data Runs that prepare items stay in `tasks/` |
+| `labelings/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`), whose Task Page holds the engine's `labeling/` lane | `subjective-label`; the data Runs that prepare items stay in `tasks/` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 | `platforms/` | code the Project owns | one submodule per repo; software/hybrid only; see `platforms/` below |
 
