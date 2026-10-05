@@ -12,7 +12,7 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.10.3"
+  version: "1.11.0"
   last_updated: "2026-10-05"
   folder_owner: canonical
   folder_kind: task

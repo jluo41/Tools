@@ -92,7 +92,7 @@ tasks/ ──────────────────────┘    
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
 | `insights/` | a Prototype (Block: questions, scripts, studio) and one Instance per dataset (runs, results, pages) | `haipipe-insight`; see `insights/` below |
 | `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
-| `labelings/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`), whose Task Page holds the engine's `labeling/` lane | `subjective-label`; the data Runs that prepare items stay in `tasks/` |
+| `labelings/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`) with many Tasks: its data preparation, its keys, its labeling Page (the engine's `labeling/` lane), its scoring | `subjective-label`; a dataset with no label yet stays in `tasks/` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 | `platforms/` | code the Project owns | one submodule per repo; software/hybrid only; see `platforms/` below |
 

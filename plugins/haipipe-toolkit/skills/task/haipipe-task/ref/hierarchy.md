@@ -25,10 +25,11 @@ read from the path; none is mapped or computed.
 examples/<project>/
 ├── tasks/       all Task Blocks
 ├── cowork/      project-level coordination text and Boards (diagram/ retired)
+├── labelings/   labeling Blocks: a Job is one dataset with one label, with many Tasks
 └── papers/      optional paper work
 ```
 
-Executable work under `tasks/` always passes through Block, Job, and Task.
+Executable work under `tasks/` or `labelings/` always passes through Block, Job, and Task.
 
 ## Block = Task Board
 

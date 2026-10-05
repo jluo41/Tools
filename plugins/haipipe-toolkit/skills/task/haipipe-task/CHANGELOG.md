@@ -1,3 +1,10 @@
+## 1.11.0 · 2026-10-05 · Run tickets also run under labelings/
+
+- `ref/run-sh-template.sh`: a Block may sit under `tasks/` or `labelings/` (haipipe-project
+  0.10.0). A `labelings/` Run's heavy output and store mirror go under `labelings/<address>`,
+  so they never share a folder with a `tasks/` Run of the same address; `tasks/` paths are
+  unchanged. `ref/hierarchy.md` shows `labelings/` in the Project tree.
+
 ## 1.10.3 · 2026-10-05 · S8 looks names up across the Project
 
 - `ref/check_task_tree.py` S8: names are looked up across the whole Project, not only

@@ -35,7 +35,9 @@ TASKS_DIR="$(cd "$BLOCK_FOLDER/.." && pwd)"
 case "$TASK_SEG" in t[0-9][0-9]_*) : ;; *) fail_shape "Task Folder must be named tNN_<noun>_<qualifier>" ;; esac
 case "$JOB_SEG" in j[0-9][0-9]_*) : ;; *) fail_shape "Job must be named jNN_<noun>_<qualifier>" ;; esac
 case "$BLOCK_SEG" in b[0-9][0-9]_*) : ;; *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;; esac
-[ "$(basename "$TASKS_DIR")" = "tasks" ] || fail_shape "Block must be a direct child of tasks/"
+case "$(basename "$TASKS_DIR")" in tasks|labelings) : ;; *) fail_shape "Block must be a direct child of tasks/ or labelings/" ;; esac
+# A labelings/ Run mirrors its address below labelings/, so it never shares a folder with a tasks/ Run.
+WORLD_SEG=""; [ "$(basename "$TASKS_DIR")" = "tasks" ] || WORLD_SEG="$(basename "$TASKS_DIR")/"
 [ -f "$TASK_FOLDER/$TASK_SEG.md" ] || fail_shape "Task Folder requires same-stem Page $TASK_SEG.md"
 
 RUN_NAME="$(basename "$TICKET" .sh)"
@@ -69,7 +71,8 @@ STORE="${RESULT_STORE:-$(sed -n 's/^store:[[:space:]]*//p' "$JOB_FOLDER/src/conf
 if [ -n "$STORE" ]; then
   case "$STORE" in /*) : ;; *) STORE="$REPO_ROOT/$STORE" ;; esac
   JOB_REL="${JOB_FOLDER#"$TASKS_DIR"/}"
-  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below tasks/"
+  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below tasks/ or labelings/"
+  JOB_REL="$WORLD_SEG$JOB_REL"
   OUTPUT_ROOT="$STORE/$JOB_REL"
 else
   OUTPUT_ROOT="$JOB_FOLDER"
@@ -83,11 +86,11 @@ NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
 NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
 export RESULT_DIR="$RESULTS_DIR"
 # A Run's heavy output (haipipe-run "A Result is light") gets its own folder under
-# _WorkSpace/ProjectResult, mirroring the Run's address below tasks/. The worker creates it
+# _WorkSpace/ProjectResult, mirroring the Run's address below tasks/ (or labelings/). The worker creates it
 # only when it writes there; the Result keeps the pointer (heavy.yaml, written below).
 _PR_ROOT="${LOCAL_PROJECT_RESULT:-_WorkSpace/ProjectResult}"
 case "$_PR_ROOT" in (/*) ;; (*) _PR_ROOT="$REPO_ROOT/$_PR_ROOT" ;; esac
-export HEAVY_DIR="$_PR_ROOT/$(basename "${TASK_FOLDER%%/tasks/*}")/${TASK_FOLDER#*/tasks/}/$RUN_NAME"
+export HEAVY_DIR="$_PR_ROOT/$PROJECT/$WORLD_SEG${TASK_FOLDER#"$TASKS_DIR"/}/$RUN_NAME"
 
 NOTEBOOK_MODE="$(grep -E '^\s*notebook:\s*(full|thin|off)\b' "$CONFIG" 2>/dev/null | awk '{print $2}' | head -1)"
 NOTEBOOK_MODE="${NOTEBOOK_MODE:-full}"

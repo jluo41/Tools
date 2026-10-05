@@ -9,8 +9,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - New optional world `labelings/` (JL 261005: "a job is data + one-label"; "a dataset,
   it can have multiple labels"; "block is not necessarily a dataset, it should be a block").
   A Block is an ordinary Block (`bNN_<block>/`); a Job is one dataset with one label
-  (`jNN_<dataset>_<label>/`, holding the label's `schema.yaml`), and its Task Page holds the labeling engine's `labeling/` lane. It replaces the `tasks/b61`-`b69`
-  labeling Blocks; the data Runs that prepare items stay in `tasks/`. The audit accepts it.
+  (`jNN_<dataset>_<label>/`, holding the label's `schema.yaml`) with many Tasks (JL 261005:
+  "for this job, we will have many tasks"): its data preparation, its keys, its labeling
+  Page (the engine's `labeling/` lane) and its scoring. It replaces the `tasks/b61`-`b69`
+  labeling Blocks; a dataset with no label yet stays in `tasks/`. The audit accepts it.
 
 ## [0.9.1] -- 2026-10-04
 
