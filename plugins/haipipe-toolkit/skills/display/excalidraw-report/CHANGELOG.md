@@ -1,5 +1,55 @@
 # Changelog
 
+0.4.0 · 2026-10-05 · Report evidence before layout
+------------------------------------------------
+
+- Read the full report and cited Results/figures before choosing the frames; map material
+  findings to plots, exact tables, source images, examples or explanations.
+- Replace the fixed three/four-block overview and one-line item limits with enough readable
+  evidence. The first frame includes results; further frames hold needed detail.
+- Explain the problem, why the method matters, how it works and what the evidence supports;
+  labelled relationships can branch where the reasoning branches.
+- Preserve units, conditions, differences, sample sizes and source links. Separate measured,
+  derived, externally reported and missing results; do not rank incompatible benchmarks.
+- Keep the existing one-drawing rule and source-builder workflow. Make image resolution,
+  plot choice and frame count serve the evidence instead of limiting it. Reuse existing
+  report or shared Block builders and identify the outputs their build commands regenerate.
+
+## 0.3.0 · 2026-10-05 · Numbers are drawn: plots
+
+- Rule 12 (JL 261005: "make sure this will include more plots as well"): sizes, shares, counts
+  over time, date coverage and progress are plotted, with every value read from the cited Result
+  and written on its mark. New § Plots: which number takes which plot, six plot rules.
+- `ref/plot_kit.py`: the drawing engine as a `Doc` class plus seven plots of native Excalidraw
+  shapes: `hbar`, `compare`, `share_bar`, `columns`, `spans`, `gauge`, `trend`. Each was rendered
+  and looked at with REACH data; the look caught spans drawn past the axis (now clamped, with ◀
+  and the true years) and a trend label on its own line (now beside the point).
+- `ref/render_excalidraw.py` (the renderer every builder copies) gains `--frame first|<name>`:
+  the `.png` beside a report drawing is the Report column's preview, so it is the first frame,
+  whose headline is the answer; four frames side by side shrank to an unreadable strip.
+- Worked example: REACH-SPACE b01_reach_jhu Q01, four frames ("Two schemas", "Where the rows
+  are", "Inside deid.omop", "Q01 status"), built from the two table catalogs and the report's
+  Evidence Item Results. The Task Workbench shows a report's own unlinked drawing with its
+  `.png` preview too (`servers/workbench-task/task_questions.py`).
+
+## 0.2.0 · 2026-10-05 · One Question, one drawing; pictures inside it
+
+- Rule 6 (JL 261005: "for each question we should just have one excalidraw"): a report has
+  exactly one `.excalidraw`; more views are frames in it. The Block road map stays in the
+  Block's `studio/` and is no longer linked from a report.
+- Rule 11 (JL 261005: "some png can be put into the excalidraw as well"): a screenshot or
+  figure the report cites is an image inside the drawing, read from its source file on every
+  build, long side at most 1600 px; a helper `picture()` in Draw.
+- `ref/add_pictures.py`: appends a "Pictures" frame to a drawing another builder made; a Block's
+  `make.sh` runs it on the built file before the render. Used for Project-Samsung b13
+  (`connector-app-develop-host-setup`, the QR desk card) and b31 (Q02's five step frames, Q06's
+  QR card); b11 Q06 and Q08 take version 3 as a frame (`BESIDE`) instead of a second link.
+- Rule 9: a second drawing link or a picture link is a finding in Check, not a second thumb.
+  Enforced in `servers/workbench-task/task_questions.py` (Task and CoWork workbenches);
+  tests `test_coworkboard.py::test_one_question_shows_one_drawing_and_a_picture_goes_inside_it`
+  and `::test_a_reports_drawing_lives_in_its_report_folder`, both failing before the change.
+  First applied to Project-REACH-PD2D's cowork reports.
+
 ## 0.1.1 · 2026-10-04 · Salience first
 
 - Rule 0, the three-second test (JL 261004: "with a glance of look, we get nothing, nothing is
