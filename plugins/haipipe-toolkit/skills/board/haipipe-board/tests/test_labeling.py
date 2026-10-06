@@ -408,6 +408,48 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertEqual(data["jobs"], [])
         self.assertEqual([row["title"] for row in data["empty"]], ["Demo corpus"])
 
+    def test_a_labelings_job_shows_its_tasks_on_its_card_and_in_its_workbench(self):
+        """A labeling Job is one dataset with one label, with many Tasks (JL 261005)."""
+        from live.labeling import board_jobs
+        job = Path(self.tmp.name) / "proj" / "labelings" / "b01_demo" / "j01_demo_safety"
+
+        def task(name, title, kind, run=None, headline=""):
+            folder = job / name
+            (folder / "runs").mkdir(parents=True)
+            (folder / f"{name}.md").write_text(
+                f"# {title}\nstate: 🔴 OPEN\nfolder-kind: task\ntask-type: {kind}\ntask: .\n\n"
+                "## Opening\n\no\n", encoding="utf-8")
+            if run:
+                (folder / "runs" / f"{run}.sh").write_text("#!/bin/bash\n", encoding="utf-8")
+                result = folder / "results" / run
+                result.mkdir(parents=True)
+                (result / "runtime.yaml").write_text("status:     complete\n", encoding="utf-8")
+                (result / "metrics.json").write_text(
+                    json.dumps({"summary": {"headline": headline}}), encoding="utf-8")
+            return folder / f"{name}.md"
+
+        task("t01_demo_items", "Demo items", "data", "r01_all", "12 items")
+        task("t02_demo_ground_truth_profile", "Demo keys", "raw", "r01_all", "two keys counted")
+        page = task("t03_demo_safety_labeling", "Safety on demo", "labeling")
+        (job.parent / "board.md").write_text(
+            "# Demo\nboard-kind: task-block\nspine: s\nclose: c\n\n## Topic\n\nt\n\n"
+            "## Pipeline\n\np\n\n## Pages\n", encoding="utf-8")
+        data = board_jobs(job.parent, "/proj/labelings/b01_demo/board.md")
+        self.assertEqual([(row["id"], row["title"]) for row in data["empty"]],
+                         [("b01j01", "Safety on demo")])          # the card is the Job's
+        body = render(page, "", "", "", None, standalone=True)
+        self.assertIn("🏷 Safety on demo</h1>", body)            # titled by the page, not its stem
+        prep = body.split("data-view=preparation hidden>", 1)[1].split("<div class=pane", 1)[0]
+        self.assertIn("<h2>Job data</h2>", prep)
+        self.assertIn("Demo items", prep)
+        self.assertIn("12 items", prep)
+        self.assertNotIn("Demo keys", prep)                       # the keys belong to External gold
+        self.assertIn(">External gold</button>", body)
+        gold = body.split("data-view=gold hidden>", 1)[1].split("</section>", 1)[0]
+        self.assertIn("two keys counted", gold)
+        plain = render(self.page, "", "", "", None, standalone=True)
+        self.assertNotIn("External gold", plain)                 # no Job, no gold Task: no view
+
     def test_flat_board_source_resolves_folded_page_task_lane(self):
         board = Path(self.tmp.name) / "board"
         (board / "SL-labeling-runs").mkdir(parents=True)

@@ -11,8 +11,8 @@ description: >-
   Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /haipipe-workbench-labeling.
 metadata:
-  version: "0.26.0"
-  last_updated: "2026-10-03"
+  version: "0.27.0"
+  last_updated: "2026-10-06"
 ---
 
 # /haipipe-workbench-labeling · one job, one folder, one operated surface
@@ -54,7 +54,7 @@ each Space a brief at the top (label over value), then its View tabs; every View
            (ref/view-structure.md has every View block by block)
 Data       Preparation · Contract · Embedding
 Labeling   Definition · Rounds · Guideline
-Quality    Test · Evaluation · Audit
+Quality    Test · Evaluation · Audit · External gold (a labelings/ Job with a gold Task)
 Delivery   Handoff · Scan · Final labels
 Runs       the shared Runs panel (haipipe-toolkit live.runs_panel) on the right of every
            Space, folded to a "◂ Runs" strip until opened: the current view's Run types in
@@ -116,8 +116,8 @@ adapter (`_board_pages`) and nothing else of the Board grammar, and the
 
 | level | where it opens | what it shows | writes |
 |---|---|---|---|
-| Board | the Board index, and the `S-Label-Dash` control Page | one card per Page with a linked preparation package or a `labeling/config.yaml` job: target, question, data, step badge, progress, next step; Pages with neither listed below | none |
-| Page | any real job Page | the four Spaces and their Runs panels; label definitions and Confirm meaning in `Labeling → Definition`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
+| Board | the Board index, and the `S-Label-Dash` control Page | one card per Page with a linked preparation package or a `labeling/config.yaml` job (in `labelings/`, one card per Job, carrying the Job address `bNNjNN`): target, question, data, step badge, progress, next step; Pages with neither listed below | none |
+| Page | any real job Page; in `labelings/`, the Job's labeling Task Page, standing for the whole Job | the four Spaces and their Runs panels; a `labelings/` Job's other Tasks with their latest Run in `Data → Preparation` (Job data) and `Quality → External gold`; label definitions and Confirm meaning in `Labeling → Definition`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
 
 A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
 the Page level in the same pane. The `all labeling jobs` link under the Page's

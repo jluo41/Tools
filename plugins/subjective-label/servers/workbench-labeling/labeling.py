@@ -491,6 +491,60 @@ def is_labeling_surface_page(page_src: Path) -> bool:
     return page_src.is_file() and page_src.name != "S-Label-Dash.md"
 
 
+# The labelings/ Job (haipipe-project 0.10.0, JL 261005: "for a data + labeling, it should be
+# a job ... for this job, we will have many tasks"). A labeling Page at
+# labelings/bNN_<block>/jNN_<dataset>_<label>/tNN_<task>/ belongs to that Job: one dataset with
+# one label. The workbench is the Job's: its card carries the Job address, Data → Preparation
+# lists the Job's data Tasks, and Quality gains External gold when a Task scores against the
+# dataset's own labels. labeling/ stays in the labeling Task, so the engine reads nothing new.
+_GOLD_TASK = re.compile(r"ground_truth|gold|scor")
+
+
+def _page_heading(page: Path) -> str:
+    try:
+        lines = page.read_text(encoding="utf-8", errors="ignore").splitlines()[:5]
+    except OSError:
+        return ""
+    return next((line[2:].strip() for line in lines if line.startswith("# ")), "")
+
+
+def _task_runs(task: Path) -> list[dict]:
+    """One row per Run ticket of a Task: its state and headline, from its Result."""
+    rows = []
+    runs = task / "runs"
+    for ticket in sorted(runs.glob("r[0-9][0-9]_*.sh")) if runs.is_dir() else []:
+        result = task / "results" / ticket.stem
+        summary = _read_json(result / "metrics.json").get("summary")
+        rows.append({"run": ticket.stem,
+                     "status": _yaml_top_scalar(result / "runtime.yaml", "status") or "not run",
+                     "headline": str((summary or {}).get("headline") or "") if isinstance(summary, dict) else ""})
+    return rows
+
+
+def _labeling_job(page_src: Path) -> dict | None:
+    """The Job this labeling Page sits in, with all its Tasks; None outside labelings/.
+
+    A Task is `data` before the labeling Task, `gold` when it holds or scores against the
+    dataset's own labels (its name says ground_truth, gold or scoring) or comes after it.
+    """
+    task, job = page_src.parent, page_src.parent.parent
+    block = job.parent
+    if (block.parent.name != "labelings" or page_src.stem != task.name
+            or not re.match(r"b\d{2}_", block.name) or not re.match(r"j\d{2}_", job.name)
+            or not re.match(r"t\d{2}_", task.name)):
+        return None
+    tasks = []
+    for folder in sorted(f for f in job.iterdir() if f.is_dir() and re.match(r"t\d{2}_", f.name)):
+        page = folder / f"{folder.name}.md"
+        if not page.is_file():
+            continue
+        role = ("labeling" if folder == task else
+                "gold" if _GOLD_TASK.search(folder.name) or folder.name > task.name else "data")
+        tasks.append({"name": folder.name, "title": _page_heading(page) or folder.name,
+                      "role": role, "runs": _task_runs(folder)})
+    return {"id": block.name[:3] + job.name[:3], "name": job.name, "tasks": tasks}
+
+
 def labeling_chat_hold(page_src: Path) -> tuple[bool, str]:
     """Server-side Chat guard; no browser flag can turn a labeling HOLD off."""
     if not is_labeling_surface_page(page_src):
@@ -699,6 +753,32 @@ SPACES = (
 )
 
 
+def _spaces(vm: dict) -> tuple:
+    """SPACES, plus Quality → External gold when this Page's Job has a Task that holds or scores
+    against the dataset's own labels: a view exists only because Runs live in it (JL 260928)."""
+    if not any(t["role"] == "gold" for t in (vm.get("job") or {}).get("tasks", [])):
+        return SPACES
+    return tuple((sid, name, views + (("gold", "External gold"),)) if sid == "quality"
+                 else (sid, name, views) for sid, name, views in SPACES)
+
+
+def _job_tasks_card(vm: dict, role: str, title: str) -> str:
+    """The Job's other Tasks of one role, each with its latest Run's state and headline."""
+    rows = []
+    for task in (vm.get("job") or {}).get("tasks", []):
+        if task["role"] != role:
+            continue
+        last = task["runs"][-1] if task["runs"] else None
+        if last:
+            cls, word = _STEP_STATE.get(last["status"], ("mut", last["status"]))
+            value = (f'<span class={cls}>{_esc(word)}</span> · <code>{_esc(last["run"])}</code>'
+                     + (f' · {_esc(last["headline"])}' if last["headline"] else ""))
+        else:
+            value = '<span class=mut>no Run yet</span>'
+        rows.append(_row(task["title"], value))
+    return _card(title, "".join(rows)) if rows else ""
+
+
 def _esc(value) -> str:
     return html.escape("" if value is None else str(value))
 
@@ -877,6 +957,7 @@ def _view_model(page_src: Path) -> dict:
         "preparation": _preparation_state(root),
         "runs": _run_rows(root),
         "embedding": _embedding_state(root),
+        "job": _labeling_job(page_src),
     }
 
 
@@ -1025,8 +1106,8 @@ def _data_space(vm: dict) -> dict[str, str]:
         else:
             contract = _card("Labeling Contract", "<p>Complete and link Corpus "
                              "Preparation before creating this Page's Contract.</p>")
-        return {"preparation": _preparation_view(vm), "contract": contract,
-                "embedding": _embedding_view(vm)}
+        return {"preparation": _job_tasks_card(vm, "data", "Job data") + _preparation_view(vm),
+                "contract": contract, "embedding": _embedding_view(vm)}
     source = manifest.get("source") if isinstance(manifest.get("source"), dict) else {}
     n_items = manifest.get("n_items")
     n_sealed = manifest.get("n_sealed", sealed.get("n_items"))
@@ -1058,8 +1139,8 @@ def _data_space(vm: dict) -> dict[str, str]:
             _row("vote counts", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("count_fields") or [])),
             _row("other fields", ", ".join(f"<code>{_esc(f)}</code>" for f in reveal.get("item_fields") or [])),
         ]))
-    return {"preparation": _preparation_view(vm), "contract": _contract_detail(vm) + corpus + schema,
-            "embedding": _embedding_view(vm)}
+    return {"preparation": _job_tasks_card(vm, "data", "Job data") + _preparation_view(vm),
+            "contract": _contract_detail(vm) + corpus + schema, "embedding": _embedding_view(vm)}
 
 
 @lru_cache(maxsize=16)
@@ -2379,7 +2460,8 @@ def _quality_space(vm: dict) -> dict[str, str]:
                   else _later("P3 Test"))
     audits = sorted((root / "audit").glob("final_*")) if (root / "audit").is_dir() else []
     audit = _card("Audit", _row("audits", _esc(len(audits)))) if audits else _later("P5 Audit")
-    return {"test": test, "evaluation": evaluation, "audit": audit}
+    return {"test": test, "evaluation": evaluation, "audit": audit,
+            "gold": _job_tasks_card(vm, "gold", "External gold")}
 
 
 _RUN_WORDS = {  # the same words as the `in words` column of ref-space-mapping.md's Workflow map
@@ -3268,7 +3350,9 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
     hold = bool(state["authority_hold"] or state["next_action"].startswith("HOLD"))
     next_line, next_space = _next_step(vm)
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
-    title = construct.get("question") or construct.get("name") or page_src.stem
+    title = (construct.get("question") or construct.get("name")
+             or (_page_heading(page_src) if vm.get("job") else "") or page_src.stem)
+    spaces = _spaces(vm)
 
     panels = {
         "data": _data_space(vm), "labeling": _labeling_space(vm),
@@ -3279,10 +3363,10 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
     space_buttons = "".join(
         f'<button class=space type=button role=tab id=tab-{sid} aria-controls=panel-{sid} '
         f'aria-selected=false data-space={sid}>{_esc(name)}</button>'
-        for sid, name, _ in SPACES
+        for sid, name, _ in spaces
     )
     sections = []
-    for sid, name, views in SPACES:
+    for sid, name, views in spaces:
         chips = "".join(
             f'<button class=chip type=button data-space={sid} data-view={vid}>{_esc(vname)}</button>'
             for vid, vname in views
@@ -3321,7 +3405,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str,
         "rounds": cal.get("rounds") or [],
         "current_round": cal.get("current_round"),
         "batch_default": ((config.get("rounds") or {}).get("round1") or {}).get("human_batch_size") or 20,
-        "spaces": {sid: [vid for vid, _ in views] for sid, _, views in SPACES},
+        "spaces": {sid: [vid for vid, _ in views] for sid, _, views in spaces},
     }
     document = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
@@ -4112,7 +4196,8 @@ def _job_row(page_src: Path, page: dict, path_q: str) -> dict:
     next_line, _ = _next_step(vm)
     labeling_url, page_url = _job_urls(path_q, page)
     return {
-        "id": page.get("id"), "title": page.get("title"), "file": page.get("file"),
+        "id": (vm.get("job") or {}).get("id") or page.get("id"), "title": page.get("title"),
+        "file": page.get("file"),
         "target": construct.get("name") or "", "question": construct.get("question") or "",
         "source": source.get("name") or "", "n_dev": n_dev, "n_sealed": n_sealed,
         "human": authority.get("human_id") or "", "kind": kind, "badge": badge, "rank": rank,
@@ -4140,7 +4225,8 @@ def board_jobs(board_dir: Path, path_q: str, probe: bool = False) -> dict:
                 labeling_url, _ = _job_urls(path_q, page)
                 candidate = _page_folder_candidate(page_src)
                 ready = candidate.is_file() and not candidate.is_symlink()
-                empty.append({"id": page.get("id"), "title": page.get("title"),
+                job = _labeling_job(page_src)
+                empty.append({"id": (job or {}).get("id") or page.get("id"), "title": page.get("title"),
                               "labeling_url": labeling_url + "&space=data&view=preparation",
                               "badge": "Prepare corpus" if ready else "Create Page folder"})
             continue

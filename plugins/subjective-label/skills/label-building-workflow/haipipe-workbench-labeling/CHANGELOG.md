@@ -1,5 +1,18 @@
 # haipipe-workbench-labeling · CHANGELOG
 
+## 0.27.0 · 2026-10-06
+
+- The workbench is the Job's (JL 261006: "is it for a block, or it is for a job?"). A labeling
+  Page at `labelings/bNN_<block>/jNN_<dataset>_<label>/tNN_<task>/` stands for its Job: one
+  dataset with one label, with many Tasks (haipipe-project 0.10.0). Its Board card carries the
+  Job address (`b01j01`, not the Task's `b01j01t03`); before a Contract the Page is titled by
+  its heading. `Data → Preparation` opens with a `Job data` card: each data Task before the
+  labeling Task, with its latest Run's state and headline. `Quality` gains `External gold`
+  only when the Job has a Task that holds or scores against the dataset's own labels
+  (`ground_truth`, `gold` or `scoring` in its name, or after the labeling Task), so a view
+  still exists only because Runs live in it. `labeling/` stays in the labeling Task; the
+  engine reads nothing new.
+
 ## 0.26.0 · 2026-10-03
 
 - Guide › Method follows the steps-first layout Design adopted: the six steps, then the
