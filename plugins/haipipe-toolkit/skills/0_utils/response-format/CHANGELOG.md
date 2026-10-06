@@ -1,6 +1,14 @@
 response-format — Changelog
 ===========================
 
+## [0.18.0] — 2026-10-06
+
+- A Related question's link opens the Question in its board's workbench:
+  `<host>/_board/<kind>-board?path=<board>/board.md&report=QNN` (kind task, cowork or
+  discovery; host = the shared host's `--public-url`). JL: "I can just click and open
+  them". The question's file stays the fallback when no host serves the SPACE or the
+  board has no workbench.
+
 ## [0.17.0] — 2026-10-03
 
 - Questions get their own skillset, `skills/question/` (JL 261003: "should I put all the
