@@ -1,6 +1,13 @@
 response-format — Changelog
 ===========================
 
+## [0.18.1] — 2026-10-06
+
+- The link opens the workbench UI, not the report's Page (JL: "what I want is the
+  workbench UI, not the webpage of the page"): `…/board.md&view=questions#question-QNN`
+  opens the Questions view scrolled to that row, in the Task, CoWork and Discovery
+  workbenches alike. `&report=QNN` opened the report Page and is no longer used.
+
 ## [0.18.0] — 2026-10-06
 
 - A Related question's link opens the Question in its board's workbench:

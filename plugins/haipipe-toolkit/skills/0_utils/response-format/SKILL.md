@@ -14,7 +14,7 @@ description: >-
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.18.0"
+  version: "0.18.1"
   last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -114,12 +114,14 @@ each `qNN_<topic>` is one question.
 4. **Link**: the Question in its workbench, so one click opens it (see "The link" below).
 5. **Why**: what this section gives it: answers, narrows, evidences, or raises it.
 
-**The link** (2026-10-06). The link opens the Question in the board's workbench on the
-running host, so the reader clicks once and reads it (JL: "I can just click and open
-them"):
+**The link** (2026-10-06). The link opens the board's workbench UI on its Questions
+view, scrolled to that Question's row, so the reader clicks once and sees it with its
+work and report beside it (JL: "I can just click and open them"; "what I want is the
+workbench UI, not the webpage of the page"). Not `&report=QNN`: that opens the
+report's own Page.
 
 ```
-<host>/_board/<kind>-board?path=<board>/board.md&report=QNN
+<host>/_board/<kind>-board?path=<board>/board.md&view=questions#question-QNN
 ```
 
 1. **Kind**: the board's workbench: `task` (a Task Block, also `Tools/designs/tasks/bNN_*`),
@@ -131,7 +133,7 @@ them"):
 4. **Fallback**: no host serves that SPACE, or the board has no workbench (a Paper
    board): link the question's file, `<board>/reports/qNN_<topic>/qNN_<topic>.md`.
 
-Example: `[b01_irb Q01 "How to write an IRB submission"](http://100.121.165.84:5622/_board/cowork-board?path=examples-4-agent/Project-Samsung/cowork/b01_irb/board.md&report=Q01)`.
+Example: `[b01_irb Q01 "How to write an IRB submission"](http://100.121.165.84:5622/_board/cowork-board?path=examples-4-agent/Project-Samsung/cowork/b01_irb/board.md&view=questions#question-Q01)`.
 
 **Granularity: a topic, not a decision** (2026-10-03). A board question is a topic
 that many sections feed and that grows into its report; the narrow decision goes in
@@ -222,7 +224,7 @@ heading -> scan -> sketch -> explain -> files -> related q   ordinary section OR
 summary: heading -> scan -> sketch -> explain               no related question
 question match follows drafting  user's input drives content and section order
 one question per section        one Related question line, last: board, QNN, name, why
-link = the workbench question   <host>/_board/<kind>-board?path=<board>/board.md&report=QNN
+link = the workbench question   <host>/_board/<kind>-board?path=<board>/board.md&view=questions#question-QNN
 question = a topic               it grows a report; the decision goes in the Why
 proposed -> propose its folder   Summary and Next offers reports/qNN_<topic>/
 1. 2. 3. not -                   numbered scan layer; dashes mean inventory
@@ -432,7 +434,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question:** [Tools/designs b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/task-board?path=designs/tasks/b01_utils/board.md&report=Q01): gives the verdict and the one condition under which it fails.
+**Related question:** [Tools/designs b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/task-board?path=designs/tasks/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
 
 ## 2. 🛠️ What I Changed
 
