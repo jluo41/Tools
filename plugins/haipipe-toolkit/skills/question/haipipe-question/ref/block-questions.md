@@ -23,12 +23,18 @@ tasks/bNN_<block>/
 └── jNN_<job>/tNN_<task>/             executable work and its native Results
 ```
 
-A report's drawings live in its own folder (JL 261004): a drawing that belongs to one
-report is saved as `reports/qNN_<topic>/studio/<name>.excalidraw`, and its build script, when
-a script draws it, in `reports/qNN_<topic>/studio/_build/`. The Block's `studio/` keeps only
-the drawings the whole Block shares: the question map and any drawing several Questions or
-Jobs use. `--drawing <name>` makes a blank drawing in the report's `studio/` and lists it
-under `### Evidence`; the workbenches also show any drawing found there, linked or not.
+One Question, one drawing (JL 261005: "for each question we should just have one
+excalidraw"). A report has exactly one `.excalidraw`, linked once from its `### Evidence`:
+more views are frames inside it, and a screenshot or figure the report cites is an image
+inside it too ("some png can be put into the excalidraw as well"), never a second link
+(`excalidraw-report` rules 6, 9 and 11). It lives in the report's folder (JL 261004), as
+`reports/qNN_<topic>/studio/<name>.excalidraw` or, drawn by a Block builder, as
+`reports/qNN_<topic>/qNN_<topic>.excalidraw` beside the Page; its build script, when a script
+draws it, sits in that `studio/_build/` or the Block's. The Block's `studio/` keeps only the
+drawings the whole Block shares: the question map, the road map, and any drawing several
+Questions or Jobs use. `--drawing <name>` (once) makes the blank drawing in the report's
+`studio/` and lists it under `### Evidence`. The workbenches show the first drawing a report
+links (else its own, unlinked); a second drawing or a linked picture is a finding in Check.
 
 A CoWork Block (`cowork/bNN_<topic>/board.md`, `board-kind: cowork-block`, owned by
 `haipipe-cowork`) keeps the same register and `reports/` folder. There a Question's
@@ -131,8 +137,8 @@ python <skill>/ref/block_questions.py add-resource <block> \
 `add-report` frames the report of a Question already in the register and writes its
 `report:` line; `--evidence 'label|path'` (repeatable, a file inside the Block) lists that
 file under the frame's `### Evidence`, percent-encoded, so a linked `.excalidraw` shows in
-the Workbench's Report column. `--drawing <name>` (repeatable) makes the report's own blank
-drawing at `reports/<id>_topic/studio/<name>.excalidraw` and lists it the same way. Evidence links are pointers, not an answer: the
+the Workbench's Report column. `--drawing <name>` (once: one Question, one drawing) makes the
+report's blank drawing at `reports/<id>_topic/studio/<name>.excalidraw` and lists it the same way. Evidence links are pointers, not an answer: the
 frame keeps `answer-status: open` and writes no `results-read:`, so Check shows "Evidence
 review time is not recorded" until someone reads the evidence.
 

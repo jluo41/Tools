@@ -10,8 +10,8 @@ description: >-
   state, or a Block's Questions. The Block contract belongs to haipipe-cowork;
   report writing to haipipe-page.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-10-04"
+  version: "0.2.2"
+  last_updated: "2026-10-05"
 ---
 
 # CoWork Block Workbench
@@ -48,7 +48,7 @@ draws). It reads the Block's files on every open and stores nothing.
 | Scope › Resources | Related resources, each Job's `design/` and `materials/` files, then the OneDrive folders by name | `board.md`; Jobs; `onedrive:` |
 | Scope › RoadMap Draw | the Block's drawings, each a folding row; a generated one is view only | `studio/*.excalidraw` |
 | Work › Jobs | one row per open Job: state, waiting on, since, waited, next, ticket; then each Job's page, Timeline, Checklist and files | `jNN_<job>/` pages |
-| Work › Questions | one row per Question: Logic │ Work (the Block files it cites) │ Report (the Opening's first paragraph, then a picture of each `.excalidraw` its Evidence links, from the `.png` beside it, opening in the pop-out) | `board.md` Questions; `reports/` |
+| Work › Questions | one row per Question: Logic │ Work (the Block files it cites) │ Report (the Opening's first paragraph, then the report's one drawing as the `.png` beside it, opening in the pop-out; a second drawing or a linked picture is a finding in Check, JL 261005) | `board.md` Questions; `reports/` |
 | Work › Emails | each thread or draft across Jobs, newest first, with its Job; drafts marked | `jNN_<job>/emails/*.md` |
 | Work › Meetings | each meeting note across Jobs, newest first, with its Job | `jNN_<job>/meetings/*.md` |
 | Check › Waiting on | open Jobs whose move is not ours, longest wait first | job page headers |

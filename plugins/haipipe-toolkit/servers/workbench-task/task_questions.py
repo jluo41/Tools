@@ -130,6 +130,9 @@ def source_links(text, page, root, source_url):
     return links
 
 
+PICTURE = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
+
+
 def report_snapshot(raw, qid, board, root, only, source_url, page_url):
     result = dict(path=words(raw), present=False, title="", answer="", status="open",
                   page_state="", evidence=[], evidence_text="", limits="", next="",
@@ -190,8 +193,22 @@ def report_snapshot(raw, qid, board, root, only, source_url, page_url):
         for path in sorted(own.glob("*.excalidraw")):
             rel = path.resolve().relative_to(Path(root).resolve()).as_posix()
             if inside(path, own) and path.is_file() and rel not in linked:
+                png = path.with_suffix(".png")
                 result["drawings"].append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
-                                           "url": "/_excalidraw/?" + urlencode({"board": rel})})
+                                           "url": "/_excalidraw/?" + urlencode({"board": rel}),
+                                           "png": source_url(png, root) if png.is_file() else ""})
+    # One Question, one drawing (JL 261005: "for each question we should just have one excalidraw"):
+    # the Report column shows the first; any further drawing is a finding, merged into the first as a frame.
+    if len(result["drawings"]) > 1:
+        result["issues"].append("One Question has one drawing; make these frames of the first: "
+                                + ", ".join(d["title"] for d in result["drawings"][1:]))
+        result["drawings"] = result["drawings"][:1]
+    # A picture goes inside that drawing as an image (JL 261005: "some png can be put into the excalidraw
+    # as well"), never beside it in the Report column.
+    pictures = [link["title"] for link in result["evidence"]
+                if link["mtime"] is not None and link["path"].lower().endswith(PICTURE)]
+    if pictures:
+        result["issues"].append("Put each picture inside the report's drawing: " + ", ".join(pictures))
     result["limits"] = plain(report_section(body, {"limits", "boundaries", "gaps"}))
     result["next"] = plain(report_section(body, {"next", "next actions"}))
     result["url"] = page_url(page, board, root, "draft", only)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.5 · 2026-10-05 · One drawing per Question
+
+- Report column shows a report's one drawing; a second drawing or a linked picture is a finding
+  in Check (`task_questions.report_snapshot`, shared with CoWork; JL 261005).
+
 ## 0.5.4 · 2026-10-05 · Databricks receipts read truthfully
 
 - `servers/workbench-page/runs.py`: a `.cmd` ticket is a ticket; a receipt `status: ok` (the

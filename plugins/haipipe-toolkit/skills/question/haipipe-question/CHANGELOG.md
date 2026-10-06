@@ -1,6 +1,17 @@
 haipipe-question — Changelog
 ============================
 
+## [0.5.1] — 2026-10-05
+
+- One Question, one drawing (JL 261005: "for each question we should just have one
+  excalidraw"; "some png can be put into the excalidraw as well"): a report links exactly one
+  `.excalidraw`; more views and any picture go inside it (`excalidraw-report` 0.2.0, rules 6,
+  9, 11). `ref/block_questions.py --drawing` refuses a second name.
+  `servers/workbench-task/task_questions.py` keeps the first drawing and records a second
+  drawing or a linked picture as a finding, for the Task and CoWork workbenches; the CoWork
+  picture-thumb change of the same morning is withdrawn.
+- The metadata version catches up with the 0.5.0 entry below.
+
 ## [0.4.1] — 2026-10-04
 
 - Short questions (JL 261004: "the sentence length is too long here, hard to read at a

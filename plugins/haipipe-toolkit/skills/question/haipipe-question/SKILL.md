@@ -12,8 +12,8 @@ description: >-
   /haipipe-question.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-04"
+  version: "0.5.1"
+  last_updated: "2026-10-05"
   # version history: ./CHANGELOG.md
 ---
 
@@ -35,12 +35,18 @@ Every board kind uses the same shape: a Task Block (`tasks/bNN_<block>/`), a Pap
         └── studio/             this report's own drawings (the rule below)
 ```
 
-A report's drawings live in its own folder (JL 261004): a drawing that belongs to one
-report is saved as `reports/qNN_<topic>/studio/<name>.excalidraw`, and its build script, when
-a script draws it, in `reports/qNN_<topic>/studio/_build/`. The Block's `studio/` keeps only
-the drawings the whole Block shares: the question map and any drawing several Questions or
-Jobs use. `--drawing <name>` makes a blank drawing in the report's `studio/` and lists it
-under `### Evidence`; the workbenches also show any drawing found there, linked or not.
+One Question, one drawing (JL 261005: "for each question we should just have one
+excalidraw"). A report has exactly one `.excalidraw`, linked once from its `### Evidence`:
+more views are frames inside it, and a screenshot or figure the report cites is an image
+inside it too ("some png can be put into the excalidraw as well"), never a second link
+(`excalidraw-report` rules 6, 9 and 11). It lives in the report's folder (JL 261004), as
+`reports/qNN_<topic>/studio/<name>.excalidraw` or, drawn by a Block builder, as
+`reports/qNN_<topic>/qNN_<topic>.excalidraw` beside the Page; its build script, when a script
+draws it, sits in that `studio/_build/` or the Block's. The Block's `studio/` keeps only the
+drawings the whole Block shares: the question map, the road map, and any drawing several
+Questions or Jobs use. `--drawing <name>` (once) makes the blank drawing in the report's
+`studio/` and lists it under `### Evidence`. The workbenches show the first drawing a report
+links (else its own, unlinked); a second drawing or a linked picture is a finding in Check.
 
 
 A question is a topic
@@ -119,7 +125,7 @@ python …/block_questions.py add-report <block> --id Q-food-1 --slug input_form
 
 `--evidence 'label|path'` (either command, repeatable) lists a file inside the Block under
 the frame's `### Evidence`: a Task Result, a source Page, or a drawing, which the workbench
-then shows in the Report column. `--drawing <name>` (repeatable) makes the report's own
+then shows in the Report column. `--drawing <name>` (once per Question) makes the report's one
 drawing in `reports/<id>_topic/studio/` and lists it the same way. It is a pointer for the writer, not an
 answer; `answer-status` stays `open` and no `results-read:` is written until someone reads it.
 

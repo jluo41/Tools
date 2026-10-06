@@ -174,5 +174,29 @@ def test_a_reports_drawing_lives_in_its_report_folder(demo):
     write(block / "reports/q01_cloud_ready/studio/extra_sketch.excalidraw", json.dumps({"type": "excalidraw", "elements": []}))
     report = block_snapshot(block, root)["questions"][0]["report"]
     titles = [d["title"] for d in report["drawings"]]
-    assert titles == ["Data flow", "Extra sketch"]                       # linked first, then the unlinked own drawing
-    assert all("reports/q01_cloud_ready/studio/" in d["url"].replace("%2F", "/") for d in report["drawings"])
+    assert titles == ["Data flow"]                                       # one Question, one drawing (JL 261005)
+    assert "reports/q01_cloud_ready/studio/" in report["drawings"][0]["url"].replace("%2F", "/")
+    assert any("one drawing" in i and "Extra sketch" in i for i in report["issues"])   # the second is a finding
+
+
+def test_one_question_shows_one_drawing_and_a_picture_goes_inside_it(demo):
+    """JL 261005: "for each question we should just have one excalidraw"; "some png can be put into the
+    excalidraw as well". The Report column shows the report's first drawing only; a second drawing and a
+    linked picture are findings in Check, not more thumbs."""
+    root, block = demo
+    write(block / "j01_cloud_group/materials/card.png", "png")
+    write(block / "studio/flow.png", "png")
+    write(block / "studio/second.excalidraw", json.dumps({"type": "excalidraw", "elements": []}))
+    write(block / "reports/q01_cloud_ready/q01_cloud_ready.md",
+          "# Cloud ready\nanswers: Q01\nanswer-status: open\n\n## Content\n\n### Evidence\n\n"
+          "- [Flow](../../studio/flow.excalidraw)\n- [Second](../../studio/second.excalidraw)\n"
+          "- [The desk card](../../j01_cloud_group/materials/card.png)\n")
+    board = (block / "board.md").read_text(encoding="utf-8")
+    write(block / "board.md", board.replace("  work:\n", "  report: reports/q01_cloud_ready/q01_cloud_ready.md\n  work:\n"))
+    report = block_snapshot(block, root)["questions"][0]["report"]
+    assert [t["title"] for t in report["thumbs"]] == ["Flow"] and report["thumbs"][0]["png"].endswith("flow.png")
+    found = " | ".join(report["issues"])
+    assert "one drawing" in found and "Second" in found
+    assert "inside the report's drawing" in found and "The desk card" in found
+    row = render_block(block_snapshot(block, root), "questions")
+    assert row.count('class="rp-thumb"') == 1 and "The desk card" not in row.split('class="hl-p"', 1)[1].split("</div>", 1)[0]

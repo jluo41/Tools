@@ -9,7 +9,7 @@ description: >-
   tracking across one tasks/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.5.4"
+  version: "0.5.5"
   last_updated: "2026-10-05"
 ---
 
@@ -77,9 +77,10 @@ a folded **More**. Task Work is one light tree, Block → Job → Task → Run, 
 once, a Task folding its Runs and its Task Page, each opening in the shared pop-out with an
 own-tab link; the fold's line counts Tasks and Runs, never their status. Report shows the
 report's title (the pop-out to the Page reader), the first paragraph of its Opening, any
-`.excalidraw` it links under Evidence (shown as its `.png` preview when one sits beside it,
-as CoWork's, and opened read-only in the Excalidraw viewer; a picture is drawn by the
-`excalidraw-report` skill), and a tag
+one drawing: the first `.excalidraw` it links under Evidence (shown as its `.png` preview when
+one sits beside it, as CoWork's, and opened read-only in the Excalidraw viewer; drawn by the
+`excalidraw-report` skill, pictures inside it); a second drawing or a linked picture is a
+finding in Check (JL 261005: "for each question we should just have one excalidraw"), and a tag
 "report qNN". A named id (`Q-food-1`) shows as itself, and a Question with no `title`
 shows its question once. No status, path, Limits or Next appear in the table; Check keeps them.
 

@@ -181,6 +181,13 @@ def jobs(board: Path, root: Path) -> tuple[list[dict], list[str]]:
     return out, issues
 
 
+
+def _drawing_png(url: str, root: Path) -> str:
+    """The .png beside a drawing opened as /_excalidraw/?board=<path>, when it exists."""
+    rel = (parse_qs(urlparse(url).query).get("board") or [""])[0]
+    png = root / (rel[:-len(".excalidraw")] + ".png") if rel.endswith(".excalidraw") else None
+    return _source_url(png, root) if png is not None and png.is_file() else ""
+
 def questions(text: str, board: Path, root: Path, only) -> tuple[list[dict], list[str]]:
     rows, issues = register(text, "Questions", "questions")
     out, seen = [], set()
@@ -205,11 +212,10 @@ def questions(text: str, board: Path, root: Path, only) -> tuple[list[dict], lis
                                      "url": file_url(board, target, root)})
         report = report_snapshot(row.get("report"), qid, board, root, only, _source_url, _page_url)
         report["url"] = report["url"].replace("/_board/task-board?", ROUTE + "?")
-        # A drawing the report links to shows as a small picture when its .png sits beside it.
-        report["thumbs"] = [{"title": link["title"], "url": "/_excalidraw/?" + urlencode({"board": link["path"]}),
-                             "png": _source_url(root / (link["path"][:-len(".excalidraw")] + ".png"), root)}
-                            for link in report["evidence"]
-                            if link["path"].endswith(".excalidraw") and link["mtime"] is not None]
+        # The report's one drawing (task_questions.report_snapshot keeps one) shows as its .png beside it;
+        # a picture is never a second thumb: it goes inside the drawing (JL 261005).
+        report["thumbs"] = [{"title": d["title"], "url": d["url"], "png": d["png"] if "png" in d else _drawing_png(d["url"], root)}
+                            for d in report["drawings"]]
         # A video the report links to plays in the row itself (JL 261004: "in the workbench").
         report["videos"] = [{"title": link["title"], "url": link["url"]} for link in report["evidence"]
                             if link["mtime"] is not None and link["path"].lower().endswith(_VIDEO)]

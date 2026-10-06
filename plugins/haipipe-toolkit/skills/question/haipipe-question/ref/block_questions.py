@@ -39,6 +39,9 @@ def drawing_files(folder, names):
     """`--drawing <name>`: reports/<id>_topic/studio/<name>.excalidraw, the report's own drawing
     (a drawing that belongs to one report lives in its folder; the Block's studio/ keeps only the
     drawings several Questions or Jobs share). Returns label|path evidence items, Block-relative."""
+    if len(names) > 1:
+        raise ValueError("One Question has one drawing (JL 261005): pass --drawing once and draw further "
+                         "views as frames inside it")
     out = []
     for name in names:
         if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", name):
@@ -192,7 +195,7 @@ def main():
     question.add_argument("--work", action="append", default=[])
     question.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     question.add_argument("--drawing", action="append", default=[],
-                          help="a blank drawing made in the report's own studio/ (reports/<id>_topic/studio/<name>.excalidraw)")
+                          help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
     report = commands.add_parser("add-report", help="a report Page for a Question already registered")
     report.add_argument("block", type=Path)
     report.add_argument("--id", required=True)
@@ -200,7 +203,7 @@ def main():
     report.add_argument("--title", help="default: the Question's title, else its question")
     report.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     report.add_argument("--drawing", action="append", default=[],
-                        help="a blank drawing made in the report's own studio/ (reports/<id>_topic/studio/<name>.excalidraw)")
+                        help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
     resource = commands.add_parser("add-resource")
     resource.add_argument("block", type=Path)
     resource.add_argument("--title", required=True)

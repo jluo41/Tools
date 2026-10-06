@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 · 2026-10-05 · One drawing per Question
+
+- Report column: one picture, the report's one drawing (JL 261005: "for each question we should
+  just have one excalidraw"). A second drawing or a linked picture shows under Check › Reports
+  as a finding; a picture belongs inside the drawing (`excalidraw-report` rule 11). Withdraws
+  the same morning's picture thumbs (JL 261005, "I want to put things into the workbench"),
+  which the new rule replaces.
+
 ## 0.2.1 · 2026-10-04
 
 - Report column: a drawing the report's Evidence links (`studio/*.excalidraw`) shows as
