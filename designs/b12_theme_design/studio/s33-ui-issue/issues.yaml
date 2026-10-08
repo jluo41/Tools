@@ -1,0 +1,207 @@
+# s33 · UI issues: the one source the drawing (build_s33_ui_issue.py) and the face read.
+# owner: s11 = design_b12_theme_design_s11_blcok (Block tab) · s12 = design_b12_theme_design_s12_job (Job tab)
+#        s13 = design_b12_theme_design_s13task (Task tab) · b03 = the shared frame
+# A fix: add `fixed: <YYMMDD>` to its row and rebuild.
+reviewed: >-
+  Review of 261008 of the design workbench at
+  /_board/workbench?path=examples-5-design/Project-Application-SMSDesign/designs/Design-SMSR2-Stage25-CarryOver-261008,
+  every Space and view of the Block, all five Jobs and six Tasks (t00, one design, t99 of j01 and j03), shot with
+  headless Chrome at 1500 x 1400, every link fetched. Judged against s01, s11, s12, s13, s31, s32, b03's s04 and
+  the Block's files. Another session renamed the Jobs and ranked j03 during the review.
+changes:
+  - "261008 topic opened: the review's problems, ranked, one box each"
+  - "261008 Job › Goal reads the fence (rank 23 fixed); Job › Method shows each step and what it did here"
+  - "261008 Block › Inputs is a files × methods table; element sources fold; checks named rules · fidelity"
+  - "261008 top row: below a level, its item is a button up to its tab, ▾ beside it switches (shared frame)"
+issues:
+- {rank: 1, owner: b03, where: "every tab › every file link (Disk box, Inputs table, Goal, Method, Report titles)",
+   wrong: "Every link to a plain .md (goal.md, method.md, rules.md, the inputs files, a Job or Task face, board.md) opens a 404 'Not a Page: Input is not a Page Face'.",
+   should: "The pop-out shows any .md read-only; the Page reader stays for Page Faces.",
+   evidence: "curl /_board/page?path=/…/inputs/goal.md → 404; workbench/frame.py:288 (_reader)"}
+- {rank: 2, owner: b03, where: "every tab › Disk box › .md rows",
+   wrong: "Disk rows for .md files are plain links without the pop-out mark, so a click leaves the frame (and lands on the 404).",
+   should: "Open in the frame's pop-out like every other file link.",
+   evidence: "workbench/frame.py:492 (_link, no data-pop); B__Audience-Report__Questions board.md"}
+- {rank: 3, owner: s11, where: "Block › Work Details · Audience Report › Method scorecard · Description › Methods",
+   wrong: "Kept designs count as not passed, so the two Jobs furthest along (ranked, 10 kept) read '0 of 10 passed', 'pass 0%', 'm2: 0 passed', while less-advanced Jobs read 93%.",
+   should: "Count passed, kept and released as passed; say 'kept 10 of 15' once a Job is ranked.",
+   evidence: "workbench-design/design_views.py:167 (_passed); B__Work-Details__All.png"}
+- {rank: 4, owner: s12, where: "Job › Audience Report › Reason ideas, Review whole › Disk box",
+   wrong: "chains.yaml, ideas.yaml and ranking.csv show 'not yet' on every Job though they exist: the patterns use old Run names r*_reason_*, r*_rank_*.",
+   should: "t00_*/runs/run-reason-*/result/… and t99_*/runs/run-rank-*/result/ranking.csv.",
+   evidence: "design_views.py:216-219; j01__Audience-Report__Reason-ideas.png"}
+- {rank: 5, owner: s13, where: "Task (t00 · design · t99) › nearly every view › Disk box",
+   wrong: "The reasoning, verify, generate and rank Runs show 'not yet' though they exist (r*_reason_*, r*_verify_*, r*_generate_*, r*_rank_*); later drafts point at run-revise-*/result/ while a revise keeps passes/.",
+   should: "run-reason-*, run-verify-*, run-generate-*, run-rank-*; revise drafts read from its passes.",
+   evidence: "design_views.py:235-254; j01-t00__Description__Task.png, j01-t99__Audience-Report__Ranking.png"}
+- {rank: 6, owner: b03, where: "every tab › Runs panel with more than 4 runs",
+   wrong: "'+N more' shows but every row stays visible: j01 Design display lists 18 verify rows above '+14 more'.",
+   should: "Four rows, then '+N more'.",
+   evidence: "workbench/runs_panel.py:438 (.run-row display:grid beats hidden) vs 574-580; full/j01__Audience-Report__Design-display.png"}
+- {rank: 7, owner: s12, where: "Job j05 › every Space",
+   wrong: "j05 is held (face state: held, with its reason) but no view says so: Description shows 'set up 3 of 3', Reason ideas says t00 has not reasoned yet.",
+   should: "A held line with its reason on Description; empty states say 'held'.",
+   evidence: "j05__Description__Goal.png; j05 face ## Hold"}
+- {rank: 8, owner: s11, where: "Block › Description (all four views)",
+   wrong: "What the Block is for never shows: board.md's topic, spine (the input ladder), close (release before Stage 2.5) and reads; the shared rules and leave-outs of design-goal.md show nowhere (only a rules.md link that 404s).",
+   should: "A short Block line (topic · spine · close) above the views, and the signed shared rules readable (a Rules view, or in Goals).",
+   evidence: "grep of every Block page for 'input ladder', 'Leave out', 'released before Stage 2.5' finds none"}
+- {rank: 9, owner: s11, where: "Block › Audience Report › Questions",
+   wrong: "The theme draws its own row (Question │ Task Work │ Report, pills, 'Question n') instead of the shared Logic │ Work │ Report row: no 'from the Idea Studio', no report drawing, no 'report qNN · status'.",
+   should: "Use the frame's question rows (b03's studio-and-report design); the theme only adds the Jobs to Work.",
+   evidence: "design_views.py:463-516 vs workbench/frame.py:742 (question_rows)"}
+- {rank: 10, owner: s12, where: "Job › Delivery › designs.md, designs.json",
+   wrong: "Only 'Nothing released yet' although j01–j04 each have 10 kept designs ranked with draft predictions waiting for a person.",
+   should: "The kept N word for word with predictions, marked 'waiting for freeze and release'.",
+   evidence: "j01__Delivery__designs.md.png; design_views.py _job_delivery"}
+- {rank: 11, owner: s13, where: "t99 › Work Details › Kept · Dropped",
+   wrong: "Each row is an empty fold (no name, rank, message or link), every row repeats 'kept · kept', and Dropped nests folds inside a fold.",
+   should: "Flush rows tNN · dNN · name · rank · state, each opening its Task; dropped in one flat block at the end.",
+   evidence: "j01-t99__Work-Details__Kept--Dropped.png; design_views.py:1053-1060"}
+- {rank: 12, owner: s13, where: "t99 › Audience Report › Ranking",
+   wrong: "d13 failed review and is silently missing; the footer 'N + 5 = 10 of 14' is a wrong template; designs are bare ids without name or link.",
+   should: "List d13 as 'failed review, not ranked', say 'kept 10 of 14 ranked (15 made)', show 'd08 name ↗' opening its Task.",
+   evidence: "j03-t99__Audience-Report__Ranking.png; run-verify-d13-v1/run.yaml; design_views.py:836-843"}
+- {rank: 13, owner: s12, where: "Job › Audience Report › Review whole · Design display (dropped fold)",
+   wrong: "Same hard-coded 'N + 5 = 10 of 14' footer (the keep is not by rank in j03), and the dropped fold says 'Dropped by t99' for d13, which failed its review.",
+   should: "The kept count from ranking.csv and each dropped design's real reason.",
+   evidence: "j03__Audience-Report__Review-whole.html; full/j03__Audience-Report__Design-display.png"}
+- {rank: 14, owner: s11, where: "Block › Audience Report › Predicted vs observed",
+   wrong: "The empty text reads 'observed/eNN_/ is filled by run-add-observed-.': <exp> and <eNN> are written unescaped and the browser eats them.",
+   should: "Escape them: 'observed/eNN_<exp>/ is filled by run-add-observed-<eNN>'.",
+   evidence: "design_views.py:554; B__Audience-Report__Predicted-vs-observed.png"}
+- {rank: 15, owner: s13, where: "design Task › Audience Report › Tests · Description › Evaluation",
+   wrong: "Only 'T0 ✓ · T1 ✓' shows; review.md's rule-by-rule verdicts and evidence are unseen; Evaluation repeats Tests.",
+   should: "Tests lists each rule, verdict and evidence from review.md with a ↗; Evaluation merged into Tests.",
+   evidence: "j01-t01__Audience-Report__Tests.png; design_views.py:1081-1092"}
+- {rank: 16, owner: s13, where: "t99 › Audience Report › Coverage",
+   wrong: "Three thin rows and a filler line; coverage.md (what was read, the checks, the control, why d13 is out) is not shown.",
+   should: "Render coverage.md and check what the design asks: covers the goal, no two alike, every input used.",
+   evidence: "j01-t99__Audience-Report__Coverage.png; design_views.py:1045-1050"}
+- {rank: 17, owner: s13, where: "every Task view",
+   wrong: "No view opens a Run's result (design.md, review.md, topics.md, coverage.md, ranking.csv, elements.yaml); .yaml and .csv Disk rows are plain text.",
+   should: "Each result a view reads gets a pop-out link.",
+   evidence: "link scan of every Task page: frame links only"}
+- {rank: 18, owner: s13, where: "dropped design Task › Delivery · Performance",
+   wrong: "Says it will be released and its prediction frozen, and offers run-freeze-prediction, for a design t99 dropped.",
+   should: "'Dropped by t99 (rank 11), never released', no freeze Run.",
+   evidence: "j01-t01__Delivery__default.png; design_views.py:990, 1123"}
+- {rank: 19, owner: s13, where: "design Task › Audience Report › Performance",
+   wrong: "Tokens hard-coded '— (usage: not in the Run receipt yet)' though run-verify-d01-v1/run.yaml has usage; 69 min is one batch session's wall time; length is missing.",
+   should: "Read usage from the receipt, label shared wall time, show the message length.",
+   evidence: "j01-t01__Audience-Report__Performance.png; design_views.py:1109"}
+- {rank: 20, owner: s12, where: "Job › Audience Report › Performance",
+   wrong: "Every design shows 69–71 min (a batched verify Run's wall span) and '—' tokens on every row.",
+   should: "Label wall time or use work time; hide tokens until usage exists.",
+   evidence: "full/j01__Audience-Report__Performance.png"}
+- {rank: 21, owner: s11, where: "Block › Audience Report › Cost",
+   wrong: "j05, with no designs, shows '15 min a design'; every Job repeats '0k (usage: not in the Run receipt yet)'.",
+   should: "No per-design time without designs; one note about tokens, not a row per Job.",
+   evidence: "design_views.py:178 (n = max(len(live), 1)); B__Audience-Report__Cost.png"}
+- {rank: 22, owner: s11, where: "Block › every list (Goals, Methods, Inputs, Cost, Method scorecard, Work Details, Runs)",
+   wrong: "Every list is rounded folding cards with gaps inside the bordered Space panel: a box in a box, not the flush rows asked for on 261008.",
+   should: "Flush rows split by thin lines (the shared .dikw / .q-table look), no card around a one-line fact.",
+   evidence: "design_views.py:97-101 (_fold); B__Description__Methods.png"}
+- {rank: 23, owner: s12, fixed: "261008 Goal reads goal.md and rules.md, flush rows", where: "Job › Description › Goal",
+   wrong: "Five rounded cards (Aim, Venue, Rules, Resources, Leave out) mostly one line each; Aim repeats its header; Venue and Rules say nothing concrete; the setup strip repeats on Goal, Method and Inputs.",
+   should: "Flush rows with the rules listed; the setup strip once (or only in Runs › Setup).",
+   evidence: "j01__Description__Goal.png; design_views.py:726-746"}
+- {rank: 24, owner: s13, where: "design Task › Description › Design",
+   wrong: "Four boxes deep (bubble in phone in card in panel); 'dropped' said three times in one state line.",
+   should: "One flush three-column row (Design │ Process │ Review), the state once.",
+   evidence: "j01-t01__Description__Design.png; design_views.py:1069-1078"}
+- {rank: 25, owner: b03, where: "every tab › Runs panel rows",
+   wrong: "Every run row repeats 'a run of · run-add-job-<jNN>' under its name: a filler line on every row.",
+   should: "Drop it in the compact list; the type is already the selected button.",
+   evidence: "workbench/runs_panel.py:221, 568; B__Description__Map.png"}
+- {rank: 26, owner: s11, where: "Block › Runs (every view)",
+   wrong: "The body lists the Runs and the Runs panel lists them again; the panel lacks run-setup-rules, run-add-inputs, run-add-observed, run-score and run-report, and does not follow the view (Set up shows add-job).",
+   should: "List each Run once; the panel's types follow the open view.",
+   evidence: "B__Runs__Set-up.png; design_views.py:325-331"}
+- {rank: 27, owner: s12, where: "Job › Audience Report › Reason ideas",
+   wrong: "A topic's chain is one run-on paragraph of '→' and 'so' with sources inline; j02's first topic ends on a dangling '→' and reads '→ 0 ideas'.",
+   should: "One flush row per step (from · says · so); a framing topic not counted as giving 0 ideas.",
+   evidence: "j02__Audience-Report__Reason-ideas.png"}
+- {rank: 28, owner: s13, where: "t00 › Audience Report › Topics · Ideas",
+   wrong: "Topics repeats Chains as run-on paragraphs and ignores topics.md; Ideas leaves out each idea's short name.",
+   should: "Topics renders topics.md (or one line per topic); Ideas shows 'I01 office-first'.",
+   evidence: "j01-t00__Audience-Report__Topics.png, …Ideas.png; design_views.py:1021-1028"}
+- {rank: 29, owner: s12, where: "Job › Work Details (all three views)",
+   wrong: "Reason ideas and Review whole are one folded card of plain file names; Conduct & review shows ids only, says 'dropped' twice and keeps dropped designs in number order.",
+   should: "One flush row per Task (t00, t01–t15, t99) with its short name, opening its Task; dropped folded last.",
+   evidence: "full/j01__Work-Details__Conduct-and-review.png; design_views.py:873-905"}
+- {rank: 30, owner: s13, where: "design Task › Runs (all, hard, soft)",
+   wrong: "Runs listed twice (body and panel); the read-only rows (t99's rank, the Job's open-designs) are missing; the panel says run-verify-d01 for run-verify-d01-v1; states mix passed and closed.",
+   should: "Each Run once, real names, read-only rows added.",
+   evidence: "j01-t01__Runs__All.png, j01-t00__Runs__All.png"}
+- {rank: 31, owner: s12, where: "Job › Runs (every view)",
+   wrong: "The body repeats the panel's list; Setup is alphabetical (open-designs first); the verify type reads v1 though v2 Runs sit under it.",
+   should: "Goal · method · inputs · open-designs order; run-verify-dNN-v<k>; the body adds time and result or goes.",
+   evidence: "j01__Runs__Setup.png"}
+- {rank: 32, owner: s12, where: "every tab › Idea Studio › Runs panel",
+   wrong: "The button is a fixed run-draw-s01 (Block: run-draw-<sNN>) and names the skill excalidraw-report; studio topics are haipipe-studio's.",
+   should: "run-draw-<sNN> and haipipe-studio at every level.",
+   evidence: "j01__Idea-Studio__default.html data-skills; haipipe-design-workflow run cards"}
+- {rank: 33, owner: b03, where: "top row › Job ▾ menu",
+   wrong: "Since the rename it shows the long folder name cut off ('j03_g01-review-new-rx_m03-detaile…').",
+   should: "'j03 · M03 detailed evidence'.",
+   evidence: "the select in j03__Description__Goal.html"}
+- {rank: 34, owner: s13, where: "top row › Task ▾ menu",
+   wrong: "Dropped designs sit inline by number, not folded at the end; the group reads '③ Conduct process', not '③ ④ Conduct & review'.",
+   should: "Dropped last; the step label as the Job's views name it.",
+   evidence: "the select in j03-t04__Description__Design.html"}
+- {rank: 35, owner: b03, where: "every tab › Disk box names",
+   wrong: "Repeated bare names (goal.md ×5, t00_reason-ideas/ ×4, run.yaml ×4) do not say which Job or Task each is; the path shows only on hover.",
+   should: "Show the parent (j01/…/goal.md, t02/…/run.yaml) or group by it.",
+   evidence: "B__Description__Goals.png, B__Work-Details__All.png"}
+- {rank: 36, owner: s12, where: "Job › Audience Report › Design display (closed rows)",
+   wrong: "Each row repeats its state ('kept · rank #3 · kept'); the message preview is cut mid-word, even inside {LINK}.",
+   should: "One state word; the SMS in full (≤140 chars) or cut at a word.",
+   evidence: "j04__Audience-Report__Design-display.png"}
+- {rank: 37, owner: s12, where: "Job › Audience Report › Review whole (table)",
+   wrong: "'(own knowledge)' ends almost every reason, the range wraps, and the design id is not a link.",
+   should: "Source in its own column, range on one line, id opens its Task.",
+   evidence: "full/j01__Audience-Report__Review-whole.png"}
+- {rank: 38, owner: s12, where: "Job › header",
+   wrong: "The tab shows only the folder name; the face's title ('j01 · G01 by M01 m2 · inputs i1') and the Job's state appear nowhere.",
+   should: "The face title and state in the header line.",
+   evidence: "j01__Description__Goal.png; the j01 face"}
+- {rank: 39, owner: s12, where: "Job › Audience Report and Task › Audience Report",
+   wrong: "Neither level has a Questions view, though every level answers its own Questions in its own reports/.",
+   should: "Keep the shared Questions view beside the method views (empty is fine).",
+   evidence: "job_spaces ar = Reason ideas … Performance (design_views.py:694); s04 studio-and-report"}
+- {rank: 40, owner: s13, where: "t00 · t99 › Delivery",
+   wrong: "One muted sentence each; nothing of what is handed on.",
+   should: "t00: the ideas handed to t01–t15; t99: the 10 kept going to the Job's Delivery.",
+   evidence: "j01-t00__Delivery__default.png; design_views.py:963"}
+- {rank: 41, owner: s13, where: "design Task › Work Details › Elements",
+   wrong: "'step ③' is the same on every row and 'changed' is always '—'.",
+   should: "Drop both, or show changed only after a revise.",
+   evidence: "j01-t01__Work-Details__Elements.png; design_views.py:1116-1118"}
+- {rank: 42, owner: s13, where: "t99 Ranking · design Performance (across Jobs)",
+   wrong: "Predictions use different unlabelled units: j01 '+4% [-3%; +11%]', j03 '+0.5 … pts'.",
+   should: "State the basis once (relative % or points against the control).",
+   evidence: "j01-t99__…Ranking.png vs j03-t99__…Ranking.png"}
+- {rank: 43, owner: b03, where: "design Task › Description · Delivery › Runs panel",
+   wrong: "'No runs yet.' on a Task that has Runs (this Space just has no run type).",
+   should: "'Made in Runs' or no list.",
+   evidence: "j01-t01__Description__Design.png"}
+- {rank: 44, owner: s11, where: "Block › Description › Goals",
+   wrong: "The card title repeats the aim that its first row says again; 'once, here; a Job only pins it' is a filler line.",
+   should: "Title = id + aim once; no explainer on the row.",
+   evidence: "B__Description__Goals.png; design_views.py:394-408"}
+- {rank: 45, owner: s11, where: "Block › Delivery",
+   wrong: "'Nothing released yet' while 40 kept designs wait for release; the person cannot see what is ready.",
+   should: "A line per Job: kept N, waiting for freeze and release.",
+   evidence: "B__Delivery__default.png; design_views.py:632-643"}
+works_well:
+- "The goal × method Map: one row, a column per registered method, each Job with its version, inputs and state; one glance shows the input ladder."
+- "The design card read three ways side by side: the SMS on a phone with {LINK} in place, each element with its source, the review and expected range."
+- "Review whole as one plain table (rank · design · predicted · why · kept) with the reviewer's real reasoning."
+- "The Inputs fence table: each part of step ①, its file and sha, and 'nothing' where a method sees nothing; the M01–M04 ladder is easy to compare."
+- "The method view as its five numbered steps, pinned with the method's sha."
+- "One casing for the Job's views (Reason ideas · Conduct & review · Review whole) across Audience Report, Work Details and Runs."
+- "The Task ▾ menu grouped by step (② · ③ · ⑤), dropped designs marked; each Task tab says 'Task · d04 · name'."
+- "t00 › Work Details › Chains as a flush table (topic · step · says · so · from)."
+- "The same six Spaces at every level with the Disk · Runs panel beside them; the Runs panel names the skill even on an empty type."
+- "Every frame-to-frame link (Spaces, views, Job and Task menus, design links) returned 200 and stayed in the frame."

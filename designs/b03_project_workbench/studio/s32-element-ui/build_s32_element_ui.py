@@ -127,9 +127,20 @@ ELEMENTS = [
      {"frame-design-job": ".space-main", "frame-design": ".space-main", "frame-authenui": ".space-main",
       "design-item": ".space-main,main", "design-ui-item": ".space-main,main"}),
 ]
+# what the drawing shows, in order (JL 261008: "I think we can merge the frame of 1, 2 and 9 together in one
+# frame"): the page header, the top tabs and the view row are one element, the top of the page; each keeps
+# its own shots (ELEMENTS), drawn as one card per page, top to bottom
+DRAWN = [("top", "1 · Top of the page: header · level tabs · Spaces · view row",
+          "the title line, the level row, the Spaces row and the view row, together: what sits above the content",
+          ("header", "tabs", "views"))]
+DRAWN += [(k, f"{n} · " + t.split(" · ", 1)[1], w, (k,))
+          for n, (k, t, w, _) in enumerate([e for e in ELEMENTS if e[0] not in ("header", "tabs", "views")], 2)]
+
+
 # what is picked, per element (JL's marks on the gallery): the look only, never the content; each
 # workbench keeps its own tabs and words and takes the picked style
-PICKED = {"tabs": "D · E (Insight, Design): 16px, 6px corners, grey border, the open one washed blue; "
+PICKED = {"top": "tabs D · E, view row E (261007); four lines, a readable title, short dropdown names (proposed 261008)",
+          "tabs": "D · E (Insight, Design): 16px, 6px corners, grey border, the open one washed blue; "
                   "the frame took it 261007",
           "tags": "none: no tags in any theme; 261008",
           "space": "Idea Studio: B kept as it is; Insight board: E kept for the insight theme only; 261007",
@@ -183,6 +194,19 @@ PROPOSALS = {
                 "the first open, the rest one line each; the dropped ones folded, kept for the record",
                 "an older board (Design-NN folders, designs/_old/) shows its old item view in place until it moves "
                 "onto the ladder"]),
+    "top": ("page:" + "TOP_MOCK", "#top",
+            ["still four lines, in this order (JL 261008): the level row on top, then the title, then the Spaces "
+             "row and the view row; the title heads what is open below it",
+             "the level row is the page index, as a site's navigation: a thin rule under it; the title is the "
+             "page's own title, larger (26px), with a wide gap above and below it (JL 261008: \"make the gap larger\")",
+             "a faint line between the Spaces row and the view row, as light as the one under the index, only "
+             "when a view row is there (JL 261008: \"not that salient\")",
+             "the title: the theme's icon and name, the level, then the folder's own title (its face's heading), not "
+             "its folder name; the folder name on hover",
+             "the level row: a Job or Task in its dropdown by a short name, its tag and its parts' ids (jNN · gNN · "
+             "mNN) or its tag and first words (j11 · fit the model); the full folder name in the open list",
+             "the Spaces row and the view row as picked (D · E, E), unchanged",
+             "the browser tab keeps the full name, so a bookmark or a tab still says which folder"]),
     "header": (FRAME_URL + "&space=Audience+Report", "header",
                ["one line: the theme's icon · its name · the folder; the path on hover",
                 "no band, no dataset banner, no links row above the tabs"]),
@@ -199,7 +223,8 @@ EXTRA_PROPOSALS = {
 }
 # a short green note where a change was made (JL 261007: "my comments with the green short words in where
 # the changes made"), drawn over each proposed picture
-CHANGED = {"tabs": "changed: the D · E look (s32-D01)", "views": "changed: the E look, no pills (s32-D02)",
+CHANGED = {"top": "proposed: the level row as the page index, the title as the page's title, wide gaps; short dropdown names (s32-D13)",
+           "tabs": "changed: the D · E look (s32-D01)", "views": "changed: the E look, no pills (s32-D02)",
            "report": "changed: the Question cell as Insight's (s32-D05)",
            "space": "kept: the frame's body; Idea Studio as is (s32-D06)",
            "runs": "changed: Disk in Runs, one fold · rows · Run names",
@@ -214,6 +239,21 @@ MOCK_CSS = """body{margin:0;padding:16px;font:16px system-ui,sans-serif;backgrou
 .ok{color:#24733d;border-color:#24733d;background:#e5f1e7}.warn{color:#996b00;border-color:#996b00;background:#f8ebe1}
 .mut{color:#6f6f6b;border-color:#ced4da;background:#fff}.bad{color:#c92a2a;border-color:#c92a2a;background:#f5e6e6}
 .acc{color:#1864ab;border-color:#1864ab;background:#e7f5ff}"""
+# the proposed top of the page, in the frame's colours (tabs D · E, view row E): placeholders only
+TOP_MOCK = """<style>body{margin:0;padding:16px;background:#fff;font:16px system-ui,sans-serif;color:#1c1c1c}
+#top{display:inline-block;padding:8px}.r{display:flex;gap:8px;align-items:center;margin:0 0 10px}
+.nav{padding-bottom:12px;border-bottom:1px solid #e3e3e6;margin:0}
+h1{font-size:26px;margin:22px 0 18px}.subs{border-top:1px solid #e3e3e6;padding-top:10px}h1 .lv{color:#6f6f6b;font-weight:400}
+.t{display:inline-block;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;background:#fff}
+.t.on{border-color:#1864ab;color:#1864ab;background:#e7f5ff}.bar{width:1px;height:26px;background:#6f6f6b;margin:0 4px}
+.v{padding:5px 12px}</style>
+<div id=top><div class="r nav"><span class=t>Guide</span><span class=t>Design Board</span>
+<span class="t on" title="jNN_gNN-&lt;goal&gt;_mNN-&lt;method&gt;">jNN · gNN · mNN ▾</span><span class=t>Design Task ▾</span></div>
+<h1 title="jNN_gNN-&lt;goal&gt;_mNN-&lt;method&gt;">🎨 Design · <span class=lv>Job jNN ·</span> &lt;goal&gt;, by &lt;method&gt;</h1>
+<div class=r><span class=t>Description</span><span class=bar></span><span class="t on">Idea Studio</span>
+<span class=t>Audience Report</span><span class=bar></span><span class=t>Work Details</span><span class=bar></span>
+<span class=t>Runs</span><span class=t>Delivery</span></div>
+<div class="r subs"><span class="t v on">All</span><span class="t v">&lt;view&gt;</span><span class="t v">&lt;view&gt;</span></div></div>"""
 MAX_H = 700                     # a screenshot is cut at this height (the element's first screen)
 
 PICK_JS = """(sel) => {
@@ -347,7 +387,9 @@ def shoot(base_url: str) -> None:
                     facts[f"proposed__{key}"] = {"page": "proposed", "url": url, "selector": sel,
                                                  "cut": box["h"] > MAX_H, **box["style"]}
                 continue
-            if url.startswith("mock:"):
+            if url.startswith("page:"):                   # a page drawn here: the proposal itself
+                page.set_content(globals()[url[5:]])
+            elif url.startswith("mock:"):
                 page.set_content(f"<style>{MOCK_CSS}</style><div id=m>{url[5:]}</div>")
             else:
                 page.goto(base_url + url)
@@ -431,10 +473,11 @@ def old_reason(key: str) -> str:
     return ""
 
 
-def frame_element(ekey, title, what, x0, y0, facts) -> dict:
+def frame_element(ekey, title, what, x0, y0, facts, parts=None) -> dict:
+    parts = parts or (ekey,)
     fr = L.open_frame(title)
     text(x0, y0, title, 34)
-    versions = [(k, label) for k, label, _ in PAGES if (SHOTS / f"{ekey}__{k}.png").exists()]
+    versions = [(k, label) for k, label, _ in PAGES if any((SHOTS / f"{p}__{k}.png").exists() for p in parts)]
     olds = sum(bool(old_reason(k)) for k, _ in versions)
     text(x0, y0 + 50, f"{what} · {len(versions)} versions today, {olds} of them on old pages (flagged OLD: they retire; "
                       "a look from one may still be picked); mark the one to keep (or draw your own beside them)", 18, GRAY)
@@ -442,14 +485,17 @@ def frame_element(ekey, title, what, x0, y0, facts) -> dict:
     for i, (k, label) in enumerate(versions):
         if i and i % 3 == 0:
             x, y, row_h = x0, y + row_h + 80, 0
-        f = facts.get(f"{ekey}__{k}", {})
         why = old_reason(k)
         if why:                                  # an old page: flagged, greyed, a red dashed box around it
             text(x, y - 26, "OLD · " + why, 14, RED)
         text(x, y, f"{chr(65 + i)} · {label}", 20, GRAY if why else INK)
-        h = picture(SHOTS / f"{ekey}__{k}.png", x, y + 40, CARD_W)
+        h, wide, keys = 0, 0, [p for p in parts if (SHOTS / f"{p}__{k}.png").exists()]
+        for n, part in enumerate(keys):                 # a merged element: its parts stacked
+            h += picture(SHOTS / f"{part}__{k}.png", x, y + 40 + h, CARD_W) + (12 if n < len(keys) - 1 else 0)
+            wide = max(wide, LAST_W[0])
+        f = facts.get(f"{keys[0]}__{k}", {})
         if why:
-            base("rectangle", x - 8, y + 32, LAST_W[0] + 16, h + 16, RED, 1.5, dashed=True, rough=0)
+            base("rectangle", x - 8, y + 32, wide + 16, h + 16, RED, 1.5, dashed=True, rough=0)
         text(x, y + 52 + h, style_line(f) + ("\n(cut at its first screen)" if f.get("cut") else ""), 14, GRAY, L.MONO)
         row_h = max(row_h, 52 + h + 60)
         x += CARD_W + 80
@@ -564,9 +610,8 @@ def frame_pick(x0, y0) -> dict:
     text(x0, y0, "Pick: one look per element", 34)
     text(x0, y0 + 50, "write the letter you keep beside each (or a new one); the base then draws it for every theme",
          18, GRAY)
-    for i, (_, title, what, _) in enumerate(ELEMENTS):
+    for i, (key, title, what, _) in enumerate(DRAWN):
         text(x0, y0 + 120 + i * 44, f"{title}  —  {what}", 20)
-        key = ELEMENTS[i][0]
         if key in PICKED:
             text(x0 + 900, y0 + 120 + i * 44, "kept: " + PICKED[key], 20, "#2f9e44")   # a change: green
         else:
@@ -583,8 +628,8 @@ def draw(out: Path) -> None:
     width = 3 * CARD_W + 2 * 80 + 160
     y = 0
     frames = []
-    for ekey, title, what, _ in ELEMENTS:
-        fr = frame_element(ekey, title, what, 0, y, facts)
+    for ekey, title, what, parts in DRAWN:
+        fr = frame_element(ekey, title, what, 0, y, facts, parts)
         frames.append(fr)
         pr = frame_proposed(ekey, title, fr["x"] + fr["width"] + 200, y, facts) if ekey in PROPOSALS else fr
         y = max(fr["y"] + fr["height"], pr["y"] + pr["height"]) + 200

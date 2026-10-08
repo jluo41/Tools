@@ -68,10 +68,10 @@ class OptionTest(unittest.TestCase):
             row = frame._level_row(theme, root, task, "Task", "Description")
             self.assertIn('<optgroup label="steps">', row)
             self.assertIn(">Task · t01</option>", row)
-            self.assertIn(">t02_other</option>", row)                  # None: the folder's own name
+            self.assertIn(">t02 · other</option>", row)                # None: the folder's short name
             plain = frame._level_row(frame.VANILLA, root, task, "Task", "Description")
             self.assertNotIn("optgroup", plain)
-            self.assertIn(">t01_task</option>", plain)
+            self.assertIn('title="t01_task" selected>t01 · task</option>', plain)   # full name on hover
 
 
 class FillTagTest(unittest.TestCase):
@@ -215,7 +215,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual(runs("Table", "Audience Report"), [])
             self.assertEqual(runs("Reading", "Audience Report"), [])
             page = frame.render(theme, root, section, "Audience Report", "Table")
-            self.assertIn("read only: its content is changed by the Runs in Work Details", page)
+            self.assertNotIn("read only: its content is changed", page)   # no note in the Runs panel (JL 261008)
             self.assertEqual(runs("Questions", "Audience Report"), ["run-ask-<qNN>", "run-report-<qNN>"])   # named by its Run
             self.assertEqual(runs("Draft-Scratch", "Work Details"),
                              ["run-scratch-<target>", "run-structure-<slug>", "run-<value|display|citation>-<slug>"])
@@ -347,7 +347,10 @@ class BandTest(unittest.TestCase):
             page = frame.render(frame.themes()["work"], root, root / "Project/tasks/b01_topic")
             self.assertNotIn("class=band", page)
             self.assertNotIn("the old page", page)
-            self.assertIn('<h1 title="Block · Project/tasks/b01_topic · Work theme">', page)
+            self.assertIn('<h1 title="Block · Project/tasks/b01_topic · Work theme · b01_topic" data-guide="📋 Work · Guide">', page)
+            # the level row is the page index, the page's title under it (b03 s32-D13, JL 261008)
+            self.assertLess(page.index('<nav class="row levels">'), page.index("<header class=page-title>"))
+            self.assertIn("<span class=lv>Block b01 ·</span> Topic</h1>", page)   # its tag said once
 
 
 class StyleTest(unittest.TestCase):

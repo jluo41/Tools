@@ -1,3 +1,11 @@
+## 1.0.0 · 2026-10-08 · The insight theme on the shared frame (b11 s21 phase 2)
+
+- `SKILL.md` rewritten: the Board, a Job and a Task on the frame's six Spaces (s11 · s12 · s13); the Runs panel is
+  the insight run cards (`haipipe-insight-workflow/ref/run-cards.md`).
+- `ref/workbench-table.md` is now generated from the cards by `scripts/cards_table.py` (59 rows; table-workbench
+  `--check --cards` passes). The retired page's table moved to `ref/legacy/workbench-table-older.md`, its skill text
+  to `ref/old-page.md`; `ref/insight-board.md` is marked retired.
+
 ## 0.17.0 · 2026-10-07 · Renamed from haipipe-workbench-insight (JL 261007)
 
 - The skill is `workbench-insight` (was `haipipe-workbench-insight`), its folder `insight/workbench-insight/`, its trigger `/workbench-insight`; every live reference in Tools follows. Older entries below keep the old name.

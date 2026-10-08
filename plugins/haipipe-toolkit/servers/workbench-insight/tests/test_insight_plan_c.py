@@ -22,19 +22,23 @@ from live import frame  # noqa: E402
 from live.insight_theme import THEME, spaces  # noqa: E402
 import plan_c_fixture as F  # noqa: E402
 
-# (Space, subspaces, run types), as b11's s11 · s12 · s13 SCREENS draw them; a "?" design run is left out
+# (Space, subspaces, run types), as b11's s11 · s12 · s13 SCREENS draw them and the run cards
+# (haipipe-insight-workflow/ref/run-cards.md) name them; a "?" design run is left out
 BOARD = {"Description": (["Map", "Prototype", "Dataset", "Partitions"], ["Add a data version", "Add a Job"]),
          "Idea Studio": ([], ["Draw the question map", "Add a topic"]),
-         "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Update the coverage"]),
+         "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Update the coverage", "Propose questions"]),
          "Work Details": (["All", "p1", "p2"], ["Add a Job", "Close a Job"]),
          "Runs": (["All", "soft", "from below"], ["Add a Job", "Update the coverage", "Check consistency"]),
          "Delivery": (["Handoff"], ["Write the counsel", "Draft the handoff"])}
 JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
        "Idea Studio": ([], ["Add a topic"]),
-       "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Write a report", "Check a report"]),
-       "Work Details": (["All", "hard", "soft"], ["Run a partition", "Check alignment", "Run the Job"]),
+       "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Write the Data report", "Write the Information report",
+                                                               "Write the Knowledge report", "Write the Wisdom report",
+                                                               "Check a report"]),
+       "Work Details": (["All", "hard", "soft"], ["Run the Job", "Run a partition", "Check alignment"]),
        "Runs": (["All", "hard", "soft", "launch", "power", "compare", "propose", "close"],
-                ["Run the Job", "Run a partition", "Compare with j02", "Propose questions", "Close the Job"]),
+                ["Run the Job", "Measure the power", "Run a partition", "Compare with the Job before",
+                 "Propose questions", "Close the Job"]),
        "Delivery": ([], [])}
 TASK = {"Description": (["Question", "Records"], []),
         "Idea Studio": ([], ["Add a topic"]),

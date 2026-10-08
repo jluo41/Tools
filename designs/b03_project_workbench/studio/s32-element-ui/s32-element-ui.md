@@ -130,6 +130,20 @@ s32-D12 · Done (261008, JL: "for your own s32, you should track these theme bas
     started" in red. Each theme drew its list from its own s11 · s12 · s13.
 
 
+s32-D13 · Done (261008, built in the frame and approved: "it is great", JL on the design Job's top: "How do you think we can replace the 🎨 Design ·
+    j04_… and [the level row] … I think we can merge the frame of 1, 2 and 9 together in one frame"; then
+    "no, it will still be four lines"): the page header, the top tabs and the view row are drawn as one
+    element, "1 · Top of the page" (the others renumbered 2-9; their shots unchanged). The page keeps its
+    four lines, in this order (JL's sketch): the level row on top, then the title, then the Spaces row
+    and the view row; the title heads what is open below it. JL: "make the first line like the page
+    index and the second line to be the title of the webpage", with a larger gap: the level row is the
+    navigation, a thin rule under it; the title is larger (26px) with a wide gap above and below. A faint line, as light as the one under the index,
+    separates the Spaces row from the view row when there is one ("not that salient"). The title reads the
+    theme's icon and name, the level and the folder's own title (its face's heading), the folder name on
+    hover; in the level row a Job or Task shows in its dropdown by a short name, its tag and its parts'
+    ids (jNN · gNN · mNN) or its tag and first words, the full folder name in the open list; the browser
+    tab keeps the full name. The Spaces row and the view row stay as picked.
+
 Open
 ----
 

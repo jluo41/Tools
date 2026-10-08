@@ -10,8 +10,13 @@ signs: null
 status: done
 passes:
 - p01-1008
+- p02-1008
+- p03-1008
 writes:
 - reports/q05_skill_per_level/q05_skill_per_level.md
 - reports/q05_skill_per_level/draft/q05_skill_per_level-draft-v0.1.md
+- reports/q05_skill_per_level/draft/q05_skill_per_level-draft-v0.2.md
+- reports/q05_skill_per_level/q05_skill_per_level.excalidraw
+- reports/q05_skill_per_level/q05_skill_per_level.png
 feeds:
 - reports/q05_skill_per_level

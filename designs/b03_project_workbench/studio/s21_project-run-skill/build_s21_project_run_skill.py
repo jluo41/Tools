@@ -63,7 +63,7 @@ SKILLS_TABLE = [
      "excalidraw-report's scratch mode; b03 _build/ canvas.py · render_png.py; workbench-studio's draw lane"),
     ("haipipe-report", "the Question │ Work │ Report workflow of Audience Report at any level: what each cell reads, "
      "how work links to a question (answers: on a Job or Task face, a need id like QK10.E1), the walk open → partial → "
-     "answered → checked, the report Page (Opening · Answer · Evidence · Limits · Next), its ## Figures and drawing; "
+     "answered (no checked state: s21-D04), the report Page (Opening · Answer · Evidence · Limits · Next), its ## Figures and drawing; "
      "a comments batch is a report kind",
      "haipipe-question's report part; frame.question_rows' column rules; the Q │ W │ R row each theme restates "
      "(cowork · discovery · paper · work); excalidraw-report's report mode and ref/build_report_drawing.py"),
@@ -338,7 +338,7 @@ def main():
                                                       "haipipe-run", "haipipe-question")),
                        "✎ 261008 excalidraw-slide " + version("excalidraw-slide").split(" ·")[0]
                        + ": slide drafts moved out of haipipe-studio; haipipe-studio enforces the black · red · green look",
-                       "? each theme keeps its own skills (haipipe-paper, haipipe-insight …) over these, as its <theme>_theme.py does over the frame"])
+                       "✎ 261008 decided (s21-D01): each theme keeps its own skills (haipipe-paper, haipipe-insight …) over these, as its <theme>_theme.py does over the frame"])
     L.close_frame(fr, pad=40)
 
     # 3 · skill × Space

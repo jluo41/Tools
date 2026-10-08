@@ -1,0 +1,19 @@
+run: run-draw-s33
+kind: soft
+type: draw
+scope: Tools/designs/b16_theme_paper
+target: s33
+ticket: run-draw-s33.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1008
+writes:
+- 'new topic s33-ui-issues: face'
+- builder
+- drawing
+- preview; b16 board.md lists it
+feeds:
+- reports/q01_paper_ladder

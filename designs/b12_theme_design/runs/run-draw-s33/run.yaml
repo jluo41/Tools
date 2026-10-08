@@ -1,0 +1,20 @@
+run: run-draw-s33
+kind: soft
+type: draw
+scope: Tools/designs/b12_theme_design
+target: s33
+ticket: run-draw-s33.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1008
+writes:
+- 'studio/s33-ui-issue/ (new: face'
+- issues.yaml
+- builder
+- drawing
+- preview)
+feeds:
+- reports/q02_design_workbench

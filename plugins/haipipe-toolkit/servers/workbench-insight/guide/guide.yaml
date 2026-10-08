@@ -33,12 +33,12 @@ flow:
   - fills
   repeat: Repeat for every partition the question is asked on, then for every question; level by level, Data → Information
     → Knowledge → Wisdom, each level's answers raise the next level's questions.
-description: 'The Insight Workbench reads one dataset and answers questions about it, from Data and Information
-  up to Knowledge and Wisdom. It is one task Block: one Job per level and one Task per question, each holding its
-  question, its one script, one run per dataset and partition, and one checked page. The cuts of the data and the
-  shared settings sit in the Block''s meta/; a new extract is a new dataset in the same Block, its code never copied.
-  The workbench shows which questions are answered on which cuts, the runs behind each answer, and what still needs
-  a check or a signature.'
+description: 'The Insight Workbench reads one dataset, version by version, and answers questions about it from Data
+  and Information up to Knowledge and Wisdom. The questions and their scripts live in a Prototype, released and signed
+  as pN; the insight Board runs one release on one data version per Job, one Task per question and one run per cut.
+  The runs compute the tables; an agent then writes each question''s page, a takeaway per cut, and another agent
+  checks it. The workbench shows what each Job found, the runs behind each answer, and what still needs a check or
+  a signature.'
 skills:
 - skill: haipipe-insight
   role: 'The Insight Block: one task per question, its file, its script and its runs'

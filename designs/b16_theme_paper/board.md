@@ -61,6 +61,10 @@ No Jobs yet. Studio topics:
   s32: every element as the frame draws it at Block, Job and Task (every Space and view) and on the old pages
   (flagged OLD), each with its proposed look (b03's picks) beside it, and the Theme elements list with its gaps
   in red. Shot live and drawn by `build_s32_paper_element_ui.py` (b03's helpers imported).
+- `studio/s33-ui-issues/s33-ui-issues.excalidraw`: the paper workbench's UI issues as served (review 261008):
+  one frame per owner (shared frame · Board tab · version tab · Section tab), each a map of its Spaces and
+  views with the issue ids beside them and a table of where · what is wrong · what it should be · code; then
+  what works (keep) and the open questions. Drawn by `build_s33_ui_issues.py`.
 
 ## Questions
 

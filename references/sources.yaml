@@ -411,3 +411,11 @@ candidates_from_screenshots:
     path: references/anti-ai-writing-skills.md
     paths: [references/stop-slop, references/no-ai-slop, references/humanizer-blader, references/cursor-plugins, references/slopkit, references/humanizer-adam, references/stephenturner-skills, references/elithrar-dotfiles, references/soundshuman, references/anti-ai-slop-writing]
     notes: "Ten-item reference map from the attached anti-AI-writing recommendation image; monorepo entries record the exact nested SKILL.md path."
+
+  - name: presentation-agent
+    path: references/presentation-agent
+    type: git-submodule
+    url: https://github.com/CommerceClarity/presentation-agent
+    license: unknown
+    notes: "No LICENSE file upstream (checked 2026-10-08, commit 1cabdca): read as a reference only; copy no code or text into the skills. A transcript-to-deck agent: two skills (onboarding, deck-progress-update: a five-slide client update from a meeting transcript, extract then outline then slides) and deck-kit (HTML template, brand tokens, puppeteer layout check, PDF export). Compared with excalidraw-slide's slide draft and deck writer."
+

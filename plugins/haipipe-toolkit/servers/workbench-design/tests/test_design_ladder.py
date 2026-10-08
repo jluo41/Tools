@@ -157,7 +157,9 @@ class DesignLadderTest(unittest.TestCase):
         self.assertIn("<code>t00</code> reason ideas", page(self.block, "Work Details"))        # the open Job previews its Tasks
         self.assertIn("j04", page(self.block, "Delivery"))
         self.assertIn("../../inputs/i2/rules.md", unescape(page(self.job, "Description", "Inputs")))
-        self.assertIn("Dropped by t99", page(self.job, "Audience Report", "Design display"))
+        shown = page(self.job, "Audience Report", "Design display")
+        self.assertIn("Dropped, kept for the record · 5", shown)
+        self.assertEqual(shown.count("Text message"), 15)                  # every design a full card, dropped ones too
         self.assertIn("arm B of e01", page(self.job, "Audience Report", "Predicted vs observed"))
         self.assertIn("{LINK}", page(self.design, "Description", "Design"))
         self.assertIn("draft 2", page(self.design, "Audience Report", "Drafts"))

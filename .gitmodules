@@ -235,3 +235,7 @@
 	path = references/writing-dna-skill
 	url = https://github.com/larashero3-dotcom/writing-dna-skill.git
 	update = none
+[submodule "references/presentation-agent"]
+	path = references/presentation-agent
+	url = https://github.com/CommerceClarity/presentation-agent.git
+	update = none

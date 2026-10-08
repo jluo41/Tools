@@ -37,6 +37,26 @@ def _yaml(path):
     return (yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}) if Path(path).is_file() else {}
 
 
+def version_extract(version: dict, root: Path) -> str:
+    """A data version's data file, SPACE-relative: its `extract:`, else found in its `folder:` (the folder of
+    the data, JL 261008): the manifest.json's `output_file`, else the one .parquet on top of the folder."""
+    if version.get("extract"):
+        return str(version["extract"])
+    folder = str(version.get("folder") or "").rstrip("/")
+    if not folder:
+        raise RQ.GateError(f"data version {version.get('version')} names neither folder: nor extract:")
+    here = Path(root) / folder
+    try:
+        named = json.loads((here / "manifest.json").read_text(encoding="utf-8")).get("output_file") or ""
+    except (OSError, ValueError):
+        named = ""
+    found = [p.name for p in sorted(here.glob("*.parquet"))]
+    pick = named if named in found else (found[0] if len(found) == 1 else "")
+    if not pick:
+        raise RQ.GateError(f"{folder}/ holds {len(found)} .parquet files and no manifest.json output_file names one")
+    return f"{folder}/{pick}"
+
+
 def resolve(task, stem):
     """Board Task + rNN_<partition> → everything the run needs, from the names and the faces."""
     task = Path(task).resolve()
@@ -75,7 +95,7 @@ def resolve(task, stem):
         raise RQ.GateError(f"{qid} is not asked on {part['name']}")
     scripts = qfolder / "scripts"
     return dict(task=task, job=job, board=board, release=rel, rdir=rdir, data=data, dataset=f"{bface.get('dataset', '')}{data}",
-                extract=version["extract"], qfolder=qfolder, qfile=qfolder / RQ.QFILE, q=q, qid=qid, scripts=scripts,
+                extract=version_extract(version, RQ.space_root(task)), qfolder=qfolder, qfile=qfolder / RQ.QFILE, q=q, qid=qid, scripts=scripts,
                 script=RQ.entry_script(scripts, qid), partitions=partitions, part=part, run=stem, block=job)
 
 

@@ -56,8 +56,7 @@ designs/Design-<name>/                      Block: one application, one channel
 
 A design Block is a special board (JL 261008: Paper, Insight, Prototype and Design are the special boards; Labeling will be one too), named by its kind: `Design-<name>[-<YYMMDD>]`, e.g. `Design-<app>-<round>-<YYMMDD>`. The folder name is a label; a reader knows the Block by its `board.md` (`board-kind: design-board`). An older `bNN_<app>` Block stays readable.
 
-`jNN_<goal>_<method>` names the goal and the method by their ids, lowercased (`j03_g01_m04`), with an optional
-`-<slug>`. The folder name is only a label; the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses.
+`jNN_<goal>-<goal-slug>_<method>-<method-slug>` names the goal and the method by their ids, lowercased, each followed by its slug so a person can read the folder (JL 261008: "MNN, GNN are not human readable … add the <slug>"): `j03_g01-review-new-rx_m04-actionable-insights`. The goal's slug is its `name:` in `board.md ## Goals`; the method's is its registry folder's (`M04-actionable-insights`). Both slugs are optional for an older folder. The folder name is only a label; the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses.
 
 
 The rules

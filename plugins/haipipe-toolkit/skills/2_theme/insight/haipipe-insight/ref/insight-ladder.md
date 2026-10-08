@@ -12,7 +12,8 @@ insight_views.py draws it). `scripts/insight_ladder.py` makes each folder and ke
 Read this reference when creating, naming, growing or auditing an insight folder. Two older layouts stay readable
 until they are carried over: the Insight Block with one Job per DIKW level ([block-contract.md](block-contract.md))
 and the register board ([board-contract.md](board-contract.md)). The question file and the script keep the contract
-written there (block-contract.md § The question file, § The script); only where they live has changed.
+written there (block-contract.md § The question file, § The script); only where they live has changed. A release, from
+its proposals to its signature, is [release.md](release.md).
 
 
 The two trees
@@ -38,7 +39,7 @@ The two trees
 <Project>/insights/Insight-<name>/            the insight Board: one dataset, its versions, a Job per pair
 ├── board.md                                  board-kind: insight-board · workbench: insight · dataset: <D> ·
 │                                             prototype: tasks/Prototype-… · accumulates: yes | no | ? ·
-│                                             versions: [{version: v<M>, extract, frozen, rows, new}]
+│                                             versions: [{version: v<M>, folder, frozen, new, preview}]
 │                                             ## Questions (```yaml questions:): the Board's own questions
 ├── meta/meta.md · meta/status.md             what the extract holds · the status grid (the checker writes it)
 ├── studio/ · reports/qNN_<topic>/            topics · the Board's questions, answered across Jobs
@@ -118,8 +119,13 @@ The rules
    from, `state: open | taken | declined`, `taken-in: pN`, why). The Board's and a Job's Propose Runs write there
    and nowhere else. Decided (261008): **a release is cut per triaged batch** (`run-triage-proposals-pN` takes a
    batch into the next version), never per single proposal, so one new question does not make a new Job each time.
-6. **A data version is frozen once added.** `run-add-version-vM` appends `{version, extract, frozen, rows, new}`
-   to board.md `versions:`; the extract path is SPACE-relative (or through its variable), never absolute.
+6. **A data version is frozen once added.** `run-add-version-vM` appends `{version, folder, frozen, new}` to
+   board.md `versions:` (261008: a version is its data folder, not one file): the folder holds the data file
+   (named by its manifest.json `output_file`, else the one .parquet on top), and may hold manifest.json,
+   data_dictionary.csv, cohort_summary.txt, figures/ and documents, all shown on Description › Dataset; a name
+   starting with `_` is work beside it, listed, never read. `preview:` names the columns its few sample rows show
+   first. An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
+   through a variable), never absolute.
    `accumulates:` says whether a later version holds the earlier rows. `meta/meta.md` says what the extract holds.
 7. **A Job's Tasks are its release's questions.** `run-add-jNN` writes the face, one Task per question (the same
    name as in the release) and one ticket per cut the question is asked on (`ref/open_job.py`). A question with no
@@ -164,7 +170,7 @@ Prototype  run-triage-proposals-p<N>        soft  take a batch of proposals into
 version    run-ask-<l><nn>                  soft  a new question's Task                      haipipe-insight-question
            run-review-questions-p<N>        soft  Q1–Q7 on the release (another agent)       haipipe-question-review
            run-set-cuts-p<N>                soft  partitions.md · thresholds.yaml (a person) haipipe-insight
-           run-sign-release-p<N>            soft  freeze the release (a person signs)        haipipe-insight-workflow
+           run-sign-release-p<N>            soft  freeze the release (a person signs)        haipipe-insight
 question   run-plan-evidence-<l><nn>        soft  its needs and work specs                   haipipe-insight-evidence-plan
            run-review-plan-<l><nn>          soft  agree the needs (another agent)            haipipe-insight-evidence-plan
            run-write-script-<l><nn>         soft  its one script                             haipipe-insight
@@ -174,18 +180,18 @@ Board      run-add-version-v<M>             soft  a data version, frozen        
            run-propose-cut-<slug>           soft  a cut, into the Prototype's proposals/     haipipe-insight-question
            run-propose-<target>             soft  questions, into proposals/ (coverage gaps) haipipe-insight-question
            run-coverage · run-track-<q>     soft  readings across Jobs                       haipipe-insight-check
-           run-consistency-<jA>-<jB>        soft  two Jobs' answers against each other       haipipe-insight-knowledge
+           run-consistency-<jA>-<jB>        soft  two Jobs' answers, judged by the reviewer  haipipe-insight-knowledge
            run-ask-q<NN> · run-report-q<NN> soft  the Board's own questions                  haipipe-question · -report
            run-check-q<NN>                  soft  a Board report's CHECK (another agent)     haipipe-report
            run-write-counsel                soft  the Wisdom counsel                         haipipe-insight-wisdom
            run-draft-handoff                soft  the Design handoff (a person signs)        haipipe-insight-wisdom
-           run-close-j<NN>                  soft  close a Job (a person signs)               haipipe-insight-workflow
+           run-close-j<NN>                  soft  check, then close a Job (a person signs)   haipipe-insight-check
            run-draw-s<NN>                   soft  a studio topic (every level)               haipipe-studio
-Job        run-launch-j<NN>                 soft  run the Job's tickets                      haipipe-insight-workflow
-           run-power-j<NN>                  soft  n and power per cut, before outcomes       haipipe-insight
+Job        run-launch-j<NN>                 soft  run the Job's tickets                      haipipe-insight
+           run-power-j<NN>                  soft  measure n and power per cut, before outcomes haipipe-insight
            run-compare-j<prev>              soft  reports/vs-<prev>.md                       haipipe-insight-knowledge
            run-propose-j<NN>                soft  new or changed questions → proposals/      haipipe-insight-question
-           run-close-j<NN>                  soft  close and freeze (a person signs)          haipipe-insight-workflow
+           run-close-j<NN>                  soft  check, close and freeze (a person signs)   haipipe-insight-check
 Task       r<NN>_<partition>                hard  the question on one cut (run_job.py)       haipipe-insight
            run-write-t<NN>                  soft  the page                                   haipipe-insight-<level>
            run-check-t<NN>                  soft  the page's CHECK (another agent)           haipipe-report
@@ -193,7 +199,9 @@ Task       r<NN>_<partition>                hard  the question on one cut (run_j
            run-check-alignment-t<NN>        soft  each answer against its question           haipipe-insight-check
 ```
 
-Run cards by level and Space (button, agent, sign, prompt) are `haipipe-insight-workflow`'s (s21 phase 2).
+Run cards by level and Space (button, agent, sign, prompt) are `haipipe-insight-workflow/ref/run-cards.md`, checked by its
+`scripts/run_cards.py --check` (against this list too). `haipipe-insight-workflow` routes Runs and keeps the gates; it is
+no card's skill: each card names the skill that does the work.
 
 
 The six Spaces at each level

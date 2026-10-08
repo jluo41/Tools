@@ -125,7 +125,7 @@ F1 = len(E)
 text("p1-title", 48, P1, "1 · Spaces, sub-spaces, runs in order, and the skill of each run", 28)
 
 # Part 1 is drawn from the Workbench Table, never kept by hand beside it
-# (skills/2_theme/insight/workbench-insight/ref/workbench-table.md, read with
+# (skills/2_theme/insight/workbench-insight/ref/legacy/workbench-table-older.md, read with
 # table-workbench's own reader, so `render_workbench_table.py --check` and this
 # drawing see the same rows).
 _HERE = Path(__file__).resolve()
@@ -138,7 +138,7 @@ from host_paths import skill_dir  # noqa: E402
 sys.path.insert(0, str(_PLUGIN / "skills" / "1_base" / "project" / "haipipe-studio" / "scripts"))
 import canvas  # noqa: E402  (writes the studio palette and keeps a person's marks)
 
-TABLE = skill_dir("workbench-insight") / "ref" / "workbench-table.md"
+TABLE = skill_dir("workbench-insight") / "ref" / "legacy" / "workbench-table-older.md"   # the retired page (261008)
 SPACE_TEXT = {   # what each Space asks, and what it hands on: prose the table does not hold
     "Prototype": ("What is asked, how, and by which code?",
                   "hands on: questions and scripts → this board's runs (JL 261003: its own Space)"),

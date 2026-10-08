@@ -321,7 +321,7 @@ PAGE_VIEW_DISK = {"folder": (("./", "every lane of the Page folder, and how old 
 def page_view(view: str, md: Path, root: Path) -> str:
     """One Page view, in place: the page its route draws, framed."""
     src = ROUTE + "?" + urlencode({"view": view, "path": _rel(md, root)})
-    return (f'<iframe class=page-view src="{_e(src)}" loading=lazy title="{_e(view)}"></iframe>'
+    return (f'<iframe class=page-view src="{_e(src)}&amp;embed=1" loading=lazy title="{_e(view)}"></iframe>'
             f'<p class=mut>{_link(src, "open on its own ↗")}</p>')
 
 
@@ -859,10 +859,15 @@ def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = ""
 
 # ── the page ────────────────────────────────────────────────────────────────────────────────────
 CSS = """
-:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--acc:#3e5c84;--acc-soft:#e6edf5;--card:#fff;--ok:#24733d;--warn:#996b00;--miss:#c92a2a;--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff}
-@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--line:#2c2e33;--acc:#8aa7cc;--acc-soft:#22304a;--card:#161719;--ok:#8bd49a;--warn:#e4bd62;--miss:#ff8787;--tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749}}
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--acc:#3e5c84;--acc-soft:#e6edf5;--card:#fff;--ok:#24733d;--warn:#996b00;--miss:#c92a2a;--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff;--wash:#f6f6f7}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--line:#2c2e33;--acc:#8aa7cc;--acc-soft:#22304a;--card:#161719;--ok:#8bd49a;--warn:#e4bd62;--miss:#ff8787;--tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749;--wash:#1d1f22}}
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:0 0 6px}a{color:var(--acc)}.mut{color:var(--mut);font-size:13px}
+main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}
+/* the level row is the page index, the title under it the page's own title, wide gaps (b03 s32-D13, JL 261008) */
+nav.levels{margin:0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+/* a faint line between the Spaces row and the view row, as light as the one under the index (JL 261008) */
+nav.subs{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.page-title .lv{color:var(--mut);font-weight:400}h2{font-size:16px;margin:0 0 6px}a{color:var(--acc)}.mut{color:var(--mut);font-size:13px}
 .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:8px 0}
 .tab{display:inline-block;padding:4px 12px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;font-size:14px;background:var(--card)}
 .tab.on{border-color:var(--acc);color:var(--acc);font-weight:600}.tab.opt{border-style:dashed}
@@ -874,6 +879,8 @@ main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:
 .levels .tab,.spaces .tab,.levels select{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid var(--tab-line);
  border-radius:6px;background:var(--bg);color:var(--fg)}
 .levels select{padding:6px 10px}
+.levels .lvl{display:inline-flex}.levels .lvl .tab{border-radius:6px 0 0 6px}
+.levels .lvl select{border-radius:0 6px 6px 0;border-left:0;padding:6px 10px;appearance:none;-webkit-appearance:none;cursor:pointer}
 .levels .tab.on,.spaces .tab.on,.levels select.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
 .levels .tab:hover,.spaces .tab:hover{border-color:var(--tab-on)}
 .spaces .tab.opt{border-style:solid}   /* an optional Space looks like any other (JL 261007) */
@@ -905,6 +912,14 @@ main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:
 .q-row{display:grid;grid-template-columns:1.1fr 1fr 1.3fr;border:1px solid var(--line);border-radius:10px;margin:0 0 8px;background:var(--card)}
 .q-row>div{padding:10px 12px;min-width:0}.q-row>div+div{border-left:1px solid var(--line)}
 .q-head-row{border:0;background:transparent;margin:0;color:var(--mut);font-size:12.5px}.q-head-row>div{padding:2px 12px}.q-head-row>div+div{border-left:0}
+/* level rows as the old Insight board drew them (b11, JL 261008): flush grey rows split by thin lines, a ▶
+   marker, a small link on the right; the q-rows inside flush, like one table. A theme opts in by the classes. */
+.dikw{border-top:1px solid var(--line);margin:4px 0 12px}
+.dikw>.topic{border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:var(--wash)}
+.dikw>.topic>summary{padding:8px 12px}.dikw>.topic>summary::before{content:"▶";color:var(--fg);font-size:11px}
+.dikw>.topic[open]>summary::before{content:"▼"}.dikw .topic-meta{flex:1;font-size:13px}.dikw .lv-link{font-size:12.5px}
+.q-table{padding:8px 0 12px;background:var(--bg)}.q-table>p.mut{margin:0 12px 6px;font-size:13px}
+.q-table>.q-row{border-radius:0;margin:0;border-bottom-width:0}.q-table>.q-row:last-child{border-bottom-width:1px}
 .q-head{margin:0}.kind{color:var(--mut);font-size:12.5px;font-weight:600}
 .q-top{display:flex;align-items:center;gap:6px}
 .q-label{display:inline-block;border:1px solid var(--tab-on);color:var(--tab-on);border-radius:999px;padding:0 8px;font:600 11.5px/1.6 system-ui,sans-serif}
@@ -943,6 +958,38 @@ POP_HTML = ('<dialog id=frame-pop aria-label="Pop-out"><div class=pop-bar><span 
             '<a id=frame-pop-new target=_blank rel=noopener>Open in its own tab ↗</a>'
             '<button type=button class=pop-x id=frame-pop-x aria-label=Close>×</button></div>'
             '<iframe class=pop-frame id=frame-pop-frame title="Pop-out"></iframe></dialog>')
+# A page the frame shows inside a Space (a Page view, an older theme page) keeps only its content: its own
+# top (the title, back link and band in <body>'s <header>, its tab row in <body>'s <nav>, a bare <h1>) is
+# hidden, so the frame's top is the only one (b03 s32-D14, JL 261008: "update all of them"). Same-origin
+# pages only; a page that already drops its top for embed=1 is left as it is.
+EMBED_JS = """
+(function(){
+  var CSS='html.wb-embed body>header,html.wb-embed body>nav,html.wb-embed body>h1,html.wb-embed .wb-band,'
+   +'html.wb-embed .wb-links{display:none!important}html.wb-embed body{padding-top:4px}';
+  function tidy(f){try{var d=f.contentDocument;if(!d||!d.documentElement)return;
+    var h=d.documentElement;if(h.classList.contains('wb-embed-top'))return;h.classList.add('wb-embed','wb-embed-top');
+    var st=d.createElement('style');st.textContent=CSS;(d.head||h).appendChild(st);}catch(e){}}
+  function hook(f){f.addEventListener('load',function(){tidy(f);});tidy(f);}
+  document.querySelectorAll('iframe.page-view,iframe.space-frame').forEach(hook);
+  new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){
+    if(n.nodeType!==1)return;(n.matches('iframe.page-view,iframe.space-frame')?[n]:
+      [].slice.call(n.querySelectorAll('iframe.page-view,iframe.space-frame'))).forEach(hook);});});})
+   .observe(document.body,{childList:true,subtree:true});
+})();
+"""
+
+# The Guide opens under the page's title, not above it, and the title reads "<theme> · Guide" while it is open
+# (JL 261008: "seems we have issues in the guide"): the Guide's mount puts its frame after the level row
+GUIDE_TITLE_JS = """
+document.addEventListener('DOMContentLoaded',function(){
+  var f=document.getElementById('wb-guide-frame'),hd=document.querySelector('header.page-title'),h=hd&&hd.querySelector('h1');
+  if(!f||!hd||!h)return;hd.after(f);var own=h.innerHTML,g=h.getAttribute('data-guide');
+  function sync(){var open=document.body.classList.contains('wb-guide-open');
+    if(open&&h.textContent!==g)h.textContent=g;else if(!open&&h.innerHTML!==own)h.innerHTML=own;}
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class']});sync();
+});
+"""
+
 POP_JS = """
 (function(){var dlg=document.getElementById('frame-pop'),fr=document.getElementById('frame-pop-frame');if(!dlg)return;
 document.addEventListener('click',function(ev){var a=ev.target.closest('a[data-pop]');
@@ -987,11 +1034,46 @@ def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str) -
                 continue
             parts.append(f'<select disabled aria-label="{_e(name)}"><option>{_e(name)} ▾</option></select>')
             continue
+        if here and lv != level:
+            # below this level (a Task under its Job): the open item is a button that goes up to its tab, and a
+            # ▾ beside it switches to a sibling; a dropdown alone ignores a click on the item already picked
+            # (JL 261008: "I want to click the job button at the top, but it is not react")
+            parts.append(f'<span class=lvl><a class=tab href="{_e(href(here, root, theme, space))}" title="{_e(here.name)}">'
+                         f'{_e(_label(theme, here))}</a><select aria-label="Switch {_e(name)}" '
+                         f'onchange="if(this.value)location.href=this.value"><option value="" selected>▾</option>'
+                         f'{_options(theme, root, space, options, None)}</select></span>')
+            continue
         opts = _options(theme, root, space, options, here)
         pick = "" if here else f'<option value="" selected>{_e(name)} ▾</option>'
         parts.append(f'<select class="{on.strip()}" aria-label="{_e(name)}" '
                      f'onchange="if(this.value)location.href=this.value">{pick}{opts}</select>')
     return '<nav class="row levels">' + "".join(parts) + "</nav>"
+
+
+def short_name(name: str, most: int = 26) -> str:
+    """A folder's short name for the Job ▾ / Task ▾ dropdown (b03 s32-D13): its tag and its parts' ids
+    (j04_g01-<goal>_m04-<method> -> j04 · g01 · m04), or its tag and first words (j11_fit_the_model ->
+    j11 · fit the model); a name without a tag stays as it is."""
+    m = _PREFIXED.match(name)
+    if not m:
+        return name
+    tag, rest = name.split("_", 1)
+    ids = re.findall(r"(?:^|_)([a-z]\d{2,})(?=-|_|$)", rest)
+    if ids and re.fullmatch(r"(?:[a-z]\d{2,}(?:-[^_]*)?_?)+", rest):
+        return " · ".join([tag] + ids)
+    words = rest.replace("_", " ").replace("-", " ")
+    return f"{tag} · " + (words if len(words) <= most else words[:most].rsplit(" ", 1)[0] + " …")
+
+
+def _label(theme: Theme, folder: Path) -> str:
+    """A folder's label in the level row: the theme's, else its short name."""
+    got = None
+    if theme.option:
+        try:
+            got = theme.option(folder)
+        except Exception:                        # a theme's label must not break the frame
+            got = None
+    return got[0] if got else short_name(folder.name)
 
 
 def _options(theme: Theme, root: Path, space: str, options: list, here) -> str:
@@ -1005,9 +1087,10 @@ def _options(theme: Theme, root: Path, space: str, options: list, here) -> str:
                 got = theme.option(o)
             except Exception:                    # a theme's label must not break the frame
                 got = None
-        label, group = got if got else (o.name, "")
+        label, group = got if got else (short_name(o.name), "")
         groups.setdefault(group or "", []).append(
-            f'<option value="{_e(href(o, root, theme, space))}"{" selected" if o == here else ""}>{_e(label)}</option>')
+            f'<option value="{_e(href(o, root, theme, space))}" title="{_e(o.name)}"'
+            f'{" selected" if o == here else ""}>{_e(label)}</option>')
     return "".join("".join(opts) if not g else f'<optgroup label="{_e(g)}">{"".join(opts)}</optgroup>'
                    for g, opts in groups.items())
 
@@ -1051,7 +1134,18 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
                          top=disk_markup(view.disk, folder, root),   # Disk folds with the Runs (JL 261007)
                          title="Disk · Runs" if view.disk else "Runs", compact=True)
     md = face(folder)
-    title = f"{theme.icon} {theme.label} · {folder.name}"
+    title = f"{theme.icon} {theme.label} · {folder.name}"     # the browser tab: the full folder name
+    # the page's own title, under the level row (b03 s32-D13, JL 261008: "make the first line like the
+    # page index and the second line to be the title of the webpage"): the theme, the level and its tag,
+    # then the folder's own title (its face's heading)
+    m = _PREFIXED.match(folder.name)
+    tag = folder.name.split("_", 1)[0] if m else ""
+    named = _title(md) if md else folder.name
+    if tag and named != folder.name:            # a heading that starts with its own tag: said once
+        named = re.sub(rf"^{re.escape(tag)}\b\s*[·:\-–]?\s*", "", named, flags=re.I) or named
+    lead = f"{theme.level_name(level)} {tag}".strip()
+    heading = (f'{_e(theme.icon)} {_e(theme.label)} · <span class=lv>{_e(lead)} ·</span> {_e(named)}'
+               if named != folder.name or tag else f'{_e(theme.icon)} {_e(theme.label)} · {_e(named)}')
     # no band line (JL 261007: "why I still have this? please remove that"): the level tabs say where
     # you are; the folder's path stays one hover away, on the title
     where = f"{theme.level_name(level)} · {rel} · " + (f"{theme.label} theme" if theme.name != "vanilla" else "vanilla")
@@ -1061,14 +1155,15 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
                 # the base's shared view styles, which a theme's Spaces may use; never a theme's own
                 # (b03, JL 261007: "base styles only": a theme carries no look of its own)
                 f'<style>{CSS}{PANEL_CSS}{SPLIT_CSS}{SPACE_VIEW_CSS}{WORK_ITEM_CSS}{DISK_CSS}</style></head><body><main>'
-                f'<header><h1 title="{_e(where)}">{_e(title)}</h1></header>'
                 + _level_row(theme, root, folder, level, space)
+                + f'<header class=page-title><h1 title="{_e(where)} · {_e(folder.name)}" '
+                  f'data-guide="{_e(theme.icon)} {_e(theme.label)} · Guide">{heading}</h1></header>'
                 + '<section class="frame-body">'          # the Guide replaces all of this while it is open
                 + _spaces_row(theme, root, folder, space)
                 + _subs_row(theme, root, folder, space, view)
                 + f'<div class=split><div class=space-main>{view.html}</div>'
                   f'{panel}</div></section>'
-                f'{POP_HTML}</main><script>{PANEL_JS}{STUDIO_JS}{POP_JS}</script></body></html>')
+                f'{POP_HTML}</main><script>{PANEL_JS}{STUDIO_JS}{POP_JS}{EMBED_JS}{GUIDE_TITLE_JS}</script></body></html>')
     # as every workbench mounts it: the face's SPACE-relative path, and its file name
     # `level`: the Guide opens this level's section and folds the other two (b03 s31-D07)
     context = {"path": _rel(md, root) if md else rel, "file": md.name if md else "", "level": level}
@@ -1283,9 +1378,8 @@ def page_task_spaces(folder: Path, root: Path, sub: str = "") -> dict:
         url = page_view_url(folder, root, opened)
         body = (f'<iframe class=space-frame title="{_e(opened)}" src="{_e(url)}"></iframe>' if url else
                 '<p class=space-empty>This Task has no face under a Block, so it opens no Page view.</p>')
-        note = ("read only: its content is changed by the Runs in Work Details"
-                if opened in ("Table", "Reading") else "")
-        out[space] = Space(html=body, subspaces=subs, open=opened, run_types=_page_runs(opened), note=note, page=True)
+        # no read-only note in the Runs panel (JL 261008: "we don't need to add these details")
+        out[space] = Space(html=body, subspaces=subs, open=opened, run_types=_page_runs(opened), page=True)
     return out
 
 

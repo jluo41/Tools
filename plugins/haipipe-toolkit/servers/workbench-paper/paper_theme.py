@@ -1377,10 +1377,9 @@ def section_spaces(folder, root, sub):
     elif d.open == "Requirement":
         out["Description"] = replace(d, html=d.html + _sub_rows(md))
     if sub == "Comments":                         # ◆ the paper's own view, after the Page's three
-        a = Space(html=_reviews(folder, root), open="Comments", run_types=(),
-                  note="read only: a Review Item is worked by Revise edits in Work Details › Draft-Revise")
+        a = Space(html=_reviews(folder, root), open="Comments", run_types=())
     out["Audience Report"] = replace(a, subspaces=tuple(page_task_spaces(folder, root, "")["Audience Report"].subspaces)
-                                     + ("Comments",))
+                                     + ("Comments",), note="")   # no read-only note in the Runs panel (JL 261008)
     out["Delivery"] = replace(w, html=_ready(folder, md) + w.html)   # ◆ Ready over the base's cards
     return out
 

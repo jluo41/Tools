@@ -1,5 +1,8 @@
 # Insight Board · one dataset, four Spaces, Logic · Work · Report
 
+> **Retired page (261008).** The insight theme now runs on the shared frame (`../SKILL.md`); this is the Board
+> grain of the page that came before, kept for the s02 drawing and the older boards.
+
 **LOAD `../SKILL.md` (`workbench-insight`) FIRST.** This reference is
 the Board grain of the Insight workbench, served at `/_board/insight-board`
 by `servers/workbench-insight/insightboard.py`. The design is drawn in

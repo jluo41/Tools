@@ -1,5 +1,13 @@
 # haipipe-insight-question · version history
 
+## 2.0.0 · 2026-10-08 · Questions in a Prototype release; proposals and their triage (b11 s21 phase 3)
+
+- `SKILL.md` rewritten for the ladder (the folder contract's nine sections): proposals (`proposals/<slug>.md`: kind ·
+  level · from · state · taken-in), triage into one release per batch, asking into a release (id never reused, `tNN`
+  kept), change and retire, the question review (Q1–Q7), and the Runs it owns.
+- New `scripts/proposals.py` (list · take --into pN · decline --why) and `tests/test_proposals.py`.
+- The register text (MT01-MT04, the Queue, GI1, GI6) is kept word for word in `ref/register-question.md`.
+
 ## 1.10.0 · 2026-10-03 · The review moves to the question world (JL 261003)
 
 - The seven tests and the verdict now live in `question/haipipe-question-review`, written for any board's ask; this skill keeps what Insight adds: Q4 is the level, Q5 is the extract, retired needs and successor ids, carried words. An Insight question is an ask; its topic, if any, is a `haipipe-question` board Question.

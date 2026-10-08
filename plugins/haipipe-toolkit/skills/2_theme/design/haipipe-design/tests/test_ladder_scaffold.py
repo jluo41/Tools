@@ -87,6 +87,15 @@ class DesignLadderTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 D.main(argv)
 
+    def test_a_job_name_carries_readable_slugs(self):
+        """jNN_<goal>-<goal-slug>_<method>-<method-slug> (JL 261008: ids alone are not human readable)."""
+        job = self.block / "j02_g01-a-goal_m04-actionable-insights"
+        D.main(["job", str(job), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2", "--n", "3"])
+        self.assertTrue((job / f"{job.name}.md").is_file())
+        self.assertEqual(D.level_of(job), "Job")
+        with self.assertRaises(SystemExit):                              # the ids must still match the pins
+            D.main(["job", str(self.block / "j03_g02-a-goal_m04-x"), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2"])
+
     def test_a_block_is_named_by_its_kind(self):
         """A design Block is a special board, Design-<name>[-<YYMMDD>] (JL 261008); bNN_<app> stays readable."""
         root = Path(self.tmp.name) / "Project" / "designs"

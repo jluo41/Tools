@@ -1,5 +1,15 @@
 # haipipe-insight · version history
 
+## 3.1.0 · 2026-10-08 · A release, from proposals to a signature (b11 s21 phase 3)
+
+- New `ref/release.md`: the life of a release (triage → open → ask · plan · script → review → cuts → sign),
+  `release.yaml` (questions, kept · changed · new, retired), the cuts (full, cross, power before contrast, the pooling
+  verdict) and signing; one release per triaged batch.
+- `ref/partition.md` marked as the register board's older layout; on the ladder the cuts are `release.md`'s.
+- `scripts/insight_ladder.py`: release folders may say what they are, `jNN_pN_<slug>` (`version --slug`); the Board's
+  Propose Run defaults to `run-propose-coverage`; Run the Job and Sign the release name haipipe-insight, Close names
+  haipipe-insight-check, Check consistency is the reviewer's (the run cards, phase 2).
+
 ## 3.0.0 · 2026-10-08 · The Prototype and the insight Board, two special boards that work together (b11 s21 phase 1)
 
 - New `ref/insight-ladder.md`, the contract: the Prototype `tasks/Prototype-bNN-<Topic>/` (questions + scripts, a Job

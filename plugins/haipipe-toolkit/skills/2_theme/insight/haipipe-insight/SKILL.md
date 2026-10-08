@@ -16,7 +16,7 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
   last_updated: "2026-10-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -26,7 +26,8 @@ metadata:
 Insight asks what a dataset can and cannot say, level by level (D what it holds · I rates and contrasts inside a
 cut · K what survives tests across cuts · W the counsel a person signs for Design), and keeps the questions apart
 from the data they run on. Read [`ref/insight-ladder.md`](ref/insight-ladder.md) before creating, naming, growing
-or auditing any insight folder: it is the contract, and `scripts/insight_ladder.py` keeps its gates.
+or auditing any insight folder: it is the contract, and `scripts/insight_ladder.py` keeps its gates. A release, from
+its proposals to its signature, is [`ref/release.md`](ref/release.md).
 
 ```text
 Prototype   tasks/Prototype-bNN-<Topic>/      the questions + their scripts; a Job per release jNN_pN_<slug>/,

@@ -1,6 +1,18 @@
 # haipipe-insight-workflow · version history
 
 
+## 3.0.0 · 2026-10-08 · The run cards, the gates and what is next, on the insight ladder (b11 s21 phase 2)
+
+- New `ref/run-cards.md`: one card per workbench button (59) for the insight Board (Block · Job · Task), the Prototype
+  (Prototype · Release · Question) and the Guide, each with its Run pattern, skill, agent, sign and prompt; § Gates.
+  The workflow skill is no card's skill: Run the Job and Sign the release name haipipe-insight, Close names
+  haipipe-insight-check; Check consistency is the reviewer's; one Write card per DIKW level.
+- New `scripts/run_cards.py`: the cards' one reader; `--check` (every card whole, its skill and agent real, its
+  pattern naming its own Run, every run type of `insight_ladder.py` carded with the same skill).
+- New `scripts/next_run.py <folder>`: where a Prototype, release, Board, Job or Task stands and the next Run.
+- `SKILL.md` rewritten for the ladder; the register boards' workflow kept word for word in
+  `ref/register-board-workflow.md`.
+
 ## 2.3.0 · 2026-10-01 · Evidence needs in the gates (JL 261001)
 
 - Every answering page, at every level, is written through the `haipipe-page` flow (structure, write, check); the Wisdom-only exemption in `ref/run-workflow.md` is gone (JL reversed the earlier "support tickets plus a report" rule). GI2-GI4 also require `page.py health` without FAIL and a page CHECK by an agent that did not write the page; GI4 requires every refusal to be shown by a probe run.

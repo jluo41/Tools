@@ -1,5 +1,8 @@
 # ref/partition.md · the partition-major InsightBoard layout grammar
 
+> **Older layout (261008).** This is the register board's partition-major grammar. On the insight ladder the cuts
+> belong to a release: read [release.md](release.md) § The cuts (the cuts, cross, power, the pooling verdict).
+
 An InsightBoard reads ONE dataset either as one story or as several told the same way. When subgroup analysis is first-class, the same ladder climbed per subgroup under identical thresholds, the board lays out PARTITION-MAJOR: groups are partitions, levels live inside each group. This file is the single source for that layout's grammar (JL 260823); it is a REFERENCE, not a verb, which is why it lives in `ref/` and not `fn/` (JL 260823). The default layout stays level-major, groups `1-D-data/` through `4-W-wisdom/`, and nothing in this file applies to it.
 
 **Since 261001 (page tickets).** A partition is a cut of the board's one

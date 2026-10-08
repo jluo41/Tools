@@ -826,5 +826,17 @@
   "border": "rgb(28, 28, 28)",
   "fill": "rgba(0, 0, 0, 0)",
   "tag": "header"
+ },
+ "proposed__top": {
+  "page": "proposed",
+  "url": "page:TOP_MOCK",
+  "selector": "#top",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "8px 8px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div"
  }
 }

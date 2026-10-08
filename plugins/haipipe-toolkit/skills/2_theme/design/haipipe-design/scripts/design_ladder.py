@@ -32,7 +32,7 @@ RUN_TYPES = {"Block": "add-goal · setup-rules · add-inputs · add-job · propo
              "t00": "reason (hard)",
              "design": "generate (hard) · verify (hard, another agent) · revise (soft)",
              "t99": "rank (hard, another agent)"}
-JOB = re.compile(r"^j\d+_(g\d+)_(m\d+)(-[a-z0-9-]+)?$")              # j03_g01_m04, an optional -<slug>
+JOB = re.compile(r"^j\d+_(g\d+)(?:-[a-z0-9-]+)?_(m\d+)(-[a-z0-9-]+)?$")   # j03_g01-<goal-slug>_m04-<method-slug>; slugs optional
 METHOD = re.compile(r"^(M\d\d) (m\d+)$")
 REGISTRY = Path(__file__).resolve().parents[2] / "haipipe-design-method" / "methods"
 # where each run type may run, its owning skill, agent and who signs (ref/design-ladder.md § Runs)
@@ -134,7 +134,7 @@ def _gates(block: Path, goal: str, method: str, inputs: str, n) -> int:
 
 def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: list) -> None:
     if not JOB.match(path.name):
-        sys.exit(f"a Job folder is jNN_<goal>_<method>, ids lowercased (j03_g01_m04): {path.name}")
+        sys.exit(f"a Job folder is jNN_<goal>[-<slug>]_<method>[-<slug>], ids lowercased (j03_g01-<goal-slug>_m04-<method-slug>): {path.name}")
     if not re.match(r"^G\d\d$", goal or ""):
         sys.exit(f"--goal is a goal id from the Block's goal list (G01): {goal!r}")
     if not METHOD.match(method or ""):

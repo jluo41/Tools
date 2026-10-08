@@ -20,7 +20,7 @@ from live.workbench_guide import REPOSITORY, VIEWS, guide_html, level_steps, mou
 from test_frame import project  # noqa: E402
 
 LEVELS = ("Block", "Job", "Task")
-SECTION = re.compile(r'<details class="wg-level" data-drawing="level-(\w+)" data-level="\w+"( open)?>')
+SECTION = re.compile(r'<details class="wg-level" data-drawing="level-(\w+)" data-level="\w+"( data-here)?( open)?>')
 CARD = re.compile(r'<div class="wg-card"><p class="wg-card-head"><b>([^<]*)</b><span>[^<]*</span></p>'
                   r'<p class="wg-card-line">sub: (.*?)   reads: .*?   runs: (.*?)</p></div>')
 
@@ -37,7 +37,12 @@ def context(root: Path, folder: Path, level: str) -> dict:
 
 def sections(page: str) -> list:
     """The level sections between one View's lead and its All levels fold: [(level, open)]."""
-    return [(level, bool(opened)) for level, opened in SECTION.findall(page)]
+    return [(level, bool(opened)) for level, _, opened in SECTION.findall(page)]
+
+
+def here(page):
+    """The level marked as the one the Guide was opened from."""
+    return [level for level, mark, _ in SECTION.findall(page) if mark]
 
 
 def space_cards(page: str, level: str) -> dict:
@@ -60,15 +65,16 @@ class CardGuideTest(unittest.TestCase):
                     self.assertIn('data-drawing="level-all"', page)       # the View's earlier body, folded
                     self.assertIn('class="wg-card', page)
 
-    def test_the_level_the_guide_was_opened_from_starts_open(self):
+    def test_every_level_starts_closed_and_the_opened_one_is_marked(self):   # JL 261008: collapsed by default
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
             for level, folder in folders(root).items():
                 with self.subTest(level=level):
                     page = guide_html("work", "description", context(root, folder, level), True, root=root)
-                    self.assertEqual([lv for lv, opened in sections(page) if opened], [level])
+                    self.assertEqual([lv for lv, opened in sections(page) if opened], [])
+                    self.assertEqual(here(page), [level])
             page = guide_html("work", "method", {"path": "", "file": ""}, True, root=root)
-            self.assertEqual([lv for lv, opened in sections(page) if opened], ["Block"])   # no level: Block
+            self.assertEqual([lv for lv, opened in sections(page) if opened], [])   # no level: none open
 
     def test_a_space_cards_sub_and_runs_are_the_frames_own(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -135,14 +141,14 @@ class RouteTest(unittest.TestCase):
                             + job.relative_to(root).as_posix())
             handler.guide_view()
             self.assertEqual(sent["code"], 200, sent["body"][:200])
-            self.assertEqual([lv for lv, opened in sections(sent["body"]) if opened], ["Job"])
+            self.assertEqual(here(sent["body"]), ["Job"])
             self.assertEqual(len(space_cards(sent["body"], "Job")), 6)
             task = folders(root)["Task"]                                 # a Task's face is not a Board Page
             handler.path = ("/_board/guide?family=work&view=method&embed=1&level=Task&path="
                             + (task / "t01_task.md").relative_to(root).as_posix() + "&file=t01_task.md")
             handler.guide_view()
             self.assertEqual(sent["code"], 200, sent["body"][:200])
-            self.assertEqual([lv for lv, opened in sections(sent["body"]) if opened], ["Task"])
+            self.assertEqual(here(sent["body"]), ["Task"])
             handler.path = "/_board/guide?family=work&view=description&embed=1&path=../../etc"
             handler.guide_view()
             self.assertNotEqual(sent["code"], 200)                      # outside the root: still refused

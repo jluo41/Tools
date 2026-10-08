@@ -86,6 +86,125 @@ def runs(folder: Path) -> list:
         if rdir.is_dir() else []
 
 
+# ── a data version's sample rows ────────────────────────────────────────────────────────────────
+# a column that names a person, a place or a record, or holds free text, is never shown (JL 261008: "preview
+# some data examples ... randomly a few lines"); a version's `preview:` list picks the readable ones first
+HIDDEN = re.compile(r"(^|_)(id|ids|encoded|npi|zip\w*|phone|email|address|ssn|mrn|dob)($|_)|_id$|_encoded$|zip|npi",
+                    re.I)
+_SAMPLES: dict = {}                                            # {(path, mtime, n, seed): sample}
+
+
+def _cell(v) -> str:
+    """One value as the page shows it: a date to the day, a whole float without .0, a missing one as —."""
+    import datetime as dt
+    import math
+    if v is None or (isinstance(v, float) and math.isnan(v)):
+        return "—"
+    if isinstance(v, dt.datetime):
+        return v.strftime("%Y-%m-%d")
+    if isinstance(v, float):
+        return f"{v:g}"
+    return str(v)
+
+
+DOC_EXT = (".md", ".txt")
+TABLE_EXT = (".csv", ".tsv")
+IMAGE_EXT = (".png", ".jpg", ".jpeg", ".svg", ".gif")
+
+
+def version_folder(v: dict, root: Path) -> Path | None:
+    """A data version's folder (JL 261008: "I give you the folder of the data, and you can see all the
+    things"): board.md `folder:`, else the folder of its `extract:` file."""
+    if v.get("folder"):
+        return (Path(root) / str(v["folder"])).resolve()
+    if v.get("extract"):
+        return (Path(root) / str(v["extract"])).resolve().parent
+    return None
+
+
+def data_folder(folder: Path, extract: str = "") -> dict:
+    """What a data version's folder holds, by role: {path, data (the extract), manifest, dictionary (rows of
+    data_dictionary.csv), summary (cohort_summary.txt), figures, docs, tables, other}. The extract is the
+    version's `extract:`, else the manifest's `output_file`, else the one data file on top. A folder or file
+    whose name starts with `_` or `.` is someone's work beside the version: listed under other, never read."""
+    import csv
+    import json
+    folder = Path(folder)
+    out = {"path": folder, "data": None, "manifest": {}, "dictionary": [], "summary": "", "figures": [],
+           "docs": [], "tables": [], "other": []}
+    if not folder.is_dir():
+        return out
+    try:
+        out["manifest"] = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        pass
+    if (folder / "data_dictionary.csv").is_file():
+        with (folder / "data_dictionary.csv").open(encoding="utf-8", errors="replace", newline="") as fh:
+            out["dictionary"] = list(csv.DictReader(fh))
+    if (folder / "cohort_summary.txt").is_file():
+        out["summary"] = (folder / "cohort_summary.txt").read_text(encoding="utf-8", errors="replace")
+    named = Path(extract).name if extract else str(out["manifest"].get("output_file") or "")
+    tops = sorted(folder.iterdir(), key=lambda p: p.name.lower())
+    data = [p for p in tops if p.is_file() and p.suffix.lower() in (".parquet", ".feather")]
+    out["data"] = next((p for p in data if p.name == named), data[0] if len(data) == 1 else None)
+    known = {"manifest.json", "data_dictionary.csv", "cohort_summary.txt"}
+    for p in tops:
+        if p.name.startswith((".", "_")):
+            out["other"].append(p)
+        elif p.is_dir() and any(f.suffix.lower() in IMAGE_EXT for f in p.iterdir() if f.is_file()):
+            out["figures"] += sorted(f for f in p.iterdir() if f.suffix.lower() in IMAGE_EXT)
+        elif p.is_dir():
+            files = sorted(f for f in p.rglob("*") if f.is_file() and not f.name.startswith("."))
+            out["docs"] += [f for f in files if f.suffix.lower() in DOC_EXT]
+            out["other"] += [f for f in files if f.suffix.lower() not in DOC_EXT]
+        elif p.name in known or p == out["data"]:
+            continue
+        elif p.suffix.lower() in DOC_EXT:
+            out["docs"].append(p)
+        elif p.suffix.lower() in TABLE_EXT:
+            out["tables"].append(p)
+        elif p.suffix.lower() in IMAGE_EXT:
+            out["figures"].append(p)
+        else:
+            out["other"].append(p)
+    seen = set()                                               # the same document twice (a copy in raw_docs/): once
+    out["docs"] = [d for d in out["docs"] if not ((d.name, d.stat().st_size) in seen or seen.add((d.name, d.stat().st_size)))]
+    return out
+
+
+def sample_rows(extract: Path, n: int = 5, seed: int = 0, hide: tuple = ()) -> dict:
+    """`n` rows of a version's extract, drawn at random with a fixed seed (the same rows on every load):
+    {columns, rows, hidden, total} or {} when the file cannot be read. Columns that identify (ids, NPI, zip,
+    contact), that `hide` names (the data dictionary's identity group) or that hold free text are left out
+    and counted in `hidden`. Read once per file change."""
+    path = Path(extract)
+    try:
+        st = path.stat()
+    except OSError:
+        return {}
+    key = (str(path), st.st_mtime_ns, n, seed, tuple(hide))
+    if key in _SAMPLES:
+        return _SAMPLES[key]
+    try:
+        import numpy as np
+        import pyarrow.parquet as pq
+        f = pq.ParquetFile(path)
+        total = f.metadata.num_rows
+        names = f.schema_arrow.names
+        keep = [c for c in names if not HIDDEN.search(c) and c not in hide]
+        idx = np.sort(np.random.RandomState(seed).choice(total, min(n, total), replace=False))
+        tab = f.read(columns=keep).take(idx).to_pylist()
+    except Exception:                                          # not parquet, unreadable, no pyarrow: no sample
+        _SAMPLES[key] = {}
+        return {}
+    free = {c for c in keep if any(isinstance(r[c], str) and len(r[c]) > 100 for r in tab)}  # free text
+    cols = [c for c in keep if c not in free]
+    out = {"columns": cols, "rows": [[_cell(r[c]) for c in cols] for r in tab],
+           "hidden": [c for c in names if c not in cols], "total": total}
+    _SAMPLES[key] = out
+    return out
+
+
 # ── the Prototype Block ─────────────────────────────────────────────────────────────────────────
 def prototype(block: Path) -> dict:
     """{path, releases: [{name, job, face, questions: {qid: {...}}, partitions, thresholds}], proposals}."""
@@ -102,8 +221,12 @@ def prototype(block: Path) -> dict:
             qs[qid] = {"id": qid, "level": q.get("level") or LEVEL_OF.get(qid[0], ""), "question": q.get("question", ""),
                        "method": q.get("method") or {}, "signed": q.get("signed", ""), "agreed": q.get("agreed", ""),
                        "change": row.get("change", ""), "task": task, "file": task / "question.md"}
-        out["releases"].append({"name": rel.get("release") or job.name.split("_")[1], "job": job,
-                                "face": front(job / f"{job.name}.md"), "questions": qs,
+        name = rel.get("release") or job.name.split("_")[1]
+        slug = job.name.split("_", 2)[2] if job.name.count("_") >= 2 else ""
+        face = front(job / f"{job.name}.md")                # its title (`title:`), else the folder's slug
+        title = face.get("title") or slug
+        out["releases"].append({"name": name, "slug": slug, "label": f"{name} - {title}" if title else name, "job": job,
+                                "face": face, "questions": qs,
                                 "partitions": front(job / "partitions.md").get("partitions") or [],
                                 "thresholds": _yaml(job / "thresholds.yaml")})
     pdir = path / "proposals"

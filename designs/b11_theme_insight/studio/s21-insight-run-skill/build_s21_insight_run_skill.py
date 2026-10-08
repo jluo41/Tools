@@ -49,7 +49,12 @@ SPACE = DESIGNS.parents[1]
 TK = DESIGNS.parent / "plugins" / "haipipe-toolkit"
 SKILLS = TK / "skills"
 INSIGHT = SKILLS / "2_theme" / "insight"
-TABLE = INSIGHT / "workbench-insight" / "ref" / "workbench-table.md"
+TABLE = INSIGHT / "workbench-insight" / "ref" / "workbench-table.md"     # generated from the cards (261008)
+_spec = importlib.util.spec_from_file_location("run_cards", INSIGHT / "haipipe-insight-workflow" / "scripts" /
+                                               "run_cards.py")
+RC = importlib.util.module_from_spec(_spec)           # the insight run cards' one reader (phase 2)
+_spec.loader.exec_module(RC)
+CARDS = RC.cards()                                    # read once: a card is matched by identity below
 LIVE = TK / "servers" / "workbench-insight"                           # the insight theme as it runs today
 BASE = TK / "servers" / "workbench"                                   # the frame every theme shares
 LEVELS = [("Block", "s11-block-level/build_s11_block_level.py"),
@@ -212,14 +217,14 @@ FOLDERS = {
         "the register boards' law, until carried over", "older boards are still read", "6"),
     "haipipe-insight-workflow/SKILL.md": ("haipipe-insight-workflow/SKILL.md", "rewrite",
         "gates and Runs by level", "Runs hang on the register's cells", "2"),
-    "haipipe-insight-workflow/ref/run-workflow.md": ("haipipe-insight-workflow/ref/run-workflow.md", "edit",
-        "routes between levels and between the two Blocks", "routes between registers", "2"),
+    "haipipe-insight-workflow/ref/run-workflow.md": ("haipipe-insight-workflow/ref/run-workflow.md", "keep",
+        "the register boards' procedure", "older boards, until carried over", "6"),
     "workbench-insight/SKILL.md": ("workbench-insight/SKILL.md", "rewrite",
         "the theme on the shared frame", "it describes the old five-Space page", "2"),
     "workbench-insight/ref/workbench-table.md": ("workbench-insight/ref/workbench-table.md", "regenerate",
         "written from the run cards", "it must match the cards (table-workbench)", "2"),
-    "workbench-insight/ref/insight-board.md": ("workbench-insight/ref/old-page.md", "rename",
-        "the retired page: what its renderers show", "insight_theme.py still draws register boards with it", "2"),
+    "workbench-insight/ref/insight-board.md": ("workbench-insight/ref/insight-board.md", "edit",
+        "marked the retired page", "two other skills link it by name", "2"),
     "folder-kinds/haipipe-insight-question/SKILL.md": ("folder-kinds/haipipe-insight-question/SKILL.md", "rewrite",
         "questions in a version Job; proposals/ triage", "the four registers MT01-MT04", "3"),
     "folder-kinds/haipipe-insight-meta/SKILL.md": ("folder-kinds/haipipe-insight-meta/SKILL.md", "edit",
@@ -239,11 +244,26 @@ NEW_FILES = [
      "a scaffold for every level, as design and paper; job writes through open_job.py", "1"),
     ("haipipe-insight/tests/test_insight_ladder.py", "the scaffold makes each level; the server reads it back",
      "the contract has teeth", "1"),
-    ("haipipe-insight-workflow/ref/run-cards.md", "one card per button, by level × six Spaces",
+    ("haipipe-insight-workflow/ref/run-cards.md", "one card per button (59), by level × six Spaces; the gates",
      "every button names its skill, agent and sign", "2"),
+    ("haipipe-insight-workflow/scripts/run_cards.py", "the cards' one reader; --check, against the scaffold too",
+     "the cards have teeth", "2"),
+    ("haipipe-insight-workflow/scripts/next_run.py", "where a folder stands and the next Run",
+     "what is next, read from the files", "2"),
+    ("haipipe-insight-workflow/ref/register-board-workflow.md", "the old SKILL.md body, word for word",
+     "register boards keep their workflow until carried", "2"),
+    ("workbench-insight/scripts/cards_table.py", "writes ref/workbench-table.md from the cards",
+     "the table is generated, never hand-kept", "2"),
+    ("workbench-insight/ref/old-page.md", "the old SKILL.md body, word for word", "the retired page's record", "2"),
+    ("workbench-insight/ref/legacy/workbench-table-older.md", "the retired page's table, moved",
+     "s02 still draws the page that came before", "2"),
     ("haipipe-insight/ref/release.md", "release.yaml · proposals/ · cuts · signing",
-     "a Prototype version is the unit of change", "3")]
-PHASES_DONE = {"1"}                                   # phase 1 done 261008 (haipipe-insight 3.0.0)
+     "a Prototype version is the unit of change", "3"),
+    ("folder-kinds/haipipe-insight-question/scripts/proposals.py", "triage: list · take --into pN · decline",
+     "one release per batch, recorded on each proposal", "3"),
+    ("folder-kinds/haipipe-insight-question/ref/register-question.md", "the old SKILL.md body, word for word",
+     "register boards keep their registers until carried", "3")]
+PHASES_DONE = {"1", "2", "3"}                         # 1-3 done 261008 (contract · cards · release and proposals)
 
 CHANGES = {
     "runs": ["new drawing, in b16's s21-paper-run-skill shape (JL 261007: \"you should follow this one\")",
@@ -271,7 +291,14 @@ CHANGES = {
              "it takes in s11's real build (tasks/Prototype-bNN-<Topic>, insights/Insight-<name>, open_job.py)",
              "261008 decided: one clock per Job · a release per triaged batch · a kept question reruns on a "
              "code-moved Job (the compare checks its tables' sha256)",
-             "? the real release p1 runs unsigned: a person signs it (state closed, signed ✅ <YYMMDD>)"]}
+             "? the real release p1 runs unsigned: a person signs it (state closed, signed ✅ <YYMMDD>)",
+             "261008 phase 2 done: 59 run cards (run_cards.py --check passes, against the scaffold too); "
+             "workbench-table.md generated from them; next_run.py; frame 1 reads the cards",
+             "261008 decided: the workflow skill only routes, so Run the Job and Sign the release name haipipe-insight, "
+             "Close haipipe-insight-check; Check consistency is the reviewer's; one Write card per DIKW level",
+             "261008 the server reads its Block · Job · Task buttons from the cards (insight_views.py, by the s11 session)",
+             "261008 phase 3 done: ref/release.md (the life of a release, the cuts, signing) · haipipe-insight-question "
+             "2.0.0 (proposals, triage, asking, review; the folder contract's sections) · proposals.py"]}
 
 
 # ── helpers, as b16's s21 draws them ──────────────────────────────────────────────────────────
@@ -390,25 +417,39 @@ def said(label, code):
     return re.search(r"[\"']" + re.escape(label) + r"[\"' ]", code) is not None
 
 
+def _sample(name: str) -> str:
+    """A Run name with its placeholders filled, so a card's pattern can match it."""
+    for a, b in (("rNN_<partition> (hard)", "r01_x"), ("<jA>-<jB>", "j01-j02"), ("<jNN>", "j01"), ("<tNN>", "t01"),
+                 ("<qNN>", "q01"), ("<sNN>", "s01"), ("<L><NN>", "d01"), ("p<N>", "p1"), ("<d>v<M>", "v1"),
+                 ("<q>", "x01"), ("<slug>", "x01"), ("<board>", "x01")):
+        name = name.replace(a, b)
+    return name
+
+
+def card_of(level: str, name: str):
+    """The run card of a drawn Run: its own level's (the Prototype's three levels for the Prototype rows)."""
+    levels = ("Prototype", "Release", "Question") if level == "Prototype" else (level,)
+    sample = _sample(name)
+    found = [c for c in CARDS if c["level"] in levels and re.match(c["pattern"], sample)]
+    return found
+
+
 def run_rows():
-    """Frame 1's rows per level, each run type with where it stands today; the tally per level."""
-    rows_today = table_rows()
-    by_new = {}
-    for old, row in rows_today.items():
-        by_new.setdefault(RENAMED.get(old, old), row)
+    """Frame 1's rows per level, each run type with where it stands today; the tally per level. Today is read from
+    the run cards (haipipe-insight-workflow/ref/run-cards.md, 261008): card = a card names its skill, agent, sign."""
     live = "\n".join(p.read_text(encoding="utf-8") for p in LIVE.glob("insight_*.py"))
-    base = "\n".join(p.read_text(encoding="utf-8") for p in BASE.glob("*.py"))
     by_level, tally, used, merged = {}, {}, set(), {}
     for lv, where, label in designed():
-        c = by_new.get(label)
         owner = OWNER.get(label, "?").replace("<level>", "<D·I·K>")
         name = RUN_NAME.get((lv, label)) or RUN_NAME.get(label) or "-"
-        if c:
-            used.add(label)
-            st, skill, agent, signs = "table", SKILL_OVERRIDE.get(label, c["skill"]), c["agent"], c["signs"]
-            agent = agent if "(new)" in agent or agent_exists(agent) else agent + " (no file) ?"
-            skill = skill.replace(" (new)", " (new) ?")
-        elif owner == "the frame":
+        found = card_of(lv, name) if name not in ("-", "- (a link)") else []
+        if found:
+            c = found[0]
+            used.update(id(x) for x in found)
+            skill = "haipipe-insight-<its level>" if len({x["skill"] for x in found}) > 1 else c["skill"]
+            st, agent, signs = "card", c["agent"], c["signs"]
+            agent = agent if agent_exists(agent) else agent + " (no file) ?"
+        elif owner == "the frame" or name == "- (a link)":
             st, skill, agent, signs = "base", FRAME_SKILL.get(label, "the frame"), "-", "-"
         else:
             st = "live ?" if said(label, live) else "drawn ?"
@@ -422,7 +463,7 @@ def run_rows():
             row[2] = row[2] if where in row[2].split(" · ") else f"{row[2]} · {where}"
     for lv, rows in by_level.items():
         tally[lv] = Counter(r[3].rstrip(" ?") for r in rows)
-    left = [(old, r) for old, r in rows_today.items() if RENAMED.get(old, old) not in used]
+    left = [c for c in CARDS if id(c) not in used]
     return by_level, tally, left
 
 
@@ -501,24 +542,25 @@ def main():
     fr = L.open_frame("Runs by level")
     L.text(0, 0, "Insight Runs, level by level", 30)
     L.text(0, 46, "the Prototype Block (typed: no level drawing yet), then every Run a Space's buttons make in s11 · s12 · "
-                  "s13, one row per Run, named run-<type>-<target> · today: table = a row of workbench-table.md names its "
-                  "skill, agent and sign · base = the shared frame · live = the insight theme shows the button, no row "
-                  "says who runs it · drawn = only in the drawing · red ? = no card yet", 16, L.INK)
+                  "s13, one row per Run, named run-<type>-<target> · today: card = a run card names its skill, agent and "
+                  "sign (haipipe-insight-workflow/ref/run-cards.md) · base = the shared frame · live = the insight theme "
+                  "shows the button, no card says who runs it · drawn = only in the drawing · red ? = no card yet", 16, L.INK)
     cols = [("Run", 400), ("button", 330), ("shows in", 470), ("today", 90), ("who does it", 330),
             ("who checks", 200), ("skill", 330)]
     y = 110
     for level in levels:
         t = tally[level]
         L.text(0, y, level, 20)
-        L.text(0, y + 30, "\n".join(f"{t[k]} {k}" for k in ("table", "base", "live", "drawn") if t[k]), 14, L.INK)
+        L.text(0, y + 30, "\n".join(f"{t[k]} {k}" for k in ("card", "base", "live", "drawn") if t[k]), 14, L.INK)
         y = table(130, y - 4, cols, by_level[level], mono=("Run", "skill")) + 30
-    L.text(0, y + 10, "today's table rows no level screen shows", 20)
-    rows = [[old, r["space"], r["skill"], "decided: kept, the Guide's own Runs panel on every tab" if old in GUIDE_RUNS
-             else "place it in a Space or retire it ?"] for old, r in left]
-    y = table(130, y + 46, [("run type", 300), ("today's Space › view", 380), ("skill", 300), ("decided", 460)],
+    L.text(0, y + 10, "cards no level drawing shows yet", 20)
+    rows = [[c["label"], f"{c['level']} › {c['space']}", c["skill"],
+             "decided: kept, the Guide's own Runs panel on every tab" if c["level"] == "Guide" else
+             "decided 261008: carded; s11 · s12 · s13 draw it next"] for c in left]
+    y = table(130, y + 46, [("button", 300), ("level › Space", 380), ("skill", 300), ("decided", 460)],
               rows) + 40
-    runnable = {lv: (t["table"] + t["base"]) * 100 // max(1, sum(t.values())) for lv, t in tally.items()}
-    L.text(0, y, "runnable today (a table row or the frame): " + " · ".join(f"{lv} {p}%" for lv, p in runnable.items()),
+    runnable = {lv: (t["card"] + t["base"]) * 100 // max(1, sum(t.values())) for lv, t in tally.items()}
+    L.text(0, y, "runnable today (a card or the frame): " + " · ".join(f"{lv} {p}%" for lv, p in runnable.items()),
            18)
     notes(0, y + 50, ["? the Prototype Block has no level drawing: a session drawing it (as s11 · s12 · s13) should "
                       "show these buttons"] + CHANGES["runs"])

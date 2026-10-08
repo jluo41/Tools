@@ -10,7 +10,7 @@ must do. Named `s21-insight-run-skill`, as the paper's is `s21-paper-run-skill`.
 **Source:** read from disk on every build:
 
 - the run types each Space shows in s11 · s12 · s13 (their builders' `SCREENS`, imported, never run)
-- today's run types with agent, skill and sign: `workbench-insight/ref/workbench-table.md`
+- each run type's skill, agent and sign: the run cards, `haipipe-insight-workflow/ref/run-cards.md` (261008)
 - the live insight theme (`servers/workbench-insight/insight_*.py`) and the base frame (`servers/workbench/`)
 - the skills in `skills/2_theme/insight/` (version, callers, how often each still writes a plan-C-retired name)
 - the base skills insight borrows, found by name; the agents, checked on disk
@@ -55,8 +55,8 @@ Runs on disk           the Runs in the Project insight folders by type and DIKW 
 skill update plan      six phases: each skill, what it learns, the run types it gains, done when
 ```
 
-"today" says where a run type stands: **table** (a row of the workbench table names its skill, agent and sign),
-**base** (the shared frame runs it), **live** (the insight theme shows the button, but no row says who runs it),
+"today" says where a run type stands: **card** (a run card names its skill, agent and sign; 261008),
+**base** (the shared frame runs it), **live** (the insight theme shows the button, but no card says who runs it),
 **drawn** (only in the drawing).
 
 
@@ -77,6 +77,9 @@ Decided (261007)
    button `run-draw-<sNN>`. Insight-only buttons keep theirs. Owners match the live theme's `SKILLS` map.
 7. Drawn in haipipe-studio 0.2.0's palette: black, red for open `?`, green for changes. The gray is now black
    (canvas.write applies the palette); a tree file with no change word beside it is kept. The builder prints anything off the palette.
+
+8. (261008) Steps 1 and 2 are done: the contract and scaffold (haipipe-insight 3.0.0), then the run cards
+   (haipipe-insight-workflow 3.0.0) and the table generated from them (workbench-insight 1.0.0). Frame 1 reads the cards.
 
 
 Open (another owner)

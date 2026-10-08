@@ -10,6 +10,7 @@ signs: null
 status: done
 passes:
 - p01-1008
+- p02-1008
 writes: []
 feeds:
 - reports/q05_skill_per_level

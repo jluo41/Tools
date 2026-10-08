@@ -2347,6 +2347,22 @@ class InsightBoardMixin:
     def insight_run_view(self, head_only=False):
         """GET /_board/insight-run?board=<name>&task=<task folder>&call=<call>: one run's results."""
         query = parse_qs(urlparse(self.path).query)
+        answer = (query.get("answer") or [""])[0]
+        if answer:                                  # a plan-C Task: its answer page, from its face and runs
+            root = Path(self.root).resolve()
+            tdir = (root / answer.lstrip("/")).resolve()
+            if not tdir.is_relative_to(root) or not (tdir / f"{tdir.name}.md").is_file():
+                return self._insight_board_send("<p>No such Task.</p>".encode("utf-8"), 404, head_only)
+            from .insight_views import render_task_page
+            return self._insight_board_send(render_task_page(tdir, root).encode("utf-8"), 200, head_only)
+        wanted = (query.get("run") or [""])[0]
+        if wanted:                                  # a plan-C hard Run: <Board>/<Job>/<Task>/runs/rNN_<cut>/
+            root = Path(self.root).resolve()
+            rundir = (root / wanted.lstrip("/")).resolve()
+            if not rundir.is_relative_to(root) or rundir.parent.name != "runs" or not (rundir / "run.yaml").is_file():
+                return self._insight_board_send("<p>No such run.</p>".encode("utf-8"), 404, head_only)
+            from .insight_views import render_run_page
+            return self._insight_board_send(render_run_page(rundir, root).encode("utf-8"), 200, head_only)
         board = self._insight_target((query.get("board") or [""])[0])
         if board is None:
             return self._insight_board_send("<p>No such InsightBoard.</p>".encode("utf-8"), 404, head_only)

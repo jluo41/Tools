@@ -294,5 +294,5 @@ def option(folder: Path):
 
 
 THEME = Theme(name="design", label="Design", icon="🎨", guide="design",
-              level_names={"Block": "Design Board", "Job": "Goal × method", "Task": "Design"}, spaces=spaces,
+              level_names={"Block": "Design Board", "Job": "Design Job", "Task": "Design Task"}, spaces=spaces,
               run_names=RUN_NAMES, level_patterns=OLDER, option=option)

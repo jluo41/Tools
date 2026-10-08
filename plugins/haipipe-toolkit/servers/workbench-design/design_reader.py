@@ -50,32 +50,54 @@ FENCE_PARTS = ("Goal · how much is set", "Goal · for whom", "Information · wh
                "Examples", "Tools", "Reading", "From the last unit")      # step ① See input's parts (s03)
 
 
+_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)          # the C parser where installed: ~10× faster
+_CACHE: dict = {}                                                   # (path, mtime, size) -> parsed; read-only
+
+
+def _cached(path: Path, parse):
+    """Parse a file once per version on disk (its mtime and size); a changed file is parsed again."""
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    key = (str(path), parse.__name__, st.st_mtime_ns, st.st_size)
+    if key not in _CACHE:
+        if len(_CACHE) > 20000:
+            _CACHE.clear()
+        try:
+            _CACHE[key] = parse(path.read_text(encoding="utf-8", errors="ignore"))
+        except (OSError, yaml.YAMLError, ValueError):
+            _CACHE[key] = None
+    return _CACHE[key]
+
+
+def _front_of(text: str) -> dict:
+    m = re.match(r"(?s)^---\n(.*?)\n---\n", text)
+    return (yaml.load(m.group(1), Loader=_LOADER) or {}) if m else {}
+
+
+def _yaml_of(text: str):
+    return yaml.load(text, Loader=_LOADER) or {}
+
+
 def front(md: Path | None) -> dict:
     """The YAML front matter of a Markdown file ({} without one)."""
-    try:
-        text = md.read_text(encoding="utf-8", errors="ignore") if md else ""
-    except OSError:
-        return {}
-    m = re.match(r"(?s)^---\n(.*?)\n---\n", text)
-    try:
-        return (yaml.safe_load(m.group(1)) or {}) if m else {}
-    except yaml.YAMLError:
-        return {}
+    f = _cached(md, _front_of) if md else None
+    return f if isinstance(f, dict) else {}
 
 
 def _yaml(path: Path) -> dict | list:
-    try:
-        return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError):
-        return {}
+    y = _cached(path, _yaml_of)
+    return y if y is not None else {}
+
+
+def _csv_of(text: str) -> list:
+    return list(csv.DictReader(text.splitlines()))
 
 
 def _csv(path: Path) -> list:
-    try:
-        with path.open(encoding="utf-8") as f:
-            return list(csv.DictReader(f))
-    except OSError:
-        return []
+    rows = _cached(path, _csv_of)
+    return rows or []
 
 
 def _block_yaml(md: Path, heading: str) -> dict:
@@ -236,8 +258,9 @@ def job(jdir: Path) -> dict:
             "delivery": jdir / "delivery"}
 
 
-def board(block: Path) -> dict:
-    """The Block: its goals, questions, inputs versions, observed Exps and scores, Runs, Jobs and delivery."""
+def board(block: Path, with_jobs: bool = True) -> dict:
+    """The Block: its goals, questions, inputs versions, observed Exps and scores, Runs, Jobs and delivery.
+    with_jobs=False skips reading every Job (a Job or Task view needs only the Block's goals and Exp results)."""
     md = block / "board.md"
     goals = _block_yaml(md, "Goals").get("goals", []) if md.is_file() else []
     questions = _block_yaml(md, "Questions").get("questions", []) if md.is_file() else []
@@ -255,7 +278,7 @@ def board(block: Path) -> dict:
         if r["type"] == "score":
             for row in _csv(r["path"] / "scores.csv") + _csv(r["result"] / "scores.csv"):
                 scores[(row.get("job", ""), row.get("design", ""))] = {**row, "run": r["run"]}
-    jobs = [job(p) for p in sorted(block.iterdir()) if re.match(r"^j\d+_", p.name) and is_job(p)]
+    jobs = [job(p) for p in sorted(block.iterdir()) if re.match(r"^j\d+_", p.name) and is_job(p)] if with_jobs else []
     delivered = _yaml(block / "delivery" / "designs.json") if (block / "delivery" / "designs.json").is_file() else {}
     return {"path": block, "face": md, "goals": goals if isinstance(goals, list) else [],
             "questions": questions if isinstance(questions, list) else [], "inputs": inputs, "observed": observed,

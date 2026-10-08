@@ -472,7 +472,8 @@ def guide_runs(profile, view):
 # A family whose guide.yaml declares `levels:` shows every View as a lead line, then three folding
 # sections, Block · Job · Task (a heading, never a box), each a stack of cards, one card shape per
 # View and the same in every theme. The View's earlier body stays below, in a closed "All levels"
-# fold. The section of the level the Guide was opened from (context `level`) starts open.
+# fold. Every section starts closed (JL 261008: "collapsed by default"); the level the Guide was opened
+# from (context `level`) is marked data-here on its section.
 LEVEL_CSS = (".wg-lead{color:var(--wg-muted)}"
              ".wg-level{margin:0 0 6px}.wg-level>summary{list-style:none;cursor:pointer;padding:10px 2px;"
              "display:flex;gap:14px;align-items:baseline}.wg-level>summary::-webkit-details-marker{display:none}"
@@ -621,7 +622,7 @@ def paper_cards_html(profile, level):
 
 def level_view(family, view, profile, context, root, earlier):
     """One View of the card Guide: a lead line, Block · Job · Task, then the View's earlier body."""
-    opened = context.get("level") if context.get("level") in LEVEL_NAMES else "Block"
+    here = context.get("level") if context.get("level") in LEVEL_NAMES else ""
     folders = _level_folders(context, root) if view == "description" else {}
     lead = (f'<p class="wg-lead">{esc(profile.get("description") or "")}</p>' if view == "description" else
             f'<p class="wg-lead">{esc(dict((k, q) for k, _, q in VIEWS)[view])}</p>')
@@ -634,7 +635,7 @@ def level_view(family, view, profile, context, root, earlier):
         role = (profile["levels"].get(level) or {}).get("role", "")
         body = "".join(cards) or f'<p class="wg-level-role">Nothing for the {level} level yet.</p>'
         parts.append(f'<details class="wg-level" data-drawing="level-{level}" data-level="{level}"'
-                     f'{" open" if level == opened else ""}><summary><b>{level}</b>'
+                     f'{" data-here" if level == here else ""}><summary><b>{level}</b>'
                      f'<span class="wg-level-line">{esc(_count(view, len(cards)))}</span></summary>'
                      f'<p class="wg-level-role">{esc(role)}</p>{body}</details>')
     if earlier:
