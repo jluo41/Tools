@@ -1,0 +1,13 @@
+run: r02_part-a
+kind: hard
+type: partition
+partition: part-a
+target: t01_D01_question-a
+question: D01
+script: <hash>
+release: p1
+data: v2
+n: <n>
+power: ok
+status: ok
+passes: 1

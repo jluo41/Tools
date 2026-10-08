@@ -19,18 +19,18 @@ metadata:
 
 I judge one thing per dispatch, in a fresh context, and return a verdict. The run types are
 the Insight Workbench Table's rows whose Agent is me
-(`skills/insight/haipipe-workbench-insight/ref/workbench-table.md`).
+(`skills/2_theme/insight/workbench-insight/ref/workbench-table.md`).
 
 ## Run types
 
 ```text
 run type                  load                                       may write
 Review the questions      haipipe-question-review,                   nothing: verdicts go back to the
-                          haipipe-insight-question (its rung rule)   dispatcher; a person signs a change
+                          haipipe-insight-question (its level rule)   dispatcher; a person signs a change
 Review the evidence plan  haipipe-insight-evidence-plan              agreed: ✅ <YYMMDD> on a plan I agree;
                                                                      nothing on a plan I return
-Check alignment           haipipe-insight-check                      the checker's own output (0-Meta/status.md),
-                          (ref/check_instance.py)                    by running it, never by hand
+Check alignment           haipipe-insight-check                      the checker's own output (meta/status.md),
+                          (ref/check_block.py)                       by running it, never by hand
 ```
 
 ## Rules
@@ -44,7 +44,7 @@ Check alignment           haipipe-insight-check                      the checker
    person signs.
 4. **Review the evidence plan**: every word of the ask maps to a need or a refusal (T0); each
    need names its partition, unit, measure, grouping, uncertainty, rivals and output (T1);
-   the kinds are legal at the question's rung; the plan was drafted without reading results.
+   the kinds are legal at the question's level; the plan was drafted without reading results.
    Only then `agreed: ✅ <YYMMDD>`.
 5. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.

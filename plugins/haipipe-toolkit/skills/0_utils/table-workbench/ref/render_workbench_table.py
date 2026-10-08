@@ -110,7 +110,7 @@ def read_cards(path: Path) -> list[dict]:
 def check_cards(rows: list[dict], cards: list[dict]) -> list[str]:
     """Each run type of the table is one card with the same agent, skill and signs, and back."""
     cols = ("Agent", "Skill", "Person signs")
-    # Guide's run types are read from this table by Guide's own Runs panel (workbench-shared),
+    # Guide's run types are read from this table by Guide's own Runs panel (workbench),
     # so a Guide row never has a run card (JL 261003)
     want = {r["Run type"]: r for r in rows if r["Run type"] != "none" and r["Space"] != "Guide"}
     have = {c["Run type"]: c for c in cards}

@@ -14,11 +14,11 @@ THE THREE CONFIGURATIONS ARE THE SAME DOOR, THREE BANKS
 ================================================================================
     population   no bank on disk. What a caller who passes nothing still gets.
     device       the vendor rows only. No personal history, no cold start.
-    person       device plus the per-patient rung.
-    ladder       every rung, person_activity on top.
+    person       device plus the per-patient step.
+    ladder       every step, person_activity on top.
 
 The four are CUMULATIVE, so each line of the table is the one above it plus one
-rung, and the difference between two lines is what that rung is worth.
+step, and the difference between two lines is what that step is worth.
 
 Nothing in exnorm is monkey-patched to produce these; each run points the door
 at a different frozen bank with `scale_path`, which is the same mechanism an
@@ -65,7 +65,7 @@ def eval_rows():
 
 
 def banks(tmp: pathlib.Path):
-    """Four files the door can be pointed at, each the previous plus one rung."""
+    """Four files the door can be pointed at, each the previous plus one step."""
     full = pd.read_parquet(BANK)
     out, keep = {}, []
     for name, kinds in (("population", []),

@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlencode, urlparse
 
-from host_paths import SKILLS
+from host_paths import skill_dir
 from live.design import (
     _declared_insight_boards, _handoff_says, _insight_bindings, _read, because_words, shared_rules,
     brief_page, brief_rows, with_link, design_runs_panel, design_snapshot, design_title, runs_panel_assets,
@@ -36,6 +36,12 @@ _BOARD_GLOBS = ("examples*/*/designs/*/board.md",     # a Project's designs/ wor
 _ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 DESIGN_GROUP = "2-Design"                      # the group folder of Design Folders
 _FOLDER_ID = re.compile(r"^Design-(\d+)-")     # Design-01-<audience>-<job>-<venue>
+# One method per group (JL 261005: "each job will be a method of design settings"): beside or instead
+# of the plain 2-Design/, a board may hold 2-Design-M<NN>-<slug>/ folders, each with its method.md
+# card (See input · Conduct process · Check output) and one Design Folder per Brief task, numbered
+# as the Brief numbers it, so Design-01 is the same task under every method.
+_METHOD_GROUP = re.compile(r"^2-Design-(M\d+)-(.+)$")
+METHOD_CARD = "method.md"
 _TABLE_COLUMNS = ("line", "audience", "job", "venue", "designs", "insight", "folder")
 
 
@@ -55,7 +61,28 @@ def is_design_board(board_root: Path) -> bool:
     text = _read(board_root / "board.md")
     return (_field(text, "board-kind").lower() in {"design", "design-board"}
             or bool(_DESIGN_BOARD.search(board_root.name))
-            or (board_root / DESIGN_GROUP).is_dir())
+            or (board_root / DESIGN_GROUP).is_dir()
+            or any(p.is_dir() and _METHOD_GROUP.match(p.name) for p in board_root.glob("2-Design-M*")))
+
+
+def design_groups(board_root: Path) -> list[dict]:
+    """The board's groups of Design Folders: the plain 2-Design/ when it exists (one method, or
+    before methods), then one 2-Design-M<NN>-<slug>/ per method, in number order."""
+    board_root = Path(board_root)
+    groups = []
+    if (board_root / DESIGN_GROUP).is_dir():
+        groups.append({"dir": board_root / DESIGN_GROUP, "group": DESIGN_GROUP, "key": "",
+                       "label": "no method stated", "card": None})
+    for d in sorted(board_root.glob("2-Design-M*"), key=lambda p: (len(p.name.split("-")[2]), p.name)):
+        hit = _METHOD_GROUP.match(d.name)
+        if not (d.is_dir() and hit):
+            continue
+        card = d / METHOD_CARD
+        title = _TITLE.search(_read(card)) if card.is_file() else None
+        groups.append({"dir": d, "group": d.name, "key": hit.group(1),
+                       "label": title.group(1).strip() if title else f"{hit.group(1)} · {hit.group(2).replace('-', ' ')}",
+                       "card": card if card.is_file() else None})
+    return groups
 
 
 def design_boards(root: Path) -> list[Path]:
@@ -115,28 +142,40 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
     title = _TITLE.search(text).group(1).strip() if _TITLE.search(text) else board_root.name
     brief = brief_page(board_root)
     brief_lines = brief_rows(_read(brief)) if brief else []
-    group = board_root / DESIGN_GROUP
+    groups = design_groups(board_root)
     folders = []
-    for page_dir in sorted(group.iterdir()) if group.is_dir() else []:
-        page = page_dir / f"{page_dir.name}.md"
-        if not page_dir.is_dir() or not page.is_file():
-            continue
-        snap = design_snapshot(page, server_root)
-        snap["name"] = page_dir.name
-        snap["rel"] = f"{DESIGN_GROUP}/{page_dir.name}/{page.name}"
-        folders.append(snap)
-    by_name = {f["name"]: f for f in folders}
+    for g in groups:
+        for page_dir in sorted(g["dir"].iterdir()):
+            page = page_dir / f"{page_dir.name}.md"
+            if not page_dir.is_dir() or not page.is_file():
+                continue
+            snap = design_snapshot(page, server_root)
+            snap["name"] = page_dir.name
+            snap["rel"] = f'{g["group"]}/{page_dir.name}/{page.name}'
+            snap["group"], snap["method_key"], snap["method_label"] = g["group"], g["key"], g["label"]
+            # a method's folder is named with its method, since Design-01 recurs under every method
+            snap["label"] = f'{g["key"]} · {page_dir.name}' if g["key"] else page_dir.name
+            folders.append(snap)
+    number = lambda name: int(_FOLDER_ID.match(name).group(1)) if _FOLDER_ID.match(name or "") else None
+    matched: set[str] = set()
     for row in brief_lines:
-        row["snapshot"] = by_name.get(row["folder"])
+        # the plain group's folder by its exact name; a method's folder by its name or its Design-NN
+        no = number(row["folder"])
+        row["snapshots"] = [f for f in folders if f["name"] == row["folder"]
+                            or (f["method_key"] and no is not None and number(f["name"]) == no)]
+        matched |= {f["rel"] for f in row["snapshots"]}
+        plain = [f for f in row["snapshots"] if not f["method_key"]]
+        row["snapshot"] = plain[0] if plain else (row["snapshots"][0] if len(row["snapshots"]) == 1 else None)
         row["status"] = ("no folder yet" if not row["folder"] else
+                         f'{len(row["snapshots"])} methods' if row["snapshot"] is None and row["snapshots"] else
                          "folder missing on disk" if row["snapshot"] is None else
                          row["snapshot"]["reason"] if not row["snapshot"]["current"] else
                          _folder_summary(row["snapshot"]))
-        row["registered"] = len(row["snapshot"]["items"]) if row["snapshot"] else 0
-        row["ready"] = sum(1 for i in row["snapshot"]["items"] if i.get("ready")) if row["snapshot"] else 0
-    listed = {row["folder"] for row in brief_lines if row["folder"]}
-    items = [dict(item, folder=f["name"], rel=f["rel"]) for f in folders for item in f["items"]]
-    runs = sorted((dict(run, folder=f["name"]) for f in folders for run in f["runs"]),
+        row["registered"] = sum(len(f["items"]) for f in row["snapshots"])
+        row["ready"] = sum(1 for f in row["snapshots"] for i in f["items"] if i.get("ready"))
+    items = [dict(item, folder=f["label"], rel=f["rel"], folder_name=f["name"], method=f["method_key"])
+             for f in folders for item in f["items"]]
+    runs = sorted((dict(run, folder=f["label"]) for f in folders for run in f["runs"]),
                   key=lambda r: (r["finished"] or r["started"] or "", r["number"]), reverse=True)
     waiting = [i for i in items if i["waiting"]]
     waiting.sort(key=lambda i: (i["waiting"].startswith("agent"), i["folder"], i["id"]))
@@ -157,10 +196,11 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
         "title": title, "board": board_root, "root": server_root, "static": static,
         "reads": _field(text, "reads"), "close": _field(text, "close"),
         "brief": brief, "brief_rows": brief_lines, "folders": folders,
-        "unlisted": [f for f in folders if f["name"] not in listed],
+        "unlisted": [f for f in folders if f["rel"] not in matched],
+        "methods": [g for g in groups if g["key"]] and groups,      # every group once any method exists
         "items": items, "runs": runs, "waiting": waiting,
         "ready": [i for i in items if i.get("ready")],
-        "audit": [f'{f["name"]}: {issue}' for f in folders for issue in f["audit"]],
+        "audit": [f'{f["label"]}: {issue}' for f in folders for issue in f["audit"]],
         "insight": insight, "insight_names": names,
         "insight_space": _board_insight_space(folders, insight),
         "totals": {"lines": len(brief_lines), "wanted": sum(r["designs"] for r in brief_lines),
@@ -168,6 +208,112 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
         "human": next((f["human"] for f in folders if f["human"] != "person"), "person"),
         "relative": rel, "current": is_design_board(board_root),
     }
+
+
+def _method_views(snapshot: dict, rows: list[dict]) -> list[tuple[str, str, str]]:
+    """Design Tasks on a board with method folders: one View per method, its method.md card above
+    the table of that method's tasks (the table the family Views use). No All View; the first
+    method opens."""
+    empty = '<div class=empty>No design task is listed yet.</div>'
+    groups = snapshot["methods"]
+    views = []                     # no All View (JL 261005: "we can remove All"): the methods alone
+    for n, g in enumerate(groups, start=1):
+        views.append((f"m-{n}", g["label"], _method_steps(snapshot, rows, g, empty)))
+    return views
+
+
+def _card_parts(card: Path | None) -> tuple[str, list[str]]:
+    """A method.md's lead paragraph and its three step sections, in file order, as HTML."""
+    if card is None:
+        return "", []
+    body = re.sub(r"(?s)^\s*#\s[^\n]*\n", "", _read(card), count=1)
+    parts = re.split(r"(?m)^##\s+.+?\s*$", body)
+    return parts[0].strip(), [_plain_md(x.strip()) for x in parts[1:]]
+
+
+def _rationale(folder: Path, run: str) -> dict:
+    """A Generate result's rationale.yaml as flat key: value pairs (reason, sources, forecast)."""
+    out: dict[str, str] = {}
+    key = ""
+    for line in _read(Path(folder) / "results" / run / "rationale.yaml").splitlines():
+        hit = re.match(r"^([a-z_]+):\s*(.*)$", line)
+        if hit:
+            key = hit.group(1)
+            out[key] = hit.group(2).strip()
+        elif key and line.startswith("  "):
+            out[key] += " " + line.strip()
+    return {k: v.strip().strip("'\"").replace("''", "'") for k, v in out.items()}
+
+
+def _method_steps(snapshot: dict, rows: list[dict], g: dict, empty: str) -> str:
+    """One method's View (JL 261005: a subsubspace under each method): the design unit's three
+    steps as its own Views, ① See input · ② Designs · ③ Check output, each step's part of the
+    method card on top. ② opens: the messages themselves, task by task (JL 261005: "changed to
+    the message content")."""
+    board = Path(snapshot["board"])
+    lead, parts = _card_parts(g["card"])
+    parts += [""] * (3 - len(parts))
+    step_card = lambda i: (f'<div class=step-card>{parts[i]}</div>' if parts[i] else "")
+    if not g["key"]:
+        lead = "Folders in the plain <code>2-Design/</code>: made before methods were stated."
+    elif g["card"] is None:
+        lead = 'No <code>method.md</code> in this method folder: the method is not stated.'
+    else:
+        lead = _plain_md(lead) if lead else ""
+
+    # ① See input: the packet the writer saw, by the path the card names, and the shared goal
+    packets = list(dict.fromkeys(re.findall(r"1-IN-inputs/[^`\s,;)]+\.md", _read(g["card"]) if g["card"] else "")))
+    see = step_card(0)
+    for rel in packets:
+        f = board / rel
+        see += (f'<details class=packet open><summary>The packet · <code>{_e(rel)}</code></summary>'
+                + (f'<div class=packet-body>{_plain_md(_read(f))}</div>' if f.is_file()
+                   else '<div class=bad>not on disk</div>') + '</details>')
+    if (board / "design-goal.md").is_file():
+        see += ('<details class=packet><summary>The goal every method shares · <code>design-goal.md</code></summary>'
+                f'<div class=packet-body>{_plain_md(_read(board / "design-goal.md"))}</div></details>')
+    if not packets and not parts[0]:
+        see += '<div class=empty>The method card names no input.</div>'
+
+    # ② Designs and ③ Check output: task by task, this method's folder for each Brief task
+    designs, checks = step_card(1), step_card(2)
+    for row in rows:
+        snap = next((f for f in row["snapshots"] if f["group"] == g["group"]), None)
+        title = _e(design_title(row))
+        if snap is None:
+            missing = (f'<h3>{title}</h3><div class=mut>not designed this way yet'
+                       + ("" if snapshot["static"] else
+                          f' <button class=do data-action=new-folder data-row="{_e(row["id"])}" '
+                          f'data-method="{_e(g["group"])}">New Design Folder</button><span class=msg></span>')
+                       + '</div>')
+            designs += missing
+            checks += f'<h3>{title}</h3><div class=mut>not designed this way yet</div>'
+            continue
+        link = (f'<h3><a href="{_e(_page_url(snapshot, snap["rel"], "design"))}">{title}</a> '
+                f'<span class=mut>{_e(snap["reason"] if not snap["current"] else _folder_summary(snap))}</span></h3>')
+        drows, crows = [], []
+        for it in snap["items"]:
+            shown = it.get("ready") or it.get("latest")
+            why = _rationale(snap["folder"], shown["run"]) if shown else {}
+            text = _e(shown["text"]) if shown else '<span class=mut>no draft yet</span>'
+            drows.append(f'<tr><td>{_e(why.get("message") or it["id"])}</td><td class=msg-text>{text}</td>'
+                         f'<td>{_e(why.get("reason", ""))}</td></tr>')
+            verdict = ("✅ pass" if it.get("ready") else
+                       f'{_e(it.get("glyph", ""))} {_e(it["state"])}')
+            crows.append(f'<tr><td>{_e(why.get("message") or it["id"])}</td><td>{verdict}</td>'
+                         f'<td>{_e(why.get("forecast", "").replace("the designer" + chr(39) + "s forecast: ", ""))}</td></tr>')
+        designs += link + ('<table class=msgs><tr><th>design</th><th>message</th><th>why</th></tr>'
+                           + "".join(drows) + '</table>' if drows else '<div class=empty>No design registered yet.</div>')
+        checks += link + ('<table class=msgs><tr><th>design</th><th>verify</th><th>predicted click-through</th></tr>'
+                          + "".join(crows) + '</table>' if crows else '<div class=empty>Nothing to check yet.</div>')
+    if not rows:
+        designs, checks = designs + empty, checks + empty
+
+    steps = (("see", "① See input", see), ("designs", "② Designs", designs), ("check", "③ Check output", checks))
+    return (f'<h2>{_e(g["label"])}</h2>' + (f'<div class=mut>{lead}</div>' if lead else "")
+            + '<div class=steps>' + "".join(f'<button type=button data-step="{k}"{" class=on" if k == "designs" else ""}>{v}</button>'
+                                             for k, v, _ in steps) + '</div>'
+            + "".join(f'<div class="step{" on" if k == "designs" else ""}" data-step="{k}">{b}</div>' for k, _, b in steps))
 
 
 def _folder_summary(snap: dict) -> str:
@@ -273,7 +419,7 @@ details.draw-fold>summary{padding:14px 16px;cursor:pointer}details.draw-fold>sum
 details.draw-fold>summary span{display:block;color:var(--mut);font-size:14px;margin-top:3px;margin-left:18px}.draw-body{padding:0 12px 12px}
 @media(prefers-color-scheme:dark){details.draw-fold{border-color:#414852}details.draw-fold>summary strong{color:#91caff}}
 details.ref-fold{margin:22px 0 0;border-top:1px solid var(--line);padding-top:10px}details.ref-fold>summary{cursor:pointer;font-weight:650;font-size:15px}
-ul.fam-methods{margin:4px 0 10px;padding-left:18px}ul.fam-methods li{margin:3px 0}
+ul.fam-methods{margin:4px 0 10px;padding-left:18px}ul.fam-methods li{margin:3px 0}.steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}.steps button{font:400 14px system-ui,sans-serif;padding:4px 12px;border:1px solid #ced4da;border-radius:14px;background:#fff;color:#1e1e1e;cursor:pointer}.steps button.on{background:#f1f3f5;border-color:#495057;font-weight:600}.step{display:none}.step.on{display:block}.step-card{border:1px solid #dee2e6;border-radius:8px;padding:2px 14px;margin:0 0 12px;background:#f8f9fa}details.packet{border:1px solid #dee2e6;border-radius:8px;margin:0 0 10px}details.packet>summary{padding:8px 12px;cursor:pointer}.packet-body{padding:0 14px 8px;max-height:520px;overflow:auto}table.msgs td:first-child{white-space:nowrap}table.msgs td.msg-text{font-family:ui-monospace,Menlo,monospace;font-size:13px;width:52%}@media(prefers-color-scheme:dark){.steps button{background:#191c21;color:#edf0f4;border-color:#414852}.steps button.on{background:#253749}.step-card,details.packet{border-color:#414852;background:transparent}}
 /* a View (sub-Space) tab, the same look as a Space tab (JL 261003) */
 .views{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 10px;margin:0 0 12px;border-bottom:1px solid var(--line)}.views button{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;background:#fff;color:#1e1e1e;cursor:pointer}
 .views button.on{background:#e7f5ff;color:#1864ab;border-color:#1864ab}
@@ -342,12 +488,19 @@ def _page_url(snapshot: dict, rel: str, space: str = "design", item: str = "") -
 # Guide › Method is one document (JL 261003): the six steps, then steps 2, 3, 4 and 6 in depth,
 # why it works, and the reference, folded. The older
 # view keys (design-theory, methods) read the same file.
-METHODS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-method.md"
+METHODS = Path(__file__).resolve().parent / "guide" / "method.md"        # the theme's Guide (261007)
 THEORY = METHODS
 # The methods studio (JL 261002: "add a new studio … put it in the excalidraw to explain
 # these methods"): one Excalidraw drawing of the loop, the families and the ten cards,
 # opened in the self-hosted canvas and saved back to this file.
-STUDIO = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-methods.excalidraw"
+# The design theme's drawings live in its Block's studio, each in its topic (JL 261007), like any Block's.
+B12 = Path(__file__).resolve().parents[4] / "designs" / "b12_theme_design" / "studio"
+STUDIO = B12 / "s03-design-methods" / "parts" / "design-methods.excalidraw"
+# The design unit (JL 261004: "each column to be the step … lines across different elements to be
+# a method"): See input → Conduct process → Check output, each step's parts with their options above,
+# and one row per method below, its choice in every part.
+# Written by Tools/designs/b12_theme_design/studio/s03-design-methods/design_unit_drawing.py.
+UNIT = B12 / "s03-design-methods" / "parts" / "design-unit-methods.excalidraw"
 
 
 def _pipe_rows(lines: list[str]) -> tuple[list[str], list[list[str]]]:
@@ -433,16 +586,16 @@ THEORY_VIEWS = (("design-theory", "Design theory"), ("methods", "Design methods"
 # 10 to 12, then the methods drawing. The other keys stay for old links and for Insight.
 
 
-def studio_html(root: Path, drawing: Path = STUDIO) -> str:
+def studio_html(root: Path, drawing: Path = STUDIO, note: str = "") -> str:
     """Theory › Methods studio: the methods drawing in the Excalidraw canvas, editable, as
     the Paper workbench's RoadMap Draw shows a Story's drawing. It loads only when shown."""
     rel = _href(root, drawing) if Path(drawing).is_file() else ""
     if not rel:
-        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>ref/design-methods.excalidraw</code>.</div>'
+        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>b12_theme_design/studio/s03-design-methods/parts/design-methods.excalidraw</code>.</div>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
-    return ('<div class=st-bar><span class=mut>The four kinds of reasoning, three inputs, Design and the Exp, the Revise '
-            'and Learning loops, three families, the cards and the tests. Edits save to '
-            '<code>ref/design-methods.excalidraw</code>.</span>'
+    note = note or ('The four kinds of reasoning, three inputs, Design and the Exp, the Revise and Learning loops, '
+                    'three families, the cards and the tests.')
+    return (f'<div class=st-bar><span class=mut>{_e(note)} Edits save to <code>{_e(Path(drawing).name)}</code>.</span>'
             f'<a href="{_e(url)}" target="_blank" rel="noopener">Open full screen ↗</a></div>'
             # no referrer: Excalidraw refuses a same-site embed ("I'm not a pretzel!")
             f'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" data-src="{_e(url)}"></iframe>')
@@ -463,10 +616,13 @@ def theory_page(board: Path, root: Path | None = None, view: str = "design-theor
         "methods": lambda: (f'<article class="theory">{_plain_md(_read(METHODS), method_cards(board, root or board, METHODS, PAPERS, in_use="in the Exp", now="in Evaluate"))}</article>'
                             if METHODS.is_file() else '<div class=empty>No design methods file is present.</div>'),
         "studio": lambda: studio_html(root or board, STUDIO),
+        "unit": lambda: studio_html(root or board, UNIT, "One design unit in five steps; ③ and ④ run once per "
+                                    "idea. Above, every choice in each step; below, one row per method, holding "
+                                    "only the choices that make it."),
         "papers": lambda: papers_page(board, root or board, PAPERS)}
     wanted = set(only) if only else {k for k, _ in THEORY_VIEWS if k != "method"}
     if "method" in wanted:
-        wanted |= {"methods", "studio"}
+        wanted |= {"methods", "studio", "unit"}
     views = {k: build() for k, build in builders.items() if k in wanted}
     if "method" in wanted:
         untitled = lambda h: re.sub(r"<h1>.*?</h1>", "", h, count=1)
@@ -485,7 +641,11 @@ def theory_page(board: Path, root: Path | None = None, view: str = "design-theor
         # the drawing in a folding card, as Guide › RoadMap Draw shows "Workbench design" (JL 261003)
         # no subtitle under the card's name (JL 261003: "do not add this, delete it")
         views["method"] = ('<details class=draw-fold><summary><strong>Method design</strong>'
-                           f'</summary><div class=draw-body>{views["studio"]}</div></details>' + page)
+                           f'</summary><div class=draw-body>{views["studio"]}</div></details>'
+                           # the design unit beside it (JL 261004: "put it in the method")
+                           '<details class=draw-fold><summary><strong>Design unit · See input → Reason ideas → '
+                           'Conduct process → Check output → Check overall</strong></summary>'
+                           f'<div class=draw-body>{views["unit"]}</div></details>' + page)
     labels = dict(THEORY_VIEWS)        # `only` also sets the order (Guide's Method: methods first, theory last)
     plain = [(k, v) for k, v in THEORY_VIEWS if k != "method"]    # Method shows only when asked for
     shown = [(k, labels[k]) for k in only if k in labels] if only else plain
@@ -498,7 +658,7 @@ def theory_page(board: Path, root: Path | None = None, view: str = "design-theor
 
 
 # Theory › Papers (JL 261001): the papers behind the theory, one card each. The rows are the
-# workbench's own `ref/design-papers.md`, the same for every board (JL 261002: "put them in
+# workbench's own `related/papers.md`, the same for every board (JL 261002: "put them in
 # the Tools of the workbench of the design"). The table's shape and check are the shared
 # rule skills/0_utils/table-papers; its renderer is the shared live.related_papers (JL 261003:
 # "this is the rule and should be shared"), imported here under the names it always had.
@@ -506,7 +666,7 @@ from .related_papers import (PAPER_ROLES, UTD24, _href, _paper_card, _paper_pdf,
                              is_utd24, paper_id, paper_rows, paper_runs, short_cite)
 from .related_papers import papers_page as _papers_page  # noqa: E402
 
-PAPERS = SKILLS / "design" / "haipipe-workbench-design" / "ref" / "design-papers.md"
+PAPERS = Path(__file__).resolve().parent / "related" / "papers.md"
 
 
 def papers_page(board: Path, root: Path, table: Path = PAPERS) -> str:
@@ -766,6 +926,9 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
              f'{len(snapshot["folders"])} Design page{"s" if len(snapshot["folders"]) != 1 else ""}']
     if designs:
         facts.append(f"{designs} designs")
+    if snapshot.get("methods"):
+        n = sum(1 for g in snapshot["methods"] if g["key"])
+        facts.insert(2, f'{n} method{"s" if n != 1 else ""}')
     header = (
         # the board's short name, the words before its title's colon (JL 261003: "this is too long");
         # the full title stays in the hover
@@ -847,12 +1010,15 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
                 + f'<details class=fam-moves><summary>Its methods: {_e(" · ".join(m["name"] for m in fam["methods"]))}</summary>'
                   f'<ul class=fam-methods>{moves}</ul></details>')
         views.append((f"fam-{n}", label, body))      # the family name is the tab (JL 261003: Goal Only, …)
-    goal_html = ('<div class=views>' + "".join(f'<button type=button data-view="{k}"{" class=on" if k == "all" else ""}>{_e(v)}</button>'
+    if snapshot.get("methods"):
+        views = _method_views(snapshot, rows)
+    first = views[0][0] if views else "all"          # the View that opens: All, or the first method
+    goal_html = ('<div class=views>' + "".join(f'<button type=button data-view="{k}"{" class=on" if k == first else ""}>{_e(v)}</button>'
                                              for k, v, _ in views) + '</div>'
-                 + "".join(f'<div class="view{" on" if k == "all" else ""}" data-view="{k}">{b}</div>' for k, _, b in views))
+                 + "".join(f'<div class="view{" on" if k == first else ""}" data-view="{k}">{b}</div>' for k, _, b in views))
     if snapshot["unlisted"]:
         goal_html += ('<div class=mut>folders no design task lists: '
-                      + ", ".join(f'<a href="{_e(_page_url(snapshot, f["rel"], "goal"))}"><code>{_e(f["name"])}</code></a>'
+                      + ", ".join(f'<a href="{_e(_page_url(snapshot, f["rel"], "goal"))}"><code>{_e(f["label"])}</code></a>'
                                   for f in snapshot["unlisted"]) + '</div>')
     rules = shared_rules(snapshot["items"])
     if rules:
@@ -863,7 +1029,7 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
         goal_html += (f'<div class=mut><a href="/_board/design-bundle?path={quote(board_path_of(snapshot), safe="")}">'
                       f'↓ Download all designs · {count} · csv</a></div>')
 
-    # JL 261002 ("follow the design here, workbench-shared"; "work on the guide space first"):
+    # JL 261002 ("follow the design here, workbench"; "work on the guide space first"):
     # the theory of design explains the family, so it is Guide › Method now, the same on
     # every board (render_theory_embed). The board keeps one working Space, its design tasks.
 
@@ -871,7 +1037,7 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
     # every design draws on. Every design, run and delivery lives at the page level.
     root = Path(snapshot["root"])
     board_rel = board_path_of(snapshot).lstrip("/")
-    runs = [r for f in snapshot["folders"] for r in (dict(x, folder=f["name"]) for x in f["runs"])]
+    runs = [r for f in snapshot["folders"] for r in (dict(x, folder=f.get("label", f["name"])) for x in f["runs"])]
     panes = {"tasks": goal_html}
     for key in panes:
         panel = design_runs_panel(key, runs, root=root, page=board_rel, board=board_rel,
@@ -891,8 +1057,11 @@ def render_design_board(snapshot: dict, space: str = "tasks", view: str = "desig
         "if(w){var u=new URL(location.href);u.searchParams.set('space',s);history.replaceState({},'',u)}}"
         "bs.forEach(function(b){b.onclick=function(){sel(b.dataset.space,true)}});"
         + _THEORY_JS +
+        "document.querySelectorAll('.steps button').forEach(function(b){b.onclick=function(){var v=b.closest('.view')||document;"
+        "v.querySelectorAll('.steps button').forEach(function(x){x.classList.toggle('on',x===b)});"
+        "v.querySelectorAll('.step').forEach(function(x){x.classList.toggle('on',x.dataset.step===b.dataset.step)})}});"
         "document.querySelectorAll('button.do').forEach(function(b){b.onclick=function(){"
-        "var box=b.closest('[data-act]'),msg=b.parentNode.querySelector('.msg'),body={path:BOARD,action:b.dataset.action,row:b.dataset.row||''};"
+        "var box=b.closest('[data-act]'),msg=b.parentNode.querySelector('.msg'),body={path:BOARD,action:b.dataset.action,row:b.dataset.row||'',method:b.dataset.method||''};"
         "if(box){box.querySelectorAll('input,textarea,select').forEach(function(f){if(f.name)body[f.name]=f.value})}"
         "msg.className='msg';msg.textContent='writing…';b.disabled=true;"
         "fetch('/_board/design-board-act',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})"
@@ -927,11 +1096,11 @@ def bundle_rows(snapshot: dict) -> list[dict]:
         design = i.get("ready")
         if not design:
             continue
-        line = by_folder.get(i["folder"], {})
+        line = by_folder.get(i.get("folder_name", i["folder"]), {})
         rows.append({
             "line": line.get("id", ""), "who": line.get("audience") or i.get("audience", ""),
             "their_job": line.get("job") or i.get("job", ""), "venue": line.get("venue") or i.get("type", ""),
-            "folder": i["folder"], "item": i["id"], "title": i["title"], "state": i["state"], "text": with_link(design["text"]),
+            "folder": i["folder"], "method": i.get("method", ""), "item": i["id"], "title": i["title"], "state": i["state"], "text": with_link(design["text"]),
             "draft_run": design["run"], "because": because_words(i),
             "render": i["render"]["render"] if i.get("render") else "",
         })
@@ -944,7 +1113,9 @@ def bundle_csv(snapshot: dict, folder: str = "") -> str:
     import io
     out = io.StringIO()
     fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "render", "because"]
-    writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n")
+    if snapshot.get("methods"):              # a board with method folders says each design's method
+        fields.insert(fields.index("folder") + 1, "method")
+    writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n", extrasaction="ignore")
     writer.writeheader()
     for row in bundle_rows(snapshot):
         if not folder or row["folder"] == folder:
@@ -1076,7 +1247,7 @@ def add_tasks(board_root: Path, subgroups: list[str], job: str, venue: str, desi
     return {"lines": new_ids, "folders": folders, "brief": brief.name}
 
 
-def new_folder(board_root: Path, row_id: str) -> dict:
+def new_folder(board_root: Path, row_id: str, method: str = "") -> dict:
     """Open a Design Folder for one Brief line that has none, and name it on the line.
 
     The line is found by its place in the task table (a Brief with no `line`
@@ -1091,6 +1262,8 @@ def new_folder(board_root: Path, row_id: str) -> dict:
     if index is None:
         raise ValueError(f"that design task is not in {brief.name}; reload the page")
     row = rows[index]
+    if method:
+        return _new_method_folder(board_root, brief, text, rows, index, method)
     if row["folder"]:
         raise ValueError(f"{design_title(row)} already has its folder {row['folder']}")
     lines = text.splitlines()
@@ -1107,15 +1280,21 @@ def new_folder(board_root: Path, row_id: str) -> dict:
     group.mkdir(exist_ok=True)
     numbers = [int(m.group(1)) for p in group.iterdir() if (m := _FOLDER_ID.match(p.name))]
     name = f"Design-{max(numbers, default=0) + 1:02d}-{_slug(row['audience'])}-{_slug(row['job'])}-{_slug(row['venue'])}"
+    return _finish_new_folder(board_root, brief, text, lines, target, folder_col, name, row)
+
+
+def _write_design_folder(folder: Path, name: str, row: dict, method: str = "") -> None:
+    """A new Design Folder: its Page and its empty Design Item register."""
+    board_root = folder.parent.parent
     title = design_title(row)
     wanted = row["designs"]
     count = "" if wanted == 1 else f"{wanted} " if wanted else ""
     ask = (f"Which {count}{row['job'].strip()} {venue_word(row['venue'])} design{'' if wanted == 1 else 's'} "
            f"should we make for {row['audience'].strip()}?")
-    folder = group / name
     folder.mkdir()
     (folder / f"{name}.md").write_text(
-        f"# {title}\nfolder-kind: design\nstate: 🔴 OPEN · no design registered yet\nowner: {_owner(board_root)}\n\n"
+        f"# {title}\nfolder-kind: design\n" + (f"method: {method} · `../method.md`\n" if method else "")
+        + f"state: 🔴 OPEN · no design registered yet\nowner: {_owner(board_root)}\n\n"
         f"## Opening\n\n{ask}\n\nListed in the board's design tasks.\n\n"
         f"## Outline\n\nDesign Items are registered in `draft/{name}-design-items.md`; their drafts,\n"
         "verifications are `run-design-*` Runs; a passed Verify is ready for Delivery.\n\n## Content\n\nDraft wording lives in "
@@ -1127,6 +1306,11 @@ def new_folder(board_root: Path, row_id: str) -> dict:
         f"# {title} · Design Items\n\nOne block per design target: the goal, its evidence, and its acceptance rules.\n"
         "Runs name an item through `item:`; state is derived from those Runs, never typed here.\n",
         encoding="utf-8")
+
+
+def _finish_new_folder(board_root, brief, text, lines, target, folder_col, name, row) -> dict:
+    group = board_root / DESIGN_GROUP
+    _write_design_folder(group / name, name, row)
     cells = [c.strip() for c in _ROW.match(lines[target]).group(1).split("|")]
     while len(cells) <= folder_col:
         cells.append("")
@@ -1135,6 +1319,40 @@ def new_folder(board_root: Path, row_id: str) -> dict:
     brief.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
     _list_page(board_root, f"{DESIGN_GROUP}/{name}/{name}.md")
     return {"folder": name, "rel": f"{DESIGN_GROUP}/{name}/{name}.md", "brief_updated": True}
+
+
+def _new_method_folder(board_root: Path, brief: Path, text: str, rows: list[dict], index: int, method: str) -> dict:
+    """One Brief task's Design Folder under one method: the task's Design-NN name, the same under
+    every method. A task with no folder name yet takes the next free number, written to the Brief."""
+    groups = {g["group"]: g for g in design_groups(board_root) if g["key"]}
+    if method not in groups:
+        raise ValueError(f"no method folder {method!r} on this board")
+    row, group = rows[index], groups[method]["dir"]
+    name, brief_updated = row["folder"], False
+    if not name:
+        used = [int(m.group(1)) for g in design_groups(board_root) for p in g["dir"].iterdir()
+                if (m := _FOLDER_ID.match(p.name))]
+        used += [int(m.group(1)) for r in rows if (m := _FOLDER_ID.match(r["folder"] or ""))]
+        name = f"Design-{max(used, default=0) + 1:02d}-{_slug(row['audience'])}-{_slug(row['job'])}-{_slug(row['venue'])}"
+        lines = text.splitlines()
+        lines, _ = _ensure_columns(lines, *_table_bounds(lines))
+        start, end, header = _table_bounds(lines)
+        data_rows = [i for i in range(start + 1, end)
+                     if not all(set(c.strip()) <= set("-: ") for c in _ROW.match(lines[i]).group(1).split("|"))]
+        folder_col = next(i for i, c in enumerate(header) if "folder" in c)
+        cells = [c.strip() for c in _ROW.match(lines[data_rows[index]]).group(1).split("|")]
+        while len(cells) <= folder_col:
+            cells.append("")
+        cells[folder_col] = f"`{name}`"
+        lines[data_rows[index]] = "| " + " | ".join(cells) + " |"
+        brief.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
+        brief_updated = True
+    if (group / name).exists():
+        raise ValueError(f"{design_title(row)} already has its folder under {method}")
+    _write_design_folder(group / name, name, row, method=groups[method]["label"])
+    rel = f"{method}/{name}/{name}.md"
+    _list_page(board_root, rel)
+    return {"folder": name, "rel": rel, "brief_updated": brief_updated}
 
 
 def _owner(board_root: Path) -> str:
@@ -1251,7 +1469,7 @@ class DesignBoardMixin:
         path_q = quote(payload.get("path") or "")
         try:
             if action == "new-folder":
-                out = new_folder(board, str(payload.get("row") or ""))
+                out = new_folder(board, str(payload.get("row") or ""), str(payload.get("method") or ""))
                 out["url"] = "/_board/design?path=%s&file=%s&space=goal" % (path_q, quote(out["rel"], safe=""))
             elif action == "add-tasks":
                 try:

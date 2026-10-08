@@ -1,0 +1,2218 @@
+{
+ "views__01": {
+  "element": "views",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Scope",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__01": {
+  "element": "space",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Scope",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "table__01": {
+  "element": "table",
+  "place": "Block › Description › Scope",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Scope",
+  "selector": "table.wf-table|14px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Scope",
+   "Block › Work Details › Jobs",
+   "Block › Work Details › Evidence",
+   "Job › Description › Version",
+   "Task › Description › Scope",
+   "Task › Description › Records",
+   "Job › Description › Version (Job · the next version (j02))",
+   "Block › Description › Scope (Block · an older Board (A1-Story layout))",
+   "Block › Work Details › Jobs (Block · an older Board (A1-Story layout))",
+   "Job › Description › Story (Job · the older Board's Story group (A1-Story))",
+   "Job › Work Details › Pages (Job · the older Board's Story group (A1-Story))"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "table.wf-table"
+ },
+ "cards__01": {
+  "element": "cards",
+  "place": "Block › Description › Related",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Related",
+  "selector": "details.rp-card|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Related",
+   "Block › Description › Related (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.rp-card"
+ },
+ "cards__02": {
+  "element": "cards",
+  "place": "Block › Description › Related",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Related",
+  "selector": "details.rp-card|15px|0px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Related",
+   "Block › Description › Related (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.rp-card"
+ },
+ "space__02": {
+  "element": "space",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__03": {
+  "element": "cards",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Idea+Studio",
+  "selector": "details.topic|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio",
+   "Job › Delivery",
+   "Task › Description › Requirement",
+   "Job › Delivery (Job · the next version (j02))",
+   "Block › Idea Studio (Block · an older Board (A1-Story layout))",
+   "Job › Idea Studio (Job · the older Board's Story group (A1-Story))"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.topic"
+ },
+ "tags__01": {
+  "element": "tags",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Idea+Studio",
+  "selector": "a.chip|12px|999px|0px 8px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio"
+  ],
+  "font": "12px 400",
+  "radius": "999px",
+  "padding": "0px 8px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.chip"
+ },
+ "tabs__01": {
+  "element": "tabs",
+  "place": "Block · the paper Board",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · the paper Board"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__02": {
+  "element": "views",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.tab"
+ },
+ "report__01": {
+  "element": "report",
+  "place": "Block › Audience Report › Ideation",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "div.q-row|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › Ideation",
+   "Block › Audience Report › Narrative",
+   "Job › Audience Report › Questions",
+   "Job › Audience Report › Questions (Job · the next version (j02))",
+   "Block › Audience Report › Ideation (Block · an older Board (A1-Story layout))",
+   "Block › Audience Report › Narrative (Block · an older Board (A1-Story layout))",
+   "Job › Audience Report › Ideation (Job · the older Board's Story group (A1-Story))",
+   "Job › Audience Report › Narrative (Job · the older Board's Story group (A1-Story))"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "space__03": {
+  "element": "space",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "runs__01": {
+  "element": "runs",
+  "place": "Block · the paper Board",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · the paper Board"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__02": {
+  "element": "tags",
+  "place": "Block › Audience Report › Ideation",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "span.kind|12.5px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › Ideation",
+   "Block › Audience Report › Narrative",
+   "Job › Audience Report › Questions",
+   "Job › Audience Report › Questions (Job · the next version (j02))",
+   "Block › Audience Report › Ideation (Block · an older Board (A1-Story layout))",
+   "Block › Audience Report › Narrative (Block · an older Board (A1-Story layout))",
+   "Job › Audience Report › Ideation (Job · the older Board's Story group (A1-Story))",
+   "Job › Audience Report › Narrative (Job · the older Board's Story group (A1-Story))"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.kind"
+ },
+ "header__01": {
+  "element": "header",
+  "place": "Block · the paper Board",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · the paper Board"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "report__02": {
+  "element": "report",
+  "place": "Block › Audience Report › High-level logic + Low-level work",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=High-level+logic+%2B+Low-level+work",
+  "selector": "div.lw-row|12px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › High-level logic + Low-level work",
+   "Block › Audience Report › High-level logic + Low-level work (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "12px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "div.lw-row"
+ },
+ "report__03": {
+  "element": "report",
+  "place": "Block › Audience Report › High-level logic + Low-level work",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=High-level+logic+%2B+Low-level+work",
+  "selector": "details.qc|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › High-level logic + Low-level work",
+   "Block › Audience Report › High-level logic + Low-level work (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "15.5px 650",
+  "radius": "0px",
+  "padding": "12px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "details.qc"
+ },
+ "report__04": {
+  "element": "report",
+  "place": "Block › Audience Report › High-level logic + Low-level work",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=High-level+logic+%2B+Low-level+work",
+  "selector": "details.qc|15px|0px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › High-level logic + Low-level work",
+   "Block › Audience Report › High-level logic + Low-level work (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "15.5px 650",
+  "radius": "0px",
+  "padding": "12px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "details.qc"
+ },
+ "tags__03": {
+  "element": "tags",
+  "place": "Block › Audience Report › High-level logic + Low-level work",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=High-level+logic+%2B+Low-level+work",
+  "selector": "span.item-kind|12px|999px|1px 8px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › High-level logic + Low-level work",
+   "Job › Audience Report › Draft-Main",
+   "Job › Audience Report › Draft-Appendix",
+   "Job › Audience Report › Cover letter",
+   "Job › Audience Report › Draft-Main (Job · the next version (j02))",
+   "Job › Audience Report › Draft-Appendix (Job · the next version (j02))",
+   "Job › Audience Report › Comments (Job · the next version (j02))",
+   "Job › Audience Report › Cover letter (Job · the next version (j02))",
+   "Job › Work Details › Letters (Job · the next version (j02))",
+   "Block › Audience Report › High-level logic + Low-level work (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "12px 650",
+  "radius": "999px",
+  "padding": "1px 8px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.item-kind"
+ },
+ "views__03": {
+  "element": "views",
+  "place": "Block › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Jobs",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__04": {
+  "element": "space",
+  "place": "Block › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Jobs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "cards__04": {
+  "element": "cards",
+  "place": "Block › Work Details › Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Main",
+  "selector": "div.sec-row|15px|0px|9px 12px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Main",
+   "Block › Work Details › Appendix",
+   "Job › Work Details › All",
+   "Job › Work Details › Main",
+   "Job › Work Details › Appendix",
+   "Job › Work Details › All (Job · the next version (j02))",
+   "Job › Work Details › Main (Job · the next version (j02))",
+   "Job › Work Details › Appendix (Job · the next version (j02))"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.sec-row"
+ },
+ "cards__05": {
+  "element": "cards",
+  "place": "Block › Work Details › Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Main",
+  "selector": "div.sec-row|15px|0px|9px 12px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Main",
+   "Block › Work Details › Appendix",
+   "Job › Work Details › All",
+   "Job › Work Details › Main",
+   "Job › Work Details › Appendix",
+   "Job › Work Details › All (Job · the next version (j02))",
+   "Job › Work Details › Main (Job · the next version (j02))",
+   "Job › Work Details › Appendix (Job · the next version (j02))"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.sec-row"
+ },
+ "tags__04": {
+  "element": "tags",
+  "place": "Block › Work Details › Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Main",
+  "selector": "span.sec-state|13px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Main",
+   "Block › Work Details › Appendix",
+   "Job › Work Details › All",
+   "Job › Work Details › Main",
+   "Job › Work Details › Appendix",
+   "Job › Work Details › All (Job · the next version (j02))",
+   "Job › Work Details › Main (Job · the next version (j02))",
+   "Job › Work Details › Appendix (Job · the next version (j02))"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.sec-state"
+ },
+ "tags__05": {
+  "element": "tags",
+  "place": "Block › Work Details › Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Main",
+  "selector": "span.sec-ver|13px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Main",
+   "Block › Work Details › Appendix",
+   "Job › Work Details › All",
+   "Job › Work Details › Main",
+   "Job › Work Details › Appendix",
+   "Job › Work Details › All (Job · the next version (j02))",
+   "Job › Work Details › Main (Job · the next version (j02))",
+   "Job › Work Details › Appendix (Job · the next version (j02))"
+  ],
+  "font": "13px 500",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.sec-ver"
+ },
+ "space__05": {
+  "element": "space",
+  "place": "Block › Runs",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Runs"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "views__04": {
+  "element": "views",
+  "place": "Block › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__06": {
+  "element": "space",
+  "place": "Block › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Delivery"
+  ],
+  "font": "11.5px 600",
+  "radius": "0px",
+  "padding": "9px 11px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "th"
+ },
+ "table__02": {
+  "element": "table",
+  "place": "Block › Delivery › LaTeX",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "table.grid|14.5px|9px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery › LaTeX",
+   "Block › Delivery › Word"
+  ],
+  "font": "11.5px 600",
+  "radius": "0px",
+  "padding": "9px 11px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "table.grid"
+ },
+ "cards__06": {
+  "element": "cards",
+  "place": "Block › Delivery › LaTeX",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "div.item-row|16px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery › LaTeX",
+   "Block › Delivery › Word"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.item-row"
+ },
+ "cards__07": {
+  "element": "cards",
+  "place": "Block › Delivery › LaTeX",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "div.item-row|16px|0px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery › LaTeX",
+   "Block › Delivery › Word"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.item-row"
+ },
+ "tags__06": {
+  "element": "tags",
+  "place": "Block › Delivery › LaTeX",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "span.ok|14.5px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery › LaTeX",
+   "Block › Delivery › Word"
+  ],
+  "font": "14.5px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(58, 125, 68)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.ok"
+ },
+ "tags__07": {
+  "element": "tags",
+  "place": "Block › Delivery › LaTeX",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": "span.warn|14.5px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery › LaTeX",
+   "Block › Delivery › Word"
+  ],
+  "font": "14.5px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(179, 84, 30)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.warn"
+ },
+ "views__05": {
+  "element": "views",
+  "place": "Job › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Description&sub=Version",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__07": {
+  "element": "space",
+  "place": "Job › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Description&sub=Version",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__08": {
+  "element": "space",
+  "place": "Job › Idea Studio",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "tabs__02": {
+  "element": "tabs",
+  "place": "Job · a version (j01)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Questions",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · a version (j01)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__06": {
+  "element": "views",
+  "place": "Job › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Questions",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__09": {
+  "element": "space",
+  "place": "Job › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Questions",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "runs__02": {
+  "element": "runs",
+  "place": "Job · a version (j01)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Questions",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · a version (j01)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__02": {
+  "element": "header",
+  "place": "Job · a version (j01)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Questions",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · a version (j01)"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "cards__08": {
+  "element": "cards",
+  "place": "Job › Audience Report › Draft-Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Draft-Main",
+  "selector": "details.item-card|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report › Draft-Main",
+   "Job › Audience Report › Draft-Appendix",
+   "Job › Audience Report › Cover letter",
+   "Job › Audience Report › Draft-Main (Job · the next version (j02))",
+   "Job › Audience Report › Draft-Appendix (Job · the next version (j02))",
+   "Job › Audience Report › Comments (Job · the next version (j02))",
+   "Job › Audience Report › Cover letter (Job · the next version (j02))",
+   "Job › Work Details › Letters (Job · the next version (j02))"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.item-card"
+ },
+ "tags__08": {
+  "element": "tags",
+  "place": "Job › Audience Report › Draft-Main",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Draft-Main",
+  "selector": "span.item-status|14px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report › Draft-Main",
+   "Job › Audience Report › Draft-Appendix",
+   "Job › Audience Report › Cover letter",
+   "Job › Audience Report › Draft-Main (Job · the next version (j02))",
+   "Job › Audience Report › Draft-Appendix (Job · the next version (j02))",
+   "Job › Audience Report › Comments (Job · the next version (j02))",
+   "Job › Audience Report › Cover letter (Job · the next version (j02))",
+   "Job › Work Details › Letters (Job · the next version (j02))"
+  ],
+  "font": "14px 650",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.item-status"
+ },
+ "views__07": {
+  "element": "views",
+  "place": "Job › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Work+Details&sub=All",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__10": {
+  "element": "space",
+  "place": "Job › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Work+Details&sub=All",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.sec-open"
+ },
+ "space__11": {
+  "element": "space",
+  "place": "Job › Runs",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Runs"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__12": {
+  "element": "space",
+  "place": "Job › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "views__08": {
+  "element": "views",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Description&sub=Scope",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__13": {
+  "element": "space",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Description&sub=Scope",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__14": {
+  "element": "space",
+  "place": "Task › Idea Studio",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "tabs__03": {
+  "element": "tabs",
+  "place": "Task · a Section (j01 › t01_introduction)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a Section (j01 › t01_introduction)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__09": {
+  "element": "views",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__15": {
+  "element": "space",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "runs__03": {
+  "element": "runs",
+  "place": "Task · a Section (j01 › t01_introduction)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a Section (j01 › t01_introduction)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__03": {
+  "element": "header",
+  "place": "Task · a Section (j01 › t01_introduction)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a Section (j01 › t01_introduction)"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "views__10": {
+  "element": "views",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Work+Details&sub=Draft-Scratch",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__16": {
+  "element": "space",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Work+Details&sub=Draft-Scratch",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__17": {
+  "element": "space",
+  "place": "Task › Runs",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Runs"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__18": {
+  "element": "space",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "cards__09": {
+  "element": "cards",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Delivery",
+  "selector": "div.topic|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "div.topic"
+ },
+ "tags__09": {
+  "element": "tags",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Delivery",
+  "selector": "span.st-ok|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(36, 115, 61)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.st-ok"
+ },
+ "tags__10": {
+  "element": "tags",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Delivery",
+  "selector": "span.st-warn|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(153, 107, 0)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.st-warn"
+ },
+ "tags__11": {
+  "element": "tags",
+  "place": "Job › Audience Report › Questions (Job · the next version (j02))",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Audience+Report&sub=Questions",
+  "selector": "p.rp-tags|12.5px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report › Questions (Job · the next version (j02))",
+   "Job › Audience Report › Ideation (Job · the older Board's Story group (A1-Story))"
+  ],
+  "font": "12.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.rp-tags"
+ },
+ "tags__12": {
+  "element": "tags",
+  "place": "Block › Description › Related (Block · an older Board (A1-Story layout))",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-PatientSimulation%2Fpapers%2FPaper-LLMSocialOutcome-PNAS2026&space=Description&sub=Related",
+  "selector": "span.warn|13px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Related (Block · an older Board (A1-Story layout))"
+  ],
+  "font": "13px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(179, 84, 30)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.warn"
+ },
+ "tabs__04": {
+  "element": "tabs",
+  "place": "the old paper Board page (paper.py render_paper)",
+  "url": "render:board",
+  "selector": "div.spaces",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "space__19": {
+  "element": "space",
+  "place": "the old paper Board page (paper.py render_paper) › ideation",
+  "url": "render:board",
+  "selector": ".space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › ideation"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__10": {
+  "element": "cards",
+  "place": "the old paper Board page (paper.py render_paper) › ideation",
+  "url": "render:board",
+  "selector": "details.item-card|16px|10px|0px 0px|1px solid",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › ideation"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.item-card"
+ },
+ "runs__04": {
+  "element": "runs",
+  "place": "the old paper Board page (paper.py render_paper)",
+  "url": "render:board",
+  "selector": ".runs-panel",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper)"
+  ],
+  "font": "12px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__13": {
+  "element": "tags",
+  "place": "the old paper Board page (paper.py render_paper) › ideation",
+  "url": "render:board",
+  "selector": "span.item-status|14px|0px|0px 0px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › ideation"
+  ],
+  "font": "14px 650",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(58, 125, 68)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.item-status"
+ },
+ "tags__14": {
+  "element": "tags",
+  "place": "the old paper Board page (paper.py render_paper) › ideation",
+  "url": "render:board",
+  "selector": "span.item-kind|12px|999px|1px 8px|1px solid",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › ideation",
+   "the old paper Board page (paper.py render_paper) › story › logic-work"
+  ],
+  "font": "12px 650",
+  "radius": "999px",
+  "padding": "1px 8px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.item-kind"
+ },
+ "header__04": {
+  "element": "header",
+  "place": "the old paper Board page (paper.py render_paper)",
+  "url": "render:board",
+  "selector": "h1|.wb-band",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper)"
+  ],
+  "font": "18px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "views__11": {
+  "element": "views",
+  "place": "the old paper Board page (paper.py render_paper) › story",
+  "url": "render:board",
+  "selector": ".space-tabs|.space-views",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "space__20": {
+  "element": "space",
+  "place": "the old paper Board page (paper.py render_paper) › story",
+  "url": "render:board",
+  "selector": ".space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": true,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "cards__11": {
+  "element": "cards",
+  "place": "the old paper Board page (paper.py render_paper) › story › spine",
+  "url": "render:board",
+  "selector": "div.item-row|16px|0px|0px 0px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › spine"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.item-row"
+ },
+ "cards__12": {
+  "element": "cards",
+  "place": "the old paper Board page (paper.py render_paper) › story › spine",
+  "url": "render:board",
+  "selector": "div.card|16px|0px|12px 4px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › spine"
+  ],
+  "font": "13px 500",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.card"
+ },
+ "report__05": {
+  "element": "report",
+  "place": "the old paper Board page (paper.py render_paper) › story › logic-work",
+  "url": "render:board",
+  "selector": "div.lw-row|12px|0px|0px 0px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › logic-work"
+  ],
+  "font": "12px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "div.lw-row"
+ },
+ "report__06": {
+  "element": "report",
+  "place": "the old paper Board page (paper.py render_paper) › story › logic-work",
+  "url": "render:board",
+  "selector": "details.qc|16px|0px|0px 0px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › logic-work"
+  ],
+  "font": "15.5px 650",
+  "radius": "0px",
+  "padding": "12px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "details.qc"
+ },
+ "report__07": {
+  "element": "report",
+  "place": "the old paper Board page (paper.py render_paper) › story › logic-work",
+  "url": "render:board",
+  "selector": "details.qc|16px|0px|0px 0px|1px solid",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › logic-work"
+  ],
+  "font": "15.5px 650",
+  "radius": "0px",
+  "padding": "12px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "details.qc"
+ },
+ "cards__13": {
+  "element": "cards",
+  "place": "the old paper Board page (paper.py render_paper) › story › related",
+  "url": "render:board",
+  "selector": "details.rp-card|16px|0px|0px 0px|0px none",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › related"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.rp-card"
+ },
+ "cards__14": {
+  "element": "cards",
+  "place": "the old paper Board page (paper.py render_paper) › story › related",
+  "url": "render:board",
+  "selector": "details.rp-card|16px|0px|0px 0px|1px solid",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › story › related"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.rp-card"
+ },
+ "views__12": {
+  "element": "views",
+  "place": "the old paper Board page (paper.py render_paper) › sections",
+  "url": "render:board",
+  "selector": ".space-tabs|.space-views",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › sections"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "space__21": {
+  "element": "space",
+  "place": "the old paper Board page (paper.py render_paper) › sections",
+  "url": "render:board",
+  "selector": ".space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › sections"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "views__13": {
+  "element": "views",
+  "place": "the old paper Board page (paper.py render_paper) › delivery",
+  "url": "render:board",
+  "selector": ".space-tabs|.space-views",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "space__22": {
+  "element": "space",
+  "place": "the old paper Board page (paper.py render_paper) › delivery",
+  "url": "render:board",
+  "selector": ".space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": true,
+  "seen": [
+   "the old paper Board page (paper.py render_paper) › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "tabs__05": {
+  "element": "tabs",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "div.spaces",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": false,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__14": {
+  "element": "views",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": ".draft-mode-switcher",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": false,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "cards__15": {
+  "element": "cards",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "div.card|15px|0px|0px 0px|0px none",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": true,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "11px 600",
+  "radius": "5px",
+  "padding": "4px 7px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "div.card"
+ },
+ "cards__16": {
+  "element": "cards",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "div.point-group|15px|0px|0px 0px|0px none",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": false,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "10.5px 500",
+  "radius": "3px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.point-group"
+ },
+ "runs__05": {
+  "element": "runs",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "section.runs-panel",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": false,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__05": {
+  "element": "header",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "h1|.wb-band",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": false,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "18px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "views__15": {
+  "element": "views",
+  "place": "a Section's Page Runs page (/_board/runs)",
+  "url": "/_board/runs?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": ".run-space-switcher",
+  "old": "old item page: the Task's Runs Space embeds it whole, in its own look",
+  "cut": false,
+  "seen": [
+   "a Section's Page Runs page (/_board/runs)"
+  ],
+  "font": "13px 400",
+  "radius": "7px",
+  "padding": "5px 10px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(247, 247, 248)",
+  "tag": "button.run-space-tab"
+ },
+ "cards__17": {
+  "element": "cards",
+  "place": "a Section's Page Runs page (/_board/runs)",
+  "url": "/_board/runs?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "div.run-card-summary|14px|0px|10px 12px|0px none",
+  "old": "old item page: the Task's Runs Space embeds it whole, in its own look",
+  "cut": false,
+  "seen": [
+   "a Section's Page Runs page (/_board/runs)"
+  ],
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "10px 12px",
+  "border": "rgb(28, 29, 31)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.run-card-summary"
+ },
+ "tags__15": {
+  "element": "tags",
+  "place": "a Section's Page Runs page (/_board/runs)",
+  "url": "/_board/runs?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": "div.run-card-action|13px|0px|0px 0px|0px none",
+  "old": "old item page: the Task's Runs Space embeds it whole, in its own look",
+  "cut": false,
+  "seen": [
+   "a Section's Page Runs page (/_board/runs)"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(113, 114, 122)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.run-card-action"
+ },
+ "header__06": {
+  "element": "header",
+  "place": "one run's results page (/_board/run-result), from a High-level logic row",
+  "url": "/_board/run-result?task=examples-4-learning/Project-ExpLearn-SMSDesign/tasks/b01_sms_message_design/j01_dikw_message_design/scripts/t01_generate_message_designs&run=_run",
+  "selector": "h1",
+  "old": "old item page: a run's results open outside the frame, not in its pop-out",
+  "cut": false,
+  "seen": [
+   "one run's results page (/_board/run-result), from a High-level logic row"
+  ],
+  "font": "20px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "item__01": {
+  "element": "item",
+  "place": "Task › Audience Report › Table: the Section's Page view, embedded in the frame",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Audience Report › Table: the Section's Page view, embedded in the frame"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "item__02": {
+  "element": "item",
+  "place": "Task › Work Details › Draft-Revise: the Page's draft, embedded",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Work+Details&sub=Draft-Revise",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Work Details › Draft-Revise: the Page's draft, embedded"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "item__03": {
+  "element": "item",
+  "place": "Job › Work Details › Main: a Section's row, ↗ leaves the frame",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Work+Details&sub=Main",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details › Main: a Section's row, ↗ leaves the frame"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.sec-open"
+ },
+ "item__04": {
+  "element": "item",
+  "place": "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗",
+  "url": "/_board/draft?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": ".space-main,main,body",
+  "old": "old item page: a Section row's ↗ leaves the frame; the Task tab embeds the same views",
+  "cut": true,
+  "seen": [
+   "a Section's Page workbench page (/_board/draft), opened by a Section row's ↗"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "item__05": {
+  "element": "item",
+  "place": "a Section's Page Runs page (/_board/runs)",
+  "url": "/_board/runs?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fboard.md&file=j01_v0429_mansci%2Ft01_introduction%2Ft01_introduction.md",
+  "selector": ".wrap,main,body",
+  "old": "old item page: the Task's Runs Space embeds it whole, in its own look",
+  "cut": false,
+  "seen": [
+   "a Section's Page Runs page (/_board/runs)"
+  ],
+  "font": "13px 400",
+  "radius": "7px",
+  "padding": "5px 10px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(247, 247, 248)",
+  "tag": "button.run-space-tab"
+ },
+ "item__06": {
+  "element": "item",
+  "place": "one run's results page (/_board/run-result), from a High-level logic row",
+  "url": "/_board/run-result?task=examples-4-learning/Project-ExpLearn-SMSDesign/tasks/b01_sms_message_design/j01_dikw_message_design/scripts/t01_generate_message_designs&run=_run",
+  "selector": "main,body",
+  "old": "old item page: a run's results open outside the frame, not in its pop-out",
+  "cut": false,
+  "seen": [
+   "one run's results page (/_board/run-result), from a High-level logic row"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "18px 22px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "body"
+ },
+ "own__01": {
+  "element": "own",
+  "place": "Block › Description › Venue: the venues (none on disk yet)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Venue",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Venue: the venues (none on disk yet)"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__02": {
+  "element": "own",
+  "place": "Block › Description › Related: paper cards",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Related",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Description › Related: paper cards"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__03": {
+  "element": "own",
+  "place": "Block › Audience Report › Ideation",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Ideation",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › Ideation"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__04": {
+  "element": "own",
+  "place": "Block › Audience Report › Narrative (was the Spine)",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=Narrative",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › Narrative (was the Spine)"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__05": {
+  "element": "own",
+  "place": "Block › Audience Report › High-level logic + Low-level work",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report&sub=High-level+logic+%2B+Low-level+work",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report › High-level logic + Low-level work"
+  ],
+  "font": "15.5px 650",
+  "radius": "0px",
+  "padding": "12px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "summary"
+ },
+ "own__06": {
+  "element": "own",
+  "place": "Block › Work Details › Main: the Sections list",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Work+Details&sub=Main",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Main: the Sections list"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.sec-open"
+ },
+ "own__07": {
+  "element": "own",
+  "place": "Block › Delivery › LaTeX: the built paper",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Delivery&sub=LaTeX",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Delivery › LaTeX: the built paper"
+  ],
+  "font": "11.5px 600",
+  "radius": "0px",
+  "padding": "9px 11px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(246, 247, 249)",
+  "tag": "th"
+ },
+ "own__08": {
+  "element": "own",
+  "place": "Job › Audience Report › Draft-Main: the Narrative's rows",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report&sub=Draft-Main",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report › Draft-Main: the Narrative's rows"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__09": {
+  "element": "own",
+  "place": "Job › Audience Report › Comments: Review Items",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Audience+Report&sub=Comments",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Job › Audience Report › Comments: Review Items"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__10": {
+  "element": "own",
+  "place": "Job › Audience Report › Cover letter",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Audience+Report&sub=Cover+letter",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report › Cover letter"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__11": {
+  "element": "own",
+  "place": "Job › Delivery: the version's build",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Delivery: the version's build"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__12": {
+  "element": "own",
+  "place": "Task › Description › Scope: ◆ the reader contract",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Description&sub=Scope",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description › Scope: ◆ the reader contract"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "own__13": {
+  "element": "own",
+  "place": "Task › Description › Requirement: ◆ the SUB-* rows",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Description&sub=Requirement",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description › Requirement: ◆ the SUB-* rows"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "own__14": {
+  "element": "own",
+  "place": "Task › Audience Report › Comments: ◆ Review Items on this Section",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Comments",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report › Comments: ◆ Review Items on this Section"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__15": {
+  "element": "own",
+  "place": "Task › Delivery: ◆ Ready, then the delivery cards",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery: ◆ Ready, then the delivery cards"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__16": {
+  "element": "own",
+  "place": "the old Board page › Story › Spine",
+  "url": "old-board#story/spine",
+  "selector": ".panel[data-space=story] .space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": true,
+  "seen": [
+   "the old Board page › Story › Spine"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "own__17": {
+  "element": "own",
+  "place": "the old Board page › Ideation",
+  "url": "old-board#ideation/",
+  "selector": ".panel[data-space=ideation] .space-main",
+  "old": "old page: /_board/paper-board forwards to the frame now; its look lives on inside the frame's pv() views",
+  "cut": false,
+  "seen": [
+   "the old Board page › Ideation"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__tabs": {
+  "element": "tabs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "proposed__views": {
+  "element": "views",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "proposed__report": {
+  "element": "report",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Audience+Report&sub=Questions",
+  "selector": ".q-head-row|.q-row:not(.q-head-row)",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "proposed__space": {
+  "element": "space",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Audience+Report&sub=Questions",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__table": {
+  "element": "table",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Description&sub=Scope",
+  "selector": "table.wf-table",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__cards": {
+  "element": "cards",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj02_v1007_mansci&space=Work+Details&sub=Main",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.sec-open"
+ },
+ "proposed__runs": {
+  "element": "runs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026&space=Audience+Report",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "proposed__header": {
+  "element": "header",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci&space=Audience+Report",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "proposed__item": {
+  "element": "item",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-4-learning%2FProject-ExpLearn-SMSDesign%2Fpaper%2FPaper-TestToLearn-MS2026%2Fj01_v0429_mansci%2Ft01_introduction&space=Audience+Report&sub=Table",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ }
+}

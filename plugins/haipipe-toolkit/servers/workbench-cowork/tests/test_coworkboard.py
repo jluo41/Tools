@@ -16,9 +16,9 @@ import pytest
 from live.coworkboard import block_snapshot, projects_snapshot, render_file
 from live.cowork_views import render_block, spaces
 from serve import Handler
+from host_paths import skill_dir
 
-TOOLKIT = Path(__file__).resolve().parents[3]
-AUDIT = TOOLKIT / "skills/project/haipipe-project/scripts/audit_projects.py"
+AUDIT = skill_dir("haipipe-project") / "scripts/audit_projects.py"
 
 
 def write(path: Path, text: str) -> Path:
@@ -163,7 +163,7 @@ def test_a_reports_drawing_lives_in_its_report_folder(demo):
     the helper makes it there and the workbench shows it with the report."""
     from argparse import Namespace
     root, block = demo
-    helper = TOOLKIT / "skills/question/haipipe-question/ref/block_questions.py"
+    helper = skill_dir("haipipe-question") / "ref/block_questions.py"
     spec = importlib.util.spec_from_file_location("block_questions_rule", helper)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

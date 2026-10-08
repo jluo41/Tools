@@ -1,0 +1,5 @@
+run: run-check-t03
+kind: soft
+type: check
+target: t03_K01_question-c
+status: planned

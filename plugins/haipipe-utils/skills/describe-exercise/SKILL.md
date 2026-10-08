@@ -4,7 +4,7 @@ description: "Normalize a logged activity (any cohort's dialect, free text or ve
 metadata:
   version: "0.5.0"
   last_updated: "2026-08-22"
-  measured: "98.0% of the resolvable set (41,931 of 42,799); 30.7% of all 136,555 rows, because 64.8% are daily device roll-ups that must not resolve. Held-out MET error, by-patient fence: MAE 1.71 r 0.520 with the device tier (1.89 / 0.440 without). By-time fence, 24,390 rows, cumulative rungs: population 1.70/0.387, device 1.50/0.506, person 1.34/0.608, person_activity 1.30/0.622"
+  measured: "98.0% of the resolvable set (41,931 of 42,799); 30.7% of all 136,555 rows, because 64.8% are daily device roll-ups that must not resolve. Held-out MET error, by-patient fence: MAE 1.71 r 0.520 with the device tier (1.89 / 0.440 without). By-time fence, 24,390 rows, cumulative steps: population 1.70/0.387, device 1.50/0.506, person 1.34/0.608, person_activity 1.30/0.622"
   parked: "103 Validic 9002 rows, the last vendor code with no book; Google_Fit gained one 260822"
 ---
 

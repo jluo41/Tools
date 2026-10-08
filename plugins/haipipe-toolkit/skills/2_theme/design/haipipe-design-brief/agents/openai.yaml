@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Brief Folder (older boards only)"
+  short_description: "Legacy: an older board's Brief; on the ladder use the Block's goal list"
+  default_prompt: "Use $haipipe-design-brief only on an older Design Board (0-BR-brief/) to read or repair its Brief Folder; on a ladder Block, add goals with $haipipe-design-goal instead."

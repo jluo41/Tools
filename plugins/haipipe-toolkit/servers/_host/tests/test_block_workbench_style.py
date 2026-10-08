@@ -10,8 +10,8 @@ from host_paths import bootstrap
 bootstrap()
 
 SERVERS = Path(__file__).resolve().parents[2]
-TASK_CSS = (SERVERS / "workbench-task/assets/css/90-task-workbench.css").read_text(encoding="utf-8")
-TASK_JS = (SERVERS / "workbench-task/assets/js/90-task-workbench.js").read_text(encoding="utf-8")
+TASK_CSS = (SERVERS / "workbench-work/assets/css/90-task-workbench.css").read_text(encoding="utf-8")
+TASK_JS = (SERVERS / "workbench-work/assets/js/90-task-workbench.js").read_text(encoding="utf-8")
 SHELL = ('<main id="task-workbench">', '<nav class="spaces"', 'id="tw-config"', 'id="tw-run-dialog"', 'class="split"')
 
 
@@ -31,7 +31,7 @@ class BlockWorkbenchStyleTest(unittest.TestCase):
         for kind in ("workbench-cowork", "workbench-discovery"):
             with self.subTest(kind=kind):
                 own = list((SERVERS / kind).glob("assets/css/*.css")) + list((SERVERS / kind).glob("assets/js/*.js"))
-                self.assertEqual(own, [], f"{kind}: style lives in workbench-task (later workbench-shared), not here")
+                self.assertEqual(own, [], f"{kind}: style lives in workbench-work (later workbench), not here")
 
     def test_every_block_workbench_draws_the_same_shell(self):
         from live.cowork_views import render_block as cowork_render, spaces as cowork_spaces
@@ -54,7 +54,7 @@ class BlockWorkbenchStyleTest(unittest.TestCase):
 
 class BlockWorkbenchTitleTest(unittest.TestCase):
     """Each page names its kind first (JL 261004): 📋 Task · 🔭 Discovery · 📨 CoWork, then the Block title."""
-    TITLES = {"workbench-task/task_views.py": "📋 Task · ", "workbench-discovery/discovery_views.py": "🔭 Discovery · ",
+    TITLES = {"workbench-work/task_views.py": "📋 Task · ", "workbench-discovery/discovery_views.py": "🔭 Discovery · ",
               "workbench-cowork/cowork_views.py": "📨 CoWork · "}
 
     def test_every_block_workbench_title_names_its_kind(self):

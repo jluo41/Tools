@@ -7,9 +7,10 @@ import tempfile
 import unittest
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
-PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "page" / "haipipe-page"
+PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "1_base" / "page" / "haipipe-page"
 sys.path.insert(0, str(PAGE_ROOT))
-sys.path.insert(0, str(SERVER_DIR.parent / "workbench-page"))
+sys.path.insert(0, str(SERVER_DIR.parent / "workbench" / "task-page"))
+sys.path.insert(0, str(SERVER_DIR.parent / "workbench"))   # runs_panel.py: the base's, every theme's
 
 from space_views import (delivery_space_html, draft_reads_html,  # noqa: E402
                          evidence_items, evidence_space_html, file_url, run_tabs)

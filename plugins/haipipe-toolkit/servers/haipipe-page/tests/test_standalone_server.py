@@ -21,7 +21,7 @@ from unittest.mock import Mock, patch
 from urllib.parse import urlsplit
 
 SERVER_DIR = Path(__file__).resolve().parents[1]                 # servers/haipipe-page
-PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "page" / "haipipe-page"
+PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "1_base" / "page" / "haipipe-page"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR))
 

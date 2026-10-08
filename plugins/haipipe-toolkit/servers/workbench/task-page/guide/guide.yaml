@@ -1,0 +1,78 @@
+# The Page family's Guide (a Page Task's views: servers/workbench/task-page). Loaded by
+# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench/task-page; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
+family: page
+label: Page
+presenter: outline.py
+table: skill:workbench-page/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+description: 'The Page Workbench works on one Page: a paper Section, a Task report, a Discovery or Insight
+  page. Draft holds the Page''s versioned plan (parts, paragraphs and Bullets, each with its role) and
+  the prose written from it; Evidence binds every value, citation and display the plan needs to the Run
+  Result that supports it; Delivery builds the Page as a web page, LaTeX, Word or slides and checks it.
+  It reads the Page''s Markdown and Run receipts on every open; the person approves the plan, checks sources
+  and releases the Page.'
+skills:
+- skill: haipipe-page-workflow
+  role: Page planning, writing, evidence and delivery
+- skill: workbench-page
+  role: The Page's workbench and native lanes
+- skill: workbench
+  role: Storage, Surface, Writer and Boundary
+method:
+- - Plan
+  - Freeze the brief, then the parts, paragraphs and Bullets, one role each; a person approves the plan.
+- - Draw the logic
+  - The claim at the left, the reasons beside it, every Bullet a row.
+- - Bind the evidence
+  - Every value, citation and display bound to the Result it came from.
+- - Write and adopt
+  - One sentence per Bullet, then adopted into the Page.
+- - Check
+  - An agent that did not write the Page runs the six tests.
+- - Build
+  - One source built as a web page, LaTeX and Word; a person signs the release.
+spaces:
+- - Draft
+  - Structure and drafting views
+- - Evidence
+  - Typed evidence and supporting work
+- - Delivery
+  - Checks and delivery artifacts
+folders:
+- - Draft
+  - Page owner
+  - draft/
+  - draft
+- - Evidence
+  - Evidence register owner
+  - draft/<stem>-evidence-items.md
+  - draft/*-evidence-items.md
+- - Runs
+  - Page Run owner
+  - runs/
+  - runs
+- - Results
+  - Native Result owner
+  - results/
+  - results
+- - Delivery
+  - Page delivery owner
+  - delivery/
+  - delivery
+explain:
+  method:
+  - /_board/guide
+  - family: page
+    mode: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/plugins/haipipe-toolkit/servers/workbench/task-page/studio/page-workbench-design.excalidraw
+  - Workbench design
+  - first
+boundary: The Page's declared PageType and native lanes own its content and writers. Guide explains their
+  conventions. It does not create a second Page or execution ledger.

@@ -3,7 +3,9 @@
     python check_papers_table.py <name>-papers.md [--online] [--format md|blocks]
 
 The table is the one Markdown table in the file whose header is exactly
-group | role | key | paper | venue | doi | why here | pdf. Offline, the check reads the
+group | role | key | paper | venue | doi | why here | pdf, optionally led by a `level` column
+(Block, Job, Task or all; several split by `;`), which a card Guide uses to show each paper under
+the levels its method serves. Offline, the check reads the
 rules a row can break on its own; `--online` also looks every DOI up on OpenAlex (then
 Crossref) and compares the title and the year with the row.
 """
@@ -19,6 +21,7 @@ import urllib.request
 from pathlib import Path
 
 COLUMNS = ["group", "role", "key", "paper", "venue", "doi", "why here", "pdf"]
+LEVELS = ("block", "job", "task", "all")        # the optional leading `level` column's words
 ROLES = ("classic", "review", "evidence", "practice")
 # `Authors Year · Title`; a standard writes its number before the year (`ISO 9241-210:2019 · ...`);
 # an undated web page writes `n.d.` for its year
@@ -30,13 +33,13 @@ def read_table(path: Path) -> list[dict]:
     lines = path.read_text(encoding="utf-8").splitlines()
     for i, line in enumerate(lines):
         cells = [c.strip().lower() for c in line.strip().strip("|").split("|")]
-        if cells == COLUMNS:
-            rows = []
+        if cells in (COLUMNS, ["level"] + COLUMNS):
+            names, rows = cells, []
             for row in lines[i + 2:]:
                 if not row.strip().startswith("|"):
                     break
                 values = [c.strip() for c in row.strip().strip("|").split("|")]
-                rows.append(dict(zip(COLUMNS, values + [""] * (len(COLUMNS) - len(values)))))
+                rows.append(dict(zip(names, values + [""] * (len(names) - len(values)))))
             return rows
     raise SystemExit(f"{path}: no table with the header {' | '.join(COLUMNS)}")
 
@@ -58,6 +61,10 @@ def check(rows: list[dict], table: Path) -> tuple[list[str], list[str]]:
                 problems.append(f"{where}: empty {col}")
         if r["role"] and r["role"].lower() not in ROLES:
             problems.append(f'{where}: role "{r["role"]}" is not one of {", ".join(ROLES)}')
+        if "level" in r:
+            words = [w.strip().lower() for w in r["level"].split(";") if w.strip()]
+            if not words or any(w not in LEVELS for w in words):
+                problems.append(f'{where}: level "{r["level"]}" is not Block, Job, Task or all (several split by ;)')
         if r["key"] not in ("", "★"):
             problems.append(f'{where}: key is "{r["key"]}"; write ★ or leave it empty')
         if r["paper"] and not PAPER.match(r["paper"]):
@@ -156,8 +163,9 @@ def main() -> int:
     if args.format == "blocks":
         print(blocks(rows) + "\n")
     elif args.format == "md":
-        print("| " + " | ".join(COLUMNS) + " |\n|" + "---|" * len(COLUMNS))
-        print("\n".join("| " + " | ".join(r[c] for c in COLUMNS) + " |" for r in rows) + "\n")
+        cols = (["level"] if rows and "level" in rows[0] else []) + COLUMNS
+        print("| " + " | ".join(cols) + " |\n|" + "---|" * len(cols))
+        print("\n".join("| " + " | ".join(r[c] for c in cols) + " |" for r in rows) + "\n")
     problems, warnings = check(rows, args.table)
     problems += check_online(rows) if args.online else []
     groups = len({first_group(r) for r in rows})

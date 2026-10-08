@@ -132,7 +132,7 @@ MAX_BOUT_MINUTES = float(os.environ.get("EXNORM_MAX_BOUT_MINUTES", "240"))
 # branch to find the good number -- that was the whole reason not to bolt the
 # scaled MET on as a second optional column. METReference always carries the
 # Compendium's published value for ActivityCode, so the adjustment is auditable
-# and reversible, and METScale names which rung produced it.
+# and reversible, and METScale names which step produced it.
 VALUES = ("METValue", "ActiveMinutes", "CaloriesBurnedEst")
 IDENTITY = ("ActivityResolved", "ActivityCode", "MajorHeading")
 SCALE = ("METReference", "METScale", "METScaleFactor")

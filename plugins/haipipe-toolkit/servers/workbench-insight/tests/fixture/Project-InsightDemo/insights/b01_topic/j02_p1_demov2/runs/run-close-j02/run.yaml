@@ -1,0 +1,5 @@
+run: run-close-j02
+kind: soft
+type: close
+target: j02_p1_demov2
+status: closed

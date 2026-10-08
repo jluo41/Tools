@@ -1,0 +1,145 @@
+# The work theme's Guide (family work, once task: `task` still answers as an alias). Loaded by
+# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench-work; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
+family: work
+label: Task
+presenter: taskboard.py
+table: skill:workbench-work/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+description: 'The Task Workbench reads one Task Block: its Jobs, Tasks and Runs, and the Questions they answer.
+  Each Question is one main topic. The Task Space is one table per register group, a row per Question: the
+  Logic (the question, what we expect and what would answer it), the Task Work that answers it (Block → Job
+  → Task → Run, each Run a Ticket that writes one Result with its receipt), and the Report that states the
+  answer from exact Results. Scope holds the Block, its Questions, the data it reads and its drawings; Check
+  reads every receipt and report; Delivery holds the answered reports. Runs and their status sit in the Runs
+  panel; a Run, a Task Page, a report and a drawing open in one pop-out.'
+skills:
+- skill: haipipe-work
+  role: 'The work theme''s door: which skill owns each part of the work'
+- skill: haipipe-task
+  role: Block / Job / Task / Run ownership and execution
+- skill: haipipe-question
+  role: A Block's Questions, their register and report folders
+- skill: haipipe-page-workflow
+  role: Task Page reasoning, evidence and readings
+- skill: workbench-work
+  role: Scope, Task, Check and Delivery over the Block's native records
+method:
+- - Ask the Question
+  - 'One main topic: the question, what we expect and what would answer it; a different agent reviews it, a
+    person signs it.'
+- - Plan the Task
+  - 'The Task''s contract, written before its code: what it reads, returns and how it is checked.'
+- - Build the Task
+  - The worker, its config and its Ticket, in the Task Folder.
+- - Review the code
+  - An agent that did not write the code reads it before the Ticket runs.
+- - Run the Ticket
+  - Only the Ticket writes its Result and receipt; heavy output goes to its store.
+- - Report the Run
+  - What the Run shows, read from its Result alone.
+- - Write the report
+  - 'The Question''s answer from exact Results: Opening, Answer, Evidence, Limits, Next.'
+- - Check and deliver
+  - An agent that did not write the report checks it; a person releases an answered report.
+spaces:
+- - Scope
+  - 'Block · Questions · Resources · RoadMap Draw: what this Block is for, the Questions it asks, the _WorkSpace
+    data and papers they use, and its drawings, the question map first'
+- - Task
+  - 'One View per register group: a table with a row per Question, Logic │ Task Work │ Report'
+- - Check
+  - 'Runs · Tasks · Reports: every receipt''s status, each Task Folder''s findings, each report''s answer'
+- - Delivery
+  - 'Reports: the answered reports, word for word, with the Results they cite'
+folders:
+- - Scope / Questions
+  - Block owner
+  - board.md · Questions register
+  - board.md
+- - Scope / Resources
+  - Block owner
+  - board.md · Related resources
+  - board.md
+- - Scope / RoadMap Draw
+  - Block drawing owner; the question map by its script
+  - studio/*.excalidraw
+  - studio/*.excalidraw
+- - Task / Report
+  - Question Report Page owner
+  - reports/<id>_topic/<id>_topic.md
+  - reports/q*_*/*.md
+- - Jobs
+  - Job owner
+  - jNN_<job>/src/
+  - j[0-9][0-9]_*/src
+- - Tasks
+  - Task owner
+  - jNN_<job>/tNN_<task>/
+  - j[0-9][0-9]_*/t[0-9][0-9]_*
+- - Run configuration
+  - Task owner
+  - <Task>/scripts/config/rNN_<run>.yaml
+  - j[0-9][0-9]_*/t[0-9][0-9]_*/scripts/config
+- - Run records
+  - Task / Result owner
+  - <Task>/runs/ + resolved output store
+  - j[0-9][0-9]_*/t[0-9][0-9]_*/runs
+explain:
+  method:
+  - /_board/guide
+  - family: work
+    mode: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+  - Workbench design
+  - first
+boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces, each with the shared Runs
+  panel on the right. The Task Space is one table per register group, a row per Question: Logic │ Task Work
+  │ Report. Reports and working drawings live in sibling reports/ and studio/ folders. Status lives in the
+  Runs panel and Check, never in the table. Native Tasks and Runs retain their execution semantics; the panel
+  copies prompts and starts nothing.'
+# The card Guide (b03 studio/s31-guide, s31-D05 to D08): the base's words are
+# servers/workbench/guide/levels.yaml; here only the words a work folder says differently.
+levels:
+  Block:
+    role: one topic, its Questions, answered by the Runs of its Jobs' Tasks
+  Task:
+    role: one folder that is also a Page; it is planned, built and run, and holds its Runs
+    spaces:
+      Description:
+        is: its scope and its plan, from its face
+        reads: <task>.md (Scope · Plan)
+      Audience Report:
+        is: its drafts, and its report, the face itself
+        reads: draft/*.md · <task>.md
+      Work Details:
+        is: how the Task is built, its code, its review, its notebooks
+        reads: scripts/ · workflow/ · tests/ · CODE_REVIEW.md · notebooks/
+roadmap:
+  Block:
+  - title: the work ladder
+    shows: a work Project, from its Theme down to one Run
+    board: Tools/designs/b17_theme_work/studio/s01-work-ladder/s01-work-ladder.excalidraw
+  - title: the Block's screens
+    shows: the six Spaces on the Block tab, for each Block variant
+    board: Tools/designs/b03_project_workbench/studio/s11-block-variants/s11-block-variants-proposed.excalidraw
+  - title: the work workbench before the frame
+    shows: the old Task Workbench page, the old page the band links
+    board: Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+  Job:
+  - title: the Job's screens
+    shows: the six Spaces on the Job tab, for each Job variant
+    board: Tools/designs/b03_project_workbench/studio/s12-job-variants/s12-job-variants.excalidraw
+  Task:
+  - title: the Task's screens
+    shows: the six Spaces on the Task tab, for each Task variant
+    board: Tools/designs/b03_project_workbench/studio/s13-task-variants/s13-task-variants-proposed.excalidraw
+  - title: a Run's life
+    shows: hard and soft Runs, in the folder and on screen
+    board: Tools/designs/b03_project_workbench/studio/s05-runs/s05-runs.excalidraw

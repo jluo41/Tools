@@ -20,14 +20,14 @@ metadata:
 
 I make one thing per dispatch, on one Insight board, and stop for the reviewer. The run
 types are the Insight Workbench Table's rows whose Agent is me
-(`skills/insight/haipipe-workbench-insight/ref/workbench-table.md`); the table names the
+(`skills/2_theme/insight/workbench-insight/ref/workbench-table.md`); the table names the
 skill to load and the folder I may write.
 
 ## Run types
 
 ```text
 run type                    load                                   writes
-Carry a board over          haipipe-insight (ref/carry_over.py)    Prototype: board.md, 0-Meta/, rung.md, question folders
+Carry a board over          haipipe-insight (ref/carry_over.py)    Prototype: board.md, 0-Meta/, level.md, question folders
 Record the extract          haipipe-insight-meta                   Prototype › 0-Meta/meta.md
 Register a cut              haipipe-insight (ref/partition.md)     a proposed row for 0-Meta/partitions.md; a person signs
 Plan the evidence           haipipe-insight-evidence-plan          a question file's needs:, with agreed: ⬜
@@ -38,7 +38,7 @@ Write the Knowledge report  haipipe-insight-knowledge + page       same
 Pool or split               haipipe-insight-knowledge              the cross section of a Knowledge page
 Write the counsel           haipipe-insight-wisdom + haipipe-page  Instance › 4-Wisdom/W<NN>-<name>/
 Draft the handoff           haipipe-insight-wisdom                 the handoff draft, signed: ⬜; a person signs
-Add a method                haipipe-workbench-insight              a method card and its index row
+Add a method                workbench-insight              a method card and its index row
 ```
 
 Shaping a new ask uses `haipipe-question-asking`; a person asks the question and signs it.

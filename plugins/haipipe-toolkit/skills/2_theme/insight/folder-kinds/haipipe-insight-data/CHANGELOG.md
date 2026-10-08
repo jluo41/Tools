@@ -1,0 +1,82 @@
+# haipipe-insight-data · version history
+
+
+## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- The page is a haipipe-page Page written through its flow (plan, Draft, adopt, health, page CHECK by another agent); each need is one Evidence Item carrying `**Need**:`, with no id in the prose. Binding follows each need's work spec exactly; configs list need ids.
+
+## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
+
+- The join is the evidence need: `answers.yaml` binds each compute need to result files; the page cites `[QD<n>.E<k>]` and records `results-read:`; GI2 uses `haipipe-insight-check` instead of the config's `answers:` (which was derived from the tickets and so could not cross-check them).
+- Page shape follows `ref/report.md` § Shape (a Page Face: objective title, the Opening answers, one division per need), replacing the finding-as-headline rule.
+
+## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Page paths read `<n>-<partition>/D<NN>-<partition>-<slug>/` (no partition letters).
+
+## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
+
+- A Data answer is its page folder: `runs/` tickets call the task run with `RESULT_DIR` set to the page's `results/<ticket>/`; the page's `.md` is the report (words optional). No `_results/` store or `reports/` folder; heavy output goes to `ProjectResult` under the page path.
+
+## 2.0.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- A Data answer is a task run in a `j1N_data_<topic>` Job whose config names the question under `answers:`; its results in the board's `_results/` are the evidence; a report is optional. The page, evidence graph and Page Face sections are gone; old boards keep their D pages, frozen.
+
+## 1.3.3 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
+## 1.3.2 — 2026-09-28 · No content hashes (JL 260928)
+
+- Governed static sources are pinned by path and version in Local Input, never by content hash.
+
+## 1.3.1 — 2026-09-20
+
+- Align GI2 with the governed static local source branch: ready typed local Evidence is required, but a Supporting Run is not invented.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
+## 1.3.0 — 2026-09-20
+
+- Move the resource owner to `insight/folder-kinds/` and remove Phase metadata.
+- Bind actual work to native Run Specs, Tickets, Results and receipts; resource
+  updates and GI checks create no synthetic Run.
+- Preserve evidence, closure and person-signature boundaries. Migration rules:
+  `../../haipipe-insight-workflow/ref/migration.md`.
+
+## 1.1.0 — 2026-09-13
+
+- Require the Page v2 evidence chain for every D value: accepted Supporting
+  Result, frozen Local Input, local Evidence Run, and typed Result.
+- GI2 now requires Page CHECK/CLOSE; new computation is released through
+  SURVEY Decide rather than an active Probe lane.
+
+## 1.0.3 — 2026-09-01
+
+- Rename the optional presenter from Execution to Runs; Execute remains with
+  the owning workflow and the workbench exposes declared Run/Result attempts.
+
+## 1.0.2 — 2026-09-01
+
+- Rename optional local Code to Execution. A declared Run/Result derivation
+  selects it; reusable scripts remain optional and confer no evidence authority.
+
+## 1.0.1 — 2026-08-31
+
+- Separate PageX relationship/status from Probe evidence authority.
+- Require every Task/Discovery-derived value to bind an accepted QA answer
+  backed by a named run, including values from already-linked Folders.
+- Limit local Code to non-authoritative validation/reshaping; displayed numbers
+  still cross the page-serving collection job.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-data` and migrated into workflow phase I2.
+- Added explicit Page Face, Task Face, workbench selection, GI2, and handoff.
+
+Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
+
+- Observed, run-bound, uninterpreted. Shared upward: many I pages cite one D page, so a re-run refreshes one file.
+
+- 0.2.0 (260828, page-type normalization): gains `## Boundary`, which lifts the never-compare rule out of an outline bullet into the section every sibling contract already had; states the 🟡-final receipt duty this level has owed since for-question 0.4.0 and the board checker has enforced since the same day; and replaces the copied chain-law block with a CITATION of `haipipe-insight` §The Climb Law, since four byte-identical copies were the standing bump hazard that produced round-2 F1. Migration: owe-on-next-touch — the one new closing check restates a rule already enforced by `partial-final-no-page-receipt`, so no settled page changes state.
+
+- 0.1.1 (260828, fieldtest round 3 Fr7): the mint-time Queue-row allocation is the register pen's act, performed by the lap — the old wording put a register write inside a chain-page instruction, against the door's three-pens law.

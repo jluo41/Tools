@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>One workbench: the same six Spaces at every level</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">One workbench: the same six Spaces at every level</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Block, Job and Task each show the same six Spaces, and what a Space holds follows the level.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">At the Task level, the Task&#x27;s run types decide what each Space shows.</text>
+<rect x="60.0" y="220.2" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Space</text>
+<text x="306.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Block</text>
+<text x="615.3" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Job</text>
+<text x="924.7" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Task</text>
+<text x="74.0" y="294.8" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Description</text>
+<text x="306.0" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Map · Goals · Methods · Inputs</text>
+<text x="615.3" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">its goal, method and inputs</text>
+<text x="924.7" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">what it reads and returns</text>
+<line x1="60.0" y1="316.9" x2="1220.0" y2="316.9" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="345.5" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Audience Report</text>
+<text x="306.0" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Questions · Cost · Predicted vs</text>
+<text x="306.0" y="370.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">observed</text>
+<text x="615.3" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Ideas · Designs · Ranking</text>
+<text x="924.7" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Tests · Drafts · Performance</text>
+<line x1="60.0" y1="392.3" x2="1220.0" y2="392.3" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="420.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Work Details</text>
+<text x="306.0" y="420.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one card per Job</text>
+<text x="615.3" y="420.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">t00 · t01 – t15 · t99</text>
+<text x="924.7" y="420.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Chains · Elements · Kept</text>
+<line x1="60.0" y1="443.0" x2="1220.0" y2="443.0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="471.6" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Runs</text>
+<text x="306.0" y="471.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">set up · launch · report</text>
+<text x="615.3" y="471.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">set up · reason · make · rank</text>
+<text x="924.7" y="471.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">its own Runs</text>
+<line x1="60.0" y1="493.7" x2="1220.0" y2="493.7" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="522.3" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Delivery</text>
+<text x="306.0" y="522.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">every released design</text>
+<text x="615.3" y="522.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the kept designs</text>
+<text x="924.7" y="522.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">what it hands on</text>
+<line x1="60.0" y1="544.4" x2="1220.0" y2="544.4" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="573.0" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Idea Studio</text>
+<text x="306.0" y="573.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">drawings</text>
+<text x="615.3" y="573.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">drawings</text>
+<text x="924.7" y="573.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">drawings</text>
+<line x1="60.0" y1="595.1" x2="1220.0" y2="595.1" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="220.2" x2="292.0" y2="595.1" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="601.3" y1="220.2" x2="601.3" y2="595.1" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="910.7" y1="220.2" x2="910.7" y2="595.1" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="220.2" width="1160.0" height="374.9" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

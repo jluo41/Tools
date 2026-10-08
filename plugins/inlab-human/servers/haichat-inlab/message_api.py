@@ -17,8 +17,8 @@ Styles and rubrics are NOT authored here — they are the persona folders shippe
 by the haipipe individual-inference skills, so a new style is a new folder and
 never a code change:
 
-    …/skills/task/4_individual/haipipe-individual-inference-report/personas/*
-    …/skills/task/4_individual/haipipe-individual-inference-judge/personas/*
+    …/skills/1_base/task/4_individual/haipipe-individual-inference-report/personas/*
+    …/skills/1_base/task/4_individual/haipipe-individual-inference-judge/personas/*
 
 Config:
     INLAB_PERSONA_ROOT   dir holding the two skills. Unset ⇒ walk up for Tools/.
@@ -52,11 +52,11 @@ def _persona_root() -> Path | None:
     here = Path(__file__).resolve()
     # this folder lives inside plugins/inlab-human/servers/, so the toolkit is a
     # sibling plugin three levels up; the walk-up below covers any other layout
-    sibling = here.parents[3] / "haipipe-toolkit/skills/task/4_individual"
+    sibling = here.parents[3] / "haipipe-toolkit/skills/1_base/task/4_individual"
     if sibling.is_dir():
         return sibling
     for parent in here.parents:
-        cand = parent / "Tools/plugins/haipipe-toolkit/skills/task/4_individual"
+        cand = parent / "Tools/plugins/haipipe-toolkit/skills/1_base/task/4_individual"
         if cand.is_dir():
             return cand
     return None
@@ -394,7 +394,7 @@ def personas():
         "judge": _personas(JUDGE_SKILL),
         "reason": None if root else
             "persona root not found — set INLAB_PERSONA_ROOT to the "
-            "skills/task/4_individual dir",
+            "skills/1_base/task/4_individual dir",
     }
 
 

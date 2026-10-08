@@ -49,10 +49,13 @@ function Write-JsonFile {
 
 # ─── Skill enumeration ───────────────────────────────────────────────────────
 # Recursively find every <plugin>/skills/<...>/SKILL.md, then dedupe by skill
-# name. Mirrors install.sh exactly, including its prunes: _archive and
-# _paper-writing-backup are excluded BEFORE matching, not merely demoted. Until
-# 2026-07-26 this function only demoted them, so Windows installed two retired
-# skills (haipipe-project-organize, haipipe-project-inspect) that macOS never saw.
+# name. Mirrors install.sh exactly, including its prune: any folder whose name
+# starts with "_" (_old, _archive, _todo, _legacy, ...) and node_modules/ are
+# excluded BEFORE matching, not merely demoted. Until 2026-07-26 this function only
+# demoted them, so Windows installed two retired skills (haipipe-project-organize,
+# haipipe-project-inspect) that macOS never saw. haipipe-toolkit nests skills in
+# layers (skills/0_utils, skills/1_base/<family>, skills/2_theme/<theme>); the
+# rule names no layer, so a layer move cannot leave it pointing nowhere.
 #
 # Duplicate names are resolved by priority (lowest wins), ties by plugin/path.
 # No promotion rule is live today: install.sh's two rules named a plugin that no
@@ -69,11 +72,7 @@ function Get-Skills {
         # Only accept <plugin>/skills/<...>; skip anything not under a skills/ tree.
         if ($parts.Length -lt 3 -or $parts[1] -ne 'skills') { continue }
         # install.sh's -prune, as an exclusion rather than a demotion.
-        # The parked HAIPipe display implementations in _todo/ are explicitly retired.
-        if ($parts -contains '_archive' -or $parts -contains '_paper-writing-backup' -or
-            $parts -contains '_old' -or
-            ($parts.Length -ge 4 -and $parts[0] -eq 'haipipe-toolkit' -and
-             $parts[1] -eq 'skills' -and $parts[2] -eq 'display' -and $parts[3] -eq '_todo')) {
+        if (@($parts | Where-Object { $_.StartsWith('_') -or $_ -eq 'node_modules' }).Count -gt 0) {
             continue
         }
 
@@ -104,8 +103,9 @@ function Get-Skills {
 }
 
 # ─── Agent enumeration ───────────────────────────────────────────────────────
-# Recursively find every *-agent.md under agents/ directories, excluding _old/,
-# _archive/, _paper-writing-backup/. Dedup by agent name: agents under skills/
+# Recursively find every *-agent.md under agents/ directories, excluding any
+# folder whose name starts with "_" and node_modules/ (as install.sh does).
+# Dedup by agent name: agents under skills/
 # (priority 10) win over flat copies at plugin-root agents/ (priority 50).
 function Get-Agents {
     param([string]$Root)
@@ -117,8 +117,7 @@ function Get-Agents {
         $parts   = $rel -split '[\\/]'
 
         # install.sh's prunes, as exclusions.
-        if ($parts -contains '_old' -or $parts -contains '_archive' -or
-            $parts -contains '_paper-writing-backup') { continue }
+        if (@($parts | Where-Object { $_.StartsWith('_') -or $_ -eq 'node_modules' }).Count -gt 0) { continue }
         # install.sh matches */agents/*-agent.md, so the file must sit DIRECTLY in
         # an agents/ dir. Matching 'agents' anywhere in the path would also pull in
         # agents/<subdir>/x-agent.md, which the .sh installer never sees.

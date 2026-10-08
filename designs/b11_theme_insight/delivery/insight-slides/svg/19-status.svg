@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Where it stands</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Where it stands</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Next: real Boards on the ladder, then the older register boards carry over.</text>
+<rect x="60.0" y="180.3" width="368.0" height="263.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Done</text>
+<text x="80.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the design: structure (s00),</text>
+<text x="101.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Board · Job · Task screens (s11</text>
+<text x="101.0" y="320.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">– s13), the Guide (s31)</text>
+<text x="80.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the workbench draws all three</text>
+<text x="101.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">levels from a placeholder</text>
+<text x="101.0" y="410.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Board; 17 tests pass</text>
+<rect x="456.0" y="180.3" width="368.0" height="263.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="476.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">In progress</text>
+<text x="476.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the run types and skills by</text>
+<text x="497.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">level (s21)</text>
+<text x="476.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the first Board with a</text>
+<text x="497.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Prototype and data versions on</text>
+<text x="497.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">disk</text>
+<rect x="852.0" y="180.3" width="368.0" height="263.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="872.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Open</text>
+<text x="872.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one Prototype per Board, or</text>
+<text x="893.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">shared?</text>
+<text x="872.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">when a release is cut</text>
+<text x="872.0" y="363.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="363.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">does a signed handoff go stale?</text>
+</svg>

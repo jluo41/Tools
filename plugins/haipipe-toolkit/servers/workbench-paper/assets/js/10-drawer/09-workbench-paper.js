@@ -2,9 +2,9 @@
  *
  * Outline applies to a Page; this applies to the Board index of a PAPER board,
  * which page_board.py marks with `data-board-dialect="paper"` from board.md's
- * `dialect:` line (JL 260916: "like haipipe-workbench-page, you should have
- * haipipe-workbench-paper"). No Links key, no per-paper file: the route
- * /_board/paper renders the four Spaces from Markdown on every open.
+ * `dialect:` line (JL 260916: "like workbench-page, you should have
+ * workbench-paper"). No Links key, no per-paper file: the route
+ * /_board/paper-board renders the four Spaces from Markdown on every open.
  * `data-board-paper` (the retired console/ Links key) still opts a board in.
  *
  * The tab is read-only. Its rows route back to the owning Story, Section,
@@ -26,7 +26,7 @@
 
   function paperUrl() {
     if (!isPaperBoard()) return '';
-    return '/_board/paper?path=' + encodeURIComponent(board())
+    return '/_board/paper-board?path=' + encodeURIComponent(board())
          + '&file=' + encodeURIComponent('board.md');
   }
 

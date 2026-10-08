@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Analysis is cheap now; a reason to trust it is not</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Analysis is cheap now; a reason to trust it is not</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">An agent runs a hundred analyses in the time a person checks one.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each way an analysis fools itself has been measured, and none is rare.</text>
+<rect x="60.0" y="220.2" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">failure</text>
+<text x="306.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">what was measured</text>
+<text x="74.0" y="294.8" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Forking paths</text>
+<text x="306.0" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">29 teams, one dataset and question: odds ratios from 0.89 to 2.93 (Silberzahn 2018)</text>
+<line x1="60.0" y1="316.9" x2="1220.0" y2="316.9" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="345.5" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Subgroup claims</text>
+<text x="306.0" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">46 of 117 tested the difference; none of 5 attempts to confirm one did (Wallach 2017)</text>
+<line x1="60.0" y1="367.6" x2="1220.0" y2="367.6" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="396.2" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">No replication</text>
+<text x="306.0" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">97% of 100 studies significant; 36% of their replications (Open Science 2015)</text>
+<line x1="60.0" y1="418.3" x2="1220.0" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="446.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Self-checking</text>
+<text x="306.0" y="446.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a language model rates its own output above others&#x27; (Panickssery 2024)</text>
+<line x1="60.0" y1="469.0" x2="1220.0" y2="469.0" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="220.2" x2="292.0" y2="469.0" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="220.2" width="1160.0" height="248.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+<text x="60.0" y="512.2" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each failure has a known remedy; the design puts every remedy on the path of every question.</text>
+</svg>

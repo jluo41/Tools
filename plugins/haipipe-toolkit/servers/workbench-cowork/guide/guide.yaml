@@ -1,0 +1,98 @@
+# The CoWork family's Guide (servers/workbench-cowork). Loaded by servers/workbench/guide_families.py.
+# Paths: guide/… related/… or a module are relative to servers/workbench-cowork; skill:<name>/<rest>
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in Tools/designs/b13_theme_cowork).
+family: cowork
+label: CoWork
+presenter: coworkboard.py
+table: skill:workbench-cowork/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+description: 'The CoWork Workbench reads one CoWork Block: one coordination topic of a Project, such as
+  an ethics approval, a cloud account or an EHR data request. Scope holds the Block''s state, spine and
+  close condition, who to ask, its links and files, and its drawings; Work holds the Jobs (each line of
+  work, usually one request to one office, with who has the next move and since when), the Questions with
+  their reports, the emails and the meeting notes; Check finds who we are waiting on, the drafts not sent
+  yet and the reports to judge; Delivery holds the answered reports and the done Jobs. It reads the Block''s
+  files on every open and stores nothing; each run is a prompt the person copies, and only the person
+  sends a message.'
+skills:
+- skill: haipipe-cowork
+  role: The Block, its Jobs and their folders
+- skill: haipipe-question
+  role: A Block's Questions, their register and report folders
+- skill: workbench-cowork
+  role: Scope, Work, Check and Delivery over the Block's files
+method:
+- - Name the Block
+  - One coordination topic, its spine and close condition, and the gate it waits for.
+- - Open the Job
+  - One Job per line of work; its page header says who has the next move, since when, and the next step.
+- - Draft the message
+  - Inside its checklist step or emails/; another agent reviews it; only the person sends it.
+- - Track the wait
+  - When the next move changes hands, the job page's waiting-on and since change and its Timeline.md gets
+    the date.
+- - Meet and record
+  - Dated meeting notes; decisions move into design/.
+- - Answer the Question
+  - A report Page from the Block's own files; another agent checks it; the person releases it.
+spaces:
+- - Scope
+  - 'Block · People · Resources · RoadMap Draw: what this Block is for, who to ask, its links and files,
+    and its drawings'
+- - Work
+  - 'Jobs · Questions · Emails · Meetings: each line of work and who has the next move, the Questions
+    with their reports, the threads and the notes'
+- - Check
+  - 'Waiting on · Drafts · Reports: the longest waits, the drafts not sent, each report''s answer'
+- - Delivery
+  - 'Reports · Done jobs: the answered reports, word for word, and the finished Jobs'
+folders:
+- - Scope / Block
+  - Block owner
+  - board.md · header lines
+  - board.md
+- - Scope / People
+  - Block owner
+  - j00_people/j00_people.md
+  - j00_people
+- - Work / Jobs
+  - Job owner
+  - jNN_<job>/jNN_<job>.md + Timeline.md + CHECKLIST.md
+  - j[0-9][0-9]_*
+- - Work / Questions
+  - Question owner
+  - board.md · Questions register
+  - board.md
+- - Work / Report
+  - Question Report Page owner
+  - reports/<id>_topic/<id>_topic.md
+  - reports/q*_*/*.md
+- - Work / Emails
+  - Job owner
+  - jNN_<job>/emails/*.md
+  - j[0-9][0-9]_*/emails
+- - Work / Meetings
+  - Job owner
+  - jNN_<job>/meetings/YYYY-MM-DD-<topic>.md
+  - j[0-9][0-9]_*/meetings
+- - Scope / RoadMap Draw
+  - Block drawing owner; scripts in studio/_build/
+  - studio/*.excalidraw
+  - studio/*.excalidraw
+explain:
+  method:
+  - /_board/guide
+  - family: cowork
+    mode: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b13_theme_cowork/studio/s02-cowork-workbench/cowork-workbench-design.excalidraw
+  - Workbench design
+  - first
+boundary: 'One CoWork Block owns this workbench: Scope, Work, Check and Delivery Spaces, each with the
+  shared Runs panel on the right. The Block''s files are the only store; the workbench reads them and
+  writes nothing but a related resource. No agent sends a message: the person signs every send.'

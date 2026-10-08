@@ -67,7 +67,7 @@ Two design rules the skills enforce:
 ## Wire-contract provenance
 
 `endpoint-predict` embeds a self-contained copy of the payload/POST logic from
-`haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference/src/{client,build_payload}.py`
+`haipipe-toolkit/skills/1_base/task/4_individual/haipipe-individual-inference/src/{client,build_payload}.py`
 (Endpoint_Set `dataframe_records` contract — same wire format for local FastAPI, Databricks
 Model Serving, SageMaker). Provenance is pinned in each file header; if the upstream
 contract changes, re-sync the copy.

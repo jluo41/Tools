@@ -1,0 +1,15 @@
+run: run-check-q05
+kind: soft
+type: check
+scope: Tools/designs/b03_project_workbench
+target: q05
+ticket: run-check-q05.md
+skill: haipipe-report
+agent: haipipe-page-check-agent
+signs: null
+status: done
+passes:
+- p01-1008
+writes: []
+feeds:
+- reports/q05_skill_per_level

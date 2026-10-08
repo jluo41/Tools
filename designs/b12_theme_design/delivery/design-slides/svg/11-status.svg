@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Where it stands</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Where it stands</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Next: the workbench serves all three levels, then the older design Boards carry over.</text>
+<rect x="60.0" y="180.3" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Done</text>
+<text x="80.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The skills carry the ladder:</text>
+<text x="101.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">contract, inputs and methods,</text>
+<text x="101.0" y="320.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">worker, Runs and release.</text>
+<text x="80.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">95 tests pass, and one Job runs</text>
+<text x="101.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">end to end.</text>
+<rect x="456.0" y="180.3" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="476.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">In progress</text>
+<text x="476.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The workbench screens for</text>
+<text x="497.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Block, Job and Task on the new</text>
+<text x="497.0" y="320.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">ladder.</text>
+<rect x="852.0" y="180.3" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="872.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Open</text>
+<text x="872.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Token usage in each Run&#x27;s</text>
+<text x="893.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">receipt.</text>
+<text x="872.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The Exp names the Job and</text>
+<text x="893.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">design on each arm.</text>
+<text x="872.0" y="390.7" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="390.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Carrying the older design</text>
+<text x="893.0" y="418.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Boards over.</text>
+</svg>

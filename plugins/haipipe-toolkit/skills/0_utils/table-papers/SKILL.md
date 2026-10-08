@@ -41,9 +41,12 @@ pdf        `papers/<file>.pdf` only when its license lets it be kept, else empty
 Rules
 -----
 
-1. **One file, one table.** `skills/<family>/haipipe-workbench-<name>/ref/<name>-papers.md`
+1. **One file, one table.** `skills/<family>/workbench-<name>/ref/<name>-papers.md`
    holds exactly one table with the eight columns in that order. Prose before it says
-   what the papers are for, when they were checked, and against what.
+   what the papers are for, when they were checked, and against what. A workbench whose
+   Guide is drawn by level (Block · Job · Task) leads the table with a ninth column,
+   `level`: `Block`, `Job`, `Task` or `all`, several split by `;`, the levels the paper's
+   method serves; Guide › Related Paper then shows each paper under those levels.
 2. **Every row is checked.** A DOI is looked up before the row goes in
    (`--online`: OpenAlex, Crossref and DataCite; one registry can be wrong). A page
    without a DOI is fetched for its title, author and date. A finding in `why here` read
@@ -67,11 +70,11 @@ Rules
 Where it shows
 --------------
 
-The shared renderer `servers/workbench-shared/related_papers.py` (`papers_page`) draws the
+The shared renderer `servers/workbench/related_papers.py` (`papers_page`) draws the
 table as cards: one band per group, a head counting papers by role, journal, UTD24 and
 PDF; closed, a card is the title then who · year · venue; open, why it is here, its links
 (publisher or source page, the PDF, the Paper Run), the abstract and the PDF itself. A
-family names its table as `papers_table` in `servers/workbench-shared/guide_families.py`,
+family names its table as `papers_table` in `servers/workbench/guide_families.py`,
 and Guide › Related Paper renders it; Design and Insight frame their own theory pages,
 which render through the same module.
 

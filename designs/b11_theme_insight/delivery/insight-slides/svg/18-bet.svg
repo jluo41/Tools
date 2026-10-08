@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>The design is itself a bet, and we can measure it</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">The design is itself a bet, and we can measure it</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Planned, agreed, powered questions should replicate on the next extract more often than ad hoc ones.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">No study compares these methods head to head on one question; this would be the first.</text>
+<rect x="60.0" y="220.2" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">measure</text>
+<text x="306.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">definition</text>
+<text x="770.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">read against</text>
+<text x="74.0" y="294.8" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Replication (T8)</text>
+<text x="306.0" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">K answers held on the next data version</text>
+<text x="770.0" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">an agent&#x27;s ad hoc analysis</text>
+<line x1="60.0" y1="316.9" x2="1220.0" y2="316.9" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="345.5" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Attributed changes</text>
+<text x="306.0" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">changed answers with one moved clock</text>
+<text x="770.0" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">100% by construction</text>
+<line x1="60.0" y1="367.6" x2="1220.0" y2="367.6" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="396.2" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Refusals</text>
+<text x="306.0" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">planned cuts refused for power</text>
+<text x="770.0" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the coverage we give up</text>
+<line x1="60.0" y1="418.3" x2="1220.0" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="446.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Time per Job</text>
+<text x="306.0" y="446.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">launch to close</text>
+<text x="770.0" y="446.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the latency we pay</text>
+<line x1="60.0" y1="469.0" x2="1220.0" y2="469.0" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="220.2" x2="292.0" y2="469.0" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="756.0" y1="220.2" x2="756.0" y2="469.0" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="220.2" width="1160.0" height="248.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

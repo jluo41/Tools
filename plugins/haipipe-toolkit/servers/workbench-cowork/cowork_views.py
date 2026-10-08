@@ -1,4 +1,4 @@
-"""CoWork Block Views, drawn as the Task Workbench is (servers/workbench-task/task_views.py).
+"""CoWork Block Views, drawn as the Task Workbench is (servers/workbench-work/task_views.py).
 
 The title alone in the header, the Block band, the Spaces Guide → Scope → Work → Check →
 Delivery, every View opened by a heading and one lead line, each Space beside the shared Runs
@@ -10,8 +10,9 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 HERE = Path(__file__).parent
-TASK = HERE.parent / "workbench-task"
-TABLE = HERE.parents[1] / "skills" / "cowork" / "haipipe-workbench-cowork" / "ref" / "workbench-table.md"
+TASK = HERE.parent / "workbench-work"
+from host_paths import skill_dir  # noqa: E402
+TABLE = skill_dir("workbench-cowork") / "ref" / "workbench-table.md"
 ROUTE = "/_board/cowork-board"
 LEADS = {
     "block": ("Block", "The state, spine, close condition and status, from board.md."),
@@ -312,7 +313,7 @@ def delivery_html(snap):
 
 def table_rows():
     import importlib.util
-    reader = HERE.parents[1] / "skills" / "0_utils" / "table-workbench" / "ref" / "render_workbench_table.py"
+    reader = skill_dir("table-workbench") / "ref" / "render_workbench_table.py"
     try:
         spec = importlib.util.spec_from_file_location("render_workbench_table", reader)
         module = importlib.util.module_from_spec(spec)
@@ -412,7 +413,7 @@ def render_report(report, board, root, board_path):
     """A Question's report Page, through the Task Workbench's report reader, with a CoWork back link."""
     from live.task_views import render_report as task_report
     page = task_report(report, board, root, board_path)
-    return page.replace('/_board/task-board?', ROUTE + '?').replace('← Task</a>', '← CoWork</a>')
+    return page.replace('/_board/work-board?', ROUTE + '?').replace('← Task</a>', '← CoWork</a>')
 
 
 def render_projects(groups, where="", missing=""):

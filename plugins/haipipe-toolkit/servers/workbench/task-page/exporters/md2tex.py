@@ -1,0 +1,501 @@
+#!/usr/bin/env python3
+"""md2tex.py -- one or more accepted Board Pages become LaTeX sections.
+
+QC5's central open item was "there is no generator, and that is the real
+finding": no `.py` or `.sh` in the family turned a page into a section, so
+"generated, one way" was a rule an agent was asked to obey rather than a step
+something performed. This is that step.
+
+It is the SIBLING of md2docx.py and reads the same `## Content` by the same
+rules, which is the point: Word and LaTeX are two projections of one source, so
+they must not disagree about what the source says.
+
+    python3 md2tex.py <page.md> [...] --paper-root DIR [-o OUTDIR]
+
+WHAT IT READS, and what it drops (QC5's read-and-drop table)
+    ###   -> \\section / \\subsection, by the depth of its number
+    ####  -> a paragraph boundary; the `(job)` line under it is scaffolding
+    prose -> one paragraph per #### block, sentences joined
+    \\citep{} \\ref{} kept verbatim: they are already LaTeX
+    > lanes DROPPED. In Word they become comments; here they have nowhere to go.
+
+A Page whose head says `content-format: latex` holds LaTeX source in Content
+(a Section migrated from a manuscript): its lines pass through unescaped, one
+LaTeX paragraph per heading block (`build_latex_section`).
+
+REFUSE TO REGRESS, which QC5 demands by name. Sync runs one way, so a page whose
+Content lost a citation would silently empty that section's bibliography. Before
+writing over an existing section the generator counts citations in both and
+REFUSES if the new one has fewer. Measured 2026-07-27: all nine pages carry real
+`\\citep{}` in prose (110 total, 0 plain-text author-year), so the check passes
+today. It exists for the day one of them does not.
+
+WHERE IT WRITES. The caller supplies `--outdir`; without one, the first Page's
+local `latex/` folder is used. This writer emits Page TeX only. The Board export
+door owns the standalone wrapper and LuaLaTeX run; whole-paper assembly belongs
+to the thin Paper composer.
+"""
+import argparse
+import os
+import pathlib
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from importlib import util as _util           # noqa: E402
+
+_spec = _util.spec_from_file_location("md2docx", os.path.join(HERE, "md2docx.py"))
+md2docx = _util.module_from_spec(_spec)
+_spec.loader.exec_module(md2docx)             # reuse the SAME reader
+
+CITE = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
+# The first line of every fragment this script writes; a file without it is not ours.
+GENERATED_MARK = "% GENERATED from"
+
+
+def keys_of(text):
+    """every citation KEY in this text. A \\citep{a,b} is two keys, not one citation."""
+    out = set()
+    for group in CITE.findall(text):
+        out |= {k.strip() for k in group.split(",") if k.strip()}
+    return out
+REF = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
+LEVEL = ("section", "subsection", "subsubsection")
+
+
+def strip_number(title):
+    """`2.1 Physician Prescribing` -> `Physician Prescribing`.
+
+    LaTeX numbers its own sections; carrying the number in the title too gives
+    "2.1 2.1 Physician Prescribing" in the compiled PDF. A board division
+    writes `1 · The contract`, so the separator dot goes with the number:
+    leaving it produced `\\section{· The contract}` (JL 260815, on QPf6).
+    """
+    return re.sub(r"^\d+(?:\.\d+)*\s*(?:·\s*)?", "", title).strip()
+
+
+SECTION_TITLE = re.compile(r"(?m)^section_title:\s*(.+?)\s*$")
+# A caption or group title: `**Name**: what this shows.` on its own line. It is
+# SCAFFOLDING, exactly like the `(job)` line under a ####, and it usually
+# captions a fenced sketch that was already dropped. It reached the .tex as
+# literal `**bold**`, which LaTeX renders as asterisks around the words.
+GROUP_TITLE = re.compile(r"^\*\*[^*]+\*\*\s*[:：]")
+# A division's own summary line, `<emoji> Establishes …`. It tells a BOARD
+# reader what the division is for, which a paper's reader learns from the prose
+# itself. Same class as the group title above: scaffolding, not manuscript.
+ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
+# Inline code is markdown's, not LaTeX's: `x` reached the .tex as literal
+# backticks around the word.
+CODE_SPAN = re.compile(r"`([^`]+)`")
+
+# The working Page keeps unresolved displays in the stable
+# `\table{D_xxx}` / `\figure{D_xxx}` / `\algorithm{D_xxx}` form. These are
+# Page bindings, not native LaTeX commands; delivery renders an unbound token
+# as a legible pending note. The slash spelling remains a migration alias.
+DISPLAY_PLACEHOLDER = re.compile(
+    r"(?:\\|/)(table|figure|algorithm)\s*\{\s*([^}]+?)\s*\}"
+)
+
+# Task Pages carry a small reader-facing status tail after their manuscript
+# content. It belongs on the Board Page, not in a paper export. Likewise, the
+# reading anchor is HTML apparatus rather than prose.
+EXPORT_SCAFFOLD = re.compile(r"^(?:answers\b|not\s+answered\b|next\s+run\b)",
+                             re.I)
+
+# A percentage in board prose ("26% of the headline cohort") reached raw LaTeX
+# as a live comment character: `%` and everything after it on the line vanished
+# from the compiled PDF with no error, no warning, just a shorter sentence
+# (found 260820 on QC3-visitheadache, where "N = 200,517 is 26% of..." printed
+# as "N = 200,517 is 26"). code_span_tex (below) escapes `%` `&` `#` `$` `_`
+# `~` `^` inside backtick spans only; PLAIN prose text never passed through any
+# escape at all. `$` is left alone deliberately: board prose does not use TeX
+# math, and an accidental `$` (a real dollar figure) is rarer than the display
+# damage a stray unmatched `$` would cause by opening math mode. `~` is TeX's
+# non-breaking space, so "conventional ~16.4 rule of thumb" silently dropped
+# its own tilde and printed "conventional 16.4" (same 260820 QC3 find).
+_PLAIN_SPECIALS = [("%", "\\%"), ("&", "\\&"), ("#", "\\#"),
+                    ("~", "\\textasciitilde{}"), ("_", "\\_")]
+
+
+def escape_prose(s):
+    """Escape TeX specials in board prose OUTSIDE backtick code spans, so a
+    literal `%`, `&` or `#` a person typed renders instead of truncating or
+    misparsing the sentence. Backtick spans are left untouched here because
+    `code_span_tex` (below) already escapes their own content in full."""
+    # An underscore in prose (`action_name`, `column_inventory.csv`) is a literal; unescaped,
+    # TeX read it as a math subscript and ran the sentence off the page (JL 261004). Math
+    # spans (`$x_1$`), code spans and a command's argument (`\\citep{key_a}`) keep their own
+    # rules, so all three stay untouched here.
+    parts = re.split(r"(`[^`]*`|\$[^$\n]+\$|\\[A-Za-z]+\*?(?:\[[^\]]*\])*\{[^}]*\})", s)
+    for i in range(0, len(parts), 2):
+        for a, b in _PLAIN_SPECIALS:
+            parts[i] = re.sub(
+                r"(?<!\\)" + re.escape(a),
+                lambda _match, value=b: value,
+                parts[i],
+            )
+    return "".join(parts)
+
+
+def display_placeholder_tex(m):
+    noun = m.group(1).capitalize()
+    label = m.group(2).strip().replace("_", r"\_")
+    return r"\textit{[%s pending: %s]}" % (noun, label)
+
+
+def render_prose(s):
+    """Keep unresolved display placeholders readable in delivery output."""
+    parts = re.split(r"(`[^`]*`)", s)
+    for i in range(0, len(parts), 2):
+        parts[i] = DISPLAY_PLACEHOLDER.sub(display_placeholder_tex, parts[i])
+    return escape_prose("".join(parts))
+
+# What a code span QUOTES must never EXECUTE: `\citep` inside \texttt{} ran the
+# macro and printed "[]" in QPf6's compiled PDF (JL 260815). Backslash first,
+# then TeX's other specials; the placeholder keeps the escaped backslash's own
+# braces out of the second pass.
+_TEX_SPECIALS = [("\\", "\x00BS\x00"), ("{", "\\{"), ("}", "\\}"),
+                 ("\x00BS\x00", "\\textbackslash{}"),
+                 ("&", "\\&"), ("%", "\\%"), ("$", "\\$"), ("#", "\\#"),
+                 ("_", "\\_"), ("~", "\\textasciitilde{}"),
+                 ("^", "\\textasciicircum{}")]
+
+
+
+# A code span with no space is one TeX "word": LaTeX only breaks lines at
+# glue (spaces) or hyphenation points, never inside a bare \texttt run, so a
+# long identifier with no internal space runs off the page margin instead of
+# wrapping (QC5-visitt2d 260820: `run-6/7-VisitT2D_1stPair_{...}-*.do`, 81
+# chars, physical page 2 cut off mid-word). \seqsplit makes every character a
+# legal break point; reserved for spans actually at risk, since it also
+# breaks short spans awkwardly at any width.
+_SEQSPLIT_MIN = 40
+
+
+def code_span_tex(m):
+    s = m.group(1)
+    needs_seqsplit = len(s) >= _SEQSPLIT_MIN and " " not in s
+    for a, b in _TEX_SPECIALS:
+        s = s.replace(a, b)
+    if needs_seqsplit:
+        return "\\texttt{\\seqsplit{%s}}" % s
+    return "\\texttt{%s}" % s
+
+
+# LaTeX text fonts may lack the box glyphs and emoji a board sketch leans on; a
+# verbatim block full of .notdef blanks reads worse than plain ASCII. So a kept
+# fence is transliterated: box drawing to +-| art, arrows to ASCII, and any
+# glyph still outside Latin-1 dropped.
+_FENCE_MAP = str.maketrans({"─": "-", "━": "-", "│": "|", "┌": "+", "┐": "+",
+                            "└": "+", "┘": "+", "├": "+", "┤": "+", "┬": "+",
+                            "┴": "+", "┼": "+", "▶": ">", "◀": "<", "·": ".",
+                            "—": "-", "…": "...", "§": "S"})
+
+# A glyph PROSE points at may not die silently: with 🅰 dropped, "🅰 lost the
+# way…" fused onto the sentence before it and read as gibberish, and the
+# figure's two candidates lost their names (JL 260815, the QPf3 comparison).
+# Reference-bearing glyphs get a textual body, in FENCES and PROSE alike;
+# decorative emoji still fall out, because a page of [🔥][📦] is not a paper.
+_BADGE = {"🅰": "[A]", "🅱": "[B]", "🅲": "[C]", "🅳": "[D]",
+          "✅": "[x]", "⬜": "[ ]", "⭐": "*", "🛑": "[!]"}
+_BADGE.update({chr(0x2460 + i): "(%d)" % (i + 1) for i in range(20)})  # ①…⑳
+
+
+def badge_sub(s):
+    for a, b in _BADGE.items():
+        if a in s:
+            s = s.replace(a, b)
+    return s
+
+
+def fence_verbatim(rows):
+    out = []
+    for r in rows:
+        r = badge_sub(r).translate(_FENCE_MAP)
+        r = "".join(c for c in r if ord(c) < 256)
+        out.append(r.rstrip())
+    while out and not out[-1]:
+        out.pop()
+    return "\\begin{verbatim}\n%s\n\\end{verbatim}\n" % "\n".join(out)
+
+
+def section_title_of(page):
+    """The name this page's `\\section{}` takes, if the page declares one.
+
+    The page TITLE has two readers with different needs: a board reader wants
+    to know what kind of page it is, and LaTeX wants the section's real name.
+    Making one string serve both produced `\\section{page-type SECTION · owns
+    ONE FLAT .tex ...}`. The head key lets each have its own.
+    """
+    head = pathlib.Path(page).read_text(encoding="utf-8", errors="ignore")[:1500]
+    m = SECTION_TITLE.search(head)
+    return m.group(1) if m else None
+
+
+def keywords_text_of(page):
+    """Return reader prose from an optional ``### Keywords`` division.
+
+    ``md2docx.parse_page`` deliberately drops unnumbered working headings, so
+    the Keywords heading itself is absent from its shared block stream.  The
+    prose still arrives, previously joining the final abstract sentence in the
+    LaTeX projection.  Read this one manuscript metadata division by name so
+    the LaTeX writer can restore its conventional inline label and spacing.
+    """
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="replace")
+    raw = re.sub(r"<!--.*?-->", "", raw, flags=re.S)
+    lines = raw.splitlines()
+    in_content = False
+    in_keywords = False
+    kept = []
+    for raw_line in lines:
+        stripped = raw_line.strip()
+        if stripped == "## Content":
+            in_content = True
+            continue
+        if in_content and stripped.startswith("## "):
+            break
+        if not in_content:
+            continue
+        if stripped.startswith("### "):
+            in_keywords = stripped[4:].strip() == "Keywords"
+            continue
+        if not in_keywords or not stripped:
+            continue
+        if stripped.startswith(("#### ", ">", "(", "```")):
+            continue
+        kept.append(re.sub(r"^[-*]\s+", "", stripped))
+    return " ".join(kept).strip()
+
+
+CONTENT_FORMAT = re.compile(r"(?m)^content-format:\s*(\S+)\s*$")
+
+
+def content_format_of(page):
+    """The Page head's `content-format:` (`markdown` when absent).
+
+    `latex` says the Draft sentences ARE LaTeX source: a paper Section migrated
+    from a manuscript keeps its floats, equations and lists as written, so the
+    LaTeX lane must pass them through instead of escaping them as prose."""
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="ignore")
+    m = CONTENT_FORMAT.search(raw.split("\n## ", 1)[0])
+    return m.group(1).lower() if m else "markdown"
+
+
+def build_latex_section(page):
+    """`content-format: latex`: `## Content` is LaTeX source, printed as written.
+
+    Markdown headings (`###`, `####`) and `>` evidence lanes are Page structure,
+    not manuscript, and are dropped; HTML comments (the `realizes:` tags) go
+    too. A heading or a blank line ends a LaTeX paragraph; a `>` lane under a
+    sentence does not. The lines inside a paragraph are kept, one per line,
+    unescaped."""
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="replace")
+    raw = re.sub(r"<!--.*?-->", "", raw, flags=re.S)
+    lines = raw.splitlines()
+    start = next((i for i, l in enumerate(lines) if l.strip() == "## Content"), None)
+    if start is None:
+        raise SystemExit(f"{page}: no ## Content section")
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+    paragraphs, current = [], []
+    for line in lines[start + 1:end]:
+        text = line.rstrip()
+        if text.lstrip().startswith(">"):
+            continue
+        if not text.strip() or text.lstrip().startswith("#"):
+            if current:
+                paragraphs.append(current)
+                current = []
+            continue
+        current.append(text)
+    if current:
+        paragraphs.append(current)
+    return "\n\n".join("\n".join(p) for p in paragraphs) + "\n"
+
+
+def build_section(page, displays, report, keep_fences=False):
+    if content_format_of(page) == "latex":
+        return build_latex_section(page)
+    blocks, nfenced = md2docx.parse_page(page, keep_fences=keep_fences)
+    declared = section_title_of(page)
+    if nfenced and not keep_fences:
+        report.append(f"{os.path.basename(page)}: {nfenced} fenced sketch(es) dropped")
+    out, buf, seen = [], [], set()
+
+    def flush():
+        if buf:
+            # A BLANK line, not a bare newline: LaTeX ignores a single "\n",
+            # so every pbreak was flushing into the SAME printed paragraph and
+            # a three-paragraph division read as one run-on (JL 260815, the
+            # QPf3 comparison).
+            out.append(" ".join(buf) + "\n\n")
+            buf.clear()
+
+    for b in blocks:
+        if b[0] == "skipped-lane":
+            continue
+        if b[0] == "fence":
+            flush()
+            out.append(fence_verbatim(b[1]))
+            continue
+        if b[0] == "pbreak":
+            flush()
+            continue
+        if b[0] == "table":
+            flush()
+            ncol = max(len(r) for r in b[1])
+            cell = lambda c: badge_sub(CODE_SPAN.sub(code_span_tex, render_prose(c)))
+            rows = [" & ".join(cell(c) for c in r + [""] * (ncol - len(r))) + r" \\" for r in b[1]]
+            out.append("\\begin{center}\\small\\begin{tabular}{%s}\n\\toprule\n%s\n\\midrule\n%s\n\\bottomrule\n"
+                       "\\end{tabular}\\end{center}\n\n" % ("l" * ncol, rows[0], "\n".join(rows[1:])))
+            continue
+        if b[0] == "h":
+            flush()
+            lvl = LEVEL[min(b[1], 3) - 1]
+            name = strip_number(b[2])
+            if b[1] == 1 and declared:
+                name = declared
+            out.append("\n\\%s{%s}\n" % (lvl, escape_prose(name)))
+            continue
+        line = b[1].strip()
+        if ((line.startswith("<a ") and line.endswith("</a>"))
+                or EXPORT_SCAFFOLD.match(line)):
+            continue
+        # Page Content uses bullets as its trace unit. The paper projection
+        # keeps the sentence but not the Board-only list marker; otherwise a
+        # paragraph exports as "- claim one. - claim two".
+        line = re.sub(r"^[-*]\s+", "", line)
+        if ESTABLISHES.match(line):
+            continue
+        if GROUP_TITLE.match(line):
+            # Scaffolding on the PAPER path, where the sketch it captions was
+            # dropped. On the keep-fences (board) path the sketch STAYS, so
+            # dropping its caption gave the worst of both: an unnamed figure
+            # (JL 260815, the QPf3 comparison). The caption rides as a bold
+            # lede paragraph; the paper path is byte-identical to before.
+            if not keep_fences:
+                continue
+            m = re.match(r"^\*\*([^*]+)\*\*\s*[:：]\s*(.*)$", line)
+            if m:
+                flush()
+                out.append(badge_sub(
+                    "\\textbf{%s}: %s" % (render_prose(m.group(1)),
+                                          CODE_SPAN.sub(code_span_tex,
+                                                        render_prose(m.group(2))))) + "\n\n")
+            continue
+        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, render_prose(line))))
+        # A Display named in this sentence is \input right after the paragraph
+        # that first mentions it, which is MISQ's stated rule: "embedded in the
+        # body of the paper, following the first reference".
+        for lab in REF.findall(b[1]):
+            unit = displays.by_label.get(lab)
+            if unit and unit["unit"] not in seen:
+                seen.add(unit["unit"])
+                flush()
+                out.append("\\input{displays/%s/float}\n" % unit["unit"])
+            elif not unit:
+                report.append("%s: \\ref{%s} matches no display unit"
+                              % (os.path.basename(page), lab))
+    flush()
+    body = "".join(out)
+
+    # Keywords are manuscript metadata, not a numbered section.  The shared
+    # reader drops their unnumbered heading but retains their prose, so restore
+    # the conventional inline label and keep the terms out of the abstract's
+    # paragraph.  Match the last exact occurrence so a later manuscript
+    # division or a bullet-form keyword list remains valid, while ordinary
+    # Sections with no Keywords division stay a no-op.
+    keywords = keywords_text_of(page)
+    if keywords:
+        rendered = badge_sub(CODE_SPAN.sub(code_span_tex,
+                                           render_prose(keywords)))
+        at = body.rfind(rendered)
+        if at >= 0:
+            before = body[:at].rstrip()
+            after = body[at + len(rendered):].lstrip()
+            body = (before + "\n\n\\smallskip\n"
+                    "\\noindent\\textbf{Keywords:} " + rendered + "\n\n"
+                    + after)
+        else:
+            report.append("%s: Keywords division was not isolated in LaTeX"
+                          % os.path.basename(page))
+    return body
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("page", nargs="+")
+    ap.add_argument("--paper-root", required=True)
+    ap.add_argument("-o", "--outdir")
+    ap.add_argument("--keep-fences", action="store_true",
+                    help="render ``` sketches as verbatim blocks instead of "
+                         "dropping them; the BOARD exporter's switch, a paper "
+                         "keeps the drop (JL 260815)")
+    a = ap.parse_args()
+
+    root = os.path.abspath(a.paper_root)
+    first_page = os.path.abspath(a.page[0])
+    outdir = a.outdir or os.path.join(os.path.dirname(first_page), "latex")
+    os.makedirs(outdir, exist_ok=True)
+    displays = md2docx.Displays(root)
+    report, wrote, total_cites = [], [], 0
+
+    for page in a.page:
+        page = os.path.abspath(page)
+        body = build_section(page, displays, report, keep_fences=a.keep_fences)
+        n = len(CITE.findall(body))
+        total_cites += n
+        stem = os.path.splitext(os.path.basename(page))[0]
+        dest = os.path.join(outdir, stem + ".tex")
+
+        # REFUSE TO REGRESS (QC5). Compare against whatever this would replace.
+        # It compares the SET OF KEYS, not the number of \citep COMMANDS. The
+        # failure this guard exists to stop is a WORK disappearing from a section's
+        # bibliography. Counting commands also stopped work that loses nothing:
+        # joining two sentences that both cite Meyer_2009 drops one command and no
+        # key, and on 260908 that blocked the humanizing rewrite of §1 while the
+        # board's /_board/latex lane still answered ok:true, so the page silently
+        # kept its old prose (20 commands vs 22, zero keys lost).
+        prior = dest if os.path.exists(dest) else None
+        # REFUSE TO REPLACE WORDS THIS SCRIPT DID NOT WRITE. A fragment without the
+        # GENERATED header was written by hand or by a migration, so its words may
+        # exist nowhere else. On 260930 an export of Paper-TimeEventDM replaced six
+        # migrated Sections (404 lines of prose) with the Pages' planning notes.
+        # Move the words into the Page (Draft, then `page.py adopt`) first, then
+        # delete the old fragment to let this script own it.
+        if prior:
+            with open(prior, encoding="utf-8") as f:
+                first = f.readline()
+            if not first.startswith(GENERATED_MARK):
+                report.append("REFUSED %s: the existing %s.tex was not written by md2tex "
+                              "(no GENERATED header), so its words may exist only there. "
+                              "Move them into the Page and adopt, then delete the file."
+                              % (stem, stem))
+                continue
+        if prior:
+            had = keys_of(open(prior, encoding="utf-8").read())
+            lost = sorted(had - keys_of(body))
+            if lost:
+                report.append("REFUSED %s: %d citation key(s) would disappear from this "
+                              "section's bibliography (%s). Sync is one-way."
+                              % (stem, len(lost), ", ".join(lost)))
+                continue
+        with open(dest, "w", encoding="utf-8") as f:
+            f.write("%s %s by md2tex.py. Do not hand-edit: sync is\n"
+                    "%% one-way and the next run overwrites this file.\n%s"
+                    % (GENERATED_MARK, os.path.relpath(page, root), body))
+        wrote.append((stem, n))
+
+    print("✅ %s" % outdir)
+    for stem, n in wrote:
+        print("   %-34s %3d citations" % (stem + ".tex", n))
+    print("   %d section(s) · %d citations total" % (len(wrote), total_cites))
+
+    if report:
+        print("⚠️  %d note(s):" % len(report))
+        for r in dict.fromkeys(report):
+            print("    " + r)
+
+
+if __name__ == "__main__":
+    main()

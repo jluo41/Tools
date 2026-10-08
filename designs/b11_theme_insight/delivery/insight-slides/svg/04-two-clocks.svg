@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Two things change, on two clocks: the questions and the data</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Two things change, on two clocks: the questions and the</text>
+<text x="60.0" y="128.8" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">data</text>
+<text x="60.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The questions change when we learn; the data changes when it arrives.</text>
+<text x="60.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A Job pins one of each, by path and hash, and is frozen when it closes.</text>
+<rect x="60.0" y="270.6" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="313.1" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Prototype</text>
+<text x="80.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the questions, their scripts,</text>
+<text x="101.0" y="383.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the cuts and the compare rule</text>
+<text x="80.0" y="418.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="418.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">released p1 → p2 → p3; a person</text>
+<text x="101.0" y="445.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">signs each</text>
+<text x="80.0" y="481.0" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="481.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">lives in</text>
+<text x="101.0" y="508.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">work/bNN_&lt;topic&gt;_prototype/</text>
+<rect x="456.0" y="270.6" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="476.0" y="313.1" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Dataset</text>
+<text x="476.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">extracts by date, outside the</text>
+<text x="497.0" y="383.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Project</text>
+<text x="476.0" y="418.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="418.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">versions &lt;d&gt;v1 → &lt;d&gt;v2 build up</text>
+<text x="476.0" y="453.7" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="497.0" y="453.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a new one needs no release</text>
+<rect x="852.0" y="270.6" width="368.0" height="271.8" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="872.0" y="313.1" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Job</text>
+<text x="872.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="355.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one release × one data version</text>
+<text x="872.0" y="391.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="391.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j03_p2_&lt;d&gt;v2 in</text>
+<text x="893.0" y="418.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">insights/bNN_&lt;topic&gt;/</text>
+<text x="872.0" y="453.7" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="893.0" y="453.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">frozen when closed; a change is</text>
+<text x="893.0" y="481.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a new Job</text>
+</svg>

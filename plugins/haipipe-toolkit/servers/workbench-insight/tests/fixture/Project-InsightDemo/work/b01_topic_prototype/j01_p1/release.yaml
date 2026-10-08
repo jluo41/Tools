@@ -1,0 +1,17 @@
+release: p1
+questions:
+  D01:
+    task: t01_D01_question-a
+    change: new
+  I01:
+    task: t02_I01_question-b
+    change: new
+  K01:
+    task: t03_K01_question-c
+    change: new
+  K02:
+    task: t04_K02_question-d
+    change: new
+  W01:
+    task: t05_W01_question-e
+    change: new

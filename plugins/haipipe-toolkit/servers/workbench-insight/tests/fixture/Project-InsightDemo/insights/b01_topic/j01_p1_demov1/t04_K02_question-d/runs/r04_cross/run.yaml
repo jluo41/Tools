@@ -1,0 +1,13 @@
+run: r04_cross
+kind: hard
+type: cross
+partition: cross
+target: t04_K02_question-d
+question: K02
+script: <hash>
+release: p1
+data: v1
+n: <n>
+power: ok
+status: ok
+passes: 1

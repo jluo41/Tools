@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Four guardrails keep the answers honest</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Four guardrails keep the answers honest</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">None of them relies on the maker checking its own work.</text>
+<rect x="60.0" y="180.3" width="269.0" height="299.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Plan first</text>
+<text x="80.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the release is fixed</text>
+<text x="101.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">before outcomes</text>
+<text x="80.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">T0 – T3 gate the plan</text>
+<rect x="357.0" y="180.3" width="269.0" height="299.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="377.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Planned cuts</text>
+<text x="377.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="398.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">filters and power</text>
+<text x="398.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">floors live in the</text>
+<text x="398.0" y="320.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">release</text>
+<text x="377.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="398.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a weak cut is refused</text>
+<text x="398.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">and shown</text>
+<text x="377.0" y="418.0" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="398.0" y="418.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Cross tests the</text>
+<text x="398.0" y="445.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">difference</text>
+<rect x="654.0" y="180.3" width="269.0" height="299.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="674.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Another agent checks</text>
+<text x="674.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="695.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">T4 – T7 by an agent</text>
+<text x="695.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">that did not write it</text>
+<text x="674.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="695.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">T5: each sentence</text>
+<text x="695.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">says what its result</text>
+<text x="695.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">says</text>
+<rect x="951.0" y="180.3" width="269.0" height="299.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="971.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">A person signs</text>
+<text x="971.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="992.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the release before</text>
+<text x="992.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the data</text>
+<text x="971.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="992.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the handoff after it</text>
+<text x="971.0" y="363.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="992.0" y="363.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">nothing else leaves</text>
+<text x="992.0" y="390.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the Board</text>
+</svg>

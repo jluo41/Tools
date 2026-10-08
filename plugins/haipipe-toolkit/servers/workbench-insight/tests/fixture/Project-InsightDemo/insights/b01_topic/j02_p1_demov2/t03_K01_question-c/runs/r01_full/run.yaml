@@ -1,0 +1,13 @@
+run: r01_full
+kind: hard
+type: partition
+partition: full
+target: t03_K01_question-c
+question: K01
+script: <hash>
+release: p1
+data: v2
+n: <n>
+power: ok
+status: ok
+passes: 1

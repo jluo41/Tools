@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Inside one Job: set up, reason, make, check, rank, release</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Inside one Job: set up, reason, make, check, rank, release</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Three set-up Runs pin the goal, the method version and the inputs.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">t00 reasons out 15 ideas, and each idea becomes its own design Task.</text>
+<text x="60.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each design is generated, verified by another agent, and revised until it passes.</text>
+<text x="60.0" y="253.0" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="253.0" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">t99 ranks the 15, keeps 10 with a prediction each, and a person releases them.</text>
+<rect x="60.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="142.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Set up ×3</text>
+<text x="142.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">goal · method ·</text>
+<text x="142.5" y="525.1" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">inputs</text>
+<polyline points="229.0,490.0 255.0,490.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="245.0,496.0 255.0,490.0 245.0,484.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="259.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="341.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">t00 Reason</text>
+<text x="341.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">15 ideas</text>
+<polyline points="428.0,490.0 454.0,490.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="444.0,496.0 454.0,490.0 444.0,484.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="458.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="540.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">t01 – t15 Make</text>
+<text x="540.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">generate → verify</text>
+<text x="540.5" y="525.1" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">→ revise</text>
+<polyline points="627.0,490.0 653.0,490.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="643.0,496.0 653.0,490.0 643.0,484.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="657.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="739.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">t99 Rank</text>
+<text x="739.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">keep 10, predict</text>
+<text x="739.5" y="525.1" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">each</text>
+<polyline points="826.0,490.0 852.0,490.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="842.0,496.0 852.0,490.0 842.0,484.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="856.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="938.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Release</text>
+<text x="938.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">a person signs</text>
+<polyline points="1025.0,490.0 1051.0,490.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="1041.0,496.0 1051.0,490.0 1041.0,484.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="1055.0" y="424.3" width="165.0" height="131.4" rx="3" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1137.5" y="464.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Delivery</text>
+<text x="1137.5" y="501.7" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">the designs, word</text>
+<text x="1137.5" y="525.1" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">for word</text>
+</svg>

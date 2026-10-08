@@ -67,7 +67,7 @@ Rules
    A claim that names a Bullet carries that Bullet's cards under the claim. Reasons and the
    claim are blue.
 6. **Studio style.** Transparent boxes, colored strokes, every label bound inside its box,
-   every connector bound at both ends, Comic Shanns (`haipipe-workbench-studio/ref/draw.md`).
+   every connector bound at both ends, Comic Shanns (`workbench-studio/ref/draw.md`).
    Connectors run down from the parent and across just above the child's row.
 7. **The drawing is the source.** After the first draw the person edits the logic on the
    canvas. Never replace an existing RoadMap without the person asking (`--force`); to
@@ -159,4 +159,4 @@ This skill owns the logic tree's shape, its first draw and its check. The Page's
 and their wording belong to the Draft plan (`haipipe-page-structure`, `haipipe-page-writing`);
 when the tree exposes a missing or misplaced Bullet, route a Structure revise rather than
 inventing a Bullet in the drawing. The canvas and its saving belong to the shared Studio
-(`haipipe-workbench-studio`); the View that shows the drawing to `haipipe-workbench-page`.
+(`workbench-studio`); the View that shows the drawing to `workbench-page`.

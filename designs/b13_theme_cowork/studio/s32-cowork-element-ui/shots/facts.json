@@ -1,0 +1,2281 @@
+{
+ "tabs__00": {
+  "page": "the frame · Block b01 › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__01": {
+  "page": "the frame · Job j01 (has a Task) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__02": {
+  "page": "the frame · Job j03 (done, no Task) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj03_done&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__03": {
+  "page": "the frame · Task t01 (a document in rounds) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__04": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": "nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__00": {
+  "page": "the frame · Block b01 › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__01": {
+  "page": "the frame · Block b01 › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__02": {
+  "page": "the frame · Block b01 › Delivery",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Delivery",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__03": {
+  "page": "the frame · Block b01 › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Runs",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__04": {
+  "page": "the frame · Job j01 (has a Task) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__05": {
+  "page": "the frame · Job j01 (has a Task) › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__06": {
+  "page": "the frame · Job j01 (has a Task) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__07": {
+  "page": "the frame · Task t01 (a document in rounds) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Description",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__08": {
+  "page": "the frame · Task t01 (a document in rounds) › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Work+Details",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__09": {
+  "page": "the old CoWork page · Scope › Block",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=block",
+  "selector": ".pane.on .wtabs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "views__10": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on .wtabs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "views__11": {
+  "page": "the old CoWork page · Check › Waiting on",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=waiting",
+  "selector": ".pane.on .wtabs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "report__00": {
+  "page": "the frame · Block b01 › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Audience+Report",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "report__01": {
+  "page": "the frame · Job j01 (has a Task) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Audience+Report",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "report__02": {
+  "page": "the frame · Task t01 (a document in rounds) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Audience+Report",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "report__03": {
+  "page": "the old CoWork page · Work › Questions",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=questions",
+  "selector": ".pane.on .hl-row",
+  "cut": false,
+  "status": 200,
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "report__04": {
+  "page": "the old CoWork page · Check › Reports",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=progress",
+  "selector": ".pane.on .card",
+  "cut": false,
+  "status": 200,
+  "font": "15px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__00": {
+  "page": "the frame · Block b01 › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__01": {
+  "page": "the frame · Block b01 › Idea Studio",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Idea+Studio",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "space__02": {
+  "page": "the frame · Block b01 › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Audience+Report",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__03": {
+  "page": "the frame · Block b01 › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__04": {
+  "page": "the frame · Block b01 › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Runs",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__05": {
+  "page": "the frame · Block b01 › Delivery",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Delivery",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__06": {
+  "page": "the frame · Job j01 (has a Task) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__07": {
+  "page": "the frame · Job j01 (has a Task) › Idea Studio",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Idea+Studio",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__08": {
+  "page": "the frame · Job j01 (has a Task) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Audience+Report",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__09": {
+  "page": "the frame · Job j01 (has a Task) › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__10": {
+  "page": "the frame · Job j01 (has a Task) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__11": {
+  "page": "the frame · Job j01 (has a Task) › Delivery",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Delivery",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__12": {
+  "page": "the frame · Task t01 (a document in rounds) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Description",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__13": {
+  "page": "the frame · Task t01 (a document in rounds) › Idea Studio",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Idea+Studio",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__14": {
+  "page": "the frame · Task t01 (a document in rounds) › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Audience+Report",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__15": {
+  "page": "the frame · Task t01 (a document in rounds) › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Work+Details",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__16": {
+  "page": "the frame · Task t01 (a document in rounds) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Runs",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__17": {
+  "page": "the frame · Task t01 (a document in rounds) › Delivery",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Delivery",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__18": {
+  "page": "the old CoWork page · Scope › Block",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=block",
+  "selector": ".pane.on .split",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__19": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on .split",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__20": {
+  "page": "the old CoWork page · Check › Waiting on",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=waiting",
+  "selector": ".pane.on .split",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__21": {
+  "page": "the old CoWork page · Delivery › Reports",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=delivery",
+  "selector": ".pane.on .split",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__22": {
+  "page": "the old CoWork page · every Project (/_board/cowork-board, no Block)",
+  "url": "/_board/cowork-board",
+  "selector": "main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "main"
+ },
+ "table__00": {
+  "page": "the frame · Block b01 › Work Details › All",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=All",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__01": {
+  "page": "the frame · Block b01 › Description › Scope",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=Scope",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__02": {
+  "page": "the frame · Block b01 › Description › Resources",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=Resources",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__03": {
+  "page": "the frame · Block b01 › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Runs",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__04": {
+  "page": "the frame · Block b01 › Delivery › Done jobs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Delivery&sub=Done+jobs",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__05": {
+  "page": "the frame · Job j01 (has a Task) › Description › Job",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description&sub=Job",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__06": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Checklist",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Checklist",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__07": {
+  "page": "the frame · Job j01 (has a Task) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__08": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on table",
+  "cut": false,
+  "status": 200,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "table__09": {
+  "page": "the old CoWork page · Work › Emails",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=emails",
+  "selector": ".pane.on table",
+  "cut": false,
+  "status": 200,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "table__10": {
+  "page": "the old CoWork page · Scope › Block",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=block",
+  "selector": ".pane.on table",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "td"
+ },
+ "cards__00": {
+  "page": "the frame · Block b01 › Idea Studio",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Idea+Studio",
+  "selector": "parent:.space-main details",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__01": {
+  "page": "the old CoWork page · Scope › RoadMap Draw",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=studio",
+  "selector": ".pane.on details.draw",
+  "cut": false,
+  "status": 200,
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "summary"
+ },
+ "cards__02": {
+  "page": "the old CoWork page · Scope › Resources",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=resources",
+  "selector": ".pane.on details.draw",
+  "cut": false,
+  "status": 200,
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "summary"
+ },
+ "cards__03": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on details.ws",
+  "cut": false,
+  "status": 200,
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "summary"
+ },
+ "cards__04": {
+  "page": "the old CoWork page · Delivery › Reports",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=delivery",
+  "selector": ".pane.on .card",
+  "cut": false,
+  "status": 200,
+  "font": "15px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "cards__05": {
+  "page": "the old CoWork page · Work › Questions",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=questions",
+  "selector": ".pane.on details.q-more",
+  "cut": false,
+  "status": 200,
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "runs__00": {
+  "page": "the frame · Block b01 › Audience Report",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Audience+Report",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__01": {
+  "page": "the frame · Block b01 › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Runs",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__02": {
+  "page": "the frame · Job j01 (has a Task) › Work Details",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__03": {
+  "page": "the frame · Job j01 (has a Task) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__04": {
+  "page": "the frame · Task t01 (a document in rounds) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Runs",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__05": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on .runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__06": {
+  "page": "the old CoWork page · Check › Waiting on",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=waiting",
+  "selector": ".pane.on .runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__00": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": "parent:.pane.on .pill",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__01": {
+  "page": "the old CoWork page · Work › Emails",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=emails",
+  "selector": "parent:.pane.on .pill",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__02": {
+  "page": "the old CoWork page · Work › Questions",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=questions",
+  "selector": "parent:.pane.on .rp-tags",
+  "cut": false,
+  "status": 200,
+  "font": "16px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "tags__03": {
+  "page": "the old CoWork page · Scope › Block",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=block",
+  "selector": "parent:.pane.on .idtag",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "li"
+ },
+ "tags__04": {
+  "page": "the old CoWork page · Check › Reports",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=progress",
+  "selector": "parent:.pane.on .card .pill",
+  "cut": false,
+  "status": 200,
+  "font": "15px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "tags__05": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Timeline",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Timeline",
+  "selector": "parent:td b",
+  "cut": false,
+  "status": 200,
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "header__00": {
+  "page": "the frame · Block b01 › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description",
+  "selector": "header",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__01": {
+  "page": "the frame · Job j01 (has a Task) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description",
+  "selector": "header",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__02": {
+  "page": "the frame · Task t01 (a document in rounds) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Description",
+  "selector": "header",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__03": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": "header|.dataset",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__04": {
+  "page": "the old CoWork page's file pop-out · j01_request/emails/2026-10-03-v2-draft.md",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&show=j01_request%2Femails%2F2026-10-03-v2-draft.md",
+  "selector": "header",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(9, 105, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "header__05": {
+  "page": "the old CoWork page · every Project (/_board/cowork-board, no Block)",
+  "url": "/_board/cowork-board",
+  "selector": "header,h1",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "item__00": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Emails",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Emails",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "item__01": {
+  "page": "the Page reader, where a frame row's link goes · j01_request/emails/2026-10-03-v2-draft.md",
+  "url": "<fixture>/_board/page?path=%2FProject-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Femails%2F2026-10-03-v2-draft.md",
+  "selector": "main,body",
+  "cut": true,
+  "status": 404,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(0, 0, 0)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "body"
+ },
+ "item__02": {
+  "page": "the Page reader, where a frame row's link goes · reports/q01_ready/q01_ready.md",
+  "url": "<fixture>/_board/page?path=%2FProject-CoworkDemo%2Fcowork%2Fb01_demo%2Freports%2Fq01_ready%2Fq01_ready.md",
+  "selector": "main,body",
+  "cut": true,
+  "status": 200,
+  "font": "11.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.src"
+ },
+ "item__03": {
+  "page": "the frame · Task t01 (a document in rounds) › Description",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request%2Ft01_protocol&space=Description",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__04": {
+  "page": "the old CoWork page's file pop-out · j01_request/emails/2026-10-03-v2-draft.md",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&show=j01_request%2Femails%2F2026-10-03-v2-draft.md",
+  "selector": "body",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(9, 105, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__05": {
+  "page": "the old CoWork page's report pop-out · Q01",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&report=Q01",
+  "selector": "body",
+  "cut": true,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "999px",
+  "padding": "4px 10px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button"
+ },
+ "jobstate__00": {
+  "page": "the frame · Job j01 (has a Task) › Description › Job",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description&sub=Job",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "jobstate__01": {
+  "page": "the frame · Block b01 › Work Details › All",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=All",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "jobstate__02": {
+  "page": "the frame · Job j02 (waiting on us) › Description › Job",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj02_review&space=Description&sub=Job",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "jobstate__03": {
+  "page": "the old CoWork page · Work › Jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=jobs",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "jobstate__04": {
+  "page": "the old CoWork page · Scope › Block",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=block",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "timeline__00": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Timeline",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Timeline",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "timeline__01": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Checklist",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Checklist",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "timeline__02": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Emails",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Emails",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "timeline__03": {
+  "page": "the frame · Job j01 (has a Task) › Work Details › Meetings",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Meetings",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "timeline__04": {
+  "page": "the old CoWork page · Work › Emails",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=emails",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "timeline__05": {
+  "page": "the old CoWork page · Work › Meetings",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=meetings",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "people__00": {
+  "page": "the frame · Block b01 › Description › People",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=People",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "people__01": {
+  "page": "the frame · Block b01 › Description › Resources",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=Resources",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "people__02": {
+  "page": "the frame · Block b01 › Description › Related",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=Related",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "people__03": {
+  "page": "the frame · Job j01 (has a Task) › Description › Files",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description&sub=Files",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "people__04": {
+  "page": "the old CoWork page · Scope › People",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=people",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "people__05": {
+  "page": "the old CoWork page · Scope › Resources",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=resources",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "check__00": {
+  "page": "the frame · Block b01 › Work Details › waiting",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=waiting",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "check__01": {
+  "page": "the frame · Block b01 › Work Details › done",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=done",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "check__02": {
+  "page": "the frame · Block b01 › Delivery › Done jobs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Delivery&sub=Done+jobs",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "check__03": {
+  "page": "the frame · Job j01 (has a Task) › Runs",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "check__04": {
+  "page": "the old CoWork page · Check › Waiting on",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=waiting",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "check__05": {
+  "page": "the old CoWork page · Check › Drafts",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=drafts",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "check__06": {
+  "page": "the old CoWork page · Check › Reports",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=progress",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "check__07": {
+  "page": "the old CoWork page · Delivery › Done jobs",
+  "url": "<fixture>/_board/cowork-board?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&view=done",
+  "selector": ".pane.on .space-main",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "proposed__tabs": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Audience+Report",
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "proposed__views": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details",
+  "selector": "nav.subs",
+  "cut": false,
+  "status": 200,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "proposed__report": {
+  "page": "proposed",
+  "url": "/_board/workbench?path=Tools%2Fdesigns%2Fb13_theme_cowork&space=Audience+Report",
+  "selector": "parent:.q-row",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__space": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details",
+  "selector": ".split",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__table": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=All",
+  "selector": "table.wf-table",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__cards": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Idea+Studio",
+  "selector": "parent:.space-main details",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__runs": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Runs",
+  "selector": "section.runs-panel",
+  "cut": false,
+  "status": 200,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "proposed__header": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description",
+  "selector": "header",
+  "cut": false,
+  "status": 200,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "proposed__item": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Emails",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__jobstate": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Description&sub=Job",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "proposed__timeline": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo%2Fj01_request&space=Work+Details&sub=Timeline",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__people": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Description&sub=Resources",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__check": {
+  "page": "proposed",
+  "url": "<fixture>/_board/workbench?path=Project-CoworkDemo%2Fcowork%2Fb01_demo&space=Work+Details&sub=waiting",
+  "selector": ".space-main",
+  "cut": false,
+  "status": 200,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "_walk": [
+  {
+   "place": "frame · Block b01 › Description › Scope",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Description › People",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Description › Resources",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Description › Related",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Idea Studio",
+   "panel": [],
+   "other": [
+    "Edit"
+   ],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Audience Report",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Work Details › All",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Work Details › open",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Work Details › waiting",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Work Details › done",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Runs › All",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Runs › draw",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Runs › report",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Delivery › delivery/",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Delivery › Reports",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Block b01 › Delivery › Done jobs",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Description › Job",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Description › Files",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Idea Studio",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Audience Report",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Work Details › Timeline",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Work Details › Checklist",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Work Details › Emails",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Work Details › Meetings",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Runs › All",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Runs › email",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Runs › meeting",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j01 (has a Task) › Delivery",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Description › Job",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Description › Files",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Idea Studio",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Audience Report",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Work Details › Timeline",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Work Details › Checklist",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Work Details › Emails",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Work Details › Meetings",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Runs",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Job j03 (done, no Task) › Delivery",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Description › Face",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Description › Folder",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Idea Studio",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Audience Report › Report",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Audience Report › Draft",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Work Details › Folders",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Work Details › Evidence",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Work Details › Value",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Runs › All",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Runs › Page Runs",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Delivery › Files",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "frame · Task t01 (a document in rounds) › Delivery › Lanes",
+   "panel": [],
+   "other": [],
+   "tags": 0
+  },
+  {
+   "place": "old page · Scope › Block",
+   "panel": [
+    {
+     "name": "Update the Block status",
+     "doing": ""
+    },
+    {
+     "name": "Add a person",
+     "doing": ""
+    },
+    {
+     "name": "Add a resource",
+     "doing": ""
+    },
+    {
+     "name": "Draw",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 5
+  },
+  {
+   "place": "old page · Scope › People",
+   "panel": [
+    {
+     "name": "Update the Block status",
+     "doing": ""
+    },
+    {
+     "name": "Add a person",
+     "doing": ""
+    },
+    {
+     "name": "Add a resource",
+     "doing": ""
+    },
+    {
+     "name": "Draw",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 5
+  },
+  {
+   "place": "old page · Scope › Resources",
+   "panel": [
+    {
+     "name": "Update the Block status",
+     "doing": ""
+    },
+    {
+     "name": "Add a person",
+     "doing": ""
+    },
+    {
+     "name": "Add a resource",
+     "doing": ""
+    },
+    {
+     "name": "Draw",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [
+    "Save resource"
+   ],
+   "tags": 5
+  },
+  {
+   "place": "old page · Scope › RoadMap Draw",
+   "panel": [
+    {
+     "name": "Update the Block status",
+     "doing": ""
+    },
+    {
+     "name": "Add a person",
+     "doing": ""
+    },
+    {
+     "name": "Add a resource",
+     "doing": ""
+    },
+    {
+     "name": "Draw",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [
+    "Edit drawing",
+    "+ Add drawing"
+   ],
+   "tags": 5
+  },
+  {
+   "place": "old page · Work › Jobs",
+   "panel": [
+    {
+     "name": "Open a job",
+     "doing": ""
+    },
+    {
+     "name": "Update a job",
+     "doing": ""
+    },
+    {
+     "name": "Ask a Question",
+     "doing": ""
+    },
+    {
+     "name": "Review the questions",
+     "doing": ""
+    },
+    {
+     "name": "Write the report",
+     "doing": ""
+    },
+    {
+     "name": "Draft an email",
+     "doing": ""
+    },
+    {
+     "name": "Write meeting notes",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 12
+  },
+  {
+   "place": "old page · Work › Questions",
+   "panel": [
+    {
+     "name": "Open a job",
+     "doing": ""
+    },
+    {
+     "name": "Update a job",
+     "doing": ""
+    },
+    {
+     "name": "Ask a Question",
+     "doing": ""
+    },
+    {
+     "name": "Review the questions",
+     "doing": ""
+    },
+    {
+     "name": "Write the report",
+     "doing": ""
+    },
+    {
+     "name": "Draft an email",
+     "doing": ""
+    },
+    {
+     "name": "Write meeting notes",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 12
+  },
+  {
+   "place": "old page · Work › Emails",
+   "panel": [
+    {
+     "name": "Open a job",
+     "doing": ""
+    },
+    {
+     "name": "Update a job",
+     "doing": ""
+    },
+    {
+     "name": "Ask a Question",
+     "doing": ""
+    },
+    {
+     "name": "Review the questions",
+     "doing": ""
+    },
+    {
+     "name": "Write the report",
+     "doing": ""
+    },
+    {
+     "name": "Draft an email",
+     "doing": ""
+    },
+    {
+     "name": "Write meeting notes",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 12
+  },
+  {
+   "place": "old page · Work › Meetings",
+   "panel": [
+    {
+     "name": "Open a job",
+     "doing": ""
+    },
+    {
+     "name": "Update a job",
+     "doing": ""
+    },
+    {
+     "name": "Ask a Question",
+     "doing": ""
+    },
+    {
+     "name": "Review the questions",
+     "doing": ""
+    },
+    {
+     "name": "Write the report",
+     "doing": ""
+    },
+    {
+     "name": "Draft an email",
+     "doing": ""
+    },
+    {
+     "name": "Write meeting notes",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 12
+  },
+  {
+   "place": "old page · Check › Waiting on",
+   "panel": [
+    {
+     "name": "Draft a follow-up",
+     "doing": ""
+    },
+    {
+     "name": "Review a draft",
+     "doing": ""
+    },
+    {
+     "name": "Check a report",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 6
+  },
+  {
+   "place": "old page · Check › Drafts",
+   "panel": [
+    {
+     "name": "Draft a follow-up",
+     "doing": ""
+    },
+    {
+     "name": "Review a draft",
+     "doing": ""
+    },
+    {
+     "name": "Check a report",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 6
+  },
+  {
+   "place": "old page · Check › Reports",
+   "panel": [
+    {
+     "name": "Draft a follow-up",
+     "doing": ""
+    },
+    {
+     "name": "Review a draft",
+     "doing": ""
+    },
+    {
+     "name": "Check a report",
+     "doing": ""
+    },
+    {
+     "name": "",
+     "doing": ""
+    }
+   ],
+   "other": [],
+   "tags": 6
+  },
+  {
+   "place": "old page · Delivery › Reports",
+   "panel": [],
+   "other": [],
+   "tags": 4
+  },
+  {
+   "place": "old page · Delivery › Done jobs",
+   "panel": [],
+   "other": [],
+   "tags": 4
+  }
+ ]
+}

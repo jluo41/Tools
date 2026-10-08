@@ -1,0 +1,215 @@
+---
+name: haipipe-discovery-feedback
+description: "Utility verb. Captures a complaint/confusion/wish about the discovery SKILL itself, ROUTED at capture time to the specific bucket unit it concerns (else the orchestrator fallback). `feedback list` aggregates across all inboxes; `feedback move` re-routes a mis-filed item."
+argument-hint: "[\"<text>\" | list [unit] | move <file> <unit>]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+---
+
+# Feedback (capture skill feedback, route at capture, fix later)
+
+Captures feedback about the discovery SKILL (confusing dashboard, clunky stage,
+missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE CODE
+THAT NEEDS FIXING. Does NOT fix anything; fixing is a separate revision pass.
+Distinguish from a discovery FINDING: feedback is about the TOOL, not the
+sources/verdict/landscape the discovery produces.
+
+Capture-time routing: each complaint is inferred to a specific bucket unit and
+written into THAT unit's `feedback/` folder. When no unit matches (cross-cutting
+discipline: the D1 Task workflow and shared Page-workflow handoff, the Discovery Page Type
+field, the discovery.yaml schema, the stage strip, or genuinely unclassifiable),
+it lands in the orchestrator fallback `feedback/`. The folder a file lives in IS
+the record of which unit it concerns; there is no separate `skill:` field.
+
+The routable UNIT is one of the three capability skills at the family root,
+plus the shared `agents/` folder. Four Discovery routable units total
+(haipipe-discovery-search, haipipe-discovery-review, haipipe-discovery-synthesize, agents); the orchestrator fallback inbox is
+the catch-all DESTINATION for cross-cutting items, not a fifth unit. Semantic
+ideation is a sibling skill, not a Discovery inbox: feedback about Direction
+Cards, evidence bundles, or Paper handoff belongs to `haipipe-ideation`.
+
+## Capture: `/haipipe-discovery feedback "<text>"`
+
+```
+1. INFER the target unit (see "Routing the capture" below).
+2. Resolve the unit -> its feedback/ folder PATH (see "Inbox paths").
+   If that folder is missing, create it + a one-line README (template below).
+3. MERGE-OR-CREATE (an inbox must NOT grow without bound):
+   a. Read the OPEN (and fixed) items already in the resolved inbox
+      (small set: one unit's folder).
+   b. SAME-TOPIC test: is the new item the same underlying concern as an
+      existing file -- not merely the same unit? (see "Same-topic test").
+   c. SAME TOPIC -> UPDATE that file in place:
+        - append a dated line under "## Recurrences" in the reporter's NEW
+          words. NEVER edit, compress, or translate the prior text -- earlier
+          wording is preserved verbatim.
+        - bump frontmatter: updated: <today>; occurrences: +1.
+        - if status was `fixed`, REOPEN: status: open + regressed: <today>.
+          A fixed concern resurfacing is a REGRESSION signal, not a dup.
+        - sharpen the title only if the new instance genuinely clarifies it.
+   d. NEW TOPIC -> CREATE one file: <inbox>/<YYYY-MM-DD>_<short-slug>.md
+      (frontmatter + body per "One file per item" below).
+   e. AMBIGUOUS near-match (manual capture) -> ASK "looks like <file> -- merge
+      or new?" rather than guess. (Under digest, the confirm gate decides.)
+4. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
+   it matched; offer the one-line correction:
+   "filed -> haipipe-discovery-search/feedback/ NEW (matched keyword 'sources.md').
+    wrong target? /haipipe-discovery feedback move <file> <unit>"
+   (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
+   already approved and its step-6 report is the single confirmation.)
+   Do NOT attempt a fix now.
+```
+
+### Same-topic test (for merge-or-create)
+
+```
+SAME TOPIC = complains about the SAME unit behavior, or wishes for the SAME
+change, even if phrased differently. Same unit alone is NOT enough.
+  same topic   "sources.md is one giant table"  +  "can't scan a source at a
+               glance in that wide table"   -> both = sources.md layout   -> MERGE
+  diff topic   "sources.md is one giant table"  +  "arxiv search misses recent
+               preprints"          -> distinct concerns, same unit -> SEPARATE
+When unsure, prefer ASK (manual) / the confirm gate (digest) over a silent
+guess: a wrong MERGE buries a distinct concern, a wrong SPLIT regrows the inbox.
+```
+
+### Routing the capture (cross-cutting guard first, then keyword, then context)
+
+```
+signal: a routing keyword in the feedback TEXT (plus the conversation's active
+        type/stage as secondary context)
+resolve:
+  0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
+     does the complaint assert a rule TRUE ACROSS ALL discovery types AND stages
+     (something that should hold for every Discovery Page Type and specialist route, at every
+     lifecycle stage, however phrased) OR name a known cross-cutting concern --
+     rather than report a bug in ONE bucket's behavior or output? If yes ->
+     orchestrator FALLBACK, STOP. This overrides any keyword it contains.
+       Signals that it is layer-wide (non-exhaustive examples, NOT a checklist):
+         - quantifies over types/stages: "every/each/all types", "at every
+           stage", "across the lifecycle", "throughout", "always ... before
+           done", or the same idea with no trigger word at all.
+         - names a known cross-cutting concern: the D1 Task/Page workflow handoff
+           lifecycle, the Discovery Page Type field and route map, the
+           discovery.yaml schema, the report block, the stage
+           strip, the dashboard, the group-letter hints, the project.log.jsonl.
+       Rule of thumb: "would this complaint be equally true for a Search folder,
+       a Review folder, AND a Synthesize folder?" If yes, it is cross-cutting.
+       Contrast: "the type: field shouldn't be a Chinese glyph" -> fallback
+       (the type axis is layer-wide schema); "sources.md is an unreadable wide
+       table" -> 1_search (one bucket's output).
+  1. else keyword match in TEXT -> that unit (most specific wins)
+  2. else the conversation's active type/stage -> that unit
+  3. else orchestrator fallback
+```
+
+Keyword -> unit map (first/most-specific match wins; unit = the bucket folder):
+
+```
+search, find paper, arxiv, semantic scholar, exa, sources.md,
+read, summarize paper, alphaxiv, deepxiv, analyze paper        -> haipipe-discovery-search/feedback/
+review, source reading, inspect Result, analyze source        -> 2_review/feedback/
+lit review, landscape, verdict, synthesize, combine papers    -> haipipe-discovery-synthesize/feedback/
+Direction Card, evidence bundle, semantic idea, Paper handoff -> haipipe-ideation owner (outside Discovery)
+creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
+--------------------------------------------------------------------------------
+NO MATCH (cross-cutting: the D1 Task/Page workflow handoff, the
+Discovery Page Type field and route map, the discovery.yaml schema,
+the report block, the stage strip, the dashboard, anything true across all
+types) ......................... -> orchestrator fallback (haipipe-discovery/feedback/)
+```
+
+When more than one keyword matches, prefer the MOST SPECIFIC. When the only
+signal is the active type/stage and the complaint is plainly cross-cutting,
+prefer the fallback over the unit (do not bury a layer-wide rule inside one
+bucket).
+
+### One file per item (schema)
+
+```
+---
+status: open | fixed
+created: YYYY-MM-DD
+updated: YYYY-MM-DD        # = created until the first merge
+occurrences: 1            # bumped on each same-topic merge
+context: <type/stage, or "general">
+fixed_in: ""
+regressed: ""             # set to a date if a fixed item resurfaces
+---
+<the feedback, in the reporter's words>
+
+## Recurrences            # added on the FIRST merge; one dated line per re-surfacing
+- YYYY-MM-DD: <the new phrasing, verbatim from the reporter>
+
+Fix: <added when resolved>
+```
+
+### Inbox paths (relative to the DISCOVERY LAYER ROOT)
+
+The discovery layer root is the `skills/2_theme/discovery/` directory (resolve symlinks:
+the orchestrator is reached via `.claude/skills/haipipe-discovery` ->
+`…/skills/2_theme/discovery/haipipe-discovery`, so the root is one level ABOVE the
+orchestrator folder, i.e. `…/skills/discovery`, NOT
+`…/skills/2_theme/discovery/haipipe-discovery`). Inboxes are created LAZILY on first
+capture, so a mapped folder not existing yet is expected, not an error. Do NOT
+pre-create empty inboxes; create one only when a file is actually filed there.
+
+```
+1_search    (arxiv, semantic-scholar, exa-search, openalex,
+             gemini-search, alphaxiv, deepxiv, paper-analyzer) haipipe-discovery-search/feedback/
+2_review    (source review, Result inspection)                  2_review/feedback/
+haipipe-discovery-synthesize (research-lit, comm-lit-review, academic-research) haipipe-discovery-synthesize/feedback/
+ideation    (semantic direction, cards, bundle, handoff)      outside Discovery; route to haipipe-ideation
+agents      (creator / orchestrator / reviewer dispatch)       agents/feedback/
+ORCHESTRATOR FALLBACK                                          haipipe-discovery/feedback/
+```
+
+New-inbox README template (write only if the folder lacks a README.md):
+
+```
+# <unit-name> - Feedback Inbox
+
+Feedback about THIS unit, captured by `/haipipe-discovery feedback "<text>"` when
+the text or the active type/stage points here (capture-time routing), or moved
+here via `/haipipe-discovery feedback move <file> <unit-name>`.
+
+One file per item: `<YYYY-MM-DD>_<slug>.md` (`status: open|fixed`). Fix in a
+later revision pass; keep files as history (never delete). Shared convention:
+the orchestrator inbox `haipipe-discovery/feedback/README.md`.
+```
+
+## List: `/haipipe-discovery feedback list [unit]`
+
+```
+AGGREGATE across every feedback/ inbox under the discovery layer root, not just
+this folder. Grep all */feedback/*.md (and the orchestrator folder) for
+`status: open` and print them newest-first, GROUPED BY inbox (unit), each line
+showing the slug + context. If [unit] is given, restrict to that one inbox.
+
+  find <discovery-layer-root> -type d -name feedback   # enumerate inboxes
+  then grep each for `status: open`
+
+The folder each file sits in tells you which unit it concerns.
+```
+
+## Move (re-route a mis-filed item): `/haipipe-discovery feedback move <file> <unit>`
+
+```
+Move <file> from its current inbox to <unit>'s feedback/ folder (resolve via
+"Inbox paths"; create the target + README if missing). Use after a wrong
+capture-time guess. This is a pure file move; no content edit.
+```
+
+## Resolve (during a revision pass, not via this verb)
+
+```
+Set status: fixed + fixed_in: <skill version> + a one-line Fix note.
+Keep the file as history; never delete it.
+```
+
+## Where it lives
+
+There is no single inbox. Each bucket unit (and the shared agents/ folder) keeps
+its OWN `feedback/` folder so the report sits right next to the code that needs
+fixing; the orchestrator's `feedback/` is the fallback for cross-cutting and
+unclassifiable items. There is no cross-skill shared feedback. All inboxes travel
+with the skills in the submodule.

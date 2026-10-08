@@ -184,7 +184,7 @@
 	url = https://github.com/AIScientists-Dev/academic-humanizer
 	update = none
 [submodule "plugins/haipipe-toolkit/skills/paper/venue"]
-	path = plugins/haipipe-toolkit/skills/paper/venue
+	path = plugins/haipipe-toolkit/skills/2_theme/paper/venue
 	url = git@github.com:jluo41/Venue-Paper.git
 	update = none
 [submodule "references/sepia"]

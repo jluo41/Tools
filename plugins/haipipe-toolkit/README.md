@@ -49,12 +49,12 @@ the Local Run/Result that makes its focal item ready.
 Evidence Workspace binds exact Supporting Run ids and Local Run/Result receipts;
 Task and Discovery never write consumer prose.
 
-The neutral spine is `skills/run/haipipe-run/SKILL.md`; its
-[`Run catalogue`](skills/run/haipipe-run/ref/run-catalog.md) links current domain
+The neutral spine is `skills/1_base/project/haipipe-run/SKILL.md`; its
+[`Run catalogue`](skills/1_base/project/haipipe-run/ref/run-catalog.md) links current domain
 profiles, and its references define identity/history and receipt/inventory
 rules. Workflow agents, domain owners, workers and presenters use these rules.
 Page evidence wiring is
-owned by `skills/page/haipipe-workbench-page/`.
+owned by `skills/1_base/page/workbench-page/`.
 
 
 Commands
@@ -63,8 +63,8 @@ Commands
 **Research axis:**
 
 ```
-/haipipe-board        cross-cutting work surface — one topic, Q/S pages,
-                      inline discussion, synchronization, and review
+/haipipe-page         a Page Folder, alone or in a Board; the Board checker and
+                      the Run CLIs live here (the Board skill retired 261005)
 
 /haipipe-task         the internal executor — Plan → Build → Execute → Report
 /haipipe-task run <task> [<run>]                 execute/reuse one Run/Result
@@ -85,7 +85,7 @@ capabilities, not additional levels: Search finds, Review inspects one
 source, and Synthesize combines accepted Results; `1_search/` and `2_review/`
 hold vendored originals only. The D1 and Page 00–04
 workflows are separate axes. See
-`skills/discovery/haipipe-discovery/ref/bjtr-alignment.md`.
+`skills/2_theme/discovery/haipipe-discovery/ref/bjtr-alignment.md`.
 
 **Engineering axis:**
 
@@ -140,7 +140,7 @@ of it a skill:
 
 ```
 servers/               🌐 everything a browser is served by: _host/ (serve.py, auth,
-│                         the `live` namespace), haipipe-board/, haipipe-page/, and one
+│                         the `live` namespace), space-home/, haipipe-page/, and one
 │                         workbench-<name>/ per live tab; see servers/README.md
 mcp-servers/           🔌 MCP servers (codex-image2)
 agents/                🤖 plugin-level agent definitions
@@ -158,11 +158,11 @@ Where to read next
 ------------------
 
 ```
-skills/run/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
-skills/page/haipipe-page-workflow/  the Page workflow: the list of Runs and their routes
-skills/page/workflow-runs/                 one skill per Page Run: context · structure · scratch · writing · evidence · revise · delivery · check
+skills/1_base/project/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
+skills/1_base/page/haipipe-page-workflow/  the Page workflow: the list of Runs and their routes
+skills/1_base/page/workflow-runs/                 one skill per Page Run: context · structure · scratch · writing · evidence · revise · delivery · check
 skills/STRUCTURE.md      the skill-tree mental model
-skills/board/README.md   the first-class Board family and its reviewer
+skills/1_base/page/workbench/agents/README.md   the Page agents, the Board reviewer among them
 ```
 
 

@@ -1,0 +1,260 @@
+---
+name: haipipe-paper-venue
+description: >-
+  Paper Page Type for one external submission target: a journal, funder, or
+  patent office. Separates binding desk rules from observed venue patterns,
+  records provenance, and hands a verified venue contract to Ideation deep fit,
+  the Story's Section Narrative rows, and Section Pages. On the ladder it also
+  writes a paper Board's venues/<venue>/ (call.md and the author kit), shown in
+  Block › Description › Venue and read by each version. Use when researching,
+  creating, refreshing, or comparing a venue Page, or adding or checking a
+  paper's venue.
+metadata:
+  version: "0.10.0"
+  last_updated: "2026-10-07"
+  page_ruling: none
+  outline:
+    mode: fixed
+    source: "this SKILL.md"
+    shape: "Target Identity and Scope → Fit and Desk Reject → Venue Structure → Unit Guidance → Submission Rules → Cost Clock and Odds → Gaps and Handoff"
+---
+
+# /haipipe-paper-venue · make one external desk inspectable
+
+For a concrete Venue Page update, load `haipipe-page`,
+`haipipe-page-workflow`, the current Run Workflow/Spec owner,
+`haipipe-paper-workflow`, this PageType and relevant references in their set order. Name the Page
+`QBv<n>-<slug>.md` and declare `page-type: venue`. The shared Page resolver
+selects its owner; the filename fallback remains readable for existing Pages.
+
+## 🪜 A paper's venues on the ladder (b16 Q05, JL 261007)
+
+A paper Board keeps every venue it writes for in `venues/<venue>/` (`haipipe-paper/ref/paper-ladder.md`):
+`call.md`, the call as read on one day (dates, limits, format, review rules, the link and the day it was read;
+scaffold [`ref/call-template.md`](ref/call-template.md)), and `kit/`, the author template as shipped. Two run
+cards write them, both `Block › Description`: **Add a venue** (`run-add-venue-<venue>`) reads the venue's own call
+into a new `venues/<venue>/`, and **Check the rules** (`run-check-venue-<venue>`, also on a version's Description ›
+Venue rules) rereads it, writes what changed under "Changed since last read", and lists every rule the paper or
+version breaks. A version's face names its one venue; its build and its Requirement read that venue's `call.md`.
+
+The shared Venue Page below (`QBv<n>-<slug>`, the bank) stays the library: what a desk rewards and refuses, for
+every paper. A Board's `call.md` names the bank Page it follows (`bank:`) and copies none of its prose. Whether the
+two become one home is open (b16 Q02).
+
+## 🏛 Grain and boundary
+
+One Venue Page describes one submission target. It does not choose the paper's
+target and does not write the paper's Story or its Section Narrative rows.
+
+```text
+Venue Page   what this external desk requires, rewards, rejects, and costs
+Story        how this paper is told for that desk (§8 Section Narrative rows)
+Section      how one unit satisfies its Story row and desk constraints
+```
+
+A target may be a journal, funder, conference, regulator, or patent office. Use
+the target's own document units when journal section kinds do not apply.
+
+**The bank is a shared reference library** (JL 260823). Venue Pages live in the
+shared QBv bank and sit outside the paper journey: nothing about a paper
+advances by writing one. Ideation records a person's intended target/category
+at G0 after deep fit; the Story confirms it as the paper's operational target
+and binds the bank contract in its Section Narrative rows. A later target change
+is a new human paper-journey receipt plus Story rebind, never a Venue Page
+decision. A missing or stale desk contract is refreshed before the gate.
+
+## 📚 Two profiles (0.4.0)
+
+A venue page declares which of two profiles it is, because their evidentiary
+floors differ by an order of magnitude and a reader must not misread one as an
+underweight instance of the other:
+
+```text
+PACK-BACKED    an exemplar pack sits behind it · budgets are measured ·
+               PACK OBSERVATION rows are expected throughout
+               (partial legacy content example: QBv1-misq)
+CfP-ONLY       a call-for-papers or published rule sheet is the ONLY source ·
+               verified published lengths are DESK RULES; unsourced lengths
+               stay UNKNOWN or labeled OWN ESTIMATE · the page SAYS, where a pack
+               observation would normally sit, that none exists
+               (partial legacy content example: QBv17-wise)
+```
+
+A CfP-only page is legitimately short. What it may never do is fill the gap
+with invented observations. Use sourced DESK RULEs, clearly marked OWN
+ESTIMATEs, or visible UNKNOWNs.
+
+Use `template.md` for current Page structure and
+[ref/profile-examples.md](ref/profile-examples.md) for both contract profiles.
+The legacy bank bodies are source material, not current Page templates.
+
+## ⚖️ Authority and provenance
+
+Every venue statement is typed:
+
+```text
+DESK RULE          published by the target; binding at a named moment
+PACK OBSERVATION   measured from exemplars; informative, not binding
+PACK PRESCRIPTION  suggested by a playbook without enough observations
+LOCAL DECISION     a paper-specific choice; never attributed to the desk
+OWN ESTIMATE       explicitly local estimate, with basis/uncertainty; not a desk rule
+UNKNOWN            visible gap with an owner or refresh route
+```
+
+For desk facts record source, access date, access method, and enforcement time:
+submission, revision, acceptance, or publication. When desk and pack disagree,
+the desk wins for compliance and the disagreement remains visible.
+
+Legacy free prose is not grandfathered into an authority class. Migrate it one
+statement at a time, retaining the original locator: official target text with
+its date/method may become `DESK RULE`; measured exemplars may become
+`PACK OBSERVATION`; unsupported playbook advice may become
+`PACK PRESCRIPTION`; a paper choice may become `LOCAL DECISION`; anything
+without enough provenance remains `UNKNOWN`. File existence, modification
+time, or prior use never establishes authority or currentness.
+
+## 📦 Versioned contract block
+
+Every Page intended for deep-fit or Story consumption exposes one
+machine-readable contract block. The Page may contain richer prose; this is
+the bounded interface consumers test:
+
+```yaml
+versioned_contract:
+  schema_version: 1
+  contract_version: "2026-09-20.1"
+  target: "Journal or desk"
+  category: null
+  profile: cfp-only                 # pack-backed | cfp-only
+  state: partial                    # current | partial | stale | superseded
+  verified_at: null
+  refresh_due: null
+  official_source_results: []
+  page_check_receipt: null
+  blocking_unknowns:
+    - Confirm the article or application category.
+    - Record dated official-source Results and a refresh policy.
+    - Obtain Page CHECK for this contract version.
+  contract_locator: "QBvN-....md#versioned-contract"
+```
+
+`current` means the target/category match, the Page CHECK accepted this
+contract version, every volatile binding rule used by consumers resolves to a
+named official-source Result, and no `blocking_unknowns` item invalidates the
+intended fit or submission path. `partial`, `stale`, `superseded`, or an absent
+block may support discovery or a broad screen but cannot close deep fit, G0,
+or a new Story/Section release. A refresh mints a new `contract_version` and
+preserves the prior block in history; it never overwrites what an earlier
+decision consumed.
+
+### Consumer preflight
+
+Before deep fit, G0 or a new Story/Section release, read the exact contract
+block and resolve every path against the owning project's declared root (or
+use an explicit absolute path). Require a concrete target/category/profile,
+`state: current`, a real `verified_at` date, unexpired `refresh_due` when set,
+accepted official-source Results for the volatile rules being used, a
+`page_check_receipt` accepting this same version, and no relevant blocking
+unknowns. A file's existence or a green legacy status does not meet this test.
+On failure report HOLD with the missing source/receipt/refresh owner; broad
+screening can continue with the limitation visible. No second target approval
+is introduced here.
+
+For initial or migrated `partial` records, category/profile/verified_at and
+page_check_receipt may be null when unknown. Put each unresolved field in
+`blocking_unknowns`; it cannot silently acquire current status. Grant/patent
+family summaries need a specific agency/jurisdiction and application category
+before use as a one-target contract. Creating the interface is not an official
+source refresh. Preserve prior versions before replacing a consumed block.
+
+## 📐 Required Content outline
+
+```text
+1  Target Identity and Scope
+   target · article/application category · audience · what this Page covers ·
+   the page's PROFILE, declared: pack-backed or CfP-only (0.4.0)
+
+2  Fit and Desk Reject
+   contributions rewarded · methods permitted · explicit or observed rejection tests
+
+3  Venue Structure
+   target reading/order units · total limits · required components · resolver gaps
+
+4  Unit Guidance
+   one comparable record per section/document unit: job, observed shape, budget,
+   displays/citations expected, anti-patterns, source
+
+5  Submission Rules
+   format · anonymity · references · disclosures · portal · files · timing of enforcement
+
+6  Cost, Clock, and Odds
+   fees · review timing · reported acceptance information · uncertainty
+
+7  Gaps and Handoff
+   stale or missing facts · desk/pack conflicts · versioned contract state ·
+   verified contract consumed by Ideation and the Story's Section Narrative rows
+```
+
+The exact number of Unit Guidance divisions may vary with the target. Keep the
+seven roles inspectable.
+
+## 🃏 Evidence and displays
+
+Venue Pages are evidence-heavy Pages, using the same three Outline-workbench
+workspaces as every current Page:
+
+```text
+Draft Workspace      venue propositions and their typed Evidence Item ids
+Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
+Run Workspace        owner-native Run Tickets, Results, and current status
+```
+
+Desk identity, profile, requirements and related links live in the backstage
+Context record; they are not an additional reader-facing Outline workspace.
+
+Desk sources and exemplars normally arrive through Discovery Supporting Run
+Results. LAND freezes the chosen Results and any governed page-local captures
+into one Local Input, then one local Run produces a `VALUE`, `CITE`, or
+`DISPLAY` Result. Related Venue Pages and playbooks remain Context links until
+a Supporting Run Result makes their content independently auditable. There is
+no active PageX, probe, bibex, value, or display workbench; old lanes are
+migration-only input.
+
+Every number and binding rule must resolve to its Evidence Item plus full
+Run/Result identity. A bare uncited number still owes its source.
+
+## 📤 Handoff
+
+Ideation deep fit, the Story's Section Narrative rows, and Section Pages consume
+the named versioned Venue contract rather than copying the whole Page:
+
+```text
+target and category
+binding rules + enforcement moments
+observed patterns, explicitly nonbinding
+reader order/document units
+total and per-unit constraints
+required displays/citations/disclosures
+known conflicts, unknowns, and refresh date
+contract version, state, verification date, and official-source Result paths
+```
+
+## ✅ Closing checks
+
+- One target and category are unambiguous.
+- Every venue statement has an authority type and source.
+- Every desk rule has an enforcement moment.
+- Desk/pack disagreements and missing facts remain visible.
+- Structure totals and per-unit guidance are reconciled or explicitly conflict.
+- The machine-readable contract block is present, checked, and honestly
+  `current`, `partial`, `stale`, or `superseded`.
+- The Story's Section Narrative rows can consume a bounded, versioned venue contract.
+- CHECK judges the rendered Page and its linked evidence before closure.
+
+`page_ruling: none` is explicit: Venue CHECK may close the bank Page when its
+semantic/mechanical contract and artifact-specific gates pass. The human
+target decision remains owned by the paper journey and is not a second
+Venue-page approval.
+
+`template.md` is the scaffold for a new Venue Page. This variant owns no
+scripts; Board machinery builds and checks it.

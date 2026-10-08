@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Comparing Jobs is how the questions grow</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Comparing Jobs is how the questions grow</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Gaps and changed answers become proposals; proposals become the next release.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A question added after seeing the data stays exploratory until the next data version confirms it.</text>
+<rect x="60.0" y="351.1" width="204.8" height="108.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="162.4" y="391.1" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Job closes</text>
+<text x="162.4" y="428.5" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">frozen</text>
+<polyline points="268.8,405.1 294.8,405.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="284.8,411.1 294.8,405.1 284.8,399.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="298.8" y="351.1" width="204.8" height="108.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="401.2" y="391.1" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">compare</text>
+<text x="401.2" y="428.5" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">new · held · changed</text>
+<polyline points="507.6,405.1 533.6,405.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="523.6,411.1 533.6,405.1 523.6,399.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="537.6" y="351.1" width="204.8" height="108.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="640.0" y="391.1" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">propose</text>
+<text x="640.0" y="428.5" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">→ proposals/</text>
+<polyline points="746.4,405.1 772.4,405.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="762.4,411.1 772.4,405.1 762.4,399.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="776.4" y="351.1" width="204.8" height="108.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="878.8" y="391.1" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">next release</text>
+<text x="878.8" y="428.5" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">asked, agreed, signed</text>
+<polyline points="985.2,405.1 1011.2,405.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="1001.2,411.1 1011.2,405.1 1001.2,399.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="1015.2" y="351.1" width="204.8" height="108.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="1117.6" y="391.1" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">new Job</text>
+<text x="1117.6" y="428.5" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">pN+1 × &lt;d&gt;vM</text>
+<polyline points="1117.6,463.1 1117.6,505.1 162.4,505.1 162.4,465.1" fill="none" stroke="#1f5aa8" stroke-width="1.6"/>
+<polyline points="168.4,475.1 162.4,465.1 156.4,475.1" fill="none" stroke="#1f5aa8" stroke-width="1.6"/>
+<text x="640.0" y="532.7" font-size="19" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">the new Job is compared with this one in turn</text>
+</svg>

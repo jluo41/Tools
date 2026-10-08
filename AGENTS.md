@@ -24,7 +24,7 @@
 - The top-level package inventory is the set of direct child directories in `plugins/`. When adding or retiring a package, keep its plugin manifest, `.claude-plugin/marketplace.json`, and the README package table aligned. Every marketplace `source` must resolve to an existing package directory.
 - Do not assume a nested `.claude-plugin/plugin.json` is a top-level package. Decide deliberately whether it should be listed separately in the root marketplace and documentation.
 - Both installers scan skill files recursively under package `skills/` trees. Keep reference trees out of those trees unless they are intentionally part of the installed skills.
-- Keep `install.sh` and `install.ps1` behavior aligned when changing discovery, exclusions, duplicate handling, or target installation. Their current skill exclusions differ for `_old/`; check the implementations rather than assuming exact parity.
+- Keep `install.sh` and `install.ps1` behavior aligned when changing discovery, exclusions, duplicate handling, or target installation. Both skip any folder whose name starts with `_` and `node_modules/`, for skills and agents alike; keep that one rule in both rather than listing retired folders.
 - Keep sound-hook event data in `install-hooks.json`, not duplicated between the installers. Update README instructions when installer behavior or flags change.
 
 ## Validation

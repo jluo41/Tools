@@ -1,1 +1,0 @@
-../../../page/haipipe-page/src/insight_instances.py

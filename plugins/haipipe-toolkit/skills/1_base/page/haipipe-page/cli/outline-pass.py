@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""outline-pass.py · the mechanical half of one OUTLINE pass, in one command.
+
+    python3 cli/outline-pass.py <page>.md            run everything, print the receipt-lite
+
+haipipe-page-structure §①: regenerate the three derived files (context,
+requirement, feedback), derive Evidence live from the authored Item contract
+and current Results, run the plan checks for THIS page (hard: any ❌ exits 1),
+run cli/check.py scoped to the page, and print what the pass must read before
+writing a bullet. Nothing is built: the workbench reads the Page live (JL 261004). It writes no plan, no thread and no
+log record: those are the Run's own pen.
+"""
+import argparse, importlib.util, re, subprocess, sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent            # cli/
+BOARD_SKILL = HERE.parent                         # haipipe-page/ (the Page engine)
+sys.path.insert(0, str(BOARD_SKILL))
+from src.plan_shape import (check as plan_shape_check, check_serves,      # noqa: E402
+                            check_bullet_grammar, check_head_style,
+                            check_note_quotes_page, check_coverage,
+                            paragraph_order_findings)
+from src.outline_version import latest_outline, legacy_integer_issue, version_policy_issues, record_path, plan_dir    # noqa: E402
+
+SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")  # skills/
+
+
+def _run(cmd, cwd=None):
+    r = subprocess.run([sys.executable] + cmd, cwd=cwd, capture_output=True, text=True)
+    return r.returncode, (r.stdout + r.stderr).strip()
+
+
+def _board_of(page: Path) -> Path:
+    d = page.parent
+    while d != d.parent:
+        if (d / "board.md").is_file():
+            return d
+        d = d.parent
+    raise SystemExit(f"no board.md above {page}")
+
+
+def _latest_plan(page: Path):
+    o = plan_dir(page.parent)
+    return latest_outline(o, page.stem)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("page")
+    ap.add_argument("--no-build", action="store_true", help="accepted and ignored: nothing is built")
+    a = ap.parse_args()
+    page = Path(a.page).resolve()
+    if not page.is_file():
+        raise SystemExit(f"not a page: {page}")
+    board = _board_of(page)
+    stem = page.stem
+    o = plan_dir(page.parent)
+    out = []
+
+    # ① the three derived files, regenerated whole. context-record.py joined
+    # 260904 with the 00 CONTEXT phase: its record is generated like the other
+    # three, so a hand-written one is a contract break, not a shortcut.
+    for script, label in (("context-record.py", "context"),
+                          ("requirement.py", "requirement"), ("feedback.py", "feedback")):
+        cmd = [str(HERE / script)] + (["collect"] if script == "feedback.py" else []) + [str(page)]
+        rc, txt = _run(cmd)
+        out.append((label, rc, txt.splitlines()[-1] if txt else ""))
+
+    # ② what the pass must READ, in one screen
+    print(f"OUTLINE pass · {stem} · board {board.name}")
+    req = record_path(o, stem, "requirement")
+    if req.is_file():
+        heads = re.findall(r"(?m)^### (V\d) · (.+)$", req.read_text(encoding="utf-8", errors="replace"))
+        print("requirement  " + " · ".join(f"{v} {h[:40]}" for v, h in heads) if heads else "requirement  (no venue division bound)")
+    else:
+        print("requirement  none (no structure-source:)")
+    fb = record_path(o, stem, "feedback")
+    if fb.is_file():
+        m = re.search(r"(?m)^status:\s*(.+)$", fb.read_text(encoding="utf-8", errors="replace"))
+        print("feedback     " + (m.group(1).strip() if m else "(no status line)"))
+    else:
+        print("feedback     none routed")
+    item_file = o / f"{stem}-evidence-items.md"
+    print("evidence     " + ("Item contract + results/**/result.yaml" if item_file.is_file()
+                             else "Item contract missing"))
+
+    # ③ the plan checks, HARD for this page
+    plan = _latest_plan(page)
+    fails, gaps = [], []
+    if plan is None:
+        print("plan         none yet: write draft/<stem>-draft-v0.1.md from ref/plan-grammar.md")
+    else:
+        txt = plan.read_text(encoding="utf-8", errors="replace")
+        tick = "✅" if re.search(r"(?m)^approved:\s*✅", txt) else "⬜"
+        arc = bool(re.search(r"(?m)^arc:\s*\S", txt))
+        fails += [f"plan-shape-off-type: {m}" for m in plan_shape_check(page, txt, SKILLS)]
+        fails += [f"serves-address-stale: {m}" for m in check_serves(page, txt)]
+        fails += [f"bullet-missing-note: {m}" for m in check_bullet_grammar(txt)]
+        fails += [f"paragraph-order: {m}" for m in paragraph_order_findings(txt)]
+        hf, hg = check_head_style(txt)
+        fails += hf + hg                                   # hard here, gaps board-wide
+        fails += check_note_quotes_page(page, txt)
+        if not arc:
+            fails.append("plan-no-arc: no `arc:` line")
+        for candidate in o.glob(f"{stem}-outline-*.md"):
+            candidate_text = candidate.read_text(encoding="utf-8", errors="replace")
+            fails += [
+                f"version-policy: {message}"
+                for message in version_policy_issues(candidate, candidate_text)
+            ]
+        legacy = legacy_integer_issue(plan)
+        if legacy:
+            fails.append(f"version-policy: {legacy}")
+        fails += [f"coverage: {m}" for m in check_coverage(page, txt)]
+        print(f"plan         {plan.name} · approved {tick} · checks {'✅ 0 ❌' if not fails else f'❌ {len(fails)}'} · coverage gaps {len(gaps)}")
+        for f in fails[:20]:
+            print("   ❌", f)
+        for g in gaps[:8]:
+            print("   🔎", g)
+        if len(gaps) > 8:
+            print(f"   🔎 … {len(gaps) - 8} more")
+
+    # ④ the page-scoped checker
+    rc, txt = _run([str(HERE / "check.py"), str(board)])
+    mine = [ln for ln in txt.splitlines() if stem in ln and ("WARN" in ln or "ERROR" in ln)]
+    print(f"check.py     {len(mine)} finding(s) on {stem}" + (": " + " · ".join(re.sub(r'\s+', ' ', l)[:70] for l in mine[:4]) if mine else ""))
+    print("tab          open the page URL: 🧭 is the first tab")
+    for label, rc, last in out:
+        if rc != 0:
+            print(f"⚠️ {label}: {last[:120]}")
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

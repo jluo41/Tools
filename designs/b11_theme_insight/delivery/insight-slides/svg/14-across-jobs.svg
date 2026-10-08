@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>The Board reads across Jobs: a second D · I · K · W</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">The Board reads across Jobs: a second D · I · K · W</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Readings use the Jobs&#x27; results, never raw data, and compare only Jobs one clock apart.</text>
+<rect x="60.0" y="180.3" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">reading</text>
+<text x="306.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">asks</text>
+<text x="770.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">soft Run</text>
+<text x="74.0" y="254.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Coverage</text>
+<text x="306.0" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">what was asked and answered, on which Job</text>
+<text x="770.0" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">run-coverage</text>
+<line x1="60.0" y1="277.0" x2="1220.0" y2="277.0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="305.6" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Tracks</text>
+<text x="306.0" y="305.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one question Job by Job; a trend over data</text>
+<text x="306.0" y="330.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">versions</text>
+<text x="770.0" y="305.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">run-track-&lt;q&gt;</text>
+<line x1="60.0" y1="352.4" x2="1220.0" y2="352.4" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="381.0" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Consistency</text>
+<text x="306.0" y="381.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">each step held or changed, and its one cause</text>
+<text x="770.0" y="381.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">run-consistency-&lt;jA&gt;-&lt;jB&gt;</text>
+<line x1="60.0" y1="403.1" x2="1220.0" y2="403.1" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="431.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Findings</text>
+<text x="306.0" y="431.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the Board&#x27;s own questions, each citing a reading</text>
+<text x="770.0" y="431.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">run-report-&lt;qNN&gt;</text>
+<line x1="60.0" y1="453.8" x2="1220.0" y2="453.8" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="180.3" x2="292.0" y2="453.8" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="756.0" y1="180.3" x2="756.0" y2="453.8" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="180.3" width="1160.0" height="273.5" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

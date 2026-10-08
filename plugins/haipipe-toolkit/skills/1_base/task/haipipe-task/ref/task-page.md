@@ -1,0 +1,291 @@
+# Task Folder Page Face
+
+Load this reference when creating, reading, repairing, or checking the
+same-stem Page inside one executable Task Folder. `haipipe-task` owns the Task
+Folder identity, execution, and closure; `haipipe-page-task` supplies the
+display-rich reader extension; `haipipe-page` supplies the shared Page frame
+and `haipipe-page-workflow` supplies CONTEXT through CHECK.
+
+## Ownership and identity
+
+```text
+Task Folder
+├── Task Face   workflow/ · scripts/ · runs/ · generated Results
+└── Page Face   <task>.md · draft/ · readable interpretation
+```
+
+The Page and Task faces name the same `bNNjNNtNN` object. A new Task Page
+declares:
+
+```yaml
+folder-kind: task
+task: .
+```
+
+The execution contract remains owned by `haipipe-task`. Load the
+reader-facing companion `haipipe-page-task` when creating, outlining,
+writing, reviewing, or delivering this Page. It adds the visual evidence
+contract: a numeric Task Page is not prose-only and must plan substantive
+tables, figures, and method/provenance diagrams.
+
+## Two entry doors and one handshake
+
+Task and Page are peer doors, not nested copies of one another. Route by the
+primary durable product:
+
+| Request centers on | Enter through | Owner-native product |
+|---|---|---|
+| executable, independently testable work | `haipipe-task` | `rNN` Ticket → Result + receipt |
+| human shaping, interpretation, or acceptance | `haipipe-page` | `rp-*` interaction → accepted Page state |
+
+Crossing the boundary uses one explicit handshake:
+
+```text
+Page SHAPE/SURVEY
+  proposes required Task work; no rNN exists yet
+          ↓
+Task PLAN/ALLOCATE/BUILD/EXECUTE/REPORT
+  allocates the next native rNN and returns a validated Result
+          ↓
+Page LAND/EMBED
+  binds full Run id + Result path into Evidence and reading
+          ↓
+Page CONTENT/CHECK
+  adopts accepted text and releases the checked Page once all gates pass
+```
+
+The Page cannot turn a candidate into a Task Run, rename a native Run, or copy
+its Result into a parallel answer store. The Task cannot accept paragraph
+wording, close an `rp-*` Run, or release the Page. A request that needs both doors
+may start at either one, but every handoff keeps these owner-native identities.
+
+The shared `runs/` and `results/` lanes carry disjoint namespaces:
+
+```text
+runs/rNN_<run>.sh|.ps1|.cmd       Task Ticket
+runs/`run-structure-<slug>`.md             Page structure interaction
+runs/`run-scratch-<slug>`    Page Scratch capture
+runs/`run-section-<slug>`.md                Page Section session
+runs/`run-paragraph-<slug>`      Page paragraph/group interaction
+results/<same-run>/runtime.yaml   receipt for the corresponding namespace
+```
+
+`rNN` and typed `rp-*` counters never reserve, renumber, or consume one another.
+
+Add the exact `task-type:` when a specialist owns the executable dialect.
+Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
+Folder = `tNN_<task>/`; Job means only its `jNN_<job>/` parent.
+
+The Page Face is not a run log. It is the technical report of what the Folder
+found and what those findings mean for the Task's own question. Machinery stays
+in the Task Face and is referenced by path.
+
+## Reader promise
+
+The Page must let a reader answer four questions without reconstructing the
+execution history:
+
+1. What question was this Task run to answer?
+2. What data and method make the Result believable?
+3. What did the ready Runs establish, including nulls and residuals?
+4. What is the current reading, and what Run would settle what remains?
+
+`workflow/report*.yaml`, `RUN_AUDIT.md`, metrics, and notebooks report what ran.
+The Page adds the interpretation they cannot own. Do not copy those files or
+invent a parallel digest; cite the exact Run/Result instead.
+
+## Outline grammar
+
+SHAPE chooses one of two forms:
+
+```text
+FLAT     one topic; role words are the Content divisions
+NESTED   several topics; each topic is a division and role words are paragraphs
+```
+
+Use NESTED only when another topic needs its own Data or Method. Otherwise keep
+the Page FLAT even when Method, Landscape, or Result repeats.
+
+The closed role order is:
+
+```text
+Introduction → Concept → Landscape → Data → Method → Result → Conclusion
+```
+
+- `Introduction` is optional, appears once, and is first when present.
+- `Concept`, `Landscape`, and `Data` may be Page-level.
+- `Landscape`, `Method`, and `Result` may repeat.
+- At least one `Result` is required.
+- An unresolved finding earns a Result-role division; it is not hidden in a
+  footnote or Conclusion.
+- `Conclusion` appears exactly once, at Page level, and is always last.
+
+Titles state what the reader learns, not where material lives. `Inputs`,
+`Runs`, `Provenance`, and `Run receipts` are Task machinery, not division
+titles. A new Run adds a reading row; it creates a new Result division only
+when no existing division can absorb the new message without making its title
+false.
+
+Each Content division begins with one captioned face diagram that previews the
+division's argument. Do not create a separate Page-level `## Diagram` section.
+The plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline
+table in Draft Space; the Page has no `## Outline` section, so never author one.
+
+For a data-bearing or empirical Task Page, the face diagram is only one part
+of the visual contract. SHAPE also plans at least one exact-audit table, one
+result/distribution figure or replacement result table, and one
+method/provenance/boundary diagram across the Page. Every Data or Result
+division receives the table or figure needed for its reader move. An inline
+fenced text map is a sketch, not a completed DISPLAY unit.
+
+For this non-Section Page, one planned `C<n>.P<m>` paragraph realizes its own
+Bullets; each Bullet may take one or more sentences in that paragraph. Each
+sentence's source line ends with its exact invisible stable backlink:
+
+```html
+<!-- realizes: C<n>.P<m>.B<k> -->
+```
+
+Follow `haipipe-page-writing` for paragraph-scoped writing commissions; a
+paragraph may realize several Bullets without pooling their evidence. A change
+to approved paragraph groups returns to SHAPE. This refines only the Task's
+Page Face, not its executable lifecycle or Result-store dialect. Diagrams,
+headings, the READING table, and Task machinery are not prose realization
+units and do not carry `realizes:`.
+
+## Evidence and Run binding
+
+Use the shared Page evidence graph. SHAPE names typed
+`E<NN>-VALUE|CITE|DISPLAY-<slug>` items and their expected ready payload.
+SURVEY records the full graph; LAND executes it; EMBED folds ready Results
+back into the plan:
+
+```text
+0..N Supporting Runs (Execution or Discovery)
+                  ↓ validated Results
+1 frozen Local Input per Evidence Item
+                  ↓
+1 local Page Evidence Item Run
+                  ↓
+1 ready typed Result
+```
+
+For this Job-backed Task dialect, the authored Evidence Item row moves through
+these exact owner-native forms:
+
+```text
+SURVEY, no Ticket   Local Run: Page · Evidence Item · new-run · bNNjNNtNN
+LAND, allocated     Local Run: Page · Evidence Item · registered · bNNjNNtNNrNN
+LAND, ready         Local Run: Page · Evidence Item · reuse · bNNjNNtNNrNN
+                              → $OUTPUT_ROOT/<task>/results/<RUNNAME>/
+later same contract Local Run: Page · Evidence Item · rerun · bNNjNNtNNrNN
+```
+
+SURVEY never invents the `rNN`; LAND allocates the next real Task Run id. A
+materially changed target, frozen input, or acceptance contract requires a new
+Run rather than `rerun`.
+
+`$OUTPUT_ROOT` resolves to the Job in self-serving mode and to the
+consumer-owned mirrored Job root in consumer-serving mode. The Ticket remains
+under the Task's `runs/` in both modes; the Page does not copy the Result back
+into the Task Folder.
+
+Every shown number names the full Run that produced it. Bind by full Run id
+and Result path; never paste a regenerating result as an untraceable value. A
+page-local static source may enter the frozen Local Input. A cross-Folder fact
+must enter through a Supporting Run Result.
+
+The Run overview belongs to `workbench-page/ref/run-space.md`; the evidence state belongs
+to `draft/<stem>-evidence-items.md` and the Evidence Results it binds. Neither becomes
+a Content division.
+
+## Reading and closure
+
+The final Conclusion carries exactly one `<a id="reading-current"></a>` anchor
+followed by one `#### READING · current` table with one stable `R<NN>` row per
+independently interpreted topic or Result family:
+
+| ID | Topic | Verdict Run | Ruling | Meaning |
+|---|---|---|---|---|
+| `R01` | `<topic>` | `<full-run-id>` | `✅ read · <who> · <timestamp>` | `<plain-language meaning>` |
+| `R02` | `<topic>` | `<full-run-id>` | `⬜ unread` | `<meaning to establish>` |
+
+Below the table, `answers`, `not answered`, and `next run` name the current
+scope and residual.
+
+This table is the Task owner's `page_ruling: local`; there is no separate Page
+`accepted:` field. CHECK passes the owner gate only when every current row has
+a person-written `✅ read · <who> · <timestamp>`, every Verdict Run resolves,
+and the block's residual fields are current. Its receipt points to the durable
+gate as:
+
+```yaml
+human_gate:
+  required: true
+  status: passed
+  evidence: ["<task>.md#reading-current"]
+```
+
+The CHECK receipt's Page version number binds that pointer to the exact
+rows judged. `R<NN>` ids never renumber. When a Verdict Result changes, keep
+the row id, update its Run binding if needed, and reset its Ruling to
+`⬜ unread`.
+
+A negative or null verdict may close a reading. An unbound verdict cannot.
+When the named Result changes, only its dependent reading, evidence binding,
+and Page version become stale; the Task identity does not change. Route the
+Page back to EVIDENCE or CONTENT as appropriate, then CHECK the exact rebuilt
+version. The Folder is closed only when P-B-E-R and this Page reading are both
+current.
+
+Use this closure equation rather than treating either face as sufficient:
+
+```text
+task_ready   = terminal P-B-E-R + every required Task Result current
+page_ready   = every planned Page Run closed
+               + every required Task Result bound by id/path
+               + accepted Content adopted and released
+               + CHECK receipt and READING rows current
+folder_closed = task_ready AND page_ready
+```
+
+A new, rerun, replaced, or invalidated Task Result makes every dependent Page
+binding, reading, CHECK receipt, and release stale. New human feedback reopens
+the affected Page Run and Page release without invalidating unrelated Task
+Results. Propagate only the dependency edge that changed; do not reset the
+whole Folder when the unaffected face remains current.
+
+The Page's top-level `state:` is therefore a cross-face Folder state, not a
+claim that one script or one Run succeeded. It may become `closed` only when
+the Task Folder's current P-B-E-R records and the current READING gate above
+all pass. A new or stale Run reopens the affected evidence, reading, and Page;
+it does not create a new Board Page.
+
+## Run/Result boundary
+
+The Page's standing self-reading points to the paired Run Results and runtime
+receipts. A consumer records full immutable Supporting Run ids and owns any
+Local Run/Result needed for a focal Evidence Item. The Page workflow never
+creates a parallel answer bank.
+
+## Template and checks
+
+Start from `ref/task-page-template.md`, which specializes the shared Board Page
+template. Then run the Page workflow and the Task tree checker. Before closure:
+
+- the Page declares `folder-kind: task` and names the same Task as its path;
+- every Content division follows the chosen FLAT or NESTED grammar;
+- every Content division opens with one captioned face diagram, with no
+  standalone Page-level Diagram or authored Outline section;
+- the SHAPE plan contains typed DISPLAY Items for the substantive tables,
+  figures, and diagrams, and every Data/Result division has its required
+  display;
+- every declared display resolves through its governed Result envelope to
+  the caller-authorized unit defined by the Page evidence/display contract,
+  with a current preview and provenance-bound intake;
+- every typed item has the declared Supporting/local Run graph and accepted
+  Result;
+- every shown number resolves to a full Run id;
+- Conclusion is last; its one current READING table is the local Page ruling,
+  and every stable row is current and person-read;
+- machinery and execution prose remain in their owning files.

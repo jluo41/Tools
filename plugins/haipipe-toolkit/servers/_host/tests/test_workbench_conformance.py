@@ -18,10 +18,13 @@ from live.workbench_guide import REPOSITORY, VIEWS  # noqa: E402
 
 SERVERS = Path(__file__).resolve().parents[2]
 SKILLS = SERVERS.parent / "skills"
-GUIDE_RULES = ("description", "table", "papers", "design")
+GUIDE_RULES = ("description", "table", "papers", "design", "levels")
 # Families that predate a rule, and the rules they still miss (JL 261003: "make sure other
 # new workbench UI will do the same thing"). Remove a rule here when its family meets it.
-GAPS = {}
+# "levels": the card Guide (b03 studio/s31-guide, s31-D05 to D08), a guide.yaml with levels: and
+# roadmap:; the work family moved first (261007), the others follow one at a time.
+GAPS = {family: {"levels"} for family in ("shared", "page", "cowork", "design", "discovery", "insight",
+                                          "labeling")}          # paper has its levels (261007)
 
 # Families whose working Spaces do not yet use the shared Runs panel (live.runs_panel): Insight
 # draws its own (Labeling switched 261003). Remove a family when it switches.
@@ -47,6 +50,8 @@ def guide_rules(profile: dict) -> set[str]:
         met.add("papers")
     if len(explain.get("roadmap-draw") or ()) > 2 and explain["roadmap-draw"][2] == "Workbench design":
         met.add("design")
+    if profile.get("levels") and profile.get("roadmap"):
+        met.add("levels")
     return met
 
 
@@ -58,15 +63,14 @@ class GuideFamilyTest(unittest.TestCase):
         for family, profile in FAMILIES.items():
             with self.subTest(family=family):
                 presenter = REPOSITORY / profile["presenter"]
-                if not presenter.is_file():      # an optional plugin (labeling) may be absent
-                    continue
+                self.assertTrue(presenter.is_file(), presenter)
                 folder = presenter.parent
                 self.assertTrue(any("mount_guide(" in p.read_text(encoding="utf-8") for p in folder.glob("*.py")),
                                 f"{folder.name}: no presenter calls mount_guide()")
                 self.assertTrue(profile.get("method"), f"{family}: no Method steps")
 
     def test_spaces_follow_the_space_order(self):
-        # workbench-shared/README.md § Space order: Guide -> setup -> work -> Delivery. Guide is
+        # workbench/README.md § Space order: Guide -> setup -> work -> Delivery. Guide is
         # mounted first and never listed again; Delivery, when a family has it, comes last.
         for family, profile in FAMILIES.items():
             with self.subTest(family=family):
@@ -110,8 +114,6 @@ class GuideFamilyTest(unittest.TestCase):
         workbench = load(SKILLS / "0_utils/table-workbench/ref/render_workbench_table.py", "render_workbench_table")
         papers = load(SKILLS / "0_utils/table-papers/ref/check_papers_table.py", "check_papers_table")
         for family, profile in FAMILIES.items():
-            if not (REPOSITORY / profile["presenter"]).is_file():
-                continue                          # an optional plugin (labeling) may be absent
             with self.subTest(family=family):
                 if profile.get("table"):
                     self.assertTrue(workbench.read_table(REPOSITORY / profile["table"]), f"{family}: empty Workbench Table")
@@ -142,9 +144,18 @@ class HostTest(unittest.TestCase):
         self.assertRegex(serve, r"startswith\(self\.EXCAL_ICONS\) and \"/_excalidraw\" not in")
 
     def test_every_workbench_folder_is_reachable(self):
-        from host_registry import WORKBENCH_ROUTES, workbench_folders
-        names = {f.name.split("-", 1)[1] for f in workbench_folders()}
+        from host_registry import WORKBENCH_ROUTES, workbench_folders, workbench_name
+        names = {workbench_name(f) for f in workbench_folders()}
         self.assertTrue(names <= set(WORKBENCH_ROUTES), names - set(WORKBENCH_ROUTES))
+
+
+class GuideHomeTest(unittest.TestCase):
+    def test_a_family_with_a_guide_folder_is_read_from_it(self):
+        # the base's own Guide lives in servers/workbench/guide/guide.yaml + related/papers.md (261007)
+        shared = FAMILIES["shared"]
+        self.assertTrue(shared["guide_home"].endswith("servers/workbench/guide"))
+        self.assertTrue(shared["papers_table"].endswith("servers/workbench/related/papers.md"))
+        self.assertTrue((REPOSITORY / shared["presenter"]).is_file())
 
 
 if __name__ == "__main__":

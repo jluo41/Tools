@@ -1,0 +1,13 @@
+run: r03_part-b
+kind: hard
+type: partition
+partition: part-b
+target: t02_I01_question-b
+question: I01
+script: <hash>
+release: p2
+data: v3
+n: <n>
+power: ok
+status: planned
+passes: 0

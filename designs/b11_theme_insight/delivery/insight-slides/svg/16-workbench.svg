@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>One workbench: the same six Spaces at every level</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">One workbench: the same six Spaces at every level</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Board, Job and Task each show the same six Spaces; what a Space holds follows the level.</text>
+<rect x="60.0" y="180.3" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Space</text>
+<text x="306.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Board</text>
+<text x="615.3" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Job</text>
+<text x="924.7" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Task</text>
+<text x="74.0" y="254.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Description</text>
+<text x="306.0" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Map · Prototype · Dataset ·</text>
+<text x="306.0" y="279.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Partitions</text>
+<text x="615.3" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the release and the data</text>
+<text x="615.3" y="279.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">version</text>
+<text x="924.7" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Question · Plan · Data</text>
+<line x1="60.0" y1="301.7" x2="1220.0" y2="301.7" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="330.3" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Audience Report</text>
+<text x="306.0" y="330.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Coverage · Tracks · Consistency</text>
+<text x="306.0" y="355.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">· Findings</text>
+<text x="615.3" y="330.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Question │ Work │ Report</text>
+<text x="924.7" y="330.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">need → Run → sentence</text>
+<line x1="60.0" y1="377.1" x2="1220.0" y2="377.1" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="405.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Work Details</text>
+<text x="306.0" y="405.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the Jobs, their quick results</text>
+<text x="615.3" y="405.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Job › Task › Run</text>
+<text x="924.7" y="405.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Task › Run</text>
+<line x1="60.0" y1="427.8" x2="1220.0" y2="427.8" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="456.4" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Runs</text>
+<text x="306.0" y="456.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">add a version or a Job ·</text>
+<text x="306.0" y="481.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">readings</text>
+<text x="615.3" y="456.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">launch … compare · propose</text>
+<text x="924.7" y="456.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">rNN · cross · write · check</text>
+<line x1="60.0" y1="503.2" x2="1220.0" y2="503.2" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="531.8" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Delivery</text>
+<text x="306.0" y="531.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the signed handoff</text>
+<text x="615.3" y="531.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">its counsel, to the Board</text>
+<text x="924.7" y="531.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">W only</text>
+<line x1="60.0" y1="553.9" x2="1220.0" y2="553.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="180.3" x2="292.0" y2="553.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="601.3" y1="180.3" x2="601.3" y2="553.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="910.7" y1="180.3" x2="910.7" y2="553.9" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="180.3" width="1160.0" height="373.6" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

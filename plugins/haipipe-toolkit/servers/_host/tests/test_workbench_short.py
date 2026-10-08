@@ -15,7 +15,7 @@ from host_paths import bootstrap
 bootstrap()
 
 from live.home import (HomeMixin, WORKBENCH_TABS, board_by_slug,  # noqa: E402
-                       board_workbench_route, resolve_workbench)
+                       board_workbench_route, old_page_url, resolve_workbench)
 from live.base import BaseMixin  # noqa: E402
 import server_config  # noqa: E402
 from host_registry import WORKBENCH_ROUTES, route_allowed  # noqa: E402
@@ -87,17 +87,17 @@ class ResolveWorkbenchTest(unittest.TestCase):
             url, why = resolve_workbench(root, "topic", "QA1", "studio")
             self.assertIsNone(url)
             self.assertIn("unknown tab", why)
-            url, why = resolve_workbench(root, "topic")
-            self.assertIsNone(url)
-            self.assertIn("no board-level workbench", why)
             self.assertIsNone(resolve_workbench(root, "topic", "", "runs")[0])
 
     def test_board_level_route_follows_what_board_md_declares(self):
         with tempfile.TemporaryDirectory() as tmp:
             root, board = fixture(tmp, "# Paper\nspine: s\ndialect: paper\n")
-            self.assertEqual(board_workbench_route(board), "paper")
+            self.assertEqual(board_workbench_route(board), "paper-board")
+            # /w/<block> opens the base frame; the frame links the theme's older page
             url, why = resolve_workbench(root, "topic")
-            self.assertEqual(url, "/_board/paper?path=unit/diagram/01-topic-260722/board.md&file=board.md")
+            self.assertEqual(url, "/_board/workbench?path=unit/diagram/01-topic-260722")
+            self.assertEqual(old_page_url(board, root),
+                             "/_board/paper-board?path=unit/diagram/01-topic-260722/board.md&file=board.md")
         with tempfile.TemporaryDirectory() as tmp:
             root, board = fixture(tmp, "# Jobs\nspine: s\nboard-kind: labeling-board\n")
             self.assertEqual(board_workbench_route(board), "labeling-board")
@@ -192,39 +192,30 @@ class OnlyHostTest(unittest.TestCase):
         self.assertTrue(route_allowed("/_board/terms", frozenset()), "no --only means everything")
 
     def test_every_workbench_folder_has_a_route_row(self):
-        from host_registry import workbench_folders
-        names = {f.name.split("-", 1)[1] for f in workbench_folders()}
+        from host_registry import workbench_folders, workbench_name
+        names = {workbench_name(f) for f in workbench_folders()}
         self.assertTrue(names <= set(WORKBENCH_ROUTES), names - set(WORKBENCH_ROUTES))
 
 
 class LabelingTabTest(unittest.TestCase):
     def test_labeling_tab_carries_the_three_values_the_view_checks(self):
+        # the page is the live reader's URL: nothing is built (JL 261005)
         with tempfile.TemporaryDirectory() as tmp:
             root, board = fixture(tmp)
-            (board / "board" / "QA").mkdir()
-            (board / "board" / "QA" / "QA1-question.html").write_text("page")
             url, why = resolve_workbench(root, "topic", "QA1", "labeling")
             self.assertEqual(why, "ok")
             self.assertEqual(url, "/_board/labeling?path=/unit/diagram/01-topic-260722/board.md"
                                   "&file=1-QA-design/QA1-question.md"
-                                  "&page=/unit/diagram/01-topic-260722/board/QA/QA1-question.html")
-
-    def test_labeling_tab_without_a_built_page_says_so(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root, _ = fixture(tmp)
-            url, why = resolve_workbench(root, "topic", "QA1", "labeling")
-            self.assertIsNone(url)
-            self.assertIn("build.py", why)
+                                  "&page=/_board/page%3Fpath%3D/unit/diagram/01-topic-260722/1-QA-design/QA1-question.md")
 
 
 class LabelingHostEntryTest(unittest.TestCase):
-    def test_subjective_label_host_runs_the_shared_host_with_only_labeling(self):
+    def test_the_labeling_host_is_the_shared_host_with_only_labeling(self):
         import subprocess
         import sys
-        entry = Path(__file__).resolve().parents[4] / "subjective-label" / "servers" / "_host" / "serve.py"
-        if not entry.is_file():
-            self.skipTest("subjective-label is not checked out beside haipipe-toolkit")
-        out = subprocess.run([sys.executable, str(entry), "--help"], capture_output=True, text=True, timeout=60)
+        entry = Path(__file__).resolve().parents[1] / "serve.py"
+        out = subprocess.run([sys.executable, str(entry), "--only", "labeling", "--help"],
+                             capture_output=True, text=True, timeout=60)
         self.assertEqual(out.returncode, 0, out.stderr[-500:])
         self.assertIn("--only", out.stdout)
         bad = subprocess.run([sys.executable, str(entry), "--only", "nosuch", "--root", "."],

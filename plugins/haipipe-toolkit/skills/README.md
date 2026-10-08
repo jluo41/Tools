@@ -7,6 +7,30 @@ reader-facing Page Face and an execution-oriented Task Face. The same folder
 may therefore be opened as a Page or executed as a Task; it is not two stores.
 
 
+The three layers
+================
+
+The skill folders sit in three layers:
+
+```text
+skills/
+├── 0_utils/    generic helpers, not tied to the Block -> Job -> Task ladder
+│               (response-format, diagram-ascii, table-workbench, table-papers, ...)
+├── 1_base/     what every theme is built on: project (the ladder, Runs) · task (the work
+│               Task) · page (the Page Task) · question · writing · display · ideation · search
+└── 2_theme/    one folder per theme: cowork · design · discovery · insight · labeling · paper,
+                each holding its haipipe-<theme> skills and its workbench-<theme>
+```
+
+A skill in `0_utils` is one folder deep (`0_utils/<skill>/`); a skill in `1_base`
+or `2_theme` sits in its family (`1_base/page/haipipe-page/`, `2_theme/paper/workbench-paper/`).
+Code finds the skills root by its folder name and a skill by its folder name
+(`servers/_host/host_paths.py` `skill_dir`, `1_base/page/haipipe-page/src/skill_paths.py`),
+never by counting parent folders, so moving a family to another layer breaks no path.
+The servers pair with the layers the same way: `servers/workbench` is the base
+every workbench reuses, and each `servers/workbench-<theme>` gives its theme.
+
+
 The neutral spine
 =================
 
@@ -39,7 +63,7 @@ Supporting Run ids, Local Run id, Result, and any decision or feedback note.
 Insight topic instances
 =======================
 
-`insight/haipipe-page-insight` owns a consumer-neutral topic/data
+`2_theme/insight/haipipe-page-insight` owns a consumer-neutral topic/data
 instance Page Folder. Its items are runnable questions, not extra Pages.
 
 | Contract | Owner | Unit |
@@ -47,7 +71,7 @@ instance Page Folder. Its items are runnable questions, not extra Pages.
 | Research topic/data context | haipipe-page-insight | One instance Page Folder |
 | Shared analysis | haipipe-task | Reusable recipe; isolated instance inputs and outputs |
 | Insight work | haipipe-page-insight + haipipe-run | Item ticket and versioned DIKW/RF Results |
-| Item table / Runs view | haipipe-board | Read projections of intent and receipts |
+| Item table / Runs view | haipipe-page | Read projections of intent and receipts |
 | Consumer-specific Design authority | haipipe-insight-workflow | Exact item/RF evidence contextualized in person-signed Wisdom |
 
 The detailed contracts are the Insight skill's `ref/instance-items.md`,
@@ -59,11 +83,11 @@ item, execution version, RF, Result path and hash; they never mean “latest”.
 The Page workflow
 =================
 
-The Page family is canonical under `skills/page/`, separate from
-`skills/board/`: `haipipe-page`, `haipipe-sentence`, `haipipe-workbench`,
-`haipipe-page-workflow` with its Run skills under `workflow-runs/`, and the two Page workbench skills, `haipipe-workbench-page` and `haipipe-workbench-studio`. The Page runtime owns file intake,
-individual rendering and standalone editing/hosting. Board owns membership,
-Groups, navigation and aggregate builds, and calls the same Page code.
+The Page family is canonical under `skills/1_base/page/` (the Board family was retired
+into it, JL 261005): `haipipe-page`, `haipipe-folder`, `haipipe-sentence`, `workbench`,
+`haipipe-page-workflow` with its Run skills under `workflow-runs/`, and the two Page workbench skills, `workbench-page` and `workbench-studio`. The Page runtime owns file intake,
+individual rendering and standalone editing/hosting, the Board checker and the
+Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
 
 The Page Face is a small, numbered workflow. The numbers are records, not
@@ -136,7 +160,7 @@ an existing immutable Result or open the shallowest new Run. The consuming
 Page, not the executor, records the Supporting/Local relationship.
 A board's own Questions are a different thing: topics recorded in its
 `reports/qNN_<topic>/` folders, each answered by a report Page. They are owned
-by `question/haipipe-question`.
+by `1_base/question/haipipe-question`.
 
 
 Current skill buckets
@@ -179,10 +203,10 @@ Where to read next
 ==================
 
 * `README.md` — user-facing doors and the Run/Result overview.
-* `skills/run/haipipe-run/SKILL.md` — the neutral Level-4 contract.
-* `skills/page/haipipe-page-workflow/SKILL.md` — the Page loop.
-* `skills/page/haipipe-workbench-page/` — Bullet/Evidence
+* `skills/1_base/project/haipipe-run/SKILL.md` — the neutral Level-4 contract.
+* `skills/1_base/page/haipipe-page-workflow/SKILL.md` — the Page loop.
+* `skills/1_base/page/workbench-page/` — Bullet/Evidence
   Workspaces, the evidence-item table, and `ref/run-space.md`, the
   read-only Runs view.
-* `skills/paper/haipipe-workbench-paper/` — the Paper Board's Setup, Ideation,
+* `skills/2_theme/paper/workbench-paper/` — the Paper Board's Setup, Ideation,
   Story, and Run-Type work console.

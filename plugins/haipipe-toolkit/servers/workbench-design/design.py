@@ -1,4 +1,4 @@
-"""🎨 Design · live Page-Folder presenter for ``haipipe-workbench-design``.
+"""🎨 Design · live Page-Folder presenter for ``workbench-design``.
 
 It reads only the current Design Folder's contract files: the Design Item
 register, ``run-design-*`` Tickets, runtime receipts, ``checks.yaml``, content
@@ -16,7 +16,8 @@ import importlib.util
 import re
 from pathlib import Path
 
-from host_paths import HOST, SKILLS
+from host_paths import HOST, skill_dir
+from src.themes import theme_dirs
 from urllib.parse import parse_qs, quote, urlparse
 
 try:
@@ -39,8 +40,7 @@ _READS = re.compile(r"(?im)^\s*reads:\s*(.*?)\s*$")
 _ITEM_HEAD = re.compile(r"^##\s+(ITEM\d+)\s*[·:-]\s*(.+?)\s*$")
 _FIELD = re.compile(r"^([a-z][a-z-]*):\s*(.*?)\s*$")
 _SIGNED = re.compile(r"(?im)^\s*signed:\s*(✅|⬜)\s*(.*?)\s*$")
-_UNIT_CHECKER = (SKILLS / "design"
-                 / "haipipe-design-unit" / "scripts" / "check_unit.py")
+_UNIT_CHECKER = skill_dir("haipipe-design-unit") / "scripts" / "check_unit.py"
 _STEP = {"commission": "Commission", "generate": "Generate",
          "verify": "Verify", "adopt": "Adopt (historical)"}
 _ITEM_FIELDS = ("type", "audience", "job", "goal", "stance", "basis", "mode",
@@ -405,12 +405,13 @@ def _audit(folder: Path) -> list[str]:
 def _relocated(folder: Path, rel: str) -> Path | None:
     """A cited page whose Insight board has moved: found by its last three path parts
     (`1-F-full/FW01-send-salience/FW01-send-salience.md`) under the nearest Project's
-    `insights/` world. The register keeps its old path, so no released Run goes stale."""
+    `insight/` world (or the old `insights/`). The register keeps its old path, so no
+    released Run goes stale."""
     tail = "/".join(Path(rel).parts[-3:])
     for up in folder.parents:
-        world = up / "insights"
-        if world.is_dir():
-            hits = sorted(world.glob(f"*/{tail}"))
+        worlds = theme_dirs(up, "insight")
+        if worlds:
+            hits = sorted(h for world in worlds for h in world.glob(f"*/{tail}"))
             return hits[0].resolve() if hits else None
     return None
 
@@ -588,7 +589,7 @@ def with_link(text: str) -> str:
 # constraints and resources. The board's `design-goal.md` states them once; a task
 # section overrides a line; the venue profile gives the channel's own defaults.
 _INPUT_BLOCKS = ("Aim", "Venue", "Rules", "Resources", "Leave out")
-_VENUE_DIR = SKILLS / "design" / "venue"
+_VENUE_DIR = skill_dir("design") / "venue"
 _VENUE_LABEL = {"length": "Length", "cta": "Call to action", "opt-out": "Opt-out", "personalization": "Personalization",
                 "links": "Link", "language": "Reading level"}
 
@@ -1082,8 +1083,8 @@ h3{font-size:13px;margin:18px 0 2px;font-weight:650}
 table.explain{border:1px solid var(--line);border-radius:10px;border-collapse:separate;border-spacing:0;overflow:hidden;margin:6px 0 0}table.explain th{width:160px;background:var(--soft);font-size:11px;font-weight:650;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);padding:12px 14px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}table.explain td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}table.explain tr:last-child th,table.explain tr:last-child td{border-bottom:0}table.explain td>.mut:first-child{margin-bottom:4px}@media(max-width:720px){table.explain th{width:110px;padding:10px}}
 .explain p.goal{margin:0 0 2px;font-size:14.5px;line-height:1.5}
 ol.flow{list-style:none;margin:0;padding:0}ol.flow li.lv{display:flex;gap:10px;align-items:baseline}
-ol.flow .rung{flex:0 0 96px;font-size:11.5px;color:var(--mut)}ol.flow .nodes{flex:1;min-width:0}ol.flow .node{display:block;margin:1px 0;line-height:1.4}
-ol.flow li.down{padding-left:118px;color:var(--mut);font-size:12px;line-height:1.2}ol.flow li.me .rung{color:var(--acc);font-weight:600}
+ol.flow .lvname{flex:0 0 96px;font-size:11.5px;color:var(--mut)}ol.flow .nodes{flex:1;min-width:0}ol.flow .node{display:block;margin:1px 0;line-height:1.4}
+ol.flow li.down{padding-left:118px;color:var(--mut);font-size:12px;line-height:1.2}ol.flow li.me .lvname{color:var(--acc);font-weight:600}
 .betl{display:flex;gap:10px;margin:2px 0;line-height:1.45}.betl .k{flex:0 0 64px;font-size:12px;font-weight:600}
 ul.checks{list-style:none;margin:0;padding:0}ul.checks li{margin:2px 0;padding-left:20px;text-indent:-20px;line-height:1.4}ul.checks .g{display:inline-block;width:20px;text-indent:0;font-weight:700}
 @media(max-width:720px){.pair{display:block}.itembody .pair .pic{position:static;max-height:none}
@@ -1263,7 +1264,7 @@ _DESIGN_RUN_GUIDE = {
 # work is started from a run type and its prompt, copied into a Claude or Codex
 # session, never from a form on the page. The run types are the Design run cards,
 # the Workbench Table written as cards (one per button: agent, skill, signs, prompt).
-_RUN_CARDS = SKILLS / "design" / "haipipe-design-workflow" / "references" / "run-cards.md"
+_RUN_CARDS = skill_dir("haipipe-design-workflow") / "references" / "run-cards.md"
 _CARD_SPACE = {"Tasks": "tasks", "Theory": "theory", "Goal": "goal", "Design": "design", "Delivery": "delivery"}
 
 
@@ -1331,7 +1332,7 @@ def runs_panel_assets() -> tuple[str, str]:
 body{max-width:1560px}
 .pane.on.split{display:flex;align-items:flex-start;gap:16px}
 .split>.space-main{flex:1 1 auto;min-width:0}
-/* each Space's content in one box, as the Guide's (JL 261003; workbench-shared's .wg-shell) */
+/* each Space's content in one box, as the Guide's (JL 261003; workbench's .wg-shell) */
 .split>.space-main{border:1px solid #e3e3e6;border-radius:10px;padding:12px 16px 16px}
 .split>.space-main>h2:first-child,.split>.space-main>.views:first-child{margin-top:0}
 @media(prefers-color-scheme:dark){.split>.space-main{border-color:#2c2e33}}
@@ -1586,8 +1587,8 @@ def _insight_href(root: Path | None, page: Path) -> str:
             + "&file=" + quote(rel_page, safe=""))
 
 
-_RUNG = re.compile(r"^([A-Z])([DIKW])(\d{2})\b")
-_RUNG_WORD = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
+_LEVEL_ID = re.compile(r"^([A-Z])([DIKW])(\d{2})\b")
+_LEVEL_WORD = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
 _H1 = re.compile(r"(?m)^#\s+(.+?)\s*$")
 
 
@@ -1600,8 +1601,8 @@ def _insight_flow(item: dict, root: Path | None = None) -> str:
     levels: dict[str, list[str]] = {}
     for r in item["evidence_rows"]:
         stem = Path(r["name"]).stem
-        hit = _RUNG.match(stem)
-        rung = hit.group(2) if hit else "?"
+        hit = _LEVEL_ID.match(stem)
+        level = hit.group(2) if hit else "?"
         page_id = stem.split("-")[0]
         title = ""
         if r["exists"]:
@@ -1618,19 +1619,19 @@ def _insight_flow(item: dict, root: Path | None = None) -> str:
         missing = "" if r["exists"] else ' <span class=bad>missing</span>'
         if r["role"] == "avoid":
             mark += ' <span class=bad>· avoid</span>'
-        levels.setdefault(rung, []).append(
+        levels.setdefault(level, []).append(
             f'<span class=node>{label + " " if label else ""}{_escape(title) or _escape(stem)}{mark}{missing}</span>')
     if not levels:
         return ('<div class=mut>from the design task only · no insight needed</div>' if item["basis"] != "evidence-informed"
                 else '<div class=bad>needs an insight · none named yet</div>')
-    rows = [(_RUNG_WORD.get(k, "Also read"), levels[k]) for k in ("D", "I", "K", "W", "?") if k in levels]
+    rows = [(_LEVEL_WORD.get(k, "Also read"), levels[k]) for k in ("D", "I", "K", "W", "?") if k in levels]
     rows.append(("This design", [f'<span class=node><b>{_escape(item["id"])}</b> {_escape(item["title"])}</span>']))
     out = []
     for i, (word, nodes) in enumerate(rows):
         if i:
             out.append('<li class=down>↓</li>')
         me = " me" if word == "This design" else ""
-        out.append(f'<li class="lv{me}"><span class=rung>{word}</span><span class=nodes>{"".join(nodes)}</span></li>')
+        out.append(f'<li class="lv{me}"><span class=lvname>{word}</span><span class=nodes>{"".join(nodes)}</span></li>')
     return f'<ol class=flow>{"".join(out)}</ol>'
 
 
@@ -1955,7 +1956,7 @@ def _chain_html(item: dict, root: Path | None, ev: dict) -> tuple[str, str]:
             f'<div class=pg>{_page_link(root, h["page"])}</div></div>' for h in ev["limits"]))
     if ev["also"]:
         parts.append('<div class=also><b>Also cited</b> · ' + " · ".join(
-            f'{_page_link(root, r["file"])} <span class=mut>({_RUNG_WORD.get(_rung(r), "source")})</span>'
+            f'{_page_link(root, r["file"])} <span class=mut>({_LEVEL_WORD.get(_level_of(r), "source")})</span>'
             for r in ev["also"]) + '</div>')
     chains = ev["chains"]
     summary = (" → ".join(n["id"] or _page_id(n["page"]) for n in chains[0]) if len(chains) == 1
@@ -2380,9 +2381,9 @@ def _page_words(row: dict) -> str:
     return words[:1].upper() + words[1:]
 
 
-def _rung(row: dict) -> str:
+def _level_of(row: dict) -> str:
     stem = Path(row["name"]).stem
-    hit = _RUNG.match(stem) or re.match(r"^()([DIKW])\d{2}-[a-z0-9]+-", stem)
+    hit = _LEVEL_ID.match(stem) or re.match(r"^()([DIKW])\d{2}-[a-z0-9]+-", stem)
     return hit.group(2) if hit else "?"
 
 
@@ -2391,7 +2392,7 @@ def _card_columns(item: dict, text: str, picture: bool) -> str:
     Evaluation. The sentences behind each line are the open card's; the closed row only
     names the design, what it rests on, and where its evaluation stands."""
     pages = sorted((r for r in item.get("evidence_rows", []) if r["role"] in _SUPPORT_ROLES),
-                   key=lambda r: "WKID?".index(_rung(r)))
+                   key=lambda r: "WKID?".index(_level_of(r)))
     rests = (f'<span class=mut>Rests on</span> {_escape(_page_words(pages[0]))}'
              + (f' <span class=mut>· +{len(pages) - 1}</span>' if len(pages) > 1 else "")
              if pages else '<span class=mut>From the design goal alone</span>')
@@ -2506,6 +2507,13 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
     if goal.get("wanted"):
         facts.append(f'{goal["wanted"]} designs asked')
     facts += [f'{goal.get("registered", len(items))} registered', f'{goal.get("ready", 0)} ready']
+    # a Design Folder under 2-Design-M<NN>-<slug>/ is made by that method (JL 261005): its name
+    # in the band, from the method folder's method.md
+    group = Path(snapshot["folder"]).parent
+    if re.match(r"^2-Design-M\d+-", group.name):
+        card = group / "method.md"
+        hit = re.search(r"(?m)^#\s+(.+?)\s*$", _read(card)) if card.is_file() else None
+        facts.insert(1, hit.group(1) if hit else group.name.replace("2-Design-", "").replace("-", " "))
     header = (
         f'<h1>🎨 {_escape(snapshot["title"])}</h1>'
         # only the Board-level link; no `all boards · board index` line (JL 261003: "could you remove this?")
@@ -2715,7 +2723,7 @@ def _pick_board_page(root: Path, short: str, boards: list[Path], held: bool) -> 
             f'<h1>🎨 Design</h1><p>{head}</p><ul>{"".join(rows)}</ul>').encode("utf-8")
 
 
-_FOLDER_FILE = re.compile(r"^2-Design/(Design-\d+-[^/]+)/\1\.md$")
+_FOLDER_FILE = re.compile(r"^(2-Design(?:-M\d+-[^/]+)?)/(Design-\d+-[^/]+)/\2\.md$")
 
 
 def shown_design(item: dict) -> dict | None:
@@ -2723,14 +2731,41 @@ def shown_design(item: dict) -> dict | None:
     return item.get("ready") or item.get("latest")
 
 
-def renamed_folder(board: Path | None, name: str) -> str:
+def renamed_folder(board: Path | None, name: str, group_name: str = "2-Design") -> str:
     """A folder renamed to say its goal keeps its Design-NN id: an old name finds the one folder with that id."""
     hit = re.match(r"^Design-(\d+)(?:-|$)", name or "")  # the bare id works too: Design-04, Design-4
-    group = Path(board) / "2-Design" if board is not None else None
+    group = Path(board) / group_name if board is not None else None
     if group is None or not hit or (group / name).is_dir():
         return name
     found = [p.name for p in group.glob(f"Design-{int(hit.group(1)):02d}-*") if p.is_dir()]
     return found[0] if len(found) == 1 else name
+
+
+def _folder_hits(board: Path, short: str) -> list[str]:
+    """Every Design Page a short folder name finds on a board, as board-relative paths: the plain
+    2-Design/ and each 2-Design-M<NN>-<slug>/ method folder; `M01/Design-01` keeps one method."""
+    from live.designboard import design_groups
+    method, _, name = short.rpartition("/")
+    found = []
+    for g in design_groups(board):
+        if method and method.lower() not in (g["key"].lower(), g["group"].lower()):
+            continue
+        current = renamed_folder(board, name, g["group"])
+        page = g["dir"] / current / f"{current}.md"
+        if page.is_file():
+            found.append(f'{g["group"]}/{current}/{current}.md')
+    return found
+
+
+def _pick_method_page(root: Path, board: Path, hits: list[str]) -> bytes:
+    """The answer to a short link whose task is designed under several methods."""
+    from urllib.parse import urlencode
+    rel = board.resolve().relative_to(root.resolve()).as_posix()
+    path = "/" + ("" if rel == "." else rel + "/") + "board.md"
+    rows = "".join(f'<li><a href="{_escape("/_board/design?" + urlencode({"path": path, "file": h}))}">'
+                   f'{_escape(h.split("/")[0])}</a> <span class=mut>{_escape(h.split("/")[1])}</span></li>' for h in hits)
+    return (f'<!doctype html><meta charset=utf-8><title>🎨 Design · pick a method</title><style>{_CSS}</style>'
+            f'<h1>🎨 Design</h1><p>This task is designed by {len(hits)} methods; pick one:</p><ul>{rows}</ul>').encode("utf-8")
 
 
 class DesignMixin:
@@ -2742,7 +2777,7 @@ class DesignMixin:
         if short and not query.get("file"):
             # short link: ?folder=Design-01-… names the Design Folder; the board is the one given or the only one
             from urllib.parse import urlencode
-            from live.designboard import DESIGN_GROUP, design_boards, resolve_board
+            from live.designboard import design_boards, resolve_board
             root = Path(self.root)
             named_board = (query.get("path") or query.pop("board", None) or [""])[0]
             board = resolve_board(root, named_board)
@@ -2750,19 +2785,21 @@ class DesignMixin:
                 # several DesignBoards: the folder picks its board when exactly one holds it,
                 # by its exact name first (every board has a Design-01), then by an old name
                 boards = design_boards(root)
-                holders = [b for b in boards if (b / DESIGN_GROUP / short).is_dir()] or \
-                          [b for b in boards if (b / DESIGN_GROUP / renamed_folder(b, short)).is_dir()]
+                holders = [b for b in boards if _folder_hits(b, short)]
                 board = holders[0] if len(holders) == 1 else None
                 if board is None:
                     # never guess: two boards' Design-01 are unrelated designs (audit N5)
                     return self._design_send(_pick_board_page(root, short, holders or boards, bool(holders)),
                                              404, head_only)
-            short = renamed_folder(board, short)
-            if board is not None and (board / DESIGN_GROUP / short / f"{short}.md").is_file():
+            hits = _folder_hits(board, short) if board is not None else []
+            if len(hits) > 1:
+                # the same task under several methods: say which, never guess
+                return self._design_send(_pick_method_page(root, board, hits), 404, head_only)
+            if hits:
                 rel = board.resolve().relative_to(root.resolve()).as_posix()
                 query.pop("board", None)
                 query["path"] = ["/" + ("" if rel == "." else rel + "/") + "board.md"]
-                query["file"] = [f"{DESIGN_GROUP}/{short}/{short}.md"]
+                query["file"] = [hits[0]]
                 self.send_response(302)
                 self.send_header("Location", "/_board/design?" + urlencode(query, doseq=True))
                 self.send_header("Content-Length", "0")
@@ -2776,8 +2813,8 @@ class DesignMixin:
         modern = payload["file"] if asked_exists else modern_file(payload["file"])
         named = _FOLDER_FILE.match(modern)
         if named and not asked_exists:
-            current = renamed_folder(board, named.group(1))
-            modern = f"2-Design/{current}/{current}.md"
+            current = renamed_folder(board, named.group(2), named.group(1))
+            modern = f"{named.group(1)}/{current}/{current}.md"
         if board is not None and not (board / modern).is_file():
             # no folder of that name today: read the link as given, so a legacy
             # folder is named unsupported (410) instead of answering a bare 404

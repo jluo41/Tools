@@ -1,0 +1,5 @@
+run: run-check-t04
+kind: soft
+type: check
+target: t04_K02_question-d
+status: closed

@@ -109,7 +109,7 @@ from host_registry import WORKBENCH_ROUTES, route_allowed, static_path_allowed  
 # ── QC8: the live layer is the `live` namespace over every server folder ─────
 # serve.py is now what build.py became on 260724: a thin CLI plus the routing
 # table.  Each area is a mixin; the class below is only their assembly order.
-# `live.<module>` resolves into servers/haipipe-board, servers/workbench-*, or a
+# `live.<module>` resolves into servers/space-home, servers/workbench-*, or a
 # sibling workbench's servers/workbench-* (see _host/live/__init__.py).
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
 from live.auth import AuthMixin, AuthConfigError, host_is_loopback
@@ -124,20 +124,8 @@ from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
 from live.xcal import XcalMixin
 from live.evidence import EvidenceTabMixin
 from live.delivery import DeliveryTabMixin
-try:
-    from live.labeling import LabelingMixin
-except ImportError:  # subjective-label is not checked out beside this workbench
-    class LabelingMixin:
-        """Stand-in when `plugins/subjective-label/servers/workbench-labeling` is absent."""
-        def _no_labeling(self, *a, **k):
-            return self.reply(404, {"ok": False, "err": "labeling workbench not installed"})
-        labeling_view = labeling_board_view = labeling_page_view = _no_labeling
-        def plug_labeling(self, p):
-            return None, "labeling workbench not installed"
-        plug_labeling_board = plug_labeling
-        def labeling_act(self, p):
-            return 404, {"ok": False, "err": "labeling workbench not installed"}
-from live.shell import ShellMixin
+from live.labeling import LabelingMixin
+from live.page_reader import PageReaderMixin
 from live.export import ExportMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
@@ -148,6 +136,7 @@ from live.coworkboard import CoworkBoardMixin
 from live.discoveryboard import DiscoveryBoardMixin
 from live.workbench_guide import WorkbenchGuideMixin
 from live.shared_workbench import SharedWorkbenchMixin
+from live.frame_view import FrameMixin
 from live.insightboard import InsightBoardMixin
 from live.outline import OutlineMixin
 from live.paper import PaperWorkbenchMixin
@@ -178,7 +167,30 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+# A theme's board page answers at /_board/<theme>-board, named as its theme is (JL 261007: "make them
+# the same to the theme name"). The names two of them had before still answer, so an old link opens the
+# same page: each request's path is renamed before any gate or route reads it.
+OLD_ROUTES = {"/_board/task-board": "/_board/work-board", "/_board/paper": "/_board/paper-board"}
+# One Page Task's views were a route each (the old Page workbench, one page per tab); they are the
+# frame's Task Spaces now (JL 261007: "why not merge them into the base"), served by the frame route
+# as `/_board/workbench?view=<view>`. A GET or HEAD of an old address answers as that; its POST twin
+# (the tab contract's write) keeps its address.
+PAGE_VIEW_ROUTES = {"/_board/folderstat": "folder", "/_board/draft": "draft", "/_board/outline": "draft",
+                    "/_board/value": "value", "/_board/evidence": "evidence", "/_board/delivery": "delivery",
+                    "/_board/runs": "runs", "/_board/pageruns": "pageruns"}
+
+
+def new_route_name(path: str, method: str = "GET") -> str:
+    """`/_board/task-board?x` -> `/_board/work-board?x`; on a GET or HEAD, `/_board/runs?x` ->
+    `/_board/workbench?view=runs&x`; any other path as it is."""
+    head, sep, query = path.partition("?")
+    view = PAGE_VIEW_ROUTES.get(head) if method in ("GET", "HEAD") else None
+    if view:
+        return "/_board/workbench?view=" + view + ("&" + query if query else "")
+    return OLD_ROUTES.get(head, head) + sep + query
+
+
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -284,6 +296,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         SimpleHTTPRequestHandler.end_headers(self)
 
     def do_GET(self):
+        self.path = new_route_name(self.path)
         if not self.require_request_auth():
             return
         if self.reject_disabled_terminal():
@@ -302,28 +315,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.labeling_page_view()
         if self.reject_private_static():
             return
-        # QD5 · the operating shell. Three routes, and they sit at the very top
-        # because two of them are ordinary board URLs wearing a query string:
-        # a pane must be recognised BEFORE the static handler serves the file.
-        if self.path.split("?", 1)[0] == "/_shell":
-            return self.serve_shell()
-        if self.path.split("?", 1)[0] == "/_events":
-            return self.serve_events()
-        pane = self.pane_of(self.path)
-        if pane:
-            return self.serve_pane(pane)
-        if self.fragment_of(self.path):
-            return self.serve_fragment()
-        split = self.split_of(self.path)
-        if split:
-            return self.serve_shell(split)
-        if self.path.split("?", 1)[0] == "/_board/folderstat":
-            # 📂 the page-folder's live status (never stored, so never stale)
-            return self.folderstat_view()
-        if self.path.split("?", 1)[0] in ("/_board/draft", "/_board/outline"):
-            # 🧭 the page re-read per division (QPf12), same live contract
-            return self.outline_view()
-        if self.path.split("?", 1)[0] == "/_board/paper":
+        if self.path.split("?", 1)[0] == "/_board/page":
+            # 📖 one Page, live, in the Page engine's reader (the retired site's replacement)
+            return self.page_reader_view()
+        if self.path.split("?", 1)[0] == "/_board/paper-board":
             # 📄 Board-level Paper Workbench, rendered live from the paper board
             return self.paper_view()
         if self.path.split("?", 1)[0] == "/_board/run-result":
@@ -335,7 +330,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/design-board":
             # 🎨 the same workbench one grain up: the Brief's design tasks × folders × items
             return self.design_board_view()
-        if self.path.split("?", 1)[0] == "/_board/task-board":
+        if self.path.split("?", 1)[0] == "/_board/work-board":
             return self.task_board_view()
         if self.path.split("?", 1)[0] == "/_board/cowork-board":
             return self.cowork_board_view()
@@ -345,6 +340,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.guide_view()
         if self.path.split("?", 1)[0] == "/_board/shared":
             return self.shared_view()
+        if self.path.split("?", 1)[0] == "/_board/workbench":
+            # 🧭 the base frame: Guide · Block · Job ▾ · Task ▾ × the six Spaces, in the folder's theme
+            return self.workbench_frame_view()
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
             # 🎨 every design on the board with its state, as one csv; the send system takes the adopted rows
             return self.design_bundle_view()
@@ -357,27 +355,12 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/insight-run":
             # 🔎 one task call's results, the Insight workbench's run pop-out
             return self.insight_run_view()
-        if self.path.split("?", 1)[0] == "/_board/value":
-            # 🔢 every number the page owes or uses, joined both ways (QPw4v)
-            return self.value_view()
-        if self.path.split("?", 1)[0] == "/_board/evidence":
-            # 🧾 ONE surface over the four evidence lanes (JL 260831)
-            return self.evidence_tab_view()
-        if self.path.split("?", 1)[0] == "/_board/delivery":
-            # 📤 ONE surface over the four delivery lanes (JL 260831)
-            return self.delivery_tab_view()
         if self.path.split("?", 1)[0] == "/_board/labeling-board":
             # 🏷 every labeling job on this Board; click one to zoom in
             return self.labeling_board_view()
         if self.path.split("?", 1)[0] == "/_board/labeling":
             # 🏷 four Spaces over one labeling/ lane
             return self.labeling_view()
-        if self.path.split("?", 1)[0] == "/_board/runs":
-            # ⚙️ one page's planned and registered Tickets, never an execute door
-            return self.runs_view()
-        if self.path.split("?", 1)[0] == "/_board/pageruns":
-            # 🪜 one page's lifecycle receipts, for the Page phases stepper
-            return self.pageruns_view()
         if self.path == "/_board/health":
             # checks/smoke.py 的探针：跑 chat 的是不是带 SDK 的解释器，只有
             # 进程自己答得出 —— ps 看到的是 venv 软链解析后的裸二进制，在外面
@@ -438,6 +421,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return ctype + "; charset=utf-8"
         return ctype
     def do_HEAD(self):
+        self.path = new_route_name(self.path, "HEAD")
         if not self.require_request_auth():
             return
         if self.reject_disabled_terminal():
@@ -456,13 +440,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.labeling_page_view(head_only=True)
         if self.reject_private_static():
             return
-        if self.pane_of(self.path):
-            return self.head_pane()
-        if self.path.split("?", 1)[0] == "/_board/folderstat":
-            return self.folderstat_view(head_only=True)
-        if self.path.split("?", 1)[0] in ("/_board/draft", "/_board/outline"):
-            return self.outline_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/paper":
+        if self.path.split("?", 1)[0] == "/_board/page":
+            return self.page_reader_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/paper-board":
             return self.paper_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/run-result":
             return self.run_result_view(head_only=True)
@@ -470,7 +450,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.design_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-board":
             return self.design_board_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/task-board":
+        if self.path.split("?", 1)[0] == "/_board/work-board":
             return self.task_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/cowork-board":
             return self.cowork_board_view(head_only=True)
@@ -480,6 +460,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.guide_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/shared":
             return self.shared_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/workbench":
+            return self.workbench_frame_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_excalidraw/_haipipe-xcal.js":
             return self.proxy_excalidraw(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
@@ -490,18 +472,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.insight_page_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/insight-run":
             return self.insight_run_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/value":
-            return self.value_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/evidence":
-            return self.evidence_tab_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/delivery":
-            return self.delivery_tab_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling-board":
             return self.labeling_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling":
             return self.labeling_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/runs":
-            return self.runs_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -510,6 +484,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return
         return SimpleHTTPRequestHandler.do_HEAD(self)
     def do_POST(self):
+        self.path = new_route_name(self.path, "POST")
         if not self.require_request_auth():
             return
         if self.reject_disabled_terminal():
@@ -616,7 +591,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.plug_design_board(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/task-board":
+        if self.path == "/_board/work-board":
             res, err = self.plug_task_board(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
@@ -663,7 +638,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        # The DERIVED paper-facing workbenches (haipipe-workbench roster):
+        # The DERIVED paper-facing workbenches (workbench roster):
         # each writes into the page's own workbench folder and answers with the
         # URL the right-pane tab frames. One route per workbench, one mixin.
         if self.path == "/_board/latex":      # page -> latex/<stem>.tex + .pdf
@@ -876,8 +851,8 @@ if __name__ == "__main__":
                          "settings.env DOMAIN); links are printed as <DOMAIN>/w/...")
     ap.add_argument("--only", default="",
                     help="serve only these workbenches, comma-separated (%s); terminal, "
-                         "chat and Board write routes are then 404. subjective-label's "
-                         "servers/_host/serve.py passes `--only labeling`."
+                         "chat and Board write routes are then 404. `--only labeling` is the "
+                         "annotator-only Labeling host (own port and auth; SPACE name Labeling)."
                          % ", ".join(sorted(WORKBENCH_ROUTES)))
     a = ap.parse_args()
     only = frozenset(w.strip() for w in a.only.split(",") if w.strip())
@@ -917,7 +892,8 @@ if __name__ == "__main__":
             auth_file = auth_path.resolve()
         else:
             auth_file = None
-    space_name = (a.space_name or config.get("SPACE_NAME") or "").strip()
+    space_name = (a.space_name or ("Labeling" if only == {"labeling"} else "")
+                  or config.get("SPACE_NAME") or "").strip()
     public_url = configured_domain(a.public_url, config)
     if not host_is_loopback(host) and auth_file is None and not a.no_auth:
         ap.error("--auth-file is required when --host is not loopback")

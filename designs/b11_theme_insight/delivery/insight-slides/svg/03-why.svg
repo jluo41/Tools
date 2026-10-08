@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Today we cannot say why an answer changed</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Today we cannot say why an answer changed</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A register board holds one extract, its partitions and the questions, edited in place.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A new extract, a fixed script and a new question tend to land in the same week.</text>
+<text x="60.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">When an answer moves, nobody can name the one cause.</text>
+<rect x="60.0" y="260.1" width="545.0" height="244.5" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="302.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Today</text>
+<text x="80.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">insights/&lt;Dataset&gt;-InsightBoard/: one extract</text>
+<text x="80.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">questions and their code edited in place</text>
+<text x="80.0" y="415.9" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="415.9" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a new extract: a new board, or an overwrite</text>
+<polyline points="615.0,382.4 665.0,382.4" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="655.0,388.4 665.0,382.4 655.0,376.4" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="675.0" y="260.1" width="545.0" height="244.5" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="695.0" y="302.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">On the ladder</text>
+<text x="695.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a Prototype Block: the questions and their code,</text>
+<text x="716.0" y="372.6" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">released p1, p2</text>
+<text x="695.0" y="407.9" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="407.9" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">an insight Board: the data versions, a Job per</text>
+<text x="716.0" y="435.2" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">pair</text>
+<text x="695.0" y="470.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="470.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a Job pins one release and one data version</text>
+</svg>

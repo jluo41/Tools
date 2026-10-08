@@ -1,1 +1,0 @@
-../../../page/haipipe-page/src/folder_contract.py

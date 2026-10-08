@@ -1,0 +1,6 @@
+interface:
+  display_name: "Question Report"
+  short_description: "the Question │ Work │ Report row: link rule, walk, report Page, figures, check"
+  default_prompt: "Use $haipipe-report to link work to a Question, write or check its report Page, or rebuild its drawing from ## Figures."
+policy:
+  allow_implicit_invocation: true

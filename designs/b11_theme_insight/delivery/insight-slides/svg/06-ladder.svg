@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Four levels: Board, Job, Task, Run</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Four levels: Board, Job, Task, Run</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Every theme has these four levels; what each holds is insight&#x27;s own.</text>
+<rect x="60.0" y="180.3" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="130.0" y="213.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Board</text>
+<text x="224.0" y="198.5" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">insights/bNN_&lt;topic&gt;/</text>
+<text x="224.0" y="225.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one dataset, its versions, the Map, and reports across Jobs</text>
+<polyline points="86.0,236.3 86.0,325.3 128.0,325.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="118.0,331.3 128.0,325.3 118.0,319.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="132.0" y="298.3" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="202.0" y="331.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Job</text>
+<text x="296.0" y="316.5" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j03_p2_&lt;d&gt;v2/</text>
+<text x="296.0" y="343.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one release × one data version; its questions grouped by D · I · K · W</text>
+<polyline points="158.0,354.3 158.0,443.3 200.0,443.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="190.0,449.3 200.0,443.3 190.0,437.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="204.0" y="416.3" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="274.0" y="449.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Task</text>
+<text x="368.0" y="434.5" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">t04_K01_&lt;q&gt;/</text>
+<text x="368.0" y="461.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one question on this pair, at its DIKW level, with its page</text>
+<polyline points="230.0,472.3 230.0,561.3 272.0,561.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="262.0,567.3 272.0,561.3 262.0,555.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="276.0" y="534.3" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="346.0" y="567.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Run</text>
+<text x="440.0" y="552.5" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">runs/r02_&lt;A&gt;/ · run-&lt;type&gt;-&lt;target&gt;/</text>
+<text x="440.0" y="579.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">hard: one partition&#x27;s result/ · soft: write, check, compare, propose</text>
+</svg>

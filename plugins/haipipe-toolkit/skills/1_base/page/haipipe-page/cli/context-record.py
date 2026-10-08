@@ -1,0 +1,304 @@
+#!/usr/bin/env python3
+"""Write `draft/records/<stem>-context.md`: the CONTEXT/PREPARE snapshot of a Page.
+
+    python3 cli/context-record.py <page.md>          one page
+    python3 cli/context-record.py --all <board-dir>  every page on the board
+
+`haipipe-page-context` (00 CONTEXT) owns the record; `workbench-page`
+keeps it off-stage for Folder inspection rather than presenting a fourth Space. The law shipped
+in 0.34.0 with `ref/context-record.md` and no generator, while the other three
+Outline records each had one (`requirement.py`, `feedback.py`,
+`evidence-status.py`), so every page reported `CONTEXT: owed` and the only way
+to satisfy the Run was to hand-write a file the contract calls generated.
+
+The six CTX rows are fixed and ordered. Each row states a resolution status,
+the facts the next Run may rely on, and the exact source addresses with a
+freshness fact. This is a PROJECTION: the source files stay authoritative and
+nothing here is a human tick.
+
+    CTX1  identity      Page, Folder kind, Folder owner, Page Face owner
+    CTX2  purpose       Opening question, audience, scope, non-goals
+    CTX3  policy        outline/structure/style authorities + requirements
+    CTX4  related       Files rows and one-hop related Page scopes
+    CTX5  feedback      feedback rows, open discussion, durable human decisions
+    CTX6  readiness     plan version/approval, item tally, next authority
+
+A source that cannot be read is recorded `missing`; PREPARE never invents the
+rule. `Next authority` is OUTLINE only when no required row is missing.
+"""
+import argparse
+import datetime
+import re
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent.parent           # haipipe-page/
+SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")  # skills/
+sys.path.insert(0, str(HERE))
+
+from src import item_table                              # noqa: E402
+from src.outline_version import record_path             # noqa: E402
+from src.folder_contract import (resolved_folder_kind,
+                                 folder_identity_path,
+                                 resolve as resolve_folder_contract)  # noqa: E402
+from src.outline_version import latest_outline, plan_dir, version_tag  # noqa: E402
+
+
+def owners(kind):
+    """Resolve ownership from the contract that declares this Page kind.
+
+    There is deliberately no central Page-Type registry. Run-owned Folder
+    contracts are authoritative when present; otherwise the Page-Face skill
+    found by ``plan_shape`` supplies the family and face names.
+    """
+    if not kind:
+        return "unresolved", "unresolved"
+
+    contract = resolve_folder_contract(
+        SKILLS, folder_kind=kind, legacy_page_type=kind
+    )
+    if contract is not None:
+        rel = contract.path.relative_to(SKILLS)
+        family = rel.parts[0] if rel.parts else "unresolved"
+        return family, contract.path.parent.name
+
+    from src.plan_shape import type_outline  # local import avoids router cycles
+
+    declaration = type_outline(kind, SKILLS)
+    type_path = declaration.get("type_path", "")
+    if type_path:
+        path = Path(type_path)
+        try:
+            family = path.relative_to(SKILLS).parts[0]
+        except ValueError:
+            family = "unresolved"
+        return family, path.parent.name
+    return "unresolved", "unresolved"
+NONE = "none"
+
+
+def fm(text, key):
+    """One frontmatter row's value, or ''."""
+    m = re.search(r"(?m)^%s:\s*(.+?)\s*$" % re.escape(key), text[:4000])
+    return m.group(1).strip() if m else ""
+
+
+def modified(path: Path) -> str:
+    """The freshness fact for a source: its file modification time.
+
+    No content hash (JL 260928): a source is newer than this record when its
+    file time is later than the record's, and `git diff` says what moved.
+    """
+    if not path.is_file():
+        return "absent"
+    stamp = datetime.datetime.fromtimestamp(path.stat().st_mtime)
+    return "saved " + stamp.strftime("%y%m%d %H%M")
+
+
+def src(root: Path, path: Path) -> str:
+    try:
+        rel = path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        rel = path.as_posix()
+    return f"`{rel}` · {modified(path)}"
+
+
+def opening(text: str) -> tuple[str, str]:
+    """The Page's own reader question, and its `Covered elsewhere` line."""
+    body = text.partition("\n## Opening")[2].partition("\n## ")[0]
+    question = next((ln.strip() for ln in body.splitlines()
+                     if ln.strip() and not ln.startswith(("<!--", "#"))), "")
+    m = re.search(r"(?m)^\*\*Covered elsewhere\*\*:\s*(.+)$", body)
+    return question, (m.group(1).strip() if m else "")
+
+
+def record_ids(path: Path, prefix: str) -> list[str]:
+    if not path.is_file():
+        return []
+    return re.findall(r"(?m)^### (%s\S*)" % prefix,
+                      path.read_text(encoding="utf-8", errors="replace"))
+
+
+def plan_of(outline_dir: Path, stem: str):
+    """Newest plan file, its version, and its `approved:` value."""
+    p = latest_outline(outline_dir, stem)
+    if p is None:
+        return None, "", ""
+    return p, version_tag(p).removeprefix("v"), \
+        fm(p.read_text(encoding="utf-8", errors="replace"), "approved")
+
+
+def row(ident, status, pairs, sources):
+    out = [f"### {ident}", f"- **Status**: {status}"]
+    out += [f"- **{k}**: {v}" for k, v in pairs]
+    out.append("- **Sources**: " + ("; ".join(sources) if sources else NONE))
+    return "\n".join(out)
+
+
+def build(page_md: Path, board: Path) -> str:
+    page_md = page_md.resolve()          # repo_root() walks parents; a relative
+    board = board.resolve()              # path has none, and the Run registry
+    stem = page_md.stem                  # would silently read back empty
+    text = page_md.read_text(encoding="utf-8", errors="replace")
+    o = plan_dir(page_md.parent)
+    root = item_table.repo_root(page_md.parent)
+    missing = []
+
+    # ── CTX1 identity ────────────────────────────────────────────────────
+    identity_file = folder_identity_path(page_md.parent)
+    key = "folder-kind" if fm(text, "folder-kind") else "page-type"
+    kind_src = src(root, identity_file) if identity_file is not None else f"`{page_md.name}` frontmatter `{key}:`"
+    identity_error = ""
+    try:
+        kind = resolved_folder_kind(page_md.parent, declared=fm(text, "folder-kind"),
+                                    legacy=fm(text, "page-type"))
+    except ValueError as error:
+        kind = ""
+        identity_error = str(error)
+        kind_src += f" · invalid current identity: {error}"
+    folder_owner, face_owner = owners(kind)
+    base_page = not kind and identity_file is None and not identity_error
+    if base_page:
+        # The base Page contract deliberately permits no specialized kind.
+        # Do not invent a Page Type to get a standalone Page into PREPARE.
+        folder_owner = face_owner = "haipipe-page"
+        kind_src = "haipipe-page base contract (no specialized kind declared)"
+    if folder_owner == "unresolved":
+        missing.append("CTX1")
+    ctx1 = row("CTX1 · Page identity and ownership", "resolved" if folder_owner != "unresolved" else "missing", [
+        ("Page", f"`{page_md.relative_to(board).as_posix()}`"),
+        ("Folder kind", f"{kind or ('base Page' if base_page else 'unresolved')} · source {kind_src}"),
+        ("Folder owner", folder_owner),
+        ("Page Face owner", face_owner),
+        ("Current authority", "CONTEXT"),
+    ], [src(root, page_md)])
+
+    # ── CTX2 purpose ─────────────────────────────────────────────────────
+    question, elsewhere = opening(text)
+    if not question:
+        missing.append("CTX2")
+    ctx2 = row("CTX2 · Purpose and scope", "resolved" if question else "missing", [
+        ("Question", question or "no Opening question on the Page"),
+        ("Audience", fm(text, "venue") and f"{fm(text, 'venue')} desk reader"
+         or ("Page reader" if (page_md.parent / "page.toml").is_file() else "board reader")),
+        ("Covered here", fm(text, "provides") or fm(text, "method") or "see the Page Opening"),
+        ("Covered elsewhere", elsewhere or NONE),
+    ], [src(root, page_md)])
+
+    # ── CTX3 policy, structure, style ────────────────────────────────────
+    req = record_path(o, stem, "requirement")
+    v_ids, w_ids = record_ids(req, "V"), record_ids(req, "W")
+    structure = fm(text, "structure-source")
+    division = fm(text, "structure-division")
+    style = fm(text, "style-from")
+    ctx3_sources = [src(root, SKILLS / "1_base/page/workflow-runs/haipipe-page-structure/SKILL.md")]
+    if base_page:
+        ctx3_sources.extend(src(root, p) for p in (
+            SKILLS / "1_base/page/haipipe-page/SKILL.md",
+            SKILLS / "1_base/page/haipipe-page/ref/page-template.md",
+            HERE / "ref/writing-rules.md",
+        ))
+    if req.is_file():
+        ctx3_sources.append(src(root, req))
+    if structure:
+        ctx3_sources.append(f"`{structure}`" + (f" {division}" if division else ""))
+    ctx3 = row("CTX3 · Policy, structure, and style",
+               "resolved" if (structure or kind != "section") else "missing", [
+                   ("Outline policy", "haipipe-page-structure · SHAPE + SURVEY"),
+                   ("Expected structure",
+                    f"`{structure}`" + (f" · {division}" if division else "") if structure
+                    else f"{face_owner} contract"),
+                   ("Narrative/style policy",
+                    f"{style} · Story §8 Section Narrative (haipipe-paper-story)" if style
+                    else "haipipe-page + haipipe-page/ref/writing-rules.md" if base_page else NONE),
+                   ("Requirements",
+                    f"`{req.relative_to(page_md.parent).as_posix()}` · {len(v_ids)} V · {len(w_ids)} W"
+                    if req.is_file() else "none generated"),
+               ], ctx3_sources)
+    if kind == "section" and not structure:
+        missing.append("CTX3")
+
+    # ── CTX4 related information ─────────────────────────────────────────
+    files_rec = record_path(o, stem, "files")
+    f_ids = record_ids(files_rec, "F")
+    requires = fm(text, "requires")
+    ctx4 = row("CTX4 · Related information",
+               "resolved" if (f_ids or requires) else "not-applicable", [
+                   ("Rows", (f"{len(f_ids)} Files rows" if f_ids else "no Files rows")
+                    + (f" · requires {requires}" if requires else "")),
+                   ("Packet", f"`cli/pagecontext.py {page_md.name} --run context`"),
+               ], [src(root, files_rec)] if files_rec.is_file() else [])
+
+    # ── CTX5 feedback and open decisions ─────────────────────────────────
+    fb = record_path(o, stem, "feedback")
+    disc = record_path(o, stem, "discussion")
+    fb_status = fm(fb.read_text(encoding="utf-8", errors="replace"), "status") if fb.is_file() else ""
+    d_ids = record_ids(disc, "D")
+    ctx5_sources = [src(root, p) for p in (fb, disc) if p.is_file()]
+    ctx5 = row("CTX5 · Feedback and open decisions",
+               "resolved" if ctx5_sources else "not-applicable", [
+                   ("Feedback", fb_status or "no feedback record"),
+                   ("Discussion", f"{len(d_ids)} open: {', '.join(d_ids)}" if d_ids else NONE),
+                   ("Human decisions",
+                    f"`{fb.relative_to(page_md.parent).as_posix()}` and each plan's `approved:` row"
+                    if fb.is_file() else "each plan's `approved:` row"),
+               ], ctx5_sources)
+
+    # ── CTX6 planning and evidence readiness ─────────────────────────────
+    plan, ver, approved = plan_of(o, stem)
+    rows = item_table.read_items(page_md)
+    if rows:
+        ready = sum(1 for r in rows.values() if r["planned"])
+        decided = sum(1 for r in rows.values() if r["decision"])
+        tally = (f"{len(rows)} typed · {ready} route-ready · {decided} decided"
+                 f" · {len(rows) - decided} awaiting Decide")
+    else:
+        tally = NONE
+    receipts = sorted((board / "_runs" / "page" / stem).glob("*.json")) \
+        if (board / "_runs" / "page" / stem).is_dir() else []
+    nxt = "OUTLINE" if not missing else "CONTEXT"
+    ctx6 = row("CTX6 · Planning and evidence readiness",
+               "resolved" if plan else "not-applicable", [
+                   ("Plan", f"`{plan.relative_to(page_md.parent).as_posix()}` · v{ver} · approved: {approved or '⬜'}"
+                    if plan else "no plan on disk"),
+                   ("Evidence Items", tally),
+                   ("Run receipts", f"{len(receipts)} under `_runs/page/{stem}/`"
+                    if receipts else NONE),
+                   ("Next authority", nxt),
+               ], [src(root, plan)] if plan else [])
+    # PREPARE precedes initial SHAPE. No plan yet is not a missing authority.
+
+    now = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
+    head = [f"# {stem} · context", f"page: {stem}",
+            "kind: context · generated · PREPARE resolves sources; source files remain authoritative",
+            f"generated: {now}",
+            f"regenerate: cli/context-record.py {page_md.name}", ""]
+    return "\n".join(head + [ctx1, "", ctx2, "", ctx3, "", ctx4, "", ctx5, "", ctx6, ""])
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("target", type=Path)
+    ap.add_argument("--all", action="store_true")
+    a = ap.parse_args()
+    if a.all:
+        board = a.target
+        pages = [p / f"{p.name}.md" for g in sorted(board.iterdir())
+                 if g.is_dir() and not g.name.startswith(("_", ".", "board"))
+                 for p in sorted(g.iterdir())
+                 if p.is_dir() and (p / f"{p.name}.md").is_file()]
+    else:
+        board, pages = a.target.parents[2], [a.target]
+    n = 0
+    for pg in pages:
+        out = record_path(plan_dir(pg.parent), pg.stem, "context")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.parent.mkdir(exist_ok=True)
+        out.write_text(build(pg, board), encoding="utf-8")
+        n += 1
+        print(f"wrote {out.relative_to(board)}")
+    print(f"{n} file(s)")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

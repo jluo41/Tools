@@ -15,9 +15,13 @@
 #   --all                 Do everything (marketplace + global + hooks)
 #   --no-marketplace      Skip marketplace registration (mirrors install.ps1)
 #
-# Skills are enumerated dynamically from plugins/**/skills/*/SKILL.md, so adding
-# or moving a plugin needs no edits here — just re-run. Anything under legacy/ is
-# intentionally excluded. The link set is OS/machine-specific; gitignore
+# Skills are enumerated dynamically: every SKILL.md under a plugin's skills/ tree,
+# at any depth, so adding or moving a skill needs no edits here — just re-run.
+# haipipe-toolkit nests its skills in three layers (skills/0_utils/<skill>,
+# skills/1_base/<family>/<skill>, skills/2_theme/<theme>/<skill>); each skill is
+# linked flat under its folder name, so skill names must be unique. Any folder
+# whose name starts with "_" (_old, _archive, _todo, _legacy, ...) is skipped,
+# as is node_modules/. The link set is OS/machine-specific; gitignore
 # <project>/.claude/skills/, <project>/.claude/agents/, and
 # <project>/.codex/skills/ and regenerate per machine rather than committing it.
 # (Committing real agent copies into .claude/agents/ makes the "kept, not a
@@ -129,22 +133,21 @@ for d in sorted(os.listdir(root)):
 echo ""
 echo "Install in Claude Code with e.g.:"
 echo "  /plugin install haipipe@jluo41-tools"
-echo "  /plugin install subjective-label@jluo41-tools"
+echo "  /plugin install inlab-human@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
 
 # Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree.
-# Discovery is recursive because haipipe-toolkit intentionally nests skills by
-# workflow family, e.g. skills/F_paper/4-write/paper-write.
+# Discovery is recursive because haipipe-toolkit nests skills in layers and
+# families, e.g. skills/2_theme/paper/haipipe-paper-section.
+# A folder whose name starts with "_" is never descended (one rule instead of a
+# list of retired folders, so a layer move cannot leave a prune pointing nowhere).
 # Prints one line per skill: "<absolute_skill_dir>\t<plugin_name>\t<rel_path_from_plugin_skills>"
 enumerate_skills() {
     local plugins_root="$1"
 
     find "$plugins_root" \
-        -path "$plugins_root/haipipe-toolkit/skills/display/_todo" -prune -o \
-        -path '*/_paper-writing-backup' -prune -o \
-        -path '*/_archive' -prune -o \
-        -path '*/_old' -prune -o \
+        -type d \( -name '_*' -o -name node_modules \) -prune -o \
         -path '*/skills/*/SKILL.md' -type f -print | while IFS= read -r skill_file; do
         local skill_path plugin_rel plugin_name rel_path skill_name priority
         skill_path="${skill_file%/SKILL.md}"
@@ -178,15 +181,14 @@ enumerate_skills() {
 
 # Enumerate every agent .md file under a plugin's agents/ tree (recursive).
 # Discovery covers both plugin-root agents/ and skill-nested agents/ dirs.
-# Excludes _old/, _archive/, README.md, _TEMPLATE.md.
+# Skips any folder whose name starts with "_" (as for skills); only *-agent.md
+# files count, so README.md and _TEMPLATE.md are never linked.
 # Prints one line per agent: "<absolute_agent_file>\t<plugin_name>\t<rel_path_from_plugin>"
 enumerate_agents() {
     local plugins_root="$1"
 
     find "$plugins_root" \
-        -path '*/_old' -prune -o \
-        -path '*/_archive' -prune -o \
-        -path '*/_paper-writing-backup' -prune -o \
+        -type d \( -name '_*' -o -name node_modules \) -prune -o \
         -path '*/agents/*-agent.md' -type f -print | while IFS= read -r agent_file; do
         local agent_name plugin_rel plugin_name rel_path priority
         agent_name="$(basename "$agent_file" .md)"

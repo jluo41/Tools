@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Today we cannot say why a design changed</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Today we cannot say why a design changed</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Design work sits in stage folders: a brief, the principles, then one Design folder per method.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A method folder holds every goal, so the goal, the method and the inputs change together.</text>
+<text x="60.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">When a new batch of designs reads differently, nobody can name the one cause.</text>
+<rect x="60.0" y="260.1" width="545.0" height="217.2" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
+<text x="80.0" y="302.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Today</text>
+<text x="80.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">0-BR-brief/ · 1-P-principle/ · 2-Design-M&lt;NN&gt;/</text>
+<text x="80.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a method folder holds every goal</text>
+<text x="80.0" y="415.9" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="101.0" y="415.9" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Runs: commission · generate · verify</text>
+<polyline points="615.0,368.7 665.0,368.7" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="655.0,374.7 665.0,368.7 655.0,362.7" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="675.0" y="260.1" width="545.0" height="217.2" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="695.0" y="302.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">On the ladder</text>
+<text x="695.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="345.3" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Block → Job → Task → Run</text>
+<text x="695.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="380.6" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a Job pins one goal, one method version, one</text>
+<text x="716.0" y="407.9" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">inputs version</text>
+<text x="695.0" y="443.2" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="716.0" y="443.2" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">every Run is named run-&lt;type&gt;-&lt;target&gt;</text>
+</svg>

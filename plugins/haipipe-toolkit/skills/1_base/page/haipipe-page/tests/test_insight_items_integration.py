@@ -1,0 +1,128 @@
+"""Insight instance identities and item tables through the real Board engine."""
+import importlib.util
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+from src import item_table as it
+from src.insight_instances import contract, render_items
+from src.page_question import render_outline
+from live.runs import local_runs, render as render_runs
+
+SCRIPTS = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "2_theme/insight/haipipe-page-insight/scripts"
+sys.path.insert(0, str(SCRIPTS))
+from test_insight_items import fixture, ri_fixture, write
+
+
+class InsightIntegrationTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.a, self.exec_a = fixture(self.root)
+        self.b, _ = fixture(self.root, "patient-b")
+        self.page = self.a / "I01-topic.md"
+        self.page.write_text("# Topic\npage-type: insight\ninsight-layout: items-v1\n")
+        it.run_registry.cache_clear()
+
+    def tearDown(self):
+        it.run_registry.cache_clear()
+        self.temp.cleanup()
+
+    def test_two_patients_have_separately_registered_results(self):
+        registry = it.run_registry(str(self.root))
+        a = "study/patient-a#r01_description@v001"
+        b = "study/patient-b#r01_description@v001"
+        self.assertEqual("complete", registry[a]["status"])
+        self.assertEqual("complete", registry[b]["status"])
+        self.assertNotEqual(registry[a]["result"], registry[b]["result"])
+        self.assertEqual(a, it.compact_global_run(a))
+        self.assertEqual(a, it.readable_global_run(a))
+        self.assertEqual((True, 1), it._valid_supporting(f"Insight · reuse · {a}"))
+        self.assertTrue(it._registered_supports(f"Insight · reuse · {a}", registry))
+
+    def test_unversioned_instance_reference_is_rejected(self):
+        self.assertEqual("", it.compact_global_run("study/patient-a#r01_description"))
+        self.assertEqual((False, 1), it._valid_supporting("Insight · reuse · r01_description"))
+
+    def test_changed_source_is_flagged_by_file_time_not_hash(self):
+        # No content hashes (JL 260928): a source saved after the Run's input
+        # record is flagged by file time on the item table.
+        data = self.a / "draft/evidence/materials/snapshot-01.yaml"
+        data.write_text("changed: true\n")
+        later = (self.exec_a / "input.yaml").stat().st_mtime + 60
+        os.utime(data, (later, later))
+        self.assertIn("source file newer than input", render_items(self.page))
+        registry = it.run_registry(str(self.root))
+        self.assertEqual("complete", registry["study/patient-b#r01_description@v001"]["status"])
+
+    def test_real_outline_renders_item_table_without_inventing_run_for_open_item(self):
+        html = render_outline(self.page, "insight")
+        self.assertIn("Insight item table", html)
+        self.assertIn("r02_temporal", html)
+        self.assertIn("planned", html)
+        self.assertIn("study/patient-a#r01_description@v001", html)
+        self.assertNotIn("patient-b", html)
+
+    def test_table_escapes_data_text(self):
+        path = self.a / "workflow/insight.yaml"
+        manifest = contract().read_yaml(path)
+        manifest["items"][1]["question"] = "<script>alert(1)</script>"
+        write(path, manifest)
+        html = render_items(self.page)
+        self.assertNotIn("<script>", html)
+        self.assertIn("&lt;script&gt;", html)
+
+    def test_runs_panel_keeps_local_insight_runs_off_stage(self):
+        write(self.exec_a.parent / "v002/runtime.yaml", {
+            "schema": "haipipe.insight-runtime/v1", "execution": "study/patient-a#r01_description@v002",
+            "family": "insight", "operation": "item", "status": "planned", "checkpoints": {},
+            "attempts": [{"attempt": 1, "status": "planned"}]})
+        rows = local_runs(self.page)
+        self.assertEqual(2, len(rows))
+        by_id = {row["global_id"]: row for row in rows}
+        self.assertEqual("Done", by_id["study/patient-a#r01_description@v001"]["status"])
+        self.assertEqual("Ready", by_id["study/patient-a#r01_description@v002"]["status"])
+        self.assertNotIn("r02_temporal", str(rows))
+        html = render_runs(self.page, "", "")
+        self.assertIn("Supporting Runs", html)
+        self.assertIn("Task", html)
+        self.assertIn("0 Tasks", html)
+        self.assertNotIn("2 Runs", html)
+        self.assertNotIn("Insight", html)
+        self.assertNotIn("r02_temporal", html)
+
+    def test_ri_binding_is_registered_but_stays_off_stage(self):
+        folder, _base, packet = ri_fixture(self.root, "patient-c")
+        page = folder / "I01-ri-topic.md"
+        page.write_text("# RI topic\npage-type: insight\ninsight-layout: items-v2\n")
+        it.run_registry.cache_clear()
+        ident = "study/patient-c#ri01_description@v001"
+        registry = it.run_registry(str(self.root))
+        self.assertEqual("ticket", registry[ident]["status"])
+        self.assertEqual(ident, it.compact_global_run(ident))
+        rows = local_runs(page)
+        by_id = {row["global_id"]: row for row in rows}
+        self.assertEqual({"r01_description", ident}, set(by_id))
+        self.assertTrue(str(by_id[ident]["ticket"]).endswith("ri01_description.yaml"))
+        self.assertEqual("Insight · RI · Wisdom", by_id[ident]["kind"])
+        self.assertEqual("r01_description", by_id["r01_description"]["run_id"])
+        self.assertIsNone(by_id[ident]["result_path"])
+        self.assertIn("Planned binding · binds r01_description to patient-c@snapshot-01",
+                      by_id[ident]["outcome"])
+        self.assertEqual("Base Task Run", by_id["r01_description"]["kind"])
+        self.assertIn("Reusable method for study/patient-c#ri01_description@v001",
+                      by_id["r01_description"]["outcome"])
+        body = render_runs(page, "", "")
+        self.assertIn("Supporting Runs", body)
+        self.assertIn("Task", body)
+        self.assertIn("0 Tasks", body)
+        self.assertNotIn("2 Runs", body)
+        self.assertNotIn("Insight · RI · Wisdom", body)
+        self.assertNotIn("Planned binding", body)
+        self.assertNotIn(packet["execution"], body)
+
+
+if __name__ == "__main__":
+    unittest.main()

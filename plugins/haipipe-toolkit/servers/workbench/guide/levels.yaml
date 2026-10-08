@@ -1,0 +1,68 @@
+# The card Guide's default words (b03 studio/s31-guide, s31-D05 to D08): what each level is, and
+# what each of its six Spaces is and reads, in the words of the vanilla frame (frame.py vanilla()).
+# Loaded by servers/workbench/guide_families.py. A theme's guide/guide.yaml `levels:` overrides
+# only the words that differ, in this same shape. A Space card's `sub` and `runs` are never written
+# here: the Guide reads them live from the frame (frame.spaces_for).
+Block:
+  role: one topic, its Questions, its studio/ and reports/
+  spaces:
+    Description:
+      is: the Block's face, its title and fields
+      reads: board.md
+    Idea Studio:
+      is: one row per studio topic; a click opens its drawing in place
+      reads: studio/sNN-<topic>/
+    Audience Report:
+      is: one row per Question, Question │ Work │ Report
+      reads: board.md ## Questions · reports/qNN_<topic>/
+    Work Details:
+      is: its Jobs
+      reads: jNN_<job>/
+    Runs:
+      is: the Block's Runs, grouped by type
+      reads: runs/<run>/run.yaml
+    Delivery:
+      is: what leaves the Block
+      reads: delivery/
+Job:
+  role: one line of work, a group of Tasks toward one end
+  spaces:
+    Description:
+      is: the Job's face, its title and fields
+      reads: <job>.md
+    Idea Studio:
+      is: one row per studio topic; a click opens its drawing in place
+      reads: studio/sNN-<topic>/
+    Audience Report:
+      is: one row per Question, Question │ Work │ Report
+      reads: <job>.md ## Questions · reports/qNN_<topic>/
+    Work Details:
+      is: its Tasks
+      reads: tNN_<task>/
+    Runs:
+      is: the Job's Runs, grouped by type
+      reads: runs/<run>/run.yaml
+    Delivery:
+      is: what leaves the Job
+      reads: delivery/
+Task:
+  role: one folder that is also a Page; it holds the Runs
+  spaces:
+    Description:
+      is: the Task's face, its title and fields
+      reads: <task>.md
+    Idea Studio:
+      is: one row per studio topic; a click opens its drawing in place
+      reads: studio/sNN-<topic>/
+    Audience Report:
+      is: its Questions, or its own face as its report
+      reads: <task>.md · reports/qNN_<topic>/
+    Work Details:
+      is: how the work is done, its own folders
+      reads: <its own folders>
+    Runs:
+      is: the Task's Runs, grouped by type
+      reads: runs/<run>/run.yaml
+    Delivery:
+      is: what leaves the Task
+      reads: delivery/

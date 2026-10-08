@@ -1,0 +1,6 @@
+interface:
+  display_name: "Slide Draft"
+  short_description: "a deck proposed on one canvas before it is built: slides.py, logic flow, the slides, the deck"
+  default_prompt: "Use $excalidraw-slide to draw, check or revise a slide draft from its slides.py before building the deck."
+policy:
+  allow_implicit_invocation: true

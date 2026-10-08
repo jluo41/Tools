@@ -54,15 +54,10 @@ PRIVATE_PARTS = page_workspace.PRIVATE_LANES | page_workspace.PRIVATE_FILES
 
 @lru_cache(maxsize=1)
 def _labeling_workbench_module():
-    """Load the optional domain presenter without making Page own its code."""
-    here = Path(__file__).resolve()
-    candidate = next(
-        (parent / 'subjective-label' / 'engine' / 'page_plugin.py'
-         for parent in here.parents
-         if (parent / 'subjective-label' / 'engine' / 'page_plugin.py').is_file()),
-        None,
-    )
-    if candidate is None:
+    """Load the labeling domain presenter (skills/2_theme/labeling/engine) without making Page own its code."""
+    from host_paths import skill_dir
+    candidate = skill_dir('labeling') / 'engine' / 'page_plugin.py'
+    if not candidate.is_file():
         return None
     spec = importlib.util.spec_from_file_location(
         'haipipe_subjective_label_page_plugin', candidate)

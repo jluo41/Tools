@@ -1,0 +1,6 @@
+interface:
+  display_name: "Block Board"
+  short_description: "a Block's face board.md, its Block-level Spaces, a new-Block scaffold, theme claims"
+  default_prompt: "Use $haipipe-board to create a Block, edit or check its board.md face, add a Job, or say which theme reads it."
+policy:
+  allow_implicit_invocation: true

@@ -7,10 +7,10 @@ Data, Information, Knowledge and Wisdom (MT01-MT04), on the right the runs
 that answer them, joined by each task config's `answers:` line.  Check shows
 the gates, the mechanical checks and the workflow runtime; Delivery the signed
 handoffs.  Each Space has its Runs panel; a run line opens its results, and a
-page opens as a document, in a pop-out.  Design: studio/insight-workbench-design.excalidraw.
-A Prototype and Instance board is read by instance_reader.py into the same snapshot.
+page opens as a document, in a pop-out.  Design: Tools/designs/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw.
+An Insight Block (a task Block with workbench: insight) is read by instance_reader.py into the same snapshot.
 Insight › Studio lists the board's own studio/*.excalidraw drawings; the shared Studio
-routes save them.  The shared Guide (workbench-shared) mounts before Scope.
+routes save them.  The shared Guide (workbench) mounts before Scope.
 
 The board on disk stays authoritative.  This module only reads: the register
 pages (their ASCII cell grids), the answering pages, the task configs whose
@@ -25,10 +25,10 @@ import re
 import uuid
 from datetime import date, datetime
 from pathlib import Path
-from urllib.parse import parse_qs, quote, unquote, urlparse
+from urllib.parse import parse_qs, quote, unquote, urlencode, urlparse
 
-from host_paths import SKILLS
 from src.folder_contract import resolved_folder_kind
+from src.themes import theme_dir, theme_dirs
 from .insight_handoff import eligibility as handoff_eligibility, watch_paths as handoff_watch_paths
 from .insight_run_specs import (definition as read_insight_definition, describe as describe_run_field,
                                 people as run_people, reader_name as run_reader_name)
@@ -94,8 +94,11 @@ def _section(text: str, title: str) -> str:
 
 def is_insight_board(board_root: Path) -> bool:
     board_root = Path(board_root)
-    declared = _field(_read(board_root / "board.md"), "board-kind").lower()
-    return declared in {"insight", "insight-board", "insight-instance", "insight-prototype"} \
+    text = _read(board_root / "board.md")
+    declared = _field(text, "board-kind").lower()
+    if declared == "task-block":                 # an Insight Block (haipipe-insight ref/block-contract.md)
+        return _field(text, "workbench").lower() == "insight"
+    return declared in {"insight", "insight-board"} \
         or bool(_INSIGHT_BOARD.search(board_root.name)) \
         or (board_root / "0-MT-meta").is_dir()
 
@@ -117,7 +120,7 @@ def _safe_board(root: Path, raw: str) -> Path | None:
 # a server rooted at the SPACE, at one project, or at one applications/ folder finds its boards
 # insights/ is the board world (JL 261001); insights/_old/ holds boards made before
 # reports; applications/ is legacy and still read.
-_BOARD_GLOBS = ("examples*/*/insights/*/board.md", "examples*/*/insights/_old/*/board.md",
+_BOARD_GLOBS = ("examples*/*/tasks/*/board.md", "examples*/*/insights/*/board.md", "examples*/*/insights/_old/*/board.md",
                 "examples*/*/applications/*/board.md", "examples*/*/*/board.md",
                 "insights/*/board.md", "applications/*/board.md", "*/board.md")
 
@@ -171,7 +174,7 @@ def _pages(board_root: Path) -> list[dict]:
             "title": (_TITLE.search(text).group(1).strip() if _TITLE.search(text) else path.stem),
             "state": head.get("state", "OPEN"),
             "page_type": kind, "identity_error": identity_error,
-            "rung": head.get("question-rung", "").lower(),
+            "register_level": head.get("question-level", "").lower(),
             "level": _LEVEL_OF.get(m.group(1)) if m else "", "partition": part,
             "receipt_field": head.get("receipt", ""),
         })
@@ -179,15 +182,12 @@ def _pages(board_root: Path) -> list[dict]:
 
 
 def _page_link(snapshot: dict, page: dict) -> str:
-    """The generated HTML twin when it exists, else the source Markdown."""
-    stem = page["path"].stem
-    letter = page["partition"] or "MT"
-    generated = snapshot["board"] / "board" / letter / f"{stem}.html"
+    """The Page in the shared live reader (`/_board/page`); the Board's static site is retired
+    (JL 261004). A static snapshot links the source Markdown."""
     if snapshot["static"]:
-        return f"{letter}/{stem}.html" if generated.is_file() else f"../{page['rel']}"
-    if generated.is_file():
-        return "/" + quote(f"{snapshot['relative']}/board/{letter}/{stem}.html", safe="/")
-    return "/" + quote(f"{snapshot['relative']}/{page['rel']}", safe="/")
+        return f"../{page['rel']}"
+    from live.page_reader import page_url
+    return page_url(page["path"], snapshot["root"])
 
 
 # ─── registers: the ASCII cell grid inside each MT page ─────────────────────
@@ -483,7 +483,7 @@ def board_snapshot(board_root: Path, server_root: Path | None = None,
     partitions = _partitions(board_root, pages)
     partition_ids = [row["id"] for row in partitions]
     registers = [p for p in pages if not p["identity_error"] and
-                 (p["page_type"] == "question" or (not p["page_type"] and p["rung"]))]
+                 (p["page_type"] == "question" or (not p["page_type"] and p["register_level"]))]
     questions = []
     for reg in sorted(registers, key=lambda p: p["id"]):
         questions.extend(_parse_register(reg, partition_ids))
@@ -502,7 +502,7 @@ def board_snapshot(board_root: Path, server_root: Path | None = None,
         "context": _extract_context(text, pages),
         "pages": pages, "by_id": by_id, "partitions": partitions, "questions": questions,
         "question_ids": [q["id"] for q in questions],
-        "registers": {lvl: [p["path"] for p in registers if p["rung"] == lvl] for lvl in _LEVELS},
+        "registers": {lvl: [p["path"] for p in registers if p["register_level"] == lvl] for lvl in _LEVELS},
         "runs": _receipts(pages, store), "events": _log_events(pages),
         "workflow_runtimes": _workflow_runtimes(board_root),
         "handoffs": handoff_records(board_root, pages),
@@ -894,8 +894,9 @@ def _render_runtime_inventory(snap: dict) -> str:
 
 
 def _tasks_root(snap: dict) -> Path:
-    return next((parent / "tasks" for parent in snap["board"].parents
-                 if (parent / "tasks").is_dir()), snap["board"].parent.parent / "tasks")
+    """The Project's work Theme (`work/`, or the old `tasks/`) nearest above the board."""
+    return next((found[0] for parent in snap["board"].parents if (found := theme_dirs(parent, "task"))),
+                theme_dir(snap["board"].parent.parent, "task"))
 
 
 def _task_calls(snap: dict) -> list[dict]:
@@ -978,13 +979,13 @@ def groom_snapshot(board_root: Path, snapshot: dict | None = None) -> dict:
     """Read-only audit: the mechanical checker plus the partial registers."""
     board_root = Path(board_root)
     if snapshot and snapshot.get("layout") == "instance":
-        # an Instance: haipipe-insight-check ref/check_instance.py, problems FAIL, notes WARN
+        # an Insight Block: haipipe-insight-check ref/check_block.py, problems FAIL, notes WARN
         checks = ([{"level": "FAIL", "code": "instance", "where": board_root.name, "message": m}
                    for m in snapshot["instance_problems"]]
                   + [{"level": "WARN", "code": "instance-note", "where": board_root.name, "message": m}
                      for m in snapshot["instance_notes"]])
         return {"checks": checks or [{"level": "PASS", "code": "instance-check-clean", "where": board_root.name,
-                                      "message": "check_instance.py returned no problem and no note"}],
+                                      "message": "check_block.py returned no problem and no note"}],
                 "queue": [], "handoffs": [], "bindable_handoffs": []}
     snapshot = snapshot or board_snapshot(board_root, board_root, static=True)
     checks = []
@@ -1000,7 +1001,7 @@ def groom_snapshot(board_root: Path, snapshot: dict | None = None) -> dict:
     if not checks:
         checks.append({"level": "PASS", "code": "insight-check-clean", "where": board_root.name,
                        "message": "mechanical InsightBoard checks returned no findings"})
-    queue = [{"rung": lvl, "page": path, "state": _field(_read(path), "state") or "OPEN",
+    queue = [{"level": lvl, "page": path, "state": _field(_read(path), "state") or "OPEN",
               "next": "continue the register frontier"}
              for lvl, paths in snapshot["registers"].items() for path in paths
              if not (_field(_read(path), "state") or "").startswith("✅")]
@@ -1023,7 +1024,7 @@ def page_cells(snap: dict, page: dict) -> list[tuple[str, str]]:
     return out
 
 
-# ─── the workbench: four Spaces, one dataset (studio/insight-workbench-design) ─
+# ─── the workbench: four Spaces, one dataset (b11 s02-insight-workbench) ─
 
 # A refused or deferred cell, said in words: the head goes where a run would
 # be, the reason under it.  Tokens from MT02/MT03's legends.
@@ -1357,6 +1358,8 @@ def report(snap: dict, qid: str, pid: str) -> dict | None:
     folder, its .md says what its own results/ show).  A `reports/` file, from
     the brief report-file layout, is still read first when one exists.
     """
+    if snap.get("layout") == "instance":
+        return _run_report(snap, qid, pid)
     path = _report_path(snap, qid, pid)
     url = f"/_board/insight?board={quote(snap['board'].name)}&report={quote(pid + ':' + qid)}"
     if path.is_file():
@@ -1388,6 +1391,30 @@ def report(snap: dict, qid: str, pid: str) -> dict | None:
             "limit": "", "url": _pop_url(snap, page), "source": "page", "page": page["id"]}
 
 
+_LEAD = re.compile(r"(?m)^- (.+?)(?: \(`[^`]+`\))?\s*$")
+
+
+def _run_report(snap: dict, qid: str, pid: str) -> dict | None:
+    """A Prototype board's report: the run's generated reports/<partition>/report.md (JL 261005: the
+    work generates the report; the page is the short answer that reads it). The cell shows its
+    first lead line and opens the run; the question's page, when there is one, is named under it."""
+    run = next((w for w in snap.get("work", []) if w.get("answers") == [qid] and w.get("partition") == pid), None)
+    if not run:
+        return None
+    path = run["task_path"] / "reports" / run.get("run", pid) / "report.md"     # an Insight Block's run is <dataset>_<partition>
+    if not path.is_file():
+        return None
+    text = _read(path)
+    leads = [m.group(1) for m in _LEAD.finditer(text.split("\n## Power", 1)[0])]
+    status = run.get("status", "")
+    head = ("Run report" if status == "ok" else f"Run report · {status}")
+    row = next((r for r in snap["questions"] if r["id"] == qid), None)
+    page = snap["by_id"].get(((row or {}).get("cells", {}).get(pid) or {}).get("page", ""))
+    return {"headline": head, "text": (leads[0][0].upper() + leads[0][1:] + ".") if leads else "",
+            "strength": f"{len(leads) - 1} more in the report" if len(leads) > 1 else "", "limit": "", "url": run["url"],
+            "source": "report", "page": page["id"] if page else "", "page_url": _pop_url(snap, page) if page else ""}
+
+
 def _report_cell(snap: dict, q: dict, pid: str) -> str:
     cell = q["cells"].get(pid, _parse_cell("·"))
     if cell["mark"] == "·":
@@ -1409,7 +1436,9 @@ def _report_cell(snap: dict, q: dict, pid: str) -> str:
             + (f'<p class=rp-text>{_inline(rep["text"])}</p>' if rep["text"] else "")
             + (f'<p class=rp-tags>{_e(tags)}</p>' if tags else "")
             + (f'<p class=rp-tags>page {_e(display_id(rep["page"], {p["id"]: p["name"] for p in snap["partitions"]}))}</p>'
-               if rep["source"] == "page" else ""))
+               if rep["source"] == "page" else "")
+            + (f'<p class=rp-tags>answer: <a class=pop href="{_e(rep["page_url"])}" data-pop="{_e(rep["page"])}">'
+               f'page {_e(rep["page"])}</a></p>' if rep.get("page_url") else ""))
 
 
 _DIVISION = re.compile(r"(?m)^#{3,4}\s+\d+\s+·\s+(Q[DIKW]\d+)\s+·\s+(.+?)\s*$")
@@ -1665,8 +1694,8 @@ def _short_window(a: str, b: str) -> str:
 
 
 def _dataset_line(snap: dict) -> tuple[str, str]:
-    """(short line, full extract name) for the banner every Space shows:
-    `SMSR2v1 · 444,691 rows · 13 messages · Jun 16 – Jul 3, 2025` (JL 261001: too wordy)."""
+    """(short line, full extract name), e.g. `SMSR2v1 · 444,691 rows · 13 messages · Jun 16 – Jul 3, 2025`;
+    only the full name is used now (the banner above the Spaces was removed, JL 261007)."""
     meta = snap["by_id"].get("MT00")
     text = (meta["text"] if meta else "") + "\n" + _read(snap["board"] / "board.md")
     name = re.search(r"(?m)^extract\s+(\S+)", text) or re.search(r"([\w.-]+)\.parquet", text)
@@ -1770,14 +1799,15 @@ def _render_delivery(snap: dict) -> str:
 # Guide › Method (JL 261003: "update the Guide > Method completely"): one file, the Insight method,
 # naming its methods after the three columns of every question: question-asking (Logic, before any data
 # is read), question-answering (Work, the run) and question-results reading (Report, the page). Not "design" or "discovery": those are the
-# Design and Discovery families. The files are the workbench's own, the same for every board; the cards
-# and paper cards are drawn as the Design workbench draws its methods.
-METHODS_REF = SKILLS / "insight" / "haipipe-workbench-insight" / "ref"
-METHOD_DOC = METHODS_REF / "insight-method.md"
-METHOD_PAPERS = METHODS_REF / "insight-papers.md"
+# Design and Discovery families. The files are the workbench's own, the same for every board, kept with
+# this server as every theme's Guide is (261007): guide/ (method, cards, canvas) and related/ (papers);
+# the cards and paper cards are drawn as the Design workbench draws its methods.
+METHODS_REF = Path(__file__).resolve().parent / "guide"
+METHOD_DOC = METHODS_REF / "method.md"
+METHOD_PAPERS = METHODS_REF.parent / "related" / "papers.md"
 # The methods drawing (JL 261002, as the Design family's): one Excalidraw drawing of the loop and the
 # question-asking, question-answering and question-results reading methods, opened in the self-hosted canvas and saved back.
-METHOD_STUDIO = METHODS_REF / "insight-methods.excalidraw"
+METHOD_STUDIO = METHODS_REF / "methods.excalidraw"
 METHOD_VIEWS = (("method", "Method"), ("papers", "Papers"))
 
 
@@ -1786,7 +1816,7 @@ def _studio_html(root: Path, editable: bool = True) -> str:
     from .designboard import _href
     rel = _href(root, METHOD_STUDIO) if METHOD_STUDIO.is_file() else ""
     if not rel:
-        return f'<p class=note>No methods drawing yet: the insight workbench keeps it as <code>ref/{METHOD_STUDIO.name}</code>.</p>'
+        return f'<p class=note>No methods drawing yet: the insight workbench keeps it as <code>guide/{METHOD_STUDIO.name}</code>.</p>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + ("&edit=1" if editable else "")
     return ('<div class=st-bar><span class=mut>The six steps, and the question-asking, question-answering and question-results reading methods of '
             'steps 1, 3 and 5. You can edit it here.</span>'
@@ -1795,7 +1825,7 @@ def _studio_html(root: Path, editable: bool = True) -> str:
             f'<iframe class=st-frame title="Methods studio" referrerpolicy="no-referrer" data-src="{_e(url)}"></iframe>')
 
 
-# Prototype › RoadMap Draw: the Prototype's studio/ (workbench-shared README, "Task alignment"): a
+# Prototype › RoadMap Draw: the Prototype's studio/ (workbench README, "Task alignment"): a
 # freeform list of folding rows, one per studio/<name>.excalidraw beside its board.md. A row's canvas
 # loads when it opens, view only; Edit drawing hands it the pen. The shared Studio routes (xcal.py)
 # save the scene. The family's own explanatory drawings stay in Guide.
@@ -1880,14 +1910,14 @@ def _render_methods(snap: dict, view: str = "method", only: tuple = (), editable
                     f'<div class=msec-body>{body}</div></details>')
         drawing = fold("Methods drawing", _studio_html(root, editable))
         if not METHOD_DOC.is_file():
-            return drawing + f'<p class=note>No method file yet: the insight workbench keeps it as <code>ref/{METHOD_DOC.name}</code>.</p>'
+            return drawing + f'<p class=note>No method file yet: the insight workbench keeps it as <code>guide/{METHOD_DOC.name}</code>.</p>'
         html = re.sub(r"<h1>.*?</h1>", "", _plain_md(_read(METHOD_DOC), method_cards(board, root, METHOD_DOC, METHOD_PAPERS)), count=1)
         parts = re.split(r"<h2>(.*?)</h2>", html)            # [before, title, body, title, body, ...]
         cards = "".join(fold(parts[k], parts[k + 1], open_=(k == 1)) for k in range(1, len(parts), 2))
         return drawing + f'<article class=mdoc>{parts[0]}{cards}</article>'
     views = {"method": method,
              "papers": (lambda: papers_page(board, root, METHOD_PAPERS) if METHOD_PAPERS.is_file() else
-                        f'<p class=note>No papers file yet: the insight workbench keeps it as <code>ref/{METHOD_PAPERS.name}</code>.</p>')}
+                        f'<p class=note>No papers file yet: the insight workbench keeps it as <code>related/{METHOD_PAPERS.name}</code>.</p>')}
     shown = [(k, label) for k, label in METHOD_VIEWS if not only or k in only]
     view = view if view in dict(shown) else shown[0][0]
     bar = "".join(f'<button type=button data-mview="{k}"{" class=on" if k == view else ""}>{_e(label)}</button>'
@@ -1949,8 +1979,7 @@ def render_insight_board(snapshot: dict, space: str = "insight",
         '<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">',
         f'<title>🔎 {_e(snap["title"])}</title><style>{_CSS}</style></head>'
         f'<body data-space="{_e(space)}" data-sel="{_e(sel)}"><main>',
-        f'<header><h1>🔎 {_e(snap["title"])}</h1></header>',   # no `all boards · board index` line (JL 261003)
-        '<div class=dataset title="{1}">{0}</div>'.format(*map(_e, _dataset_line(snap))),
+        f'<header><h1>🔎 {_e(snap["title"])}</h1></header>',   # no `all boards · board index` line (JL 261003); no dataset banner (JL 261007)
         nav, panes, _POP, "</main>", _JS, _STUDIO_JS, "</body></html>",
     ]))
     if snap["static"]:
@@ -2025,16 +2054,16 @@ def render_insight_report(snap: dict, qid: str, pid: str) -> str:
 
 
 def render_insight_page(snap: dict, page: dict) -> str:
-    """One page as a document, for the pop-out: what it answers, then its text."""
-    page_tpl, _, md_view = _result_kit()
+    """One page as a document, for the pop-out: the shared Page reader, the same document the
+    web delivery writes (workbench/page_reader.py)."""
+    from live.page_reader import page_document
     cells = page_cells(snap, page)
     where = " · ".join(f'{_STAGE[q[1]]} question {q[2:]} on {_part_label(snap, p)}' for q, p in cells) or "answers no register question"
-    text = re.sub(r"\A#[^\n]*\n", "", page["text"])
-    body = (f'<h1>{_e(page["title"])}</h1><p class="where mut">{_e(display_id(page["id"], {p["id"]: p["name"] for p in snap["partitions"]}))}'
-            f' · {_e(_clip(page["state"], 90))} · {_e(where)}</p>'
-            f'<div class=links><a href="{_e(_page_link(snap, page))}" target=_blank rel=noopener>Open the Markdown ↗</a></div>'
-            f'{md_view(text)}')
-    return page_tpl.format(title=_e(page["title"]), body=body)
+    name = display_id(page["id"], {p["id"]: p["name"] for p in snap["partitions"]})
+    source = "/" + quote(f"{snap['relative']}/{page['rel']}", safe="/")
+    return page_document(page["path"], snap["root"],
+                         f'<span class=mut>{_e(name)} · {_e(where)}</span> '
+                         f'<a href="{_e(source)}" target=_blank rel=noopener>Source ↗</a>')
 
 
 _CSS = """
@@ -2043,7 +2072,6 @@ _CSS = """
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:17px;margin:0 0 6px}h3{font-size:15px;margin:14px 0 6px}p{margin:4px 0}
 .mut{color:var(--mut);font-size:13px}code,.mono{font:13px ui-monospace,Menlo,monospace}a{color:var(--acc)}
-.dataset{margin:10px 0 4px;padding:8px 14px;border:1px solid var(--acc);border-radius:10px;background:var(--acc-soft);color:var(--acc);font-size:14px}
 .spaces{display:flex;gap:6px;margin:12px 0 8px;flex-wrap:wrap}.space{font:400 16px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:6px 14px;cursor:pointer;background:var(--bg);color:var(--fg)}.space.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
 .pane{display:none}.pane.on{display:block}.split{display:flex;align-items:flex-start;gap:14px}
 .shell{flex:1 1 auto;border:1px solid var(--line);border-radius:10px;padding:12px 16px 16px;min-width:0;overflow-x:auto}
@@ -2204,6 +2232,10 @@ list.querySelectorAll('details.draw').forEach(function(r){
 
 # ─── server mixin ───────────────────────────────────────────────────────────
 
+_RETIRED_SPACE = {"scope": "Description", "prototype": "Description", "insight": "Audience Report",
+                  "check": "Runs", "delivery": "Delivery"}
+
+
 class InsightBoardMixin:
     """GET/HEAD/POST read-only surface for a whole InsightBoard."""
 
@@ -2232,22 +2264,38 @@ class InsightBoardMixin:
                 return None
             body = render_board_list(Path(self.root), raw).encode("utf-8")
             return self._insight_board_send(body, 404, head_only)
-        from .instance_reader import board_kind, instances_of, legacy_snapshot, render_file
+        from .instance_reader import board_kind, legacy_snapshot, render_file
         kind = board_kind(board)
+        if not (query.get("file") or [""])[0]:
+            # Retired (JL 261007): the board opens in the workbench (/_board/workbench, the insight theme,
+            # b11 s11 · s12 · s13). Its old Spaces map to the new ones; screenshots of this page are kept in
+            # Tools/designs/b11_theme_insight/studio/s11-block-level/old-insight-board/.
+            old_space = (query.get("space") or ["insight"])[0]
+            space = _RETIRED_SPACE.get(old_space, "Audience Report")
+            from .insight_plan_c import JOB_NAME
+            jobs = sorted(j for j in board.iterdir() if j.is_dir() and JOB_NAME.match(j.name))
+            target = jobs[-1] if jobs and old_space in ("insight", "check") else board   # the Q │ W │ R rows: a Job's
+            try:
+                where = target.resolve().relative_to(Path(self.root).resolve()).as_posix()
+            except ValueError:
+                where = board.name
+            self.send_response(302)
+            self.send_header("Location", f"/_board/workbench?path={quote(where)}&space={quote(space)}")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return None
         if kind:
-            # a Prototype and Instance board (haipipe-insight ref/prototype-contract.md): the same
-            # workbench, its data read by instance_reader; a file opens in the pop-out
+            # an Insight Block (haipipe-insight ref/block-contract.md): the same workbench, its data
+            # read by instance_reader for one dataset; a file opens in the pop-out
             wanted = (query.get("file") or [""])[0]
+            if wanted == "board.md":                 # the Board's own face (the `/w/` and Home link): the board
+                wanted = ""
             if wanted:
                 code, page = render_file(board, Path(self.root), wanted)
                 return self._insight_board_send(page.encode("utf-8"), code, head_only)
-            if kind == "insight-prototype":
-                inst = instances_of(board)
-                if len(inst) != 1:
-                    return self._insight_board_send(render_board_list(Path(self.root), raw).encode("utf-8"), 404, head_only)
-                board = inst[0]                      # a Prototype is read through its one Instance
             body = render_insight_board(
-                legacy_snapshot(board, Path(self.root)), (query.get("space") or ["insight"])[0],
+                legacy_snapshot(board, Path(self.root), (query.get("dataset") or [""])[0]),
+                (query.get("space") or ["insight"])[0],
                 (query.get("q") or query.get("question") or [""])[0],
                 (query.get("p") or query.get("partition") or [""])[0]).encode("utf-8")
             return self._insight_board_send(body, 200, head_only)
@@ -2303,7 +2351,7 @@ class InsightBoardMixin:
         if board is None:
             return self._insight_board_send("<p>No such InsightBoard.</p>".encode("utf-8"), 404, head_only)
         from .instance_reader import board_kind, render_run
-        if board_kind(board) == "insight-instance":
+        if board_kind(board) == "insight-block":
             try:
                 body = render_run(board, Path(self.root), (query.get("task") or [""])[0], (query.get("call") or [""])[0])
             except (FileNotFoundError, ValueError) as exc:
@@ -2434,7 +2482,7 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
     if any(not re.fullmatch(r"[a-z]+", p) for p in partitions):
         raise ValueError("partitions are named by their full name, e.g. full, youngmale, cross")
     pages = _pages(Path(board_root))
-    candidates = [p for p in pages if p["rung"] == _LEVEL_OF[level]
+    candidates = [p for p in pages if p["register_level"] == _LEVEL_OF[level]
                   or p["id"] == f"MT0{'DIKW'.index(level) + 1}"]
     for page in candidates:
         if page["identity_error"]:
@@ -2442,7 +2490,7 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
         if page["page_type"] != "question":
             raise ValueError(f"{page['path']}: selected register is not a Question Folder")
     if len(candidates) > 1:
-        raise ValueError("multiple Question registers face the requested rung")
+        raise ValueError("multiple Question registers face the requested DIKW level")
     register = candidates[0] if candidates else None
     if register is None:
         raise ValueError(f"no register page faces the {_LEVEL_LABEL[level]} level")

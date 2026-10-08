@@ -1,6 +1,6 @@
 """The browser assets, assembled from parts across every server folder.
 
-Each server folder (``_host``, ``haipipe-board``, ``haipipe-page``,
+Each server folder (``_host``, ``space-home``, ``haipipe-page``,
 ``workbench-*``, and sibling workbenches' ``servers/workbench-*``) keeps its own
 parts under ``assets/js/**`` and ``assets/css/**``. They are gathered here and
 concatenated in sorted RELATIVE path order, so a part's numeric prefix still
@@ -36,7 +36,7 @@ if str(_HOST) not in sys.path:
 from host_paths import SERVERS  # noqa: E402
 from host_registry import asset_roots  # noqa: E402
 
-BOARD_MARK = SERVERS / "haipipe-board" / "assets" / "board-mark.svg"
+BOARD_MARK = SERVERS / "space-home" / "assets" / "board-mark.svg"
 
 
 def board_mark():

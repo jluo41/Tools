@@ -1,0 +1,5 @@
+run: run-launch-j04
+kind: soft
+type: launch
+target: j04_p2_demov3
+status: open

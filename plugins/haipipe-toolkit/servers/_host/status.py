@@ -165,51 +165,18 @@ def resolve_focus(value, pages, groups):
 
 
 def board_url(board, root, base_url, anchor):
-    """The link a human clicks. Prefers QC9's split site when the board has one,
-    because that is what JL reads now; the one-file board.html stays as the
-    fallback for boards that have not been split yet (JL 260731: board.html is
-    on its way out, so nothing new should send anyone to it)."""
+    """The link a human clicks: the short route `/b/<slug>[/<page>]`, which opens a Page in
+    the shared live reader or the Board in its workbench (servers/space-home/home.py owns
+    the slug). Nothing is built, so the link is good the moment the Page exists (JL 261004:
+    the Board's static site is retired). A group code or an index anchor opens the Board."""
     try:
-        relative = board.resolve().relative_to(root.resolve())
+        board.resolve().relative_to(root.resolve())
     except ValueError:
         return None
-    path = urllib.parse.quote(relative.as_posix(), safe="/")
-    base = f"{base_url.rstrip('/')}/{path}"
-    site = board / "board"
-    if not (site.is_dir() and (site / "index.html").exists()):
-        return f"{base}/{'board.html'}#{anchor}"
-
-    # anchor is a page id (QD2), a group code (QD), or an index anchor
     tail = anchor if anchor and anchor not in ("top", "qlist", "all") else ""
-
-    long_url = f"{base}/board/index.html"
-    resolved = not tail
-    if tail:
-        for html in sorted(site.glob("*/*.html")):
-            if html.stem.split("-")[0] == tail:
-                long_url = f"{base}/board/{html.parent.name}/{html.name}"
-                resolved = True
-                break
-        else:
-            if (site / f"{tail}.html").exists():
-                long_url = f"{base}/board/{tail}.html"
-                resolved = True
-
-    # QE2 · the short route, and it is the DEFAULT once the generated site is
-    # there. 78 of the 131 characters JL measured on 260802 were the path from
-    # the SPACE root down to the board folder, and a chat surface expands
-    # `[label](url)` back into `label (url)`, so a person reads that length no
-    # matter what the strip does. `/b/<slug>[/<page>]` is a 302 from
-    # `servers/haipipe-board/home.py`, which owns the slug so the route and the printed label
-    # can never disagree about what a board is called.
-    #
-    # An anchor that resolves to no generated file keeps the long URL, because
-    # the route answers 404 there: a long working link beats a short dead one.
-    if resolved:
-        slug = urllib.parse.quote(board_slug(board.name, board.parent.name), safe="")
-        short = f"{base_url.rstrip('/')}/b/{slug}"
-        return f"{short}/{urllib.parse.quote(tail, safe='')}" if tail else short
-    return long_url
+    slug = urllib.parse.quote(board_slug(board.name, board.parent.name), safe="")
+    short = f"{base_url.rstrip('/')}/b/{slug}"
+    return f"{short}/{urllib.parse.quote(tail, safe='')}" if tail else short
 
 
 def render(board, focus="board", mode="status", status="ready", next_action="",

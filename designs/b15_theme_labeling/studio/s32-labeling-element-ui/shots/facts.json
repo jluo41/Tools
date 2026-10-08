@@ -1,0 +1,2120 @@
+{
+ "views__01": {
+  "element": "views",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Description",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__01": {
+  "element": "space",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Description",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "table__01": {
+  "element": "table",
+  "place": "Block › Description › Scope",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Description",
+  "selector": "table.wf-table|14px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description › Scope",
+   "Block › Work Details › Jobs",
+   "Block › Work Details › Labeling",
+   "Job › Work Details",
+   "Task › Description › Scope",
+   "Task › Description › Contract",
+   "Task › Work Details › Preparation",
+   "Task › Work Details › Embedding",
+   "Task › Work Details › Definition",
+   "Task › Work Details › Rounds",
+   "Task › Work Details › Guideline",
+   "Task › Work Details › Test",
+   "Task › Work Details › Evaluation",
+   "Task › Work Details › Audit",
+   "Task › Delivery › Handoff",
+   "Task › Delivery › Scan",
+   "Task › Delivery › Final labels",
+   "Block › Description › Scope (Block · b62 (a second labeling Block))",
+   "Block › Work Details › Jobs (Block · b62 (a second labeling Block))",
+   "Block › Work Details › Labeling (Block · b62 (a second labeling Block))",
+   "Task › Description › Scope (Task · b62's labeling job)",
+   "Task › Description › Contract (Task · b62's labeling job)",
+   "Task › Work Details › Preparation (Task · b62's labeling job)",
+   "Task › Work Details › Embedding (Task · b62's labeling job)",
+   "Task › Work Details › Definition (Task · b62's labeling job)",
+   "Task › Work Details › Rounds (Task · b62's labeling job)",
+   "Task › Work Details › Guideline (Task · b62's labeling job)",
+   "Task › Work Details › Test (Task · b62's labeling job)",
+   "Task › Work Details › Evaluation (Task · b62's labeling job)",
+   "Task › Work Details › Audit (Task · b62's labeling job)",
+   "Task › Delivery › Handoff (Task · b62's labeling job)",
+   "Task › Delivery › Scan (Task · b62's labeling job)",
+   "Task › Delivery › Final labels (Task · b62's labeling job)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "table.wf-table"
+ },
+ "space__02": {
+  "element": "space",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Idea+Studio",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "report__01": {
+  "element": "report",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Audience+Report",
+  "selector": "div.q-row|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report",
+   "Task › Audience Report › Report",
+   "Task › Audience Report › Report (Task · b62's labeling job)"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "space__03": {
+  "element": "space",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Audience+Report",
+  "selector": ".split",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__01": {
+  "element": "cards",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Audience+Report",
+  "selector": "details.q-more|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.q-more"
+ },
+ "tabs__01": {
+  "element": "tabs",
+  "place": "Block · b61 (its schema, its Jobs)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · b61 (its schema, its Jobs)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__02": {
+  "element": "views",
+  "place": "Block › Work Details",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__04": {
+  "element": "space",
+  "place": "Block › Work Details",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "runs__01": {
+  "element": "runs",
+  "place": "Block · b61 (its schema, its Jobs)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · b61 (its schema, its Jobs)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__01": {
+  "element": "header",
+  "place": "Block · b61 (its schema, its Jobs)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · b61 (its schema, its Jobs)"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "tags__01": {
+  "element": "tags",
+  "place": "Block › Work Details › Labeling",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": "a.chip|12px|999px|0px 8px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Labeling",
+   "Task › Description › Contract",
+   "Task › Work Details › Preparation",
+   "Task › Work Details › Embedding",
+   "Task › Work Details › Definition",
+   "Task › Work Details › Rounds",
+   "Task › Work Details › Guideline",
+   "Task › Work Details › Test",
+   "Task › Work Details › Evaluation",
+   "Task › Work Details › Audit",
+   "Task › Delivery › Handoff",
+   "Task › Delivery › Scan",
+   "Task › Delivery › Final labels",
+   "Block › Work Details › Labeling (Block · b62 (a second labeling Block))",
+   "Task › Description › Contract (Task · b62's labeling job)",
+   "Task › Work Details › Preparation (Task · b62's labeling job)",
+   "Task › Work Details › Embedding (Task · b62's labeling job)",
+   "Task › Work Details › Definition (Task · b62's labeling job)",
+   "Task › Work Details › Rounds (Task · b62's labeling job)",
+   "Task › Work Details › Guideline (Task · b62's labeling job)",
+   "Task › Work Details › Test (Task · b62's labeling job)",
+   "Task › Work Details › Evaluation (Task · b62's labeling job)",
+   "Task › Work Details › Audit (Task · b62's labeling job)",
+   "Task › Delivery › Handoff (Task · b62's labeling job)",
+   "Task › Delivery › Scan (Task · b62's labeling job)",
+   "Task › Delivery › Final labels (Task · b62's labeling job)"
+  ],
+  "font": "12px 400",
+  "radius": "999px",
+  "padding": "0px 8px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.chip"
+ },
+ "space__05": {
+  "element": "space",
+  "place": "Block › Runs",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Runs",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Runs"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__06": {
+  "element": "space",
+  "place": "Block › Delivery",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Delivery",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__07": {
+  "element": "space",
+  "place": "Job › Description",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Description",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__08": {
+  "element": "space",
+  "place": "Job › Idea Studio",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Idea+Studio",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Idea Studio"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__09": {
+  "element": "space",
+  "place": "Job › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Audience+Report",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tabs__02": {
+  "element": "tabs",
+  "place": "Job · j01_building_corpus",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Work+Details",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j01_building_corpus"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "space__10": {
+  "element": "space",
+  "place": "Job › Work Details",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Work+Details",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "runs__02": {
+  "element": "runs",
+  "place": "Job · j01_building_corpus",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Work+Details",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j01_building_corpus"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__02": {
+  "element": "header",
+  "place": "Job · j01_building_corpus",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Work+Details",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j01_building_corpus"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "space__11": {
+  "element": "space",
+  "place": "Job › Runs",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Runs",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Runs"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__12": {
+  "element": "space",
+  "place": "Job › Delivery",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Delivery",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Delivery"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "views__03": {
+  "element": "views",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Description",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__13": {
+  "element": "space",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Description",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__14": {
+  "element": "space",
+  "place": "Task › Idea Studio",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Idea+Studio",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Idea Studio"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "views__04": {
+  "element": "views",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Audience+Report",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__15": {
+  "element": "space",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Audience+Report",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "tabs__03": {
+  "element": "tabs",
+  "place": "Task · a labeling job (j01 › t01_dices350_labeling)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a labeling job (j01 › t01_dices350_labeling)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__05": {
+  "element": "views",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__16": {
+  "element": "space",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "runs__03": {
+  "element": "runs",
+  "place": "Task · a labeling job (j01 › t01_dices350_labeling)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a labeling job (j01 › t01_dices350_labeling)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__03": {
+  "element": "header",
+  "place": "Task · a labeling job (j01 › t01_dices350_labeling)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · a labeling job (j01 › t01_dices350_labeling)"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "views__06": {
+  "element": "views",
+  "place": "Task › Runs",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Runs",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Runs"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__17": {
+  "element": "space",
+  "place": "Task › Runs",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Runs",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Runs"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "views__07": {
+  "element": "views",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Delivery",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__18": {
+  "element": "space",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Delivery",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tabs__04": {
+  "element": "tabs",
+  "place": "the labeling board page (/_board/labeling-board: Guide · Jobs)",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "nav.spaces",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "the labeling board page (/_board/labeling-board: Guide · Jobs)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "space__19": {
+  "element": "space",
+  "place": "the labeling board page (/_board/labeling-board: Guide · Jobs)",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": ".space-main",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "the labeling board page (/_board/labeling-board: Guide · Jobs)"
+  ],
+  "font": "15px 400",
+  "radius": "6px",
+  "padding": "2px 6px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.rec"
+ },
+ "cards__02": {
+  "element": "cards",
+  "place": "old board page › Jobs",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "div.card|15px|0px|0px 0px|0px none",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs",
+   "old job page › Data › preparation",
+   "old job page › Data › contract",
+   "old job page › Data › embedding",
+   "old job page › Labeling › definition",
+   "old job page › Labeling › guideline"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.card"
+ },
+ "cards__03": {
+  "element": "cards",
+  "place": "old board page › Jobs",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "div.card|15px|0px|12px 0px|1px solid",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs",
+   "old job page › Data › preparation",
+   "old job page › Labeling › definition",
+   "old job page › Labeling › rounds"
+  ],
+  "font": "15px 400",
+  "radius": "6px",
+  "padding": "2px 6px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.card"
+ },
+ "cards__04": {
+  "element": "cards",
+  "place": "old board page › Jobs",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "a.rec|15px|6px|2px 6px|0px none",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs"
+  ],
+  "font": "15px 400",
+  "radius": "6px",
+  "padding": "2px 6px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.rec"
+ },
+ "tags__02": {
+  "element": "tags",
+  "place": "old board page › Jobs",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "span.pill|10.5px|999px|1px 8px|1px solid",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs"
+  ],
+  "font": "10.5px 600",
+  "radius": "999px",
+  "padding": "1px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.pill"
+ },
+ "tags__03": {
+  "element": "tags",
+  "place": "old board page › Jobs",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": "span.rid|11px|6px|0px 6px|1px solid",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs"
+  ],
+  "font": "11px 600",
+  "radius": "6px",
+  "padding": "0px 6px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.rid"
+ },
+ "header__04": {
+  "element": "header",
+  "place": "the labeling board page (/_board/labeling-board: Guide · Jobs)",
+  "url": "/_board/labeling-board?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fboard.md&file=board.md",
+  "selector": ".wb-band",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "the labeling board page (/_board/labeling-board: Guide · Jobs)"
+  ],
+  "font": "14px 400",
+  "radius": "10px",
+  "padding": "8px 14px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgb(230, 237, 245)",
+  "tag": "div.wb-band"
+ },
+ "tabs__05": {
+  "element": "tabs",
+  "place": "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": "nav.spaces",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__08": {
+  "element": "views",
+  "place": "old job page › Data",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": ".views",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "space__20": {
+  "element": "space",
+  "place": "old job page › Data",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "table__02": {
+  "element": "table",
+  "place": "old job page › Data › preparation",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": "table.steptable|14px|9px|0px 0px|1px solid",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data › preparation"
+  ],
+  "font": "11px 700",
+  "radius": "0px",
+  "padding": "8px 11px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "table.steptable"
+ },
+ "cards__05": {
+  "element": "cards",
+  "place": "old job page › Data › preparation",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": "dl.brief|15px|0px|0px 0px|0px none",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data › preparation",
+   "old job page › Data › contract",
+   "old job page › Data › embedding"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "dl.brief"
+ },
+ "runs__04": {
+  "element": "runs",
+  "place": "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": "section.runs-panel",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__05": {
+  "element": "header",
+  "place": "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=data&view=preparation",
+  "selector": "h1.pagetitle|.wb-band",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "the labeling job page (/_board/labeling: Data · Labeling · Quality · Delivery)"
+  ],
+  "font": "18px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1.pagetitle"
+ },
+ "views__09": {
+  "element": "views",
+  "place": "old job page › Labeling",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=labeling&view=definition",
+  "selector": ".views",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "space__21": {
+  "element": "space",
+  "place": "old job page › Labeling",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=labeling&view=definition",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "views__10": {
+  "element": "views",
+  "place": "old job page › Quality",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=quality&view=test",
+  "selector": ".views",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Quality"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "space__22": {
+  "element": "space",
+  "place": "old job page › Quality",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=quality&view=test",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Quality"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "views__11": {
+  "element": "views",
+  "place": "old job page › Delivery",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=delivery&view=handoff",
+  "selector": ".views",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "space__23": {
+  "element": "space",
+  "place": "old job page › Delivery",
+  "url": "/_board/labeling?path=/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/board.md&file=j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&page=/_board/page%3Fpath%3D/examples-6-labeling/Project-Labeling-SafeResponse/tasks/b61_response_safety/j01_building_corpus/t01_dices350_labeling/t01_dices350_labeling.md&space=delivery&view=handoff",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "item__01": {
+  "element": "item",
+  "place": "Task › Work Details › Rounds: the job's status, ↗ out",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Rounds: the job's status, ↗ out"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "item__02": {
+  "element": "item",
+  "place": "Task › Description › Contract",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Description&sub=Contract",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description › Contract"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "item__03": {
+  "element": "item",
+  "place": "Block › Work Details › Labeling: the job as one row",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Labeling: the job as one row"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "item__04": {
+  "element": "item",
+  "place": "old job page › Labeling › Rounds",
+  "url": "old-job#labeling/rounds",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling › Rounds"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "item__05": {
+  "element": "item",
+  "place": "old job page › Data › Contract",
+  "url": "old-job#data/contract",
+  "selector": ".split",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data › Contract"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "status__01": {
+  "element": "status",
+  "place": "Block › Work Details › Labeling (status table, open ↗)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Labeling (status table, open ↗)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "status__02": {
+  "element": "status",
+  "place": "Task › Work Details › Preparation (facts, open in the Labeling workbench ↗)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Preparation",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Preparation (facts, open in the Labeling workbench ↗)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "status__03": {
+  "element": "status",
+  "place": "Block › Work Details › Labeling (b62)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb62_depression_symptoms&space=Work+Details&sub=Labeling",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details › Labeling (b62)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "status__04": {
+  "element": "status",
+  "place": "old board page › Jobs: one card per job",
+  "url": "old-board",
+  "selector": ".space-main",
+  "old": "old page: the labeling theme draws on the frame now; its Jobs list is Block › Work Details › Labeling",
+  "cut": false,
+  "seen": [
+   "old board page › Jobs: one card per job"
+  ],
+  "font": "15px 400",
+  "radius": "6px",
+  "padding": "2px 6px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.rec"
+ },
+ "schema__01": {
+  "element": "schema",
+  "place": "Block › Description › Schema",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Description&sub=Schema",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Description › Schema"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "schema__02": {
+  "element": "schema",
+  "place": "Block › Description › Schema (b62)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb62_depression_symptoms&space=Description&sub=Schema",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Description › Schema (b62)"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "schema__03": {
+  "element": "schema",
+  "place": "Job › Description (the face; no schema here)",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description (the face; no schema here)"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "definition__01": {
+  "element": "definition",
+  "place": "Task › Work Details › Definition",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Definition",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Definition"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "definition__02": {
+  "element": "definition",
+  "place": "old job page › Labeling › Definition",
+  "url": "old-job#labeling/definition",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling › Definition"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "rounds__01": {
+  "element": "rounds",
+  "place": "Task › Work Details › Rounds",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Rounds"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "rounds__02": {
+  "element": "rounds",
+  "place": "old job page › Labeling › Rounds",
+  "url": "old-job#labeling/rounds",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling › Rounds"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "rounds__03": {
+  "element": "rounds",
+  "place": "old job page › Labeling › Guideline",
+  "url": "old-job#labeling/guideline",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Labeling › Guideline"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "prep__01": {
+  "element": "prep",
+  "place": "Task › Work Details › Preparation",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Preparation",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Preparation"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "prep__02": {
+  "element": "prep",
+  "place": "Task › Work Details › Embedding",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Embedding",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Embedding"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "prep__03": {
+  "element": "prep",
+  "place": "old job page › Data › Preparation",
+  "url": "old-job#data/preparation",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data › Preparation"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "prep__04": {
+  "element": "prep",
+  "place": "old job page › Data › Embedding",
+  "url": "old-job#data/embedding",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Data › Embedding"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "quality__01": {
+  "element": "quality",
+  "place": "Task › Work Details › Test",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Test",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Test"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "quality__02": {
+  "element": "quality",
+  "place": "Task › Delivery › Handoff",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Delivery&sub=Handoff",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery › Handoff"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "quality__03": {
+  "element": "quality",
+  "place": "Task › Audience Report › Report",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Audience+Report&sub=Report",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report › Report"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "quality__04": {
+  "element": "quality",
+  "place": "old job page › Quality › Test",
+  "url": "old-job#quality/test",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Quality › Test"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "quality__05": {
+  "element": "quality",
+  "place": "old job page › Quality › Audit",
+  "url": "old-job#quality/audit",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Quality › Audit"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "quality__06": {
+  "element": "quality",
+  "place": "old job page › Delivery › Handoff",
+  "url": "old-job#delivery/handoff",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Delivery › Handoff"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "quality__07": {
+  "element": "quality",
+  "place": "old job page › Delivery › Final labels",
+  "url": "old-job#delivery/final",
+  "selector": ".space-main",
+  "old": "old page: the frame's Task shows the job's status and links here; still the one write door, so it retires last",
+  "cut": false,
+  "seen": [
+   "old job page › Delivery › Final labels"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "proposed__tabs": {
+  "element": "tabs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "proposed__views": {
+  "element": "views",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.tab"
+ },
+ "proposed__report": {
+  "element": "report",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Audience+Report",
+  "selector": ".q-head-row|.q-row:not(.q-head-row)",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "proposed__space": {
+  "element": "space",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": ".split",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__table": {
+  "element": "table",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": "table.wf-table",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__cards": {
+  "element": "cards",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "proposed__runs": {
+  "element": "runs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "proposed__header": {
+  "element": "header",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "proposed__item": {
+  "element": "item",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Work+Details&sub=Rounds",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__status": {
+  "element": "status",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Work+Details&sub=Labeling",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__schema": {
+  "element": "schema",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety&space=Description&sub=Schema",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "proposed__definition": {
+  "element": "definition",
+  "place": "proposed",
+  "url": "old-job#labeling/definition",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "proposed__rounds": {
+  "element": "rounds",
+  "place": "proposed",
+  "url": "old-job#labeling/rounds",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.chip"
+ },
+ "proposed__prep": {
+  "element": "prep",
+  "place": "proposed",
+  "url": "old-job#data/preparation",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.chip"
+ },
+ "proposed__quality": {
+  "element": "quality",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-6-labeling%2FProject-Labeling-SafeResponse%2Ftasks%2Fb61_response_safety%2Fj01_building_corpus%2Ft01_dices350_labeling&space=Delivery&sub=Handoff",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "_buttons": {
+  "run-face-b61": {
+   "op": "",
+   "doing": "update the description",
+   "places": [
+    "Block › Description › Scope",
+    "Block › Description › Schema"
+   ]
+  },
+  "run-draw-<sNN>": {
+   "op": "",
+   "doing": "add a topic · redraw it · save this session, each a pass",
+   "places": [
+    "Block › Idea Studio",
+    "Job › Idea Studio",
+    "Task › Idea Studio",
+    "Block › Idea Studio (Block · b62 (a second labeling Block))",
+    "Task › Idea Studio (Task · b62's labeling job)"
+   ]
+  },
+  "run-ask-<qNN>": {
+   "op": "",
+   "doing": "ask a Question",
+   "places": [
+    "Block › Audience Report",
+    "Job › Audience Report",
+    "Task › Audience Report › Report",
+    "Task › Audience Report › Draft",
+    "Block › Audience Report (Block · b62 (a second labeling Block))",
+    "Task › Audience Report › Report (Task · b62's labeling job)",
+    "Task › Audience Report › Draft (Task · b62's labeling job)"
+   ]
+  },
+  "run-report-<qNN>": {
+   "op": "",
+   "doing": "write the report",
+   "places": [
+    "Block › Audience Report",
+    "Job › Audience Report",
+    "Task › Audience Report › Report",
+    "Task › Audience Report › Draft",
+    "Block › Audience Report (Block · b62 (a second labeling Block))",
+    "Task › Audience Report › Report (Task · b62's labeling job)",
+    "Task › Audience Report › Draft (Task · b62's labeling job)"
+   ]
+  },
+  "run-figures-<qNN>": {
+   "op": "",
+   "doing": "rebuild the report drawing",
+   "places": [
+    "Block › Audience Report",
+    "Job › Audience Report",
+    "Task › Audience Report › Report",
+    "Task › Audience Report › Draft",
+    "Block › Audience Report (Block · b62 (a second labeling Block))",
+    "Task › Audience Report › Report (Task · b62's labeling job)",
+    "Task › Audience Report › Draft (Task · b62's labeling job)"
+   ]
+  },
+  "run-check-<qNN>": {
+   "op": "",
+   "doing": "check a report",
+   "places": [
+    "Block › Audience Report",
+    "Job › Audience Report",
+    "Task › Audience Report › Report",
+    "Task › Audience Report › Draft",
+    "Block › Audience Report (Block · b62 (a second labeling Block))",
+    "Task › Audience Report › Report (Task · b62's labeling job)",
+    "Task › Audience Report › Draft (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-corpus-<corpus>": {
+   "op": "",
+   "doing": "Prepare a corpus",
+   "places": [
+    "Block › Work Details › Jobs",
+    "Block › Work Details › Labeling",
+    "Block › Work Details › Jobs (Block · b62 (a second labeling Block))",
+    "Block › Work Details › Labeling (Block · b62 (a second labeling Block))"
+   ]
+  },
+  "run-labeling-open-<job>": {
+   "op": "",
+   "doing": "Open a labeling job",
+   "places": [
+    "Block › Work Details › Jobs",
+    "Block › Work Details › Labeling",
+    "Block › Work Details › Jobs (Block · b62 (a second labeling Block))",
+    "Block › Work Details › Labeling (Block · b62 (a second labeling Block))"
+   ]
+  },
+  "run-<type>-<target>": {
+   "op": "",
+   "doing": "start a Run (a work Task's hard Runs: rNN_<slug>)",
+   "places": [
+    "Block › Runs",
+    "Job › Runs",
+    "Task › Runs › All",
+    "Task › Runs › Page Runs",
+    "Block › Runs (Block · b62 (a second labeling Block))",
+    "Task › Runs › All (Task · b62's labeling job)",
+    "Task › Runs › Page Runs (Task · b62's labeling job)"
+   ]
+  },
+  "run-delivery-b61": {
+   "op": "",
+   "doing": "build the delivery",
+   "places": [
+    "Block › Delivery"
+   ]
+  },
+  "run-add-<tNN>": {
+   "op": "",
+   "doing": "add a Task",
+   "places": [
+    "Job › Work Details"
+   ]
+  },
+  "run-delivery-j01": {
+   "op": "",
+   "doing": "build the delivery",
+   "places": [
+    "Job › Delivery"
+   ]
+  },
+  "run-face-t01": {
+   "op": "",
+   "doing": "update the description",
+   "places": [
+    "Task › Description › Scope",
+    "Task › Description › Folder",
+    "Task › Description › Scope (Task · b62's labeling job)",
+    "Task › Description › Folder (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-contract-<job>": {
+   "op": "",
+   "doing": "Contract",
+   "places": [
+    "Task › Description › Contract",
+    "Task › Description › Contract (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-preparation-<job>": {
+   "op": "",
+   "doing": "Preparation",
+   "places": [
+    "Task › Work Details › Preparation",
+    "Task › Work Details › Evidence",
+    "Task › Work Details › Value",
+    "Task › Work Details › Preparation (Task · b62's labeling job)",
+    "Task › Work Details › Evidence (Task · b62's labeling job)",
+    "Task › Work Details › Value (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-embedding-<job>": {
+   "op": "",
+   "doing": "Embedding",
+   "places": [
+    "Task › Work Details › Embedding",
+    "Task › Work Details › Embedding (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-definition-<job>": {
+   "op": "",
+   "doing": "Definition",
+   "places": [
+    "Task › Work Details › Definition",
+    "Task › Work Details › Definition (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-round-<NN>": {
+   "op": "",
+   "doing": "Rounds",
+   "places": [
+    "Task › Work Details › Rounds",
+    "Task › Work Details › Rounds (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-guideline-<job>": {
+   "op": "",
+   "doing": "Guideline",
+   "places": [
+    "Task › Work Details › Guideline",
+    "Task › Work Details › Guideline (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-test-<job>": {
+   "op": "",
+   "doing": "Test",
+   "places": [
+    "Task › Work Details › Test",
+    "Task › Work Details › Test (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-evaluation-<job>": {
+   "op": "",
+   "doing": "Evaluation",
+   "places": [
+    "Task › Work Details › Evaluation",
+    "Task › Work Details › Evaluation (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-audit-<job>": {
+   "op": "",
+   "doing": "Audit",
+   "places": [
+    "Task › Work Details › Audit",
+    "Task › Work Details › Audit (Task · b62's labeling job)"
+   ]
+  },
+  "run-delivery-t01": {
+   "op": "",
+   "doing": "build the delivery",
+   "places": [
+    "Task › Delivery › Files",
+    "Task › Delivery › Lanes",
+    "Task › Delivery › Files (Task · b62's labeling job)",
+    "Task › Delivery › Lanes (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-handoff-<job>": {
+   "op": "",
+   "doing": "Handoff",
+   "places": [
+    "Task › Delivery › Handoff",
+    "Task › Delivery › Handoff (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-scan-<job>": {
+   "op": "",
+   "doing": "Scan",
+   "places": [
+    "Task › Delivery › Scan",
+    "Task › Delivery › Scan (Task · b62's labeling job)"
+   ]
+  },
+  "run-labeling-final-<job>": {
+   "op": "",
+   "doing": "Final labels",
+   "places": [
+    "Task › Delivery › Final labels",
+    "Task › Delivery › Final labels (Task · b62's labeling job)"
+   ]
+  },
+  "run-face-b62": {
+   "op": "",
+   "doing": "update the description",
+   "places": [
+    "Block › Description › Scope (Block · b62 (a second labeling Block))",
+    "Block › Description › Schema (Block · b62 (a second labeling Block))"
+   ]
+  },
+  "run-delivery-b62": {
+   "op": "",
+   "doing": "build the delivery",
+   "places": [
+    "Block › Delivery (Block · b62 (a second labeling Block))"
+   ]
+  },
+  "Copy setup request": {
+   "op": "",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Normalize source": {
+   "op": "source-normalize",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Choose labeling unit": {
+   "op": "unit-recipe",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Create candidate items": {
+   "op": "unit-materialize",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Check candidate items": {
+   "op": "unit-check",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Reserve source groups": {
+   "op": "initial-group-reserve",
+   "doing": "",
+   "places": [
+    "old job page › Data › preparation"
+   ]
+  },
+  "Set up the job": {
+   "op": "corpus-contract",
+   "doing": "",
+   "places": [
+    "old job page › Data › contract"
+   ]
+  },
+  "Build a map": {
+   "op": "embedding-build",
+   "doing": "",
+   "places": [
+    "old job page › Data › embedding"
+   ]
+  },
+  "Discuss the label meanings": {
+   "op": "definition-discussion",
+   "doing": "",
+   "places": [
+    "old job page › Labeling › definition"
+   ]
+  },
+  "Draw one round": {
+   "op": "round-prepare",
+   "doing": "",
+   "places": [
+    "old job page › Labeling › rounds"
+   ]
+  },
+  "You label one round": {
+   "op": "human-calibration",
+   "doing": "",
+   "places": [
+    "old job page › Labeling › rounds"
+   ]
+  }
+ },
+ "_links": {
+  "the board page's job link": 200,
+  "the frame's 'open in the Labeling workbench ↗'": 200,
+  "the same link with path= starting '/'": 200
+ },
+ "_missing": []
+}

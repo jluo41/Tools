@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>One question, four Jobs: what a naive pipeline would have shipped</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">One question, four Jobs: what a naive pipeline would have</text>
+<text x="60.0" y="128.8" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">shipped</text>
+<text x="60.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">K01 asks whether &lt;arm X&gt; beats &lt;arm Y&gt; on &lt;outcome&gt;, split by &lt;A&gt; and &lt;B&gt;.</text>
+<text x="60.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Illustrative only: placeholders, no data.</text>
+<rect x="60.0" y="270.6" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="299.0" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Job</text>
+<text x="306.0" y="299.0" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">moved</text>
+<text x="538.0" y="299.0" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;A&gt; vs &lt;B&gt;</text>
+<text x="770.0" y="299.0" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">a naive pipeline</text>
+<text x="1002.0" y="299.0" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">this design</text>
+<text x="74.0" y="345.2" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">j01 p1 × v1</text>
+<text x="306.0" y="345.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">start</text>
+<text x="538.0" y="345.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">SPLIT: larger in &lt;A&gt;</text>
+<text x="770.0" y="345.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">ships &quot;works better in</text>
+<text x="770.0" y="369.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;A&gt;&quot;</text>
+<text x="1002.0" y="345.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a K claim: W waits for</text>
+<text x="1002.0" y="369.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">T8</text>
+<line x1="60.0" y1="392.0" x2="1220.0" y2="392.0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="420.6" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">j02 p1 × v2</text>
+<text x="306.0" y="420.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">data</text>
+<text x="538.0" y="420.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">POOL</text>
+<text x="770.0" y="420.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the effect</text>
+<text x="770.0" y="445.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">&quot;disappears&quot;</text>
+<text x="1002.0" y="420.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">changed; cause: data</text>
+<line x1="60.0" y1="467.4" x2="1220.0" y2="467.4" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="496.0" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">j03 p2 × v2</text>
+<text x="306.0" y="496.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">code</text>
+<text x="538.0" y="496.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;B&gt; below power</text>
+<text x="770.0" y="496.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">old and new mixed</text>
+<text x="1002.0" y="496.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;B&gt; refused, and shown</text>
+<line x1="60.0" y1="518.1" x2="1220.0" y2="518.1" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="546.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">j04 p2 × v3</text>
+<text x="306.0" y="546.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">data</text>
+<text x="538.0" y="546.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">POOL</text>
+<text x="770.0" y="546.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<text x="1002.0" y="546.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">held: the split was</text>
+<text x="1002.0" y="571.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">noise</text>
+<line x1="60.0" y1="593.5" x2="1220.0" y2="593.5" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="270.6" x2="292.0" y2="593.5" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="524.0" y1="270.6" x2="524.0" y2="593.5" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="756.0" y1="270.6" x2="756.0" y2="593.5" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="988.0" y1="270.6" x2="988.0" y2="593.5" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="270.6" width="1160.0" height="322.9" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

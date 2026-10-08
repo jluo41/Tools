@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>A question is planned, agreed and signed before any data is read</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">A question is planned, agreed and signed before any data</text>
+<text x="60.0" y="128.8" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">is read</text>
+<text x="60.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The ask, the plan, the cuts, the power floors and the compare rule are fixed in a release.</text>
+<text x="60.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A different agent agrees the plan (T0 – T3), and a person signs the release.</text>
+<rect x="60.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="142.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">ask</text>
+<text x="142.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">a person signs it</text>
+<polyline points="229.0,475.3 255.0,475.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="245.0,481.3 255.0,475.3 245.0,469.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="259.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="341.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">plan</text>
+<text x="341.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">T0 covered · T1</text>
+<text x="341.5" y="510.4" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">specified</text>
+<polyline points="428.0,475.3 454.0,475.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="444.0,481.3 454.0,475.3 444.0,469.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="458.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="540.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">agree</text>
+<text x="540.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">another agent ·</text>
+<text x="540.5" y="510.4" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">T2 · T3 powered</text>
+<polyline points="627.0,475.3 653.0,475.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="643.0,481.3 653.0,475.3 643.0,469.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="657.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="739.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">script</text>
+<text x="739.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">the code that</text>
+<text x="739.5" y="510.4" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">answers it</text>
+<polyline points="826.0,475.3 852.0,475.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="842.0,481.3 852.0,475.3 842.0,469.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="856.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="938.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">review</text>
+<text x="938.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">another agent</text>
+<polyline points="1025.0,475.3 1051.0,475.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="1041.0,481.3 1051.0,475.3 1041.0,469.3" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="1055.0" y="409.6" width="165.0" height="131.4" rx="3" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1137.5" y="449.6" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">release p2</text>
+<text x="1137.5" y="487.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">signed; used by</text>
+<text x="1137.5" y="510.4" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">path and hash</text>
+</svg>

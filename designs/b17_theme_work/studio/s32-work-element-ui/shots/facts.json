@@ -1,0 +1,1917 @@
+{
+ "tabs__01": {
+  "element": "tabs",
+  "place": "Block · a work Block (b18)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Description",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · a work Block (b18)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "space__01": {
+  "element": "space",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "table__01": {
+  "element": "table",
+  "place": "Block › Description",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Description",
+  "selector": "table.wf-table|14px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Description",
+   "Block › Work Details",
+   "Job › Work Details",
+   "Task › Description › Scope",
+   "Task › Work Details › Code",
+   "Task › Runs › All",
+   "Task › Runs › run",
+   "Task › Description › Scope (Task · one with draft/ and workflow/ (b00 › j51 › t01))",
+   "Task › Work Details › Code (Task · one with draft/ and workflow/ (b00 › j51 › t01))",
+   "Task › Work Details › Notebooks (Task · one with draft/ and workflow/ (b00 › j51 › t01))",
+   "Task › Runs › All (Task · one with draft/ and workflow/ (b00 › j51 › t01))",
+   "Task › Runs › run (Task · one with draft/ and workflow/ (b00 › j51 › t01))"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "table.wf-table"
+ },
+ "space__02": {
+  "element": "space",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__01": {
+  "element": "cards",
+  "place": "Block › Idea Studio",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Idea+Studio",
+  "selector": "details.topic|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.topic"
+ },
+ "report__01": {
+  "element": "report",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": "div.q-row|15px|10px|0px 0px|1px solid",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "space__03": {
+  "element": "space",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__02": {
+  "element": "cards",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": "details.q-more|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.q-more"
+ },
+ "runs__01": {
+  "element": "runs",
+  "place": "Block · a work Block (b18)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · a work Block (b18)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__01": {
+  "element": "tags",
+  "place": "Block › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": "p.rp-tags|12.5px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Audience Report"
+  ],
+  "font": "12.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.rp-tags"
+ },
+ "header__01": {
+  "element": "header",
+  "place": "Block · a work Block (b18)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block · a work Block (b18)"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "space__04": {
+  "element": "space",
+  "place": "Block › Work Details",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Work+Details",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__05": {
+  "element": "space",
+  "place": "Block › Runs",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Runs"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__06": {
+  "element": "space",
+  "place": "Block › Delivery",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "tabs__02": {
+  "element": "tabs",
+  "place": "Job · j02",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Description",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j02"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "space__07": {
+  "element": "space",
+  "place": "Job › Description",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__08": {
+  "element": "space",
+  "place": "Job › Idea Studio",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "report__02": {
+  "element": "report",
+  "place": "Job › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Audience+Report",
+  "selector": "p.mut|13px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.mut"
+ },
+ "space__09": {
+  "element": "space",
+  "place": "Job › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Audience+Report",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Audience Report"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "runs__02": {
+  "element": "runs",
+  "place": "Job · j02",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Audience+Report",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j02"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__02": {
+  "element": "header",
+  "place": "Job · j02",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Audience+Report",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job · j02"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "space__10": {
+  "element": "space",
+  "place": "Job › Work Details",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Work+Details",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__11": {
+  "element": "space",
+  "place": "Job › Runs",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Runs"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "space__12": {
+  "element": "space",
+  "place": "Job › Delivery",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Delivery",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "tabs__03": {
+  "element": "tabs",
+  "place": "Task · j02 › t01",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description&sub=Scope",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · j02 › t01"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__01": {
+  "element": "views",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description&sub=Scope",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__13": {
+  "element": "space",
+  "place": "Task › Description",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description&sub=Scope",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__14": {
+  "element": "space",
+  "place": "Task › Idea Studio",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Idea+Studio",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Idea Studio"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "views__02": {
+  "element": "views",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Draft",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.tab"
+ },
+ "report__03": {
+  "element": "report",
+  "place": "Task › Audience Report › Draft",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Draft",
+  "selector": "p.|15px|0px|0px 0px|0px none",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report › Draft",
+   "Task › Audience Report › Report",
+   "Task › Audience Report › Draft (Task · one with draft/ and workflow/ (b00 › j51 › t01))",
+   "Task › Audience Report › Report (Task · one with draft/ and workflow/ (b00 › j51 › t01))"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p."
+ },
+ "space__15": {
+  "element": "space",
+  "place": "Task › Audience Report",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Draft",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "runs__03": {
+  "element": "runs",
+  "place": "Task · j02 › t01",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Draft",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · j02 › t01"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__03": {
+  "element": "header",
+  "place": "Task · j02 › t01",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Draft",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task · j02 › t01"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "views__03": {
+  "element": "views",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details&sub=Code",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__16": {
+  "element": "space",
+  "place": "Task › Work Details",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details&sub=Code",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "views__04": {
+  "element": "views",
+  "place": "Task › Runs",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Runs&sub=All",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Runs"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__17": {
+  "element": "space",
+  "place": "Task › Runs",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Runs&sub=All",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Runs"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "views__05": {
+  "element": "views",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Delivery&sub=Files",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "space__18": {
+  "element": "space",
+  "place": "Task › Delivery",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Delivery&sub=Files",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Delivery"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "tabs__04": {
+  "element": "tabs",
+  "place": "the old work Block page (/_board/work-board)",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "nav.spaces",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board)"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__06": {
+  "element": "views",
+  "place": "the old work Block page (/_board/work-board) › scope",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .wtabs",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__19": {
+  "element": "space",
+  "place": "the old work Block page (/_board/work-board) › scope",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "table__02": {
+  "element": "table",
+  "place": "the old work Block page (/_board/work-board) › scope › Block",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "table.rows|16px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope › Block"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "table.rows"
+ },
+ "runs__04": {
+  "element": "runs",
+  "place": "the old work Block page (/_board/work-board)",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on section.runs-panel",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board)"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__02": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › scope › Block",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "span.idtag|13px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope › Block",
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.idtag"
+ },
+ "header__04": {
+  "element": "header",
+  "place": "the old work Block page (/_board/work-board)",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "header",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board)"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "table__03": {
+  "element": "table",
+  "place": "the old work Block page (/_board/work-board) › scope › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "table.|16px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope › Questions",
+   "the old work Block page (/_board/work-board) › check › Runs",
+   "the old work Block page (/_board/work-board) › check › Tasks"
+  ],
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "table."
+ },
+ "cards__03": {
+  "element": "cards",
+  "place": "the old work Block page (/_board/work-board) › scope › Resources",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "details.draw|16px|8px|0px 0px|1px solid",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › scope › Resources",
+   "the old work Block page (/_board/work-board) › scope › RoadMap Draw"
+  ],
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "details.draw"
+ },
+ "views__07": {
+  "element": "views",
+  "place": "the old work Block page (/_board/work-board) › task",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .wtabs",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "report__04": {
+  "element": "report",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "div.hl-row|16px|0px|10px 10px|1px solid",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.hl-row"
+ },
+ "space__20": {
+  "element": "space",
+  "place": "the old work Block page (/_board/work-board) › task",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": true,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "cards__04": {
+  "element": "cards",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "details.bj-tr|13.5px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.bj-tr"
+ },
+ "cards__05": {
+  "element": "cards",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "details.wk|16px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.wk"
+ },
+ "cards__06": {
+  "element": "cards",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "details.q-more|13.5px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "details.q-more"
+ },
+ "tags__03": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "span.kind|12px|999px|0px 8px|1px solid",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "12px 650",
+  "radius": "999px",
+  "padding": "0px 8px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.kind"
+ },
+ "tags__04": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "p.rp-tags|12.5px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "12.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.rp-tags"
+ },
+ "tags__05": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › task › Questions",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "p.rp-label|16px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › task › Questions"
+  ],
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.rp-label"
+ },
+ "views__08": {
+  "element": "views",
+  "place": "the old work Block page (/_board/work-board) › check",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .wtabs",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › check"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__21": {
+  "element": "space",
+  "place": "the old work Block page (/_board/work-board) › check",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": true,
+  "seen": [
+   "the old work Block page (/_board/work-board) › check"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "tags__06": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › check › Runs",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "a.idtag|13px|0px|0px 0px|0px none",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › check › Runs",
+   "the old work Block page (/_board/work-board) › check › Tasks"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.idtag"
+ },
+ "tags__07": {
+  "element": "tags",
+  "place": "the old work Block page (/_board/work-board) › check › Runs",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "span.pill|12px|999px|1px 8px|1px solid",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › check › Runs",
+   "the old work Block page (/_board/work-board) › check › Reports"
+  ],
+  "font": "12px 400",
+  "radius": "999px",
+  "padding": "1px 8px",
+  "border": "rgb(58, 125, 68)",
+  "fill": "rgb(229, 241, 231)",
+  "tag": "span.pill"
+ },
+ "cards__07": {
+  "element": "cards",
+  "place": "the old work Block page (/_board/work-board) › check › Reports",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": "article.card|16px|8px|10px 14px|1px solid",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › check › Reports",
+   "the old work Block page (/_board/work-board) › delivery › Reports"
+  ],
+  "font": "15px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "article.card"
+ },
+ "views__09": {
+  "element": "views",
+  "place": "the old work Block page (/_board/work-board) › delivery",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .wtabs",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page (/_board/work-board) › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__22": {
+  "element": "space",
+  "place": "the old work Block page (/_board/work-board) › delivery",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": true,
+  "seen": [
+   "the old work Block page (/_board/work-board) › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "header__05": {
+  "element": "header",
+  "place": "one Run on the old work Block page (?task=…&run=…), from a Run id on a Question row",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md&task=b18j01t01&run=b18.j01.t01.r02",
+  "selector": "h1,h2,body",
+  "old": "old item page: a Run's result opens outside the frame, not in its pop-out",
+  "cut": false,
+  "seen": [
+   "one Run on the old work Block page (?task=…&run=…), from a Run id on a Question row"
+  ],
+  "font": "20px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "tabs__05": {
+  "element": "tabs",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": "div.spaces",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__10": {
+  "element": "views",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".draft-mode-switcher,.space-tabs",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "space__23": {
+  "element": "space",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".space-main",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "cards__08": {
+  "element": "cards",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": "div.card|15px|10px|10px 14px|1px solid",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › draft"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "10px 14px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "div.card"
+ },
+ "runs__05": {
+  "element": "runs",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": "section.runs-panel",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link"
+  ],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "header__06": {
+  "element": "header",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": "h1|.wb-band",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link"
+  ],
+  "font": "18px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "views__11": {
+  "element": "views",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".draft-mode-switcher,.space-tabs",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "space__24": {
+  "element": "space",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".space-main",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.space-tab"
+ },
+ "tags__08": {
+  "element": "tags",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": "span.space-count|16px|0px|0px 0px|0px none",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › evidence",
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › delivery"
+  ],
+  "font": "16px 500",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "span.space-count"
+ },
+ "views__12": {
+  "element": "views",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › delivery",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".draft-mode-switcher,.space-tabs",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.space-tab"
+ },
+ "space__25": {
+  "element": "space",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link › delivery",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".space-main",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link › delivery"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.space-tab"
+ },
+ "item__01": {
+  "element": "item",
+  "place": "Task › Description › Scope: a Task opens as the Task tab",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description › Scope: a Task opens as the Task tab"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__02": {
+  "element": "item",
+  "place": "Task › Runs › All: its hard Runs, a row each (no pop-out)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Runs › All: its hard Runs, a row each (no pop-out)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "item__03": {
+  "element": "item",
+  "place": "Block › Audience Report: a report's ↗ opens the Page reader in the pop-out",
+  "url": "/_board/page?path=%2Fexamples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Freports%2Fq03_plan_menu_size%2Fq03_plan_menu_size.md",
+  "selector": "main,body",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Block › Audience Report: a report's ↗ opens the Page reader in the pop-out"
+  ],
+  "font": "11.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(124, 124, 120)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a.src"
+ },
+ "item__04": {
+  "element": "item",
+  "place": "one Run on the old work Block page (?task=…&run=…), from a Run id on a Question row",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md&task=b18j01t01&run=b18.j01.t01.r02",
+  "selector": "main,body",
+  "old": "old item page: a Run's result opens outside the frame, not in its pop-out",
+  "cut": true,
+  "seen": [
+   "one Run on the old work Block page (?task=…&run=…), from a Run id on a Question row"
+  ],
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__05": {
+  "element": "item",
+  "place": "a Task's Page workbench page (/_board/draft), the old page's Task Page link",
+  "url": "/_board/draft?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size%2Ft01_design_size.md&file=j02_smart_design%2Ft01_design_size%2Ft01_design_size.md",
+  "selector": ".space-main,main,body",
+  "old": "old page: a Task's Page views are the frame's Task Spaces now; this page retires",
+  "cut": false,
+  "seen": [
+   "a Task's Page workbench page (/_board/draft), the old page's Task Page link"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "own__01": {
+  "element": "own",
+  "place": "Block › Work Details: the Jobs (Job · title · Tasks)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Work+Details",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Block › Work Details: the Jobs (Job · title · Tasks)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "own__02": {
+  "element": "own",
+  "place": "Job › Work Details: the Tasks (Task · title · Runs)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Work+Details",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Work Details: the Tasks (Task · title · Runs)"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "own__03": {
+  "element": "own",
+  "place": "Job › Description: a Job with no face file",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Job › Description: a Job with no face file"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__04": {
+  "element": "own",
+  "place": "Task › Description › Plan: the face's Plan section",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description&sub=Plan",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Description › Plan: the face's Plan section"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__05": {
+  "element": "own",
+  "place": "Task › Audience Report › Report: the report is its face",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Audience+Report&sub=Report",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report › Report: the report is its face"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__06": {
+  "element": "own",
+  "place": "Task › Audience Report › Draft: the Page's Draft view, embedded (not draft/)",
+  "url": "/_board/workbench?path=examples-1-data%2FProject-Data-DrFirst-Raw2AIData%2Ftasks%2Fb00_A_sms_rawdata%2Fj51_smsr1all_v250218_raw%2Ft01_load_cohort_parquet&space=Audience+Report&sub=Draft",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Audience Report › Draft: the Page's Draft view, embedded (not draft/)"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__07": {
+  "element": "own",
+  "place": "Task › Work Details › Code: scripts/ · workflow/ · tests/",
+  "url": "/_board/workbench?path=examples-1-data%2FProject-Data-DrFirst-Raw2AIData%2Ftasks%2Fb00_A_sms_rawdata%2Fj51_smsr1all_v250218_raw%2Ft01_load_cohort_parquet&space=Work+Details&sub=Code",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Code: scripts/ · workflow/ · tests/"
+  ],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "own__08": {
+  "element": "own",
+  "place": "Task › Work Details › Review: CODE_REVIEW.md",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details&sub=Review",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Review: CODE_REVIEW.md"
+  ],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__09": {
+  "element": "own",
+  "place": "Task › Work Details › Notebooks (generated)",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details&sub=Notebooks",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [
+   "Task › Work Details › Notebooks (generated)"
+  ],
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "own__10": {
+  "element": "own",
+  "place": "Task › Work Details › Evidence: a Page view, embedded",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details&sub=Evidence",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Work Details › Evidence: a Page view, embedded"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__11": {
+  "element": "own",
+  "place": "Task › Runs › Page Runs: a Page view, embedded",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Runs&sub=Page+Runs",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Runs › Page Runs: a Page view, embedded"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__12": {
+  "element": "own",
+  "place": "Task › Delivery › Lanes: a Page view, embedded",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Delivery&sub=Lanes",
+  "selector": ".space-main",
+  "old": "",
+  "cut": true,
+  "seen": [
+   "Task › Delivery › Lanes: a Page view, embedded"
+  ],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "own__13": {
+  "element": "own",
+  "place": "the old work Block page › Task › Questions: Question │ Work │ Report with the Job → Task → Run tree",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": true,
+  "seen": [
+   "the old work Block page › Task › Questions: Question │ Work │ Report with the Job → Task → Run tree"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "own__14": {
+  "element": "own",
+  "place": "the old work Block page › Check › Tasks: Plan · Build · Run · Report per Task",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": false,
+  "seen": [
+   "the old work Block page › Check › Tasks: Plan · Build · Run · Report per Task"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "button.wtab"
+ },
+ "own__15": {
+  "element": "own",
+  "place": "the old work Block page › Check › Runs: every Run of the Block",
+  "url": "/_board/work-board?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fboard.md",
+  "selector": ".pane.on .space-main",
+  "old": "old page: the work theme draws on the frame now (work_theme.py); this page retires",
+  "cut": true,
+  "seen": [
+   "the old work Block page › Check › Runs: every Run of the Block"
+  ],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "proposed__tabs": {
+  "element": "tabs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description",
+  "selector": "nav.levels|nav.spaces",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "proposed__views": {
+  "element": "views",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Work+Details",
+  "selector": "nav.subs",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "proposed__report": {
+  "element": "report",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": ".q-head-row|.q-row:not(.q-head-row)",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "proposed__space": {
+  "element": "space",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Audience+Report",
+  "selector": ".split",
+  "old": "",
+  "cut": true,
+  "seen": [],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__table": {
+  "element": "table",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design&space=Work+Details",
+  "selector": "table.wf-table",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__cards": {
+  "element": "cards",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime&space=Idea+Studio",
+  "selector": ".space-main details",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__runs": {
+  "element": "runs",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Runs",
+  "selector": "section.runs-panel",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "proposed__header": {
+  "element": "header",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description",
+  "selector": "header",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "proposed__item": {
+  "element": "item",
+  "place": "proposed",
+  "url": "/_board/workbench?path=examples-3-model%2FProject-Algorithm-Design%2Ftasks%2Fb18_smart_dynamic_regime%2Fj02_smart_design%2Ft01_design_size&space=Description",
+  "selector": ".space-main",
+  "old": "",
+  "cut": false,
+  "seen": [],
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "_buttons": {
+  "run-face-b18": [
+   "the frame · Block › Description"
+  ],
+  "run-draw-<sNN>": [
+   "the frame · Block › Idea Studio",
+   "the frame · Job › Idea Studio",
+   "the frame · Task › Idea Studio"
+  ],
+  "run-ask-<qNN>": [
+   "the frame · Block › Audience Report",
+   "the frame · Job › Audience Report"
+  ],
+  "run-report-<qNN>": [
+   "the frame · Block › Audience Report",
+   "the frame · Job › Audience Report"
+  ],
+  "run-figures-<qNN>": [
+   "the frame · Block › Audience Report",
+   "the frame · Job › Audience Report"
+  ],
+  "run-check-<qNN>": [
+   "the frame · Block › Audience Report",
+   "the frame · Job › Audience Report"
+  ],
+  "run-add-<jNN>": [
+   "the frame · Block › Work Details"
+  ],
+  "run-<type>-<target>": [
+   "the frame · Block › Runs",
+   "the frame · Job › Runs"
+  ],
+  "run-delivery-b18": [
+   "the frame · Block › Delivery"
+  ],
+  "run-add-<tNN>": [
+   "the frame · Job › Work Details"
+  ],
+  "run-delivery-j02": [
+   "the frame · Job › Delivery"
+  ],
+  "run-plan-t01": [
+   "the frame · Task › Description"
+  ],
+  "run-write-t01": [
+   "the frame · Task › Audience Report"
+  ],
+  "run-build-t01": [
+   "the frame · Task › Work Details"
+  ],
+  "run-review-code-t01": [
+   "the frame · Task › Work Details"
+  ],
+  "rNN_<slug>": [
+   "the frame · Task › Runs"
+  ],
+  "run-check-t01": [
+   "the frame · Task › Runs"
+  ],
+  "run-delivery-t01": [
+   "the frame · Task › Delivery"
+  ],
+  "Ask a Question": [
+   "the old work Block page"
+  ],
+  "Review the questions": [
+   "the old work Block page"
+  ],
+  "Add a resource": [
+   "the old work Block page"
+  ],
+  "Draw the question map": [
+   "the old work Block page"
+  ],
+  "Draw": [
+   "the old work Block page"
+  ],
+  "Plan a Task": [
+   "the old work Block page"
+  ],
+  "Review the plan": [
+   "the old work Block page"
+  ],
+  "Build the Task": [
+   "the old work Block page"
+  ],
+  "Review the Task code": [
+   "the old work Block page"
+  ],
+  "Run a Task": [
+   "the old work Block page"
+  ],
+  "Report the Run": [
+   "the old work Block page"
+  ],
+  "Plan the report": [
+   "the old work Block page"
+  ],
+  "Write the report": [
+   "the old work Block page"
+  ],
+  "Check a Task": [
+   "the old work Block page"
+  ],
+  "Check a report": [
+   "the old work Block page"
+  ],
+  "Build the report": [
+   "the old work Block page"
+  ],
+  "Context": [
+   "a Task's Page workbench page"
+  ],
+  "Structure revise": [
+   "a Task's Page workbench page"
+  ],
+  "Evidence embed": [
+   "a Task's Page workbench page"
+  ],
+  "Bind / update citation": [
+   "a Task's Page workbench page"
+  ],
+  "Build": [
+   "a Task's Page workbench page"
+  ]
+ }
+}

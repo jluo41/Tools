@@ -1,17 +1,17 @@
 """📄 Paper · the Board-level Paper Workbench, live and storage-less.
 
-    GET /_board/paper?path=<board.md>&file=board.md[#<space>[/<tab>][/<view>]]
+    GET /_board/paper-board?path=<board.md>&file=board.md[#<space>[/<tab>][/<view>]]
 
 The Paper Workbench is the Board-altitude sibling of the 📃 Page workbench. Page shows
 one Page's plan, evidence and runs; this shows one paper Board's journey
-(haipipe-workbench-paper, JL 260916). It wears the shared workbench shell (servers/README.md
+(workbench-paper, JL 260916). It wears the shared workbench shell (servers/README.md
 "Adding a workbench", JL 261003): the title, a band (desk ·
 Story version · questions · Sections · build state), then the Space row with the shared
 Guide first, each Space's tabs, Views and content in one box, and the shared Runs panel
 folded to a strip on the right.
 
     Guide      Description · Method · RoadMap Draw · Related Paper, from the `paper`
-               entry of workbench-shared/guide_families.py
+               entry of workbench/guide_families.py
     Ideation   Story00-ideation: the Ideas (ranked) table, else the plan's `Idea <n>:`
                divisions · evidence items · the I3 admission
     Story      Spine · RoadMap Draw · High-level logic + Low-level work · Related Papers
@@ -37,11 +37,12 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from host_paths import SKILLS
-from urllib.parse import parse_qs, quote, urlparse
+from host_paths import skill_dir
+from urllib.parse import parse_qs, quote, urlencode, urlparse
 
 from src.outline_version import latest_outline, plan_dir, version_tag
 from src.plan_shape import iter_plan_bullets
+from src.themes import kind_of as theme_kind_of, theme_dirs
 
 _PAIRS_DIR = Path(os.environ.get("HAIPIPE_PAIRS_DIR",
                                  Path.home() / ".config" / "haipipe" / "pairs"))
@@ -59,7 +60,8 @@ def esc(s):
 def clean(cell):
     """Markdown cell → plain text: links to their label, no emphasis marks."""
     cell = _LINK_RE.sub(r"\1", cell or "")
-    cell = re.sub(r"[*_`]+", "", cell)
+    cell = re.sub(r"[*`]+", "", cell)
+    cell = re.sub(r"(?<!\w)_+([^_\n]+?)_+(?!\w)", r"\1", cell)   # _emphasis_ only: an id keeps its _ (t01_introduction)
     return re.sub(r"\s+", " ", cell).strip()
 
 
@@ -157,12 +159,101 @@ def board_url(path_param, rel):
 
 
 # ---------------------------------------------------------------- collectors
-SECTION_ROW = r"S-[\w-]+(?:\s*(?:\(.*\)|·.*))?"
+SECTION_ROW = r"(?:S-[\w-]+|t\d{2}_[\w-]+)(?:\s*(?:\(.*\)|·.*))?"      # S-<desk>-… or a version's tNN_<title>
 STORY_STEM = re.compile(r"^Story(?:[A-Z]|(?!00)\d{2})(?:\b|-)")
 
 
-def collect(board, path_param):
-    """Read everything the four Spaces show. Pure: no writes, no network."""
+# ── the Story on b03's shape (b16 Q04, JL 261007): no Story Page; studio topics and Questions ──────────
+# Ideation is studio/sNN-ideation/; each telling is studio/sNN-story-<telling>/ (its face keeps identity,
+# pitch, stakes and its roadmaps); each research question is a Board Question with reports/qNN_<question>/;
+# the Section Narrative and its compile order are the version face's ## Narrative. A Board in this shape is
+# read as a Story assembled from those homes, so every view reads it as it reads a Story Page.
+TELLING = re.compile(r"^s\d{2}-story-")
+IDEATION_TOPIC = re.compile(r"^s\d{2}-ideation$")
+_QBLOCK = re.compile(r"(?ms)^(####\s+[\d.]+\s*·\s*Question\b.*?)(?=^#{1,3} |\Z)")
+
+
+def _topic_face(topic):
+    face = topic / (topic.name + ".md")
+    return face if face.is_file() else None
+
+
+def _section(text, name):
+    """The body under `## <name>` up to the next `## ` heading, or ""."""
+    m = re.search(r"(?ms)^## +%s[^\n]*\n(.*?)(?=^## |\Z)" % re.escape(name), text or "")
+    return m.group(1).strip() if m else ""
+
+
+def _question_blocks_of(board, ids):
+    """The `#### N · Question …` blocks of the reports these Question ids name (board.md ## Questions)."""
+    reg = re.search(r"(?ms)^## Questions[ \t]*\n.*?```ya?ml\n(.*?)```", read(board / "board.md"))
+    try:
+        import yaml
+        rows = (yaml.safe_load(reg.group(1)) or {}).get("questions") or [] if reg else []
+    except Exception:
+        rows = []
+    out = []
+    for qid in ids:
+        r = next((x for x in rows if isinstance(x, dict) and str(x.get("id")) == qid), {})
+        rp = board / r["report"] if r.get("report") else None
+        if rp is None or not rp.is_file():
+            found = sorted(board.glob("reports/q%s_*/q%s_*.md" % (qid[1:].zfill(2), qid[1:].zfill(2))))
+            rp = found[0] if found else None
+        m = _QBLOCK.search(read(rp)) if rp else None
+        if m:
+            out.append(m.group(1).strip())
+    return out
+
+
+def _tells(version):
+    face = version / (version.name + ".md")
+    return Path(scalar(read(face), "tells").strip()).name if face.is_file() else ""
+
+
+def assembled_stories(board, version=None):
+    """[page-like dicts] for each telling topic, its text assembled as a Story: the face, then
+    `### 3 · Research Questions` from the reports it feeds, then `### 8 · Section Narrative` from the
+    version that tells it (`version`, else the newest whose face `tells:` names it)."""
+    out = []
+    for topic in sorted((board / "studio").glob("s[0-9][0-9]-story-*")) if (board / "studio").is_dir() else []:
+        face = _topic_face(topic)
+        if not topic.is_dir() or face is None:
+            continue
+        text = read(face)
+        feeds = re.search(r"\*\*Feeds:\*\*(.+?)(?:\n\s*\n|\Z)", text, re.S)       # b03's topic contract
+        ids = re.findall(r"\bQ\d+\b", scalar(text, "feeds")) + \
+            ["Q" + n for n in re.findall(r"\bq(\d\d)_", feeds.group(1) if feeds else "")]
+        blocks = _question_blocks_of(board, ids)
+        versions = [version] if version else sorted(board.glob("j[0-9][0-9]_v*/"), reverse=True)
+        narrative = next((_section(read(v / (v.name + ".md")), "Narrative") for v in versions
+                          if v is not None and _tells(v) == topic.name and _section(read(v / (v.name + ".md")), "Narrative")), "")
+        three = re.search(r"(?m)^### +3 +·[^\n]*\n", text)       # the face keeps §3's words: the blocks go back in
+        if blocks and three:
+            nxt = re.compile(r"(?m)^#{2,3} ").search(text, three.end())
+            at = nxt.start() if nxt else len(text)
+            text, blocks = text[:at].rstrip("\n") + "\n\n" + "\n\n".join(blocks) + "\n\n" + text[at:], []
+        extra = (("\n### 3 · Research Questions\n\n" + "\n\n".join(blocks) + "\n") if blocks else "") + \
+                (("\n### 8 · Section Narrative\n\n" + narrative + "\n") if narrative else "")
+        m = re.search(r"(?ms)^## Content[^\n]*\n.*?(?=^## |\Z)", text)
+        text = (text[:m.end()].rstrip("\n") + "\n" + extra + "\n" + text[m.end():]) if m else text + "\n## Content\n" + extra
+        out.append({"group": {"label": "Story", "folder": "studio", "stems": []}, "stem": topic.name,
+                    "rel": face.relative_to(board), "text": text})
+    return out
+
+
+def ideation_topic(board):
+    """The Ideation topic (studio/sNN-ideation/) read as the Ideation Page, or None."""
+    for topic in sorted((board / "studio").glob("s[0-9][0-9]-ideation")) if (board / "studio").is_dir() else []:
+        face = _topic_face(topic)
+        if face is not None:
+            return {"group": {"label": "Story", "folder": "studio", "stems": []}, "stem": topic.name,
+                    "rel": face.relative_to(board), "text": read(face)}
+    return None
+
+
+def collect(board, path_param, version=None):
+    """Read everything the four Spaces show. Pure: no writes, no network. `version` (a version Job's
+    folder) reads that version's Section Narrative on a Board where the Story is studio topics."""
     board = Path(board)
     text = read(board / "board.md")
     groups = board_pages(text)
@@ -172,12 +263,13 @@ def collect(board, path_param):
             rel = page_file(board, g["folder"], stem)
             pages.append({"group": g, "stem": stem, "rel": rel,
                           "text": read(board / rel) if rel else ""})
-    story00 = next((p for p in pages if p["stem"].startswith("Story00")), None)
+    story00 = next((p for p in pages if p["stem"].startswith("Story00")), None) or ideation_topic(board)
     # Story<Letter> is the current form; legacy numbered Stories (Story01-seed, Story02-roadmap,
-    # Story03-narrative-MISQ) stay readable per haipipe-paper-ideation, so they are Stories too
-    stories = [p for p in pages if STORY_STEM.match(p["stem"])]
-    sections = [p for p in pages if p["stem"].startswith("S-")]
-    rounds = [p for p in pages if p["stem"].startswith("RD")]
+    # Story03-narrative-MISQ) stay readable per haipipe-paper-ideation, so they are Stories too;
+    # with no Story Page, the telling topics are read as Stories (b16 Q04)
+    stories = [p for p in pages if STORY_STEM.match(p["stem"])] or assembled_stories(board, version)
+    sections = [p for p in pages if is_section(p["stem"])]
+    rounds = [p for p in pages if is_batch(p["stem"])]
     d = {
         "title": next((l[2:].strip() for l in text.splitlines()
                        if l.startswith("# ")), board.name),
@@ -231,13 +323,57 @@ def paper_reports(d):
     return out
 
 
+VERSION_DIR = re.compile(r"^j(\d{2})_v(\d+)_(.+)$")     # a version Job on the ladder: j01_v<MMDD>_<desk>/
+# A version's Tasks by series (JL 261007, "no more S-xxx"): t00-t19 Main (t00 the Abstract), t20-t29 Appendix
+# (A = t21), t30-t39 letters and comment batches. The older S-<desk>-<Main|Appendix>-… and RD<NN>-/CM<NN>- stems
+# stay readable.
+TASK_STEM = re.compile(r"^t(\d{2})_(.+)$")
+
+
+def _task_n(stem):
+    m = TASK_STEM.match(stem)
+    return int(m.group(1)) if m else None
+
+
+def is_section(stem):
+    n = _task_n(stem)
+    return stem.startswith("S-") or (n is not None and n < 30)
+
+
+def is_batch(stem):
+    n = _task_n(stem)
+    return stem.startswith(("RD", "CM")) or (n is not None and 30 <= n < 40)
+
+
+def part_of(stem):
+    """main or appendix, from an S- stem's -Appendix- or a tNN_ stem's number band."""
+    n = _task_n(stem)
+    return "appendix" if "-Appendix-" in stem or (n is not None and 20 <= n < 30) else "main"
+
+
+def task_num(stem):
+    """The number a Section prints: a tNN_ Main → N ('' for the Abstract t00), an Appendix t2N → its letter."""
+    n = _task_n(stem)
+    if n is None:
+        return ""
+    return "" if n == 0 else str(n) if n < 20 else chr(ord("A") + n - 21) if 21 <= n < 30 else ""
+
+
 def paper_desk(d):
-    """The desk name, read from a real B group (`Ba-MISQ-Main` → MISQ) or, before
+    """The desk name, read from a real B group (`Ba-MISQ-Main` → MISQ), a version Job
+    (`j01_v1_misq` → MISQ, its case taken from a Section stem inside it) or, before
     any Section group exists, from the Story's §8 target cell (`MISQ · 1`)."""
     for g in d["groups"]:
         m = re.match(r"^B[a-z]-(.+)-(?:Main|Appendix|Round)$", g["folder"])
         if m:
             return m.group(1)
+        m = VERSION_DIR.match(g["folder"])
+        if m:
+            face = d["board"] / g["folder"] / (g["folder"] + ".md")     # the version's face names its desk
+            if face.is_file() and scalar(read(face), "desk"):
+                return scalar(read(face), "desk")
+            stems = (re.match(r"^S-(.+?)-(?:Main|Appendix)-", s) for s in g["stems"])
+            return next((x.group(1) for x in stems if x and x.group(1).lower() == m.group(3).lower()), m.group(3))
     for p in d["stories"]:
         for c in table_rows(p["text"], r"S-[\w-]+\s*\(.*\)"):
             m = re.search(r"\(([^·)]+)", c[0])
@@ -286,9 +422,10 @@ def session_rows(d):
     pairs = _pairs_for(root) if root else {}
     rows = []
     for p in d["sections"]:
-        parts = p["stem"].split("-")           # S-<desk>-<Main|Appendix>-<N>-<Title>
-        desk = parts[1].lower() if len(parts) > 1 else "paper"
-        title = "-".join(parts[4:] if len(parts) > 4 else parts[3:]).lower()
+        parts = p["stem"].split("-")           # S-<desk>-<Main|Appendix>-<N>-<Title>, or tNN_<title>
+        tm = TASK_STEM.match(p["stem"])
+        desk = (paper_desk(d) or "paper").lower() if tm else parts[1].lower() if len(parts) > 1 else "paper"
+        title = tm.group(2) if tm else "-".join(parts[4:] if len(parts) > 4 else parts[3:]).lower()
         plan = "paper-%s-%s" % (desk, title)
         sid = scalar(p.get("text", ""), "session")
         cx = scalar(p.get("text", ""), "codex-session")
@@ -368,7 +505,7 @@ def _table_headers(text, first_cell):
 
 def ideation(d):
     """The Idea Cards of Story00, one collapsed card each (JL 260916: "like the
-    evidence card in haipipe-workbench-page, I can open and hide it")."""
+    evidence card in workbench-page, I can open and hide it")."""
     p = d["story00"]
     if p is None:
         return {"present": False}
@@ -449,7 +586,7 @@ def ideation(d):
 _ADDR_RE = re.compile(r"\bb(\d{2})(?:[.\s_-]?j(\d{2}))?(?:[.\s_-]?t(\d{2}))?(?:[.\s_-]?r(\d{2}))?\b")
 
 
-_TASK_HOMES = ("tasks", "task")          # LLMRec says tasks/, OpioidRx says task/
+_TASK_HOMES = ("work", "tasks", "task")  # the work Theme; LLMRec says tasks/, OpioidRx says task/
 _SKIP_DIRS = {"src", "sbatch", "results", "runs", "scripts", "notebooks", "workflow",
               "QA", "board", "diagram", "config", "configs", "tests", "_tools"}
 _TICKET_EXT = {".sh", ".ps1"}
@@ -578,8 +715,7 @@ def scan_task_tree(tasks):
                 t["addr"] = b.name[:3] + j.name[:3] + t["name"][:3]
             jobs.append({"name": j.name, "addr": b.name[:3] + j.name[:3], "dir": j, "tasks": tasks_,
                          "shape": "task folders" if direct else "runs/ · scripts/ · results/ per task"})
-        blocks.append({"name": b.name, "addr": b.name[:3], "dir": b, "jobs": jobs,
-                       "board": (b / "board" / "index.html").is_file()})
+        blocks.append({"name": b.name, "addr": b.name[:3], "dir": b, "jobs": jobs})
     return blocks
 
 
@@ -588,7 +724,7 @@ def project_blocks(d):
     holding bNN blocks, scanned Block → Job → Task on every load."""
     b = d["board"]
     text = read(b / "board.md")
-    project = b.parent.parent if b.parent.name == "papers" else None
+    project = b.parent.parent if theme_kind_of(b.parent.name) == "paper" else None
     tasks = None
     home = scalar(text, "task-home").strip()          # board.md may name the folder outright
     if home:
@@ -680,11 +816,11 @@ def project_discoveries(d):
     holding tNN Discovery Task Pages, each with a discovery.yaml."""
     b = d["board"]
     text = read(b / "board.md")
-    project = b.parent.parent if b.parent.name == "papers" else None
+    project = b.parent.parent if theme_kind_of(b.parent.name) == "paper" else None
     home = scalar(text, "discovery-home").strip()
     root = (b / home).resolve() if home else None
-    if (root is None or not root.is_dir()) and project and (project / "discoveries").is_dir():
-        root = project / "discoveries"
+    if (root is None or not root.is_dir()) and project and theme_dirs(project, "discovery"):
+        root = theme_dirs(project, "discovery")[0]          # discovery/, or the old discoveries/
     if root is not None and not root.is_dir():
         root = None
     tree = scan_task_tree(root)
@@ -696,10 +832,10 @@ def project_discoveries(d):
                 y = t["dir"] / "discovery.yaml"
                 t.update(_discovery_yaml(y) if y.is_file() else {"status": "", "outcome": "", "confidence": "", "question": ""})
                 t["n_results"] = len([x for x in (t["dir"] / "results").iterdir() if x.is_dir()]) if (t["dir"] / "results").is_dir() else 0
-    label = (("examples/%s/discoveries/" % project.name) if root is not None and project and root.parent == project else
+    label = (("examples/%s/%s/" % (project.name, root.name)) if root is not None and project and root.parent == project else
              home if root is not None else
-             ("examples/%s/ has no discoveries/ folder" % project.name) if project else
-             "no discovery home (board is not under papers/)")
+             ("examples/%s/ has no discovery/ folder" % project.name) if project else
+             "no discovery home (board is not under paper/)")
     return {"dir": root, "tree": tree, "label": label, "claim": _addresses(scalar(text, "discoveries")),
             "n_jobs": sum(len(x["jobs"]) for x in tree),
             "n_tasks": sum(len(j["tasks"]) for x in tree for j in x["jobs"])}
@@ -833,7 +969,7 @@ def story(d, p):
     return s
 
 
-_RECORD = re.compile(r"^\*\*(S-[\w-]+)\s*(?:\(([^)]*)\))?\s*(?:·\s*(.*?))?\*\*\s*$")
+_RECORD = re.compile(r"^\*\*(S-[\w-]+|t\d{2}_[\w-]+)\s*(?:\(([^)]*)\))?\s*(?:·\s*(.*?))?\*\*\s*$")
 _FIELD = re.compile(r"^-\s+\*\*(.+?)\*\*\s*:\s*(.*)$")
 
 
@@ -1054,7 +1190,7 @@ def hero_evidence(d):
     out = []
     for p in d["sections"]:
         folder_name = p["group"]["folder"] or (Path(p["rel"]).parts[0] if p["rel"] else "")
-        if not p["rel"] or not folder_name.endswith(("-Main", "-Appendix")):
+        if not p["rel"] or not (folder_name.endswith(("-Main", "-Appendix")) or VERSION_DIR.match(folder_name)):
             continue
         folder = (b / p["rel"]).parent
         abstract = p["stem"].lower().endswith("abstract")
@@ -1062,8 +1198,8 @@ def hero_evidence(d):
             if it["retired"]:
                 continue
             if it["type"] in ("DISPLAY", "TABLE") or (abstract and it["type"] == "VALUE"):
-                it.update({"page": p["stem"], "rel": p["rel"],
-                           "part": "appendix" if folder_name.endswith("-Appendix") else "main",
+                it.update({"page": p["stem"], "rel": p["rel"],     # a version holds both: the part is in the stem
+                           "part": "appendix" if folder_name.endswith("-Appendix") else part_of(p["stem"]),
                            "why": "printed display" if it["type"] != "VALUE" else "stated in the Abstract"})
                 out.append(it)
     return out
@@ -1130,7 +1266,7 @@ def gates(d):
     minted = sum(1 for s in d["story"] for r in s["sections"] if r["rel"])
     g.append(("G3", "Story → Section",
               "%d of %d Section Narrative rows have a Section page" % (minted, rows) if rows else "⬜ no Section Narrative rows"))
-    man = b / "delivery" / "build-manifest.json"
+    man = delivery_dir(b) / "build-manifest.json"
     if man.is_file():
         try:
             j = json.loads(man.read_text(encoding="utf-8"))
@@ -1200,13 +1336,26 @@ def _links(text):
     return out
 
 
-def delivery_info(d):
+def delivery_dir(b):
+    """The Board's delivery/: at the Board today, inside the newest version Job on the
+    ladder (j01_v1_<desk>/delivery/, b16 g03 D4). A path that may not exist."""
+    if (b / "delivery").is_dir():
+        return b / "delivery"
+    found = sorted((v for v in b.iterdir() if v.is_dir() and VERSION_DIR.match(v.name)
+                    and (v / "delivery").is_dir()), key=lambda v: VERSION_DIR.match(v.name).group(1)) if b.is_dir() else []
+    built = [v for v in found if (v / "delivery" / "build-manifest.json").is_file()]   # a built one first
+    return (built or found)[-1] / "delivery" if found else b / "delivery"
+
+
+def delivery_info(d, ddir=None):
     """What leaves the paper: delivery/ (generated whole by haipipe-paper-assemble),
     its manifest, the compile order with every Section page's fragment and lanes,
-    the display register, the checks, the Round pages and returned manuscripts."""
+    the display register, the checks, the Round pages and returned manuscripts.
+    `ddir` reads one version's delivery/ in place of the Board's newest."""
     b = d["board"]
     text = read(b / "board.md")
-    ddir = b / "delivery"
+    ddir = ddir or delivery_dir(b)
+    at = ddir.relative_to(b).as_posix() + "/"               # delivery/ · j01_v1_<desk>/delivery/
     info = {"dir": ddir if ddir.is_dir() else None, "manifest": None, "toml": {}, "outputs": [],
             "returned": [], "order": [], "order_src": "", "pages": [], "displays": [], "display_note": "",
             "assets": [], "links": _links(text), "built": "", "stale": [], "rounds": []}
@@ -1245,13 +1394,13 @@ def delivery_info(d):
                 [("docx", str(x.relative_to(ddir))) for x in sorted((ddir / "word").glob("*.docx")) if (ddir / "word").is_dir()]
     for what, rel in named:
         f = ddir / rel
-        info["outputs"].append({"what": what.replace("_", " "), "rel": "delivery/" + rel, "path": f, "exists": f.is_file(),
+        info["outputs"].append({"what": what.replace("_", " "), "rel": at + rel, "path": f, "exists": f.is_file(),
                                 "size": _size(f), "stamp": _stamp(f),
                                 "stale": bool(f.is_file() and built_t and _mtime(f) + 5 < built_t)})
     if (ddir / "word-feedback").is_dir():
         for f in sorted(ddir / "word-feedback").iterdir() if False else sorted((ddir / "word-feedback").iterdir()):
             if f.is_file() and not f.name.startswith("."):
-                info["returned"].append({"name": f.name, "rel": "delivery/word-feedback/" + f.name, "path": f,
+                info["returned"].append({"name": f.name, "rel": at + "word-feedback/" + f.name, "path": f,
                                          "size": _size(f), "stamp": _stamp(f)})
     # compile order: the manifest's, else the Story's §8 block
     order = []
@@ -1304,7 +1453,7 @@ def delivery_info(d):
                 info["displays"].append(cells + [""] * (5 - len(cells)))
     sa = ddir / "latex" / "submission-assets"
     if sa.is_dir():
-        info["assets"] = [{"name": x.name, "rel": "delivery/latex/submission-assets/" + x.name, "path": x, "size": _size(x)}
+        info["assets"] = [{"name": x.name, "rel": at + "latex/submission-assets/" + x.name, "path": x, "size": _size(x)}
                           for x in sorted(sa.iterdir()) if x.is_file() and not x.name.startswith(".")]
     return info
 
@@ -1875,7 +2024,8 @@ def _q_block(d, T, q):
     # a question that sets the tasks (JL 260930: "what is the pretraining task, and also the
     # downstream task") lists them first, and shows only the groups it fills
     tasks = q.get("tasks") or []          # the RQ table has none
-    groups = [([_band("task", "Tasks")] + [_hyp_line("", x["kind"], x["text"]) for x in tasks]) if tasks else []]
+    # the question's tasks, without a "Tasks" band over them (JL 261007: "what is this 'Task' could we remove this?")
+    groups = [[_hyp_line("", x["kind"], x["text"]) for x in tasks] if tasks else []]
     # a ✅ needs the question's Report to say answered (JL 261003); before that the prose
     # states it but nothing has shown it: 📝
     answered = ((d.get("reports") or {}).get(_num(q["id"])) or {}).get("status") == "answered"
@@ -1940,10 +2090,8 @@ def logic_work_html(d):
     each piece named as a question, in the order it runs, with its B → J → T → R."""
     # board.md `story-current:` names the Story being worked on (JL 260930: one paper in this
     # tree, no Story labels); without it every Story's questions are drawn, as before
-    cur = scalar(read(d["board"] / "board.md"), "story-current").strip()
-    stories = [s for s in d["story"] if s["stem"] == cur] if cur else d["story"]
     blocks = []
-    for s in stories or d["story"]:
+    for s in current_stories(d):
         T = story_tree(s)
         blocks += [_q_block(d, T, q) for q in T["questions"]]
         blocks.append(_rest_block(d, T))
@@ -2102,7 +2250,9 @@ def _lw_table(lw):
     rows = [_lw_row("", item("Question", lw["question"]), item("Data", lw.get("data", ""))),
             _lw_row("", lst("Finding", lw.get("findings") or []), lst("Method", lw.get("method") or [])),
             _lw_row("", item("Contribution", lw.get("contribution", "")), "")]
-    return '<div class="lw rp-lw">%s%s</div>' % (head, "".join(rows))
+    # it folds, closed, as the Abstract does (JL 261005: "make this collapsable as well")
+    return ('<details class="rp-lwd"><summary>Their logic · Their work</summary><div class="lw rp-lw">%s%s</div></details>'
+            % (head, "".join(rows)))
 
 
 def _paper_card(d, s, row):
@@ -2160,7 +2310,7 @@ def related_html(d):
     """Story › Related Papers: the §5.3 P-board. The target venue's papers come first and
     other venues follow (JL 260930: "this is not limited to NMI"); inside each, the
     papers are grouped by the role they play."""
-    rows = [(s, r) for s in d["story"] for r in s["pp"]]
+    rows = [(s, r) for s in current_stories(d) for r in s["pp"]]
     if not rows:
         return '<div class="space-empty">No related paper yet.</div>'
     venue, n_pdf, roles = venue_name(d), 0, {k for k, _, _ in RELATED_ROLES}
@@ -2257,19 +2407,17 @@ def _claimed(addr, scope):
 
 def _disc_link(d, blk, job, task, label):
     """A link into the Discovery Board: a Task Page opens in Outline; an inquiry
-    opens its built board page (board/jNN.html), else its raw _index.md; the
-    block opens the board itself. Outline does not serve `_index.md`."""
+    opens its raw _index.md; the block opens its Discovery workbench (the Board's
+    static site is retired, JL 261004). Outline does not serve `_index.md`."""
     url = ""
     if task is not None and task["page"] and blk["board_md"] is not None:
         url = outline_url(_tree_url(d, blk["board_md"]), task["page"].relative_to(blk["dir"]))
     elif task is not None:
         url = _tree_url(d, task["page"] or task["dir"])
     elif job is not None:
-        built = blk["dir"] / "board" / (job["name"][:3] + ".html")
-        url = _tree_url(d, built if built.is_file() else (job["index"] or job["dir"]))
+        url = _tree_url(d, job["index"] or job["dir"])
     elif blk["board_md"] is not None:
-        built = blk["dir"] / "board" / "index.html"
-        url = _tree_url(d, built) if built.is_file() else outline_url(_tree_url(d, blk["board_md"]), "board.md")
+        url = "/_board/discovery-board?" + urlencode({"path": _tree_url(d, blk["board_md"])})
     return ('<a href="%s">%s</a>' % (esc(url), esc(label))) if url else esc(label)
 
 
@@ -2337,7 +2485,7 @@ def _not_ready_ids(rd):
 
 # ---------------------------------------------------------------- render
 # The Page workbench's grammar (JL 260927; the drawing is
-# servers/workbench-paper/studio/paper-workbench-design.excalidraw): four Spaces,
+# Tools/designs/b16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every
@@ -2350,25 +2498,29 @@ SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "E
 DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("cover", "Cover letter"), ("rounds", "Rounds"))
 DELIVERY_VIEWS = (("preview", "Preview"), ("artifacts", "Artifacts"), ("checks", "Checks"))
 
-_CARDS = SKILLS / "paper" / "haipipe-paper-workflow" / "ref" / "run-cards.md"
-_BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][A-Za-z]+)\s+·\s+"
+_CARDS = skill_dir("haipipe-paper-workflow") / "ref" / "run-cards.md"
+_BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][^·]*?)\s+·\s+"
                      r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w -]+?))?\s*$")
 _PROMPT = re.compile(r"^💬 PROMPT\s+(?P<prompt>.+?)\s*$")
 
 
 def paper_run_types(path=_CARDS):
-    """The paper's Run cards → {space: [{label, pattern, views, prompt, skills}]} in
+    """The paper's Run cards → {space: [{label, run, pattern, views, prompt, skills}]} in
     card order. Each button takes the first `💬 PROMPT` after it and the `🧩 SKILL`
-    line before that prompt; pattern `-` means the button only copies a prompt
-    (its runs live with another owner)."""
+    line before that prompt, and its `🏷 RUN` line, the Run it makes (b16 Q05); pattern `-`
+    means the button only copies a prompt (its runs live with another owner)."""
     out, pending = {}, []
     for line in read(path).splitlines():
         m = _BUTTON.match(line)
         if m:
             t = {"label": m["label"], "space": m["space"].lower(), "pattern": m["pattern"].strip(),
-                 "views": " ".join((m["views"] or "").split()), "prompt": "", "skills": []}
+                 "views": " ".join((m["views"] or "").split()), "prompt": "", "skills": [], "run": ""}
             out.setdefault(t["space"], []).append(t)
             pending.append(t)
+            continue
+        m = re.match(r"^🏷 RUN\s+(.+?)\s*$", line)
+        if m and pending:
+            pending[-1]["run"] = m.group(1)
             continue
         m = re.match(r"^🧩 SKILL\s+(.+?)\s*$", line)
         if m:
@@ -2653,15 +2805,25 @@ def render_story(d, kinds):
     return _space("story", main, _story_panel(d, kinds), STORY_TABS)
 
 
+def current_stories(d):
+    """The Story board.md `story-current:` names (JL 260930: one paper in this tree), as a
+    one-item list; every Story when the line is missing or names none. The logic tree, the
+    Sections, Related Papers and the band all read this (JL 261005: "things here are not well
+    aligned": a redesign's Sections showed the submitted Story's rows)."""
+    cur = scalar(read(d["board"] / "board.md"), "story-current").strip()
+    return [s for s in d["story"] if s["stem"] == cur] or d["story"] if cur else d["story"]
+
+
 def section_rows(d):
-    """Every Section of the paper in compile order: the Story's §8 rows joined to
+    """Every Section of the paper in compile order: the current Story's §8 rows joined to
     their Section Pages, then any Section Page no §8 row names."""
     by_id, heads = {}, {}
-    for s in d["story"]:
+    stories = current_stories(d)
+    for s in stories:
         for r in s["sections"]:
             by_id.setdefault(r["id"], r)
             heads.setdefault(r["id"], r.get("heads") or s["sec_h"])
-    order = next((s["order"] for s in d["story"] if s["order"]), [])
+    order = next((s["order"] for s in stories if s["order"]), [])
     ids = [x for x in order] + [x for x in by_id if x not in order]
     ids += [p["stem"] for p in d["sections"] if p["stem"] not in ids]
     pages = {p["stem"]: p for p in d["sections"]}
@@ -2672,7 +2834,9 @@ def section_rows(d):
         page = page if page and page["rel"] else None
         # S-<desk>-<Main|Appendix>-[<N>-]<Title>; a desk may carry a hyphen (JAMA-IM)
         m = re.match(r"^S-.+?-(?:Main|Appendix)-(?:([0-9]+|[A-Z])-)?(.+)$", sid)
-        num, name = ((m.group(1) or ""), m.group(2).replace("-", " ")) if m else ("", sid)
+        tm = TASK_STEM.match(sid)
+        num, name = (((m.group(1) or ""), m.group(2).replace("-", " ")) if m else
+                     (task_num(sid), tm.group(2).replace("-", " ").title()) if tm else ("", sid))
         c8_num = (by_id.get(sid) or {}).get("target", "")
         if not num and re.fullmatch(r"[0-9]+|[A-Z]", c8_num):
             num = c8_num                    # a record's `(0)`: the Abstract's place in the order
@@ -2681,7 +2845,7 @@ def section_rows(d):
             plan = latest_outline(plan_dir((d["board"] / page["rel"]).parent), sid)
             version = version_tag(plan) if plan else ""
         state = clean(scalar(page["text"], "state", "")).split("·")[0].strip() if page else "not set up"
-        out.append({"id": sid, "part": "appendix" if "-Appendix-" in sid else "main", "num": num,
+        out.append({"id": sid, "part": part_of(sid), "num": num,
                     "name": name, "page": page, "version": version, "state": state,
                     "row": by_id.get(sid), "heads": heads.get(sid, []), "session": sessions.get(sid)})
     return out
@@ -2997,7 +3161,7 @@ table.grid th:last-child,table.grid td:last-child{{border-right:0}} table.grid t
 .rp-lw{{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:4px 0 10px}}
 .rp-lw .lw-row+.lw-row{{border-top:1px solid var(--line)}} .rp-lw .lw-c{{margin:0}} .rp-lw .lw-c+.lw-c{{margin-top:8px}}
 .rp-acts{{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13.5px;margin:0 0 6px}}
-.rp-absd>summary{{cursor:pointer;font-size:13.5px;color:var(--mut)}} .rp-absd>p{{font-size:14px;line-height:1.55;margin:6px 0 0}}
+.rp-absd>summary,.rp-lwd>summary{{cursor:pointer;font-size:13.5px;color:var(--mut)}} .rp-lwd{{margin:4px 0 10px}} .rp-lwd>.rp-lw{{margin-top:6px}} .rp-absd>p{{font-size:14px;line-height:1.55;margin:6px 0 0}}
 .rp-nopdf{{font-size:13.5px;margin-top:8px}}
 .rd-bar{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}} .rd-open{{margin-left:auto;font-size:13px}}
 .rd-file{{border:1px solid var(--line);background:transparent;color:inherit;border-radius:999px;padding:3px 10px;font:inherit;font-size:13px;cursor:pointer}}
@@ -3189,10 +3353,12 @@ a{{color:var(--acc);text-decoration:none}} a:hover{{text-decoration:underline}}
 
 def _shell_band(d):
     """The band under the title: what this paper is and where it stands, read from its files."""
-    s = d["stories"][0]["text"] if d["stories"] else ""
+    cur = current_stories(d)
+    texts = {x["stem"]: x["text"] for x in d["stories"]}
+    s = texts.get(cur[0]["stem"], "") if cur else (d["stories"][0]["text"] if d["stories"] else "")
     desk = scalar(s, "desk") or paper_desk(d)
-    version = scalar(s, "version")
-    questions = len(d["story"][0]["qb"]) if d["story"] else 0
+    version = scalar(s, "story-version") or scalar(s, "version")
+    questions = len(cur[0]["qb"]) if cur else 0
     sections = section_rows(d)
     built = (d.get("delivery") or {}).get("built") or ""
     parts = [desk, "Story %s" % version if version else "no Story yet" if not d["story"] else "",
@@ -3268,9 +3434,11 @@ def run_files(task_dir, run=""):
     return "all of results/: this Task keeps one folder for every run, and no file there is named after %s" % key, every(res)
 
 
-def _md_view(text):
+def _md_view(text, base=None):
     """Enough Markdown for a result summary: headings, bullets, pipe tables, fences, bold
-    and code. Raw HTML is escaped, never run."""
+    and code. Raw HTML is escaped, never run. With `base` (the URL folder of the .md), a
+    line that is only `![alt](relative.png)` shows that image, resolved against it."""
+    from urllib.parse import urljoin, urlsplit
     out, lines, i, para = [], text.split("\n"), 0, []
 
     def flush():                                  # a line break inside a paragraph stays
@@ -3288,7 +3456,13 @@ def _md_view(text):
             i = j + 1
             continue
         m = re.match(r"^(#{1,4})\s+(.*)$", s)
-        if m:
+        img = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)\)$", s) if base else None
+        if img and not urlsplit(img.group(2)).scheme and not img.group(2).startswith("/"):
+            flush()
+            src = esc(urljoin(base, img.group(2)))
+            out.append('<figure><a href="%s" target="_blank" rel="noopener"><img loading="lazy" src="%s" alt="%s"></a>'
+                       '</figure>' % (src, src, esc(img.group(1))))
+        elif m:
             flush()
             out.append("<h%d>%s</h%d>" % (len(m.group(1)) + 2, inline(m.group(2)), len(m.group(1)) + 2))
         elif s.startswith("|") and i + 1 < len(lines) and re.match(r"^\|?\s*:?-{2,}", lines[i + 1].strip()):
@@ -3355,7 +3529,7 @@ code,pre{{font:12.5px/1.5 ui-monospace,Menlo,monospace}} pre{{background:var(--s
 .doc>h3:first-child{{font:600 13px ui-monospace,Menlo,monospace;color:var(--mut)}}
 .figs{{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}}
 figure{{margin:0;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}}
-figure img{{width:100%;height:auto;display:block}} figcaption{{font:12px ui-monospace,Menlo,monospace;color:#555;margin-top:6px;word-break:break-all}}
+.doc figure{{margin:10px 0;max-width:920px}} figure img{{width:100%;height:auto;display:block}} figcaption{{font:12px ui-monospace,Menlo,monospace;color:#555;margin-top:6px;word-break:break-all}}
 .tw{{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:8px}}
 table{{border-collapse:collapse;font-size:13px}} th,td{{border-bottom:1px solid var(--line);padding:4px 10px;text-align:left;white-space:nowrap}}
 th{{position:sticky;top:0;background:var(--soft)}} .doc table{{margin:8px 0}}
@@ -3429,7 +3603,8 @@ def render_run_result(root, task_rel, run=""):
 
 # ---------------------------------------------------------------- the route
 class PaperWorkbenchMixin:
-    """GET /_board/paper — the Board-level Paper Workbench, rendered live."""
+    """GET /_board/paper-board: the old Board-level page is retired (JL 261007, "could we also remove the
+    old page?"); the address now forwards to the paper Board on the shared frame, so old links still land."""
 
     def paper_view(self, head_only=False):
         q = parse_qs(urlparse(self.path).query)
@@ -3442,11 +3617,11 @@ class PaperWorkbenchMixin:
             return self._paper_send("<h1>📄 paper</h1><p>Paper Workbench requires file=board.md.</p>".encode("utf-8"), 400, head_only)
         if scalar(read(Path(board) / "board.md"), "dialect").strip() != "paper":
             return self._paper_send("<h1>📄 paper</h1><p>This Board is not a paper Board (board.md has no <code>dialect: paper</code>).</p>".encode("utf-8"), 400, head_only)
-        try:
-            page = render_paper(board, self.root, p["path"])
-        except Exception as exc:  # a render bug is a named row, never a blank pane
-            return self._paper_send(("<h1>📄 paper</h1><p>render failed: %s</p>" % esc(exc)).encode("utf-8"), 500, head_only)
-        return self._paper_send(page.encode("utf-8"), 200, head_only)
+        rel = Path(board).resolve().relative_to(Path(self.root).resolve()).as_posix()
+        self.send_response(302)
+        self.send_header("Location", "/_board/workbench?" + urlencode({"path": rel, "theme": "paper"}))
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def run_result_view(self, head_only=False):
         """GET /_board/run-result?task=<Task folder>&run=<run stem>: one run's results."""

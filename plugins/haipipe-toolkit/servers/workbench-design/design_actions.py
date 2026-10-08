@@ -15,7 +15,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from host_paths import SKILLS
+from host_paths import skill_dir
 
 import yaml
 
@@ -577,7 +577,7 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
     record is malformed. It never edits the Result.
     """
     import importlib.util
-    checker = SKILLS / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
+    checker = skill_dir("haipipe-design-unit") / "scripts" / "check_unit.py"
     spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
     gate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gate)

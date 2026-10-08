@@ -1,0 +1,5 @@
+run: run-power-j04
+kind: soft
+type: power
+target: j04_p2_demov3
+status: open

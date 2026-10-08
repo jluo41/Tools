@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "status": "design-proposal",
+  "description": "Predefined drawing types and their content contracts for Workbench Draw surfaces.",
+  "types": [
+    {
+      "id": "guide.skill_map",
+      "label": "Skill map",
+      "scope": "guide",
+      "view": "Skill set",
+      "availability": "required-family-definition",
+      "question": "Which skills do what, and how do they cooperate?",
+      "layout": "Role groups connected by labeled relationships.",
+      "required_elements": ["Named skills and responsibilities", "Content, work and presentation owners", "Labeled routing, reading and reference relationships"],
+      "sources": ["Family skill contracts", "Family Workbench contract"],
+      "caption": "Roles + owners + labeled relationships",
+      "example": "guide-skill-set.excalidraw"
+    },
+    {
+      "id": "guide.method_flow",
+      "label": "Method flow",
+      "scope": "guide",
+      "view": "Methods",
+      "availability": "required-family-definition",
+      "question": "How does this family turn a question into an answer?",
+      "layout": "Reasoning and evidence flow with conditional work and a revision loop.",
+      "required_elements": ["Starting question and answer form", "Reasoning and evidence needs", "Optional related work and native Results", "Interpretation, current answer, limits and remaining issues"],
+      "sources": ["Family method contract", "Owner review and acceptance rules"],
+      "caption": "Question + evidence + answer + revision",
+      "example": "guide-methods.excalidraw"
+    },
+    {
+      "id": "guide.ui_map",
+      "label": "UI map",
+      "scope": "guide",
+      "view": "Workbench",
+      "availability": "required-family-definition",
+      "question": "Where do I go in this Workbench to do or read something?",
+      "layout": "Workbench to Spaces to Views, with explanatory and working content distinguished.",
+      "required_elements": ["The Guide and family-owned working Spaces", "Views belonging to each Space", "What each View presents", "Space row followed by the View row"],
+      "sources": ["Family Space and View roster", "Workbench surface contract"],
+      "caption": "Spaces + Views + their purposes",
+      "example": "guide-workbench.excalidraw"
+    },
+    {
+      "id": "guide.folder_map",
+      "label": "Folder map",
+      "scope": "guide",
+      "view": "Folder map",
+      "availability": "required-family-definition",
+      "question": "Which files and owners supply each part of the UI?",
+      "layout": "A graph of Space or View nodes connected by labeled reads arrows to native owner nodes, then defined in or stored at arrows to folder and file nodes. Mark repository, instance-relative and external paths.",
+      "required_elements": ["Family definition sources", "View to native owner mapping", "Source paths or path patterns", "Native configuration, Ticket, Result and product ownership"],
+      "sources": ["Family storage contract", "Workbench source readers"],
+      "caption": "Views + owners + source paths",
+      "example": "guide-folder-map.excalidraw"
+    },
+    {
+      "id": "work.question_map",
+      "label": "Question map",
+      "scope": "work",
+      "availability": "optional-owner-activation",
+      "question": "What questions matter, what is answered, and what remains open?",
+      "layout": "Goal and question relationships, with answer, evidence and open issues alongside each question.",
+      "required_elements": ["Goal and question identities", "Current answer or explicit absence", "Evidence or reasoning references", "Remaining issue", "Related Work references when present"],
+      "sources": ["Owning question or design record", "Current answer or Report", "Evidence and optional native Work references"],
+      "caption": "Goal + questions + answers + open issues"
+    },
+    {
+      "id": "work.design_map",
+      "label": "Design map",
+      "scope": "work",
+      "availability": "optional-owner-activation",
+      "question": "How is the proposed solution structured, and why?",
+      "layout": "Components and their flows, accompanied by decisions and unresolved design questions.",
+      "required_elements": ["Named design scope", "Components and boundaries", "Inputs, outputs and labeled relationships", "Decision and question references", "Constraints and acceptance criteria"],
+      "sources": ["Owning design record", "Question and decision records", "Current input and output contracts"],
+      "caption": "Components + flows + decisions + constraints"
+    },
+    {
+      "id": "work.roadmap",
+      "label": "Work roadmap",
+      "scope": "work",
+      "availability": "optional-owner-activation",
+      "question": "What outcomes come next, what depends on what, and when is each ready?",
+      "layout": "Milestones joined by dependency arrows, with deliverables, acceptance and native owners.",
+      "required_elements": ["Milestones and related questions", "Dependency relationships", "Deliverable and readiness criterion per milestone", "Native owner or related Work reference", "Current owner state when available"],
+      "sources": ["Owning plan", "Question references", "Native Work and review records"],
+      "caption": "Milestones + dependencies + readiness + owners"
+    }
+  ],
+  "rules": {
+    "guide_placement": "Guide contains the four family explanations and their RoadMap Draw collection.",
+    "work_placement": "Instance drawings belong to the owning family's working Spaces, Draw or Studio Views. The three work types are optional reference types; a family may offer freeform drawings.",
+    "list_scope": "Guide Draw lists its defined explanatory drawings. Working Studio lists the owner's actual drawings, which may be freeform. This catalog describes Guide and optional working types in successive sections.",
+    "presentation": "One full-width drawing row in a single column. Defined Guide and catalog rows show title, purpose and preparation state. Freeform working rows may show only a freely chosen title.",
+    "expand": "Click a row header to show its embedded drawing directly below that header. Defined Guide rows also show their content contract and sources. Each row opens and closes independently; several rows may be open.",
+    "collapse": "Collapsing hides the embedded canvas without replacing or deleting its drawing file, content or editing state. A missing drawing keeps its named row and preparation reason.",
+    "full_screen": "An expanded row can open the same drawing full screen. Returning restores its row and local view state; this does not create another drawing.",
+    "expected_slots": "Every family prepares the four Guide definitions. A working owner decides whether to use the typed working kinds, freeform drawings or both. Task Roadmap Studio uses freely named Drawing rows without mandatory type, source or metadata fields.",
+    "unprepared": "Keep the named type visible as Not prepared and identify the missing source. An empty scene is not a completed drawing.",
+    "not_applicable": "Keep the type and a concise reason visible when the family declares it not applicable.",
+    "extensions": "Declare a family-specific type with its own id, question, required elements, sources and placement before publishing it as a standard type. Freeform working drawings need no type registration.",
+    "instance_content": "Types define the grammar. Names, relationships, evidence and states come from the selected family's or instance's native records.",
+    "state": "Execution completion and question resolution use their native meanings. Unknown or absent answer state stays explicit.",
+    "connections": "Every arrow states its meaning; semantic dependencies, navigation, references and execution are distinct relationships.",
+    "draw_action": "For Guide or an explicitly chosen type, draw its defined content from the owning sources. In a freeform working Studio, add or rename a drawing and draw directly in its embedded Excalidraw; no type selection is required.",
+    "redraw": "Revise the generator for generated scenes. Preserve independently edited scenes under their own filenames."
+  }
+}

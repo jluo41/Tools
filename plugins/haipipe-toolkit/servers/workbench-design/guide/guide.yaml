@@ -1,0 +1,133 @@
+# The design family's Guide (the design theme's server: servers/workbench-design). Loaded by
+# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench-design; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
+# Method (guide/method.md, its cards in guide/methods/) and Related Paper (related/papers.md, its
+# open-licensed PDFs in related/papers/) are read by designboard.py's theory embed. The drawings stay
+# in the design Block, one topic each (JL 261007): the RoadMap drawing in b12 s02, the methods
+# canvas and the design unit in b12 s03.
+family: design
+label: Design
+presenter: designboard.py
+table: skill:workbench-design/ref/workbench-table.md
+description: The Design workbench turns a design task into designs a person can release. A board lists its design
+  tasks; each Design page is one task done by one design method, and it returns N designs. Every design reads the
+  task's requirements and, by its method, internal insights (our own data, signed) or external ones (the literature
+  and theory); each element of a design records where it came from and whether it was reasoned or intuitive. An
+  agent generates, a different agent evaluates, a person releases, and the Exp tests the design in use.
+skills:
+- skill: haipipe-design
+  role: 'The door: the design ladder (Block · Job · Task · Run), its scaffold, launching a Job and opening its design Tasks'
+- skill: haipipe-design-goal
+  role: 'What a design reads: the goal list (signed), the shared rules, inputs versions and a Job''s inputs/ fence'
+- skill: haipipe-design-method
+  role: 'The registered methods and their versions (the five steps), proposals, the Exp''s results and the scorecard'
+- skill: haipipe-design-unit
+  role: 'One step of a method on one target: reason ② · generate ③ · verify ④ · rank ⑤'
+- skill: haipipe-design-workflow
+  role: 'Which Run comes next at each level, the run cards, a design''s state and the Job''s close'
+- skill: haipipe-design-delivery
+  role: 'The release: frozen predictions and designs.json, the one file another system reads'
+- skill: workbench-design
+  role: 'The theme on the shared frame: the six Spaces at each level; the theory of design, the method cards and their papers'
+method:
+- - Set the Design Task
+  - 'Aim · Requirements · Resources · Leave out: what every design must do and keep; a person signs.'
+- - Pick the method
+  - 'One method per Design page, from 13 in 3 families (the board''s Design Tasks views): where its rule comes from.'
+- - Generate N Design Items
+  - 'Each design with its element record: where each element came from, reasoned or intuitive.'
+- - Evaluate
+  - Rules, fidelity, critique, pretest, by a different agent; back to Generate or Method until it passes.
+- - Release
+  - A person releases the designs that passed; Delivery holds them word for word.
+- - Run the Exp
+  - A trial in use against the control; its data becomes the next internal insights.
+spaces:
+- - Design Tasks
+  - 'Board level. One row per Design page: its task, method, N designs and how many are ready; one View per method
+    folder when the board has them.'
+- - Page › Design Task
+  - 'The task once, in four views: Aim · Requirements (channel and rules) · Resources (starting text, elements)
+    · Leave out.'
+- - Page › Design Item
+  - 'The element matrix, then one card per design: Design · Rationale · Evaluation, runs inside.'
+- - Page › Delivery
+  - Every design whose independent Verify passed, word for word, and the csv.
+folders:
+- - Design Goal
+  - Design Goal owner
+  - design-goal.md beside board.md
+  - design-goal.md
+- - Design Tasks
+  - Brief owner
+  - 0-BR-brief/
+  - 0-BR-brief
+- - Methods
+  - Design Folder owners
+  - '2-Design-M<NN>-<slug>/method.md: See input · Conduct process · Check output'
+  - 2-Design-M*/method.md
+- - Design pages
+  - Design Folder owners
+  - 2-Design[-M<NN>-<slug>]/Design-NN-<audience>-<job>-<venue>/
+  - 2-Design*/Design-*
+- - Design Items
+  - Design Folder owners
+  - <Design page>/draft/<stem>-design-items.md
+  - 2-Design*/Design-*/draft
+- - Runs
+  - Design Run owners
+  - <Design page>/runs/
+  - 2-Design*/Design-*/runs
+- - Results and element records
+  - Design Run owners
+  - <Design page>/results/<run>/ (content, checks, elements.yaml)
+  - 2-Design*/Design-*/results
+- - Message theories
+  - Board theory owner
+  - design-theory.md beside board.md, when declared
+  - design-theory.md
+flow:
+  logic:
+  - - Design task · Goal
+    - 'one Design page: the task, its requirements, its one method'
+  - - Work
+    - Commission, then Generate and Verify, one run per design
+  - - Delivery
+    - the designs that passed, word for word, and the csv
+  data:
+  - - Input · requirements, insights
+    - the Design Goal; internal insights, signed; external ones, cited
+  - - Processing
+    - Method → Generate → Evaluate, back until each design passes
+  - - Output
+    - N designs, each with its element record, in results/<run>/
+  links:
+  - frames
+  - runs
+  - fills
+  repeat: Evaluate repeats until each design passes (the Revise loop). After a person releases them, the Exp tests
+    the designs in use and its data becomes the next internal insights (the Learning loop). One page per method,
+    so comparing methods takes one page each on the same task.
+explain:
+  method:
+  - /_board/design-board
+  - embed: theory
+    view: method
+    views: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b12_theme_design/studio/s02-workbench-ui/design-workbench-ui.excalidraw
+  - Workbench design
+  - first
+  related-paper:
+  - /_board/design-board
+  - embed: theory
+    view: papers
+    views: papers
+  - ''
+  - first
+boundary: 'Guide explains how the Design family designs: the theory, the method cards and their papers are the same
+  on every board. Each board''s Design Tasks and each Design page''s goal, designs, runs and delivery keep their
+  native owners. Commission release stays a person''s decision.'

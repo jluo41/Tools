@@ -1,1 +1,1 @@
-../skills/task/agents/haipipe-task-reviewer-agent.md
+../skills/1_base/task/agents/haipipe-task-reviewer-agent.md

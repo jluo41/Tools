@@ -211,7 +211,7 @@ def questions(text: str, board: Path, root: Path, only) -> tuple[list[dict], lis
             question["work"].append({"path": path, "role": words(entry.get("role")) if isinstance(entry, dict) else "",
                                      "url": file_url(board, target, root)})
         report = report_snapshot(row.get("report"), qid, board, root, only, _source_url, _page_url)
-        report["url"] = report["url"].replace("/_board/task-board?", ROUTE + "?")
+        report["url"] = report["url"].replace("/_board/work-board?", ROUTE + "?")
         # The report's one drawing (task_questions.report_snapshot keeps one) shows as its .png beside it;
         # a picture is never a second thumb: it goes inside the drawing (JL 261005).
         report["thumbs"] = [{"title": d["title"], "url": d["url"], "png": d["png"] if "png" in d else _drawing_png(d["url"], root)}
@@ -403,7 +403,8 @@ class CoworkBoardMixin:
         if action == "add-resource":
             from argparse import Namespace
             import importlib.util
-            script = Path(__file__).resolve().parents[2] / "skills/question/haipipe-question/ref/block_questions.py"
+            from host_paths import skill_dir
+            script = skill_dir("haipipe-question") / "ref/block_questions.py"
             values = {name: payload.get(name, "") for name in ("title", "url", "contribution", "notes")}
             ids = payload.get("questions", [])
             if (any(not isinstance(value, str) or len(value) > 10000 for value in values.values())

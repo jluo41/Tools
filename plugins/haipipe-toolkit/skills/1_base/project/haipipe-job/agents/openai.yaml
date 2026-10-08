@@ -1,0 +1,6 @@
+interface:
+  display_name: "Job"
+  short_description: "a Job's face, its Tasks in order, a new-Job scaffold, a theme's own Job names"
+  default_prompt: "Use $haipipe-job to create a Job, add a Task to it in order, check its Tasks list, or name a theme's own Jobs."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,5 @@
+run: run-compare-j02
+kind: soft
+type: compare
+target: j02
+status: closed

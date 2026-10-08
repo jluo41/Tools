@@ -24,3 +24,17 @@ body.standalone #chatfab,body.standalone #chatfabmore,
 body.standalone .chatbtn,body.standalone .schatbar{display:none!important}
 @media(max-width:800px){body.workbench-open .page-stage{display:block}.page-workbench-pane{position:fixed;inset:53px 0 0;z-index:35;height:auto;border-left:0;border-top:1px solid var(--line)}}
 @media(max-width:640px){.page-toolbar{padding:12px 16px}.page-toolbar nav{gap:12px}.source-html{min-height:450px}}
+/* Reader mode (JL 261004: "as simple and understandable as possible"). The workbench and the
+   web delivery are one reader: a section's sentences run on as paragraphs, the per-sentence
+   badges and evidence lanes step back, and each subsection ends with one folded Sources list
+   (page.js). The Evidence button in the toolbar shows every sentence with its lanes again. */
+body.reader .cbody>details.sent{display:none}
+p.rpara{margin:.6em 0}
+body:not(.reader) p.rpara{display:none}
+details.psrc{margin:8px 0 16px;font-size:12.5px;color:var(--mut)}
+details.psrc>summary{cursor:pointer;width:max-content;list-style:none}
+details.psrc>summary::-webkit-details-marker{display:none}
+details.psrc .lane{font-size:12.5px;margin:2px 0 2px 14px;overflow-wrap:anywhere}
+body:not(.reader) details.psrc{display:none}
+#page-reader-toggle{border:1px solid var(--line);border-radius:var(--radius-pill);padding:4px 10px;background:transparent;color:var(--fg);cursor:pointer}
+#page-reader-toggle[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}

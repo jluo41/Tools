@@ -26,11 +26,11 @@ from urllib.parse import unquote
 
 from http.server import SimpleHTTPRequestHandler
 
-from host_paths import BOARD_ENGINE, PAGE_ENGINE, bootstrap  # noqa: E402
+from host_paths import PAGE_ENGINE, bootstrap  # noqa: E402
 bootstrap()
-# The Board skill engine: cli/build.py and the src/ grammar. Kept under the old
-# name because the mixins that moved out of the skill still import it from here.
-HERE = BOARD_ENGINE
+# The Board skill engine, kept under the old name because the mixins that moved out of
+# the skill still import it from here; the `src` grammar is the Page engine's.
+HERE = PAGE_ENGINE
 from src.common import (QNAME, group_stem, page_files, q_files,  # noqa: E402
                         registered_page_source, vet_pagepath, vet_qpath)
 
@@ -224,15 +224,16 @@ class BaseMixin:
         return None, f"not a registered or same-stem standalone Page Face: {name}"
 
     def rebuild(self, board):
-        """Build a Board container or one Page, surfacing subprocess failure."""
+        """Build one standalone Page, surfacing subprocess failure. A Board container is
+        never built: its Pages are read live (`/_board/page`) and the static site is
+        retired (JL 261004), so a write to a Board's Page needs no build."""
         target = Path(board).resolve()
         if target.name == "board.md" and target.is_file():
             target = target.parent
         if target.is_dir() and (target / "board.md").is_file():
-            cmd = [sys.executable, str(BOARD_ENGINE / "cli" / "build.py"), str(target)]
-        else:
-            page_cli = PAGE_ENGINE / "cli" / "page.py"
-            cmd = [sys.executable, str(page_cli), "build", str(target)]
+            return "live: a Board's Pages are read live; nothing to build"
+        page_cli = PAGE_ENGINE / "cli" / "page.py"
+        cmd = [sys.executable, str(page_cli), "build", str(target)]
         r = subprocess.run(cmd, capture_output=True, text=True,
                            cwd=str(target if target.is_dir() else target.parent))
         output = "\n".join(part.strip() for part in (r.stdout, r.stderr) if part and part.strip())

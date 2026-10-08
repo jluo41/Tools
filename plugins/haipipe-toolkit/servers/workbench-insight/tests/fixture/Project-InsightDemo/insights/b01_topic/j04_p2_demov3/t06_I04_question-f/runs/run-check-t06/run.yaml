@@ -1,0 +1,5 @@
+run: run-check-t06
+kind: soft
+type: check
+target: t06_I04_question-f
+status: planned

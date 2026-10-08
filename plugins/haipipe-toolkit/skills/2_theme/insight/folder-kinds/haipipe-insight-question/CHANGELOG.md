@@ -1,0 +1,104 @@
+# haipipe-insight-question · version history
+
+## 1.10.0 · 2026-10-03 · The review moves to the question world (JL 261003)
+
+- The seven tests and the verdict now live in `question/haipipe-question-review`, written for any board's ask; this skill keeps what Insight adds: Q4 is the level, Q5 is the extract, retired needs and successor ids, carried words. An Insight question is an ask; its topic, if any, is a `haipipe-question` board Question.
+
+## 1.9.0 · 2026-10-02 · The question review, Q1-Q7 (JL 261002)
+
+- GI1 adds the question review: one thing, logic, consumer, level, answerable, new, open. A reviewer agent proposes keep, split, merge or move with reasons; a person signs; a signed change retires the old question, never edits it. The check only flags Q1, Q2, Q4 and Q6 suspects. On a Prototype board the question file v2 holds the register division's fields.
+
+## 1.8.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
+
+- The register's need lines carry each compute need's work spec on indented lines; planned before any run or task is looked at.
+
+## 1.7.0 · 2026-10-01 · Evidence needs on every row (JL 261001)
+
+- **What would answer it** carries the question's evidence needs, `<QID>.E<n>` (compute · cite · judge, with `pass:` / `from:`), and a **Needs agreed** line a person signs. Contract: `haipipe-insight/ref/evidence-needs.md`.
+- GI1 requires needs with kinds legal at the level; GI6 requires `haipipe-insight-check` to find no overclaim on the cell. A ✅ cell the check fails drops to 🟡.
+- The handoff to the next level carries the needs.
+
+## 1.6.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+
+- Settled cells read `✅ <L><NN>-<partition>`; Question Groups `QG-<partition>-<L>`; refusal token `🚫 full-only`.
+
+## 1.5.0 · 2026-10-01 · Cells name the answering page (JL 261001)
+
+- A settled cell names its answering page (`✅ FI02`, `🟡 <page id> final`); the page names the question back (`answers QI2`). The `✅ report` token and `reports/` path are gone.
+
+## 1.4.0 · 2026-10-01 · Runs and reports (JL 261001)
+
+- Register divisions are `#### N · <QID> · <Short Name>` with The ask · Why now · What would answer it · Expected · Where it stands; the Queue row stays short. New optional **Expected** line: a recorded prior, written before any run, never evidence. Cells settle `✅ report`.
+
+## 1.3.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
+## 1.3.3 — 2026-09-28 · No content hashes (JL 260928)
+
+- A bridge QW row records the Task Insight Result path and version, never a content hash.
+
+## 1.3.2 — 2026-09-20
+
+- Define the Question-owned GI6 receipt for a licensed
+  `UNDETERMINED` partial-final Wisdom answer; both receipts quote the shared
+  licensing sentence, and the route creates no Design handoff.
+- Migration: preserve settled cells; use the route only for new or reopened
+  work under a current partition verdict.
+
+## 1.3.1 — 2026-09-20
+
+- Keep the id prefix and owning register immutable; a changed level creates a linked successor with fresh open cells and preserved history.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
+## 1.3.0 — 2026-09-20
+
+- Move the resource owner to `insight/folder-kinds/` and remove Phase metadata.
+- Bind actual work to native Run Specs, Tickets, Results and receipts; resource
+  updates and GI checks create no synthetic Run.
+- Preserve evidence, closure and person-signature boundaries. Migration rules:
+  `../../haipipe-insight-workflow/ref/migration.md`.
+
+## 1.2.0 — 2026-09-13
+
+- Define each Question Group as the derived intersection of one MT00 partition
+  scope and this register's DIKW target, for example `QG-B-I` or `QG-F-W`.
+- Keep one stable question row and CELL-level authority; no group Folder,
+  duplicated question, or independently written group state is introduced.
+- Align register closure with Page CHECK/CLOSE plus the matching GI receipt and
+  retire active PageX/Probe workbench selection.
+
+## 1.1.0 — 2026-09-08
+
+- Register an exact instance/item/version/RF Result path and hash. Unrelated open items do not block a ready external parent.
+
+## 1.0.2 — 2026-08-31
+
+- Define I1 ownership of the Task-RF bridge: a QW row pins the exact external
+  Page/RF version and its local I5 W Folder, reopens on staleness, and settles
+  only after that Application-owned W is signed.
+
+## 1.0.1 — 2026-08-31
+
+- Put register and target-Folder receipts in their canonical
+  `outline/<stem>-log.md` files.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-question` and migrated into workflow phase I1.
+- Question Folder semantics now include both Page and Task faces; the legacy page-type is compatibility only.
+
+Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
+
+- 0.3.0 (260827, cold-read audit): the state vocabulary gains `🟡 partial` (answered in part; never folded into an answered count; row stays lap-eligible) and the annotated-`⬜` convention (`⬜ calc` — a reason, still OPEN, never a refusal), both legalizing what the first partition-major board already practiced with a private legend; and the precedence rule: when a header count and the Queue rows disagree, the Queue rows are the record.
+- 0.2.1 (JL 260823): X is a column only where routed, not a partition; the three cell rules joined the closing checks; ⬜ may name the planned page.
+- 0.2.0 (JL 260823): on a partition-major board the Queue gains one column per partition; a question is written once and asked per partition, a blank cell is illegal, a dot cell is an explicit X-routing.
+- 0.1.0 split the register out of MT00-meta by level.
+
+- 0.4.0 (260827, fieldtest F13 + the 🟡 termination law): the 🚫 grammar unified — refusal reasons and the tombstone share one form, `🚫 <reason>`, closed-without-answer always; and a `🟡` cell gains its exit — `🟡 <page> final` when the page states why the remainder cannot close, settled-partial, out of the lap, never in an answered count. A00's 8 🟡 cells were blocked by vocabulary, not evidence.
+
+- 0.4.1 (260828, fieldtest round 2 F9/F12/F13/F10): the derived-header rule covers EVERY on-register restatement (state line, Diagram, Opening) and status WORDS by fixed mapping; a token's spelling includes its spacing (`🚫 F-only`), canonical forward with authorized-sweep migration; ⬜ annotations are the register pen's.
+
+- 0.5.0 (260828, the receipt-duty completion): gains `## Receipts`. GI1 and GI6 leave their dated Log row on this page, and the register owns the FIRST of the two receipts a `🟡 <page> final` flip leaves — the row QUOTING the answering page's licensing sentence, where the answering page owns the second under its own contract. Both halves were stated only in `haipipe-insight-workflow` §Marks until now, and a duty living solely in the machine file is one the page's author never reads. With for-meta 0.3.0 this closes the last ⑥ gap on the insight side: the four level contracts gained their half on 260828 and the two MT contracts had none. Migration: OWE-ON-NEXT-TOUCH — the new closing check adds no human gate, so settled cells stay settled and a live register owes its GI6 rows when next opened.
+
+- 0.4.2 (260828, round 4 Fr3): the compressed-count grammar — a rollup abbreviates a token only as `<mark>(<letter>)` with a legend mapping; where the grammar is silent, legends invent.

@@ -1,0 +1,6 @@
+run: run-consistency-j02-j03
+kind: soft
+type: consistency
+target: "j02 \xB7 j03"
+status: closed
+passes: 1

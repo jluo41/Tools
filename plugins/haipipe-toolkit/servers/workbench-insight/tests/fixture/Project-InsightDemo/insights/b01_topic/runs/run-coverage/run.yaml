@@ -1,0 +1,6 @@
+run: run-coverage
+kind: soft
+type: coverage
+target: every Job
+status: closed
+passes: 1

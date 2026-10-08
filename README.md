@@ -8,12 +8,11 @@ upstream projects in `references/`.
 
 | Package | Focus | Guide |
 |---|---|---|
-| **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
+| **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, subjective labeling (the labeling theme, [guide](plugins/haipipe-toolkit/skills/2_theme/labeling/README.md)), and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
 | **haipipe-utils** | Normalization skills that turn cohort-specific food, exercise, medication and insulin text into typed measurements with provenance, plus the `servers/` API host that serves them | [Utilities guide](plugins/haipipe-utils/README.md) |
 | **inlab-human** | Clinician studies of deployed prediction endpoints, including blind-then-assisted review | [In-Lab Human guide](plugins/inlab-human/README.md) |
-| **subjective-label** | Human-grounded construct building and corpus labeling with calibration and audit workflows | [Subjective Label guide](plugins/subjective-label/README.md) |
 
-This table covers the four package directories directly under `plugins/`. The HAI-Pipe display subtree also contains nested HTML-PPT package metadata; nested packages are not automatically top-level entries in the root marketplace.
+This table covers the three package directories directly under `plugins/`. The HAI-Pipe display subtree also contains nested HTML-PPT package metadata; nested packages are not automatically top-level entries in the root marketplace.
 
 ## Repository map
 
@@ -48,9 +47,12 @@ git submodule update --init --recursive
 ```
 
 Both installers discover skills recursively under first-party package
-`skills/` trees. The retired `plugins/haipipe-toolkit/skills/display/_todo/`
-tree is excluded on macOS/Linux and Windows, matching the Display package
-guide; its skills remain in the repository for historical reference.
+`skills/` trees, at any depth: haipipe-toolkit nests them in three layers
+(`skills/0_utils/`, `skills/1_base/<family>/`, `skills/2_theme/<theme>/`), and each
+skill is linked flat under its folder name. Both skip any folder whose name starts
+with `_` (`_old/`, `_archive/`, `_todo/`, `_legacy/`, ...) and `node_modules/`, on
+macOS/Linux and Windows alike; retired skills parked there stay in the repository
+for reference.
 
 ### macOS and Linux
 

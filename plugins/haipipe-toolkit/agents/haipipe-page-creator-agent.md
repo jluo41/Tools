@@ -1,1 +1,1 @@
-../skills/board/agents/haipipe-page-creator-agent.md
+../skills/1_base/page/workbench/agents/haipipe-page-creator-agent.md

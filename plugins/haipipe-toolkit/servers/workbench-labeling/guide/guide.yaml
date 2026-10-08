@@ -1,0 +1,78 @@
+# The Labeling family's Guide (servers/workbench-labeling). Loaded by servers/workbench/guide_families.py.
+# Paths: guide/… related/… or a module are relative to servers/workbench-labeling; skill:<name>/<rest>
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in designs/b15_theme_labeling).
+family: labeling
+label: Labeling
+presenter: labeling.py
+table: skill:workbench-labeling/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+description: 'The Labeling Workbench runs one subjective-labeling job on one Page: labels whose meaning
+  a person must decide, such as how unsafe a reply is. Data prepares the corpus into items, holds a test
+  set back unseen, and maps the items; Labeling is where the person confirms what each label means (G0),
+  then labels rounds drawn from the corpus while the guideline is written down; Quality checks models
+  against the person''s held-back answers; Delivery freezes the labels and hands them on. The person is
+  the only source of gold: a model''s agreement never makes a label true. Every write goes through the
+  job''s engine, which checks the person, the gate and the held-back test on each call.'
+skills:
+- skill: workbench-labeling
+  role: The Page-local labeling job and its Spaces
+- skill: haipipe-labeling-building
+  role: 'Building the labels: meanings, rounds and guideline'
+- skill: haipipe-labeling-scanning
+  role: 'Scanning: the final test, production and audit'
+method:
+- - Prepare the corpus
+  - Turn raw conversations into checked items grouped by source, and hold a test set back by group so
+    no source sits on both sides.
+- - Set up the job
+  - The Contract names the target, the person who decides the labels, and the custodian of the held-back
+    test.
+- - Confirm the meanings
+  - Discuss what each label means, then the person confirms them (G0); no round is drawn before.
+- - Label in rounds
+  - Each round draws items (round 1 at random), models may pre-label them blind, and the person gives
+    each item its final label; the guideline is revised from the judgments.
+- - Check against the held-back test
+  - Models predict the locked test; a different agent scores them against the person's blind answers,
+    by preregistered metrics.
+- - Deliver
+  - Freeze the handoff, label the corpus with the chosen model, send risky items back to the person, audit
+    a sample, then release the final labels.
+spaces:
+- - Data
+  - 'Preparation · Contract · Embedding: the corpus, the job''s contract, the map of items'
+- - Labeling
+  - 'Definition · Rounds · Guideline: what each label means, the rounds, the written guideline'
+- - Quality
+  - 'Test · Evaluation · Audit: the held-back test and the checks against it'
+- - Delivery
+  - 'Handoff · Scan · Final labels: what is frozen, scanned and released'
+folders:
+- - Labeling job
+  - Page-local labeling owner
+  - labeling/
+  - labeling
+- - Contract
+  - Labeling owner
+  - labeling/config.yaml
+  - labeling/config.yaml
+- - Runs
+  - Page-local Labeling Run owner
+  - runs/run-labeling-* · beside labeling/
+  - runs/run-labeling-*
+explain:
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b15_theme_labeling/studio/s02-labeling-workbench/labeling-workbench-ui.excalidraw
+  - Workbench design
+  - first
+  method:
+  - /_board/guide
+  - family: labeling
+    mode: method
+  - ''
+  - only
+boundary: Guide describes the labeling family. Job-specific policies, annotations, private sources and
+  actions stay in the native labeling surface.

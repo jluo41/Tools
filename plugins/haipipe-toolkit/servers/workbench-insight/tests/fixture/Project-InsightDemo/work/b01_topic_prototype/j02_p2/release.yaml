@@ -1,0 +1,20 @@
+release: p2
+questions:
+  D01:
+    task: ../j01_p1/t01_D01_question-a
+    change: kept
+  I01:
+    task: ../j01_p1/t02_I01_question-b
+    change: kept
+  K01:
+    task: t03_K01_question-c
+    change: 'changed: its script fixed'
+  K02:
+    task: ../j01_p1/t04_K02_question-d
+    change: kept
+  W01:
+    task: ../j01_p1/t05_W01_question-e
+    change: kept
+  I04:
+    task: t06_I04_question-f
+    change: new

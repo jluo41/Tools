@@ -1,0 +1,2580 @@
+{
+ "tabs__00": {
+  "page": "the frame · Block › Audience Report",
+  "src": [
+   "fr",
+   "Block",
+   "Audience Report",
+   ""
+  ],
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__01": {
+  "page": "the frame · Job › Work Details",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__02": {
+  "page": "the frame · Task › Work Details",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__03": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": "nav.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "tabs__04": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": "nav.spaces,div.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "views__00": {
+  "page": "the frame · Block › Description",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__01": {
+  "page": "the frame · Block › Audience Report",
+  "src": [
+   "fr",
+   "Block",
+   "Audience Report",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__02": {
+  "page": "the frame · Block › Work Details",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__03": {
+  "page": "the frame · Block › Runs",
+  "src": [
+   "fr",
+   "Block",
+   "Runs",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__04": {
+  "page": "the frame · Block › Delivery",
+  "src": [
+   "fr",
+   "Block",
+   "Delivery",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__05": {
+  "page": "the frame · Task › Description",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__06": {
+  "page": "the frame · Task › Audience Report",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__07": {
+  "page": "the frame · Task › Work Details",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__08": {
+  "page": "the frame · Task › Runs",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__09": {
+  "page": "the frame · Task › Delivery",
+  "src": [
+   "fr",
+   "Task",
+   "Delivery",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "views__10": {
+  "page": "Discovery board page › Scope › Block",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Block"
+  ],
+  "selector": ".pane.on .wtabs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "views__11": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": ".pane.on .wtabs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "views__12": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": ".draft-mode-switcher",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "report__00": {
+  "page": "the frame · placeholder Block (Questions) · Block › Audience Report › Questions",
+  "src": [
+   "demo",
+   "Block",
+   "Audience Report",
+   "Questions"
+  ],
+  "selector": ".q-head-row|.q-row:not(.q-head-row)",
+  "cut": false,
+  "font": "12.5px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "report__01": {
+  "page": "the frame · placeholder Block (Questions) · Job › Audience Report",
+  "src": [
+   "demo",
+   "Job",
+   "Audience Report",
+   ""
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "13.5px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "report__02": {
+  "page": "the frame · placeholder Block (Questions) · Block › Audience Report › Reports",
+  "src": [
+   "demo",
+   "Block",
+   "Audience Report",
+   "Reports"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "report__03": {
+  "page": "the frame · Block › Audience Report › Questions",
+  "src": [
+   "fr",
+   "Block",
+   "Audience Report",
+   "Questions"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "report__04": {
+  "page": "the frame · Task › Audience Report › Synthesis",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Synthesis"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "report__05": {
+  "page": "Discovery board page › Scope › Questions",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Questions"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "section.view"
+ },
+ "space__00": {
+  "page": "the frame · Block › Description",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__01": {
+  "page": "the frame · Block › Idea Studio",
+  "src": [
+   "fr",
+   "Block",
+   "Idea Studio",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__02": {
+  "page": "the frame · Block › Audience Report",
+  "src": [
+   "fr",
+   "Block",
+   "Audience Report",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__03": {
+  "page": "the frame · Block › Work Details",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   ""
+  ],
+  "selector": ".split",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__04": {
+  "page": "the frame · Block › Runs",
+  "src": [
+   "fr",
+   "Block",
+   "Runs",
+   ""
+  ],
+  "selector": ".split",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__05": {
+  "page": "the frame · Block › Delivery",
+  "src": [
+   "fr",
+   "Block",
+   "Delivery",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__06": {
+  "page": "the frame · Job › Description",
+  "src": [
+   "fr",
+   "Job",
+   "Description",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__07": {
+  "page": "the frame · Job › Idea Studio",
+  "src": [
+   "fr",
+   "Job",
+   "Idea Studio",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__08": {
+  "page": "the frame · Job › Audience Report",
+  "src": [
+   "fr",
+   "Job",
+   "Audience Report",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__09": {
+  "page": "the frame · Job › Work Details",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__10": {
+  "page": "the frame · Job › Runs",
+  "src": [
+   "fr",
+   "Job",
+   "Runs",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__11": {
+  "page": "the frame · Job › Delivery",
+  "src": [
+   "fr",
+   "Job",
+   "Delivery",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__12": {
+  "page": "the frame · Task › Description",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "space__13": {
+  "page": "the frame · Task › Idea Studio",
+  "src": [
+   "fr",
+   "Task",
+   "Idea Studio",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__14": {
+  "page": "the frame · Task › Audience Report",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   ""
+  ],
+  "selector": ".split",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "space__15": {
+  "page": "the frame · Task › Work Details",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   ""
+  ],
+  "selector": ".split",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__16": {
+  "page": "the frame · Task › Runs",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "space__17": {
+  "page": "the frame · Task › Delivery",
+  "src": [
+   "fr",
+   "Task",
+   "Delivery",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "space__18": {
+  "page": "Discovery board page › Scope › Block",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Block"
+  ],
+  "selector": ".pane.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__19": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": ".pane.on",
+  "cut": true,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__20": {
+  "page": "Discovery board page › Check › Runs",
+  "src": [
+   "old",
+   "board",
+   "Check",
+   "Runs"
+  ],
+  "selector": ".pane.on",
+  "cut": true,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__21": {
+  "page": "Discovery board page › Delivery › Reports",
+  "src": [
+   "old",
+   "board",
+   "Delivery",
+   "Reports"
+  ],
+  "selector": ".pane.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.wtab"
+ },
+ "space__22": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": ".space-main,main",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "table__00": {
+  "page": "the frame · Block › Description › Block",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Block"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__01": {
+  "page": "the frame · Block › Work Details › Papers",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__02": {
+  "page": "the frame · Block › Work Details › Tasks",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Tasks"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__03": {
+  "page": "the frame · Block › Runs › All",
+  "src": [
+   "fr",
+   "Block",
+   "Runs",
+   "All"
+  ],
+  "selector": "table.wf-table",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__04": {
+  "page": "the frame · Task › Description › Face",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   "Face"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__05": {
+  "page": "the frame · Task › Runs › All",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   "All"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "table__06": {
+  "page": "Discovery board page › Scope › Block",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Block"
+  ],
+  "selector": ".pane.on section.view.on table",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "td"
+ },
+ "table__07": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": ".pane.on section.view.on table",
+  "cut": true,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "table__08": {
+  "page": "Discovery board page › Check › Runs",
+  "src": [
+   "old",
+   "board",
+   "Check",
+   "Runs"
+  ],
+  "selector": ".pane.on section.view.on table",
+  "cut": true,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "cards__00": {
+  "page": "the frame · Block › Description › Resources",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Resources"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "cards__01": {
+  "page": "the frame · placeholder Block (Questions) · Block › Audience Report › Reports",
+  "src": [
+   "demo",
+   "Block",
+   "Audience Report",
+   "Reports"
+  ],
+  "selector": "details.topic",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__02": {
+  "page": "the frame · Task › Audience Report › Synthesis",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Synthesis"
+  ],
+  "selector": "details.topic",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__03": {
+  "page": "the frame · Task › Work Details › Notes",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   "Notes"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "cards__04": {
+  "page": "Discovery board page › Scope › Resources",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Resources"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "summary"
+ },
+ "cards__05": {
+  "page": "Discovery board page › Scope › RoadMap Draw",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "RoadMap Draw"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "13px 500",
+  "radius": "6px",
+  "padding": "3px 10px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button"
+ },
+ "cards__06": {
+  "page": "Discovery board page › Check › Reports",
+  "src": [
+   "old",
+   "board",
+   "Check",
+   "Reports"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "section.view"
+ },
+ "runs__00": {
+  "page": "the frame · Block › Audience Report",
+  "src": [
+   "fr",
+   "Block",
+   "Audience Report",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__01": {
+  "page": "the frame · Block › Work Details",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__02": {
+  "page": "the frame · Job › Work Details",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__03": {
+  "page": "the frame · Task › Runs",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__04": {
+  "page": "the frame · Task › Description",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__05": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": ".pane.on .runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "runs__06": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": ".runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(228, 228, 231)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "tags__00": {
+  "page": "the frame · Block › Description › Block",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Block"
+  ],
+  "selector": "parent:.chip",
+  "cut": false,
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__01": {
+  "page": "the frame · Block › Work Details › Papers",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "parent:td .chip",
+  "cut": false,
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__02": {
+  "page": "the frame · Block › Runs › All",
+  "src": [
+   "fr",
+   "Block",
+   "Runs",
+   "All"
+  ],
+  "selector": "parent:td .st-ok",
+  "cut": false,
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__03": {
+  "page": "the frame · Task › Work Details › Papers",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "parent:.st-ok",
+  "cut": false,
+  "font": "14px 400",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__04": {
+  "page": "the frame · placeholder Block (Questions) · Block › Audience Report › Questions",
+  "src": [
+   "demo",
+   "Block",
+   "Audience Report",
+   "Questions"
+  ],
+  "selector": "parent:.kind",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "p.q-head"
+ },
+ "tags__05": {
+  "page": "the frame · placeholder Block (Questions) · Block › Audience Report › Questions",
+  "src": [
+   "demo",
+   "Block",
+   "Audience Report",
+   "Questions"
+  ],
+  "selector": "parent:.rp-tags",
+  "cut": false,
+  "font": "15px 600",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "tags__06": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": "parent:.pill",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "td"
+ },
+ "tags__07": {
+  "page": "Discovery board page › Work › Tasks",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Tasks"
+  ],
+  "selector": "parent:.idtag",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "li"
+ },
+ "header__00": {
+  "page": "the frame · Block › Description",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   ""
+  ],
+  "selector": "header",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__01": {
+  "page": "the frame · Job › Description",
+  "src": [
+   "fr",
+   "Job",
+   "Description",
+   ""
+  ],
+  "selector": "header",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__02": {
+  "page": "the frame · Task › Description",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   ""
+  ],
+  "selector": "header",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "header__03": {
+  "page": "Discovery board page › Scope › Block",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Block"
+  ],
+  "selector": ".dataset,header",
+  "cut": false,
+  "font": "14px 400",
+  "radius": "10px",
+  "padding": "8px 14px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgb(230, 237, 245)",
+  "tag": "div.dataset"
+ },
+ "header__04": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": "header,h1",
+  "cut": false,
+  "font": "18px 700",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "h1"
+ },
+ "item__00": {
+  "page": "the frame · Task › Work Details › Papers: a paper row clicked, its Result Card in the pop-out",
+  "src": [
+   "pop",
+   "Task",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "dialog[open]",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__01": {
+  "page": "the frame · Task › Description › Face",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   "Face"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__02": {
+  "page": "a Paper Run's Result Card (the board page's file route)",
+  "src": [
+   "old",
+   "card",
+   "",
+   ""
+  ],
+  "selector": "main,body",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(9, 105, 218)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "item__03": {
+  "page": "Page workbench page (/_board/draft), where a Task opens",
+  "src": [
+   "old",
+   "draft",
+   "",
+   ""
+  ],
+  "selector": ".space-main,main",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "button.draft-mode-tab"
+ },
+ "papers__00": {
+  "page": "the frame · Task › Work Details › Papers",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "papers__01": {
+  "page": "the frame · Block › Work Details › Papers",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "papers__02": {
+  "page": "the frame · Block › Work Details › Citations",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Citations"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "papers__03": {
+  "page": "Discovery board page › Work › Papers",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Papers"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": true,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "papers__04": {
+  "page": "Discovery board page › Check › Citations",
+  "src": [
+   "old",
+   "board",
+   "Check",
+   "Citations"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": true,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "tasks__00": {
+  "page": "the frame · Job › Work Details",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "tasks__01": {
+  "page": "the frame · Block › Work Details › Tasks",
+  "src": [
+   "fr",
+   "Block",
+   "Work Details",
+   "Tasks"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "tasks__02": {
+  "page": "Discovery board page › Work › Tasks",
+  "src": [
+   "old",
+   "board",
+   "Work",
+   "Tasks"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": true,
+  "font": "12px 650",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "th"
+ },
+ "synthesis__00": {
+  "page": "the frame · Task › Audience Report › Synthesis",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Synthesis"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "synthesis__01": {
+  "page": "the frame · Task › Audience Report › Draft",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Draft"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "synthesis__02": {
+  "page": "the frame · Block › Delivery › Reports",
+  "src": [
+   "fr",
+   "Block",
+   "Delivery",
+   "Reports"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "synthesis__03": {
+  "page": "the frame · placeholder Block (Questions) · Block › Delivery › Reports",
+  "src": [
+   "demo",
+   "Block",
+   "Delivery",
+   "Reports"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "synthesis__04": {
+  "page": "Discovery board page › Delivery › Reports",
+  "src": [
+   "old",
+   "board",
+   "Delivery",
+   "Reports"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "section.view"
+ },
+ "bib__00": {
+  "page": "the frame · Block › Delivery › BibTeX",
+  "src": [
+   "fr",
+   "Block",
+   "Delivery",
+   "BibTeX"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "bib__01": {
+  "page": "the frame · Task › Delivery › Files",
+  "src": [
+   "fr",
+   "Task",
+   "Delivery",
+   "Files"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "bib__02": {
+  "page": "the frame · Job › Delivery",
+  "src": [
+   "fr",
+   "Job",
+   "Delivery",
+   ""
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "bib__03": {
+  "page": "Discovery board page › Delivery › BibTeX",
+  "src": [
+   "old",
+   "board",
+   "Delivery",
+   "BibTeX"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": true,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "scope__00": {
+  "page": "the frame · Block › Description › Block",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Block"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "scope__01": {
+  "page": "the frame · Block › Description › Resources",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Resources"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "scope__02": {
+  "page": "the frame · Task › Description › Face",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   "Face"
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "scope__03": {
+  "page": "the frame · Task › Description › Folder",
+  "src": [
+   "fr",
+   "Task",
+   "Description",
+   "Folder"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "13px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "scope__04": {
+  "page": "the frame · Job › Description",
+  "src": [
+   "fr",
+   "Job",
+   "Description",
+   ""
+  ],
+  "selector": ".space-main",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "10px",
+  "padding": "12px 16px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.space-main"
+ },
+ "scope__05": {
+  "page": "Discovery board page › Scope › Block",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Block"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "0px",
+  "padding": "7px 9px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "td"
+ },
+ "scope__06": {
+  "page": "Discovery board page › Scope › Resources",
+  "src": [
+   "old",
+   "board",
+   "Scope",
+   "Resources"
+  ],
+  "selector": ".pane.on section.view.on",
+  "cut": false,
+  "font": "16px 650",
+  "radius": "0px",
+  "padding": "10px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgb(244, 245, 247)",
+  "tag": "summary"
+ },
+ "proposed__tabs": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.levels|nav.spaces",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "6px 14px",
+  "border": "rgb(206, 212, 218)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.wb-guide-button"
+ },
+ "proposed__views": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   ""
+  ],
+  "selector": "nav.subs",
+  "cut": false,
+  "font": "16px 400",
+  "radius": "6px",
+  "padding": "5px 12px",
+  "border": "rgb(24, 100, 171)",
+  "fill": "rgb(231, 245, 255)",
+  "tag": "a.tab"
+ },
+ "proposed__report": {
+  "page": "proposed",
+  "src": [
+   "b03",
+   "",
+   "",
+   ""
+  ],
+  "selector": ".q-head-row|.q-row:not(.q-head-row)",
+  "cut": false,
+  "font": "12.5px 400",
+  "radius": "10px",
+  "padding": "0px 0px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.q-row"
+ },
+ "proposed__space": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": ".split",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__table": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   "All"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__cards": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Synthesis"
+  ],
+  "selector": "details.topic",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__runs": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Runs",
+   ""
+  ],
+  "selector": "section.runs-panel",
+  "cut": false,
+  "font": "11.5px 600",
+  "radius": "7px",
+  "padding": "0px 7px",
+  "border": "rgb(227, 227, 230)",
+  "fill": "rgb(255, 255, 255)",
+  "tag": "button.runs-fold"
+ },
+ "proposed__header": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Job",
+   "Description",
+   ""
+  ],
+  "selector": "header",
+  "cut": false,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "header"
+ },
+ "proposed__item": {
+  "page": "proposed",
+  "src": [
+   "pop",
+   "Task",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "dialog[open]",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "proposed__papers": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Work Details",
+   "Papers"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__tasks": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Job",
+   "Work Details",
+   ""
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "proposed__synthesis": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Task",
+   "Audience Report",
+   "Synthesis"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "9px 14px",
+  "border": "rgb(28, 28, 28)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "summary"
+ },
+ "proposed__bib": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Block",
+   "Delivery",
+   "BibTeX"
+  ],
+  "selector": ".space-main",
+  "cut": true,
+  "font": "15px 400",
+  "radius": "0px",
+  "padding": "0px 0px",
+  "border": "rgb(62, 92, 132)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "a"
+ },
+ "proposed__scope": {
+  "page": "proposed",
+  "src": [
+   "fr",
+   "Block",
+   "Description",
+   "Block"
+  ],
+  "selector": "table.wf-table",
+  "cut": false,
+  "font": "12.5px 600",
+  "radius": "0px",
+  "padding": "5px 8px",
+  "border": "rgb(111, 111, 107)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "th"
+ },
+ "_buttons": {
+  "run-ask-<qNN>": {
+   "doing": "Ask a Question",
+   "where": [
+    "the frame · Block › Audience Report",
+    "the frame · Block › Audience Report › Questions",
+    "the frame · Job › Audience Report",
+    "the frame · Block › Audience Report › Reports"
+   ]
+  },
+  "run-review-questions": {
+   "doing": "Review the questions",
+   "where": [
+    "the frame · Block › Audience Report",
+    "the frame · Block › Audience Report › Questions",
+    "the frame · Job › Audience Report",
+    "the frame · Block › Audience Report › Reports"
+   ]
+  },
+  "run-report-<qNN>": {
+   "doing": "Write the report",
+   "where": [
+    "the frame · Block › Audience Report",
+    "the frame · Block › Audience Report › Questions",
+    "the frame · Job › Audience Report",
+    "the frame · Block › Audience Report › Reports"
+   ]
+  },
+  "run-check-<qNN>": {
+   "doing": "Check a report",
+   "where": [
+    "the frame · Block › Audience Report",
+    "the frame · Block › Audience Report › Questions",
+    "the frame · Block › Audience Report › Reports"
+   ]
+  },
+  "Copy": {
+   "doing": "",
+   "where": [
+    "the frame · Block › Audience Report (body)",
+    "the frame · Job › Work Details (body)",
+    "the frame · Task › Work Details (body)",
+    "Discovery board page › Work › Papers (body)",
+    "Discovery board page › Work › Tasks (body)",
+    "the frame · Block › Description (body)",
+    "the frame · Block › Work Details (body)",
+    "the frame · Block › Runs (body)",
+    "the frame · Block › Delivery (body)",
+    "the frame · Task › Description (body)",
+    "the frame · Task › Audience Report (body)",
+    "the frame · Task › Runs (body)",
+    "the frame · Task › Delivery (body)",
+    "Discovery board page › Scope › Block (body)",
+    "the frame · Block › Audience Report › Questions (body)",
+    "the frame · Task › Audience Report › Synthesis (body)",
+    "Discovery board page › Scope › Questions (body)",
+    "the frame · Block › Idea Studio (body)",
+    "the frame · Job › Description (body)",
+    "the frame · Job › Idea Studio (body)",
+    "the frame · Job › Audience Report (body)",
+    "the frame · Job › Runs (body)",
+    "the frame · Job › Delivery (body)",
+    "the frame · Task › Idea Studio (body)",
+    "Discovery board page › Check › Runs (body)",
+    "Discovery board page › Delivery › Reports (body)",
+    "the frame · Block › Description › Block (body)",
+    "the frame · Block › Work Details › Papers (body)",
+    "the frame · Block › Work Details › Tasks (body)",
+    "the frame · Block › Runs › All (body)",
+    "the frame · Task › Description › Face (body)",
+    "the frame · Task › Runs › All (body)",
+    "the frame · Block › Description › Resources (body)",
+    "the frame · Task › Work Details › Notes (body)",
+    "Discovery board page › Scope › Resources (body)",
+    "Discovery board page › Scope › RoadMap Draw (body)",
+    "Discovery board page › Check › Reports (body)",
+    "the frame · Task › Work Details › Papers (body)",
+    "the frame · Block › Work Details › Citations (body)",
+    "Discovery board page › Check › Citations (body)",
+    "the frame · Task › Audience Report › Draft (body)",
+    "the frame · Block › Delivery › Reports (body)",
+    "the frame · Block › Delivery › BibTeX (body)",
+    "the frame · Task › Delivery › Files (body)",
+    "Discovery board page › Delivery › BibTeX (body)",
+    "the frame · Task › Description › Folder (body)",
+    "the frame · Block › Audience Report › Reports (body)",
+    "the frame · Block › Runs › Blocked (body)",
+    "the frame · Task › Work Details › Evidence (body)",
+    "the frame · Task › Work Details › Value (body)",
+    "the frame · Task › Runs › run (body)",
+    "the frame · Task › Runs › Page Runs (body)",
+    "the frame · Task › Delivery › Lanes (body)",
+    "Discovery board page › Work › Questions (body)"
+   ]
+  },
+  "run-synthesize-<tNN>": {
+   "doing": "Synthesize a Task",
+   "where": [
+    "the frame · Job › Work Details",
+    "the frame · Block › Work Details",
+    "the frame · Block › Work Details › Papers",
+    "the frame · Block › Work Details › Tasks",
+    "the frame · Block › Work Details › Citations"
+   ]
+  },
+  "run-find-papers-t03": {
+   "doing": "Find papers",
+   "where": [
+    "the frame · Task › Work Details",
+    "the frame · Task › Work Details › Notes",
+    "the frame · Task › Work Details › Papers",
+    "the frame · Task › Work Details › Evidence",
+    "the frame · Task › Work Details › Value"
+   ]
+  },
+  "rNN_<author><year>_<subject>": {
+   "doing": "Read a paper",
+   "where": [
+    "the frame · Task › Work Details",
+    "the frame · Block › Work Details",
+    "the frame · Block › Work Details › Papers",
+    "the frame · Block › Work Details › Tasks",
+    "the frame · Task › Work Details › Notes",
+    "the frame · Task › Work Details › Papers",
+    "the frame · Block › Work Details › Citations",
+    "the frame · Task › Work Details › Evidence",
+    "the frame · Task › Work Details › Value"
+   ]
+  },
+  "Ask a Question": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Review the questions": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Add a resource": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Draw": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Find papers": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Read a paper": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Synthesize a Task": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Write the report": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Review a Run": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Verify a citation": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Check a report": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers",
+    "Discovery board page › Work › Tasks",
+    "Discovery board page › Scope › Block",
+    "Discovery board page › Scope › Questions",
+    "Discovery board page › Check › Runs",
+    "Discovery board page › Delivery › Reports",
+    "Discovery board page › Scope › Resources",
+    "Discovery board page › Scope › RoadMap Draw",
+    "Discovery board page › Check › Reports",
+    "Discovery board page › Check › Citations",
+    "Discovery board page › Delivery › BibTeX",
+    "Discovery board page › Work › Questions"
+   ]
+  },
+  "Save resource": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers (body)",
+    "Discovery board page › Work › Tasks (body)",
+    "Discovery board page › Scope › Block (body)",
+    "Discovery board page › Scope › Questions (body)",
+    "Discovery board page › Check › Runs (body)",
+    "Discovery board page › Delivery › Reports (body)",
+    "Discovery board page › Scope › Resources (body)",
+    "Discovery board page › Scope › RoadMap Draw (body)",
+    "Discovery board page › Check › Reports (body)",
+    "Discovery board page › Check › Citations (body)",
+    "Discovery board page › Delivery › BibTeX (body)",
+    "Discovery board page › Work › Questions (body)"
+   ]
+  },
+  "+ Add drawing": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers (body)",
+    "Discovery board page › Work › Tasks (body)",
+    "Discovery board page › Scope › Block (body)",
+    "Discovery board page › Scope › Questions (body)",
+    "Discovery board page › Check › Runs (body)",
+    "Discovery board page › Delivery › Reports (body)",
+    "Discovery board page › Scope › Resources (body)",
+    "Discovery board page › Scope › RoadMap Draw (body)",
+    "Discovery board page › Check › Reports (body)",
+    "Discovery board page › Check › Citations (body)",
+    "Discovery board page › Delivery › BibTeX (body)",
+    "Discovery board page › Work › Questions (body)"
+   ]
+  },
+  "Rerun": {
+   "doing": "",
+   "where": [
+    "Discovery board page › Work › Papers (body)",
+    "Discovery board page › Work › Tasks (body)",
+    "Discovery board page › Scope › Block (body)",
+    "Discovery board page › Scope › Questions (body)",
+    "Discovery board page › Check › Runs (body)",
+    "Discovery board page › Delivery › Reports (body)",
+    "Discovery board page › Scope › Resources (body)",
+    "Discovery board page › Scope › RoadMap Draw (body)",
+    "Discovery board page › Check › Reports (body)",
+    "Discovery board page › Check › Citations (body)",
+    "Discovery board page › Delivery › BibTeX (body)",
+    "Discovery board page › Work › Questions (body)"
+   ]
+  },
+  "run-add-resource-<slug>": {
+   "doing": "Add a resource",
+   "where": [
+    "the frame · Block › Description",
+    "the frame · Block › Description › Block",
+    "the frame · Block › Description › Resources"
+   ]
+  },
+  "run-find-papers-<tNN>": {
+   "doing": "Find papers",
+   "where": [
+    "the frame · Block › Work Details",
+    "the frame · Block › Work Details › Papers",
+    "the frame · Block › Work Details › Tasks",
+    "the frame · Block › Work Details › Citations"
+   ]
+  },
+  "run-verify-citation-<slug>": {
+   "doing": "Verify a citation",
+   "where": [
+    "the frame · Block › Work Details",
+    "the frame · Block › Work Details › Papers",
+    "the frame · Block › Work Details › Tasks",
+    "the frame · Block › Work Details › Citations"
+   ]
+  },
+  "run-review-<run>": {
+   "doing": "Review a Run",
+   "where": [
+    "the frame · Block › Runs",
+    "the frame · Task › Runs",
+    "the frame · Job › Runs",
+    "the frame · Block › Runs › All",
+    "the frame · Task › Runs › All",
+    "the frame · Block › Runs › Blocked",
+    "the frame · Task › Runs › run",
+    "the frame · Task › Runs › Page Runs"
+   ]
+  },
+  "run-delivery-b01": {
+   "doing": "build the delivery",
+   "where": [
+    "the frame · Block › Delivery",
+    "the frame · Block › Delivery › Reports",
+    "the frame · Block › Delivery › BibTeX"
+   ]
+  },
+  "run-face-t03": {
+   "doing": "update the description",
+   "where": [
+    "the frame · Task › Description",
+    "the frame · Task › Description › Face",
+    "the frame · Task › Description › Folder"
+   ]
+  },
+  "run-synthesize-t03": {
+   "doing": "Synthesize a Task",
+   "where": [
+    "the frame · Task › Audience Report",
+    "the frame · Task › Audience Report › Synthesis",
+    "the frame · Task › Audience Report › Draft"
+   ]
+  },
+  "run-delivery-t03": {
+   "doing": "build the delivery",
+   "where": [
+    "the frame · Task › Delivery",
+    "the frame · Task › Delivery › Files",
+    "the frame · Task › Delivery › Lanes"
+   ]
+  },
+  "run-draw-<sNN>": {
+   "doing": "add a topic · redraw it · save this session, each a pass",
+   "where": [
+    "the frame · Block › Idea Studio",
+    "the frame · Job › Idea Studio",
+    "the frame · Task › Idea Studio"
+   ]
+  },
+  "run-delivery-j01": {
+   "doing": "build the delivery",
+   "where": [
+    "the frame · Job › Delivery"
+   ]
+  }
+ }
+}

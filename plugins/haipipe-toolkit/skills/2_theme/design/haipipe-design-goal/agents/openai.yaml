@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Goal"
+  short_description: "What a design reads: the goal list, shared rules, inputs versions, a Job's inputs fence"
+  default_prompt: "Use $haipipe-design-goal to add a goal to the Block's goal list, freeze an inputs version, or build a Job's inputs/ fence; a person signs goals and rules."
+policy:
+  allow_implicit_invocation: true

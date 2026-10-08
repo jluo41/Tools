@@ -138,7 +138,7 @@ Example: `[b01_irb Q01 "How to write an IRB submission"](http://100.121.165.84:5
 **Granularity: a topic, not a decision** (2026-10-03). A board question is a topic
 that many sections feed and that grows into its report; the narrow decision goes in
 the section's points and its Why. Reuse the board's existing question first. What a
-question is, how big it is and how it is created: [haipipe-question](../../question/haipipe-question/SKILL.md).
+question is, how big it is and how it is created: [haipipe-question](../../1_base/question/haipipe-question/SKILL.md).
 
 The board is the one that owns the section's work. No question fits: write
 `(proposed) <Board> "<short question>"` unlinked; never invent a QNN or a link.
@@ -154,7 +154,7 @@ one offer.
 Keep the question at topic level and let the Why say what this section adds; preserve
 the user's latest clarifications. Ordinary follow-ups feed the same question.
 For matching evolving session questions, identifying candidates, or deciding
-whether clarification is needed, use [ask-questions](../../question/ask-questions/SKILL.md).
+whether clarification is needed, use [ask-questions](../../1_base/question/ask-questions/SKILL.md).
 Simple attribution from an explicit user question can be done directly.
 
 The final **Summary and Next** has no Related question line. It summarizes
@@ -434,7 +434,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question:** [Tools/designs b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/task-board?path=designs/tasks/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
+**Related question:** [Tools/designs b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/work-board?path=designs/tasks/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
 
 ## 2. 🛠️ What I Changed
 

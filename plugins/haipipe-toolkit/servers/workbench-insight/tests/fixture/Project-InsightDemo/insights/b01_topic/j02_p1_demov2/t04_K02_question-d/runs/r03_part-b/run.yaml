@@ -1,0 +1,13 @@
+run: r03_part-b
+kind: hard
+type: partition
+partition: part-b
+target: t04_K02_question-d
+question: K02
+script: <hash>
+release: p1
+data: v2
+n: <n>
+power: low
+status: refused
+passes: 1

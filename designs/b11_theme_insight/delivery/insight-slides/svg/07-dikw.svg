@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Each DIKW level may say more, and has one thing it may not say</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Each DIKW level may say more, and has one thing it may not</text>
+<text x="60.0" y="128.8" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">say</text>
+<text x="60.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A question&#x27;s level is set when it is asked, before the data, so a weak result cannot be promoted.</text>
+<rect x="60.0" y="230.7" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="259.1" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">level</text>
+<text x="306.0" y="259.1" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">may say</text>
+<text x="615.3" y="259.1" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">may not say</text>
+<text x="924.7" y="259.1" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">must show</text>
+<text x="74.0" y="305.3" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">D · Data</text>
+<text x="306.0" y="305.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">counts, what was seen</text>
+<text x="615.3" y="305.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">any comparison</text>
+<text x="924.7" y="305.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">n, coverage, missingness</text>
+<line x1="60.0" y1="327.4" x2="1220.0" y2="327.4" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="356.0" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">I · Information</text>
+<text x="306.0" y="356.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">rates, contrasts, segments</text>
+<text x="615.3" y="356.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">&quot;because&quot;</text>
+<text x="924.7" y="356.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one test for each contrast</text>
+<line x1="60.0" y1="378.1" x2="1220.0" y2="378.1" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="406.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">K · Knowledge</text>
+<text x="306.0" y="406.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one claim, how sure, its rivals</text>
+<text x="615.3" y="406.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">advice</text>
+<text x="924.7" y="406.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">rivals ruled out; replicates</text>
+<text x="924.7" y="431.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">(T8)</text>
+<line x1="60.0" y1="453.5" x2="1220.0" y2="453.5" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="482.1" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">W · Wisdom</text>
+<text x="306.0" y="482.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">advice for Design</text>
+<text x="615.3" y="482.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">new evidence</text>
+<text x="924.7" y="482.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the K claims it rests on; a</text>
+<text x="924.7" y="506.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">signature</text>
+<line x1="60.0" y1="528.9" x2="1220.0" y2="528.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="230.7" x2="292.0" y2="528.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="601.3" y1="230.7" x2="601.3" y2="528.9" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="910.7" y1="230.7" x2="910.7" y2="528.9" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="230.7" width="1160.0" height="298.2" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+</svg>

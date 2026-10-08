@@ -125,7 +125,7 @@ def test_http_views_short_address_and_resource_form(server):
     url = origin + "/_board/discovery-board?" + urlencode({"path": path})
     with urlopen(url) as response:
         assert response.status == 200 and b"Glucose Transformer" in response.read()
-    with urlopen(origin + "/w/b03_cgm_forecasting") as response:
+    with urlopen(origin + "/w/b03_cgm_forecasting") as response:     # an --only host: its own page
         assert response.status == 200 and b"Papers" in response.read()
     with pytest.raises(HTTPError) as err:
         urlopen(origin + "/_board/discovery-board?" + urlencode({"path": "nowhere/board.md"}))

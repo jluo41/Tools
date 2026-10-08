@@ -75,7 +75,7 @@ def _page_path(board: Path, value) -> Path | None:
 def selected_specs(snap: dict, question: str, partition: str, page: dict | None = None) -> dict:
     """Select owed Specs, including dependencies, using explicit cell bindings.
 
-    A Folder/rung or an open Queue mark alone never commissions executable work.
+    A Folder/DIKW level or an open Queue mark alone never commissions executable work.
     Missing bindings are reported for the controller to resolve through chain.
     """
     projection = {"items": [], "notes": [], "question": question, "partition": partition}

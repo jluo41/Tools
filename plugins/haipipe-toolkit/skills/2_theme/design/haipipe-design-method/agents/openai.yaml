@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Method"
+  short_description: "The design method registry: versions, pinning a Job, the Exp's scores and the scorecard"
+  default_prompt: "Use $haipipe-design-method to pin a Job's method version, propose the next version, or score an Exp's per-arm totals against the frozen predictions."
+policy:
+  allow_implicit_invocation: true

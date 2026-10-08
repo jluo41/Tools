@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Four levels: Block, Job, Task, Run</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Four levels: Block, Job, Task, Run</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A Block is one application and one channel: its goals, its inputs versions and what the Exps returned.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A Job is one goal done by one method version on one inputs version, returning N designs.</text>
+<text x="60.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A Task is one step of the method, and a Run is one piece of work inside it.</text>
+<rect x="60.0" y="260.1" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="130.0" y="293.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Block</text>
+<text x="224.0" y="278.3" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">bNN_&lt;app&gt;/</text>
+<text x="224.0" y="305.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one application, one channel: goals · inputs i1, i2 · observed e01</text>
+<polyline points="86.0,316.1 86.0,392.1 128.0,392.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="118.0,398.1 128.0,392.1 118.0,386.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="132.0" y="365.1" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="202.0" y="398.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Job</text>
+<text x="296.0" y="383.3" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">jNN_&lt;goal&gt;_&lt;design-method&gt;/</text>
+<text x="296.0" y="410.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one goal × one method version × one inputs version → N designs</text>
+<polyline points="158.0,421.1 158.0,497.1 200.0,497.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="190.0,503.1 200.0,497.1 190.0,491.1" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="204.0" y="470.1" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="274.0" y="503.6" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Task</text>
+<text x="368.0" y="488.3" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">t00_reason-ideas/ · tNN_d&lt;NN&gt;_&lt;slug&gt;/ · t99_review-whole/</text>
+<text x="368.0" y="515.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">one method step: reason ideas · one design · review the whole set</text>
+<polyline points="230.0,526.0 230.0,602.0 272.0,602.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<polyline points="262.0,608.0 272.0,602.0 262.0,596.0" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
+<rect x="276.0" y="575.0" width="140.0" height="54.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
+<text x="346.0" y="608.5" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">Run</text>
+<text x="440.0" y="593.2" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">runs/run-&lt;type&gt;-&lt;target&gt;/</text>
+<text x="440.0" y="620.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">hard: an agent writes a result · soft: a set-up or a sign-off</text>
+</svg>

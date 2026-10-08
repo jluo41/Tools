@@ -1,1 +1,1 @@
-../skills/board/agents/haipipe-board-reviewer-agent.md
+../skills/1_base/page/workbench/agents/haipipe-board-reviewer-agent.md

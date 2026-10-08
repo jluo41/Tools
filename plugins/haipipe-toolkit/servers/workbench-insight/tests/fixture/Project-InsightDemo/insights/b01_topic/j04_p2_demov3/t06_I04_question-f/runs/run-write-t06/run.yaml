@@ -1,0 +1,5 @@
+run: run-write-t06
+kind: soft
+type: write
+target: t06_I04_question-f
+status: planned

@@ -1,0 +1,5 @@
+run: run-compare-j03
+kind: soft
+type: compare
+target: j03
+status: open

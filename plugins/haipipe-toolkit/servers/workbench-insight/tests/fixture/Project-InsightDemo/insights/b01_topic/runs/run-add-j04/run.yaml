@@ -1,0 +1,6 @@
+run: run-add-j04
+kind: soft
+type: add
+target: j04_p2_demov3
+status: closed
+passes: 1

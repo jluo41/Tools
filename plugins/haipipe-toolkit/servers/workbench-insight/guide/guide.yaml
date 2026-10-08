@@ -1,0 +1,204 @@
+# The Insight family's Guide (servers/workbench-insight, 261007). Loaded by
+# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench-insight; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
+family: insight
+label: Insight
+presenter: insightboard.py
+table: skill:workbench-insight/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+# the board page that holds Guide beside the Spaces, and where to find boards when Guide is opened alone
+board_route: /_board/workbench?path={board}
+boards: examples-*/*/tasks/b5[0-9]_*_dikw/board.md
+# the RoadMap's workflow: logic over data, the link between them, and the loop (JL 261003)
+flow:
+  logic:
+  - - Question · Logic
+    - 'a question file: the ask, why now, its needs'
+  - - Work
+    - its script, one run per partition
+  - - Report
+    - one page per question, a section per partition, checked
+  data:
+  - - Input · Data
+    - the extract, cut by one partition
+  - - Processing
+    - the power check, then run(df, ctx), then the gate
+  - - Output
+    - results/<run>/ and reports/<run>/, a run being <dataset>_<partition>
+  links:
+  - names
+  - runs
+  - fills
+  repeat: Repeat for every partition the question is asked on, then for every question; level by level, Data → Information
+    → Knowledge → Wisdom, each level's answers raise the next level's questions.
+description: 'The Insight Workbench reads one dataset and answers questions about it, from Data and Information
+  up to Knowledge and Wisdom. It is one task Block: one Job per level and one Task per question, each holding its
+  question, its one script, one run per dataset and partition, and one checked page. The cuts of the data and the
+  shared settings sit in the Block''s meta/; a new extract is a new dataset in the same Block, its code never copied.
+  The workbench shows which questions are answered on which cuts, the runs behind each answer, and what still needs
+  a check or a signature.'
+skills:
+- skill: haipipe-insight
+  role: 'The Insight Block: one task per question, its file, its script and its runs'
+- skill: haipipe-insight-evidence-plan
+  role: A question's evidence needs, agreed by a reviewer
+- skill: haipipe-insight-check
+  role: Question rules and each cell's status from receipts and checks
+- skill: haipipe-page-workflow
+  role: One page per question, checked by an agent that did not write it
+- skill: workbench-insight
+  role: Scope, Prototype, Insight, Check and Delivery over the Block
+# the Insight loop (JL 261003): the Method page carries these six steps in its A3; this list still
+# draws the family's RoadMap card
+method:
+- - Ask the question
+  - 'Logic: one ask at its level, why now and what would answer it; a person signs it. Asking methods, below.'
+- - Plan and agree
+  - The steps that would answer it, written before any data is read; a different agent agrees them, then the script
+    is written and reviewed.
+- - Run each partition
+  - 'Work: one run per dataset and partition writes the results, its figures and its generated report. Answering
+    methods, below.'
+- - Check the run
+  - Another agent checks each run against its plan.
+- - Write the page
+  - 'Report: one page per question, a section per partition, read into a claim at its level; another agent''s CHECK
+    closes it. Reading methods, below.'
+- - Hand off
+  - A Wisdom answer, signed by a person, goes to Design; the Exp's data is the next extract. A signed change retires
+    a question, never edits it.
+spaces:
+- - Scope
+  - 'Dataset · Partitions · Questions: this board''s own data: the extract, its cuts with their row counts, and
+    the Ask box'
+- - Prototype
+  - 'Meta · Data · Information · Knowledge · Wisdom: the Block''s design: the summary, partitions and shared settings,
+    then each level''s questions with their needs, script and sign-off; RoadMap Draw holds the Block''s own drawings'
+- - Insight
+  - 'One View per partition, Full to Cross: each a table of the questions, Logic / Work / Report'
+- - Check
+  - 'Gates · Checks · Runtime: the Block checker''s findings and every run''s receipt'
+- - Delivery
+  - 'Handoff: signed Wisdom answers ready to leave the board'
+folders:
+- - Scope / Block
+  - Block owner
+  - 'board.md: workbench: insight + datasets'
+  - board.md
+- - Scope / Dataset and Partitions
+  - Block owner
+  - meta/
+  - meta/*
+- - Insight / Logic
+  - Question owners
+  - jNN_<level>/tNN_<name>/question.md
+  - j0[1-4]_*/t[0-9][0-9]_*/question.md
+- - Insight / Work
+  - Question owners
+  - jNN_<level>/tNN_<name>/runs/<dataset>_<partition>.sh
+  - j0[1-4]_*/t[0-9][0-9]_*/runs/*_*.sh
+- - Insight / Report
+  - Run reports, generated
+  - jNN_<level>/tNN_<name>/reports/<run>/report.md
+  - j0[1-4]_*/t[0-9][0-9]_*/reports/*/report.md
+- - Insight / Page
+  - Page owners
+  - jNN_<level>/tNN_<name>/tNN_<name>.md
+  - j0[1-4]_*/t[0-9][0-9]_*/t[0-9][0-9]_*.md
+- - Check
+  - Block checker
+  - meta/status.md, written only by the checker
+  - meta/status.md
+# Method: one page, as Design's: the Insight method (asking, answering, reading) with its cards, then the
+# methods drawing, served by insightboard.py from guide/ ("only": the page carries the six steps, so Guide
+# skips its own list); RoadMap Draw: the design drawing in b11_theme_insight's s02-insight-workbench, view
+# only; Related Paper: related/papers.md, the papers the cards cite
+explain:
+  method:
+  - /_board/insight-board
+  - embed: methods
+    view: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw
+  - Workbench design
+  - first
+  related-paper:
+  - /_board/insight-board
+  - embed: methods
+    view: papers
+  - ''
+  - first
+boundary: 'One task Block holds everything: the partitions and settings in meta/, one task per question with its
+  file, its one script, one run per dataset and partition, and its page. Status is computed from run receipts and
+  CHECK runs. Guide never signs a question change or a handoff.'
+# the card Guide's words per level (b11 s31-insight-guide, plan C, 261007); a Space card's sub and runs
+# are read live from the frame (insight_theme.py). roadmap: per level is still open in s31, so not yet here.
+levels:
+  Block:
+    role: 'one insight topic over one growing dataset: a Job per pair (release × data version)'
+    spaces:
+      Description:
+        is: 'one dataset, its versions, and the Prototype it runs: the Map of Jobs'
+        reads: board.md · meta/ · the release
+      Idea Studio:
+        is: the Board's drawings, one topic after another
+        reads: studio/sNN-<topic>/
+      Audience Report:
+        is: 'the Block''s own questions over the Jobs: Coverage · Tracks · Consistency · Findings'
+        reads: reports/qNN_<topic>/
+      Work Details:
+        is: the Jobs, each opening to its Tasks' quick results
+        reads: j0N_pN_<d>vM/
+      Runs:
+        is: the Board's own soft Runs, and its Jobs' from below
+        reads: runs/run-<type>-<target>/
+      Delivery:
+        is: the signed Wisdom counsel, naming the Job it came from
+        reads: delivery/
+  Job:
+    role: one Prototype release run on one data version; frozen once closed
+    spaces:
+      Description:
+        is: 'its two pins: the Prototype release and the data version'
+        reads: j0N_pN_<d>vM.md · the release · <d>vM
+      Idea Studio:
+        is: 'optional: a drawing about this pair'
+        reads: studio/
+      Audience Report:
+        is: Question │ Work │ Report by D · I · K · W, filtered by Partition × Period
+        reads: tNN_<L><NN>_<q>.md · reports/vs-<prev>.md
+      Work Details:
+        is: 'the J-T-R tree: its Tasks, each open to its Runs'
+        reads: tNN_<L><NN>_<q>/runs/
+      Runs:
+        is: its own soft Runs, then its Tasks' hard and soft
+        reads: runs/ · tNN_…/runs/
+      Delivery:
+        is: only the latest Job's Wisdom counsel, to the Board
+        reads: → Board › Delivery
+  Task:
+    role: 'one question on one Job''s pair: its runs per partition and its page'
+    spaces:
+      Description:
+        is: its question, read only from the release, and its records
+        reads: …/j0N_pN/tNN_<L><NN>_<q>/question.md
+      Idea Studio:
+        is: 'optional: a drawing about this question'
+        reads: studio/
+      Audience Report:
+        is: 'its page: the answer, a part per partition'
+        reads: tNN_<L><NN>_<q>.md
+      Work Details:
+        is: one Run per partition, and Cross
+        reads: runs/rNN_<partition>/
+      Runs:
+        is: 'hard: one per partition · soft: write, check'
+        reads: runs/
+      Delivery:
+        is: 'none of its own: its answer goes up as a cite need'
+        reads: —

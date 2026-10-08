@@ -67,13 +67,13 @@ Where a table lives
 Each workbench keeps its own table beside its skill:
 
 ```text
-skills/<family>/haipipe-workbench-<name>/ref/workbench-table.md
+skills/<family>/workbench-<name>/ref/workbench-table.md
 ```
 
 The file is the source. It holds one Markdown table with exactly the seven
 columns above, in that order, and may hold notes before and after it. The first
 instance is the Design workbench:
-`skills/design/haipipe-workbench-design/ref/workbench-table.md`.
+`skills/2_theme/design/workbench-design/ref/workbench-table.md`.
 
 When the workbench's Runs panel reads a run-cards file, that file and this table
 must agree: each `🔘 BUTTON` is one row's Run type, its `🤖 AGENT`, `🧩 SKILL` and

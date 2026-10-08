@@ -1,0 +1,4 @@
+interface:
+  display_name: "Haipipe Paper Comments"
+  short_description: "Take in and answer comments on a paper"
+  default_prompt: "Use $haipipe-paper-comments to take in one batch of comments on a paper, group them into Review Items and answer each once."

@@ -1,0 +1,91 @@
+# The Discovery family's Guide (servers/workbench-discovery). Loaded by
+# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench-discovery; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
+family: discovery
+label: Discovery
+presenter: discoveryboard.py
+table: skill:workbench-discovery/ref/workbench-table.md
+method_doc: guide/method.md
+method_drawing: guide/methods.excalidraw
+papers_table: related/papers.md
+description: 'The Discovery Workbench reads one Discovery Block: one reading topic of a Project, split
+  into Jobs (one inquiry each) and Task Pages, each Task reading its papers one Paper Run at a time.
+  Scope holds the Block, its Questions, its links and its drawings; Work holds every paper with its
+  Result card, each Task with its synthesis, and the Questions with their reports; Check reads every
+  Run receipt and lists the citations a person must still verify; Delivery holds the answered reports
+  and the Block''s BibTeX. It reads the Block on every open and stores nothing; each run is a prompt
+  the person copies.'
+skills:
+- skill: haipipe-discovery
+  role: The Block, its Jobs, Task Pages and Paper Runs
+- skill: haipipe-question
+  role: A Block's Questions, their register and report folders
+- skill: workbench-discovery
+  role: Scope, Work, Check and Delivery over the Block's Runs
+# the six steps of guide/method.md; that page carries them ("only"), this list draws the RoadMap card
+method:
+- - Scope the Block
+  - One topic, its spine and close condition, and one Job per inquiry.
+- - Find the sources
+  - Search channels return candidate papers; nothing is filed yet.
+- - Read one paper per Run
+  - A ticket writes the Result card, facts, receipt and one-entry BibTeX for exactly one paper.
+- - Verify the citation
+  - Another agent checks the paper's identity and BibTeX; a person signs what stays unverified.
+- - Synthesize the Task
+  - A summary, verdict or landscape written only from the Task's own Results.
+- - Answer the Question
+  - A report Page from the Results; another agent checks it; the person releases it.
+spaces:
+- - Scope
+  - 'Block · Questions · Resources · RoadMap Draw: what this Block reads, the Questions it asks, its
+    links and its drawings'
+- - Work
+  - 'Papers · Tasks · Questions: every paper with its Result card, each Task with its synthesis, the
+    Questions with their reports'
+- - Check
+  - 'Runs · Citations · Reports: every receipt''s status, the citations still to verify, each report''s
+    answer'
+- - Delivery
+  - 'Reports · BibTeX: the answered reports, word for word, and the Block''s BibTeX'
+folders:
+- - Scope / Block
+  - Block owner
+  - board.md · header and Topic
+  - board.md
+- - Scope / Questions
+  - Block owner
+  - board.md · Questions register
+  - board.md
+- - Work / Tasks
+  - Task owner
+  - jNN_<job>/tNN_<task>/ (Task Page, discovery.yaml)
+  - j[0-9][0-9]_*/t[0-9][0-9]_*
+- - Work / Papers
+  - Run owner
+  - <Task>/runs/rNN_<paper>.sh + results/rNN_<paper>/
+  - j[0-9][0-9]_*/t[0-9][0-9]_*/results
+- - Work / Report
+  - Question Report Page owner
+  - reports/<id>_topic/<id>_topic.md
+  - reports/q*_*/*.md
+- - Scope / RoadMap Draw
+  - Block drawing owner
+  - studio/*.excalidraw
+  - studio/*.excalidraw
+boundary: 'One Discovery Block owns this workbench: Scope, Work, Check and Delivery Spaces, each with
+  the shared Runs panel on the right. Task Pages and Paper Runs keep their haipipe-discovery owners
+  and receipts; the workbench reads them and writes nothing but a related resource. A citation a Run
+  could not verify stays visible until a person signs it.'
+explain:
+  method:
+  - /_board/guide
+  - family: discovery
+    mode: method
+  - ''
+  - only
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b14_theme_discovery/studio/s02-discovery-workbench/discovery-workbench-design.excalidraw
+  - Workbench design
+  - first

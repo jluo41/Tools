@@ -28,7 +28,7 @@ verified (or that needs none) is solid green, one still waiting dashed orange; t
 themselves stay in the Evidence Space.
 
 The scene is generated: change the plan or the Evidence Items and rerun this script; never
-edit the drawing. Studio style (haipipe-workbench-studio/ref/draw.md): transparent boxes,
+edit the drawing. Studio style (workbench-studio/ref/draw.md): transparent boxes,
 colored strokes, labels bound inside their boxes, arrows bound at both ends, Comic Shanns.
 """
 import argparse
@@ -40,7 +40,7 @@ import textwrap
 from pathlib import Path
 
 # the Page grammar (Draft plan, Evidence Items) lives with haipipe-page
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "page" / "haipipe-page"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "1_base" / "page" / "haipipe-page"))
 
 from src.item_table import read_items  # noqa: E402
 from src.outline_version import latest_outline, plan_dir, version_tag  # noqa: E402

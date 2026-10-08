@@ -1,0 +1,17 @@
+run: run-report-q05
+kind: soft
+type: report
+scope: Tools/designs/b03_project_workbench
+target: q05
+ticket: run-report-q05.md
+skill: haipipe-report
+agent: null
+signs: null
+status: done
+passes:
+- p01-1008
+writes:
+- reports/q05_skill_per_level/q05_skill_per_level.md
+- reports/q05_skill_per_level/draft/q05_skill_per_level-draft-v0.1.md
+feeds:
+- reports/q05_skill_per_level

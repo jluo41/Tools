@@ -1,0 +1,6 @@
+interface:
+  display_name: "Insight"
+  short_description: "The Prototype and the insight Board"
+  default_prompt: "Use $haipipe-insight to work on a Prototype (questions and scripts, by release) or an insight Board (a dataset by version, a Job per release × data version), or to route a dataset-first topic to the Task-side Insight Page."
+policy:
+  allow_implicit_invocation: true

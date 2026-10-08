@@ -20,6 +20,7 @@ from host_registry import static_path_allowed
 from live.home import _manifests, project_owner
 from live.task_questions import extend_snapshot, field, inside, read, section
 from live.taskboard import _page_url, _source_url, task_snapshot
+from src.themes import kind_of as theme_kind_of
 
 ROUTE = "/_board/discovery-board"
 KIND = "discovery-block"
@@ -56,7 +57,7 @@ def resolve(root: Path, raw: str):
         return None, None
     if not target.is_relative_to(root):
         return None, None
-    if target.is_dir() and target.name == "discoveries":
+    if target.is_dir() and theme_kind_of(target.name) == "discovery":   # discovery/ or discoveries/
         return "project", target
     for candidate in (target, *target.parents):
         if not candidate.is_relative_to(root):
@@ -167,7 +168,7 @@ def block_snapshot(board: Path, root: Path, only=()) -> dict:
                        "bib": sum(bool(p["bib"]) for p in papers)}}
     snap = extend_snapshot(board, root, snap, only, _source_url, _page_url)
     for question in snap["questions"]:
-        question["report"]["url"] = question["report"]["url"].replace("/_board/task-board?", ROUTE + "?")
+        question["report"]["url"] = question["report"]["url"].replace("/_board/work-board?", ROUTE + "?")
     return snap
 
 
@@ -262,7 +263,8 @@ class DiscoveryBoardMixin:
         if action == "add-resource":
             from argparse import Namespace
             import importlib.util
-            script = Path(__file__).resolve().parents[2] / "skills/question/haipipe-question/ref/block_questions.py"
+            from host_paths import skill_dir
+            script = skill_dir("haipipe-question") / "ref/block_questions.py"
             values = {name: payload.get(name, "") for name in ("title", "url", "contribution", "notes")}
             ids = payload.get("questions", [])
             if (any(not isinstance(value, str) or len(value) > 10000 for value in values.values())

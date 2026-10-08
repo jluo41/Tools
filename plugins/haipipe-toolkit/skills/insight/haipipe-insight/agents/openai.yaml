@@ -1,6 +1,0 @@
-interface:
-  display_name: "Insight"
-  short_description: "Route Task and InsightBoard work"
-  default_prompt: "Use $haipipe-insight to route this request to Task-side RI work or an InsightBoard scope. Insight and Design are independent peer families."
-policy:
-  allow_implicit_invocation: true

@@ -1,0 +1,242 @@
+## 1.8.0 · 2026-10-07 · Cards and gates by level (b16 Q05)
+
+- `ref/run-cards.md` is re-cut from the four old Spaces (Ideation · Story · Sections · Delivery) to the ladder: one card per button of each level's Space, its Space field `<Level> › <Space>` (`Block › Audience Report`), its views the third-row views (`narrative`, `draft-main`). New cards for every button the s11 and s12 designs show and the paper workbench typed by hand: Update the Board, Add a venue, Check the rules, Add a resource, Add a related item, Read a paper, Ask a Question, Review for an audience, Open a version, Update the Board status, Update the version, Redraw the paper map, Release a Section, Add comments, Route an item, Reply to an item, Write the cover letter, Check the letter, Add a Section, Add a letter. The old cards are placed: Idea review and Select idea in Block › Audience Report › Ideation, Claim review there under logic-work, Redraw in Block › Idea Studio, the Section buttons in Job › Work Details. Labels people see are unchanged.
+- Gates by level: G0-G2 are signed at the Board, G3-G5 in a version. G3 releases a row of the version face's `## Narrative`; G5 closes a comments report.
+- The ownership map and file-system projection follow the ladder (`haipipe-paper/ref/paper-ladder.md`).
+- `workbench-paper/ref/workbench-table.md` matches the cards: `table-workbench --check --cards` PASS.
+- Every card has a `🏷 RUN` line, the Run it makes; the workbench names the button by it, its label under it (haipipe-run `ref/run-types-by-space.md`). Shared buttons make the base Runs and name the base skills: run-face-*, run-add-<jNN|tNN>, run-draw-<sNN> (haipipe-studio), run-ask-<qNN> (haipipe-question), run-report-<qNN> · run-figures-<qNN> · run-check-<qNN> (haipipe-report), run-delivery-<target>. New card: Rebuild report drawing.
+
+## 1.7.0 · 2026-09-30 · Task review is paper.judgment.task; the Redraw card
+
+- The Task review Spec is `paper.judgment.task` (`task.<story>.<row>`), matching its `rtask` ticket and the "Task review" button (JL 260930, "go ahead and update them accordingly", on aligning the paper skills with the Paper Workbench; AGENTS rule 9 bans "obligation"). No saved Run used the old id.
+- `ref/run-cards.md`: new `Redraw` card on Story › RoadMap Draw, which had no card; prompts name a claim, a Task Roadmap row and a Section Narrative row instead of C5, C7 and C8.
+- Story parts are §N or their name (haipipe-paper-story 0.17.0); "ledger" is the Round's concern table; "canonical" is gone.
+
+## 1.6.3 · 2026-09-30 · Discovery runs also show on Story › Related Papers (JL 260930)
+
+- `ref/run-cards.md`: the Discovery runs button says `views logic-work related`, so it shows beside the new Related Papers tab (haipipe-workbench-paper 0.16.0), where each card is one Discovery Paper Run.
+
+## 1.6.2 · 2026-09-29 · Story run buttons move to the logic-work tab (JL 260929)
+
+- `ref/run-cards.md`: Claim review, Task review, Task runs and Discovery runs say `views logic-work` (were `views questions` and `views roadmap`). The Paper workbench merged Story › Questions and Story › Roadmap into one tab, High-level logic + Low-level work (haipipe-workbench-paper 0.10.0), so all four Story judgment and supporting buttons show beside it.
+
+## 1.6.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
+
+- Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
+
+## 1.6.0 · 2026-09-29 · Cover letter run card
+- `ref/run-cards.md`: new `paper.coverletter` card (`🔘 Cover letter · Delivery`), run-delivery-coverletter in haipipe-paper-assemble 0.9.0.
+
+## 1.5.1 · 2026-09-28 · No content hashes (JL 260928)
+
+- `ref/run-workflow.md`: `deliver.<page>.<format>` is the Page's fixed Delivery Run `run_delivery_<lane>`, current by file time (JL 260928).
+- `ref/run-workflow.md`: a compile Ticket freezes the config path and source versions; staleness before execution is file time or `git diff`. Runtime `runs` entries and Delivery receipts carry paths and versions, not input or artifact hashes.
+
+## 1.5.0 · 2026-09-27
+
+- `ref/run-cards.md`: one `🔘 BUTTON` + `💬 PROMPT` per Paper Run type, the buttons the
+  Paper Workbench's Runs panels show in each Space (Idea review, Story revise, Claim review,
+  Task review, Supporting runs, Narrative review, the Section's Draft / Evidence / Delivery
+  runs, Build, Check, Response). A button only copies its prompt.
+
+## 1.4.0 · 2026-09-21
+
+- Route the final G4 pass through the Paper submission-readiness overlay,
+  separating Section-owned checks from Paper-level cover-letter and whole-paper
+  checks without adding a Workflow unit.
+
+## 1.3.1 · 2026-09-20
+
+- Clarify that Paper Workflow units are owner-native Runs; compatibility controller labels do not add Runs.
+
+## 1.3.0 · 2026-09-20
+
+- Define the Paper Workflow as bounded Specs and actual owner-native Runs. Separate gates/controller decisions from Runs; document compile/response receipts and the RP/RE/RD integration.
+
+## 1.2.1 · 2026-09-13
+
+- Made G0 read the Paper Ideation sync's working, release, and delivery
+  surfaces separately, preserving I3 as the sole selection authority.
+
+## 1.2.0 · 2026-09-13
+
+- Align Paper Run guidance with the current Page-owned `rp00`/`rpNN` interaction
+  namespace and Page-global `P01…PN` addresses.
+- Keep delegated paragraph writing owner-native and make Page release/CHECK a
+  prerequisite for the Paper G4 build gate.
+
+## 1.1.7 · 2026-09-08
+
+- Point Page-local Section writing to the paragraph-scoped CONTENT contract without changing Paper journey gates or Evidence/Display namespaces.
+
+## 1.1.6 · 2026-09-08
+
+- Used the exact `paper_page.state: blocked` field form in the G0 no-surrogate
+  rule.
+
+## 1.1.5 · 2026-09-08
+
+- Clarified that the Paper Ideation Page projects the I3 handoff but does not
+  own the I3 decision.
+- Made any Paper-side G0 record explicitly optional and pointer-only, avoiding
+  ambiguity with the sole I3 selection receipt.
+
+## 1.1.4 · 2026-09-08
+
+- Aligned G0 with the Ideation I3 single-authority chain: Paper validates the
+  final `handoff/paper-ideation.yaml`, its latest sync, sole
+  `workflow/selection.yaml` receipt, and reciprocal Story binding.
+- Clarified that Page Shape approval and Page CHECK are separate Page
+  decisions; Paper G0 creates no second selection receipt.
+- Preserved the blocked-page no-surrogate rule for the Page path,
+  projection, and selection receipt.
+
+## 1.1.3 · 2026-09-08
+
+- Point the journey contract at the Paper-specific Run naming authority and
+  distinguish semantic Main/Appendix/Round lane qualifiers from physical
+  `Ba`/`Bb`/`Bc` shelves and `RD` Round Page ids.
+
+## 1.1.2 · 260908
+- P1 Story id is `Story<Letter>-<desk>-<idea-slug>` (JL 260908); phase table and examples follow `haipipe-paper-story` 0.9.2.
+
+## 1.1.1 · 2026-09-07
+
+- Clarified that both human PROCEED and risk-accepted PROCEED WITH CAUTION can
+  pass G0, while open/deferred/abandoned states cannot.
+- Added non-destructive legacy Story role/path mapping and aligned target
+  authority: Ideation records intended target at G0; Story confirms and later
+  rebinds the operational target.
+
+## 1.1.0 · 2026-09-07
+
+- Extended G0 from Idea-only selection to human selection of an Idea plus its
+  intended target/category after complete deep fit against a current Venue
+  contract.
+- Added the Venue Page to the ownership map: it owns one desk's typed contract,
+  while Ideation owns comparative fit and the human target decision.
+- Required released Section rows to bind the current target desk and Venue
+  contract rather than carrying an optional unverified target label.
+
+## 0.8.1 · 260907
+
+- P1 is named Story, after its authority page (the naming law); "Seed" stays
+  as the alias and as the name of the identity divisions the Story page holds.
+  `haipipe-paper-seed` → `haipipe-paper-story`; gazette row added.
+
+## 0.8.0 · 260907
+
+- Story = one idea (JL 260907): the story group's number is the IDEA COUNTER.
+  `Story00-ideation` is the pool; `Story<NN>-<idea-slug>` is one paper's control
+  center and carries the Seed; `Story<NN>-roadmap` (plan to COLLECT) and
+  `Story<NN>-narrative-<desk>` (plan to SHOW) are its child pages. New
+  "🧩 Story = one idea" block; phase table, G0 receipt, group map updated.
+- `0-paperboard/` wrapper and `<N>-<desk><year>/` desk rooms retired for new
+  repos; `delivery/` replaces the room. Both grandfathered. Gazette 0.8.0 rows.
+- The Collection page is retired outright (was grandfathered since 0.6.0).
+- G7 names the Round's `sent/` and `released/` frozen builds.
+
+## 0.7.4 · 260904
+
+- Name the current Page loop CONTEXT through CHECK.
+- Express the Roadmap dispatch/settle handoff through typed Evidence Items,
+  Supporting/local Runs, and accepted local Results instead of an active probe
+  lane.
+- Separate paper-family entry routing from its position as the Folder-owning
+  workflow inside the concrete Page chain.
+
+## 0.7.3 · 260831
+- Replace ASCII angle-bracket arrows in the discovery description with Unicode
+  journey arrows so the package passes skill metadata validation.
+
+## 0.7.2 · 260831
+- One letter per B group (JL 260831 "Ba to be Main, Bb to be Appendix, Bc to be Round"): first desk Ba-<desk>-Main · Bb-<desk>-Appendix · Bc-<desk>-Round, a second desk continues at Bd; shared-letter (0.4.x) and combined-group layouts grandfathered. Live: Ba-MISQ-Main/Bb-MISQ-Appendix/Bc-MISQ-Round, Ba-JAMA-IM-Main/Bb-JAMA-IM-Appendix.
+
+## 0.7.1 · 260831
+- Desk layer split three ways (JL 260831 "I want to make Ba-misq into three page groups"): B<x>-<desk>-Main (S<D> units) · B<x>-<desk>-Appendix (SA units) · B<x>-<desk>-Round (RD pages); page tokens unchanged; a combined B<x>-<desk> group is grandfathered.
+
+## 0.7.0 · 260831
+- Story ids replace SD/NA (JL 260831 "I don't like the SD... make sure to be self explained"): one A1-Story group holds P0-P3, the venue-free head (Story00-ideation, Story01-seed, Story02-roadmap) plus one Story<NN>-narrative-<desk> per desk (Story03 first); the A2-NA-narrative group and the SD/NA tokens are retired to the grandfathered list. Phase table and group mapping updated.
+
+## 0.6.2 — 2026-08-31
+
+- **Phase law location named** (workflow-phases restructure, JL 260831): each
+  journey phase's own law now ships as `workflow-phases/haipipe-paper-<phase>`;
+  one pointer line added above the six-phase table. Gates, names, groups
+  unchanged.
+
+## 0.6.1 — 2026-08-31
+
+- **The appendix token is `SA`, Section-Appendix** (JL 260831: "The AM is not
+  correct, it should be SA"): a desk group's pages are `S<D><NN>` main
+  sections, `SA<NN>` appendix sections, `RD<NN>` rounds. The Round's concern table
+  grammar (`SA-PP<n>` rows) already said so; the page ids now agree. MISQ
+  renamed AM01-AM06 → SA01-SA06 the same day; boards still on `A<D>` are
+  grandfathered until their own rename.
+
+## 0.6.0 — 2026-08-28
+
+- **Six phases: the Collection page folded into the Roadmap** (JL 260828: the
+  two were plan and result of the same campaign, one-to-one; the lap-L1 field
+  test showed every Collection edit forcing a mirrored Roadmap edit). P2
+  Roadmap (route) now carries plan AND intake; Narrative, Section, Round
+  renumber P3/P4/P5. The establish loop is P1↔P2.
+- **Gate numbers unchanged**: G2 (plan → dispatch) and G3 (lap → Seed) both
+  read the Roadmap now — its plan face and its lap face — and both leave
+  their receipt Log rows there. Three pens become two: the Roadmap plans and
+  registers; the Seed alone flips.
+- Group mapping: P0–P2 in A1-SD-story (three pages), P3 in A2-NA-narrative,
+  P4–P5 in the desks' B groups. Boards with a separate SD03-collection page
+  are grandfathered; the gazette gains the 0.6.0 renumber rows.
+
+## 0.5.0 — 2026-08-24
+
+- **Seven phases, named by their authority pages** (JL 260824: "phase 和 page
+  名字起得一模一样"): Ideation (ideate) → Seed (establish) → Roadmap (route) →
+  Collection (collect) → Narrative (tell) → Section (realize) → Round
+  (respond). The old verbs survive as parenthesized aliases (JL: keep the
+  word in the phase's parentheses); the naming law forbids any future phase
+  from taking a name its authority page does not carry.
+- **Roadmap and Collection promoted to full journey phases** (JL 260824,
+  overruling the engine-inside-P1 design): P1↔P2↔P3 is the establish loop —
+  Seed states gaps, Roadmap plans and a person releases, Collection collects
+  and the settle is written back on the Seed; the loop's only exit is G4.
+- **Gates renumbered G0-G7** with the old G1-G4 gazetted in-file; new G1
+  (skeleton stands), G2 (every gap has a released row or waiver), G3 (lap
+  done-when + settle on the Seed).
+- **Group mapping**: P0-P3 → A1-SD-story, P4 → A2-NA-narrative, P5-P6 → one
+  B group per desk holding sections AND rounds; old layouts grandfathered.
+
+## 0.4.0 — 2026-08-24
+
+- **Ideation-first story order** (JL 260824, with ideation 0.4.0): P0's
+  authority page is A1-SD-story/SD00-ideation, the seed sits at SD01, and G0's
+  receipt reads: SD01-seed exists and its §5 first row binds SD00-ideation
+  back. The separate A0 group is abolished.
+
+## 0.3.0 — 2026-08-24
+
+- **P0 renamed IDEATE** (JL 260824, with ideation 0.3.0: the P0 act is
+  thinking up ideas — "想 idea 的过程,然后才是 seed"): the journey reads
+  Ideate → Establish → Tell → Realize → Respond; authority page `ideation`
+  at `0-paperboard/A0-ID-ideation/`; G0 is `Ideate → Establish`.
+
+## 0.2.0 — 2026-08-23
+
+- **P0's home moves with explore 0.2.0** (JL 260823: the nursery belongs in
+  the paper's own board, before the seed): the phase table reads
+  `explore (paperboard/A0)` and notes the repo is minted WITH that page; the
+  standing IdeaBoard is retired unshipped.
+- **G0's receipt becomes same-board**: SD00-seed exists in this board's
+  A1-SD-story with §5's first row binding the Explore Page back; an idea
+  graduating into a DIFFERENT paper additionally requires that new repo to
+  exist as a submodule.
+
+## 0.1.0 — 2026-08-23
+
+- **Created as the thin five-phase machine** over the six Page Types (JL
+  260823): owns gates G0-G4 and phase receipts only; explicitly NOT a revival
+  of the deleted S01-S10 stage lane, which owned content contracts and
+  tooling. Gates are grep-able assertions over existing pages; phase is read,
+  not stored, per telling from P2 on; advancement is never scheduled (ARIS
+  external-cadence rule). Terminology law: journey phase ≠ Page phase.

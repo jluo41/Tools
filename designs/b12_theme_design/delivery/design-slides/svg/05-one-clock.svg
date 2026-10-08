@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>One change per Job, so every difference has one cause</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">One change per Job, so every difference has one cause</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A new goal, a new method version or a new inputs version each starts a new Job.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">To compare two methods, run sibling Jobs on the same goal and the same inputs.</text>
+<text x="60.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="213.1" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The Block&#x27;s Map lays goals against methods, and each cell holds its chain of Jobs.</text>
+<rect x="60.0" y="260.1" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="288.5" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start"></text>
+<text x="306.0" y="288.5" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">M01 by goal</text>
+<text x="615.3" y="288.5" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">M03 by insight</text>
+<text x="924.7" y="288.5" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">M04 by insight</text>
+<text x="74.0" y="334.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">G01 &lt;goal&gt;</text>
+<text x="306.0" y="334.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j01 · i1</text>
+<text x="615.3" y="334.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j02 · i1 → j05 · i2</text>
+<text x="924.7" y="334.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j03 · m2 · i2</text>
+<line x1="60.0" y1="356.8" x2="1220.0" y2="356.8" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="385.4" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">G02 &lt;goal&gt;</text>
+<text x="306.0" y="385.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<text x="615.3" y="385.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j04 · i1</text>
+<text x="924.7" y="385.4" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j06 · m2 · i1</text>
+<line x1="60.0" y1="407.5" x2="1220.0" y2="407.5" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="436.1" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">G03 &lt;goal&gt;</text>
+<text x="306.0" y="436.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j07 · i2</text>
+<text x="615.3" y="436.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<text x="924.7" y="436.1" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<line x1="60.0" y1="458.2" x2="1220.0" y2="458.2" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="260.1" x2="292.0" y2="458.2" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="601.3" y1="260.1" x2="601.3" y2="458.2" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="910.7" y1="260.1" x2="910.7" y2="458.2" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="260.1" width="1160.0" height="198.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+<text x="60.0" y="501.4" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">A row is one goal&#x27;s history: each → is a new Job that changed one thing. A column is one method across goals.</text>
+</svg>

@@ -1,0 +1,99 @@
+# The base workbench's own Guide (family `shared`): Guide › Description, Method, RoadMap Draw.
+# Loaded by servers/workbench/guide_families.py; the same shape for every theme's guide/guide.yaml.
+# Paths: guide/… related/… or a module are relative to this server folder; skill:<name>/<rest>
+# is a skill's file; Tools/… is SPACE-relative.
+family: shared
+label: Workbench
+presenter: shared_workbench.py
+standalone: true
+table: skill:workbench-studio/ref/workbench-table.md
+papers_table: related/papers.md
+description: 'The base workbench is what every theme reuses instead of owning a copy: the Block · Job
+  · Task frame with its six Spaces, the Runs panel, Studio and the Guide; with no theme on top it is the
+  vanilla workbench. Its Studio opens, creates and saves the Excalidraw drawings of any Page or Board,
+  and keeps a chat and a terminal beside them; its Guide explains how each Workbench family works. It
+  has no Board and no data of its own.'
+skills:
+- skill: workbench-studio
+  role: 'Studio: the drawing canvas, chat and terminal every workbench reuses'
+- skill: workbench
+  role: 'The Workbench contract: storage, surface, writer and boundary'
+method:
+- - What is shared
+  - 'The frame (frame.py: levels, six Spaces, third row, vanilla defaults) and two parts. Guide: each
+    theme''s own guide/guide.yaml and related/papers.md, loaded by guide_families.py, the presenter workbench_guide.py
+    and the mount script guide-mount.js. Studio: the Excalidraw editor xcal.py with its proxy excalidraw_proxy.py
+    and boot script xcal-boot.js, the chat chat.py and turnring.py, the terminal term.py, and the ✨ pens
+    autodraw.py and autodeck.py. The host loads every workbench-* folder as one live namespace, so a family
+    imports these by name and never copies them.'
+- - Mount Guide on a family's page
+  - The family's presenter calls mount_guide() with its own Space row. The Guide button goes first on
+    that row and opens Description, Method, RoadMap Draw and Related Paper from the family's entry. Inside
+    a Board the folder patterns resolve against that Board; on this site (/w/shared) they stay patterns.
+- - Prepare a drawing from source
+  - 'A design drawing is written by a script beside it, studio/<name>.py, which builds the scene from
+    the text that holds the facts (this Guide''s RoadMap Draw is Tools/designs/b03_project_workbench/studio/s02-workbench-shared/, drawn by its build_s02_workbench_shared.py; a paper''s
+    is studio/make_<name>.py). The .excalidraw file is generated: change the script or its source and
+    rerun it, never the drawing. A RoadMap with a Workbench Table is drawn from that table each time Guide
+    opens.'
+- - Follow the Studio style
+  - 'Every generated scene keeps the style in workbench-studio/ref/draw.md: transparent boxes, one colored
+    stroke per role, every label bound inside its box, every arrow bound at both ends, Comic Shanns, and
+    a compact span. ✨ Draw it (autodraw.py) authors a scene from the page''s own Markdown under the same
+    rules and refuses a hand-drawn scene.'
+- - Open, create and save
+  - 'xcal.py serves a scene to the Excalidraw app through the proxy; xcal-boot.js seeds the canvas from
+    the file, never from browser storage. A missing Page or Board scene is created empty on first open.
+    Opening never saves: the first stroke arms the save, each save carries the revision it opened, and
+    a stale revision shows a conflict instead of overwriting. Guide''s canvases open read-only (guide=1).'
+- - Chat and run beside the drawing
+  - The Studio tab stages the drawing above the chat. The chat (GUI) or the real CLI in a terminal (TUI)
+    works on the Page or Board in view; when the person asks, the chat may redraw that page's own scene,
+    and a kept session is saved under the page's studio/chat/.
+- - Write the Workbench Table, then check it
+  - 'Each workbench lists its runs in ref/workbench-table.md: Space · View · Run type · Agent · Skill
+    · Person signs. One agent writes the table and a different agent reviews it; table-workbench --check
+    fails a missing agent or skill, and Guide draws the RoadMap from the table.'
+- - Keep ownership
+  - Shared parts never take over a family's content. Guide never saves; Studio writes only the scene,
+    session or deck it was asked for, through its own route; every other write stays with the family's
+    own skill.
+spaces: []
+folders:
+- - Guide / families
+  - Shared Guide owner
+  - servers/workbench/guide_families.py
+  - guide_families.py
+- - Guide / presenter
+  - Shared Guide owner
+  - servers/workbench/workbench_guide.py
+  - workbench_guide.py
+- - Studio / draw
+  - Studio owner
+  - servers/workbench/xcal.py + excalidraw_proxy.py + assets/xcal-boot.js
+  - xcal.py
+- - Studio / chat and terminal
+  - Studio owner
+  - servers/workbench/chat.py + turnring.py + term.py
+  - chat.py
+- - Studio / ✨ pens
+  - Studio owner
+  - servers/workbench/autodraw.py + autodeck.py
+  - autodraw.py
+- - Design scenes
+  - Generator owner
+  - Tools/designs/b03_project_workbench/studio/s31-guide/ (the Guide design; the 261002 design in history/)
+  - studio
+- - Guide / this family
+  - Base owner
+  - servers/workbench/guide/guide.yaml + related/papers.md
+  - guide
+explain:
+  roadmap-draw:
+  - /_excalidraw/
+  - board: Tools/designs/b03_project_workbench/studio/s02-workbench-shared/s02-workbench-shared.excalidraw
+  - Workbench design
+  - first
+boundary: The base workbench is what every theme reuses. Guide explains each family and never saves; Studio
+  opens and saves drawings and runs chat and terminal through its own routes. Each family keeps its own
+  Spaces, content and writers.

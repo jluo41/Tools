@@ -2,7 +2,7 @@
 
 The console's ACTION story: the AI panel labels, the researcher ADJUDICATES.
 This router serves, read-only, the artifacts a subjective-label project already
-produces on disk (see Tools/plugins/subjective-label) — guideline versions,
+produces on disk (see Tools/plugins/haipipe-toolkit/skills/2_theme/labeling) — guideline versions,
 gallery, trajectory, state — plus the case universe those labels attach to.
 The ONLY write is the researcher's own decision, appended to an audit file the
 panel never touches (human_decisions.jsonl).

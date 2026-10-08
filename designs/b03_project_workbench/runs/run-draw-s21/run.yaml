@@ -1,0 +1,24 @@
+run: run-draw-s21
+kind: soft
+type: draw
+scope: Tools/designs/b03_project_workbench
+target: s21
+ticket: run-draw-s21.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1008
+writes:
+- Tools/designs/b03_project_workbench/studio/s21_project-run-skill/s21_project-run-skill.md
+- Tools/designs/b03_project_workbench/studio/s21_project-run-skill/build_s21_project_run_skill.py
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-board
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-job
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio
+- Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-slide
+- Tools/plugins/haipipe-toolkit/servers/workbench/frame.py
+feeds:
+- reports/q05_skill_per_level
+- reports/q08_workbench_base

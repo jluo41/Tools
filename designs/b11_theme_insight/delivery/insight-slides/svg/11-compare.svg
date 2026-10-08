@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>Every answer gets a status against the previous Job</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Every answer gets a status against the previous Job</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The rule for &quot;held&quot; is fixed in the release before any outcome, not by whoever reads the result.</text>
+<rect x="60.0" y="180.3" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">status</text>
+<text x="306.0" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">means</text>
+<text x="74.0" y="254.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">new question</text>
+<text x="306.0" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">first asked in this release: not yet a finding</text>
+<line x1="60.0" y1="277.0" x2="1220.0" y2="277.0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="305.6" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">new finding</text>
+<text x="306.0" y="305.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a question asked before now has an answer</text>
+<line x1="60.0" y1="327.7" x2="1220.0" y2="327.7" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="356.3" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">held</text>
+<text x="306.0" y="356.3" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the release&#x27;s rule says it is the same</text>
+<line x1="60.0" y1="378.4" x2="1220.0" y2="378.4" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="407.0" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">changed</text>
+<text x="306.0" y="407.0" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">it moved beyond the rule, and the moved clock is its cause</text>
+<line x1="60.0" y1="429.1" x2="1220.0" y2="429.1" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="457.7" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">dropped · not</text>
+<text x="74.0" y="482.4" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">comparable</text>
+<text x="306.0" y="457.7" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">answered before and not now · the question itself changed</text>
+<line x1="60.0" y1="504.5" x2="1220.0" y2="504.5" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="180.3" x2="292.0" y2="504.5" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="180.3" width="1160.0" height="324.2" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+<text x="60.0" y="547.7" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Held: D counts within a tolerance; I the same direction; K the same sign and size; W its ground holds.</text>
+</svg>

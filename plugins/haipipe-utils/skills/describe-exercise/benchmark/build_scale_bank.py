@@ -32,8 +32,8 @@ A PERSON'S FACTOR IS NOT AVAILABLE TO EVERY PERSON, AND THAT IS THE POINT
 ================================================================================
 163 of 421 patients with a gradeable bout never log enough of them to earn one.
 They are not a rounding error, they are 39% of the people, and they are exactly
-who the device tier is for. A ladder whose top rung reaches 61% of the board is
-why the lower rungs are not optional.
+who the device tier is for. A ladder whose top step reaches 61% of the board is
+why the lower steps are not optional.
 
 WHY THE BUILDER READS METReference AND NOT METValue
 ================================================================================
@@ -74,7 +74,7 @@ OUT = ROOT / "_WorkSpace/ExternalStore/exnorm_scale"
 MIN_ROWS = 100          # below this a vendor factor is one clinic's habit
 MIN_PATIENTS = 15       # and below this it is a handful of people
 MIN_CALIB = 5           # a person needs this many of their own bouts to earn one
-MIN_CALIB_PA = 2        # and this many OF THAT ACTIVITY for the narrowest rung
+MIN_CALIB_PA = 2        # and this many OF THAT ACTIVITY for the narrowest step
 
 
 def _head():
@@ -95,7 +95,7 @@ def device_rows(as_of: str):
     # METReference, never METValue. See the module docstring.
     g["comp"] = pd.to_numeric(res.METReference, errors="coerce").values
     # The COMPENDIUM code, not the vendor's. It is what the door looks the
-    # narrowest rung up by, and it usefully merges vendor codes that mean the
+    # narrowest step up by, and it usefully merges vendor codes that mean the
     # same activity: Validic 1001 and Nokia 1001 are both walking, and one
     # person's walks should not be split across two keys.
     g["code"] = res.ActivityCode.values
@@ -158,9 +158,9 @@ def _calib(g: pd.DataFrame):
 
 
 def person_activity_rows(as_of: str, cal: pd.DataFrame):
-    """One row per (patient, COMPENDIUM code). The narrowest rung, and the one
+    """One row per (patient, COMPENDIUM code). The narrowest step, and the one
     with the least material: a person's first five bouts rarely cover more than
-    two activities, so this rung is thin by construction and the ladder below it
+    two activities, so this step is thin by construction and the ladder below it
     carries most of the traffic."""
     out = []
     for (pid, code), d in cal[cal.code.notna()].groupby(["PatientID", "code"]):
@@ -260,7 +260,7 @@ The patient-hash split is irrelevant to this tier and is deliberately ignored --
 a personal factor is not supposed to generalise to other people.
 
 163 of 421 patients never log enough bouts to earn one and always fall through
-to `device`. That is 39% of the people, and it is why the lower rungs of the
+to `device`. That is 39% of the people, and it is why the lower steps of the
 ladder are not optional.
 
 ## The person_activity tier
@@ -271,7 +271,7 @@ so one person's walks are not split across Validic 1001 and Nokia 1001.
 
 It is thin by construction: a person's first {minc} bouts cover one activity for
 94 patients and two for 89, so most people can never populate more than a couple
-of pairs. The rung above a thin rung is not wasted -- it is the reason the
+of pairs. The step above a thin step is not wasted -- it is the reason the
 ladder falls through instead of failing.
 """
 

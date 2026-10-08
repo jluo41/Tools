@@ -1,0 +1,16 @@
+run: run-draw-s01
+kind: soft
+type: draw
+scope: Tools/designs/b03_project_workbench
+target: s01
+ticket: run-draw-s01.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1006
+writes:
+- studio/s01-overall-tree-structure/
+feeds:
+- Q01

@@ -1,7 +1,7 @@
 """
 Stage 2: a typed item becomes an FDA product, or honestly nothing.
 
-THE LADDER, and what each rung is worth
+THE LADDER, and what each step is worth
 ================================================================================
     A  NDC -> FDA product                  GOOD   the drug's own code resolved
                                                   in the FDA's own file. There

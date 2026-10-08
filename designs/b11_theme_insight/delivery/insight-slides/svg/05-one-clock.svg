@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<title>One change per Job, so every changed answer has one cause</title>
+<rect width="1280" height="720" fill="#ffffff"/>
+<text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">One change per Job, so every changed answer has one cause</text>
+<text x="60.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="133.3" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each step to the next Job moves the data or the code, never both.</text>
+<text x="60.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
+<text x="83.0" y="173.2" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Backfill (new code on old data) is one more cell, not a special case.</text>
+<rect x="60.0" y="220.2" width="1160.0" height="46.0" rx="3" fill="#f2f2f0" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start"></text>
+<text x="306.0" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;d&gt;v1</text>
+<text x="615.3" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;d&gt;v2</text>
+<text x="924.7" y="248.6" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">&lt;d&gt;v3</text>
+<text x="74.0" y="294.8" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">p1</text>
+<text x="306.0" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j01 · start</text>
+<text x="615.3" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j02 · data moved</text>
+<text x="924.7" y="294.8" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<line x1="60.0" y1="316.9" x2="1220.0" y2="316.9" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="345.5" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">p2</text>
+<text x="306.0" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">+ backfill p2 × &lt;d&gt;v1</text>
+<text x="615.3" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j03 · code moved</text>
+<text x="924.7" y="345.5" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">j04 · data moved</text>
+<line x1="60.0" y1="367.6" x2="1220.0" y2="367.6" stroke="#d4d4d0" stroke-width="1"/>
+<text x="74.0" y="396.2" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">p3</text>
+<text x="306.0" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<text x="615.3" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">—</text>
+<text x="924.7" y="396.2" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">+ the next release</text>
+<line x1="60.0" y1="418.3" x2="1220.0" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="292.0" y1="220.2" x2="292.0" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="601.3" y1="220.2" x2="601.3" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<line x1="910.7" y1="220.2" x2="910.7" y2="418.3" stroke="#d4d4d0" stroke-width="1"/>
+<rect x="60.0" y="220.2" width="1160.0" height="198.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+<text x="60.0" y="461.5" font-size="21" fill="#1f5aa8" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">The Board&#x27;s Map: data versions as columns, releases as rows. Jobs two clocks apart are never compared.</text>
+</svg>

@@ -6,7 +6,7 @@ Model Serving, SageMaker — same wire contract: GET /ping, POST /invocations
 with a JSON payload) as tools an agent can call. The score always comes from
 the endpoint verbatim; no LLM ever produces or edits the number.
 
-Wire-contract provenance: mirrors haipipe-toolkit/skills/task/4_individual/
+Wire-contract provenance: mirrors haipipe-toolkit/skills/1_base/task/4_individual/
 haipipe-individual-inference/src/client.py (Endpoint_Set payload POST). If the
 upstream contract changes, re-sync.
 
