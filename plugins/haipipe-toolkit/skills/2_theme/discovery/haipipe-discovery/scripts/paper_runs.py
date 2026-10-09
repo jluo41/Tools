@@ -219,7 +219,8 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
     runs_dir = topic / "runs"
     results_dir = topic / "results"
     runs = (
-        {path.stem: path for path in runs_dir.glob("*.sh") if path.is_file()}
+        # A soft Run (`run-<type>-<target>`, such as a Page's Delivery ticket) is never a Paper Run.
+        {path.stem: path for path in runs_dir.glob("*.sh") if path.is_file() and not path.stem.startswith("run-")}
         if runs_dir.is_dir()
         else {}
     )
