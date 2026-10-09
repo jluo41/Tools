@@ -38,14 +38,16 @@ questions:
   question: With no live page loading the chat drawer, do we keep, move or retire the in-page chat and terminal?
   hypothesis: 'Retire it from the server and keep the code here: the right panel is Disk and Runs, and a Run''s
     prompt already opens the work in Claude Code.'
-  acceptance: Answered when the decision is recorded; if retired, the server no longer mounts the chat or
-    terminal, the code sits in legacy/ with chat-code.md's map, and the tests pass.
+  acceptance: Answered when the decision is recorded; if retired, the server no longer mounts the chat or terminal,
+    the code sits in legacy/ with chat-code.md's map, and the tests pass.
   work: []
   report: reports/q01_in_page_chat/q01_in_page_chat.md
 - id: Q02
   title: How does a workbench Run reach Claude Code?
-  question: How does a Run's button hand the work to Claude Code working in the project folder, by headless run, by
-    an MCP server over the workbench, or by a request queue the MCP reads?
+  question: 'How does a Run''s button hand the work to Claude Code working in the project folder, by headless run,
+    by an MCP server over the workbench, or by a request queue the MCP reads? The In-Lab Console already has one
+    answer: its action list, dispatched alike by a click and by the agent, acts gated by Allow/Deny (Tools/blueprints/b03_inlab-human/j04_haichat
+    Q02; evidence b03 j02 studio s21).'
   hypothesis: 'The MCP first (B), then the queue (C): one agent under its own permission prompts; a headless runner
     (A) only for unattended hard Runs, with a fixed tool list.'
   acceptance: Answered when one way is built and a Run started from the workbench lands a pass in its run folder.

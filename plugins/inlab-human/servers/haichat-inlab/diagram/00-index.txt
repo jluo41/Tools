@@ -11,12 +11,16 @@ file, scan top-to-bottom.
   📄 01-overview.txt          what it is · the beside-a-thread picture · 2 invariants
   🌱 02-how-it-came.txt       genesis: the haipipe pipeline it sits on + why a console
   🧱 03-boundaries.txt        who owns what · the ONE shared engine · env-mounted stores
-  🔌 04-backend-api.txt       FastAPI: 4 routers → engine / label / case / task stores
+  🔌 04-backend-api.txt       FastAPI: 5 routers → engine / label / case / task / message
   🖥️  05-frontend-shell.txt    rail groups · dock layout · two-drivers-one-reducer
   🧬 06-data-lineage-views.txt Raw→Source→Record→Case · the human-type axis
   📌 07-case-builder.txt      Trigger / Key / CaseFn — the case is BUILT, not found
   ✏️  08-labeling-and-tasks.txt subjective-label PI inbox · the tasks feed
   🔗 09-workspace-wiring.txt  how _WorkSpace parquet stores reach the console (the bridge)
+  🧩 10-ui-elements.txt      every view and component, from the code  (generated)
+  🔌 11-routes.txt           every route the app mounts, from the code (generated)
+
+  10 and 11 are written by build_ui_docs.py; rerun it, never edit them.
 
 ─§ The one-paragraph version ─────────────────────────────────────
 
@@ -29,11 +33,13 @@ file, scan top-to-bottom.
 ─§ Where the code lives ──────────────────────────────────────────
 
   plugins/inlab-human/servers/haichat-inlab/
-  ├── main.py            FastAPI app: 4 routers + SPA + /individual /group routes
+  ├── main.py            FastAPI app: 5 routers + SPA + /individual /group routes
   ├── console_api.py     patients · models · predict · datasets (engine-backed)
   ├── labeling_api.py    cases (record-driven) · labeling dims · decisions
   ├── tasks_api.py       the haipipe task feed (INLAB_PROJECTS_ROOT)
   ├── haichat_api.py     WS /ws/haichat — Agent SDK + engine-as-MCP
+  ├── message_api.py     after ▶Run: compose · judge · feedback
+  ├── fixtures/          SYNTHETIC store + stub endpoint: run_fixture.sh
   ├── diagram/           ← you are here
   └── web/               React + Vite SPA (Console.tsx, useConsole.ts, views.ts…)
 

@@ -18,12 +18,40 @@ sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/project/ha
 import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
 
 INK, RED, GREEN = canvas.INK, canvas.RED, canvas.GREEN
-LINE = 24                                           # one text line's height at 16 px, with room to spare
+LINE = 28                                           # one text line's height at 16 px, with room to spare
 
 
 class Sheet:
     def __init__(self):
         self.els = []
+        self.files = {}
+
+    def image(self, path, x, y, w, frame=None, px=900, border=True):
+        """A screenshot, embedded small: resized to at most `px` wide and stored as JPEG (quality 72), so a drawing
+        with many shots stays a few MB. Returns its drawn height. A missing file draws nothing and returns 0."""
+        import base64
+        import hashlib
+        import io
+        from PIL import Image
+        path = Path(path)
+        if not path.is_file():
+            return 0
+        im = Image.open(path).convert("RGB")
+        if im.width > px:
+            im = im.resize((px, round(im.height * px / im.width)))
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=72, optimize=True)
+        raw = buf.getvalue()
+        fid = hashlib.sha1(raw).hexdigest()[:20]
+        self.files[fid] = {"mimeType": "image/jpeg", "id": fid, "created": 1,
+                           "dataURL": "data:image/jpeg;base64," + base64.b64encode(raw).decode()}
+        w = min(w, im.width)                       # never enlarge a small element: draw it at its own size
+        h = im.height * w / im.width
+        self._el("image", x, y, w, h, strokeColor="transparent", status="saved", fileId=fid, scale=[1, 1],
+                 frameId=frame["id"] if frame else None)
+        if border:
+            self.box(x - 1, y - 1, w + 2, h + 2, frame)
+        return h
 
     def _el(self, kind, x, y, w, h, **extra):
         e = {"id": f"e{len(self.els)}", "type": kind, "x": x, "y": y, "width": w, "height": h, "angle": 0,
@@ -78,4 +106,4 @@ class Sheet:
     def save(self, out, source):
         for e in canvas.off_palette(self.els):
             print("off the studio palette:", e["type"], e.get("text", "")[:40])
-        canvas.write(out, self.els, source)
+        canvas.write(out, self.els, source, files=self.files)

@@ -74,19 +74,13 @@ than copying them into the image — patient data must never enter a container i
 
 ## API
 
-| Route | Returns |
-|---|---|
-| `GET /api/patients` | roster |
-| `GET /api/patients/{id}` | curated chart **as of the prediction date** (later rows withheld) |
-| `GET /api/patients/{id}/raw` | every table/column/row; later rows **flagged**, not hidden |
-| `GET /api/models` | packaged models + whether their endpoint answers |
-| `POST /api/predict` | `{patient_id, model}` → endpoint response + data-gap report |
-| `GET /api/health` | config + live endpoints |
-| `GET /api/cases` | the case universe (one case = one annotation point), label history joined; `?human_id=` `?q=` |
-| `GET /api/labeling/dimensions` | mounted subjective-label projects (status, κ, labels) |
-| `GET /api/labeling/{dim}` | one dimension: state, guideline+versions, gallery, trajectory, the PI's inbox |
-| `POST /api/labeling/{dim}/decision` | the ONE labeling write: the researcher's adjudication → `human_decisions.jsonl` |
-| `WS /ws/haichat` | HaiChat agent session (Agent SDK + engine-as-MCP). Client sends `user`/`approval_response`/`interrupt`; server sends `ready`/`delta`/`assistant`/`tool_call`/`tool_result`/`approval_request`/`done`/`error` |
+Every route the app mounts, with its router and what it returns, is listed in
+[`diagram/11-routes.txt`](diagram/11-routes.txt), generated from `main.app.routes` by
+`diagram/build_ui_docs.py` (rerun it after a route changes; never edit the list by hand). Every view
+and component is listed the same way in [`diagram/10-ui-elements.txt`](diagram/10-ui-elements.txt).
+The WebSocket `/ws/haichat`: the client sends `user` / `approval_response` / `interrupt`; the server
+sends `ready` / `delta` / `assistant` / `tool_call` / `tool_result` / `approval_request` / `done` /
+`error`.
 
 HaiChat extras via env: `INLAB_AGENT_MODEL` (optional model override for the
 agent; default = the local Claude Code default).

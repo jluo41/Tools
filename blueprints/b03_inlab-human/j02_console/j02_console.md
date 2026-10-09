@@ -25,4 +25,45 @@ questions:
   acceptance: Answered when every persona has one home and the console reads it, never copies it.
   work: []
   report: reports/q01_console_vs_toolkit/q01_console_vs_toolkit.md
+- id: Q02
+  title: Copy each human to json, or read the record store in place?
+  question: The engine reads one json per human, so a build step copies each RecSet into InLabStore/<dataset>/patients/
+    (a second copy that can go stale, and one more copy of patient data to secure); an adapter would read 2-RecStore
+    per request instead (one source of truth, a parquet filter per request). Which way? (JL's question in diagram/09-workspace-wiring.txt;
+    drawn in studio s02.)
+  hypothesis: 'The adapter: one source of truth and no extra copy of patient data outweigh a cached parquet filter
+    per request.'
+  acceptance: Answered when one way is chosen with its reason, and the other is removed from the docs.
+  work: []
+  report: reports/q02_copy_or_read/q02_copy_or_read.md
+- id: Q03
+  title: How does the tasks feed read the project ladder?
+  question: tasks_api.py reads examples/Project-*/tasks/<A01_*> (a letter series) and classifies each task as individual
+    or group; today's projects are examples-N-*/Project-*/tasks/bNN_*/jNN_*/tNN_*. How should the feed find and
+    scope tasks on the ladder? (s33 issue 5.)
+  hypothesis: Read Blocks, Jobs and Tasks the way the project skill defines them, from every examples-* world, with
+    the scope read from each Task's face.
+  acceptance: Answered when the feed lists a real project's Tasks under their Blocks and Jobs, at the right scope,
+    on a fixture tree.
+  work: []
+  report: reports/q03_tasks_on_the_ladder/q03_tasks_on_the_ladder.md
+- id: Q04
+  title: One look for the console and the workbench?
+  question: 'The console draws in a Databricks/Mattermost grammar (rail, tab strip, dock); the toolkit''s workbench
+    frame has its own (level row, Spaces row, view row, light tables, a Runs panel). Should they share one look,
+    or keep two? (Evidence: studio s32''s side by side; s01''s ladder against the toolkit''s.)'
+  hypothesis: Share the parts both have (tables, the Runs panel's row, buttons and their states); keep the console's
+    rail and dock, which the frame has no counterpart for.
+  acceptance: Answered when each element of s32 is marked share or keep, with a reason.
+  work: []
+  report: reports/q04_one_look/q04_one_look.md
+- id: Q05
+  title: Build or drop the placeholder views?
+  question: 'Seven views are a placeholder at Group scope (Raw, Source, Record, Internal, External, Model, Checklist),
+    and Internal and External at Individual too. Which are built next, and which leave the rail at that scope? (Evidence:
+    studio s11, s12.)'
+  hypothesis: Drop what has no Group meaning yet from the Group rail; build Internal first (the DIKW cards it promises).
+  acceptance: Answered when every placeholder has a build-or-drop decision and the rail shows only built views.
+  work: []
+  report: reports/q05_placeholder_views/q05_placeholder_views.md
 ```

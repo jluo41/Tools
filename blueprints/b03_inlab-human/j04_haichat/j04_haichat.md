@@ -23,4 +23,17 @@ questions:
   acceptance: Answered when j05_chat's Q02 records whether HaiChat's pattern is adopted, with what changes.
   work: []
   report: reports/q01_haichat_as_bridge/q01_haichat_as_bridge.md
+- id: Q02
+  title: Can the console's action list become an MCP that drives a workbench?
+  question: 'The console lets a person and the agent drive the UI through one list of actions (web/src/actions.ts:
+    view/open, panel/set, highlight/set, model/select, run/start …), the agent''s tools dispatching the same ConsoleAction
+    a click does, gated by Allow/Deny when they act. Could the toolkit''s workbench expose its own actions the same
+    way, as an MCP? (Linked both ways with Tools/blueprints/b01_haipipe-toolkit/j05_chat Q02; evidence: studio j02
+    s21.)'
+  hypothesis: 'Yes: one action list per workbench, served as an MCP; navigation auto, acts gated, every agent act
+    badged where it happened.'
+  acceptance: Answered when j05_chat Q02 records whether this pattern is adopted, and a first action list is drafted
+    for the workbench.
+  work: []
+  report: reports/q02_actions_as_mcp/q02_actions_as_mcp.md
 ```

@@ -1,7 +1,7 @@
-🔌  Backend — FastAPI: 4 routers over stores + engine
+🔌  Backend — FastAPI: 5 routers over stores + engine
 ═══════════════════════════════════════════════════════════════════
 
-main.py builds ONE app: mounts four APIRouters, then the built SPA at "/".
+main.py builds ONE app: mounts five APIRouters, then the built SPA at "/".
 Each router owns one surface and reads one kind of store. Only console_api
 touches the shared engine; the others read files directly.
 
@@ -11,12 +11,13 @@ touches the shared engine; the others read files directly.
    ├─ include  console_api.router     🔧 engine-backed (patients/models/predict)
    ├─ include  labeling_api.router    ✏️ cases + subjective-label
    ├─ include  tasks_api.router       📋 the haipipe task feed
-   ├─ include  haichat_api.router     🤖 WS /ws/haichat (Agent SDK)
+   ├─ include  haichat_api.router     🤖 WS /ws/haichat (Agent SDK) + POST /api/checklist
+   ├─ include  message_api.router     ✉️ after ▶Run: compose · judge · feedback (+ personas, runrecord)
    ├─ GET /individual  ┐  client-side SPA routes → hand back index.html
    ├─ GET /group       ┘  (a refresh on either must not 404)
    └─ mount "/"  → web/dist  (503 with a fix hint if unbuilt)
 
-─§ The route map ─────────────────────────────────────────────────
+─§ The route map (abridged; the full list is 11-routes.txt, generated) ─────────────────────────────────────────────────
 
   +-------------------------------+------------------------------------------+
   | 🌐 Route                      | 📤 Returns / reads                       |
@@ -44,6 +45,9 @@ touches the shared engine; the others read files directly.
                     authoritative) | INLAB_LABEL_STORE (legacy single, all datasets)
   tasks_api    ─▶ 🗂️ INLAB_PROJECTS_ROOT  (examples/Project-*/tasks)
   haichat_api  ─▶ 🤖 Claude Agent SDK + 🔧 the SAME engine as MCP tools
+  message_api  ─▶ 🧾 the toolkit's individual-inference report and judge personas
+                   (INLAB_PERSONA_ROOT) · run records in INLAB_RUN_STORE; `observed`
+                   is stripped before compose and judge (the wall)
 
 ─§ Multi-dataset: scoping the shared engine ──────────────────────
 
