@@ -20,6 +20,10 @@ B  Claude Code ─▶ an MCP server over the workbench: next Run · run card · 
 C  button ─▶ a request in runs/<run>/ ─▶ the MCP inbox ─▶ a Claude Code session does it
 ```
 
+A working reference exists: inlab-human's console runs a Claude Agent SDK drawer that blocks every tool call on
+an Allow or Deny in the browser (`plugins/inlab-human/servers/haichat-inlab/haichat_api.py`, see
+`b03_inlab-human/j04_haichat`).
+
 What each must solve: permissions (a headless run cannot ask; a fixed tool list per run type), security (a page
 that starts an agent needs loopback or real auth), lifecycle (a long run outlives a server restart: detached, logged,
 resumed by session id), collisions (two agents on the same files: a lock per Block), and context (start in the SPACE
