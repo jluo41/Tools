@@ -231,7 +231,7 @@ def check(root):
     # `<!-- s8-skip -->` on its own line exempts the NEXT fenced block, for the one
     # honest case: a snippet whose whole point is to CREATE the files it names.
     for md in sorted(root.rglob("*.md")):
-        if "results" in md.parts: continue
+        if "results" in md.parts or "result" in md.parts: continue   # a Result is never edited (runs/<run>/result/ since 0.31)
         armed = skip = False
         for i, line in enumerate(md.read_text().splitlines(), 1):
             if line.strip() == "<!-- s8-skip -->": armed = True; continue
@@ -240,7 +240,7 @@ def check(root):
                 elif skip: skip = False
                 continue
             if skip: continue
-            if "tasks/" in line: continue          # provenance, points at the OLD tree
+            if "tasks/" in line or "work/" in line: continue   # a path line: S16 owns it (work/ is tasks/ renamed, s01-D29)
             for tok in set(TOKEN.findall(line)):
                 if tok in live or tok.rsplit(".",1)[0] in live: continue
                 bad("S8", f"{md.relative_to(root.parent)}:{i}", f"names something that does not exist: {tok}")
@@ -358,7 +358,8 @@ def check(root):
     proj = root.parent if not root.name.startswith("b") else root.parent.parent
     TP = re.compile(r"(?<![A-Za-z0-9_.-])(work|tasks)/((?:[bjt]\d\d_|[A-Z]\d\d_)[A-Za-z0-9_][A-Za-z0-9_.\-/]*)")
     for f in sorted(root.rglob("*")):
-        if not f.is_file() or f.suffix not in (".py", ".yaml", ".yml", ".sh") or "results" in f.parts: continue
+        if not f.is_file() or f.suffix not in (".py", ".yaml", ".yml", ".sh") or "results" in f.parts \
+                or "result" in f.parts or f.name == "run.yaml": continue   # a Result, or a Run card whose moved_from: is history
         for i, l in enumerate(f.read_text(errors="replace").splitlines(), 1):
             if l.lstrip().startswith("#") or "tasks.old/" in l: continue
             for m in TP.finditer(l):

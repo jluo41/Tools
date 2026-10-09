@@ -25,7 +25,7 @@ Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ 
    design question, so both pass); a Job's and a Task's face is its own name plus `.md`.
 2. **Task kind**: a Task face may say `task-kind: page`; a Page Task holds soft Runs only.
    Without the field a Task is a work Task.
-3. **Hard and soft**: a hard Run (`rNN_<slug>`, ticket `.sh` or a runner `.yaml`) writes only
+3. **Hard and soft**: a hard Run (`rNN_<slug>`, ticket `.sh`, `.cmd` where only cmd.exe runs, or a runner `.yaml`) writes only
    its own `result/` and lives in a work Task. A soft Run (`run-<type>-<target>`, ticket `.md`)
    writes into its scope's items, has no `result/`, and may sit at Block, Job or Task. Its name
    carries no date; the date is in its passes. haipipe-run owns the definitions.
@@ -75,6 +75,8 @@ families:
     hard: '^[a-z0-9]+_[a-z0-9_]+$'       # <dataset>_<partition>; its vNNN are passes
   paper:
     block: [venues, related]             # a paper Board's venues and related papers (a meeting is a comments report)
+  cowork:
+    job: [emails, meetings, materials, design]  # a cowork Job's lanes (haipipe-cowork), text only
   labeling:
     task: [labeling]
     hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by subjective-label

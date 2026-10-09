@@ -24,7 +24,7 @@ LADDER_MD = Path(__file__).resolve().parents[1] / "ref" / "ladder.md"
 # the Themes the ladder checks, each by its singular folder and its old plural one (the same table as
 # haipipe-page src/themes.py); cowork/ has its own check; paper/, design/, insight/ keep their family layouts
 LADDER_WORLDS = ("work", "tasks", "discovery", "discoveries", "labeling", "labelings")
-TICKET_EXT = (".sh", ".yaml", ".yml", ".md")
+TICKET_EXT = (".sh", ".cmd", ".yaml", ".yml", ".md")   # .cmd: a desktop where only cmd.exe runs (REACH SAFER)
 ORDER = {"ok": 0, "debt": 1, "failed": 2}
 
 
@@ -81,6 +81,8 @@ def family_of(block: Path) -> str:
         return fam
     if "discovery" in field_of(text, "board-kind") or block.parent.name in ("discovery", "discoveries"):
         return "discovery"
+    if "cowork" in field_of(text, "board-kind") or block.parent.name == "cowork":
+        return "cowork"
     if block.name.startswith("Labeling-") or block.parent.name in ("labeling", "labelings"):
         return "labeling"
     if block.name.startswith("Paper-") or block.parent.name in ("paper", "papers"):
@@ -194,7 +196,7 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
         node.add("failed", "name is neither a hard Run (rNN_<slug>) nor a soft one (run-<type>-<target>)")
     if kind == "soft" and NAMES["soft_dated"].match(name):
         node.add("debt", "soft name carries a date; the date belongs in passes/pNN-<MMDD>/")
-    tickets = [d / f"{name}{e}" for e in ((".sh", ".yaml", ".yml") if kind == "hard" else (".md",))]
+    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".yaml", ".yml") if kind == "hard" else (".md",))]
     ticket = next((t for t in tickets if t.is_file()), None)
     if kind and not ticket:
         node.add("failed", f"no ticket ({tickets[0].name})")

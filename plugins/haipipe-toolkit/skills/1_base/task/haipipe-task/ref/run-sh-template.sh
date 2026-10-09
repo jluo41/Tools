@@ -22,6 +22,12 @@ fail_shape() {
 
 TICKET="$(realpath "$0" 2>/dev/null || echo "$0")"
 RUNS_DIR="$(cd "$(dirname "$TICKET")" && pwd)"
+# One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh writes runs/<run>/result/.
+# The older flat runs/<run>.sh beside results/<run>/ still runs until haipipe-project update moves it.
+RUN_FOLDER=""
+if [ "$(basename "$RUNS_DIR")" = "$(basename "$TICKET" .sh)" ]; then
+  RUN_FOLDER="$RUNS_DIR"; RUNS_DIR="$(cd "$RUN_FOLDER/.." && pwd)"
+fi
 [ "$(basename "$RUNS_DIR")" = "runs" ] || fail_shape "Ticket must live in a Task Folder's runs/ lane"
 
 TASK_FOLDER="$(cd "$RUNS_DIR/.." && pwd)"
@@ -35,9 +41,10 @@ TASKS_DIR="$(cd "$BLOCK_FOLDER/.." && pwd)"
 case "$TASK_SEG" in t[0-9][0-9]_*) : ;; *) fail_shape "Task Folder must be named tNN_<noun>_<qualifier>" ;; esac
 case "$JOB_SEG" in j[0-9][0-9]_*) : ;; *) fail_shape "Job must be named jNN_<noun>_<qualifier>" ;; esac
 case "$BLOCK_SEG" in b[0-9][0-9]_*) : ;; *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;; esac
-case "$(basename "$TASKS_DIR")" in tasks|labelings) : ;; *) fail_shape "Block must be a direct child of tasks/ or labelings/" ;; esac
-# A labelings/ Run mirrors its address below labelings/, so it never shares a folder with a tasks/ Run.
-WORLD_SEG=""; [ "$(basename "$TASKS_DIR")" = "tasks" ] || WORLD_SEG="$(basename "$TASKS_DIR")/"
+# Theme folders are singular (s01-D29): work/ (was tasks/), labeling/ (was labelings/); both names run.
+case "$(basename "$TASKS_DIR")" in work|tasks|labeling|labelings) : ;; *) fail_shape "Block must be a direct child of work/ (tasks/) or labeling/ (labelings/)" ;; esac
+# A labeling Run mirrors its address below the labeling Theme, so it never shares a folder with a work Run.
+WORLD_SEG=""; case "$(basename "$TASKS_DIR")" in work|tasks) : ;; *) WORLD_SEG="labelings/" ;; esac
 [ -f "$TASK_FOLDER/$TASK_SEG.md" ] || fail_shape "Task Folder requires same-stem Page $TASK_SEG.md"
 
 RUN_NAME="$(basename "$TICKET" .sh)"
@@ -45,6 +52,7 @@ case "$RUN_NAME" in r[0-9][0-9]_*) : ;; *) fail_shape "Run must be named rNN_<no
 
 CONFIG_REL="$TASK_SEG/scripts/config/$RUN_NAME.yaml"
 TICKET_REL="$TASK_SEG/runs/$RUN_NAME.sh"
+[ -z "$RUN_FOLDER" ] || TICKET_REL="$TASK_SEG/runs/$RUN_NAME/$RUN_NAME.sh"
 WORKER_REL="$TASK_SEG/scripts/$TASK_NAME.py"
 CONFIG="$JOB_FOLDER/$CONFIG_REL"
 WORKER="$JOB_FOLDER/$WORKER_REL"
@@ -81,6 +89,7 @@ export OUTPUT_ROOT
 
 RUN_REL="$TASK_SEG/$RUN_NAME"
 RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
+[ -z "$RUN_FOLDER" ] || RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/runs/$RUN_NAME/result"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
 NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"

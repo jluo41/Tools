@@ -46,3 +46,19 @@ def test_ok_with_nothing_local_and_no_outputs_is_held(tmp_path):
 def test_a_selftest_seed_is_still_planned(tmp_path):
     runtime = _receipt(tmp_path, "run: r01_table\nstatus: ok\nhost: laptop-selftest\n", "profile.json")
     assert _status(runtime, _fields(runtime)) == "Ready"
+
+
+def test_a_run_in_its_own_folder_pairs_with_its_result(tmp_path):
+    """One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.cmd beside runs/<run>/result/."""
+    from live.runs import _run_folder_receipt, _ticket_files
+    run = tmp_path / "runs" / "r01_table"
+    (run / "result").mkdir(parents=True)
+    (run / "r01_table.cmd").write_text("@echo off\n", encoding="utf-8")
+    (run / "run.yaml").write_text("run: r01_table\nkind: hard\n", encoding="utf-8")
+    (run / "result" / "runtime.yaml").write_text("status: ok\n", encoding="utf-8")
+    (run / "result" / "r01_card.md").write_text("a Result file named like a ticket\n", encoding="utf-8")
+    (tmp_path / "runs" / "r02_old.cmd").write_text("@echo off\n", encoding="utf-8")
+    tickets = _ticket_files(tmp_path / "runs")
+    assert [p.name for p in tickets] == ["r01_table.cmd", "r02_old.cmd"]
+    assert _run_folder_receipt(tickets[0]) == run / "result" / "runtime.yaml"
+    assert _run_folder_receipt(tickets[1]) is None

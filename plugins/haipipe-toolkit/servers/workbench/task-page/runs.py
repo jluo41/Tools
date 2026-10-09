@@ -1257,7 +1257,27 @@ def _ticket_files(runs_dir: Path) -> list[Path]:
         return []
     return [path for path in sorted(runs_dir.rglob("*"))
             if _confined_file(path, runs_dir) and path.suffix in _TICKET_SUFFIXES
-            and _TICKET_NAME.match(path.name) and not path.name.startswith(".")]
+            and _TICKET_NAME.match(path.name) and not path.name.startswith(".")
+            and _is_ticket_place(path, runs_dir)]
+
+
+def _is_ticket_place(path: Path, runs_dir: Path) -> bool:
+    """One folder per Run (haipipe-run 0.31.0): `runs/<run>/<run>.<ext>` is the ticket, and nothing
+    under a Run's `result/` or `passes/` is one; the older flat `runs/<run>.<ext>` still reads."""
+    parts = path.relative_to(runs_dir).parts
+    if any(part in {"result", "passes"} for part in parts[:-1]):
+        return False
+    if len(parts) == 2 and _TICKET_NAME.match(parts[0]) and parts[0] != path.stem:
+        return False                       # a file beside the ticket inside a Run folder
+    return True
+
+
+def _run_folder_receipt(ticket: Path) -> Path | None:
+    """The receipt of a Run in its own folder: `runs/<run>/result/runtime.yaml`."""
+    if ticket.parent.name != ticket.stem:
+        return None
+    receipt = ticket.parent / "result" / "runtime.yaml"
+    return receipt if _confined_file(receipt, ticket.parent) else None
 
 
 def _runtime_for(ticket: Path, runs_dir: Path, results_dir: Path) -> Path | None:
@@ -1398,8 +1418,10 @@ def local_runs(page_src: Path) -> list[dict]:
             fixed["status"] = "Done" if delivery_lanes.get(fixed["target"].split("/")[-1]) == "pass" else "Ready"
             rows.append(fixed)
             continue
-        matches = [(path, base_path) for result_root, base_path in locations
-                   if (path := _runtime_for(ticket, runs_dir, result_root)) is not None]
+        own = _run_folder_receipt(ticket)
+        matches = ([(own, page_dir)] if own is not None else
+                   [(path, base_path) for result_root, base_path in locations
+                    if (path := _runtime_for(ticket, runs_dir, result_root)) is not None])
         runtime, result_base = matches[0] if matches else (None, locations[0][1])
         paired_runtimes.update(path for path, _ in matches)
         fields = _fields(runtime)
@@ -1600,7 +1622,7 @@ def _labeling_runs(page_src: Path) -> list[dict]:
     rows = []
     paired = set()
     for ticket in _ticket_files(runs_dir):
-        runtime = _runtime_for(ticket, runs_dir, results_dir)
+        runtime = _run_folder_receipt(ticket) or _runtime_for(ticket, runs_dir, results_dir)
         if runtime:
             paired.add(runtime)
         fields = _fields(runtime)

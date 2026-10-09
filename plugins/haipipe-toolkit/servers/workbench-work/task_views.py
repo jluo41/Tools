@@ -289,7 +289,7 @@ def runs_panel(space, snap, rows):
             buckets.append([])
     if not kinds:
         return ""
-    fill = lambda row: {"ticket": row.get("ticket") or "<job>/<task>/runs/<run>.sh"}
+    fill = lambda row: {"ticket": row.get("ticket") or "<job>/<task>/runs/<run>/<run>.sh"}
     return panel_markup(space, kinds, buckets, base=HERE, fill=fill, whole=f"the Block {snap['block']}", folded=True)
 
 

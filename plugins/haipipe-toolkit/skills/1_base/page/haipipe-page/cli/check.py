@@ -2426,6 +2426,8 @@ def check_workbench_roster(d, rep):
         for sub in sorted(p for p in page.iterdir() if p.is_dir()):
             if sub.name.startswith("_") or sub.name in names:
                 continue
+            if (sub / f"{sub.name}.md").is_file():
+                continue          # a child with its own face (a Job's Task) is a Page; it is checked as one
             rep.add(WARN, "workbench-not-rostered", f"{page.name}/{sub.name}/",
                     "this subfolder is not on the workbench roster, so no surface, "
                     "writer or boundary is declared for it; add the row first")
@@ -2601,7 +2603,13 @@ def check_template(rep, quiet):
         s_src = re.sub(r"^# .*$", "# S Main 1 · Fixture", src, count=1, flags=re.M)
         (d / "S-Main-1-template.md").write_text(s_src, encoding="utf-8")
 
-        r = subprocess.run([sys.executable, str(HERE / "cli" / "build.py"), str(d)],
+        builder = HERE / "cli" / "build.py"
+        if not builder.is_file():
+            # The static Board site and its builder are retired (haipipe-board 2.0.0, JL 261005):
+            # a Board is read live in the workbench, so there is no build to compare with the
+            # template. Without this the check reported template-build-failed on every Block.
+            return
+        r = subprocess.run([sys.executable, str(builder), str(d)],
                            capture_output=True, text=True)
         if r.returncode != 0:
             rep.add(ERROR, "template-build-failed", "ref/page-template.md",

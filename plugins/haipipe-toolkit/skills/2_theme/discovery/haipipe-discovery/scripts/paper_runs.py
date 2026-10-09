@@ -234,6 +234,14 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
         if results_dir.is_dir()
         else {}
     )
+    # One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh beside runs/<run>/result/.
+    if runs_dir.is_dir():
+        for folder in sorted(p for p in runs_dir.iterdir() if p.is_dir()):
+            ticket = folder / f"{folder.name}.sh"
+            if ticket.is_file():
+                runs[folder.name] = ticket
+            if (folder / "result").is_dir() and not PAGE_RUN_RE.fullmatch(folder.name):
+                results[folder.name] = folder / "result"
     return runs, results
 
 
@@ -368,8 +376,8 @@ def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
             errors.append(f"address-{level}-name-invalid: {path}")
         else:
             parts.append(match.group(1))
-    if bank.name != "discoveries":
-        errors.append(f"address-bank-invalid: {bank}: expected discoveries/")
+    if bank.name not in ("discovery", "discoveries"):    # singular since b03 s01-D29; old name read as alias
+        errors.append(f"address-bank-invalid: {bank}: expected discovery/")
     if errors:
         return None, None, errors
     return ".".join(parts), "".join(parts), errors

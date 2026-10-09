@@ -18,13 +18,15 @@ PROFILES = {"research", "software", "hybrid"}
 GIT_MODES = {"workspace", "submodule"}
 STATES = {"active", "paused", "archived"}
 WORLD_DIRS = {
-    "tasks",
-    "discoveries",
+    # Theme folders are singular (b03 s01-D28, D29; haipipe-page themes.py); the plural
+    # names are read as aliases until every Project has moved.
+    "work", "tasks",
+    "discovery", "discoveries",
     "cowork",        # coordination text + project Boards; diagram/ retired 261003 (declared debt)
-    "papers",
-    "insights",      # older register-kind <Dataset>-InsightBoard/ (new Insight work: a tasks/ Block)
-    "designs",
-    "labelings",     # labeling Blocks; a Job is one dataset with one label (JL 261005)
+    "paper", "papers",
+    "insight", "insights",      # older register-kind <Dataset>-InsightBoard/ (new Insight work: a work/ Block)
+    "design", "designs",
+    "labeling", "labelings",    # labeling Blocks; a Job is one dataset with one label (JL 261005)
     "external",      # applications/ is legacy since 261001: migration debt, not a world
 }
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
