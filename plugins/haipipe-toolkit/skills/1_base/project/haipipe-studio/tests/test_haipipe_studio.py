@@ -129,7 +129,7 @@ class StudioTest(unittest.TestCase):
         designs = SCRIPTS.parents[4].parent.parent / "designs"
         if not designs.is_dir():
             self.skipTest("no design Blocks beside this plugin")
-        self.assertFalse((designs / "b03_project_workbench" / "studio" / "_build" / "canvas.py").exists())
+        self.assertFalse((designs / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "_build" / "canvas.py").exists())
         for f in designs.glob("*/studio/**/*.py"):
             if "history" in f.parts:
                 continue

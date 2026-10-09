@@ -1,7 +1,7 @@
 Inputs: a Block's inputs versions and a Job's fence
 ===================================================
 
-(JL 261007, designed in Tools/blueprints/b12_theme_design s11 · s12 · s13; the ladder is
+(JL 261007, designed in Tools/blueprints/b01_haipipe-toolkit/j12_theme_design s11 · s12 · s13; the ladder is
 haipipe-design/ref/design-ladder.md rule 4.) The design work of a Job sees only its own `inputs/`. This reference
 gives each file's shape; `scripts/make_inputs.py` writes the manifests and the links.
 

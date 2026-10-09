@@ -26,7 +26,7 @@ its four Views (Description, Method, RoadMap Draw, Related Paper) come from
 page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
-`Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
+`Tools/blueprints/b01_haipipe-toolkit/j17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
 
 ## Open
 

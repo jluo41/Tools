@@ -1,6 +1,6 @@
 """The design theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-The design ladder (Tools/blueprints/b12_theme_design, s01-design; the contract is
+The design ladder (Tools/blueprints/b01_haipipe-toolkit/j12_theme_design, s01-design; the contract is
 skills/2_theme/design/haipipe-design/ref/design-ladder.md):
 
     Block  bNN_<app>/                 one application, one channel: its goal list, theory, shared rules

@@ -1,6 +1,6 @@
 # The CoWork family's Guide (servers/workbench-cowork). Loaded by servers/workbench/guide_families.py.
 # Paths: guide/… related/… or a module are relative to servers/workbench-cowork; skill:<name>/<rest>
-# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in Tools/blueprints/b13_theme_cowork).
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in Tools/blueprints/b01_haipipe-toolkit/j13_theme_cowork).
 family: cowork
 label: CoWork
 presenter: coworkboard.py
@@ -90,7 +90,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b13_theme_cowork/studio/s02-cowork-workbench/cowork-workbench-design.excalidraw
+  - board: Tools/blueprints/b01_haipipe-toolkit/j13_theme_cowork/studio/s02-cowork-workbench/cowork-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One CoWork Block owns this workbench: Scope, Work, Check and Delivery Spaces, each with the

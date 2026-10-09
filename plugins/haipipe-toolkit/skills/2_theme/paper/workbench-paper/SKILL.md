@@ -19,7 +19,7 @@ metadata:
 the frame every theme shares (`servers/workbench/`, `servers/workbench/README.md`). This skill is the paper's
 delta: which views each level's Spaces show, where they read, and which run cards their Runs panels list.
 
-The design is drawn in `Tools/blueprints/b16_theme_paper/studio/`: s11 (the Board), s12 (a version), s13 (a
+The design is drawn in `Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/`: s11 (the Board), s12 (a version), s13 (a
 Section), s21 (the skills and Runs), s31 (the Guide by level). The paper's folders are
 `haipipe-paper/ref/paper-ladder.md`. The four-Space page that came before (`/_board/paper-board`) is retired;
 what it showed is kept in [`ref/old-page.md`](ref/old-page.md), since several views below still draw with its

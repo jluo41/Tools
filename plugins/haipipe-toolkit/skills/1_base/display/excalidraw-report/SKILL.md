@@ -101,7 +101,7 @@ Two shapes the person liked for concepts (JL 261005, "things like this is great"
   folder tree with a gray definition beside every entry, then its open questions in red.
   Route arrows box edge to box edge, or around the trees, never through text.
 
-Worked examples: `Tools/blueprints/b03_project_workbench/studio/_build/build_ladder_grid.py` (table) and
+Worked examples: `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/_build/build_ladder_grid.py` (table) and
 `build_ladder_trees.py` (a tree per level, boxes and labelled arrows).
 
 
@@ -136,7 +136,7 @@ frame per Space:  [ Block tab ]   [ Job tab ]   [ Task tab ]   | pop-out, from a
    for how the parts relate, routed in clear channels (never through a box or a caption);
    red dashed for what is open.
 
-Worked example: `Tools/blueprints/b03_project_workbench/studio/s04-studio-and-report/` (`studio_report_ui.py`,
+Worked example: `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s04-studio-and-report/` (`studio_report_ui.py`,
 the screens, their on-disk trees and the pop-outs; `build_s04_studio_and_report.py`, frame 5,
 the logic tree).
 
@@ -215,7 +215,7 @@ previewer draws Nunito as a plain sans and monospace in Menlo; Excalidraw shows 
 fonts. Use ASCII (`->`, `!=`, `x`) in text: symbols such as ✓ → ≠ × may not render.
 
 Helpers (sticky with bound text, mark, mono block, merge-safe write, and the tidy elements)
-are in `ref/elements.md`. Worked example: `Tools/blueprints/b03_project_workbench/studio/_build/`
+are in `ref/elements.md`. Worked example: `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/_build/`
 (`build_project_scratch.py`, `disk_facts.py`, `make.sh`); the merge-safe writer and the previewer
 are `haipipe-studio`'s `scripts/canvas.py` and `scripts/render_png.py`, a studio topic's contract is
 `haipipe-studio`'s.
@@ -242,7 +242,7 @@ person's marks, without their red notes), scales it to one width, straightens it
 figures under a heading frame with a source line each. The frame's name is the contract: rename a
 studio frame and the build names the frames it can find. Rebuild after the studio changes; the
 workbench's Audience Report shows the result (Rebuild report drawing). Designed in
-`Tools/blueprints/b03_project_workbench/studio/s04-studio-and-report/`.
+`Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s04-studio-and-report/`.
 
 
 Boundary

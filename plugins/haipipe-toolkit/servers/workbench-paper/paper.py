@@ -2485,7 +2485,7 @@ def _not_ready_ids(rd):
 
 # ---------------------------------------------------------------- render
 # The Page workbench's grammar (JL 260927; the drawing is
-# Tools/blueprints/b16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
+# Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every

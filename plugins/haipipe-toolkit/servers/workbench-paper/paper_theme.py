@@ -1,6 +1,6 @@
 """The paper theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A paper Board climbs the ladder as Tools/blueprints/b16_theme_paper proposes (Q01, s11-paper-block): the
+A paper Board climbs the ladder as Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper proposes (Q01, s11-paper-block): the
 Board is one paper; its versions are Jobs and its Sections are Page Tasks once those folders exist. Today
 a paper Board holds A1-Story/ (Ideation and Story Pages) and Ba-/Bb- Section groups, so this theme fills
 the Block tab only, from today's folders, with paper.py's own content (JL: carry over what exists) drawn in

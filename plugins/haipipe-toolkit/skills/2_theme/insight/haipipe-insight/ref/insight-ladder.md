@@ -1,7 +1,7 @@
 Insight ladder: the Prototype, the insight Board, and how they work together
 ===========================================================================
 
-(JL 261007 plan C, designed in Tools/blueprints/b11_theme_insight: s00 the thinking, s11 Board, s12 Job, s13 Task,
+(JL 261007 plan C, designed in Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight: s00 the thinking, s11 Board, s12 Job, s13 Task,
 s21 Runs and skills; special boards JL 261008.) Insight sits on the shared ladder as two special boards. The
 **Prototype** holds the questions and the code that answers them; each of its Jobs is one version, a release. The
 **insight Board** holds one dataset and its dated versions; each of its Jobs runs one release on one data version.

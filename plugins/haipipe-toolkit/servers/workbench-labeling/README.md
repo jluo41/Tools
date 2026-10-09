@@ -9,7 +9,7 @@ servers/
 └── workbench-labeling/        🏷 the served face of workbench-labeling
     ├── labeling.py            LabelingMixin: labeling-board, labeling, and the one write door
     ├── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
-    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/)
+    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/b01_haipipe-toolkit/j15_theme_labeling/studio/s02-labeling-workbench/)
 ```
 
 ## Two ways to serve it
@@ -60,7 +60,7 @@ Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/ru
 (`panel_markup`, `PANEL_CSS`, `PANEL_JS`, `SPLIT_CSS`), with Labeling's own gated Run
 cards passed in. Both follow the rules every workbench shares
 (`haipipe-toolkit/servers/README.md` "Adding a workbench"); how they were met is
-recorded in `Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/labeling-shared-rules.md`.
+recorded in `Tools/blueprints/b01_haipipe-toolkit/j15_theme_labeling/studio/s02-labeling-workbench/labeling-shared-rules.md`.
 The engine under `../../skills/2_theme/labeling/engine/` imports nothing from the servers. So:
 
 - **runtime**: independent. The labeling host (`serve.py --only labeling`) is its own process

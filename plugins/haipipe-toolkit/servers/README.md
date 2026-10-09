@@ -162,7 +162,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
      `test | asks | when | source` rows of its own steps; then Why it works; then Reference,
      folded (terms and people with checked links, coined Chinese marked as ours). Every part
      is a fold, open at first except Reference. One made-up
-     example throughout; no file notes on screen. `blueprints/b03_project_workbench/studio/s31-guide/method-canvas.py`
+     example throughout; no file notes on screen. `blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/method-canvas.py`
      draws the canvas's first version from the document; after that the canvas is the source;
    - `table`: the Workbench Table, `ref/workbench-table.md` beside its skill
      (Space · View · Run type · Agent · Skill · Person signs; `skills/0_utils/table-workbench`);
