@@ -8,8 +8,8 @@ close: Each recorded question has a report Page with an answer status, and every
 
 The workbench once carried a chat and a terminal in a side drawer (`servers/workbench/chat.py`, `term.py` and the
 drawer's chat and terminal scripts). No live page loads them any more: the frame's right panel is Disk and Runs, and
-each Run's prompt is one click away. The code is kept here, in `legacy/chat-drawer/`, with a note on where each
-file lived and how it was wired, so it can come back or be reused.
+each Run's prompt is one click away. The code stays where it is and is still served (JL 261009: "don't delete
+it"); `chat-code.md` maps every file, route and dependent, and what retiring it would take (Q01).
 
 The open question is the bridge: how a Run's button hands the work to Claude Code working in the project folder.
 Three ways (JL 261009, "how could I make it as the mcp, which can call the claude code to do it?"):
@@ -34,8 +34,8 @@ questions:
   question: With no live page loading the chat drawer, do we keep, move or retire the in-page chat and terminal?
   hypothesis: 'Retire it from the server and keep the code here: the right panel is Disk and Runs, and a Run''s
     prompt already opens the work in Claude Code.'
-  acceptance: Answered when the server no longer mounts the chat or terminal, the code sits in legacy/chat-drawer/
-    with a note on how it was wired, and the tests pass.
+  acceptance: Answered when the decision is recorded; if retired, the server no longer mounts the chat or
+    terminal, the code sits in legacy/ with chat-code.md's map, and the tests pass.
   work: []
   report: reports/q01_in_page_chat/q01_in_page_chat.md
 - id: Q02
