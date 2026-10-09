@@ -23,25 +23,31 @@ _spec.loader.exec_module(DOCS)
 VIEWS = DOCS.views()                    # [(key, icon, label, group)] from web/src/views.ts
 BLURBS = DOCS.blurbs()                  # {raw|source|record|case: (store, what)}
 
-# what each view reads, as the reader would find it on disk (env var → folder → file), and the route that serves it
+HIDDEN = DOCS.placeholders()            # {view: [scopes where it is a placeholder, so not shown]} (j02 Q05)
+
+# what each view reads, as the reader would find it on disk (env var → folder → file), and the route that serves it.
+# A dataset is a record set read in place ($INLAB_RECORD_STORE, j02 Q02) or, as the fallback, a json copy per human.
+HUMAN = ["$INLAB_RECORD_STORE/<record_set>/Record-<H>.<R>/RecAttr.parquet  (read in place)",
+         "  else $INLAB_DATASET_STORE/<dataset>/patients/<human>.json  (the copy)"]
 DISK = {
-    "raw": ["$INLAB_DATASET_STORE/<dataset>/patients/<human>.json", "  layers.raw.files  (the arrived files, previewed)",
-            "GET /api/patients/{id}/layer/raw"],
-    "source": ["$INLAB_DATASET_STORE/<dataset>/patients/<human>.json", "  source_tables  (every row; later ones ⚠ flagged)",
-               "GET /api/patients/{id}/raw"],
-    "record": ["$INLAB_DATASET_STORE/<dataset>/patients/<human>.json", "  layers.record.tables  (5-min grid, DT_s)",
-               "GET /api/patients/{id}/layer/record"],
-    "case": ["<human>.json record streams  (a row with text = a case)", "$INLAB_LABEL_STORES[<dataset>]  (label overlay)",
+    "raw": ["$INLAB_DATASET_STORE/<dataset>/patients/<human>.json", "  layers.raw.files  (the arrived files, previewed;",
+            "  a record set read in place has none)", "GET /api/patients/{id}/layer/raw"],
+    "source": HUMAN + ["  source_tables  (every row; later ones ⚠ flagged)", "GET /api/patients/{id}/raw"],
+    "record": HUMAN + ["  layers.record.tables  (each on its own time grain)", "GET /api/patients/{id}/layer/record"],
+    "case": ["$INLAB_CASE_STORE/<dataset>/@v<k>CaseSet-<Trigger>/", "  df_case.parquet · @<CaseFn>.parquet  (facets)",
+             "  else: a record row that holds text", "$INLAB_LABEL_STORES[<dataset>]  (label overlay)",
              "GET /api/cases?dataset=&human_id="],
-    "internal": ["<human>.json source_tables as of the index date", "GET /api/patients/{id}  (later rows withheld)"],
+    "internal": ["<human> source_tables as of the index date", "GET /api/patients/{id}  (later rows withheld)"],
     "external": ["nothing yet: a placeholder (the problem list it would search)"],
     "model": ["$INLAB_ENDPOINT_STORE/<package>/manifest.json · meta.json", "  model/config.json · model/prefn_config.json",
               "$INLAB_REGISTRY  {package: url}", "GET /api/models · /card · POST /api/predict → <url>/invocations"],
-    "tasks": ["$INLAB_PROJECTS_ROOT/Project-*/tasks/<A01_*>/  (old layout)", "GET /api/tasks"],
+    "tasks": ["$INLAB_PROJECTS_ROOT/examples-*/Project-*/tasks/", "  bNN_<block>/jNN_<job>/tNN_<task>/tNN_<task>.md",
+              "  (scope: line, else task-type)", "GET /api/tasks"],
     "checklist": ["the record + the last run → an LLM (Agent SDK)", "POST /api/checklist"],
     "annotate": ["$INLAB_LABEL_STORES[<dataset>]/<dim>/", "  .state.json · guideline/ · gallery/gallery.json · iterNN/",
                  "  human_decisions.jsonl  (the one write)", "GET /api/labeling/{dim} · POST …/decision"],
-    "health": ["the resolved env: $INLAB_* · which endpoints answer /ping", "GET /api/health"],
+    "health": ["each $INLAB_* setting: unset · set · found · missing", "  (names only, never a path)",
+               "which endpoints answer /ping", "GET /api/health"],
 }
 
 
@@ -57,7 +63,8 @@ def header(s: Sheet, f, title: str, sub: str, changes=()) -> float:
     return y + 20
 
 
-def screens(s: Sheet, f, x0: float, y0: float, shots: Path, keys, cols: int = 3, w: int = 560, red_if_stub=False) -> float:
+def screens(s: Sheet, f, x0: float, y0: float, shots: Path, keys, cols: int = 3, w: int = 560, red_if_stub=False,
+            scope: str | None = None) -> float:
     """A screenshot per view (shots/<key>.png) in a grid, its title over it and its "on disk" tree under it."""
     label = {k: f"{icon} {lab}  ·  {group}" for k, icon, lab, group in VIEWS}
     y_row, col, row_h = y0, 0, 0
@@ -65,7 +72,10 @@ def screens(s: Sheet, f, x0: float, y0: float, shots: Path, keys, cols: int = 3,
         x = x0 + col * (w + 60)
         s.text(x, y_row, label.get(key, key), 20, f)
         h = s.image(shots / f"{key}.png", x, y_row + 34, w, f)
-        if not h:
+        if not h and scope and scope in HIDDEN.get(key, []):
+            s.text(x, y_row + 40, f"not shown at {scope} scope: a placeholder there, hidden (Q05)", 16, f)
+            h = 40
+        elif not h:
             s.text(x, y_row + 40, "? not shot", 18, f, RED)
             h = 40
         y = y_row + 34 + h + 14

@@ -58,7 +58,7 @@ def _store(dataset: str | None = None) -> Path | None:
 
     If a per-dataset map is set (INLAB_LABEL_STORES) it is AUTHORITATIVE: a
     dataset absent from the map has no labeling (returns None) — so picking
-    ACIBench no longer shows PhyReview's dimensions. Falls back to the single
+    one dataset never shows another dataset's dimensions. Falls back to the single
     INLAB_LABEL_STORE (legacy: applies to every dataset) when no map is set."""
     m = _stores_map()
     if m:
@@ -462,29 +462,25 @@ def labeling_decision(dim: str, body: dict[str, Any]):
 
 # ── cases from the record (data-type driven) ─────────────────────────────────
 #
-# A case = one annotation/prediction point sliced from ONE human's record. The
-# unit is data-type specific: an ACIBench encounter is a doctor↔patient dialogue,
-# a physician-review case is one review, a MIMIC case is a prediction window. So
-# cases come from the SELECTED DATASET's record — not from a fixed corpus — and
-# the labeling gallery is joined on as an overlay when a case id lines up.
-# (Formalizing "which stream/column is the case" is the job of a CaseFn / a
-# 3-CaseStore; until then we read it generically off the record streams.)
+# A case = one annotation/prediction point cut from ONE human's record. A dataset's
+# cooked case set (3-CaseStore, case_store.py) says what a case is: a trigger moment
+# and its CaseFn facets. Without one, a record row that holds prose is a case (a
+# dialogue, a review); a timeline of numbers has no cases until it is cooked. The
+# labeling gallery is joined on as an overlay when a case id lines up.
 
-_TEXT_COLS = ["Dialogue", "Transcript", "ReviewText", "NoteFull", "Note",
-              "text", "comment", "ChiefComplaint"]
+_MIN_WORDS = 5         # a cell of this many words, and not a date, is text a person reads (a dialogue, a review)
+_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?")
 
 
 def _row_text(row: dict) -> tuple[str | None, str]:
-    """The row's case text: a known text column, else the longest string cell."""
-    for c in _TEXT_COLS:
-        v = row.get(c)
-        if isinstance(v, str) and v.strip():
-            return c, v
+    """The row's case text: its longest string cell, when that is prose (five words or more, and not a date).
+    No column is named: any dataset's text column qualifies by what it holds, and a timeline row (numbers,
+    timestamps, short labels) has none, so it is never a case."""
     best_c, best = None, ""
     for k, v in row.items():
-        if isinstance(v, str) and len(v) > len(best):
+        if isinstance(v, str) and len(v) > len(best) and not _DATE.match(v.strip()):
             best_c, best = k, v
-    return best_c, best
+    return (best_c, best) if len(best.split()) >= _MIN_WORDS else (None, "")
 
 
 def _row_id(row: dict, stream: str, i: int) -> str:
@@ -515,26 +511,23 @@ def _record_streams(rec: dict) -> dict[str, list[dict]]:
             if isinstance(rows, list)}
 
 
-def _cases_from_records(pdir: Path, human_id: str | None, q: str | None, limit: int):
-    """Cases sliced from the dataset's patient records. One human when human_id is
-    given; otherwise a sample across the dataset's humans."""
-    if human_id:
-        files = [pdir / f"{human_id}.json"]
-        files = [f for f in files if f.exists()]
-    else:
-        files = sorted(pdir.glob("*.json"))
+def _cases_from_records(human_id: str | None, q: str | None, limit: int):
+    """Text cases sliced from the scoped dataset's records, one per text row: the fallback when the dataset
+    has no case set. One human when human_id is given; otherwise a sample across the dataset's humans."""
+    from console_api import load_patient, patient_ids
+    ids = [human_id] if human_id else patient_ids()
     cap = max(1, min(limit, 500))
 
     out: list[dict] = []
     scanned = 0
-    for f in files:
+    for pid in ids:
         if len(out) >= cap:
             break
-        rec = _jload(f)
-        if not isinstance(rec, dict):
+        try:
+            rec = load_patient(pid)
+        except Exception:  # noqa: BLE001 — an unknown human has no cases
             continue
         scanned += 1
-        pid = rec.get("patient_id", f.stem)
         for stream, rows in _record_streams(rec).items():
             for i, row in enumerate(rows):
                 if not isinstance(row, dict):
@@ -548,19 +541,19 @@ def _cases_from_records(pdir: Path, human_id: str | None, q: str | None, limit: 
                     "id": _row_id(row, stream, i),
                     "text": text,
                     "human_id": pid,
-                    "stream": stream.replace("ACI", "").replace("HmACIPtt.", ""),
+                    "stream": stream.split(".")[-1],
                     "meta": _row_meta(row, text_col),
                     "annotations": {},
                 })
                 if len(out) >= cap and human_id:
                     break
-    return out, scanned
+    return out, scanned, len(ids)
 
 
 def _overlay_labels(cases: list[dict], dataset: str | None = None) -> list[str]:
     """Best-effort: join sl gallery/batch label history onto cases by exact id,
-    using ONLY the labeling linked to this dataset. (ACIBench has no labeling
-    project, so its cases get no overlay — which is correct.)"""
+    using ONLY the labeling linked to this dataset. (A dataset with no labeling
+    project gets no overlay, which is correct.)"""
     dims = _dims(dataset)
     joins = {d.name: (_gallery_by_id(d), _batches(d)) for d in dims}
     for c in cases:
@@ -640,9 +633,11 @@ def _cases_from_corpus(human_id: str | None, q: str | None, limit: int,
 @router.get("/cases")
 def cases(dataset: str | None = None, human_id: str | None = None,
           q: str | None = None, limit: int = 120):
-    """Cases for the chosen data type. Record-driven when a patient store is
-    mounted (one case per record row of the selected human); falls back to the
-    labeling-corpus browse when the console is launched label-only."""
+    """Cases for the chosen data type, best source first:
+    caseset    the dataset's cooked case sets (INLAB_CASE_STORE): one case per trigger moment, with facets
+    text-row   no case set: one case per record row that holds prose (a dialogue, a review, a note)
+    none       no case set and no prose rows (a timeline): no cases, and the view says why
+    and, with no dataset at all, the labeling-corpus browse."""
     t0 = time.time()
     try:
         from console_api import _datasets, _default_dataset
@@ -651,22 +646,35 @@ def cases(dataset: str | None = None, human_id: str | None = None,
         ds = {}
 
     if ds:
-        name = dataset if dataset in ds else _default_dataset()
-        pdir = Path(ds[name])
-        if not pdir.is_dir():
-            return JSONResponse({"source": "record", "dataset": name, "cases": [],
-                                 "n_total": 0, "n_matched": 0, "matched": None,
-                                 "reason": f"dataset '{name}' has no patient store on disk"})
-        cases_out, scanned = _cases_from_records(pdir, human_id, q, limit)
+        from case_store import case_sets, read_cases
+        from console_api import scope
+        name = scope(dataset)
+        base = {"dataset": name, "datasets": list(ds), "human_id": human_id}
+        sets = case_sets(name)
+        if sets:
+            out_cases, humans = [], 0
+            for folder in sets:
+                got, n = read_cases(folder, human_id, limit)
+                out_cases += got
+                humans = max(humans, n)
+            if q:
+                out_cases = [c for c in out_cases if q.lower() in json.dumps(c).lower()]
+            dims = _overlay_labels(out_cases, name)
+            return JSONResponse({
+                **base, "source": "caseset", "unit": "caseset", "dims": dims,
+                "case_sets": [f.name for f in sets],
+                "n_total": humans, "n_matched": len(out_cases),
+                "matched": (bool(out_cases) if human_id else None),
+                "elapsed_ms": int((time.time() - t0) * 1000), "cases": out_cases,
+            })
+        cases_out, scanned, n_humans = _cases_from_records(human_id, q, limit)
         dims = _overlay_labels(cases_out, name)
         return JSONResponse({
-            "source": "record", "dataset": name,
-            "datasets": list(ds), "dims": dims,
-            "n_total": len(sorted(pdir.glob("*.json"))),
+            **base, "source": "record", "unit": "text-row" if cases_out else "none", "dims": dims,
+            "n_total": n_humans,
             "n_matched": len(cases_out),
             "matched": (bool(cases_out) if human_id else None),
             "scanned_humans": scanned,
-            "human_id": human_id,
             "elapsed_ms": int((time.time() - t0) * 1000),
             "cases": cases_out,
         })

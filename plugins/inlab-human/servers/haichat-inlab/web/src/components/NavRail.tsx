@@ -13,8 +13,9 @@
  * Collapsible: expanded shows group headers + labels; collapsed keeps icons with
  * group dividers (the default inside a narrow HAI-Chat iframe embed).
  */
+import type {Scope} from '../Console';
 import type {ConsoleView} from '../types';
-import {RAIL_GROUPS, VIEW_META} from '../views';
+import {RAIL_GROUPS, VIEW_META, shownAt} from '../views';
 
 interface Props {
     active: ConsoleView | null;
@@ -26,10 +27,12 @@ interface Props {
     onOpenToSide: (v: ConsoleView) => void;
     collapsed: boolean;
     onToggle: () => void;
+    /** only the views built at this scope are listed (views.ts PLACEHOLDER) */
+    scope: Scope;
 }
 
 export default function NavRail(props: Props) {
-    const {active, open, agentOpened, onOpen, onOpenToSide, collapsed, onToggle} = props;
+    const {active, open, agentOpened, onOpen, onOpenToSide, collapsed, onToggle, scope} = props;
 
     const item = (v: ConsoleView, group: string) => {
         const m = VIEW_META[v];
@@ -58,12 +61,14 @@ export default function NavRail(props: Props) {
 
     return (
         <nav className={'navrail' + (collapsed ? ' collapsed' : '')}>
-            {RAIL_GROUPS.map((g) => (
-                <div className='nr-group' key={g.title}>
-                    {collapsed ? <div className='nr-divider'/> : <div className='nr-title'>{g.title}</div>}
-                    {g.items.map((v) => item(v, g.title))}
-                </div>
-            ))}
+            {RAIL_GROUPS.map((g) => ({...g, items: g.items.filter((v) => shownAt(v, scope))}))
+                .filter((g) => g.items.length > 0)
+                .map((g) => (
+                    <div className='nr-group' key={g.title}>
+                        {collapsed ? <div className='nr-divider'/> : <div className='nr-title'>{g.title}</div>}
+                        {g.items.map((v) => item(v, g.title))}
+                    </div>
+                ))}
 
             <div className='nr-foot'>
                 {item('health', 'Console')}

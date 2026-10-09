@@ -13,7 +13,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_build"))
 from console_draw import RED, TOOLS, Sheet, header, save  # noqa: E402
 
-CHANGES = []                                          # (YYMMDD, what changed): a green note each
+CHANGES = [("261009", "record chart: one lane per table, no table named (fix 6)"),
+           ("261009", "dropped the Internal chart and the placeholder card: their views are hidden (Q05)"),
+           ("261009", "added the refused tool call: the gate's no is shown, never a chip that looks run")]
 FRAME_SHOTS = TOOLS / "blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s32-element-ui/shots"
 # console element → the toolkit frame's element of the same kind (shots of b01 j03 s32), with what they share
 COUNTERPART = {"topbar": ("tabs__frame.png", "the frame's level row and Spaces row"),
@@ -22,9 +24,9 @@ COUNTERPART = {"topbar": ("tabs__frame.png", "the frame's level row and Spaces r
                "source-table": ("table__paper.png", "the frame's light table"),
                "runs-table": ("runs__frame.png", "the frame's Runs panel")}
 ORDER = ["topbar", "scope-toggle", "dataset-picker", "patient-picker", "haichat-toggle", "nav-rail", "tab-strip",
-         "patient-card", "layer-banner", "source-table", "raw-file", "record-chart", "case-card", "chart",
-         "placeholder", "model-list", "model-card", "run-bar", "forecast-chart", "runs-table", "checklist-bar",
-         "annotate-start", "health-table", "drawer", "approval"]
+         "patient-card", "layer-banner", "source-table", "raw-file", "record-chart", "case-card",
+         "model-list", "model-card", "run-bar", "forecast-chart", "runs-table", "checklist-bar",
+         "annotate-start", "health-table", "drawer", "approval", "refused"]
 
 
 def style(fx: dict) -> str:

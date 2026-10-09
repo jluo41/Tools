@@ -173,6 +173,7 @@ ALLOWED = ALLOWED_AUTO + ALLOWED_GATED
 # reaches the same patients the buttons do regardless of how the cohort was set.
 ENGINE_ENV_KEYS = [
     "INLAB_DATASETS", "INLAB_DATASET_STORE", "INLAB_PATIENT_STORE",
+    "INLAB_RECORD_STORE", "INLAB_RECORD_SET", "INLAB_RECORD_TABLE_NAMES",
     "INLAB_ENDPOINT_STORE", "INLAB_REGISTRY",
     "INLAB_ENDPOINT_URL", "INLAB_ENDPOINT_TOKEN", "INLAB_ENDPOINT_TIMEOUT_SEC",
 ]
@@ -675,6 +676,15 @@ async def haichat(sock: WebSocket):
             seen["snapshot"] = res["state"]
         return res
 
+    async def refuse(tool_name: str, message: str):
+        """Deny a call AND tell the drawer: the SDK returns a denial to the agent inside a
+        user turn the drawer never reads, so without this the call's chip looks as if it ran."""
+        try:
+            await sock.send_json({"type": "tool_refused", "tool": tool_name, "message": message})
+        except Exception:  # noqa: BLE001 — socket gone; the denial still stands
+            pass
+        return PermissionResultDeny(message=message)
+
     async def can_use_tool(tool_name: str, tool_input: dict, ctx: Any):
         """The gate. Two tiers, one callback, no bypass.
 
@@ -695,8 +705,7 @@ async def haichat(sock: WebSocket):
             return PermissionResultAllow()
 
         if tool_name not in gated:
-            return PermissionResultDeny(
-                message=f"{tool_name} is not permitted in this console.")
+            return await refuse(tool_name, f"{tool_name} is not permitted in this console.")
 
         req_id = uuid.uuid4().hex[:8]
         fut: asyncio.Future = asyncio.get_running_loop().create_future()
@@ -711,7 +720,7 @@ async def haichat(sock: WebSocket):
             pending.pop(req_id, None)
         if approved:
             return PermissionResultAllow()
-        return PermissionResultDeny(message="The clinician declined this tool call.")
+        return await refuse(tool_name, "The clinician declined this tool call.")
 
     lab = AGENT_PROFILE == "lab"
     options = ClaudeAgentOptions(

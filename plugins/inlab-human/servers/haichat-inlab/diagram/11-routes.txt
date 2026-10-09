@@ -22,6 +22,9 @@
   GET    /api/models
   POST   /api/predict
   GET    /api/health
+         Configured when SOME patient store resolves to a dataset (a record store, a dataset store,
+         or the single patient store) and the endpoint store and registry are set. Names, never
+         paths.
 
 ─§ haichat_api ─────────────────────────────────────────────────────
 
@@ -43,9 +46,11 @@
          panel's artifacts (gallery, guideline) are NEVER touched here — folding a decision into the
          gallery is the gallery-keeper's job, through the sl loop.
   GET    /api/cases
-         Cases for the chosen data type. Record-driven when a patient store is mounted (one case per
-         record row of the selected human); falls back to the labeling-corpus browse when the
-         console is launched label-only.
+         Cases for the chosen data type, best source first: caseset the dataset's cooked case sets
+         (INLAB_CASE_STORE): one case per trigger moment, with facets text-row no case set: one case
+         per record row that holds prose (a dialogue, a review, a note) none no case set and no
+         prose rows (a timeline): no cases, and the view says why and, with no dataset at all, the
+         labeling-corpus browse.
 
 ─§ main ────────────────────────────────────────────────────────────
 
@@ -71,7 +76,7 @@
 ─§ tasks_api ───────────────────────────────────────────────────────
 
   GET    /api/tasks
-         Task-folders across all projects, classified individual/group. `?scope=group` (or
-         `individual`) filters to that side.
+         Tasks across all projects, under their Block and Job, classified individual/group.
+         `?scope=group` (or `individual`) filters to that side. The root is named, never its path.
 
      see 04-backend-api.txt  →  which store each router reads

@@ -1,34 +1,37 @@
 🔗  Wiring — how _WorkSpace reaches the In-Lab UI
 ═══════════════════════════════════════════════════════════════════
 
-The pipeline cooks parquet stores into _WorkSpace. The console does NOT read
-those parquets. Between them sits a thin BRIDGE: a cohort-packaging step that
-flattens a RecSet/CaseSet into per-human JSON, plus env vars that MOUNT the
-result read-only. This file is that bridge.
+The pipeline cooks parquet stores into _WorkSpace. Since 261009 the console
+READS them in place: a record set is read per request and assembled into the
+per-human json the engine speaks (record_store.py, beside the engine's json
+reader), and a case set is read as cooked (case_store.py). The per-human json
+COPY is the fallback, used only where no record store is mounted.
 
-─§ The gap, and the bridge across it ─────────────────────────────
+─§ The two ways across, and which one is used ────────────────────
 
   🗄️ _WorkSpace (parquet, pipeline-native)          🖥️ Console (json, UI-native)
   +----------------------------+                    +----------------------+
-  | 2-RecStore/<RecSet>/       |                    | 👥 roster + 🧾 record  |
-  |   Record-*/RecAttr.parquet |  ── build cohort ─▶| per-human <id>.json   |
-  | 3-CaseStore/@v0CaseSet-*/  |     (flatten →     |   source_tables +     |
-  |   df_case.parquet          |      per-human)    |   layers.record       |
-  +----------------------------+         │          +----------------------+
-                                         ▼
-                             📦 _WorkSpace/InLabStore/<dataset>/patients/*.json
-                                         │  🔧 env mount (read-only)
-                                         ▼
-                              INLAB_DATASET_STORE ─▶ the engine reads it
+  | 2-RecStore/<RecSet>/       |  ── ② read in ────▶| per-human json,      |
+  |   Record-*/RecAttr.parquet |     place, per     |   assembled per      |
+  |                            |     request        |   request, cached    |
+  | 3-CaseStore/<RecSet>/      |  ── read as ──────▶| 📌 cases + facets     |
+  |   @v<k>CaseSet-*/          |     cooked         |                      |
+  +----------------------------+                    +----------------------+
+               │
+               └─ ① copy (the fallback) ─▶ 📦 InLabStore/<dataset>/patients/*.json
 
-  ⚠️ the engine (endpoint-predict) expects ONE json per human. RecSet parquet
-     is NOT that shape — the build step is what makes them meet.
+  ✅ ② READ IN PLACE (chosen 261009, j02 Q02): INLAB_RECORD_STORE; each record
+     set is a dataset; one source of truth, always fresh, no second copy of
+     patient data to secure. Cost: a parquet filter per request, cached per
+     human. A record store has no raw layer: the Raw view says so.
+  ↩︎ ① COPY (fallback): INLAB_DATASET_STORE / INLAB_PATIENT_STORE; used where
+     no record store is mounted. A record set wins over a copy of the same name.
 
 > JL: do you mean here we copy the data again?
 >> CC0718: yes — TODAY the build step writes a 2nd physical copy (RecSet
 >>   parquet → new per-human json under InLabStore/). Why it exists: the engine
 >>   reads ONE <id>.json per human, but a RecSet is columnar parquet sharded by
->>   STREAM (Record-*.ACIDialogue/…), not per-human — the copy bridges the shape.
+>>   STREAM (Record-*.<Stream>/…), not per-human — the copy bridges the shape.
 >>   Cost you're right to flag: duplication + can go STALE vs the RecSet + one
 >>   more PHI copy to secure.
 >>   No-copy alternative = an ADAPTER (read path): point the console at
@@ -37,68 +40,81 @@ result read-only. This file is that bridge.
 >>   json IN MEMORY. Single source of truth, always fresh, zero dup — at the cost
 >>   of a parquet filter per request (cacheable). This is the "durable form"
 >>   named in the ⚠️ below. Which do you want? (see chat)
+>> ✎ 261009 decided (j02 Q02): the adapter. Built as record_store.py; on the
+>>   synthetic glucose fixtures every Individual view's API answer from the
+>>   record store equals the copy's (116 equal; the record store also carries
+>>   the one-row Ptt record, and has no raw layer).
 
 ─§ Every console mount ← its _WorkSpace source ───────────────────
 
   +------------------+---------------------------+-------------+-------------+
   | 🖥️ Console needs  | 🗄️ _WorkSpace source       | 🔀 via       | 🌐 router    |
   +------------------+---------------------------+-------------+-------------+
-  | 👥 patients/record| 2-RecStore/<RecSet>        | BUILD→json  | console_api |
-  | 📌 cases          | 3-CaseStore/@v0CaseSet-*   | BUILD/read  | labeling_api|
+  | 👥 patients/record| 2-RecStore/<RecSet>        | read in place| console_api |
+  | 📌 cases          | 3-CaseStore/<RecSet>/@v*   | as cooked   | labeling_api|
   | 🧠 endpoints      | 6-EndpointStore            | as-is       | console_api |
-  | ✏️ labels         | examples/Project-*/tasks   | as-is       | labeling_api|
-  | 📋 task feed      | examples/ (Project-*)      | as-is       | tasks_api   |
+  | ✏️ labels         | <project>/tasks (label dims)| as-is       | labeling_api|
+  | 📋 task feed      | examples-*/Project-*/tasks | as-is       | tasks_api   |
   +------------------+---------------------------+-------------+-------------+
 
-  converted (parquet→json) : patients · cases
+  read in place (parquet)  : patients · cases
   used as-is (dir mount)   : endpoints · labels · projects
+  copied (the fallback)    : patients, as InLabStore/<dataset>/patients/*.json
 
 ─§ The env vars that mount each one ──────────────────────────────
 
-  🔧 INLAB_DATASET_STORE  = _WorkSpace/InLabStore        (parent of <dataset>/patients)
-  🔧 INLAB_PATIENT_STORE  = …/InLabStore/ACIBench_v0/patients   (single, back-compat)
+  🔧 INLAB_RECORD_STORE   = _WorkSpace/2-RecStore          (each record set is a dataset)
+  🔧 INLAB_CASE_STORE     = _WorkSpace/3-CaseStore         (<RecSet>/@v<k>CaseSet-*/)
+  🔧 INLAB_DATASET_STORE  = _WorkSpace/InLabStore          (the copy: <dataset>/patients)
+  🔧 INLAB_PATIENT_STORE  = …/InLabStore/<dataset>/patients (single, back-compat)
   🔧 INLAB_ENDPOINT_STORE = _WorkSpace/6-EndpointStore
   🔧 INLAB_REGISTRY       = …/endpoints.json            {package: url}
-  🔧 INLAB_LABEL_STORES   = {"PhyReview_v0": "examples/Project-Subjective-Label/tasks"}
-  🔧 INLAB_PROJECTS_ROOT  = examples/
-  🔧 (planned) INLAB_CASE_STORE = _WorkSpace/3-CaseStore
+  🔧 INLAB_LABEL_STORES   = {"<dataset>": "<project>/tasks"}
+  🔧 INLAB_PROJECTS_ROOT  = the SPACE root               (examples-*/Project-*/tasks)
+  🔧 INLAB_RECORD_TABLE_NAMES = {"<RecordName>": "<table>"}  (optional renames)
 
-─§ The BUILD step (RecSet → per-human json) ──────────────────────
+─§ Reading a record set in place (record_store.py) ───────────────
 
-  🗄️ 2-RecStore/ACIBench_v0RecSet/
-       Human-HmACIPtt/ · Record-HmACIPtt.ACIDialogue/ · .ACINote/ · .ACIEncounter/
-                    │  ⚙️ for each PID: gather its rows from every stream
+  🗄️ 2-RecStore/<RecSet>/[@i<k>n<n>/]
+       manifest.json  structure.humans · structure.records
+       Human-<H>/Human2RawNum.parquet          → who is in it (the id column)
+       Record-<H>.<R>/RecAttr.parquet          → one human's rows, filtered by id
+                    │  ⚙️ per request, cached: every Record's rows for that id
                     ▼
-  📦 InLabStore/ACIBench_v0/patients/pt-D2N001.json
      {
-       patient_id, summary{cohort, table_counts, not_scoreable_reason},
-       provenance: [],                     ← no endpoint scored it yet → say so
-       source_tables: { Dialogue:[…], Note:[…], Encounter:[…] },
-       layers: { record: { tables: {…} } } ← what the 🧾 Record view renders
+       patient_id, summary{cohort, table_counts, anchor, sex · birth date if a
+                           one-row Record carries them},
+       provenance: [the endpoints whose required tables this human carries],
+       source_tables: { <R without its time grain>: […] },
+       layers: { record: { tables: { Rec.<R>: … } } }
      }
 
-  ⚠️ two ways to produce this json — the design fork (see JL note above):
-     ① COPY (now): scratch converter writes it to disk. simple · fast reads ·
-        but DUPLICATES the RecSet + can go stale + extra PHI copy.
-     ② ADAPTER (durable): console reads 2-RecStore directly, assembles the
-        per-human json at request time. single source of truth · zero dup ·
-        always fresh · costs one parquet filter per request (cacheable).
+  No table or column is named: the id column is the one every Record shares,
+  the time columns are the timestamp and date columns, by type.
 
-─§ End-to-end trace (ACIBench) ───────────────────────────────────
+─§ Reading a case set (case_store.py) ────────────────────────────
 
-  cook           2-RecStore/ACIBench_v0RecSet  (RecordFn output, 207 humans)
-   ▼ build       InLabStore/ACIBench_v0/patients/pt-D2N001.json … (207 files)
-   ▼ mount       INLAB_DATASET_STORE=_WorkSpace/InLabStore
-   ▼ scope       GET /api/patients?dataset=ACIBench_v0  → ep.PATIENT_STORE set
-   ▼ render      👥 roster: pt-D2N001 …  🧾 record: Dialogue/Note/Encounter
-   ▼ cut         📌 case = ACIEncounterEntry over 3-CaseStore/@v0CaseSet-*
+  🗄️ 3-CaseStore/<RecSet>/@v<k>CaseSet-<Trigger>/
+       df_case.parquet      one row per case (id, ObsDT, trigger columns)
+       @<CaseFn>.parquet    that CaseFn's facets, row for row with df_case
+  → 📌 one case per trigger moment, its facets summarised by shape.
+     No case set: a record row that holds prose (5+ words) is a case; a
+     timeline of numbers has none until it is cooked.
+
+─§ End-to-end trace (any dataset) ────────────────────────────────
+
+  cook           2-RecStore/<RecSet>               (RecordFn output)
+   ▼ mount       INLAB_RECORD_STORE=_WorkSpace/2-RecStore
+   ▼ scope       GET /api/patients?dataset=<RecSet> → ep.RECORD_SET set
+   ▼ render      👥 roster · 🧾 record: one lane per table with a time column
+   ▼ cut         📌 case = a trigger moment of 3-CaseStore/<RecSet>/@v*CaseSet-*
    ▼ attach      ✏️ label (if a label store maps this dataset) / 🧠 score (if endpoint)
 
 ─§ Adding a new dataset (the checklist) ──────────────────────────
 
-  1. 🍳 cook the RecSet    → 2-RecStore/<Name>RecSet   (/haipipe-data record)
-  2. 📦 build the cohort   → InLabStore/<dataset>/patients/*.json
-  3. 🔧 it auto-appears    → INLAB_DATASET_STORE autodiscovers <dataset>/patients
+  1. 🍳 cook the RecSet    → 2-RecStore/<Name>          (/haipipe-data record)
+  2. 🔧 it auto-appears    → INLAB_RECORD_STORE lists every record set
+  3. 📌 (optional) cook a case set → 3-CaseStore/<Name>/@v0CaseSet-<Trigger>
   4. ✏️ (optional) map a label store in INLAB_LABEL_STORES[<dataset>]
   5. 🧠 (optional) package an endpoint → 6-EndpointStore + registry entry
 

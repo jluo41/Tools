@@ -24,12 +24,13 @@ Rebuild: the console on its fixtures (`fixtures/run_fixture.sh`), then `uv run -
 Decided
 -------
 
-(none yet: a decision is one line, s11-D01 · <what was decided> (<who> <date>))
+s11-D01 · A view that is a placeholder at Group leaves the Group rail; seven are hidden (Q05, g02 261009)
+s11-D02 · Tasks reads the Block · Job · Task ladder (Q03, g02 261009)
 
 
 Open
 ----
 
-1. Build or drop each Group placeholder (Q05).
+1. Which Group view to build first, now that the rail shows only built ones (Q05 Next).
 
 (write here, or mark the drawing in red)

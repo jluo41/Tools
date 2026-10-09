@@ -159,27 +159,11 @@ export function extractScore(r: PredictResult): {score: number | null; band: str
     return {score, band};
 }
 
-/** Which cohort a patient id belongs to — used for grouping in pickers/cards.
- *  A store may carry the cohort explicitly (the CGM store does); fall back to the
- *  id prefix, which is how the REACH store encodes it. */
-export function cohortOf(patientId: string, summary?: Partial<PatientSummary>): string {
-    const named = (summary as {cohort?: string} | undefined)?.cohort;
-    if (named) {
-        return named;
-    }
-    if (patientId.startsWith('reach-1')) {
-        return 'ADHD';
-    }
-    if (patientId.startsWith('reach-2')) {
-        return 'PD2D';
-    }
-    if (patientId.startsWith('ohio-')) {
-        return 'OhioT1DM';
-    }
-    if (patientId.startsWith('CGMacros')) {
-        return 'CGMacros';
-    }
-    return 'MIMIC';
+/** Which cohort a patient belongs to — used for grouping in pickers/cards: the store's own
+ *  `summary.cohort`, else the dataset's cohort label, else the dataset's name. Never guessed
+ *  from the id: no study is named in this plugin's code. */
+export function cohortOf(summary?: Partial<PatientSummary>, dataset?: {name?: string | null; cohort?: string | null}): string {
+    return summary?.cohort || dataset?.cohort || dataset?.name || 'cohort';
 }
 
 /* ── console shell ────────────────────────────────────────────────────────── */

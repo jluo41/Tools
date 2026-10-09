@@ -11,6 +11,11 @@ the endpoint verbatim. Its routers: console_api (patients, models, predict), mes
 message, judge it, record the human's verdict), labeling_api (read a subjective-label project's artifacts),
 tasks_api (a project's task folders), haichat_api (the agent drawer, j04).
 
+Since g02 (261009) it reads a record set in place (`record_store.py`, beside the engine's json reader; the json copy
+is the fallback) and a dataset's cooked case set (`case_store.py`), names no table or column of any dataset, reads
+Tasks off the Block · Job · Task ladder, and hides a view at the scope where it is only a placeholder. Q02, Q03 and
+Q05 are answered; s33 marks what each fix changed.
+
 ## Questions
 
 ```yaml
@@ -34,7 +39,15 @@ questions:
   hypothesis: 'The adapter: one source of truth and no extra copy of patient data outweigh a cached parquet filter
     per request.'
   acceptance: Answered when one way is chosen with its reason, and the other is removed from the docs.
-  work: []
+  work:
+  - goals/g02-console-fixes-and-decisions.md
+  - ../../../plugins/inlab-human/mcp-servers/endpoint-predict/record_store.py
+  - ../../../plugins/inlab-human/mcp-servers/endpoint-predict/server.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/console_api.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/case_store.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/labeling_api.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/fixtures/build_fixtures.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/diagram/09-workspace-wiring.txt
   report: reports/q02_copy_or_read/q02_copy_or_read.md
 - id: Q03
   title: How does the tasks feed read the project ladder?
@@ -45,7 +58,11 @@ questions:
     the scope read from each Task's face.
   acceptance: Answered when the feed lists a real project's Tasks under their Blocks and Jobs, at the right scope,
     on a fixture tree.
-  work: []
+  work:
+  - goals/g02-console-fixes-and-decisions.md
+  - ../../../plugins/inlab-human/servers/haichat-inlab/tasks_api.py
+  - ../../../plugins/inlab-human/servers/haichat-inlab/web/src/components/TasksView.tsx
+  - ../../../plugins/inlab-human/servers/haichat-inlab/fixtures/build_fixtures.py
   report: reports/q03_tasks_on_the_ladder/q03_tasks_on_the_ladder.md
 - id: Q04
   title: One look for the console and the workbench?
@@ -64,6 +81,10 @@ questions:
     studio s11, s12.)'
   hypothesis: Drop what has no Group meaning yet from the Group rail; build Internal first (the DIKW cards it promises).
   acceptance: Answered when every placeholder has a build-or-drop decision and the rail shows only built views.
-  work: []
+  work:
+  - goals/g02-console-fixes-and-decisions.md
+  - ../../../plugins/inlab-human/servers/haichat-inlab/web/src/views.ts
+  - ../../../plugins/inlab-human/servers/haichat-inlab/web/src/components/NavRail.tsx
+  - ../../../plugins/inlab-human/servers/haichat-inlab/web/src/Console.tsx
   report: reports/q05_placeholder_views/q05_placeholder_views.md
 ```

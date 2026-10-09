@@ -1,7 +1,7 @@
 s02 · The data lineage
 ======================
 
-**Topic:** The four DATA views as one dataset at four stages (Raw · Source · Record · Case), each with its store, its transform and its route, and the open fork of `diagram/09-workspace-wiring.txt`: copy each human into a json, or read the record store in place (261009, g01).
+**Topic:** The four DATA views as one dataset at four stages (Raw · Source · Record · Case), each with its store, its transform and its route, and the fork of `diagram/09-workspace-wiring.txt` (copy each human into a json, or read the record store in place), drawn open in g01 and decided in g02: read in place (261009).
 
 **Feeds:** `reports/` q02_copy_or_read
 
@@ -23,12 +23,12 @@ Rebuild: `python build_s02_data_lineage.py`, then haipipe-studio's `scripts/rend
 Decided
 -------
 
-(none yet: a decision is one line, s02-D01 · <what was decided> (<who> <date>))
+s02-D01 · Read the record store in place; the json copy is the fallback where none is mounted (Q02, g02 261009)
 
 
 Open
 ----
 
-1. Copy or read in place (Q02): JL's question, recorded, not decided here.
+(none: the fork is decided; a real record set behind the data boundary is j05's)
 
 (write here, or mark the drawing in red)

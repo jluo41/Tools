@@ -1,10 +1,10 @@
-/* TasksView — the work linked to this scope, from the research projects.
+/* TasksView — the work linked to this scope, read off the project ladder.
  *
- * The individual/group split is per-task, so this view is scope-filtered: the
- * group console lists group-level tasks (cohort data/case/eval pipelines), the
- * individual console lists per-subject tasks. Grouped by project, read-only —
- * it surfaces what work exists on disk (each project's tasks folder); running
- * or opening a task is a HaiChat/CLI job, not a button here yet.
+ * A project's work is Blocks → Jobs → Tasks; this view draws that tree. The
+ * individual/group split is per Task (its face's scope: line, else its task-type),
+ * so the view is scope-filtered: the group console lists cohort-level Tasks, the
+ * individual console per-subject ones. Read-only: it surfaces what work exists on
+ * disk; running or opening a Task is a HaiChat/CLI job, not a button here yet.
  */
 import {useEffect, useState} from 'react';
 
@@ -15,17 +15,26 @@ interface TaskItem {
     task: string;
     series: string | null;
     title: string;
+    task_type?: string | null;
     kind: Scope;
     status: string;
 }
+
+interface JobNode {job: string | null; title: string | null; tasks: TaskItem[]}
+interface BlockNode {block: string | null; title: string | null; jobs: JobNode[]}
 
 interface TasksResp {
     root: string | null;
     scope?: string | null;
     n?: number;
     reason?: string;
-    projects?: {project: string; tasks: TaskItem[]}[];
+    projects?: {project: string; world?: string | null; blocks: BlockNode[]}[];
     error?: string;
+}
+
+/** the number in front of a ladder folder: b01_x → b01 */
+function code(name: string | null): string {
+    return name ? name.split('_')[0] : '';
 }
 
 const STATUS_ICON: Record<string, string> = {
@@ -51,11 +60,11 @@ export default function TasksView({scope}: {scope: Scope}) {
     const banner = (
         <div className='layer-banner'>
             <span className='layer-step'>{'📋 TASKS'}</span>
-            <code>{'examples/Project-*/tasks'}</code>
+            <code>{'Project-*/tasks/bNN/jNN/tNN'}</code>
             <span className='roster-sub'>
                 {scope === 'group'
-                    ? 'group-level tasks — cohort data / case / eval pipelines across your projects'
-                    : 'individual-level tasks — per-subject queries (haipipe for-individual, E-series)'}
+                    ? 'group-level Tasks: cohort data, fit and eval work, under their Blocks and Jobs'
+                    : 'individual-level Tasks: per-subject work, under their Blocks and Jobs'}
             </span>
         </div>
     );
@@ -87,6 +96,7 @@ export default function TasksView({scope}: {scope: Scope}) {
             <div className='case-bar'>
                 <span className='badge'>{(data.n ?? 0) + ' ' + scope + ' tasks'}</span>
                 <span className='badge'>{projects.length + ' projects'}</span>
+                <span className='roster-sub'>{'root ' + data.root}</span>
                 <span className='topbar-space'/>
                 <span className='roster-sub'>{'🟢 has-results · 🔵 reported · 🟡 planned · ⚪ scaffolded'}</span>
             </div>
@@ -95,34 +105,59 @@ export default function TasksView({scope}: {scope: Scope}) {
                 {projects.length === 0 && (
                     <div className='muted pad'>
                         {scope === 'individual'
-                            ? 'No individual (per-subject) tasks yet — none of your projects have E-series / for-individual tasks. Create one and it lands here.'
-                            : 'No group tasks found.'}
+                            ? 'No individual (per-subject) Tasks yet. A Task whose face says scope: individual lands here.'
+                            : 'No group Tasks found.'}
                     </div>
                 )}
                 {projects.map((p) => (
                     <div key={p.project} className='task-project'>
                         <div className='pane-header task-proj-head'>
                             {'📦 ' + p.project.replace(/^Project-/, '')}
-                            <span className='badge'>{p.tasks.length}</span>
+                            {p.world && <span className='roster-sub'>{p.world}</span>}
+                            <span className='badge'>
+                                {p.blocks.reduce((n, b) => n + b.jobs.reduce((m, j) => m + j.tasks.length, 0), 0)}
+                            </span>
                         </div>
-                        <div className='task-list'>
-                            {p.tasks.map((t) => (
-                                <div key={t.task} className='task-row' title={t.project + '/tasks/' + t.task}>
-                                    <span className='task-status'>{STATUS_ICON[t.status] ?? '⚪'}</span>
-                                    {t.series && <code className='task-series'>{t.series}</code>}
-                                    <span className='task-title'>{t.title}</span>
-                                    <span className='topbar-space'/>
-                                    <span className='badge task-status-label'>{t.status}</span>
-                                </div>
-                            ))}
-                        </div>
+                        {p.blocks.map((b) => (
+                            <div key={b.block ?? 'flat'} className='task-block'>
+                                {b.block && (
+                                    <div className='task-block-head'>
+                                        <code>{code(b.block)}</code>
+                                        <span>{b.title}</span>
+                                    </div>
+                                )}
+                                {b.jobs.map((j) => (
+                                    <div key={j.job ?? 'flat'} className='task-job'>
+                                        {j.job && (
+                                            <div className='task-job-head'>
+                                                <code>{code(j.job)}</code>
+                                                <span>{j.title}</span>
+                                            </div>
+                                        )}
+                                        <div className='task-list'>
+                                            {j.tasks.map((t) => (
+                                                <div key={t.task} className='task-row'
+                                                    title={[p.project, b.block, j.job, t.task].filter(Boolean).join('/')}>
+                                                    <span className='task-status'>{STATUS_ICON[t.status] ?? '⚪'}</span>
+                                                    <code className='task-series'>{t.series ?? code(t.task)}</code>
+                                                    <span className='task-title'>{t.title}</span>
+                                                    <span className='topbar-space'/>
+                                                    {t.task_type && <span className='chip'>{t.task_type}</span>}
+                                                    <span className='badge task-status-label'>{t.status}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
                     </div>
                 ))}
             </div>
 
             <div className='raw-foot roster-sub'>
-                {'read-only — classification: E-series / “individual” → individual, else group; ' +
-                    'override with .inlab-scope or scope: in a task yaml'}
+                {'read-only · scope from each Task face\'s scope: line, else its task-type; ' +
+                    'projects not yet on the ladder are read flat'}
             </div>
         </div>
     );

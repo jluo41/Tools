@@ -24,7 +24,7 @@ Rebuild: the console on its fixtures (`fixtures/run_fixture.sh`), then `uv run -
 Decided
 -------
 
-(none yet: a decision is one line, s21-D01 · <what was decided> (<who> <date>))
+s21-D01 · A call the gate refuses is shown as ⛔ refused in the drawer, with the gate's reason (g02 261009)
 
 
 Open

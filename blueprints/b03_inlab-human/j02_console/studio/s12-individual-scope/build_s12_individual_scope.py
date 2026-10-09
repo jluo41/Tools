@@ -8,9 +8,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_build"))
-from console_draw import VIEWS, Sheet, header, save, screens  # noqa: E402
+from console_draw import GREEN, HIDDEN, VIEWS, Sheet, header, save, screens  # noqa: E402
 
-CHANGES = []                                          # (YYMMDD, what changed): a green note each
+CHANGES = [("261009", "Q05 decided: Internal, External and Annotate (placeholders here) leave the Individual rail"),
+           ("261009", "Record chart: one lane per table; Health: setting names, never paths; picker: the store's cohort")]
 
 
 def main():
@@ -20,7 +21,10 @@ def main():
                "One synthetic glucose human selected (SynthCGM_v0 · synth-cgm-001). The rail opens a view; the patient\n"
                "card and the as-of date stay on top. Under each screen: what it reads on disk, and the route that serves it.",
                CHANGES)
-    bottom = screens(s, f, 40, y, HERE / "shots", [k for k, *_ in VIEWS])
+    hidden = [lab for k, _, lab, _ in VIEWS if "individual" in HIDDEN.get(k, [])]
+    s.text(40, y - 8, "✎ 261009 hidden at Individual (placeholders): " + " · ".join(hidden), 18, f, GREEN)
+    bottom = screens(s, f, 40, y + 30, HERE / "shots",
+                     [k for k, *_ in VIEWS if "individual" not in HIDDEN.get(k, [])], scope="individual")
     save(s, f, bottom, HERE / "s12-individual-scope.excalidraw", "build_s12_individual_scope.py")
 
 

@@ -23,12 +23,13 @@ Rebuild: `python build_s33_console_ui_issue.py`, then haipipe-studio's `scripts/
 Decided
 -------
 
-(none yet: a decision is one line, s33-D01 · <what was decided> (<who> <date>))
+s33-D01 · g02 (261009) fixed issues 1-5, 7, 8, 10-12 and decided 6 (Q05); each row says how
 
 
 Open
 ----
 
-1. The issues each need their owner's fix, one Question or commit at a time; none is fixed by g01 except the docs.
+1. Issue 9: no view links out; open a file or folder in a read-only pop-out.
+2. One look for the console and the workbench (Q04).
 
 (write here, or mark the drawing in red)

@@ -23,12 +23,12 @@ Rebuild: `python build_s51_console_runtime.py`, then haipipe-studio's `scripts/r
 Decided
 -------
 
-(none yet: a decision is one line, s51-D01 · <what was decided> (<who> <date>))
+s51-D01 · The image copies every module (COPY *.py) and personas/; built and run on the fixtures (g02 261009)
 
 
 Open
 ----
 
-1. Fix the Dockerfile so the image holds every module and personas/.
+(none: the image starts; on this network pip needed a trusted package index to build)
 
 (write here, or mark the drawing in red)

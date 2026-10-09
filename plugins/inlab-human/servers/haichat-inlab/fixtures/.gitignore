@@ -4,3 +4,6 @@ endpoints/
 registry.json
 .runs/
 .logs/
+recstore/
+casestore/
+projects/

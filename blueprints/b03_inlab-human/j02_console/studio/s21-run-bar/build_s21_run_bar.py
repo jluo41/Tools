@@ -11,9 +11,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_build"))
-from console_draw import APP, RED, Sheet, header, save  # noqa: E402
+from console_draw import APP, GREEN, RED, Sheet, header, save  # noqa: E402
 
-CHANGES = []                                          # (YYMMDD, what changed): a green note each
+CHANGES = [("261009", "fixed: a call the gate refuses shows as ⛔ refused in the drawer, with the gate's reason"),
+           ("261009", "the message step reads the patient from the dataset on screen, not one fixed store")]
 STEPS = [
     ["▶ Run", "the endpoint's own number: POST to its /invocations through endpoint-predict", "the endpoint (no LLM)",
      "POST /api/predict"],
@@ -62,6 +63,9 @@ def main():
     tools = agent_tools()
     y = s.table(40, y + 40, [("tool (mcp__console__…)", 360, 36), ("ConsoleAction", 420, 42), ("gate", 360, 36)],
                 tools, f, red=lambda r: r[2].startswith("?"))
+    y += 30
+    s.text(40, y, "✎ 261009 a tool in neither list (prepare_payload) or a Deny now reaches the drawer as ⛔ refused, "
+                  "never a chip that looks as if it ran (shot in s32)", 16, f, GREEN)
     y += 30
     s.text(40, y, "? this vocabulary could drive the toolkit's workbench too: an MCP whose tools are its actions "
                   "(j04 Q02 · b01 j05_chat Q02)", 16, f, RED)

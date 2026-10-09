@@ -30,7 +30,7 @@ export default function PatientCard({patient, loading}: Props) {
         <div className='patient-card'>
             <div className='pc-main'>
                 <span className='pc-id'>{patient.patient_id}</span>
-                <span className='chip'>{cohortOf(patient.patient_id, patient.summary)}</span>
+                <span className='chip'>{cohortOf(patient.summary)}</span>
                 <span className='roster-sub'>
                     {[
                         patient.age_at_index === null ? '?' : patient.age_at_index + 'y',

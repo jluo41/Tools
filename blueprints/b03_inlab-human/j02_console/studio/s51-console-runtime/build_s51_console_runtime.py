@@ -5,21 +5,24 @@ module the image lacks drawn in red. A rebuild keeps whatever a person drew.
 
     python build_s51_console_runtime.py
 """
+import fnmatch
 import re
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_build"))
-from console_draw import APP, RED, Sheet, header, save  # noqa: E402
+from console_draw import APP, GREEN, RED, Sheet, header, save  # noqa: E402
 
-CHANGES = []                                          # (YYMMDD, what changed): a green note each
+CHANGES = [("261009", "fixed: the image copies every module and personas/; built and run on the fixtures"),
+           ("261009", "new settings: INLAB_RECORD_STORE (read in place), INLAB_CASE_STORE (case sets)")]
 RUNTIMES = [
     ["standalone", "uvicorn main:app (:8091) serves the SPA, the REST routes and WS /ws/haichat",
      "the HaiChat drawer is shown; the agent runs on the local Claude Code login (Agent SDK)", "a person at the console"],
     ["embedded", "HAIChat-SPACE builds this folder (docker compose up haichat-inlab) and renders it as a per-thread iframe",
      "the drawer is hidden: Mattermost is the chat, haichat-me-agent the agent", "a clinician in a HAI-Chat thread"],
-    ["fixtures", "fixtures/run_fixture.sh: the stub endpoint (:8192) + the console (:8191) on synthetic data, loopback",
+    ["fixtures", "fixtures/run_fixture.sh (record flag optional): the stub endpoint (:8192) + the console (:8191) on synthetic data, "
+                 "loopback; with the record flag the glucose set is read from a record store in place",
      "the drawer is shown; prints both PIDs; stop them by PID", "docs, screenshots, tests"],
 ]
 
@@ -27,7 +30,8 @@ RUNTIMES = [
 def env_reads():
     """[(INLAB_* name, the modules that read it)] from the console's Python and the engine."""
     found = {}
-    files = sorted(APP.glob("*.py")) + [APP.parents[1] / "mcp-servers/endpoint-predict/server.py"]
+    engine = APP.parents[1] / "mcp-servers/endpoint-predict"
+    files = sorted(APP.glob("*.py")) + [engine / "server.py", engine / "record_store.py"]
     for f in files:
         for name in set(re.findall(r"INLAB_[A-Z_]+", f.read_text(encoding="utf-8"))):
             found.setdefault(name, []).append(f.name)
@@ -35,15 +39,25 @@ def env_reads():
 
 
 def image_check():
-    """[(module main.py imports, copied into the image?)]"""
-    imports = re.findall(r"^from (\w+) import", (APP / "main.py").read_text(encoding="utf-8"), re.M)
-    local = [m for m in imports if (APP / f"{m}.py").is_file()]
-    copied = set()
+    """[(module the app imports, or a folder it reads at run time, copied into the image?)]: every local module
+    any console module imports (main.py's routers and what they import in turn), and personas/."""
+    local = {f.stem for f in APP.glob("*.py")}
+    need, todo = set(), ["main"]
+    while todo:
+        m = todo.pop()
+        if m in need:
+            continue
+        need.add(m)
+        src = (APP / f"{m}.py").read_text(encoding="utf-8")
+        todo += [x for x in re.findall(r"^\s*(?:from|import) (\w+)", src, re.M) if x in local]
+    patterns = []
     for line in (APP / "Dockerfile").read_text(encoding="utf-8").splitlines():
         if line.startswith("COPY ") and "--from" not in line:
-            copied |= {Path(t).stem for t in line.split()[1:-1] if t.endswith(".py")}
-    rows = [["main.py", "yes" if "main" in copied else "? not copied"]]
-    rows += [[f"{m}.py", "yes" if m in copied else "? not copied"] for m in local]
+            patterns += line.split()[1:-1]
+    def copied(name: str) -> bool:
+        return any(fnmatch.fnmatch(name, pat.rstrip("/")) for pat in patterns)
+    rows = [[f"{m}.py", "yes" if copied(f"{m}.py") else "? not copied"] for m in sorted(need)]
+    rows.append(["personas/", "yes" if copied("personas") else "? not copied"])
     return rows
 
 
@@ -63,10 +77,12 @@ def main():
     rows = image_check()
     y = s.table(40, y + 40, [("module", 360, 36), ("in the image?", 300, 30)], rows, f,
                 red=lambda r: r[1].startswith("?"))
+    y += 30
     if any(r[1].startswith("?") for r in rows):
-        y += 30
-        s.text(40, y, "? the image cannot start: main.py imports routers the Dockerfile never copies (and personas/ "
-                      "is not copied either)", 16, f, RED)
+        s.text(40, y, "? the image cannot start: the app imports modules the Dockerfile never copies", 16, f, RED)
+    else:
+        s.text(40, y, "✎ 261009 fixed: COPY *.py and personas/; the image built and answered every route on the "
+                      "fixtures (pip needed a trusted index on this network)", 16, f, GREEN)
     save(s, f, y + 40, HERE / "s51-console-runtime.excalidraw", "build_s51_console_runtime.py")
 
 

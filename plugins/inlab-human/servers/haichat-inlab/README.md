@@ -48,13 +48,22 @@ at a cohort:
 
 | Env | Meaning |
 |---|---|
-| `INLAB_PATIENT_STORE` | directory of `<patient_id>.json` records |
+| `INLAB_RECORD_STORE` | a haipipe record store (`2-RecStore`), read in place: each record set is a dataset (needs `pyarrow`) |
+| `INLAB_DATASET_STORE` | the json copy, the fallback: a parent dir of `<dataset>/patients/<id>.json` |
+| `INLAB_PATIENT_STORE` | one dataset's `<patient_id>.json` records (the oldest form) |
+| `INLAB_CASE_STORE` | *(optional)* a haipipe case store (`3-CaseStore`): the 📌 Case view lists each dataset's cooked cases |
 | `INLAB_ENDPOINT_STORE` | directory of packaged endpoints (a `6-EndpointStore`) |
 | `INLAB_REGISTRY` | JSON map `{"<package>": "http://host:port"}` |
 | `INLAB_ENGINE` | *(optional)* path to the `endpoint-predict` dir. Unset ⇒ the plugin sibling `../../mcp-servers/endpoint-predict`, else walk up looking for `Tools/plugins/inlab-human/…` |
-| `INLAB_LABEL_STORE` | *(optional)* dir of subjective-label dimension folders (a project's `tasks/`). Lights up the 📌 Case and ✏️ Annotate views |
+| `INLAB_LABEL_STORE` | *(optional)* dir of subjective-label dimension folders (a project's `tasks/`). Lights up the ✏️ Annotate view and the label overlay on cases |
+| `INLAB_PROJECTS_ROOT` | *(optional)* the SPACE root: the 📋 Tasks view reads `examples-*/Project-*/tasks/bNN/jNN/tNN` |
 
-`GET /api/health` reports the resolved config and which endpoints are live.
+One patient store is enough (any of the first three). `diagram/09-workspace-wiring.txt` says how each
+store reaches the console. `GET /api/health` reports each setting's state (unset · set · found ·
+missing, never a path) and which endpoints are live.
+
+Synthetic fixtures for docs, screenshots and tests: `bash fixtures/run_fixture.sh [--record]` (prints
+both PIDs; stop them by PID).
 
 ## Run
 

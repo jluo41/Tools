@@ -24,13 +24,13 @@ Rebuild: the console on its fixtures (`fixtures/run_fixture.sh`), then `uv run -
 Decided
 -------
 
-(none yet: a decision is one line, s13-D01 · <what was decided> (<who> <date>))
+s13-D01 · The Case view reads the dataset's cooked case set (3-CaseStore) when one is mounted (Q02, g02 261009)
+s13-D02 · Without one, a row is a case only if it holds prose; a timeline has no cases until cooked (g02 261009)
 
 
 Open
 ----
 
-1. Read the cooked CaseSet, or name each data type's case stream?
-2. On a timeline, is a case a 5-minute window rather than a row?
+(none: both are decided; which TriggerFn cuts a dataset's cases is its Case stage's)
 
 (write here, or mark the drawing in red)

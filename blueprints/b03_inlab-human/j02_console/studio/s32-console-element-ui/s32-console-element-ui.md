@@ -24,7 +24,7 @@ Rebuild: the console on its fixtures (`fixtures/run_fixture.sh`), then `uv run -
 Decided
 -------
 
-(none yet: a decision is one line, s32-D01 · <what was decided> (<who> <date>))
+s32-D01 · The Internal chart and the placeholder card left the gallery: their views are hidden (Q05, g02 261009)
 
 
 Open

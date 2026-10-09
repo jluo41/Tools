@@ -82,9 +82,10 @@ class Sheet:
     def box(self, x, y, w, h, frame=None):
         return self._el("rectangle", x, y, w, h, frameId=frame["id"] if frame else None)
 
-    def table(self, x0, y0, cols, rows, frame=None, size=16, red=lambda row: False):
+    def table(self, x0, y0, cols, rows, frame=None, size=16, red=lambda row: False, green=lambda row: False):
         """A lines-only table: cols = [(head, width, chars per line)], rows = [[cell, ...]]; a row for which
-        red(row) is true is written in red (an open point). Returns the y under the last rule."""
+        red(row) is true is written in red (an open point), one for which green(row) is true in green (a change
+        we made). Returns the y under the last rule."""
         width = sum(w for _, w, _ in cols)
         x = x0
         for head, w, _ in cols:
@@ -97,7 +98,7 @@ class Sheet:
             h = max(t.count("\n") + 1 for t in wrapped) * LINE + 14
             x = x0
             for t, (_, w, _) in zip(wrapped, cols):
-                self.text(x + 8, y + 7, t, size, frame, RED if red(row) else INK)
+                self.text(x + 8, y + 7, t, size, frame, RED if red(row) else GREEN if green(row) else INK)
                 x += w
             y += h
             self.line(x0, y, x0 + width, y, frame)

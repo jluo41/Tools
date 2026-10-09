@@ -25,6 +25,8 @@ import ModelCard from './ModelCard';
 interface Props {
     /** whose message this is — MessagePanel needs it to load the patient */
     patientId: string | null;
+    /** the dataset the patient is in: the message step reads the patient from it */
+    dataset?: string | null;
     models: ModelInfo[];
     selected: string | null;
     tab: 'card' | 'run' | 'message';
@@ -42,7 +44,7 @@ interface Props {
 }
 
 export default function RunsPanel(props: Props) {
-    const {patientId, models, selected, tab, openRun, onTab, onOpenRun, onSelect, onRun,
+    const {patientId, dataset, models, selected, tab, openRun, onTab, onOpenRun, onSelect, onRun,
         canRun, running, runs, error, notScoreable} = props;
 
     const shown = openRun === null ? runs[0] : runs.find((r) => r.id === openRun);
@@ -118,6 +120,7 @@ export default function RunsPanel(props: Props) {
 
                             <PipelineBar
                                 patientId={patientId}
+                                dataset={dataset ?? null}
                                 run={shown ?? null}
                                 onRun={onRun}
                                 canRun={canRun}

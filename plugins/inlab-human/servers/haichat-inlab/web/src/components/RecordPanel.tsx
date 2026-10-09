@@ -1,7 +1,7 @@
 /* RecordPanel — the DATA layer's third stage: RecordFn output.
  *
  * What the pipeline actually reads. Compared with Source, this is where the cleaning
- * shows: sensor rows filtered, a PID assigned, timestamps binned onto a 5-minute grid,
+ * shows: rows filtered, a human id assigned, times put on each record's grain,
  * duplicates aggregated. Put this beside Source (drag the tab) and the transformation
  * is visible row for row — which is the point.
  */

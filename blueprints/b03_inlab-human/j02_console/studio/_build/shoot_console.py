@@ -24,6 +24,7 @@ HERE = Path(__file__).resolve().parent
 STUDIO = HERE.parent
 sys.path.insert(0, str(STUDIO.parents[2] / "_build"))
 from shoot import browser, page_shot, snap  # noqa: E402
+from console_draw import HIDDEN  # noqa: E402  — views a scope hides (views.ts PLACEHOLDER, j02 Q05)
 
 VIEWS = ["Raw", "Source", "Record", "Case", "Internal", "External", "Model", "Tasks", "Checklist", "Annotate",
          "Health"]
@@ -43,10 +44,8 @@ ELEMENTS = [
     ("layer-banner", "Layer banner (store and transform)", ".layer-banner", "Source"),
     ("source-table", "Source table (tabs, grid, as-of)", ".raw", "Source"),
     ("raw-file", "Raw file preview", ".raw-file", "Raw"),
-    ("record-chart", "Record chart (glucose and events)", ".record-chart", "Record"),
+    ("record-chart", "Record chart (a lane per table with a time column)", ".record-chart", "Record"),
     ("case-card", "Case card", ".case-card", "Case"),
-    ("chart", "Clinician chart (Internal)", ".chart", "Internal"),
-    ("placeholder", "Placeholder card", ".stub-card", "External"),
     ("model-list", "Model list", ".mv-side", "Model"),
     ("model-card", "Model card", ".mv-body", "Model"),
     ("run-bar", "Run bar (Run · Interpret · Message · Judge · Feedback)", ".pipe-bar", "@run"),
@@ -56,7 +55,9 @@ ELEMENTS = [
     ("annotate-start", "Annotate start (Group)", ".fg-start", "@group:Annotate"),
     ("health-table", "Health table", ".health-table", "Health"),
     ("drawer", "HaiChat drawer", ".drawer", "@drawer"),
+    ("refused", "HaiChat tool call the gate refused", ".tc-chip.refused", "@refusals"),
 ]
+# (dropped 261009: the Internal chart and the placeholder card, whose views are hidden as placeholders, j02 Q05)
 
 
 # a screenshot never carries a host path: any home-folder path on screen (the Health view prints the
@@ -68,6 +69,46 @@ MASK_JS = r"""() => { const re = /\/(?:Users|home|private)\/[^\s"']*?\/(?=Tools\
 
 def masked(page) -> None:
     page.evaluate(MASK_JS)
+
+
+def shown(views: list[str], scope: str) -> list[str]:
+    """The views the rail lists at a scope: a placeholder there is hidden (j02 Q05)."""
+    return [v for v in views if scope not in HIDDEN.get(v.lower(), [])]
+
+
+READY = "() => { const b = document.querySelector('.drawer-input .send'); return b && !b.disabled; }"
+REFUSED = "(t) => [...document.querySelectorAll('.tc-chip.refused')].some(c => c.innerText.includes(t))"
+
+
+def refusals(page, box, element) -> dict:
+    """The gate's two refusals, as the drawer shows them (j02 g02 D5): Deny on the approval card ("declined"),
+    and a tool in neither list ("not permitted", prepare_payload). Each must leave a chip marked refused,
+    never one that looks as if it ran. The agent often tries prepare_payload on its own; asked only if not."""
+    out = {}
+    page.locator(".appr-card button", has_text="Deny").first.click()
+    for key, text, ask in (("declined", "declined", None),
+                           ("not_permitted", "not permitted",
+                            "Call the tool mcp__endpoint-predict__prepare_payload with patient_id synth-cgm-001 and "
+                            "model synth_cgm_forecast_v0001, and tell me what happened.")):
+        try:
+            if ask and not page.evaluate(REFUSED, text):
+                page.wait_for_function(READY, timeout=180000)       # the turn before must be over
+                box.fill(ask)
+                box.press("Enter")
+            page.wait_for_function(REFUSED, arg=text, timeout=120000)
+            chip = page.locator(".tc-chip.refused", has_text=text).first
+            out[key] = chip.inner_text().replace("\n", " ")
+            if key == "not_permitted":
+                chip.scroll_into_view_if_needed()
+                chip.evaluate("c => c.dataset.shot = 'refused'")         # so the element helper can find it
+                element("refused", "HaiChat tool call the gate refused", ".tc-chip[data-shot='refused']")
+        except Exception as e:  # noqa: BLE001 — say what did not happen; the drawing marks it red
+            out[key] = f"no '{text}' chip within the wait ({type(e).__name__})"
+    page.wait_for_function(READY, timeout=180000)
+    page.wait_for_timeout(800)
+    masked(page)
+    page_shot(page, STUDIO / "s32-console-element-ui" / "shots" / "refused_page.png")
+    return out
 
 
 def select(page, dataset: str, human: str) -> None:
@@ -134,7 +175,7 @@ def main() -> None:
         element("patient-picker", "Patient picker, open", ".combo")
         page.keyboard.press("Escape")
         page.wait_for_timeout(300)
-        for v in VIEWS:
+        for v in shown(VIEWS, "individual"):
             view(page, v)
             masked(page)
             page_shot(page, shots["s12-individual-scope"] / f"{v.lower()}.png")
@@ -157,7 +198,7 @@ def main() -> None:
         page_shot(page, shots["s21-run-bar"] / "run_risk_score.png")
         # Group scope: every view
         scope(page, "Group")
-        for v in VIEWS:
+        for v in shown(VIEWS, "group"):
             view(page, v)
             masked(page)
             page_shot(page, shots["s11-group-scope"] / f"{v.lower()}.png")
@@ -181,6 +222,7 @@ def main() -> None:
                     element("approval", "HaiChat approval card (Allow · Deny)", ".appr-card")
                     page_shot(page, shots["s32-console-element-ui"] / "approval_page.png")
                     status = "shot"
+                    facts["_refused"] = refusals(page, box, element)
                 except Exception as e:  # noqa: BLE001 — no card in time: say so, the drawing marks it red
                     status = f"no approval card within 120 s ({type(e).__name__})"
             else:

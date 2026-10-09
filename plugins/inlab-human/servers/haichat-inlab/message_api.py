@@ -52,9 +52,11 @@ def _persona_root() -> Path | None:
     here = Path(__file__).resolve()
     # this folder lives inside plugins/inlab-human/servers/, so the toolkit is a
     # sibling plugin three levels up; the walk-up below covers any other layout
-    sibling = here.parents[3] / "haipipe-toolkit/skills/1_base/task/4_individual"
-    if sibling.is_dir():
-        return sibling
+    # (in the image the module sits at /app, with no three levels above it)
+    if len(here.parents) > 3:
+        sibling = here.parents[3] / "haipipe-toolkit/skills/1_base/task/4_individual"
+        if sibling.is_dir():
+            return sibling
     for parent in here.parents:
         cand = parent / "Tools/plugins/haipipe-toolkit/skills/1_base/task/4_individual"
         if cand.is_dir():
@@ -375,12 +377,12 @@ def _save_run(run_ref: str, patch: dict[str, Any]) -> dict[str, Any]:
     return rec
 
 
-def _patient(patient_id: str) -> dict[str, Any]:
-    store = os.environ.get("INLAB_PATIENT_STORE", "")
-    p = Path(store).expanduser() / f"{patient_id}.json"
-    if not p.exists():
-        raise ValueError(f"unknown patient: {patient_id}")
-    return json.loads(p.read_text())
+def _patient(patient_id: str, dataset: str | None = None) -> dict[str, Any]:
+    """One human, from whichever store holds the dataset (record set or json copy), the same way the
+    console's views read it."""
+    from console_api import load_patient, scope
+    scope(dataset)
+    return load_patient(patient_id)
 
 
 # ── routes ───────────────────────────────────────────────────────────────────
@@ -389,7 +391,7 @@ def personas():
     """The styles a clinician can pick: message personas + judge rubrics."""
     root = _persona_root()
     return {
-        "root": str(root) if root else None,
+        "root": root.name if root else None,          # a name, never a host path
         "message": _personas(REPORT_SKILL),
         "judge": _personas(JUDGE_SKILL),
         "reason": None if root else
@@ -414,7 +416,7 @@ async def message(body: dict[str, Any]):
     system, meta = files
 
     try:
-        patient = _patient(patient_id)
+        patient = _patient(patient_id, body.get("dataset"))
         blind = _blind(resp)
         user_msg = _compose_user_msg(patient, blind, body.get("anchor"))
         text = await _ask(system, user_msg, meta.get("model"))

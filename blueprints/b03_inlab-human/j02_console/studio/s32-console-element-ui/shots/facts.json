@@ -121,7 +121,7 @@
   "tag": "button.raw-tab"
  },
  "record-chart": {
-  "label": "Record chart (glucose and events)",
+  "label": "Record chart (a lane per table with a time column)",
   "selector": ".record-chart",
   "cut": false,
   "font": "16px 400",
@@ -135,34 +135,12 @@
   "label": "Case card",
   "selector": ".case-card",
   "cut": false,
-  "font": "14px 400",
-  "radius": "8px",
-  "padding": "10px 12px",
-  "border": "rgba(27, 49, 57, 0.12)",
-  "fill": "rgba(27, 49, 57, 0.02)",
-  "tag": "div.case-card"
- },
- "chart": {
-  "label": "Clinician chart (Internal)",
-  "selector": ".chart",
-  "cut": false,
   "font": "12px 400",
   "radius": "0px",
-  "padding": "4px 0px",
-  "border": "rgb(17, 23, 28)",
+  "padding": "2px 0px",
+  "border": "rgba(27, 49, 57, 0.08)",
   "fill": "rgba(0, 0, 0, 0)",
-  "tag": "summary"
- },
- "placeholder": {
-  "label": "Placeholder card",
-  "selector": ".stub-card",
-  "cut": false,
-  "font": "14px 400",
-  "radius": "8px",
-  "padding": "12px 12px",
-  "border": "rgba(27, 49, 57, 0.28)",
-  "fill": "rgba(27, 49, 57, 0.03)",
-  "tag": "div.stub-card"
+  "tag": "td.roster-id"
  },
  "model-list": {
   "label": "Model list",
@@ -273,6 +251,21 @@
   "border": "rgb(255, 255, 255)",
   "fill": "rgb(34, 114, 180)",
   "tag": "button.run-btn"
+ },
+ "refused": {
+  "label": "HaiChat tool call the gate refused",
+  "selector": ".tc-chip[data-shot='refused']",
+  "cut": false,
+  "font": "11px 400",
+  "radius": "10px",
+  "padding": "3px 8px",
+  "border": "rgb(200, 45, 76)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "tag": "div.tc-chip"
+ },
+ "_refused": {
+  "declined": "\u26d4 select_model refused \u00b7 The clinician declined this tool call.",
+  "not_permitted": "\u26d4 prepare_payload refused \u00b7 mcp__endpoint-predict__prepare_payload is not permitted in this console."
  },
  "_approval": "shot"
 }

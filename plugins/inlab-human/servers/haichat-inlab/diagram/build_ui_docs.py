@@ -62,12 +62,22 @@ def blurbs() -> dict[str, tuple[str, str]]:
     return out
 
 
+def placeholders() -> dict[str, list[str]]:
+    """{view: [the scopes where it is only a placeholder, so hidden]} from views.ts PLACEHOLDER."""
+    ts = (SRC / "views.ts").read_text(encoding="utf-8")
+    block = ts.split("PLACEHOLDER", 1)[1].split("};", 1)[0]
+    return {k: re.findall(r"'(\w+)'", v) for k, v in re.findall(r"(\w+):\s*\[([^\]]*)\]", block)}
+
+
 def ui_elements() -> str:
     out = ["🧩  UI elements — every view, then every component", "═" * 67, "", f"({HEAD})", "",
            "─§ The views (web/src/views.ts) " + "─" * 35, ""]
     bl = blurbs()
+    hidden = placeholders()
     for key, icon, label, group in views():
         line = f"  {icon} {label:<10} {group:<8} view '{key}'"
+        if hidden.get(key):
+            line += "   hidden at " + " · ".join(hidden[key]) + " (a placeholder there)"
         out.append(line)
         if key in bl:
             store, what = bl[key]

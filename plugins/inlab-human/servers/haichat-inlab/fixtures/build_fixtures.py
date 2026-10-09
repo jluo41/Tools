@@ -2,9 +2,15 @@
 
 Writes, under fixtures/ (beside this file):
 
-    store/<dataset>/patients/<human_id>.json   three data types, five synthetic humans each
+    store/<dataset>/patients/<human_id>.json   three data types, five synthetic humans each (the json copy)
+    recstore/SynthCGM_v0/                      the glucose humans as a haipipe record set, read in place
+    casestore/SynthCGM_v0/@v0CaseSet-Meal/     a cooked case set: one case per meal, with two facets
+    projects/examples-0-synthetic/Project-Synthetic/tasks/   a ladder: one Block, two Jobs, four Tasks
     endpoints/<package>/                       two packaged endpoints the engine can list and card
     registry.json                              {package: stub endpoint URL}
+
+The record store and the case set follow the layouts the haipipe Record and Case stages write
+(RecordSet._save_data_to_disk, CaseSet._save_data_to_disk); they need pyarrow.
 
     SynthCGM_v0       a 5-minute glucose timeline with meals, exercise and insulin (forecast endpoint)
     SynthDialogue_v0  a doctor–patient visit: encounter, dialogue, note (risk-score endpoint)
@@ -178,21 +184,123 @@ def endpoints(root: Path) -> None:
         "dataframe_records": [{"PID": "synth-dlg-000", "ObsDT": "2024-05-01"}]})
 
 
+# ── the glucose humans as a record store, and their cooked cases ─────────────────────────────────
+GRAIN = "5Min"
+
+
+def parquet(path: Path, rows: list[dict], types: dict | None = None) -> None:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    path.parent.mkdir(parents=True, exist_ok=True)
+    table = pa.Table.from_pylist(rows)
+    for col, t in (types or {}).items():
+        if col in table.column_names:
+            table = table.set_column(table.column_names.index(col), col, table.column(col).cast(t))
+    pq.write_table(table, path)
+
+
+def record_store(root: Path, humans: list[dict]) -> None:
+    """One record set in the Record stage's layout: a Human table and one Record per source table."""
+    import pyarrow as pa
+    rs = root / "SynthCGM_v0"
+    human = "HmSynth"
+    write(rs / "manifest.json", {"_synthetic": SYNTH, "record_set_name": "SynthCGM_v0",
+                                 "source_set_manifest": {"source_name": "SynthCGM", "cohort": "SynthCGM"},
+                                 "Partition_Args": {"record_set_label": 1}, "structure": {
+                                     "humans": [human],
+                                     "records": [[human, "Ptt"]] + [[human, f"{t}{GRAIN}"] for t in
+                                                                    ("CGM", "Diet", "Exercise", "Medication")]}})
+    parquet(rs / f"Human-{human}" / "Human2RawNum.parquet",
+            [{"PID": h["patient_id"], "PatientID": h["patient_id"], "record_set_label": 1,
+              **{f"{t}_n": n for t, n in h["summary"]["table_counts"].items()}} for h in humans])
+    ts = pa.timestamp("s")
+    for table in ("Ptt", "CGM", "Diet", "Exercise", "Medication"):
+        name = table if table == "Ptt" else f"{table}{GRAIN}"
+        rows, k = [], 0
+        for h in humans:
+            for r in h["source_tables"][table]:
+                row = {"PID": h["patient_id"], **r}
+                if "DT_s" in row:
+                    row["DT_s"] = datetime.strptime(row["DT_s"], "%Y-%m-%d %H:%M:%S")
+                    row[f"{name}ID"] = k
+                    k += 1
+                rows.append(row)
+        parquet(rs / f"Record-{human}.{name}" / "RecAttr.parquet", rows, {"DT_s": ts})
+        parquet(rs / f"Record-{human}.{name}" / "RecIndex.parquet",
+                [{"PID": h["patient_id"], "n": len(h["source_tables"][table])} for h in humans])
+
+
+def case_store(root: Path, humans: list[dict]) -> None:
+    """One cooked case set in the Case stage's layout: a case per meal, with the two hours of glucose before
+    it and the meal itself as facets (row for row with df_case)."""
+    import pyarrow as pa
+    cs = root / "SynthCGM_v0" / "@v0CaseSet-Meal"
+    write(cs / "manifest.json", {"_synthetic": SYNTH, "case_set_name": "@v0CaseSet-Meal",
+                                 "record_set_manifest": {"record_set_name": "SynthCGM_v0"},
+                                 "trigger_info": {"TriggerName": "Meal", "TriggerArgs": {"Trigger": "Meal"}},
+                                 "casefn_info": {"CaseFn_list": ["CGMBf2h", "DietAt"]}})
+    base, before, meal = [], [], []
+    for h in humans:
+        cgm = [(datetime.strptime(r["DT_s"], "%Y-%m-%d %H:%M:%S"), r["BGValue"]) for r in h["source_tables"]["CGM"]]
+        for d in h["source_tables"]["Diet"]:
+            at = datetime.strptime(d["DT_s"], "%Y-%m-%d %H:%M:%S")
+            base.append({"PID": h["patient_id"], "ObsDT": at})
+            before.append({"PID": h["patient_id"],
+                           "CGMBf2h--val": [v for t, v in cgm if at - timedelta(hours=2) <= t < at]})
+            meal.append({"PID": h["patient_id"], "DietAt--carbs": d["Carbs"], "DietAt--food": d["FoodName"]})
+    parquet(cs / "df_case.parquet", base, {"ObsDT": pa.timestamp("s")})
+    parquet(cs / "@CGMBf2h.parquet", before)
+    parquet(cs / "@DietAt.parquet", meal)
+
+
+# ── a project ladder for the Tasks view ─────────────────────────────────────────────────────────
+TASKS = [  # (job, task, scope line or None, task-type, has results)
+    ("j01_example_cohort_job", "t01_example_cohort_summary", None, "data", True),
+    ("j01_example_cohort_job", "t02_example_cohort_model", None, "fit", False),
+    ("j02_example_individual_job", "t01_example_one_person_readout", "individual", "eval", True),
+    ("j02_example_individual_job", "t02_example_one_person_check", "individual", "eval", False),
+]
+
+
+def projects(root: Path) -> None:
+    blk = root / "examples-0-synthetic" / "Project-Synthetic" / "tasks" / "b01_example_block"
+    blk.mkdir(parents=True, exist_ok=True)
+    (blk / "board.md").write_text("# Synthetic example block\n\nboard-kind: task-block\n", encoding="utf-8")
+    for job, task, scope, ttype, done in TASKS:
+        t = blk / job / task
+        t.mkdir(parents=True, exist_ok=True)
+        head = [f"# Synthetic example: {task[4:].replace('_', ' ')}", "", f"task-type: {ttype}", f"task: {task}",
+                f"job: {job}"] + ([f"scope: {scope}"] if scope else [])
+        (t / f"{task}.md").write_text("\n".join(head) + "\n\n## Opening\n\nA placeholder Task.\n", encoding="utf-8")
+        (t / "runs").mkdir(exist_ok=True)
+        if done:
+            (t / "results" / "r01").mkdir(parents=True, exist_ok=True)
+            (t / "results" / "r01" / "synthetic.txt").write_text(SYNTH + "\n", encoding="utf-8")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8192, help="the stub endpoint's port")
     a = ap.parse_args()
-    for d in ("store", "endpoints"):
+    for d in ("store", "endpoints", "recstore", "casestore", "projects"):
         shutil.rmtree(HERE / d, ignore_errors=True)
+    glucose = []
     for ds, make in (("SynthCGM_v0", cgm_human), ("SynthDialogue_v0", dialogue_human),
                      ("SynthReview_v0", review_human)):
         for i in range(5):
             h = make(i)
             write(HERE / "store" / ds / "patients" / f"{h['patient_id']}.json", h)
+            if ds == "SynthCGM_v0":
+                glucose.append(h)
+    record_store(HERE / "recstore", glucose)
+    case_store(HERE / "casestore", glucose)
+    projects(HERE / "projects")
     endpoints(HERE / "endpoints")
     url = f"http://127.0.0.1:{a.port}"
     write(HERE / "registry.json", {"synth_cgm_forecast_v0001": url, "synth_risk_v0001": url})
-    print(f"fixtures written under {HERE.name}/: 3 datasets × 5 humans, 2 endpoints, registry → {url}")
+    print(f"fixtures written under {HERE.name}/: 3 datasets × 5 humans, a record set, a case set "
+          f"({sum(len(h['source_tables']['Diet']) for h in glucose)} cases), a 4-Task ladder, 2 endpoints, "
+          f"registry → {url}")
 
 
 if __name__ == "__main__":

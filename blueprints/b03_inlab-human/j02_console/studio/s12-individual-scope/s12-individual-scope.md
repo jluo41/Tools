@@ -24,12 +24,13 @@ Rebuild: the console on its fixtures (`fixtures/run_fixture.sh`), then `uv run -
 Decided
 -------
 
-(none yet: a decision is one line, s12-D01 · <what was decided> (<who> <date>))
+s12-D01 · Internal, External and Annotate (placeholders at Individual) leave the Individual rail (Q05, g02 261009)
+s12-D02 · The Record chart draws a lane per table with a time column, naming no table (g02 261009)
 
 
 Open
 ----
 
-1. Internal and External are still placeholders here too (Q05).
+1. Build Internal first, then bring it back to the rail (Q05 Next).
 
 (write here, or mark the drawing in red)
