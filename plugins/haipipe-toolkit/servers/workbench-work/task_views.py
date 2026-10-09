@@ -225,6 +225,17 @@ def delivery_html(snap):
                               'answer-status is answered.</p>')
 
 
+def drawings_html(drawings):
+    """The RoadMap Draw list: the Block's drawings, then each Job's studio topics under the Job's name."""
+    out, group = [], None
+    for d in drawings:
+        if d.get("group") and d["group"] != group:
+            group = d["group"]
+            out.append(f'<h3 class="draw-group">{e(group)}</h3>')
+        out.append(drawing_html(d))
+    return "".join(out)
+
+
 def drawing_html(drawing):
     """A RoadMap Draw row (Insight's details.draw): a generated drawing is view only and names its
     script; any other drawing takes the pen with Edit drawing."""
@@ -236,8 +247,19 @@ def drawing_html(drawing):
     else:
         bar = (f'<span><button type="button" class="draw-edit">Edit drawing</button> '
                f'<span class="mono mut">{e(drawing["path"])}</span></span>{link(url + "&edit=1", "Open full screen")}')
-    return (f'<details class="draw" data-board="{e(drawing["path"])}"><summary>{e(drawing["title"])}</summary>'
-            f'<div class="st-bar">{bar}</div>'
+    sessions = drawing.get("sessions") or []
+    count = (f' <span class="mut">· {len(sessions)} session{"s" if len(sessions) != 1 else ""}</span>'
+             if sessions else "")
+    saved = ""
+    if sessions:                                     # the studio's saved sessions, newest first (haipipe-studio)
+        items = "".join(f'<li>{pop(s["url"], "Session · " + s["title"], s["pass"] + " · " + s["title"])}</li>'
+                        for s in sessions)
+        saved = f'<div class="draw-sessions"><span class="mut">Sessions</span><ul>{items}</ul></div>'
+    if drawing.get("preview"):                       # the builder's preview: readable without the canvas
+        saved += (f'<a class="draw-preview" href="{e(drawing["preview"])}" target="_blank" rel="noopener">'
+                  f'<img src="{e(drawing["preview"])}" alt="{e(drawing["title"])}" loading="lazy"></a>')
+    return (f'<details class="draw" data-board="{e(drawing["path"])}"><summary>{e(drawing["title"])}{count}</summary>'
+            f'<div class="st-bar">{bar}</div>{saved}'
             f'<iframe class="st-frame" title="{e(drawing["title"])}" data-src="{e(url)}" referrerpolicy="no-referrer"></iframe>'
             '</details>')
 
@@ -374,7 +396,7 @@ def render(snap, view="task"):
                         f'<p>{e(r["contribution"])}</p><p class="mut">{e(r["notes"] or "No notes yet.")}</p>'
                         f'<p>{link(r["url"], "Open source")}</p></div></details>'
                         for r in snap["resources"])
-    drawings = ''.join(drawing_html(d) for d in snap["drawings"])
+    drawings = drawings_html(snap["drawings"])
     no_draw = ('<p class="note" id="tw-no-drawings">No drawings yet: run "Draw the question map" in the Runs panel, '
                'or add a drawing to explore an idea, workflow or folder map.</p>')
     studio = (f'<div id="tw-drawings">{drawings or no_draw}</div><form id="tw-add-drawing"><label>Drawing name<input name="name" required placeholder="Drawing 1" maxlength="80" pattern="[A-Za-z0-9_ -]+"></label><button type="submit">+ Add drawing</button><p role="status"></p></form>'

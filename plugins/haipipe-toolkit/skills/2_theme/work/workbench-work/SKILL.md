@@ -57,7 +57,7 @@ available. Preserve the existing host's authentication settings.
 | Scope › Block | The spine, close condition, Jobs and board.md, as label and value rows | `board.md` |
 | Scope › Questions | The Question register: id, group, topic, question, linked Tasks | `board.md` Questions |
 | Scope › Resources | Workspace data: each `_WorkSpace` folder a Job declares (`raw_store` + `cohort`, or a `_WorkSpace/` path, in `src/config-defaults.yaml`) and the Block's ProjectResult folder, its files by kind (data named and sized only; documents, figures, drawings and scripts pop out); then the Related resources and the add form | Job defaults; `board.md` Related resources |
-| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, each a folding row | Block `studio/*.excalidraw` |
+| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `studio/sNN-<topic>/`, `jNN_*/studio/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
 | Task › each group | One table per register `group:` (one, Questions, when there is none): a row per Question, **Logic │ Task Work │ Report** | `board.md` Questions; native Tasks; report Pages |
 | Check › Runs | Every Run and its receipt status | Native Ticket/Result reader |
 | Check › Tasks | Each Task Folder's run counts and audit findings | Native Task reader |

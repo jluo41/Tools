@@ -1,0 +1,16 @@
+run: run-draw-s32
+kind: soft
+type: draw
+scope: Tools/blueprints/b03_inlab-human/j02_console
+target: s32
+ticket: run-draw-s32.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1009
+writes:
+- 24 elements re-shot · three green change notes · face s32-D01
+feeds:
+- reports/q04_one_look

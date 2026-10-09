@@ -1,0 +1,17 @@
+run: run-draw-s33
+kind: soft
+type: draw
+scope: Tools/blueprints/b03_inlab-human/j02_console
+target: s33
+ticket: run-draw-s33.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1009
+writes:
+- status column with how each was fixed (green rows) · issue 12 added · walk line
+  · Open now issue 9 and Q04 and j04 Q02 · face s33-D01
+feeds:
+- reports/q01_console_vs_toolkit

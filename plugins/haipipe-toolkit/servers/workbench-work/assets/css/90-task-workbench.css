@@ -34,6 +34,8 @@ details.draw{border:1px solid var(--line);border-radius:8px;margin:0 0 10px;over
 details.draw[open]>summary{border-bottom:1px solid var(--line)}details.draw>.st-bar{padding:8px 12px 0}
 details.draw>.st-frame{border:0;border-radius:0;border-top:1px solid var(--line)}details.draw>form,details.draw>.dr-body,details.draw>.ws-files{margin:10px 14px}
 .st-bar{display:flex;gap:14px;align-items:baseline;justify-content:space-between;margin:0 0 8px}
+/* RoadMap Draw: a Job's studio topics under its name, and each topic's saved sessions (haipipe-studio) */
+.draw-group{font:650 13px -apple-system,sans-serif;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line)}details.draw>.draw-sessions{margin:0 12px 8px;font-size:13px}.draw-sessions ul{margin:4px 0 0;padding-left:18px}details.draw>.draw-preview{display:block;margin:0 12px 10px}.draw-preview img{max-width:100%;border:1px solid var(--line);border-radius:6px}
 .st-frame{display:block;width:100%;height:calc(100vh - 260px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .draw-edit,form button{font:500 13px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;padding:3px 10px;cursor:pointer;background:var(--bg);color:var(--fg)}.draw-edit:disabled,form button:disabled{opacity:.55;cursor:not-allowed}
 /* the pop-out: Insight's pop box, as a dialog */
