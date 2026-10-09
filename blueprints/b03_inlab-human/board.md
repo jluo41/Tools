@@ -26,11 +26,24 @@ j05_data_boundary   de-identified only; outcomes scrubbed; study data stays with
 questions:
 - id: Q01
   title: What does inlab-human own, and what belongs to the toolkit?
-  question: The payload contract, the inference personas, the labeling reader and an agent drawer each exist both
-    here and in haipipe-toolkit. Which side owns each, and how does the other read it?
-  hypothesis: The toolkit owns contracts and personas; inlab-human owns the protocol, the console's routing and
-    display, and its tests.
-  acceptance: Answered when each shared piece has one owner and the other side imports or reads it.
+  question: The payload contract, the inference personas, the labeling reader and
+    an agent drawer each exist both here and in haipipe-toolkit. Which side owns each,
+    and how does the other read it?
+  hypothesis: The toolkit owns contracts and personas; inlab-human owns the protocol,
+    the console's routing and display, and its tests.
+  acceptance: Answered when each shared piece has one owner and the other side imports
+    or reads it.
   work: []
   report: reports/q01_ownership/q01_ownership.md
+- id: Q02
+  title: How is the plugin tested?
+  question: 'inlab-human has no tests: what should a suite cover across the study,
+    the console and the endpoint tool, and what can run without a live endpoint or
+    real cases?'
+  hypothesis: A synthetic patient store and a stub endpoint let the bundle invariants,
+    the blinding, the payload contract and the console routes run in CI with no PHI.
+  acceptance: Answered when one command runs a suite over all three parts on synthetic
+    data and it fails on a broken bundle, a premature reveal and a payload change.
+  work: []
+  report: reports/q02_plugin_tests/q02_plugin_tests.md
 ```

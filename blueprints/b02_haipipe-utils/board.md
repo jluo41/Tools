@@ -28,12 +28,24 @@ j07_banks           the reference banks in ExternalStore
 questions:
 - id: Q01
   title: Does the package say what it is?
-  question: plugin.json (0.2.0) names only food and exercise, and the README says haipipe-norm ships no code; medication,
-    insulin, the API host and the shared packages are missing from the package's own description.
-  hypothesis: Bring plugin.json and the README up to the four members, the API and the shared packages, and keep
-    them in step with each member's version.
-  acceptance: Answered when the manifest and README list every member and the API, and a member's release updates
-    them.
+  question: plugin.json (0.2.0) names only food and exercise, and the README says
+    haipipe-norm ships no code; medication, insulin, the API host and the shared packages
+    are missing from the package's own description.
+  hypothesis: Bring plugin.json and the README up to the four members, the API and
+    the shared packages, and keep them in step with each member's version.
+  acceptance: Answered when the manifest and README list every member and the API,
+    and a member's release updates them.
   work: []
   report: reports/q01_package_description/q01_package_description.md
+- id: Q02
+  title: How is a new member added?
+  question: 'When a fifth noun joins (a lab value, a symptom), what does it need:
+    the contract''s five rules, a client door, a bank and its manifest, an API lane,
+    a benchmark?'
+  hypothesis: haipipe-norm's 'adding a member' section is the checklist; a scaffold
+    makes the folders; a member is done when its suite, lane and benchmark pass.
+  acceptance: Answered when the checklist is tested by adding a member (or a dry run
+    of one) and every step lands where the contract says.
+  work: []
+  report: reports/q02_adding_a_member/q02_adding_a_member.md
 ```
