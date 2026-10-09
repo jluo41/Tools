@@ -37,7 +37,7 @@ A Run is **hard** or **soft**, decided by where its output lands (JL 261006).
 | | Hard | Soft |
 |---|---|---|
 | Name | `rNN_<slug>` | `run-<type>-<target>`, no date (the date is in its passes) |
-| Ticket | `rNN_<slug>.sh`, or a runner's `.yaml` | `run-<type>-<target>.md` |
+| Ticket | `rNN_<slug>.sh`, or a runner's `.yaml` | `run-<type>-<target>.md` (a Page's Delivery Run keeps its one command, `.sh`) |
 | Output | only its own `result/` (generated) | its scope's items: `draft/`, `studio/`, `reports/`, `delivery/` |
 | Counts as | evidence | work, not evidence |
 | Where | a work Task only | a Block, a Job or a Task; a Page Task has soft Runs only |

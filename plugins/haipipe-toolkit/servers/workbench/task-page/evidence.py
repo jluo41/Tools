@@ -1365,16 +1365,16 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
     records: dict[str, dict[str, object]] = {}
     order: list[str] = []
 
+    from src.run_folders import result_roots, under_page_results
     result_root = page_home / "results"
-    if result_root.is_dir() and not result_root.is_symlink():
+    if result_roots(page_home) and not result_root.is_symlink():   # results/<run>/ or a run's passes
         from src.evidence_selection import selected_for_home
         for manifest in selected_for_home(page_home):
-            if manifest.is_symlink():
+            if manifest.is_symlink() or not under_page_results(page_home, manifest):
                 continue
             try:
-                manifest.resolve().relative_to(result_root.resolve())
                 text = manifest.read_text(encoding="utf-8", errors="replace")
-            except (OSError, ValueError):
+            except OSError:
                 continue
             document = _result_document(text)
             item_id = _document_text(document, "item", text)
@@ -1385,7 +1385,9 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
             status = _document_text(document, "status", text) or "ready"
             owner_run = _document_text(document, "run", text)
             page_run = _document_text(document, "page_run", text)
-            run_id = page_run or owner_run or manifest.parent.name
+            folder_name = (manifest.parent.parent.parent.name if manifest.parent.parent.name == "passes"
+                           else manifest.parent.name)          # runs/<run>/passes/pNN-<MMDD>/ names the run above
+            run_id = page_run or owner_run or folder_name
             bullet = _document_text(document, "bullet", text)
             title = _document_text(document, "title", text)
             label = _document_text(document, "label", text)

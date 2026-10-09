@@ -194,7 +194,7 @@ Each lane has one fixed Delivery Run (JL 260928: "we just need one run, it can
 be run-delivery-webpage, no need for rd01_web, rd02_web"): `run-delivery-webpage`,
 `run-delivery-latex`, `run-delivery-word`; slides and render follow the pattern
 (`run-delivery-slides`, `run-delivery-render`). Every rebuild reruns the same Run
-through `page.py export`, which writes its ticket `runs/run-delivery-<lane>.sh`.
+through `page.py export`, which writes its ticket `runs/run-delivery-<lane>/run-delivery-<lane>.sh`.
 There is no new id, attempt, `runtime.yaml` or receipt: the lane's files and
 their file time are the result. A build never changes the Page, so it may run
 at any time; it never reopens or rewrites an RE. Older `rdNN_<lane>` Runs are
@@ -219,14 +219,15 @@ current authority is one Result/Card binding.
 
 ## Storage and routing
 
-Every Page Run is one ticket and one result folder with the same name, in a
-flat `runs/`. `page.py open-run` writes the ticket when the run starts;
-`page.py close-run` writes the result folder when it ends (JL 260928: records at
-the two ends, only the Page's text in between).
+Every Page Run is its own folder, `runs/<name>/` (0.125, JL 261009): its ticket, its card
+`run.yaml`, and one pass `passes/pNN-<MMDD>/` per close. `page.py open-run` writes the
+ticket and the card when the run starts; `page.py close-run` writes the pass when it ends
+(JL 260928: records at the two ends, only the Page's text in between). An older Page's
+flat `runs/<name>.md` ↔ `results/<name>/` still reads until `page.py run-names` moves it.
 
 ```text
-runs/run-<kind>-<slug>.md   ↔ results/run-<kind>-<slug>/
-runs/run-delivery-<lane>.sh        written by page.py export; its result is delivery/<lane>/
+runs/run-<kind>-<slug>/run-<kind>-<slug>.md · run.yaml · passes/pNN-<MMDD>/   (older: runs/<name>.md ↔ results/<name>/)
+runs/run-delivery-<lane>/run-delivery-<lane>.sh   written by page.py export; its result is delivery/<lane>/
 ```
 
 The Folder dialect may place the executable owner-native Ticket and canonical

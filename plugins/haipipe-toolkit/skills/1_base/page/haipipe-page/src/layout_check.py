@@ -21,7 +21,7 @@ from .plan_shape import iter_plan_bullets
 from . import run_names
 from .run_folders import FOLDERS, folder_for
 
-LAYOUT_VERSION = "0.121"
+LAYOUT_VERSION = "0.125"
 # Evidence lanes that stay live in `draft/evidence/`: the Page export writes `bibex/`, and
 # `materials/` holds the Page's imports (workbench ref/roster.md). Every other
 # lane is retired Outline evidence, `display/` once its units are DISPLAY Results.
@@ -208,6 +208,15 @@ def check_page_folder(target: Path) -> dict:
           "; ".join(filter(None, ["%d older Page run(s) loose in runs/" % len(loose) if loose else "",
                                   "%d readable run(s) inside a Space folder" % len(nested) if nested else ""]))
           or "%d Page run(s) in place" % len(page_runs), FIX_RUNS)
+    # ONE FOLDER PER RUN (0.125, JL 261009; haipipe-run 0.31.0): a readable run is runs/<name>/
+    # with its ticket, card run.yaml and passes/pNN-<MMDD>/, never the flat runs/<name>.md.
+    flat = sorted(p.name for p in runs.iterdir() if p.is_file() and run_names.is_run_name(p.stem)) \
+        if runs.is_dir() else []
+    own = sorted(p.name for p in runs.iterdir() if p.is_dir() and run_names.is_run_name(p.name)) \
+        if runs.is_dir() else []
+    _rule(rules, "one folder per run", "0.125", None if not (flat or own) else not flat,
+          ("%d readable run(s) flat in runs/: %s" % (len(flat), ", ".join(flat[:3]))) if flat
+          else "%d run folder(s): runs/<name>/<name>.md · run.yaml · passes/" % len(own), FIX_RUNS)
     results = folder / "results"
     nested = sorted(d.name for d in results.iterdir() if d.is_dir() and d.name in FOLDERS) \
         if results.is_dir() else []
@@ -286,6 +295,7 @@ def pages_in(target: Path) -> list[Path]:
                   and PREVIOUS not in p.parts and ".git" not in p.parts
                   and "pagex" not in p.relative_to(target).parts[:-1]  # links to other Pages
                   and "results" not in p.relative_to(target).parts[:-1]  # a Result card is not a Page
+                  and "runs" not in p.relative_to(target).parts[:-1]     # nor a run's ticket in its folder
                   and not {"outline", "draft"} & set(p.relative_to(target).parts[:-1]))
 
 

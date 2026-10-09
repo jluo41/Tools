@@ -30,7 +30,7 @@ from pathlib import Path
 
 from live.outline_preview import page_lock
 from src.outline_version import plan_dir, latest_outline
-from src.run_folders import ticket_dir, ticket_rel
+from src.run_folders import result_dir, result_roots, ticket_dir, ticket_rel, working_dir, write_card
 from src import run_names
 
 KINDS = ("explore", "wording", "accept")
@@ -144,7 +144,6 @@ def _kind_of(stem: str) -> str:
 def run_rows(page: Path, every: set[int]) -> list[dict]:
     """Enumerate Page Writing Runs with status, version, and covered paragraphs."""
     runs_dir = page.parent / "runs"
-    results_dir = page.parent / "results"
     rows = []
     if not runs_dir.is_dir():
         return rows
@@ -156,20 +155,22 @@ def run_rows(page: Path, every: set[int]) -> list[dict]:
         kind = _kind_of(stem)
         if not kind:
             continue
+        if ticket.parent != runs_dir and ticket.parent.name != stem:
+            continue                                   # a file inside a run's pass, not a ticket
         ticket_fields = _front(_read(ticket))
-        runtime = results_dir / stem / "runtime.yaml"
+        own = result_dir(page.parent, stem)            # its latest pass, or results/<run>/ (older)
+        runtime = own / "runtime.yaml"
         runtime_fields = _front(_read(runtime)) if runtime.is_file() else {}
         fields = dict(ticket_fields)
         fields.update({k: v for k, v in runtime_fields.items() if v})
-        versions = sorted((results_dir / stem).glob("v[0-9][0-9][0-9].md")) \
-            if (results_dir / stem).is_dir() else []
+        versions = sorted(own.glob("v[0-9][0-9][0-9].md")) if own.is_dir() else []
         version = runtime_fields.get("version") or (versions[-1].stem if versions else "")
         rows.append({
             "id": stem,
             "kind": kind,
             "nn": nn,
             "ticket": ticket,
-            "results": results_dir / stem,
+            "results": own,
             "runtime": runtime,
             "status": (fields.get("status") or "").lower(),
             "version": version,
@@ -221,10 +222,11 @@ def feedback_items(page: Path) -> dict[str, list[dict]]:
     paras = paragraphs(page)
     every = {v["p"]: k for k, v in paras.items()}
     out: dict[str, list[dict]] = {k: [] for k in paras}
-    results_dir = page.parent / "results"
-    if not results_dir.is_dir():
+    roots = [r for r in result_roots(page.parent)       # results/run-*/ and every run's pass
+             if (r.name if r.parent.name == "results" else r.parent.parent.name).startswith("run-")]
+    if not roots:
         return out
-    for vfile in sorted(results_dir.glob("run-*/v[0-9][0-9][0-9].md")):
+    for vfile in [v for r in roots for v in sorted(r.glob("v[0-9][0-9][0-9].md"))]:
         text = _read(vfile)
         steps = list(re.finditer(r"^##[ \t]+Step[ \t]+(s\d{3})\b.*$", text, re.M))
         closure = re.search(r"^##[ \t]+Version closure[ \t]*$", text, re.M)
@@ -565,7 +567,7 @@ def _set_yaml_key(text: str, key: str, value: str) -> str:
 def _write_runtime(row: dict, page: Path, version: str, step: str, vfile: Path,
                    prior_file: Path | None) -> None:
     runtime = row["runtime"]
-    rel_result = "results/%s" % row["id"]
+    rel_result = row["results"].relative_to(page.parent).as_posix()
     if runtime.is_file():
         text = _read(runtime)
     else:
@@ -631,14 +633,15 @@ def _write_working(row: dict, version: str, step: str, label: str, kind: str, pa
 
 
 def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: str, now: str) -> dict:
-    taken = {r["id"] for r in rows} | {p.name for p in (page.parent / "results").glob("run-*")}
+    taken = ({r["id"] for r in rows} | {p.name for p in (page.parent / "results").glob("run-*")}
+             | {p.name for p in (page.parent / "runs").glob("run-*") if p.is_dir()})
     run_id = run_names.mint("paragraph", "p%02d" % para["p"], taken=taken)
     ticket = ticket_dir(page.parent, run_id) / ("%s.md" % run_id)
     ticket.parent.mkdir(parents=True, exist_ok=True)
     plan = plan_path(page)
     ticket.write_text(
         "---\nfamily: page\noperation: interactive-writing\ninteraction: human-feedback\n"
-        "target: %s\nparagraphs: P%02d\nresult: results/%s\npage: %s\nrun: %s\n---\n\n"
+        "target: %s\nparagraphs: P%02d\nresult: runs/%s/passes/\npage: %s\nrun: %s\n---\n\n"
         "# %s\n\n"
         "- Goal: capture and settle Draft Space feedback on P%02d · %s · %s.\n"
         "- Run kind: %s\n"
@@ -655,8 +658,9 @@ def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: 
            para["p"], paragraph, "%s/%s" % (plan.parent.name, plan.name) if plan else "the current plan",
            para["p"], para["p"], author, now),
         encoding="utf-8")
-    results = page.parent / "results" / run_id
-    results.mkdir(parents=True, exist_ok=True)
+    results = working_dir(page.parent, run_id)        # its first pass: the run writes into it while open
+    write_card(page.parent, run_id, type="paragraph", target=paragraph, skill="haipipe-page-writing",
+               agent=author or None, status="running", writes=[], feeds=[])
     return {"id": run_id, "kind": "para", "nn": len(rows) + 1, "ticket": ticket, "results": results,
             "runtime": results / "runtime.yaml", "status": "ready", "version": "", "step": "",
             "covers": {para["p"]}, "target": paragraph, "paragraphs": "P%02d" % para["p"]}

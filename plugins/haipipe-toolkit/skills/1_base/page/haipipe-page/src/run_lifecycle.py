@@ -4,8 +4,9 @@
         writes ONE ticket, runs/<name>.md, status open. Nothing else.
     … while the run is open, only the Page's text changes (Draft, Evidence Markdown, Page) …
     page.py close-run <page> <run> [--summary …]
-        writes results/<name>/ (runtime.yaml, and for a Revise run its Before / After
-        ledger v001.md), marks the ticket closed, and adds one line to the Page's log.
+        writes the run's next pass runs/<name>/passes/pNN-<MMDD>/ (runtime.yaml, and for a
+        Revise run its Before / After ledger v001.md; an older flat run writes results/<name>/),
+        marks the ticket closed, updates the card run.yaml, and adds one line to the Page's log.
 
 A Revise run opened by the workbench keeps the paragraph's text at open in its
 ticket (`## Before`), so the ledger compares that with the text at close.
@@ -20,7 +21,7 @@ from pathlib import Path
 from . import run_names
 from .outline_version import latest_outline, plan_dir, record_path
 from .plan_shape import iter_plan_bullets
-from .run_folders import ticket_dir
+from .run_folders import find_ticket, is_folder_run, ticket_dir, working_dir, write_card
 
 # The skills each kind uses; the Runs panel shows the same (run-cards.md `🧩 SKILL`).
 SKILLS = {
@@ -52,6 +53,7 @@ def taken_names(folder: Path) -> set[str]:
     runs, results = folder / "runs", folder / "results"
     if runs.is_dir():
         names |= {p.stem for p in runs.rglob("*") if p.is_file()}
+        names |= {p.name for p in runs.iterdir() if p.is_dir()}      # a run's own folder (0.122)
     if results.is_dir():
         names |= {p.name for p in results.iterdir() if p.is_dir()}
     return names
@@ -84,7 +86,9 @@ def _set_front(text: str, **values) -> str:
 def find_open(folder: Path, kind: str, target: str) -> str | None:
     """The open run of this kind for this target, if any (newest first)."""
     runs = folder / "runs"
-    for ticket in sorted(runs.glob("run-%s-*.md" % kind), reverse=True) if runs.is_dir() else []:
+    found = (list(runs.glob("run-%s-*.md" % kind)) + [t for t in runs.glob("run-%s-*/run-%s-*.md" % (kind, kind))
+                                                     if t.parent.name == t.stem]) if runs.is_dir() else []
+    for ticket in sorted(found, key=lambda t: t.stem, reverse=True):
         fields = front(ticket.read_text(encoding="utf-8", errors="replace"))
         if fields.get("status", "open") == "open" and fields.get("target", "") == target:
             return ticket.stem
@@ -119,8 +123,8 @@ def open_run(page, kind: str, slug: str = "", *, target: str = "", goal: str = "
         lines += ["- Goal: %s" % goal]
     if target:
         lines += ["- Target: %s" % target]
-    lines += ["- While open, only the Page's text changes; results/%s/ and the log are "
-              "written when it closes." % name]
+    lines += ["- While open, only the Page's text changes; its pass (runs/%s/passes/) and the log "
+              "are written when it closes." % name]
     if before is None and kind == "revise" and target:
         # Opened from the command line: snapshot the target's Drafts now, so close-run can
         # count what the Run changed (JL 261004: a CLI Revise used to record 0 changes).
@@ -129,6 +133,9 @@ def open_run(page, kind: str, slug: str = "", *, target: str = "", goal: str = "
     if before is not None:
         lines += ["", "## Before", "", "```text", before.rstrip(), "```"]
     ticket.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if ticket.parent.name == name:                 # one folder per Run: its card opens with it
+        write_card(folder, name, type=kind, target=target or None, skill=" · ".join(SKILLS.get(kind, [])) or None,
+                   agent=by or None, status="running", writes=[], feeds=[])
     return {"run": name, "ticket": ticket.relative_to(folder).as_posix()}
 
 
@@ -204,19 +211,21 @@ def _log(folder: Path, stem: str, line: str, receipt: str) -> None:
 def close_run(page, run: str, *, summary: str = "", by: str = "", why: str = "") -> dict:
     """Write the run's results/ and log line; mark its ticket closed."""
     folder, stem = _page(page)
-    tickets = [p for p in (folder / "runs").rglob(run + ".*") if p.is_file()] if (folder / "runs").is_dir() else []
-    if not tickets:
-        raise ValueError("no ticket runs/%s.* on this Page" % run)
-    ticket = tickets[0]
+    ticket = find_ticket(folder, run)
+    if ticket is None:
+        raise ValueError("no ticket for %s on this Page (runs/%s/%s.md or runs/%s.md)" % (run, run, run, run))
     text = ticket.read_text(encoding="utf-8", errors="replace")
     fields = front(text)
     if fields.get("status", "open") not in {"open", "running"}:
         raise ValueError("%s is not open (status: %s)" % (run, fields.get("status")))
     kind = fields.get("kind") or run_names.kind_of(run) or ""
     target = fields.get("target", "")
-    result = folder / "results" / run
-    result.mkdir(parents=True, exist_ok=True)
     now = _now()
+    folder_run = is_folder_run(folder, run)
+    # One folder per Run: close finishes the open pass (an interactive run wrote into it while
+    # open), else makes the next one; an older flat run keeps results/<name>/.
+    result = working_dir(folder, run, day=now.strftime("%m%d"))
+    result_rel = result.relative_to(folder).as_posix()
     changes = None
     if kind == "revise":
         ledger, changes = _ledger(run, target, _before(text), paragraph_drafts(folder, stem, target),
@@ -237,12 +246,14 @@ def close_run(page, run: str, *, summary: str = "", by: str = "", why: str = "")
                "operation: %s" % fields.get("operation", ""), "target: %s" % target,
                "mode: %s" % fields.get("mode", ""), "version: v001", "step: s001",
                "interaction: %s" % ("human-revise" if kind == "revise" else "human-feedback"),
-               "version_file: results/%s/v001.md" % run,
+               "version_file: %s/v001.md" % result_rel,
                "ticket: %s" % ticket.relative_to(folder).as_posix(), "status: complete",
                "started_at: '%s'" % fields.get("started_at", ""), "closed_at: '%s'" % now.isoformat(),
                "closed_by: %s" % (by or fields.get("started_by", "")),
                "skills: %s" % fields.get("skills", ""), "summary: %s" % (summary or "closed")]
     (result / "runtime.yaml").write_text("\n".join(runtime) + "\n", encoding="utf-8")
     ticket.write_text(_set_front(text, status="closed", closed_at=now.isoformat()), encoding="utf-8")
-    _log(folder, stem, "%s closed: %s" % (run, summary or "closed"), "results/%s/" % run)
-    return {"run": run, "result": "results/%s/" % run, "changes": changes, "summary": summary}
+    if folder_run:
+        write_card(folder, run, status="done")
+    _log(folder, stem, "%s closed: %s" % (run, summary or "closed"), "%s/" % result_rel)
+    return {"run": run, "result": "%s/" % result_rel, "changes": changes, "summary": summary}

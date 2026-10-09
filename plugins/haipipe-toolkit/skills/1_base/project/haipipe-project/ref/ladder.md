@@ -26,7 +26,7 @@ Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ 
 2. **Task kind**: a Task face may say `task-kind: page`; a Page Task holds soft Runs only.
    Without the field a Task is a work Task.
 3. **Hard and soft**: a hard Run (`rNN_<slug>`, ticket `.sh`, `.cmd` where only cmd.exe runs, or a runner `.yaml`) writes only
-   its own `result/` and lives in a work Task. A soft Run (`run-<type>-<target>`, ticket `.md`)
+   its own `result/` and lives in a work Task. A soft Run (`run-<type>-<target>`, ticket `.md`; a Page's Delivery Run `run-delivery-<lane>` keeps its one command, `.sh`)
    writes into its scope's items, has no `result/`, and may sit at Block, Job or Task. Its name
    carries no date; the date is in its passes. haipipe-run owns the definitions.
 4. **Old layout**: `runs/<run>.sh` beside `results/<run>/` is the layout before one folder per

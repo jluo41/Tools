@@ -237,8 +237,8 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
     )
     # One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh beside runs/<run>/result/.
     if runs_dir.is_dir():
-        for folder in sorted(p for p in runs_dir.iterdir() if p.is_dir()):
-            ticket = folder / f"{folder.name}.sh"
+        for folder in sorted(p for p in runs_dir.iterdir() if p.is_dir() and not p.name.startswith("run-")):
+            ticket = folder / f"{folder.name}.sh"                # a soft run-<type>-<target> is never a Paper Run
             if ticket.is_file():
                 runs[folder.name] = ticket
             if (folder / "result").is_dir() and not PAGE_RUN_RE.fullmatch(folder.name):

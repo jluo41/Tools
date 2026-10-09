@@ -19,6 +19,7 @@ from live.runs import local_runs, _page_writing_subspace
 from live.runs import render as render_runs
 from src.plan_shape import iter_plan_bullets
 from src.run_lifecycle import close_run
+from src.run_folders import find_ticket, result_dir  # noqa: E402  one folder per Run (0.125)
 import re
 
 PLAN = '''# Plan
@@ -96,7 +97,7 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     assert '- B1 · First draft, sharpened.\n  Point: [Point] First point\n' in plan and 'approved: ✅' in plan
     assert '- B1 · [Point] Third point\n' in plan and 'Draft:' not in plan
     # while open: one ticket (with the text before), no results/ and no log line
-    ticket = (tmp_path / 'runs' / (run + '.md')).read_text()
+    ticket = find_ticket(tmp_path, run).read_text()
     assert 'status: open' in ticket and 'target: C1.P1' in ticket and 'C1.P1.B1 · First draft.' in ticket
     assert not (tmp_path / 'results').exists()
     rows = {row['run_id']: row for row in local_runs(page)}
@@ -105,13 +106,13 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     # close: the ledger, the runtime and one log line
     closed = close_run(page, run)
     assert closed['changes'] == 1
-    ledger = (tmp_path / 'results' / run / 'v001.md').read_text()
+    ledger = (result_dir(tmp_path, run) / 'v001.md').read_text()
     for needle in ('## Step s001', '#### Track changes', '##### R01 · wording', '###### Before\nFirst draft.\n',
                    '###### After\nFirst draft, sharpened.\n', '###### Why\nSharper claim.\n', '###### Decision\naccept\n'):
         assert needle in ledger, needle
-    runtime = (tmp_path / 'results' / run / 'runtime.yaml').read_text()
+    runtime = (result_dir(tmp_path, run) / 'runtime.yaml').read_text()
     assert 'mode: revise\n' in runtime and 'status: complete\n' in runtime and 'target: C1.P1\n' in runtime
-    assert 'status: closed' in (tmp_path / 'runs' / (run + '.md')).read_text()
+    assert 'status: closed' in find_ticket(tmp_path, run).read_text()
     assert run + ' closed' in (tmp_path / 'outline' / 'records' / 'Page-log.md').read_text()
     space = render_runs(page, '', '')
     assert 'Revise · C1.P1' in space and 'class=track-card' in space and '<b>Decision</b><br>accept' in space
@@ -128,14 +129,14 @@ def test_extra_lines_join_the_last_bullet_and_missing_lines_clear(tmp_path):
     assert result['run'] == first                     # the open run continues
     assert 'C1.P1.B2' not in read_drafts(page)
     close_run(page, first)
-    ledger = (tmp_path / 'results' / first / 'v001.md').read_text()
+    ledger = (result_dir(tmp_path, first) / 'v001.md').read_text()
     assert '###### Before\nFirst draft.\n\n###### After\nOnly one now.\n' in ledger
     assert '##### R02 · deletion' in ledger and '###### After\n(removed)\n' in ledger
     # a first sentence for an undrafted paragraph opens its own run and closes as a first draft
     result, err = save_revise(page, payload(page, 'C1.P2', 'A first sentence.'))
     assert err is None and re.fullmatch(r'run-revise-c1-p2', result['run'])
     close_run(page, result['run'])
-    assert '##### R01 · first draft' in (tmp_path / 'results' / result['run'] / 'v001.md').read_text()
+    assert '##### R01 · first draft' in (result_dir(tmp_path, result['run']) / 'v001.md').read_text()
 
 
 def test_stale_tokens_bad_payloads_and_no_op_saves(tmp_path):
@@ -185,7 +186,7 @@ def test_box_starts_from_page_sentences_when_no_draft_exists(tmp_path):
     assert err is None and result['run'].startswith('run-revise-')
     assert read_drafts(page)['C1.P2.B1']['text'] == 'Third point, rewritten on the Page.'
     close_run(page, result['run'])
-    ledger = (tmp_path / 'results' / result['run'] / 'v001.md').read_text()
+    ledger = (result_dir(tmp_path, result['run']) / 'v001.md').read_text()
     assert '##### R01 · wording' in ledger
     assert '###### Before\nThird point, already written on the Page.\n' in ledger
     assert "the Page's own sentence where no Draft existed" in ledger

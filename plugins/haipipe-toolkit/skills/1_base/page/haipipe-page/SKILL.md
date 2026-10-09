@@ -11,7 +11,7 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.124.1"
+  version: "0.125.0"
   last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -123,11 +123,14 @@ display), `slug` two to four words (its purpose, its target such as `c1-p2`, or
 its Evidence Item's slug); a taken name gets `-2`. The name carries no day (JL
 261007: a run is worked in passes, each dated inside it); an older dated name
 `run-<kind>-<MMDD>-<slug>` still reads, and `page.py run-names` drops its day. The three Delivery Runs are fixed and never numbered. Each run is
-one ticket and one result folder with the same name in a flat `runs/`:
-`runs/<name>.md` ↔ `results/<name>/`. The one grammar is `src/run_names.py`.
+its own folder (0.125, JL 261009; haipipe-run 0.31.0): `runs/<name>/` holds its ticket
+`<name>.md` (a Delivery Run's is its command, `<name>.sh`), its card `run.yaml`, and
+`passes/pNN-<MMDD>/`, one per close. The older flat `runs/<name>.md` ↔ `results/<name>/`
+still reads. The one grammar is `src/run_names.py`; the paths are `src/run_folders.py`.
 Older names (`rp-sec-07`, `re-value-07_x`, `rd01_latex`) still read;
-`page.py run-names <page>` renames a Page's runs once, keeps older numbered
-Delivery builds as history, and writes each built lane's Delivery Run ticket.
+`page.py run-names <page>` renames a Page's runs once, moves each into its own folder
+(its result folder becoming the first pass), keeps older numbered Delivery builds as
+history, and writes each built lane's Delivery Run ticket.
 
 **Run bookends (JL 260928).** A Page Writing Run has two bookends the person
 calls. `page.py open-run <page> --kind <kind> [--slug] [--target] [--goal]`
@@ -441,9 +444,9 @@ uses. The roster of legal folder names is `workbench/ref/roster.md`.
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
 │   └── config/    Job code stays one level up in `src/`
-├── runs/          one ticket per Page Run, flat: runs/<name>.md ↔ results/<name>/
+├── runs/          one folder per Page Run: runs/<name>/{<name>.md, run.yaml, passes/pNN-<MMDD>/}
 │                  (run-<kind>-<slug>, run-delivery-<lane>); THE ONE execution door
-├── results/       canonical Page Evidence Results and Folder-local Results.
+├── results/       older Pages only: Results before one folder per Run (0.125).
 │                  A canonical Task Page resolves
 │                  generated output at `$OUTPUT_ROOT/<task>/results/<run>/`
 │              ─── the UPPER, PAGE part ───

@@ -35,9 +35,9 @@ def migrate_global_paragraphs(page) -> dict:
     for directory in (plan_dir(page.folder), page.folder / "runs"):
         if directory.is_dir():
             candidates.update(path for path in directory.rglob("*") if path.is_file())
-    results = page.folder / "results"
-    if results.is_dir():
-        for runtime in results.glob("*/runtime.yaml"):
+    from .run_folders import result_roots
+    for root in result_roots(page.folder):                  # results/<run>/ and every run's pass
+        for runtime in root.glob("runtime.yaml"):
             body = runtime.read_text(encoding="utf-8", errors="replace")
             if "operation: interactive-writing" in body:
                 candidates.update(

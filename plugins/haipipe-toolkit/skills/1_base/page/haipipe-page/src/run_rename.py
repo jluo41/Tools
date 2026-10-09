@@ -3,9 +3,11 @@
     page.py run-names <page> --dry-run     print old → new, change nothing
     page.py run-names <page>               do it
 
-For each run on the Page: its ticket moves to the flat `runs/<new>.<ext>`, its folder
-to `results/<new>/`, and every mention inside the Page folder is rewritten (tickets,
-runtime.yaml, result.yaml, the Draft and Evidence Markdown, records, scripts). The
+For each run on the Page: it is renamed, then moved into its own folder (one folder per
+Run, 0.122): the ticket to `runs/<new>/<new>.<ext>`, its result folder to the run's first
+pass `runs/<new>/passes/p01-<MMDD>/`, and a card `run.yaml` is written. A lane's Delivery
+ticket is rewritten in its folder. Every mention inside the Page folder is rewritten
+(tickets, runtime.yaml, result.yaml, the Draft and Evidence Markdown, records, scripts). The
 generated `delivery/` is left alone: rebuild it with `page.py export`.
 
 New names (`src/run_names.py`): `run-<kind>-<slug>`, no day (JL 261007). A dated name
@@ -22,7 +24,7 @@ from pathlib import Path
 
 from . import run_names
 from .outline_version import plan_dir
-from .run_folders import FOLDERS
+from .run_folders import FOLDERS, write_card
 
 TEXT = {".md", ".yaml", ".yml", ".json", ".sh", ".ps1", ".py", ".txt", ".csv", ".tex", ".bib",
         ".toml", ".do", ".r", ".R", ".ipynb", ".mmd"}
@@ -193,13 +195,17 @@ def plan(page) -> dict:
         rows.append({"old": old, "new": new, "tickets": paths, "kind": kind, "item": item,
                      "note": "" if paths else "result had no ticket; one is written"})
     from .page_export import RUN_NAMES, built_lanes
-    fixed = [lane for lane in built_lanes(folder, stem) if RUN_NAMES[lane] not in tickets]
+    fixed = [lane for lane in built_lanes(folder, stem)
+             if RUN_NAMES[lane] not in tickets and not (runs / RUN_NAMES[lane]).is_dir()]   # flat, or its own folder
     by_old = {row["old"]: row for row in rows}
     for extra in extras:
         base = extra.name.split(".", 1)[0]
         if base in by_old:
             by_old[base].setdefault("extras", []).append(extra)
-    return {"page": stem, "folder": folder, "moves": rows, "kept": kept, "fixed": fixed}
+    after = {row["new"] for row in rows} | {old for old, paths in tickets.items()
+                                            if any(p.parent == runs for p in paths)}
+    return {"page": stem, "folder": folder, "moves": rows, "kept": kept, "fixed": fixed,
+            "fold": folds(folder, after)}
 
 
 def _rewrite(folder: Path, names: dict[str, str], moved_up=()) -> int:
@@ -221,6 +227,88 @@ def _rewrite(folder: Path, names: dict[str, str], moved_up=()) -> int:
         text = path.read_text(encoding="utf-8", errors="replace")
         new = path_re.sub("runs/", text)
         new = name_re.sub(lambda m: names[m.group(1)], new) if name_re else new
+        if new != text:
+            path.write_text(new, encoding="utf-8")
+            changed += 1
+    return changed
+
+
+def _pass_day(result: Path, ticket: Path, named: str = "") -> str:
+    """MMDD of a run's first pass: when its receipt says it ran, else the day its older dated name
+    carried (`run-display-0930-…`), else its ticket's, else the oldest file time."""
+    for name in ("runtime.yaml",):
+        text = _read(result / name)
+        for key in ("closed_at", "finished_at", "started_at", "created_at"):
+            value = _field(text, key)
+            m = re.search(r"\d{4}-(\d{2})-(\d{2})", value)
+            if m:
+                return m.group(1) + m.group(2)
+    if named:
+        return named
+    m = re.search(r"\d{4}-(\d{2})-(\d{2})", _field(_read(ticket), "started_at", "closed_at"))
+    if m:
+        return m.group(1) + m.group(2)
+    files = [ticket] + [p for p in result.rglob("*") if p.is_file()]
+    return dt.date.fromtimestamp(min(p.stat().st_mtime for p in files if p.exists())).strftime("%m%d")
+
+
+def folds(folder: Path, names_after: set[str]) -> list[str]:
+    """Readable-grammar runs that still sit flat (`runs/<name>.<ext>`), Delivery tickets aside."""
+    from .page_export import RUN_NAMES
+    lanes = set(RUN_NAMES.values())
+    return sorted(n for n in names_after if run_names.is_run_name(n) and not run_names.is_dated(n)
+                  and n not in lanes)
+
+
+def _into_folders(folder: Path, days: dict[str, str] | None = None) -> dict[str, dict]:
+    """Move each flat readable run into its own folder; {name: {"pass": rel, "ext": suffix}}."""
+    from .page_export import RUN_NAMES
+    runs, results = folder / "runs", folder / "results"
+    lanes = set(RUN_NAMES.values())
+    moved = {}
+    for ticket in sorted(p for p in runs.iterdir() if p.is_file()) if runs.is_dir() else []:
+        name = ticket.stem
+        if not run_names.is_run_name(name) or name in lanes or run_names.is_dated(name):
+            continue
+        dest = runs / name
+        if dest.exists():
+            raise FileExistsError("%s already exists" % dest.relative_to(folder))
+        dest.mkdir()
+        res = results / name
+        day = _pass_day(res, ticket, (days or {}).get(name, "")) if res.is_dir() else ""
+        ticket.rename(dest / ticket.name)
+        info = {"ext": ticket.suffix, "pass": ""}
+        if res.is_dir():
+            pdir = dest / "passes" / ("p01-%s" % day)
+            pdir.parent.mkdir(parents=True)
+            res.rename(pdir)
+            info["pass"] = pdir.relative_to(folder).as_posix()
+        fields = _read(dest / ticket.name)
+        status = _field(fields, "status") or ("closed" if info["pass"] else "open")
+        write_card(folder, name, target=_field(fields, "target") or None,
+                   skill=_field(fields, "skills") or None,
+                   status="done" if status in {"closed", "complete"} else "running")
+        moved[name] = info
+    if results.is_dir() and not any(results.iterdir()):
+        results.rmdir()
+    return moved
+
+
+def _rewrite_folds(folder: Path, moved: dict[str, dict]) -> int:
+    """`runs/<name>.md` → `runs/<name>/<name>.md` and `results/<name>` → its first pass."""
+    if not moved:
+        return 0
+    alt = "|".join(re.escape(n) for n in sorted(moved, key=len, reverse=True))
+    ticket_re = re.compile(r"(?<![A-Za-z0-9_/.-])runs/(%s)(\.(?:md|sh|yaml|yml|ps1))(?![A-Za-z0-9_-])" % alt)
+    result_re = re.compile(r"(?<![A-Za-z0-9_/.-])results/(%s)(?![A-Za-z0-9_-])" % alt)
+    changed = 0
+    for path in folder.rglob("*"):
+        rel = path.relative_to(folder).parts
+        if not path.is_file() or path.suffix not in TEXT or not rel or rel[0] in {"delivery", ".git"}:
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        new = ticket_re.sub(lambda m: "runs/%s/%s%s" % (m.group(1), m.group(1), m.group(2)), text)
+        new = result_re.sub(lambda m: moved[m.group(1)]["pass"] or m.group(0), new)
         if new != text:
             path.write_text(new, encoding="utf-8")
             changed += 1
@@ -288,9 +376,19 @@ def apply(page, *, dry_run: bool = False) -> dict:
                     target.write_text(fixed, encoding="utf-8")
     report["flattened"] = flattened
     report["files_rewritten"] = _rewrite(folder, names, moved_up=flattened)
-    from .page_export import docx_author, write_ticket
-    for lane in report.get("fixed", []):          # each built lane gets its one Delivery Run ticket
+    # One folder per Run (0.122): every readable run moves into runs/<name>/, its result folder
+    # becoming its first pass, and the Page's text follows.
+    days = {row["new"]: run_names.NAME.match(row["old"]).group("mmdd") for row in report["moves"]
+            if run_names.is_dated(row["old"])}
+    moved = _into_folders(folder, days)
+    report["folded"] = sorted(moved)
+    report["files_rewritten"] += _rewrite_folds(folder, moved)
+    from .page_export import RUN_NAMES, docx_author, write_ticket
+    flat_lanes = [lane for lane, name in RUN_NAMES.items() if (runs / (name + ".sh")).is_file()]
+    for lane in sorted(set(report.get("fixed", [])) | set(flat_lanes)):   # each lane's one Delivery Run ticket
         write_ticket(folder, lane, docx_author(folder, report["page"]) if lane == "word" else None)
+    if flat_lanes:
+        report["files_rewritten"] += _rewrite_folds(folder, {RUN_NAMES[lane]: {"pass": ""} for lane in flat_lanes})
     for space in SPACE_FOLDERS:
         path = runs / space
         if path.is_dir() and not any(path.iterdir()):
@@ -307,6 +405,12 @@ def render(report: dict) -> str:
     from .page_export import RUN_NAMES
     for lane in report.get("fixed", []):
         lines.append("  %-46s   + the lane's one Delivery Run (ticket)" % RUN_NAMES[lane])
+    if report.get("fold") and "folded" not in report:
+        lines.append("  %d run(s) to move into their own folder (runs/<name>/, result as passes/p01-<MMDD>/)"
+                     % len(report["fold"]))
+    if report.get("folded"):
+        lines.append("  %d run(s) moved into their own folder (runs/<name>/, result as passes/p01-<MMDD>/)"
+                     % len(report["folded"]))
     if "files_rewritten" in report:
         lines.append("  %d file(s) rewritten; rebuild delivery with page.py export" % report["files_rewritten"])
     return "\n".join(lines)

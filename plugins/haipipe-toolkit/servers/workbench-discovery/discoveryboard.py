@@ -88,9 +88,22 @@ def _receipt(path: Path, board: Path) -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def paper_results(task: Path) -> list[Path]:
+    """A Topic's Paper Run Results: `runs/<run>/result/` (one folder per Run, haipipe-run 0.31.0),
+    and the older `results/<run>/`."""
+    out = []
+    runs = task / "runs"
+    for run in sorted(runs.iterdir()) if runs.is_dir() else []:
+        if run.is_dir() and _RUN.match(run.name) and (run / "result").is_dir():
+            out.append(run / "result")
+    results = task / "results"
+    out += [r for r in sorted(results.iterdir()) if r.is_dir() and _RUN.match(r.name)] if results.is_dir() else []
+    return out
+
+
 def paper(result: Path, board: Path, root: Path, task: dict) -> dict:
     """One Paper Run's Result: its card's title and lines, its receipt's status and analysis."""
-    name = result.name
+    name = result.parent.name if result.name == "result" else result.name
     card = result / f"{name}.md"
     text = read(card, board)
     lines = dict((k, v.strip()) for k, v in _BULLET.findall(text))
@@ -122,9 +135,7 @@ def task_row(task: Path, board: Path, root: Path, only) -> dict:
     spec = _receipt(task / "discovery.yaml", board)
     snap["discovery_type"] = str(spec.get("discovery_type") or "")
     snap["synthesis"] = [{"name": n, "url": file_url(board, task / n, root)} for n in SYNTHESIS if (task / n).is_file()]
-    results = task / "results"
-    snap["papers"] = ([paper(r, board, root, snap) for r in sorted(results.iterdir())
-                       if r.is_dir() and _RUN.match(r.name) and inside(r, task)] if results.is_dir() else [])
+    snap["papers"] = [paper(r, board, root, snap) for r in paper_results(task) if inside(r, task)]
     for run in snap["runs"]:                        # a Run opens this workbench's view of its card
         found = next((p for p in snap["papers"] if p["run"] == run["name"]), None)
         run["result_url"] = found["card_url"] if found and found["card_url"] else run.get("receipt_url", "")
@@ -181,8 +192,7 @@ def projects_snapshot(root: Path, folder: Path | None = None) -> list[dict]:
         text = read(board / "board.md", board)
         tasks = [t for j in board.iterdir() if j.is_dir() and _JOB.match(j.name)
                  for t in j.iterdir() if t.is_dir() and _TASK.fullmatch(t.name)]
-        results = [r for t in tasks if (t / "results").is_dir() for r in (t / "results").iterdir()
-                   if r.is_dir() and _RUN.match(r.name)]
+        results = [r for t in tasks for r in paper_results(t)]
         owner = project_owner(board, root)
         name = owner.get("project") or board.parent.parent.name
         group = groups.setdefault(name, {"project": name, "folder": board.parent.relative_to(root).as_posix(), "blocks": []})

@@ -196,7 +196,10 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
         node.add("failed", "name is neither a hard Run (rNN_<slug>) nor a soft one (run-<type>-<target>)")
     if kind == "soft" and NAMES["soft_dated"].match(name):
         node.add("debt", "soft name carries a date; the date belongs in passes/pNN-<MMDD>/")
-    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".yaml", ".yml") if kind == "hard" else (".md",))]
+    # A soft Run's ticket is its ask, `.md`; a Page's Delivery Run (`run-delivery-<lane>`) is one fixed
+    # command, so its ticket is that command, `.sh` (haipipe-page 0.125, JL 261009).
+    soft = (".md", ".sh") if name.startswith("run-delivery-") else (".md",)
+    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".yaml", ".yml") if kind == "hard" else soft)]
     ticket = next((t for t in tickets if t.is_file()), None)
     if kind and not ticket:
         node.add("failed", f"no ticket ({tickets[0].name})")
@@ -379,7 +382,7 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
     groups: dict[str, list] = {}
     for t in old_tickets(runs):
         stem, kind = t.stem, run_kind(t.stem, fam)
-        if not kind or (kind == "soft") != (t.suffix == ".md"):
+        if not kind or (kind == "soft") != (t.suffix == ".md" or (t.suffix == ".sh" and t.stem.startswith("run-delivery-"))):
             skipped.append(f"{rel(t)}: name or ticket type needs its owner's mapping, not moved")
             continue
         new = re.sub(r"^(run-[a-z]+)-\d{4}-", r"\1-", stem) if kind == "soft" else stem

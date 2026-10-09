@@ -51,16 +51,14 @@ def pending_items(page_src):
 def _unbound_manifests(home, *, strict=False):
     """Compatibility inspection for pre-ledger Pages; ambiguous items stay unresolved."""
     from .page_evidence import _result_document
+    from .run_folders import result_roots, under_page_results
     root = home / "results"
-    if root.is_symlink() or not root.is_dir():
+    if root.is_symlink():
         return []
     by_item = {}
-    for manifest in sorted(root.rglob("result.yaml")):
-        if manifest.is_symlink():
-            continue
-        try:
-            manifest.resolve().relative_to(root.resolve())
-        except (OSError, ValueError):
+    manifests = [m for folder in result_roots(home) for m in sorted(folder.rglob("result.yaml"))]
+    for manifest in manifests:
+        if manifest.is_symlink() or not under_page_results(home, manifest):
             continue
         item = str(_result_document(manifest).get("item") or manifest)
         by_item.setdefault(item, []).append(manifest)
@@ -76,14 +74,16 @@ RECEIPT_OK = {"ok", "ready", "complete", "completed", "accepted", "resolved"}
 def run_receipt(path):
     """The ticket receipt that vouches for a run's output file, or None.
 
-    A run ticket writes `results/<run>/` and its `runtime.yaml` (status, spec and script
+    A run ticket writes `results/<run>/` (or its pass `runs/<run>/passes/pNN-<MMDD>/`, 0.122) and
+    its `runtime.yaml` (status, spec and script
     hashes, outputs). A VALUE or CITE item that binds one of those output files directly is
     bound to that receipt: an Insight answering Page binds `results/<partition>/<table>.csv`,
     and a cite binds another Page's run file the same way (JL 261004: Insight pages export
     to LaTeX and Word). Returns (receipt path, status)."""
+    from .run_folders import is_result_folder
     path = Path(path)
     for folder in path.parents:
-        if folder.parent.name == "results":
+        if is_result_folder(folder):
             receipt = folder / "runtime.yaml"
             if not receipt.is_file():
                 return None
@@ -98,6 +98,7 @@ def run_receipt(path):
 def selected_results(page_src, *, strict=True, errors=None):
     from .item_table import items_path, read_items, repo_root, resolve
     from .page_evidence import _result_document
+    from .run_folders import under_page_results
     page_src = Path(page_src)
     ledger = items_path(page_src)
     results = page_src.parent / "results"
@@ -135,15 +136,16 @@ def selected_results(page_src, *, strict=True, errors=None):
                 bound = run_receipt(path)
                 if bound is None:
                     raise EvidenceSelectionError(f"{item}: a bound run file needs its run's runtime.yaml receipt")
-                if row["type"] == "VALUE":
-                    path.relative_to(results.resolve())          # a value comes from this Page's own runs
+                if row["type"] == "VALUE" and not under_page_results(page_src.parent, path):
+                    raise ValueError(f"{path} is not one of this Page's own run results")  # a value comes from this Page's own runs
                 if strict and bound[1] not in RECEIPT_OK:
                     raise EvidenceSelectionError(f"{item}: the bound run is not ok ({bound[1] or 'missing status'})")
                 continue                                         # receipt-bound: no manifest to select
             if path.is_dir():
                 path /= "result.yaml"
             path = path.resolve()
-            path.relative_to(results.resolve())
+            if not under_page_results(page_src.parent, path):
+                raise ValueError(f"{path} is not one of this Page's own run results")
             if path.name != "result.yaml" or not path.is_file():
                 raise EvidenceSelectionError(f"{item}: bind an exact local result.yaml")
             document = _result_document(path)

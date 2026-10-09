@@ -17,6 +17,7 @@ from live.outline_scratch import (ai_summarize_scratch, read_scratch,  # noqa: E
                                   save_scratch, scratch_assets_html,
                                   scratch_flag_html)
 from live.runs import run_inventory  # noqa: E402
+from src.run_folders import find_ticket, result_dir  # noqa: E402  one folder per Run (0.125)
 
 
 PLAN = """# S-scratch · outline v1.1
@@ -94,7 +95,7 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(err, err)
         self.assertEqual(result["status"], "closed")
         self.assertEqual(result["summary"], "AI summary of the rough plan.")
-        runtime = self.folder / "results" / run_id / "runtime.yaml"
+        runtime = result_dir(self.folder, run_id) / "runtime.yaml"
         self.assertIn("status: complete", runtime.read_text(encoding="utf-8"))
         _, err = self.save("paragraph", "C1.P1", "finish", run_id, "A new summary")
         self.assertIn("immutable", err)
@@ -126,7 +127,7 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(err, err)
         # a new Scratch after a close is a new run: the same day and target get -2
         self.assertRegex(result["run"], r"^run-scratch-c1-p1-2$")
-        self.assertFalse((self.folder / "results" / result["run"]).exists())   # open: ticket only
+        self.assertFalse(result_dir(self.folder, result["run"]).exists())   # open: ticket only
 
     def test_draft_renders_one_control_per_current_target_but_read_only_has_none(self):
         card = plan_card(self.page)

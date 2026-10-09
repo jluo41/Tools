@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from live.outline import OutlineMixin, plan_card
+from src.run_folders import find_ticket, result_dir  # noqa: E402  one folder per Run (0.125)
 
 
 PLAN = '''# S-test · outline v1.1
@@ -75,8 +76,8 @@ class DraftSpaceFeedbackTest(unittest.TestCase):
         self.assertEqual(result['status'], 'open')
         self.assertEqual(result['target'], 'C1.P1')
         # an open Scratch run has its ticket only; results/ waits for Finish (JL 260928)
-        self.assertTrue((self.folder / 'runs' / (result['run'] + '.md')).is_file())
-        self.assertFalse((self.folder / 'results' / result['run']).exists())
+        self.assertTrue(find_ticket(self.folder, result['run']) is not None)
+        self.assertFalse(result_dir(self.folder, result['run']).exists())
 
     def test_legacy_editor_actions_stay_rejected(self):
         handler = OutlineMixin()

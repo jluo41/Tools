@@ -353,7 +353,8 @@ def kept_by_result(path) -> set[str]:
     if "runs" not in parts:
         return set()
     i = len(parts) - 1 - parts[::-1].index("runs")
-    result = Path(*parts[:i]) / "results" / Path(path).stem
+    from .run_folders import result_dir
+    result = result_dir(Path(*parts[:i]), Path(path).stem)      # its latest pass, or results/<run>/
     kept = set()
     for f in (result.rglob("*") if result.is_dir() else []):
         if f.is_file() and f.suffix in (".yaml", ".yml", ".json", ".md"):

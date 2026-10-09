@@ -591,7 +591,7 @@ _ADDR_RE = re.compile(r"\bb(\d{2})(?:[.\s_-]?j(\d{2}))?(?:[.\s_-]?t(\d{2}))?(?:[
 _TASK_HOMES = ("work", "tasks", "task")  # the work Theme; LLMRec says tasks/, OpioidRx says task/
 _SKIP_DIRS = {"src", "sbatch", "results", "runs", "scripts", "notebooks", "workflow",
               "QA", "board", "diagram", "config", "configs", "tests", "_tools"}
-_TICKET_EXT = {".sh", ".ps1"}
+_TICKET_EXT = {".sh", ".ps1", ".cmd"}          # .cmd: a desktop where only cmd.exe runs (REACH SAFER)
 _CODE_EXT = (".py", ".do", ".R")
 
 
@@ -671,15 +671,21 @@ def _scan_task(job, name, tdir):
     if not page.is_file():
         alt = (code_dir / "README.md") if code_dir.is_dir() else None
         page = alt if alt and alt.is_file() else None
-    tickets = sorted(x for x in runs_dir.rglob("*") if x.is_file() and x.suffix in _TICKET_EXT) if runs_dir.is_dir() else []
+    # a ticket is a file in runs/, or runs/<run>/<run>.<ext> (one folder per Run): never a Result file
+    tickets = sorted(x for x in runs_dir.rglob("*") if x.is_file() and x.suffix in _TICKET_EXT
+                     and (x.parent == runs_dir or x.parent.name == x.stem)) if runs_dir.is_dir() else []
     receipts, receipt_map = [], {}
-    if res_dir.is_dir():
-        for run_dir in sorted(x for x in res_dir.iterdir() if x.is_dir()):
+    # one folder per Run (haipipe-run 0.31.0): runs/<run>/result/ beside the older results/<run>/
+    folders = [(x.name, x / "result") for x in sorted(runs_dir.iterdir())
+               if x.is_dir() and (x / "result").is_dir()] if runs_dir.is_dir() else []
+    folders += [(x.name, x) for x in sorted(res_dir.iterdir()) if x.is_dir()] if res_dir.is_dir() else []
+    if folders:
+        for run_name, run_dir in folders:
             r = run_dir / "runtime.yaml"
             if r.is_file():
                 st = _head_field(r, "status") or "?"
                 receipts.append(st)
-                receipt_map[run_dir.name] = st            # Discovery: results/<run stem>/
+                receipt_map[run_name] = st                # Discovery: runs/<run>/result/ or results/<run>/
                 tk = _head_field(r, "ticket")             # Stata dialect: the receipt names its ticket
                 if tk:
                     receipt_map[Path(tk.strip().strip('"')).stem] = st
@@ -833,7 +839,8 @@ def project_discoveries(d):
             for t in j["tasks"]:
                 y = t["dir"] / "discovery.yaml"
                 t.update(_discovery_yaml(y) if y.is_file() else {"status": "", "outcome": "", "confidence": "", "question": ""})
-                t["n_results"] = len([x for x in (t["dir"] / "results").iterdir() if x.is_dir()]) if (t["dir"] / "results").is_dir() else 0
+                t["n_results"] = (len([x for x in (t["dir"] / "results").iterdir() if x.is_dir()]) if (t["dir"] / "results").is_dir() else 0) \
+                    + (len([x for x in (t["dir"] / "runs").iterdir() if (x / "result").is_dir()]) if (t["dir"] / "runs").is_dir() else 0)
     label = (("examples/%s/%s/" % (project.name, root.name)) if root is not None and project and root.parent == project else
              home if root is not None else
              ("examples/%s/ has no discovery/ folder" % project.name) if project else
@@ -914,7 +921,8 @@ def _resolve_address(d, m):
     if rnn:
         run = None
         if task is not None and job is not None:
-            run = _find(job / "results" / task.name, "r" + rnn) or _find(task / "results", "r" + rnn)
+            run = (_find(task / "runs", "r" + rnn) or _find(job / "results" / task.name, "r" + rnn)
+                   or _find(task / "results", "r" + rnn))
         levels.append(("r" + rnn, run))
     addr = ".".join(l for l, _ in levels)
     found = [x for x in levels if x[1] is not None]
@@ -1847,6 +1855,8 @@ def _runs_fold(d, t):
     home = Path(t["dir"])
     if not ticks and (home / "results").is_dir():
         ticks = sorted(x.name for x in (home / "results").iterdir() if x.is_dir() and not x.name.startswith("."))
+    if not ticks and (home / "runs").is_dir():                 # one folder per Run: runs/<run>/result/
+        ticks = sorted(x.name for x in (home / "runs").iterdir() if (x / "result").is_dir())
     n = len(ticks) or t.get("n_results", 0)
     if not n:
         return '<span class="mut bj-rn">no runs yet</span>'
@@ -2122,7 +2132,12 @@ def _disc_run(d, addr):
     m = re.fullmatch(r"(b\d{2}j\d{2}t\d{2})(r\d{2})", addr or "")
     hit = _disc_lookup(d, m.group(1)) if m else None
     task = hit[2] if hit else None
-    return _find(task["dir"] / "results", m.group(2)) if task is not None else None
+    if task is None:
+        return None
+    own = _find(task["dir"] / "runs", m.group(2))            # one folder per Run: runs/<run>/result/
+    if own is not None and (own / "result").is_dir():
+        return own / "result"
+    return _find(task["dir"] / "results", m.group(2))
 
 
 def _yaml_block(text, block):
@@ -2633,12 +2648,14 @@ def _supporting_rows(d, s, fill, T):
                         home = Path(task["dir"]) if task and task.get("dir") else None
                         stem = r["tickets"][0][0] if r["tickets"] else ""
                         # its card opens the run's results in the pop-out (JL 260930)
-                        opens = home is not None and (home / "results").is_dir() and d.get("root") is not None
+                        opens = home is not None and ((home / "results").is_dir() or (home / "runs" / stem / "result").is_dir()) \
+                            and d.get("root") is not None
                         rows.append({"run_id": dotted, "global_id": dotted, "ticket": ticket,
                                      "status": "done" if st in ("complete", "completed", "done") else (st or "unknown"),
                                      "target": owner + " · " + dotted, "goal": "used by " + ", ".join(users),
                                      "result": "", "_display": dotted, "_keys": " ".join(keys),
-                                     "result_path": (home / "results" / stem if stem and (home / "results" / stem).is_dir()
+                                     "result_path": (home / "runs" / stem / "result" if stem and (home / "runs" / stem / "result").is_dir()
+                                                     else home / "results" / stem if stem and (home / "results" / stem).is_dir()
                                                      else home / "results") if opens else "",
                                      "_open": run_result_url(d["root"], home, stem) if opens else "",
                                      "_open_name": stem or dotted})
@@ -3416,6 +3433,10 @@ def run_files(task_dir, run=""):
     `results/` tells its runs apart; else the files whose path holds every word of that name
     (`run_fit_forecast.sh` wrote `fits_forecast/…`); else all of `results/`, said so. No
     run: all of it."""
+    own = Path(task_dir) / "runs" / run / "result" if run else None
+    if own is not None and own.is_dir():                     # one folder per Run (haipipe-run 0.31.0)
+        return "runs/%s/result/" % run, sorted((f for f in own.rglob("*") if f.is_file() and not f.name.startswith(".")),
+                                              key=lambda f: f.relative_to(own).as_posix())
     res = Path(task_dir) / "results"
     if not res.is_dir():
         return "no results/ folder yet", []
@@ -3553,7 +3574,7 @@ def render_run_result(root, task_rel, run=""):
     where, files = run_files(tdir, run)
     more = max(len(files) - _MAX_FILES, 0)
     files = files[:_MAX_FILES]
-    res = tdir / "results"
+    res = tdir / "runs" / run / "result" if run and (tdir / "runs" / run / "result").is_dir() else tdir / "results"
     shown = lambda f: f.relative_to(res).as_posix() if res in f.parents else f.name
     runs = tdir / "runs"
     ticket = next((f for f in sorted(runs.rglob(run + ".*")) if f.is_file()), None) if run and runs.is_dir() else None

@@ -49,11 +49,17 @@ def test_each_lane_has_one_fixed_run_whose_ticket_code_writes(tmp_path):
     (page / "runs" / "delivery-run").mkdir(parents=True)        # an older Page with Space folders
     first = page_export.write_ticket(page, "word", "Junjie Luo")
     again = page_export.write_ticket(page, "word", "Junjie Luo")
-    assert first == again == page / "runs" / "run-delivery-word.sh"   # a readable name lives in the flat runs/
+    # one folder per Run (0.125): the lane's Run is runs/run-delivery-word/ with its command and card
+    assert first == again == page / "runs" / "run-delivery-word" / "run-delivery-word.sh"
     text = first.read_text(encoding="utf-8")
-    assert 'page="$(cd "$(dirname "$0")/.." && pwd)"' in text
+    assert 'page="$(cd "$(dirname "$0")/../.." && pwd)"' in text
     assert 'export "$page" --lane word --author "Junjie Luo"' in text
-    assert sorted(p.name for p in first.parent.iterdir()) == ["delivery-run", "run-delivery-word.sh"]
+    assert sorted(p.name for p in first.parent.iterdir()) == ["run-delivery-word.sh", "run.yaml"]
+    assert sorted(p.name for p in (page / "runs").iterdir()) == ["delivery-run", "run-delivery-word"]
+    (page / "runs" / "run-delivery-latex.sh").write_text("old flat ticket\n", encoding="utf-8")
+    page_export.write_ticket(page, "latex")                     # an older flat ticket is the same Run
+    assert not (page / "runs" / "run-delivery-latex.sh").exists()
+    assert (page / "runs" / "run-delivery-latex" / "run-delivery-latex.sh").is_file()
 
 
 def test_run_names_keeps_old_builds_and_adds_each_built_lanes_run(tmp_path):
@@ -66,7 +72,8 @@ def test_run_names_keeps_old_builds_and_adds_each_built_lanes_run(tmp_path):
     (page / "delivery" / "latex" / "S-X-Main-1-Intro.pdf").write_bytes(b"PDF")
     report = run_rename.apply(page)
     assert [k["old"] for k in report["kept"]] == ["rd01_latex"] and report["fixed"] == ["latex"]
-    assert (page / "runs" / "rd01_latex.md").is_file() and (page / "runs" / "run-delivery-latex.sh").is_file()
+    assert (page / "runs" / "rd01_latex.md").is_file()
+    assert (page / "runs" / "run-delivery-latex" / "run-delivery-latex.sh").is_file()
     assert run_rename.plan(page)["fixed"] == []                 # a second pass adds nothing
 
 

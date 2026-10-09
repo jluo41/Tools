@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 from src.outline_version import plan_dir, latest_outline
-from src.run_folders import ticket_dir, ticket_rel
+from src.run_folders import result_rel, ticket_dir, ticket_rel, working_dir, write_card
 from src.run_lifecycle import _log, open_run
 from src.plan_layout import is_sectioned, scratch_notes, to_canonical, write_scratch
 
@@ -241,10 +241,12 @@ def _update_plan(plan: Path, record: dict) -> None:
 
 def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
     base = page_src.parent
-    runs = ticket_dir(base, record["run"])
-    result = base / "results" / record["run"]
+    runs = ticket_dir(base, record["run"])          # the run's own folder (0.125)
     runs.mkdir(parents=True, exist_ok=True)
-    result.mkdir(parents=True, exist_ok=True)
+    if not (runs / (record["run"] + ".md")).is_file():   # the ticket first: it makes the folder a run
+        (runs / (record["run"] + ".md")).write_text("---\nrun: %s\n---\n" % record["run"], encoding="utf-8")
+    result = working_dir(base, record["run"])       # its open pass, or results/<run>/ (older)
+    rel = result.relative_to(base).as_posix()
     status = "complete" if closed else "running"
     ticket = (
         "---\n"
@@ -256,12 +258,12 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
         "target: {target}\n"
         "run: {run}\n"
         "ticket: {ticket}\n"
-        "result: results/{run}\n"
+        "result: {rel}\n"
         "---\n\n"
         "# {run}\n\n"
         "- Purpose: capture the person's rough thinking for {scope} {target}.\n"
         "- Close rule: Finish asks the AI for a concise Summary.\n"
-    ).format(ticket=ticket_rel(base, record["run"]), **record)
+    ).format(ticket=ticket_rel(base, record["run"]), rel=rel, **record)
     (runs / (record["run"] + ".md")).write_text(ticket, encoding="utf-8")
     version = "v001"
     version_file = result / (version + ".md")
@@ -295,16 +297,19 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
         "run: {run}\nfamily: page\noperation: interactive-writing\n"
         "interaction: human-scratch\nmode: scratch\n"
         "target_scope: {scope}\ntarget: {target}\n"
-        "ticket: {ticket}\nresult: results/{run}\n"
+        "ticket: {ticket}\nresult: {rel}\n"
         "status: {status}\nversion: v001\nstep: s001\n"
-        "version_file: results/{run}/v001.md\n"
+        "version_file: {rel}/v001.md\n"
         "summary: {summary}\n".format(
             run=record["run"], scope=record["scope"], target=record["target"],
-            ticket=ticket_rel(base, record["run"]),
+            ticket=ticket_rel(base, record["run"]), rel=rel,
             status=status, summary=record.get("summary", "") or "pending",
         )
     )
     (result / "runtime.yaml").write_text(runtime, encoding="utf-8")
+    if runs.name == record["run"]:
+        write_card(base, record["run"], type="scratch", target=record["target"] or None,
+                   skill="haipipe-page-scratch", status="done" if closed else "running", writes=[], feeds=[])
     return {
         "run": record["run"], "scope": record["scope"],
         "target": record["target"], "status": record["status"],
@@ -362,13 +367,13 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
         plan = _plan(page_src)
         _update_plan(plan, record)
         # Records only at the two ends (JL 260928): an autosave changes only the notes
-        # in the Draft; Finish is the close and writes results/ and one log line.
+        # in the Draft; Finish is the close and writes the run's pass and one log line.
         if step != "finish":
             return {"run": record["run"], "scope": scope, "target": target, "status": "open",
                     "summary": "", "version": "", "file": ""}, None
         result = _write_run(page_src, record, closed=True)
         _log(page_src.parent, page_src.stem, "%s closed: %s" % (record["run"], summary or "Scratch finished"),
-             "results/%s/" % record["run"])
+             "%s/" % result_rel(page_src.parent, record["run"]))
         return result, None
     except (OSError, ValueError) as exc:
         return None, str(exc)

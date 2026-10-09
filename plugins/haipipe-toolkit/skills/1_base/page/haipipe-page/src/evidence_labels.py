@@ -213,18 +213,18 @@ def _normalize(raw: dict[str, str]) -> dict[str, str]:
 
 def collect_result_labels(page_home: Path) -> dict[str, dict[str, str]]:
     """Return the current token-to-binding map from local Result manifests."""
+    from .run_folders import result_roots, under_page_results
     result_root = page_home / "results"
-    if not result_root.is_dir() or result_root.is_symlink():
+    if result_root.is_symlink() or not result_roots(page_home):
         return {}
     bindings: dict[str, dict[str, str]] = {}
     from .evidence_selection import selected_for_home
     for manifest in selected_for_home(page_home):
-        if manifest.is_symlink():
+        if manifest.is_symlink() or not under_page_results(page_home, manifest):   # results/ or a run's pass
             continue
         try:
-            manifest.resolve().relative_to(result_root.resolve())
             text = manifest.read_text(encoding="utf-8", errors="replace")
-        except (OSError, ValueError):
+        except OSError:
             continue
         top = {}
         for key in ("item", "page_run", "run", "status", "display_kind",

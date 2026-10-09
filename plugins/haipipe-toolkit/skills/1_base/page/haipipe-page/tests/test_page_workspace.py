@@ -19,6 +19,13 @@ from live.outline_preview import read_drafts
 from src.plan_shape import iter_plan_bullets
 
 
+def _setup_pass(folder, n):
+    """The nth pass of the Page's setup Run, runs/run-context-page-setup/passes/pNN-<MMDD>/ (0.125)."""
+    passes = sorted((folder / "runs" / "run-context-page-setup" / "passes").glob("p%02d-*" % n))
+    assert len(passes) == 1, passes
+    return passes[0]
+
+
 def test_import_edit_build_portable(tmp_path):
     original = tmp_path / "input.md"
     original.write_text("# Notes\n\nOriginal sentence.\n", encoding="utf-8")
@@ -213,20 +220,20 @@ def test_setup_cli_accepts_file_then_folder(tmp_path):
     assert created.returncode == 0, created.stderr
     page = tmp_path / "working-note"
     assert (page / "delivery/web/index.html").is_file()
-    assert (page / "results/r01_page-setup/report.md").is_file()
-    runtime = (page / "results/r01_page-setup/runtime.yaml").read_text()
+    assert (_setup_pass(page, 1) / "report.md").is_file()
+    runtime = (_setup_pass(page, 1) / "runtime.yaml").read_text()
     assert "outcome: \"Created semantic records:" in runtime
     assert "inputs:\n  - path:" in runtime
     assert "supersedes: null" in runtime
     assert "failure: null" in runtime
-    first_checks = json.loads((page / "results/r01_page-setup/checks.json").read_text())
+    first_checks = json.loads((_setup_pass(page, 1) / "checks.json").read_text())
     assert first_checks["blocking_gate"] == "pass"
     assert '"mode": "create-semantic-records"' in created.stdout
 
     resumed = subprocess.run([*cli, str(page)], cwd=tmp_path, capture_output=True, text=True)
     assert resumed.returncode == 0, resumed.stderr
-    assert (page / "results/r02_page-setup/report.md").is_file()
-    second_checks = json.loads((page / "results/r02_page-setup/checks.json").read_text())
+    assert (_setup_pass(page, 2) / "report.md").is_file()
+    second_checks = json.loads((_setup_pass(page, 2) / "checks.json").read_text())
     assert second_checks["blocking_gate"] == "pass"
     assert '"mode": "resume-and-build"' in resumed.stdout
 
@@ -271,7 +278,7 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
         "title": "A Useful Argument", "divisions": 2, "paragraphs": 3,
         "bullets": 3, "source_sentences": 4,
         "plan": "draft/argument-page-draft-v0.1.md",
-        "draft": "draft/argument-page-draft-v0.1.md", "run": "r01_page-setup",
+        "draft": "draft/argument-page-draft-v0.1.md", "run": "run-context-page-setup",
         "delivery": "delivery/web/index.html", "mode": "create-semantic-records",
         "checks": {"pass": 10, "missing": 0, "deferred": 4, "untested": 2, "n/a": 1},
         "blocking_gate": "pass",
@@ -294,16 +301,16 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "[Requirement]" in plan.read_text(encoding="utf-8")
     assert (page.folder / "draft/records/argument-page-context.md").is_file()
     assert (page.folder / "draft/records/argument-page-files.md").is_file()
-    assert (page.folder / "results/r01_page-setup/report.md").is_file()
-    audit = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
+    assert (_setup_pass(page.folder, 1) / "report.md").is_file()
+    audit = json.loads((_setup_pass(page.folder, 1) / "checks.json").read_text())
     assert audit["blocking_gate"] == "pass"
     for name in ("page_face", "content", "shape", "content_draft", "static_delivery"):
         artifact = audit["artifacts"][name]
         path = page.folder / artifact["path"]
         assert path.is_file() and re.fullmatch(r"\d{6} \d{4}", artifact["saved"])
         assert "sha256" not in artifact
-    assert "sha256" not in (page.folder / "results/r01_page-setup/runtime.yaml").read_text()
-    assert "SHA-256" not in (page.folder / "results/r01_page-setup/report.md").read_text()
+    assert "sha256" not in (_setup_pass(page.folder, 1) / "runtime.yaml").read_text()
+    assert "SHA-256" not in (_setup_pass(page.folder, 1) / "report.md").read_text()
     assert {item["id"] for item in audit["checks"]} == {
         "source_configuration", "input_preservation", "opening", "outline_structure",
         "paragraph_global_order",
@@ -416,7 +423,7 @@ def test_setup_never_clips_a_long_reader_move_to_a_word_limit(tmp_path):
     assert "[Possibility] Appointment wait time" not in plan
     assert "[Possibility] Short waits" not in plan
     assert "[Mechanism] Transportation, work schedules" in plan
-    checks = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
+    checks = json.loads((_setup_pass(page.folder, 1) / "checks.json").read_text())
     readability = next(
         item for item in checks["checks"] if item["id"] == "bullet_head_readability"
     )
@@ -444,7 +451,7 @@ def test_setup_resume_builds_without_replacing_shape(tmp_path):
     before = plan.read_bytes()
     result = run_setup(page)
     assert result["mode"] == "resume-and-build"
-    assert result["run"] == "r02_page-setup"
+    assert result["run"] == "run-context-page-setup"   # a second setup is a pass
     assert result["delivery"] == "delivery/web/index.html"
     assert result["blocking_gate"] == "pass"
     assert result["source_sentences"] == 1
@@ -521,8 +528,8 @@ def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing
     with pytest.raises(ValueError, match="setup validation failed"):
         run_setup(page)
 
-    runtime = (page.folder / "results/r02_page-setup/runtime.yaml").read_text()
-    audit = json.loads((page.folder / "results/r02_page-setup/checks.json").read_text())
+    runtime = (_setup_pass(page.folder, 2) / "runtime.yaml").read_text()
+    audit = json.loads((_setup_pass(page.folder, 2) / "checks.json").read_text())
     assert "status: failed" in runtime
     assert audit["blocking_gate"] == "fail"
     draft = next(item for item in audit["checks"] if item["id"] == "content_draft_mapping")
@@ -544,7 +551,7 @@ def test_force_setup_allows_intentional_content_edit_without_recertifying_the_or
     result = setup_markdown_page(page, force=True, input_file=original)
 
     assert result["blocking_gate"] == "pass"
-    audit = json.loads((page.folder / "results/r02_page-setup/checks.json").read_text())
+    audit = json.loads((_setup_pass(page.folder, 2) / "checks.json").read_text())
     preservation = next(item for item in audit["checks"] if item["id"] == "input_preservation")
     assert preservation["status"] == "untested"
     assert preservation["blocking"] is False

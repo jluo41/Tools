@@ -1,3 +1,23 @@
+## 0.125.0 · 2026-10-09 · One folder per Page Run (JL 261009; haipipe-run 0.31.0)
+
+- `src/run_folders.py`: a readable-grammar Run is `runs/<name>/` with its ticket, card
+  `run.yaml` and `passes/pNN-<MMDD>/`; new helpers `find_ticket`, `result_dir`, `working_dir`,
+  `new_pass`, `result_roots`, `under_page_results`, `write_card` read both layouts, so an older
+  Page's flat `runs/<name>.md` + `results/<name>/` still works everywhere.
+- `src/run_lifecycle.py`: `open-run` writes the ticket and card in the run's folder; `close-run`
+  finishes the open pass (an interactive run wrote into it) or makes the next one.
+- `src/page_export.py`: a lane's Delivery Run is `runs/run-delivery-<lane>/run-delivery-<lane>.sh`
+  with its card; an older flat ticket is removed. `src/page_setup.py`: setup is the soft Run
+  `run-context-page-setup`, one pass per setup (it was a new `rNN_page-setup` each time).
+- `src/run_rename.py`: `page.py run-names` also moves each run into its folder, its result folder
+  becoming `passes/p01-<MMDD>/` (the day from its receipt, else its older dated name), and rewrites
+  every mention in the Page folder. `src/layout_check.py`: layout 0.125 adds "one folder per run";
+  `pages_in` skips a run's ticket.
+- Evidence readers (`evidence_selection`, `page_evidence`, `evidence_labels`, `draft_migration`,
+  `page_migration`) and the workbench (`runs.py`, `evidence.py`, `outline_feedback.py`,
+  `outline_revise.py`, `outline_scratch.py`) take a Result from a run's pass or from `results/`.
+- First applied to REACH-SPACE: the Q01 report's 15 runs and a discovery Topic's two; 687 Pages on 0.125.
+
 ## 0.124.1 · 2026-10-09 · The Context record names the family and a SPACE path
 
 - `cli/context-record.py`: **Folder owner** is the skill family (`paper`), not its layer folder; since the skills moved into `0_utils/`, `1_base/`, `2_theme/`, every theme's record said `2_theme`.

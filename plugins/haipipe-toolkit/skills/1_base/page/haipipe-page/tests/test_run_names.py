@@ -41,15 +41,20 @@ def test_a_run_writes_its_ticket_at_open_and_its_results_only_at_close(tmp_path)
     folder = page(tmp_path)
     opened = open_run(folder, "section", target="C1", goal="Tighten the section", by="JL", day="2026-09-29")
     run = opened["run"]
-    assert run == "run-section-c1" and opened["ticket"] == "runs/%s.md" % run
-    assert "status: open" in (folder / "runs" / (run + ".md")).read_text()
-    assert not (folder / "results").exists()
+    # one folder per Run (0.125): runs/<name>/<name>.md and its card at open, its pass at close
+    assert run == "run-section-c1" and opened["ticket"] == "runs/%s/%s.md" % (run, run)
+    assert "status: open" in (folder / "runs" / run / (run + ".md")).read_text()
+    assert "status: running" in (folder / "runs" / run / "run.yaml").read_text()
+    assert not (folder / "results").exists() and not (folder / "runs" / run / "passes").exists()
     assert find_open(folder, "section", "C1") == run
     closed = close_run(folder, run, summary="tightened three sentences")
-    assert closed["result"] == "results/%s/" % run
-    runtime = (folder / "results" / run / "runtime.yaml").read_text()
+    assert re.fullmatch(r"runs/%s/passes/p01-\d{4}/" % run, closed["result"])
+    runtime = (folder / closed["result"] / "runtime.yaml").read_text()
     assert "status: complete" in runtime and "skills: haipipe-page-writing · haipipe-writing" in runtime
-    assert "status: closed" in (folder / "runs" / (run + ".md")).read_text()
+    assert "status: closed" in (folder / "runs" / run / (run + ".md")).read_text()
+    card = (folder / "runs" / run / "run.yaml").read_text()
+    assert "kind: soft" in card and "status: done" in card and closed["result"].split("/")[3] in card
+    assert not (folder / "results").exists()
     assert run + " closed: tightened three sentences" in (folder / "draft" / "records" / "Page-log.md").read_text()
     assert find_open(folder, "section", "C1") is None
 
@@ -74,16 +79,20 @@ def test_rename_flattens_renames_rewrites_and_pairs_every_result(tmp_path):
                      "pj02t03r01_headline": "run-value-headline-estimate",
                      "re-value-01_headline": "run-value-headline-estimate-2"}
     rename(folder)
-    tickets = sorted(p.stem for p in (folder / "runs").iterdir() if p.is_file())
-    results = sorted(p.name for p in (folder / "results").iterdir())
-    assert tickets == results == sorted(names.values())          # one ticket ↔ one result, flat
-    assert not any(p.is_dir() for p in (folder / "runs").iterdir())
+    # one folder per Run (0.125): each run is runs/<name>/ with its ticket, card and first pass
+    runs = sorted(p.name for p in (folder / "runs").iterdir())
+    assert runs == sorted(names.values()) and not (folder / "results").exists()
+    for name in runs:
+        assert (folder / "runs" / name / (name + ".md")).is_file() and (folder / "runs" / name / "run.yaml").is_file()
+    assert [p.name for p in (folder / "runs" / "run-value-headline-estimate" / "passes").iterdir()] == ["p01-0906"]
+    assert [p.name for p in (folder / "runs" / "run-value-headline-estimate-2" / "passes").iterdir()] == ["p01-0928"]
     evidence = (folder / "draft" / "Page-evidence-items.md").read_text()
-    assert "run-value-headline-estimate → results/run-value-headline-estimate/result.yaml" in evidence
-    assert "pj02t03r01" not in evidence
-    assert "results/run-value-headline-estimate-2/" in (folder / "runs" / "run-value-headline-estimate-2.md").read_text()
-    assert "had no ticket" in (folder / "runs" / "run-value-headline-estimate.md").read_text()
-    assert re.search(r"kind: value", (folder / "runs" / "run-value-headline-estimate.md").read_text())
+    assert "run-value-headline-estimate → runs/run-value-headline-estimate/passes/p01-0906/result.yaml" in evidence
+    assert "pj02t03r01" not in evidence and "results/" not in evidence
+    two = folder / "runs" / "run-value-headline-estimate-2" / "run-value-headline-estimate-2.md"
+    assert "runs/run-value-headline-estimate-2/passes/p01-0928/" in two.read_text()
+    one = folder / "runs" / "run-value-headline-estimate" / "run-value-headline-estimate.md"
+    assert "had no ticket" in one.read_text() and re.search(r"kind: value", one.read_text())
 
 
 def test_rename_drops_the_day_from_a_dated_name(tmp_path):
@@ -99,7 +108,11 @@ def test_rename_drops_the_day_from_a_dated_name(tmp_path):
     assert names == {"run-display-0930-main-effects": "run-display-main-effects",
                      "run-display-1002-main-effects": "run-display-main-effects-2"}
     rename(folder)
-    assert sorted(p.stem for p in (folder / "runs").iterdir()) == sorted(p.name for p in (folder / "results").iterdir()) \
+    assert sorted(p.name for p in (folder / "runs").iterdir()) \
         == ["run-display-main-effects", "run-display-main-effects-2", "run-section-c1"]
-    assert "run: run-display-main-effects\n" == (folder / "results" / "run-display-main-effects" / "runtime.yaml").read_text()
-    assert "0930" not in (folder / "draft" / "Page-evidence-items.md").read_text()
+    # the dropped day becomes the first pass's day (0.125): the name has none, its pass does
+    first = folder / "runs" / "run-display-main-effects" / "passes" / "p01-0930"
+    assert "run: run-display-main-effects\n" == (first / "runtime.yaml").read_text()
+    assert (folder / "runs" / "run-display-main-effects-2" / "passes" / "p01-1002").is_dir()
+    evidence = (folder / "draft" / "Page-evidence-items.md").read_text()
+    assert "run-display-0930" not in evidence and "runs/run-display-main-effects/passes/p01-0930/" in evidence

@@ -83,10 +83,12 @@ def docx_author(folder: Path, stem: str) -> str | None:
 
 
 def write_ticket(folder: Path, lane: str, author: str | None = None) -> Path:
-    """Write `runs/run-delivery-<lane>.sh`, the command that reruns this lane's one Delivery Run."""
-    from src.run_folders import ticket_dir
+    """Write `runs/run-delivery-<lane>/run-delivery-<lane>.sh`, the command that reruns this lane's
+    one Delivery Run, and its card (one folder per Run, 0.122). An older flat ticket
+    `runs/run-delivery-<lane>.sh` is the same Run: it is removed so the lane keeps one ticket."""
+    from src.run_folders import ticket_dir, write_card
     run = RUN_NAMES[lane]
-    ticket = ticket_dir(folder, run) / (run + ".sh")        # a readable name lives in the flat runs/
+    ticket = ticket_dir(folder, run) / (run + ".sh")        # the run's own folder
     ticket.parent.mkdir(parents=True, exist_ok=True)
     up = "/".join([".."] * len(ticket.parent.relative_to(Path(folder)).parts))
     quoted = ' --author "%s"' % author.replace('"', "") if lane == "word" and author else ""
@@ -94,6 +96,12 @@ def write_ticket(folder: Path, lane: str, author: str | None = None) -> Path:
     if not ticket.is_file() or ticket.read_text(encoding="utf-8") != text:
         ticket.write_text(text, encoding="utf-8")
         ticket.chmod(0o755)
+    flat = Path(folder) / "runs" / (run + ".sh")
+    if flat.is_file() and flat != ticket:
+        flat.unlink()
+    if not (ticket.parent / "run.yaml").is_file():
+        write_card(folder, run, type="delivery", target=lane, skill="haipipe-page-delivery",
+                   status="done", writes=["delivery/%s/" % lane], feeds=[])
     return ticket
 
 

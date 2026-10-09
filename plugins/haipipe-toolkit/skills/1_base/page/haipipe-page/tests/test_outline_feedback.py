@@ -22,6 +22,7 @@ from live.outline import OutlineMixin, plan_card  # noqa: E402
 from live.outline_feedback import (feedback_items, paragraphs, run_rows,  # noqa: E402
                                    save_feedback)
 from src.page_workspace import load_page  # noqa: E402
+from src.run_folders import find_ticket, result_dir  # noqa: E402  one folder per Run (0.125)
 from standalone_server import create_server  # noqa: E402
 
 
@@ -286,13 +287,13 @@ class WriteSideTest(FeedbackFixture):
         ticket = next((self.folder / "runs").rglob(run + ".md")).read_text(encoding="utf-8")
         self.assertIn("paragraphs: P03", ticket)
         self.assertIn("Structure description: P03 · C2.P3 · Sources", ticket)
-        v001 = (self.folder / "results" / run / "v001.md").read_text(encoding="utf-8")
+        v001 = (result_dir(self.folder, run) / "v001.md").read_text(encoding="utf-8")
         self.assertIn("Prior Version: none", v001)
         self.assertIn("- Target: `C2.P3.B1` · P03", v001)
-        runtime = (self.folder / "results" / run / "runtime.yaml").read_text(encoding="utf-8")
+        runtime = (result_dir(self.folder, run) / "runtime.yaml").read_text(encoding="utf-8")
         self.assertRegex(runtime, r"(?m)^run: %s$" % run)
         self.assertRegex(runtime, r"(?m)^status: waiting-for-feedback$")
-        self.assertTrue((self.folder / "results" / run / "working.md").is_file())
+        self.assertTrue((result_dir(self.folder, run) / "working.md").is_file())
 
     def test_open_structure_run_takes_paragraph_notes_before_paragraph_runs_exist(self):
         (self.folder / "runs" / "run-structure-0901-outline.md").write_text(
@@ -394,7 +395,7 @@ class StandaloneWireTest(FeedbackFixture):
         result = json.loads(body)
         self.assertTrue(result["ok"], result)
         self.assertRegex(result["run"], r"^run-scratch-c1-p2$")
-        scratch_result = self.folder / "results" / result["run"]
+        scratch_result = result_dir(self.folder, result["run"])
         self.assertTrue((scratch_result / "v001.md").is_file())
         self.assertIn("AI generated the Scratch Summary and the person closed the Run.",
                       (scratch_result / "v001.md").read_text(encoding="utf-8"))

@@ -17,6 +17,7 @@ from live.outline_preview import read_drafts
 from .outline_version import plan_dir
 from .plan_layout import to_sectioned
 from src.plan_shape import iter_plan_bullets, render_bullet
+from src.run_folders import result_rel
 
 
 SETUP_MARKER = "setup: semantic-markdown-v1"
@@ -357,20 +358,18 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
 
 def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences: int,
                *, mode: str, delivery: str, audit) -> str:
-    runs = page.folder / "runs"
-    results = page.folder / "results"
-    runs.mkdir(exist_ok=True)
-    results.mkdir(exist_ok=True)
-    used = {int(m.group(1)) for path in runs.glob("r*_*")
-            if (m := re.match(r"r(\d+)_", path.name))}
-    number = next(n for n in range(1, 100) if n not in used)
-    run = f"r{number:02d}_page-setup"
-    result = results / run
-    result.mkdir(exist_ok=False)
-    ticket = runs / f"{run}.md"
+    # ONE SOFT RUN, ONE PASS PER SETUP (0.122, JL 261009). Setup writes the Page's context
+    # record, so it is the Page's context Run; a second setup is its next pass, never a new rNN.
+    from src.run_folders import new_pass, write_card
+    run = "run-context-page-setup"
+    folder = page.folder / "runs" / run
+    folder.mkdir(parents=True, exist_ok=True)
+    result = new_pass(page.folder, run)
+    result_rel = result.relative_to(page.folder).as_posix()
+    ticket = folder / f"{run}.md"
     ticket.write_text(
         "---\nfamily: page\noperation: page-setup\ninteraction: delegated\n"
-        f"target: {page.source.name}\nresult: results/{run}\n---\n\n"
+        f"target: {page.source.name}\nresult: {result_rel}\n---\n\n"
         f"- Goal: Turn “{title}” into a substantive standalone Page setup.\n"
         f"- Mode: {mode}.\n"
         "- Scope: Page-owned source, planning records, workbench inputs, and static delivery.\n"
@@ -393,7 +392,7 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
     (result / "runtime.yaml").write_text(
         f"run: {run}\nfamily: page\noperation: page-setup\ninteraction: delegated\n"
         f"mode: {mode}\n"
-        f"target: {page.source.name}\nticket: runs/{run}.md\nresult: results/{run}\n"
+        f"target: {page.source.name}\nticket: runs/{run}/{run}.md\nresult: {result_rel}\n"
         f"outcome: {json.dumps(outcome)}\n"
         f"inputs:\n  - path: {json.dumps(content)}\n"
         f"status: {status}\nstarted_at: {now}\nfinished_at: {now}\n"
@@ -420,6 +419,8 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
         f"{audit.markdown()}\n",
         encoding="utf-8",
     )
+    write_card(page.folder, run, type="context", target=page.source.name, skill="haipipe-page",
+               status="done" if audit.blocking_passed else "failed", writes=["draft/"], feeds=[])
     return run
 
 
@@ -479,7 +480,7 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
     run = _setup_run(current, title, len(divisions), bullet_count, source_sentence_count,
                      mode="create-semantic-records", delivery=delivery, audit=audit)
     if not audit.blocking_passed:
-        raise ValueError(f"setup validation failed; inspect results/{run}/report.md")
+        raise ValueError(f"setup validation failed; inspect {result_rel(page.folder, run)}/report.md")
     return {"title": title, "divisions": len(divisions),
             "paragraphs": sum(len(d.paragraphs) for d in divisions),
             "bullets": bullet_count, "source_sentences": source_sentence_count,
@@ -517,7 +518,7 @@ def _existing_setup(page, *, input_file: Path | None = None):
     run = _setup_run(page, page.title, divisions, bullets, source_sentences,
                      mode="resume-and-build", delivery=delivery, audit=audit)
     if not audit.blocking_passed:
-        raise ValueError(f"setup validation failed; inspect results/{run}/report.md")
+        raise ValueError(f"setup validation failed; inspect {result_rel(page.folder, run)}/report.md")
     return {"title": page.title, "divisions": divisions, "paragraphs": paragraphs,
             "bullets": bullets, "source_sentences": source_sentences,
             "plan": plan.relative_to(page.folder).as_posix() if plan else None,

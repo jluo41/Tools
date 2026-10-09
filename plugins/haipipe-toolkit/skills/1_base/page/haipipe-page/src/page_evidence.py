@@ -191,7 +191,7 @@ def _resolve_payload_unit(page_home: Path, manifest: Path, raw: object) -> Path 
         candidates.append(path)
     else:
         candidates.extend((page_home / path, manifest.parent / path))
-        if path.parts and path.parts[0] not in {"results", "payload"}:
+        if path.parts and path.parts[0] not in {"results", "payload", "runs"}:
             candidates.append(manifest.parent / "payload" / path)
     try:
         resolved_root = root.resolve()
@@ -245,7 +245,6 @@ def current_display_results(page_source: Path) -> tuple[list[dict], bool]:
     Page that has moved to Results.
     """
     page_home = _page_home(page_source)
-    result_root = page_home / "results"
     records = {}
     from .evidence_selection import legacy_profile, selected_results
     saw_display = not legacy_profile(page_source)
@@ -268,12 +267,9 @@ def current_display_results(page_source: Path) -> tuple[list[dict], bool]:
             "selection_error": issue.get("error", "invalid selected Result"),
         }
         saw_display = True
+    from .run_folders import under_page_results
     for manifest in manifests:
-        if manifest.is_symlink():
-            continue
-        try:
-            manifest.resolve().relative_to(result_root.resolve())
-        except (OSError, ValueError):
+        if manifest.is_symlink() or not under_page_results(page_home, manifest):   # results/ or a run's pass
             continue
         document = _result_document(manifest)
         item = str(document.get("item", "")).strip()

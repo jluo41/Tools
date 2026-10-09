@@ -1273,11 +1273,18 @@ def _is_ticket_place(path: Path, runs_dir: Path) -> bool:
 
 
 def _run_folder_receipt(ticket: Path) -> Path | None:
-    """The receipt of a Run in its own folder: `runs/<run>/result/runtime.yaml`."""
+    """The receipt of a Run in its own folder: a hard Run's `runs/<run>/result/runtime.yaml`, or a
+    soft Run's latest pass `runs/<run>/passes/pNN-<MMDD>/runtime.yaml` (a Page Run, 0.125)."""
     if ticket.parent.name != ticket.stem:
         return None
     receipt = ticket.parent / "result" / "runtime.yaml"
-    return receipt if _confined_file(receipt, ticket.parent) else None
+    if _confined_file(receipt, ticket.parent):
+        return receipt
+    from src.run_folders import passes
+    for folder in reversed(passes(ticket.parent.parent.parent, ticket.stem)):
+        if _confined_file(folder / "runtime.yaml", ticket.parent):
+            return folder / "runtime.yaml"
+    return None
 
 
 def _runtime_for(ticket: Path, runs_dir: Path, results_dir: Path) -> Path | None:
@@ -1760,17 +1767,17 @@ def _registry_status(record: dict[str, str]) -> str:
 
 def _result_supporting_refs(page_src: Path) -> list[dict[str, str]]:
     """Read external Supporting Runs from local Evidence Result manifests."""
-    result_root = page_src.parent / "results"
-    if not result_root.is_dir() or result_root.is_symlink():
+    from src.run_folders import result_roots, under_page_results
+    if (page_src.parent / "results").is_symlink():
         return []
     rows = []
-    for manifest in sorted(result_root.rglob("result.yaml")):
-        if manifest.is_symlink():
+    manifests = [m for root in result_roots(page_src.parent) for m in sorted(root.rglob("result.yaml"))]
+    for manifest in manifests:
+        if manifest.is_symlink() or not under_page_results(page_src.parent, manifest):
             continue
         try:
-            manifest.resolve().relative_to(result_root.resolve())
             text = manifest.read_text(encoding="utf-8", errors="replace")
-        except (OSError, ValueError):
+        except OSError:
             continue
         item_match = re.search(r"(?mi)^item:\s*([^#\n]+)", text)
         item_id = item_match.group(1).strip().strip("'\"") if item_match else ""

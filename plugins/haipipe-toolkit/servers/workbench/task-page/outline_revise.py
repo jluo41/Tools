@@ -14,7 +14,7 @@ rendered with. Records only at the two ends (JL 260928): the first Save on a
 paragraph opens its Revise run, `run-revise-<c1-p2>` (one ticket in
 `runs/`, which keeps the paragraph's text before the Save as its Before); later
 Saves change only the Draft (a Why note is kept in that ticket). `page.py
-close-run` writes the Before / After ledger into `results/<run>/` when the person
+close-run` writes the Before / After ledger into the run's pass `runs/<run>/passes/` when the person
 says close (haipipe-page-revise). The Runs panel lists the run under Revise edits.
 
 Nothing here touches Page Content; `page.py adopt` copies the Drafts into it when the person asks.
@@ -28,7 +28,7 @@ import re
 from pathlib import Path
 
 from src.outline_version import plan_dir, latest_outline, version_tag
-from src.run_folders import ticket_dir, ticket_rel
+from src.run_folders import find_ticket, ticket_dir, ticket_rel, working_dir, write_card
 from src.plan_shape import iter_plan_bullets
 from src.run_lifecycle import find_open, open_run
 from live.outline_preview import (bullet_token, draft_path, page_lock, read_drafts,
@@ -223,10 +223,13 @@ def _card(number: int, address: str, before: str, after: str, why: str) -> str:
 def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, display: str,
                   plan: Path, changes: list[dict], why: str) -> dict:
     base = page_src.parent
-    runs = ticket_dir(base, run_id)
-    result = base / "results" / run_id
+    runs = ticket_dir(base, run_id)                 # the run's own folder (0.125)
     runs.mkdir(parents=True, exist_ok=True)
-    result.mkdir(parents=True, exist_ok=True)
+    if not (runs / (run_id + ".md")).is_file():     # the ticket first: it makes the folder a run
+        (runs / (run_id + ".md")).write_text("---\nfamily: page\nrun: %s\n---\n" % run_id, encoding="utf-8")
+        existing = False
+    result = working_dir(base, run_id)              # its open pass, or results/<run>/ (older)
+    rel = result.relative_to(base).as_posix()
     version_file = result / "v001.md"
     text = version_file.read_text(encoding="utf-8", errors="replace") if existing and version_file.is_file() else ""
     step_number = len(re.findall(r"(?m)^## Step s\d+", text)) + 1
@@ -256,18 +259,21 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
     else:
         text = text.rstrip("\n") + "\n\n" + block
     version_file.write_text(text.rstrip("\n") + "\n", encoding="utf-8")
-    if not existing or not (runs / (run_id + ".md")).is_file():
+    if not existing or "operation:" not in (runs / (run_id + ".md")).read_text(encoding="utf-8"):
         (runs / (run_id + ".md")).write_text(
             "---\n"
             "family: page\noperation: interactive-writing\ninteraction: human-revise\n"
             "mode: revise\ntarget_scope: paragraph\ntarget: %s\nrun: %s\n"
-            "ticket: %s\nresult: results/%s\n"
+            "ticket: %s\nresult: %s\n"
             "---\n\n# %s\n\n"
             "- Purpose: the person revises the Draft of %s in place; every Save appends one Step "
             "with a change ledger.\n"
             "- Close rule: the person closes the Run when the paragraph reads right; the accepted "
             "Drafts stay in the Outline for the writing Run to adopt.\n"
-            % (target, run_id, ticket_rel(base, run_id), run_id, run_id, display), encoding="utf-8")
+            % (target, run_id, ticket_rel(base, run_id), rel, run_id, display), encoding="utf-8")
+        if runs.name == run_id:
+            write_card(base, run_id, type="revise", target=target, skill="haipipe-page-revise",
+                       status="running", writes=[], feeds=[])
     total = len(re.findall(r"(?m)^##### R\d+ ·", text))
     summary = "%d change%s over %d Step%s" % (total, "s"[:total != 1], step_number, "s"[:step_number != 1])
     (result / "working.md").write_text(
@@ -278,9 +284,9 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
     (result / "runtime.yaml").write_text(
         "run: %s\nfamily: page\noperation: interactive-writing\ninteraction: human-revise\n"
         "mode: revise\ntarget_scope: paragraph\ntarget: %s\n"
-        "ticket: %s\nresult: results/%s\nstatus: running\nversion: v001\nstep: %s\n"
-        "version_file: results/%s/v001.md\nsummary: %s\n"
-        % (run_id, target, ticket_rel(base, run_id), run_id, step, run_id, summary), encoding="utf-8")
+        "ticket: %s\nresult: %s\nstatus: running\nversion: v001\nstep: %s\n"
+        "version_file: %s/v001.md\nsummary: %s\n"
+        % (run_id, target, ticket_rel(base, run_id), rel, step, rel, summary), encoding="utf-8")
     return {"run": run_id, "step": step, "summary": summary,
             "result": str(result.relative_to(base))}
 
@@ -323,7 +329,7 @@ def _display_name(run_id: str) -> str:
 
 def _note_why(folder: Path, run_id: str, paragraph: str, why: str) -> None:
     """Keep the person's reason in the open run's own ticket (not in results/ or the log)."""
-    ticket = folder / "runs" / (run_id + ".md")
+    ticket = find_ticket(folder, run_id) or folder / "runs" / (run_id + ".md")
     if ticket.is_file():
         text = ticket.read_text(encoding="utf-8")
         if "\n## Why\n" not in text:
@@ -394,7 +400,7 @@ def save_revise(page_src: Path, payload: dict, *, read_only: bool = False) -> tu
         write_drafts(page_src, records)
         fresh = read_drafts(page_src)
         # Records only at the two ends (JL 260928): the first Save opens the run (its ticket
-        # keeps the Before); later Saves change only the Draft; close-run writes results/.
+        # keeps the Before); later Saves change only the Draft; close-run writes the run's pass.
         run_id = find_open(page_src.parent, "revise", paragraph)
         if not run_id:
             run_id = open_run(page_src, "revise", target=paragraph, goal=why,
