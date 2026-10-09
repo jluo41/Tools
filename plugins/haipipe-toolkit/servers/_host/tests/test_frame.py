@@ -49,7 +49,7 @@ class LadderTest(unittest.TestCase):
             self.assertEqual(sorted(frame.chain(task, root)), ["Block", "Job", "Task"])
             self.assertEqual(frame.theme_of(task, root), "work")          # tasks/ reads as the work theme
             self.assertEqual([r["type"] for r in frame.runs_of(task)], ["fit", "build"])
-            tools = root / "Tools" / "designs" / "b02_workbench"           # not inside a Project
+            tools = root / "Tools" / "blueprints" / "b02_workbench"           # not inside a Project
             tools.mkdir(parents=True)
             (tools / "board.md").write_text("# b02\n")
             self.assertEqual(frame.theme_of(tools, root), "vanilla")

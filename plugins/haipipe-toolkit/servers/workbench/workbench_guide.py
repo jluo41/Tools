@@ -786,7 +786,7 @@ def method_page_html(family, profile, editable=True):
                   "d.querySelectorAll('iframe.st-frame[data-src]').forEach(go)},true)})()</script>")
     else:
         canvas = (f'<div class=empty>No methods drawing yet: draw it from the method file with '
-                  f'<code>designs/b03_project_workbench/studio/s31-guide/method-canvas.py</code>.</div>')
+                  f'<code>blueprints/b03_project_workbench/studio/s31-guide/method-canvas.py</code>.</div>')
     height = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
               "height:document.documentElement.scrollHeight},location.origin)}"
               "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"

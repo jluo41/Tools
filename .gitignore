@@ -59,3 +59,7 @@ node_modules/
 # presigned-URL credentials (a PNAS page tripped GitHub push protection on
 # 260823), and nothing tracked references them.
 **/materials/raw/
+
+# a studio builder's seed snapshot (haipipe-studio canvas.py): a local cache of the last build, rebuilt per
+# machine, often several MB; never committed
+.*.seed.json

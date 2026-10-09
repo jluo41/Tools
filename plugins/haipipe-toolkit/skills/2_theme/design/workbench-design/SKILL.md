@@ -98,7 +98,7 @@ writes it ("No ranking yet: t99's run-rank-t99").
 
 The shared Guide's design family is `servers/workbench-design/guide/guide.yaml`: Guide › Method (`guide/method.md`
 and its method cards, the 13 kinds of design method), Guide › Related Paper (`related/papers.md`), and the family's
-skills. The drawings stay in the design Block `Tools/designs/b12_theme_design/studio/` (s02 the workbench, s03 the
+skills. The drawings stay in the blueprint Block `Tools/blueprints/b12_theme_design/studio/` (s02 the workbench, s03 the
 methods and the design unit, s11 · s12 · s13 the levels, s21 Runs and skills).
 
 ## Older board page

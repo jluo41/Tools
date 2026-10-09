@@ -1,6 +1,6 @@
 """The cowork theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A cowork topic climbs Block → Job → Run (Tools/designs/b13_theme_cowork, Q01, proposed 261007). An
+A cowork topic climbs Block → Job → Run (Tools/blueprints/b13_theme_cowork, Q01, proposed 261007). An
 email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`tNN_<doc>/`) is only a
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.

@@ -70,7 +70,7 @@ Notes
   computation and each page's plan are decided by agents: one drafts, a different
   one agrees or closes.
 - **The studio drawing.** Part 1 of
-  `Tools/designs/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw` draws
+  `Tools/blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw` draws
   Spaces, views, run types and skills; it should be drawn from this table, not
   hand-kept beside it (planned: a drawer in `table-workbench`).
 - **As served.** The Work column reads each page's `answers.yaml` and shows

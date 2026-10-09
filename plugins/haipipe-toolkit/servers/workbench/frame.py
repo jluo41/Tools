@@ -6,7 +6,7 @@
     content                                                  │ Runs panel
 
 The frame owns the levels, the six Spaces, their order and dividers, the third row, the Runs
-panel and the look (Tools/designs/b03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
+panel and the look (Tools/blueprints/b03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
 gives only what each Space holds at each level: `servers/workbench-<theme>/<theme>_theme.py`
 exports `THEME`, a `Theme`. A Space a theme leaves out shows the vanilla default, read from the
 standard folders (the face `.md`, `studio/`, `reports/`, the child `jNN_` / `tNN_` folders,
@@ -189,7 +189,7 @@ def is_project(folder: Path) -> bool:
 
 def theme_of(folder: Path, root: Path) -> str:
     """The theme a folder belongs to: the Theme folder its Block sits in (tasks/ or work/ -> work),
-    counted only inside a Project, so a design Block of the Tools repo (Tools/designs/bNN_*) reads
+    counted only inside a Project, so a design Block of the Tools repo (Tools/blueprints/bNN_*) reads
     as vanilla rather than as the design theme."""
     block = chain(folder, root).get("Block", folder)
     if not is_project(theme_folder(block).parent):

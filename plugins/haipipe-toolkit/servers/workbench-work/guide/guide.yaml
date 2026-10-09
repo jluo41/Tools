@@ -96,7 +96,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+  - board: Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces, each with the shared Runs
@@ -125,21 +125,21 @@ roadmap:
   Block:
   - title: the work ladder
     shows: a work Project, from its Theme down to one Run
-    board: Tools/designs/b17_theme_work/studio/s01-work-ladder/s01-work-ladder.excalidraw
+    board: Tools/blueprints/b17_theme_work/studio/s01-work-ladder/s01-work-ladder.excalidraw
   - title: the Block's screens
     shows: the six Spaces on the Block tab, for each Block variant
-    board: Tools/designs/b03_project_workbench/studio/s11-block-variants/s11-block-variants-proposed.excalidraw
+    board: Tools/blueprints/b03_project_workbench/studio/s11-block-variants/s11-block-variants-proposed.excalidraw
   - title: the work workbench before the frame
     shows: the old Task Workbench page, the old page the band links
-    board: Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+    board: Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
   Job:
   - title: the Job's screens
     shows: the six Spaces on the Job tab, for each Job variant
-    board: Tools/designs/b03_project_workbench/studio/s12-job-variants/s12-job-variants.excalidraw
+    board: Tools/blueprints/b03_project_workbench/studio/s12-job-variants/s12-job-variants.excalidraw
   Task:
   - title: the Task's screens
     shows: the six Spaces on the Task tab, for each Task variant
-    board: Tools/designs/b03_project_workbench/studio/s13-task-variants/s13-task-variants-proposed.excalidraw
+    board: Tools/blueprints/b03_project_workbench/studio/s13-task-variants/s13-task-variants-proposed.excalidraw
   - title: a Run's life
     shows: hard and soft Runs, in the folder and on screen
-    board: Tools/designs/b03_project_workbench/studio/s05-runs/s05-runs.excalidraw
+    board: Tools/blueprints/b03_project_workbench/studio/s05-runs/s05-runs.excalidraw

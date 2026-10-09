@@ -108,7 +108,7 @@ each `qNN_<topic>` is one question.
 **Related question:** (proposed) <Board> "<short question>": <why>
 ```
 
-1. **Board**: owner and block holding `reports/`: `Tools/designs b01_utils`, `Paper-<Name>`.
+1. **Board**: owner and block holding `reports/`: `Tools/blueprints b01_utils`, `Paper-<Name>`.
 2. **QNN**: from the question's folder `reports/qNN_<topic>`.
 3. **Short question**: the topic question itself, in quotes, a few words.
 4. **Link**: the Question in its workbench, so one click opens it (see "The link" below).
@@ -124,7 +124,7 @@ report's own Page.
 <host>/_board/<kind>-board?path=<board>/board.md&view=questions#question-QNN
 ```
 
-1. **Kind**: the board's workbench: `task` (a Task Block, also `Tools/designs/tasks/bNN_*`),
+1. **Kind**: the board's workbench: `task` (a Task Block, also `Tools/blueprints/bNN_*`),
    `cowork` (a CoWork Block), `discovery` (a Discovery Block). A wrong kind returns 404.
 2. **Path**: the board's `board.md`, relative to the SPACE root, with plain slashes.
 3. **Host**: the shared host serving that SPACE, its `--public-url`: find it with
@@ -434,7 +434,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question:** [Tools/designs b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/work-board?path=designs/tasks/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
+**Related question:** [Tools/blueprints b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/work-board?path=Tools/blueprints/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
 
 ## 2. 🛠️ What I Changed
 

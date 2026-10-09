@@ -1558,11 +1558,17 @@ class ChatMixin:
 
     # ---- 会话登记（QD1 Law 修正，JL 260731：一题多 session，一个 current）----
     # 头部 `session:` 只记 CURRENT；这里登记这一题铸造过的每一个 id，
-    # 拣选器从这里列历史。放 .haipipe-board/（跟 activity 一样，本机状态，gitignored）。
+    # 拣选器从这里列历史。本机状态，放在 SPACE 外：跟这些 session 的 jsonl 同一个目录
+    # （~/.claude/projects/<proj>/haipipe-sessions.json）。SPACE 里不再生成 .haipipe-board/（JL 261009）；
+    # 旧的 <root>/.haipipe-board/sessions.json 第一次读时搬过来。
     def _sess_map_path(self):
-        d = self.root / ".haipipe-board"
-        d.mkdir(exist_ok=True)
-        return d / "sessions.json"
+        d = self._jsonl_path("x").parent
+        d.mkdir(parents=True, exist_ok=True)
+        path = d / "haipipe-sessions.json"
+        old = self.root / ".haipipe-board" / "sessions.json"
+        if not path.exists() and old.is_file():
+            path.write_text(old.read_text(encoding="utf-8"), encoding="utf-8")
+        return path
 
     def _sess_map(self):
         try:

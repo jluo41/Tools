@@ -138,7 +138,7 @@ Guide's four Views come from `guide/guide.yaml` (family `task`), loaded by
 `workbench/guide_families.py`. Description is text there. Method is the shared
 method page (`/_board/guide?family=work&mode=method`): the methods drawing
 `guide/methods.excalidraw` first (drawn once by
-`designs/b03_project_workbench/studio/s31-guide/method-canvas.py`, then edited as the source), then
+`blueprints/b03_project_workbench/studio/s31-guide/method-canvas.py`, then edited as the source), then
 `guide/method.md` as fold cards with its method cards in `guide/methods/`. RoadMap Draw
 draws the Workbench Table (the skill's `ref/workbench-table.md`, checked by `table-workbench --check`)
 and opens the **Workbench design** drawing; Related Paper shows `related/papers.md`
@@ -150,7 +150,7 @@ is generated; never edit it by hand. Its frames are "Spaces, runs and skills"
 Change the generator or the table, then regenerate:
 
 ```sh
-.venv/bin/python Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.py
+.venv/bin/python Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.py
 ```
 
 The question map of a Block is generated the same way:
@@ -160,4 +160,4 @@ The question map of a Block is generated the same way:
 ```
 
 On a Studio-enabled host, open
-`/_excalidraw/?board=Tools/designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.
+`/_excalidraw/?board=Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.

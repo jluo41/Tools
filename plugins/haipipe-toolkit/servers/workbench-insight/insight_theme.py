@@ -9,7 +9,7 @@ gates as chips on each question row; its Jobs and Tasks stay the base's own.
 
 The notes below describe today's layout.
 
-An insight Board reads one dataset (Tools/designs/b11_theme_insight). b11 proposes (s11, 261007) a Job
+An insight Board reads one dataset (Tools/blueprints/b11_theme_insight). b11 proposes (s11, 261007) a Job
 per pair, Prototype version × data version; no Board has those Jobs on disk yet, so this theme fills
 the Block tab from today's folders, with the old page's content (JL: carry over what exists) drawn in
 the base's look only (JL 261007: no theme stylesheet): the frame's .topic folds, .wf-table, .q-row,

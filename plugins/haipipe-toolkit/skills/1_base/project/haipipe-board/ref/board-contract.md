@@ -19,7 +19,7 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 
 No empty folder is made ahead of its content (`haipipe-project`): `studio/`, `reports/`,
 `runs/` and the Jobs come with their first item. A design Block in the Tools repo
-(`Tools/designs/bNN_<topic>/`) has the same face and folders, read by the vanilla frame.
+(`Tools/blueprints/bNN_<topic>/`) has the same face and folders, read by the vanilla frame.
 
 ## The face: board.md
 
@@ -85,7 +85,7 @@ The frame asks, in this order:
 1. a theme that claims it        Theme.claims(block) -> True   (asked before the Theme folder)
 2. its Theme folder              tasks/ → work · discoveries/ → discovery · cowork/ · papers/ →
                                  paper · insights/ → insight · designs/ → design · labelings/ → labeling
-3. otherwise                     vanilla (also every Block outside a Project, e.g. Tools/designs/)
+3. otherwise                     vanilla (also every Block outside a Project, e.g. Tools/blueprints/)
 ```
 
 1. **Claims**: a theme declares `claims=<function>` on its `Theme(...)`; the function gets the

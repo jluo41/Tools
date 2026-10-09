@@ -23,7 +23,7 @@ metadata:
 A board's `reports/` folder is its list of questions: each `qNN_<topic>/` holds one
 Question and the report that answers it (JL 261003: "reports is a list of questions").
 Every board kind uses the same shape: a Task Block (`tasks/bNN_<block>/`), a Paper board
-(`papers/Paper-<Name>/`) and a skill Block (`Tools/designs/tasks/bNN_<block>/`).
+(`papers/Paper-<Name>/`) and a skill Block (`Tools/blueprints/bNN_<block>/`).
 
 ```text
 <board>/

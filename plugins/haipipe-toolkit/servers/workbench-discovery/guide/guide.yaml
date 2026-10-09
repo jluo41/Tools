@@ -86,6 +86,6 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/designs/b14_theme_discovery/studio/s02-discovery-workbench/discovery-workbench-design.excalidraw
+  - board: Tools/blueprints/b14_theme_discovery/studio/s02-discovery-workbench/discovery-workbench-design.excalidraw
   - Workbench design
   - first

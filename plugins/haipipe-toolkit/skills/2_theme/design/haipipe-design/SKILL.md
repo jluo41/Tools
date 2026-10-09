@@ -38,7 +38,7 @@ CHANGELOG under the current version and does not by itself authorize a new one.
 ## The ladder
 
 Read [ref/design-ladder.md](ref/design-ladder.md) on every invocation that creates, names or audits a design
-folder. In one picture (designed in `Tools/designs/b12_theme_design`, s11 · s12 · s13 · s21):
+folder. In one picture (designed in `Tools/blueprints/b12_theme_design`, s11 · s12 · s13 · s21):
 
 ```text
 designs/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
