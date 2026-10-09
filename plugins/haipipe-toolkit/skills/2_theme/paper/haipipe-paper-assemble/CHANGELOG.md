@@ -1,3 +1,8 @@
+## 0.11.1 · 2026-10-09 · No /Users/ path in the manifest, no stale snapshot
+
+- `scripts/build_delivery.py`: the Word and LaTeX output kept in `build-manifest.json` (`docx_tail`, `latexmk_tail`) has the SPACE root cut off its paths; the Word lane prints every file it writes, so each manifest held four `/Users/...` paths (JL 260927).
+- `scripts/latex_room_to_docx.py`: `word/draft-sections/` is regenerated whole; a snapshot no Section makes any more goes (ScalingGlucose kept five `S-NMI-*.docx` beside the `t0N-*.docx` after its Sections were renamed).
+
 ## 0.11.0 · 2026-10-07 · Send to a comments report; the letter from its Task (b16 Q05)
 
 - `build.py send|release <name>` also takes a comments report of the version, `reports/qNN_<kind>-<MMDD>/` (`send q02` or its full stem), and freezes into its `sent/` or `released/`; an older Round (`RD<NN>`) is still found. The Send run card (`Job › Delivery`) names it.

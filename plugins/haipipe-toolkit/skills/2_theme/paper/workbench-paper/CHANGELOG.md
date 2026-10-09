@@ -1,3 +1,7 @@
+## 0.33.1 · 2026-10-09 · Ideas with IDEA-NN ids
+
+- `servers/workbench-paper/paper.py` `ideation()`: the ranked Ideas table is read when its ids are `i01` or `IDEA-01`; ScalingGlucose's `studio/s01-ideation` writes `IDEA-NN`, so Block › Audience Report › Ideation said "No idea yet" over five ideas.
+
 ## 0.33.0 · 2026-10-07 · The paper theme on the frame, buttons from the cards (b16 Q05)
 
 - SKILL.md is the paper theme of the shared frame: the link, each level's Spaces and views and what they read, the Runs panel, the Guide, the gates by level. It no longer describes the retired four-Space page; what that page showed is `ref/old-page.md`, since several views still draw with its renderers.

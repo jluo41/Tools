@@ -129,6 +129,13 @@ validate_build_config(CFG, HERE)
 DEDUPE_EMBEDDED_FLOATS = True   # behavior A · tests flip this to prove the register catches the double print
 
 def rel(p): return (HERE / p).resolve()
+
+
+def unrooted(text):
+    """A tool's printed output with the SPACE root (the folder with env.sh) cut off its paths, so the manifest
+    holds no /Users/... path (JL 260927; the Word lane prints every file it writes)."""
+    root = next((q for q in [HERE.resolve(), *HERE.resolve().parents] if (q / "env.sh").is_file()), None)
+    return text.replace(f"{root}/", "") if text and root else text
 LATEX = rel(CFG["source"]["room"])
 SEC = LATEX / CFG["source"]["sections"]
 APP = LATEX / CFG["source"].get("appendices", "appendices")
@@ -1400,7 +1407,7 @@ def build():
     if DOCX_ENGINE.exists():
         env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(HERE / "paper-build.toml"))
         r = _run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
-        docx_rc, docx_err = r.returncode, (r.stderr or r.stdout)[-1500:]
+        docx_rc, docx_err = r.returncode, unrooted((r.stderr or r.stdout)[-1500:])
     # JL 260929 "for the word, why we cannot preview it": each .docx gets its PDF twin beside it,
     # <stem>.pdf, drawn from the package the Word lane just wrote; the Paper Workbench's Word Preview shows it
     twins = {}
@@ -1462,7 +1469,7 @@ def build():
     }
     manifest["render"] = {
         "latexmk_rc": rc.returncode,
-        "latexmk_tail": (rc.stdout + rc.stderr)[-1200:] if rc.returncode else "",
+        "latexmk_tail": unrooted((rc.stdout + rc.stderr)[-1200:]) if rc.returncode else "",
         "docx_rc": docx_rc,
         "docx_tail": docx_err,
     }

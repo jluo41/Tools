@@ -272,7 +272,11 @@ def faces(board, P):
         batches = sorted(n.split("/")[-1] for o, n in P["moves"] if n.startswith(job + "/")
                          and re.match(r"^(RD|CM)\d", n.split("/")[-1]))
         state = f"under review · {batches[-1]}" if batches else "drafting"
-        tells = f"{story}/{current.group(1)}" if story and current else "—"
+        # no story-current in board.md: the Story whose page the build reads its order from (`order = ".../<stem>/<stem>.md"`)
+        order = re.search(r'(?m)^order\s*=\s*"([^"]+)"', toml)
+        built = Path(order.group(1)) if order else None
+        stem = current.group(1) if current else built.parent.name if built and built.stem == built.parent.name else ""
+        tells = f"{story}/{stem}" if story and stem else "—"
         out[face] = (f"# {job} · version {int(job.split('_v')[1].split('_')[0])} of the paper\n\n"
                      f"send: {job}\ndesk: {desk}\nvenue: {(venue.group(1) if venue and venue.group(1) else desk)}\n"
                      f"state: {state}\ntells: {tells}\nfrom: none (the first send)\n\n"

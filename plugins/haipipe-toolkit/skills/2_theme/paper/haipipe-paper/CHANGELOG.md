@@ -1,3 +1,13 @@
+## 1.11.1 · 2026-10-09 · The carry-over scripts, run on ScalingGlucose
+
+- First Board moved with `scripts/carry_over/` (Paper-ScalingGlucose-NatSeries2026, branch `v1009-paper-ladder`); four faults found and fixed at the source:
+- `topics_paper.py`: a §3 block is a question only when "Question" is followed by its number, so "#### 3.7 · Question logic" stays in the Story as words (it was taken for an 8th question and cut out).
+- `topics_paper.py`: a question keeps the number its telling gave it (Question 3 → Q03, Question 0 → Q00), so "Q3" in the Story's tables and the meeting notes still names it; a taken number gets the next free one.
+- `migrate_paper.py` and `topics_paper.py`: with no `story-current:` in board.md, the version tells the Story its build's `order =` names (else the only telling); `topics_paper.py` writes `story-current:` and the face's `tells:`, and takes §8 out of the Story only when a version receives it (before, §8 stayed put and the version got no `## Narrative`).
+- `topics_paper.py`: each Section's `story-row: <Story> §8.N / <stem>` follows its row to `<version> ## Narrative / <stem>` (paper_ladder.py task's shape), the bound Story version kept under the topic's name.
+- `topics_paper.py`: the rest of what a tool finds by a Story's stem (`draft/`, `draft/records/`, `draft/previous/`) follows its new name, as `rename_tasks.py` does for Tasks; `StoryA-…-context.md` stayed under the old name in `studio/s02-…/draft/records/`.
+- New `tests/test_carry_over.py`: a Board shaped like ScalingGlucose's before the move; fails on the 1.11.0 scripts, passes now.
+
 ## 1.11.0 · 2026-10-07 · One ladder contract, one scaffold (b16 Q05)
 
 - JL 261007: "the current skill is not that powerful enough"; "a before after plan of the skill folders and what to change and why"; "unify the run to be run-xxx-xxx". Shaped like the design theme's skill (`ref/design-ladder.md`, `scripts/design_ladder.py`), as drawn in Tools/designs b16 s21 (frame "skill folders: before → after") and run by b16's goal g04, phase 1.

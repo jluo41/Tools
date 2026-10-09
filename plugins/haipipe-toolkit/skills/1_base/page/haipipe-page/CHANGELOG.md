@@ -1,3 +1,8 @@
+## 0.124.1 · 2026-10-09 · The Context record names the family and a SPACE path
+
+- `cli/context-record.py`: **Folder owner** is the skill family (`paper`), not its layer folder; since the skills moved into `0_utils/`, `1_base/`, `2_theme/`, every theme's record said `2_theme`.
+- `cli/context-record.py`: a source is written relative to the SPACE root also when it sits behind a linked folder there (`Tools` -> `../Tools-SPACE`); the CTX3 skill sources were written as `/Users/...` paths (JL 260927: no absolute path on disk).
+
 ## 0.124.0 · 2026-10-07 · A Page Run's name carries no day (JL 261007)
 
 - `src/run_names.py`: the grammar is `run-<kind>-<slug>`; `mint()` no longer puts in the day (JL:

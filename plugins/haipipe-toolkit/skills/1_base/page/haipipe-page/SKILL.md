@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.124.0"
-  last_updated: "2026-10-05"
+  version: "0.124.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

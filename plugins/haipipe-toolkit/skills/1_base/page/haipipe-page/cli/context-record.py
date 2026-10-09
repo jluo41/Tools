@@ -37,6 +37,7 @@ SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
 sys.path.insert(0, str(HERE))
 
 from src import item_table                              # noqa: E402
+from src.skill_paths import LAYERS                      # noqa: E402
 from src.outline_version import record_path             # noqa: E402
 from src.folder_contract import (resolved_folder_kind,
                                  folder_identity_path,
@@ -58,9 +59,7 @@ def owners(kind):
         SKILLS, folder_kind=kind, legacy_page_type=kind
     )
     if contract is not None:
-        rel = contract.path.relative_to(SKILLS)
-        family = rel.parts[0] if rel.parts else "unresolved"
-        return family, contract.path.parent.name
+        return family_of(contract.path), contract.path.parent.name
 
     from src.plan_shape import type_outline  # local import avoids router cycles
 
@@ -68,12 +67,19 @@ def owners(kind):
     type_path = declaration.get("type_path", "")
     if type_path:
         path = Path(type_path)
-        try:
-            family = path.relative_to(SKILLS).parts[0]
-        except ValueError:
-            family = "unresolved"
-        return family, path.parent.name
+        return family_of(path), path.parent.name
     return "unresolved", "unresolved"
+
+
+def family_of(path: Path) -> str:
+    """The skill family a contract sits in: `paper` for skills/2_theme/paper/..., not its layer
+    (`2_theme`, which every theme shares; the record said that after the skills moved into layers)."""
+    try:
+        parts = path.relative_to(SKILLS).parts
+    except ValueError:
+        return "unresolved"
+    parts = parts[1:] if parts and parts[0] in LAYERS else parts
+    return parts[0] if parts else "unresolved"
 NONE = "none"
 
 
@@ -96,11 +102,27 @@ def modified(path: Path) -> str:
 
 
 def src(root: Path, path: Path) -> str:
+    return f"`{space_rel(root, path)}` · {modified(path)}"
+
+
+def space_rel(root: Path, path: Path) -> str:
+    """`path` relative to the SPACE root, also through a linked folder there (`Tools` -> `../Tools-SPACE`):
+    a skill file resolves outside the root, and the record wrote its `/Users/...` path (JL 260927: none on disk)."""
+    real = path.resolve()
     try:
-        rel = path.resolve().relative_to(root.resolve()).as_posix()
+        return real.relative_to(root.resolve()).as_posix()
     except ValueError:
-        rel = path.as_posix()
-    return f"`{rel}` · {modified(path)}"
+        pass
+    for link in sorted(root.iterdir()):
+        if link.is_symlink() and link.is_dir():
+            try:
+                return (Path(link.name) / real.relative_to(link.resolve())).as_posix()
+            except ValueError:
+                continue
+    try:                                     # a Page outside any SPACE: a skill file as the SPACE names it
+        return (Path("Tools") / real.relative_to(SKILLS.parents[2])).as_posix()
+    except ValueError:
+        return path.name
 
 
 def opening(text: str) -> tuple[str, str]:

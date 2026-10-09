@@ -1657,6 +1657,7 @@ def write_section_snapshots(section_specs: list[tuple[str, str]], running_title:
         "They are review snapshots only and are never used as builder inputs.\n",
         encoding="utf-8",
     )
+    written = set()
     for source_name, label in section_specs:
         source = SECTION_DIR / source_name
         text = clean_fragment(source.read_text(encoding="utf-8"), source.parent)
@@ -1667,6 +1668,11 @@ def write_section_snapshots(section_specs: list[tuple[str, str]], running_title:
         add_events(doc, events, include_displays=True)
         output_name = source_name.replace("_", "-").replace(".tex", ".docx")
         doc.save(DRAFT_SECTION_ROOM / output_name)
+        written.add(output_name)
+    # the folder is regenerated whole: a snapshot no section makes any more (a renamed Section's old name) goes
+    for stale in DRAFT_SECTION_ROOM.glob("*.docx"):
+        if stale.name not in written:
+            stale.unlink()
 
 
 def evidence_lock_path() -> Path | None:

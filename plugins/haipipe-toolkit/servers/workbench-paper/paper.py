@@ -514,11 +514,13 @@ def ideation(d):
     out = {"present": True, "stem": p["stem"], "rel": p["rel"],
            "state": clean(scalar(p["text"], "state", "⬜ no state line")),
            "ideas": [], "source": "", "items": [], "receipts": []}
-    # ① the page's own Ideas (ranked) table, when Content carries one
-    rows = table_rows(p["text"], r"i\d+")
+    # ① the page's own Ideas (ranked) table, when Content carries one; its ids are `i01` or `IDEA-01`
+    # (ScalingGlucose's s01-ideation writes IDEA-NN, and its ideas showed as "No idea yet")
+    idea_id = r"i\d+|IDEA-\d+"
+    rows = table_rows(p["text"], idea_id)
     if rows:
         out["source"] = "Content · Ideas (ranked) table"
-        headers = _table_headers(p["text"], r"i\d+") or []
+        headers = _table_headers(p["text"], idea_id) or []
         for c in rows:
             fields = [(headers[i] if i < len(headers) else "col %d" % (i + 1), c[i])
                       for i in range(2, len(c)) if c[i] and c[i] not in ("—", "-")]
