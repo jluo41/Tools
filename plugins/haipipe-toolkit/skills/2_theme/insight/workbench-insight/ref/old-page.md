@@ -171,7 +171,7 @@ server derives it from `path=`.
 - `../../../../servers/workbench-insight/guide/` (`guide.yaml`, `method.md`, `methods/{answer,read}/`, `methods.excalidraw`) · the Guide: its entry, the Insight method, its cards and canvas; the question-asking cards are `1_base/question/haipipe-question-asking`
 - `../../../../servers/workbench-insight/related/papers.md` · the papers behind the methods (verified DOIs)
 - `../haipipe-insight/ref/evidence-needs.md` · the join the Work column will show per need
-- `../../../../../../designs/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw` · the design drawing (its Block: b11_theme_insight)
+- `../../../../../../design/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw` · the design drawing (its Block: b11_theme_insight)
 - `../haipipe-insight/SKILL.md` · the Insight door and its vocabulary
 - `../haipipe-insight-workflow/SKILL.md` · the owner-native Runs this surface projects
 - `../haipipe-page-insight/SKILL.md` · the Task-side Insight Page and RI contract

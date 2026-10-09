@@ -10,12 +10,12 @@ Edit builders in the BUILDER HOME, run them, and the output lands in `code/haifn
 
 **BUILDER HOME** — where builder scripts live; resolve once, then substitute for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples below:
   - Project-local (current convention): a canonical Task Folder,
-    `examples/<Project>/tasks/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/`
+    `examples/<Project>/work/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/`
     (table of Fn kind to Block and Job: `ref/0-overview.md` § Current Builder Structure).
   - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
   Seed library (copy sources, all workspaces): `code/scripts/haibuilder/<N>-<stage>/`
   — real builders (MIMIC, Ohio, CGM...) to copy as starting points.
-  Discover with: `ls examples/*/tasks/b0[1-4]_*/j[0-4][0-9]_*/t*/scripts/` or `ls code/scripts/haibuilder/`.
+  Discover with: `ls examples/*/work/b0[1-4]_*/j[0-4][0-9]_*/t*/scripts/` or `ls code/scripts/haibuilder/`.
 
 ---
 
@@ -52,10 +52,10 @@ Apply these steps regardless of which stage you are building.
 **Step 0: Inspect Existing Builders and Source Table**
 
 ```bash
-ls examples/*/tasks/b01_sourcestore/j5*_source/t01_sourcefn_*/scripts/   # stage 1 project builders
-ls examples/*/tasks/b02_recordstore/j[0-4]*/t*/scripts/                  # stage 2
-ls examples/*/tasks/b03_casestore/j[0-4]*/t*/scripts/                    # stage 3
-ls examples/*/tasks/b10_aidatastore/j[0-4]*/t*/scripts/                  # stage 4
+ls examples/*/work/b01_sourcestore/j5*_source/t01_sourcefn_*/scripts/   # stage 1 project builders
+ls examples/*/work/b02_recordstore/j[0-4]*/t*/scripts/                  # stage 2
+ls examples/*/work/b03_casestore/j[0-4]*/t*/scripts/                    # stage 3
+ls examples/*/work/b10_aidatastore/j[0-4]*/t*/scripts/                  # stage 4
 ls code/scripts/haibuilder/<N>-<stage>/         # cross-project SEED LIBRARY
                                                 # (real builders: MIMIC, Ohio, CGM...)
 ```

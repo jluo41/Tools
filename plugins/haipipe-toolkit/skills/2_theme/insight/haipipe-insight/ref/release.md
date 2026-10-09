@@ -1,7 +1,7 @@
 Release: one version of the Prototype, from proposals to a signature
 =====================================================================
 
-(b11 s00 · s21 phase 3, 261008.) A release is one Job of the Prototype, `tasks/Prototype-bNN-<Topic>/jNN_pN_<slug>/`:
+(b11 s00 · s21 phase 3, 261008.) A release is one Job of the Prototype, `work/Prototype-bNN-<Topic>/jNN_pN_<slug>/`:
 the questions asked in it, their scripts, the cuts and the thresholds, frozen once a person signs it. Every Board Job
 runs exactly one signed release (insight-ladder.md rule 1). This file is the release's contract; the ladder is
 [insight-ladder.md](insight-ladder.md), the question file and the script are

@@ -1,6 +1,11 @@
 # haipipe-insight-workflow · version history
 
 
+## 3.0.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 3.0.0 · 2026-10-08 · The run cards, the gates and what is next, on the insight ladder (b11 s21 phase 2)
 
 - New `ref/run-cards.md`: one card per workbench button (59) for the insight Board (Block · Job · Task), the Prototype

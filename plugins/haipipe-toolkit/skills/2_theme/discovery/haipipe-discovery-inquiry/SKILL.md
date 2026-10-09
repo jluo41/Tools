@@ -7,8 +7,8 @@ description: >-
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-09-22"
+  version: "0.7.2"
+  last_updated: "2026-10-09"
   workflow: haipipe-discovery-inquiry
   phase: D1 # compatibility selector for the Discovery controller contract; not a Run identity
   folder_kind: discovery
@@ -78,7 +78,7 @@ tree supplies membership and order.
 ## Folder Kind
 
 `folder-kind: discovery` resolves here. The Folder lives at
-`discoveries/bNN_<block>/jNN_<job>/tNN_<task>/`, with readable address
+`discovery/bNN_<block>/jNN_<job>/tNN_<task>/`, with readable address
 `bNN.jNN.tNN`. It has both faces; “Task” names its work altitude and does not
 select the empirical `page-type: task` compatibility grammar.
 

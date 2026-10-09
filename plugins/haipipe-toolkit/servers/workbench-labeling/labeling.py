@@ -517,14 +517,14 @@ def _task_runs(task: Path) -> list[dict]:
 
 
 def _labeling_job(page_src: Path) -> dict | None:
-    """The Job this labeling Page sits in, with all its Tasks; None outside labelings/.
+    """The Job this labeling Page sits in, with all its Tasks; None outside labeling/ (or the older labelings/).
 
     A Task is `data` before the labeling Task, `gold` when it holds or scores against the
     dataset's own labels (its name says ground_truth, gold or scoring) or comes after it.
     """
     task, job = page_src.parent, page_src.parent.parent
     block = job.parent
-    if (block.parent.name != "labelings" or page_src.stem != task.name
+    if (block.parent.name not in ("labeling", "labelings") or page_src.stem != task.name
             or not re.match(r"b\d{2}_", block.name) or not re.match(r"j\d{2}_", job.name)
             or not re.match(r"t\d{2}_", task.name)):
         return None

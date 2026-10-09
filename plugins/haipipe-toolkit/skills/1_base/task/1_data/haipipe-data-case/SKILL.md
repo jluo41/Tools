@@ -3,8 +3,8 @@ name: haipipe-data-case
 description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.4"
-  last_updated: "2026-09-26"
+  version: "0.3.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -73,7 +73,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TriggerFn / CaseFn builders in `tasks/b03_casestore/jNN_{triggerfn,casefn}_<family>/tNN_{triggerfn,casefn}_<Fn>/scripts/`; one CaseSet per raw dataset in `b03_casestore/j5N_<cohort>_v<yymmdd>_case/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
+  - TriggerFn / CaseFn builders in `work/b03_casestore/jNN_{triggerfn,casefn}_<family>/tNN_{triggerfn,casefn}_<Fn>/scripts/`; one CaseSet per raw dataset in `b03_casestore/j5N_<cohort>_v<yymmdd>_case/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
   - Generated `code/haifn/fn_case/{fn_trigger,case_casefn}/`, or `code/haifn/fn_case/<fn_version>/{fn_trigger,case_casefn}/` when the Run config sets `fn_version:` (the same version as the dataset's SourceFn and RecordFns; the CaseSet cook Run sets it too; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/3-CaseStore/` cases (cohort sampling)
   - `templates/config.yaml` for Case_Pipeline runs
@@ -131,7 +131,7 @@ Facts, not labels (REACH PD2D, JL 260923):
   - Generated, never hand-edited: `b03_casestore/src/casefn_build.py` writes
     each Fn from its Run config, and the build Run fails unless the committed
     `code/haifn/fn_case/<Fn>.py` matches byte for byte.
-  - Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b03_casestore/`.
+  - Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/b03_casestore/`.
 
 
 Partition Support

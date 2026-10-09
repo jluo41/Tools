@@ -16,7 +16,7 @@ Kitchen  = Record_Pipeline class      (code/haipipe/record_base/)
 Chef     = HumanFn + RecordFn         (code/haifn/fn_record/[<fn_version>/])  GENERATED
 Recipe   = YAML config file           (the Task's scripts/config/)
 Dish     = RecordSet asset            (_WorkSpace/2-RecStore/)
-Academy  = Builder scripts            (tasks/bNN_*/jNN_*/tNN_<recordfn>/scripts/)
+Academy  = Builder scripts            (work/bNN_*/jNN_*/tNN_<recordfn>/scripts/)
 ```
 
 
@@ -177,8 +177,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_record/human/ code/haifn/fn_record/*/human/
 ls code/haifn/fn_record/record/ code/haifn/fn_record/*/record/
-find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*human*.py
-find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*record*.py
+find examples -path '*/work/b*/j*/t*/scripts/*' -name '*human*.py
+find examples -path '*/work/b*/j*/t*/scripts/*' -name '*record*.py
 ```
 
 
@@ -233,7 +233,7 @@ Fn loaders:           code/haipipe/record_base/builder/human.py
 Generated HumanFns:   code/haifn/fn_record/[<fn_version>/]human/     (discover with ls)
 Generated RecordFns:  code/haifn/fn_record/[<fn_version>/]record/    (discover with ls)
 ([<fn_version>/] is set by the Run config's fn_version:; see haipipe-data/ref/0-overview.md § Fn Versions)
-Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<recordfn>/scripts/
+Builders (edit here): examples/<Project>/work/bNN_<block>/jNN_<job>/tNN_<recordfn>/scripts/
                       (legacy workspaces: code-dev/1-PIPELINE/2-Record-WorkSpace/)
 Store path:           _WorkSpace/2-RecStore/
 Config template:      ../templates/config.yaml (this skill's own template)

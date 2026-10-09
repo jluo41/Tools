@@ -10,8 +10,8 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.7"
-  last_updated: "2026-09-29"
+  version: "0.5.8"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -60,7 +60,7 @@ What this scaffolds
 -------------------
 
 ```
-tasks/bNN_<raw_block>/
+work/bNN_<raw_block>/
 └── jNN_<extraction_job>/
     ├── src/                                 shared extraction helpers
     └── tNN_<raw_table_or_step>/
@@ -88,7 +88,7 @@ Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the cata
 Raw understanding Block (`b00`)
 -------------------------------
 
-Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`
+Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/work/b00_rawdata/`
 (one dataset) and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b00_rawdata/`
 (14 datasets in seven raw families, Jobs `j51`-`j96`; migrated 260923).
 
@@ -229,19 +229,19 @@ Pattern 2: Server-resident rawstore (PHI cohorts)
 When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
 The whole extraction pipeline runs on Databricks and writes to the catalog volume.
 Current shape: REACH-SPACE Project-0-EHR-Description
-`tasks/b01_reach_jhu/j21_adhd_raw_extraction/` (and `j22_pd2d_...`). One
+`work/b01_reach_jhu/j21_adhd_raw_extraction/` (and `j22_pd2d_...`). One
 extraction Job; `src/config-defaults.yaml` holds `volume_base` and the ONE
 versioned `raw_data_name` (`reach-adhd-v260922`), so a refresh is one edit;
 each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>.cmd`
 tickets; `sbatch/run_all.cmd` runs the Job and writes `_FROZEN.yaml` after
 the last Run. No `.ipynb`, no `.sh`.
 
-Legacy example: Project-REACH-ADHD `tasks/A00_rawstore_reachadhd/`.
+Legacy example: Project-REACH-ADHD `work/A00_rawstore_reachadhd/`.
 
 Legacy shape (readable, never scaffolded for new work):
 
 ```
-tasks/A00_rawstore_<cohort>/
+work/A00_rawstore_<cohort>/
 ├── run_pipeline_<cohort>_raw.py(+.ipynb)   ← group-root orchestrator (sequences stages)
 ├── 01_stage1_universe/                     ← cohort universe (Spark SQL on deid tables)
 ├── 02_stage2_phenotype/                    ← phenotype definition (parallelizable sub-steps)

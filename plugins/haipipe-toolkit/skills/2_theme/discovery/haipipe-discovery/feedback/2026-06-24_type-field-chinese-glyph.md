@@ -17,7 +17,7 @@ process verbs vs folder kinds, non-overlapping word lists). Chinese TRIGGER phra
 
 Reporter (JL): `type: 搜` <- why is the type here Chinese? please think about
 updating this.
-(re: discoveries/.../discovery.yaml `type:` field; the value is a CJK glyph 搜/析/创)
+(re: discovery/.../discovery.yaml `type:` field; the value is a CJK glyph 搜/析/创)
 
 ## Current design + rationale
 `ref/lifecycle-map.md` makes the Chinese deliberate: "The type axis is named in

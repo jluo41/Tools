@@ -1,3 +1,8 @@
+## 0.33.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.33.0 · 2026-10-07 · The paper theme on the frame, buttons from the cards (b16 Q05)
 
 - SKILL.md is the paper theme of the shared frame: the link, each level's Spaces and views and what they read, the Runs panel, the Guide, the gates by level. It no longer describes the retired four-Space page; what that page showed is `ref/old-page.md`, since several views still draw with its renderers.

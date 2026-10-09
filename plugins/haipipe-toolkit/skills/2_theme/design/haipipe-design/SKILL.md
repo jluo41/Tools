@@ -15,8 +15,8 @@ description: >-
   set up a design Block, launch a design Job, open the design Tasks, design
   ladder, /haipipe-design.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-07"
+  version: "0.4.1"
+  last_updated: "2026-10-09"
   folder_owner: canonical
   folder_kind: design
   primary_face: board
@@ -41,7 +41,7 @@ Read [ref/design-ladder.md](ref/design-ladder.md) on every invocation that creat
 folder. In one picture (designed in `Tools/blueprints/b01_haipipe-toolkit/j12_theme_design`, s11 · s12 · s13 · s21):
 
 ```text
-designs/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
+design/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
 └── jNN_<goal>_<method>/           Job: goal G01 × method M04 m2 × inputs i2 → N designs; inputs/ is its fence
     ├── t00_reason-ideas/          ② reason ideas           run-reason-t00            (hard)
     ├── tNN_d<NN>_<slug>/          ③ ④ one design           run-generate-d<NN> · run-verify-d<NN>-v<k> (hard)
@@ -82,8 +82,8 @@ refuses any of them missing, and a folder whose ids differ from `--goal` and `--
 pins; `n` comes from the goal's line (`--n` only to say the same):
 
 ```bash
-python scripts/design_ladder.py job designs/Design-<name>/j03_g01_m04 --goal G01 --method "M04 m2" --inputs i2 --moved method
-python scripts/design_ladder.py run designs/Design-<name> add-job j03
+python scripts/design_ladder.py job design/Design-<name>/j03_g01_m04 --goal G01 --method "M04 m2" --inputs i2 --moved method
+python scripts/design_ladder.py run design/Design-<name> add-job j03
 ```
 
 The Job is then set up by its own three Runs (`run-setup-goal`, `run-setup-method`, `run-setup-inputs`); set up =

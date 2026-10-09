@@ -134,7 +134,7 @@ its next writing Run applies them.
 
 - A ticket is a call-through: it sets `RESULT_DIR` to the page's own
   `results/<ticket name>/` and `RUN_TICKET` to itself, then runs the task's own
-  ticket in the Project's DIKW Block (`tasks/b5N_<topic>_dikw/jNN_…/tNN_…/runs/rNN_<dataset>_<cut>.sh`).
+  ticket in the Project's DIKW Block (`work/b5N_<topic>_dikw/jNN_…/tNN_…/runs/rNN_<dataset>_<cut>.sh`).
 - The name is the full task address plus the partition and the task:
   `run_bNNjNNtNNrNN_<partition>_<task>.sh`. Ticket and result share the stem.
 - One task run often feeds several pages; each page calls it with its own

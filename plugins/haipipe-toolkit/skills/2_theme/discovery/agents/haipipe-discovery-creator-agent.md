@@ -34,7 +34,7 @@ the Board source.
 Create both Faces of one Task Page:
 
 ~~~text
-discoveries/bNN_<block>/jNN_<job>/tNN_<task>/
+discovery/bNN_<block>/jNN_<job>/tNN_<task>/
 Page Face: tNN_<task>.md, shared draft/ process and selected draft/evidence lanes
 Task Face: discovery.yaml, optional scripts, runs, results
 ~~~
@@ -45,7 +45,7 @@ needs them. New manifests write one canonical `discovery_type`; legacy
 `type`/`role` fields are read-only compatibility input.
 
 Every new segment uses `<level-letter><NN>_<noun>_<qualifier>`. Resolve or mint
-Block, then Job, then Task. `discoveries/` is the bank, not a Block. The Page
+Block, then Job, then Task. `discovery/` is the bank, not a Block. The Page
 stem equals the Task folder stem. Stamp readable and compact Task addresses in
 the manifest. After creating a Block, Job, or Task Folder, run:
 

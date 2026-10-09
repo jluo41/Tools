@@ -2,7 +2,9 @@ Theme rename plan: `tasks/` → `work/`, every Theme singular
 =============================================================
 
 decided: s01-D28 (the work Theme), s01-D29 (every Theme folder singular), JL 261007
-status: phase 1 done in the working tree (261007, not yet committed); no folder moved yet
+status: phase 1 done (261007); phases 2 and 3 done for DrFirst-SPACE on 261009, not yet committed:
+        the skill docs name the singular folders, and all 12 DrFirst Projects with Theme folders moved
+        (haipipe-project `scripts/rename_themes.py`). Phase 4 (WellDoc, Physician) and 5 remain.
 
 
 The map
@@ -93,7 +95,10 @@ exclusions above; bump each touched skill's version and CHANGELOG. haipipe-proje
 reports an old Theme folder as "rename pending", not an error.
 Check: `git grep` finds the old names only in CHANGELOGs, `_legacy/` and the alias table.
 
-**3 · Move DrFirst-SPACE, one project at a time.** In each project repo: `git mv` its Theme
+**3 · Move DrFirst-SPACE, one project at a time.** Done 261009 with `rename_themes.py`: folders renamed on disk (submodules by `git mv`),
+tickets' `tasks` checks also accept `work` (store addresses unchanged), references relinked; the smoke run
+was a path-only probe instead of a real run (no DrFirst data touched). `code/haifn/` records no Theme path,
+so nothing was rebuilt. In each project repo: `git mv` its Theme
 folders, update its run tickets and configs, rebuild anything generated from a moved
 builder (`code/haifn/` from its builder, per AGENTS rule 3), and run one ticket per Block as
 a smoke test. Then the SPACE's own AGENTS.md path, README and workspace files.

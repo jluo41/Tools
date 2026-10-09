@@ -19,8 +19,11 @@ Trigger -> resolve canonical Subject -> allocate RUNNAME -> Run -> Result
 - **Subject** is the one canonical evidence object analyzed by the Run. It is
   normally one paper. A non-paper source is legal only when that source itself
   is explicitly the evidence object.
-- **Run** is the authored executable ticket `runs/<RUNNAME>.sh`.
-- **Result** is that same Run materialized at `results/<RUNNAME>/`.
+- **Run** is the authored executable ticket `runs/<RUNNAME>/<RUNNAME>.sh`.
+- **Result** is that same Run materialized at `runs/<RUNNAME>/result/`.
+- One folder per Run (haipipe-run, JL 261006): `runs/<RUNNAME>/` holds `run.yaml`, the ticket
+  and `result/`. An older Task keeps `runs/<RUNNAME>.sh` + `results/<RUNNAME>/` until haipipe-project
+  `update` moves its Block; the scripts read both.
 
 One Trigger may resolve to zero, one, or many Subjects. Zero opens no Run and
 returns/logs an unresolved intake. Many MUST fan out to one Run per Subject.
@@ -30,12 +33,12 @@ the resolved Subject does.
 ## Hierarchy and the 1:1 spine
 
 ```text
-bank  discoveries/
+bank  discovery/
 L1    bNN_<noun>_<qualifier>/                 Block
 L2    jNN_<noun>_<qualifier>/                 Job
 L3    tNN_<noun>_<qualifier>/                 Discovery Task Page
-L4    runs/rNN_<author><year>_<paper>.sh
-         <-> results/rNN_<author><year>_<paper>/
+L4    runs/rNN_<author><year>_<paper>/rNN_<author><year>_<paper>.sh
+         <-> runs/rNN_<author><year>_<paper>/result/
 ```
 
 Result is not a fifth level. It is the generated projection of the Level-4
@@ -62,7 +65,7 @@ inputs. Resume or retry that Run only while those identity fields remain
 unchanged. A material change always creates the superseding Run described above.
 
 The four prefixes are one global identity. For a local `r01_...` under
-`discoveries/b02_.../j03_.../t01_.../`, stamp both forms:
+`discovery/b02_.../j03_.../t01_.../`, stamp both forms:
 
 ```text
 compact   b02j03t01r01
@@ -79,7 +82,7 @@ This profile is the executable detail for the `d1.acquire` row in
 ```text
 ALLOWED    paper-analysis · source-analysis
 TARGET     exactly one resolved canonical Subject
-TICKET     executable runs/<RUNNAME>.sh, authored by the Discovery creator
+TICKET     executable runs/<RUNNAME>/<RUNNAME>.sh, authored by the Discovery creator
 INPUTS     Task Page question/type, frozen candidate-rule version, Trigger
            provenance, canonical Subject identity, and the path and version of
            any reusable instrument
@@ -139,8 +142,8 @@ worker, CLI, API, and skill calls belong in `runtime.yaml`; they are not Runs.
 Opening a Run creates BOTH projections immediately:
 
 ```text
-runs/<RUNNAME>.sh
-results/<RUNNAME>/runtime.yaml   # status: planned
+runs/<RUNNAME>/<RUNNAME>.sh
+runs/<RUNNAME>/result/runtime.yaml   # status: planned
 ```
 
 The ticket is executable. `runtime.yaml` uses one of:
@@ -155,9 +158,9 @@ authoritative Bib resolution failed after the Subject was known; it never means
 a Subject-free Trigger placeholder. A `complete` Result additionally requires:
 
 ```text
-results/<RUNNAME>/<RUNNAME>.md
-results/<RUNNAME>/<RUNNAME>.bib
-results/<RUNNAME>/facts.md
+runs/<RUNNAME>/result/<RUNNAME>.md
+runs/<RUNNAME>/result/<RUNNAME>.bib
+runs/<RUNNAME>/result/facts.md
 ```
 
 Completion hard-fails when:
@@ -169,7 +172,7 @@ Completion hard-fails when:
 - runtime omits `bib.source` or `bib.mode: verbatim_copy`;
 - runtime omits `family: discovery`, or `operation` does not match the Subject
   kind (`paper-analysis` for papers; `source-analysis` otherwise);
-- the Task path is not `discoveries/bNN_.../jNN_.../tNN_.../`, the Page stem
+- the Task path is not `discovery/bNN_.../jNN_.../tNN_.../`, the Page stem
   differs from the Task folder, or runtime omits/mismatches the full readable
   and compact BJTR address;
 - the Bib entry was composed from model memory rather than copied from a
@@ -438,7 +441,7 @@ python3 scripts/paper_bib_fetch.py \
   --title '<accepted title>' --expected-year <year> \
   --expected-first-author '<surname>' --expected-venue '<venue>' \
   --expected-doi '<publication DOI>' \
-  --result-dir <results/rNN_...>
+  --result-dir <runs/rNN_.../result>
 ```
 
 For a venue record without a DOI, omit `--expected-doi` and keep the accepted

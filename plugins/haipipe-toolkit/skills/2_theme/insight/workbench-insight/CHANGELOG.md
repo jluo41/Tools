@@ -1,3 +1,8 @@
+## 1.0.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 1.0.0 · 2026-10-08 · The insight theme on the shared frame (b11 s21 phase 2)
 
 - `SKILL.md` rewritten: the Board, a Job and a Task on the frame's six Spaces (s11 · s12 · s13); the Runs panel is

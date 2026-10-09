@@ -4,8 +4,8 @@ description: Search, download, and summarize academic papers from arXiv. Use whe
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "[query-or-arxiv-id]"
-  version: "0.1.2"
-  last_updated: "2026-09-22"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -19,7 +19,7 @@ Search topic or arXiv paper ID: $ARGUMENTS
 
 ## Constants
 
-- **PAPER_DIR** - Local directory to save downloaded PDFs. Default: `papers/` in the current project directory.
+- **PAPER_DIR** - Local directory to save downloaded PDFs. Default: `paper/` in the current project directory.
 - **MAX_RESULTS = 10** - Default number of search results.
 - **API** - inline Python against `http://export.arxiv.org/api/query` (search_query for keyword search, id_list for batch verification). No local script exists; do not hunt for one.
 
@@ -138,7 +138,7 @@ After each download:
 
 - Confirm file size > 10 KB (reject smaller files - likely an error HTML page)
 - Add a 1-second delay between consecutive downloads to avoid rate limiting
-- Report: `Downloaded: papers/2301.07041.pdf (842 KB)`
+- Report: `Downloaded: paper/2301.07041.pdf (842 KB)`
 
 ### Step 5: Summarize
 
@@ -156,7 +156,7 @@ For each paper (downloaded or fetched by API):
   - [contribution 1]
   - [contribution 2]
   - [contribution 3]
-- **Local PDF**: papers/[ID].pdf (if downloaded)
+- **Local PDF**: paper/[ID].pdf (if downloaded)
 ```
 
 ### Step 6: Update Research Wiki (if active)
@@ -175,7 +175,7 @@ if [ -d research-wiki/ ]:
 
 The helper handles metadata fetch, slug, dedup, page creation, index
 rebuild, and log append in a single call — **do not handwrite
-`papers/<slug>.md`**. See
+`paper/<slug>.md`**. See
 [`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md)
 for the canonical-helper rule. Missed ingests can be backfilled later
 with `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id1>,<id2>,...`.
@@ -185,7 +185,7 @@ with `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id1>,<id2>
 Summarize what was done:
 
 - `Found N papers for "query"`
-- `Downloaded: papers/2301.07041.pdf (842 KB)` (for each download)
+- `Downloaded: paper/2301.07041.pdf (842 KB)` (for each download)
 - `Wiki-ingested N papers` (if `research-wiki/` was present)
 - Any warnings (rate limit hit, file too small, already exists)
 

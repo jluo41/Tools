@@ -4,8 +4,8 @@ description: "model-fitting job specialist: scaffolds {NN}_<name>/ jobs that fit
 argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.4"
-  last_updated: "2026-09-21"
+  version: "0.1.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,7 +41,7 @@ What this scaffolds
 -------------------
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared code + config-defaults.yaml

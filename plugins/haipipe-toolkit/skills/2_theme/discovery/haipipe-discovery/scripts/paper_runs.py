@@ -234,6 +234,13 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
         if results_dir.is_dir()
         else {}
     )
+    if runs_dir.is_dir():                       # one folder per Run: runs/<run>/<run>.sh + result/
+        for folder in runs_dir.iterdir():
+            ticket = folder / f"{folder.name}.sh"
+            if folder.is_dir() and ticket.is_file():
+                runs[folder.name] = ticket
+                if (folder / "result").is_dir():
+                    results[folder.name] = folder / "result"
     return runs, results
 
 
@@ -368,8 +375,8 @@ def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
             errors.append(f"address-{level}-name-invalid: {path}")
         else:
             parts.append(match.group(1))
-    if bank.name != "discoveries":
-        errors.append(f"address-bank-invalid: {bank}: expected discoveries/")
+    if bank.name not in ("discovery", "discoveries"):          # discoveries/ is the older name (s01-D29)
+        errors.append(f"address-bank-invalid: {bank}: expected discovery/")
     if errors:
         return None, None, errors
     return ".".join(parts), "".join(parts), errors
@@ -755,9 +762,9 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
         if not RUN_RE.fullmatch(stem):
             errors.append(f"runname-invalid: {stem}")
     for stem in sorted(runs.keys() - results.keys()):
-        errors.append(f"missing-result: runs/{stem}.sh has no results/{stem}/")
+        errors.append(f"missing-result: {runs[stem].relative_to(topic)} has no Result")
     for stem in sorted(results.keys() - runs.keys()):
-        errors.append(f"orphan-result: results/{stem}/ has no runs/{stem}.sh")
+        errors.append(f"orphan-result: {results[stem].relative_to(topic)} has no ticket")
 
     for stem in sorted(runs.keys() & results.keys()):
         run_path = runs[stem]

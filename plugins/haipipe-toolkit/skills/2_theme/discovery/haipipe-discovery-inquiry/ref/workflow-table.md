@@ -56,7 +56,7 @@ worked route are in `../../haipipe-discovery/ref/bjtr-alignment.md`.
 
 | Object | Physical location or label | Owner | Cardinality / relation | Correct interpretation |
 |---|---|---|---|---|
-| Bank | discoveries/ | Discovery bank | many Blocks | Root collection; it is not a Block level |
+| Bank | discovery/ | Discovery bank | many Blocks | Root collection; it is not a Block level |
 | Block / Board | bNN_<block>/ + board.md | D1 + haipipe-page | contains Jobs/Groups | Discovery Board source; `board-kind: discovery-block`; generated `board/` is derived |
 | Job / Group | jNN_<job>/ | D1 + Board projection | contains Task Pages | Self-contained inquiry or campaign group; direct folder is the group identity |
 | Task Page / Page Folder | tNN_<task>/ | D1 + shared Page workflow | contains many Runs | One article-shaped question and one discovery_type; the Page Folder is the Board Page source |

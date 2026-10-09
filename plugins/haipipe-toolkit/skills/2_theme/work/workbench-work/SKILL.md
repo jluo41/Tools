@@ -7,16 +7,16 @@ description: >-
   generated question map), Task (one table per register group, a row per
   Question: Logic, Task Work, Report), Check and Delivery, each with the shared
   Runs panel, and the shared Guide with its Method page. Use for visual
-  tracking across one tasks/bNN_* Block and opening its Question reports.
+  tracking across one work/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-10-07"
+  version: "0.7.3"
+  last_updated: "2026-10-09"
 ---
 
 # Work Block Workbench (the work theme, once task)
 
-One `tasks/bNN_*/board.md` declaring `board-kind: task-block` opens one
+One `work/bNN_*/board.md` declaring `board-kind: task-block` opens one
 Workbench, drawn in the Insight Workbench's style (`servers/workbench-insight/`):
 the title alone in the header, the Block band, the Spaces Guide · Scope · Task ·
 Check · Delivery, every View opened by a heading and one lead line, and each

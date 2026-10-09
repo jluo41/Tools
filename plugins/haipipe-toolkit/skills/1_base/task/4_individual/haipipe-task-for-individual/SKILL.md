@@ -4,8 +4,8 @@ description: "individual-query job specialist: scaffolds {NN}_<name>/ jobs in th
 argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-04"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,7 +24,7 @@ What this scaffolds
 -------------------
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared code + config-defaults.yaml

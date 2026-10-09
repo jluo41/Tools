@@ -2,7 +2,7 @@ fn-scaffold: Scaffold an endpoint-packaging job
 ========================================================
 
 Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set (Stage 6) via `Endpoint_Pipeline`.
-Output: `tasks/bNN_<endpoint_block>/jNN_<endpoint_job>/tNN_<task>/`.
+Output: `work/bNN_<endpoint_block>/jNN_<endpoint_job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block

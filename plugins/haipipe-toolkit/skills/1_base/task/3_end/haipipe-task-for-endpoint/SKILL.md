@@ -3,8 +3,8 @@ name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-13"
+  version: "0.3.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,7 +41,7 @@ What this scaffolds
 -------------------
 
 ```
-tasks/bNN_<endpoint-block>/
+work/bNN_<endpoint-block>/
 └── jNN_<endpoint-job>/
     ├── t01_<task_name>/
     │   ├── t01_<task_name>.md       ← Page Face (`folder-kind: task`)

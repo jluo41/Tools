@@ -28,7 +28,7 @@ haifn      Production functions (GENERATED -- NEVER edit directly)
 The builder pattern bridges haipipe and haifn:
 
 ```
-tasks/bNN_<block>/jNN_<job>/tNN_<fn-task>/scripts/   <-- edit these (Academy)
+work/bNN_<block>/jNN_<job>/tNN_<fn-task>/scripts/   <-- edit these (Academy)
     |  run builder scripts
     v
 code/haifn/                    <-- auto-generated (DO NOT EDIT)
@@ -54,7 +54,7 @@ Kitchen  = Pipeline class         (code/haipipe/<layer>_base/)
 Chef     = Domain function (Fn)   (code/haifn/<fn_layer>/)     GENERATED
 Recipe   = YAML config file       (the Task's scripts/config/)
 Dish     = Set asset              (_WorkSpace/<N>-<Layer>Store/)
-Academy  = Builder scripts        (tasks/bNN_*/jNN_*/tNN_*/scripts/)
+Academy  = Builder scripts        (work/bNN_*/jNN_*/tNN_*/scripts/)
 ```
 
 The metaphor makes the roles unambiguous: you write the Recipe (config) and choose which Chefs (Fns) to use.
@@ -153,7 +153,7 @@ Discover at runtime (always prefer ls over relying on this snapshot):
 ls code/haipipe/          # core pipeline base classes
 ls code/hainn/            # ML models and predictors
 ls code/haifn/            # generated production functions
-ls examples/*/tasks/b*/j*/t*/scripts/   # builder Task scripts (per project)
+ls examples/*/work/b*/j*/t*/scripts/   # builder Task scripts (per project)
 ```
 
 Snapshot (as of 2026-02-21):
@@ -211,11 +211,11 @@ Current Builder Structure
 New builders live inside canonical BJTR Task Folders:
 
 ```bash
-ls examples/*/tasks/b*/j*/t*/scripts/    # all canonical Task script lanes
+ls examples/*/work/b*/j*/t*/scripts/    # all canonical Task script lanes
 ```
 
 ```text
-tasks/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/<builder>.py
+work/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/<builder>.py
 ```
 
 Where each Fn kind lives (rule and reasons: `haipipe-task/ref/hierarchy.md`
@@ -239,7 +239,7 @@ AIDataSet, which may merge several raw datasets, so it has its own number;
 the AIData Block is `b10`, not `b04`, so the numbers are never read as the
 same dataset (JL 260925). Task
 folders keep the real CamelCase Fn name (`t02_recordfn_REACHPatientUniverse`).
-Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/`.
+Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/`.
 
 ---
 
@@ -301,7 +301,7 @@ Rules.
 The following pre-BJTR tree is a legacy snapshot and remains readable only:
 
 ```
-examples/Project-REACH-ADHD/tasks/
+examples/Project-REACH-ADHD/work/
 +-- A01_data_pipeline_reachadhd/
 |   +-- 01_source_fn_develop_reachadhd/    SourceFn builders   (c<N>_build_source_*.py)
 |   +-- 02_record_fn_develop_reachadhd/    HumanFn + RecordFn builders
@@ -375,7 +375,7 @@ Current Config Structure
 Pipeline configs live INSIDE each pipeline task folder — there is no repo-root config/ directory:
 
 ```bash
-ls examples/*/tasks/b*/j*/t*/scripts/config/  # all pipeline Run configs
+ls examples/*/work/b*/j*/t*/scripts/config/  # all pipeline Run configs
 ls code/scripts/haistepconfig/            # framework reference templates ONLY
                                           # (never put real project configs here)
 ```

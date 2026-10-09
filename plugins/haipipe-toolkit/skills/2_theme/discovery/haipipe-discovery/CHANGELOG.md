@@ -8,6 +8,15 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.22.1 · 2026-10-09 · Theme folders are singular
+
+- `scripts/paper_runs.py` accepts a Task under `discovery/` (or the older `discoveries/`). Docs name `discovery/`.
+
+## 0.22.0 · 2026-10-09 · One folder per Run
+
+- `scripts/paper_result_build.py` writes `runs/<run>/result/` when the Run folder exists;
+  `scripts/paper_runs.py` pairs both layouts. `SKILL.md`, `ref/paper-run-contract.md` updated.
+
 ## 0.21.0 · 2026-10-02 · Logic-and-work readout; PubMed reads only the article's own ids
 
 - New optional Result file `logic-work.yaml`: the paper's own question, data, method, findings and contribution, written from an authored readout at `<task>/scripts/readouts/<run>/logic-work.yaml` that `scripts/paper_result_build.py` validates and copies when the ticket runs. Consumer-side reasons (why a paper is kept, which questions it bears on) stay with the consumer. Contract: `ref/paper-run-contract.md` § Logic and work readout. The Paper Workbench draws it inside each related-paper card (haipipe-workbench-paper 0.21.0).

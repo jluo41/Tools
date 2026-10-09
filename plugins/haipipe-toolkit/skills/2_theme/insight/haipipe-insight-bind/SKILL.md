@@ -11,8 +11,8 @@ description: >-
   /haipipe-insight-bind.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-01"
+  version: "0.2.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -25,7 +25,7 @@ first. Tickets and results follow `../haipipe-insight/ref/report.md`.
 
 One answering page (`<n>-<partition>/<L><NN>-<partition>-<slug>/`), the
 register rows of the questions its cells name, their agreed needs, and the
-Project's DIKW task Block (`tasks/b5N_<topic>_dikw/`).
+Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
 
 ## Steps
 

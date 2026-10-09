@@ -132,12 +132,12 @@ channels:
 acceptance: "identity, relevance, reading depth, and Bib requirements"
 status: requested | returned | blocked
 requested_at: "2026-09-07T12:00:00-04:00"
-discovery_task_path: "../../discoveries/bNN_.../jNN_.../tNN_..."
+discovery_task_path: "../../discovery/bNN_.../jNN_.../tNN_..."
 returned_results:
   - address: bNN.jNN.tNN.rNN
-    result_path: "../../discoveries/.../results/rNN_.../rNN_....md"
-    bib_path: "../../discoveries/.../results/rNN_.../rNN_....bib"
-    runtime_path: "../../discoveries/.../results/rNN_.../runtime.yaml"
+    result_path: "../../discovery/.../results/rNN_.../rNN_....md"
+    bib_path: "../../discovery/.../results/rNN_.../rNN_....bib"
+    runtime_path: "../../discovery/.../results/rNN_.../runtime.yaml"
     cite: "@CanonicalKey"
     status: complete | blocked | unresolved
 unresolved_gap: ""
@@ -291,7 +291,7 @@ selected_ideas:
     story_path: "Paper-Example/A1-Story/StoryA/StoryA.md"
     claim_ids: [c01]
     evidence_ids: [ext01]
-    feasibility_receipt_or_waiver: "tasks/.../results/.../runtime.yaml"
+    feasibility_receipt_or_waiver: "work/.../results/.../runtime.yaml"
     venue_fit_card: cards/venue-fit/i01_venue-fit.yaml
     intended_target: "Specialist journal"
     intended_category: "Original research"

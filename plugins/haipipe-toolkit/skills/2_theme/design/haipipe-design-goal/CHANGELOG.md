@@ -23,3 +23,9 @@
   Leave out), `key: value <- source` lines, `?` for a gap, `Task · <folder>` overrides.
 - One run type per Design Goal view, run by haipipe-designer-agent; the person signs
   the aim and the rules. Starts at the Design family version 0.4.0.
+
+## 0.4.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+

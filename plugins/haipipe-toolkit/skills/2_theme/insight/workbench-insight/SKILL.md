@@ -13,8 +13,8 @@ description: >-
   insight tab, insight Board tab, insight Job tab, insight Task tab, insight
   spaces on screen, /workbench-insight.
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-10-08"
+  version: "1.0.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,7 +30,7 @@ that came before (`/_board/insight-board`) is retired and redirects here; what i
 [`ref/old-page.md`](ref/old-page.md) and [`ref/insight-board.md`](ref/insight-board.md).
 
 ```text
-the link       /_board/workbench?path=<Project>/insights/Insight-<name>[/<Job>[/<Task>]]
+the link       /_board/workbench?path=<Project>/insight/Insight-<name>[/<Job>[/<Task>]]
 the server     servers/workbench-insight/insight_theme.py (the Theme) · insight_views.py (the three levels) ·
                insight_plan_c.py (reads the Board and its Prototype) · guide/guide.yaml (the Guide's words)
 the cards      haipipe-insight-workflow/ref/run-cards.md (one per button; scripts/run_cards.py --check)
@@ -54,7 +54,7 @@ Task      Question · Records           topics             Table · Reading     
 
 Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
 (`release.yaml`, `partitions.md`, each question's `question.md`), a Job's face and `reports/vs-<prev>.md`, a Task's
-page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Prototype in `tasks/`
+page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Prototype in `work/`
 opens in the work theme until a Prototype level is drawn (s21 lists its run types).
 
 

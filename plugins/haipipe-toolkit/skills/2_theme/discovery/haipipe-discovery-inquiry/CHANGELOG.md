@@ -1,3 +1,8 @@
+## 0.7.2 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.7.1 · 2026-09-22
 
 - Moved to the family root beside the door: every skill we wrote sits flat, the numbered folders hold vendored originals only. Relative links lost one `../`. The `workflow-phases/` name is retired; this controller declares runtime phase ownership from the root.

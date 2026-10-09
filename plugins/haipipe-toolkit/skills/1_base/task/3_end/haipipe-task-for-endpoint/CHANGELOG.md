@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.2] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.3.1] - 2026-09-28 - No content hashes (JL 260928)
 
 - AGENTS.md rule 9: `external_contract` has no `checksum` field (`SKILL.md`, `fn/scaffold.md`, `ref/config-seed.yaml`).

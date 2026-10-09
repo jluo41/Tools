@@ -8,8 +8,8 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.8.0"
-  last_updated: "2026-10-07"
+  version: "1.8.1"
+  last_updated: "2026-10-09"
 ---
 
 # /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
@@ -190,8 +190,8 @@ Evidence execution remains outside the Paper folder:
 
 ```text
 examples/<Project>/
-├── discoveries/<discovery-block>/      Discovery block + inquiry Results
-└── tasks/<task-block>/                 Task block + jobs + Run receipts
+├── discovery/<discovery-block>/      Discovery block + inquiry Results
+└── work/<task-block>/                 Task block + jobs + Run receipts
 ```
 
 The Story states research questions, bounded evidence interpretations and

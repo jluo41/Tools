@@ -83,7 +83,7 @@ def run_receipt(path):
     to LaTeX and Word). Returns (receipt path, status)."""
     path = Path(path)
     for folder in path.parents:
-        if folder.parent.name == "results":
+        if folder.parent.name == "results" or (folder.name == "result" and folder.parent.parent.name == "runs"):
             receipt = folder / "runtime.yaml"
             if not receipt.is_file():
                 return None

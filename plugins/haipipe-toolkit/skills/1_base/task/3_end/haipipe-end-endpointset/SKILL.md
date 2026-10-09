@@ -3,8 +3,8 @@ name: haipipe-end-endpointset
 description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package from Stage 5 to 6, local inference smoke test, structural review, and dashboard. Per-Fn-type design/review lives in haipipe-end specialists; deployment lives in haipipe-end-deploy specialists."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-09-13"
+  version: "0.2.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -163,7 +163,7 @@ New endpoint work uses canonical BJTR. A development Job owns one Task per Fn
 or gate; a packaging Job owns the Endpoint_Set task:
 
 ```
-tasks/bNN_<endpoint_block>/
+work/bNN_<endpoint_block>/
 ├── j01_endpoint_functions_<qualifier>/
 │   ├── t01_metafn_<qualifier>/
 │   ├── t02_trigfn_<qualifier>/

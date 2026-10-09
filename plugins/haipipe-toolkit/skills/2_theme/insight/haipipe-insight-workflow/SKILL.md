@@ -13,8 +13,8 @@ description: >-
   over. Trigger: what next, next Run, run card, gate, insight workflow, where
   does this Job stand, who owns this button, /haipipe-insight-workflow.
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-10-08"
+  version: "3.0.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

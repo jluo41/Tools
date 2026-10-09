@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.3] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.3.2] - 2026-10-03 - Project notes go in README.md
 
 - ref/stata-dialect.md: naming notes go in the project's `README.md`; the

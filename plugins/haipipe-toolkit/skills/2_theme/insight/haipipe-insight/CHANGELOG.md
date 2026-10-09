@@ -1,5 +1,10 @@
 # haipipe-insight · version history
 
+## 3.1.1 · 2026-10-09 · Theme folders are singular
+
+- `scripts/insight_ladder.py` accepts a Board under `insight/` (or the older `insights/`); usage names
+  `work/Prototype-…` and `insight/Insight-…`. Docs name the singular folders.
+
 ## 3.1.0 · 2026-10-08 · A release, from proposals to a signature (b11 s21 phase 3)
 
 - New `ref/release.md`: the life of a release (triage → open → ask · plan · script → review → cuts → sign),

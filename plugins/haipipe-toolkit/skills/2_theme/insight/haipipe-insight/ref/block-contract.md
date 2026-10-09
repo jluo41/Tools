@@ -22,7 +22,7 @@ code exists once.
 ## The Block
 
 ```text
-tasks/b5N_<topic>_dikw/
+work/b5N_<topic>_dikw/
 ├── board.md                    board-kind: task-block · workbench: insight
 │                               datasets: {<name>: <extract .parquet under the SPACE root>, …}
 ├── meta/

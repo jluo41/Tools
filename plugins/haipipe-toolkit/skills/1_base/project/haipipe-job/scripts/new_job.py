@@ -5,12 +5,15 @@
     python new_job.py task <job> --slug <task> --title '<title>' [--nn NN | --name <folder>]
                           [--kind page] [--answers Q01.E1] [--dry-run]
     python new_job.py check <job>
+    python new_job.py face <job> [--dry-run]
 
 `job` writes `jNN_<job>/jNN_<job>.md`, the Job's face, with an empty `## Tasks` list. `task` makes the
 next `tNN_<task>/` with a bare face (title, task-kind, answers) and adds it to the Job's `## Tasks`, in
 order; the Task is then built by haipipe-task. `--name` gives a theme's own folder name instead of
 jNN_ / tNN_ (a paper's version group or Section), which its Theme.level_patterns must match for the
-frame to read it. `check` compares the `## Tasks` list with the Task folders on disk.
+frame to read it. `check` compares the `## Tasks` list with the Task folders on disk. `face` writes the face of an existing
+Job (or, given a Task folder, a bare Task face listing its Runs) that has none, from what is on disk: its title from the folder name, goal and close left open, its Tasks
+in folder order with each Task face's own title, and a Job README.md (if any) carried into ## Topic.
 """
 from __future__ import annotations
 
@@ -109,6 +112,45 @@ def add_task(job: Path, slug: str, title: str, nn: int | None = None, name: str 
     return md
 
 
+def _title(md: Path) -> str:
+    """A face's own title: its first `# ` heading without a leading `tNN ·` / `jNN ·` label."""
+    for line in md.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.startswith("# "):
+            return re.sub(r"^[a-z]\d+\s*[·:-]\s*", "", line[2:].strip())
+    return ""
+
+
+def write_face(job: Path, dry_run: bool = False) -> Path | None:
+    """The face of an existing Job without one; None when it already has its face."""
+    md = job / f"{job.name}.md"
+    if md.is_file():
+        return None
+    if re.match(r"^t\d+_", job.name):              # an existing Task with no face: a bare face, as add_task writes
+        title = job.name.split("_", 1)[1].replace("_", " ")
+        runs = sorted(p.name for p in (job / "runs").iterdir() if p.is_dir()) if (job / "runs").is_dir() else []
+        lines = [f"# {job.name[:3]} · {title}", "", "state: open", "",
+                 "<Built by haipipe-task: its Task Page from the task kind's template.>", ""]
+        if runs:
+            lines += ["## Runs", ""] + [f"- `runs/{r}/`" for r in runs] + [""]
+        if not dry_run:
+            md.write_text("\n".join(lines), encoding="utf-8")
+        return md
+    m = re.match(r"^([a-z]\d+)_(.+)$", job.name)
+    label, title = (m.group(1), m.group(2).replace("_", " ")) if m else (job.name, job.name)
+    readme = job / "README.md"
+    topic = ""
+    if readme.is_file():
+        body = readme.read_text(encoding="utf-8", errors="replace").strip().splitlines()
+        topic = "\n".join(body[1:] if body and body[0].startswith("# ") else body).strip()
+    tasks = [f"{i}. {k.name} · {_title(k / (k.name + '.md')) or k.name}" for i, k in enumerate(kids(job), 1)]
+    lines = [f"# {label} · {title}", "", "goal: open", "close: open", "", "## Topic", "",
+             topic or "open: why these Tasks belong to one Job is not written yet.", "", "## Tasks", ""]
+    lines += tasks + [""]
+    if not dry_run:
+        md.write_text("\n".join(lines), encoding="utf-8")
+    return md
+
+
 def listed(text: str) -> list[str]:
     """The Task folder names the Job face's `## Tasks` list names, in its order."""
     m = re.search(r"(?ms)^## Tasks[ \t]*\n(.*?)(?=^## |\Z)", text)
@@ -149,8 +191,15 @@ def main() -> int:
             p.add_argument("--kind", default="", help="task-kind, e.g. page")
     p = sub.add_parser("check")
     p.add_argument("job", type=Path)
+    p = sub.add_parser("face")
+    p.add_argument("job", type=Path)
+    p.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     try:
+        if a.cmd == "face":
+            md = write_face(a.job, a.dry_run)
+            print(f"{a.job.name}: has its face" if md is None else ("would write " if a.dry_run else "") + str(md))
+            return 0
         if a.cmd == "check":
             found = check(a.job)
             print("\n".join(found) or f"{a.job.name}: ## Tasks and its Task folders agree")

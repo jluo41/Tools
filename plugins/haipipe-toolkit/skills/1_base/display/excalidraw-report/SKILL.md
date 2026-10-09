@@ -11,8 +11,8 @@ description: >-
   "draw it so we can think", "too structured", a report's picture, plots, /excalidraw-report.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-10-07"
+  version: "0.8.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 

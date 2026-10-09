@@ -1,3 +1,8 @@
+## 0.124.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.124.0 · 2026-10-07 · A Page Run's name carries no day (JL 261007)
 
 - `src/run_names.py`: the grammar is `run-<kind>-<slug>`; `mint()` no longer puts in the day (JL:

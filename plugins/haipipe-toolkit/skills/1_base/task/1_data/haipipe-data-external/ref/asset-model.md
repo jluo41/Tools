@@ -397,7 +397,7 @@ b51_<name>_externalstore/
                                 the SourceFn does, and checks it (t99_food_gallery)
   j48_external_base/            t01_unit_tests: tests of code/haipipe/external_base/
   j49_external_releases/           t01_release_<ReleaseName>, t99_release_gallery: span every asset
-tasks/_legacy/b51_snapshot_<tag>_<yymmdd>/   audit of a legacy @{tag} snapshot, read-only
+work/_legacy/b51_snapshot_<tag>_<yymmdd>/   audit of a legacy @{tag} snapshot, read-only
 ```
 
 A new version is a new Run in the asset's existing Task, never a new Task.

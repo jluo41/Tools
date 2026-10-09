@@ -17,7 +17,7 @@ Block   bNN_<topic>/    board.md           studio/ reports/ delivery/ resources/
 Job     jNN_<job>/      jNN_<job>.md       studio/ reports/ delivery/ src/ sbatch/      tNN_<task>/
                                            runs/ (soft Runs only)
 Task    tNN_<task>/     tNN_<task>.md      studio/ reports/ delivery/ scripts/ draft/   runs/<run>/
-                                           displays/ notebooks/ tests/ workflow/
+                                           displays/ notebooks/ tests/ workflow/ sbatch/
 Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ · passes/  pNN-<MMDD>/
 ```
 
@@ -52,7 +52,7 @@ levels:
       workflow: "workflow/ at a Job is not in the ladder"
   task:
     may_hold: [studio, reports, delivery, scripts, draft, displays, notebooks, tests, workflow,
-               runs, _old]
+               sbatch, runs, _old]                 # sbatch/: this Task's own supervisor (haipipe-task)
     debt:
       results: "old layout: results/<run>/ moves into runs/<run>/result/"
       diagram: "diagram/ is retired: drawings go in studio/"
@@ -81,6 +81,8 @@ families:
 
 checks:
   heavy_mb: 10                           # AGENTS rule 10: a Result is light
+  heavy_exempt:                          # a discovery Paper Run keeps its source PDF beside its Result,
+    discovery: [paper.pdf]               # only when project.yaml says visibility: private (JL 261009)
   absolute_path: '/(Users|home)/[^/\s]+/' # AGENTS rule 7
 ```
 
@@ -97,3 +99,6 @@ failed   a hard Run in a Page Task, a Job or a Block · a soft Run with result/ 
 debt     a missing face · the old runs/ + results/ layout · a dated soft name ·
          a Run with no run.yaml · a folder the ladder does not list (named in the finding)
 ```
+
+A moved Run's old receipt (its run.yaml names `moved_from:`) is history: the paths it recorded
+are not checked (JL 261009). Tickets, run.yaml and every receipt written since stay strict.

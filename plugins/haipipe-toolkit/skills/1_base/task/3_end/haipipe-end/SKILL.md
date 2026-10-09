@@ -3,8 +3,8 @@ name: haipipe-end
 description: "Run any Stage 6 endpoint work: routes intent to the right specialist across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging Endpoint_Sets, training a build, local inference tests, or deploying anywhere. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-13"
+  version: "0.2.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

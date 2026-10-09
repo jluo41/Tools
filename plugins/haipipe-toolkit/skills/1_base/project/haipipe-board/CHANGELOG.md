@@ -1,6 +1,11 @@
 haipipe-board · Changelog
 =========================
 
+## [2.0.1] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [2.0.0] · 2026-10-07 · The Block level (b03 s21)
 
 - The name returns for the Block level (JL 261007: "I think we should have the haipipe-board,

@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-trig
-description: "TrigFn specialist -- designs/reviews the trigger-detection function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references TrigFn, trigger detection, or `trig`."
+description: "TrigFn specialist -- design/reviews the trigger-detection function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references TrigFn, trigger detection, or `trig`."
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-08"
+  version: "0.1.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -97,5 +97,5 @@ code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← WellD
 
 Project-specific builders live in the task folder:
 ```
-examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn*.py
+examples/<project>/work/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn*.py
 ```

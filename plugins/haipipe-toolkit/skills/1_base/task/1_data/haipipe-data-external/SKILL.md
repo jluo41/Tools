@@ -10,8 +10,8 @@ description: >-
   engagement snapshot, vendor data.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.5"
-  last_updated: "2026-09-29"
+  version: "0.3.6"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

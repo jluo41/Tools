@@ -15,7 +15,7 @@ Run    rNN_<noun>_<qualifier>   one execution identity
 Read the four prefixes directly from the canonical path:
 
 ```text
-examples/<project>/tasks/b02_llm_runs/j01_physician_search/
+examples/<project>/work/b02_llm_runs/j01_physician_search/
   t03_claude_requests/scripts/config/r04_fold00_opus.yaml
 
 compact   b02j01t03r04
@@ -52,10 +52,13 @@ One Run's paths:
 
 ```text
 <task>/scripts/config/<run>.yaml
-<task>/runs/<run>.sh
-$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+<task>/runs/<run>/run.yaml
+<task>/runs/<run>/<run>.sh
+$OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml
 $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
+
+An older Run sits flat (`runs/<run>.sh` + `results/<run>/`) until haipipe-project `update` moves its Block.
 
 Every receipt stores both address spellings. Renaming descriptive words does
 not change the numeric identity; changing an index changes the address and

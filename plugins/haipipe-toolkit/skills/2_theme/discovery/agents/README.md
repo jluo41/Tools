@@ -20,7 +20,7 @@ Block -> Job -> Task Page -> Run; skill-family and Page-phase numbers stay
 orthogonal.
 
 ~~~text
-discoveries/ -> bNN_ Block -> jNN_ Job -> tNN_ Task Page -> rNN_ Run
+discovery/ -> bNN_ Block -> jNN_ Job -> tNN_ Task Page -> rNN_ Run
 compact address: bNNjNNtNNrNN
 ~~~
 

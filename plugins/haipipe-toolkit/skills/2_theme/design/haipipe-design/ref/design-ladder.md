@@ -19,7 +19,7 @@ The tree
 --------
 
 ```text
-designs/Design-<name>/                      Block: one application, one channel
+design/Design-<name>/                      Block: one application, one channel
 ├── board.md                                its face: board-kind: design-board · channel · spine · close
 │                                           ## Goals (```yaml goals:) · ## Questions (```yaml questions:)
 ├── design-goal.md                          the shared rules every goal keeps: rules: r<k> · signed: (haipipe-design-goal)

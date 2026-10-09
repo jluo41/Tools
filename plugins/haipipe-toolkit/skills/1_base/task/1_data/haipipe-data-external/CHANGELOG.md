@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.6] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.3.5] - 2026-09-29 - a contract field can say when it was added
 
 - `FieldSpec.since` (default 1) names the `contract_version` that added a field. A version built before it lacks the column and reads it as the field's default; a field without `since` stays required, and `since` above `contract_version` is refused (`code/haipipe/external_base/asset.py`, `providers/local_external_store.py`). Builds and `validate_asset.py` stay strict. Asked for by the food session so `ext_food_resolved` can gain `Sugar` without making S20260926 and S20260929 unreadable. `ref/asset-model.md` shows the form.

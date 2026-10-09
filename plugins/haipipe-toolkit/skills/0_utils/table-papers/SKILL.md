@@ -10,8 +10,8 @@ description: >-
   table papers, add a paper to the workbench, check the papers, /table-papers.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-03"
+  version: "0.1.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,7 +34,7 @@ venue      the journal, proceedings, publisher or site
 doi        the bare DOI (10.xxxx/...), or the https page of a work with none;
            empty only for a print-only book or report
 why here   one line: what the paper gives this workbench
-pdf        `papers/<file>.pdf` only when its license lets it be kept, else empty
+pdf        `paper/<file>.pdf` only when its license lets it be kept, else empty
 ```
 
 
@@ -90,7 +90,7 @@ Check
 
 It fails on an empty group, role, paper or why here; a role outside the four; a key that
 is not ★; a paper not in `Authors Year · Title` form; a doi that is neither a DOI nor an
-https page; a repeated DOI; a pdf missing on disk or missing from `papers/README.md`; and,
+https page; a repeated DOI; a pdf missing on disk or missing from `paper/README.md`; and,
 online, a DOI no registry knows or whose record has another title or year. A group with
 no ★ is a warning.
 

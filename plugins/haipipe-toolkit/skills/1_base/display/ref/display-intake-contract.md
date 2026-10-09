@@ -88,7 +88,7 @@ those values into the visual but must not calculate or infer them.
 The normal data route is deliberately small:
 
 ```text
-tasks/<holder>/results/<run>/source_data.csv
+work/<holder>/results/<run>/source_data.csv
         │
         ├── task keeps the canonical aggregate and provenance.json
         ▼

@@ -9,8 +9,8 @@ description: >-
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-09-20"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -179,7 +179,7 @@ Reuses
 - `haipipe-individual-inference` for `load_patient_ctx`, `build_payload`, `client.call_predict`
 - `haipipe-end-deploy-local` for the prediction endpoint
 - `claude_agent_sdk` for the LLM call (subprocess of `claude` CLI)
-- Pattern reference: `Physician-SPACE/.../tasks/A3_cross_family_judge/run_sdk_judge.py`
+- Pattern reference: `Physician-SPACE/.../work/A3_cross_family_judge/run_sdk_judge.py`
 
 `make_report_cli.py` accepts `--workspace-root` and `--platform`; select the deployed
 wire pair even for a local wrapper. `meta.json` binds forecast.json and report.json

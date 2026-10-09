@@ -108,7 +108,7 @@ the SPACE root:
 ```bash
 page() { .venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-page/cli/page.py "$@"; }   # bash and zsh
 for d in examples*; do page check-page-folder "$d"; done   # every Page in the SPACE: latest or behind
-page draft-layout <root> --sort-runs --archive-evidence --dry-run   # <root> = a Board, a paper, or tasks/
+page draft-layout <root> --sort-runs --archive-evidence --dry-run   # <root> = a Board, a paper, or work/
 page draft-layout <root> --sort-runs --archive-evidence
 page run-names <root>/<group>/*                        # every Page: readable run names, flat runs/
 page check-page-folder <root>                        # behind only where Evidence work is left

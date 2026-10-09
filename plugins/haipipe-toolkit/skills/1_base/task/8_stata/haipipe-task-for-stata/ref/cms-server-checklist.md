@@ -51,17 +51,17 @@ ENV-nn   the SERVER itself: Stata, PowerShell, the filesystem.
 ALL-nn   the .ps1 runner + config shape. The same shape sits in EVERY
          task folder, so an ALL fix is a sweep, not one edit.
 
-A11-nn   tasks/A11_CMS-pipeline
-C01-nn   tasks/C01_CaseData_TraitOpioid
-C02-nn   tasks/C02_CaseData_TraitDiabetes
-R01-nn   tasks/R01_Reg_TraitOpioid
-R02-nn   tasks/R02_Reg_TraitDiabetesNDC
+A11-nn   work/A11_CMS-pipeline
+C01-nn   work/C01_CaseData_TraitOpioid
+C02-nn   work/C02_CaseData_TraitDiabetes
+R01-nn   work/R01_Reg_TraitOpioid
+R02-nn   work/R02_Reg_TraitDiabetesNDC
 ```
 
 Four rules make it work:
 
 1. **The prefix is the folder's own index**, verbatim, not an abbreviation
-   invented for the register. `R01-07` and `tasks/R01_Reg_TraitOpioid` are
+   invented for the register. `R01-07` and `work/R01_Reg_TraitOpioid` are
    the same string. A folder with no issues has no prefix yet.
 2. **Every id is exactly 6 characters.** Column tables in these files are
    hand-aligned, so a variable-width id silently ruins every one of them.
@@ -80,7 +80,7 @@ Four rules make it work:
 **When a new failure appears**: add one register line, give it the owning
 folder's prefix and the next free counter, then add the `[ID]` citation at
 the line of code that causes it. If a static rule can catch it, add that
-rule to `tasks/_tools/check_server_ready.py` and put the rule id in the
+rule to `work/_tools/check_server_ready.py` and put the rule id in the
 register's `gate` column. An issue with no gate is one only a person can
 find, and the register counts those on purpose.
 
@@ -374,7 +374,7 @@ The full three-gate flow:
   4. Package: ship-to-cms-server.ps1
      (code only, no data)
          |
-  5. --------[ hand-copy zip ]--------------->  6. Unzip into tasks/
+  5. --------[ hand-copy zip ]--------------->  6. Unzip into work/
                                                 7. Edit $stata path (D1)
                                                 8. Run: powershell run_*.ps1
                                                       -cfg cms_production

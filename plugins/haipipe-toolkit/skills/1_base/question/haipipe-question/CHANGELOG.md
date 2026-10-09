@@ -1,6 +1,11 @@
 haipipe-question — Changelog
 ============================
 
+## [0.6.1] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.6.0] — 2026-10-07
 
 - The report moved to `haipipe-report` (b03 s21; JL 261007: "haipipe-report … to define the

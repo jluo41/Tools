@@ -228,7 +228,7 @@ ls _WorkSpace/ExternalStore/<asset>/                  # asset.yaml + versions
 cat _WorkSpace/ExternalStore/<asset>/asset.yaml
 cat _WorkSpace/ExternalStore/<asset>/<version>/version.yaml
 ls _WorkSpace/ExternalStore/_releases/
-ls examples*/*/tasks/b51_*/j*_asset_*/                # asset build Jobs
+ls examples*/*/work/b51_*/j*_asset_*/                # asset build Jobs
 ```
 
 For the canonical catalog (asset name, primary key, source, columns), see ref/asset-catalog.md.

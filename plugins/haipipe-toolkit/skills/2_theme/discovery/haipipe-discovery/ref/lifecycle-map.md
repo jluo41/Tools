@@ -16,7 +16,7 @@ PAGE WORKFLOW   00 CONTEXT -> 01 OUTLINE -> 02 EVIDENCE -> 03 CONTENT -> 04 CHEC
 DISCOVERY TYPE  one article form from page-types.md
 ```
 
-`discoveries/` is the bank/root and has no address segment. Hierarchy says
+`discovery/` is the bank/root and has no address segment. Hierarchy says
 WHERE the unit lives. Workflow says WHEN work happens.
 Discovery Type says WHAT article the root Page promises. Never use phase names
 or types as folder levels, or worker calls as Paper Runs.
@@ -24,7 +24,7 @@ or types as folder levels, or worker calls as Paper Runs.
 ## Hierarchy
 
 ```text
-discoveries/                                  bank, not Block
+discovery/                                  bank, not Block
 └── b01_<noun>_<qualifier>/                   Block: broad evidence Board/program
     ├── j01_<noun>_<qualifier>/               Job: inquiry/campaign group
     └── j02_<noun>_<qualifier>/               sibling group on the same Board
@@ -43,10 +43,10 @@ a fifth hierarchy level. Full contract: `paper-run-contract.md`.
 The Block is a Board as soon as it exists. The source/projection split is:
 
 ```text
-discoveries/b01_<block>/board.md      authored Board head
-discoveries/b01_<block>/jNN_*/        Board Groups / Jobs
-discoveries/b01_<block>/jNN_*/tNN_*/  Board Pages / Task Folders
-discoveries/b01_<block>/board/        generated Board site
+discovery/b01_<block>/board.md      authored Board head
+discovery/b01_<block>/jNN_*/        Board Groups / Jobs
+discovery/b01_<block>/jNN_*/tNN_*/  Board Pages / Task Folders
+discovery/b01_<block>/board/        generated Board site
 ```
 
 `board.md` declares `board-kind: discovery-block`, `spine:`, `close:`, Topic,

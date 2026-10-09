@@ -41,7 +41,7 @@ readers to maintain a translation table.
 
 ## N4 — siblings are unique
 
-Block names are unique in `tasks/`; Job names are unique within a Block; Task
+Block names are unique in `work/`; Job names are unique within a Block; Task
 names are unique within a Job; Run names are unique within a Task. Cross-Job
 references use full relative paths or full b/j/t/r addresses.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.1.0 · 2026-10-03 · The shared Related Paper rule (JL 261003)
 
 - The eight-column table the Design and Insight workbenches already kept, written down as

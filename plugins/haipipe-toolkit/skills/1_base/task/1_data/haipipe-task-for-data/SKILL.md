@@ -3,8 +3,8 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-25"
+  version: "0.9.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,7 +23,7 @@ What this scaffolds
 -------------------
 
 ```
-tasks/bNN_<block>/
+work/bNN_<block>/
 └── jNN_<job>/
     ├── src/                               shared by two or more Tasks
     └── tNN_<task>/
@@ -136,7 +136,7 @@ SourceFn Block pattern
 Source is Block `b01` (see `haipipe-task/ref/hierarchy.md` § Block number
 ranges). Its output is `ProcName_to_ProcDf`: one table (ProcDf) per ProcName.
 Reference implementation: REACH-SPACE
-`examples/Project-REACH-PD2D/tasks/b01_sourcestore/` (one dataset) and WellDoc-SPACE
+`examples/Project-REACH-PD2D/work/b01_sourcestore/` (one dataset) and WellDoc-SPACE
 `examples-1-data/Proj01-CGM-RawData/tasks/b01_sourcestore/` (11 datasets, five
 topic Jobs, a fixed card number per ProcName `t11`-`t26`, cross-dataset checks
 in `j49_procdf_coverage`; migrated 260923).

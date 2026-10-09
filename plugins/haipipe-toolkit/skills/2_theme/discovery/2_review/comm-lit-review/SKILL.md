@@ -9,8 +9,8 @@ description: >-
   first, then IEEE Xplore, ScienceDirect, ACM DL, and the web.
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-22"
+  version: "0.1.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -40,7 +40,7 @@ If the center of gravity is generic ML architecture research, pure control theor
 ## Constants
 
 - **PAPER_LIBRARY**: Check local PDFs in this order:
-  1. `papers/` in the current project
+  1. `paper/` in the current project
   2. `literature/` in the current project
   3. Custom path specified by the user in `CLAUDE.md` under `## Paper Library`
 - **MAX_LOCAL_PAPERS = 20**: Maximum number of local PDFs to scan. If there are more, prioritize by filename and first-page relevance.
@@ -78,7 +78,7 @@ This is a knowledge-base-first skill. Search in this order unless the user overr
 
 1. `Zotero`
 2. `Obsidian`
-3. local `papers/` and `literature/`
+3. local `paper/` and `literature/`
 4. `IEEE Xplore`
 5. `ScienceDirect`
 6. `ACM Digital Library`
@@ -197,7 +197,7 @@ If available:
 
 Run this step if `local` is enabled.
 
-1. locate PDFs from `papers/**/*.pdf` and `literature/**/*.pdf`
+1. locate PDFs from `paper/**/*.pdf` and `literature/**/*.pdf`
 2. de-duplicate against Zotero hits when possible
 3. read the first pages of relevant PDFs
 4. extract title, authors, year, problem, method, and relevance

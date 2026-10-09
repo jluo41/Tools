@@ -16,7 +16,7 @@ Kitchen  = Case_Pipeline class        (code/haipipe/case_base/)
 Chef     = TriggerFn + CaseFn         (code/haifn/fn_case/)  GENERATED
 Recipe   = YAML config file           (the Task's scripts/config/)
 Dish     = CaseSet asset              (_WorkSpace/3-CaseStore/)
-Academy  = Builder scripts            (tasks/bNN_*/jNN_*/tNN_<casefn>/scripts/)
+Academy  = Builder scripts            (work/bNN_*/jNN_*/tNN_<casefn>/scripts/)
 ```
 
 
@@ -230,8 +230,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_case/fn_trigger/
 ls code/haifn/fn_case/case_casefn/
-find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*trigger*.py'
-find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*case*.py'
+find examples -path '*/work/b*/j*/t*/scripts/*' -name '*trigger*.py'
+find examples -path '*/work/b*/j*/t*/scripts/*' -name '*case*.py'
 ```
 
 
@@ -345,7 +345,7 @@ Fn loaders:           code/haipipe/case_base/builder/triggerfn.py
                       code/haipipe/case_base/builder/rotools.py
 Generated TriggerFns: code/haifn/fn_case/fn_trigger/      (discover with ls)
 Generated CaseFns:    code/haifn/fn_case/case_casefn/     (discover with ls)
-Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<casefn>/scripts/
+Builders (edit here): examples/<Project>/work/bNN_<block>/jNN_<job>/tNN_<casefn>/scripts/
                       (legacy workspaces: code-dev/1-PIPELINE/3-Case-WorkSpace/)
 Store path:           _WorkSpace/3-CaseStore/
 Config template:      ../templates/config.yaml (this skill's own template)

@@ -1,3 +1,8 @@
+## 0.28.2 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.28.1 · 2026-10-07 · The Guide lives with the server (JL 261007, via b02)
 
 - Guide's files moved from this skill's `ref/` to `servers/workbench-labeling/`: `guide/guide.yaml`

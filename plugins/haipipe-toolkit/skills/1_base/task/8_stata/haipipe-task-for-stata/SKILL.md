@@ -4,8 +4,8 @@ description: "Unified Stata-engine job specialist: handles all 4 stages internal
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [job]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-08-29"
+  version: "0.3.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -73,7 +73,7 @@ Stage: cms
 **What this scaffolds:**
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared libraries + config-defaults.do
@@ -102,7 +102,7 @@ Stage: case
 **What this scaffolds:**
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared libraries + config-defaults.do
@@ -133,7 +133,7 @@ Stage: data
 **What this scaffolds:**
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared libraries + config-defaults.do
@@ -166,7 +166,7 @@ Stage: reg
 **What this scaffolds:**
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared libraries + config-defaults.do

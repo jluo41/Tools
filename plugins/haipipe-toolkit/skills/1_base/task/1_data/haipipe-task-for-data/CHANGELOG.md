@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.9.1] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.9.0] - 2026-09-29 - Reviews carry no commit id (JL 260929)
 
 - A new Job writes a fresh `CODE_REVIEW.md` without a commit id; a copied review says nothing about the new code.

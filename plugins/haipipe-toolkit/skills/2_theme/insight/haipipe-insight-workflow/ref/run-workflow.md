@@ -102,7 +102,7 @@ run_specs:
     owner: haipipe-task
     run_type: task.run
     target: {ticket: 2-alpha/I03-alpha-<slug>/runs/run_b5Nj21t01r02_alpha_rates.sh,
-             calls: tasks/<b5N_topic_dikw>/j21_information_<topic>/t01_rates/runs/r02_<dataset>_alpha.sh,
+             calls: work/<b5N_topic_dikw>/j21_information_<topic>/t01_rates/runs/r02_<dataset>_alpha.sh,
              answers: [QI1, QI2, QI3]}
     actor: person-presses-run
     inputs: [{path: <the board's ONE extract>, version: <manifest end date>}]
@@ -162,7 +162,7 @@ runs:
     run_type: task.run
     owner: haipipe-task
     participation: reused
-    target: {calls: <tasks/b5N_topic_dikw/j21_information_<topic>/t01_rates>/runs/r02_<dataset>_alpha.sh, answers: [QI1, QI2, QI3]}
+    target: {calls: <work/b5N_topic_dikw/j21_information_<topic>/t01_rates>/runs/r02_<dataset>_alpha.sh, answers: [QI1, QI2, QI3]}
     consumers: [{question: QI3, partition: alpha}]
     status: complete
     ticket: 2-alpha/I03-alpha-<slug>/runs/run_b5Nj21t01r02_alpha_rates.sh

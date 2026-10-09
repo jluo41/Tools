@@ -12,8 +12,8 @@ Two ways to run it; same instrumentation underneath (`endpoint_set.inference(pay
 
 For a DURABLE, versioned profile (tracked across model releases, or to A/B a vectorization fix), scaffold a durable task instead via `/haipipe-task-for-endpoint` (profiling folded into the endpoint domain) (task) — same breakdown, recorded as `results/<run>/latency.json`.
 Preferred placement: co-locate it in the project's ENDPOINT group as a sibling of the endpoint-build task (e.g.
-`tasks/C_endpoint/C2_inference_profile/` next to `C1_endpoint/`), so the group owns build → profile.
-Real example: `<project>/tasks/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
+`work/C_endpoint/C2_inference_profile/` next to `C1_endpoint/`), so the group owns build → profile.
+Real example: `<project>/work/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
 
 
 Procedure (local)

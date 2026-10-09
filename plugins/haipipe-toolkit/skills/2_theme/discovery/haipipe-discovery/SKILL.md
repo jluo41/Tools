@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-10-02"
+  version: "0.22.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -145,11 +145,11 @@ When an older 0/1/2/3 or 1/2/3/4 description is encountered, use
 capability families or workflow records without turning them into Block, Job,
 Task, or Run folders.
 
-`discoveries/` is the bank, not a Block. Every address-bearing level uses the
+`discovery/` is the bank, not a Block. Every address-bearing level uses the
 same grammar: `<level-letter><NN>_<noun>_<qualifier>`.
 
 ~~~text
-discoveries/
+discovery/
 └── b01_<block_noun>_<qualifier>/      Block: broad Board/program; prefer few
     ├── board.md                       Board head; `board-kind: discovery-block`
     ├── j01_<job_noun>_<qualifier>/    Job: one inquiry/campaign group
@@ -162,9 +162,9 @@ discoveries/
             │       └── bibex/t01_<...>.bib        derived CITE aggregate
             ├── workflow/                          namespaced D1 + Page-phase receipts
             ├── scripts/                           optional instrument
-            ├── runs/r01_<author><year>_<paper>.sh  D1 Discovery Run
+            ├── runs/r01_<author><year>_<paper>/r01_<author><year>_<paper>.sh  D1 Discovery Run
             │       (Page-owned rpNN records may share this lane)
-            ├── results/r01_<author><year>_<paper>/  D1 Result
+            ├── runs/r01_<author><year>_<paper>/result/  D1 Result
             │       (Page-owned rpNN Results are not D1 inventory)
             └── summary.md | verdict.md | landscape.md
 ~~~
@@ -218,7 +218,7 @@ Versions, Steps, Bullets, and acceptance; they are not Discovery Runs, do not
 enter `R_discovery`, and must never be renamed as `rNN`.
 
 The Runs workbench is required once a Task Page owns any Paper Run. Discovery uses
-the exact `rNN` `runs/<RUNNAME>.sh <-> results/<RUNNAME>/` pair inside the
+the exact `rNN` `runs/<RUNNAME>/<RUNNAME>.sh <-> runs/<RUNNAME>/result/` pair inside the
 shared Page lanes; Page-owned `rpNN` records/results may coexist there but are
 presented and validated by the Page workflow. `scripts/` stays optional and
 appears only as supporting material. Runs presents these artifacts but owns no lifecycle. The Outline
@@ -231,7 +231,7 @@ separate Bibex workbench.
 1. One Run analyzes exactly one resolved canonical Subject, normally one paper.
 2. Trigger explains why work started; Subject owns RUNNAME and the authoritative
    Bib. One Trigger may resolve to zero, one, or many Subjects.
-3. runs/<RUNNAME>.sh and results/<RUNNAME>/ are an exact 1:1 same-stem pair.
+3. runs/<RUNNAME>/<RUNNAME>.sh and runs/<RUNNAME>/result/ are an exact 1:1 same-stem pair.
    Opening a Run creates both, with runtime status planned.
 4. A complete Result requires <RUNNAME>.md, facts.md, runtime.yaml, and an
    exactly-one-entry <RUNNAME>.bib whose key equals the Card's cite: @Key.
@@ -341,8 +341,8 @@ bound. Never mint an umbrella Discovery Run for Page synthesis or writing.
 
 ### 0. Resolve scope
 
-Find the nearest project root containing tasks/, paper/, applications/, or
-_haipipe/. Under its `discoveries/` bank, a Block owns Jobs, a Job owns Task
+Find the nearest project root containing work/, paper/, applications/, or
+_haipipe/. Under its `discovery/` bank, a Block owns Jobs, a Job owns Task
 Pages, and a Task contains `discovery.yaml`. Detect existing units by structure,
 but every new address must pass the explicit b/j/t/r naming gate.
 
@@ -366,7 +366,7 @@ Every canonical Discovery Block carries `board.md` with
 `board-kind: discovery-block`. This declaration selects the shared BJTR projection:
 Block = Board, Job = Group, Discovery Task = Page, and Paper/Source Run =
 execution record. SPACE Home classifies the resulting container as a Discovery
-Board from its `discoveries/` ownership path. The `## Pages` section may list
+Board from its `discovery/` ownership path. The `## Pages` section may list
 only Job headings because the direct `jNN_/tNN_` tree supplies membership and
 default Task order. Run `scripts/board_sync.py` after opening the Block, Job,
 or Task so the source head and generated projection remain current.
@@ -393,8 +393,8 @@ runtime receipt. For every admitted canonical Subject:
 
 ~~~text
 allocate rNN_authorYEAR_slug
-write executable runs/<RUNNAME>.sh
-write results/<RUNNAME>/runtime.yaml with status: planned
+write executable runs/<RUNNAME>/<RUNNAME>.sh
+write runs/<RUNNAME>/result/runtime.yaml with status: planned
 stamp address: bNN.jNN.tNN.rNN and address_compact: bNNjNNtNNrNN
 ~~~
 

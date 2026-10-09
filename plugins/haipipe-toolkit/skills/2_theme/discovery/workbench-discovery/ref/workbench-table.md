@@ -7,7 +7,7 @@ its Questions, its links and its drawings; Work finds and reads the papers, one 
 each, and writes each Task's synthesis and the Questions' reports; Check reads every Run
 receipt and which citations still need a person; Delivery holds the answered reports and
 the Block's BibTeX. Folder is where the run writes: `Block ›` is the Block folder
-(`discoveries/bNN_<block>/`), `Tools ›` the workbench's server folder (`servers/workbench-discovery/`); `none` writes no file,
+(`discovery/bNN_<block>/`), `Tools ›` the workbench's server folder (`servers/workbench-discovery/`); `none` writes no file,
 only a verdict.
 
 Agents are the Discovery family's own (`skills/2_theme/discovery/agents/`): the orchestrator

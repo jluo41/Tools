@@ -10,3 +10,9 @@
   method-sha), run-propose-method-<slug>, run-add-observed-e<NN>, run-score-e<NN> (`scripts/score_exp.py`).
 - `ref/scorecard.md`: observed/eNN, scores.csv, the sum per method version.
 - `tests/test_method_registry.py`.
+
+## 0.4.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+

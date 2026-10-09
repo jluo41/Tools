@@ -6,7 +6,7 @@ replaces the other. Level-4 Run inventory is derived from `runs/` and
 `results/`, never copied into YAML.
 
 ```text
-discoveries/                                  bank
+discovery/                                  bank
 └── b01_<noun>_<qualifier>/                   Block
     ├── board.md                               Discovery Board head
     └── j01_<noun>_<qualifier>/               Job
@@ -22,7 +22,7 @@ discoveries/                                  bank
             └── summary.md | verdict.md | landscape.md
 ```
 
-Every new name uses `<level-letter><NN>_<noun>_<qualifier>`. `discoveries/` is
+Every new name uses `<level-letter><NN>_<noun>_<qualifier>`. `discovery/` is
 not a Block. The path is the identity: `b01j01t01r01` compact and
 `b01.j01.t01.r01` readable. A bare `01_` at any addressed level is invalid.
 
@@ -188,7 +188,7 @@ migration Pages and preserves their human-edited title line.
 ## Skeleton
 
 ```yaml
-# path: discoveries/b01_rare_phenotype_lift/j02_adaptive_sampling_prior_art/t01_adaptive_sampling_verdict/
+# path: discovery/b01_rare_phenotype_lift/j02_adaptive_sampling_prior_art/t01_adaptive_sampling_verdict/
 version: 6
 kind: discovery
 address: b01.j02.t01

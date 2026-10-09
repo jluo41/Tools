@@ -75,15 +75,15 @@ adopt it in place; never recreate or copy it:
 
 ## Nested Paper repositories
 
-A Paper may be a submodule inside `papers/`. Its pointer is owned by the
+A Paper may be a submodule inside `paper/`. Its pointer is owned by the
 Project repository, then the Project pointer is owned by the workspace:
 
 ```text
 paper commit → Project pointer commit → workspace pointer commit
 ```
 
-Never move an existing nested Paper from legacy `paper/` during routine setup
-or update; record that path as migration debt first.
+A nested Paper under an older `papers/` moves to `paper/` only with the Project's Theme rename
+(`scripts/rename_themes.py`, which moves submodules with `git mv`), never in routine setup.
 
 ## Verify and return
 

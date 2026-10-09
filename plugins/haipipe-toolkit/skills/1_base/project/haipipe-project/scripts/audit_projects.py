@@ -17,16 +17,21 @@ SCHEMA = "haipipe-project/v1"
 PROFILES = {"research", "software", "hybrid"}
 GIT_MODES = {"workspace", "submodule"}
 STATES = {"active", "paused", "archived"}
+# Theme folders are singular (s01-D28, s01-D29, JL 261007); the same table as haipipe-page
+# src/themes.py. An old plural folder is "rename pending" debt until its Project moves.
 WORLD_DIRS = {
-    "tasks",
-    "discoveries",
+    "work",          # computational Blocks (haipipe-task); was tasks/
+    "discovery",     # external-evidence Blocks (haipipe-discovery); was discoveries/
     "cowork",        # coordination text + project Boards; diagram/ retired 261003 (declared debt)
-    "papers",
-    "insights",      # older register-kind <Dataset>-InsightBoard/ (new Insight work: a tasks/ Block)
-    "designs",
-    "labelings",     # labeling Blocks; a Job is one dataset with one label (JL 261005)
+    "paper",         # paper Boards (haipipe-paper); was papers/
+    "insight",       # Insight Boards (haipipe-insight); was insights/
+    "design",        # Design boards (haipipe-design); was designs/
+    "labeling",      # labeling Blocks; a Job is one dataset with one label (JL 261005); was labelings/
+    "ideation",      # Ideation directions, bNN/jNN/tNN without Runs (haipipe-ideation); was ideations/
     "external",      # applications/ is legacy since 261001: migration debt, not a world
 }
+OLD_WORLD_DIRS = {"tasks": "work", "discoveries": "discovery", "papers": "paper", "insights": "insight",
+                  "designs": "design", "labelings": "labeling", "ideations": "ideation"}
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
 # cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
 COWORK_BLOCK_DIRS = {"studio", "reports", "_old"}
@@ -206,6 +211,9 @@ def audit(project: Path) -> Result:
         if entry.is_dir() and not entry.name.startswith(".")
     }
 
+    pending = sorted(root_dirs & set(OLD_WORLD_DIRS))   # rename pending: <old>/ → <new>/ (s01-D29)
+    root_dirs -= set(OLD_WORLD_DIRS)
+
     for name in sorted(root_dirs - allowed):
         if name in declared_legacy:
             debts.append(name)
@@ -221,6 +229,7 @@ def audit(project: Path) -> Result:
     migration_status = str(manifest.migration.get("status", "")).strip()
     if debts and migration_status not in {"needed", "planned"}:
         errors.append("existing legacy paths require migration.status")
+    debts.extend(f"{name} → {OLD_WORLD_DIRS[name]} (rename pending)" for name in pending)
     if migration_status in {"needed", "planned"} and not declared_legacy:
         errors.append("migration.status requires legacy_paths")
 
@@ -249,7 +258,7 @@ def project_paths(args: argparse.Namespace) -> Iterable[Path]:
 
 
 def cell(result: Result) -> str:
-    details = [*result.errors, *[f"legacy: {item}/" for item in result.debts]]
+    details = [*result.errors, *[(f"legacy: {item}/" if "rename pending" not in item else item) for item in result.debts]]
     return "; ".join(details) if details else "—"
 
 

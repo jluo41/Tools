@@ -204,7 +204,7 @@ Builder Pattern
 <builder-dir>/c1_build_postfn_{description}.py
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (work/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 

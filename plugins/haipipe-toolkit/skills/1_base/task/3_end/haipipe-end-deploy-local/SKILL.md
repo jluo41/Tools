@@ -4,8 +4,8 @@ description: "Local self-hosted deploy specialist for haipipe-end: wraps an Endp
 argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.4"
-  last_updated: "2026-07-08"
+  version: "0.1.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -135,7 +135,7 @@ Deploy (FastAPI):
        POST /invocations  — accepts the Endpoint_Set's documented payload
                             (typically `dataframe_records` per Input2SrcFn)
   3. Invocation (from the job copy):
-       cp <skill>/scripts/serve_local.py tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/
+       cp <skill>/scripts/serve_local.py work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/
        ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
        PORT=8765 \
            python serve_local.py

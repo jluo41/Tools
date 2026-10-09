@@ -1,7 +1,7 @@
 # task
 
 `task/` owns executable Task Folders and their Plan → Build → Execute → Report lifecycle.
-The hierarchy is `tasks/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs.
+The hierarchy is `work/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs.
 A Workflow is a list of Runs: `run_specs` defines them, routes form the execution graph,
 and reports bind actual Run Instances to definitions and durable receipts.
 Internal Steps, review gates, and the four lifecycle commands do not allocate Runs.

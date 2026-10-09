@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.2.0 · 2026-10-04
 
 - Jobs (JL 261004: "we should have the job, otherwise the work is hard to do"): a Block

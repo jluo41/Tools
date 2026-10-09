@@ -1,5 +1,10 @@
 # label-building · CHANGELOG
 
+## 0.8.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.8.0 · 2026-10-07
 
 Folded in the Building step-order guide (haipipe-labeling-building-workflow, JL 261007):

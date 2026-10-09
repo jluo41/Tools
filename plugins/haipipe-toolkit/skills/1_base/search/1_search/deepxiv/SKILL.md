@@ -4,8 +4,8 @@ description: Search and progressively read open-access academic papers through D
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "[query-or-paper-id]"
-  version: "0.1.2"
-  last_updated: "2026-09-22"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -213,7 +213,7 @@ if [ -d research-wiki/ ]:
 ```
 
 The helper handles metadata / slug / dedup / page / index / log in one
-call — **do not handwrite `papers/<slug>.md`**. See
+call — **do not handwrite `paper/<slug>.md`**. See
 [`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md).
 Backfill missed ingests with
 `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id1>,<id2>,...`.

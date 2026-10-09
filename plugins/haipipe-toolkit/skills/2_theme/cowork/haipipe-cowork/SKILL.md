@@ -10,8 +10,8 @@ description: >-
   coordination belongs to. Trigger: cowork, cowork block, job, ticket, who are we
   waiting on, open a job, update a job, checklist, who to ask, /haipipe-cowork.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-04"
+  version: "0.2.1"
+  last_updated: "2026-10-09"
 ---
 
 # CoWork Block
@@ -48,7 +48,7 @@ No other names at a Block's top level: not `README.md` (the Block's README is it
 `board.md`), `PEOPLE.md` (now `j00_people/`), `ticket/`, `design/`, `materials/`,
 `emails/` or `meetings/` (they live inside a Job). There is no `tNN` level: a Job's
 items are single files and nothing in cowork runs code. Work that runs code (a lab
-test, a data pull) is a Task Block in the Project's `tasks/`; a cowork Question cites it.
+test, a data pull) is a Task Block in the Project's `work/`; a cowork Question cites it.
 
 ## Block numbers
 

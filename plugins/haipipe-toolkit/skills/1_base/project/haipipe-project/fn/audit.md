@@ -7,6 +7,20 @@ Audit one Project or every active Project under `examples/`.
 /haipipe-project audit --all
 ```
 
+## A Project · every finding and the step that fixes it
+
+```text
+python3 <haipipe-project>/scripts/project.py audit <project>|--all [--root <SPACE>]
+```
+
+One read-only pass over a Project: the root audit below, the ladder audit (§ Any level), a Job-centred
+v0.8.1 layout or ticket header, and the Tools gate with its contract-drift check (the decided Theme
+names in haipipe-page `src/themes.py` against this audit's worlds). Each finding names the step of
+`update` that fixes it (`root`, `themes`, `convert`, `runs`, `faces`) or `person` when only a person
+can decide (fn/update.md § A Project · the steps). A Project with no finding prints `clean`.
+
+## The root alone
+
 Read `../ref/project-structure.md`, then run:
 
 ```text
@@ -46,8 +60,8 @@ python3 <haipipe-project>/scripts/audit_projects.py <project> --deep     root re
 ```
 
 `--only` checks that level alone, `--quiet` hides folders that are ok all the way down,
-`--summary` prints counts per level. It walks `tasks/`, `discoveries/` and `labelings/`;
-`cowork/` keeps the check above; `papers/`, `designs/` and `insights/` keep their family layouts.
+`--summary` prints counts per level. It walks `work/`, `discovery/` and `labeling/`;
+`cowork/` keeps the check above; `paper/`, `design/` and `insight/` keep their family layouts.
 
 It checks the **shape** at every level: the face, which folders sit where, the child
 prefixes, hard and soft Runs in the right places, `run.yaml` against its folder, the old
@@ -57,7 +71,7 @@ skill still judges the **content**. Each finding is `failed` or `debt`
 (`../ref/ladder.md` § What the audit reports); a folder takes its worst finding.
 
 ```text
-tasks/b00_<topic>/                       ok
+work/b00_<topic>/                       ok
   j51_<job>/                             debt
       · no face j51_<job>.md
     t07_<task>/                          debt

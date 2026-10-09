@@ -112,7 +112,7 @@ paper_page:
     revision: 2 | null
     receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-delivery.yaml" | null
 discovery_landscape:
-  accepted_syntheses: ["discoveries/.../<page>.md"]
+  accepted_syntheses: ["discovery/.../<page>.md"]
   direct_result_ids: [ext01, ext02]
   convergent_signals: []
   contradictions: []

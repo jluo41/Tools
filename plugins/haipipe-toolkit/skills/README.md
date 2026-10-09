@@ -134,9 +134,9 @@ Project folder contract
 
 ```text
 examples/<PROJECT>/
-├── tasks/          internal execution (haipipe-task)
-├── discoveries/    external evidence (haipipe-discovery)
-├── papers/         academic Page composition (haipipe-paper)
+├── work/          internal execution (haipipe-task)
+├── discovery/    external evidence (haipipe-discovery)
+├── paper/         academic Page composition (haipipe-paper)
 ├── applications/  other Page consumers
 └── diagram/        non-runtime design records
 ```

@@ -6,8 +6,8 @@ description: >-
   from named results and Information pages, never advising. Trigger: insight
   knowledge, claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-10-01"
+  version: "2.4.1"
+  last_updated: "2026-10-09"
   workflow: haipipe-insight-workflow
   folder_kind: knowledge
   primary_face: page
@@ -138,7 +138,7 @@ boundary, the runs it rests on, and any pooling condition.
 
 ## Files
 
-- Page: `insights/<board>/<n>-<partition>/K<NN>-<partition>-<slug>/K<NN>-<partition>-<slug>.md`
+- Page: `insight/<board>/<n>-<partition>/K<NN>-<partition>-<slug>/K<NN>-<partition>-<slug>.md`
 - Tickets and results, when it computes: the page's `runs/<ticket>.sh` and
   `results/<ticket>/`, named in its `runs:` header
 - Binding: the page's `answers.yaml` (each need → its result files, cited page or `judge`)

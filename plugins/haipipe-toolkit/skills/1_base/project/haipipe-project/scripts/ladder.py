@@ -86,9 +86,9 @@ def family_of(block: Path) -> str:
     if block.name.startswith("Paper-") or block.parent.name in ("paper", "papers"):
         return "paper"
     # the special boards are named by their kind (haipipe-board, JL 261008)
-    if block.name.startswith(("Insight-", "Prototype-")) or block.parent.name == "insights":
+    if block.name.startswith(("Insight-", "Prototype-")) or block.parent.name in ("insight", "insights"):
         return "insight"
-    if block.name.startswith("Design-") or block.parent.name == "designs":
+    if block.name.startswith("Design-") or block.parent.name in ("design", "designs"):
         return "design"
     return "task"
 
@@ -136,6 +136,19 @@ def scan_text(node: Node, files: list[Path], root: Path) -> None:
                 node.add("failed", f"absolute path in {f.relative_to(root)}")
 
 
+def heavy_exempt(f: Path, root: Path) -> bool:
+    """A file the table lets a family keep over the heavy limit, in a Project whose remote is private."""
+    world = next((p for p in f.parents if p.name in LADDER_WORLDS), None)
+    if world is None:
+        return False
+    fam = "discovery" if world.name in ("discovery", "discoveries") else world.name
+    if f.name not in (T["checks"].get("heavy_exempt") or {}).get(fam, []):
+        return False
+    manifest = world.parent / "project.yaml"
+    card = yaml.safe_load(face_text(manifest)) if manifest.is_file() else {}
+    return str((card or {}).get("visibility", "")).strip() == "private"
+
+
 def scan_heavy(node: Node, result: Path, root: Path) -> None:
     if not result.is_dir():
         return
@@ -145,7 +158,7 @@ def scan_heavy(node: Node, result: Path, root: Path) -> None:
             if p.is_symlink():
                 if os.path.isabs(os.readlink(p)):
                     node.add("failed", f"symlink to an absolute path: {p.relative_to(root)}")
-            elif p.is_file() and p.stat().st_size > HEAVY:
+            elif p.is_file() and p.stat().st_size > HEAVY and not heavy_exempt(p, root):
                 node.add("failed", f"heavy file in a Result ({p.stat().st_size >> 20} MB): "
                                    f"{p.relative_to(root)} → ProjectResult + heavy.yaml")
 
@@ -218,7 +231,10 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     for p in sorted(d.iterdir()):
         if not p.name.startswith(".") and p.name not in keep:
             node.add("debt", f"{p.name} is not in the ladder for a Run")
-    scan_text(node, [t for t in [ticket, d / "run.yaml", d / "result" / "runtime.yaml"] if t]
+    # A moved Run's old receipt is history (JL 261009): it keeps the path it recorded; tickets and
+    # receipts written since stay strict.
+    receipt = None if card.get("moved_from") else d / "result" / "runtime.yaml"
+    scan_text(node, [t for t in [ticket, d / "run.yaml", receipt] if t]
               + sorted(d.glob("passes/*/runtime.yaml")), root)
     scan_heavy(node, d / "result", root)
     return node
@@ -285,8 +301,20 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
     if NAMES["block"].match(name):
         return [audit_block(path, root, only)]
     worlds = [path] if name in LADDER_WORLDS else [path / w for w in LADDER_WORLDS if (path / w).is_dir()]
-    return [audit_block(b, root, only) for w in worlds for b in sorted(w.iterdir())
-            if b.is_dir() and NAMES["block"].match(b.name)]
+    nodes = []
+    for w in worlds:
+        for b in sorted(w.iterdir()):
+            if not b.is_dir() or b.name.startswith(("_", ".")):
+                continue
+            if NAMES["block"].match(b.name):
+                nodes.append(audit_block(b, root, only))
+            elif family_of(b) != "task":              # a family's own Block (Prototype-, Insight-, Design-…)
+                continue                              # its owner's ladder checks it
+            else:
+                odd = Node(b, "block")
+                odd.add("debt", "not a Block (bNN_<topic>/): carry it onto the ladder or archive it in _legacy/")
+                nodes.append(odd)
+    return nodes
 
 
 # ── Report ────────────────────────────────────────────────────────────────────
@@ -394,6 +422,8 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
                 moves.append((t, dest / t.name))
                 moved_from.append(rel(t))
             res = results / new
+            if not res.is_dir():                              # older Job-level Result: <job>/results/<task>/<run>/
+                res = runs.parent.parent / "results" / runs.parent.name / new
             if res.is_dir():
                 moves.append((res, dest / "result"))
                 moved_from.append(rel(res))
@@ -422,6 +452,102 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
     return steps, skipped
 
 
+# After a move (fn/update.md § Relink). A moved ticket resolves its folders as it did from runs/
+# (one more dirname on its own path) and writes its Result to runs/<run>/result/.
+PATCH_MARK = "# ladder: moved to one folder per Run; resolves as runs/<run>.sh did, writes runs/<run>/result/"
+SELF = re.compile(r'dirname "(\$0|\$\{0\}|\$\{BASH_SOURCE\[0\]\}|\$BASH_SOURCE|\$TICKET)"')
+TASK_VAR = r'\$\{?[A-Z_]*TASK[A-Z_]*\}?'
+RUN_VAR = r'\$\{?[A-Z_]*RUN(?:_NAME|_ID)?\}?'
+
+
+def patch_ticket(text: str) -> tuple[str, bool]:
+    """The patched ticket and whether its self-location was found."""
+    if PATCH_MARK in text:
+        return text, True
+    found = bool(SELF.search(text))
+    # A ticket that builds TICKET from its own path and then takes dirname "$TICKET" needs the extra
+    # level once: keep TICKET the real path (never wrap the TICKET= line) and wrap the dirname of it.
+    via_ticket = 'dirname "$TICKET"' in text
+    t = "\n".join(line if via_ticket and re.match(r"\s*TICKET=", line)
+                  else SELF.sub(lambda m: f'dirname "$(dirname "{m.group(1)}")"', line)
+                  for line in text.split("\n"))
+    t = re.sub(r'results/\$\{?RUN_REL\}?(?![A-Za-z_])', '$TASK_SEG/runs/$RUN_NAME/result', t)
+    t = re.sub(rf'results/({TASK_VAR})/({RUN_VAR})(?![A-Za-z_])', r'\1/runs/\2/result', t)
+    t = re.sub(rf'results/({RUN_VAR})(?![A-Za-z_])', r'runs/\1/result', t)
+    t = re.sub(r'runs/(\$\{?RUN_NAME\}?)\.sh', r'runs/\1/\1.sh', t)
+    t = re.sub(r'(\$\{?OUTPUT_ROOT\}?)/notebooks/(\$\{?TASK_SEG\}?)', r'\1/\2/notebooks', t)
+    lines = t.split("\n", 1)
+    if lines[0].startswith("#!"):
+        t = lines[0] + "\n" + PATCH_MARK + "\n" + (lines[1] if len(lines) > 1 else "")
+    else:
+        t = PATCH_MARK + "\n" + t
+    return t, found
+
+
+TEXT_EXT = {".md", ".yaml", ".yml", ".py", ".sh", ".json", ".txt", ".tex", ".r", ".do", ".toml", ".cfg"}
+NO_RELINK = {".git", "result", "results", "passes", "notebooks", "delivery", "_legacy", "_old",
+             "__pycache__", "node_modules", ".venv"}
+GENERATED = re.compile(r"(?i)do not edit|generated by|auto-generated|\(generated\)")
+END = r'(?=[/\s"\'`)\]>,;:#|]|$)'
+
+
+def relink_rules(moved: list[tuple[Path, str, Path]]) -> list[tuple[re.Pattern, str, Path | None]]:
+    """moved: (task folder, run name, job folder). Rules: (pattern, replacement, only-inside folder)."""
+    rules = []
+    for task, run, job in moved:
+        tn, r = re.escape(task.name), re.escape(run)
+        rules += [
+            (re.compile(rf'(?<![\w-]){tn}/results/{r}{END}'), f"{task.name}/runs/{run}/result", None, run),
+            (re.compile(rf'(?<![\w-])results/{tn}/{r}{END}'), f"{task.name}/runs/{run}/result", None, run),
+            (re.compile(rf'(?<![\w-]){tn}/runs/{r}\.sh{END}'), f"{task.name}/runs/{run}/{run}.sh", None, run),
+            (re.compile(rf'(?<![\w-])(?<![a-z0-9_-]/)results/{r}{END}'), f"runs/{run}/result", task, run),
+            (re.compile(rf'(?<![\w-])(?<![a-z0-9_-]/)runs/{r}\.sh{END}'), f"runs/{run}/{run}.sh", task, run),
+        ]
+    return rules
+
+
+def relink(root: Path, rules: list, apply: bool) -> tuple[int, int]:
+    """Rewrite references in hand-written text files under every examples*/ world. Generated files
+    (a marker in the first lines), Results, passes, notebooks, delivery and archives are never touched."""
+    if not rules:
+        return 0, 0
+    files = changes = 0
+    by_key: dict[str, list] = {}
+    for pat, rep, inside, key in rules:
+        by_key.setdefault(key, []).append((pat, rep, inside))
+    quick = re.compile("|".join(re.escape(k) for k in sorted(by_key, key=len, reverse=True)))
+    for top in sorted(root.glob("examples*")):
+        for dirpath, dirnames, filenames in os.walk(top):
+            dirnames[:] = [d for d in dirnames if d not in NO_RELINK]
+            here = Path(dirpath)
+            for fn in filenames:
+                f = here / fn
+                if f.suffix.lower() not in TEXT_EXT or f.name == "run.yaml" or f.is_symlink():
+                    continue
+                try:
+                    if f.stat().st_size > 2_000_000:
+                        continue
+                    text = f.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
+                keys = set(quick.findall(text))
+                if not keys or GENERATED.search("\n".join(text.splitlines()[:5])):
+                    continue
+                new, n = text, 0
+                for pat, rep, inside in (r for k in keys for r in by_key[k]):
+                    if inside is not None and inside not in f.parents:
+                        continue
+                    new, k = pat.subn(rep, new)
+                    n += k
+                if n:
+                    files += 1
+                    changes += n
+                    print(f"    relink  {f.relative_to(root)}  ({n})")
+                    if apply:
+                        f.write_text(new, encoding="utf-8")
+    return files, changes
+
+
 def runs_folders(path: Path) -> list[Path]:
     if path.parent.name == "runs":
         return [path.parent]
@@ -437,9 +563,44 @@ def runs_folders(path: Path) -> list[Path]:
     return sorted(set(out))
 
 
+def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
+    """Folder moves the ladder names as debt and that are safe to make whole: a Job's notebooks/<task>/
+    into that Task's notebooks/, and a retired diagram/ into studio/ (studio/diagram/ when studio/ exists)."""
+    out: list[tuple[Path, Path, str]] = []
+    levels = [path] + [d for d in sorted(path.rglob("*")) if d.is_dir() and NAMES["block"].match(d.name) or
+                       d.is_dir() and NAMES["job"].match(d.name) or d.is_dir() and NAMES["task"].match(d.name)]
+    for d in levels:
+        if any(part.startswith(("_", ".")) or part in ("runs", "results", "notebooks", "studio")
+               for part in d.relative_to(path).parts):
+            continue
+        diagram = d / "diagram"
+        if diagram.is_dir():
+            dest = d / "studio" if not (d / "studio").exists() else d / "studio" / "diagram"
+            if not dest.exists():
+                out.append((diagram, dest, "diagram/ is retired: drawings go in studio/"))
+        for extra in sorted(x for x in d.glob("diagram-*") if x.is_dir()):   # diagram-<topic>/ → studio/<name>/
+            if not (d / "studio" / extra.name).exists():
+                out.append((extra, d / "studio" / extra.name, "diagram/ is retired: drawings go in studio/"))
+        wf = d / "workflow"
+        if NAMES["job"].match(d.name) and wf.is_dir() and not (d / "_old" / "workflow").exists():
+            out.append((wf, d / "_old" / "workflow", "workflow/ at a Job is not in the ladder: kept as history"))
+        nb = d / "notebooks"
+        if NAMES["job"].match(d.name) and nb.is_dir():
+            for sub in sorted(nb.iterdir()):
+                task = d / sub.name
+                if sub.is_dir() and NAMES["task"].match(sub.name) and task.is_dir():
+                    for f in sorted(sub.iterdir()):
+                        dest = task / "notebooks" / f.name
+                        if not dest.exists():
+                            out.append((f, dest, "a Job holds no notebooks/: into its Task"))
+    return out
+
+
 def update(path: Path, root: Path, apply: bool) -> int:
     fam = family_of(block_of(path)) if block_of(path) else "task"
     n_moves = n_cards = 0
+    moved: list[tuple[Path, str, Path]] = []
+    unpatched: list[str] = []
     for runs in runs_folders(path):
         steps, skipped = plan_runs(runs, fam, root)
         if not steps and not skipped:
@@ -452,24 +613,65 @@ def update(path: Path, root: Path, apply: bool) -> int:
                 n_moves += 1
                 print(f"    {kind:<4}  → {dest.name}/")
                 for a, b in moves:
-                    print(f"          mv {a.relative_to(runs.parent)} → {b.relative_to(runs.parent)}")
+                    print(f"          mv {os.path.relpath(a, runs.parent)} → {os.path.relpath(b, runs.parent)}")
             else:
                 n_cards += 1
                 print(f"    card  {dest.name}/run.yaml")
+            if op == "move" and kind == "hard":
+                moved.append((runs.parent, dest.name, runs.parent.parent))
             if apply:
                 for a, b in moves:
                     b.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(a), str(b))
+                tk = dest / (ticket or "")
+                if op == "move" and kind == "hard" and tk.suffix == ".sh" and tk.is_file():
+                    patched, found = patch_ticket(tk.read_text(encoding="utf-8"))
+                    tk.write_text(patched, encoding="utf-8")
+                    if not found:
+                        unpatched.append(str(tk.relative_to(root)))
                 for name in passes or []:
                     (dest / "passes" / name).mkdir(parents=True, exist_ok=True)
                 card = make_card(dest, dest.name, kind, ticket, root, moved_from or None, passes)
                 (dest / "run.yaml").write_text(yaml.safe_dump(card, sort_keys=False, allow_unicode=True))
-    results_left = [r for r in (p.parent / "results" for p in runs_folders(path)) if r.is_dir() and apply
-                    and not any(r.iterdir())]
-    for r in results_left:
-        r.rmdir()
+    tidy = tidy_moves(path)
+    if tidy:
+        print("\ntidy (folders the ladder retires):")
+    for a, b, why in tidy:
+        print(f"    mv {a.relative_to(root)} → {b.relative_to(root)}   ({why})")
+        if apply:
+            b.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(a), str(b))
+    if apply:
+        for a, _, _ in tidy:
+            for gone in (a.parent, a.parent.parent):
+                if gone.name in ("notebooks",) or gone.parent.name == "notebooks":
+                    try:
+                        gone.rmdir()
+                    except OSError:
+                        pass
+    print("\nrelink (references to the moved Results and tickets):")
+    rules = relink_rules(moved)
+    for a, b, why in tidy:                            # a moved diagram/: links to what it held follow it
+        if a.name == "diagram":
+            new = b.relative_to(a.parent).as_posix()
+            held = sorted((x.name for x in b.iterdir()), key=len, reverse=True) if b.is_dir() else \
+                   sorted((x.name for x in a.iterdir()), key=len, reverse=True) if a.is_dir() else []
+            if not held:
+                continue
+            nxt = "(?=(?:" + "|".join(re.escape(h) for h in held) + r")(?:[/\s\"'`)\]>,;:#|]|$))"
+            rules.append((re.compile(rf'(?<![\w-]){re.escape(a.parent.name)}/diagram/{nxt}'), f"{a.parent.name}/{new}/", None, "diagram/"))
+            rules.append((re.compile(rf'(?<![\w-])(?<![a-z0-9_-]/)diagram/{nxt}'), f"{new}/", a.parent, "diagram/"))
+    n_files, n_refs = relink(root, rules, apply)
+    for t in unpatched:
+        print(f"    check  {t}: no self-location found, the ticket may not resolve its folders")
+    left = [p.parent / "results" for p in runs_folders(path)]
+    left += [j / "results" / p.parent.name for p in runs_folders(path) for j in [p.parent.parent]]
+    left += [p.parent.parent / "results" for p in runs_folders(path)]
+    for r in left:
+        if apply and r.is_dir() and not any(r.iterdir()):
+            r.rmdir()
     verb = "done" if apply else "planned (dry run; --apply to do it)"
-    print(f"\n{n_moves} Run folder(s) and {n_cards} run.yaml card(s) {verb}")
+    print(f"\n{n_moves} Run folder(s), {n_cards} run.yaml card(s), {n_refs} reference(s) in {n_files} file(s) {verb}")
     return 0
 
 

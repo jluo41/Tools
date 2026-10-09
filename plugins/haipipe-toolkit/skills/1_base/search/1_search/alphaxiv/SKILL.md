@@ -4,8 +4,8 @@ description: Quick single-paper lookup via AlphaXiv LLM-optimized summaries with
 allowed-tools: Bash(*), Read, Write, WebFetch, Glob
 metadata:
   argument_hint: "[arxiv-id-or-url]"
-  version: "0.1.2"
-  last_updated: "2026-09-22"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -145,7 +145,7 @@ if [ -d research-wiki/ ]:
 ```
 
 The helper handles metadata fetch, slug, dedup, page creation, index
-rebuild, and log append — **do not handwrite `papers/<slug>.md`**. See
+rebuild, and log append — **do not handwrite `paper/<slug>.md`**. See
 [`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md).
 If wiki was not present at read time, the user can backfill via
 `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id>`.

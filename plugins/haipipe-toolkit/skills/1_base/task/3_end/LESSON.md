@@ -344,7 +344,7 @@ New projects had to guess which file to copy.
 Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/
                        └── canonical WellDoc references (copy-and-customize)
 
-Layer 2: PROJECT       examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/
+Layer 2: PROJECT       examples/<project>/work/C01_*/00_endpoint_set_fn_develop/
                        └── project-specific builders, each as own run
                            (configs/ + runs/ + results/ per builder)
 

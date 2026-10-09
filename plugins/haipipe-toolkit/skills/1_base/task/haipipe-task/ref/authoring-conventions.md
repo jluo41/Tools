@@ -147,7 +147,7 @@ small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
 2. **Where it goes**: the Run's own folder, which the Ticket exports as
    `HEAVY_DIR`:
    `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`. It mirrors
-   the Run's address below `tasks/` (Task names repeat across Jobs, so Block and
+   the Run's address below `work/` (Task names repeat across Jobs, so Block and
    Job are part of it). The worker creates it only when it writes there
    (`os.makedirs(os.environ["HEAVY_DIR"], exist_ok=True)`). `LOCAL_PROJECT_RESULT`
    may move the root; the default is `_WorkSpace/ProjectResult`. A pipeline asset

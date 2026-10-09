@@ -3,6 +3,11 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.5 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.7.4 · 2026-09-30
 
 - For computer-science venue papers, inspect the accepted dblp conference/journal record before choosing BibTeX. Import its exact one-record export through the Discovery fetcher, keep CoRR/arXiv separate, and use Google Scholar only as a manually checked last resort.

@@ -1,3 +1,38 @@
+## 0.14.0 · 2026-10-09 · audit and update at Project level: every step, planned then applied
+
+- `scripts/project.py` (fn/audit.md § A Project, fn/update.md § A Project · the steps): `audit` lists
+  every finding with the `update` step that fixes it (tools gate and contract drift, root, themes,
+  convert, runs, faces) or marks it for a person; `update` dry-runs every step; `update --apply` runs
+  them in order, re-audits after each, stops if failures rise, verifies, and never commits. The decided
+  words stay audit and update (run-skill-draft Part B, 261006); no new verb.
+- `scripts/probe_tickets.py`: where each moved ticket writes its Result, by running only its path lines
+  (writing commands dropped, under its own name); an owner's gate counts as gated.
+- `scripts/link_check.py`: links into results/ or runs/ that do not resolve, with --save/--compare so an
+  update reports only what it newly broke.
+- `tests/test_project_update.py`: a scratch SPACE with every older layout (plural Themes, flat Runs,
+  Job-level Results, a Job-centred Job, missing faces, diagram/); audit finds every step, the dry run
+  changes nothing, --apply leaves it clean with every ticket resolving and no link newly broken.
+
+## 0.13.0 · 2026-10-09 · Theme folders are singular
+
+- `scripts/rename_themes.py <project> [--list] [--apply]`: renames a Project's Theme folders to the singular
+  names, patches its tickets and relinks references (folders renamed on disk; submodules by `git mv`; a stale
+  `.gitmodules` entry is skipped; a half-done pair resumes). The root audit reads `work/`, `discovery/`,
+  `paper/`, `insight/`, `design/`, `labeling/`, `ideation/` and reports an older plural folder as
+  "rename pending". Docs name the singular folders.
+
+## 0.12.0 · 2026-10-09 · one folder per Run, applied to the examples
+
+- `scripts/ladder.py update`: patches each moved ticket, finds Job-level Results, relinks references
+  (prefiltered by Run name), tidies `diagram/`, Job `notebooks/` and Job `workflow/`; a world child that
+  is not a Block is reported as debt; a family Block (`Prototype-` …) is left to its owner's ladder.
+- `ref/ladder.md`: a Task may hold `sbatch/` (haipipe-task allows it); `heavy_exempt` lets a discovery
+  `paper.pdf` pass in a Project whose `project.yaml` says `visibility: private` (JL 261009).
+- A moved Run's old receipt (run.yaml `moved_from:`) is history: the audit no longer checks the paths
+  it recorded (JL 261009); tickets, run.yaml and new receipts stay strict.
+- `ideations/` is a world (haipipe-ideation's home); `SKILL.md` and `ref/project-structure.md` point
+  to haipipe-insight's current Prototype + Board layout; `fn/update.md` documents ticket, relink, tidy.
+
 ## 2026-10-07 — the ladder reads paper Boards (b03 s21, for b16)
 
 - `ref/ladder.md`: a Block may be a paper Board, `Paper-<Slug>/`; Job and Task names take kebab tails

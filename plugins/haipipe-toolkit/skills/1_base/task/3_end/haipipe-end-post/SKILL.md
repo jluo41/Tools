@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-post
-description: "PostFn specialist -- designs/reviews the response-formatting function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references PostFn, response formatting, post-processing, or `post`."
+description: "PostFn specialist -- design/reviews the response-formatting function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references PostFn, response formatting, post-processing, or `post`."
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-08"
+  version: "0.1.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -153,5 +153,5 @@ code/scripts/haibuilder/6-endpoint/c1_build_postfn_weight_multilabel.py  ← Wel
 
 Project-specific builders live in the task folder:
 ```
-examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/c1_build_postfn.py
+examples/<project>/work/C01_*/00_endpoint_set_fn_develop/c1_build_postfn.py
 ```

@@ -9,8 +9,8 @@ description: >-
   workflow, build workflow, execute workflow, report, /haipipe-workflow.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-09-15"
+  version: "0.3.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 

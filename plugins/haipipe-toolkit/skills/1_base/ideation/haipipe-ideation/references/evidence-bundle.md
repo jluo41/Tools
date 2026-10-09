@@ -29,7 +29,7 @@ sources:
   internal:
     - id: int01
       kind: task-result | task-report | task-page
-      path: "tasks/.../results/.../report.md"
+      path: "work/.../results/.../report.md"
       address: bNN.jNN.tNN.rNN | bNN.jNN.tNN
       locator: "metric/table/section or report heading"
       role: signal | method | feasibility | boundary
@@ -38,9 +38,9 @@ sources:
   external:
     - id: ext01
       kind: discovery-result | discovery-page
-      result_path: "discoveries/.../results/rNN_.../rNN_....md"
-      bib_path: "discoveries/.../results/rNN_.../rNN_....bib"
-      runtime_path: "discoveries/.../results/rNN_.../runtime.yaml"
+      result_path: "discovery/.../results/rNN_.../rNN_....md"
+      bib_path: "discovery/.../results/rNN_.../rNN_....bib"
+      runtime_path: "discovery/.../results/rNN_.../runtime.yaml"
       address: bNN.jNN.tNN.rNN | bNN.jNN.tNN
       cite: "@CanonicalKey"
       locator: "Card section/fact/page/figure or report heading"

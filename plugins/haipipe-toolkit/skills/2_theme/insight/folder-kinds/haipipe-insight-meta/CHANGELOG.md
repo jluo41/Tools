@@ -1,6 +1,11 @@
 # haipipe-insight-meta · version history
 
 
+## 1.5.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 1.5.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 
 - MT00's partition register has no letter column; partitions are named by one lowercase word.

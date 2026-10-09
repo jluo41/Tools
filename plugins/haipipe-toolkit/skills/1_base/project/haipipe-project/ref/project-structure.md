@@ -37,6 +37,14 @@ state: active                    # active | paused | archived
 mission: "Predict glucose from CGM plus event context."
 ```
 
+Optional remote visibility, read by the ladder audit (a private remote may keep a discovery
+Paper Run's `paper.pdf` beside its Result over the heavy limit; check it with `glab api` or
+`gh repo view --json visibility`):
+
+```yaml
+visibility: private              # private | public
+```
+
 Optional root-migration disclosure:
 
 ```yaml
@@ -59,13 +67,14 @@ examples/<project>/
 ├── README.md             REQUIRED
 ├── project.yaml          REQUIRED
 │
-├── tasks/                LAZY · internal computational executor
-├── discoveries/          LAZY · external-evidence executor
+├── work/                LAZY · internal computational executor
+├── discovery/          LAZY · external-evidence executor
 ├── cowork/               LAZY · coordination text and project-level Boards
-├── papers/               LAZY · academic consumers
-├── insights/             LAZY · older register-kind Insight boards (new: a tasks/ Block)
-├── designs/              LAZY · Design boards and Design Folders
-├── labelings/            LAZY · labeling Blocks; a Job is one dataset with one label
+├── paper/               LAZY · academic consumers
+├── insight/             LAZY · older register-kind Insight boards (new: a work/ Block)
+├── design/              LAZY · Design boards and Design Folders
+├── labeling/            LAZY · labeling Blocks; a Job is one dataset with one label
+├── ideation/            LAZY · Ideation directions (bNN/jNN/tNN, no Runs)
 ├── external/             LAZY · read-only upstream repositories/assets
 └── platforms/            LAZY · software/hybrid only: owned code repos (submodules)
 ```
@@ -73,26 +82,29 @@ examples/<project>/
 LAZY means “create on first use,” not “missing capability.” Empty directories
 are not a useful contract because Git cannot preserve them without placeholders.
 
-New work always uses plural `papers/`. Existing `paper/` paths, especially
-submodules, are legacy debt and are not renamed without an explicit migration.
+Theme folders are singular (s01-D28, s01-D29, JL 261007): `work/`, `discovery/`, `cowork/`, `paper/`,
+`insight/`, `design/`, `labeling/`, `ideation/`. An older plural folder (`tasks/`, `discoveries/`,
+`papers/`, …) is "rename pending" debt; `scripts/rename_themes.py <project>` moves it, patches its
+tickets and relinks references. Tools reads both names until every SPACE has moved.
 
 ## Worlds and flow
 
 ```text
-external/ ──▶ discoveries/ ──┐
-                             ├──▶ tasks/ Insight Block (one Task per question) ──▶ papers/
-tasks/ ──────────────────────┘                                      └──▶ designs/
+external/ ──▶ discovery/ ──┐
+                             ├──▶ work/ Insight Block (one Task per question) ──▶ paper/
+work/ ──────────────────────┘                                      └──▶ design/
 ```
 
 | Root | Role | Owner and boundary |
 |---|---|---|
-| `tasks/` | computational evidence bank | `haipipe-task`; Block → Job → Task → Run |
-| `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
+| `work/` | computational evidence bank | `haipipe-task`; Block → Job → Task → Run |
+| `discovery/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
 | `cowork/` | coordination: who we work with and what we wait on | tickets, people, emails, meetings, design notes, drawings, project-level Boards; see `cowork/` below |
-| `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
-| `insights/` | older register-kind Insight boards; new Insight work is a `tasks/` Block (one Task per question) | `haipipe-insight`; see `insights/` below |
-| `designs/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
-| `labelings/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`) with many Tasks: its data preparation, its keys, its labeling Page (the engine's `labeling/` lane), its scoring | `haipipe-labeling`; a dataset with no label yet stays in `tasks/` |
+| `paper/` | academic consumer | `haipipe-paper`; may contain nested submodules |
+| `insight/` | older register-kind Insight boards; new Insight work is a `work/` Block (one Task per question) | `haipipe-insight`; see `insight/` below |
+| `design/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
+| `labeling/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`) with many Tasks: its data preparation, its keys, its labeling Page (the engine's `labeling/` lane), its scoring | `haipipe-labeling`; a dataset with no label yet stays in `work/` |
+| `ideation/` | research directions and their candidate idea cards, before a paper picks one | `haipipe-ideation`; Blocks, Jobs and Tasks only: a Run it needs is commissioned in `work/` or `discovery/` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 | `platforms/` | code the Project owns | one submodule per repo; software/hybrid only; see `platforms/` below |
 
@@ -169,7 +181,7 @@ split into **Jobs** (JL 261004). `haipipe-cowork` owns the Block: its number ran
 No other names at a Block's top level: not `README.md` (the Block's README is its
 `board.md`), `PEOPLE.md`, `ticket/`, `design/`, `materials/`, `emails/` or
 `meetings/` (those live inside a Job). There is no `tNN` level in cowork; work that
-runs code is a Task Block in `tasks/`. Code is never here; it lives in `platforms/`.
+runs code is a Task Block in `work/`. Code is never here; it lives in `platforms/`.
 An old numbered topic folder (`N-<Topic>/`) is an audit finding until it becomes a Block.
 
 - Text and small images are tracked. Office files, recordings and anything
@@ -178,7 +190,7 @@ An old numbered topic folder (`N-<Topic>/`) is an audit finding until it becomes
 - No participant data, no keys, ever: git keeps history.
 - Drawings are rebuilt by their scripts, kept beside them (for example
   `studio/_build/`), never edited by hand.
-- Block-local `board.md` stays under its owning `tasks/bNN_.../` Block.
+- Block-local `board.md` stays under its owning `work/bNN_.../` Block.
 
 ## `platforms/`
 
@@ -196,24 +208,29 @@ is migration debt: declare it in `project.yaml` (`migration.legacy_paths`).
 When migrated, project-level Boards move to `cowork/`, and Task or Insight
 Boards to their owning world. No routine update moves an active Board.
 
-## `insights/`
+## `insight/`
+
+**Current Insight layout (haipipe-insight, 261009):** a topic's Prototype is a task-world Block
+`work/Prototype-bNN-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
+dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
+`b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
 
 Insight work is a task Block since JL 261005 (the Prototype + Instance pair is retired): an
-Insight topic is one Block `tasks/b5N_<topic>_dikw/` whose board.md says `workbench: insight`,
+Insight topic is one Block `work/b5N_<topic>_dikw/` whose board.md says `workbench: insight`,
 one Job per DIKW level and one Task per question, each Task holding its question, its one
 script, its runs and its answering page. A new dataset is a new entry in the Block's
 `datasets:`, with its own runs beside the others; the code is not copied. Home opens the Block
 in the Insight workbench.
 
 ```text
-tasks/
+work/
 └── b5N_<topic>_dikw/               an Insight Block: board-kind: task-block · workbench: insight
     ├── board.md                    datasets: {<name>: <extract .parquet>, …}
     ├── meta/                       meta.md · partitions.md · thresholds.yaml · status.md (generated)
     ├── j01_data/ … j04_wisdom/     one Job per level; one Task per question:
     │                               question.md · scripts/ · runs/<dataset>_<partition>.sh · the page
     └── studio/                     question-map.excalidraw (generated) and hand sketches
-insights/
+insight/
 └── <Dataset>-InsightBoard/         older register-kind board, until carried over
 ```
 
@@ -221,24 +238,24 @@ insights/
   question the Task, a `<dataset>_<partition>` run the Run (no per-run config).
 - **The studio lives at Block level.** `studio/question-map.excalidraw` is generated
   from the question files and never edited, and each hand sketch is its own file.
-- **`insights/` keeps only older boards.** A register-kind `<Dataset>-InsightBoard/`
+- **`insight/` keeps only older boards.** A register-kind `<Dataset>-InsightBoard/`
   keeps its layout until it is carried over into a Block; it is not migration debt.
 
 The internals belong to `haipipe-insight` (`ref/block-contract.md`); a Project audit
-checks only that `insights/` holds these folder kinds.
+checks only that `insight/` holds these folder kinds.
 
 ## Root prohibitions and debt
 
 Never create these as new root structures:
 
 - `results/`: generated output belongs to a Job or consumer-owned store.
-- `applications/`: legacy since 261001; Insight boards go to `insights/`, Design
-  boards to `designs/` (old ones under each world's `_old/`).
+- `applications/`: legacy since 261001; Insight boards go to `insight/`, Design
+  boards to `design/` (old ones under each world's `_old/`).
 - `probes/`: use the current Page evidence contract.
 - `_old/`, `cc-archive/`: archive inside the owning world, or preserve only as
   declared migration debt.
 - `tasks.old/`: temporary migration name only; durable history belongs under
-  `tasks/_legacy/` after explicit migration.
+  `work/_legacy/` after explicit migration.
 
 For a research profile, root `src/`, `scripts/`, `configs/`, `tests/`, and
 `docs/` are also debt until reclassified or moved. For software/hybrid they are
@@ -249,12 +266,12 @@ valid profile-owned structure.
 | Scope | Authority |
 |---|---|
 | Project root, manifest, profile, Git mode, `external/` boundary | `haipipe-project` |
-| `tasks/` internals | `haipipe-task` + `haipipe-run` |
-| `discoveries/` internals | `haipipe-discovery` |
+| `work/` internals | `haipipe-task` + `haipipe-run` |
+| `discovery/` internals | `haipipe-discovery` |
 | Board/Page internals | `haipipe-page`, owning workflow |
-| `papers/` internals | `haipipe-paper` |
-| `insights/` internals | `haipipe-insight` |
-| `designs/` internals | `haipipe-design` |
+| `paper/` internals | `haipipe-paper` |
+| `insight/` internals | `haipipe-insight` |
+| `design/` internals | `haipipe-design` |
 
 An audit at this layer checks only Project-root truth. It must not claim that a
 child world is internally compliant without invoking that world's checker.

@@ -15,8 +15,8 @@ description: >-
   /haipipe-design-goal.
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-07"
+  version: "0.4.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -30,7 +30,7 @@ A design starts from an **aim**, **constraints** and **resources** (Theory of De
 records, each written once and read by every Job that pins it:
 
 ```text
-designs/Design-<name>/
+design/Design-<name>/
 ├── board.md ## Goals          the goal list: one entry per goal, signed by a person      run-add-goal-<goal>
 ├── design-goal.md             the shared rules every goal keeps; a person signs them     run-setup-rules
 ├── inputs/iN/                 one inputs version: rules · theory · handoff copies,       run-add-inputs-i<N>
@@ -148,8 +148,8 @@ All five are soft (`run-<type>-<target>/run.yaml` and `passes/`; `haipipe-run`);
 them (its run cards name it). Show the person the changed lines before writing a goal or a rule; write them only after the person says yes.
 
 ```bash
-python scripts/make_inputs.py freeze designs/Design-<name>/inputs/i2 --new "a new handoff"
-python scripts/make_inputs.py job designs/Design-<name>/j03_g01_m04
+python scripts/make_inputs.py freeze design/Design-<name>/inputs/i2 --new "a new handoff"
+python scripts/make_inputs.py job design/Design-<name>/j03_g01_m04
 ```
 
 

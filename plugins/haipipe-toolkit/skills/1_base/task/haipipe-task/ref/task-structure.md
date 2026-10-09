@@ -6,7 +6,7 @@ conceptual model; `ref/authoring-conventions.md` owns code and runtime rules.
 ## Canonical tree
 
 ```text
-tasks/
+work/
 └── bNN_<block>/
     ├── board.md
     ├── diagram/
@@ -27,13 +27,13 @@ tasks/
         │   │       ├── _defaults.yaml
         │   │       ├── prompts/
         │   │       └── rNN_<run>.yaml
-        │   ├── runs/rNN_<run>.sh
+        │   ├── runs/rNN_<run>/           run.yaml · rNN_<run>.sh · result/
         │   ├── sbatch/
         │   └── studio/                   kept chat and draw, if any
         │       └── chat/<YYMMDD-HHMM>/
         │           ├── digest.md
         │           └── transcript.md
-        ├── tNN_<task>/results/rNN_<run>/
+        ├── (older: tNN_<task>/results/rNN_<run>/, until its Block moves)
         │   ├── runtime.yaml
         │   └── metrics.json
         └── tNN_<task>/notebooks/rNN_<run>.ipynb
@@ -47,7 +47,7 @@ when no `draft/` exists). It holds the current plan
 `<stem>-draft-v<G>.<S>.md` with three sections (`## 1 · Structure`,
 `## 2 · Scratch`, `## 3 · Draft`), `records/` for process records such as
 `<stem>-log.md`, and `previous/` for older plan versions. For an existing
-Task or a whole `tasks/` tree, `page.py check-page-folder <task-folder | tasks-dir>`
+Task or a whole `work/` tree, `page.py check-page-folder <task-folder | tasks-dir>`
 says whether each Page is on the latest layout and names the fix, and
 `page.py draft-layout <task-folder | tasks-dir> --sort-runs` migrates it
 (both under `<toolkit>/skills/1_base/page/haipipe-page/cli/`).
@@ -79,7 +79,7 @@ material: no worker, ticket, config or Result lives there.
 - `src/` holds only code/defaults shared by multiple Tasks.
 - `src/config-defaults.yaml` may declare a Job-level `store:`.
 - Job `sbatch/` coordinates at least two Tasks.
-- Generated output uses `<task>/results/<run>/` and
+- Generated output uses `<task>/runs/<run>/result/` and
   `<task>/notebooks/<run>.ipynb` under resolved `$OUTPUT_ROOT`.
 - A kept chat session is Page material, not generated output: it stays in the
   Task Folder at `<task>/studio/chat/<YYMMDD-HHMM>/` and never follows
@@ -94,13 +94,12 @@ material: no worker, ticket, config or Result lives there.
   `draft/` appears with the Task's first plan or record (page tools create it).
 - `scripts/` holds Task-owned workers and helpers.
 - `scripts/config/` holds shared Task settings plus one config per Run.
-- `runs/` holds one Ticket per Run. Task Run Tickets `runs/rNN_<run>.sh` stay
-  flat; only Page Runs (names starting `rp-`, `re-`, `rd`) are sorted into
-  `runs/<space>/` (`draft-manual-run/`, `draft-auto-run/`, `evidence-run/`,
-  `supporting-run/`, `delivery-run/`). `results/<run>/` stays flat.
+- `runs/` holds one folder per Run (haipipe-run, JL 261006): `runs/rNN_<run>/` with
+  `run.yaml`, the Ticket `rNN_<run>.sh` and the generated `result/`. An older Task keeps
+  `runs/rNN_<run>.sh` + `results/rNN_<run>/` until haipipe-project `update` moves it.
 - Task `sbatch/` may coordinate only this Task's Tickets.
-- Must not contain `src/` or root `config/`. Generated `results/` and
-  `notebooks/` DO live here, one level under the Task (JL 260909).
+- Must not contain `src/` or root `config/`. Generated `notebooks/` live here, and each
+  Result in its Run folder, `runs/<run>/result/`.
 
 ## Run spine
 
@@ -108,8 +107,8 @@ For each Run stem, these projections pair exactly:
 
 ```text
 tNN_<task>/scripts/config/rNN_<run>.yaml
-tNN_<task>/runs/rNN_<run>.sh
-$OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/runtime.yaml
+tNN_<task>/runs/rNN_<run>/rNN_<run>.sh
+$OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/runtime.yaml
 $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 

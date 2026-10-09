@@ -9,8 +9,8 @@ description: >-
 argument-hint: "<paste the error text or screenshot>  [--profile <name>]  [--register <dir where the report is written>]  [--unit <task folder>]  [--session <name of this debugging round>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-09-20"
+  version: "0.10.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -310,7 +310,7 @@ The shape on screen, verbatim, one file:
     **WHERE**
 
     ```
-    tasks/00_cms-stata-template/C00_data_pipeline_template/scripts/0-libs/
+    work/00_cms-stata-template/C00_data_pipeline_template/scripts/0-libs/
       lib-state-end.do   :47-56   CANONICAL  -> synced to 3 C-stage jobs
     ```
 

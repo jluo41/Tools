@@ -13,8 +13,8 @@ description: >-
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-09-29"
+  version: "0.7.3"
+  last_updated: "2026-10-09"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -188,7 +188,7 @@ source and reason, but it is not retroactively promoted into an Idea Card.
 When a project needs a persistent record, use an explicit BJTR container:
 
 ```text
-<project>/ideations/
+<project>/ideation/
 └── b01_<direction>_<qualifier>/
     └── j01_<inquiry>_<qualifier>/
         └── t01_<direction>_<qualifier>/

@@ -1,5 +1,10 @@
 - 261007 · review fixes (version unchanged): Description: read-only display only (setup and launch are haipipe-design's); the cards are the authority until design_views.py reads them; ref/design-board.md and ref/space-mapping.md carry an "older board page only" banner (they stay in place because other skills link them); placeholder examples replace the domain ones.
 
+## 0.15.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.15.0 · 2026-10-07 · The design ladder on the shared frame (JL 261007; b12 s11 · s12 · s13 · s21) (version unchanged)
 
 - SKILL.md rewritten for the ladder: tabs Guide · Block · Job ▾ · Task ▾, the six Spaces at each level as s11 · s12 ·

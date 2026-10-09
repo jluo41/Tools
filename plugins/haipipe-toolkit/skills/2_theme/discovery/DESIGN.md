@@ -73,7 +73,7 @@ compatibility surface.
 ## Four levels
 
 ~~~text
-bank        discoveries/
+bank        discovery/
 L1 Block    bNN_<noun>_<qualifier>/  (Discovery Board; board.md)
 L2 Job      jNN_<noun>_<qualifier>/
 L3 TaskPage tNN_<noun>_<qualifier>/  (Page Folder)
@@ -85,7 +85,7 @@ one article question and `discovery_type`; L4 owns one canonical evidence Subjec
 one paper. Result is the generated projection of Run, not an additional level.
 
 All four levels use `<level-letter><NN>_<noun>_<qualifier>`. Their joined
-address is `bNNjNNtNNrNN`; `discoveries/` is a bank and contributes no segment.
+address is `bNNjNNtNNrNN`; `discovery/` is a bank and contributes no segment.
 
 The Block is the Board container from its first durable write. `board.md`
 declares `board-kind: discovery-block`; Job folders render as Groups and Task

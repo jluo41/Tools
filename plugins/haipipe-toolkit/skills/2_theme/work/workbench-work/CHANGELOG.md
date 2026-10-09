@@ -1,3 +1,15 @@
+## 0.7.3 · 2026-10-09 · RoadMap Draw lists the studio topics and their sessions
+
+- RoadMap Draw also reads the haipipe-studio topic folders: the Block's `studio/sNN-<topic>/` and each Job's
+  `jNN_*/studio/sNN-<topic>/` under the Job's name, each row titled from its face, with its saved sessions
+  (`runs/run-draw-<sNN>/passes/`, newest first) and its preview picture, so a Block keeping its drawings in topic
+  folders no longer reads "No drawings yet". Topics stay editable (their builders keep a person's marks).
+
+## 0.7.2 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.7.1 · 2026-10-07 · The board page answers at `/_board/work-board` (JL 261007)
 
 - Every theme's board page is now `/_board/<theme>-board`, named as its theme is: this one moved from `/_board/task-board` to `/_board/work-board`. The old name still answers (serve.py renames it before any route reads it), so older links keep working; every link the server writes uses the new name.

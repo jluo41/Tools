@@ -230,7 +230,7 @@ Related Papers  (`#story/related`)
                                                 │ › Results     One law for all?
   Claim 1a                                      │   We fit one scaling law to every model's score …
   More capacity stops helping: …                │   for Hypotheses 1a and 1b · also for Questions 2, 3, 4 and 5
-  from Hypothesis 1a                            │     tasks/  b04 scaling_law_analysis
+  from Hypothesis 1a                            │     work/  b04 scaling_law_analysis
                                                 │               j01 collect_and_fit
   Contribution 1a                               │                 t01 collect_scaling_data  ▸ 3 runs
   Patients, not parameters: …                   │
@@ -269,7 +269,7 @@ Under each work item: its folders in the Task or Discovery home, one line per le
 (`b04` block, `j01` job, `t01` task as plain text (JL 260930: its link only opened the raw
 Task Markdown), R as `▸ 3 runs · no receipts`
 on the task line, opening to each run ticket and its receipt state below it, one level in; a Discovery task also says what it
-found). Work built in another project says "built outside tasks/" with its path; a row
+found). Work built in another project says "built outside work/" with its path; a row
 with no folder says "no folder yet".
 
 A run opens its results (JL 260930: "for a run, how could we have a popout window to
@@ -386,7 +386,7 @@ alone and it loads only when its card opens. A row whose Run is missing says "no
 at <address>". `related_html()` draws the tab; `_paper_card()` one card;
 `paper_card_data()` reads one Run.
 
-Task home rules: the Task home is `examples/<Project>/tasks/` (or `task/`, or
+Task home rules: the Task home is `examples/<Project>/work/` (or `task/`, or
 board.md `task-home:`), read Block → Job → Task in both folder shapes (a task folder
 with its own runs/ results/, or the flat `<job>/{runs,results,scripts}/<task>/`);
 runs are the tickets under runs/ and their state is the result's `runtime.yaml`.
@@ -399,7 +399,7 @@ not an address); end the row's design cell with `Task: b03.j02.`, as a Discovery
 scope cell with `Discovery: b01.j04.`. CLAIMED = a block or job shows because
 `blocks:` or a Task Roadmap address covers it; ADDRESSED = the row names its own
 address. Unclaimed jobs are named once, muted, never expanded. Discovery home
-(`examples/<Project>/discoveries/`, or `discovery-home:`) is claimed the same way
+(`examples/<Project>/discovery/`, or `discovery-home:`) is claimed the same way
 through `discoveries:` and Discovery Roadmap addresses.
 
 The High-level logic + Low-level work Runs panel lists Claim review (`run-paper-claim-…`), Task review (`run-paper-task-…`), Task

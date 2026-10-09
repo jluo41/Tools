@@ -1,5 +1,6 @@
 #!/bin/bash
-# Canonical Ticket: <job>/tNN_<task>/runs/rNN_<run>.sh
+# Canonical Ticket: <job>/tNN_<task>/runs/rNN_<run>/rNN_<run>.sh (one folder per Run)
+# An older Ticket sits flat in runs/ and writes results/<run>/; it still runs.
 
 set -uo pipefail
 
@@ -21,8 +22,13 @@ fail_shape() {
 }
 
 TICKET="$(realpath "$0" 2>/dev/null || echo "$0")"
-RUNS_DIR="$(cd "$(dirname "$TICKET")" && pwd)"
-[ "$(basename "$RUNS_DIR")" = "runs" ] || fail_shape "Ticket must live in a Task Folder's runs/ lane"
+RUN_FOLDER="$(cd "$(dirname "$TICKET")" && pwd)"
+if [ "$(basename "$RUN_FOLDER")" = "runs" ]; then
+  RUNS_DIR="$RUN_FOLDER"; RUN_FOLDER=""            # older flat layout: runs/<run>.sh
+else
+  RUNS_DIR="$(cd "$RUN_FOLDER/.." && pwd)"          # one folder per Run: runs/<run>/<run>.sh
+fi
+[ "$(basename "$RUNS_DIR")" = "runs" ] || fail_shape "Ticket must live in runs/<run>/ of a Task Folder"
 
 TASK_FOLDER="$(cd "$RUNS_DIR/.." && pwd)"
 TASK_SEG="$(basename "$TASK_FOLDER")"
@@ -35,16 +41,21 @@ TASKS_DIR="$(cd "$BLOCK_FOLDER/.." && pwd)"
 case "$TASK_SEG" in t[0-9][0-9]_*) : ;; *) fail_shape "Task Folder must be named tNN_<noun>_<qualifier>" ;; esac
 case "$JOB_SEG" in j[0-9][0-9]_*) : ;; *) fail_shape "Job must be named jNN_<noun>_<qualifier>" ;; esac
 case "$BLOCK_SEG" in b[0-9][0-9]_*) : ;; *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;; esac
-case "$(basename "$TASKS_DIR")" in tasks|labelings) : ;; *) fail_shape "Block must be a direct child of tasks/ or labelings/" ;; esac
-# A labelings/ Run mirrors its address below labelings/, so it never shares a folder with a tasks/ Run.
-WORLD_SEG=""; [ "$(basename "$TASKS_DIR")" = "tasks" ] || WORLD_SEG="$(basename "$TASKS_DIR")/"
+# The Theme folder: work/ or labeling/ (the older tasks/ and labelings/ still run; s01-D29).
+case "$(basename "$TASKS_DIR")" in work|tasks|labeling|labelings) : ;; *) fail_shape "Block must be a direct child of work/ or labeling/" ;; esac
+# A labeling/ Run mirrors its address below labeling/, so it never shares a folder with a work/ Run;
+# a work/ Run mirrors none, so its store address is the same under work/ or tasks/.
+case "$(basename "$TASKS_DIR")" in work|tasks) WORLD_SEG="" ;; *) WORLD_SEG="$(basename "$TASKS_DIR")/" ;; esac
 [ -f "$TASK_FOLDER/$TASK_SEG.md" ] || fail_shape "Task Folder requires same-stem Page $TASK_SEG.md"
 
 RUN_NAME="$(basename "$TICKET" .sh)"
 case "$RUN_NAME" in r[0-9][0-9]_*) : ;; *) fail_shape "Run must be named rNN_<noun>_<qualifier>" ;; esac
 
+[ -z "$RUN_FOLDER" ] || [ "$(basename "$RUN_FOLDER")" = "$RUN_NAME" ] || fail_shape "Run folder must be named after its Ticket"
 CONFIG_REL="$TASK_SEG/scripts/config/$RUN_NAME.yaml"
+[ -z "$RUN_FOLDER" ] || [ ! -f "$RUN_FOLDER/config.yaml" ] || CONFIG_REL="$TASK_SEG/runs/$RUN_NAME/config.yaml"
 TICKET_REL="$TASK_SEG/runs/$RUN_NAME.sh"
+[ -z "$RUN_FOLDER" ] || TICKET_REL="$TASK_SEG/runs/$RUN_NAME/$RUN_NAME.sh"
 WORKER_REL="$TASK_SEG/scripts/$TASK_NAME.py"
 CONFIG="$JOB_FOLDER/$CONFIG_REL"
 WORKER="$JOB_FOLDER/$WORKER_REL"
@@ -71,7 +82,7 @@ STORE="${RESULT_STORE:-$(sed -n 's/^store:[[:space:]]*//p' "$JOB_FOLDER/src/conf
 if [ -n "$STORE" ]; then
   case "$STORE" in /*) : ;; *) STORE="$REPO_ROOT/$STORE" ;; esac
   JOB_REL="${JOB_FOLDER#"$TASKS_DIR"/}"
-  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below tasks/ or labelings/"
+  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below work/ or labeling/"
   JOB_REL="$WORLD_SEG$JOB_REL"
   OUTPUT_ROOT="$STORE/$JOB_REL"
 else
@@ -80,13 +91,15 @@ fi
 export OUTPUT_ROOT
 
 RUN_REL="$TASK_SEG/$RUN_NAME"
-RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
+# One folder per Run: the Result is runs/<run>/result/ (mirrored under a store). Older: results/<run>/.
+RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/runs/$RUN_NAME/result"
+[ -n "$RUN_FOLDER" ] || RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
 NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
 export RESULT_DIR="$RESULTS_DIR"
 # A Run's heavy output (haipipe-run "A Result is light") gets its own folder under
-# _WorkSpace/ProjectResult, mirroring the Run's address below tasks/ (or labelings/). The worker creates it
+# _WorkSpace/ProjectResult, mirroring the Run's address below work/ (or labeling/). The worker creates it
 # only when it writes there; the Result keeps the pointer (heavy.yaml, written below).
 _PR_ROOT="${LOCAL_PROJECT_RESULT:-_WorkSpace/ProjectResult}"
 case "$_PR_ROOT" in (/*) ;; (*) _PR_ROOT="$REPO_ROOT/$_PR_ROOT" ;; esac
@@ -321,7 +334,7 @@ HEAVY="$(find "$RESULTS_DIR" \( -type f -size +10M -o -type l \) 2>/dev/null | h
 if [ -n "$HEAVY" ]; then
   echo "==> [warn] the Result holds a file over 10 MB or a link; write it to _WorkSpace and keep a pointer: $HEAVY" >&2
 fi
-LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' 2>/dev/null | while read -r l; do case "$(readlink "$l")" in (/*|*_WorkSpace*) echo "$l" ;; esac; done | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
+LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' -not -path '*/runs/*/result/*' 2>/dev/null | while read -r l; do case "$(readlink "$l")" in (/*|*_WorkSpace*) echo "$l" ;; esac; done | head -3 | sed "s|$REPO_ROOT/||" | tr '\n' ' ')"
 if [ -n "$LINKS" ]; then
   echo "==> [warn] the Task folder links to an absolute path or into _WorkSpace; read it through its variable: $LINKS" >&2
 fi

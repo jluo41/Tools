@@ -14,8 +14,8 @@ description: >-
   design workbench, design tab, design Block tab, design Job tab, design Task tab,
   design spaces on screen, theory of design, /workbench-design.
 metadata:
-  version: "0.15.0"
-  last_updated: "2026-10-07"
+  version: "0.15.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

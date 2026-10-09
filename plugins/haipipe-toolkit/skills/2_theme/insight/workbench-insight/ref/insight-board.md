@@ -12,8 +12,8 @@ page follows the drawing.
 
 ## One dataset, one workbench
 
-The workbench reads one extract, from its board in `insights/<Dataset>-InsightBoard/`
-(boards made before 261001 sit in `insights/_old/`). MT00 names it and every Space shows it in
+The workbench reads one extract, from its board in `insight/<Dataset>-InsightBoard/`
+(boards made before 261001 sit in `insight/_old/`). MT00 names it and every Space shows it in
 one banner line; there is no dataset switcher. A partition is a cut of that
 extract (one config per task, its `population` block), never a second
 dataset. A new extract is a new board (DatasetB → `DatasetB-InsightBoard`).

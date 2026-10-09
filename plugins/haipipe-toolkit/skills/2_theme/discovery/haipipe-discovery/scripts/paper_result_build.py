@@ -262,7 +262,8 @@ def main():
     space_root = next((p for p in [task] + list(task.parents) if (p / "env.sh").is_file()), None)
     if space_root is None:
         sys.exit("no env.sh above %s" % task)
-    result = task / "results" / a.run
+    run_folder = task / "runs" / a.run              # one folder per Run, else the older results/<run>/
+    result = run_folder / "result" if run_folder.is_dir() else task / "results" / a.run
     result.mkdir(parents=True, exist_ok=True)
     y = (task / "discovery.yaml").read_text(encoding="utf-8") if (task / "discovery.yaml").is_file() else ""
     qm = re.search(r"(?ms)^question:\s*\|\s*\n(.*?)(?=^\S)", y)
@@ -331,8 +332,8 @@ def main():
         "operation: paper-analysis",
         "status: complete",
         "result_contract: paper-source-v2",
-        "ticket: runs/%s.sh" % a.run,
-        "result: results/%s/" % a.run,
+        "ticket: %s" % ("runs/%s/%s.sh" % (a.run, a.run) if run_folder.is_dir() else "runs/%s.sh" % a.run),
+        "result: %s/" % result.relative_to(task).as_posix(),
         "trigger:",
         "  kind: user_request",
         "  input: %s" % q(a.trigger or question),

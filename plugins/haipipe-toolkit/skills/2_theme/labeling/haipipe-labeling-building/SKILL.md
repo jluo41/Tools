@@ -9,8 +9,8 @@ description: >-
   new labeling jobs, calibration rounds, human annotation sessions, boundary
   discovery, guideline revision, stopping decisions, freeze, which Building Run comes next, or /haipipe-labeling-building.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-10-07"
+  version: "0.8.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

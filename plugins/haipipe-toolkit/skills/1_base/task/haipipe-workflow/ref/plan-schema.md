@@ -13,14 +13,14 @@ workbench:
   workspace_ids: [create, review, runtime]
 
 input:
-  args: {name: run_lbp, task_folder: tasks/b01_data/j01_lbp/t01_source}
+  args: {name: run_lbp, task_folder: work/b01_data/j01_lbp/t01_source}
   files_in: [ref/source_fn_template.py]
 
 run_specs:
   - id: author
     run_type: authoring.write-file
     purpose: create the requested bounded artifact
-    target: tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
+    target: work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
     actor: {mode: agent, owner: haipipe-task-for-data}
     action: author-file
     input: [ref/source_fn_template.py]
@@ -29,7 +29,7 @@ run_specs:
     exit_gate: {mode: automatic, assertion: file exists and syntax check passes}
     routes: {pass: review, fail: HOLD}
     result:
-      payload: {status: ok, file_path: tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py}
+      payload: {status: ok, file_path: work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py}
       receipt: results/author/runtime.yaml
     cardinality: 1
     cells:
@@ -40,7 +40,7 @@ run_specs:
   - id: review
     run_type: evaluation.validate
     purpose: independently review the authored artifact
-    target: tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
+    target: work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
     actor: {mode: agent, owner: haipipe-task-reviewer-agent}
     action: code-review
     input: [results/author/result.yaml]
@@ -61,7 +61,7 @@ terminal: [CLOSE, HOLD]
 
 output:
   returns: [status, artifacts, verdict, receipts]
-  files_out: [tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py]
+  files_out: [work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py]
 ```
 
 ## Report schema
@@ -77,7 +77,7 @@ runs:
   - run_id: r01_author
     run_spec_id: author
     run_type: authoring.write-file
-    target: tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
+    target: work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
     actor: {mode: agent, owner: haipipe-task-for-data}
     status: complete
     gate_outcome: pass
@@ -87,7 +87,7 @@ runs:
   - run_id: r02_review
     run_spec_id: review
     run_type: evaluation.validate
-    target: tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
+    target: work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py
     actor: {mode: agent, owner: haipipe-task-reviewer-agent}
     status: complete
     gate_outcome: pass
@@ -100,7 +100,7 @@ summary:
   planned_cardinality: 2
   actual_runs: 2
   terminal_route: CLOSE
-  files_created: [tasks/b01_data/j01_lbp/t01_source/scripts/build_lbp.py]
+  files_created: [work/b01_data/j01_lbp/t01_source/scripts/build_lbp.py]
 ```
 
 ## Field requirements

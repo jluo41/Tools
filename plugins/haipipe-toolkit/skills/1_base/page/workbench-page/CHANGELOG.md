@@ -1,3 +1,8 @@
+## 0.100.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.100.0 · 2026-10-07 · The Page views are the frame's Task Spaces (JL 261007)
 
 - One Page Task's views were a route and a page each (draft, evidence, value, runs, pageruns, delivery, folderstat; outline the old name of draft). They are now subspaces of the frame's Task level, drawn in place: Description › Folder, Audience Report › Draft, Work Details › Evidence · Value, Runs › Page Runs, Delivery › Lanes (`servers/workbench/frame.py` PAGE_VIEWS). A theme keeps them beside its own subspaces.

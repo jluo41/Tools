@@ -82,7 +82,7 @@ NEVER edit files in code/haifn/fn_endpoint/ directly — use builders.
 Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/   ← copy-and-customize starting points
                        code/scripts/haibuilder/5-instance/   ← ExampleFn templates
 
-Layer 2: PROJECT       examples/<project>/tasks/bNN_*/jNN_endpoint_functions_*/
+Layer 2: PROJECT       examples/<project>/work/bNN_*/jNN_endpoint_functions_*/
                          ├── t01_metafn_*/scripts/<builder>.py
                          ├── t02_trigfn_*/scripts/<builder>.py
                          ├── t03_postfn_*/scripts/<builder>.py
@@ -507,7 +507,7 @@ Fn loaders (builder/):    code/haipipe/endpoint_base/builder/
   Src2InputFn loader:       builder/src2inputfn.py
   Input2SrcFn loader:       builder/input2srcfn.py
 Generated Fns:            code/haifn/fn_endpoint/    <- NEVER edit directly
-Builder scripts:          tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/  (legacy: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
+Builder scripts:          work/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/  (legacy: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 YAML configs:             <endpoint task>/scripts/config/rNN_*.yaml  (platform configs: platforms/platform-*/config/)
 Databricks platform:      platforms/platform-databrick-inference/
   MLflow wrapper:           code/mlflow_model.py

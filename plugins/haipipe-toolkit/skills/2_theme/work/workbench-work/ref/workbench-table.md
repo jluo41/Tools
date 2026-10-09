@@ -6,7 +6,7 @@ workbench (`/w/<block>`). Rows run input → process → output: Scope states th
 Block, its Questions, its data and its drawings; Task does the work and writes the
 answers, one View per register group; Check reads what was run and judges the reports;
 Delivery holds the answered reports. Folder is where the run writes: `Block ›` is
-the Block folder (`tasks/bNN_<block>/`), `Tools ›` the workbench's own `ref/`;
+the Block folder (`work/bNN_<block>/`), `Tools ›` the workbench's own `ref/`;
 `none` writes no file, only a verdict.
 
 Agents: `haipipe-task-creator-agent` makes a Task (plan, build, report of a Run);

@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.2] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.3.1] — 2026-09-23
 
 - External fields at serving: same `enrich_<table>()` as training with `env='serve'`, `obs_dt='now'`; live providers called inside the endpoint; fallback with `_matched=False`; `max_staleness`; `log_responses`; roundtrip test uses packaged versions.

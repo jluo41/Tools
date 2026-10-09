@@ -7,8 +7,8 @@ description: >-
   or refreshing an InsightBoard. Trigger: insight meta, data inventory,
   folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-10-01"
+  version: "1.5.1"
+  last_updated: "2026-10-09"
   workflow: haipipe-insight-workflow
   folder_kind: meta
   primary_face: page
@@ -34,7 +34,7 @@ changing the partition register.
 
 Meta owns the inventory prerequisite. GI0 must pass before an answering
 Run can consume that inventory. One Meta Folder exists at `0-MT-meta/MT00-meta/`
-of a board in `insights/<Dataset>-InsightBoard/`.
+of a board in `insight/<Dataset>-InsightBoard/`.
 
 **One dataset (JL 261001).** MT00 names the board's ONE prepared extract (its
 path, manifest and data dictionary). It is the identity of the board: the

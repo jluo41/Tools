@@ -75,7 +75,7 @@ payload:
 provenance:
   supporting_results:
     - run: b01j02t03r04
-      result: tasks/.../results/r04_.../result.yaml
+      result: work/.../results/r04_.../result.yaml
   local_input: results/r01_.../input.yaml
 acceptance:
   passed: true

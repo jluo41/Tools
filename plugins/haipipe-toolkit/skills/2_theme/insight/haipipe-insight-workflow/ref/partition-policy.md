@@ -107,7 +107,7 @@ a PARTITION         scripts/config/rNN_<dataset>_<cut>.yaml over the same code (
                     needing DIFFERENT CODE for a subgroup disproves the partition or the topic
 a cross question   its OWN folder, reading the siblings' outputs — a contrast is
                     a new derivation, never a re-filter
-a NEW EXTRACT       a NEW board in insights/ whose pages' tickets call the SAME tasks
+a NEW EXTRACT       a NEW board in insight/ whose pages' tickets call the SAME tasks
                     under new configs (rNN_<newdataset>_<cut>), each result landing in
                     its own page's results/ — the DIKW Block is an instrument bank that travels
 ```
