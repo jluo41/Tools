@@ -49,7 +49,7 @@ WIRING · the ticket, the config, the script
 - [ ] —   the ticket derives RUN_NAME from its own file name and names `scripts/config/${RUN_NAME}.yaml`
 - [ ] —   the ticket calls a script that exists in `scripts/` (`python "$TASK_DIR/scripts/<stem>.py" "$@"`)
 - [ ] S15 no store path is derived from the ticket's file name; a chunk folder is pinned in the config (`chunk_dir:`)
-- [ ] S16 no script, config or ticket names a `tasks/…` path that does not exist (a hardcoded config path, an old `producer:` string)
+- [ ] S16 no script, config or ticket names a `work/…` path that does not exist (a hardcoded config path, an old `producer:` string)
 
 RESULTS · generated output lands where the law says
 - [ ] S12 no `results/` inside a task, and no task script writes `TASK_DIR / "results"`

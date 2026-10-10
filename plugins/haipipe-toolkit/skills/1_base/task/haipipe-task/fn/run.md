@@ -7,7 +7,7 @@ Use for `/haipipe-task run <task-folder-path> [run-name]`.
 The target must be a canonical Task Folder:
 
 ```text
-tasks/bNN_<block>/jNN_<job>/tNN_<task>/
+work/bNN_<block>/jNN_<job>/tNN_<task>/
 ```
 
 Require the same-stem Task Page, `scripts/`, `scripts/config/`, and `runs/`.
@@ -20,12 +20,15 @@ mode.
 ## Resolve the Run spine
 
 ```text
-config    <task>/scripts/config/<run>.yaml
-Ticket    <task>/runs/<run>.sh
-Result    $OUTPUT_ROOT/<task>/results/<run>/
+card      <task>/runs/<run>/run.yaml
+config    <task>/scripts/config/<run>.yaml (or <task>/runs/<run>/config.yaml)
+Ticket    <task>/runs/<run>/<run>.sh
+Result    $OUTPUT_ROOT/<task>/runs/<run>/result/
 notebook  $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
-receipt   $OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+receipt   $OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml
 ```
+
+An older Run sits flat (`runs/<run>.sh` + `results/<run>/`) until haipipe-project `update` moves its Block.
 
 `RESULT_STORE` wins output-root resolution. Next read `store:` from
 `<job>/src/config-defaults.yaml`. Otherwise `$OUTPUT_ROOT` is the Job.

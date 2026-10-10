@@ -1,0 +1,3 @@
+version = 1
+source = "q02_copy_or_read.md"
+title = "Copy each human to json, or read the record store in place?"

@@ -44,7 +44,7 @@ and ask the creator to run `scripts/board_sync.py <block> --build --check
 
 ~~~text
 [ ] one Task Page Folder; root Page and discovery.yaml describe the same question
-[ ] path is discoveries/bNN_.../jNN_.../tNN_.../; no bare NN_ segment
+[ ] path is discovery/bNN_.../jNN_.../tNN_.../; no bare NN_ segment
 [ ] Page filename equals the tNN_ Task folder stem
 [ ] manifest readable/compact Task addresses match the path
 [ ] canonical discovery_type fits the promised root article

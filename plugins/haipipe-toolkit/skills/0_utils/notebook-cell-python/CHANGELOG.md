@@ -4,6 +4,11 @@ notebook-cell-python — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.4.5] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.4.4] - 2026-09-29 - Generated output and encoded ids (JL 260929)
 
 - Rule 7: a notebook that changed because its .py changed and its Ticket reran is reported that way, never as an edit to the notebook.

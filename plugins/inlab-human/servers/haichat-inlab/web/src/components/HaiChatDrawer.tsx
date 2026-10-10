@@ -149,9 +149,12 @@ export default function HaiChatDrawer(props: Props) {
                         );
                     case 'tool_call':
                         return (
-                            <div key={i} className='tc-chip' title={it.input}>
-                                {'🔧 ' + toolLabel(it.tool)}
-                                <span className='tc-args'>{it.input.slice(0, 80)}</span>
+                            <div key={i} className={'tc-chip' + (it.refused ? ' refused' : '')}
+                                title={it.refused ?? it.input}>
+                                {(it.refused ? '⛔ ' : '🔧 ') + toolLabel(it.tool)}
+                                {it.refused
+                                    ? <span className='tc-args'>{'refused · ' + it.refused}</span>
+                                    : <span className='tc-args'>{it.input.slice(0, 80)}</span>}
                             </div>
                         );
                     case 'tool_result':

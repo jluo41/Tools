@@ -1,6 +1,6 @@
 """The work theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A work Task (s13, Tools/blueprints/b03_project_workbench/studio/s13-task-variants): Description is Scope · Plan,
+A work Task (s13, Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s13-task-variants): Description is Scope · Plan,
 Audience Report is Draft · Report, Work Details is Code · Review · Notebooks; its Runs are grouped
 by type by the frame itself. The Block and Job levels read as vanilla (Questions as
 Question │ Work │ Report, the child Jobs and Tasks). Its Guide is the `work` family (once `task`, still an alias).

@@ -179,11 +179,11 @@ Builder Pattern
 **Step 1: Edit builder in the endpoint fn_develop task folder**
 
 ```
-tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/a1_build_metafn_{description}.py
+work/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/a1_build_metafn_{description}.py
 (legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (work/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top of builder:**
 

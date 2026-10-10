@@ -2,9 +2,9 @@
 name: haipipe-insight
 description: >-
   The one door for insight on the ladder: two special boards that work together.
-  The Prototype (tasks/Prototype-bNN-<Topic>/) holds the questions and their
+  The Prototype (work/Prototype-bNN-<Topic>/) holds the questions and their
   scripts, one Job per release, signed and frozen; the insight Board
-  (insights/Insight-<name>/) holds one dataset and its dated versions, one Job
+  (insight/Insight-<name>/) holds one dataset and its dated versions, one Job
   per release × data version, a Task per question, a hard Run per cut. Owns the
   ladder contract and its scaffold (insight_ladder.py), routes each level's Runs
   to the question, evidence-plan, meta, level, check, wisdom and workflow
@@ -16,8 +16,8 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-10-08"
+  version: "3.1.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,9 +30,9 @@ or auditing any insight folder: it is the contract, and `scripts/insight_ladder.
 its proposals to its signature, is [`ref/release.md`](ref/release.md).
 
 ```text
-Prototype   tasks/Prototype-bNN-<Topic>/      the questions + their scripts; a Job per release jNN_pN_<slug>/,
+Prototype   work/Prototype-bNN-<Topic>/      the questions + their scripts; a Job per release jNN_pN_<slug>/,
                                               frozen once a person signs it; proposals/ is its backlog
-Board       insights/Insight-<name>/          one dataset, its dated versions (board.md versions:); a Job per
+Board       insight/Insight-<name>/          one dataset, its dated versions (board.md versions:); a Job per
                                               release × data version jNN_pN_<D>vM/, a Task per question,
                                               a hard Run per cut runs/rNN_<partition>/
 ```

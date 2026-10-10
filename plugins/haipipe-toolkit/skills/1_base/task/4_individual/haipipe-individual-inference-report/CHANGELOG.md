@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.3] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.1.2] - 2026-09-28 - No content hashes (JL 260928)
 
 - AGENTS.md rule 9: `meta.json` `evidence_binding` names `forecast.json` and `report.json` plus the selection, with no hashes (`scripts/make_report_cli.py`, `SKILL.md`, `src/report_schema.py`).

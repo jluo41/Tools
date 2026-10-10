@@ -124,4 +124,4 @@ code/scripts/haistepconfig/
 ```
 
 These are reference templates only — real project configs live in
-`examples/<project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/`.
+`examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/`.

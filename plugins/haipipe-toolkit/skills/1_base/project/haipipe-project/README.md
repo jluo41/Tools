@@ -12,8 +12,8 @@ Project-root setup, audit, and safe reconciliation for `examples/`.
 ```
 
 Every active Project has `README.md` and `project.yaml`. Content worlds are
-lazy: `tasks/`, `discoveries/`, `cowork/`, `papers/`, `insights/`,
-`designs/`, `external/` and (software/hybrid) `platforms/` appear when first
+lazy: `work/`, `discovery/`, `cowork/`, `paper/`, `insight/`,
+`design/`, `external/` and (software/hybrid) `platforms/` appear when first
 used. `diagram/` and `applications/` are retired.
 
 `profile` and `git_mode` are independent manifest fields; names never choose

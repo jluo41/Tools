@@ -1,7 +1,7 @@
 /* RawFilesPanel — the DATA layer's first stage: the files exactly as they arrived.
  *
  * Nothing is parsed here. This is the ground truth a reader can point at when they ask
- * "but what did we actually receive?" — the OhioT1DM XML, not our tables.
+ * "but what did we actually receive?" — the device export as it arrived, not our tables.
  */
 import {useEffect, useState} from 'react';
 
@@ -9,7 +9,7 @@ import type {LayerUnavailable, RawFilesLayer} from '../types';
 import {LAYER_BLURB} from '../views';
 
 /* CONTROLLED — which file is expanded is owned by useConsole, so HaiChat can open the
- * OhioT1DM XML and say "look at this" through the same dispatch a click goes through. */
+ * device export and say "look at this" through the same dispatch a click goes through. */
 interface Props {
     patientId: string | null;
     dataset: string | null;

@@ -2,7 +2,7 @@
 
 A Theme is a Project-root folder holding the Blocks of one kind of work (the contract is
 haipipe-project's ref/project-structure.md). Theme folders are singular and the general
-Theme is `work/` (Tools/blueprints/b03_project_workbench, s01-D28 and s01-D29):
+Theme is `work/` (Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench, s01-D28 and s01-D29):
 
     work/  discovery/  cowork/  paper/  insight/  design/  labeling/
 

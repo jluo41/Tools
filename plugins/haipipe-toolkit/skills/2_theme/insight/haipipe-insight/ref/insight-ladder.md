@@ -1,7 +1,7 @@
 Insight ladder: the Prototype, the insight Board, and how they work together
 ===========================================================================
 
-(JL 261007 plan C, designed in Tools/blueprints/b11_theme_insight: s00 the thinking, s11 Board, s12 Job, s13 Task,
+(JL 261007 plan C, designed in Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight: s00 the thinking, s11 Board, s12 Job, s13 Task,
 s21 Runs and skills; special boards JL 261008.) Insight sits on the shared ladder as two special boards. The
 **Prototype** holds the questions and the code that answers them; each of its Jobs is one version, a release. The
 **insight Board** holds one dataset and its dated versions; each of its Jobs runs one release on one data version.
@@ -20,8 +20,8 @@ The two trees
 -------------
 
 ```text
-<Project>/tasks/Prototype-bNN-<Topic>/        the Prototype: questions + scripts, by version
-├── board.md                                  board-kind: prototype · serves: insights/Insight-<name>
+<Project>/work/Prototype-bNN-<Topic>/        the Prototype: questions + scripts, by version
+├── board.md                                  board-kind: prototype · serves: insight/Insight-<name>
 ├── proposals/                                the backlog: <slug>.md (kind · level · from · state · why), README.md
 ├── studio/ · runs/                           the question map, its own Runs (triage · open a version · carry)
 └── jNN_pN_<slug>/                            one version (a release), frozen once a person signs it
@@ -36,9 +36,9 @@ The two trees
         ├── scripts/<slug>.py                 its one entry script (SPEC line; § The script)
         └── runs/                             its making Runs: plan the evidence · review · write · review the script
 
-<Project>/insights/Insight-<name>/            the insight Board: one dataset, its versions, a Job per pair
+<Project>/insight/Insight-<name>/            the insight Board: one dataset, its versions, a Job per pair
 ├── board.md                                  board-kind: insight-board · workbench: insight · dataset: <D> ·
-│                                             prototype: tasks/Prototype-… · accumulates: yes | no | ? ·
+│                                             prototype: work/Prototype-… · accumulates: yes | no | ? ·
 │                                             versions: [{version: v<M>, folder, frozen, new, preview}]
 │                                             ## Questions (```yaml questions:): the Board's own questions
 ├── meta/meta.md · meta/status.md             what the extract holds · the status grid (the checker writes it)
@@ -59,7 +59,7 @@ The two trees
 ```
 
 **Names.** Both are special boards, named by their kind (JL 261008): the Prototype `Prototype-bNN-<Topic>` in
-`tasks/`, the Board `Insight-<name>[-<YYMMDD>]` in `insights/`. The folder name is a label: a reader knows each by its
+`work/`, the Board `Insight-<name>[-<YYMMDD>]` in `insight/`. The folder name is a label: a reader knows each by its
 `board.md` (`board-kind:`; a Board also by `prototype:`). An older `bNN_<topic>` name stays readable. Inside, Jobs and
 Tasks keep `jNN_` and `tNN_`: a release `jNN_pN_<slug>` (the slug says what it is, JL 261008; its id stays
 `pN` in release.yaml, the faces and Run names; an older `jNN_pN` stays readable), a Board Job `jNN_pN_<D>vM` (`<D>` the dataset, `vM` its version:
@@ -70,7 +70,7 @@ How they work together
 ----------------------
 
 ```text
-          Prototype (tasks/Prototype-bNN-<Topic>/)                    insight Board (insights/Insight-<name>/)
+          Prototype (work/Prototype-bNN-<Topic>/)                    insight Board (insight/Insight-<name>/)
 
 proposals/<slug>.md ◀─────────── propose (questions, a cut) ──────────── a Job's vs-previous · Coverage's gaps
       │ triage: one batch                                                 · a weak or refused answer

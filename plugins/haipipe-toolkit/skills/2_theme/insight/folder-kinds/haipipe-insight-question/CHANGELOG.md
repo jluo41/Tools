@@ -1,5 +1,10 @@
 # haipipe-insight-question · version history
 
+## 2.0.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 2.0.0 · 2026-10-08 · Questions in a Prototype release; proposals and their triage (b11 s21 phase 3)
 
 - `SKILL.md` rewritten for the ladder (the folder contract's nine sections): proposals (`proposals/<slug>.md`: kind ·

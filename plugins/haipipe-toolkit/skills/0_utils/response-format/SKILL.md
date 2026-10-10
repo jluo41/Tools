@@ -14,7 +14,7 @@ description: >-
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.18.1"
+  version: "0.18.2"
   last_updated: "2026-10-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -108,7 +108,7 @@ each `qNN_<topic>` is one question.
 **Related question:** (proposed) <Board> "<short question>": <why>
 ```
 
-1. **Board**: owner and block holding `reports/`: `Tools/blueprints b01_utils`, `Paper-<Name>`.
+1. **Board**: the Block (or Job) holding `reports/`: `b01_haipipe-toolkit j01_utils`, `Paper-<Name>`.
 2. **QNN**: from the question's folder `reports/qNN_<topic>`.
 3. **Short question**: the topic question itself, in quotes, a few words.
 4. **Link**: the Question in its workbench, so one click opens it (see "The link" below).
@@ -132,6 +132,10 @@ report's own Page.
    Never start a host just to make a link.
 4. **Fallback**: no host serves that SPACE, or the board has no workbench (a Paper
    board): link the question's file, `<board>/reports/qNN_<topic>/qNN_<topic>.md`.
+5. **A Job's question** (2026-10-09): a Job keeps its own `reports/` and its face's
+   `## Questions` (the toolkit's blueprint Jobs, `Tools/blueprints/b01_haipipe-toolkit/jNN_*`).
+   Link the shared workbench on the Job's Audience Report, scrolled to the row:
+   `<host>/_board/workbench?path=<job folder>&space=Audience+Report#question-QNN`.
 
 Example: `[b01_irb Q01 "How to write an IRB submission"](http://100.121.165.84:5622/_board/cowork-board?path=examples-4-agent/Project-Samsung/cowork/b01_irb/board.md&view=questions#question-Q01)`.
 
@@ -434,7 +438,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question:** [Tools/blueprints b01_utils Q01 "Point to a skill or restate it?"](<host>/_board/work-board?path=Tools/blueprints/b01_utils/board.md&view=questions#question-Q01): gives the verdict and the one condition under which it fails.
+**Related question:** [b01_haipipe-toolkit j01_utils Q01 "Point to a skill or restate it?"](<host>/_board/workbench?path=Tools/blueprints/b01_haipipe-toolkit/j01_utils&space=Audience+Report#question-Q01): gives the verdict and the one condition under which it fails.
 
 ## 2. 🛠️ What I Changed
 

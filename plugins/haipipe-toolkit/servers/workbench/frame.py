@@ -6,7 +6,7 @@
     content                                                  │ Runs panel
 
 The frame owns the levels, the six Spaces, their order and dividers, the third row, the Runs
-panel and the look (Tools/blueprints/b03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
+panel and the look (Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
 gives only what each Space holds at each level: `servers/workbench-<theme>/<theme>_theme.py`
 exports `THEME`, a `Theme`. A Space a theme leaves out shows the vanilla default, read from the
 standard folders (the face `.md`, `studio/`, `reports/`, the child `jNN_` / `tNN_` folders,

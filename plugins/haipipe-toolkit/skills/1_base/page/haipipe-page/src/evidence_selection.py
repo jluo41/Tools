@@ -83,7 +83,7 @@ def run_receipt(path):
     from .run_folders import is_result_folder
     path = Path(path)
     for folder in path.parents:
-        if is_result_folder(folder):
+        if is_result_folder(folder) or (folder.name == "result" and folder.parent.parent.name == "runs"):
             receipt = folder / "runtime.yaml"
             if not receipt.is_file():
                 return None

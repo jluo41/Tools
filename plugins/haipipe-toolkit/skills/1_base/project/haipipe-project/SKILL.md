@@ -3,14 +3,17 @@ name: haipipe-project
 description: >-
   Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-nlp/.
   Owns the Project boundary, README.md, project.yaml, project profile and Git
-  mode, and the optional top-level worlds tasks/, discoveries/, cowork/,
-  papers/, insights/, designs/, labelings/, and external/, plus platforms/ for code repos. Use for new projects, repository
-  topology, project structure reviews, compliance previews, or root-level
-  migrations. Child-world internals remain owned by their domain skills.
+  mode, and the optional top-level worlds work/, discovery/, cowork/,
+  paper/, insight/, design/, labeling/, ideation/, and external/, plus platforms/ for code repos. Use for new projects, repository
+  topology, project structure reviews, compliance previews, and root-level migrations:
+  `audit` flags what an existing Project or SPACE is missing against the current contract
+  (old plural Theme folders, flat Runs, missing faces) and the step that fixes it, `update`
+  plans the fix as a dry run, `update --apply` applies it. Child-world internals remain
+  owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-10-06"
+  version: "0.14.0"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,17 +29,18 @@ Task, Discovery, Paper, Application, Page, or Run.
 examples/ProjNN-<domain>-<purpose>/
 ├── README.md       required human entry
 ├── project.yaml    required machine contract
-├── tasks/          optional/lazy · computational evidence bank
-├── discoveries/    optional/lazy · external-evidence bank
+├── work/          optional/lazy · computational evidence bank
+├── discovery/    optional/lazy · external-evidence bank
 ├── cowork/         optional/lazy · coordination text: tickets, people, emails,
 │                   meetings, design notes; one CoWork Block per topic,
 │                   bNN_<topic>/board.md + jNN_<job>/ Jobs (haipipe-cowork)
 ├── platforms/      optional/lazy · project-owned code repos as submodules
 │                   (software and hybrid profiles only)
-├── papers/         optional/lazy · academic consumers
-├── insights/       optional/lazy · older register-kind Insight boards (new: a tasks/ Block)
-├── designs/        optional/lazy · Design boards and folders
-├── labelings/      optional/lazy · labeling Blocks; a Job is one dataset with one label
+├── paper/         optional/lazy · academic consumers
+├── insight/       optional/lazy · older register-kind Insight boards (new: a work/ Block)
+├── design/        optional/lazy · Design boards and folders
+├── labeling/      optional/lazy · labeling Blocks; a Job is one dataset with one label
+├── ideation/      optional/lazy · Ideation directions (bNN/jNN/tNN, no Runs)
 └── external/       optional/lazy · pinned, read-only upstream material
 ```
 
@@ -68,13 +72,16 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
     the Project name is not a router.
 
 /haipipe-project audit [<project>|--all|<Block|Job|Task|Run>] [--deep]
-    Read-only. A Project: root compliance (--deep adds counts per level). A Block,
-    Job, Task or Run: its shape against the ladder, down to each Run. Read fn/audit.md.
+    Read-only. A Project: every finding and the update step that fixes it (root, singular
+    Theme folders, Job-centred layout, one folder per Run, faces), what a person decides,
+    and the Tools gate. A Block, Job, Task or Run: its shape against the ladder, down to
+    each Run. Read fn/audit.md.
 
 /haipipe-project update [<project>|--all|<Block|Job|Task>] [--apply]
-    A Project: add or reconcile the root contract; record unsafe moves as migration
-    debt. Below it: a dry run of the move to one folder per Run and the missing
-    run.yaml cards; --apply does it. Read fn/update.md.
+    A dry run unless --apply. A Project: every step audit found work for, in order (root,
+    themes, convert, runs, faces); --apply runs them, re-audits after each, verifies tickets
+    and links, and never commits. Below it: the move to one folder per Run and the missing
+    run.yaml cards. Read fn/update.md.
 
 /haipipe-project feedback "<text>"
 /haipipe-project digest [session] [--dry-run]
@@ -87,12 +94,13 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 ## Boundary and ownership
 
 ```text
-tasks/          → haipipe-task       BJTR execution; Task = Page; Run = identity
-discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
-papers/         → haipipe-paper      academic consumer
-insights/       → haipipe-insight    older register-kind <Dataset>-InsightBoard/ only (new work: an Insight Block in tasks/)
-designs/        → haipipe-design     Design boards and Design Folders
-labelings/      → subjective-label   bNN_<block>/ Blocks; a Job jNN_<dataset>_<label>/
+work/          → haipipe-task       BJTR execution; Task = Page; Run = identity
+discovery/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
+paper/         → haipipe-paper      academic consumer
+insight/       → haipipe-insight    older register-kind <Dataset>-InsightBoard/ only (new work: an Insight Block in work/)
+design/        → haipipe-design     Design boards and Design Folders
+labeling/      → subjective-label   bNN_<block>/ Blocks; a Job jNN_<dataset>_<label>/
+ideation/      → haipipe-ideation   one direction per Task; its Runs live in work/ or discovery/
 cowork/         → this skill owns the boundary; haipipe-cowork owns each bNN_ Block
 platforms/      → each repo owns its code; this skill owns only the link
 external/       → this skill owns only the read-only root boundary
@@ -100,27 +108,32 @@ external/       → this skill owns only the read-only root boundary
 
 Insight and Design are peer worlds (JL 261001: "no more applications"). An
 Insight topic is one task Block (JL 261005; the Prototype + Instance pair is retired):
-`tasks/b5N_<topic>_dikw/` with `workbench: insight` in its board.md, one Job per DIKW
+`work/b5N_<topic>_dikw/` with `workbench: insight` in its board.md, one Job per DIKW
 level, one Task per question holding its question, its one script, its runs and its
 answering page. A new dataset is a new `datasets:` entry, never a copy of the code.
 
+**Current Insight layout (haipipe-insight, 261009):** a topic's Prototype is a task-world Block
+`work/Prototype-bNN-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
+dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
+`b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
+
 ```text
-tasks/
+work/
 └── b5N_<topic>_dikw/               an Insight Block: board-kind: task-block · workbench: insight
     ├── board.md                    datasets: {<name>: <extract .parquet>, …}
     ├── meta/                       meta.md · partitions.md · thresholds.yaml · status.md (generated)
     ├── j01_data/ … j04_wisdom/     one Job per level; one Task per question:
     │                               question.md · scripts/ · runs/<dataset>_<partition>.sh · the page
     └── studio/                     question-map.excalidraw (generated) and hand sketches
-insights/
+insight/
 └── <Dataset>-InsightBoard/         older register-kind board, until carried over
 ```
 
 The internals (question file, run, report, status) belong to `haipipe-insight`
 (`ref/block-contract.md`). An older register-kind board, `<Dataset>-InsightBoard/`,
-keeps its layout in `insights/` and runs its code from `tasks/`. A
+keeps its layout in `insight/` and runs its code from `work/`. A
 Design board reads a signed Insight handoff. `applications/`
-is legacy: old boards move to `insights/_old/` and `designs/_old/`. Task-side
+is legacy: old boards move to `insight/_old/` and `design/_old/`. Task-side
 consumer-neutral Insight Pages still live on their Task Board. `results/` is
 never a canonical Project-root directory.
 
@@ -133,7 +146,7 @@ migration debt, like `applications/`; no routine update moves its Boards.
 
 - Add a missing `project.yaml` or `README.md` when the user asks to update.
 - Reconcile facts that are observable on disk; do not invent ownership or state.
-- Treat `paper/`, `applications/`, root `results/`, old pipeline roots, and misplaced
+- Treat `applications/`, root `results/`, old pipeline roots, and misplaced
   submodules as migration debt until their owner and destination are resolved.
 - Never move a submodule, generated Result bank, or large code tree as part of a
   routine update. Report the exact source, proposed destination, and required

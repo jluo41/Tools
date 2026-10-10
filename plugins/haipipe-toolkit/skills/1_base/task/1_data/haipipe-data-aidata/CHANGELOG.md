@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.3] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.2.2] — 2026-09-26
 
 - PD2D split years stated as JL set them (train 2015-2022, test 2023-2025; 2023-2024 for the 2-year label), replacing the 1990-2020 / 2021+ placeholder.

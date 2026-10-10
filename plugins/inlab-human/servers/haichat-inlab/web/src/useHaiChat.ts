@@ -28,7 +28,8 @@ export type ChatItem =
     | {kind: 'user'; text: string}
     | {kind: 'draft'; text: string}
     | {kind: 'assistant'; text: string}
-    | {kind: 'tool_call'; tool: string; input: string}
+    /** refused: the gate denied it (not in either list, or the clinician said Deny) — it never ran */
+    | {kind: 'tool_call'; tool: string; input: string; refused?: string}
     | {kind: 'tool_result'; content: string; isError: boolean}
     | {kind: 'approval'; id: string; tool: string; input: string; status: 'pending' | 'allowed' | 'denied'}
     /** something the agent DID to the console — always shown, gated or not */
@@ -152,6 +153,18 @@ export function useHaiChat({enabled, patientId, dispatch, snapshot, drainUserEve
                 break;
             case 'tool_result':
                 push({kind: 'tool_result', content: m.content, isError: Boolean(m.is_error)});
+                break;
+            case 'tool_refused':
+                // the gate said no: mark the newest call of that tool refused, so its chip never
+                // reads as if it ran
+                setItems((xs) => {
+                    const at = xs.map((x) => x.kind === 'tool_call' && x.tool === m.tool && !x.refused)
+                        .lastIndexOf(true);
+                    if (at < 0) {
+                        return [...xs, {kind: 'tool_call', tool: m.tool, input: '', refused: m.message}];
+                    }
+                    return xs.map((x, j) => (j === at ? {...x, refused: m.message} as ChatItem : x));
+                });
                 break;
             case 'approval_request':
                 push({kind: 'approval', id: m.id, tool: m.tool,

@@ -1,10 +1,10 @@
 ---
 name: haipipe-end-input2src
-description: "Input2SrcFn specialist -- designs/reviews the wire-payload-to-record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or input2src."
+description: "Input2SrcFn specialist -- design/reviews the wire-payload-to-record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or input2src."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-13"
+  version: "0.3.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

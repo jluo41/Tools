@@ -5,7 +5,7 @@ Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelI
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
 
-Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
+Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
@@ -32,7 +32,7 @@ Step 3 — Create skeleton
 -------------------------
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared code + config-defaults.yaml

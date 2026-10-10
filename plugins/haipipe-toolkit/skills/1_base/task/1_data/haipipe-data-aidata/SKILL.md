@@ -3,8 +3,8 @@ name: haipipe-data-aidata
 description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-09-26"
+  version: "0.2.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,7 +74,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TfmFn / SplitFn builders in `tasks/b10_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b10_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
+  - TfmFn / SplitFn builders in `work/b10_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b10_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
   - Generated `code/haifn/fn_aidata/`
   - `_WorkSpace/4-AIDataStore/` tensors and split definitions
   - `templates/config.yaml` for AIData_Pipeline runs
@@ -234,7 +234,7 @@ It fills in every required element above, including named selection filters with
 Read it before writing your first datapoint description.
 
 
-Template — drop in `examples/{project}/tasks/{task}/diagram/datapoint.txt`
+Template — drop in `examples/{project}/work/{task}/diagram/datapoint.txt`
 -------------------------------------------------------------------------
 
    ─── DATAPOINT DESCRIPTION ───────────────────────────────────────

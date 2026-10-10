@@ -5,7 +5,7 @@ fn-review: Structural Code Review for haipipe-data Pipeline Functions
 Reports PASS / WARN / FAIL per criterion.
 Read-only: does NOT modify any files.
 
-**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `tasks/b0[1-4]_*/j*/t*/scripts/` Task Folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
+**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `work/b0[1-4]_*/j*/t*/scripts/` Task Folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
 
 ---
 
@@ -84,7 +84,7 @@ Present this message:
     SplitFn        code/haifn/fn_aidata/split/<SplitFnName>.py
 
   Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
-    Any builder:   examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/<builder>.py
+    Any builder:   examples/<Project>/work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/<builder>.py
 
   Pipeline configs (Task scripts/config/)
     Any config:    <task>/scripts/config/<name>.yaml
@@ -344,7 +344,7 @@ ___________________________________________________________________________ CHEC
   SP-5   Function returns the modified df_tag            return contract
          (NOT a dict of split DataFrames)
 
-___________________________________________________________________________ CHECKLIST: Builder script (tasks/b0[1-4]_*/j*/t*/scripts/ or legacy code-dev/1-PIPELINE/) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Builder script (work/b0[1-4]_*/j*/t*/scripts/ or legacy code-dev/1-PIPELINE/) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------

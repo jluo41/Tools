@@ -105,7 +105,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
+  - board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
   - Workbench design
   - first
 # The card Guide (b03 studio/s31-guide, s31-D05 to D08): the base's words are
@@ -141,18 +141,18 @@ roadmap:
   Block:
   - title: the paper ladder
     shows: every paper row, Block to Run, proposed above today
-    board: Tools/blueprints/b16_theme_paper/studio/s01-paper-ladder/s01-paper-ladder.excalidraw
+    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s01-paper-ladder/s01-paper-ladder.excalidraw
   - title: the Board's screens
     shows: the paper Board's tab, one frame per Space, and Guide › Method from it
-    board: Tools/blueprints/b16_theme_paper/studio/s11-paper-block/s11-paper-block.excalidraw
+    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s11-paper-block/s11-paper-block.excalidraw
   - title: the paper workbench before the frame
     shows: the old four-Space page, the old page the band links
-    board: Tools/blueprints/b16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
+    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
   Job:
   - title: a version's screens
     shows: a version's tab, one frame per Space (proposed)
-    board: Tools/blueprints/b16_theme_paper/studio/s12-paper-job/s12-paper-job.excalidraw
+    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s12-paper-job/s12-paper-job.excalidraw
   Task:
   - title: a Section's screens
     shows: a Section's tab, a Page Task with what the paper adds
-    board: Tools/blueprints/b16_theme_paper/studio/s13-paper-task/s13-paper-task.excalidraw
+    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s13-paper-task/s13-paper-task.excalidraw

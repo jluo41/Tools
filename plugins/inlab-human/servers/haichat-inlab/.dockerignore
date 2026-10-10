@@ -3,3 +3,7 @@ web/dist
 __pycache__
 *.pyc
 .venv
+.runs
+# the synthetic fixtures are for docs, screenshots and tests, never for the image
+fixtures
+diagram

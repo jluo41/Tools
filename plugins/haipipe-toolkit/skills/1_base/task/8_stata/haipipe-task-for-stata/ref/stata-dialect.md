@@ -421,7 +421,7 @@ surfaces as the `{LNN}` JOB-level alphabet below. The actual BLOCK letters
 stay project-specific as always (OpioidRx uses A=external/cms, B=case-data,
 R=one regression topic per block — a third scheme, and the project's own
 scheme wins).
-Document it in the project's `README.md` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
+Document it in the project's `README.md` so an auditor reading `work/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
 `regen_task_log.py`'s `LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate for these folders; the type hint it prints is cosmetic and does not affect correctness.
 
 ### Job `{LNN}` stage-letter alphabet

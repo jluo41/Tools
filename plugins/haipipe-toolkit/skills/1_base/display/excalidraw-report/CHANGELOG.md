@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.2 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.8.1 · 2026-10-07 · The report builder and the studio writers moved to their skills (b03 s21)
 
 - `ref/build_report_drawing.py` moved to `haipipe-report`'s `scripts/` (the report's own skill);

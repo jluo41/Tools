@@ -11,13 +11,13 @@ description: >-
   person, or a Block's Questions. The Block contract and the Runs belong to
   haipipe-discovery; report writing to haipipe-page.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-07"
+  version: "0.3.1"
+  last_updated: "2026-10-09"
 ---
 
 # Discovery Block Workbench
 
-One `discoveries/bNN_*/board.md` declaring `board-kind: discovery-block` opens one
+One `discovery/bNN_*/board.md` declaring `board-kind: discovery-block` opens one
 Workbench (`haipipe-discovery` owns the Block, its Jobs, Task Pages and Paper Runs). It is
 drawn as the Task and CoWork workbenches are (JL 261004: separate workbenches, one style):
 the title alone in the header, the Block band, the Spaces Guide · Scope · Work · Check ·

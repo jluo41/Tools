@@ -23,8 +23,8 @@ For a concrete end-to-end project shape, see
 ```
 📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/    <- project (umbrella)
 |
-|-- 📁 tasks/        <- 💼 the WORK         build & run things
-|-- 📁 discoveries/  <- 🔍 the OUTSIDE      sources, notes, prior art verdicts
+|-- 📁 work/        <- 💼 the WORK         build & run things
+|-- 📁 discovery/  <- 🔍 the OUTSIDE      sources, notes, prior art verdicts
 |-- 📁 paper/        <- 📰 the DELIVERABLE  what we publish
 |-- 📁 applications/ <- 💬 the DELIVERABLE  audience-specific reports/messages/UI
 ```
@@ -35,8 +35,8 @@ Each core layer has its own specialist family — different sections, no overlap
 project umbrella     /haipipe-project              project/ (sibling)
 
 ⚙️ THE EXECUTORS — the evidence bank; neither knows a consumer exists
-discoveries/         /haipipe-discovery            discover/
-tasks/               /haipipe-task-*               task/    <- THIS SECTION
+discovery/         /haipipe-discovery            discover/
+work/               /haipipe-task-*               task/    <- THIS SECTION
 
 📄 THE CONSUMERS — they ask; each owns its own evidence questions, privately
 paper/               /haipipe-paper-*              paper/
@@ -418,11 +418,11 @@ other reads the outside world.
 
 ```
    ⚙️ THE EXECUTORS                        📄 SOMEWHERE ELSE
-   tasks/       code, runs, metrics        a consumer, weeks apart
-   discoveries/ literature, prior art      it asks. That is all we ever see of it.
+   work/       code, runs, metrics        a consumer, weeks apart
+   discovery/ literature, prior art      it asks. That is all we ever see of it.
 ```
 
-Nothing under `tasks/` names a consumer, points at one, or is shaped by one. There is no
+Nothing under `work/` names a consumer, points at one, or is shaped by one. There is no
 mailbox, no id, no return field. That is not an accident of layering — it is what makes a
 result REUSABLE: evidence shaped by one consumer's frame is evidence the next one cannot
 use.
@@ -491,7 +491,7 @@ forbidden:
   reading a consumer's files, of any kind
   writing conclusions on anyone's behalf
   deciding whether someone's claim holds
-  putting an external id, a claim id, or a hypothesis id in ANY file under tasks/
+  putting an external id, a claim id, or a hypothesis id in ANY file under work/
 ```
 
 
@@ -637,7 +637,7 @@ Supporting Run / Local Run    consumer-side lineage: full immutable source Run i
 ```
 
 WRITER RULE — every one of these files has exactly ONE writer: THIS LAYER. Nothing outside
-the task layer writes anything under `tasks/`. Not a config, not a run script. A caller
+the task layer writes anything under `work/`. Not a config, not a run script. A caller
 that needs work done here DISPATCHES it —
 `Agent(haipipe-task-orchestrator-agent)`, clean context, one question or one spec — and
 reads the result afterwards. It does not reach in.
@@ -658,7 +658,7 @@ Decision Log
 2026-06-09  Aligned: all 13 specialists consistent with orchestrator v3 (agent names, lifecycle paragraph, IPO samples).
 2026-06-11  Added: "Downstream Consumer Contract (probe)" section — makes the metrics.json / runtime.yaml / configs contract visible from C's side.
 2026-06-11  Proposed: Stage 5 (Insight) after Report, filing D_data via /haipipe-insight-data.
-2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
+2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discovery/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
 2026-07-14  Historical probe/answer-bank design recorded (R1-R18). Retired on 2026-09-08: Task questions now use the shared Run/Result contract, and consumers bind Supporting/Local Runs. The old question command, answer-bank folder, and digest are no longer live.

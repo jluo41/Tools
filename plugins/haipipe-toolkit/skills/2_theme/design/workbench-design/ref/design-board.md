@@ -182,8 +182,8 @@ design-theory.md                        the board's domain theory, when present
 `board.md` `reads:` still names the Insight boards. It now feeds only a
 card's **Insight pages** fold at the Page level. It names each board by its
 sibling folder name, or by a `../` path that stays inside the checkout,
-for example `../../insights/<Name>-InsightBoard` from
-`<Project>/designs/B<NN>_DesignBoard-<Name>-<YYMMDD>`.
+for example `../../insight/<Name>-InsightBoard` from
+`<Project>/design/B<NN>_DesignBoard-<Name>-<YYMMDD>`.
 The board checker (`cli/check.py`) accepts both forms.
 
 A legacy folder under `2-Design/` (`design/DU*`, `rNN_design_*`, PageX, v1)
@@ -200,7 +200,7 @@ Boundary
 Apply to a Board whose `board.md` says `board-kind: design-board` (or
 `design`), whose folder name carries `DesignBoard` as a `-` or `_`
 separated token (`B<NN>_DesignBoard-<Name>-<YYMMDD>`), or which holds
-`2-Design/`. Boards are found under `examples*/*/designs/*/board.md`. The
+`2-Design/`. Boards are found under `examples*/*/design/*/board.md`. The
 legacy `applications/` globs are still searched for historical boards
 only. The board checker audits every folder that holds Design Runs,
 including one with only Commission Runs. Historical `run-design-adopt-*`

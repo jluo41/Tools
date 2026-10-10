@@ -1,6 +1,6 @@
 """Make the design ladder's folders (ref/design-ladder.md): a Block, a Job, its Tasks, a Run.
 
-    python design_ladder.py block <designs/>Design-<name>  [--title "<application>"] [--channel sms]
+    python design_ladder.py block <design/>Design-<name>  [--title "<application>"] [--channel sms]
     python design_ladder.py job   <block>/jNN_<goal>_<method>  --goal G01 --method "M04 m2" --inputs i2 [--n 10]
                                                                 [--moved start|method|inputs]
     python design_ladder.py task  <job> t00                   t00_reason-ideas/   (② reason ideas)

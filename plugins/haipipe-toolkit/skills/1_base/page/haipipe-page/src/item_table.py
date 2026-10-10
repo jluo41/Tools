@@ -287,6 +287,8 @@ def _add_discovery_tickets(root: Path, records: dict[str, dict[str, str]]):
     tickets = ((theme, t) for theme in folder_names("discovery")     # discovery/, or the old discoveries/
                for t in root.glob(f"examples/**/{theme}/b*/j*/t*/runs/*"))
     for theme, ticket in tickets:
+        if ticket.is_dir():                         # one folder per Run: runs/<run>/<run>.sh + result/
+            ticket = ticket / f"{ticket.name}.sh"
         if not ticket.is_file() or ticket.suffix != ".sh":
             continue
         try:
@@ -309,6 +311,8 @@ def _add_discovery_tickets(root: Path, records: dict[str, dict[str, str]]):
         )
         task_root = root.joinpath(*rel.parts[:at + 4])
         result_dir = task_root / "results" / ticket.stem
+        if ticket.parent.name == ticket.stem:       # one folder per Run
+            result_dir = ticket.parent / "result"
         runtime = result_dir / "runtime.yaml"
         status, result = "ticket", ""
         if runtime.is_file():
@@ -349,8 +353,10 @@ def run_registry(root_text: str) -> dict[str, dict[str, str]]:
     """
     root = Path(root_text)
     records: dict[str, dict[str, str]] = {}
-    pattern = "examples/**/tasks/b*/j*/results/t*/r*/runtime.yaml"
-    for runtime in root.glob(pattern):
+    patterns = ("examples/**/tasks/b*/j*/results/t*/r*/runtime.yaml",     # older Job-level Results
+                "examples/**/tasks/b*/j*/t*/results/r*/runtime.yaml",     # older Task-level Results
+                "examples/**/tasks/b*/j*/t*/runs/r*/result/runtime.yaml")  # one folder per Run
+    for runtime in (r for pattern in patterns for r in root.glob(pattern)):
         text = runtime.read_text(encoding="utf-8", errors="replace")
 
         def field(name: str) -> str:

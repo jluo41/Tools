@@ -25,7 +25,7 @@ never be used to infer j02, and 01 OUTLINE can never be used to infer t01.
 ## 2. Canonical work shape
 
 ```text
-discoveries/                                  bank; no address segment
+discovery/                                  bank; no address segment
 └── b01_sleep-evidence/                       Block = Discovery Board
     ├── board.md                                Board head; board-kind: discovery-block
     └── j02_sleep-mechanisms/                 Job = inquiry/campaign group
@@ -103,7 +103,7 @@ old paper mention -> not a Run until a new Subject is admitted and analyzed
 
 The migrator never manufactures Runs from a PDF, source index, notes file, or
 old status. It makes the new b/j/t address explicit. Old skill directories are
-not project folders and must not be moved into discoveries/. Idea-typed legacy
+not project folders and must not be moved into discovery/. Idea-typed legacy
 manifests are rejected; they are not converted or redirected. After a write,
 run `scripts/board_sync.py` on each new Block so migration also forms its
 `discovery-block` Board. There is no need to rename `1_search`, `2_review`, or the

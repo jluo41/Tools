@@ -7,8 +7,8 @@ description: >-
   a notebook, or for .py to .ipynb conversion and Jupytext-style cells.
 allowed-tools: Bash, Read, Write, Edit
 metadata:
-  version: "0.4.4"
-  last_updated: "2026-09-20"
+  version: "0.4.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,7 +21,7 @@ figures.
 
 Used in any project where code must be runnable both as a script (PR
 review, CI) and as a notebook (Jupyter, embedded figures). Most common
-home: `examples/<project>/tasks/<task>/`.
+home: `examples/<project>/work/<task>/`.
 
 
 ---

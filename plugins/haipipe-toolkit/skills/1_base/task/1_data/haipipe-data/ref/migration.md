@@ -41,7 +41,7 @@ Steps
 
 1. Rename the Block, keeping its letter and name, e.g.:
    ```bash
-   git mv tasks/b04_A_sms_aidatastore tasks/b10_A_sms_aidatastore
+   git mv work/b04_A_sms_aidatastore work/b10_A_sms_aidatastore
    ```
 2. Update text that names the old path (model Project configs and pages,
    READMEs, `TASK-TABLE.md`). Find them with:

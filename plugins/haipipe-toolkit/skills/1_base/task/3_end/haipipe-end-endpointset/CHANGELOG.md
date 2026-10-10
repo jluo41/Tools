@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.3] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## [0.2.2] - 2026-09-28 - No content hashes (JL 260928)
 
 - AGENTS.md rule 9: `manifest.json` records the external release, lock name and asset versions, with no checksums or `sha256`; `fn/fn-1-package.md` and `fn/fn-review.md` check the release, not checksums.

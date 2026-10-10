@@ -1,14 +1,14 @@
 /* CaseView — the DATA layer's last cut: annotation points.
  *
- * A record is one human's whole timeline; a CASE is one point sliced from it —
- * a doctor↔patient dialogue, one review, one prediction window — the unit a
- * label or a score attaches to. Cases come from the SELECTED DATASET's record
- * (data-type driven): pick ACIBench and you get conversations, PhyReview and you
- * get reviews. Labeling history (sl gallery/batch) is joined on as an overlay
- * where a case id lines up.
- *
- * The case unit is data-type specific and is formalized by a CaseFn / 3-CaseStore;
- * until that exists we read it generically off the record streams (server side).
+ * A record is one human's whole timeline; a CASE is one point cut from it — the
+ * unit a label or a score attaches to. Where the cases come from, best first (the
+ * banner names which):
+ *   caseset   the dataset's cooked case set (3-CaseStore): one case per trigger
+ *             moment, with the facets its CaseFns computed
+ *   text-row  no case set: each record row that holds prose is a case
+ *   none      no case set and no prose: a timeline has no cases until it is cooked
+ * Labeling history (sl gallery/batch) is joined on as an overlay where a case id
+ * lines up. Nothing here names a dataset, a table or a column.
  */
 import {useEffect, useMemo, useState} from 'react';
 
@@ -25,11 +25,15 @@ interface CaseItem {
     human_id?: string;
     stream?: string;
     meta?: Record<string, string | number>;
+    /** a case set's CaseFn facets, each already summarised by the server */
+    facets?: Record<string, string>;
     annotations: Record<string, CaseAnnotation>;
 }
 
 interface CasesResp {
-    source: 'record' | 'corpus' | null;
+    source: 'caseset' | 'record' | 'corpus' | null;
+    unit?: 'caseset' | 'text-row' | 'none';
+    case_sets?: string[];
     dataset?: string;
     dims?: string[];
     n_total: number;
@@ -105,11 +109,19 @@ export default function CaseView({patientId, dataset}: Props) {
     }, [patientId, dataset, query]);
 
     const blurb = LAYER_BLURB.case;
+    // the banner names where THESE cases come from, not where cases ideally come from
+    const from = data?.unit === 'caseset'
+        ? {store: blurb.store + ' · ' + (data.case_sets ?? []).join(', '), what: blurb.what}
+        : data?.unit === 'text-row'
+            ? {store: 'no case set mounted', what: 'one case per record row that holds text (a dialogue, a review, a note)'}
+            : data?.unit === 'none'
+                ? {store: 'no case set mounted', what: 'this dataset\'s records hold no text, so it has no cases until a case set is cooked (3-CaseStore)'}
+                : blurb;
     const banner = (
         <div className='layer-banner'>
             <span className='layer-step'>{'4 · CASE'}</span>
-            <code>{blurb.store}</code>
-            <span className='roster-sub'>{blurb.what}</span>
+            <code>{from.store}</code>
+            <span className='roster-sub'>{from.what}</span>
         </div>
     );
 
@@ -154,17 +166,20 @@ export default function CaseView({patientId, dataset}: Props) {
                 {data.dims && data.dims.map((d) => <span key={d} className='chip'>{d}</span>)}
             </div>
 
-            {!patientId && data.source === 'record' && (
+            {!patientId && data.source !== 'corpus' && data.cases.length > 0 && (
                 <div className='hl-note'>
                     {'browsing cases across all humans in '}
                     <code>{data.dataset}</code>
                     {' — pick a human above to see just theirs'}
                 </div>
             )}
-            {patientId && data.cases.length === 0 && (
+            {data.cases.length === 0 && (
                 <div className='hl-note'>
-                    {'this human has no record cases in '}
+                    {data.unit === 'none'
+                        ? 'no cases: mount a case set for '
+                        : (patientId ? 'this human has no cases in ' : 'no cases in ')}
                     <code>{data.dataset}</code>
+                    {data.unit === 'none' ? ' (INLAB_CASE_STORE)' : ''}
                 </div>
             )}
 
@@ -181,6 +196,15 @@ export default function CaseView({patientId, dataset}: Props) {
                             {c.human_id && !patientId && <code className='roster-sub'>{c.human_id}</code>}
                         </div>
                         <CaseText text={c.text}/>
+                        {c.facets && Object.keys(c.facets).length > 0 && (
+                            <table className='case-facets'>
+                                <tbody>
+                                    {Object.entries(c.facets).map(([k, v]) => (
+                                        <tr key={k}><td className='roster-id'>{k}</td><td>{v}</td></tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                         {Object.keys(c.annotations).length > 0 && (
                             <div className='case-anns'>
                                 {Object.entries(c.annotations).map(([dim, a]) => (
@@ -204,10 +228,12 @@ export default function CaseView({patientId, dataset}: Props) {
             </div>
 
             <div className='raw-foot roster-sub'>
-                {data.source === 'record'
-                    ? 'cases sliced from the ' + data.dataset + ' record — one annotation/prediction point each; ' +
+                {data.source === 'caseset'
+                    ? 'cases from the ' + data.dataset + ' case set: one trigger moment each, with its facets; ' +
                       'labels overlay where a labeling project shares the id'
-                    : 'served from the labeling corpus until a 3-CaseStore is mounted'}
+                    : data.source === 'record'
+                        ? 'no case set mounted for ' + data.dataset + ': cases are its record rows that hold text'
+                        : 'served from the labeling corpus until a 3-CaseStore is mounted'}
             </div>
         </div>
     );

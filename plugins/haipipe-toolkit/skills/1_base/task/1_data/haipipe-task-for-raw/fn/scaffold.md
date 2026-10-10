@@ -2,7 +2,7 @@ fn-scaffold: Scaffold a raw extraction job
 ===================================================
 
 Extracts source tables from a Databricks catalog as wide parquet files.
-Output: `tasks/bNN_<raw_block>/jNN_<extraction_job>/tNN_<task>/`.
+Output: `work/bNN_<raw_block>/jNN_<extraction_job>/tNN_<task>/`.
 
 
 Step 0 — Pick the pattern (governance gate)
@@ -18,7 +18,7 @@ PHI      →  Pattern 2  server-resident              (Steps 1-7 with the P2 del
 
 Pattern 2 in one line: nothing comes local — all stages are Spark on the cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/`, and the group carries an orchestrator + `_databricks/` bundle.
 Full contract: `../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks-execution.md`.
-Live example: `examples/Project-REACH-ADHD/tasks/A00_rawstore_reachadhd/`.
+Live example: `examples/Project-REACH-ADHD/work/A00_rawstore_reachadhd/`.
 
 
 Step 1 — Identify project + block

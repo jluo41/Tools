@@ -13,8 +13,8 @@ description: >-
   soft Run, pass, run.yaml, Run ticket, runtime receipt, orphan Result, which skill owns
   this button, run types by Space, soft_run.py, /haipipe-run.
 metadata:
-  version: "0.33.0"
-  last_updated: "2026-10-07"
+  version: "0.33.1"
+  last_updated: "2026-10-09"
 ---
 
 # /haipipe-run · one commission, one identity, preserved history
@@ -258,7 +258,7 @@ beyond a small sample, any file over 10 MB) lives outside the Result, and the
 Result records a pointer to it: a SPACE-relative path with each file's size and
 hash. A Task Run's heavy output has its own folder,
 `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`, the Run's
-address below `tasks/` (the Ticket exports it as `HEAVY_DIR`, and writes the
+address below `work/` (the Ticket exports it as `HEAVY_DIR`, and writes the
 pointer `heavy.yaml` into the Result); a pipeline asset (a SourceSet, an
 ExternalStore version) goes to its stage store instead. Never a copy of the heavy file in the Result or its Folder, and never a
 symlink to an absolute path or into the heavy store: such a link stores an

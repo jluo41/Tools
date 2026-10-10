@@ -1,6 +1,16 @@
 haipipe-job · Changelog
 =======================
 
+## [0.2.1] · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
+## [0.2.0] · 2026-10-09 · Face for an existing Job or Task
+
+- `scripts/new_job.py face <job|task>`: writes the face of an existing folder that has none, from disk
+  (goal and close left open; a Job lists its Tasks with their titles; a Task lists its Runs).
+
 ## [0.1.0] · 2026-10-07 · New: the Job level (b03 s21)
 
 - New skill (JL 261007: "haipipe-board, and haipipe-job, and also haipipe-studio and

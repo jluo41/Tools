@@ -2,7 +2,7 @@
 """insight_ladder.py · make the insight ladder's folders (ref/insight-ladder.md): the Prototype Block and its
 versions and questions, the insight Board and its data versions, its Jobs and their Tasks, and a Run.
 
-    python insight_ladder.py prototype <Project>/tasks/Prototype-<name> --serves insights/Insight-<name> [--title "…"]
+    python insight_ladder.py prototype <Project>/work/Prototype-<name> --serves insight/Insight-<name> [--title "…"]
     python insight_ladder.py version   <prototype> --slug <what-it-is>  the next release jNN_pN_<slug>/ (from the newest)
     python insight_ladder.py question  <version> <L><NN> <slug>        a new question Task tNN_<L><NN>_<slug>/
     python insight_ladder.py change    <version> <L><NN> --why "…"     carry a kept question into this version to change it
@@ -10,7 +10,7 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py sign      <version> --date YYMMDD         record the signature a person states; freezes it
     python insight_ladder.py propose   <prototype> <slug> --kind "new question|fix|retire|cut" --from <jNN or qNN>
                                                                         [--level data|information|knowledge|wisdom] [--why "…"]
-    python insight_ladder.py board     <Project>/insights/Insight-<name> --dataset <D> --prototype tasks/Prototype-<name>
+    python insight_ladder.py board     <Project>/insight/Insight-<name> --dataset <D> --prototype work/Prototype-<name>
                                                                         [--title "…"] [--accumulates yes|no|?]
     python insight_ladder.py data      <board> v<M> --data-folder <SPACE-relative data folder>/ [--new "…"]
                                        (or --extract <SPACE-relative .parquet> [--rows <n>], a lone file)
@@ -19,9 +19,9 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py run       <Board Task> partition <name|all>   a hard Run runs/rNN_<partition>/ (planned)
     (add --dry-run to any command: print what it would make; change nothing)
 
-Two special boards (b11 s00, JL 261007 plan C; named by their kind, JL 261008). The Prototype, `tasks/Prototype-<name>/`,
+Two special boards (b11 s00, JL 261007 plan C; named by their kind, JL 261008). The Prototype, `work/Prototype-<name>/`,
 holds the questions and their scripts; each of its Jobs is one version (a release), j0N_pN/, frozen once a person
-signs it. The insight Board, `insights/Insight-<name>/`, holds one dataset and its dated versions; each of its Jobs
+signs it. The insight Board, `insight/Insight-<name>/`, holds one dataset and its dated versions; each of its Jobs
 pins one release and one data version, j0N_pN_<D>vM/, and moves one clock from the Job before it (`moved: start |
 data | code`). `job` checks the gates (the release is signed, the data version is in board.md, the pair is new, only
 one clock moved), then writes the Job through ref/open_job.py: its face, a Task per question, a ticket per asked cut.
@@ -367,8 +367,8 @@ def face_kind(block: Path) -> str:
 
 
 def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, plan: Plan) -> None:
-    if path.parent.name != "insights":
-        sys.exit(f"an insight Board lives in <Project>/insights/: {path}")
+    if path.parent.name not in ("insight", "insights"):          # insights/ is the older name (s01-D29)
+        sys.exit(f"an insight Board lives in <Project>/insight/: {path}")
     if not BOARD_NAME.match(path.name):
         sys.exit(f"an insight Board is a special board, Insight-<name> (or the older bNN_<topic>): {path.name}")
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", dataset or "") or re.search(r"v\d+$", dataset):
@@ -592,7 +592,7 @@ def main(argv=None) -> list[Path]:
     plan = Plan(a.dry_run)
     c = a.command
     if c == "prototype":
-        prototype(a.folder, a.serves or "insights/<board>", a.title, plan)
+        prototype(a.folder, a.serves or "insight/<board>", a.title, plan)
     elif c == "version":
         version(a.folder, a.slug, plan)
     elif c == "question":

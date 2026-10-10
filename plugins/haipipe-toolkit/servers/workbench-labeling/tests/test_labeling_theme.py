@@ -57,7 +57,8 @@ class LabelingThemeTest(unittest.TestCase):
         page = frame.render(self.theme, self.root, self.block, "Description", "Schema")
         self.assertIn("labels: [high, low, none]", page)
         page = frame.render(self.theme, self.root, self.block, "Work Details", "Labeling")
-        self.assertIn("b61j01t01", page)
+        # labeling/ is the Theme's name (s01-D29), so the row is the Job, b61j01, as under labelings/
+        self.assertIn("b61j01", page)
         self.assertIn("/_board/labeling?path=", page)
 
     def test_a_job_page_opens_each_view_in_the_labeling_workbench(self):

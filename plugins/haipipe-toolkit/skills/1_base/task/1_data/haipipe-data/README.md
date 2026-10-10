@@ -175,7 +175,7 @@ Review a file before committing**
   Situation:  You've written a new CaseFn or RecordFn builder and want to
               check it for structural issues before running it.
   Command:    /haipipe-data review code/haifn/fn_case/case_casefn/MyFn.py
-              /haipipe-data review examples/<Project>/tasks/b03_casestore/j02_casefn_<family>/t01_casefn_MyFeature/scripts/build_casefn_MyFeature.py
+              /haipipe-data review examples/<Project>/work/b03_casestore/j02_casefn_<family>/t01_casefn_MyFeature/scripts/build_casefn_MyFeature.py
               /haipipe-data review <task>/scripts/config/my_caseset.yaml
   What it does: Auto-detects the file type, applies the matching checklist
                 (70+ criteria across all Fn types), and reports
@@ -305,6 +305,6 @@ Key Files (codebase)
   AIData_Pipeline:    code/haipipe/aidata_base/aidata_pipeline.py
   Asset base:         code/haipipe/assets.py
   Generated Fns:      code/haifn/        (NEVER edit directly)
-  Builder scripts:    examples/<Project>/tasks/b0[1-4]_*/j*/t*/scripts/  (legacy: code-dev/1-PIPELINE/)
+  Builder scripts:    examples/<Project>/work/b0[1-4]_*/j*/t*/scripts/  (legacy: code-dev/1-PIPELINE/)
 
   Always activate .venv first: source .venv/bin/activate && source env.sh

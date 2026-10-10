@@ -1,3 +1,8 @@
+## 0.3.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.3.0 · 2026-10-07 · The Guide moves to its server folder (JL 261007, via b02)
 
 - `ref/discovery-method.md` → `servers/workbench-discovery/guide/method.md`, `ref/methods/` →

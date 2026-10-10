@@ -12,8 +12,8 @@ description: >-
   insight question, propose a question, proposals, triage, ask a question,
   question review, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-10-08"
+  version: "2.0.1"
+  last_updated: "2026-10-09"
   workflow: haipipe-insight-workflow
   folder_kind: question
   primary_face: page
@@ -31,7 +31,7 @@ metadata:
 ## Position
 
 Load `haipipe-insight` (`ref/insight-ladder.md`, `ref/release.md`). A question lives in a Prototype release, one
-Task per question: `tasks/Prototype-bNN-<Topic>/jNN_pN_<slug>/tNN_<L><NN>_<slug>/question.md`
+Task per question: `work/Prototype-bNN-<Topic>/jNN_pN_<slug>/tNN_<L><NN>_<slug>/question.md`
 (`haipipe-insight/ref/block-contract.md` § The question file: id, level, the short question, the ask, Why now, What
 would answer it, the partitions it is asked on, its needs, agreed). This skill owns how a question gets there and
 how it changes; whether it is answered is the Board's.

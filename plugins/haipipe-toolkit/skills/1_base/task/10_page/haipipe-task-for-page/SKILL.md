@@ -14,8 +14,8 @@ description: >-
   reorganize the pages by run, each run one division.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-19"
+  version: "0.4.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -50,7 +50,7 @@ EXITS    Report: every question answered in values.yaml + its Run/Result receipt
 
 ```text
 project or owning family                          any Folder's Page Face
-tasks/                                           <page>/
+work/                                           <page>/
 └── b<NN>_page_service/         one service      ├── draft/<stem>-evidence-items.md
     ├── j01_values_<pageA>/     block per project│     E<NN>-VALUE-<slug> · Supporting Runs
     │   ├── t01_collect_values/                  ├── runs/<owner-native-Run-Ticket>
@@ -108,7 +108,7 @@ Every row resolves or is `owed` — a computed row with an unresolvable
 # $OUTPUT_ROOT/t01_collect_values/results/r01_intro_batch/values.yaml
 computed: "260831 1710"
 upstream:                            # every folder this run read, pinned
-  - examples/ProjB/tasks/R01_Reg_TraitOpioid · report.yaml 260828
+  - examples/ProjB/work/R01_Reg_TraitOpioid · report.yaml 260828
 values:
   - id: adjusted-effect              # consumer-neutral Result key
     question: 2-agreeableness-effect # the Page Evidence Item's question

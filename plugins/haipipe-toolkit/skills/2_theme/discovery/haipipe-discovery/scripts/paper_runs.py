@@ -764,9 +764,9 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
         if not RUN_RE.fullmatch(stem):
             errors.append(f"runname-invalid: {stem}")
     for stem in sorted(runs.keys() - results.keys()):
-        errors.append(f"missing-result: runs/{stem}.sh has no results/{stem}/")
+        errors.append(f"missing-result: {runs[stem].relative_to(topic)} has no Result")
     for stem in sorted(results.keys() - runs.keys()):
-        errors.append(f"orphan-result: results/{stem}/ has no runs/{stem}.sh")
+        errors.append(f"orphan-result: {results[stem].relative_to(topic)} has no ticket")
 
     for stem in sorted(runs.keys() & results.keys()):
         run_path = runs[stem]

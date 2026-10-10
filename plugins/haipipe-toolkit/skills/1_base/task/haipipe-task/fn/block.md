@@ -4,7 +4,7 @@ fn-block: Scaffold a New Task Block Board
 A Block is the Board over one large task topic. It contains related Jobs;
 their Tasks are the Board Pages and their Runs remain execution records.
 
-Output: `examples/{PROJECT_ID}/tasks/bNN_{block_name}/`.
+Output: `examples/{PROJECT_ID}/work/bNN_{block_name}/`.
 
 
 Step 1 - Identify the project
@@ -42,7 +42,7 @@ Step 3 - Create the Board skeleton
 Create exactly:
 
 ```
-tasks/bNN_{block_name}/
+work/bNN_{block_name}/
 ├── board.md
 └── diagram/                 optional until a shared narrative is authored
 ```

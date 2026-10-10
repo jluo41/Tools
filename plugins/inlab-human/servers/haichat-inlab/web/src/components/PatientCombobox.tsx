@@ -12,9 +12,11 @@ interface Props {
     patients: PatientListItem[];
     selected: string | null;
     onSelect: (id: string) => void;
+    /** the active dataset: its cohort label names a patient whose summary names none */
+    dataset?: {name?: string | null; cohort?: string | null};
 }
 
-export default function PatientCombobox({patients, selected, onSelect}: Props) {
+export default function PatientCombobox({patients, selected, onSelect, dataset}: Props) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const rootRef = useRef<HTMLDivElement>(null);
@@ -39,11 +41,11 @@ export default function PatientCombobox({patients, selected, onSelect}: Props) {
         const hit = patients.filter((p) => !q || p.patient_id.toLowerCase().includes(q));
         const by: Record<string, PatientListItem[]> = {};
         for (const p of hit) {
-            const g = cohortOf(p.patient_id, p.summary);
+            const g = cohortOf(p.summary, dataset);
             (by[g] = by[g] ?? []).push(p);
         }
         return Object.entries(by);
-    }, [patients, query]);
+    }, [patients, query, dataset]);
 
     const first = groups[0]?.[1]?.[0];
 
@@ -62,7 +64,11 @@ export default function PatientCombobox({patients, selected, onSelect}: Props) {
             >
                 <span className='combo-label'>{'Patient'}</span>
                 <span className='combo-value'>{selected ?? 'select…'}</span>
-                {selected && <span className='chip'>{cohortOf(selected)}</span>}
+                {selected && (
+                    <span className='chip'>
+                        {cohortOf(patients.find((p) => p.patient_id === selected)?.summary, dataset)}
+                    </span>
+                )}
                 <span className='combo-caret'>{open ? '▴' : '▾'}</span>
             </button>
 

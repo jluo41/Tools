@@ -46,6 +46,7 @@ interface Judged {
 
 interface Props {
     patientId: string | null;
+    dataset?: string | null;
     run: RunRecord | null;
     onRun: () => void;
     canRun: boolean;
@@ -91,7 +92,7 @@ function scoreClass(s: string): string {
 }
 
 export default function PipelineBar(props: Props) {
-    const {patientId, run, onRun, canRun, running, runLabel, disabledReason} = props;
+    const {patientId, dataset, run, onRun, canRun, running, runLabel, disabledReason} = props;
 
     const [personas, setPersonas] = useState<{message: PersonaInfo[]; judge: PersonaInfo[]} | null>(null);
     const [interp, setInterp] = useState<Composed | null>(null);
@@ -142,7 +143,7 @@ export default function PipelineBar(props: Props) {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    patient_id: patientId, persona, slot, run_ref: runRef,
+                    patient_id: patientId, dataset, persona, slot, run_ref: runRef,
                     anchor: run?.result?.trigger?.record?.ObsDT ?? null,
                     response: run?.result?.response,
                 }),

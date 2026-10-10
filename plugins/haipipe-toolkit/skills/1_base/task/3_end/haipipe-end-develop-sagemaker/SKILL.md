@@ -4,8 +4,8 @@ description: "AWS SageMaker develop specialist for haipipe-end: runs Stage 5 tra
 argument-hint: "[verb] [endpoint_set_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-08"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -219,7 +219,7 @@ SSO role needs SageMaker action permissions explicitly.** The
 
    Cleanest fix: attach AWS-managed `AmazonSageMakerFullAccess` to the
    SSO permission set. Curated alternative in
-   `<project>/tasks/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired WellDoc project)`.
+   `<project>/work/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired WellDoc project)`.
 
 **2.
 Multi-arch OCI manifests break SageMaker.** If a training image is

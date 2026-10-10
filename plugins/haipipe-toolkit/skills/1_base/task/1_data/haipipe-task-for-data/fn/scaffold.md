@@ -2,7 +2,7 @@ fn-scaffold: Scaffold a data-pipeline job
 ==================================================
 
 Invokes one of the Stage 1-4 builders (Source / Record / Case / AIData) to produce data artifacts under `_WorkSpace/{1..4}-*Store/`.
-Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
+Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
@@ -38,7 +38,7 @@ Stage A4 → copy code/scripts/haistepnb/a4_aidata_nb.py into tNN_<task>/scripts
 ```
 
 After copy:
-- Set CONFIG default to `examples/<project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/rNN_<run>.yaml`
+- Set CONFIG default to `examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/rNN_<run>.yaml`
 - Update the docstring (first line + Input/Output) with project-specific info
 
 Result:

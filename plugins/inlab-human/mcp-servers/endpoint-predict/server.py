@@ -18,6 +18,10 @@ codex-image2/server.py. Register with Claude Code:
 Config via env:
     INLAB_ENDPOINT_URL   default endpoint base URL (e.g. http://127.0.0.1:5050)
     INLAB_ENDPOINT_TOKEN optional bearer token (Databricks serving)
+    INLAB_PATIENT_STORE  one json per human (the copy; the fallback)
+    INLAB_DATASET_STORE  <store>/<dataset>/patients/: the first dataset, when no patient store is set
+    INLAB_RECORD_STORE   a haipipe record store, read in place (record_store.py; needs pyarrow);
+                         INLAB_RECORD_SET picks the set, else the first. Wins over the json copy.
 """
 
 from __future__ import annotations
@@ -35,8 +39,26 @@ TOKEN = os.environ.get("INLAB_ENDPOINT_TOKEN", "")
 TIMEOUT_SEC = int(os.environ.get("INLAB_ENDPOINT_TIMEOUT_SEC", "120"))
 # console-mode stores (v0.2): patient store dir, Endpoint_Set store dir, url registry
 PATIENT_STORE = os.environ.get("INLAB_PATIENT_STORE", "")
+if not PATIENT_STORE and os.environ.get("INLAB_DATASET_STORE"):
+    # the console's multi-dataset form: <store>/<dataset>/patients/; standalone, serve the first dataset
+    _root = os.path.expanduser(os.environ["INLAB_DATASET_STORE"])
+    _first = sorted(d for d in os.listdir(_root) if os.path.isdir(os.path.join(_root, d, "patients"))) \
+        if os.path.isdir(_root) else []
+    PATIENT_STORE = os.path.join(_root, _first[0], "patients") if _first else ""
 ENDPOINT_STORE = os.environ.get("INLAB_ENDPOINT_STORE", "")
 REGISTRY_PATH = os.environ.get("INLAB_REGISTRY", "")
+# the record set read in place (record_store.RecordSetReader), when one is mounted; else the json copy.
+# The console points this per request at the chosen dataset, as it does PATIENT_STORE.
+RECORD_SET: Any = None
+if os.environ.get("INLAB_RECORD_STORE"):
+    try:
+        from record_store import RecordSetReader, record_sets
+        _sets = record_sets(os.environ["INLAB_RECORD_STORE"])
+        _pick = os.environ.get("INLAB_RECORD_SET") or next(iter(_sets), None)
+        if _pick in _sets:
+            RECORD_SET = RecordSetReader(_sets[_pick])
+    except Exception as _e:  # noqa: BLE001 — no pyarrow, or no set: the json copy still serves
+        print(f"[{SERVER_NAME}] record store not used: {_e}", file=sys.stderr)
 
 
 # ---------------------------------------------------------------- HTTP layer
@@ -121,6 +143,31 @@ def _index_date(patient: dict[str, Any], pkg: str | None = None) -> str | None:
             if t.get("ObsDT"):
                 return str(t["ObsDT"])[:10]
     return None
+
+
+def _endpoint_tables() -> dict[str, list[str]]:
+    """{package: the tables it requires}, for the record store's 'who can score this human'."""
+    try:
+        return {pkg: _model_info(pkg)["required_tables"] for pkg in _model_dirs()}
+    except Exception:  # noqa: BLE001 — no endpoint store: nobody can score
+        return {}
+
+
+def _load_patient(patient_id: str) -> dict[str, Any]:
+    """One human's json: read in place from the record store when one is mounted, else the copy."""
+    if RECORD_SET is not None:
+        return RECORD_SET.patient(patient_id, _endpoint_tables)
+    with open(_patient_path(patient_id)) as f:
+        return json.load(f)
+
+
+def _patient_ids() -> list[str]:
+    if RECORD_SET is not None:
+        return RECORD_SET.ids()
+    store = os.path.expanduser(PATIENT_STORE)
+    if not PATIENT_STORE or not os.path.isdir(store):
+        raise ValueError("no patient store: set INLAB_RECORD_STORE or INLAB_PATIENT_STORE")
+    return [fn[:-5] for fn in sorted(os.listdir(store)) if fn.endswith(".json")]
 
 
 def _patient_path(patient_id: str) -> str:
@@ -271,7 +318,8 @@ def _build_cgm_payload(patient: dict[str, Any], info: dict[str, Any]) -> dict[st
     return {
         "payload": payload,
         "model": info,
-        "trigger": {"record": {"ObsDT": (patient.get("summary") or {}).get("cgm_last")},
+        "trigger": {"record": {"ObsDT": (patient.get("summary") or {}).get("cgm_last")
+                               or (patient.get("summary") or {}).get("anchor")},
                     "source": "the endpoint's TrigFn anchors on the last CGM reading"},
         "gaps": {"missing_tables": missing, "empty_tables": empty,
                  "unused_patient_tables": sorted(set(have) - known)},
@@ -281,8 +329,7 @@ def _build_cgm_payload(patient: dict[str, Any], info: dict[str, Any]) -> dict[st
 def _build_payload_for(patient_id: str, model: str,
                        obs_dt: str | None = None) -> dict[str, Any]:
     info = _resolve_model(model)
-    with open(_patient_path(patient_id)) as f:
-        patient = json.load(f)
+    patient = _load_patient(patient_id)
 
     if info.get("payload_style") == "cgm_columnar":
         return _build_cgm_payload(patient, info)
@@ -318,25 +365,19 @@ def _build_payload_for(patient_id: str, model: str,
 
 # ---------------------------------------------------------------- console-mode tools (v0.2)
 def tool_list_patients(args: dict[str, Any]) -> dict[str, Any]:
-    store = os.path.expanduser(PATIENT_STORE)
-    if not PATIENT_STORE or not os.path.isdir(store):
-        raise ValueError("INLAB_PATIENT_STORE is not configured or missing")
     out = []
-    for fn in sorted(os.listdir(store)):
-        if not fn.endswith(".json"):
-            continue
-        with open(os.path.join(store, fn)) as f:
-            rec = json.load(f)
-        out.append({"patient_id": rec.get("patient_id", fn[:-5]),
+    for pid in _patient_ids():
+        rec = _load_patient(pid)
+        out.append({"patient_id": rec.get("patient_id", pid),
                     "summary": rec.get("summary", {}),
                     "seen_by": sorted({p["endpoint_package"] for p in rec.get("provenance", [])})})
+    store = f"record store · {RECORD_SET.name}" if RECORD_SET is not None else os.path.expanduser(PATIENT_STORE)
     return _clean({"patient_store": store, "n": len(out), "patients": out})
 
 
 def tool_get_patient(args: dict[str, Any]) -> dict[str, Any]:
     pid = args.get("patient_id") or ""
-    with open(_patient_path(pid)) as f:
-        rec = json.load(f)
+    rec = _load_patient(pid)
 
     index_date = args.get("as_of") or _index_date(rec)
     include_future = bool(args.get("include_post_index"))

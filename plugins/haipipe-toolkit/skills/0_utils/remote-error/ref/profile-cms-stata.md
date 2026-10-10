@@ -25,11 +25,11 @@ issue file         ${REGISTER}/<YYMMDD>/issue-00N-<slug>.md
 daily findings     ${REGISTER}/<YYMMDD>/FINDINGS.md
 issue template     ../ref/issue-file-template.md
 status file        <task-folder>/ISSUES.md
-static gate        python3 tasks/_tools/check_server_ready.py <UNIT>    19 rules
-lessons file       tasks/LESSON.MD
-sync command       python3 tasks/_tools/sync_shared.py
-drift check        python3 tasks/_tools/sync_shared.py --check
-canonical root     tasks/00_cms-stata-template/
+static gate        python3 work/_tools/check_server_ready.py <UNIT>    19 rules
+lessons file       work/LESSON.MD
+sync command       python3 work/_tools/sync_shared.py
+drift check        python3 work/_tools/sync_shared.py --check
+canonical root     work/00_cms-stata-template/
 ```
 
 `<UNIT>` is a prefix, not a path: `R01`, `C01`, `A11`, `R03`.
@@ -101,7 +101,7 @@ cite as [ID] in the code     `// [C01-02] ...` at the causing line
 ```
 
 A file whose head reads `GENERATED FILE` names its canonical under
-`tasks/00_cms-stata-template/`. Edit there, then `sync_shared.py`. Gate rule R19
+`work/00_cms-stata-template/`. Edit there, then `sync_shared.py`. Gate rule R19
 fails until you do.
 
 ---
@@ -109,10 +109,10 @@ fails until you do.
 ## Step 4: the gate, and what it cannot see
 
 ```bash
-python3 tasks/_tools/check_server_ready.py <UNIT>
+python3 work/_tools/check_server_ready.py <UNIT>
 ```
 
-19 rules, each one an entry in `tasks/LESSON.MD`, each entry a failure that has
+19 rules, each one an entry in `work/LESSON.MD`, each entry a failure that has
 already cost a real run. Exit 0 means every rule passed.
 
 Register entry **ALL-09** is why green is not proof: a synthetic unit built to
@@ -141,11 +141,11 @@ ENV-nn   the SERVER itself: Stata, PowerShell, the filesystem.
 ALL-nn   the .ps1 runner or config SHAPE. The same shape sits in EVERY task
          folder, so an ALL fix is a sweep, not one edit.
 
-A11-nn   tasks/A11_CMS-pipeline
-C01-nn   tasks/B01_CaseData_TraitOpioid   (case stage)
-R01-nn   tasks/R01_Reg_TraitOpioid
-R02-nn   tasks/R02_Reg_TraitDiabetesNDC
-R03-nn   tasks/R03_Reg_TraitCABG
+A11-nn   work/A11_CMS-pipeline
+C01-nn   work/B01_CaseData_TraitOpioid   (case stage)
+R01-nn   work/R01_Reg_TraitOpioid
+R02-nn   work/R02_Reg_TraitDiabetesNDC
+R03-nn   work/R03_Reg_TraitCABG
 ```
 
 The prefix is the folder's own index, verbatim, never an abbreviation invented

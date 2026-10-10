@@ -283,7 +283,7 @@ one spine, coordinator tags) and `build_q03_status.py` (frame "Q03 status" with 
 progress track, frame "Health Connect vs Samsung Health SDK" as a two-column comparison with
 a dot per cell).
 
-Plots (REACH-SPACE, Project-0-EHR-Description `tasks/b01_reach_jhu/reports/q01_table_list/
+Plots (REACH-SPACE, Project-0-EHR-Description `work/b01_reach_jhu/reports/q01_table_list/
 studio/_build/build_q01_table_list.py`): four frames, every value read from the two table
 catalogs and the report's Evidence Item Results. "Two schemas" (three `compare` pairs: rows,
 tables, columns, with the ratio between), "Where the rows are" (`share_bar` of all rows, then

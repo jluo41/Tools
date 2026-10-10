@@ -8,8 +8,8 @@ description: >-
   task-type=display.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.4"
-  last_updated: "2026-09-04"
+  version: "0.3.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -48,7 +48,7 @@ What this scaffolds
 -------------------
 
 ```
-tasks/b<NN>_<display-input-block>/
+work/b<NN>_<display-input-block>/
 └── j<NN>_<figure-or-table-name>/
     ├── src/
     └── t01_display_input_summary/

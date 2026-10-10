@@ -1,7 +1,7 @@
 """Scaffold a new Block: `bNN_<slug>/board.md`, its face (haipipe-board, b03 s21, 261007).
 
-A Block sits in a Project's Theme folder (tasks/, discoveries/, cowork/, papers/, insights/, designs/,
-labelings/). The face carries the title line, its header fields (board-kind, spine, close, and an
+A Block sits in a Project's Theme folder (work/, discovery/, cowork/, paper/, insight/, design/,
+labeling/; the older plural names still read). The face carries the title line, its header fields (board-kind, spine, close, and an
 optional workbench: naming the theme that reads it when the Theme folder names another), a Topic, and,
 with --questions, an empty Questions register for haipipe-question. No empty folders are made: studio/,
 reports/, runs/ and the Jobs come with their first content.

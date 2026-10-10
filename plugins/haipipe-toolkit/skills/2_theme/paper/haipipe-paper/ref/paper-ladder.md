@@ -1,7 +1,7 @@
 Paper ladder: the paper theme's Board · version · Task · Run
 =============================================================
 
-(JL 261007, designed in Tools/blueprints/b16_theme_paper: s11 Board, s12 version, s13 Section, s21 skills and Runs;
+(JL 261007, designed in Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper: s11 Board, s12 version, s13 Section, s21 skills and Runs;
 Q01 and Q04, and Q05 for this file; was paper-structure.md.) A paper sits on the shared ladder: one Board per
 paper, one Job per version (one send to one venue), one Task per Section, the Abstract or a letter, and the Runs
 that make and check them. Each level has the six Spaces of the base workbench (Description · Idea Studio ·

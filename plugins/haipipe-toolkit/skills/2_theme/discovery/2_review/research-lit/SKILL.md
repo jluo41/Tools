@@ -4,8 +4,8 @@ description: Search and analyze research papers, find related work, summarize ke
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, Skill, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   argument_hint: "[paper-topic-or-url]"
-  version: "0.2.3"
-  last_updated: "2026-09-22"
+  version: "0.2.4"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -22,7 +22,7 @@ Research topic: $ARGUMENTS
 
 - **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See [`reviewer-routing.md`](../../../../../../../references/aris/skills/shared-references/reviewer-routing.md).
 - **PAPER_LIBRARY** — Local directory containing user's paper collection (PDFs). Check these paths in order:
-  1. `papers/` in the current project directory
+  1. `paper/` in the current project directory
   2. `literature/` in the current project directory
   3. Custom path specified by user in `CLAUDE.md` under `## Paper Library`
 - **MAX_LOCAL_PAPERS = 20** — Maximum number of local PDFs to scan (read first 3 pages each). If more are found, prioritize by filename relevance to the topic.
@@ -94,7 +94,7 @@ Examples:
 |----------|--------|----|---------------|-----------------|
 | 1 | **Zotero** (via MCP) | `zotero` | Try calling any `mcp__zotero__*` tool — if unavailable, skip | Collections, tags, annotations, PDF highlights, BibTeX, semantic search |
 | 2 | **Obsidian** (via MCP) | `obsidian` | Try calling any `mcp__obsidian-vault__*` tool — if unavailable, skip | Research notes, paper summaries, tagged references, wikilinks |
-| 3 | **Local PDFs** | `local` | `Glob: papers/**/*.pdf, literature/**/*.pdf` | Raw PDF content (first 3 pages) |
+| 3 | **Local PDFs** | `local` | `Glob: paper/**/*.pdf, literature/**/*.pdf` | Raw PDF content (first 3 pages) |
 | 4 | **Web search** | `web` | Always available (WebSearch) | arXiv, PubMed, medRxiv, Semantic Scholar, Google Scholar |
 | 5 | **Semantic Scholar API** | `semantic-scholar` | `tools/semantic_scholar_fetch.py` exists | Published venue papers (IEEE, ACM, Springer) with structured metadata: citation counts, venue info, TLDR. **Only runs when explicitly requested** via `— sources: semantic-scholar` or `— sources: web, semantic-scholar` |
 | 6 | **DeepXiv CLI** | `deepxiv` | `tools/deepxiv_fetch.py` and installed `deepxiv` CLI | Progressive paper retrieval: search, brief, head, section, trending, web search. **Only runs when explicitly requested** via `— sources: deepxiv` or `— sources: all, deepxiv` |
@@ -170,7 +170,7 @@ Before searching online, check if the user already has relevant papers locally:
 
 1. **Locate library**: Check PAPER_LIBRARY paths for PDF files
    ```
-   Glob: papers/**/*.pdf, literature/**/*.pdf
+   Glob: paper/**/*.pdf, literature/**/*.pdf
    ```
 
 2. **De-duplicate against Zotero**: If Step 0a found papers, skip any local PDFs already covered by Zotero results (match by filename or title).
@@ -325,7 +325,7 @@ citation-count authority or a standalone Bib source.
 After all sources are searched and papers are ranked by relevance:
 ```bash
 # Download top N most relevant arXiv papers
-python3 "$SCRIPT" download ARXIV_ID --dir papers/
+python3 "$SCRIPT" download ARXIV_ID --dir paper/
 ```
 - Only download papers ranked in the top ARXIV_MAX_DOWNLOAD by relevance
 - Skip papers already in the local library
@@ -376,7 +376,7 @@ table and standalone `references.bib` file:
    citation authority.
 
 ### Step 5: Save (if requested)
-- Save paper PDFs to `literature/` or `papers/`
+- Save paper PDFs to `literature/` or `paper/`
 - Update related work notes in project memory
 - If Obsidian is available, optionally create a literature review note in the vault
 
@@ -406,7 +406,7 @@ in `tools/research_wiki.py`, not in this prose.
               --from "paper:<slug>" --to "<target_node_id>" \
               --type <extends|contradicts|addresses_gap|inspired_by|...> \
               --evidence "<one-sentence quote or reasoning>"
-   [ ] 4. Confirm papers/<slug>.md files were created (helper prints
+   [ ] 4. Confirm paper/<slug>.md files were created (helper prints
           "Paper ingested: ..."); if any failed with a network error,
           retry or fall back to the --title/--authors/--year manual form.
 ```
@@ -414,7 +414,7 @@ in `tools/research_wiki.py`, not in this prose.
 `ingest_paper` handles slug generation, arXiv metadata fetch, dedup
 (skips an existing paper by arXiv id), page rendering, `index.md`
 rebuild, `query_pack.md` rebuild, and log append in a single call —
-**do not manually write `papers/<slug>.md`**. If the helper is
+**do not manually write `paper/<slug>.md`**. If the helper is
 unavailable (e.g., offline on a non-ARIS machine), log the gap and let
 `/research-wiki sync --arxiv-ids …` backfill later.
 

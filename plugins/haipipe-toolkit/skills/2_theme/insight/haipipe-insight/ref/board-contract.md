@@ -11,14 +11,14 @@ made before it, which keep their layout.
 ## One dataset, one board, one folder (JL 261001)
 
 An InsightBoard reads exactly one prepared extract. It lives in the Project's
-`insights/` world, one folder per dataset:
+`insight/` world, one folder per dataset:
 
 ```text
-<Project>/insights/<Dataset>-InsightBoard/      e.g. DatasetA-InsightBoard · DatasetB-InsightBoard
+<Project>/insight/<Dataset>-InsightBoard/      e.g. DatasetA-InsightBoard · DatasetB-InsightBoard
 ```
 
 ```text
-a new source extract        ──▶ a NEW InsightBoard folder in insights/
+a new source extract        ──▶ a NEW InsightBoard folder in insight/
 a new question              ──▶ a new register row INSIDE the board
 a subgroup of the extract   ──▶ a PARTITION inside the board, never a board
 a subgroup + SPLIT verdict  ──▶ MAY become a child board · the verdict is its birth
@@ -32,7 +32,7 @@ not carry), never the same rows re-cut. The child-board path always runs
 through the SPLIT verdict, and a re-extract cannot launder around it.
 
 The code that answers questions is NOT in the board. It lives in the
-Project's `tasks/` world, shared by every dataset (one DIKW Block, below): the
+Project's `work/` world, shared by every dataset (one DIKW Block, below): the
 engine. The board is the dataset wrapper: it owns its questions, and each
 answering page folder is also a task folder holding the page, the tickets that
 call the engine, and their results.
@@ -62,13 +62,13 @@ A page rests on the runs its own tickets call (`ref/report.md`):
 PAGE="$(cd "$(dirname "$0")/.." && pwd)"
 export RUN_TICKET="${PAGE}/runs/$(basename "$0")"
 export RESULT_DIR="${PAGE}/results/$(basename "$0" .sh)"
-exec "${PAGE}/../../../../tasks/b5N_<topic>_dikw/j21_information_<topic>/t02_contrast/runs/r02_<dataset>_alpha.sh"
+exec "${PAGE}/../../../../work/b5N_<topic>_dikw/j21_information_<topic>/t02_contrast/runs/r02_<dataset>_alpha.sh"
 ```
 
 The task config the ticket runs names the extract, the cut and the questions:
 
 ```yaml
-# tasks/b5N_<topic>_dikw/j21_information_<topic>/t01_rates/scripts/config/r02_<dataset>_alpha.yaml
+# work/b5N_<topic>_dikw/j21_information_<topic>/t01_rates/scripts/config/r02_<dataset>_alpha.yaml
 input:      {parquet_path: _WorkSpace/7-AgentStore/…/<dataset>/…parquet}   # the board's ONE extract
 population: {name: alpha, where: [{column: <column>, eq: <value>}]}
 answers:    [QI1, QI2, QI3, QI4, QI5, QI6]        # derived from the pages' answers.yaml; a cross-check
@@ -166,7 +166,7 @@ separate books.
 ## The board, concretely
 
 ```text
-insights/<Dataset>-InsightBoard/              Block: one extract
+insight/<Dataset>-InsightBoard/              Block: one extract
 ├── board.md                    spine · close · extract (no store: results live in pages)
 ├── 0-MT-meta/
 │   ├── MT00-meta/              the ONE extract · partitions (one config name per cut) · thresholds
@@ -188,14 +188,14 @@ insights/<Dataset>-InsightBoard/              Block: one extract
   board.
 - A result is generated: never edited by hand. Rerun its ticket.
 
-## The DIKW Block in tasks/
+## The DIKW Block in work/
 
-The code a board runs lives in one Block of the Project's `tasks/` world, in
+The code a board runs lives in one Block of the Project's `work/` world, in
 the auxiliary range (`haipipe-task` § Block number ranges), with Jobs grouped
 by level so the Work column reads in the same order as the questions:
 
 ```text
-tasks/b5N_<topic>_dikw/          board.md (board-kind: task-block) · src/ shared by every Job
+work/b5N_<topic>_dikw/          board.md (board-kind: task-block) · src/ shared by every Job
 ├── j1N_data_<topic>/            Data: extract shape, catalogs, balance checks
 ├── j2N_information_<topic>/     Information: rates, crossings, features
 ├── j3N_knowledge_<topic>/       Knowledge computations (heterogeneity, prediction), when any
@@ -227,9 +227,9 @@ creates a Run identity. Legacy `page-type:` keys resolve to these owners.
 
 A board scaffolded before 261001 keeps its results in
 `_WorkSpace/InsightBoardResult/<board>/` and its pages cite them there. Such
-boards sit in `insights/_old/<board>/` (they lived in `applications/`, which is
+boards sit in `insight/_old/<board>/` (they lived in `applications/`, which is
 retired; `haipipe-project`). Rebuilding one is: write each
 answering page's tickets, rerun them, check the tables against the old store,
 then rewrite each page's citations to its own `results/` and embed its
 figures. Signed Wisdom pages are not edited. `migration.md` in
-`haipipe-insight-workflow` owns the move of such a board into `insights/`.
+`haipipe-insight-workflow` owns the move of such a board into `insight/`.

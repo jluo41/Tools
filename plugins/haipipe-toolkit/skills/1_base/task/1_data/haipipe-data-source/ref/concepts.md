@@ -42,7 +42,7 @@ Kitchen    Source_Pipeline class       code/haipipe/source_base/
 Chef       SourceFn functions         code/haifn/fn_source/           (GENERATED)
 Recipe     YAML config file           the Task's scripts/config/
 Dish       SourceSet asset            _WorkSpace/1-SourceStore/
-Academy    Builder scripts            tasks/bNN_*/jNN_*/tNN_<sourcefn>/scripts/
+Academy    Builder scripts            work/bNN_*/jNN_*/tNN_<sourcefn>/scripts/
 ```
 
 The Kitchen (Source_Pipeline) orchestrates execution.
@@ -279,7 +279,7 @@ Do not rely on a hardcoded list -- always discover at runtime:
 ls code/haifn/fn_source/
 
 # Corresponding builder scripts (per-project fn_develop task folders)
-ls examples/*/tasks/b*/j*/t*/scripts/
+ls examples/*/work/b*/j*/t*/scripts/
 
 # Inspect a SourceFn's ProcName_List
 head -20 code/haifn/fn_source/<SourceFnName>.py
@@ -372,7 +372,7 @@ Pipeline framework:   code/haipipe/source_base/source_pipeline.py
 Fn loader:            code/haipipe/source_base/builder/sourcefn.py
 
 Generated SourceFns:  code/haifn/fn_source/                        <- discover with ls
-Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<sourcefn>/scripts/
+Builders (edit here): examples/<Project>/work/bNN_<block>/jNN_<job>/tNN_<sourcefn>/scripts/
                       (per-project canonical Task Folder;
                       legacy workspaces may still carry code-dev/1-PIPELINE/1-Source-WorkSpace/)
 

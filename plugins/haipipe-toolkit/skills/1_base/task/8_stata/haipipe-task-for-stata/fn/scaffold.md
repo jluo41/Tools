@@ -4,7 +4,7 @@ fn-scaffold: Scaffold a Stata job
 Unified scaffold for all 4 Stata stages.
 Read `ref/stata-dialect.md` first for the engine contract.
 
-Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`; stage belongs in the suffix.
+Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`; stage belongs in the suffix.
 
 
 Step 1 -- Identify project + block
@@ -40,9 +40,9 @@ Step 4 -- Create skeleton
 Stage-specific tree (see SKILL.md for the full tree per stage).
 Common elements:
 
-    tasks/bNN_<block>/board.md
-    tasks/bNN_<block>/jNN_<job>/src/                 shared libraries/defaults
-    tasks/bNN_<block>/jNN_<job>/tNN_<task>/
+    work/bNN_<block>/board.md
+    work/bNN_<block>/jNN_<job>/src/                 shared libraries/defaults
+    work/bNN_<block>/jNN_<job>/tNN_<task>/
       tNN_<task>.md + draft/ + workflow/
       scripts/                                    dispatcher, orchestrator, workers
       scripts/config/rNN_<run>.do                  per-run globals

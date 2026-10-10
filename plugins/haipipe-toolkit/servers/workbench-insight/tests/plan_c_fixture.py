@@ -1,6 +1,6 @@
 """A placeholder plan-C Project for the insight theme's tests and screenshots (b11 s00 · s11 · s12 · s13).
 
-Plan C (Tools/blueprints/b11_theme_insight): the Prototype (questions + scripts) is its own work Block whose
+Plan C (Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight): the Prototype (questions + scripts) is its own work Block whose
 Jobs are versions (j0N_pN/); the insight Board holds one dataset with dated versions, and its Jobs pin one
 Prototype version and one data version (j0N_pN_<d>vM/). No real names and no data values: every value is a
 placeholder. `make(root)` writes the Project under root and returns its folder.

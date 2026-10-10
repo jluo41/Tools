@@ -1,10 +1,10 @@
 ---
 name: haipipe-discovery-search
-description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical papers/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
+description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical paper/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.4"
-  last_updated: "2026-09-30"
+  version: "0.7.5"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 

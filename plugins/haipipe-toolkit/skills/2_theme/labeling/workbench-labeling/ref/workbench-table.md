@@ -45,7 +45,7 @@ their rows plan who will do them. `(new)` marks an agent or skill planned but no
 | page | Quality | Audit | Draw from one frozen audit design | sampler-agent | haipipe-labeling-audit | none |
 | page | Quality | Audit | Blind-label one audit sample | moderator-agent | haipipe-labeling-audit | the audit labels |
 | page | Quality | Audit | Analyze one completed audit sample | validator-agent | haipipe-labeling-audit | none |
-| page | Quality | External gold (only for a `labelings/` Job with a gold Task) | none | none | none | none |
+| page | Quality | External gold (only for a `labeling/` Job with a gold Task) | none | none | none | none |
 | page | Delivery | Handoff | Freeze a stopped labeling lineage | gallery-keeper-agent | haipipe-labeling-handoff | the frozen handoff |
 | page | Delivery | Scan | Check one frozen production plan | labeling-checker-agent (new) | haipipe-labeling-scan | the frozen production plan |
 | page | Delivery | Scan | Label one frozen corpus shard | labeler-panel-agent | haipipe-labeling-scan | none |

@@ -110,7 +110,7 @@ identification:
 feasibility:
   evidence: [int01]
   pilot: positive | negative | skipped | waived | pending
-  receipt: "tasks/.../results/.../runtime.yaml"
+  receipt: "work/.../results/.../runtime.yaml"
   pressure_receipt: "workflow/pressure/i01_<timestamp>.yaml"  # raw assessment or same-kind resolution receipt
   waiver: ""             # required when pilot: waived
 venue_fit:

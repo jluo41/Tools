@@ -14,8 +14,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-structure.
 metadata:
-  version: "0.49.1"
-  last_updated: "2026-09-29"
+  version: "0.49.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -222,7 +222,7 @@ may reuse the same source or Supporting Run.
 
 ```text
 Q        what will this page say, division by division, bullet by bullet;
-         what does each bullet owe; and where in tasks/ does each owed thing
+         what does each bullet owe; and where in work/ does each owed thing
          come from?
 READS    draft/records/<stem>-requirement.md (V1 to V4) · draft/records/<stem>-feedback.md
          (open rows) · draft/<stem>-evidence-items.md (the authored Item
@@ -616,7 +616,7 @@ SURVEY runs after SHAPE has named every item and passed its mechanical checks.
 For `v0.*`, that checked state may advance in copilot or auto while approval
 remains open; Content stays closed. For `G>=1`, the outline must have direct or
 inherited human approval in either mode.
-It inventories the current `task/` and `discoveries/` libraries, classifies
+It inventories the current `task/` and `discovery/` libraries, classifies
 each selected route as existing Result, Ticket only, rerun, or new design, and
 writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
 worker, materialize a Result, or write prose. A new local route normally names

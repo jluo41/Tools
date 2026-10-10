@@ -8,8 +8,8 @@ description: >-
   says what they show. Trigger: insight information, derive pattern,
   folder-kind information, /haipipe-insight-information.
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-10-01"
+  version: "2.4.1"
+  last_updated: "2026-10-09"
   workflow: haipipe-insight-workflow
   folder_kind: information
   primary_face: task
@@ -97,10 +97,10 @@ nulls and contradictions. Never turn arithmetic into a claim in the handoff.
 
 ## Files
 
-- Task run: `tasks/b5N_<topic>_dikw/j2N_information_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
-- Page ticket: `insights/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
-- Result: `insights/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/results/<ticket>/`
-- Page: `insights/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/I<NN>-<partition>-<slug>.md`
-- Binding: `insights/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
+- Task run: `work/b5N_<topic>_dikw/j2N_information_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
+- Page ticket: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
+- Result: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/results/<ticket>/`
+- Page: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/I<NN>-<partition>-<slug>.md`
+- Binding: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
 - Legacy: a board made before page tickets keeps its results in its old store
   (`ref/board-contract.md` § Boards made before page tickets).

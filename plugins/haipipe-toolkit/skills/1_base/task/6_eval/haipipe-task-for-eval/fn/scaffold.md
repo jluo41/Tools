@@ -4,7 +4,7 @@ fn-scaffold: Scaffold an evaluation job
 Score a trained ModelInstance on an AIData split; produce metrics under `$OUTPUT_ROOT/<task>/results/rNN_<run>/`.
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
-Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
+Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
@@ -31,7 +31,7 @@ Step 3 — Create skeleton
 -------------------------
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md
 └── jNN_<job>/
     ├── src/                         shared code + config-defaults.yaml

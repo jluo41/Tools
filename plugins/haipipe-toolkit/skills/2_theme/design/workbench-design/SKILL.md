@@ -14,8 +14,8 @@ description: >-
   design workbench, design tab, design Block tab, design Job tab, design Task tab,
   design spaces on screen, theory of design, /workbench-design.
 metadata:
-  version: "0.15.0"
-  last_updated: "2026-10-07"
+  version: "0.15.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -98,7 +98,7 @@ writes it ("No ranking yet: t99's run-rank-t99").
 
 The shared Guide's design family is `servers/workbench-design/guide/guide.yaml`: Guide › Method (`guide/method.md`
 and its method cards, the 13 kinds of design method), Guide › Related Paper (`related/papers.md`), and the family's
-skills. The drawings stay in the blueprint Block `Tools/blueprints/b12_theme_design/studio/` (s02 the workbench, s03 the
+skills. The drawings stay in the blueprint Block `Tools/blueprints/b01_haipipe-toolkit/j12_theme_design/studio/` (s02 the workbench, s03 the
 methods and the design unit, s11 · s12 · s13 the levels, s21 Runs and skills).
 
 ## Older board page

@@ -1,21 +1,21 @@
-/* RecordChart — the record layer as a TIMELINE, not a table.
+/* RecordChart — the record layer as a TIMELINE, not a table, for any dataset.
  *
- * Every record stream is already binned onto the same 5-minute grid (DT_s), so they
- * share one x-axis and belong on one plot: the glucose curve, and on top of it the
- * events that move it — meals, exercise, medication. A table can show you a meal at
- * 07:40; only this can show you what the glucose did next.
+ * Every record table that carries a time column becomes one lane, and all lanes share one
+ * time axis, so what happened in one table can be read against what happened in another:
  *
- *   mg/dL                                        ⇣ anchor (what ▶ Run scores)
- *     ╭──╮      🍽        ╭───╮   💊             ┊
- *   ──╯  ╰──────────╮──╭──╯   ╰────╮──────────╮──┊──
- *                   ╰──╯            ╰─────────╯  ┊
+ *   lane 1  ─╮╭──╮╭───╮╭──      a table with numbers: one line per numeric column
+ *   lane 2      ▲      ▲          a table with no numbers: one marker per row, hover lists it
+ *   lane 3   ■           ■
+ *            ┊ anchor (what ▶ Run scores)
  *
- * Events are drawn AT the glucose value of their moment, so a marker sits on the
- * curve rather than in a separate lane — the response is the point.
+ * Nothing here names a dataset, a table or a column (JL 261009: "we might have any dataset with
+ * any type of table"). Which column is the time, which columns are numbers, and which numeric
+ * column is only a row counter are all read from the values. A table with no time column is
+ * not drawn: it is still in the grid below.
  *
- * Plotly owns the mouse: drag to zoom, shift-drag to pan, hover for values, click a
- * legend entry to mute a stream, and the range slider underneath to move a window
- * over the whole series. Click any point to ring its row in the table below.
+ * Plotly owns the mouse: drag to zoom, shift-drag to pan, hover for values, click a legend
+ * entry to mute a column, the range slider to move a window over the whole series. Click any
+ * point to ring its row in the table below.
  */
 import {useEffect, useMemo, useRef} from 'react';
 import Plotly from 'plotly.js-dist-min';
@@ -32,289 +32,228 @@ interface Props {
 
 type Row = Record<string, unknown>;
 
-/** US wire format ("12/06/2021 06:45:00 PM") — what the stores emit. Date.parse
- *  handles it, but NaN-guard so one bad cell can't blank the plot. */
+/** a value that reads as a moment: a date or date-time string, or a Date */
+const DATEISH = /^\d{4}-\d{2}-\d{2}|^\d{1,2}\/\d{1,2}\/\d{2,4}/;
+
 function parseDT(v: unknown): Date | null {
-    if (!v) {
+    if (v === null || v === undefined || v === '') {
         return null;
     }
-    const t = Date.parse(String(v));
+    const s = String(v);
+    if (!DATEISH.test(s)) {
+        return null;
+    }
+    const t = Date.parse(s);
     return Number.isNaN(t) ? null : new Date(t);
 }
 
 function num(v: unknown): number | null {
-    if (v === null || v === undefined || v === '') {
+    if (v === null || v === undefined || v === '' || typeof v === 'boolean') {
         return null;
     }
     const n = Number(v);
     return Number.isFinite(n) ? n : null;
 }
 
-/** The one time column every record stream shares. */
-const T_COLS = ['DT_s', 'DT_r', 'ObservationDateTime', 'AdministrationDate'];
-
-function timeOf(r: Row): Date | null {
-    for (const c of T_COLS) {
-        const d = parseDT(r[c]);
-        if (d) {
-            return d;
+/** share of a column's non-empty cells that pass a test */
+function share(rows: Row[], col: string, ok: (v: unknown) => boolean): number {
+    let n = 0;
+    let hit = 0;
+    for (const r of rows) {
+        const v = r[col];
+        if (v === null || v === undefined || v === '') {
+            continue;
+        }
+        n += 1;
+        if (ok(v)) {
+            hit += 1;
         }
     }
-    return null;
+    return n ? hit / n : 0;
 }
 
-/* How each stream is drawn, and what its hover says. Keyed by the record table's
- * suffix so a cohort missing a stream (Ohio has no Exercise5Min) simply renders
- * fewer traces instead of breaking. */
-const EVENTS: {
-    match: RegExp;
-    label: string;
-    symbol: string;
-    color: string;
-    detail: (r: Row) => string;
-}[] = [
-    {
-        match: /Diet/i,
-        label: '🍽️ Meal',
-        symbol: 'triangle-up',
-        color: '#e8833a',
-        detail: (r) => {
-            const bits = [r.FoodName, r.ActivityType].filter(Boolean).join(' · ');
-            const carbs = num(r.Carbs);
-            const cal = num(r.Calories);
-            return [bits, carbs !== null ? `${carbs} g carbs` : '',
-                cal !== null ? `${cal} kcal` : ''].filter(Boolean).join('<br>');
-        },
-    },
-    {
-        match: /Exercise/i,
-        label: '🏃 Exercise',
-        symbol: 'square',
-        color: '#3aa76d',
-        detail: (r) => {
-            const dur = num(r.ExerciseDuration);
-            return [r.ExerciseType, r.ExerciseIntensity,
-                dur !== null ? `${dur} min` : ''].filter(Boolean).join('<br>');
-        },
-    },
-    {
-        match: /Med/i,
-        label: '💊 Medication',
-        symbol: 'diamond',
-        color: '#8a6fd4',
-        detail: (r) => {
-            const dose = num(r.Dose);
-            const med = String(r.medication ?? r.MedicationID ?? '').slice(0, 60);
-            return [med, dose !== null ? `dose ${dose}` : ''].filter(Boolean).join('<br>');
-        },
-    },
-];
-
-/** Where events with no glucose reading are drawn: a rug lane below the plausible
- *  glucose range, so they read as "an event happened here", never as a value. */
-const RUG = 40;
-
-/** The glucose stream: the only one with a y-value of its own. */
-function glucoseTable(tables: RecordLayer['tables']): string | null {
-    const keys = Object.keys(tables);
-    return keys.find((k) => /CGM/i.test(k)) ?? null;
+/** a numeric column that only counts rows (whole numbers, each one more than the last) */
+function isCounter(rows: Row[], col: string): boolean {
+    const xs = rows.map((r) => num(r[col])).filter((x): x is number => x !== null);
+    if (xs.length < 3 || xs.some((x) => !Number.isInteger(x))) {
+        return false;
+    }
+    return xs.every((x, i) => i === 0 || x > xs[i - 1]);
 }
 
-/** Glucose at time t, by nearest 5-min bin — so an event marker lands ON the curve.
- *  Returns null when the nearest reading is more than 15 min away (a real gap). */
-function nearest(xs: Date[], ys: number[], t: Date): number | null {
-    if (!xs.length) {
-        return null;
-    }
-    let lo = 0;
-    let hi = xs.length - 1;
-    while (lo < hi) {
-        const mid = (lo + hi) >> 1;
-        if (xs[mid].getTime() < t.getTime()) {
-            lo = mid + 1;
-        } else {
-            hi = mid;
+const MAX_LINES = 6;      // numeric columns drawn per lane; the rest stay in the grid
+
+interface Lane {
+    table: string;
+    time: string;
+    numeric: string[];
+    more: number;
+}
+
+/** what each table can draw: its time column and its numeric columns, read from the values */
+function lanesOf(tables: RecordLayer['tables']): Lane[] {
+    const out: Lane[] = [];
+    for (const [table, t] of Object.entries(tables)) {
+        const rows = (t.rows ?? []) as Row[];
+        const cols = t.columns?.length ? t.columns : Object.keys(rows[0] ?? {});
+        if (!rows.length) {
+            continue;
         }
-    }
-    const cands = [xs[lo - 1] ? lo - 1 : lo, lo];
-    let best = cands[0];
-    for (const i of cands) {
-        if (Math.abs(xs[i].getTime() - t.getTime()) < Math.abs(xs[best].getTime() - t.getTime())) {
-            best = i;
+        const time = cols.find((c) => share(rows, c, (v) => parseDT(v) !== null) >= 0.8);
+        if (!time) {
+            continue;
         }
+        const numeric = cols
+            .filter((c) => c !== time && share(rows, c, (v) => num(v) !== null) >= 0.8 && !isCounter(rows, c))
+            .sort((a, b) => rows.filter((r) => num(r[b]) !== null).length -
+                rows.filter((r) => num(r[a]) !== null).length);
+        out.push({table, time, numeric: numeric.slice(0, MAX_LINES), more: Math.max(0, numeric.length - MAX_LINES)});
     }
-    return Math.abs(xs[best].getTime() - t.getTime()) <= 15 * 60_000 ? ys[best] : null;
+    // tables with numbers first (they carry the shape), then event tables
+    return out.sort((a, b) => Number(b.numeric.length > 0) - Number(a.numeric.length > 0));
+}
+
+/** a row's hover: its short fields, the time column first */
+function describe(r: Row, time: string): string {
+    const bits = Object.entries(r)
+        .filter(([k, v]) => k !== time && v !== null && v !== undefined && v !== '' && String(v).length <= 60)
+        .slice(0, 8)
+        .map(([k, v]) => `${k}: ${v}`);
+    return bits.join('<br>') || '—';
 }
 
 export default function RecordChart({data, anchor, onPick}: Props) {
     const host = useRef<HTMLDivElement>(null);
 
     /* traces + the table/row each point came from, so a click can reach the grid */
-    const {traces, origin, empty, hasRug} = useMemo(() => {
-        const tables = data.tables;
-        const gKey = glucoseTable(tables);
+    const {traces, origin, lanes, layoutAxes, height} = useMemo(() => {
+        const ls = lanesOf(data.tables);
+        const weight = ls.map((l) => (l.numeric.length ? 3 : 1));
+        const total = weight.reduce((a, b) => a + b, 0) || 1;
+        const gap = ls.length > 1 ? 0.04 : 0;
         const out: Partial<Plotly.PlotData>[] = [];
         const org: {table: string; row: number}[][] = [];
+        const axes: Record<string, Partial<Plotly.LayoutAxis>> = {};
 
-        let gx: Date[] = [];
-        let gy: number[] = [];
-        if (gKey) {
-            const rows = (tables[gKey].rows ?? []) as Row[];
-            const idx: number[] = [];
-            rows.forEach((r, i) => {
-                const t = timeOf(r);
-                const v = num(r.BGValue ?? r.Value);
-                if (t && v !== null) {
-                    gx.push(t);
-                    gy.push(v);
-                    idx.push(i);
-                }
-            });
-            out.push({
-                type: 'scatter',
-                mode: 'lines',
-                name: `📈 Glucose (${gy.length})`,
-                x: gx,
-                y: gy,
-                line: {color: '#2f7fd1', width: 1.6},
-                hovertemplate: '<b>%{y:.0f} mg/dL</b><br>%{x|%b %d %H:%M}<extra></extra>',
-            });
-            org.push(idx.map((i) => ({table: gKey, row: i})));
-        }
+        let top = 1;
+        ls.forEach((lane, k) => {
+            const h = (weight[k] / total) * (1 - gap * (ls.length - 1));
+            const yName = k === 0 ? 'y' : `y${k + 1}`;
+            const axisKey = k === 0 ? 'yaxis' : `yaxis${k + 1}`;
+            axes[axisKey] = {
+                domain: [Math.max(0, top - h), top],
+                gridcolor: 'rgba(128,128,128,.18)',
+                zeroline: false,
+                showticklabels: lane.numeric.length > 0,
+                title: {text: lane.table.replace(/^Rec\./, ''), font: {size: 10}, standoff: 4},
+                fixedrange: lane.numeric.length === 0,
+            };
+            top = top - h - gap;
 
-        for (const ev of EVENTS) {
-            const key = Object.keys(tables).find((k) => ev.match.test(k) && k !== gKey);
-            if (!key) {
-                continue;
-            }
-            const rows = (tables[key].rows ?? []) as Row[];
-            /* An event only sits ON the curve if there is a reading near it. Events
-             * outside the glucose window (the CGM table is row-capped, the event
-             * tables are not) have NO glucose value — parking them at a made-up y
-             * would draw a reading that does not exist, so they go to a rug lane
-             * under the axis instead: still visible, still clickable, not a value. */
-            const on = {xs: [] as Date[], ys: [] as number[], text: [] as string[], idx: [] as number[]};
-            const off = {xs: [] as Date[], text: [] as string[], idx: [] as number[]};
-            rows.forEach((r, i) => {
-                const t = timeOf(r);
-                if (!t) {
-                    return;
+            const rows = (data.tables[lane.table].rows ?? []) as Row[];
+            const times = rows.map((r) => parseDT(r[lane.time]));
+            if (lane.numeric.length) {
+                for (const col of lane.numeric) {
+                    const xs: Date[] = [];
+                    const ys: number[] = [];
+                    const idx: number[] = [];
+                    rows.forEach((r, i) => {
+                        const t = times[i];
+                        const v = num(r[col]);
+                        if (t && v !== null) {
+                            xs.push(t);
+                            ys.push(v);
+                            idx.push(i);
+                        }
+                    });
+                    out.push({
+                        type: 'scatter',
+                        mode: xs.length >= 20 ? 'lines' : 'lines+markers',
+                        name: `${lane.table.replace(/^Rec\./, '')} · ${col} (${xs.length})`,
+                        x: xs,
+                        y: ys,
+                        yaxis: yName,
+                        line: {width: 1.5},
+                        hovertemplate: `<b>${col}</b> %{y}<br>%{x|%b %d %H:%M}<extra></extra>`,
+                    });
+                    org.push(idx.map((i) => ({table: lane.table, row: i})));
                 }
-                const y = nearest(gx, gy, t);
-                if (y === null) {
-                    off.xs.push(t);
-                    off.text.push(ev.detail(r) || '—');
-                    off.idx.push(i);
-                } else {
-                    on.xs.push(t);
-                    on.ys.push(y);
-                    on.text.push(ev.detail(r) || '—');
-                    on.idx.push(i);
-                }
-            });
-            if (!on.xs.length && !off.xs.length) {
-                continue;
-            }
-            const total = on.xs.length + off.xs.length;
-            out.push({
-                type: 'scatter',
-                mode: 'markers',
-                name: `${ev.label} (${total})`,
-                legendgroup: ev.label,
-                x: on.xs,
-                y: on.ys,
-                text: on.text,
-                marker: {symbol: ev.symbol, size: 11, color: ev.color,
-                    line: {color: '#fff', width: 1}},
-                hovertemplate: `<b>${ev.label}</b><br>%{text}<br>` +
-                    'glucose %{y:.0f} · %{x|%b %d %H:%M}<extra></extra>',
-            });
-            org.push(on.idx.map((i) => ({table: key, row: i})));
-
-            if (off.xs.length) {
+            } else {
+                const xs: Date[] = [];
+                const text: string[] = [];
+                const idx: number[] = [];
+                rows.forEach((r, i) => {
+                    const t = times[i];
+                    if (t) {
+                        xs.push(t);
+                        text.push(describe(r, lane.time));
+                        idx.push(i);
+                    }
+                });
                 out.push({
                     type: 'scatter',
                     mode: 'markers',
-                    name: `${ev.label} · no CGM`,
-                    legendgroup: ev.label,
-                    showlegend: false,
-                    x: off.xs,
-                    y: off.xs.map(() => RUG),
-                    text: off.text,
-                    marker: {symbol: 'line-ns-open', size: 9, color: ev.color,
-                        line: {color: ev.color, width: 2}},
-                    hovertemplate: `<b>${ev.label}</b><br>%{text}<br>` +
-                        'no CGM within 15 min · %{x|%b %d %H:%M}<extra></extra>',
+                    name: `${lane.table.replace(/^Rec\./, '')} (${xs.length})`,
+                    x: xs,
+                    y: xs.map(() => 0),
+                    yaxis: yName,
+                    text,
+                    marker: {size: 10, symbol: 'triangle-up'},
+                    hovertemplate: `<b>${lane.table.replace(/^Rec\./, '')}</b><br>%{text}` +
+                        '<br>%{x|%b %d %H:%M}<extra></extra>',
                 });
-                org.push(off.idx.map((i) => ({table: key, row: i})));
+                org.push(idx.map((i) => ({table: lane.table, row: i})));
             }
-        }
+        });
 
         return {
             traces: out,
             origin: org,
-            empty: !out.length,
-            hasRug: out.some((t) => t.name?.includes('no CGM')),
+            lanes: ls,
+            layoutAxes: axes,
+            height: Math.min(560, 90 + 60 * total),
         };
     }, [data]);
 
     useEffect(() => {
         const el = host.current;
-        if (!el || empty) {
+        if (!el || !traces.length) {
             return;
         }
-        const a = anchor ? parseDT(anchor) : null;
+        const a = anchor ? parseDT(anchor) ?? new Date(anchor) : null;
+        const anchorOk = a && !Number.isNaN(a.getTime());
 
         const layout: Partial<Plotly.Layout> = {
-            margin: {l: 46, r: 12, t: 8, b: 28},
-            height: 300,
+            margin: {l: 64, r: 12, t: 8, b: 28},
+            height,
             hovermode: 'closest',
             dragmode: 'zoom',
             showlegend: true,
-            legend: {orientation: 'h', y: 1.16, x: 0, font: {size: 11}},
+            legend: {orientation: 'h', y: 1.14, x: 0, font: {size: 11}},
             xaxis: {
                 type: 'date',
+                anchor: lanes.length > 1 ? `y${lanes.length}` as Plotly.AxisName : 'y',
                 // SVG traces (not scattergl) so the slider actually previews the
                 // series — a WebGL trace leaves it an empty white band.
-                rangeslider: {thickness: 0.12},
+                rangeslider: {thickness: 0.08},
                 gridcolor: 'rgba(128,128,128,.18)',
             },
-            yaxis: {
-                title: {text: 'mg/dL', standoff: 8},
-                gridcolor: 'rgba(128,128,128,.18)',
-                zeroline: false,
-            },
+            ...layoutAxes,
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
             font: {size: 11},
-            shapes: [
-                // the clinical target band — the reference every CGM chart is read against
-                {
-                    type: 'rect', xref: 'paper', x0: 0, x1: 1,
-                    yref: 'y', y0: 70, y1: 180,
-                    fillcolor: 'rgba(58,167,109,.10)', line: {width: 0}, layer: 'below',
-                },
-                ...(a ? [{
-                    type: 'line' as const, xref: 'x' as const, yref: 'paper' as const,
-                    x0: a, x1: a, y0: 0, y1: 1,
-                    line: {color: '#d1443f', width: 2, dash: 'dot' as const},
-                }] : []),
-            ],
-            annotations: [
-                ...(a ? [{
-                    // Plotly's annotation typing wants a primitive on a date axis
-                    x: a.toISOString(), y: 1, yref: 'paper' as const,
-                    text: '⇣ prediction anchor',
-                    showarrow: false, font: {size: 10, color: '#d1443f'},
-                    xanchor: 'right' as const, yanchor: 'bottom' as const,
-                }] : []),
-                ...(hasRug ? [{
-                    xref: 'paper' as const, x: 0, y: RUG, yref: 'y' as const,
-                    text: 'events with no CGM ⇢',
-                    showarrow: false, font: {size: 9, color: 'rgba(128,128,128,.9)'},
-                    xanchor: 'left' as const, yanchor: 'bottom' as const,
-                }] : []),
-            ],
+            shapes: anchorOk ? [{
+                type: 'line', xref: 'x', yref: 'paper',
+                x0: a, x1: a, y0: 0, y1: 1,
+                line: {color: '#d1443f', width: 2, dash: 'dot'},
+            }] : [],
+            annotations: anchorOk ? [{
+                // Plotly's annotation typing wants a primitive on a date axis
+                x: (a as Date).toISOString(), y: 1, yref: 'paper',
+                text: '⇣ prediction anchor',
+                showarrow: false, font: {size: 10, color: '#d1443f'},
+                xanchor: 'right', yanchor: 'bottom',
+            }] : [],
         };
 
         Plotly.react(el, traces as Plotly.Data[], layout, {
@@ -340,18 +279,20 @@ export default function RecordChart({data, anchor, onPick}: Props) {
         return () => {
             Plotly.purge(el);
         };
-    }, [traces, origin, empty, hasRug, anchor, onPick]);
+    }, [traces, origin, lanes, layoutAxes, height, anchor, onPick]);
 
-    if (empty) {
+    if (!traces.length) {
         return null;
     }
+    const more = lanes.filter((l) => l.more > 0);
     return (
         <div className='record-chart'>
             <div ref={host} />
             <div className='record-chart-hint'>
-                {'drag to zoom · shift-drag to pan · scroll to zoom · '}
-                {'click a legend entry to mute a stream · click a point to find its row · '}
-                {'double-click to reset'}
+                {'one lane per table with a time column · drag to zoom · shift-drag to pan · '}
+                {'click a legend entry to mute a column · click a point to find its row · double-click to reset'}
+                {more.length > 0 && (' · not drawn: ' +
+                    more.map((l) => `${l.more} more numeric columns of ${l.table.replace(/^Rec\./, '')}`).join(', '))}
             </div>
         </div>
     );

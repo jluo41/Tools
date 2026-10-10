@@ -12,8 +12,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.11.1"
-  last_updated: "2026-10-05"
+  version: "1.12.1"
+  last_updated: "2026-10-09"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -32,7 +32,7 @@ metadata:
 
 ```text
 Project
-└── tasks/
+└── work/
     └── bNN_<block>/                       Block = Task Board
         ├── board.md                       board-kind: task-block
         ├── studio/                        optional drawings the whole Block shares
@@ -46,11 +46,11 @@ Project
             │   ├── scripts/
             │   │   ├── <worker>.py
             │   │   └── config/rNN_<run>.yaml
-            │   ├── runs/rNN_<run>.sh      authored Ticket
+            │   ├── runs/rNN_<run>/        run.yaml · rNN_<run>.sh · result/
             │   ├── sbatch/                optional, serves only this Task
             │   └── studio/                optional, the Page's kept chat and draw
             ├── sbatch/                    optional, spans two or more Tasks
-            ├── <task>/results/<run>/      generated Result + runtime.yaml
+            ├── (older: <task>/results/<run>/ until its Block moves)
             └── <task>/notebooks/<run>.ipynb
 ```
 
@@ -140,8 +140,8 @@ All lifecycle work targets one exact `tNN_<task>/` Task Folder.
 ```text
 Plan     workflow/plan.yaml (authoritative Run Specs)
 Build    scripts/<worker>.py + scripts/config/<run>.yaml
-         + runs/<run>.sh + CODE_REVIEW.md
-Execute  $OUTPUT_ROOT/<task>/results/<run>/{runtime.yaml, metrics.json, ...}
+         + runs/<run>/<run>.sh + run.yaml + CODE_REVIEW.md
+Execute  $OUTPUT_ROOT/<task>/runs/<run>/result/{runtime.yaml, metrics.json, ...}
          + $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 Report   workflow/report.yaml (actual Runs and receipts)
          + RUN_AUDIT.md
@@ -183,7 +183,7 @@ Tickets remain in the Task Folder. `CODE_REVIEW.md` stays with the Task code.
 The one Page-authority exception is a PHI-safe DISPLAY unit admitted by LAND
 at the caller-authorized destination in the Page evidence/display contract.
 Its Result envelope and receipt still live under
-`$OUTPUT_ROOT/<task>/results/<run>/` and record the unit path.
+`$OUTPUT_ROOT/<task>/runs/<run>/result/` and record the unit path.
 
 ## Question and Insight routing
 
@@ -265,7 +265,7 @@ Resolve by structure and enforce the prefix at the same time:
   `scripts/`, and `runs/`.
 - Job: direct Block child named `jNN_*`, containing `src/` and one or more
   valid Task Folders.
-- Block: direct `tasks/` child named `bNN_*`, containing `board.md` and one or
+- Block: direct `work/` child named `bNN_*`, containing `board.md` and one or
   more Jobs; it has no runnable lanes of its own.
 
 For a Job, enumerate direct `tNN_*` children. For a Block, enumerate
@@ -297,7 +297,7 @@ Workflow(
 6. For Job or Block scope, call the same workflow once per resolved Task Folder
    in path order. Continue after one child fails and aggregate all verdicts.
 7. After creating or renaming any Block, Job, Task, config, or Ticket, run
-   `ref/check_task_tree.py` on the touched Block or `tasks/` directory.
+   `ref/check_task_tree.py` on the touched Block or `work/` directory.
 8. Before trusting a new gate, prove it fires against a deliberately broken
    scratch copy, then run it against the target tree.
 

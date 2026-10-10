@@ -4,8 +4,8 @@ description: Search published venue papers (IEEE, ACM, Springer, etc.) via Seman
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "query-or-paper-id"
-  version: "0.1.3"
-  last_updated: "2026-09-22"
+  version: "0.1.4"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -180,7 +180,7 @@ if [ -d research-wiki/ ]:
 ```
 
 The helper handles slug / dedup / page / index / log — **do not
-handwrite `papers/<slug>.md`**. See
+handwrite `paper/<slug>.md`**. See
 [`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md).
 Backfill with `/research-wiki sync --arxiv-ids <id1>,<id2>,...` for
 arXiv-available papers.

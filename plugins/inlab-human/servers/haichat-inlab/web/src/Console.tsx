@@ -51,6 +51,7 @@ import * as L from './layout';
 import type {ConsoleView, Origin} from './types';
 import {snapshotOf, useConsole, type Console as ConsoleState} from './useConsole';
 import {useHaiChat} from './useHaiChat';
+import {VIEW_META, shownAt} from './views';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
@@ -79,6 +80,21 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
      * charts — shifts colour when you switch. See [data-scope] in console.css. */
     useEffect(() => {
         document.documentElement.dataset.scope = scope;
+    }, [scope]);
+
+    /* A view that is only a placeholder at this scope is not shown here (views.ts PLACEHOLDER):
+     * switching scope closes its tab, and an emptied dock falls back to the first built DATA view. */
+    useEffect(() => {
+        setRoot((r) => {
+            let next: L.LayoutNode | null = r;
+            for (const v of L.allTabs(r)) {
+                if (next && !shownAt(v, scope)) {
+                    next = L.removeView(next, v);
+                }
+            }
+            const first = (['source', 'case', 'tasks', 'health'] as ConsoleView[]).find((v) => shownAt(v, scope));
+            return next ?? L.group([first ?? 'health']);
+        });
     }, [scope]);
 
     const panes = L.groups(root);
@@ -126,6 +142,9 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
             return {ok: true};
 
         case 'view/open': {
+            if (!shownAt(a.view, scope)) {
+                return {ok: false, error: VIEW_META[a.view].label + ' is not built at the ' + scope + ' scope'};
+            }
             const wasOpen = L.allTabs(root).includes(a.view);
             setRoot((r) => (a.where === 'side'
                 ? L.dock(r, anchorOf(r), a.view, 'right')
@@ -177,6 +196,9 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
         }
 
         case 'highlight/set': {
+            if (!shownAt(a.view, scope)) {
+                return {ok: false, error: VIEW_META[a.view].label + ' is not built at the ' + scope + ' scope'};
+            }
             const wasOpen = L.allTabs(root).includes(a.view);
             c.setHighlight({
                 view: a.view, table: a.table ?? null, row: a.row ?? null,
@@ -264,7 +286,7 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
         // `root` is read to LOCATE a view (view/focus, view/close, was-it-already-open);
         // every WRITE uses the functional setRoot form, so a concurrent human drag and an
         // agent action cannot clobber each other.
-    }, [c, root, adopt, claimIfNew]);
+    }, [c, root, adopt, claimIfNew, scope]);
 
     const snapshot = useCallback(
         () => snapshotOf(c, L.allTabs(root), activeView, agentOpened, scope),
@@ -334,6 +356,7 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
                         patients={c.patients}
                         selected={c.patientId}
                         onSelect={(id) => act({type: 'patient/select', patient_id: id})}
+                        dataset={c.datasets.find((d) => d.name === c.dataset) ?? {name: c.dataset}}
                     />
                 ) : (
                     <span className='group-indicator' title='the group these views are scoped to'>
@@ -371,6 +394,7 @@ export default function Console({scope, navigate}: {scope: Scope; navigate: (s: 
                     onOpenToSide={(v) => act({type: 'view/open', view: v, where: 'side'})}
                     collapsed={railCollapsed}
                     onToggle={() => setRailCollapsed((x) => !x)}
+                    scope={scope}
                 />
 
                 <main className='center'>
@@ -519,6 +543,7 @@ function viewFor(
         ) : (
             <RunsPanel
                 patientId={c.patientId}
+                dataset={c.dataset}
                 models={c.models}
                 selected={c.modelPkg}
                 tab={c.nav.model.tab}

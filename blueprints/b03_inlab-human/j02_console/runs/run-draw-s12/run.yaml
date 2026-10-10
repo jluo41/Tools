@@ -1,0 +1,16 @@
+run: run-draw-s12
+kind: soft
+type: draw
+scope: Tools/blueprints/b03_inlab-human/j02_console
+target: s12
+ticket: run-draw-s12.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1009
+writes:
+- eight screens re-shot · green line naming the hidden views · faces s12-D01 and D02
+feeds:
+- reports/q01_console_vs_toolkit

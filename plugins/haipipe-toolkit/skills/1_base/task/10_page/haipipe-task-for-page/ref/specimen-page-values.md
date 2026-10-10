@@ -7,7 +7,7 @@ bind nothing.
 ## The batch config · one entry per stripped question
 
 ```yaml
-# tasks/b90_page_service/j01_values_sm05_results/t01_collect_values/scripts/config/r01_results_batch.yaml
+# work/b90_page_service/j01_values_sm05_results/t01_collect_values/scripts/config/r01_results_batch.yaml
 batch: results_batch
 questions:
   - id: adjusted-effect               # consumer-neutral Result key

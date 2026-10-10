@@ -1,5 +1,10 @@
 # haipipe-insight-bind · version history
 
+## 0.2.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.3.0 · 2026-10-02 · The question owns its run (JL 261002)
 
 - A run fits only if its config serves this question alone and writes exactly the proposed files and columns; otherwise the question gets its own run (a new config of a task whose code computes the proposal, or a new task). Never extend another question's run with a column or grouping.

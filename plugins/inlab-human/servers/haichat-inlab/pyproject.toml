@@ -17,6 +17,8 @@ dependencies = [
     # local Claude Code login — without it the console still serves the
     # deterministic REST/SPA, but the agent socket reports itself unavailable.
     "claude-agent-sdk",
+    # reads a record store and a case set in place (record_store.py, case_store.py)
+    "pyarrow",
 ]
 
 [project.optional-dependencies]

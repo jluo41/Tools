@@ -1,6 +1,8 @@
-## 0.33.1 · 2026-10-09 · Ideas with IDEA-NN ids
+## 0.33.1 · 2026-10-09 · Ideas with IDEA-NN ids; Theme folders are singular
 
 - `servers/workbench-paper/paper.py` `ideation()`: the ranked Ideas table is read when its ids are `i01` or `IDEA-01`; ScalingGlucose's `studio/s01-ideation` writes `IDEA-NN`, so Block › Audience Report › Ideation said "No idea yet" over five ideas.
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
 
 ## 0.33.0 · 2026-10-07 · The paper theme on the frame, buttons from the cards (b16 Q05)
 

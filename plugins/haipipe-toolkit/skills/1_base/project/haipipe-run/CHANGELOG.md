@@ -1,3 +1,8 @@
+## 0.33.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 0.33.0 · 2026-10-07 · A button is named by its Run (JL 261007)
 
 - A theme names its own buttons in `Theme.run_names` (frame.py `named`); the catalogue lists the themes named so far: paper (itself), work, discovery, labeling, cowork; insight and design are open.

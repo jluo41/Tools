@@ -7,16 +7,16 @@ description: >-
   generated question map), Task (one table per register group, a row per
   Question: Logic, Task Work, Report), Check and Delivery, each with the shared
   Runs panel, and the shared Guide with its Method page. Use for visual
-  tracking across one tasks/bNN_* Block and opening its Question reports.
+  tracking across one work/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-10-07"
+  version: "0.7.3"
+  last_updated: "2026-10-09"
 ---
 
 # Work Block Workbench (the work theme, once task)
 
-One `tasks/bNN_*/board.md` declaring `board-kind: task-block` opens one
+One `work/bNN_*/board.md` declaring `board-kind: task-block` opens one
 Workbench, drawn in the Insight Workbench's style (`servers/workbench-insight/`):
 the title alone in the header, the Block band, the Spaces Guide · Scope · Task ·
 Check · Delivery, every View opened by a heading and one lead line, and each
@@ -26,7 +26,7 @@ its four Views (Description, Method, RoadMap Draw, Related Paper) come from
 page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
-`Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
+`Tools/blueprints/b01_haipipe-toolkit/j17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
 
 ## Open
 
@@ -57,7 +57,7 @@ available. Preserve the existing host's authentication settings.
 | Scope › Block | The spine, close condition, Jobs and board.md, as label and value rows | `board.md` |
 | Scope › Questions | The Question register: id, group, topic, question, linked Tasks | `board.md` Questions |
 | Scope › Resources | Workspace data: each `_WorkSpace` folder a Job declares (`raw_store` + `cohort`, or a `_WorkSpace/` path, in `src/config-defaults.yaml`) and the Block's ProjectResult folder, its files by kind (data named and sized only; documents, figures, drawings and scripts pop out); then the Related resources and the add form | Job defaults; `board.md` Related resources |
-| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, each a folding row | Block `studio/*.excalidraw` |
+| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `studio/sNN-<topic>/`, `jNN_*/studio/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
 | Task › each group | One table per register `group:` (one, Questions, when there is none): a row per Question, **Logic │ Task Work │ Report** | `board.md` Questions; native Tasks; report Pages |
 | Check › Runs | Every Run and its receipt status | Native Ticket/Result reader |
 | Check › Tasks | Each Task Folder's run counts and audit findings | Native Task reader |

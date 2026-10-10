@@ -18,10 +18,12 @@
   `outline_revise.py`, `outline_scratch.py`) take a Result from a run's pass or from `results/`.
 - First applied to REACH-SPACE: the Q01 report's 15 runs and a discovery Topic's two; 687 Pages on 0.125.
 
-## 0.124.1 · 2026-10-09 · The Context record names the family and a SPACE path
+## 0.124.1 · 2026-10-09 · The Context record names the family and a SPACE path; Theme folders are singular
 
 - `cli/context-record.py`: **Folder owner** is the skill family (`paper`), not its layer folder; since the skills moved into `0_utils/`, `1_base/`, `2_theme/`, every theme's record said `2_theme`.
 - `cli/context-record.py`: a source is written relative to the SPACE root also when it sits behind a linked folder there (`Tools` -> `../Tools-SPACE`); the CTX3 skill sources were written as `/Users/...` paths (JL 260927: no absolute path on disk).
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
 
 ## 0.124.0 · 2026-10-07 · A Page Run's name carries no day (JL 261007)
 

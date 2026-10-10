@@ -1,3 +1,14 @@
+## 1.12.1 · 2026-10-09 · Theme folders are singular
+
+- `ref/run-sh-template.sh`: a Ticket under `work/` (or `labeling/`) runs; the older `tasks/` and `labelings/`
+  still do, and a work Run's store address is the same under either name. Docs name `work/`.
+
+## 1.12.0 · 2026-10-09 · One folder per Run
+
+- `ref/run-sh-template.sh`: a Ticket at `runs/<run>/<run>.sh` writes `runs/<run>/result/` (config may
+  be `runs/<run>/config.yaml`); an older flat `runs/<run>.sh` still writes `results/<run>/`.
+- `SKILL.md`, `fn/run.md`, `ref/block-job-task-run.md`, `ref/task-structure.md` describe the new layout.
+
 ## 1.11.1 · 2026-10-05 · The Insight Block (JL 261005; local 1.10.3, merged after upstream 1.11.0)
 
 - `ref/hierarchy.md`: the DIKW Block `b5N_<topic>_dikw` with `workbench: insight` is an Insight Block, one Task per

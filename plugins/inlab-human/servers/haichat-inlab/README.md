@@ -48,13 +48,22 @@ at a cohort:
 
 | Env | Meaning |
 |---|---|
-| `INLAB_PATIENT_STORE` | directory of `<patient_id>.json` records |
+| `INLAB_RECORD_STORE` | a haipipe record store (`2-RecStore`), read in place: each record set is a dataset (needs `pyarrow`) |
+| `INLAB_DATASET_STORE` | the json copy, the fallback: a parent dir of `<dataset>/patients/<id>.json` |
+| `INLAB_PATIENT_STORE` | one dataset's `<patient_id>.json` records (the oldest form) |
+| `INLAB_CASE_STORE` | *(optional)* a haipipe case store (`3-CaseStore`): the 📌 Case view lists each dataset's cooked cases |
 | `INLAB_ENDPOINT_STORE` | directory of packaged endpoints (a `6-EndpointStore`) |
 | `INLAB_REGISTRY` | JSON map `{"<package>": "http://host:port"}` |
 | `INLAB_ENGINE` | *(optional)* path to the `endpoint-predict` dir. Unset ⇒ the plugin sibling `../../mcp-servers/endpoint-predict`, else walk up looking for `Tools/plugins/inlab-human/…` |
-| `INLAB_LABEL_STORE` | *(optional)* dir of subjective-label dimension folders (a project's `tasks/`). Lights up the 📌 Case and ✏️ Annotate views |
+| `INLAB_LABEL_STORE` | *(optional)* dir of subjective-label dimension folders (a project's `tasks/`). Lights up the ✏️ Annotate view and the label overlay on cases |
+| `INLAB_PROJECTS_ROOT` | *(optional)* the SPACE root: the 📋 Tasks view reads `examples-*/Project-*/tasks/bNN/jNN/tNN` |
 
-`GET /api/health` reports the resolved config and which endpoints are live.
+One patient store is enough (any of the first three). `diagram/09-workspace-wiring.txt` says how each
+store reaches the console. `GET /api/health` reports each setting's state (unset · set · found ·
+missing, never a path) and which endpoints are live.
+
+Synthetic fixtures for docs, screenshots and tests: `bash fixtures/run_fixture.sh [--record]` (prints
+both PIDs; stop them by PID).
 
 ## Run
 
@@ -74,19 +83,13 @@ than copying them into the image — patient data must never enter a container i
 
 ## API
 
-| Route | Returns |
-|---|---|
-| `GET /api/patients` | roster |
-| `GET /api/patients/{id}` | curated chart **as of the prediction date** (later rows withheld) |
-| `GET /api/patients/{id}/raw` | every table/column/row; later rows **flagged**, not hidden |
-| `GET /api/models` | packaged models + whether their endpoint answers |
-| `POST /api/predict` | `{patient_id, model}` → endpoint response + data-gap report |
-| `GET /api/health` | config + live endpoints |
-| `GET /api/cases` | the case universe (one case = one annotation point), label history joined; `?human_id=` `?q=` |
-| `GET /api/labeling/dimensions` | mounted subjective-label projects (status, κ, labels) |
-| `GET /api/labeling/{dim}` | one dimension: state, guideline+versions, gallery, trajectory, the PI's inbox |
-| `POST /api/labeling/{dim}/decision` | the ONE labeling write: the researcher's adjudication → `human_decisions.jsonl` |
-| `WS /ws/haichat` | HaiChat agent session (Agent SDK + engine-as-MCP). Client sends `user`/`approval_response`/`interrupt`; server sends `ready`/`delta`/`assistant`/`tool_call`/`tool_result`/`approval_request`/`done`/`error` |
+Every route the app mounts, with its router and what it returns, is listed in
+[`diagram/11-routes.txt`](diagram/11-routes.txt), generated from `main.app.routes` by
+`diagram/build_ui_docs.py` (rerun it after a route changes; never edit the list by hand). Every view
+and component is listed the same way in [`diagram/10-ui-elements.txt`](diagram/10-ui-elements.txt).
+The WebSocket `/ws/haichat`: the client sends `user` / `approval_response` / `interrupt`; the server
+sends `ready` / `delta` / `assistant` / `tool_call` / `tool_result` / `approval_request` / `done` /
+`error`.
 
 HaiChat extras via env: `INLAB_AGENT_MODEL` (optional model override for the
 agent; default = the local Claude Code default).

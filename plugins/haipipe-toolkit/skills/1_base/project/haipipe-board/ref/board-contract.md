@@ -7,7 +7,7 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 ## Where a Block sits
 
 ```text
-<Project>/<theme folder>/bNN_<topic>/      tasks/ · discoveries/ · cowork/ · papers/ · insights/ · designs/ · labelings/
+<Project>/<theme folder>/bNN_<topic>/      work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
 ├── board.md                               the face (this contract)
 ├── studio/sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
 ├── reports/qNN_<topic>/                   Audience Report: one folder per Question (haipipe-question · haipipe-report)
@@ -90,7 +90,7 @@ The frame asks, in this order:
 
 1. **Claims**: a theme declares `claims=<function>` on its `Theme(...)`; the function gets the
    Block folder and returns True for a Block it reads by what the Block holds. An Insight
-   Block kept in `tasks/` is claimed by its `workbench: insight` field; a labeling Block by a
+   Block kept in `work/` is claimed by its `workbench: insight` field; a labeling Block by a
    `schema.yaml` beside its `board.md`.
 2. **To make a theme read a Block** in another Theme folder: give the face the field that
    theme's `claims` reads (`workbench: <theme>`, `--workbench` on `new_board.py`), never move

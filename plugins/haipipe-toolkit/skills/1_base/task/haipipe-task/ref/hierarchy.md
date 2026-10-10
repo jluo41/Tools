@@ -10,8 +10,8 @@ an executable Task Face and a reader-facing Page Face. Its parent
 
 ```text
 level    canonical path                                      meaning
-Block    tasks/bNN_<noun>_<qualifier>/                       one Task Board
-Job      tasks/bNN_<block>/jNN_<noun>_<qualifier>/           one submittable unit
+Block    work/bNN_<noun>_<qualifier>/                       one Task Board
+Job      work/bNN_<block>/jNN_<noun>_<qualifier>/           one submittable unit
 Task     .../jNN_<job>/tNN_<noun>_<qualifier>/               one pipeline and Page
 Run      .../tNN_<task>/scripts/config/rNN_<run>.yaml        one execution identity
 ```
@@ -23,18 +23,18 @@ read from the path; none is mapped or computed.
 
 ```text
 examples/<project>/
-├── tasks/       all Task Blocks
+├── work/       all Task Blocks
 ├── cowork/      project-level coordination text and Boards (diagram/ retired)
-├── labelings/   labeling Blocks: a Job is one dataset with one label, with many Tasks
-└── papers/      optional paper work
+├── labeling/   labeling Blocks: a Job is one dataset with one label, with many Tasks
+└── paper/      optional paper work
 ```
 
-Executable work under `tasks/` or `labelings/` always passes through Block, Job, and Task.
+Executable work under `work/` or `labeling/` always passes through Block, Job, and Task.
 
 ## Block = Task Board
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md                    board-kind: task-block
 ├── studio/                     optional drawings the whole Block shares
 ├── reports/qNN_<topic>/         ordinary Page answering a Block Question
@@ -198,7 +198,7 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   framework's unit tests, and `j49_external_releases` spans every asset, as
   `b01/j49_procdf_coverage` spans every dataset. The audit of a legacy
   whole-store snapshot lives read-only in
-  `tasks/_legacy/b51_release_<tag>_<yymmdd>/`. Layout and rules:
+  `work/_legacy/b51_release_<tag>_<yymmdd>/`. Layout and rules:
   `haipipe-data-external/ref/asset-model.md` § Build Block.
 
 ## Job = submittable unit

@@ -35,7 +35,7 @@ Step 3 — Create canonical authored structure
 --------------------------------------------
 
 ```text
-tasks/bNN_<display-input-block>/
+work/bNN_<display-input-block>/
 └── jNN_<figure-or-table-name>/
     ├── src/
     └── t01_display_input_summary/

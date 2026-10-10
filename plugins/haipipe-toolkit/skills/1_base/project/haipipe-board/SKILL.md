@@ -10,8 +10,8 @@ description: >-
   block face, spine, close, board-kind, add a job, which theme, claims, /haipipe-board.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-10-07"
+  version: "2.0.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,11 +34,11 @@ is `haipipe-project`'s, and each theme adds its words over the face.
 the future, the Labeling will be the same"). A theme's own Board is named by its kind, not `bNN_`:
 
 ```text
-<Project>/papers/Paper-<Slug>/                 a paper Board          (haipipe-paper)
-<Project>/insights/Insight-<name>[-<YYMMDD>]/  an insight Board       (haipipe-insight)
-<Project>/tasks/Prototype-bNN-<Topic>/         an insight Prototype   (haipipe-insight)
-<Project>/designs/Design-<name>[-<YYMMDD>]/    a design Block         (haipipe-design)
-<Project>/labelings/Labeling-<name>/           a labeling Board, later (haipipe-labeling)
+<Project>/paper/Paper-<Slug>/                 a paper Board          (haipipe-paper)
+<Project>/insight/Insight-<name>[-<YYMMDD>]/  an insight Board       (haipipe-insight)
+<Project>/work/Prototype-bNN-<Topic>/         an insight Prototype   (haipipe-insight)
+<Project>/design/Design-<name>[-<YYMMDD>]/    a design Block         (haipipe-design)
+<Project>/labeling/Labeling-<name>/           a labeling Board, later (haipipe-labeling)
 ```
 
 The name is a label: every reader knows the Block by its `board.md` (its `board-kind:`, or `workbench:`), and its

@@ -9,8 +9,8 @@ description: >-
   data, observations, Data, folder-kind data, legacy page-type data,
   /haipipe-insight-data.
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-10-01"
+  version: "2.4.1"
+  last_updated: "2026-10-09"
   workflow: haipipe-insight-workflow
   folder_kind: data
   primary_face: task
@@ -94,10 +94,10 @@ and coverage/gaps. Do not hand it a precomputed claim.
 
 ## Files
 
-- Task run: `tasks/b5N_<topic>_dikw/j1N_data_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
-- Page ticket: `insights/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
-- Result: `insights/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/results/<ticket>/`
-- Page: `insights/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/D<NN>-<partition>-<slug>.md`
-- Binding: `insights/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
+- Task run: `work/b5N_<topic>_dikw/j1N_data_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
+- Page ticket: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
+- Result: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/results/<ticket>/`
+- Page: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/D<NN>-<partition>-<slug>.md`
+- Binding: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
 - Legacy: a board made before page tickets keeps its results in its old store
   (`ref/board-contract.md` § Boards made before page tickets).

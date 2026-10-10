@@ -10,8 +10,8 @@ description: >-
   in order, level_patterns, version group, /haipipe-job.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-07"
+  version: "0.2.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 

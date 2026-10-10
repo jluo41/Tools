@@ -10,7 +10,7 @@ resources. `haipipe-question` owns this register (moved from `haipipe-task`,
 ## Placement
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── board.md                         Question and resource registers
 ├── studio/*.excalidraw              drawings the whole Block shares (the question map)
 ├── reports/

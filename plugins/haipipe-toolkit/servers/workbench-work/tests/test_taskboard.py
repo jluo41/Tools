@@ -285,3 +285,28 @@ def test_http_invalid_board_is_404_and_auth_still_applies(server):
         "Authorization": "Basic " + base64.b64encode(b"example:password").decode()})
     with urlopen(request) as response:
         assert response.status == 200
+
+
+def test_studio_topics_of_the_block_and_its_jobs_list_with_their_sessions(demo):
+    """RoadMap Draw lists the haipipe-studio topic folders (studio/sNN-<topic>/), the Block's own and then
+    each Job's under the Job's name, each with the sessions saved as passes of runs/run-draw-<sNN>/."""
+    root, board = demo
+    scene = json.dumps({"type": "excalidraw", "elements": [], "source": "build_s02_map.py"})
+    write(board / "studio/s01-block-map/s01-block-map.excalidraw", scene)
+    write(board / "studio/s01-block-map/s01-block-map.md", "s01 · The block map\n=================\n")
+    job = board / "j07_example_job"
+    write(job / "studio/s02-a-topic/s02-a-topic.excalidraw", scene)
+    write(job / "studio/s02-a-topic/s02-a-topic.md", "s02 · A topic\n=============\n")
+    write(job / "runs/run-draw-s02/passes/p01-1009/pass.md", "# first pass\n\n## Summary\n\nx\n")
+    write(job / "runs/run-draw-s02/passes/p02-1010/pass.md", "# second pass\n\n## Summary\n\ny\n")
+    snap = task_board_snapshot(board, root)
+    topics = [d for d in snap["drawings"] if d.get("topic")]
+    assert [(d["group"], d["title"]) for d in topics] == [("", "s01 · The block map"), ("j07_example_job", "s02 · A topic")]
+    assert [s["title"] for s in topics[1]["sessions"]] == ["second pass", "first pass"]   # newest first
+    assert not topics[1].get("source")                       # a studio topic keeps the person's marks: editable
+    html = render_task_board(snap, "studio")
+    assert '<h3 class="draw-group">j07_example_job</h3>' in html
+    assert "2 sessions" in html and "p02-1010 · second pass" in html
+    assert topics[1]["preview"] == ""                       # no preview yet: no picture
+    (job / "studio/s02-a-topic/s02-a-topic.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    assert 'class="draw-preview"' in render_task_board(task_board_snapshot(board, root), "studio")

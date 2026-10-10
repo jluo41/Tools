@@ -255,6 +255,41 @@ def generated(path, board):
     return {"source": str(source), "stale": (board / "board.md").stat().st_mtime > path.stat().st_mtime}
 
 
+TOPIC = re.compile(r"^s\d{2}-[a-z0-9-]+$")
+
+
+def studio_topics(level, root, group, source_url):
+    """A level's studio topics, the haipipe-studio layout: studio/sNN-<topic>/sNN-<topic>.excalidraw, its
+    face's first line as the title, its preview, and the sessions saved as passes of runs/run-draw-<sNN>/
+    (each pass.md's title, newest first). A topic's builder keeps a person's marks, so it stays editable."""
+    studio = level / "studio"
+    out = []
+    if not (inside(studio, root) and studio.is_dir()):
+        return out
+    for folder in sorted(d for d in studio.iterdir() if d.is_dir() and TOPIC.match(d.name)):
+        drawing = folder / f"{folder.name}.excalidraw"
+        if not (inside(drawing, root) and drawing.is_file()):
+            continue
+        face = folder / f"{folder.name}.md"
+        title = folder.name
+        if face.is_file():
+            first = next((line.strip() for line in face.read_text(encoding="utf-8", errors="replace").splitlines()
+                          if line.strip()), "")
+            title = first.lstrip("# ").strip() or title
+        sessions = []
+        for pass_md in sorted((level / "runs" / f"run-draw-{folder.name[:3]}" / "passes").glob("p*/pass.md"),
+                              reverse=True):
+            head = next((line[2:].strip() for line in pass_md.read_text(encoding="utf-8", errors="replace")
+                         .splitlines() if line.startswith("# ")), pass_md.parent.name)
+            sessions.append({"pass": pass_md.parent.name, "title": head,
+                             "path": pass_md.relative_to(root).as_posix(), "url": source_url(pass_md, root)})
+        preview = folder / f"{folder.name}.png"
+        out.append({"title": title, "path": drawing.relative_to(root).as_posix(), "group": group,
+                    "topic": folder.name, "sessions": sessions,
+                    "preview": source_url(preview, root) if preview.is_file() else ""})
+    return out
+
+
 def extend_snapshot(board, root, snap, only, source_url, page_url):
     body = read(board / "board.md", board)
     rows, issues = register(body, "Questions", "questions")
@@ -322,6 +357,10 @@ def extend_snapshot(board, root, snap, only, source_url, page_url):
                 drawings.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
                                  "path": path.relative_to(root).as_posix(), **generated(path, board)})
         drawings.sort(key=lambda d: not d.get("source"))       # a generated drawing (the question map) first
+    # the studio topics, the Block's own and then each Job's (a Job keeps its studio beside its face)
+    drawings += studio_topics(board, root, "", source_url)
+    for job in sorted(j for j in board.glob("j[0-9][0-9]_*") if j.is_dir()):
+        drawings += studio_topics(job, root, job.name, source_url)
     snap.update(questions=questions, resources=clean_resources, drawings=drawings,
                 source_issues=issues, unassigned=[t for t in snap["tasks"] if t["id"] not in assigned],
                 studio_path=(board.relative_to(root) / "studio").as_posix(),

@@ -168,7 +168,7 @@ Guide › <View>
 - **Family key.** The work family is `work`; `guide_families.ALIASES` keeps `task` answering. A
   frame folder with no face file still opens its family's Guide, its cards read from the folder.
 - **Tests.** `_host/tests/test_guide_levels.py`; the status of every family is frame 6 of
-  `Tools/blueprints/b03_project_workbench/studio/s31-guide/s31-guide.excalidraw`, read off the code.
+  `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/s31-guide.excalidraw`, read off the code.
 
 ## Studio
 
@@ -194,7 +194,7 @@ A new workbench family fills its Guide by the checklist in `../README.md` § Add
 Guide has four Views: **Description** (what the Workbench does), **Method**
 (its steps, as text), **RoadMap Draw** (one drawing of its skills, method,
 Workbench and folders) and **Related Paper**. Guide's UI design artifacts (once this folder's `studio/`) live in
-the b03 design Block (`Tools/blueprints/b03_project_workbench/`), not here: `studio/s31-guide/` (the Guide tab, one screen per View, each
+the b03 design Block (`Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/`), not here: `studio/s31-guide/` (the Guide tab, one screen per View, each
 family's status; `method-canvas.py`; the 261002 design in its `history/`). The base's RoadMap Draw is
 `studio/s02-workbench-shared/` (the frame). The Studio runtime stays.
 
@@ -487,8 +487,8 @@ The generator owns these generated artifacts. Keep independently edited
 Excalidraw copies under another filename before regenerating.
 
 ```sh
-python3 blueprints/b03_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py
-python3 blueprints/b03_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py
+python3 blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py
+python3 blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py
 ```
 
 `studio/` keeps only the Excalidraw scenes and their generators. Each generator

@@ -1,8 +1,8 @@
 ---
 name: haipipe-work
 description: >-
-  The door of the work theme: bounded execution work in a Project's tasks/
-  world, where a Block (tasks/bNN_<topic>/) groups Jobs (jNN_<series>/), each
+  The door of the work theme: bounded execution work in a Project's work/
+  world, where a Block (work/bNN_<topic>/) groups Jobs (jNN_<series>/), each
   Task (tNN_<task>/) plans, builds, executes and reports, and each hard Run
   (rNN_<noun>_<qualifier>.sh) leaves a Result and a receipt that the Block's
   Question reports read. Routes a request to the skill that owns it: the Task
@@ -12,8 +12,8 @@ description: >-
   folder contract of its own yet. Trigger: work theme, work Block, work Job,
   which work skill, where does this work go, /haipipe-work.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-07"
+  version: "0.1.1"
+  last_updated: "2026-10-09"
 ---
 
 # Work theme
@@ -25,7 +25,7 @@ called the task theme until 2026-10-07; the Task as a ladder level (Block ->
 Job -> Task -> Run) belongs to every theme and keeps its name.
 
 ```text
-tasks/bNN_<topic>/                    a work Block: board.md, Questions, reports/, studio/
+work/bNN_<topic>/                    a work Block: board.md, Questions, reports/, studio/
 └── jNN_<series>/                     a Job: one series of Tasks (j0N, j1N, j5N ...)
     └── tNN_<task>/                   a work Task: Plan -> Build -> Execute -> Report
         ├── runs/rNN_<noun>_<qualifier>.sh     a hard Run (one ticket)

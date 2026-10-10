@@ -17,8 +17,8 @@ description: >-
   row, describe every column, synth_df, synthetic patient, synthetic rows.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-29"
+  version: "0.4.2"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -131,7 +131,7 @@ Where it sits
 -------------
 
 ```text
-tasks/bNN_<block>/
+work/bNN_<block>/
 ├── src/column_dictionary.yaml            one dictionary per table family (all versions)
 └── jNN_<dataset>_raw/                    or any Job that owns a stored table
     ├── src/describe_table.py             copied from templates/, same in every Job
@@ -226,7 +226,7 @@ Task type level   this section: every description or raw-profile Task of any
   (each column's most common value or median; identifying columns show a
   placeholder), still named `synth_df`.
 
-Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/j51_reachpd2d_v260922_raw/`
+Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/b00_rawdata/j51_reachpd2d_v260922_raw/`
 (`src/synthetic_individual.yaml`, 28 tables).
 
 

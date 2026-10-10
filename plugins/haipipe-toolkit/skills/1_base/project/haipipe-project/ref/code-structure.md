@@ -5,7 +5,7 @@ Read `project.yaml.profile` before deciding whether root-owned code is legal.
 ## Research
 
 A `research` Project does not own a root software package. Execution code
-belongs to its BJTR Job/Task under `tasks/`; generated output belongs to the
+belongs to its BJTR Job/Task under `work/`; generated output belongs to the
 Job or its consumer-owned store. Reusable SPACE libraries remain in the SPACE's
 own code package, outside the Project.
 

@@ -4,8 +4,8 @@ description: AI-powered web search via Exa with content extraction. Use when use
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "[search-query-or-url]"
-  version: "0.1.2"
-  last_updated: "2026-09-22"
+  version: "0.1.3"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -170,7 +170,7 @@ if [ -d research-wiki/ ] and query category was "research paper":
 ```
 
 The helper handles slug / dedup / page / index / log — **do not
-handwrite `papers/<slug>.md`**. See
+handwrite `paper/<slug>.md`**. See
 [`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md).
 
 ## Key Rules

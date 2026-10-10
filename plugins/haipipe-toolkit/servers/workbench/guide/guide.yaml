@@ -32,7 +32,7 @@ method:
     a Board the folder patterns resolve against that Board; on this site (/w/shared) they stay patterns.
 - - Prepare a drawing from source
   - 'A design drawing is written by a script beside it, studio/<name>.py, which builds the scene from
-    the text that holds the facts (this Guide''s RoadMap Draw is Tools/blueprints/b03_project_workbench/studio/s02-workbench-shared/, drawn by its build_s02_workbench_shared.py; a paper''s
+    the text that holds the facts (this Guide''s RoadMap Draw is Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s02-workbench-shared/, drawn by its build_s02_workbench_shared.py; a paper''s
     is studio/make_<name>.py). The .excalidraw file is generated: change the script or its source and
     rerun it, never the drawing. A RoadMap with a Workbench Table is drawn from that table each time Guide
     opens.'
@@ -82,7 +82,7 @@ folders:
   - autodraw.py
 - - Design scenes
   - Generator owner
-  - Tools/blueprints/b03_project_workbench/studio/s31-guide/ (the Guide design; the 261002 design in history/)
+  - Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/ (the Guide design; the 261002 design in history/)
   - studio
 - - Guide / this family
   - Base owner
@@ -91,7 +91,7 @@ folders:
 explain:
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b03_project_workbench/studio/s02-workbench-shared/s02-workbench-shared.excalidraw
+  - board: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s02-workbench-shared/s02-workbench-shared.excalidraw
   - Workbench design
   - first
 boundary: The base workbench is what every theme reuses. Guide explains each family and never saves; Studio

@@ -1,3 +1,8 @@
+## 1.8.1 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
 ## 1.8.0 · 2026-10-07 · Cards and gates by level (b16 Q05)
 
 - `ref/run-cards.md` is re-cut from the four old Spaces (Ideation · Story · Sections · Delivery) to the ladder: one card per button of each level's Space, its Space field `<Level> › <Space>` (`Block › Audience Report`), its views the third-row views (`narrative`, `draft-main`). New cards for every button the s11 and s12 designs show and the paper workbench typed by hand: Update the Board, Add a venue, Check the rules, Add a resource, Add a related item, Read a paper, Ask a Question, Review for an audience, Open a version, Update the Board status, Update the version, Redraw the paper map, Release a Section, Add comments, Route an item, Reply to an item, Write the cover letter, Check the letter, Add a Section, Add a letter. The old cards are placed: Idea review and Select idea in Block › Audience Report › Ideation, Claim review there under logic-work, Redraw in Block › Idea Studio, the Section buttons in Job › Work Details. Labels people see are unchanged.

@@ -1,6 +1,13 @@
 response-format — Changelog
 ===========================
 
+## [0.18.2] — 2026-10-09
+
+- A Job's question links the shared workbench on the Job's Audience Report
+  (`/_board/workbench?path=<job folder>&space=Audience+Report#question-QNN`): the toolkit's
+  blueprint Blocks became Jobs of `Tools/blueprints/b01_haipipe-toolkit/` (one Block per
+  package, JL 261009), and a Job has no `board.md`.
+
 ## [0.18.1] — 2026-10-06
 
 - The link opens the workbench UI, not the report's Page (JL: "what I want is the
