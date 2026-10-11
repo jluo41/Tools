@@ -43,9 +43,13 @@ HEAVY = T["checks"]["heavy_mb"] * 1024 * 1024
 
 
 def space_root(start: Path) -> Path:
-    for p in (start, *start.parents):
-        if (p / "env.sh").is_file() or (p / "AGENTS.md").is_file():
-            return p
+    """The SPACE: the nearest folder holding env.sh; else the nearest holding AGENTS.md. A submodule
+    Project keeps its own AGENTS.md, so env.sh is looked for all the way up first."""
+    chain = (start, *start.parents)
+    for marker in ("env.sh", "AGENTS.md"):
+        for p in chain:
+            if (p / marker).is_file():
+                return p
     return Path.cwd()
 
 
