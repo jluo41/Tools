@@ -1,7 +1,13 @@
 """s02 · Workbench shared: s02-workbench-shared.excalidraw: what workbench holds today, how
 every other workbench leans on it, and the proposal that it owns the Block / Job / Task frame.
 
-Six frames, top to bottom:
+Three discussion frames lead; the eight older frames stay as references:
+
+    Shared workbench across levels  Block, Job and Task screens with their sources (Q08)
+    Block topics construct Jobs    Block-owned topics lead to linked execution Jobs (Q07)
+    Studio and Report separate Spaces connected by source links (Q09)
+
+Older reference material:
 
     today · who owns which part   one column per workbench, one row per part; each cell read off the
                                   workbench's own Python at build time (an import of a shared part, or
@@ -172,10 +178,9 @@ def frame_spaces(y):
         text(tx + 16, ry + 8, " · ".join(v for _, vs in layout[1:2] for v in vs)[:70], 12, GRAY)
         ry += 44
     ry += 20
-    text(0, ry, "proposed (s11 · s12 · s13), the same at every level and in every family:", 16, TEAL)
-    tx = 400
-    for space in ["Guide", "|", "Description", "|", "Idea Studio", "Audience Report", "|", "Work Details", "|",
-                  "Runs", "Delivery"]:
+    text(0, ry, "261010: shared Studio opens Block topics from Block, Job and Task; work Spaces below:", 16, TEAL)
+    tx = 520
+    for space in ["Description", "|", "Report", "|", "Work Details", "|", "Runs", "Delivery"]:
         if space == "|":
             path([(tx + 2, ry + 30), (tx + 2, ry + 72)], arrow=False, color=INK)
             tx += 14
@@ -184,7 +189,9 @@ def frame_spaces(y):
         base("rectangle", tx, ry + 36, w, 30, TEAL, 1.5)
         text(tx + 11, ry + 42, space, 15, TEAL)
         tx += w + 8
-    text(0, ry + 42, "Guide · Block · Job ▾ · Task ▾", 15, TEAL)
+    text(0, ry + 42, "Guide · Studio | Block · Job ▾ · Task ▾", 15, TEAL)
+    L.els.append(canvas.change_note(0, ry + 84, "Live: Studio hides the five work Space buttons",
+                                    date="261010", frame=L.FRAME[0], size=16))
     L.close_frame(fr, pad=60)
     return fr["y"] + fr["height"]
 
@@ -244,7 +251,7 @@ PROPOSED_TREE = [   # what is done (teal) and what is left (red), 261007
     ("│   ├── guide/ · related/   (done)", "the base's own Guide, read from guide/guide.yaml", TEAL),
     ("│   ├── work_items.py   open ?", "the BJTR tree under every Work Details: the frame lists only the children", RED),
     ("│   ├── one look   open ?", "the frame has one CSS; the old pages keep theirs until each theme moves", RED),
-    ("│   └── Studio", "Idea Studio: one card per studio topic (done, 261007)", TEAL),
+    ("│   └── Studio", "Studio: one card per studio topic (done, 261007)", TEAL),
     ("├── workbench-work/   (done: was workbench-task)", "work_theme.py on the frame; b17 owns it", TEAL),
     ("├── workbench-cowork/ · -design/   (done)", "cowork_theme.py · design_theme.py on the frame", TEAL),
     ("├── workbench-<theme>/   open ?", "theme left: discovery · labeling · paper · insight (waits on DIKW)", RED),
@@ -281,9 +288,9 @@ def frame_trees(y):
 
 
 
-SHARED_OWNS = ["level tabs: Guide · Block · Job ▾ · Task ▾", "the six Spaces, their order, the dividers",
-               "the third row (draws it)", "Idea Studio: Studio, named drawings", "Runs panel, grouped by run type",
-               "Audience Report: Question │ Work │ Report", "BJTR tree under Work", "Guide", "header · band · look (one CSS)"]
+SHARED_OWNS = ["top: Guide · Studio | Block · Job · Task", "shared Studio; five Spaces in work mode",
+               "the third row (draws it)", "Studio: same Block topics at every level", "Runs panel, grouped by run type",
+               "Report: Question │ Work │ Report", "BJTR tree under Work", "Guide", "header · band · look (one CSS)"]
 FAMILY_FILLS = ["which levels it has (a Page family: Task only)", "what each Space shows, at each level",
                 "the names in it (Code · Review · Notebooks …)", "which drawings", "its run types (its workbench table)",
                 "its questions and reports", "its folders", "its guide/ and related/ folders (done)", "its title and band line"]
@@ -307,36 +314,37 @@ def frame_proposed(y):
     text(LX, hy + 26, "spaces(level, path) → {Space: (subspaces, content, run types)}", 15, INK, MONO)
     text(LX, hy + 56, "and a skill to match the server, as workbench-page / workbench-paper: "
                       "skills/…/workbench-frame, the frame contract ?  (open)", 15, RED)
+    L.els.append(canvas.change_note(LX, hy + 90, "sNN topics now belong to the Block only", date="261010", frame=L.FRAME[0], size=16))
     L.close_frame(fr, pad=60)
     return fr["y"] + fr["height"]
 
 
 # ── the base and a theme: shared holds the levels, a workbench-xxx gives its theme ─────────────
-BASE_SPACES = ["Description", "Idea Studio", "Audience Report", "Work Details", "Runs", "Delivery"]
-BASE_GROUP = [0, 1, 1, 2, 3, 3]               # the divider groups: Description | IS · AR | WD | Runs · Delivery
+BASE_SPACES = ["Description", "Studio", "Report", "Work Details", "Runs", "Delivery"]
+BASE_GROUP = [0, 1, 2, 3, 4, 5]               # each Space has its own column and divider
 BASE = {   # level -> what each Space reads by default, from the standard folder layout
     "Block": ["bNN_<topic>.md", "studio/sNN-<topic>/", "reports/qNN_<topic>/\nQuestion │ Work │ Report",
               "its Jobs: jNN_<job>/", "runs/<run>/ by type\n+ from below", "delivery/"],
-    "Job": ["jNN_<job>.md", "studio/", "reports/ (optional)", "its Tasks: tNN_<task>/", "runs/<run>/ by type\n+ from below",
+    "Job": ["jNN_<job>.md", "same Block Studio", "reports/ (optional)", "its Tasks: tNN_<task>/", "runs/<run>/ by type\n+ from below",
             "delivery/"],
-    "Task": ["tNN_<task>.md", "studio/", "its report", "how the work is done", "hard rNN_ · soft run-\nrun.yaml cards",
+    "Task": ["tNN_<task>.md", "same Block Studio", "its report", "how the work is done", "hard rNN_ · soft run-\nrun.yaml cards",
              "delivery/"]}
 THEMES = [   # (theme folder, [(field, value, colour)]); views/ = a Space's own body, where config is not enough
     ("workbench-work/work_theme.py   (done)", [
         ("levels", "Block · Job · Task", INK), ("theme", "work (once task); the level stays Task", INK),
-        ("Description (Task)", "Scope · Plan", INK), ("Audience Report", "Draft · Report", INK),
+        ("Description (Task)", "Scope · Plan", INK), ("Report", "Draft · Report", INK),
         ("Work Details (Task)", "Code · Review · Notebooks", INK), ("Runs", "run · build · report", INK),
         ("run types", "Plan · Build · Run · Check a Task", INK), ("Guide", "workbench-work/guide/ (done)", INK),
         ("views/", "none", GRAY)]),
     ("workbench-paper/   config + views", [
         ("levels", "Block · Job · Task", INK), ("names", "paper Board · paper version · Section", INK),
-        ("Description (Block)", "+ Venue: venues/<venue>/", INK), ("Idea Studio", "Ideation", INK),
+        ("Description (Block)", "+ Venue: venues/<venue>/", INK), ("Studio", "Ideation", INK),
         ("Work Details (Job)", "its Sections, in compile order", INK), ("Delivery (Job)", "the whole paper: LaTeX · Word", INK),
         ("run types", "its workbench table", INK), ("Guide", "workbench-paper/guide/ (done)", INK),
         ("views/", "story.py: the Story (spine, claims) ?  open", RED)]),
     ("workbench/task-page/   (in the base)", [
         ("level", "Task: a Page Task  (a Section is one)", INK), ("theme", "any: the Page views of the base", INK),
-        ("Audience Report", "Table · Reading", INK),
+        ("Report", "Table · Reading", INK),
         ("Work Details", "Draft-Scratch · Draft-Revise ·\nEvidence-Citation · -Display ·\n-Value · -Supporting Runs", INK),
         ("Runs", "structure · section · display · delivery", INK), ("Guide", "task-page/guide/ (done)", INK),
         ("views", "outline editor · evidence · exports\n(moved in from workbench-page)", TEAL)])]
@@ -386,6 +394,7 @@ def frame_base(y):
         text(mx, bottom + 40, head, 18, color)
         for j, it in enumerate(items):
             text(mx + 12, bottom + 72 + j * 24, ("· " if color == INK else "✗ ") + it, 15, color)
+    L.els.append(canvas.change_note(LX, bottom + 258, "Job and Task open the same Block-owned Studio", date="261010", frame=L.FRAME[0], size=16))
     L.close_frame(fr, pad=60)
     return fr["y"] + fr["height"]
 
@@ -396,8 +405,8 @@ STEPS = [("1 ✓", "runs_panel.py moved into the base", "done 261007"),
          ("3", "Each theme writes its <theme>_theme.py and moves onto the frame", "3 of 7: work · cowork · design"),
          ("4 ✓", "Each theme's own guide/ and related/, read from guide/guide.yaml", "all nine families, 261007"),
          ("5", "The vanilla Job and Task filled from s12 · s13", "")]
-OPEN = ["insight fits the frame (its session, 261007): partitions = Audience Report's third row, DIKW levels = Jobs,",
-        "   its Insight table = Question │ Work │ Report, its question map = a generated, view-only Idea Studio row",
+OPEN = ["insight fits the frame (its session, 261007): partitions = Report's third row, DIKW levels = Jobs,",
+        "   its Insight table = Question │ Work │ Report, its question map = a generated, view-only Studio row",
         "labeling: its theme goes on the frame (b15); its write door and `--only labeling` host stay as they are",
         "? insight's DIKW: at the Block level or the Job level (b11 waits on this to write insight_theme.py)",
         "? insight's Check (a question's gates) has no Space: chips on each question row?",
@@ -432,7 +441,7 @@ VANILLA = {  # level -> (tabs, active tab, open Space, third row, table heads, r
               [("bNN_<topic>/", ""), ("├── bNN_<topic>.md", "the band: title · state; Description"),
                ("├── j01_<data>/ · j11_<job>/ …", "Work Details: one row per Job folder"),
                ("│   └── jNN_<job>.md", "the row: its title and state"),
-               ("├── studio/ · reports/ · delivery/", "Idea Studio · Audience Report · Delivery"),
+               ("├── studio/ · reports/ · delivery/", "Studio · Report · Delivery"),
                ("└── runs/", "the Runs panel: the Block's own soft Runs"),
                ("servers/workbench/", "the base, which draws all of it:"),
                ("├── frame.py", "the tabs, the six Spaces, the third row"),
@@ -480,7 +489,22 @@ THEMED = {  # theme -> one Block screen through its theme: (tabs, third row, row
                      ("<Project>/paper/Paper-<Name>/ …", "the folders it reads")])}
 
 
-chrome, table, runs_panel, on_disk = UI.chrome, UI.table, UI.runs_panel, UI.on_disk
+table, runs_panel, on_disk = UI.table, UI.runs_panel, UI.on_disk
+
+
+def chrome(x, y, tabs, on, space, third, dashed=()):
+    """Draw s02's reference screens with the live Studio entry and five lower Space buttons."""
+    tabs = list(tabs)
+    tabs[1:1] = ["Studio", "|"]
+    old_row = UI.SPACE_ROW
+    try:
+        UI.SPACE_ROW = ["Description", "|", "Report", "|", "Work Details", "|", "Runs", "Delivery"]
+        UI.chrome(x, y, tabs, on + 2, space, third, dashed=dashed)
+    finally:
+        UI.SPACE_ROW = old_row
+    L.els.append(canvas.change_note(x + 24, y + UI.SH + 8,
+                                    "Live: work mode keeps five Spaces; Studio hides them",
+                                    date="261010", frame=L.FRAME[0], size=20))
 
 
 def frame_screens(x0, y0):
@@ -525,6 +549,214 @@ def frame_themed(x0, y0):
     return fr
 
 
+# The current discussion row: Block topics, linked Jobs, separate Studio and Report.
+DISCUSSION_NAMES = (
+    "Shared workbench across levels",
+    "Block topics construct Jobs",
+    "Studio and Report",
+)
+
+
+def changed(x, y, words):
+    L.els.append(canvas.change_note(x, y, words, date="261010", frame=L.FRAME[0], size=20))
+
+
+def card(x, y, w, h, title, body):
+    base("rectangle", x, y, w, h, INK, 1.5, rough=0)
+    text(x + 20, y + 16, title, 23)
+    if body:
+        text(x + 20, y + 56, body, 20)
+
+
+def compact_chrome(x, y, w, h, level, space, filters=()):
+    """The live top Studio entry and Block context, with proposed topic content below."""
+    base("rectangle", x, y, w, h, INK, 1.5, rough=0)
+    tx = x + 24
+    for label in ("Guide", "Studio", "|", "Block", "Job jNN", "Task tNN"):
+        text(tx, y + 20, label, 20)
+        if (label == "Studio" if space == "Studio" else label.startswith(level)):
+            path([(tx, y + 49), (tx + len(label) * 11, y + 49)], arrow=False, color=INK)
+        tx += len(label) * 11 + (20 if label == "|" else 40)
+    if space == "Studio":
+        text(x + 24, y + 78, "Workbench · Studio · bNN · Block name", 23)
+    else:
+        sx = x + 24
+        for name in (s for s in BASE_SPACES if s != "Studio"):
+            if name in ("Report", "Work Details", "Runs"):
+                path([(sx, y + 76), (sx, y + 102)], arrow=False, color=INK)
+                sx += 18
+            bw = len(name) * 11 + 24
+            base("rectangle", sx, y + 68, bw, 42, INK, 2 if name == space else 1, rough=0)
+            text(sx + 12, y + 77, name, 20)
+            sx += bw + 18
+    path([(x, y + 126), (x + w, y + 126)], arrow=False, color=INK)
+    fx = x + 24
+    for label in filters:
+        bw = len(label) * 11 + 28
+        base("rectangle", fx, y + 144, bw, 42, INK, 1, rough=0)
+        text(fx + 14, y + 152, label, 20)
+        fx += bw + 12
+
+
+def frame_shared_levels():
+    fr = L.open_frame(DISCUSSION_NAMES[0])
+    text(0, 0, "Shared workbench across levels", 38)
+    text(0, 62, "Q08: one shared frame; the Block owns ideation, Jobs and Tasks open related Block topics.", 23)
+    sy = 160
+    compact_chrome(0, sy, 1500, 820, "Block", "Studio",
+                   filters=("Current", "Guide", "Server", "Structure", "UI", "Workflow", "All"))
+    path([(1160, sy + 126), (1160, sy + 820)], arrow=False, color=INK)
+    text(24, sy + 210, "Studio: one row per Block bNN topic", 23)
+    for yy, label in ((sy + 266, "s01-<topic>  [Structure]  ·  exploring  ·  no Job yet"),
+                      (sy + 338, "s02-<topic>  [Structure] [UI]  ·  linked Jobs j01, j02")):
+        base("rectangle", 24, yy, 1110, 56, INK, 1, rough=0)
+        text(42, yy + 15, label, 20)
+    card(24, sy + 410, 1110, 205, "s02: working drawing and topic notes",
+         "Ideas -> choices -> agreed plan\nFrames hold the plan and its supporting material.\n[Create Job from topic]   [Open linked Job]")
+    text(24, sy + 662, "Topic source: Block / studio / s02-<topic>", 21)
+    text(24, sy + 710, "Drag cards into Current; All shows the whole Block list.", 20)
+    text(24, sy + 758, "sNN = topic; group = references. Source keeps old local topics distinct.", 20)
+    text(1180, sy + 152, "Disk: Block source", 21)
+    for k, line in enumerate(("studio/", "s02-<topic>/", "topic notes", "source drawing", "builder / preview")):
+        text(1180, sy + 200 + k * 34, line, 20)
+    text(1180, sy + 430, "Runs: topic history", 21)
+    text(1180, sy + 478, "run-draw-s02\nworking sessions\nredraw / save", 20)
+    card(1600, 160, 830, 235, "Studio from a Job: same Block topics",
+         "Studio alone is selected; no work Space row.\nTopics, Disk and sessions use the Block.\nThe Job remains context in the top controls.\n[Job] returns to its work Space and view.")
+    card(1600, 440, 830, 225, "Studio from a Task: same Block topics",
+         "The Task opens the same Block Studio.\nThe Task remains context in the controls.\n[Task] returns to its work Space and view.\nNew topics and topic Runs belong to the Block.")
+    card(1600, 710, 830, 270, "Guide's Index and the separate Report",
+         "Guide: [Index] [Description] [Method]\n[RoadMap Draw] [Related Paper]\nIndex returns to the SPACE studio overview.\nReport: Question -> supporting work -> answer\nReports use selected topic frames and evidence.\nReport ownership follows its own rules.")
+    changed(1600, 1004, "s02-D13: Current first, All last; drag or use Add to Current")
+    card(0, 1060, 740, 140, "Block source",
+         "bNN_<block>/studio/sNN-<topic>/\nOne topic and one source drawing.")
+    card(850, 1060, 740, 140, "Job link and execution",
+         "bNN_<block>/jNN_<job>/\nJob face -> Block topic; Tasks below.")
+    card(1700, 1060, 740, 140, "Task and actual Runs",
+         "jNN_<job>/tNN_<task>/runs/<run>/\nResults come from actual executions.")
+    path([(740, 1130), (850, 1130)], color=INK)
+    path([(1590, 1130), (1700, 1130)], color=INK)
+    changed(0, 1260, "sNN topics now belong to the Block only")
+    changed(0, 1300, "Jobs are constructed from and linked to Block topics")
+    changed(0, 1340, "Studio and Report are separate Spaces")
+    changed(0, 1380, "Live: Studio and Block buttons; Block bNN stays in the title")
+    changed(0, 1420, "s02-D08: shorter button names; existing Studio links still work")
+    changed(0, 1450, "s02-D09: shared Studio; only Studio selected; no work Space row")
+    changed(1400, 1260, "s02-D11: Block name + Index + topic tag filters")
+    changed(1400, 1300, "Tags live in each topic; buttons read this Block")
+    changed(1400, 1340, "s02-D12: top row is Guide / Studio / Block / Job / Task")
+    L.close_frame(fr, pad=60)
+    return fr
+
+
+def frame_topic_jobs():
+    fr = L.open_frame(DISCUSSION_NAMES[1])
+    text(0, 0, "Block topics construct Jobs", 38)
+    text(0, 62, "Q07: ideation stays in the Block; a ready topic supplies the plan for a linked Job.", 23)
+    card(0, 160, 740, 245, "Block / s02-<topic>",
+         "Explore the idea and compare choices.\nRecord the agreed plan and open questions.\nKeep the drawing and its history here.\nA topic may remain exploratory.")
+    card(850, 160, 740, 245, "Job j01_<job>",
+         "Create a Job from the agreed plan.\nRecord its goal, close and source topic.\nThe Job link opens Block / s02.\nThe Job keeps its jNN identity.")
+    card(1700, 160, 740, 245, "Task tNN -> Run rNN",
+         "Tasks split the Job into pieces of work.\nRuns are the actual executions.\nResults provide evidence for Reports.\nFind the topic through the Job link.")
+    path([(740, 278), (850, 278)], color=INK)
+    path([(1590, 278), (1700, 278)], color=INK)
+    card(0, 495, 1130, 320, "Block Studio: topics and linked Jobs", "")
+    for dx, head in ((20, "Topic"), (410, "State"), (750, "Linked Jobs")):
+        text(dx, 558, head, 20)
+    for yy, row in ((606, ("s01-<topic>", "exploring", "none yet")),
+                    (680, ("s02-<topic>", "plan agreed", "j01 · j02"))):
+        base("rectangle", 20, yy, 1090, 58, INK, 1, rough=0)
+        for dx, value in zip((36, 410, 750), row):
+            text(dx, yy + 16, value, 20)
+    text(20, 766, "Select s02 -> its drawing, decisions and linked Jobs.", 20)
+    card(1310, 495, 1130, 320, "Job face: plan and source link", "")
+    for k, line in enumerate(("Source topic: Block / s02 (link)", "Goal: <work agreed in the topic>",
+                              "Close: <what must be true when done>", "Tasks: t01_<task> · t02_<task>",
+                              "Answers: Q01 (when it answers a Question)")):
+        text(1330, 560 + k * 44, line, 20)
+    text(0, 875, "One Block topic can lead to zero, one or several Jobs; sNN and jNN stay linked and distinct.", 23)
+    card(0, 955, 740, 170, "Topic source stays in the Block",
+         "bNN_<block>/studio/s02-<topic>/\nTopic notes, drawing and topic sessions.")
+    card(850, 955, 740, 170, "The Job owns its execution plan",
+         "bNN_<block>/j01_<job>/j01_<job>.md\nIts source-topic link points back to s02.")
+    card(1700, 955, 740, 170, "Evidence stays with the actual Run",
+         "j01_<job>/tNN_<task>/runs/rNN_<run>/\nThe Report cites the resulting evidence.")
+    path([(740, 1040), (850, 1040)], color=INK)
+    path([(1590, 1040), (1700, 1040)], color=INK)
+    changed(0, 1200, "Jobs are constructed from and linked to Block topics")
+    text(0, 1260, "? Where is the durable source-topic link stored on the Job face?", 22, RED)
+    text(0, 1304, "? How do existing Job and Task Studios move into the Block without losing links?", 22, RED)
+    L.close_frame(fr, pad=60)
+    return fr
+
+
+def frame_separate_spaces():
+    fr = L.open_frame(DISCUSSION_NAMES[2])
+    text(0, 0, "Studio and Report", 38)
+    text(0, 62, "Q09: separate Spaces with separate purposes, connected by topic, work and figure links.", 23)
+    sy, rx, sw = 160, 1340, 1240
+    compact_chrome(0, sy, sw, 860, "Block", "Studio")
+    compact_chrome(rx, sy, sw, 860, "Block", "Report", ("Questions", "Reading"))
+    text(24, sy + 212, "s02-<topic> · Block-owned thinking", 23)
+    card(24, sy + 270, 1192, 310, "Working drawing: ideas, choices and plan", "")
+    for x, title, body in ((44, "Idea", "<what to explore>"),
+                            (440, "Choice", "<agreed approach>"),
+                            (836, "Plan", "<work for a Job>")):
+        card(x, sy + 360, 360, 110, title, body)
+    path([(404, sy + 415), (440, sy + 415)], color=INK)
+    path([(800, sy + 415), (836, sy + 415)], color=INK)
+    text(44, sy + 520, "? <choice still being discussed>", 20, RED)
+    text(24, sy + 638, "Feeds: Q01 · Q02   [Open Report]", 21)
+    text(24, sy + 692, "Linked Jobs: j01 · j02   [Create Job from topic]", 21)
+    text(24, sy + 752, "Drafts, alternatives, decisions and marks live here.", 20)
+    text(24, sy + 800, "Jobs return to this same Block-owned topic.", 20)
+    qx = rx + 24
+    for dx, head in ((0, "Question"), (250, "Supporting work"), (670, "Report")):
+        text(qx + dx, sy + 212, head, 22)
+    for yy, question, work, answer in ((sy + 270, "Q01 · <question>", "Job j01 · j02", "<current answer; partial>"),
+                                      (sy + 450, "Q02 · <question>", "Job j02 / Tasks", "<answer with evidence>")):
+        base("rectangle", qx, yy, 1192, 145, INK, 1, rough=0)
+        for dx in (232, 652):
+            path([(qx + dx, yy), (qx + dx, yy + 145)], arrow=False, color=INK)
+        text(qx + 16, yy + 20, question, 20)
+        text(qx + 250, yy + 20, work, 20)
+        text(qx + 250, yy + 70, "<Tasks / Run evidence>", 20)
+        text(qx + 670, yy + 20, answer, 20)
+        text(qx + 670, yy + 70, "Topic frames: s02 (link)", 20)
+        text(qx + 670, yy + 110, "[Read]  [Open source topic]", 20)
+    text(qx, sy + 638, "Opening · Answer · Evidence · Limits · Next", 21)
+    text(qx, sy + 692, "Report figures use selected Block topic frames.", 20)
+    text(qx, sy + 752, "A topic can feed several Reports, and vice versa.", 20)
+    text(qx, sy + 800, "[Open source] returns to Studio and its topic.", 20)
+    path([(1240, sy + 650), (1340, sy + 650)], color=INK)
+    path([(1340, sy + 790), (1240, sy + 790)], color=INK)
+    text(0, 1060, "Open Report -> work mode / Report. Open source -> shared Studio; topic and canvas return proposed.", 22)
+    card(0, 1120, 1240, 145, "Studio source and topic history",
+         "Block / studio / sNN-<topic> / drawing + notes\nBlock / runs / run-draw-<sNN> / working sessions")
+    card(rx, 1120, 1240, 145, "Report source and work evidence",
+         "reports/qNN_<topic>/qNN_<topic>.md + figure list\nLinked Jobs -> Tasks -> actual Runs and their results")
+    changed(0, 1310, "Studio and Report are separate Spaces")
+    changed(0, 1350, "Live: Studio hides work buttons; Report belongs to work mode")
+    changed(24, 1380, "s02-D10: Report button; existing Audience Report links still work")
+    text(0, 1410, "? Keep topic, frame, Job filter and canvas position when moving between the Spaces?", 22, RED)
+    L.close_frame(fr, pad=60)
+    return fr
+
+
+def discussion_row():
+    """Place the current model above the reference drawing, without moving reference frames."""
+    start = len(L.els)
+    frames = [frame_shared_levels(), frame_topic_jobs(), frame_separate_spaces()]
+    new_elements = L.els[start:]
+    canvas.grid(new_elements, [[fr["id"] for fr in frames]], gap=180)
+    bottom = max(fr["y"] + fr["height"] for fr in frames)
+    for element in new_elements:
+        element["y"] -= bottom + 500
+    L.FRAME[0] = None
+
+
+
 ROWS = [  # the reading order (JL 261007: "arrange well the current ones"): heading, then its frames left to right
     ("1 · The proposal: the base owns the frame, a theme fills it",
      [("proposed · the frame", "1 · the frame: who owns what"),
@@ -543,12 +775,14 @@ ROWS = [  # the reading order (JL 261007: "arrange well the current ones"): head
 def arrange():
     """Move each frame, with everything in it, into its row; rows top to bottom, a heading over each."""
     frames = {e["name"]: e for e in L.els if e["type"] == "frame"}
-    y = 0
-    for heading, names in ROWS:
+    # Keep the established reference rows in place as the code inventory grows.
+    row_tops = (0, 1620.75, 3554.75, 5614.25)
+    row_xs = ((0, 1880), (0, 6180), (0, 3550, 5202.2), (0,))
+    for (heading, names), y, xs in zip(ROWS, row_tops, row_xs):
         text(0, y, heading, 48)
         y += 110
-        x, row_h = 0, 0
-        for old, new in names:
+        row_h = 0
+        for (old, new), x in zip(names, xs):
             fr = frames[old]
             dx, dy = x - fr["x"], y - fr["y"]
             for e in L.els:
@@ -556,7 +790,6 @@ def arrange():
                     e["x"] += dx
                     e["y"] += dy
             fr["name"] = new
-            x += fr["width"] + 300
             row_h = max(row_h, fr["height"])
         y += row_h + 400
 
@@ -571,6 +804,7 @@ def main():
     a = frame_screens(0, y)
     frame_themed(0, a["y"] + a["height"] + 300)
     arrange()
+    discussion_row()
     canvas.write(out, list(L.els), "build_s02_workbench_shared.py")
 
 

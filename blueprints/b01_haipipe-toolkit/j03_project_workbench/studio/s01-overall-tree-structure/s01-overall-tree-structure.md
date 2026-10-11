@@ -1,6 +1,8 @@
 s01 · Overall tree structure
 ===========================
 
+**Tags:** `Structure`
+
 **Topic:** one tree from Space down to Run (Space → Project → Theme → Block → Job → Task →
 Run), each level with its specials, its variants, its skills and where it shows in the
 workbench. Studio topic = creation: drawn and argued here, settled in a report Question.

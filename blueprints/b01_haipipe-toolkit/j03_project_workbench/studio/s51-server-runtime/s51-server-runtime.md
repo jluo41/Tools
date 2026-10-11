@@ -1,6 +1,8 @@
 s51 · Server runtime
 ====================
 
+**Tags:** `Server`
+
 **Topic:** how the workbench server runs today: how it starts, which folders make it up, how one
 request finds its page, how the base frame draws a folder, which routes each workbench answers,
 and where SPACE Home's links land. It is the first server topic: s01-s13 design the ladder and the

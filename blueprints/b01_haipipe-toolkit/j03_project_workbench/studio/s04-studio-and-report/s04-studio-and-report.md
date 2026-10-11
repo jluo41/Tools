@@ -1,13 +1,16 @@
 s04 · Studio and Report
 =======================
 
-**Topic:** how a Block's studio topics (`studio/sNN-<topic>/`) and its report Questions
+**Tags:** `Structure` · `Workflow`
+
+**Topic:** how a Block's Studio items (`studio/sNN-<topic>/`) and its report Questions
 (`reports/qNN_<topic>/`) relate. Both draw. The studio is the source; a report's drawing is
 generated from named studio frames, never drawn by hand (JL 261007: "use the draw from the sNN to
 format its own draw").
 
 **Feeds:** `reports/q03_block_questions/` (how Questions live in a Block), `q07_workbench_mapping/`
-(Idea Studio and Audience Report on screen). The earlier note on this topic (261006) is now draft
+(Idea Studio and Audience Report on screen), `q09_studio_report_on_screen/`
+(frame-to-Question links, panel behavior and safe drawing saves). The earlier note on this topic (261006) is now draft
 v0.1 of Q03: `../../reports/q03_block_questions/draft/q03_block_questions-draft-v0.1.md`.
 
 
@@ -19,8 +22,9 @@ s04-studio-and-report/
 ├── s04-studio-and-report.md            this face: what is decided, what is open
 ├── build_s04_studio_and_report.py      the builder; marks are kept on rebuild
 ├── studio_report_ui.py                 the workbench screens, drawn large; s11 draws them too
-├── s04-studio-and-report.excalidraw    the drawing: six frames, a plain prototype
-└── s04-studio-and-report.png           its preview
+├── s04-studio-and-report.excalidraw    the drawing: nine frames, relationship and screen prototypes
+├── s04-studio-and-report.png           the full preview
+└── s04-relationship.png                a readable preview of the relationship frame
 haipipe-report scripts/build_report_drawing.py   builds a report's drawing from its figure list (✎ 261007 moved from excalidraw-report, s21)
 ```
 
@@ -31,7 +35,13 @@ A report: `python Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-re
 What the drawing holds
 ----------------------
 
+The first row holds the current relationship and interaction proposal. The existing screen
+prototypes stay as reference; the proposed linked panel has not been implemented in the server.
+
 ```text
+6 · Studio item, frames and Questions   one sNN item has N frames; n primary frames each anchor qNN
+7 · Linked Studio and Report panels    one workspace, two linked panels; on-disk sources (UI proposal)
+8 · From exploration to an answer      promote a question, develop a partial answer, review source changes
 1 · Studio and Report       side by side: job, drawings, who makes and edits them, lifespan, link, screen
 2 · From studio to report   studio frames -> the report's figure list -> build_report_drawing.py
                             -> qNN_<topic>.excalidraw (view only) -> the Audience Report row;
@@ -51,11 +61,42 @@ Questions                   what is still open
 ```
 
 
-Proposed
---------
+Decided
+-------
+
+s04-D07 · A row/folder `sNN-<topic>/` is called a **Studio item**. Idea Studio is the view;
+    a Studio item is a broad topic containing drawings, each with named frames (JL 261009-261010).
+s04-D08 · One Studio item may have N frames, and only n of N need Question links. The default
+    is one primary frame per Question; exploratory/background frames can stay without a
+    Question and may be cited as supporting frames. A frame is the visual source, not the
+    Question object itself (JL 261009-261010).
+s04-D09 · Keep `qNN` for the Question and its answering Report, which share one identity.
+    Keep `rNN` for computational Runs. A Report can hold an open or partial current answer;
+    its figure is generated from selected Studio frames (JL 261010, accepted naming proposal).
+
+The shared relationship is owned here: `b03_project_workbench/studio/s04-studio-and-report/`,
+at Block level. CoWork and other themes use the same contract. No new Job is needed to draw
+and discuss it; an implementation Job can be scoped later against Q09 if needed.
+
+Interaction proposal (261010)
+----------------------------
+
+Two linked panels on the same work page: Studio canvas at left, collapsible Question/Report
+at right. Selecting a frame opens its qNN; selecting qNN locates its primary source frame.
+Keep the viewport and selection when switching. New frames can remain exploratory. Keep
+one session as a pass of `run-draw-sNN`; the panel does not create a second session log.
+The Report panel presents Answer, Evidence, Limits and Next, plus a source link. Its figure
+comes from the source canvas, with no independently edited second copy. Source changes
+should flag a Report for review before changing an accepted answer. These are UI proposals,
+not server behavior delivered by this drawing update.
+
+
+Earlier proposals
+-----------------
 
 s04-D01 · Proposed (261007): the studio makes, the report shows. A studio topic holds many rough
     drawings that a person edits freely; a report holds one drawing, generated.
+    Refined by D07-D09: Studio item contains frames; a Report may still have a partial answer.
 s04-D02 · Proposed (261007): a report's drawing is built by the excalidraw-report skill's `ref/build_report_drawing.py` from
     the figure list in its own `.md` (a `## Figures` yaml block: `from` a studio drawing, the
     `frame` name, a `caption`). The builder copies each frame with the person's marks except their
@@ -107,3 +148,7 @@ Open
 4. What Suggest writes: a note on the studio frame, or a comment on the report?
 5. When it rebuilds: `make.sh`, a Run button on the Question's row, or on every studio save?
 6. `feeds:` in a studio face and `## Figures` in a report: keep both, or derive feeds from the lists?
+7. Q09: store a durable frame ID alongside its readable name, or cite by name only? How do
+   renamed, split or merged frames preserve the primary Question link?
+8. Q09: how should selection, viewport and open text edits survive panel switching, and what
+   exact source changes should mark a Report as needing review?

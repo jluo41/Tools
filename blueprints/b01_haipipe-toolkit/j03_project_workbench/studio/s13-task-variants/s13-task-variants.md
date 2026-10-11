@@ -1,6 +1,8 @@
 s13 · Task variants
 ===================
 
+**Tags:** `Structure`
+
 **Topic:** each Task variant: its folder (one folder per Run in runs/), its skills, and where it shows on screen. One row per variant, top to bottom: folder → what it holds → skills (owns ·
 works · shows) → screens. Each variant is its own frame. Its screens come in two rows:
 

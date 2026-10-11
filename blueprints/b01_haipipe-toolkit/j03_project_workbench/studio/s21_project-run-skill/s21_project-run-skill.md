@@ -1,6 +1,8 @@
 s21 · Project Run and skill
 ===========================
 
+**Tags:** `Workflow`
+
 **Topic:** every Run button of the base frame, by level and Space, the skill that should own it, and the
 plan to update the base skills so every button has one (JL 261007: "what skill we should have for the studio
 and for the report … I think we should have the haipipe-board, and haipipe-job, and also haipipe-studio and

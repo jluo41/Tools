@@ -1,6 +1,8 @@
 s05 · Runs
 ==========
 
+**Tags:** `Workflow`
+
 **Topic:** how Runs are managed: the hard and the soft Run, how one looks in its folder, how it
 lives (type, Spec, folder, passes, close), and how it shows in the workbench (JL 261007: "how do we
 manage the runs here ... the soft run, the hard run, how the run looks like in the folder and

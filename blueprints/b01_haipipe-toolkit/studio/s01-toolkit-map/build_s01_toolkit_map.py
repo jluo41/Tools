@@ -1,7 +1,7 @@
 """s01 · The toolkit map: s01-toolkit-map.excalidraw, drawn by this builder from disk (haipipe-studio).
 
 Every part of `plugins/haipipe-toolkit` (the three skill layers by family, the servers, the agents, the MCP
-servers) with its size, and the Job of b01 that owns its design questions. Counted on every rebuild, so the map
+servers) with its size, and the shared Job or Theme Block that owns its design questions. Counted on every rebuild, so the map
 follows the folders. A rebuild keeps whatever a person drew on the canvas.
 
     python build_s01_toolkit_map.py
@@ -15,10 +15,10 @@ sys.path.insert(0, str(BLOCK.parent / "_build"))
 from mapdraw import GREEN, Sheet  # noqa: E402
 
 TK = BLOCK.parents[1] / "plugins" / "haipipe-toolkit"
-THEME_JOB = {"insight": "j11_theme_insight", "design": "j12_theme_design", "cowork": "j13_theme_cowork",
-             "discovery": "j14_theme_discovery", "labeling": "j15_theme_labeling", "paper": "j16_theme_paper",
-             "work": "j17_theme_work"}
-CHANGES = []                                          # (YYMMDD, what changed): a green note each
+THEME_BLOCK = {"insight": "b11_theme_insight", "design": "b12_theme_design", "cowork": "b13_theme_cowork",
+             "discovery": "b14_theme_discovery", "labeling": "b15_theme_labeling", "paper": "b16_theme_paper",
+             "work": "b17_theme_work"}
+CHANGES = [("261010", "Themes are peer Blocks b11–b17; shared foundation Jobs remain in b01.")]                                          # (YYMMDD, what changed): a green note each
 
 
 def skills(folder: Path) -> int:
@@ -31,11 +31,11 @@ def rows():
         job = "j03_project_workbench" if fam.name == "project" else "j02_base"
         out.append([f"skills · 1_base · {fam.name}", f"skills/1_base/{fam.name}/", f"{skills(fam)} skills", job])
     for th in sorted(p for p in (TK / "skills/2_theme").iterdir() if p.is_dir()):
-        job = THEME_JOB.get(th.name, "? no Job")
+        job = THEME_BLOCK.get(th.name, "? no Job")
         out.append([f"skills · 2_theme · {th.name}", f"skills/2_theme/{th.name}/", f"{skills(th)} skills", job])
-    for srv in sorted(p for p in (TK / "servers").iterdir() if p.is_dir()):
+    for srv in sorted(p for p in (TK / "servers").iterdir() if p.is_dir() and not p.name.startswith(".")):
         theme = srv.name.removeprefix("workbench-")
-        job = THEME_JOB.get(theme) if srv.name.startswith("workbench-") else "j03_project_workbench"
+        job = THEME_BLOCK.get(theme) if srv.name.startswith("workbench-") else "j03_project_workbench"
         py = sum(1 for f in srv.rglob("*.py") if "tests" not in f.parts)
         out.append([f"server · {srv.name}", f"servers/{srv.name}/", f"{py} .py files", job or "? no Job"])
     chat = [f for f in ("chat.py", "term.py") if (TK / "servers/workbench" / f).is_file()]
@@ -43,7 +43,7 @@ def rows():
         out.append(["the chat drawer", "servers/workbench/" + " · ".join(chat), "kept, not loaded by any page",
                     "j05_chat"])
     agents = sorted((TK / "agents").glob("*.md")) if (TK / "agents").is_dir() else []
-    out.append(["agents", "agents/", f"{len(agents)} agents", "? their theme's Job"])
+    out.append(["agents", "agents/", f"{len(agents)} agents", "? their theme's Block"])
     for m in sorted(p for p in (TK / "mcp-servers").iterdir() if p.is_dir()) if (TK / "mcp-servers").is_dir() else []:
         out.append([f"mcp server · {m.name}", f"mcp-servers/{m.name}/", "", "? no Job"])
     out.append(["how all of it sits on disk", "skills/ · servers/ · agents/", "", "j04_skill_folder"])
@@ -54,10 +54,10 @@ def main():
     s = Sheet()
     data = rows()
     cols = [("part", 330, 32), ("where, under plugins/haipipe-toolkit/", 420, 42), ("size", 260, 26),
-            ("owning Job of b01", 280, 28)]
+            ("owning Job / Theme Block", 280, 28)]
     f = s.frame("1 · The toolkit map", 0, 0, sum(w for _, w, _ in cols) + 80, 100)
-    s.text(40, 30, "s01 · The toolkit map: every part of haipipe-toolkit, and the Job that owns it", 30, f)
-    s.text(40, 80, "Counted from disk on each rebuild. Red: a part with no owning Job yet (? open).", 18, f)
+    s.text(40, 30, "s01 · The toolkit map: every part of haipipe-toolkit, and its blueprint owner", 30, f)
+    s.text(40, 80, "Counted from disk on each rebuild. Red: a part with no blueprint owner yet (? open).", 18, f)
     for i, (date, what) in enumerate(CHANGES):
         s.text(40, 112 + i * 26, f"✎ {date} {what}", 16, f, GREEN)
     y = s.table(40, 150 + len(CHANGES) * 26, cols, data, f, red=lambda r: str(r[3]).startswith("?"))

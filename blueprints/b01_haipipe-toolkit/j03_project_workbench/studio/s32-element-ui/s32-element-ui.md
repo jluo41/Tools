@@ -1,6 +1,8 @@
 s32 · Element UI
 ================
 
+**Tags:** `UI`
+
 **Topic:** every kind of element a workbench draws, as each workbench draws it today, side by side,
 so one look per element can be picked and the base draws it for every theme (JL 261007: "collect
 all types of the UI of different types of the element ... so we can unify them"; "for each type

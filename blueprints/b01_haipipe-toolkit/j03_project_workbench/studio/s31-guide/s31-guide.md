@@ -1,6 +1,8 @@
 s31 · Guide
 ===========
 
+**Tags:** `Guide`
+
 **Topic:** the Guide tab of the frame: the family's docs, the same in every Block. Its four Views
 (Description · Method · RoadMap Draw · Related Paper), the files each reads in
 `servers/workbench-<theme>/`, how those files relate, and each family's status. Drawn in the style

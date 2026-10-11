@@ -1,0 +1,22 @@
+run: run-draw-s04
+kind: soft
+type: draw
+scope: null
+target: s04
+ticket: run-draw-s04.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1010
+writes:
+- studio/s04-studio-and-report/build_s04_studio_and_report.py
+- studio/s04-studio-and-report/s04-studio-and-report.md
+- studio/s04-studio-and-report/s04-studio-and-report.excalidraw
+- studio/s04-studio-and-report/s04-studio-and-report.png
+- studio/s04-studio-and-report/s04-relationship.png
+feeds:
+- reports/q03_block_questions
+- reports/q07_workbench_mapping
+- reports/q09_studio_report_on_screen

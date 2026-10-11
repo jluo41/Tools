@@ -32,9 +32,16 @@ for b in "$B12"/s1[123]-design-*/build_s1*_design_*.py; do "$PY" "$b"; done   # 
 # and b13-b17's theme ladders (261007), one per theme, all drawn by theme_ladder.py
 THEMES=()
 for b in cowork discovery labeling paper work; do
-  d="$(cd "$STUDIO/../.." && pwd)/$(cd "$STUDIO/../.." && ls -d b1[3-7]_theme_$b)/studio/s01-$b-ladder"
-  "$PY" "$d/build_s01_${b}_ladder.py"
-  THEMES+=("$d/s01-$b-ladder.excalidraw")
+  if [ "$b" = paper ]; then
+    # s01-s04 retired on 261010; s05 holds the current paper ladder and boundaries.
+    d="$(cd "$STUDIO/../.." && pwd)/b16_theme_paper/studio/s05-board-job-task-boundary"
+    "$PY" "$d/build_s05_board_job_task_boundary.py"
+    THEMES+=("$d/s05-board-job-task-boundary.excalidraw")
+  else
+    d="$(cd "$STUDIO/../.." && pwd)/$(cd "$STUDIO/../.." && ls -d b1[3-7]_theme_$b)/studio/s01-$b-ladder"
+    "$PY" "$d/build_s01_${b}_ladder.py"
+    THEMES+=("$d/s01-$b-ladder.excalidraw")
+  fi
 done
 # the workbench topics (b02 merged into b03, 261007): the base frame and the Guide
 "$PY" "$STUDIO/s02-workbench-shared/build_s02_workbench_shared.py"

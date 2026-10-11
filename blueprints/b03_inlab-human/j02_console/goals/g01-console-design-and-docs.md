@@ -15,7 +15,7 @@ What this is
 
 The In-Lab Console (`Tools/plugins/inlab-human/servers/haichat-inlab/`: a React + Vite app over five FastAPI
 routers) is inlab-human's own workbench. Give it the design treatment the toolkit's theme Jobs got (for example
-`Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/`): screens per level with what each reads on disk,
+`Tools/blueprints/b11_theme_insight/studio/`): screens per level with what each reads on disk,
 an element-UI gallery shot from the live console, a map from each run-bar step to its owner, a UI review, a runtime
 page, and the Questions they raise. Fix the docs that have drifted from the code. Build nothing new in the console.
 
@@ -29,7 +29,7 @@ Read first
 - The engine: `Tools/plugins/inlab-human/mcp-servers/endpoint-predict/server.py`.
 - The blueprint: `Tools/blueprints/b03_inlab-human/board.md`, `studio/s01-two-modes-map/`, and the Job faces
   `j02_console/j02_console.md`, `j04_haichat/j04_haichat.md`.
-- The pattern to mirror: `Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/` (s01 ladder, s11 · s12 ·
+- The pattern to mirror: `Tools/blueprints/b11_theme_insight/studio/` (s01 ladder, s11 · s12 ·
   s13 levels, s21 runs and skills, s32 element UI, s33 UI issues) and
   `j03_project_workbench/studio/s32-element-ui/build_s32_element_ui.py` (its `PICK_JS` and `shoot()`: Playwright
   screenshots of one element per CSS selector, plus each element's computed style in `facts.json`).
@@ -76,7 +76,7 @@ D6. The design topics, in `j02_console/studio/`, each with a builder that redraw
       card, data panels, record chart, model card, run bar, forecast chart, Annotate, Checklist, HaiChat drawer with
       an approval card, Health), each a screenshot and its computed style; beside it the toolkit frame's matching
       element where one exists (top tabs, view row, tables), so a common look can be judged.
-    - s33-console-ui-issue: the review, the same way as `j11_theme_insight/studio/s33-ui-issue/`: every view at both
+    - s33-console-ui-issue: the review, the same way as `b11_theme_insight/studio/s33-ui-issue/`: every view at both
       scopes, every link, ranked worst first (where · what is wrong · what it should be · evidence · owner).
     - s51-console-runtime: standalone (:8091, the drawer shown) and embedded (an iframe in a HAI-Chat thread, the
       drawer hidden): processes, ports, env mounts, and what HAIChat-SPACE builds from this folder.

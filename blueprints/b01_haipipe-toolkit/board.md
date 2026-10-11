@@ -1,46 +1,58 @@
 # b01 · haipipe-toolkit
 
 board-kind: task-block
-spine: The blueprint of the `plugins/haipipe-toolkit` package: its skill layers, its project ladder and workbench, each theme, and the chat; one Job per area.
+spine: Shared toolkit foundations: utilities, base skills, the project ladder and workbench frame, skill layout, and chat; one Job per area. Theme design belongs to the peer b11–b17 Blocks.
 close: Every Job's questions have a report Page with an answer status, and every answered question names the skill, server or file change that settled it.
 
 ## Topic
 
-One blueprint Block per package in `plugins/` (261009): this one is `plugins/haipipe-toolkit`; `b02_haipipe-utils`
-and `b03_inlab-human` are the others. Until 261009 each Job here was a Block of its own in `Tools/blueprints/`
-(`b11_theme_insight` is now `j11_theme_insight`, the same number); each kept its questions (`reports/`), its
-studio topics (`studio/`) and its Runs (`runs/`), now at the Job level.
+The shared foundations of `plugins/haipipe-toolkit`: utility and base skills,
+the project ladder and workbench frame, skill folders, and chat. Each area is a
+Job inside this Block. Each Theme has its own peer Block under `blueprints/`
+(261010), with its own questions, reports, studio topics and Runs.
+
+`b02_haipipe-utils` and `b03_inlab-human` remain the other package blueprints.
+Blueprint Blocks describe a coherent area; a package can have a shared Block
+and several Theme Blocks.
 
 ## Jobs
 
 ```text
-j01_utils               the 0_utils skills: reply format, questions, small helpers
-j02_base                the 1_base skill layer: project, page, task, question, display families
-j03_project_workbench   a Project from root to Run, and the shared workbench frame
-j04_skill_folder        how skills and servers are laid out on disk
-j05_chat                the chat: the old in-page chat, and how a workbench Run reaches Claude Code
-j11_theme_insight       the insight theme          j15_theme_labeling   the labeling theme
-j12_theme_design        the design theme           j16_theme_paper      the paper theme
-j13_theme_cowork        the cowork theme           j17_theme_work       the work theme
-j14_theme_discovery     the discovery theme
+j01_utils               utility skills and small helpers
+j02_base                base skill families
+j03_project_workbench   the project ladder and shared workbench frame
+j04_skill_folder        skill and server layout
+j05_chat                chat and workbench Runs
 ```
+
+## Theme Blocks
+
+| Block | Focus |
+|---|---|
+| [b11_theme_insight](../b11_theme_insight/board.md) | insight |
+| [b12_theme_design](../b12_theme_design/board.md) | design |
+| [b13_theme_cowork](../b13_theme_cowork/board.md) | cowork |
+| [b14_theme_discovery](../b14_theme_discovery/board.md) | discovery |
+| [b15_theme_labeling](../b15_theme_labeling/board.md) | labeling |
+| [b16_theme_paper](../b16_theme_paper/board.md) | paper |
+| [b17_theme_work](../b17_theme_work/board.md) | work |
 
 ## Questions
 
-The Block's own questions, across its Jobs. None yet; each Job keeps its own.
+The Block's questions span shared Jobs and the peer Theme Blocks. Each Theme keeps its own questions in its board.md.
 
 ```yaml
 questions:
 - id: Q01
   title: How are the toolkit's blueprints organized?
-  question: 'How does Tools/blueprints/ map the toolkit: one Block per package, one
-    Job per area with the old Block numbers, and what lives at the Block level versus
-    in a Job?'
-  hypothesis: One Block per package in plugins/; a Job per area keeps its own studio,
-    reports and runs; the Block keeps only the package map and questions that span
-    Jobs.
-  acceptance: Answered when the layout, the renames (designs to blueprints, Blocks
-    to Jobs) and the Block-level rule are written down with the paths they changed.
+  question: 'How does Tools/blueprints/ map the toolkit: shared foundation Jobs in b01,
+    independent Theme Blocks b11–b17, and what belongs to each level?'
+  hypothesis: b01 holds shared foundation Jobs and cross-theme questions; each
+    Theme Block keeps its own studio, questions, reports and runs. Package membership
+    does not determine the number of blueprint Blocks.
+  acceptance: Answered when the current shared and Theme layout, the 261010
+    promotion paths, and preserved question, studio and Run identities are documented
+    and their references resolve.
   work: []
   report: reports/q01_blueprints_organized/q01_blueprints_organized.md
 - id: Q02

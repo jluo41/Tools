@@ -1,0 +1,34 @@
+run: run-draw-s05
+kind: soft
+type: draw
+scope: null
+target: s05
+ticket: run-draw-s05.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1009
+- p02-1009
+- p03-1009
+- p04-1009
+- p05-1009
+- p06-1009
+- p07-1010
+writes:
+- studio/s05-board-job-task-boundary/
+- runs/run-draw-s05/run-draw-s05.md
+- studio/s05-board-job-task-boundary/s05-board-job-task-boundary.md
+- studio/s05-board-job-task-boundary/build_s05_board_job_task_boundary.py
+- studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
+- studio/s05-board-job-task-boundary/s05-board-job-task-boundary.png
+- studio/s31-paper-guide/guide_block.py
+- board.md
+- reports/q01_paper_ladder/q01_paper_ladder.md
+- reports/q04_story_into_topics/q04_story_into_topics.md
+- _archive/20261010/studio/
+feeds:
+- reports/q01_paper_ladder
+- reports/q02_venues_related_built
+- reports/q04_story_into_topics

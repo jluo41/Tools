@@ -1,6 +1,8 @@
 s11 · Block variants
 ====================
 
+**Tags:** `Structure`
+
 **Topic:** each Block variant: its folder, what it holds, its skills, and one screen per view of the Block tab. One row per variant, top to bottom: folder → what it holds → skills (owns ·
 works · shows) → screens. Each variant is its own frame. Its screens come in two rows:
 
