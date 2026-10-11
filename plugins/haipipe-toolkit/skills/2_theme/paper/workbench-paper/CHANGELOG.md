@@ -1,3 +1,11 @@
+## 0.34.0 · 2026-10-09 · Block › Audience Report › Related Papers
+
+- JL 261009: "we might add a Related Paper after the related Questions". A new view after Related Questions shows the related papers under the research question each bears on (Q00 … Q06), the whole-paper ones first and the closest first inside each, with no venue order (Tools/blueprints/b16_theme_paper s05: the Board is venue-free, its related work grouped by question). It reads `related/related.md` when the Board has one (already grouped by question), else the current telling's related-papers table (`RQ3` → Q03), through the same cards as Description › Related, so a card's PDF opens inside it. `paper.py` `related_by_question_html()`; `paper_theme.py` `AUDIENCE`, `_report()`, its Disk rows.
+
+## 0.33.2 · 2026-10-09 · A related paper's PDF shows when its card opens
+
+- `servers/workbench-paper/paper_theme.py` `pv()`: a view drawn by the old page's renderers brings the old page's frame loading with it (`PV_JS`): a related paper's PDF (`data-pdf`) loads when its card opens, any other old frame (`data-src`) once it is shown. In the frame, Block › Description › Related opened every card on an empty box (JL 261009: "I cannot see the paper here"); the old page's script never came along with its styles.
+
 ## 0.33.1 · 2026-10-09 · Ideas with IDEA-NN ids; Theme folders are singular
 
 - `servers/workbench-paper/paper.py` `ideation()`: the ranked Ideas table is read when its ids are `i01` or `IDEA-01`; ScalingGlucose's `studio/s01-ideation` writes `IDEA-NN`, so Block › Audience Report › Ideation said "No idea yet" over five ideas.

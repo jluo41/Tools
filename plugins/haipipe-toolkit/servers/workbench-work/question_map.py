@@ -51,7 +51,7 @@ class Scene:
         lines = s.split("\n")
         e = self._base(id_, "text", x, y, max(len(l) for l in lines) * size * 0.56, len(lines) * size * 1.25,
                        stroke=color, rounded=False)
-        e.update(text=s, originalText=s, fontSize=size, fontFamily=8, textAlign="left", verticalAlign="top",
+        e.update(text=s, originalText=s, fontSize=size, fontFamily=6, textAlign="left", verticalAlign="top",
                  containerId=None, autoResize=True, lineHeight=1.25)
         return e
 

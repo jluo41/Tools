@@ -124,7 +124,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw
+  - board: Tools/blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw
   - Workbench design
   - first
   related-paper:

@@ -1,6 +1,6 @@
 """A placeholder design Project on b12's ladder, for the design theme's tests and screenshots (b12 s11 · s12 · s13).
 
-The ladder (Tools/blueprints/b01_haipipe-toolkit/j12_theme_design, goals/g01-design-workbench.md): a design Block `bNN_<app>/` holds its goal
+The ladder (Tools/blueprints/b12_theme_design, goals/g01-design-workbench.md): a design Block `bNN_<app>/` holds its goal
 list (board.md ## Goals), its inputs versions (inputs/iN/ + manifest.yaml), what an Exp returned
 (observed/eNN_<exp>/), its soft Runs and its delivery/; a Job `jNN_<goal>_<design-method>/` pins one goal, one
 registered method version and one inputs version (its face's goal: · method: · inputs:), fences its inputs in

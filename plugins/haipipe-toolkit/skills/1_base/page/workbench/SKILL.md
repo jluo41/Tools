@@ -1,18 +1,59 @@
 ---
 name: workbench
 description: >-
-  The WORKBENCH contract of a Page: every Page-material subfolder is
-  rostered, while one category workbench may own several internal storage lanes.
-  A workbench is defined by STORAGE, SURFACE, WRITER, and BOUNDARY.
-  ref/roster.md is the single list of material names. Trigger: page
-  workbench, workbench folder, workbench roster, workbench tab, add a workbench,
-  /workbench.
+  Open a workbench, and the WORKBENCH contract behind it. /wb is the short name.
+  No input opens the SPACE Home; a Project path opens that Project; a Block, Job
+  or Task path opens the shared frame in its theme; plain words find the place
+  first (cli/wb.py checks the link on the running server, then the matching
+  workbench-<theme> skill explains the screen). The contract: every
+  Page-material subfolder is rostered, while one category workbench may own
+  several internal storage lanes; a workbench is defined by STORAGE, SURFACE,
+  WRITER, and BOUNDARY; ref/roster.md is the single list of material names.
+  Trigger: wb, open the workbench, open the space, open a project, open a
+  block, find a block, workbench link, page workbench, workbench folder,
+  workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.13.1"
-  last_updated: "2026-10-07"
+  version: "1.14.1"
+  last_updated: "2026-10-09"
+  aliases: [wb]
 ---
 
 # /workbench · a page's material, as one contract
+
+## 🚪 Open: /wb and /workbench (JL 261009)
+
+`/wb` is this skill's short name: `aliases: [wb]` above, and `install.sh` (and `install.ps1`)
+link it as one more name for this same folder, so the two can never differ. With an input,
+the skill OPENS a workbench; every section after this one is the contract the opened screen keeps.
+
+```text
+/wb                        SPACE Home, every Project     /
+/wb <Project>              that Project only             /?project=<Project>
+/wb <Project>/cowork       that Project, one kind        /?project=<Project>&kind=cowork
+/wb <Block | Job | Task>   the shared frame, its theme   /_board/workbench?path=<folder>
+/wb <words>                find the place, then open it as above
+```
+
+1. **Run the script** from inside the SPACE: `.venv/bin/python <this skill's folder>/cli/wb.py <input>`
+   (from the SPACE root, `Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb.py`).
+   A path may be SPACE-relative or relative to where you are; a file inside a folder opens that folder.
+2. **It checks before it hands out**: it finds this SPACE's running `servers/_host/serve.py --root <SPACE>`
+   (the lowest port when several run), starts one from `.server_config/settings.env` when none does,
+   loads the link, and restarts a server that drops the request (a server started before another
+   session renamed something in Tools holds old paths). Then it opens the browser and prints the link,
+   the folder, its level and the skill for its theme. `--no-open` only prints; `--no-restart` never restarts.
+3. **Words**: it ranks every Project, Theme folder, Block, Job and Task by folder name, title and
+   `spine:`/`goal:`/`status:` lines, using the server's own lists (`home.discover_boards`,
+   `frame.children`, `frame.theme_of`), so a found place and the screen agree. Level words
+   (project, block, job, task) and theme words (paper, cowork, discovery, insight, design,
+   labeling) narrow the search. When one place clearly wins it opens it.
+4. **No clear winner** (`🙋`): read the listed titles and pick by meaning (`CGM-FM` is the CGM
+   foundation model), then run `wb.py <that path>`. Do not ask the person to choose: open the best
+   one and name the next two as links. `--find` only lists.
+5. **Then route**: load the printed skill when the person wants the screen explained or worked in:
+   `workbench-work`, `workbench-cowork`, `workbench-discovery`, `workbench-paper`, `workbench-insight`,
+   `workbench-design`, `workbench-labeling`, or this skill when the folder has no theme. Reply with
+   the printed link; its Tailscale address also opens on a phone.
 
 `haipipe-page` owns what the page's `.md` SAYS; this skill owns what sits BESIDE it.
 A page lives in its own home folder (QPf1 on the design board), and every

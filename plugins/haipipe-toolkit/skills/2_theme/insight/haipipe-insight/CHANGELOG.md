@@ -1,5 +1,9 @@
 # haipipe-insight · version history
 
+## 3.1.2 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `ref/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic Shanns (8).
+
 ## 3.1.1 · 2026-10-09 · Theme folders are singular
 
 - `scripts/insight_ladder.py` accepts a Board under `insight/` (or the older `insights/`); usage names

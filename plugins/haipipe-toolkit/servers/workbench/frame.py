@@ -1,12 +1,12 @@
 """The base frame every theme draws in, and the vanilla workbench when no theme is laid over it.
 
-    Guide · Block · Job ▾ · Task ▾                                        level tabs
-    Description | Idea Studio · Audience Report | Work Details | Runs · Delivery   the six Spaces
+    Guide · Studio | Block · Job ▾ · Task ▾                            top navigation
+    Description | Report | Work Details | Runs · Delivery          work mode only
     <subspaces>                                                           the third row
     content                                                  │ Runs panel
 
-The frame owns the levels, the six Spaces, their order and dividers, the third row, the Runs
-panel and the look (Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
+The frame owns the levels, shared Guide and Studio, the five work Spaces, their order and
+dividers, the third row, the Runs panel and the look (Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
 gives only what each Space holds at each level: `servers/workbench-<theme>/<theme>_theme.py`
 exports `THEME`, a `Theme`. A Space a theme leaves out shows the vanilla default, read from the
 standard folders (the face `.md`, `studio/`, `reports/`, the child `jNN_` / `tNN_` folders,
@@ -171,7 +171,7 @@ def children(folder: Path, level: str) -> list:
     if not want or not folder.is_dir():
         return []
     return sorted(p for p in folder.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))
-                  and level_of(p) == want)
+                  and folder.resolve() in p.resolve().parents and level_of(p) == want)
 
 
 def face(folder: Path) -> Path | None:
@@ -392,14 +392,30 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "") -> dict:
                  "redraw or this session → a pass of run-draw-<sNN>.", "haipipe-studio",
                  rows=studio_sessions(folder, root)),))
 
-    rows_html, groups = question_rows(level, folder, root, sub)
-    has_questions = "q-row" in rows_html
-    if level == "Task" and not has_questions and md:          # a Task's report is its own face
-        rows_html = (f'<div class=q-row><div class=q-l><p class=q-head><b>the Page</b></p></div>'
-                     f'<div class=q-w>{" · ".join(_e(r["run"]) for r in runs_of(folder)) or "<span class=mut>no Runs yet</span>"}</div>'
-                     f'<div class=q-r>{pop(_reader(md, root), "the Page", _title(md) + " ↗")}</div></div>')
-    out["Audience Report"] = Space(rows_html, subspaces=("All",) + tuple(groups) if groups else (),
-                                   open=(sub or "All") if groups else "", run_types=(
+    view = sub if sub in AUDIENCE_VIEWS else "High-level logic + Low-level work"
+    face_name = _e(md.name) if md else "the face"
+    if view == "Ideation":
+        rows_html = _topic_rows(folder, root, ("ideation", "idea")) or _empty_view(
+            "No ideas yet. A studio topic holds them, ranked, admitted and eliminated: studio/sNN-ideation/.")
+    elif view == "Narrative":
+        rows_html = _topic_rows(folder, root, ("story", "narrative")) or _empty_view(
+            "No narrative yet. A studio topic tells this level's story, what it is, why it matters and the "
+            "questions it answers: studio/sNN-story-&lt;idea&gt;/.")
+    elif view == "Related Questions":
+        rows_html, _ = question_rows(level, folder, root, keep=lambda g: g in WHO_ASKS)
+        if "q-row" not in rows_html:
+            rows_html = _empty_view(f"No questions yet. Ask one a reviewer, a coauthor, an editor or a reader will "
+                                    f"ask; {face_name} ## Questions, group: {' · '.join(WHO_ASKS)}.")
+    else:
+        rows_html, _ = question_rows(level, folder, root, keep=lambda g: g not in WHO_ASKS)
+        if level == "Task" and "q-row" not in rows_html and md:   # a Task's report is its own face
+            rows_html = (f'<div class=q-row><div class=q-l><p class=q-head><b>the Page</b></p></div>'
+                         f'<div class=q-w>{" · ".join(_e(r["run"]) for r in runs_of(folder)) or "<span class=mut>no Runs yet</span>"}</div>'
+                         f'<div class=q-r>{pop(_reader(md, root), "the Page", _title(md) + " ↗")}</div></div>')
+    # the four views, always, on every level a theme does not draw itself (JL 261009, over the paper Board's
+    # Audience Report: "I want you to follow things like this"; b03 s01-D22); the register's own groups head
+    # the High-level logic view's table (s04-D04)
+    out["Audience Report"] = Space(rows_html, subspaces=AUDIENCE_VIEWS, open=view, run_types=(
         run_type("run-ask-<qNN>", "ask a Question", "Ask a new Question of {folder}: its register row and "
                  "reports/qNN_<topic>/.", "haipipe-question"),
         run_type("run-report-<qNN>", "write the report", "Write or update a report of {folder}.", "haipipe-report"),
@@ -448,6 +464,11 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "") -> dict:
                                                 LEVEL_SKILL.get(level, LEVEL_SKILL["Task"])),))
     for name, disk in vanilla_disk(level, md.name if md else folder.name + ".md").items():
         out[name] = replace(out[name], disk=disk)
+    if level == "Block":
+        old_sources = dict.fromkeys(source for source, _, _ in studio_inventory(folder, root) if source != folder.resolve())
+        extra = tuple((source.relative_to(folder.resolve()).as_posix() + "/studio/s*/", "existing topics from " + short_name(source.name))
+                      for source in old_sources)
+        out["Idea Studio"] = replace(out["Idea Studio"], disk=out["Idea Studio"].disk + extra)
     return with_page_views(out, level, folder, root, sub, {"Description": "Face", "Audience Report": "Report",
                                                            "Work Details": "Folders", "Runs": "All",
                                                            "Delivery": "Files"})
@@ -467,7 +488,7 @@ def vanilla_disk(level: str, face_name: str) -> dict:
                         ("runs/run-draw-*/passes/", "a topic's sessions, one pass each")),
         "Audience Report": ((face_name, "## Questions: one row per Question, its group"),
                             ("reports/q*/q*.md", "Report: the title and its answer line"),
-                            ("reports/q*/q*.png", "Report: the drawing's thumbnail"),
+                            ("reports/q*/q*.excalidraw", "Report: its drawing, live (click to pan and zoom)"),
                             ("studio/s*/s*.md", "from the Idea Studio: each topic's feeds: line")),
         "Work Details": ((kids,) if kids else (("./", "its own folders, with their file counts"),)),
         "Runs": (("runs/*/", "one row per Run: kind · type · status, grouped by type"),),
@@ -500,6 +521,8 @@ def disk_markup(entries, folder: Path, root: Path, most: int = 4) -> str:
         else:
             target = folder if path in ("", "./", ".") else folder / path
             found = [target] if target.exists() else []
+        found = [m for m in found if (m.resolve() == folder.resolve() or folder.resolve() in m.resolve().parents)
+                 and (m.resolve() == root.resolve() or root.resolve() in m.resolve().parents)]
         if not found:
             body = f'<li class=miss title="{_e(path)}"><span class=disk-p>{_e(path)}</span><span class=disk-n>not yet</span></li>'
         else:
@@ -547,13 +570,19 @@ DISK_CSS = """
 def _note_facts(md: Path | None) -> dict:
     """What a topic's notes file says: its **Topic:** line, decisions, open points, feeds."""
     if not md:
-        return {"topic": "", "decided": 0, "open": 0, "feeds": []}
+        return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": []}
     text = md.read_text(encoding="utf-8", errors="ignore")
     m = re.search(r"\*\*Topic:\*\*\s*(.+?)(?:\n\s*\n|\Z)", text, re.S)
     topic = re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
     opened = re.search(r"(?ims)^(?:#+\s*)?Open\b[^\n]*\n(?:[-=]{3,}\n)?(.*?)(?=^\S[^\n]*\n[-=]{3,}\n|^#+ |\Z)", text)
     feeds = re.search(r"\*\*Feeds:\*\*(.+?)(?:\n\s*\n|\Z)", text, re.S)
-    return {"topic": topic,
+    tags = []
+    for line in re.findall(r"(?mi)^\*\*(?:Tags|Type):\*\*[^\S\n]*([^\n]*)", text):
+        for value in re.split(r"[,·|]", line):
+            value = value.strip().strip(chr(96)).strip()
+            if value and value.casefold() not in {tag.casefold() for tag in tags}:
+                tags.append(value)
+    return {"topic": topic, "tags": tags,
             "decided": len(re.findall(r"(?m)^s\d+-D\d+\b", text)),
             "open": len(re.findall(r"(?m)^\d+\.\s", opened.group(1))) if opened else 0,
             "feeds": list(dict.fromkeys(re.findall(r"q\d\d_[A-Za-z0-9_]+", feeds.group(1)))) if feeds else []}
@@ -604,7 +633,7 @@ def _sessions(topic: Path, folder: Path) -> list:
     return out
 
 
-def _topic_row(topic: Path, drawings: list, root: Path, folder: Path) -> str:
+def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Path | None = None) -> str:
     """One closed row, its name and one line; opened in place, the live drawing across the row."""
     md = _notes(topic)
     facts = _note_facts(md)
@@ -626,7 +655,20 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path) -> str:
     else:
         files = sorted(p.name for p in topic.iterdir() if p.is_file() and not p.name.startswith(".")) if topic.is_dir() else []
         body = f'<p class="mut none">No drawing; it holds {_e(" · ".join(files)) or "nothing yet"}.</p>'
-    return (f'<details class=topic id="topic-{_e(name)}"><summary><b>{_e(name)}</b>'
+    tags = "".join(f'<span class=chip>{_e(tag)}</span>' for tag in facts["tags"])
+    badges = f'<span class=topic-tags>{tags}</span>' if tags else ""
+    topic_id, attrs, focus = "topic-" + name, "", ""
+    if shared is not None:
+        topic_id = studio_anchor(topic, folder, shared)
+        source = folder.relative_to(shared).as_posix() if folder != shared else ""
+        attrs = (f' data-studio-key="{_e(topic.relative_to(shared).as_posix())}"'
+                 f' data-studio-name="{_e(name)}" data-studio-source="{_e(source)}"')
+        badges += f'<span class=topic-source>{_e(short_name(folder.name) if source else "Block")}</span>'
+        focus = ('<span class=studio-drag draggable=false title="Drag this topic to Current"'
+                 ' aria-label="Drag this topic to Current">⋮⋮</span>')
+        tools.insert(0, '<button type=button class=studio-current aria-pressed=false>Add to Current</button>')
+    return (f'<details class=topic id="{_e(topic_id)}" data-studio-tags="{_e(json.dumps(facts["tags"]))}"{attrs}>'
+            f'<summary>{focus}<b>{_e(name)}</b>{badges}'
             f'<span class=topic-meta>{" · ".join(meta)}{feeds}</span>'
             f'<span class=topic-pop>{" ".join(tools + ([full] if full else []))}</span></summary>{body}</details>')
 
@@ -643,15 +685,97 @@ def _studio_topics(folder: Path) -> list:
     return out
 
 
+# The Audience Report's views on a level no theme draws itself: the paper Board's four (JL 261009, over its
+# Audience Report: "I want you to follow things like this"; b03 s01-D22), each a button, an empty one saying what
+# belongs there. A Related Question is one someone else asks: its register group names who.
+AUDIENCE_VIEWS = ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions")
+WHO_ASKS = ("reviewer", "coauthor", "editor", "reader")
+
+
+def _empty_view(text: str) -> str:
+    return f'<p class=space-empty>{text}</p>'
+
+
+def _topic_rows(folder: Path, root: Path, words: tuple) -> str:
+    """The studio topics whose name holds one of `words`, as Idea Studio draws them; '' when none."""
+    return "".join(_topic_row(t, d, root, folder) for t, d in _studio_topics(folder) if any(w in t.name for w in words))
+
+
+def studio_inventory(folder: Path, root: Path) -> list:
+    """One Block list, including existing Job/Task topics until their files are moved.
+
+    Keep each topic's source for its feeds and sessions. Never enter an archive or a link
+    outside this Block/root, and count a linked topic only once.
+    """
+    root, folder = root.resolve(), folder.resolve()
+    if folder != root and root not in folder.parents:
+        return []
+    sources = [folder]
+    if level_of(folder) == "Block":
+        jobs = children(folder, "Block")
+        sources += jobs + children(folder, "Job")
+        for job in jobs:
+            sources += children(job, "Job")
+    out, seen = [], set()
+    for source in sources:
+        resolved = source.resolve()
+        if resolved != folder and folder not in resolved.parents:
+            continue
+        for topic, drawings in _studio_topics(source):
+            actual = topic.resolve()
+            if root not in actual.parents or folder not in actual.parents or actual in seen:
+                continue
+            seen.add(actual)
+            drawings = [d for d in drawings if root in d.resolve().parents and folder in d.resolve().parents]
+            out.append((source, topic, drawings))
+    return out
+
+
+def studio_anchor(topic: Path, source: Path, block: Path) -> str:
+    """Keep Block topic links; qualify older local topics so repeated sNN names stay distinct."""
+    prefix = source.relative_to(block).as_posix().replace("/", "--") + "--" if source != block else ""
+    return "topic-" + prefix + (topic.name if topic.is_dir() else topic.stem)
+
+
 def studio_cards(folder: Path, root: Path) -> str:
-    """Idea Studio's default body: one closed row per studio topic, by name; a click opens it in
-    place with its details and the live drawing across the row. Then where the next topic goes."""
-    topics = _studio_topics(folder)
-    last = max([int(m.group(1)) for t, _ in topics for m in [re.match(r"s(\d+)", t.name)] if m] or [0])
+    """Current first, tag groups in between, All last; sNN is a topic, never a group."""
+    folder, root = folder.resolve(), root.resolve()
+    topics = studio_inventory(folder, root)
+    own = [(t, d) for source, t, d in topics if source == folder]
+    last = max([int(m.group(1)) for t, _ in own for m in [re.match(r"s(\d+)", t.name)] if m] or [0])
     add = f'<p class="mut add">+ Add topic → studio/s{last + 1:02d}-&lt;topic&gt;/</p>'
-    rows = "".join(_topic_row(t, d, root, folder) for t, d in topics)
-    return ('<p class=mut>One topic per row, by name; click one and it opens in place.</p>' + rows + add
-            if rows else '<p class=mut>No studio topics yet.</p>' + add)
+    rows = "".join(_topic_row(t, d, root, source, shared=folder) for source, t, d in topics)
+    counts, untagged = {}, 0
+    for _, topic, _ in topics:
+        tags = _note_facts(_notes(topic))["tags"]
+        untagged += not tags
+        for tag in tags:
+            key = tag.casefold()
+            label, count = counts.get(key, (tag, 0))
+            counts[key] = (label, count + 1)
+    options = [("__current__", "Current", 0)]
+    options += [(key, label, count) for key, (label, count) in sorted(counts.items())]
+    if untagged:
+        options.append(("__untagged__", "Untagged", untagged))
+    options.append(("", "All", len(topics)))
+    buttons = "".join(
+        f'<button type=button class="tab{" on" if key == "__current__" else ""}" data-studio-tag="{_e(key)}" '
+        f'aria-pressed="{"true" if key == "__current__" else "false"}">{_e(label)} <span class=tag-count>{count}</span></button>'
+        for key, label, count in options)
+    filters = f'<nav class="row studio-filters" aria-label="Studio topic groups">{buttons}</nav>'
+    sources = dict.fromkeys(source for source, _, _ in topics)
+    picker = ""
+    if len(sources) > 1:
+        choices = ''.join(f'<option value="{_e(source.relative_to(folder).as_posix() if source != folder else "")}">'
+                          f'{_e(short_name(source.name) if source != folder else "Block")}</option>' for source in sources)
+        picker = ('<label class=studio-source>Source <select aria-label="Studio source" data-studio-source-filter>'
+                  '<option value="__all__">All sources</option>' + choices + '</select></label>')
+    help_ = '<p class="mut studio-help">Drag a topic by ⋮⋮ into Current, or use Add to Current. Your selection is saved in this browser.</p>'
+    empty = '<p class="mut studio-empty" hidden>Current is empty. Open All and add the topics you want to focus on.</p>'
+    status = '<p class="mut studio-status" role=status aria-live=polite></p>'
+    listing = rows or '<p class=mut>No studio topics yet.</p>'
+    return (f'<div class=studio-topics data-studio-owner="{_e(_rel(folder, root))}">{filters}'
+            f'{picker}{help_}{status}{empty}{listing}{add}</div>')
 
 
 def studio_sessions(folder: Path, root: Path) -> list:
@@ -669,7 +793,9 @@ def studio_sessions(folder: Path, root: Path) -> list:
         passes = len(sessions) - older
         what = " · ".join(x for x in (f"{passes} pass{'es' if passes != 1 else ''}" if passes else "",
                                       f"{older} older chat/ session{'s' if older != 1 else ''}" if older else "") if x)
-        rows.append({"run_id": f"run-draw-{sid}", "status": "done", "target": topic.name,
+        card = run / "run.yaml"                 # its own status (waiting, held …); "done" only when it has no card
+        status = _yaml_scalar(card.read_text(encoding="utf-8", errors="ignore"), "status") if card.is_file() else ""
+        rows.append({"run_id": f"run-draw-{sid}", "status": status or "done", "target": topic.name,
                      "_display": f"run-draw-{sid}", "_of": f"studio topic {topic.name} · {what}",
                      "result": _rel(run if run.is_dir() else sessions[0]["path"].parent, root),
                      "result_path": str(run / "passes" if run.is_dir() else sessions[0]["path"].parent)})
@@ -719,18 +845,17 @@ def _answering(folder: Path, level: str, qid: str, root: Path) -> list:
 
 def _report_cell(qid: str, page: Path | None, root: Path) -> str:
     """The work theme's Report cell: the title (the Page in the pop-out), its answer line, its one
-    drawing as a thumbnail (generated, view only, in the pop-out), and a tag."""
+    drawing embedded live (view only, fitted to the box, loaded as it scrolls into view; JL 261009:
+    "the embed excalidraw in the third column"), full size in the pop-out, and a tag."""
     if not page:
         return '<p class=mut>No report yet</p>'
     tag = page.stem.split("_", 1)[0]
     status = dict(_fields(page)).get("answer-status", "open")
     drawing = page.with_suffix(".excalidraw")
-    png = page.with_suffix(".png")
-    if drawing.is_file() and png.is_file():
-        pic = (f'<a class=rp-thumb data-pop="{_e(qid)} · Drawing · generated, view only" href="{_e(_draw_url(drawing, root))}" '
-               f'target=_blank rel=noopener><img loading=lazy alt="{_e(page.stem)}" src="/{_e(_rel(png, root))}"></a>')
-    elif drawing.is_file():
-        pic = f'<p class=mut>{pop(_draw_url(drawing, root), qid + " · Drawing · generated, view only", "its drawing ↗")}</p>'
+    if drawing.is_file():
+        pic = (f'<div class=rp-live title="Click to pan and zoom"><iframe class=rp-draw inert loading=lazy '   # inert: it never
+               f'title="{_e(page.stem)}" src="{_e(_draw_url(drawing, root))}" referrerpolicy=no-referrer></iframe></div>'  # takes focus
+               f'<p class=rp-full>{pop(_draw_url(drawing, root), qid + " · Drawing · generated, view only", "full size ↗")}</p>')
     else:
         pic = '<p class=mut>no drawing yet</p>'
     answer = _opening(page)
@@ -739,7 +864,7 @@ def _report_cell(qid: str, page: Path | None, root: Path) -> str:
             + pic + f'<p class=rp-tags>report {_e(tag)} · {_e(status)}</p>')
 
 
-def question_rows(level: str, folder: Path, root: Path, sub: str = "") -> tuple:
+def question_rows(level: str, folder: Path, root: Path, sub: str = "", keep=None) -> tuple:
     """(html, groups): one row per Question of this level: Logic (the question, its status, the
     studio topics that feed it) │ Work (the Jobs and Tasks that answer it) │ Report."""
     md = face(folder)
@@ -753,6 +878,8 @@ def question_rows(level: str, folder: Path, root: Path, sub: str = "") -> tuple:
     for topic, drawings in _studio_topics(folder):
         for q in _note_facts(_notes(topic))["feeds"]:
             feeders.setdefault(q.split("_", 1)[0].lower(), []).append((topic, drawings[0] if drawings else None))
+    if keep is not None:                        # keep(group) -> bool: the rows one view shows
+        rows = [r for r in rows if keep(str(r.get("group") or ""))]
     groups = list(dict.fromkeys(str(r["group"]) for r in rows if r.get("group")))
     out = []
     for r in rows:
@@ -773,14 +900,19 @@ def question_rows(level: str, folder: Path, root: Path, sub: str = "") -> tuple:
         work = [str(w.get("task") or w.get("path") or w) if isinstance(w, dict) else str(w) for w in (r.get("work") or [])]
         kids = _answering(folder, level, qid, root)
         work_html = " · ".join([_link(ROUTE + "?" + urlencode({"path": _rel(k, root)}), _rel(k, folder)) for k in kids]
-                               + [_e(w) for w in work if w]) or '<span class=mut>no work yet</span>'
-        out.append(f'<div class=q-row id="question-{_e(qid)}"><div class=q-l>{logic}</div>'
-                   f'<div class=q-w>{work_html}</div><div class=q-r>{_report_cell(qid, page, root)}</div></div>')
+                               + [_link(_reader(folder / w, root), w) if (folder / w).is_file() else _e(w)
+                                  for w in work if w]) or '<span class=mut>no work yet</span>'   # a file opens in the reader
+        out.append((str(r.get("group") or ""),
+                    f'<div class=q-row id="question-{_e(qid)}"><div class=q-l>{logic}</div>'
+                    f'<div class=q-w>{work_html}</div><div class=q-r>{_report_cell(qid, page, root)}</div></div>'))
     if not out:
         return '<p class=mut>No Questions at this level yet.</p>', groups
     head = ('<div class="q-row q-head-row"><div>Logic · the question</div><div>Work · the Jobs, Tasks and Runs</div>'
             '<div>Report · what it says</div></div>')
-    return head + "".join(out), groups
+    if groups and sub in ("", "All"):              # All: the table grouped the same way, a heading per group (s04-D04)
+        return head + "".join(f'<h3 class=q-group>{_e(g or "other")}</h3>' + "".join(h for k, h in out if k == g)
+                              for g in groups + ([""] if any(not k for k, _ in out) else [])), groups
+    return head + "".join(h for _, h in out), groups
 
 def _first_sentence(text: str, most: int = 160) -> str:
     """The question's first sentence, cut at `most` characters: the short explanation under its name."""
@@ -854,6 +986,11 @@ def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = ""
             if sub in v.keep and sub not in (t.subspaces or ()):    # a theme's own view of that name wins
                 merged = replace(merged, html=v.html, open=sub, disk=v.disk)
         out[name] = merged
+    # Studio is one Block-owned view, shared with that Block's Jobs and Tasks (b03 s02-D09).
+    if level != "Block":
+        block = chain(folder, root).get("Block")
+        out["Idea Studio"] = (spaces_for(theme, "Block", block, root)["Idea Studio"] if block else
+                              Space('<p class=mut>Studio needs an owning Block.</p>'))
     return out
 
 
@@ -888,14 +1025,25 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .page-view{display:block;width:100%;height:calc(100vh - 260px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
 /* the view row (third row): the Page workbench's view buttons (b03 s32-element-ui, picked E, JL 261007; not the
    small pills): 16px, 6px corners, padding 5px 12px, the open one washed blue */
-.subs .tab{font:400 16px system-ui,sans-serif;padding:5px 12px;border:1px solid var(--tab-line);border-radius:6px;
+.subs .tab,.studio-filters .tab{font:400 16px system-ui,sans-serif;padding:5px 12px;border:1px solid var(--tab-line);border-radius:6px;
  background:transparent;color:var(--fg)}
-.subs .tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
-.subs .tab:hover{border-color:var(--tab-on)}
+.subs .tab.on,.studio-filters .tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
+.subs .tab:hover,.studio-filters .tab:hover{border-color:var(--tab-on)}
+.studio-filters{margin:0 0 12px;position:sticky;top:8px;z-index:2;padding:4px 0;background:var(--bg)}.studio-filters button{cursor:pointer}.tag-count{font-size:12px;opacity:.7;margin-left:4px}
+.studio-filters .drop-ready{outline:2px dashed var(--tab-on);outline-offset:3px;background:var(--tab-wash)}
+.studio-drag{cursor:grab;flex:none;user-select:none;touch-action:none;color:var(--mut);padding:0 4px}
+.studio-drag:active{cursor:grabbing}.topic.dragging{opacity:.55}
+.studio-drag-preview{position:fixed;z-index:9999;pointer-events:none;padding:8px 12px;border:1px solid var(--tab-on);border-radius:8px;background:var(--bg);color:var(--fg);box-shadow:0 3px 14px #0002;font:600 14px system-ui,sans-serif;max-width:340px}
+.studio-current{font:400 12px system-ui,sans-serif;white-space:nowrap;border:1px solid var(--tab-line);border-radius:6px;padding:3px 7px;background:var(--bg);color:var(--fg);cursor:pointer}
+.studio-current[aria-pressed=true]{color:var(--tab-on);border-color:var(--tab-on);background:var(--tab-wash)}
+.topic-source{color:var(--mut);font-size:12px}.studio-source{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.studio-source select{font:400 13px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:4px 8px;background:var(--bg);color:var(--fg)}
+.studio-help,.studio-empty,.studio-status{font-size:13px;margin:8px 0 12px}.studio-status:empty{display:none}
+.topic[hidden]{display:none}.topic-tags{display:inline-flex;gap:6px;flex-wrap:wrap}.topic-tags .chip{font-size:12px;color:var(--mut);border-color:var(--line)}
 .wf-table{border-collapse:collapse;width:100%;font-size:14px}.wf-table th,.wf-table td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .wf-table th{font-weight:600;color:var(--mut);font-size:12.5px}
 .topic{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:0 0 8px;overflow:hidden}
-.topic>summary{display:flex;gap:12px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.topic>summary{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
 .topic>summary::-webkit-details-marker{display:none}.topic>summary::before{content:"▸";color:var(--mut)}
 .topic[open]>summary::before{content:"▾"}.topic[open]>summary{border-bottom:1px solid var(--line)}
 .topic-meta{color:var(--mut);font-size:13px;flex:1}.topic-pop a{text-decoration:none;font-size:15px}
@@ -928,9 +1076,12 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .q-slug{margin:6px 0 2px!important;font-weight:700}.q-text{margin:0 0 4px!important}
 .q-more summary{cursor:pointer;color:var(--acc);font-size:13px;list-style:none}.q-more summary::-webkit-details-marker{display:none}
 .q-more p{font-size:13px}.q-row p{margin:0 0 4px}
-.from{margin:8px 0 0!important;font-size:12px;color:var(--mut)}.from-list{margin:2px 0 0;padding-left:16px;font-size:13px}
+.q-group{margin:22px 0 6px;font-size:16px}.from{margin:8px 0 0!important;font-size:12px;color:var(--mut)}.from-list{margin:2px 0 0;padding-left:16px;font-size:13px}
 .q-w{font-size:13.5px}.rp-title{font-weight:600}.rp-title a{color:inherit}.rp-text{font-size:14px}
 .rp-thumb{display:block;margin:6px 0}.rp-thumb img{display:block;width:100%;max-height:200px;object-fit:contain;object-position:left top;border:1px dashed var(--line);border-radius:6px;background:#fff}
+.rp-live{cursor:zoom-in;margin:6px 0 2px}.rp-live.on{cursor:auto}
+.rp-draw{display:block;width:100%;height:300px;border:1px dashed var(--line);border-radius:6px;background:#fff}
+.rp-full{font-size:12.5px;margin:0 0 4px!important}
 .rp-tags{color:var(--mut);font-size:12.5px}
 #frame-pop{width:min(1300px,95vw);height:90vh;max-width:95vw;max-height:90vh;padding:0;border:0;border-radius:12px;background:var(--bg);color:var(--fg);overflow:hidden}
 #frame-pop::backdrop{background:rgba(0,0,0,.35)}#frame-pop[open]{display:flex;flex-direction:column}
@@ -943,14 +1094,108 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 # Idea Studio: a topic's canvas loads when its row opens; Edit switches that canvas to the editor in
 # place; #topic-<name> in the address opens that row (the Audience Report links here).
 STUDIO_JS = """
-(function(){function load(d){var f=d.querySelector('iframe');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
+(function(){
+function load(d){var f=d.querySelector('iframe');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
+function hashTarget(){
+  var id;try{id=decodeURIComponent(location.hash.slice(1));}catch(e){return null;}
+  var found=document.getElementById(id);if(found)return found;
+  if(id.indexOf('topic-')!==0)return null;
+  var name=id.slice(6),path=new URL(location.href).searchParams.get('path')||'';
+  var matches=Array.from(document.querySelectorAll('[data-studio-name]')).filter(function(r){return r.dataset.studioName===name;});
+  return matches.find(function(r){return path.endsWith('/'+r.dataset.studioSource);})||matches[0]||null;
+}
 document.querySelectorAll('details.topic').forEach(function(d){d.addEventListener('toggle',function(){load(d);});});
+document.querySelectorAll('.studio-topics').forEach(function(list){
+  var rows=Array.from(list.querySelectorAll('details[data-studio-key]'));
+  var buttons=Array.from(list.querySelectorAll('[data-studio-tag]'));
+  var currentButton=buttons.find(function(b){return b.dataset.studioTag==='__current__';});
+  var empty=list.querySelector('.studio-empty'),status=list.querySelector('.studio-status');
+  var source=list.querySelector('[data-studio-source-filter]');
+  var storageKey='workbench.studio.current.v1:'+list.dataset.studioOwner,current=new Set(),active='__current__';
+  function read(){try{var value=JSON.parse(localStorage.getItem(storageKey)||'[]');
+    return new Set(Array.isArray(value)?value.filter(function(k){return typeof k==='string';}):[]);
+  }catch(e){return new Set();}}
+  current=read();
+  function tags(row){return JSON.parse(row.dataset.studioTags||'[]').map(function(tag){return tag.toLowerCase();});}
+  function matches(row,key){var names=tags(row);
+    return !key||(key==='__current__'?current.has(row.dataset.studioKey):key==='__untagged__'?names.length===0:names.indexOf(key)>=0);}
+  function paintCurrent(){
+    currentButton.querySelector('.tag-count').textContent=rows.filter(function(r){return current.has(r.dataset.studioKey);}).length;
+    rows.forEach(function(r){var b=r.querySelector('.studio-current'),on=current.has(r.dataset.studioKey);
+      b.textContent=on?'Remove from Current':'Add to Current';b.setAttribute('aria-pressed',String(on));});
+  }
+  function apply(key,save){
+    if(!buttons.some(function(b){return b.dataset.studioTag===key;}))key='';
+    active=key;
+    rows.forEach(function(row){row.hidden=!matches(row,key)||(source&&source.value!=='__all__'&&row.dataset.studioSource!==source.value);});
+    buttons.forEach(function(b){var on=b.dataset.studioTag===key;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+    paintCurrent();
+    empty.hidden=rows.some(function(r){return !r.hidden;})||rows.length===0;
+    empty.textContent=key==='__current__'?'Current is empty here. Open All and add the topics you want to focus on.':'No topics match this group and source.';
+    if(save){var url=new URL(location.href);
+      url.searchParams.delete('studio_tag');url.searchParams.delete('studio_group');
+      if(key==='__current__')url.searchParams.set('studio_group','current');
+      else if(key)url.searchParams.set('studio_tag',key);else url.searchParams.set('studio_group','all');
+      if(source&&source.value!=='__all__')url.searchParams.set('studio_source',source.value);else url.searchParams.delete('studio_source');
+      var target=hashTarget();if(target&&target.hidden)url.hash='';history.replaceState(null,'',url);}
+  }
+  function setCurrent(row,on){
+    var next=new Set(current);if(on)next.add(row.dataset.studioKey);else next.delete(row.dataset.studioKey);
+    try{localStorage.setItem(storageKey,JSON.stringify(Array.from(next)));}
+    catch(e){status.textContent='Could not save Current in this browser. Your selection has not changed.';return false;}
+    current=next;apply(active,false);
+    status.textContent=row.dataset.studioName+(on?' added to Current.':' removed from Current.');return true;
+  }
+  buttons.forEach(function(b){b.addEventListener('click',function(){
+    if(b.dataset.studioTag===''&&source)source.value='__all__';apply(b.dataset.studioTag,true);});});
+  if(source)source.addEventListener('change',function(){apply(active,true);});
+  rows.forEach(function(row){
+    row.querySelector('.studio-current').addEventListener('click',function(ev){
+      ev.preventDefault();ev.stopPropagation();setCurrent(row,!current.has(row.dataset.studioKey));});
+    var handle=row.querySelector('.studio-drag');
+    handle.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();});
+    handle.addEventListener('pointerdown',function(ev){
+      if(ev.button!==0)return;ev.preventDefault();ev.stopPropagation();
+      var startX=ev.clientX,startY=ev.clientY,ghost=null,moved=false;
+      if(handle.setPointerCapture)handle.setPointerCapture(ev.pointerId);
+      function over(x,y){var r=currentButton.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;}
+      function move(e){
+        if(e.pointerId!==ev.pointerId)return;
+        if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
+        if(!moved){moved=true;row.classList.add('dragging');ghost=document.createElement('div');
+          ghost.className='studio-drag-preview';ghost.textContent=row.dataset.studioName;document.body.appendChild(ghost);}
+        ghost.style.left=(e.clientX+12)+'px';ghost.style.top=(e.clientY+12)+'px';
+        currentButton.classList.toggle('drop-ready',over(e.clientX,e.clientY));
+      }
+      function finish(e){
+        if(e.pointerId!==ev.pointerId)return;
+        document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);
+        row.classList.remove('dragging');currentButton.classList.remove('drop-ready');if(ghost)ghost.remove();
+        if(moved&&e.type==='pointerup'&&over(e.clientX,e.clientY)&&setCurrent(row,true)){
+          if(source)source.value='__all__';apply('__current__',true);}
+      }
+      document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+    });
+  });
+  function restore(){var url=new URL(location.href),group=url.searchParams.get('studio_group');
+    var key=url.searchParams.get('studio_tag')||(group==='all'?'':'__current__');
+    if(source){var wanted=url.searchParams.get('studio_source')||'__all__';
+      source.value=Array.from(source.options).some(function(o){return o.value===wanted;})?wanted:'__all__';}
+    var target=hashTarget();
+    if(target&&rows.indexOf(target)>=0){if(!matches(target,key))key='';if(source)source.value='__all__';}
+    apply(key,false);
+  }
+  restore();window.addEventListener('popstate',restore);
+  window.addEventListener('storage',function(ev){if(ev.key===storageKey){current=read();apply(active,false);}});
+});
 document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addEventListener('click',function(ev){
-  ev.preventDefault();ev.stopPropagation();          // in the row's header: edit, never fold
+  ev.preventDefault();ev.stopPropagation();
   var d=b.closest('details'),f=d.querySelector('iframe'),on=b.textContent==='Edit';
   d.open=true;f.src=on?f.dataset.edit:f.dataset.src;b.textContent=on?'Finish editing':'Edit';});});
-var h=decodeURIComponent(location.hash.slice(1)),t=h&&document.getElementById(h);
-if(t&&t.tagName==='DETAILS'){t.open=true;load(t);t.scrollIntoView({block:'start'});}})();
+document.querySelectorAll('.rp-live').forEach(function(b){b.addEventListener('click',function(){
+  var f=b.querySelector('iframe');if(f&&f.hasAttribute('inert')){f.removeAttribute('inert');b.classList.add('on');}});});
+var t=hashTarget();if(t&&t.tagName==='DETAILS'){t.open=true;load(t);t.scrollIntoView({block:'start'});}
+})();
 """
 
 # The pop-out (Insight's pop box, as the old boards had it): any [data-pop] link opens in it.
@@ -1004,7 +1249,7 @@ dlg.addEventListener('close',function(){fr.removeAttribute('src');});})();
 """
 
 
-def href(folder: Path, root: Path, theme: Theme, space: str = "", sub: str = "") -> str:
+def href(folder: Path, root: Path, theme: Theme, space: str = "", sub: str = "", *, studio: bool = False) -> str:
     query = {"path": _rel(folder, root)}
     if theme.name != "vanilla":
         query["theme"] = theme.name
@@ -1012,20 +1257,28 @@ def href(folder: Path, root: Path, theme: Theme, space: str = "", sub: str = "")
         query["space"] = space
     if sub:
         query["sub"] = sub
+    if studio:
+        query["studio"] = "1"
     return ROUTE + "?" + urlencode(query)
 
 
-def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str) -> str:
-    """Guide (mounted by the Guide) · Block · Job ▾ · Task ▾: a level with siblings is a dropdown."""
+def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str, sub: str = "", *, studio: bool = False) -> str:
+    """Guide (mounted first) · Studio | Block · Job ▾ · Task ▾; context stays in the title."""
     up = chain(folder, root)
-    parts = []
+    studio = studio or space in ("Idea Studio", "Studio")
+    space = "Description" if space in ("Idea Studio", "Studio") else space
+    studio_on = " on" if studio else ""
+    studio_current = ' aria-current="page"' if studio_on else ""
+    parts = [f'<a class="tab{studio_on}" href="{_e(href(folder, root, theme, space, sub, studio=True))}"'
+             f'{studio_current}>Studio</a>', '<span class=bar></span>']
     for lv in theme.levels:
         name = theme.level_name(lv)
         here = up.get(lv)
-        on = " on" if lv == level else ""
+        on = " on" if lv == level and not studio else ""
         if lv == "Block":
             if here:
-                parts.append(f'<a class="tab{on}" href="{_e(href(here, root, theme, space))}">{_e(name)}</a>')
+                parts.append(f'<a class="tab{on}" href="{_e(href(here, root, theme, space, sub if here == folder else ""))}" '
+                             f'title="{_e(here.name)}">{_e(name)}</a>')
             continue
         parent = up.get({"Job": "Block", "Task": "Job"}[lv])
         options = children(parent, {"Job": "Block", "Task": "Job"}[lv]) if parent else []
@@ -1034,16 +1287,16 @@ def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str) -
                 continue
             parts.append(f'<select disabled aria-label="{_e(name)}"><option>{_e(name)} ▾</option></select>')
             continue
-        if here and lv != level:
+        if here and (lv != level or studio):
             # below this level (a Task under its Job): the open item is a button that goes up to its tab, and a
             # ▾ beside it switches to a sibling; a dropdown alone ignores a click on the item already picked
             # (JL 261008: "I want to click the job button at the top, but it is not react")
-            parts.append(f'<span class=lvl><a class=tab href="{_e(href(here, root, theme, space))}" title="{_e(here.name)}">'
+            parts.append(f'<span class=lvl><a class=tab href="{_e(href(here, root, theme, space, sub if here == folder else ""))}" title="{_e(here.name)}">'
                          f'{_e(_label(theme, here))}</a><select aria-label="Switch {_e(name)}" '
                          f'onchange="if(this.value)location.href=this.value"><option value="" selected>▾</option>'
                          f'{_options(theme, root, space, options, None)}</select></span>')
             continue
-        opts = _options(theme, root, space, options, here)
+        opts = _options(theme, root, space, options, here, sub if lv == level else "")
         pick = "" if here else f'<option value="" selected>{_e(name)} ▾</option>'
         parts.append(f'<select class="{on.strip()}" aria-label="{_e(name)}" '
                      f'onchange="if(this.value)location.href=this.value">{pick}{opts}</select>')
@@ -1076,7 +1329,7 @@ def _label(theme: Theme, folder: Path) -> str:
     return got[0] if got else short_name(folder.name)
 
 
-def _options(theme: Theme, root: Path, space: str, options: list, here) -> str:
+def _options(theme: Theme, root: Path, space: str, options: list, here, sub: str = "") -> str:
     """The dropdown's options: each folder's name, or the theme's label for it; the theme's groups as
     <optgroup>s, in the order they first come."""
     groups: dict = {}
@@ -1089,7 +1342,7 @@ def _options(theme: Theme, root: Path, space: str, options: list, here) -> str:
                 got = None
         label, group = got if got else (short_name(o.name), "")
         groups.setdefault(group or "", []).append(
-            f'<option value="{_e(href(o, root, theme, space))}" title="{_e(o.name)}"'
+            f'<option value="{_e(href(o, root, theme, space, sub if o == here else ""))}" title="{_e(o.name)}"'
             f'{" selected" if o == here else ""}>{_e(label)}</option>')
     return "".join("".join(opts) if not g else f'<optgroup label="{_e(g)}">{"".join(opts)}</optgroup>'
                    for g, opts in groups.items())
@@ -1098,11 +1351,14 @@ def _options(theme: Theme, root: Path, space: str, options: list, here) -> str:
 def _spaces_row(theme, root, folder, space) -> str:
     out, last = [], None
     for name, group, optional in SPACES:
+        if name == "Idea Studio":                 # its one entry is beside Guide in the top row
+            continue
         if last is not None and group != last:
             out.append('<span class=bar></span>')
         last = group
         cls = "tab" + (" on" if name == space else "") + (" opt" if optional else "")
-        out.append(f'<a class="{cls}" href="{_e(href(folder, root, theme, name))}">{_e(name)}</a>')
+        label = "Report" if name == "Audience Report" else name
+        out.append(f'<a class="{cls}" href="{_e(href(folder, root, theme, name))}">{_e(label)}</a>')
     return '<nav class="row spaces">' + "".join(out) + "</nav>"
 
 
@@ -1114,8 +1370,8 @@ def _subs_row(theme, root, folder, space, view: Space) -> str:
         for s in view.subspaces) + "</nav>")
 
 
-def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "") -> str:
-    """The whole page for one folder: its level's tabs, the six Spaces, the open Space."""
+def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "", *, studio: bool = False) -> str:
+    """One work level, or its shared Block Studio; Guide can replace either body."""
     from live.runs_panel import PANEL_CSS, PANEL_JS, SPLIT_CSS, panel_markup
     from live.space_views import SPACE_VIEW_CSS
     from live.work_items import WORK_ITEM_CSS
@@ -1123,15 +1379,19 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
 
     root, folder = root.resolve(), folder.resolve()
     level = level_of(folder) or "Block"
-    space = space if space in SPACE_NAMES else "Description"
-    views = spaces_for(theme, level, folder, root, sub)
-    view = views[space]
-    rel = _rel(folder, root)
+    studio = studio or space in ("Idea Studio", "Studio")   # saved Space links still open Studio
+    space = space if space in SPACE_NAMES and space != "Idea Studio" else "Description"
+    block = chain(folder, root).get("Block")
+    owner = block if studio and block else folder
+    owner_level = "Block" if studio and block else level
+    views = spaces_for(theme, owner_level, owner, root, "" if studio else sub)
+    view = views["Idea Studio" if studio else space]
+    rel = _rel(owner, root)
     kinds = [dict(k, prompt=k.get("prompt", "").replace("{folder}", rel)) for k in view.run_types]
-    panel = panel_markup(space, kinds, [list(k.get("rows") or []) for k in kinds], base=root, fill=lambda row: {"page": rel, "folder": rel},
-                         whole=f"this {theme.level_name(level)}",
+    panel = panel_markup("Idea Studio" if studio else space, kinds, [list(k.get("rows") or []) for k in kinds], base=root, fill=lambda row: {"page": rel, "folder": rel},
+                         whole=f"this {theme.level_name(owner_level)}",
                          extra=f'<p class=mut style="margin:6px 0">{_e(view.note)}</p>' if view.note else "",
-                         top=disk_markup(view.disk, folder, root),   # Disk folds with the Runs (JL 261007)
+                         top=disk_markup(view.disk, owner, root),   # Disk folds with the Runs (JL 261007)
                          title="Disk · Runs" if view.disk else "Runs", compact=True)
     md = face(folder)
     title = f"{theme.icon} {theme.label} · {folder.name}"     # the browser tab: the full folder name
@@ -1143,24 +1403,40 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
     named = _title(md) if md else folder.name
     if tag and named != folder.name:            # a heading that starts with its own tag: said once
         named = re.sub(rf"^{re.escape(tag)}\b\s*[·:\-–]?\s*", "", named, flags=re.I) or named
+    block_tag = block.name.split("_", 1)[0] if block and _PREFIXED.match(block.name) else ""
+    block_context = f"{theme.level_name('Block')} {block_tag or short_name(block.name)}" if block else ""
     lead = f"{theme.level_name(level)} {tag}".strip()
+    if level != "Block" and block_context:
+        lead = f"{block_context} · {lead}"
+    guide_title = f"{theme.icon} {theme.label} · Guide" + (f" · {block_context}" if block_context else "")
     heading = (f'{_e(theme.icon)} {_e(theme.label)} · <span class=lv>{_e(lead)} ·</span> {_e(named)}'
                if named != folder.name or tag else f'{_e(theme.icon)} {_e(theme.label)} · {_e(named)}')
-    # no band line (JL 261007: "why I still have this? please remove that"): the level tabs say where
-    # you are; the folder's path stays one hover away, on the title
-    where = f"{theme.level_name(level)} · {rel} · " + (f"{theme.label} theme" if theme.name != "vanilla" else "vanilla")
+    if studio:
+        studio_context = block_tag or (short_name(block.name) if block else "No Block")
+        block_md = face(block) if block else None
+        block_name = _title(block_md) if block_md else (block.name if block else "")
+        if block_tag:
+            block_name = re.sub(rf"^{re.escape(block_tag)}\b\s*[·:\-–]?\s*", "", block_name, flags=re.I) or block_name
+        heading = f'{_e(theme.icon)} {_e(theme.label)} · Studio · <span class=lv>{_e(studio_context)}</span>'
+        if block_name and block_name != studio_context:
+            heading += f' · {_e(block_name)}'
+    work_rows = "" if studio else (_spaces_row(theme, root, folder, space)
+                                     + _subs_row(theme, root, folder, space, view))
+    body_class = "frame-body studio-body" if studio else "frame-body"
+    # No band line: the title keeps the Block context when the top button just says Block
+    # (b03 s02-D08, JL 261010); the folder's path stays one hover away, on the title.
+    where = f"{theme.level_name(level)} · {_rel(folder, root)} · " + (f"{theme.label} theme" if theme.name != "vanilla" else "vanilla")
     document = ('<!doctype html><html lang=en><head><meta charset=utf-8>'
                 '<meta name=viewport content="width=device-width,initial-scale=1">'
                 f'<title>{_e(title)}</title><link rel="icon" href="data:,">'
                 # the base's shared view styles, which a theme's Spaces may use; never a theme's own
                 # (b03, JL 261007: "base styles only": a theme carries no look of its own)
                 f'<style>{CSS}{PANEL_CSS}{SPLIT_CSS}{SPACE_VIEW_CSS}{WORK_ITEM_CSS}{DISK_CSS}</style></head><body><main>'
-                + _level_row(theme, root, folder, level, space)
+                + _level_row(theme, root, folder, level, space, sub, studio=studio)
                 + f'<header class=page-title><h1 title="{_e(where)} · {_e(folder.name)}" '
-                  f'data-guide="{_e(theme.icon)} {_e(theme.label)} · Guide">{heading}</h1></header>'
-                + '<section class="frame-body">'          # the Guide replaces all of this while it is open
-                + _spaces_row(theme, root, folder, space)
-                + _subs_row(theme, root, folder, space, view)
+                  f'data-guide="{_e(guide_title)}">{heading}</h1></header>'
+                + f'<section class="{body_class}" data-owner="{_e(rel)}">'  # Guide replaces either body
+                + work_rows
                 + f'<div class=split><div class=space-main>{view.html}</div>'
                   f'{panel}</div></section>'
                 f'{POP_HTML}</main><script>{PANEL_JS}{STUDIO_JS}{POP_JS}{EMBED_JS}{GUIDE_TITLE_JS}</script></body></html>')

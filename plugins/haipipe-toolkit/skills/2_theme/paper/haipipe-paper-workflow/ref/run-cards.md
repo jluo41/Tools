@@ -80,7 +80,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 💬 PROMPT   /haipipe-studio redraw {folder}'s studio topics (a pass of run-draw-<sNN> each): rerun each topic's build_*.py so every drawing follows the current telling, then check it in the Idea Studio; a person's marks on a drawing are kept.
 
 
-## Block › Audience Report · Ideation, Narrative, the research questions, Related Questions
+## Block › Audience Report · Ideation, Narrative, the research questions, Related Questions, Related Papers
 
 🔘 BUTTON   Ask a Question · Block › Audience Report · ^run-ask- · views ideation related-questions
 🏷 RUN      run-ask-<qNN>
@@ -186,6 +186,20 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🤖 AGENT    haipipe-discovery-orchestrator-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-discovery <target>: create or continue the Discovery folder (BJTR) that answers this question of {folder}, write its address in the question's report, and add its Paper Runs.
+
+🔘 BUTTON   Add a related item · Block › Audience Report · ^run-add-related- · views related-papers
+🏷 RUN      run-add-related-<slug>
+🧩 SKILL    haipipe-paper
+🤖 AGENT    haipipe-page-writing-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-paper add a related item to {folder}/related/related.md: its group (the research question it bears on), key, who, year, title, venue, kind, why here, and the deep read it links.
+
+🔘 BUTTON   Read a paper · Block › Audience Report · - · views related-papers
+🏷 RUN      rNN_<author><year>_<subject> (discovery)
+🧩 SKILL    haipipe-discovery
+🤖 AGENT    haipipe-discovery-orchestrator-agent
+✍️ SIGNS    the source check
+💬 PROMPT   /haipipe-discovery read <paper> for {folder}: one deep read, its Result card, facts, BibTeX and its drawing; then link the read from related/related.md.
 
 
 ## Block › Work Details · the versions

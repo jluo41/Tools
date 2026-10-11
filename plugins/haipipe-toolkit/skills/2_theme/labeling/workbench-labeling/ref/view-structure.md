@@ -74,7 +74,7 @@ Board level
 
 | Space | Reads | Shows | Writes through |
 |---|---|---|---|
-| Guide | `servers/workbench-labeling/guide/guide.yaml` (with `guide/method.md`, `guide/methods/`); `ref/workbench-table.md`; `servers/workbench-labeling/related/papers.md`; `Tools/blueprints/b01_haipipe-toolkit/j15_theme_labeling/studio/s02-labeling-workbench/labeling-workbench-ui.excalidraw` | Description, Method, RoadMap Draw, Related Paper | none (Guide never saves) |
+| Guide | `servers/workbench-labeling/guide/guide.yaml` (with `guide/method.md`, `guide/methods/`); `ref/workbench-table.md`; `servers/workbench-labeling/related/papers.md`; `Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/labeling-workbench-ui.excalidraw` | Description, Method, RoadMap Draw, Related Paper | none (Guide never saves) |
 | Jobs | every Page on the Board through `_board_pages()`; each job through the same view model as the page level | the band (jobs, waiting, next step); "Waiting for you", then "Other jobs": one card each with id, question, badge, Target, Data, Labeler, Next; "Pages before Contract" | none |
 
 **Jobs · To add**: built (Phase, Meanings, Rounds on each card).

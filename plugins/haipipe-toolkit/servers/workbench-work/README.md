@@ -144,13 +144,13 @@ draws the Workbench Table (the skill's `ref/workbench-table.md`, checked by `tab
 and opens the **Workbench design** drawing; Related Paper shows `related/papers.md`
 (checked by `table-papers --online`), each `group` one method card.
 
-[task-workbench-design.excalidraw](../../../../designs/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw)
+[task-workbench-design.excalidraw](../../../../blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw)
 is generated; never edit it by hand. Its frames are "Spaces, runs and skills"
 (drawn from the Workbench Table), "The workbench" and "Where things live".
 Change the generator or the table, then regenerate:
 
 ```sh
-.venv/bin/python Tools/blueprints/b01_haipipe-toolkit/j17_theme_work/studio/s03-work-workbench/task-workbench-design.py
+.venv/bin/python Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.py
 ```
 
 The question map of a Block is generated the same way:
@@ -160,4 +160,4 @@ The question map of a Block is generated the same way:
 ```
 
 On a Studio-enabled host, open
-`/_excalidraw/?board=Tools/blueprints/b01_haipipe-toolkit/j17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.
+`/_excalidraw/?board=Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.

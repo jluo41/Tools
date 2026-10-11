@@ -112,6 +112,12 @@
   } catch (_) { /* Use the document defaults. */ }
   app.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', remember); });
   app.querySelectorAll('details.draw[data-board]').forEach(prepareDrawing);
+  // A link may name one Block drawing: ...&view=studio#drawing-<name> opens <name>.excalidraw and scrolls to it.
+  if (location.hash.indexOf('#drawing-') === 0) {
+    var wanted = '/' + decodeURIComponent(location.hash.slice(9)) + '.excalidraw';
+    var hit = Array.from(app.querySelectorAll('details.draw[data-board]')).find(function (d) { return ('/' + d.dataset.board).slice(-wanted.length) === wanted; });
+    if (hit) { hit.open = true; loadDrawing(hit); hit.scrollIntoView({block:'start'}); }
+  }
   var drawingForm = document.getElementById('tw-add-drawing');
   drawingForm.querySelector('button').disabled = !config.studioEnabled;
   drawingForm.addEventListener('submit', async function (event) {

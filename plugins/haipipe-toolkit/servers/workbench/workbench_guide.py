@@ -2,7 +2,7 @@
 
 The existing Excalidraw proxy opens virtual, source-backed Guide scenes in
 its isolated viewing mode. Working Studio files and their save API retain
-their native ownership. All URLs are origin-relative.
+their native ownership. Guide Index may use a configured SPACE URL; other URLs are origin-relative.
 """
 
 import hashlib
@@ -17,6 +17,7 @@ from live.guide_families import ALIASES, FAMILIES, LEVEL_NAMES, family_key
 
 HERE = Path(__file__).resolve().parent
 REPOSITORY = HERE.parents[3]
+STUDIO_INDEX = "/?view=radial&measure=studios"
 VIEWS = (("description", "Description", "What does this Workbench do?"),
          ("method", "Method", "How does this family reach a supported answer or product?"),
          ("roadmap-draw", "RoadMap Draw", "Space · View · Run type · Agent & Skill, in one drawing"),
@@ -155,7 +156,7 @@ class Scene:
         lines = str(value).splitlines()
         self.add("text", x, y, max(map(len, lines), default=0) * size * .62,
                  len(lines) * size * 1.25, text=value, originalText=value, fontSize=size,
-                 fontFamily=3 if mono else 8, textAlign="left", verticalAlign="top",
+                 fontFamily=3 if mono else 6, textAlign="left", verticalAlign="top",
                  containerId=None, autoResize=True, lineHeight=1.25, strokeColor=color)
         for index, line in enumerate(lines):
             self.svg.append(f'<text x="{x}" y="{y + size + index * size * 1.25}" fill="{color}" '
@@ -204,7 +205,7 @@ def table_scene(family, view, profile, rows):
     Folder when the table has it; then the family's workflow when it declares `flow`.
 
     Studio style: transparent boxes, one colored stroke per column, every label bound
-    inside its box, Comic Shanns. A repeated Space or View cell spans its rows."""
+    inside its box, Nunito (no hand-drawn font, JL 261009). A repeated Space or View cell spans its rows."""
     scene = Scene(family, view)
     scene.text(0, 0, profile["label"] + " · RoadMap", 26, "#1e1e1e")
     columns = (("Space", 200, "#1971c2"), ("View", 200, "#2f9e44"), ("Run type", 280, "#e8590c"),
@@ -219,7 +220,7 @@ def table_scene(family, view, profile, rows):
         box = scene.add("rectangle", x, y, width, height, strokeColor=color, backgroundColor="transparent",
                         roundness={"type": 3}, boundElements=[{"type": "text", "id": key + "-label"}])
         scene.add("text", x + 8, y + 8, width - 16, height - 16, id=key + "-label", text=label, originalText=label,
-                  fontSize=size, fontFamily=8, textAlign="center", verticalAlign="middle", containerId=box["id"],
+                  fontSize=size, fontFamily=6, textAlign="center", verticalAlign="middle", containerId=box["id"],
                   autoResize=True, lineHeight=1.25, strokeColor="#1e1e1e")
         scene.svg.append(f'<rect x="{x}" y="{y}" width="{width}" height="{height}" rx="8" fill="none" stroke="{color}"/>')
         for i, line in enumerate(label.splitlines()):
@@ -645,14 +646,21 @@ def level_view(family, view, profile, context, root, earlier):
     return "".join(parts)
 
 
-def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", title=None, root=None):
+def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", title=None, root=None,
+               index_url=STUDIO_INDEX):
     """One Guide View. A host page may supply its own View links and a prelude above them."""
     view = OLD_VIEWS.get(view, view)
     profile = family_profile(family, context)
     tab_url = tab_url or (lambda key: url(family=family, view=key, embed=int(embedded), **context))
     css = (HERE / "assets/guide.css").read_text(encoding="utf-8")
     js = (HERE / "assets/guide.js").read_text(encoding="utf-8")
-    tabs = "".join(f'<a href="{esc(tab_url(key))}" '
+    parsed_index = urlparse(index_url)
+    if not (index_url.startswith("/") and not index_url.startswith("//")) and not (
+            parsed_index.scheme in ("http", "https") and parsed_index.netloc):
+        index_url = STUDIO_INDEX
+    # Index leaves the whole workbench, including when Guide is shown in its iframe.
+    tabs = f'<a href="{esc(index_url)}" target="_top" data-guide-index>Index</a>'
+    tabs += "".join(f'<a href="{esc(tab_url(key))}" '
                    f'aria-current="{("page" if key == view else "false")}">{label}</a>' for key, label, _ in VIEWS)
     source_links = "".join(f'<li><a href="{esc(url(mode="source", family=family, source=i))}" '
                           f'target="_blank" rel="noopener">{esc(Path(item["path"]).parent.name)}</a>'
@@ -962,6 +970,7 @@ class WorkbenchGuideMixin:
                 prelude = (f'<header><h1>{esc(profile["label"])} Workbench</h1><p>Guide · open it on a board to see its Spaces: '
                            + (links or "no board found") + '</p></header>')
             return self.guide_send(guide_html(family, view, context, get("embed") == "1", prelude=prelude,
-                                              root=Path(self.root)), head_only=head_only)
+                                              root=Path(self.root),
+                                              index_url=getattr(self, "workbench_index_url", STUDIO_INDEX)), head_only=head_only)
         except (ValueError, OSError, RuntimeError) as error:
             return self.guide_send(esc(error), 404, head_only=head_only)

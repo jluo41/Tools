@@ -127,7 +127,7 @@ def text(x, y, s, size=18, color=INK, align="left", link=None, mono=False):
     w = max(len(l) for l in lines) * size * (MONO_EM if mono else EM)
     e = base("text", x - {"left": 0, "center": w / 2, "right": w}[align], y, w, len(lines) * size * 1.25,
              color, rounded=False)
-    e.update(text=s, originalText=s, fontSize=size, fontFamily=3 if mono else 2, textAlign=align,
+    e.update(text=s, originalText=s, fontSize=size, fontFamily=3 if mono else 6, textAlign=align,
              verticalAlign="top", containerId=None, autoResize=True, lineHeight=1.25, link=link)
     return e
 

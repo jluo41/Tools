@@ -252,7 +252,11 @@ def drawings(board: Path, root: Path) -> list[dict]:
     out = []
     studio = board / "studio"
     if inside(studio, board) and studio.is_dir():
-        for path in sorted(studio.glob("*.excalidraw")):
+        # a drawing sits in studio/ or in one numbered item folder, studio/s01_<topic>/ (JL 261008);
+        # _build/, _old/ and hidden folders hold scripts and replaced work, never a listed drawing
+        found = list(studio.glob("*.excalidraw")) + [
+            p for p in studio.glob("*/*.excalidraw") if not p.parent.name.startswith(("_", "."))]
+        for path in sorted(found):
             if inside(path, studio) and path.is_file() and _source_url(path, root):
                 out.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
                              "path": path.relative_to(root).as_posix(), **generated(path, board)})

@@ -1,6 +1,28 @@
 response-format — Changelog
 ===========================
 
+**[0.20.0] · 2026-10-10**
+-------------------------
+
+- Related studio is the default closing association: the owning Block, its sNN
+  topic and the section's contribution. It names a discussion topic, not only a drawing.
+- Related question is optional for work directly addressing a recorded Question;
+  Summary and Next still has neither association line.
+- Studio links open the shared Workbench with `studio_group=all` and the actual
+  topic anchor, including existing Job/Task sources. Missing topics stay proposed
+  and unnumbered; the format never creates a topic or Question folder.
+- Updated the reply template, rule list and examples; retained the other reply rules.
+
+## [0.19.0] — 2026-10-06
+
+- **Related studio** line after the Related question (JL: "besides the Question, you can
+  also add what is the Studio related to it if possible"; "block-level studio"): the Block
+  drawing that shows the section, linked to the workbench Studio view with it open,
+  `…/board.md&view=studio#drawing-<name>`. Block `studio/` only, one drawing, only when one
+  fits; the `.excalidraw` file is the fallback with no host. The shared workbench script
+  (`workbench-task/assets/js/90-task-workbench.js`) now opens `#drawing-<name>` in the Task,
+  CoWork and Discovery workbenches.
+
 ## [0.18.2] — 2026-10-09
 
 - A Job's question links the shared workbench on the Job's Audience Report

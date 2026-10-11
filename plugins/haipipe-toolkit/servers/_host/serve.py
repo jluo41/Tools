@@ -849,6 +849,8 @@ if __name__ == "__main__":
     ap.add_argument("--public-url", default="",
                     help="DOMAIN, the reader-facing origin (also env HAIPIPE_DOMAIN or "
                          "settings.env DOMAIN); links are printed as <DOMAIN>/w/...")
+    ap.add_argument("--index-url", default="",
+                    help="workbench Index destination; defaults to this SPACE's studio index")
     ap.add_argument("--only", default="",
                     help="serve only these workbenches, comma-separated (%s); terminal, "
                          "chat and Board write routes are then 404. `--only labeling` is the "
@@ -924,6 +926,7 @@ if __name__ == "__main__":
     Handler.terminal_enabled = not a.no_terminal
     Handler.space_name = space_name
     Handler.public_url = public_url
+    Handler.workbench_index_url = a.index_url or config.get("INDEX_URL") or "/?view=radial&measure=studios"
     Handler.only = only
     base.BIND_HOST = host
     srv = ThreadingHTTPServer((host, port),

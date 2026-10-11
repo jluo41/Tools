@@ -6,6 +6,8 @@ import json
 import re
 import tempfile
 import unittest
+from html import unescape
+from urllib.parse import parse_qs, urlparse
 from pathlib import Path
 
 from host_paths import bootstrap
@@ -282,18 +284,46 @@ class ClaimTest(unittest.TestCase):
 
 
 class FrameTest(unittest.TestCase):
-    def test_every_level_draws_the_six_spaces_in_order_with_three_bars(self):
+    def test_every_level_keeps_one_studio_entry_above_the_five_space_buttons(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
             block = root / "Project/tasks/b01_topic"
-            page = frame.render(frame.VANILLA, root, block)
-            at = [page.index(f">{name}</a>") for name in frame.SPACE_NAMES]
-            self.assertEqual(at, sorted(at))
-            self.assertEqual(page.count("<span class=bar></span>"), 3)
-            self.assertIn("j01_job", page)                                   # the Job dropdown
-            self.assertIn("runs-panel", page)
+            for folder in (block, block / "j01_job", block / "j01_job/t01_task"):
+                for space in ("Description", "Idea Studio", "Audience Report"):
+                    with self.subTest(level=frame.level_of(folder), space=space):
+                        page = frame.render(frame.VANILLA, root, folder, space)
+                        levels = re.search(r'<nav class="row levels">(.*?)</nav>', page).group(1)
+                        spaces = re.search(r'<nav class="row spaces">(.*?)</nav>', page)
+                        self.assertEqual(re.findall(r'>([^<]+)</a>', levels)[:2], ["Studio", "Block"])
+                        self.assertEqual(levels.count(">Studio</a>"), 1)
+                        self.assertNotIn(">Index</a>", levels)
+                        self.assertEqual(levels.count("<span class=bar></span>"), 1)
+                        self.assertEqual('aria-current="page"' in levels, space == "Idea Studio")
+                        work_space = "Description" if space == "Idea Studio" else space
+                        self.assertIn(frame._e(frame.href(folder, root, frame.VANILLA, work_space, studio=True)), levels)
+                        heading = re.search(r"<header class=page-title>(.*?)</header>", page).group(1)
+                        if space == "Idea Studio":
+                            self.assertIsNone(spaces)
+                            self.assertNotIn('<nav class="row subs">', page)
+                            self.assertEqual(levels.count('class="tab on"'), 1)
+                            self.assertNotIn('select class="on"', levels)
+                            self.assertIn("· Studio ·", heading)
+                            self.assertIn("b01", heading)
+                            self.assertIn("</span> · Topic", heading)
+                            self.assertNotIn("· Job", heading)
+                            self.assertNotIn("· Task", heading)
+                        else:
+                            self.assertIsNotNone(spaces)
+                            self.assertNotIn(">Studio</a>", spaces.group(1))
+                            self.assertEqual(re.findall(r'>([^<]+)</a>', spaces.group(1)),
+                                             ["Report" if name == "Audience Report" else name
+                                              for name in frame.SPACE_NAMES if name != "Idea Studio"])
+                            self.assertEqual(spaces.group(1).count("<span class=bar></span>"), 3)
+                            self.assertIn("Block b01", heading)
+                        self.assertIn("j01_job", page)
+                        self.assertIn("runs-panel", page)
             studio = self._space(root, block, "Idea Studio")
-            self.assertIn('<details class=topic id="topic-s01-flow">', studio)  # one closed row per topic
+            self.assertIn('<details class=topic id="topic-s01-flow" data-studio-tags="[]"', studio)  # one closed row per topic
             self.assertIn("decided 1 · open 0 · 0 sessions · feeds", studio)
             self.assertIn('data-src="/_excalidraw/?board=Project%2Ftasks%2Fb01_topic%2Fstudio%2Fs01-flow%2Fflow.excalidraw"',
                           studio)                                            # its canvas loads when opened
@@ -305,6 +335,28 @@ class FrameTest(unittest.TestCase):
             self.assertIn("One line that answers it.", report)               # the report's answer line
             self.assertIn(">j01_job</a>", report)                            # the Job that answers it
             self.assertIn("s01-flow ↗", report)                              # the studio topic that feeds it
+
+    def test_studio_tags_are_explicit_shared_and_keep_untyped_topics_visible(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            note = block / "studio/s01-flow/s01-flow.md"
+            note.write_text(note.read_text() + "\n**Type:** Structure\n**Tags:** UI · ui, Structure | Reading & writing\n")
+            untyped = block / "studio/s02-legacy"
+            untyped.mkdir()
+            (untyped / "s02-legacy.md").write_text("s02 legacy\n====\n")
+            self.assertEqual(frame._note_facts(note)["tags"], ["Structure", "UI", "Reading & writing"])
+            for folder in (block, block / "j01_job", block / "j01_job/t01_task"):
+                with self.subTest(level=frame.level_of(folder)):
+                    page = frame.render(frame.VANILLA, root, folder, studio=True)
+                    listing = re.search(r"<div class=studio-topics[^>]*>(.*?)</div>", page).group(1)
+                    self.assertIn('data-studio-tag="" aria-pressed="false">All <span class=tag-count>2</span>', listing)
+                    self.assertIn('data-studio-tag="ui" aria-pressed="false">UI <span class=tag-count>1</span>', listing)
+                    self.assertIn('data-studio-tag="__untagged__" aria-pressed="false">Untagged <span class=tag-count>1</span>', listing)
+                    self.assertIn('Reading &amp; writing', listing)
+                    self.assertIn('id="topic-s02-legacy" data-studio-tags="[]"', listing)
+                    self.assertNotRegex(listing, r'<details[^>]*\bhidden')
+                    self.assertNotIn('<nav class="row spaces">', page)
 
     def test_vanilla_runs_are_grouped_by_type_in_the_third_row(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -333,6 +385,93 @@ class FrameTest(unittest.TestCase):
             block = json.loads(frame.frame_json(work, root, root / "Project/tasks/b01_topic"))
             self.assertEqual([s["name"] for s in block["spaces"]], list(frame.SPACE_NAMES))
 
+    def test_the_block_list_skips_a_link_that_leaves_the_root(self):
+        from live.frame_view import _blocks
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as away:
+            root = project(tmp)
+            outside = Path(away) / "blueprints" / "b01_utils"     # a Tools checkout beside the SPACE
+            outside.mkdir(parents=True)
+            (outside / "board.md").write_text("# b01 · Utils\n\nboard-kind: task-block\n")
+            (root / "Tools").symlink_to(Path(away), target_is_directory=True)
+            found = [frame._rel(b, root) for b in _blocks(root)]    # _rel raised on the outside Block
+            self.assertEqual(found, ["Project/tasks/b01_topic"])
+
+    def test_studio_uses_the_block_topics_disk_sessions_and_new_run_target_at_every_level(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            job, task = block / "j01_job", block / "j01_job/t01_task"
+            for folder in (job, task):
+                topic = folder / "studio/s99-local"
+                topic.mkdir(parents=True)
+                (topic / "local.excalidraw").write_text("{}")
+                (topic / "s99-local.md").write_text("s99 local\n====\n")
+            run = block / "runs/run-draw-s01"
+            (run / "passes/p01-1010").mkdir(parents=True)
+            (run / "run.yaml").write_text("run: run-draw-s01\nkind: soft\ntype: draw\nstatus: done\ntarget: s01-flow\n")
+            for folder in (block, job, task):
+                with self.subTest(level=frame.level_of(folder)):
+                    page = frame.render(frame.VANILLA, root, folder, "Idea Studio")
+                    self.assertIn('data-owner="Project/tasks/b01_topic"', page)
+                    self.assertIn('board=Project%2Ftasks%2Fb01_topic%2Fstudio%2Fs01-flow%2Fflow.excalidraw', page)
+                    self.assertIn('id="topic-j01_job--s99-local"', page)
+                    self.assertIn('id="topic-j01_job--t01_task--s99-local"', page)
+                    disk_heading = re.search(r"<p class=disk-head>(.*?)</p>", page).group(1)
+                    self.assertIn("b01_topic/", disk_heading)
+                    self.assertNotIn("j01_job", disk_heading)
+                    self.assertNotIn("t01_task", disk_heading)
+                    self.assertIn("run-draw-s01", page)
+                    self.assertIn("/haipipe-studio a topic of Project/tasks/b01_topic:", page)
+                    self.assertNotIn("/haipipe-studio a topic of Project/tasks/b01_topic/j01_job:", page)
+
+    def test_current_groups_keep_repeated_local_topics_distinct_and_skip_external_links(self):
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as away:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            job, task = block / "j01_job", block / "j01_job/t01_task"
+            for folder in (job, task):
+                topic = folder / "studio/s01-flow"
+                topic.mkdir(parents=True)
+                (topic / "s01-flow.md").write_text("s01 local\n====\n\n**Feeds:** q01_ask\n")
+                (topic / "flow.excalidraw").write_text("{}")
+            report = job / "reports/q01_ask/q01_ask.md"
+            report.parent.mkdir(parents=True)
+            report.write_text("# Job's question\n")
+            (job / "studio/s02-alias").symlink_to(block / "studio/s01-flow", target_is_directory=True)
+            outside = Path(away) / "j99_private/studio/s99-secret"
+            outside.mkdir(parents=True)
+            (outside / "secret.excalidraw").write_text("{}")
+            (block / "j99_private").symlink_to(outside.parent.parent, target_is_directory=True)
+            (block / "studio/s99-external").symlink_to(outside, target_is_directory=True)
+            old = block / "_archive/j98_old/studio/s98-old"
+            old.mkdir(parents=True)
+            inventory = frame.studio_inventory(block, root)
+            self.assertEqual([source for source, _, _ in inventory], [p.resolve() for p in (block, job, task)])
+            pages = [frame.render(frame.VANILLA, root, f, studio=True) for f in (block, job, task)]
+            for page in pages:
+                ids = re.findall(r'<details class=topic id="([^"]+)" data-studio-tags', page)
+                self.assertEqual(ids, ["topic-s01-flow", "topic-j01_job--s01-flow", "topic-j01_job--t01_task--s01-flow"])
+                listing = re.search(r'<div class=studio-topics[^>]*>(.*?)</div>', page).group(1)
+                for name in ("s99-secret", "s99-external", "s02-alias", "s98-old"):
+                    self.assertNotIn(name, listing)
+                groups = re.findall(r'data-studio-tag="([^"]*)"', listing)
+                self.assertEqual((groups[0], groups[-1]), ("__current__", ""))
+                self.assertIn('data-studio-key="j01_job/studio/s01-flow"', page)
+                local = re.search(r'<details class=topic id="topic-j01_job--s01-flow"(.*?)</details>', page).group(1)
+                self.assertIn("j01_job%2Freports%2Fq01_ask", local)
+                self.assertIn("s02-&lt;topic&gt;", page)  # old local numbers don't allocate new Block numbers
+
+    def test_a_themes_studio_is_also_shared_from_its_block(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            task = root / "Project/tasks/b01_topic/j01_job/t01_task"
+            theme = frame.Theme(spaces=lambda level, folder, root, sub: {
+                "Idea Studio": frame.Space(f'<p>Studio source: {folder.name}</p>')})
+            page = frame.render(theme, root, task, "Idea Studio")
+            self.assertIn("Studio source: b01_topic", page)
+            self.assertNotIn("Studio source: t01_task", page)
+            self.assertIn("Studio source: b01_topic", frame.spaces_for(theme, "Task", task, root)["Idea Studio"].html)
+
     @staticmethod
     def _space(root, folder, space):
         return frame.render(frame.VANILLA, root, folder, space)
@@ -347,7 +486,7 @@ class BandTest(unittest.TestCase):
             page = frame.render(frame.themes()["work"], root, root / "Project/tasks/b01_topic")
             self.assertNotIn("class=band", page)
             self.assertNotIn("the old page", page)
-            self.assertIn('<h1 title="Block · Project/tasks/b01_topic · Work theme · b01_topic" data-guide="📋 Work · Guide">', page)
+            self.assertIn('<h1 title="Block · Project/tasks/b01_topic · Work theme · b01_topic" data-guide="📋 Work · Guide · Block b01">', page)
             # the level row is the page index, the page's title under it (b03 s32-D13, JL 261008)
             self.assertLess(page.index('<nav class="row levels">'), page.index("<header class=page-title>"))
             self.assertIn("<span class=lv>Block b01 ·</span> Topic</h1>", page)   # its tag said once
@@ -482,6 +621,26 @@ class RouteTest(unittest.TestCase):
             data = json.loads(self._get(root, "/_board/workbench?path=Project/tasks/b01_topic&format=json")["body"])
             self.assertEqual(data["theme"], "work")
             self.assertEqual(data["level"], "Block")
+
+    def test_studio_preserves_the_task_and_work_view_for_return(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            original = "/_board/workbench?path=Project/tasks/b01_topic/j01_job/t01_task&space=Work+Details&sub=Code"
+            page = self._get(root, original)["body"]
+            studio_url = unescape(re.search(r'<a class="tab" href="([^"]+)"[^>]*>Studio</a>', page).group(1))
+            query = parse_qs(urlparse(studio_url).query)
+            self.assertEqual(query["studio"], ["1"])
+            self.assertEqual(query["space"], ["Work Details"])
+            self.assertEqual(query["sub"], ["Code"])
+            studio = self._get(root, studio_url)["body"]
+            self.assertNotIn('<nav class="row spaces">', studio)
+            self.assertIn('data-owner="Project/tasks/b01_topic"', studio)
+            back = unescape(re.search(r'<a class=tab href="([^"]+)" title="t01_task">', studio).group(1))
+            self.assertNotIn("studio", parse_qs(urlparse(back).query))
+            restored = self._get(root, back)["body"]
+            self.assertIn('<nav class="row spaces">', restored)
+            self.assertIn("worker.py", restored)
+            self.assertIn('class="tab on"', restored)
 
     def test_view_draws_one_page_task_view_from_the_same_query(self):
         with tempfile.TemporaryDirectory() as tmp:

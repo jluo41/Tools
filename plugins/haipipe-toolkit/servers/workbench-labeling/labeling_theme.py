@@ -1,7 +1,7 @@
 """The labeling theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
 A labeling Block holds one schema (`schema.yaml`) and its Jobs; a labeling job is a Task Page whose
-`labeling/` lane the subjective-label engine owns (Tools/blueprints/b01_haipipe-toolkit/j15_theme_labeling, Q01 open). Today's
+`labeling/` lane the subjective-label engine owns (Tools/blueprints/b15_theme_labeling, Q01 open). Today's
 Labeling workbench (labeling.py: Data · Labeling · Quality · Delivery, three views each) stays the one
 place a person labels: it is the write door, gated by the engine. This theme is read only. It shows each
 job's status and opens that workbench at the right view; it never renders item text and never writes.

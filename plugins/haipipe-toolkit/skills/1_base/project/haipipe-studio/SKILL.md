@@ -10,11 +10,12 @@ description: >-
   `run-draw-<sNN>`; and the scripts canvas.py, render_png.py and new_topic.py. Use to add,
   redraw or number a studio topic, write a builder, preview a drawing, or save a session.
   Trigger: studio, studio topic, Idea Studio, add a topic, redraw, save this session, sNN,
-  build_*.py, canvas.write, render_png, seed snapshot, /haipipe-studio.
+  build_*.py, canvas.write, render_png, seed snapshot, proposal topic, draft marked up,
+  section written out, /haipipe-studio.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-08"
+  version: "0.8.0"
+  last_updated: "2026-10-10"
   # version history: ./CHANGELOG.md
 ---
 
@@ -87,6 +88,38 @@ green  #2f9e44   a change we made, where we made it (✎ <date> …)    canvas.G
    `canvas.off_palette(els)` lists them first, if a builder wants to see.
 4. **Not here**: a report drawing's plots and embedded figures follow `excalidraw-report`'s report mode.
 
+One readable font (JL 261009: "I think the font should be more readable"): every word in Nunito,
+Excalidraw's "Normal" font (`fontFamily` 6, `canvas.FONT`); paths and code may use Cascadia (3,
+`canvas.CODE_FONT`). No hand-drawn Virgil (1) or Excalifont (5), no Comic Shanns (8). `canvas.write`
+sets it on what a builder writes (`apply_font`), a change note included; the person's own marks and a
+slide draft keep their fonts.
+
+Frames in rows, never one long column (JL 261009: "don't put all the things in one column"): a builder
+places its frames with `canvas.grid(els, [[...], [...]])`, read left to right and then down, two to four a
+row; each frame moves with what is drawn in it. `canvas.write` warns when 4 or more frames stand in one
+column.
+One idea, one dense frame (JL 261010: "既然是 idea，你搞那么多 frame 干嘛呀？... 一个 frame 的信息量是非常大的"):
+a topic's idea is drawn as one connected flow, dense with facts, its most important part the largest;
+a separate frame is for separate material (a source marked up, a reference picture), never for one more
+step of the same idea. Large means much information, not a large canvas (next rule).
+Each frame fits the screen (JL 261010, on a 9,200 px idea frame: "This is too huge, what I want is: when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of the frame"):
+
+1. **50% zoom**: the whole frame is on screen and its words still read.
+2. **100% zoom**: most of the frame is on screen, not one box of it.
+3. **In numbers**: about 2560 x 1440 px, the workbench's 1280 x 720 pane at 50% zoom; at most
+   2800 x 1600 (`canvas.FRAME_MAX`). Body words 20 px or more (`canvas.TEXT_MIN`), so 10 px on screen at
+   50%; box titles about 23, the frame's title about 34.
+4. **Room from words**: boxes sized to their words, short gaps, fewer words; never a bigger canvas, and
+   never smaller type (scaling a whole drawing down shrinks its words below reading).
+5. **One long piece, one frame**: a piece read top to bottom (a section written out, a draft's pages
+   marked up) is never cut into frames "· 1", "· 2"; it is one frame that grows down, its width still
+   within the screen (JL 261010: "the draft take should be one single frame, and the Written out should
+   be one large frame"). The builder marks it `canvas.reads_down(frame)`.
+6. **Checked**: `canvas.oversized(els)` lists the frames over the size (a `reads_down` frame by its width
+   only), `canvas.small_text(els)` the frames whose words are mostly under 20 px (green notes not
+   counted), and `canvas.numbered_frames(els)` one piece cut into "· 1", "· 2"; `canvas.write` warns
+   about each.
+
 
 Change notes
 ------------
@@ -107,6 +140,27 @@ changed"):
 5. **Kept**: old notes stay; a note is removed only when its thing is removed.
 
 The face's Decided list records the decision; the green note shows where the drawing changed.
+
+
+A proposal topic
+----------------
+
+A topic that works on one section of a proposal or a paper copies b03_event_cgm's s03 (SHIFT Task 2.1;
+JL 261010: "I think this one is very very great!"): five frames in two rows.
+
+```text
+row 1   ① idea workflow     ② why and the plan     ③ proposal figure       each one screen
+row 2   ④ draft today, marked up      ⑤ section written out              each one frame, read down
+```
+
+1. **① Idea**: one connected flow, loops drawn closed, checks beside it, open questions red in place.
+2. **④ Draft**: read only; passages cut from their pages, red box, arrow to Change, Why, Ask.
+3. **⑤ Written out**: paragraph, point, Text, Evidence; tight rows; cards free, joined by lines.
+4. **Words in the face**: yaml blocks the builder reads; a draft passage is found by its anchors.
+5. **Who answers**: every red ask names a person; ④ and ⑤ close listing them.
+
+The frames one by one, the rules of ⑤, what went wrong on the way and the builders to copy from:
+`ref/topic-contract.md` § A proposal topic.
 
 
 Slide drafts
@@ -163,7 +217,7 @@ haipipe-studio/
 ├── SKILL.md
 ├── CHANGELOG.md
 ├── agents/openai.yaml
-├── ref/topic-contract.md      the folder, face, numbering, builders, sessions, buttons
+├── ref/topic-contract.md      the folder, face, numbering, builders, sessions, buttons, a proposal topic
 ├── scripts/canvas.py          the merge-safe writer
 ├── scripts/render_png.py      the offline PNG preview
 ├── scripts/new_topic.py       topic · session

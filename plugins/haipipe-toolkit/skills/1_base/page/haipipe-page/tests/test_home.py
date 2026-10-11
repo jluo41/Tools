@@ -427,6 +427,53 @@ class SpaceViewTest(unittest.TestCase):
             self.assertEqual(request.code, 200)
             self.assertIn('data-kind="paper" aria-pressed="true"', body)
 
+    def test_project_filter_shows_one_project_and_keeps_it_in_kind_links(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.full_project(root)
+            other = self.project(root, "Project-B")
+            self.add_board(root, f"{other}/tasks/b01_other", "Other Task", "board-kind: task-block\n")
+            plain = render_home(root)
+            self.assertIn("Other Task", plain)
+            # by folder, by folder name, or by project.yaml id: the same one-Project view
+            for name in ("examples/Project-A", "Project-A", "project-a", "/examples/Project-A/"):
+                page = render_home(root, project=name)
+                self.assertNotIn("Other Task", page, name)
+                self.assertIn('class="t">Task One</span>', page)
+                self.assertIn("<title>Project-A · ", page)
+                self.assertIn('Project <b>Project-A</b> · <a href="?">all Projects</a>', page)
+                self.assertIn(' role="listitem" open>', page)     # one Project: open
+            page = render_home(root, kind="task", project="Project-A")
+            self.assertIn('href="?kind=task,paper&amp;project=examples/Project-A" data-kind="paper"', page)
+            self.assertIn('href="?project=examples/Project-A" data-kind="all"', page)
+            self.assertIn('<a href="?kind=task">all Projects</a>', page)
+            # a name that matches no Project shows every Project and says so
+            missing = render_home(root, project="Project-Z")
+            self.assertIn("Other Task", missing)
+            self.assertIn("No Project matches “Project-Z”; showing every Project.", missing)
+
+    def test_serve_home_reads_the_project_from_the_query(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.full_project(root)
+            other = self.project(root, "Project-B")
+            self.add_board(root, f"{other}/tasks/b01_other", "Other Task", "board-kind: task-block\n")
+
+            class Request(HomeMixin):
+                command = "GET"
+                def send_response(self, code): self.code = code
+                def send_header(self, *_): pass
+                def end_headers(self): pass
+
+            request = Request()
+            request.root, request.path = root, "/?project=examples/Project-B"
+            request.wfile = io.BytesIO()
+            request.serve_home()
+            body = request.wfile.getvalue().decode("utf-8")
+            self.assertEqual(request.code, 200)
+            self.assertIn("Other Task", body)
+            self.assertNotIn('class="t">Task One</span>', body)
+
     def test_projects_start_open_only_when_the_view_is_small(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -553,6 +600,221 @@ class ShortRouteTest(unittest.TestCase):
         for path in ("/b", "/b/", "/b/topic/QA1/extra", "/boards", "/bogus/x"):
             request.path = path
             self.assertIsNone(request.short_request(), path)
+
+
+
+
+class SpaceChartTest(unittest.TestCase):
+    def test_state_words_keep_pause_and_red_open_out_of_completed_and_failed(self):
+        from live.space_chart import state_of
+        cases = {"✅ COMPLETE": "done", "✅ SETTLED": "done", "⏸️ PAUSED": "paused",
+                 "🔴 OPEN": "open", "🔴 BLOCKED": "blocked", "🟡 ACTIVE": "active",
+                 "🟡 RESULTS READY · PAGE OPEN": "active", "✅ NOT STARTED": "open",
+                 "something else": "unknown"}
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                self.assertEqual(state_of("# Face\nstate: " + raw)[0], expected)
+        self.assertEqual(state_of("# Face\nThe last run completed.")[0], "unknown")
+
+    def _chart_fixture(self, root, project_name="Project-A"):
+        project = root / "examples-test" / project_name
+        block = project / "work" / "b01_demo"
+        block.mkdir(parents=True)
+        (project / "project.yaml").write_text("id: " + project_name + "\nprofile: research\n")
+        (block / "board.md").write_text("# Demo\nboard-kind: task-block\nstate: 🔴 OPEN\n")
+        return block
+
+    def test_chart_reads_real_tasks_and_keeps_job_and_direct_task_separate(self):
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = self._chart_fixture(root)
+            job = block / "j01_prepare"; job.mkdir()
+            (job / "j01_prepare.md").write_text("# Prepare\nstate: 🟡 ACTIVE\n")
+            for folder, state in ((job / "t01_done", "✅ COMPLETE"),
+                                  (job / "t02_pause", "⏸️ PAUSED"),
+                                  (block / "t03_direct", "🔴 OPEN")):
+                folder.mkdir()
+                (folder / (folder.name + ".md")).write_text("# Task\nstate: " + state + "\n")
+            data = chart_data(root, discover_boards(root))
+            b = data["tree"]["children"][0]["children"][0]["children"][0]["children"][0]
+            self.assertEqual([child["level"] for child in b["children"]], ["Job", "Task"])
+            # Parent page states stay independent of completed child Tasks.
+            self.assertEqual(b["status"], "open")
+            self.assertEqual(b["children"][0]["status"], "active")
+            self.assertEqual([task["status"] for task in b["children"][0]["children"]], ["done", "paused"])
+            self.assertEqual(b["children"][1]["status"], "open")
+            self.assertTrue(b["children"][0]["children"][0]["href"].startswith("/_board/workbench?path=examples-test"))
+            self.assertNotIn(str(root), str(data))
+
+    def test_chart_keeps_zero_task_blocks_and_same_named_blocks_in_two_projects(self):
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._chart_fixture(root, "Project-A")
+            self._chart_fixture(root, "Project-B")
+            tree = chart_data(root, discover_boards(root))["tree"]
+            projects = tree["children"][0]["children"]
+            blocks = [project["children"][0]["children"][0] for project in projects]
+            self.assertEqual(len(blocks), 2)
+            self.assertNotEqual(blocks[0]["id"], blocks[1]["id"])
+            self.assertEqual(blocks[0]["children"], [])
+
+    def test_chart_counts_shared_studio_folders_once_and_links_the_source_qualified_topic(self):
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = self._chart_fixture(root)
+            studio = block / "studio"
+            for name in ("s01-first", "s03_second", "_build", "notes"):
+                topic = studio / name
+                topic.mkdir(parents=True)
+                (topic / (name + ".md")).write_text("# A different page title\n")
+                for drawing in ("draft", "final"):
+                    (topic / (drawing + ".excalidraw")).write_text("{}")
+            (studio / "s05-loose.excalidraw").write_text("{}")
+            job = block / "j01_job"
+            (job / "studio" / "s01-job-topic").mkdir(parents=True)
+            (job / "j01_job.md").write_text("# Job\n")
+            b = chart_data(root, discover_boards(root))["tree"]["children"][0]["children"][0]["children"][0]["children"][0]
+            self.assertEqual([t["name"] for t in b["studios"]], ["s01-first", "s03_second", "s01-job-topic"])
+            self.assertEqual([t["drawings"] for t in b["studios"]], [2, 2, 0])
+            self.assertEqual(b["studios"][0]["title"], "A different page title")
+            self.assertEqual(len(b["children"]), 1)
+            self.assertEqual(b["children"][0]["level"], "Job")
+            self.assertIn("space=Idea+Studio#topic-s01-first", b["studios"][0]["href"])
+            self.assertIn("#topic-j01_job--s01-job-topic", b["studios"][2]["href"])
+            self.assertNotIn(str(root), str(b))
+            page = render_home(root)
+            self.assertIn('<option value="studios">Studio topic count (sNN)</option>', page)
+
+    def test_chart_marks_legacy_blocks_without_removing_their_saved_work(self):
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = self._chart_fixture(root)
+            legacy = block.parent / "_legacy" / "b02_old"
+            task = legacy / "j01_job" / "t01_old"
+            task.mkdir(parents=True)
+            (legacy / "board.md").write_text("# Old work\nboard-kind: task-block\n")
+            (task / "t01_old.md").write_text("# Old task\nstate: 🔴 OPEN\n")
+            tree = chart_data(root, discover_boards(root))["tree"]
+            blocks = tree["children"][0]["children"][0]["children"][0]["children"]
+            self.assertEqual(len(blocks), 2)
+            by_name = {b["name"]: b for b in blocks}
+            self.assertFalse(by_name["b01_demo"]["archived"])
+            self.assertTrue(by_name["b02_old"]["archived"])
+            self.assertEqual(by_name["b02_old"]["children"][0]["children"][0]["name"], "t01_old")
+
+    def test_home_chart_escapes_source_titles_and_keeps_list_and_filter_controls(self):
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = self._chart_fixture(root)
+            job = block / "j01_prepare"; job.mkdir()
+            task = job / "t01_title"; task.mkdir()
+            (task / "t01_title.md").write_text("# </script><script>bad()</script>\nstate: ✅ COMPLETE\n")
+            page = render_home(root)
+            encoded = re.search(r'<script id="space-chart-data" type="application/json">(.*?)</script>', page).group(1)
+            data = json.loads(encoded)
+            self.assertNotIn("</script>", encoded)
+            self.assertIn("bad()", str(data))
+            self.assertIn('id="chart-measure"', page)
+            self.assertIn('data-home-view="list"', page)
+            self.assertIn("space-home-filter", page)
+
+    def test_chart_reads_declared_linked_tools_scope_and_keeps_its_own_links(self):
+        import json
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "space"; workspace.mkdir()
+            tools = Path(tmp) / "tools"; tools.mkdir()
+            local = self._chart_fixture(workspace)
+            (workspace / "Tools").symlink_to(tools, target_is_directory=True)
+            (workspace / "Tools-alias").symlink_to(tools, target_is_directory=True)
+            block = tools / "blueprints" / "b01_demo"
+            job = block / "j01_work"
+            task = job / "t01_done"
+            topic = block / "studio" / "s01-map"
+            task.mkdir(parents=True); topic.mkdir(parents=True)
+            (block / "board.md").write_text("# Demo tool\nboard-kind: task-block\nstate: 🟡 ACTIVE\n")
+            (job / "j01_work.md").write_text("# Work\n")
+            (task / "t01_done.md").write_text("# Done\nstate: ✅ COMPLETE\n")
+            (topic / "01-map.excalidraw").write_text('{"type":"excalidraw","elements":[]}')
+            for relative in ("references/b99_sample", "blueprints/_build/b99_copy"):
+                fake = tools / relative; fake.mkdir(parents=True)
+                (fake / "board.md").write_text("# Sample\nboard-kind: task-block\n")
+            config = workspace / ".server_config"; config.mkdir()
+            setting = {"url": "https://tools.example.test", "folders": ["blueprints", "blueprints"]}
+            (config / "settings.env").write_text("INDEX_LINKED_SPACES='" +
+                json.dumps({"Tools": setting, "Tools-alias": setting}) + "'\n")
+            data = chart_data(workspace, discover_boards(workspace))
+            groups = data["tree"]["children"]
+            self.assertEqual([node["name"] for node in groups], ["examples-test", "Tools"])
+            linked = groups[1]
+            self.assertEqual(linked["href"], "https://tools.example.test/?view=radial")
+            folder = linked["children"][0]
+            self.assertEqual((folder["name"], folder["level"]), ("blueprints", "Folder"))
+            blocks = folder["children"][0]["children"]
+            self.assertEqual(len(blocks), 1)
+            b = blocks[0]
+            self.assertEqual(b["id"], "Tools/blueprints/b01_demo")
+            self.assertEqual(b["path"], "Tools/blueprints/b01_demo")
+            self.assertEqual(b["href"], "https://tools.example.test/_board/workbench?path=blueprints%2Fb01_demo")
+            t = b["children"][0]["children"][0]
+            self.assertEqual(t["status"], "done")
+            self.assertTrue(t["href"].startswith("https://tools.example.test/_board/workbench?path=blueprints%2F"))
+            self.assertEqual(len(b["studios"]), 1)
+            self.assertTrue(b["studios"][0]["href"].startswith("https://tools.example.test/"))
+            self.assertNotIn(str(Path(tmp)), json.dumps(data))
+            self.assertTrue(local.is_dir())
+            # Index links use the linked host; local short routes keep local ownership.
+            page = render_home(workspace)
+            self.assertIn('data-space-key="Tools"', page)
+            self.assertIn('<span class="project-name">blueprints</span>', page)
+            self.assertIn('href="https://tools.example.test/_board/workbench?path=blueprints%2Fb01_demo"', page)
+            local_cards = discover_boards(workspace)
+            all_cards = discover_boards(workspace, include_linked=True)
+            self.assertEqual((len(local_cards), len(all_cards)), (1, 2))
+            self.assertEqual(resolve_workbench(workspace, 'b01_demo'),
+                ('/_board/workbench?path=examples-test/Project-A/work/b01_demo', 'ok'))
+
+    def test_chart_ignores_invalid_linked_config_and_outside_scan_folders(self):
+        import json
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "space"; root.mkdir()
+            self._chart_fixture(root)
+            tools = Path(tmp) / "tools"; tools.mkdir()
+            (root / "Tools").symlink_to(tools, target_is_directory=True)
+            config = root / ".server_config"; config.mkdir()
+            settings = config / "settings.env"
+            cases = ["broken JSON", json.dumps([]),
+                json.dumps({"../tools": {"url": "https://tools.example.test", "folders": ["."]}}),
+                json.dumps({"Tools": {"url": "javascript:bad", "folders": ["."]}}),
+                json.dumps({"Tools": {"url": "http://[", "folders": ["."]}}),
+                json.dumps({"Tools": {"url": "https://tools.example.test", "folders": ["../space"]}})]
+            for raw in cases:
+                with self.subTest(raw=raw):
+                    settings.write_text("INDEX_LINKED_SPACES='" + raw + "'\n")
+                    groups = chart_data(root, discover_boards(root))["tree"]["children"]
+                    self.assertEqual([node["name"] for node in groups], ["examples-test"])
+
+    def test_chart_supports_theme_specific_paper_levels(self):
+        from live.space_chart import chart_data
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "examples-test" / "Project-Paper"
+            block = project / "paper" / "Paper-Example"
+            task = block / "Ba-sections" / "S-intro"
+            task.mkdir(parents=True)
+            (project / "project.yaml").write_text("id: Project-Paper\nprofile: research\n")
+            (block / "board.md").write_text("# Paper\nboard-kind: paper\n")
+            (task / "S-intro.md").write_text("# Introduction\nstate: ✅ SETTLED\n")
+            tree = chart_data(root, discover_boards(root))["tree"]
+            b = tree["children"][0]["children"][0]["children"][0]["children"][0]
+            self.assertEqual(b["children"][0]["level"], "Job")
+            self.assertEqual(b["children"][0]["children"][0]["level"], "Task")
 
 
 if __name__ == "__main__":

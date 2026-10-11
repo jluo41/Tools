@@ -34,7 +34,7 @@ OLD_WORLD_DIRS = {"tasks": "work", "discoveries": "discovery", "papers": "paper"
                   "designs": "design", "labelings": "labeling", "ideations": "ideation"}
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
 # cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
-COWORK_BLOCK_DIRS = {"studio", "reports", "_old"}
+COWORK_BLOCK_DIRS = {"studio", "reports", "runs", "_old"}  # Studio soft Runs live at Block scope.
 COWORK_JOB_DIRS = {"design", "materials", "emails", "meetings", "_old"}
 COWORK_BLOCK = re.compile(r"b\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 COWORK_JOB = re.compile(r"j\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
@@ -117,7 +117,7 @@ def observed_git_mode(project: Path) -> str:
 
 def cowork_topic_findings(cowork: Path) -> list[str]:
     """Each cowork/bNN_<topic>/ Block: board.md (board-kind: cowork-block), only studio/, reports/,
-    _old/ and jNN_<job>/ Jobs at its top, and each Job a jNN_<job>.md page (job-kind: cowork-job)
+    runs/ (Studio sessions), _old/ and jNN_<job>/ Jobs at its top, and each Job a jNN_<job>.md page (job-kind: cowork-job)
     with only the Job folder names inside. An old N-<Topic>/ folder is a finding (haipipe-cowork)."""
     found: list[str] = []
     if not cowork.is_dir():

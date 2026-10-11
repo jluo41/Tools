@@ -1,3 +1,7 @@
+## 1.8.2 · 2026-10-09 · Cards for Block › Audience Report › Related Papers
+
+- `ref/run-cards.md`: Add a related item and Read a paper also sit in Block › Audience Report, for its new Related Papers view (workbench-paper 0.34.0); with no card of its own the view's Runs panel fell back to the question buttons.
+
 ## 1.8.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

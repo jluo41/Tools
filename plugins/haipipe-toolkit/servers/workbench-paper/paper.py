@@ -2346,6 +2346,35 @@ def related_html(d):
     return '<div class="rp-list">%s%s</div>' % (head, "".join(parts))
 
 
+def related_by_question_html(d, questions):
+    """Block › Audience Report › Related Papers (JL 261009: "a Related Paper after the Related Questions"): the
+    same cards as Description › Related, under the research question each bears on, with no venue order (b16
+    s05: the Board is venue-free). `questions` is the Board's register as [(id, title)]; a row's `RQ3` is Q03,
+    and `all` (or no question) is the whole paper, shown first. Inside a question the closest come first."""
+    rows = [(s, r) for s in current_stories(d) for r in s["pp"]]
+    if not rows:
+        return '<div class="space-empty">No related paper yet.</div>'
+    rank = {k: i for i, (k, _, _) in enumerate(RELATED_ROLES)}
+    role = lambda s, r: (_cell(s["pp_h"], r, "role").split() or ["background"])[0].lower()
+    groups, n_pdf = {}, 0
+    for s, r in sorted(rows, key=lambda x: rank.get(role(*x), len(rank))):
+        card, has, _ = _paper_card(d, s, r)
+        n_pdf += has
+        ids = ["Q%02d" % int(n) for n in re.findall(r"(?i)\bR?Q(\d+)\b", _cell(s["pp_h"], r, "question"))]
+        for k in ids or ["all"]:
+            groups.setdefault(k, []).append(card)
+    titles = dict(questions)
+    keys = ["all"] + list(titles) + sorted(k for k in groups if k != "all" and k not in titles)
+    head = '<div class="rp-head">%d paper%s · %d with a PDF · by the question each bears on</div>' % (
+        len(rows), "" if len(rows) == 1 else "s", n_pdf)
+    parts = ['<h3 class="rp-venue">%s<span class="lw-kn">%d</span></h3><div class="rp-group">%s</div>'
+             % (esc("The whole paper" if k == "all" else "%s · %s" % (k, titles[k]) if titles.get(k) else k),
+                len(groups[k]), "".join(groups[k])) for k in keys if k in groups]
+    none = [k for k in titles if k not in groups]
+    tail = ('<p class="mut">No related paper yet for %s.</p>' % esc(" · ".join(none))) if none else ""
+    return '<div class="rp-list">%s%s%s</div>' % (head, "".join(parts), tail)
+
+
 def _named(addr, named):
     """Is this job address answered by a question row (at job level or below)?"""
     return any(addr.startswith(a) or a.startswith(addr) for a in named)
@@ -2502,7 +2531,7 @@ def _not_ready_ids(rd):
 
 # ---------------------------------------------------------------- render
 # The Page workbench's grammar (JL 260927; the drawing is
-# Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
+# Tools/blueprints/b16_theme_paper/_archive/20261010/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.3 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". SKILL.md's "readable words" rule also names Comic Shanns (`8`) beside Virgil and Excalifont.
+- Its own helpers wrote the font it forbids: `ref/plot_kit.py` and `ref/add_pictures.py` wrote `fontFamily` 8, and
+  `ref/elements.md`'s second text helper wrote 2 (Helvetica); all three now write Nunito (6).
+
 ## 0.8.2 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

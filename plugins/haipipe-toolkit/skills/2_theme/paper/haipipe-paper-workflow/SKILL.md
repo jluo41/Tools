@@ -8,7 +8,7 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.8.1"
+  version: "1.8.2"
   last_updated: "2026-10-09"
 ---
 

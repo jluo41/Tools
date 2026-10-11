@@ -267,12 +267,35 @@ function Install-Skills {
     New-Item -ItemType Directory -Force -Path $SkillsDir | Out-Null
 
     $installed = 0; $kept = 0
-    foreach ($s in Get-Skills $PluginsRoot) {
+    $skills = @(Get-Skills $PluginsRoot)
+    foreach ($s in $skills) {
         $linkPath = Join-Path $SkillsDir $s.Name
         $target   = Join-Path $PluginsRoot ($s.Plugin + "\skills\" + ($s.RelPath -replace '/', '\'))
         $result   = New-SkillLink -LinkPath $linkPath -Target $target
         if ($result -eq "linked") { $installed++ }
         else { $kept++; Write-Host "  . $($s.Name) (kept, not a link)" }
+    }
+
+    # Short names, as install.sh makes them: `aliases: [wb]` under `metadata:` in a
+    # SKILL.md is one more link per alias to the same folder (/wb is /workbench). An
+    # alias that is already a skill's own name is skipped.
+    $names = @{}; foreach ($s in $skills) { $names[$s.Name] = $true }
+    foreach ($s in $skills) {
+        $text = Get-Content -LiteralPath (Join-Path $s.SkillDir "SKILL.md") -Raw -ErrorAction SilentlyContinue
+        if (-not $text -or -not $text.StartsWith('---')) { continue }
+        $head = ($text -split "`n---", 2)[0]
+        $m = [regex]::Match($head, '(?m)^\s+aliases:\s*\[?([^\]\r\n#]*)\]?')
+        if (-not $m.Success) { continue }
+        foreach ($alias in ($m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim().Trim('"', "'") })) {
+            if ($alias -notmatch '^[a-z0-9][a-z0-9-]*$') { continue }
+            if ($names.ContainsKey($alias)) {
+                Write-Host "  . $alias (alias of $($s.Name) skipped: a skill has that name)"; continue
+            }
+            $target = Join-Path $PluginsRoot ($s.Plugin + "\skills\" + ($s.RelPath -replace '/', '\'))
+            $result = New-SkillLink -LinkPath (Join-Path $SkillsDir $alias) -Target $target
+            if ($result -eq "linked") { $installed++ }
+            else { $kept++; Write-Host "  . $alias (kept, not a link)" }
+        }
     }
 
     # Remove stale links: reparse points whose target no longer resolves.

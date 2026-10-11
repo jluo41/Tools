@@ -143,7 +143,8 @@ def static_path_allowed(root: Path, translated: Path) -> bool:
         return False
     parts = [part.casefold() for part in relative.parts]
     name = parts[-1] if parts else ""
-    if any(part.startswith(".") for part in parts) or name == "settings.env":
+    # env.sh and *.env hold keys (OPENAI_API_KEY and the like): never a static file (JL 261008)
+    if any(part.startswith(".") for part in parts) or name == "env.sh" or name.endswith(".env"):
         return False
     if any(part == "corpus-preparation" for part in parts):
         return False

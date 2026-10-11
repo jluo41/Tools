@@ -1,3 +1,14 @@
+## 0.6.1 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `ref/draw.md`'s style contract: every word in Nunito (`fontFamily` 6), Cascadia (3) for the verbatim
+  ASCII copy, paths and code; never Virgil (1), Excalifont (5) or Comic Shanns (8). It replaces the 260815 Comic
+  Shanns Mono rule. Its enforcing copy, the prompt in `servers/workbench/autodraw.py`, follows in the same change:
+  the model is told `fontFamily 6`, a bound label is 6, and the server-placed ASCII copy is Cascadia, which keeps
+  it fixed-width as Comic Shanns Mono did.
+- `../workbench/ref/roster.md`, the `draw/` row (this Studio lane): "Nunito words, never a hand-drawn font".
+- `servers/workbench/frame.py`: the Idea Studio's Runs panel shows each `run-draw-<sNN>` Run's own status from its
+  `run.yaml` (waiting, held …); it wrote "done" for every one, so b16's s05, waiting on JL, read "Closed".
+
 ## 0.6.0 · 2026-10-07 · Renamed from haipipe-workbench-studio (JL 261007)
 
 - The skill is `workbench-studio` (was `haipipe-workbench-studio`), its folder `page/workbench-studio/`, its trigger `/workbench-studio`; every live reference in Tools follows. Older entries below keep the old name.

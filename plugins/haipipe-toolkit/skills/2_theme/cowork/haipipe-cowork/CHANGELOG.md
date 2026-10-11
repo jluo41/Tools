@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.2 · 2026-10-09
+
+- A Block's `studio/` follows `haipipe-studio` (JL 261009: "We have changed a lot in
+  Tools/plugins"): one topic per `sNN-<topic>/` with its face and its builder beside the
+  drawing, so the frame's Idea Studio opens it view only; `studio/_build/` keeps shared
+  helpers and `make.sh`. Rule 5 and the tree say so.
+- Open the workbench: `/w/<block-folder>` is the base frame with the cowork theme; the
+  older `/_board/cowork-board` page still answers.
+
 ## 0.2.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

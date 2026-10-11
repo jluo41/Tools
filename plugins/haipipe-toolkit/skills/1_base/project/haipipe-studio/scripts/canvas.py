@@ -27,6 +27,7 @@ folder to sys.path, imports it as `canvas` and calls `canvas.write(out, els, sou
 """
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -42,6 +43,26 @@ PALETTE = (INK, RED, GREEN)
 # from canvas)
 ACCENT, ACCENT_FILL, MUTED = "#1971c2", "#d0ebff", "#868e96"
 SLIDE_PALETTE = (ACCENT, MUTED)
+
+
+# the studio font (JL 261009: "I think the font should be more readable"): Nunito, Excalidraw's "Normal"
+# font, for every word a builder writes; Cascadia, the code font, stays for paths and code. The hand-drawn
+# Virgil (1) and Excalifont (5), Lilita One (7) and Comic Shanns (8) read slowly; Helvetica (2) and
+# Liberation Sans (9) become Nunito too, so a drawing reads in one font.
+FONT, CODE_FONT = 6, 3
+# each frame fits the screen: whole and readable at 50% zoom, mostly on screen at 100% (JL 261010)
+FRAME_MAX, TEXT_MIN = (2800, 1600), 20   # aim: 2560 x 1440, a 1280 x 720 pane at 50%
+
+
+def apply_font(els):
+    """The studio font applied to what a builder wrote: every text becomes Nunito (6) but code (3).
+    The person's own marks never pass through here. Returns how many texts changed."""
+    n = 0
+    for e in els:
+        if e.get("type") == "text" and e.get("fontFamily") not in (FONT, CODE_FONT):
+            e["fontFamily"] = FONT
+            n += 1
+    return n
 
 
 def off_palette(els, slides=False):
@@ -87,8 +108,87 @@ def change_note(x, y, what, date=None, frame=None, size=16):
             "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
             "groupIds": [], "frameId": frame, "roundness": None, "seed": 1, "version": 1, "versionNonce": 1,
             "isDeleted": False, "boundElements": [], "updated": 1, "link": None, "locked": False, "text": text,
-            "originalText": text, "fontSize": size, "fontFamily": 1, "textAlign": "left",
+            "originalText": text, "fontSize": size, "fontFamily": FONT, "textAlign": "left",
             "verticalAlign": "top", "containerId": None, "autoResize": True, "lineHeight": 1.25}
+
+
+def grid(els, rows, gap=150):
+    """Place the frames in rows, read left to right and then down, never one long column (JL 261009:
+    "don't put all the things in one column"). `rows` lists every frame id once, row by row; each frame
+    moves with everything drawn in it. A builder draws each frame where it likes, then calls this once,
+    before `write`."""
+    frames = {e["id"]: e for e in els if e["type"] == "frame"}
+    placed = [fid for row in rows for fid in row]
+    assert sorted(placed) == sorted(frames), f"grid() places each frame once: {placed} vs {list(frames)}"
+    y = 0
+    for row in rows:
+        x = 0
+        for fid in row:
+            f = frames[fid]
+            dx, dy = x - f["x"], y - f["y"]
+            for e in els:
+                if e["id"] == fid or e.get("frameId") == fid:
+                    e["x"], e["y"] = e["x"] + dx, e["y"] + dy
+            x += f["width"] + gap
+        y += max(frames[fid]["height"] for fid in row) + gap
+    return els
+
+
+def reads_down(frame):
+    """Mark a frame that is read top to bottom: one piece of writing, or a source's pages marked up. It stays
+    one frame however long (JL 261010: "the draft take should be one single frame, and the Written out should
+    be one large frame"); its width still fits the screen, only its height may pass FRAME_MAX. Returns it."""
+    frame.setdefault("customData", {})["reads"] = "down"
+    return frame
+
+
+def is_read_down(e):
+    return (e.get("customData") or {}).get("reads") == "down"
+
+
+def oversized(els):
+    """Frames bigger than FRAME_MAX, as (name, width, height): too big to read whole at 50% zoom (JL 261010:
+    "when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of the frame").
+    A frame marked `reads_down` is checked on its width only."""
+    w, h = FRAME_MAX
+    return [(e.get("name") or e["id"], round(e["width"]), round(e["height"])) for e in els
+            if e["type"] == "frame" and not e.get("isDeleted")
+            and (e["width"] > w or (e["height"] > h and not is_read_down(e)))]
+
+
+def small_text(els):
+    """Frames whose words are mostly below TEXT_MIN, as (name, median size): they will not read at 50% zoom, as
+    after scaling a whole drawing down. Change notes (green) may be smaller and are not counted."""
+    frames = {e["id"]: e for e in els if e["type"] == "frame" and not e.get("isDeleted")}
+    sizes = {}
+    for e in els:
+        if e["type"] == "text" and e.get("frameId") in frames and e.get("strokeColor") != GREEN \
+                and not e.get("isDeleted"):
+            sizes.setdefault(e["frameId"], []).append(e["fontSize"])
+    out = []
+    for fid, s in sizes.items():
+        mid = sorted(s)[len(s) // 2]
+        if mid < TEXT_MIN:
+            out.append((frames[fid].get("name") or fid, round(mid, 1)))
+    return out
+
+
+def numbered_frames(els):
+    """One piece cut into numbered frames ("X · 1", "X · 2", ...), as {stem: count}: the shape JL turned down
+    (261010: "the draft take should be one single frame, and the Written out should be one large frame")."""
+    stems = Counter()
+    for e in els:
+        if e["type"] == "frame" and not e.get("isDeleted"):
+            m = re.match(r"^(.*\S)\s*·\s*\d+$", e.get("name") or "")
+            if m:
+                stems[m.group(1)] += 1
+    return {stem: n for stem, n in stems.items() if n >= 2}
+
+
+def one_column(els):
+    """True when 4 or more frames stand in one column, the layout JL turned down (261009)."""
+    xs = [round(e["x"]) for e in els if e["type"] == "frame"]
+    return len(xs) >= 4 and len(set(xs)) == 1
 
 
 KEYS = ("type", "x", "y", "width", "height", "text", "name", "strokeColor", "backgroundColor", "points",
@@ -171,13 +271,27 @@ def legacy_seed(out, old):
 
 def write(out, els, source, redraw_frames=(), files=None, palette=None):
     """`files`: the images this build embeds ({fileId: {mimeType, dataURL, ...}}); the files of the
-    person's own kept images stay too. `palette`: apply the studio look (black, red, green) to what this
-    build draws; by default on for every drawing but a slide draft (s61-s69). The person's own marks are
+    person's own kept images stay too. `palette`: apply the studio look (black, red, green, and the
+    readable font) to what this build draws; by default on for every drawing but a slide draft (s61-s69). The person's own marks are
     never recoloured."""
     out = Path(out)
     snap_path = seed_path(out)
     if palette if palette is not None else not is_slide_draft(out):
         apply_palette(els)
+        apply_font(els)
+    if not is_slide_draft(out) and one_column(els):
+        print(f"{out.name}: {sum(e['type'] == 'frame' for e in els)} frames in one column; set them in rows "
+              "with canvas.grid (JL 261009: \"don't put all the things in one column\")")
+    for stem, n in ([] if is_slide_draft(out) else numbered_frames(els).items()):
+        print(f"{out.name}: '{stem}' is cut into {n} numbered frames; one piece read top to bottom is one frame "
+              "that grows down, marked canvas.reads_down (JL 261010)")
+    for name, w, h in ([] if is_slide_draft(out) else oversized(els)):
+        print(f"{out.name}: frame '{name}' is {w} x {h} px, over {FRAME_MAX[0]} x {FRAME_MAX[1]}: fit it to one "
+              "screen at 50% zoom with fewer words and boxes sized to them; a piece read top to bottom stays one frame, "
+              "marked canvas.reads_down, and only its width must fit (JL 261010)")
+    for name, size in ([] if is_slide_draft(out) else small_text(els)):
+        print(f"{out.name}: frame '{name}' writes its words at {size} px, under {TEXT_MIN}: they will not read at 50% "
+              "zoom; keep the words' size and make room by cutting words (JL 261010)")
     assign_ids(els)
     old_doc = json.loads(out.read_text()) if out.exists() else {}
     old = old_doc.get("elements", [])

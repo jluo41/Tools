@@ -6,16 +6,17 @@ description: >-
   scan points state the takeaways, a short readable ASCII sketch draws the content
   when useful, and plain prose paragraphs carry the detail. Changed files follow
   the explanation, one short line each saying what changed. Each ordinary section
-  answers one question, closed by its Related question line saying why. The last
-  section is always the summary and next steps, without a Question; there is no
+  closes with Related studio: the owning Block, its sNN topic and what the section
+  adds. Related question is optional when a recorded Question is being addressed.
+  The last section is always the summary and next steps, without either line; there is no
   file section. This is a reference spec and
   does not self-activate. Trigger: response format, reply format, outline format,
   bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.18.2"
-  last_updated: "2026-10-03"
+  version: "0.20.0"
+  last_updated: "2026-10-10"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,8 +42,9 @@ Scope
   guidance and document template, including their heading syntax. This chat
   skill neither forbids Markdown `##` nor requires ASCII underline headings
   in authored files.
-- Question associations describe the chat's relationship to questions. Saving
-  a question or updating its Report is separate work through its owning skills.
+- Studio associations describe where the discussion belongs: the owning Block
+  and its sNN topic. Saving a topic, Question or Report is separate work through
+  its owning skill; an association line does not create or change those files.
 
 
 The format
@@ -54,12 +56,13 @@ that line. Never build up to it.
 
 **Everything after line 1 is sectioned.** Form the sections from the user's
 current input and the relevant session context, in a natural discussion order.
-Then associate each ordinary section with the question it advances. Its content
+Then associate each ordinary section with the Studio topic it advances. Its content
 starts with a NUMBERED list of one-line points, followed by a concise ASCII sketch
 when there is a useful relationship to draw, then plain prose for whatever needs
-explaining. Changed files follow the explanation. Each section answers ONE question,
-named in its last line, the **Related question**, with why this section serves it.
-Summary and Next has none.
+explaining. Changed files follow the explanation. The closing **Related studio**
+line names the owning Block, its sNN topic and what this section adds. When the
+section directly addresses a recorded Question, an optional **Related question**
+line may precede it. Summary and Next has neither.
 The list is what the reader scans, the sketch is what the reader sees, and the
 prose is ordinary paragraphs, with no keys and no repeated titles. Never interleave
 these content layers.
@@ -80,90 +83,91 @@ covers what the points could not hold, and it is often not needed at all.
 
 (changed file lines, if any)
 
-**Related question:** [<Board> QNN "<short question>"](<workbench question URL>): <why this section serves it>
+**Related studio:** [<Block> sNN-<topic>](<workbench Studio topic URL>): <what this section adds>
 ```
 
 
-Question associations
----------------------
+Studio associations
+-------------------
 
 Determine the reply's content and section order from the user's input first;
-match those sections to questions afterwards. A Board register supplies possible
-associations, not an outline for ordinary chat. Keep the normal numbered sections
-at the same level; do not wrap them in additional Question headings or regroup
-them by Board order. Display the association as the section's last element, the
-Related question, with one line saying why the section serves it.
+match the sections to Studio topics afterwards. The topic list helps locate the
+work; it does not replace the user's discussion with a board outline.
 
-**One question per section** (2026-10-03). Each ordinary section answers exactly one
-question. When a section's content serves two questions, it is really two sections:
-split it. Several sections may answer the same question, so a question can span
-sections, but a section never spans questions.
-
-Every ordinary section ends with one Related question line, naming the board and
-its question (2026-10-03). A board's `reports/` folder is its list of questions:
-each `qNN_<topic>` is one question.
+**Related studio is the default** (2026-10-10). Close an ordinary section with one
+Studio association: the owning Block, an existing sNN topic and one short line
+saying what the section contributes. Several sections may share the same topic.
+Use the topic being worked on, even when the section changes a skill or code
+rather than a drawing. A topic owns the discussion; its drawing is one of its files.
 
 ```
-**Related question:** [<Board> QNN "<short question>"](<workbench question URL>): <why>
-**Related question:** (proposed) <Board> "<short question>": <why>
+**Related studio:** [<Block> sNN-<topic>](<workbench Studio topic URL>): <why>
+**Related studio:** (proposed) <Block> "<topic title>": <why>
 ```
 
-1. **Board**: the Block (or Job) holding `reports/`: `b01_haipipe-toolkit j01_utils`, `Paper-<Name>`.
-2. **QNN**: from the question's folder `reports/qNN_<topic>`.
-3. **Short question**: the topic question itself, in quotes, a few words.
-4. **Link**: the Question in its workbench, so one click opens it (see "The link" below).
-5. **Why**: what this section gives it: answers, narrows, evidences, or raises it.
+1. **Block**: the Block owning this work, named explicitly, such as `b01_haipipe-toolkit`.
+2. **Topic**: the existing `sNN-<topic>` folder, with its real name and number.
+3. **Why**: what this section settles, changes, checks or leaves open for that topic.
+4. **One topic**: choose the closest one; do not attach a list of loosely related topics.
+5. **Existing first**: reuse the topic already being discussed before proposing another.
 
-**The link** (2026-10-06). The link opens the board's workbench UI on its Questions
-view, scrolled to that Question's row, so the reader clicks once and sees it with its
-work and report beside it (JL: "I can just click and open them"; "what I want is the
-workbench UI, not the webpage of the page"). Not `&report=QNN`: that opens the
-report's own Page.
+A Job or Task may select the work context, but the Studio association names its
+owning Block. Existing topics still stored under a Job or Task can appear in the
+Block's shared Studio. Link that actual topic, retaining its source-qualified
+anchor; do not claim the files have already moved to the Block's `studio/`.
+
+**The link** opens the shared Workbench's Studio with the topic expanded in place:
 
 ```
-<host>/_board/<kind>-board?path=<board>/board.md&view=questions#question-QNN
+<host>/_board/workbench?path=<block folder>&studio=1&studio_group=all#topic-sNN-<topic>
 ```
 
-1. **Kind**: the board's workbench: `task` (a Task Block, also `Tools/blueprints/bNN_*`),
-   `cowork` (a CoWork Block), `discovery` (a Discovery Block). A wrong kind returns 404.
-2. **Path**: the board's `board.md`, relative to the SPACE root, with plain slashes.
-3. **Host**: the shared host serving that SPACE, its `--public-url`: find it with
-   `ps aux | grep _host/serve.py` (for WellDoc-SPACE, `http://100.121.165.84:5622`).
-   Never start a host just to make a link.
-4. **Fallback**: no host serves that SPACE, or the board has no workbench (a Paper
-   board): link the question's file, `<board>/reports/qNN_<topic>/qNN_<topic>.md`.
-5. **A Job's question** (2026-10-09): a Job keeps its own `reports/` and its face's
-   `## Questions` (the toolkit's blueprint Jobs, `Tools/blueprints/b01_haipipe-toolkit/jNN_*`).
-   Link the shared workbench on the Job's Audience Report, scrolled to the row:
-   `<host>/_board/workbench?path=<job folder>&space=Audience+Report#question-QNN`.
+1. **Path**: the Block folder relative to the served SPACE root; URL-encode the query value.
+2. **Anchor**: use the topic row's actual id, as `frame.studio_anchor` produces it.
+   A Block topic uses `topic-sNN-<topic>`; an existing Job topic may use
+   `topic-jNN_<job>--sNN-<topic>`. This keeps repeated sNN numbers distinct.
+3. **All**: `studio_group=all` makes the link work even when the topic is outside Current.
+4. **Host**: use the host already serving that SPACE and its configured public origin.
+   Never start a host just to make an association link.
+5. **Fallback**: when no host is available, link the topic's existing notes or drawing
+   file. Do not guess a URL, a path or an anchor.
 
-Example: `[b01_irb Q01 "How to write an IRB submission"](http://100.121.165.84:5622/_board/cowork-board?path=examples-4-agent/Project-Samsung/cowork/b01_irb/board.md&view=questions#question-Q01)`.
+Example for the existing shared-Studio design topic, still stored in its Job:
 
-**Granularity: a topic, not a decision** (2026-10-03). A board question is a topic
-that many sections feed and that grows into its report; the narrow decision goes in
-the section's points and its Why. Reuse the board's existing question first. What a
-question is, how big it is and how it is created: [haipipe-question](../../1_base/question/haipipe-question/SKILL.md).
+```
+**Related studio:** [b01_haipipe-toolkit s04-studio-and-report](<host>/_board/workbench?path=blueprints%2Fb01_haipipe-toolkit&studio=1&studio_group=all#topic-j03_project_workbench--s04-studio-and-report): settles how Studio is shared across levels.
+```
 
-The board is the one that owns the section's work. No question fits: write
-`(proposed) <Board> "<short question>"` unlinked; never invent a QNN or a link.
-There is no Session form. One question per section; several sections may share one.
+**No matching topic**: if the owning Block is known, write an unlinked `(proposed)`
+Studio title. Never invent an sNN, a folder or a link. The reply itself creates
+nothing; creating a topic requires the user's authorization and `haipipe-studio`.
+When the section has no known Block or Studio work, omit the association instead
+of inventing one. A trivial answer line needs no association.
 
-**Propose its folder** (2026-10-03). A proposed question comes with a proposal to
-make it real: the closing Summary and Next offers to create its folder,
-`<board>/reports/qNN_<topic>/`, with the board's next free NN, and names the question
-that folder will hold. Create it only when the user agrees, through `haipipe-question`;
-the reply itself creates nothing. Several sections proposing the same question make
-one offer.
+**Related question is optional**. Include it only when the section directly
+answers, reviews or updates a recorded Question. It supplements Related studio
+and appears before it; ordinary design discussion does not need a QNN.
 
-Keep the question at topic level and let the Why say what this section adds; preserve
-the user's latest clarifications. Ordinary follow-ups feed the same question.
-For matching evolving session questions, identifying candidates, or deciding
-whether clarification is needed, use [ask-questions](../../1_base/question/ask-questions/SKILL.md).
-Simple attribution from an explicit user question can be done directly.
+```
+**Related question:** [<owner> QNN "<short question>"](<workbench Question URL>): <why>
+**Related studio:** [<Block> sNN-<topic>](<workbench Studio topic URL>): <why>
+```
 
-The final **Summary and Next** has no Related question line. It summarizes
-the whole reply and may mention Q ids naturally in its points or prose. A trivial
-answer consisting only of line 1 needs no Question association.
+Use the real Question owner and its existing QNN. A Block, Job or Task Question
+can open in that owner's shared Workbench Report view:
+
+```
+<host>/_board/workbench?path=<question owner folder>&space=Audience+Report#question-QNN
+```
+
+Verify the row exists; without a serving host, link its existing report file.
+`haipipe-question` owns creating Questions and `haipipe-report` owns their Reports.
+A missing QNN never forces a proposed Question or a new report folder just to
+satisfy the reply format.
+
+The final **Summary and Next** has no Related studio or Related question line.
+It summarizes the whole reply and may mention topic or Q ids naturally in its
+points or prose.
 
 
 Inside one section: scan, see, then explain
@@ -175,8 +179,9 @@ of what the points are about (see "The sketch"). Then plain prose for whatever
 needs more context. A
 reader who stops after the numbers already has the point; a reader who stops after
 the sketch has seen it. A section whose work changed files adds a fourth layer:
-its file lines (see "Files live in their section"). Last comes the Related question
-line: the question this section serves, and why.
+its file lines (see "Files live in their section"). Last comes the Related studio
+line: the Block and sNN this section advances, and why. An optional Related question
+line comes before it when a recorded Question is directly addressed.
 
 ```
 scan point   N. **Short title**: one takeaway. ONE line, <= 14 words
@@ -185,7 +190,8 @@ sketch       a ```text block: draws the thing, one step per line, emoji on its
 prose        plain paragraphs after the whole list. no keys, no titles.
              as detailed as the point deserves. skip it when it adds nothing
 file lines   - `name` (where): change in <= 8 words. only if the section changed files
-related q    **Related question:** [<Board> QNN "<short question>"](<workbench question URL>): <why>. always, last
+related q    **Related question:** [<owner> QNN "<short question>"](<Question URL>): <why>. optional
+related st   **Related studio:** [<Block> sNN-<topic>](<Studio topic URL>): <why>. default, last
 ```
 
 1. **Numbers, not dashes**: the scan layer is `1.` `2.` `3.`, never `-`.
@@ -224,13 +230,14 @@ Rules, all countable
 --------------------
 
 ```
-heading -> scan -> sketch -> explain -> files -> related q   ordinary section ORDER
-summary: heading -> scan -> sketch -> explain               no related question
-question match follows drafting  user's input drives content and section order
-one question per section        one Related question line, last: board, QNN, name, why
-link = the workbench question   <host>/_board/<kind>-board?path=<board>/board.md&view=questions#question-QNN
-question = a topic               it grows a report; the decision goes in the Why
-proposed -> propose its folder   Summary and Next offers reports/qNN_<topic>/
+heading -> scan -> sketch -> explain -> files -> related q -> related st   ordinary ORDER
+summary: heading -> scan -> sketch -> explain               no related question or studio
+studio match follows drafting   user's input drives content and section order
+one Studio topic per section    default Related studio line: Block, sNN, contribution
+Studio link opens the topic     /_board/workbench?path=<Block>&studio=1&studio_group=all#<actual topic id>
+Question link is optional       /_board/workbench?path=<owner>&space=Audience+Report#question-QNN
+Studio = the discussion topic   its drawing is a file; Job and Task reuse the Block Studio
+proposed topic has no sNN        no invented folder or link; creation needs user authorization
 1. 2. 3. not -                   numbered scan layer; dashes mean inventory
 1 authored line per scan point   short phrase; viewport wrapping is outside the writer's control
 <= 14 words per scan point       title included. count them
@@ -246,7 +253,7 @@ emoji nodes, no separators       a blank line around it; no rules, no borders
 heading = number, emoji, words  no question in it, no dot padding, no trailing marks
 why <= 20 words, one line        the section's contribution, not the question again
 a sketch draws, never restates   the list redrawn in boxes is not a sketch
-body prose follows scan          the Related question closes the section
+body prose follows scan          Related studio closes; optional Related question precedes it
 a file line says what changed    `name` (where): change, <= 8 words, one line
 ```
 
@@ -276,7 +283,7 @@ Sections
   detail. It is the section a reader who skipped everything else reads, so it
   carries the real state and the real next step, never a list of files. A question
   for the user belongs here too, as the next step it blocks. It has no Related
-  question line.
+  studio or Related question line.
 - **Honest headlines** — the headline names what is under it. Never pad to hit a count.
 
 The sketch (2026-10-02)
@@ -286,7 +293,7 @@ A reader takes in the first line and the pictures first. Keep a sketch between
 the scan list and the prose whenever it helps draw the section's content. It is
 an ASCII drawing, in the shapes of `/diagram-ascii`, laid out to be read: one step
 per line, a short note beside each, several lines when that reads better than one
-long line. The Related question line supplements this diagram; it does not replace it.
+long line. The Related studio line supplements this diagram; it does not replace it.
 
 ```text
 📥 raw row          FoodName, ExternalSourceID, FoodID
@@ -373,7 +380,7 @@ A list of bare paths at the end of a reply answers "which files" and nothing els
 So a changed file is written down next to the work that changed it, as short as it
 can be while still saying what changed.
 
-1. **In the section**: changed files follow the explanation and end the section.
+1. **In the section**: changed files follow the explanation, before the association lines.
 2. **Name, where, change**: ``- `name` (where): change``, the change in 8 words or fewer.
 3. **👀 means read it**: add `Check:` and what to confirm, 8 words or fewer.
 4. **Outputs too**: a notebook or result goes under the section that made it.
@@ -438,7 +445,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Related question:** [b01_haipipe-toolkit j01_utils Q01 "Point to a skill or restate it?"](<host>/_board/workbench?path=Tools/blueprints/b01_haipipe-toolkit/j01_utils&space=Audience+Report#question-Q01): gives the verdict and the one condition under which it fails.
+**Related studio:** (proposed) b01_haipipe-toolkit "Skill instructions and reply format": gives the verdict and when the format applies.
 
 ## 2. 🛠️ What I Changed
 
@@ -454,23 +461,22 @@ no readings. It now skips them, and the rebuild picked that up.
 - 👀 `builder_x.py` (`build_cases`): skip days with zero readings. Check: skip before window cut
 - `fn_case/x.py`: regenerated from the builder
 
-**Related question:** (proposed) <Project> b02_record "How are records cut into cases?": empty days made empty cases; the builder now skips them.
+**Related studio:** (proposed) <Project> b02_record "Record-to-case rules": settles how empty days are handled.
 
 ## 3. 📋 Summary and Next
 1. **Now**: empty days no longer make cases; the CaseSet is rebuilt
 2. **Next**: pick the model, Bedrock (BAA-covered) or a local in-VPC model
-3. **New question**: create `b02_record/reports/q03_records_to_cases/`?
+3. **Topic**: the proposed Studio topic remains unnumbered until creation is approved
 
   ✅ builder fixed
   ✅ CaseSet rebuilt
   🙋 model pick        Bedrock or a local in-VPC model
-  🙋 q03 folder        "How are records cut into cases?"
+  ⬜ proposed topic    "Record-to-case rules", no folder created
   ⬜ training Run      starts from this CaseSet
 
 The rebuild wrote `_WorkSpace/3-CaseStore/x/@v0002/`, which git ignores. Once the
-model is picked, the training Run can start from this CaseSet. If you agree, I will
-record "How are records cut into cases?" as b02_record's Q03, so today's fix becomes
-the first entry of its report.
+model is picked, the training Run can start from this CaseSet. The proposed Studio
+topic names where this discussion belongs; it has no sNN or folder yet.
 ```
 
 ## 📎 "Show me" means in the reply (2026-09-04)

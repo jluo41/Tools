@@ -66,8 +66,10 @@ def test_the_block_fills_its_spaces_with_cowork_rows(tmp_path):
     assert "j00_people" not in views["Work Details"].html                 # a reference Job is not waiting
     done = frame.spaces_for(THEME, "Block", block, root, "done")["Work Details"].html
     assert "j02_done" in done and "j01_request" not in done
-    report = frame.spaces_for(THEME, "Block", block, root)["Audience Report"].html
-    assert "Q01 Is it ready?" in report and "j01_request/Timeline.md" in report and "answered" in report
+    write(block / "reports/q01_ready/q01_ready.excalidraw", "{}")
+    report = frame.spaces_for(THEME, "Block", block, root)["Audience Report"].html   # the base's Question rows
+    assert "Is it ready?" in report and "j01_request/Timeline.md" in report and "answered" in report
+    assert "class=rp-draw" in report and "q01_ready.excalidraw" in report             # its drawing, live in Report
     people = frame.spaces_for(THEME, "Block", block, root, "People")["Description"].html
     assert "PERSON_001" in people
     resources = frame.spaces_for(THEME, "Block", block, root, "Resources")["Description"].html
@@ -92,6 +94,20 @@ def test_a_job_shows_its_emails_and_meetings_as_rows_not_tasks(tmp_path):
     cites = frame.spaces_for(THEME, "Job", job, root)["Audience Report"].html
     assert "Q01 Is it ready?" in cites
     assert "Q01" not in frame.spaces_for(THEME, "Job", block / "j02_done", root)["Audience Report"].html
+
+
+def test_a_message_out_shows_in_delivery_with_its_attachments(tmp_path):
+    """A Job's delivery/<date>-<what>/ holds one message we send, its draft and its attachments (JL 261009):
+    the Job's Delivery lists it, its Timeline dates it, and the Block's delivery/ gathers every Job's."""
+    root, block = demo(tmp_path)
+    job = block / "j01_request"
+    write(job / "delivery/2026-10-09-reply/2026-10-09-reply-draft.md", "# Reply to OFFICE_A\n\nstatus: draft\n")
+    write(job / "delivery/2026-10-09-reply/diagram.png", "png")
+    sent = frame.spaces_for(THEME, "Job", job, root)["Delivery"].html
+    assert "Reply to OFFICE_A" in sent and "diagram.png" in sent and "draft ✎ not sent" in sent and "2026-10-09" in sent
+    assert "Reply to OFFICE_A" in frame.spaces_for(THEME, "Job", job, root, "Timeline")["Work Details"].html
+    gathered = frame.spaces_for(THEME, "Block", block, root, "delivery/")["Delivery"].html
+    assert "j01_request" in gathered and "diagram.png" in gathered
 
 
 def test_the_task_tab_opens_only_for_a_document_written_in_rounds(tmp_path):

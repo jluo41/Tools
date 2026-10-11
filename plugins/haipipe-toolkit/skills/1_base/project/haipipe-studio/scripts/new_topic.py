@@ -101,7 +101,7 @@ def el(kind, x, y, w, h, **extra):
 def text(x, y, s, size=20, frame=None, color=INK):
     lines = s.split("\\n")
     return el("text", x, y, max(len(l) for l in lines) * size * 0.55, len(lines) * size * 1.25, text=s,
-              originalText=s, fontSize=size, fontFamily=1, textAlign="left", verticalAlign="top",
+              originalText=s, fontSize=size, fontFamily=6, textAlign="left", verticalAlign="top",  # 6 Nunito, the studio font
               containerId=None, autoResize=True, lineHeight=1.25, frameId=frame, strokeColor=color)
 
 

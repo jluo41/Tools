@@ -88,6 +88,97 @@ are left alone; a slide draft s61-s69 is left as drawn, or pass `palette=`), and
 colours and a design scratch's coloured panels are not used in a studio topic; a report drawing's
 plots and figures are `excalidraw-report`'s. One exception, inside a slide of a slide draft (below).
 
+One font, for reading (JL 261009): every word in Nunito (`fontFamily` 6, `canvas.FONT`), paths and code
+in Cascadia (3, `canvas.CODE_FONT`); `canvas.write` sets it on what a builder writes (`apply_font`), and a
+change note is written in it. Hand-drawn Virgil (1) and Excalifont (5) and Comic Shanns (8) are not used.
+
+Frames in rows, never one long column (JL 261009: "don't put all the things in one column"). A builder
+draws each frame where it likes, then calls `canvas.grid(els, rows, gap=150)` once before `write`: `rows`
+lists every frame id once, row by row, read left to right and then down, two to four frames a row, and
+each frame moves with everything drawn in it. `canvas.one_column(els)` is true when 4 or more frames share
+one column, and `canvas.write` prints a warning then. Keep a frame's number out of its name when the number
+can change (a frame's id comes from its name).
+
+One idea, one large frame (JL 261010, on a topic split into 12 frames: "你这么多 frame，其实只相当于我的一个
+frame。你要把它的体量做大"). The idea is one big connected flow in one frame, with many facts in it and its most
+important part drawn largest; more frames are for separate material beside it (a source document marked up,
+reference figures). Many small frames that each hold a few points are the wrong shape. Large means much
+information, not a large canvas: each frame fits the screen (JL 261010, on a 9,200 px idea frame: "This is too huge, what I want is: when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of the frame").
+At 50% zoom the whole frame is on screen and its words read; at 100% most of it is. So a frame is about
+2560 x 1440 px (the workbench's 1280 x 720 pane at 50%), at most 2800 x 1600 (`canvas.FRAME_MAX`), body words
+20 px or more (`canvas.TEXT_MIN`); room comes from boxes sized to their words and fewer words, never a bigger
+canvas or smaller type (scaling a drawing down shrinks its words below reading). One piece read top to bottom
+(a section written out, a draft's pages marked up) stays one frame that grows down, its width within the
+screen, and is never cut into frames "· 1", "· 2" (JL 261010: "the draft take should be one single frame, and
+the Written out should be one large frame"); the builder marks it `canvas.reads_down(frame)`, and its height
+is not checked. `canvas.oversized(els)` lists the frames over the size,
+`canvas.small_text(els)` the frames whose words are mostly under 20 px, `canvas.numbered_frames(els)` one piece
+cut into frames "· 1", "· 2", and `canvas.write` warns about each.
+
+## A proposal topic: one section, drawn so it can be written
+
+A topic that works on one section of a proposal or a paper draws five frames in two rows. The worked
+example is b03_event_cgm's s03 for SHIFT Task 2.1 (JL 261010, on its drawing: "I think this one is very
+very great!"). The first row is the thinking, each frame one screen; the second row is the long reads,
+each one frame that grows down (`canvas.reads_down`).
+
+```text
+row 1   ① the idea workflow        ② why and the plan        ③ the proposal figure
+          one screen, one flow        one screen                one screen, caption beside
+row 2   ④ the draft today, marked up        ⑤ the section written out
+          one frame, read down                one large frame, read down
+```
+
+1. **① The idea workflow**: one connected flow from the inputs through the steps and the model to its
+   use, every loop drawn closed (in s03 the data loop, the model-improvement loop, and the red loop that
+   stops when there is no gain). The checks that would show it works sit beside it; each open question
+   is red, inside the box it is about. The words are cut short until it fits one screen.
+2. **② Why and the plan**: the lab's own papers it builds on (each one's status and what it gives this
+   section), a small sketch of what the model sees, and the plan in order.
+3. **③ The figure**: the proposal's picture, its change notes and caption in a column beside it.
+4. **④ The draft today, marked up**: the shared draft is only read, printed to PDF, and each related
+   passage is cut from its own page in the draft's order. A numbered red box on the passage, an arrow to
+   a note: its title, `Change:` the wording we propose, `Why:`, and in red `Ask the team:` with the name
+   of who can answer. The frame closes with every open question again, by who can answer.
+5. **⑤ The section written out**: every part of the template as a section map read left to right:
+   paragraph (its job), point (role and gist), Text (our wording), Evidence. Rules below.
+
+The section written out (JL 261010: "the bullet points should be close to each other, and in the right
+side, the evidence can be free style and be multiple columns, and use the lines to connect to the text"):
+
+1. **Tight text**: text rows sit 8 px apart; the evidence never pushes them apart.
+2. **Free evidence**: cards in two columns on the right, each beside the first text it supports; a line
+   joins text and card and goes around other cards, never through one.
+3. **No long lines**: a later text more than about one screen (1,400 px) from its card gets a one-line
+   card naming the item ("full card above") instead of a long line.
+4. **The card**: `E<nn> · VALUE|CITE|DISPLAY · label`, what it needs, where it comes from. Black when
+   traced to a published paper or a repo file; dashed red while it waits, with its ask and who answers.
+5. **The figure is evidence**: a DISPLAY item whose full card holds the picture and its caption, at the
+   figure's own row. The frame closes with every waiting ask, by who can answer.
+
+Where the words live: every word is in the face, in yaml blocks the builder reads (s03: `idea`,
+`workflow_figure`, `draft_changes`, `task21_section`, `task21_evidence`); the builder only lays them out,
+so a wording change is a face edit and a rebuild. A draft change finds its passage by `anchors` (a start
+and an end phrase, each found exactly once in the draft): when the draft is edited the boxes move on the
+next rebuild, and a phrase found twice or not at all stops the build. The written-out section prints its
+word count against the template's page budget. Our wording reaches the shared file by a person, never by
+an agent.
+
+What went wrong on the way, so it is not done again (all JL 261010, on s03):
+
+```text
+❗ one 9,200 x 5,650 px idea frame        "This is too huge"            ✅ fits one screen
+❗ the whole drawing scaled to 20%         words 6 px, 3 px at 50%       ✅ words stay 20 px
+❗ the written-out cut into 9 frames,       "should be one large frame"   ✅ one frame, read down
+   the draft into 4
+❗ evidence stacked under each point       text rows spread apart        ✅ evidence laid out on its own
+```
+
+The builders to copy from (WellDoc-SPACE, `examples-0-cowork/Project-SHIFT-Study/cowork/b03_event_cgm/studio/`):
+`s03-related-work-structure/idea_frame.py` draws ① and ②; `draft_pages.py` ④; `task21_section.py` ⑤, with
+its line routing (`evidence_route`); `build_s03_related_work_structure.py` reads the face and the draft,
+draws ③ and sets the rows; `_build/draw_kit.py` and `_build/word_pdf.py` are the level's helpers.
+
 ## A slide draft (s61-s69)
 
 A topic that proposes a deck before it is built: `studio/s6N-<deck>/` with its face, one `slides.py`

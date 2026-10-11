@@ -1,4 +1,4 @@
-"""Read a design Block on b12's ladder from disk (Tools/blueprints/b01_haipipe-toolkit/j12_theme_design s11 · s12 · s13, 261007).
+"""Read a design Block on b12's ladder from disk (Tools/blueprints/b12_theme_design s11 · s12 · s13, 261007).
 
 The ladder: a design Block `bNN_<app>/` holds its goal list (board.md ## Goals), its inputs versions
 (`inputs/iN/` + manifest.yaml), what an Exp returned (`observed/eNN_<exp>/arms.csv`), its soft Runs

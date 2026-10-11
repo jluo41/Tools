@@ -27,6 +27,8 @@
 # (Committing real agent copies into .claude/agents/ makes the "kept, not a
 # symlink" guard below skip them, so they silently drift from Tools — keep the
 # dir gitignored and regenerate, exactly like .claude/skills/.)
+# A skill may also answer to short names: `aliases: [wb]` under `metadata:` in its
+# SKILL.md makes one more link per alias to the same folder (/wb is /workbench).
 #
 # Sound hooks work on macOS (afplay), Linux (paplay/aplay), and Windows via
 # install.ps1. The per-OS table lives in install-hooks.json so both installers
@@ -179,6 +181,31 @@ enumerate_skills() {
     '
 }
 
+# A skill may carry short names: `aliases: [wb]` under `metadata:` in its SKILL.md
+# (JL 261009: /wb is /workbench). Each alias is one more link to the SAME folder,
+# so both names load one file and can never drift. An alias that is already some
+# skill's own name is skipped (the real skill wins).
+# Reads enumerate_skills' lines on stdin; prints "<alias>\t<skill_dir>\t<plugin>\t<rel_path>".
+enumerate_aliases() {
+    python3 -c '
+import re, sys
+from pathlib import Path
+rows = [line.rstrip("\n").split("\t") for line in sys.stdin if line.strip()]
+names = {Path(row[0]).name for row in rows}
+for skill_path, plugin, rel_path in rows:
+    text = (Path(skill_path) / "SKILL.md").read_text(encoding="utf-8", errors="ignore")
+    head = text.split("\n---", 1)[0] if text.startswith("---") else ""
+    m = re.search(r"(?m)^\s+aliases:\s*\[?([^\]\n#]*)\]?", head)
+    for alias in (a.strip().strip("\"\x27") for a in (m.group(1).split(",") if m else [])):
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", alias):
+            continue
+        if alias in names:
+            print(f"  . {alias} (alias of {Path(skill_path).name} skipped: a skill has that name)", file=sys.stderr)
+            continue
+        print("\t".join((alias, skill_path, plugin, rel_path)))
+'
+}
+
 # Enumerate every agent .md file under a plugin's agents/ tree (recursive).
 # Discovery covers both plugin-root agents/ and skill-nested agents/ dirs.
 # Skips any folder whose name starts with "_" (as for skills); only *-agent.md
@@ -232,6 +259,18 @@ if [ "$DO_GLOBAL" = true ]; then
         ln -s "$skill_path" "$target"
         echo "  $skill_name -> $target"
     done < <(enumerate_skills "$SCRIPT_DIR/plugins")
+
+    # Short names: one more link per alias, to the same skill folder.
+    while IFS=$'\t' read -r alias skill_path plugin_name rel_path; do
+        target="$CLAUDE_DIR/skills/$alias"
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "  . $alias (kept, not a symlink)"
+            continue
+        fi
+        [ -L "$target" ] && rm "$target"
+        ln -s "$skill_path" "$target"
+        echo "  $alias -> $target (alias of $(basename "$skill_path"))"
+    done < <(enumerate_skills "$SCRIPT_DIR/plugins" | enumerate_aliases)
 
     # Clean up stale global symlinks (point to removed/retired skills).
     # Plain "*" rather than "*/" so broken symlinks are still enumerated.
@@ -303,6 +342,20 @@ install_project_skills() {
         installed=$((installed + 1))
     done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
+    # Short names: one more link per alias, to the same skill folder.
+    local alias aliased
+    aliased=0
+    while IFS=$'\t' read -r alias skill_path plugin_name rel_path; do
+        target="$target_dir/$alias"
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "  . $alias (kept, not a symlink)"
+            continue
+        fi
+        [ -L "$target" ] && rm "$target"
+        ln -s "$tools_rel/$plugin_name/skills/$rel_path" "$target"
+        aliased=$((aliased + 1))
+    done < <(enumerate_skills "$SCRIPT_DIR/plugins" | enumerate_aliases)
+
     # Clean up stale symlinks (point to removed skills).
     # Use plain "*" rather than "*/" so broken symlinks (whose target no
     # longer exists) are still enumerated — "*/" requires the entry to
@@ -318,7 +371,7 @@ install_project_skills() {
     done
     shopt -u nullglob
 
-    echo "  $installed skills symlinked, $cleaned stale links removed."
+    echo "  $installed skills symlinked, $aliased short names, $cleaned stale links removed."
 }
 
 # ─── 3. Project-level installation (--project) ──────────────────────────────

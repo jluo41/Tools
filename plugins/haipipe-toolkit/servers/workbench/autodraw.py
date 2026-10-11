@@ -52,7 +52,8 @@ faithfully: same boxes, same arrows, same labels (emoji included).
 - Palette: stroke #1e1e1e; backgroundColor "transparent" on every shape \
 (JL 260816: boxes stay unfilled); a shape that must stand out may use a colored \
 STROKE from #e8590c #2f9e44 #1971c2 #9c36b5 instead of a fill; \
-notes in #666666. fontFamily 8 on EVERY text element (Comic Shanns Mono, JL 260815). Keep it under 40 elements.
+notes in #666666. fontFamily 6 on EVERY text element (Nunito; never 1, 5 or 8, the hand-drawn fonts are \
+hard to read, JL 261009). Keep it under 40 elements.
 
 Element contract (follow exactly; ids are yours to invent, keep them short):
 - rectangle: {{"id","type":"rectangle","x","y","width","height","angle":0,\
@@ -63,7 +64,7 @@ Element contract (follow exactly; ids are yours to invent, keep them short):
 "updated":1,"link":null,"locked":false}}
 - bound label: {{"id","type":"text","x","y","width","height",...same base...,\
 "roundness":null,"boundElements":[],"text","originalText","fontSize":16,\
-"fontFamily":8,"textAlign":"center","verticalAlign":"middle",\
+"fontFamily":6,"textAlign":"center","verticalAlign":"middle",\
 "containerId":"<rectId>","autoResize":true,"lineHeight":1.25}}
 - arrow: {{"id","type":"arrow","x","y","width","height",...same base...,\
 "roundness":{{"type":2}},"boundElements":[],"points":[[0,0],[dx,dy]],\
@@ -93,7 +94,7 @@ def ascii_element(fig):
     Placed by the SERVER, never retyped by the model (JL 260816: "copy the
     diagram's ascii to the draw as well, and then draw its own version") —
     ascii art round-tripped through a generation comes back subtly bent,
-    and Comic Shanns Mono renders the verbatim copy true. Returns
+    and Cascadia, a fixed-width font, renders the verbatim copy true. Returns
     (element, y_where_the_drawing_starts)."""
     lines = fig.split("\n")
     size = 14                                   # px; wide figures still fit
@@ -108,7 +109,7 @@ def ascii_element(fig):
           "versionNonce": 261608, "isDeleted": False, "boundElements": [],
           "updated": 1, "link": None, "locked": False,
           "text": fig, "originalText": fig, "fontSize": size,
-          "fontFamily": 8, "textAlign": "left", "verticalAlign": "top",
+          "fontFamily": 3, "textAlign": "left", "verticalAlign": "top",
           "containerId": None, "autoResize": False, "lineHeight": 1.25}
     return el, h + 100
 

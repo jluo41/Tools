@@ -1,3 +1,9 @@
+## 0.7.4 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `servers/workbench-work/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic
+  Shanns (8); the Guide's tables (`servers/workbench/workbench_guide.py`, shared by every theme) too, with
+  Cascadia (3) kept for code.
+
 ## 0.7.3 · 2026-10-09 · RoadMap Draw lists the studio topics and their sessions
 
 - RoadMap Draw also reads the haipipe-studio topic folders: the Block's `studio/sNN-<topic>/` and each Job's

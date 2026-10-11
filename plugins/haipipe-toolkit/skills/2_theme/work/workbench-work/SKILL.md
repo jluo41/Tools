@@ -10,7 +10,7 @@ description: >-
   tracking across one work/bNN_* Block and opening its Question reports.
   Execution belongs to haipipe-task; report writing to haipipe-page.
 metadata:
-  version: "0.7.3"
+  version: "0.7.4"
   last_updated: "2026-10-09"
 ---
 
@@ -26,7 +26,7 @@ its four Views (Description, Method, RoadMap Draw, Related Paper) come from
 page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
-`Tools/blueprints/b01_haipipe-toolkit/j17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
+`Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
 
 ## Open
 

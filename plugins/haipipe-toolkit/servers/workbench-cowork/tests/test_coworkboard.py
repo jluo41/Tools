@@ -200,3 +200,16 @@ def test_one_question_shows_one_drawing_and_a_picture_goes_inside_it(demo):
     assert "inside the report's drawing" in found and "The desk card" in found
     row = render_block(block_snapshot(block, root), "questions")
     assert row.count('class="rp-thumb"') == 1 and "The desk card" not in row.split('class="hl-p"', 1)[1].split("</div>", 1)[0]
+
+
+def test_a_studio_item_folder_drawing_is_listed(demo):
+    """JL 261008: studio/ may hold numbered items, rNN_<topic>/ (a reference) and sNN_<topic>/ (a drawing
+    about it). A drawing one folder down is listed; scripts in _build/ and replaced work in _old/ are not."""
+    root, block = demo
+    write(block / "studio/s01_pilot/s01_pilot.excalidraw",
+          json.dumps({"type": "excalidraw", "source": "studio/_build/build_s01.py", "elements": []}))
+    write(block / "studio/_build/scratch.excalidraw", json.dumps({"type": "excalidraw", "elements": []}))
+    write(block / "studio/_old/old.excalidraw", json.dumps({"type": "excalidraw", "elements": []}))
+    found = {d["path"].rsplit("/studio/", 1)[1]: d for d in block_snapshot(block, root)["drawings"]}
+    assert set(found) == {"flow.excalidraw", "s01_pilot/s01_pilot.excalidraw"}
+    assert found["s01_pilot/s01_pilot.excalidraw"]["source"] == "studio/_build/build_s01.py"   # view only

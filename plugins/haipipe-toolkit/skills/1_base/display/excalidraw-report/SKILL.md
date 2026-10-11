@@ -11,7 +11,7 @@ description: >-
   "draw it so we can think", "too structured", a report's picture, plots, /excalidraw-report.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.8.2"
+  version: "0.8.3"
   last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
@@ -51,7 +51,7 @@ What makes a good scratch
    material suggests, and let it differ from the last drawing.
 3. **Sketchy shapes, readable words.** `roughness: 1` on boxes, notes, marks and arrows;
    words in Nunito (`fontFamily` 6), a clean rounded sans, never the hand-script Virgil
-   (`1`) or Excalifont (`5`), which are hard to read (JL 261005); monospace (`fontFamily`
+   (`1`), Excalifont (`5`) or Comic Shanns (`8`), which are hard to read (JL 261005, 261009); monospace (`fontFamily`
    3) only for real paths, code and tables. Sticky notes in a few soft fills (yellow the
    ask, green fits, orange bends, gray empty, pink open). Keep everything straight and
    aligned (`angle: 0`, no random offsets): tilt reads as crooked (JL 261005: "it is not

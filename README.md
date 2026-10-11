@@ -19,6 +19,7 @@ This table covers the three package directories directly under `plugins/`. The H
 | Path | Purpose |
 |---|---|
 | `plugins/` | First-party packages. The installers discover skills recursively under these package roots. |
+| `blueprints/` | Shared foundation and independent Theme Blocks, with questions, reports, studio topics and Runs. |
 | `references/` | Upstream projects, reference material, and Git submodules. The installers do not install skills from this tree. |
 | `references/sources.yaml` | Source, origin, and license notes for the reference collection. |
 | `.claude-plugin/marketplace.json` | Claude Code marketplace catalog for this repository. |
@@ -26,9 +27,28 @@ This table covers the three package directories directly under `plugins/`. The H
 | `install-hooks.json` | Shared per-OS sound-hook configuration read by both installers. |
 
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
-and [skill structure map](plugins/haipipe-toolkit/skills/STRUCTURE.md).
+and [skill and server layout](blueprints/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
 For the shared Workbench, Run Type, and Skill relationship, see
-[Workbench design principles](principle/WORKBENCH-DESIGN.md).
+[the shared project workbench blueprint](blueprints/b01_haipipe-toolkit/j03_project_workbench/j03_project_workbench.md).
+
+## Blueprints
+
+`b01_haipipe-toolkit` holds shared foundation Jobs j01–j05. Each Theme is its
+own peer Block; a package may have several blueprint Blocks. Each Theme's
+board.md records its questions and links its reports, studio topics and Runs.
+
+| Block | Area |
+|---|---|
+| [b01_haipipe-toolkit](blueprints/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
+| [b02_haipipe-utils](blueprints/b02_haipipe-utils/board.md) | Utilities |
+| [b03_inlab-human](blueprints/b03_inlab-human/board.md) | Human studies |
+| [b11_theme_insight](blueprints/b11_theme_insight/board.md) | Insight Theme |
+| [b12_theme_design](blueprints/b12_theme_design/board.md) | Design Theme |
+| [b13_theme_cowork](blueprints/b13_theme_cowork/board.md) | Cowork Theme |
+| [b14_theme_discovery](blueprints/b14_theme_discovery/board.md) | Discovery Theme |
+| [b15_theme_labeling](blueprints/b15_theme_labeling/board.md) | Labeling Theme |
+| [b16_theme_paper](blueprints/b16_theme_paper/board.md) | Paper Theme |
+| [b17_theme_work](blueprints/b17_theme_work/board.md) | Work Theme |
 
 ## Installation
 

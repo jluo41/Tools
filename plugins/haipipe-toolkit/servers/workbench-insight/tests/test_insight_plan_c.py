@@ -31,7 +31,7 @@ BOARD = {"Description": (["Map", "Prototype", "Dataset", "Partitions"], ["Add a 
          "Runs": (["All", "soft", "from below"], ["Add a Job", "Update the coverage", "Check consistency"]),
          "Delivery": (["Handoff"], ["Write the counsel", "Draft the handoff"])}
 JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
-       "Idea Studio": ([], ["Add a topic"]),
+       "Idea Studio": ([], ["Draw the question map", "Add a topic"]),  # the Block's Studio (b03 s02-D09)
        "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Write the Data report", "Write the Information report",
                                                                "Write the Knowledge report", "Write the Wisdom report",
                                                                "Check a report"]),
@@ -41,7 +41,7 @@ JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
                  "Propose questions", "Close the Job"]),
        "Delivery": ([], [])}
 TASK = {"Description": (["Question", "Records"], []),
-        "Idea Studio": ([], ["Add a topic"]),
+        "Idea Studio": ([], ["Draw the question map", "Add a topic"]),  # the Block's Studio (b03 s02-D09)
         "Audience Report": (["Table", "Reading"], ["Write the Knowledge report", "Check a report"]),
         "Work Details": (["Partitions"], ["Run a partition", "Check alignment"]),
         "Runs": (["All", "hard", "soft"], ["Run a partition", "Check alignment"]),

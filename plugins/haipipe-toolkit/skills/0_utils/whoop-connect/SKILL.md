@@ -24,7 +24,7 @@ Trigger phrases:
 
 ## Overview
 
-This skill guides one Whoop-connection Run, when the local Health-Sync checkout
+This skill guides one Whoop-connection Run, when the local HealthConnect checkout
 and its supported credential method are available. Its internal Steps are:
 
 1. **App creation** — guide user to developer.whoop.com to create their free developer app
@@ -48,7 +48,7 @@ that setup is not ready; do not improvise a way to transmit the secret.
 
 ## Preflight — before asking the user to create an app
 
-Resolve the Health-Sync checkout from an existing configured path or ask for
+Resolve the HealthConnect checkout from an existing configured path or ask for
 its location. Confirm `whoop_listen.py`, `whoop_sync.py`, setup instructions,
 the Python environment, and the documented local credential loader exist.
 This skill does not ship that application. If it is missing, explain the
@@ -96,7 +96,7 @@ Then guide them step by step:
 **Step 1.3** — Say:
 > "Perfect! Now you should see your **Client ID** and **Client Secret**.
 > Keep both on your machine and enter them only through the local credential
-> prompt or secret store documented by your Health-Sync checkout. Do not send
+> prompt or secret store documented by your HealthConnect checkout. Do not send
 > either value in this chat. Tell me when local setup confirms they were stored.
 >
 > 🔒 I will not handle or repeat either value."

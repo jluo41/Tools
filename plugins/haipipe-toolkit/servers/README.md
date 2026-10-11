@@ -85,7 +85,10 @@ inside it every Theme (`tasks`, `discoveries`, `cowork`, `papers`, `insights`, `
 in that order; then any other root folder), inside that the Block cards. Cards open
 `/w/<block>` when its slug is unique, else the frame's long address; both open the base
 frame. `?kind=task` (or `?kind=task,paper`) filters by block type and is written back
-to the address bar, so a link reproduces the view. Projects start open when the view
+to the address bar, so a link reproduces the view. `?project=<Project>` (its SPACE-relative
+folder, its folder name, or its project.yaml id) shows that one Project alone, with a link back
+to every Project; the two combine (`?project=…&kind=cowork`). `/wb` (the `workbench` skill's
+`cli/wb.py`) opens these addresses, and the frame's, from a path or from plain words. Projects start open when the view
 holds at most five, closed otherwise; a person's own folds and Project order stay in
 the browser.
 

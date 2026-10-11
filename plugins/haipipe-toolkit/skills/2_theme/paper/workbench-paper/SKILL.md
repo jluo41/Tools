@@ -9,7 +9,7 @@ description: >-
   Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
   Section tab, paper spaces, /workbench-paper.
 metadata:
-  version: "0.33.1"
+  version: "0.34.0"
   last_updated: "2026-10-09"
 ---
 
@@ -19,7 +19,7 @@ metadata:
 the frame every theme shares (`servers/workbench/`, `servers/workbench/README.md`). This skill is the paper's
 delta: which views each level's Spaces show, where they read, and which run cards their Runs panels list.
 
-The design is drawn in `Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/`: s11 (the Board), s12 (a version), s13 (a
+The design is drawn in `Tools/blueprints/b16_theme_paper/studio/`: s11 (the Board), s12 (a version), s13 (a
 Section), s21 (the skills and Runs), s31 (the Guide by level). The paper's folders are
 `haipipe-paper/ref/paper-ladder.md`. The four-Space page that came before (`/_board/paper-board`) is retired;
 what it showed is kept in [`ref/old-page.md`](ref/old-page.md), since several views below still draw with its
@@ -48,7 +48,7 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 |---|---|---|
 | Block › Description | Scope · Venue · Resources · Related | `board.md`; `venues/*/call.md`; `## Related resources`; `related/related.md` as cards, each opening on its deep read's drawing |
 | Block › Idea Studio | one row per topic | `studio/sNN-<topic>/` (the frame's studio rows) |
-| Block › Audience Report | Ideation · Narrative · High-level logic + Low-level work · Related Questions | `board.md ## Questions` by `group:`, their `reports/qNN_`; the current telling's studio topic |
+| Block › Audience Report | Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers | `board.md ## Questions` by `group:`, their `reports/qNN_`; the current telling's studio topic; the related papers under the question each bears on (`related/related.md`, else the telling's related-papers table) |
 | Block › Work Details | Jobs · Main · Appendix · Evidence | the versions; every Section by part; the Evidence Items |
 | Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/` |
 | Job › Description | Version · Venue rules | the version face; its venue's `call.md` |

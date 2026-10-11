@@ -1,6 +1,6 @@
 # The Labeling family's Guide (servers/workbench-labeling). Loaded by servers/workbench/guide_families.py.
 # Paths: guide/… related/… or a module are relative to servers/workbench-labeling; skill:<name>/<rest>
-# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in blueprints/b01_haipipe-toolkit/j15_theme_labeling).
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in blueprints/b15_theme_labeling).
 family: labeling
 label: Labeling
 presenter: labeling.py
@@ -65,7 +65,7 @@ folders:
 explain:
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b01_haipipe-toolkit/j15_theme_labeling/studio/s02-labeling-workbench/labeling-workbench-ui.excalidraw
+  - board: Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/labeling-workbench-ui.excalidraw
   - Workbench design
   - first
   method:

@@ -10,7 +10,7 @@ description: >-
   coordination belongs to. Trigger: cowork, cowork block, job, ticket, who are we
   waiting on, open a job, update a job, checklist, who to ask, /haipipe-cowork.
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-10-09"
 ---
 
@@ -31,7 +31,7 @@ Project/
     ├── _old/                       replaced material; do not use
     └── bNN_<topic>/                Block = CoWork Board
         ├── board.md                fixed: header, the text, the Questions register
-        ├── studio/                 fixed: drawings the whole Block shares; scripts in studio/_build/
+        ├── studio/                 fixed: the Idea Studio, one topic per sNN-<topic>/ (haipipe-studio)
         ├── reports/qNN_<topic>/    fixed: a Question's report Page (haipipe-question); its own
         │                           drawings in reports/qNN_<topic>/studio/
         ├── _old/                   fixed: replaced material; do not use
@@ -41,7 +41,8 @@ Project/
             ├── jNN_<job>.md        the job page; its header holds the Job's state
             ├── Timeline.md         the dates, one line each
             ├── CHECKLIST.md        the steps, numbered; each draft message inside its step
-            └── design/ materials/ emails/ meetings/   only when the Job has them
+            ├── design/ materials/ emails/ meetings/   only when the Job has them
+            └── delivery/<date>-<what>/   one message we send: its draft and its attachments
 ```
 
 No other names at a Block's top level: not `README.md` (the Block's README is its
@@ -114,7 +115,12 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
 ## Rules
 
 1. **Drafts are not sent by agents.** A message is drafted in its checklist step or the
-   Job's `emails/`; the person reviews and sends it. Mark a draft with `status: draft`
+   Job's `emails/`; one that goes out with attachments is a folder of its own,
+   `delivery/<date>-<what>/` (the draft and the files, together; JL 261009), which the
+   Job's Delivery lists. `scripts/email_page.py <draft.md>` turns the draft into
+   `<draft>.html`, a page with a Copy button for To, Cc, Subject and the body, so it pastes
+   into Outlook with its paragraphs, numbers and bullets; the Job's `delivery/build.py`
+   calls it after making the attachments. The person reviews and sends it. Mark a draft with `status: draft`
    on its own line, or `draft` in the file name, until it is sent.
 2. **One home per file.** A ticket page, email or meeting belongs to the Job whose work
    it moves; material for every Block goes to the cowork root folders.
@@ -122,16 +128,18 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
    `since` in the job page header and add the date to the Job's `Timeline.md`.
 4. **No participant data, no keys.** Git keeps history. Office files, recordings and
    anything over 5 MB stay local through `cowork/.gitignore`.
-5. **Drawings are generated.** A drawing is rebuilt by its script in `studio/_build/`,
-   never edited by hand.
+5. **Drawings are generated.** A studio topic follows `haipipe-studio`: `studio/sNN-<topic>/` holds
+   its face `.md`, its builder `build_sNN_<topic>.py` beside the drawing, and the preview;
+   `studio/_build/` keeps only shared helpers and `make.sh`. A drawing is never edited by hand.
 6. **Paths are Block-relative** inside a Block (`j02_hopkins_rit4630/emails/...`) and
    Project-relative elsewhere; never `/Users/...`.
 
 ## Open the workbench
 
-`workbench-cowork` presents one Block at `/_board/cowork-board?path=<Block>/board.md`
-(short: `/w/<block-folder>`), and every Block of a Project at
-`/_board/cowork-board?path=<Project>/cowork`.
+`/w/<block-folder>` opens a Block in the base frame, `/_board/workbench?path=<Block>` (since
+261007), with the cowork theme on it (`servers/workbench-cowork/cowork_theme.py`); a Job opens
+with `path=<Block>/<jNN_job>`. The older page `/_board/cowork-board?path=<Block>/board.md`
+still answers, and lists every Block of a Project at `?path=<Project>/cowork`.
 
 ## Create or migrate a Block
 

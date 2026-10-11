@@ -24,7 +24,7 @@ metadata:
 every theme shares (`servers/workbench/`). This skill is insight's delta: which views each level's Spaces show,
 where they read, and which run cards their Runs panels list.
 
-The design is drawn in `Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/`: s11 (the Board), s12 (a Job), s13 (a Task), s21
+The design is drawn in `Tools/blueprints/b11_theme_insight/studio/`: s11 (the Board), s12 (a Job), s13 (a Task), s21
 (the Runs and skills), s31 (the Guide by level). The folders are `haipipe-insight/ref/insight-ladder.md`. The page
 that came before (`/_board/insight-board`) is retired and redirects here; what it showed is kept in
 [`ref/old-page.md`](ref/old-page.md) and [`ref/insight-board.md`](ref/insight-board.md).

@@ -643,7 +643,7 @@ class XcalMixin(ExcalidrawProxyMixin):
         want = urllib.parse.parse_qs(qs).get("frame", [""])[0]
         # `?frame=` narrows to one page; no frame means the whole board, and
         # BOTH need their images turned back into dataURLs on the way out.
-        f = (self.root / path.lstrip("/")).resolve()
+        f = (self.root / unquote(path).lstrip("/")).resolve()
         try:
             f.relative_to(self.root.resolve())
         except ValueError:

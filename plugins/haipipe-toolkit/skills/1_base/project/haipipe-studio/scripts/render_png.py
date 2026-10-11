@@ -89,11 +89,13 @@ def render(src, dst, s=None):
         if e["type"] != "text":
             continue
         x, y = P(e["x"], e["y"])
-        if e.get("textAlign") == "center":
-            dr.multiline_text((x + e["width"] * s / 2, y), e["text"], fill=e["strokeColor"], font=font(e["fontSize"] * s, e.get("fontFamily", 2)),
-                              anchor="ma", align="center", spacing=4)
-        else:
-            dr.multiline_text((x, y), e["text"], fill=e["strokeColor"], font=font(e["fontSize"] * s, e.get("fontFamily", 2)), spacing=4)
+        f = font(e["fontSize"] * s, e.get("fontFamily", 2))
+        step = e["fontSize"] * e.get("lineHeight", 1.25) * s   # the canvas's line height, so lines stack as there
+        for i, line in enumerate(e["text"].split("\n")):
+            if e.get("textAlign") == "center":
+                dr.text((x + e["width"] * s / 2, y + i * step), line, fill=e["strokeColor"], font=f, anchor="ma")
+            else:
+                dr.text((x, y + i * step), line, fill=e["strokeColor"], font=f)
     im.save(dst)
     print(Path(dst).name, im.size)
 

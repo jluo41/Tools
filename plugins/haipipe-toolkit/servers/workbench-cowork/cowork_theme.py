@@ -1,14 +1,17 @@
 """The cowork theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A cowork topic climbs Block → Job → Run (Tools/blueprints/b01_haipipe-toolkit/j13_theme_cowork, Q01, proposed 261007). An
+A cowork topic climbs Block → Job → Run (Tools/blueprints/b13_theme_cowork, Q01, proposed 261007). An
 email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`tNN_<doc>/`) is only a
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.
 
-    Block  Description: Scope · People · Resources · Related | Audience Report: Question │ Work │ Report
-           | Work Details: its Jobs, All · open · waiting · done | Delivery: Reports · Done jobs
+    Block  Description: Scope · People · Resources · Related | Audience Report: the base's Question rows
+           (Logic │ Work │ Report, the report's drawing live in Report)
+           | Work Details: its Jobs, All · open · waiting · done | Delivery: delivery/ (every Job's messages
+           out) · Reports · Done jobs
     Job    Description: Job · Files | Audience Report: the Block's Questions citing this Job
-           | Work Details: Timeline · Checklist · Emails · Meetings
+           | Work Details: Timeline · Checklist · Emails · Meetings | Delivery: its messages out, each with
+           its attachments (delivery/<date>-<what>/)
 
 Idea Studio and Runs read as vanilla (studio/ topics; runs/ grouped by type); the theme adds its
 run types. It reads the Block through coworkboard.py and writes nothing; no run sends a message.
@@ -18,7 +21,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from live.coworkboard import DONE, files, header, jobs, notes, people_page, steps, waited
-from live.frame import ROUTE, Space, Theme, esc, link, reader, rel, table
+from live.frame import ROUTE, Space, Theme, esc, link, pop, question_rows, reader, rel, table
 from live.task_questions import field, read, register, words
 
 _DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
@@ -83,6 +86,39 @@ def _question_rows(rows, block, root):
     return out
 
 
+def _deliveries(job_dir, block):
+    """One message we send per `delivery/<date>-<what>/` of a Job: its draft (.md) and its attachments
+    (JL 261009: "add it to the delivery"), newest first."""
+    out, d = [], job_dir / "delivery"
+    for p in sorted(d.iterdir(), reverse=True) if d.is_dir() else []:
+        if p.name.startswith((".", "_")):
+            continue
+        found = sorted(f for f in (p.iterdir() if p.is_dir() else [p]) if f.is_file() and not f.name.startswith("."))
+        md = next((f for f in found if f.suffix == ".md"), None)
+        text = read(md, block) if md else ""
+        title = re.search(r"(?m)^#\s+(.+)$", text) or re.search(r"(?m)^Subject:\s*(.+)$", text)
+        page = md.with_suffix(".html") if md and md.with_suffix(".html").is_file() else None   # email_page.py's
+        named = re.search(r"(?m)^Attach:\s*(.+)$", text)                                       # copy page
+        date = _DATE.search(p.name) or _DATE.search(text)
+        out.append({"date": date.group(1) if date else "",
+                    "md": md, "page": page, "title": title.group(1).strip() if title else p.name,
+                    "draft": bool(re.search(r"(?m)^\s*status:\s*draft\b", text)) or "draft" in (md.name if md else ""),
+                    "attach": [p / n.strip() for n in named.group(1).split(";") if n.strip()] if named
+                              else [f for f in found if md is None or f.stem != md.stem]})
+    return out
+
+
+def _delivery_rows(job_dir, block, root, with_job=False):
+    rows = []
+    for m in _deliveries(job_dir, block):
+        msg = (pop("/" + rel(m["page"], root), m["title"]) if m["page"]          # the page to copy from
+               else link(reader(m["md"], root), m["title"]) if m["md"] else esc(m["title"]))
+        files_ = " · ".join(pop("/" + rel(f, root), f.name) for f in m["attach"]) or '<span class=mut>none</span>'
+        row = (esc(m["date"] or "—"), msg, files_, "draft ✎ not sent" if m["draft"] else "sent")
+        rows.append(((_job_link({"name": job_dir.name}, block, root),) if with_job else ()) + row)
+    return rows
+
+
 def _block(block, root, sub):
     text = read(block / "board.md", block)
     head = header(text, block)
@@ -112,7 +148,12 @@ def _block(block, root, sub):
     out["Description"] = Space(html=body or "", subspaces=("Scope", "People", "Resources", "Related"), open=d_sub,
                                run_types=BLOCK_RUNS["Description"])
 
-    out["Audience Report"] = Space(html=table(("Question", "Work", "Report"), _question_rows(_questions(text), block, root)),
+    q_html, groups = question_rows("Block", block, root, sub)            # one look with the other Block workbenches
+    if sub in groups:
+        from .timeline_view import group_timeline
+        q_html = group_timeline(block, root, _questions(text), sub) or q_html
+    out["Audience Report"] = Space(html=q_html, subspaces=("All",) + tuple(groups) if groups else (),
+                                   open=(sub if sub in groups else "All") if groups else "",
                                    run_types=BLOCK_RUNS["Audience Report"])
 
     w_sub = _pick(sub, ("All", "open", "waiting", "done"))
@@ -135,8 +176,9 @@ def _block(block, root, sub):
     elif v_sub == "Done jobs":
         html = table(("Job", "title", "since"), [(_job_link(j, block, root), esc(j["title"]), esc(j["since"] or "—"))
                                                   for j in rows if j["state"].startswith(DONE)])
-    else:
-        html = ""                                                       # vanilla: delivery/
+    else:                                                               # delivery/: every Job's messages out
+        sent = [r for j in rows for r in _delivery_rows(block / j["name"], block, root, with_job=True)]
+        html = table(("Job", "date", "message", "attachments", "state"), sent) if sent else ""   # none: vanilla
     out["Delivery"] = Space(html=html, subspaces=("delivery/", "Reports", "Done jobs"), open=v_sub or "delivery/",
                             run_types=BLOCK_RUNS["Delivery"])
     return out
@@ -154,6 +196,9 @@ def _timeline(job_dir, block, root, emails, meetings, checklist):
         for n in rows:
             state = " <b>draft ✎</b>" if n.get("draft") else ""
             items.append((n["date"], kind, link(reader(job_dir / (kind + "s") / n["name"], root), n["title"]) + state))
+    for m in _deliveries(job_dir, block):
+        items.append((m["date"], "delivery", (link(reader(m["md"], root), m["title"]) if m["md"] else esc(m["title"]))
+                      + (" <b>draft ✎</b>" if m["draft"] else "")))
     items.sort(key=lambda x: x[0], reverse=True)
     undated = sum(1 for s in checklist if not s["done"])
     shown = table(("date", "item", ""), [(esc(d or "—"), esc(k), h) for d, k, h in items])
@@ -206,6 +251,10 @@ def _job(job_dir, root, sub):
     out["Work Details"] = Space(html=body, subspaces=("Timeline", "Checklist", "Emails", "Meetings"), open=w_sub,
                                 run_types=JOB_RUNS["Work Details"])
     out["Runs"] = Space(run_types=JOB_RUNS["Runs"])
+    sent = _delivery_rows(job_dir, block, root)
+    out["Delivery"] = Space(html=table(("date", "message", "attachments", "state"), sent) if sent
+                            else '<p class=mut>Nothing to send yet: a message and its attachments go in '
+                                 'delivery/&lt;date&gt;-&lt;what&gt;/.</p>')
     return out
 
 

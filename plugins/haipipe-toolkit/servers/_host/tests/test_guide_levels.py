@@ -54,6 +54,22 @@ def space_cards(page: str, level: str) -> dict:
 
 
 class CardGuideTest(unittest.TestCase):
+    def test_index_is_first_in_guide_and_leaves_the_parent_workbench(self):
+        for view, _, _ in VIEWS:
+            with self.subTest(view=view):
+                page = guide_html("shared", view, {"path": "", "file": ""}, True,
+                                  index_url="https://example.test/?view=radial&measure=studios")
+                nav = re.search(r'<nav class="wg-views"[^>]*>(.*?)</nav>', page).group(1)
+                labels = re.findall(r'>([^<]+)</a>', nav)
+                self.assertEqual(labels, ["Index"] + [label for _, label, _ in VIEWS])
+                self.assertIn('href="https://example.test/?view=radial&amp;measure=studios" target="_top" data-guide-index', nav)
+                self.assertEqual(nav.count('aria-current="page"'), 1)
+        default = guide_html("shared", "description", {"path": "", "file": ""}, True)
+        self.assertIn('href="/?view=radial&amp;measure=studios" target="_top" data-guide-index', default)
+        invalid = guide_html("shared", "description", {"path": "", "file": ""}, True,
+                             index_url="javascript:alert(1)")
+        self.assertNotIn("javascript:alert", invalid)
+
     def test_every_view_is_three_folding_level_sections_then_all_levels(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
@@ -137,11 +153,13 @@ class RouteTest(unittest.TestCase):
             (job / "j01_job.md").unlink()
             handler = Fake()
             handler.root = root
+            handler.workbench_index_url = "https://example.test/?view=radial&measure=studios"
             handler.path = ("/_board/guide?family=task&view=description&embed=1&level=Job&file=&path="
                             + job.relative_to(root).as_posix())
             handler.guide_view()
             self.assertEqual(sent["code"], 200, sent["body"][:200])
             self.assertEqual(here(sent["body"]), ["Job"])
+            self.assertIn('href="https://example.test/?view=radial&amp;measure=studios" target="_top" data-guide-index', sent["body"])
             self.assertEqual(len(space_cards(sent["body"], "Job")), 6)
             task = folders(root)["Task"]                                 # a Task's face is not a Board Page
             handler.path = ("/_board/guide?family=work&view=method&embed=1&level=Task&path="

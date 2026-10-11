@@ -118,7 +118,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b01_haipipe-toolkit/j12_theme_design/studio/s02-workbench-ui/design-workbench-ui.excalidraw
+  - board: Tools/blueprints/b12_theme_design/studio/s02-workbench-ui/design-workbench-ui.excalidraw
   - Workbench design
   - first
   related-paper:

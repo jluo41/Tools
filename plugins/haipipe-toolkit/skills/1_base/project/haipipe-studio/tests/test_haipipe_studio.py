@@ -1,4 +1,6 @@
 """haipipe-studio: the topic scaffold, a builder that keeps the person's marks, the preview, sessions."""
+import contextlib
+import io
 import json
 import re
 import subprocess
@@ -80,6 +82,60 @@ class StudioTest(unittest.TestCase):
         self.assertEqual({e["strokeColor"] for e in els}, {canvas.INK, canvas.RED})
         self.assertEqual(len(canvas.off_palette([{"strokeColor": "#1971c2"}, {"backgroundColor": "#ffec99"}])), 2)
 
+    def test_words_are_written_in_one_readable_font(self):
+        out = self.block / "font.excalidraw"
+        mk = lambda s, fam, y: {"id": s, "type": "text", "x": 0, "y": y, "width": 10, "height": 10, "text": s,
+                                "originalText": s, "fontSize": 20, "fontFamily": fam}
+        canvas.write(out, [mk("hand", 1, 0), mk("comic", 8, 40), mk("path/to/code.py", 3, 80)], "test")
+        fams = {e["text"]: e["fontFamily"] for e in json.loads(out.read_text())["elements"]}
+        self.assertEqual(fams, {"hand": canvas.FONT, "comic": canvas.FONT, "path/to/code.py": canvas.CODE_FONT})
+        self.assertEqual(canvas.change_note(0, 0, "moved", "261009")["fontFamily"], canvas.FONT)
+        md = new_topic.new_topic(self.block, "plain", "Plain", builder=True)
+        texts = [e for e in json.loads(md.with_suffix(".excalidraw").read_text())["elements"] if e["type"] == "text"]
+        self.assertEqual({e["fontFamily"] for e in texts}, {canvas.FONT})
+
+
+    def test_grid_sets_frames_in_rows_not_one_column(self):
+        """JL 261009: "don't put all the things in one column"; each frame moves with what is in it."""
+        frame = lambda fid, y: {"id": fid, "type": "frame", "x": 0, "y": y, "width": 100, "height": 50}
+        els = [frame(f"f{i}", i * 80) for i in range(4)] + [{"id": "t", "type": "text", "x": 10, "y": 250,
+                                                             "frameId": "f3"}]
+        self.assertTrue(canvas.one_column(els))
+        canvas.grid(els, [["f0", "f1"], ["f2", "f3"]], gap=20)
+        self.assertEqual([(e["x"], e["y"]) for e in els[:4]], [(0, 0), (120, 0), (0, 70), (120, 70)])
+        self.assertEqual((els[4]["x"], els[4]["y"]), (130, 80))
+        self.assertFalse(canvas.one_column(els))
+        with self.assertRaises(AssertionError):
+            canvas.grid(els, [["f0", "f1", "f2"]])
+    def test_a_frame_fits_the_screen(self):
+        """JL 261010: "when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of
+        the frame"; a frame over FRAME_MAX is listed, and the build warns."""
+        w, h = canvas.FRAME_MAX
+        els = [{"id": "ok", "type": "frame", "name": "fits", "x": 0, "y": 0, "width": 2560, "height": 1440},
+               {"id": "big", "type": "frame", "name": "huge", "x": 0, "y": 0, "width": 9200, "height": 5650}]
+        self.assertTrue(2560 <= w and 1440 <= h)
+        self.assertEqual(canvas.oversized(els), [("huge", 9200, 5650)])
+        # one piece read top to bottom stays one frame: only its width must fit (JL 261010)
+        long = [canvas.reads_down({"id": "t", "type": "frame", "name": "written out", "width": 2560, "height": 9000}),
+                canvas.reads_down({"id": "w", "type": "frame", "name": "too wide", "width": 4000, "height": 9000})]
+        self.assertEqual(canvas.oversized(long), [("too wide", 4000, 9000)])
+        cut = [{"id": f"p{i}", "type": "frame", "name": f"Task 2.1 written out · {i}"} for i in (1, 2, 3)]
+        self.assertEqual(canvas.numbered_frames(cut + long), {"Task 2.1 written out": 3})
+        self.assertEqual(canvas.numbered_frames([{"id": "a", "type": "frame", "name": "s03 · Why"}]), {})
+        out = self.block / "studio" / "s01-x" / "s01-x.excalidraw"
+        out.parent.mkdir(parents=True)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            canvas.write(out, els, "build_s01_x.py")
+        self.assertIn("frame 'huge' is 9200 x 5650 px", buf.getvalue())
+        self.assertNotIn("'fits'", buf.getvalue())
+        word = lambda fid, size, color=canvas.INK: {"id": f"t{fid}{size}", "type": "text", "x": 0, "y": 0,
+                                                    "width": 10, "height": 10, "frameId": fid, "fontSize": size,
+                                                    "strokeColor": color, "text": "w"}
+        frames = [{"id": "ok", "type": "frame", "name": "fits"}, {"id": "big", "type": "frame", "name": "tiny words"}]
+        words = [word("ok", 20), word("ok", 22), word("ok", 16, canvas.GREEN), word("big", 6), word("big", 6)]
+        self.assertEqual(canvas.small_text(frames + words), [("tiny words", 6)])
+
     def test_two_elements_with_one_id_stay_two(self):
         out = self.block / "dup.excalidraw"
         mk = lambda x: {"id": "same", "type": "rectangle", "x": x, "y": 0, "width": 10, "height": 10}
@@ -126,9 +182,9 @@ class StudioTest(unittest.TestCase):
         self.assertIsNone(canvas.legacy_seed(self.block / "x.excalidraw", [{"id": "s-1"}]))
 
     def test_no_builder_reaches_canvas_through_the_old_address(self):
-        designs = SCRIPTS.parents[4].parent.parent / "designs"
+        designs = SCRIPTS.parents[4].parent.parent / "blueprints"   # Tools/designs, renamed 261009
         if not designs.is_dir():
-            self.skipTest("no design Blocks beside this plugin")
+            self.skipTest("no blueprint Blocks beside this plugin")
         self.assertFalse((designs / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "_build" / "canvas.py").exists())
         for f in designs.glob("*/studio/**/*.py"):
             if "history" in f.parts:

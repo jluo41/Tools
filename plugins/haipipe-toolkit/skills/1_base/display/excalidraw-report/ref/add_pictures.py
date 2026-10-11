@@ -39,7 +39,7 @@ def element(kind, x, y, w, h, frame, **kw):
 
 def text(x, y, t, size, color, frame):
     return element("text", x, y, len(t) * size * EM, size * 1.25, frame, strokeColor=color, text=t, originalText=t,
-                   fontSize=size, fontFamily=8, textAlign="left", verticalAlign="top", containerId=None,
+                   fontSize=size, fontFamily=6, textAlign="left", verticalAlign="top", containerId=None,
                    autoResize=True, lineHeight=1.25)
 
 

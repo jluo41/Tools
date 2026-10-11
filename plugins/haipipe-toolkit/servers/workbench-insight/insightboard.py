@@ -7,7 +7,7 @@ Data, Information, Knowledge and Wisdom (MT01-MT04), on the right the runs
 that answer them, joined by each task config's `answers:` line.  Check shows
 the gates, the mechanical checks and the workflow runtime; Delivery the signed
 handoffs.  Each Space has its Runs panel; a run line opens its results, and a
-page opens as a document, in a pop-out.  Design: Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw.
+page opens as a document, in a pop-out.  Design: Tools/blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw.
 An Insight Block (a task Block with workbench: insight) is read by instance_reader.py into the same snapshot.
 Insight › Studio lists the board's own studio/*.excalidraw drawings; the shared Studio
 routes save them.  The shared Guide (workbench) mounts before Scope.
@@ -2269,7 +2269,7 @@ class InsightBoardMixin:
         if not (query.get("file") or [""])[0]:
             # Retired (JL 261007): the board opens in the workbench (/_board/workbench, the insight theme,
             # b11 s11 · s12 · s13). Its old Spaces map to the new ones; screenshots of this page are kept in
-            # Tools/blueprints/b01_haipipe-toolkit/j11_theme_insight/studio/s11-block-level/old-insight-board/.
+            # Tools/blueprints/b11_theme_insight/studio/s11-block-level/old-insight-board/.
             old_space = (query.get("space") or ["insight"])[0]
             space = _RETIRED_SPACE.get(old_space, "Audience Report")
             from .insight_plan_c import JOB_NAME

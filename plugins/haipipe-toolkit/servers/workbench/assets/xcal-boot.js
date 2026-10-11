@@ -22,6 +22,16 @@
  * makes one excalidraw per board work at all.
  */
 (function () {
+  // An embedded drawing must never move the page around it: the app focuses itself on load, and a
+  // plain focus() scrolls every page that holds it to that frame (a column of report drawings jumped
+  // to the last one, JL 261009). So inside a frame, every focus() keeps the page where it is.
+  if (window.top !== window) {
+    var focus = HTMLElement.prototype.focus;
+    HTMLElement.prototype.focus = function (o) {
+      return focus.call(this, Object.assign({}, o || {}, { preventScroll: true }));
+    };
+  }
+
   // The app's own module script was held back by the proxy so that seeding can
   // finish first: localStorage is synchronous, but IndexedDB (where the IMAGES
   // live) is not, and an app that boots mid-seed renders grey placeholders.

@@ -9,8 +9,8 @@ description: >-
   autodraw, chat and draw together, the human's room,
   /workbench-studio.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-07"
+  version: "0.6.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

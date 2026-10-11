@@ -1,0 +1,190 @@
+.home-views{display:flex;gap:4px;margin:18px 0 22px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.home-views button,#space-chart button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:7px;padding:6px 11px;cursor:pointer;line-height:1.5}
+.home-views button[aria-pressed=true],#space-chart .chart-status button[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.home-views button:focus-visible,#space-chart :where(button,select,input,a):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+main.home-chart-view{max-width:none}
+main.home-chart-view{display:grid;grid-template-columns:minmax(0,1fr) auto;padding-top:22px;gap:0 18px}
+main.home-chart-view>.site-head{grid-column:1;grid-row:1;margin:0 0 12px;align-self:center}
+main.home-chart-view>.home-views{grid-column:2;grid-row:1;margin:0 0 12px;border:0;padding:0}
+main.home-chart-view>.toolbar{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 0 8px}
+main.home-chart-view>.toolbar .search{flex:0 1 270px}
+main.home-chart-view>.toolbar .kind-filter{margin:0}
+main.home-chart-view>#space-chart{grid-column:1/-1}
+#space-chart{--chart-done:#24826c;--chart-active:#c49543;--chart-open:#96b4c7;--chart-blocked:#ba6563;--chart-paused:#9c8aae;--chart-unknown:#c3c6c9}
+@media(prefers-color-scheme:dark){#space-chart{--chart-done:#4db497;--chart-active:#d8b069;--chart-open:#608aa6;--chart-blocked:#d07f7c;--chart-paused:#ac97c0;--chart-unknown:#555b63}}
+#space-chart .chart-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:8px 0 12px}
+#space-chart h2{font-size:18px;line-height:1.4;margin:0;font-weight:650}
+#space-chart .chart-top p{font-size:13px;color:var(--mut);margin:5px 0 0}
+#space-chart .chart-top>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px}
+#space-chart .chart-top p{margin:0}
+#space-chart .chart-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin-bottom:12px}
+#space-chart .chart-controls>label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:4px;min-width:130px;flex:1}
+#space-chart select{min-height:37px;max-width:100%;width:100%;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--fg);padding:6px 24px 6px 8px;font-family:inherit;font-size:13px;line-height:1.5}
+#space-chart .chart-controls .chart-job-toggle{flex-direction:row;align-items:center;align-self:center;flex:0 0 auto;min-width:0;color:var(--fg);font-size:13px;margin-top:20px}
+#space-chart .chart-job-toggle input{accent-color:var(--accent);width:16px;height:16px}
+#space-chart .chart-stats{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;border-bottom:1px solid var(--line);padding:13px 0;margin:0;font-size:13px}
+#space-chart .chart-stat{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+#space-chart .chart-stat>span{color:var(--mut);font-size:12px}
+#space-chart .chart-stat>strong{font-size:15px;font-weight:650;line-height:1.4;font-variant-numeric:tabular-nums}
+#space-chart .chart-stat:last-child{margin-left:auto}
+#space-chart .chart-status{display:grid;gap:7px;margin:0 0 8px}
+#space-chart .chart-status-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+#space-chart .chart-status-caption{font-size:12px;color:var(--mut);width:78px;flex-shrink:0}
+#space-chart .chart-status button{font-size:12px;display:inline-flex;align-items:center;gap:6px;min-height:32px}
+#space-chart .chart-status-note{display:flex;flex-wrap:wrap;align-items:center;gap:4px;color:var(--mut);font-size:11px;line-height:1.6}
+#space-chart .chart-status-note button{border:0;text-decoration:underline;padding:2px 6px}
+#space-chart .chart-swatch{display:inline-block;flex:0 0 9px;width:9px;height:9px;border-radius:50%}
+#space-chart .status-done{fill:var(--chart-done);background:var(--chart-done)}
+#space-chart .status-active{fill:var(--chart-active);background:var(--chart-active)}
+#space-chart .status-open{fill:var(--chart-open);background:var(--chart-open)}
+#space-chart .status-blocked{fill:var(--chart-blocked);background:var(--chart-blocked)}
+#space-chart .status-paused{fill:var(--chart-paused);background:var(--chart-paused)}
+#space-chart .status-unknown{fill:var(--chart-unknown);background:var(--chart-unknown)}
+#space-chart .chart-breadcrumb{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-height:36px;margin:5px 0}
+#space-chart .chart-breadcrumb button{border:0;padding:4px 6px;color:var(--mut);font-size:12px}
+#space-chart .chart-breadcrumb button+button::before{content:'›';margin-right:9px;color:var(--mut)}
+#space-chart .chart-breadcrumb button[aria-current]{color:var(--fg);font-weight:600}
+#space-chart .chart-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:start}
+#space-chart .chart-figure{min-width:0}
+#space-chart .chart-canvas{width:100%;min-width:0;overflow:hidden;border-radius:9px;user-select:none;touch-action:pan-y pinch-zoom}
+#space-chart .chart-canvas svg{display:block;max-width:100%;overflow:hidden}
+#space-chart .chart-canvas.is-zoomed{touch-action:none;cursor:grab}
+#space-chart .chart-canvas.is-zoomed .chart-arc,#space-chart .chart-canvas.is-zoomed .chart-center{cursor:grab}
+#space-chart .chart-canvas.is-panning,#space-chart .chart-canvas.is-panning *{cursor:grabbing!important}
+#space-chart .chart-canvas:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+#space-chart .chart-zoom-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0;border-bottom:1px solid var(--line);font-size:12px}
+#space-chart .chart-zoom-controls output{min-width:45px;text-align:center;font-variant-numeric:tabular-nums}
+#space-chart .chart-zoom-group{display:flex;align-items:center;gap:4px}
+#space-chart .chart-zoom-controls button{min-width:44px;min-height:44px;font-size:13px;border-color:transparent;padding:5px 9px}
+#space-chart button:disabled{opacity:.35;cursor:default}
+#space-chart .chart-arc{cursor:pointer;transition:opacity .12s;stroke:none}
+#space-chart .chart-arc:hover{filter:brightness(1.08)}
+#space-chart .chart-arc-label{font:11px -apple-system,BlinkMacSystemFont,sans-serif;fill:#182328;pointer-events:none}
+#space-chart .chart-important-label{font-size:13px;font-weight:650;paint-order:stroke;stroke:var(--bg);stroke-width:2px;stroke-opacity:.55}
+#space-chart .chart-scope-label{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;padding:12px 0 6px;overflow-wrap:anywhere}
+#space-chart .chart-scope-label strong{font-size:16px;font-weight:650}
+#space-chart .chart-scope-label small{font-size:12px;color:var(--mut)}
+#space-chart .chart-name-title{font:650 13px -apple-system,BlinkMacSystemFont,sans-serif;fill:var(--fg)}
+#space-chart .chart-name-theme{font:500 12px -apple-system,BlinkMacSystemFont,sans-serif;fill:var(--mut)}
+#space-chart .chart-name-label{cursor:pointer}
+#space-chart .chart-name-label:hover .chart-name-title{fill:var(--accent)}
+#space-chart .chart-name-line{fill:none;stroke:var(--mut);stroke-width:1;stroke-opacity:.55;pointer-events:none}
+#space-chart .chart-name-dot{fill:var(--mut);pointer-events:none}
+#space-chart .chart-name-background{fill:var(--bg);fill-opacity:.95}
+#space-chart .chart-name-key{margin:0;border-bottom:1px solid var(--line);padding:4px 0;font-size:12px}
+#space-chart .chart-name-key summary{cursor:pointer;font-weight:600;min-height:44px;line-height:44px}
+#space-chart .chart-name-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;max-height:280px;overflow:auto;overscroll-behavior:contain;margin-top:8px}
+#space-chart .chart-name-row{padding:7px 0;border-top:1px solid var(--line);min-width:0}
+#space-chart button.chart-key-name{display:flex;align-items:center;gap:8px;width:100%;text-align:left;min-height:44px;border:0;padding:4px 0}
+#space-chart .chart-key-name span{min-width:0;display:grid;gap:4px;overflow-wrap:anywhere}
+#space-chart .chart-key-name strong{font-size:13px;font-weight:650}
+#space-chart .chart-key-name small{font-size:11px;color:var(--mut)}
+#space-chart .chart-key-themes{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-left:17px;color:var(--mut)}
+#space-chart .chart-key-themes button{font-size:12px;min-height:36px;padding:3px 7px;border-radius:5px}
+@media(max-width:580px){#space-chart .chart-name-list{grid-template-columns:1fr}#space-chart .chart-key-themes button{min-height:44px}}
+@media(prefers-color-scheme:dark){#space-chart .chart-arc-label{fill:#101519}}
+#space-chart .chart-center{cursor:pointer}
+#space-chart .chart-center circle{fill:var(--card)}
+#space-chart .chart-center text,#space-chart .chart-empty{fill:var(--fg);font-family:inherit;pointer-events:none}
+#space-chart .chart-center-caption{font-size:11px}
+#space-chart .chart-center-rate{font-size:27px;font-weight:650}
+#space-chart .chart-center-back{font-size:11px;fill:var(--mut)!important}
+#space-chart .chart-empty{font-size:12px}
+#space-chart .chart-area-note{color:var(--mut);font-size:12px;line-height:1.7;margin:9px 0}
+#space-chart .chart-hover{min-height:44px;padding:8px 0;font-size:13px;border-top:1px solid var(--line);overflow-wrap:anywhere}
+#space-chart .chart-detail{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:32px;padding:10px 0 18px;min-width:0}
+#space-chart .chart-status-summary{display:grid;gap:9px;margin:14px 0;font-size:12px}
+#space-chart .chart-summary-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+#space-chart .chart-summary-row strong{width:100%;font-size:11px;color:var(--mut);font-weight:500}
+#space-chart .chart-summary-row span{display:inline-flex;align-items:center;gap:5px}
+#space-chart .chart-detail h3{font-size:18px;line-height:1.45;margin:4px 0 12px;overflow-wrap:anywhere}
+#space-chart .chart-detail p{font-size:13px;line-height:1.7;margin:7px 0;overflow-wrap:anywhere}
+#space-chart .chart-level{font-size:11px!important;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+#space-chart .chart-path{font:11px/1.7 ui-monospace,Menlo,monospace!important;color:var(--mut);overflow-wrap:anywhere}
+#space-chart .chart-note{color:var(--mut)}
+#space-chart .chart-open{display:inline-block;color:var(--accent);font-size:13px;margin:10px 0;text-decoration:none}
+#space-chart .chart-detail h4{font-size:12px;color:var(--mut);font-weight:500;margin:0 0 6px}
+#space-chart button.chart-child{display:flex;align-items:center;gap:10px;justify-content:space-between;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 0;background:transparent}
+#space-chart button.chart-child:hover{background:var(--card)}
+#space-chart .chart-child-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+#space-chart .chart-child-copy strong{font-size:13px;font-weight:500;overflow-wrap:anywhere}
+#space-chart .chart-child small{font-size:11px;font-weight:400;color:var(--mut)}
+#space-chart .chart-child-value{display:flex;flex-direction:column;gap:3px;text-align:right;flex-shrink:0}
+#space-chart .chart-child-value strong{font:13px/1.5 ui-monospace,Menlo,monospace;font-weight:500}
+#space-chart .chart-footnote{color:var(--mut);font-size:12px;line-height:1.7;margin:12px 0;padding:0}
+#space-chart .chart-footnote span{display:block}
+@media(max-width:840px){#space-chart .chart-detail{grid-template-columns:1fr;gap:12px;padding:18px 0 0}#space-chart .chart-status-row button{min-height:44px}#space-chart .chart-status-caption{width:100%;font-weight:600}#space-chart .chart-zoom-controls small{width:100%;margin-left:0}}
+@media(max-width:580px){#space-chart .chart-stats{gap:7px 18px}#space-chart .chart-stat:last-child{margin-left:0}}
+@media(max-width:480px){#space-chart .chart-stats{gap:8px}#space-chart .chart-stat>strong{font-size:15px}#space-chart .chart-top{align-items:start}#space-chart .chart-controls>label{min-width:calc(50% - 12px)}#space-chart select{font-size:16px}#space-chart .chart-top button{font-size:12px;white-space:nowrap}#space-chart .chart-center-rate{font-size:22px}}
+@media(max-width:580px){main.home-chart-view{grid-template-columns:1fr;gap:0}main.home-chart-view>.site-head{grid-column:1;grid-row:1}main.home-chart-view>.home-views{grid-column:1;grid-row:2}main.home-chart-view>.toolbar .search{flex-basis:100%;max-width:none}}
+@media(max-width:700px){#space-chart .chart-stat{gap:5px}#space-chart .chart-top>div{display:block}#space-chart .chart-top p{margin-top:4px}}
+@media(prefers-reduced-motion:reduce){#space-chart .chart-arc{transition:none}}
+
+#space-chart .chart-project-borders{pointer-events:none}
+#space-chart .chart-project-halo{fill:none;stroke:var(--bg);stroke-linejoin:round}
+#space-chart .chart-project-border{fill:none;stroke:var(--fg);stroke-opacity:.55;stroke-linejoin:round}
+#space-chart .chart-arc.is-inspected{stroke:var(--fg);stroke-width:2;stroke-linejoin:round}
+#space-chart .chart-inspector{position:fixed;inset:auto 0 0;width:min(560px,100%);max-width:100%;max-height:75dvh;margin:0 auto;padding:18px 20px max(20px,env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:16px 16px 0 0;background:var(--bg);color:var(--fg);overflow:auto;overscroll-behavior:contain;box-shadow:0 -8px 35px #0002}
+#space-chart .chart-inspector::backdrop{background:#0004;touch-action:none}
+#space-chart .chart-inspector-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#space-chart .chart-inspector button,#space-chart .chart-inspector .chart-open{min-height:44px;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:9px 14px;font-size:14px}
+#space-chart .chart-inspector h3{font-size:20px;line-height:1.4;margin:12px 0;overflow-wrap:anywhere}
+#space-chart .chart-inspector p{font-size:14px;line-height:1.6;margin:8px 0;overflow-wrap:anywhere}
+#space-chart .chart-inspector-states{display:flex;flex-wrap:wrap;gap:8px 14px;margin:14px 0;font-size:13px}
+#space-chart .chart-inspector-states span{display:flex;align-items:center;gap:6px}
+#space-chart .chart-inspector-actions{display:flex;flex-wrap:wrap;gap:10px;position:sticky;bottom:-20px;background:var(--bg);padding:14px 0 4px;margin-top:12px;border-top:1px solid var(--line)}
+#space-chart button.chart-inspector-zoom{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+html:has(#chart-inspector[open]){overflow:hidden}
+@media(max-width:840px){#space-chart button.chart-child{min-height:44px}#space-chart .chart-inspector{width:100%}}
+
+#space-chart .chart-studios{margin-top:20px;min-width:0}
+#space-chart .chart-studios h4{font-size:13px;color:var(--mut);font-weight:600;margin:0 0 8px}
+#space-chart .chart-studio-topic{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:44px;padding:10px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
+#space-chart .chart-studio-topic strong{font-size:13px;font-weight:600}
+#space-chart .chart-studio-topic small{font-size:12px;color:var(--mut)}
+#space-chart .chart-studio-topic:hover strong{color:var(--accent)}
+#space-chart .chart-job-toggle:has(input:disabled){opacity:.5}
+
+#space-chart .chart-project-name{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;fill:#182328;paint-order:stroke;stroke:var(--bg);stroke-width:2px;stroke-opacity:.65;pointer-events:none}
+
+#space-chart .chart-primary-controls{gap:10px;margin:12px 0 6px}
+#space-chart .chart-primary-controls>label{flex:2;min-width:160px}
+#space-chart .chart-primary-controls>label:has(#chart-measure){flex:1;min-width:140px}
+#space-chart .chart-actions{display:flex;gap:6px;align-items:center}
+#space-chart .chart-actions button{min-height:37px;font-size:12px}
+#space-chart .chart-drawers{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+#space-chart .chart-disclosure{border-bottom:1px solid var(--line);font-size:12px;min-width:0}
+#space-chart .chart-disclosure>summary{min-height:44px;line-height:44px;cursor:pointer;font-weight:600}
+#space-chart .chart-disclosure>summary>span{font-weight:400;color:var(--mut);margin-left:12px;font-size:11px}
+#space-chart summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+#space-chart .chart-drawer-body{padding:10px 0 14px}
+#space-chart .chart-drawer-body.chart-controls{align-items:center;margin:0}
+#space-chart .chart-drawer-body .chart-job-toggle{margin-top:0;min-height:44px}
+#space-chart .chart-filter-controls{align-items:center}
+#space-chart .chart-filter-controls>label{flex:0 1 210px;min-width:160px}
+#space-chart #chart-kind-slot{flex:1;min-width:240px}
+#space-chart #chart-kind-slot .kind-filter{margin:0;gap:5px}
+#space-chart .chart-active-filters{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 0}
+#space-chart .chart-active-filters[hidden]{display:none}
+#space-chart .chart-active-filters button{font-size:12px;border-radius:20px;padding:4px 10px;background:var(--card)}
+#space-chart .chart-scope-info>summary{min-height:44px;line-height:44px;cursor:pointer;font-size:12px;font-weight:600}
+#space-chart .chart-help .chart-top{margin:8px 0;display:block}
+#space-chart .chart-legend{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--mut);font-size:12px}
+#space-chart .chart-legend>span{display:inline-flex;gap:5px;align-items:center}
+#space-chart .chart-drawers:has(details[open]){grid-template-columns:1fr}
+@media(max-width:580px){
+  #space-chart .chart-primary-controls{display:grid;grid-template-columns:1fr 1fr}
+  #space-chart .chart-primary-controls>label{min-width:0}
+  #space-chart .chart-primary-controls>label:has(#chart-project){grid-column:1/-1}
+  #space-chart .chart-primary-controls>label:has(#chart-measure){min-width:0}
+  #space-chart .chart-actions{grid-column:1/-1;justify-content:end}
+  #space-chart .chart-actions button{min-height:44px}
+  #space-chart .chart-drawers{grid-template-columns:1fr;gap:0}
+  #space-chart .chart-drawer-body.chart-controls .chart-job-toggle{flex-basis:100%}
+  #space-chart .chart-zoom-controls{gap:2px}
+  #space-chart .chart-zoom-controls button{padding:5px;font-size:11px}
+  #space-chart .chart-zoom-group{gap:0}
+  #space-chart .chart-zoom-controls output{min-width:38px;font-size:11px}
+  #space-chart .chart-primary-controls select{min-height:44px}
+  #space-chart .chart-hover{font-size:12px}
+}

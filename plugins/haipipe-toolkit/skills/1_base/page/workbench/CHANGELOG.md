@@ -1,3 +1,28 @@
+## 1.14.1 · 2026-10-09 · Audience Report: the paper Board's four views on every level
+
+- JL 261009: "why the Audience Report, there are not sub buttons, it is not correct", then, over the paper Board's
+  Audience Report: "I want you to follow things like this". `servers/workbench/frame.py`: on a level no theme draws
+  itself (every Tools blueprint Block b01 … b17), Audience Report's third row is the paper Board's four views,
+  always there: Ideation (the studio topics on ideas) · Narrative (the studio topics telling the level's story) ·
+  High-level logic + Low-level work (the register's Questions, Logic │ Work │ Report, the open view) · Related
+  Questions (the Questions others ask: register group reviewer · coauthor · editor · reader). An empty view says what
+  belongs there (b03 s01-D22). Before, the row came only from register groups, and no blueprint Block had one, so
+  none showed a third row. `question_rows(…, keep=)` picks a view's rows; with groups, a heading per group (s04-D04).
+- `frame.py` `studio_sessions()`: the Idea Studio's Runs panel shows each run-draw Run's own status from its
+  run.yaml (it wrote "done" for every one; recorded first in workbench-studio 0.6.1).
+
+## 1.14.0 · 2026-10-09 · /wb opens a workbench (JL 261009)
+
+- `/wb` is this skill's short name (`metadata.aliases: [wb]`; `install.sh` and `install.ps1` link
+  every alias as one more name for the same folder). JL 261009: "/wb is the same to the /workbench".
+- New first section, Open: no input opens the SPACE Home, a Project path opens that Project
+  (`/?project=`, new in `servers/space-home/home.py`), a Block, Job or Task path opens the shared
+  frame in its theme, and plain words find the place first. JL 261009: "can we with the natural
+  language and to find them as well".
+- New `cli/wb.py`: finds this SPACE's running host (starts one when none runs, restarts one that
+  drops the request), checks the link before printing it, ranks places by words with the server's
+  own lists, and names the theme skill to load next.
+
 ## 1.13.1 · 2026-10-07 · How to draw a workbench design
 
 - Surface points to excalidraw-report 0.7.0, "Designing a workbench: screens with what is on

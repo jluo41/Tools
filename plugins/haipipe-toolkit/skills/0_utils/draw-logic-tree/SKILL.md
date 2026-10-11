@@ -11,8 +11,8 @@ description: >-
   argument tree, claim and reasons, /draw-logic-tree.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-03"
+  version: "0.4.1"
+  last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
 
@@ -67,7 +67,8 @@ Rules
    A claim that names a Bullet carries that Bullet's cards under the claim. Reasons and the
    claim are blue.
 6. **Studio style.** Transparent boxes, colored strokes, every label bound inside its box,
-   every connector bound at both ends, Comic Shanns (`workbench-studio/ref/draw.md`).
+   every connector bound at both ends, words in Nunito (`fontFamily` 6), never a hand-drawn font
+   (`workbench-studio/ref/draw.md`; JL 261009).
    Connectors run down from the parent and across just above the child's row.
 7. **The drawing is the source.** After the first draw the person edits the logic on the
    canvas. Never replace an existing RoadMap without the person asking (`--force`); to

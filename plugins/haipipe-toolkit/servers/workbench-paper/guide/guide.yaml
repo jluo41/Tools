@@ -105,14 +105,14 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
+  - board: Tools/blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - Workbench design
   - first
 # The card Guide (b03 studio/s31-guide, s31-D05 to D08): the base's words are
 # servers/workbench/guide/levels.yaml; here only the words a paper says differently (b16 Q01, s11-s13).
 levels:
   Block:
-    role: one paper, its question, its Story and the evidence each question needs
+    role: one venue-free paper, its research questions, tellings, related work and evidence
     spaces:
       Description:
         is: the paper's scope, the venues it writes for, what it uses and the related work
@@ -124,8 +124,8 @@ levels:
         is: the candidate ideas, the Story's spine, and each research question with its work and report
         reads: board.md ## Questions · reports/qNN_<question>/ · studio/s01-ideation/ · studio/sNN-story-…/ (today A1-Story/)
       Work Details:
-        is: the Sections, each a Page, and their Evidence; the Narrative is in the Audience Report
-        reads: jNN_v<N>_<desk>/ (today Ba-<desk>-Main/ · Bb-<desk>-Appendix/)
+        is: the version Jobs, each with its Section Tasks
+        reads: jNN_v<MMDD>_<desk>/
       Runs:
         is: the paper's run types and the Runs of its Pages
         reads: haipipe-paper-workflow/ref/run-cards.md
@@ -133,26 +133,23 @@ levels:
         is: the built paper (LaTeX, Word), the cover letter and the review rounds
         reads: jNN_v<N>_<desk>/delivery/ (today delivery/ · Bc-<desk>-Round/)
   Job:
-    role: one version of the paper for one venue (jNN_v<N>_<desk>/), its Sections, its comments and its build;
-      the Story Job (j00_story/) holds the Story every version tells
+    role: one version of the paper for one venue (jNN_v<MMDD>_<desk>/), selecting questions and results,
+      ordering its Sections, answering comments and building the send
   Task:
     role: one Section, a Page, written by the Page method
 roadmap:
   Block:
-  - title: the paper ladder
-    shows: every paper row, Block to Run, proposed above today
-    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s01-paper-ladder/s01-paper-ladder.excalidraw
+  - title: the paper ladder and level boundaries
+    shows: Board, Job and Task roles, shared Spaces, and the decided Story and Ideation homes
+    board: Tools/blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - title: the Board's screens
     shows: the paper Board's tab, one frame per Space, and Guide › Method from it
-    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s11-paper-block/s11-paper-block.excalidraw
-  - title: the paper workbench before the frame
-    shows: the old four-Space page, the old page the band links
-    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s02-paper-workbench/paper-workbench-design.excalidraw
+    board: Tools/blueprints/b16_theme_paper/studio/s11-paper-block/s11-paper-block.excalidraw
   Job:
   - title: a version's screens
     shows: a version's tab, one frame per Space (proposed)
-    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s12-paper-job/s12-paper-job.excalidraw
+    board: Tools/blueprints/b16_theme_paper/studio/s12-paper-job/s12-paper-job.excalidraw
   Task:
   - title: a Section's screens
     shows: a Section's tab, a Page Task with what the paper adds
-    board: Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper/studio/s13-paper-task/s13-paper-task.excalidraw
+    board: Tools/blueprints/b16_theme_paper/studio/s13-paper-task/s13-paper-task.excalidraw

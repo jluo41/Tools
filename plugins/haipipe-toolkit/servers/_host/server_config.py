@@ -4,6 +4,8 @@
 host reads these keys and nothing else; the file is never executed and secrets
 never load:
 
+    INDEX_URL           optional workbench Index destination, local path or SPACE URL
+    INDEX_LINKED_SPACES  JSON map of linked local folders and their reader origins
     SPACE_NAME          display name of the SPACE Home
     DOMAIN              reader-facing origin, e.g. http://100.64.0.9:5599
     BIND_HOST           listener address; TAILSCALE_ADDRESS is the fallback
@@ -32,7 +34,7 @@ import re
 from pathlib import Path
 
 CANONICAL_KEYS = ("SPACE_NAME", "DOMAIN", "BIND_HOST", "TAILSCALE_ADDRESS", "PORT",
-                  "AUTH_FILE", "ACCESS_MODE", "NO_AUTH")
+                  "AUTH_FILE", "ACCESS_MODE", "NO_AUTH", "INDEX_URL", "INDEX_LINKED_SPACES")
 # alias -> (canonical, rank): a lower rank wins when several aliases are present
 ALIAS_KEYS = {"PUBLIC_URL": ("DOMAIN", 1), "TAILSCALE_URL": ("DOMAIN", 2),
               "LOCAL_PORT": ("PORT", 1), "TAILSCALE_PORT": ("PORT", 2)}

@@ -54,7 +54,8 @@ ROUND = """# RD01-demo
 | Review-other-page | R2.1 | S-desk-Main-2-Methods ¶1 | — | — | open |
 """
 SUBS = {"Description": ("Scope", "Venue", "Resources", "Related"), "Idea Studio": ("",),
-        "Audience Report": ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions"),
+        "Audience Report": ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions",
+                            "Related Papers"),
         "Work Details": ("Jobs", "Main", "Appendix", "Evidence"), "Runs": ("",),
         "Delivery": ("LaTeX", "Word", "Cover letter", "Rounds")}
 
@@ -353,7 +354,7 @@ class LayoutsTest(unittest.TestCase):
         self.assertEqual(P.section_rows(d)[0]["row"]["cells"][1], "<what the introduction answers>")
         draft = spaces("Job", board / "j01_v0101_desk", root, "Draft-Main")["Audience Report"].html
         self.assertIn("&lt;what the introduction answers&gt;", draft)
-        for sub in ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions"):
+        for sub in ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions", "Related Papers"):
             html = spaces("Block", board, root, sub)["Audience Report"].html
             self.assertNotIn("No Story yet", html, sub)
 

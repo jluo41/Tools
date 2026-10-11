@@ -29,7 +29,7 @@ themselves stay in the Evidence Space.
 
 The scene is generated: change the plan or the Evidence Items and rerun this script; never
 edit the drawing. Studio style (workbench-studio/ref/draw.md): transparent boxes,
-colored strokes, labels bound inside their boxes, arrows bound at both ends, Comic Shanns.
+colored strokes, labels bound inside their boxes, arrows bound at both ends, Nunito (no hand-drawn font, JL 261009).
 """
 import argparse
 import json
@@ -74,7 +74,7 @@ class Scene:
         lines = value.split("\n")
         w = max(len(line) for line in lines) * size * 0.6
         return self.element(key, "text", x, y, w, len(lines) * size * 1.25, color, text=value,
-                            originalText=value, fontSize=size, fontFamily=8, textAlign=align,
+                            originalText=value, fontSize=size, fontFamily=6, textAlign=align,
                             verticalAlign="middle" if container else "top", containerId=container,
                             autoResize=True, lineHeight=1.25)
 

@@ -55,7 +55,7 @@ checkout folder change per machine (`/Users/<name>/Desktop/<SPACE>/...`), so an
 absolute path breaks on the next machine and shows the user name (JL 260927).
 
 - Write every path relative to the SPACE root, the folder that holds `env.sh`
-  (for example `examples-2-lm/Proj10-LLM-Baseline/tasks/...`). This covers
+  (for example `examples-C2-tech/Proj10-LLM-Baseline/tasks/...`). This covers
   configs, Tickets, the `config` parameter papermill writes into the notebook,
   anything a worker prints, `runtime.yaml`, `metrics.json`, and reports.
 - Preferred: the Ticket injects the config SPACE-relative

@@ -108,10 +108,20 @@ def parse_kinds(value: str) -> list[str]:
     return kinds
 
 
-def kind_query(kinds) -> str:
-    """The query string that reproduces a kind selection (`?kind=task`), or `?`."""
+def kind_query(kinds, rest: str = "") -> str:
+    """The query string that reproduces a kind selection (`?kind=task`), or `?`; `rest`
+    (`project=...`) rides along so a kind link keeps the Project it was clicked in."""
     ordered = sorted(set(kinds), key=kind_sort_key)
-    return "?kind=" + ",".join(ordered) if ordered else "?"
+    parts = (["kind=" + ",".join(ordered)] if ordered else []) + ([rest] if rest else [])
+    return "?" + "&".join(parts)
+
+
+def project_matches(card: dict[str, object], wanted: str) -> bool:
+    """`?project=` names a Project by its SPACE-relative folder, its folder name, or its id."""
+    wanted = (wanted or "").strip().strip("/").lower()
+    path = str(card.get("project_path") or "").lower()
+    return card.get("project_scope") == "project" and wanted in {
+        path, path.rsplit("/", 1)[-1], str(card.get("project") or "").lower()}
 
 
 def frame_url(rel: str) -> str:
@@ -131,6 +141,8 @@ def old_page_url(board: Path, root: Path) -> str | None:
 def block_link(card: dict[str, object], slug_counts: dict[str, int]) -> str:
     """`/w/<block>` when its slug is unique; otherwise the frame's long address (an ambiguous
     slug is a 404). Both open the base frame."""
+    if card.get("linked_space"):
+        return str(card["href"])
     slug = str(card.get("slug") or "")
     if slug and slug_counts.get(slug, 0) == 1:
         return "/w/" + quote(slug, safe="")
@@ -259,7 +271,7 @@ def _manifests(root: Path):
             yield Path(dirpath) / "board.md"
 
 
-def discover_boards(root: Path, *, include_page_state: bool = True) -> list[dict[str, object]]:
+def discover_boards(root: Path, *, include_page_state: bool = True, include_linked: bool = False) -> list[dict[str, object]]:
     """Read metadata from every real Board source folder.
 
     The full form keeps the page counts used by diagnostics and tests.  Home
@@ -305,6 +317,9 @@ def discover_boards(root: Path, *, include_page_state: bool = True) -> list[dict
         card["theme"] = block_theme(card)
         card["kind_key"] = block_kind_key(card)
         cards.append(card)
+    if include_linked:
+        from live.space_chart import linked_home_cards
+        cards.extend(linked_home_cards(root))
     return sorted(cards, key=lambda c: (
         0 if c["project_scope"] == "project" else 1,
         str(c["project_path"]).lower(), str(c["kind"]).lower(),
@@ -616,25 +631,34 @@ def _home_row(card: dict[str, object], project_name: str, href: str,
 
 
 def render_home(root: Path, space_name: str = "", public_url: str = "",
-                kind: str = "") -> str:
+                kind: str = "", project: str = "") -> str:
     """Render the Space view: every Project, its Themes, and their Block cards.
 
-    Home is an entry index, not a status dashboard.  Only Boards that can be
+    Home offers a live hierarchy chart and an entry list. Only Boards that can be
     opened (a declared workbench, or Pages the live reader shows) are listed, so
     every card is actionable.  Inside a Project the cards group by Theme, the
     Project-root folder they sit in, in the order ``THEMES`` gives.  ``kind``
     (``?kind=task`` or ``?kind=task,paper``) filters by block type; the same
     filter runs in the browser and is written back to the address bar, so a
-    link reproduces the view.  Projects start open when the view holds at most
-    ``FOLD_OPEN_MAX`` of them.  Collapse choices and Project order are
+    link reproduces the view.  ``project`` (``?project=examples/Project-A``, or
+    the folder name, or the project.yaml id) shows that one Project alone, with
+    a link back to every Project; a name that matches none shows them all and
+    says so (``/wb <Project>`` opens this view).  Projects start open when the
+    view holds at most ``FOLD_OPEN_MAX`` of them.  Collapse choices and Project order are
     browser-local preferences, never source files or a second registry.  The
     card shows folder names, titles, kinds, the Board's state word and counts;
     never a Result value.
     """
-    cards = discover_boards(root, include_page_state=False)
+    cards = discover_boards(root, include_page_state=False, include_linked=True)
+    scoped = [card for card in cards if project_matches(card, project)] if project else []
+    if scoped:
+        cards = scoped
+    rest = "project=" + quote(str(scoped[0]["project_path"]), safe="/") if scoped else ""
     open_cards = [card for card in cards if card["ready"] or card.get("workbench_ready")]
     slug_counts: dict[str, int] = {}
     for card in cards:   # the same match board_by_slug makes: a slug or a full folder name
+        if card.get("linked_space"):
+            continue
         for key in {str(card["slug"]), str(card["name"]).lower()}:
             slug_counts[key] = slug_counts.get(key, 0) + 1
 
@@ -741,13 +765,13 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
     toggles = []
     if present:
         toggles.append(
-            f'<a class="kind-toggle" role="button" href="?" data-kind="all" '
+            f'<a class="kind-toggle" role="button" href="{html.escape(kind_query((), rest), quote=True)}" data-kind="all" '
             f'aria-pressed="{"false" if selected else "true"}">all</a>')
         for key in present:
             after = selected ^ {key}
             count = sum(card["kind_key"] == key for card in open_cards)
             toggles.append(
-                f'<a class="kind-toggle" role="button" href="{html.escape(kind_query(after), quote=True)}" '
+                f'<a class="kind-toggle" role="button" href="{html.escape(kind_query(after, rest), quote=True)}" '
                 f'data-kind="{html.escape(key, quote=True)}" '
                 f'aria-pressed="{"true" if key in selected else "false"}">'
                 f'<span aria-hidden="true">{KIND_ICON.get(key, "")}</span> {html.escape(key)} '
@@ -756,9 +780,21 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
                 if toggles else "")
     any_shown = any(shown(card) for card in open_cards)
     heading = html.escape(space_name.strip() or HOME_BRAND)
+    title = heading
+    scope_line = ""
+    if scoped:
+        name = html.escape(str(scoped[0]["project"]))
+        title = f"{name} · {heading}"
+        scope_line = (f'<p class="home-scope">Project <b>{name}</b> · '
+                      f'<a href="{html.escape(kind_query(kinds), quote=True)}">all Projects</a></p>')
+    elif project:
+        scope_line = (f'<p class="home-scope">No Project matches “{html.escape(project)}”; '
+                      'showing every Project.</p>')
+    from live.space_chart import chart_parts
+    chart_markup, chart_css, chart_js = chart_parts(root, open_cards, space_name.strip() or HOME_BRAND)
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>{heading}</title><style>
+<title>{title}</title><style>
 :root{{color-scheme:light;--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#f7f7f8;--accent:#1f5aa8;--focus:#075fbd;--radius-control:7px;--radius-surface:10px}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--accent:#6ea8f0;--focus:#9dc8ff}}}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}}
@@ -767,10 +803,12 @@ main{{max-width:820px;margin:0 auto;padding:34px 22px 90px}}
 .site-head{{margin:0 0 22px}}h1{{font-size:26px;line-height:1.35;margin:0;font-weight:700}}
 .toolbar{{margin:0 0 12px}}.search{{display:block;max-width:420px}}.search input{{width:100%;min-height:38px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card);color:var(--fg);font:inherit;padding:5px 9px;outline:none}}.search input::placeholder{{color:var(--mut)}}.search input:focus{{border-color:var(--accent)}}
 .kind-filter{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}}.kind-toggle{{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font-size:14px;text-decoration:none}}.kind-toggle:hover{{border-color:var(--accent)}}.kind-toggle[aria-pressed="true"]{{border-color:var(--accent);background:var(--accent);color:var(--bg)}}.kind-count{{color:inherit;opacity:.7;font:12px/1 ui-monospace,Menlo,monospace}}
-.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-scope{{margin:4px 0 0;color:var(--mut);font-size:14px}}.home-scope b{{color:var(--fg)}}.home-scope a{{color:var(--accent)}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
 @media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}.theme-group{{margin-left:8px}}}}
-</style></head><body><main><header class="site-head"><h1>{heading}</h1></header>
+{chart_css}
+</style></head><body><main><header class="site-head"><h1>{heading}</h1>{scope_line}</header>
 <div class="toolbar"><label class="search"><span class="sr-only">Search boards</span><input id="board-filter" type="search" placeholder="Search boards" aria-label="Search boards" autocomplete="off"></label>{kind_bar}</div>
+{chart_markup}
 <div id="board-list" class="board-list project-groups" role="list" aria-label="Projects">{body}</div><p id="no-results" class="no-results"{" hidden" if (any_shown or not open_cards) else ""}>No matching boards.</p></main><script>
 const filter = document.getElementById('board-filter');
 const noResults = document.getElementById('no-results');
@@ -927,6 +965,14 @@ function kindQuery(kinds) {{
   const ordered = KIND_ORDER.filter((kind) => kinds.has(kind));
   return ordered.length ? '?kind=' + ordered.join(',') : '';
 }}
+// a kind link keeps every other part of the address (`project=`), as the server writes it
+function kindHref(kinds) {{
+  const params = new URLSearchParams(location.search);
+  params.delete('kind');
+  const rest = params.toString();
+  const kq = kindQuery(kinds);
+  return kq ? kq + (rest ? '&' + rest : '') : (rest ? '?' + rest : '?');
+}}
 function syncKindToggles() {{
   kindToggles.forEach((toggle) => {{
     const kind = toggle.dataset.kind;
@@ -934,7 +980,7 @@ function syncKindToggles() {{
     toggle.setAttribute('aria-pressed', pressed ? 'true' : 'false');
     const after = new Set(selectedKinds);
     if (kind !== 'all') {{ if (after.has(kind)) after.delete(kind); else after.add(kind); }}
-    toggle.setAttribute('href', kind === 'all' ? '?' : (kindQuery(after) || '?'));
+    toggle.setAttribute('href', kindHref(kind === 'all' ? new Set() : after));
   }});
 }}
 function applyFilter() {{
@@ -969,6 +1015,7 @@ function applyFilter() {{
       .some((group) => !group.hidden);
   }});
   noResults.hidden = visible !== 0 || (!query && selectedKinds.size === 0);
+  document.dispatchEvent(new CustomEvent('space-home-filter', {{detail: {{query, kinds: [...selectedKinds]}}}}));
 }}
 kindToggles.forEach((toggle) => {{
   toggle.addEventListener('click', (event) => {{
@@ -979,29 +1026,29 @@ kindToggles.forEach((toggle) => {{
     else selectedKinds.add(kind);
     syncKindToggles();
     // the address bar carries the view, so a copied link reproduces it
-    const params = new URLSearchParams(location.search);
-    params.delete('kind');
-    const rest = params.toString();
-    const kq = kindQuery(selectedKinds);
-    const search = kq ? kq + (rest ? '&' + rest : '') : (rest ? '?' + rest : '');
-    history.replaceState(null, '', location.pathname + search + location.hash);
+    const search = kindHref(selectedKinds);
+    history.replaceState(null, '', location.pathname + (search === '?' ? '' : search) + location.hash);
     applyFilter();
     if (!filter.value.trim()) restoreCollapsed();
   }});
 }});
 filter.addEventListener('input', applyFilter);
-</script></body></html>'''
+</script><script>{chart_js}</script></body></html>'''
 
 
 class HomeMixin:
     def serve_home(self):
-        # `?kind=task[,paper]` renders the filtered view, so a shared link reproduces it
-        kind = ",".join(parse_qs(urlsplit(self.path).query).get("kind", []))
+        # `?kind=task[,paper]` and `?project=<Project>` render the filtered view, so a shared
+        # link reproduces it
+        query = parse_qs(urlsplit(self.path).query)
+        kind = ",".join(query.get("kind", []))
+        project = (query.get("project") or [""])[0]
         body = render_home(
             self.root,
             getattr(self, "space_name", ""),
             getattr(self, "public_url", ""),
             kind=kind,
+            project=project,
         ).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")

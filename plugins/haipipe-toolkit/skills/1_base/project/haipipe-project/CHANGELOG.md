@@ -107,7 +107,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   Replaces "topic folders are free-form" in `ref/project-structure.md`.
 - `scripts/audit_projects.py` checks each `cowork/N-<Topic>/`: a README and
   only the shared names; anything else (for example `docs/`) fails the audit.
-- First applied to examples-4-agent/Project-Samsung/cowork (0-IRB,
+- First applied to examples-0-cowork/Project-Samsung/cowork (0-IRB,
   1-Azure-Account, 1-Epic-Streaming, 1-SmartWatch-Connector, 2-WellDocApp).
 - `fn/repo-project.md`: "Adopt an existing Project folder", the six steps
   used to make Project-Samsung its own repo (JHU-CDHAI/Project-Samsung).
@@ -122,7 +122,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   recordings and files over 5 MB stay local through `cowork/.gitignore`.
 - New profile-owned code folder `platforms/` (software/hybrid): one submodule
   per owned repo, mirroring the SPACE root `platforms/`.
-- First Project on this layout: examples-4-agent/Project-Samsung.
+- First Project on this layout: examples-0-cowork/Project-Samsung.
 - `scripts/audit_projects.py`: `cowork` is a world, `platforms` a code folder,
   `diagram` no longer a world.
 

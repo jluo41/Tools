@@ -1,7 +1,7 @@
 Design ladder: the design theme's Block · Job · Task · Run
 ==========================================================
 
-(JL 261007, designed in Tools/blueprints/b01_haipipe-toolkit/j12_theme_design: s00 the thinking, s11 Block, s12 Job, s13 Task, s21 Runs
+(JL 261007, designed in Tools/blueprints/b12_theme_design: s00 the thinking, s11 Block, s12 Job, s13 Task, s21 Runs
 and skills.) A design sits on the shared ladder: one Block per application and channel, one Job per goal done by one
 registered method version on one inputs version, one Task per step of that method (t00 reason ideas, one Task per
 design, t99 review whole), and the Runs that make and check them. Each level has the six Spaces of the base

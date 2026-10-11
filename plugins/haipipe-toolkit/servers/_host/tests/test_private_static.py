@@ -34,6 +34,8 @@ class PrivateStaticPathsTest(unittest.TestCase):
                 root / "board-one" / "S-Label-1" / "labeling" / "corpus" / "items.jsonl",
                 root / "source" / "board" / "labeling" / "private.html",
                 root / ".server_config" / "settings.env",
+                root / "env.sh",
+                root / "board-one" / "lab.env",
             ]
             for path in denied:
                 self.assertFalse(static_path_allowed(root, path), path)

@@ -1,4 +1,4 @@
-"""GET /_board/workbench?path=<folder>[&space=<Space>][&sub=<subspace>][&theme=<name>][&format=json]
+"""GET /_board/workbench?path=<folder>[&space=<Space>][&sub=<subspace>][&studio=1][&theme=<name>][&format=json]
 GET /_board/workbench?view=<view>&path=<Page .md>[&...]
 
 The base frame (frame.py) over one Block, Job or Task folder, in the theme its Block belongs to
@@ -16,8 +16,9 @@ from live import frame
 
 
 def _blocks(root: Path, depth: int = 4) -> list:
-    """Block folders under root (bNN_* with a face), shallow first; private and old folders skipped."""
-    found, frontier = [], [root]
+    """Block folders under root (bNN_* with a face), shallow first; private and old folders skipped, and
+    a link to a folder outside the root (WellDoc's Tools -> ../Tools-SPACE, 261009), which no path= reaches."""
+    found, frontier, top = [], [root], root.resolve()
     for _ in range(depth):
         nxt = []
         for d in frontier:
@@ -26,6 +27,8 @@ def _blocks(root: Path, depth: int = 4) -> list:
             except OSError:
                 continue
             for p in kids:
+                if top not in p.resolve().parents:
+                    continue
                 if frame.level_of(p) == "Block" and frame.face(p):
                     found.append(p)
                 elif p.name not in ("node_modules", "results", "runs"):
@@ -76,5 +79,5 @@ class FrameMixin:
                                    "application/json; charset=utf-8", head_only=head_only)
         # an older link (`/w/<block>?view=questions#question-QNN`) opens the same rows in Audience Report
         space = get("space") or ("Audience Report" if get("view") == "questions" else "")
-        return self.guide_send(frame.render(theme, root, folder, space, get("sub")), code,
+        return self.guide_send(frame.render(theme, root, folder, space, get("sub"), studio=get("studio") == "1"), code,
                                head_only=head_only)

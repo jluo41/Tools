@@ -1,6 +1,6 @@
 """The paper theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A paper Board climbs the ladder as Tools/blueprints/b01_haipipe-toolkit/j16_theme_paper proposes (Q01, s11-paper-block): the
+A paper Board climbs the ladder as Tools/blueprints/b16_theme_paper proposes (Q01, s11-paper-block): the
 Board is one paper; its versions are Jobs and its Sections are Page Tasks once those folders exist. Today
 a paper Board holds A1-Story/ (Ideation and Story Pages) and Ba-/Bb- Section groups, so this theme fills
 the Block tab only, from today's folders, with paper.py's own content (JL: carry over what exists) drawn in
@@ -8,7 +8,8 @@ the base's look only (JL 261007: no theme stylesheet): wf-table, the folding .to
 
     Description      Scope · Venue · Resources · Related     (Related: paper cards, drawing from the deep read)
     Idea Studio      the base's studio rows; the RoadMap drawings are rows   (was Story › RoadMap Draw)
-    Audience Report  Ideation · Narrative · High-level logic + Low-level work · Related Questions: questions
+    Audience Report  Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related
+                     Papers (by the question each bears on, JL 261009): questions
                      (JL 261007); Narrative = what the story says, how it is drawn and told, will it attract
     Work Details     Main · Appendix · Evidence               (was Sections; a row opens its Page)
     Runs             vanilla (runs/), with the paper's run types
@@ -25,6 +26,7 @@ import re
 from pathlib import Path
 
 from live import paper as P
+from live.discoveryboard import file_url as disc_file_url
 from live.frame import Space, Theme, esc, face, link, page_task_spaces, pop, reader, rel, studio_cards, table, vanilla
 
 
@@ -128,9 +130,22 @@ def _frame_links(html: str) -> str:
     return _OLD_LINK.sub(fix, html)
 
 
+# The old page's own script filled its frames; a view drawn by pv() in the frame needs the same two rules
+# (JL 261009: a related paper's card opened on an empty box): a related paper's PDF (data-pdf) loads when its
+# card opens, any other old frame (data-src: RoadMap Draw, a delivery preview) once it is shown.
+PV_JS = """<script>(function(){if(window.pvFill)return;
+function fill(r){r.querySelectorAll('iframe[data-src]:not([src])').forEach(function(f){
+ var d=f.parentElement.closest('details');if(!d||d.open)f.setAttribute('src',f.dataset.src);});}
+window.pvFill=fill;function all(){document.querySelectorAll('.pv').forEach(fill);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();
+document.addEventListener('toggle',function(ev){var w=ev.target;if(!(w.matches&&w.open&&w.closest('.pv')))return;
+ var f=w.matches('details.rp-card')&&w.querySelector('iframe[data-pdf]');
+ if(f&&!f.getAttribute('src'))f.setAttribute('src',f.dataset.pdf);fill(w);},true);})();</script>"""
+
+
 def pv(html: str) -> str:
-    """A view in the old paper page's look, its links into the frame."""
-    return f'<div class=pv><style>{PV_CSS}</style>{_frame_links(html)}</div>'
+    """A view in the old paper page's look, its links into the frame, its frames loading as they did there."""
+    return f'<div class=pv><style>{PV_CSS}</style>{_frame_links(html)}{PV_JS}</div>'
 
 
 def _pick(sub: str, options: tuple) -> str:
@@ -186,8 +201,11 @@ def _related(d, block, root):
         out.append(f"<h3>{esc(group)}</h3>")
         for _, kind, key, title, venue, why, run in (r for r in rows if r[0] == group):
             drawing = run / f"{run.name}.excalidraw" if run is not None else None
-            read = (link(reader(run / f"{run.name}.md", root), f"read {run.name.split('_')[0]} ↗")
-                    if run is not None and (run / f"{run.name}.md").is_file() else "no deep read yet")
+            # a Result card is no Page Face, so /_board/page refuses it: open it in the Discovery reader
+            # (<block>/jNN/tNN/results/rNN → the Block is four folders up)
+            card = run / f"{run.name}.md" if run is not None else None
+            read = (link(disc_file_url(run.parents[3], card, root), f"read {run.name.split('_')[0]} ↗")
+                    if card is not None and card.is_file() else "no deep read yet")
             head = (f'<span><b>{esc((key + " ") if key else "")}{esc(title)}</b>'           # line 1: who · title
                     + (f' <span class=topic-meta>{esc(venue)}</span>' if venue else "")
                     + f'<br><span class=topic-meta>{esc(kind)} · why here: {esc(why or "—")} · {read}</span></span>')
@@ -296,7 +314,7 @@ def _ideas(d):
 
 # JL 261007: the Audience Report is questions; Spine, Design and the telling are one view, Narrative: how we
 # tell the story, and whether it will attract an editor, a reviewer and the public
-AUDIENCE = ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions")
+AUDIENCE = ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions", "Related Papers")
 # who the story must attract, what each looks for, and the Story division that answers it (by its heading)
 ATTRACT = (("editor", "fit, and a contribution worth the pages, in one sentence", ("Identity", "Pitch")),
            ("reviewer", "claims backed by evidence, honest about their limits", ("Research Questions", "Evidence")),
@@ -642,6 +660,10 @@ def _report(d, block, root, sub):
                        for g in groups) or \
             _empty("No questions yet. Ask one a reviewer, a coauthor, an editor or a reader will ask; "
                    "board.md ## Questions, group: reviewer · coauthor · editor · reader.")
+    elif s == "Related Papers":                     # the related work under the question each bears on (JL 261009);
+        html = (_related(d, block, root) if (block / "related" / "related.md").is_file()   # related.md groups by it
+                else pv(P.related_by_question_html(d, [(str(r.get("id") or ""), str(r.get("title") or ""))
+                                                       for r, _ in _questions(block, root)])))
     else:                                           # the current telling's research questions
         html = pv(P.logic_work_html(d))             # its original structure (JL 261007): question blocks,
         if 'class="qc lw-q"' not in html:           # logic beside work and report; a Board with no Story text
@@ -1422,6 +1444,7 @@ def _disk_block(d, block, out):
         ("Audience Report", "Narrative"): tell + reg,
         ("Audience Report", "High-level logic + Low-level work"): reg + tell + rep_,
         ("Audience Report", "Related Questions"): reg + rep_,
+        ("Audience Report", "Related Papers"): [("related/related.md", "the related items, by question")] + tell + reg,
         ("Work Details", "Jobs"): [("j[0-9][0-9]_*/", "one version each")],
         ("Work Details", "Main"): _section_globs(d, block, "main"),
         ("Work Details", "Appendix"): _section_globs(d, block, "appendix"),

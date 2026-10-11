@@ -77,7 +77,7 @@ class Doc:
         elif align == "right":
             x -= w
         return self.base("text", x, y, w, h, strokeColor=color, text=str(t), originalText=str(t), fontSize=size,
-                         fontFamily=8, textAlign=align, verticalAlign="top", containerId=None,
+                         fontFamily=6, textAlign=align, verticalAlign="top", containerId=None,
                          autoResize=True, lineHeight=1.25, link=link)
 
     def rect(self, x, y, w, h, stroke=INK, fill="transparent", width=2, dashed=False, round_=True):

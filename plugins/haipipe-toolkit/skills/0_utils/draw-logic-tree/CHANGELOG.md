@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". SKILL.md and `ref/draw_logic_tree.py`: words in Nunito (`fontFamily` 6), not Comic Shanns (8).
+
 ## 0.4.0 · 2026-10-03 · Text and Evidence columns
 
 - Right of the Bullets, a Text column left empty for the person and an Evidence column

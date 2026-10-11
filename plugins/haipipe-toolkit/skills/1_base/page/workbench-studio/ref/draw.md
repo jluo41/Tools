@@ -84,7 +84,9 @@ The style contract every generated scene follows (JL 260816):
 🫙 fill      backgroundColor "transparent" on every shape · boxes stay unfilled
 🖊 emphasis  a shape that must stand out uses a colored STROKE
              #e8590c · #2f9e44 · #1971c2 · #9c36b5 (default stroke #1e1e1e)
-✍️ text      fontFamily 8 on every text element · Comic Shanns Mono
+✍️ text      fontFamily 6 (Nunito) on every word · 3 (Cascadia) for the verbatim ASCII
+             copy, paths and code · never 1 Virgil, 5 Excalifont or 8 Comic Shanns:
+             hand-drawn fonts are hard to read (JL 261009; was Comic Shanns, 260815)
 🔗 form      every box is a rectangle with a BOUND label · every arrow BINDS both ends
 📏 size      under 40 elements · span near 900x600 from (0,0)
 ```
