@@ -2,7 +2,7 @@
 one venue: its telling, its Sections, its build), its Spaces as full screens with "on disk" under each,
 then Guide › Method opened from the Job tab (JL 261007: "add the s11 s12 s13 like b11").
 
-It draws Q01's proposal for a version Job (s05-board-job-task-boundary): the §8 Narrative is the version face's
+It draws Q01's proposal for a version Job (s01-paper-tree): the §8 Narrative is the version face's
 ## Narrative (Q04), its Work Details are its Sections (Main · Appendix · Letters, each row its Section map), its
 Delivery is the built version (? Q02). A Section opens the Task tab (s13). Placeholders only; written
 through canvas.write, so every mark a person adds survives a rebuild.

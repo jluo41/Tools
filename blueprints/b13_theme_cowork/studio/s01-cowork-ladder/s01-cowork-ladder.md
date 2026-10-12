@@ -7,7 +7,7 @@ level's six Spaces, where today's Check Views go, and the open points in red. Be
 and Job rows. Each row shows its folder, what it holds, its skills and its screens, with the
 proposal (teal, solid) above today's workbench (gray, dashed). There is no cowork Task row.
 
-**Source:** the rows are defined once in `../../../b03_project_workbench/studio/s01-overall-tree-structure/`
+**Source:** the rows are defined once in `../../../b10_project_workbench/studio/s01-overall-tree-structure/`
 (`build_ladder_v4.py`, `level_views.py`). This topic's own builder draws them under its overview
 frame, as b12's s01-design does. Edit the cowork rows there and this drawing follows on its next build.
 

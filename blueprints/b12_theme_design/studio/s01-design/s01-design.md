@@ -12,7 +12,7 @@ per level (JL 261007, "instead of nesting all the things together"): `../s11-des
 `../s12-design-job/`, `../s13-design-task/`.
 
 **Source:** the trees, skills and screens are defined once, in
-`../../../b03_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py` (`BLOCK_TREES`,
+`../../../b10_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py` (`BLOCK_TREES`,
 `JOB_TREES`, `TASK_TREES`) and `level_views.py` beside it; the same rows still appear in b03's s11-block-variants, s12-job-variants and s13-task-variants,
 one level each. This drawing gathers one theme across the levels, as
 `../../../b11_theme_insight/studio/s01-insight-ladder/` does for insight. The method itself is

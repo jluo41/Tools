@@ -1,6 +1,10 @@
 s21 · paper Run and skill
 =========================
 
+**Tags:** `Run and Skill`
+
+**Stage:** explore
+
 **Topic:** every paper Run type and the skills behind them, and the plan to make the skills carry the new
 ladder (JL 261007: "focus on show what are the skills and runs we have in the paper set"; then "the current
 skill is not that powerful enough … make a plan to update the skills"). Drawn in b12's `s21-run-skill` style:
@@ -10,7 +14,7 @@ b12 has a drawing of that name.
 **Source:** read from disk on every build:
 
 - the run types each Space shows in s11 · s12 · s13 (their builders' `SCREENS` and `ROWS`, imported, never run)
-- the run cards: `haipipe-paper-workflow/ref/run-cards.md` and the Page's `haipipe-page-workflow/ref/run-cards.md`
+- the run cards: `haipipe-paper-workflow/ref/run-cards.md` and the Page's `haipipe-draft-workflow/ref/run-cards.md`
 - the live paper workbench (`servers/workbench-paper/paper_theme.py`) and the base frame (`servers/workbench/`)
 - the skills in `skills/2_theme/paper/` (version, size, callers, how often each still writes an old name)
 - the base skills a paper borrows, found by name

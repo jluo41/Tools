@@ -82,7 +82,7 @@ the Runs with a Building · Scanning third row.
   Job and Task frames, each with its folder, skills and proposed screens above today's (dashed).
   Red = open.
 - The rows are b03's shared definitions, labeling entries only:
-  `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py` (the trees,
+  `Tools/blueprints/b10_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py` (the trees,
   skills, Block views, the Job's six Spaces) and `level_views.py` (the Job and Task screens,
   today's rows).
 - Contracts read: `Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/ref/project-structure.md`
@@ -115,7 +115,7 @@ Open, red in the drawing:
    Depth tells them apart (the Theme's parent is the Project; the lane's parent is a `tNN_`
    folder with its own `.md`). Proposed: keep the lane's name, since the engine, receipts and
    26 Run types all write `labeling/…`. The workbench's `_labeling_job` (`labeling.py`) checks
-   only for `labelings`; it must read both names through `haipipe-page/src/themes.py` at
+   only for `labelings`; it must read both names through `haipipe-draft/src/themes.py` at
    build time.
 
 ### Next

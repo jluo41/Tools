@@ -1,6 +1,10 @@
 s13 · Task level
 ================
 
+**Tags:** `Levels`
+
+**Stage:** shaping
+
 **Topic:** a paper Section's tab. A Section is a Page Task, so its six Spaces are the base's Page Task views
 (`servers/workbench/task-page`); ◆ marks the few things the paper theme adds: the Section's row in
 the version's Narrative, its venue's section norms, and the LaTeX fragment the version pulls in.
@@ -111,7 +115,7 @@ Decided (JL 261007, on the row drawing)
    frame: a Page Task's Runs Space embeds the Page Runs view.
 9. A Run's name carries no date (JL 261007: "one soft run can have multiple path(es), so we don't
    need the MMDD"): `runs/run-<type>-<slug>.md`, its passes p01, p02 … inside. Renamed (JL 261007:
-   "rename them"): the page engine (`haipipe-page/src/run_names.py`) mints `run-<kind>-<slug>` and still
+   "rename them"): the page engine (`haipipe-draft/src/run_names.py`) mints `run-<kind>-<slug>` and still
    reads a dated name; `page.py run-names` dropped the day on 9 Sections. 7 wait for their delivery
    rebuild, since their built LaTeX points at the dated display folders.
 10. The names follow the version's rename (s12): a Section is `t0N_<title>/` (`t2N_` an appendix), a

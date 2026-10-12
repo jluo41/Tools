@@ -12,7 +12,7 @@ Note: the labeling skills and server were just folded in from the subjective-lab
 Where things are
 ----------------
 - Your Block: board.md (3 open questions with hypotheses), reports/, studio/s01-labeling-ladder/ (every labeling row, Block to Run, proposed above today; drawn by b03's studio/_build/theme_ladder.py).
-- The shared ladder and its decisions: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s01-overall-tree-structure/ (s01-overall-tree-structure.md, build_ladder_v4.py, level_views.py) and the s03/s04/s05 notes beside it. Models to follow: b11_theme_insight and b12_theme_design (a design Job = one goal × one method → N designs).
+- The shared ladder and its decisions: Tools/blueprints/b10_project_workbench/studio/s01-overall-tree-structure/ (s01-overall-tree-structure.md, build_ladder_v4.py, level_views.py) and the s03/s04/s05 notes beside it. Models to follow: b11_theme_insight and b12_theme_design (a design Job = one goal × one method → N designs).
 - Your skills: Tools/plugins/haipipe-toolkit/skills/2_theme/labeling/subjective-label and its view skills, label-building, label-scanning, labeling/workbench-labeling.
 - Your server: Tools/plugins/haipipe-toolkit/servers/workbench-labeling/ (its studio/ drawings move into your Block's studio, one topic each, the way b12 did on 261007: the servers hold code only).
 
@@ -32,8 +32,8 @@ The frame comes from the base (design_b02_workbench, 261007)
 -------------------------------------------------------------
 Do not build your own copy of the frame. The tab row (Guide · Block · Job ▾ · Task ▾), the six Spaces
 with their dividers, the third row and the Runs panel come from servers/workbench (the base, was
-workbench-shared); your theme gives only its content. The design is Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/
-s02-workbench-shared/ (frames "proposed · the frame" and "the base and a theme") and b03 Q08 (b02 merged into b03). Layout
+workbench-shared); your theme gives only its content. The design is Tools/blueprints/b10_project_workbench/studio/
+s02-studio-workbench-skill/ (frames "proposed · the frame" and "the base and a theme") and b03 Q08 (b02 merged into b03). Layout
 now: servers/workbench = the base; servers/workbench/task = the base's Task level (was workbench-page);
 servers/workbench-work = the work theme (was workbench-task). If you build before the base frame exists,
 keep your tab and Space code small and in one place, so it can move into the base later, and ask

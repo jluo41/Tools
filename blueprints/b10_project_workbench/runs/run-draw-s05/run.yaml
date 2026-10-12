@@ -1,0 +1,17 @@
+run: run-draw-s05
+kind: soft
+type: draw
+scope: null
+target: s05
+ticket: run-draw-s05.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1011
+writes:
+- studio/s05-report-workbench-skill/ · studio/_build/make.sh
+feeds:
+- reports/q03_block_questions
+- reports/q09_studio_report_on_screen

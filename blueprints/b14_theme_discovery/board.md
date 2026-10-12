@@ -26,7 +26,7 @@ Most answers here are a change to the discovery skills (`2_theme/discovery/haipi
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); the paper that cites a
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the paper that cites a
 synthesis (b16_theme_paper).
 
 ## Pipeline
@@ -48,7 +48,7 @@ studio/
 └── s32-discovery-element-ui/ every element the theme draws, today, old and planned, with its proposed look
 ```
 
-s01's rows come from b03's shared definitions (`b03_project_workbench/studio/s01-overall-tree-structure/`);
+s01's rows come from b03's shared definitions (`b10_project_workbench/studio/s01-overall-tree-structure/`);
 its own builder draws the overview and the Run frame, and b03's `studio/_build/make.sh` rebuilds it.
 s02 is drawn from the theme's `workbench-discovery/ref/workbench-table.md` by its own script.
 

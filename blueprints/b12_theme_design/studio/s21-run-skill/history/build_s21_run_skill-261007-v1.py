@@ -39,7 +39,7 @@ RUNS = [("Block", [   # every Block Run is soft (JL 261007)
             ("run-add-observed-e<NN>", "soft", "add the Exp's data", "designer agent", "manifest sha256", "haipipe-design", "Predicted vs observed"),
             ("run-score-e<NN>", "soft", "score the predictions", "another agent", "-", "haipipe-design", "Predicted vs observed"),
             ("run-propose-questions", "soft", "propose questions", "designer agent", "another agent agrees", "haipipe-question", "Questions"),
-            ("run-report-q<NN>", "soft", "write a report", "designer agent", "another agent checks", "haipipe-page", "Questions"),
+            ("run-report-q<NN>", "soft", "write a report", "designer agent", "another agent checks", "haipipe-draft", "Questions"),
             ("run-propose-method-<slug>", "soft", "propose a method", "designer agent", "a person", "haipipe-design-unit", "Methods (the registry)"),
             ("run-draw-s<NN>", "soft", "draw a topic", "designer agent", "-", "excalidraw-report", "Idea Studio")]),
         ("Job", [
@@ -77,7 +77,7 @@ SKILLS = [("haipipe-design", "the door: the ladder contract (design-ladder.md) a
           ("haipipe-design-workflow", "the Run list and its routes: set up, generate, verify",
            "(no Run of its own)", "becomes the Run graph per level ?"),
           ("? haipipe-design-delivery", "? the hand-off: designs.json (its schema) · designs.md · screens/",
-           "freeze predictions · release", "? new, like haipipe-page-delivery"),
+           "freeze predictions · release", "? new, like haipipe-draft-delivery"),
           ("workbench-design", "the served face; the Guide (method.md, papers)",
            "shows every Run, starts none", "design_theme.py on the shared frame; old pages retire ?"),
           ("venue/* (8)", "style profiles: sms, email, push, reminder, report, ui-card …",

@@ -12,8 +12,10 @@ is implemented; the broader organization question remains open for review.
 
 ### Current layout
 
-- [b01](../../board.md) keeps shared foundations as j01–j05, its package map,
+- [b01](../../board.md) keeps shared foundations as j01, j02, j04 and j05, its package map,
   theme matrix, and questions that span shared Jobs or Themes.
+- [b10](../../../b10_project_workbench/board.md) owns the shared project ladder
+  and Workbench, promoted from j03 with its topics, reports and Runs.
 - b11–b17 are peer Theme Blocks: insight, design, cowork, discovery, labeling,
   paper and work. Each has board.md and its existing studio, reports and Runs.
 - b02 and b03 keep the utilities and human-study package blueprints.

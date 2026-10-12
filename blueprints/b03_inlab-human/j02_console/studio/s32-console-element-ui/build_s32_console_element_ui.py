@@ -16,7 +16,7 @@ from console_draw import RED, TOOLS, Sheet, header, save  # noqa: E402
 CHANGES = [("261009", "record chart: one lane per table, no table named (fix 6)"),
            ("261009", "dropped the Internal chart and the placeholder card: their views are hidden (Q05)"),
            ("261009", "added the refused tool call: the gate's no is shown, never a chip that looks run")]
-FRAME_SHOTS = TOOLS / "blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s32-element-ui/shots"
+FRAME_SHOTS = TOOLS / "blueprints/b10_project_workbench/studio/s32-element-ui/shots"
 # console element → the toolkit frame's element of the same kind (shots of b01 j03 s32), with what they share
 COUNTERPART = {"topbar": ("tabs__frame.png", "the frame's level row and Spaces row"),
                "nav-rail": ("tabs__frame.png", "the frame's Spaces row (the console puts its Spaces in a rail)"),

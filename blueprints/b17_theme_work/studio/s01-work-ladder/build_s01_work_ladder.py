@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-B03 = Path(__file__).resolve().parents[3] / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
+B03 = Path(__file__).resolve().parents[3] / "b10_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402

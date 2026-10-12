@@ -142,6 +142,14 @@ s32-D06 · Done (261008, b03's rulings on the nine gaps): the Task select is gro
     (`test_the_b12_s32_rulings`).
 
 
+s32-D07 · Done (261011, JL on a pre-visit questionnaire drawn as a text message: "I don't think this should be
+    the message ... It is not message"): a design is drawn in its goal's channel (the goal's `venue:`), never as an
+    SMS by default. A phone bubble only for sms, push and reminder (labelled so); tick boxes with the day labels for a
+    checklist; numbered questions with answer boxes (sentence · sentences · time · yes-no · choice) for the new
+    questionnaire channel (`skills/2_theme/design/venue/venue-questionnaire/`); a card named by its channel for the rest.
+    A Block whose goals name no venue stays an SMS. `servers/workbench-design/design_views.as_read` draws it,
+    `design_reader.venue_of` finds the channel from the Job's goal pin.
+
 Open
 ----
 

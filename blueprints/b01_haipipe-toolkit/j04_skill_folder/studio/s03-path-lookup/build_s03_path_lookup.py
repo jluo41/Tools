@@ -43,7 +43,7 @@ def facts():
                             r"^structure-source:\s*(Tools/plugins/haipipe-toolkit/skills/)?paper/", str(SPACE)],
                            capture_output=True, text=True).stdout.split()
     f["old_source"] = len(pages)
-    delivery = subprocess.run(["grep", "-rlF", "--include=*.sh", "skills/page/haipipe-page/cli/page.py", str(SPACE)],
+    delivery = subprocess.run(["grep", "-rlF", "--include=*.sh", "skills/page/haipipe-draft/cli/page.py", str(SPACE)],
                               capture_output=True, text=True).stdout.split()
     f["old_delivery"] = len([d for d in delivery if "/delivery/" in d])
     st = subprocess.run(["git", "-C", str(TOOLS), "status", "--short", "--", "plugins/haipipe-toolkit/skills",

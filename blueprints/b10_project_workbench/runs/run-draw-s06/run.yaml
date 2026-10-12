@@ -1,0 +1,18 @@
+run: run-draw-s06
+kind: soft
+type: draw
+scope: null
+target: s06
+ticket: run-draw-s06.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1011
+writes:
+- studio/s06-run-workbench-skill/ · s01 face D31 · s21 builder and face · make.sh
+  · reports/q01_bjtr_boundary · workbench-work/guide/guide.yaml · b11 s01 face
+feeds:
+- reports/q01_bjtr_boundary
+- reports/q07_workbench_mapping

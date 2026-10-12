@@ -19,7 +19,7 @@ Two steps:
         draws the gallery from shots/ and the planned screens from b03's shared cowork rows; marks are kept on
         rebuild (canvas.write).
 
-The shooting and picture helpers are b03's (../../../b03_project_workbench/studio/s32-element-ui/
+The shooting and picture helpers are b03's (../../../b10_project_workbench/studio/s32-element-ui/
 build_s32_element_ui.py), imported; the planned screens are drawn by b03's shared ladder helpers
 (s01-overall-tree-structure: build_ladder_v4.wireframe, level_views' cowork Job views), so a change there shows
 here on the next build. Placeholders only.
@@ -42,7 +42,7 @@ SHOTS = HERE / "shots"
 SPACE = Path(__file__).resolve().parents[5]
 TOOLS = Path(__file__).resolve().parents[4]
 SERVERS = TOOLS / "plugins" / "haipipe-toolkit" / "servers"
-sys.path.insert(0, str(TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "s32-element-ui"))
+sys.path.insert(0, str(TOOLS / "blueprints" / "b10_project_workbench" / "studio" / "s32-element-ui"))
 import build_s32_element_ui as E  # noqa: E402  (b03's gallery: PICK_JS, picture, style_line; it loads L and canvas)
 import level_views as LV  # noqa: E402  (b03's level views: the cowork Job's planned screens; on E's path)
 sys.path.insert(0, str(HERE))
@@ -228,7 +228,7 @@ PROPOSALS = {
               "? one casing: open · waiting · done and delivery/ are lower case beside Timeline · Checklist; "
               "Job › Runs groups by email · meeting, s12 plans email · notes · update · check"),
     "report": (("space", "b13-report"), "parent:.q-row",
-               ["one Question │ Work │ Report row per Question, as every theme (b03 s04-D04)",
+               ["one Question │ Work │ Report row per Question, as every theme (b10 s02-D25)",
                 "the Question cell as the Insight row (b03 s32-D05): label pill and state dot, the slug, one "
                 "sentence, › More; the base's question_cell(), as the frame draws it on a real Block",
                 "the Job's Audience Report: the same rows, only the Block's Questions that cite this Job"],

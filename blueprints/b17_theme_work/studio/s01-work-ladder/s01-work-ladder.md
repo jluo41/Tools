@@ -10,7 +10,7 @@ with its folder, what it holds, its skills, and its screens, the proposal (teal,
 today's workbench (gray, dashed).
 
 **Source:** the Q01 frame is this folder's own (`build_s01_work_ladder.py`, the `GRID`, `MOVES` and
-`OPEN` tables). The rows below it are defined once in `../../../b03_project_workbench/studio/s01-overall-tree-structure/`
+`OPEN` tables). The rows below it are defined once in `../../../b10_project_workbench/studio/s01-overall-tree-structure/`
 (`build_ladder_v4.py`, `level_views.py`); edit them there and this drawing follows on its next build.
 
 **Feeds:** `../../reports/` q01 (the ladder question).

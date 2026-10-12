@@ -16,7 +16,7 @@ skills/1_base/
 ├── task/       haipipe-task (the Task folder: Plan, Build, Execute, Report), the
 │               haipipe-task-for-<kind> skills, the HAI-Pipe stage pipelines (data, nn, end,
 │               individual), haipipe-workflow, haipipe-page-task, the task agents
-├── page/       haipipe-page (the Page engine), haipipe-page-workflow and its Run skills,
+├── page/       haipipe-draft (the Page engine), haipipe-draft-workflow and its Run skills,
 │               haipipe-folder, haipipe-sentence, workbench, workbench-studio, workbench-page
 ├── question/   haipipe-question (a Block's Questions and report folders), -asking, -review
 ├── writing/    haipipe-writing, humanizer, academic-humanizer, writing-dna-skill
@@ -32,7 +32,7 @@ everywhere, and what is in base by accident.
 Most answers here are a decision recorded in a report Page and a drawing; a decision that moves
 or renames a skill is carried out by b04_skill_folder (it owns skill moves and path fixes).
 
-Excluded: the Block → Job → Task → Run ladder and the base workbench's frame (b03_project_workbench);
+Excluded: the Block → Job → Task → Run ladder and the base workbench's frame (b10_project_workbench);
 each theme's internals (its b1x Block); the `0_utils` helpers (b01_utils); moving files (b04_skill_folder).
 
 ## Pipeline
@@ -63,7 +63,7 @@ questions:
   title: What does each base family give the themes?
   question: For each base family, what does it provide (contract, engine, CLI, agents),
     and which themes and other base families call it?
-  hypothesis: Every theme calls haipipe-task, haipipe-run, haipipe-page and haipipe-question;
+  hypothesis: Every theme calls haipipe-task, haipipe-run, haipipe-draft and haipipe-question;
     no theme calls another theme; a few base skills are called by one theme only,
     which makes them candidates to move into that theme.
   acceptance: Answered when a map of base family x caller (theme or base family) is

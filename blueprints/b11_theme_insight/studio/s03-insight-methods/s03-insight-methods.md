@@ -4,7 +4,7 @@ s03 · Insight methods
 **Topic:** what the Insight methods are, where their code lives in Tools, and how much of them the
 code runs today (JL 261007: "what is the methods? for the insight discovery? collect all the
 related code in the Tools and then create the excalidraw"). Drawn in the shape of b03's
-s04-studio-and-report.
+s02-studio-workbench-skill.
 
 **Two drawings, two scripts:**
 

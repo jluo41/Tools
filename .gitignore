@@ -63,3 +63,12 @@ node_modules/
 # a studio builder's seed snapshot (haipipe-studio canvas.py): a local cache of the last build, rebuilt per
 # machine, often several MB; never committed
 .*.seed.json
+
+# ── A Block's outside material stays on this machine ───────────────────────
+# related/ keeps what came in from outside (haipipe-related). A meeting
+# transcript names colleagues and internal plans, a sent file or email is
+# someone else's, and this repo is public: related.md links them, git never
+# holds them. Papers are open-licensed and stay tracked.
+blueprints/*/related/meetings/
+blueprints/*/related/emails/
+blueprints/*/related/files/

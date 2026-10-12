@@ -1,0 +1,37 @@
+run: run-draw-s21
+kind: soft
+type: draw
+scope: Tools/blueprints/b10_project_workbench
+target: s21
+ticket: run-draw-s21.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1008
+- p02-1010
+- p03-1011
+writes:
+- Tools/blueprints/b10_project_workbench/studio/s21_project-run-skill/s21_project-run-skill.md
+- Tools/blueprints/b10_project_workbench/studio/s21_project-run-skill/build_s21_project_run_skill.py
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-block
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-job
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio
+- Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-slide
+- Tools/plugins/haipipe-toolkit/servers/workbench/frame.py
+- build_s21_project_run_skill.py · s21_project-run-skill.md · .excalidraw · .png ·
+  history/
+- studio/s21_project-run-skill/build_s21_project_run_skill.py
+- studio/s21_project-run-skill/s21_project-run-skill.md
+- studio/s21_project-run-skill/s21_project-run-skill.excalidraw
+- studio/s21_project-run-skill/s21_project-run-skill.png
+- studio/s02-studio-workbench-skill/s02-studio-workbench-skill.md
+- runs/run-draw-s01/run.yaml
+- runs/run-report-q05/run.yaml
+- runs/run-check-q05/run.yaml
+- runs/run-draw-s21/passes/p01-1008/pass.md
+feeds:
+- reports/q05_skill_per_level
+- reports/q08_workbench_base

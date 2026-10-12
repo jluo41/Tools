@@ -1,5 +1,5 @@
 # How does a paper climb the ladder?
-state: 🟡 DRAFT · Board/Job roles decided 2026-10-09; topic cleanup 2026-10-10; Section details remain open
+state: 🟡 DRAFT · Board/Job roles decided 2026-10-09; on b10's screen and ownership rules 2026-10-11; Section details remain open
 answers: Q01
 answer-status: partial
 
@@ -18,21 +18,30 @@ discovery Tasks; the Job does not call that scientific work.
 
 | level | holds | home |
 |---|---|---|
-| Board / Block | research questions, reports, related work, Ideation and tellings | `Paper-<Name>/` |
-| Job | one venue's send, Section Narrative and order, version questions, comments and build | `jNN_v<MMDD>_<desk>/` |
+| Board / Block | research questions, reports, Ideation and tellings (`studio/`), related work (`related/`), every version's build (`delivery/jNN_<version>/`) | `Paper-<Name>/` |
+| Job | one venue's send, Section Narrative and order, version questions, comments (its `reports/`) | `jNN_v<MMDD>_<desk>/` |
 | Task | one Section, Abstract or letter: draft, evidence, checks and fragment | `tNN_<title>/` |
 | Run | one execution under its owning level; paper Runs are soft | `runs/run-<type>-<target>/` |
 
-Every level uses Description, Idea Studio, Audience Report, Work Details, Runs and Delivery.
-Work Details opens its children: Board to version Jobs, then Job to Section Tasks. Studio topics,
-reports and Runs keep their own level. Story and Ideation are topics, not a reference Job.
-Each version face's `## Narrative` supplies the Section order to its build.
+On screen every level has the same two rows (b10 s02-D18, s09-D05, s04-D05, 261011):
+
+```text
+Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery    the Board's views, from any level
+Description | Report | Work | Runs                                         each level its own
+```
+
+Studio (with Related folded under its topics) and Delivery are the Board's alone: a version or a Section opens the Board's, and
+keeps no `studio/` or `delivery/` folder (b10 s09-D01, D05). Every level writes its own Report
+(s09-D02): the Board answers its research questions, a version its send's questions and the
+comments it answers (Q03). Work opens the children: Board to versions, version to Sections.
+Story and Ideation are Board topics, not a reference Job (Q04). Each version face's `## Narrative`
+supplies the Section order to its build, which lands in the Board's `delivery/jNN_<version>/`.
 
 ### 2 · Evidence
 
-- [s05 · Board, Job and Task boundary](../../studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw):
+- [s01 · Paper tree, the Board, Job and Task boundary](../../studio/s01-paper-tree/s01-paper-tree.excalidraw):
   current roles, screens, communication, shared ladder (frame 8) and Story/Ideation decisions (frame 9).
-- [s05 decisions](../../studio/s05-board-job-task-boundary/s05-board-job-task-boundary.md):
+- [s01 decisions](../../studio/s01-paper-tree/s01-paper-tree.md):
   JL 261009 Board/Job rules and all five carried s04 decisions, with their original ids and dates.
 - [paper ladder contract](../../../../plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper/ref/paper-ladder.md):
   the current folders; [s11](../../studio/s11-paper-block), [s12](../../studio/s12-paper-job) and
@@ -40,14 +49,15 @@ Each version face's `## Narrative` supplies the Section order to its build.
 
 ### 3 · Limits
 
-The venue folder's final home, Task-level Studio and reports, a Section's upward ask, and the
-Narrative question column remain open in s05. JL 261010 also asks to see Job Studio topics and
-reports smoothly from the Block. That viewing proposal is recorded, not implemented.
+The venue folder's final home (Q02, s04-paper-related), a Section's upward ask, and the Narrative
+question column remain open in s01. Task-level Studio is settled by b10 (a Section opens the
+Board's Studio, s09-D01); JL's 261010 ask to see a Job's topics from the Block is met by the shared
+Studio, which lists every older Job topic until its files move (frame `studio_inventory`).
 The old migration goal is retired; this cleanup does not migrate any real paper or settle these choices.
 
 ### 4 · Next
 
-Settle s05's remaining boundary and viewing questions before changing the live workbench.
+Settle s01's remaining boundary and viewing questions before changing the live workbench.
 The current Studio no longer carries s01-s04. Their full records are preserved under
 `_archive/20261010/studio/`; topic numbers stay retired. Q04 keeps the Story/Ideation mapping.
 

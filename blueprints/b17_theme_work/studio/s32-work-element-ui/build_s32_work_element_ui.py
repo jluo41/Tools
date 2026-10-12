@@ -33,7 +33,7 @@ HERE = Path(__file__).resolve().parent
 SHOTS = HERE / "shots"
 TOOLS = Path(__file__).resolve().parents[4]
 SERVERS = TOOLS / "plugins" / "haipipe-toolkit" / "servers"
-B03S = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03S = TOOLS / "blueprints" / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03S / "s32-element-ui"))
 import build_s32_element_ui as B  # noqa: E402  (b03's gallery: picture, style_line, PICK_JS; it loads L and canvas)
 import screens as SC  # noqa: E402  (b03 _build/: the workbench screens, drawn large)
@@ -171,7 +171,7 @@ PROPOSALS = {
               "changed: the work theme's own Draft wins over the Page's Draft view (base fix, b03)",
               "? the Page views (Folder · Evidence · Value · Page Runs · Lanes) are still added to every work Task's row"),
     "report": (SPOT(BLOCK, "Audience Report"), ".q-head-row|.q-row:not(.q-head-row)",
-               ["one row per Question at every level: Question │ Work │ Report (b03 s04-D04)",
+               ["one row per Question at every level: Question │ Work │ Report (b10 s02-D25)",
                 "the Question cell as the Insight row (b03 s32-D05): label and state dot, the short name, one "
                 "sentence, › More",
                 "the Work column names the j · t · r each Question reads (Q03)"],

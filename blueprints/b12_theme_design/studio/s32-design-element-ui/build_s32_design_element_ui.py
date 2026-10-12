@@ -18,7 +18,7 @@ Two steps:
         draws the gallery from shots/ and the planned screens from s11 · s12 · s13's builders; marks are kept
         on rebuild (canvas.write).
 
-The shooting and the picture helpers are b03's (../../../b03_project_workbench/studio/s32-element-ui/
+The shooting and the picture helpers are b03's (../../../b10_project_workbench/studio/s32-element-ui/
 build_s32_element_ui.py), imported; the planned screens are drawn by the level builders' own screen functions
 (../_build/design_ui.py), so a change there shows here on the next build. Placeholders only.
 """
@@ -41,7 +41,7 @@ SHOTS = HERE / "shots"
 SPACE = Path(__file__).resolve().parents[5]
 TOOLS = Path(__file__).resolve().parents[4]
 SERVERS = TOOLS / "plugins" / "haipipe-toolkit" / "servers"
-B03S32 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "s32-element-ui"
+B03S32 = TOOLS / "blueprints" / "b10_project_workbench" / "studio" / "s32-element-ui"
 sys.path.insert(0, str(B03S32))
 import build_s32_element_ui as E  # noqa: E402  (b03's gallery: PICK_JS, picture, style_line; it loads L and canvas)
 sys.path.insert(0, str(HERE.parent / "_build"))
@@ -218,7 +218,7 @@ PROPOSALS = {
               "changed: one casing, Reason ideas · Conduct & review · Review whole (261008)",
               ""),
     "report": (fx("Block", "Audience Report", "Questions"), "parent:.q-row",
-               ["one Question │ Work │ Report row per Question, as every theme (b03 s04-D04)",
+               ["one Question │ Work │ Report row per Question, as every theme (b10 s02-D25)",
                 "the Question cell as the Insight row: label and state dot, short name, one sentence, › More"],
                "kept: the Question cell as Insight's (b03 s32-D05)",
                "? Predicted vs observed and Description › Design reuse the row as Design │ Predicted │ Observed: keep, or the design card"),

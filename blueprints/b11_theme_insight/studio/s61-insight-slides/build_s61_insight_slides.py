@@ -20,7 +20,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DESIGNS = Path(__file__).resolve().parents[3]
-B03 = DESIGNS / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"              # the shared drawing helpers and canvas.write
+B03 = DESIGNS / "b10_project_workbench" / "studio"              # the shared drawing helpers and canvas.write
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 sys.path.insert(0, str(HERE))

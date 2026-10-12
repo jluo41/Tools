@@ -32,7 +32,7 @@ HERE = Path(__file__).resolve().parent
 SHOTS = HERE / "shots"
 TOOLS = Path(__file__).resolve().parents[4]
 SERVERS = TOOLS / "plugins" / "haipipe-toolkit" / "servers"
-B03 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03 = TOOLS / "blueprints" / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03 / "s32-element-ui"))
 import build_s32_element_ui as E  # noqa: E402  (b03's gallery: PICK_JS, picture, style_line; it loads L and canvas)
 import level_views as LV  # noqa: E402  (b03's planned Job and Task screens; on the path through E)
@@ -220,7 +220,7 @@ PROPOSALS = {
               "? Task › Work Details: Preparation sits here (s13: Description), Scan sits in Delivery (s13: Work "
               "Details), no Building | Scanning divider, and the base's Evidence · Value follow in the same row"),
     "report": (F("block", "Audience Report"), ".q-head-row|.q-row:not(.q-head-row)",
-               ["one Question │ Work │ Report row per Question at every level (b03 s04-D04)",
+               ["one Question │ Work │ Report row per Question at every level (b10 s02-D25)",
                 "the Question cell as the Insight row (b03 s32-D05): label and state dot, short name, one sentence, › More"],
                "kept: the Question cell as Insight's (b03 s32-D05)",
                "? Job › Audience Report draws no rows: s12 plans ours vs the dataset's keys (Scored · Building), "

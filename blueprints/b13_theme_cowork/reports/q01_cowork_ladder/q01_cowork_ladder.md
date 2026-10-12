@@ -78,7 +78,7 @@ Q02 settles the details.
   `s01-cowork-ladder.png`). The overview frame holds this answer. The Block and Job frames show
   the proposed screens above today's.
 - The cowork rows are defined once in b03's shared definitions:
-  `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py`
+  `Tools/blueprints/b10_project_workbench/studio/s01-overall-tree-structure/build_ladder_v4.py`
   (`BLOCK_TREES` "cowork Block", `JOB_TREES` "cowork Job", `JOB_SPACES_COWORK`, `level_subs`) and
   `level_views.py` (`JOB_FAMILY_VIEWS["cowork"]`, `COWORK_ROWS`, `COWORK_NOTES`).
 - The contract today: `Tools/plugins/haipipe-toolkit/skills/2_theme/cowork/haipipe-cowork/SKILL.md`

@@ -144,8 +144,9 @@ issues:
    evidence: "j01__Idea-Studio__default.html data-skills; haipipe-design-workflow run cards"}
 - {rank: 33, owner: b03, where: "top row › Job ▾ menu",
    wrong: "Since the rename it shows the long folder name cut off ('j03_g01-review-new-rx_m03-detaile…').",
-   should: "'j03 · M03 detailed evidence'.",
-   evidence: "the select in j03__Description__Goal.html"}
+   should: "The folder name as it is, the folder named in words: 'j03_questions-before-visit_goal-only' (b10 s32-D15, JL 261011; replaces 'j03 · M03 detailed evidence').",
+   evidence: "the select in j03__Description__Goal.html",
+   fixed: "261011"}
 - {rank: 34, owner: s13, where: "top row › Task ▾ menu",
    wrong: "Dropped designs sit inline by number, not folded at the end; the group reads '③ Conduct process', not '③ ④ Conduct & review'.",
    should: "Dropped last; the step label as the Job's views name it.",

@@ -25,11 +25,13 @@ Decided
 
 s01-D01 · Themes own independent Blocks b11–b17; b01 keeps shared foundation Jobs (261010).
 
+s01-D02 · Project structure and the shared Workbench move from j03 to independent b10; the map links their new owner (261010).
+
 
 Open
 ----
 
 1. The agents (19) and the MCP server codex-image2 have no blueprint owner: give agents to their theme's Block, or a Job of their own?
-2. 1_base/project sits under j03 (a Project from root to Run) and the other 1_base families under j02: keep that split?
+2. 1_base/project sits under b10 (a Project from root to Run) and the other 1_base families under j02: keep that split?
 
 (write here, or mark the drawing in red)

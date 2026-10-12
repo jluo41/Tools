@@ -123,7 +123,7 @@ def draw():
                        ("b02 + JL: workbench-shared -> workbench\n(the base).", "none"),
                        ("b02 + JL: workbench-page -> the base's\nTask level (workbench/<task level>/).", "none"),
                        ("b02 + JL: workbench-task -> workbench-work\n(server and skill; URL task-board kept).", "none"),
-                       ("haipipe-board -> space-home happened\nearlier (already in the working tree).", "none")]:
+                       ("haipipe-block -> space-home happened\nearlier (already in the working tree).", "none")]:
         yy = sticky(rn + 50, yy, 470, body, kind) + 20
 
     # 4 · what broke, and the fix (q02)
@@ -133,7 +133,7 @@ def draw():
              ("2 parents[N] in skill code", "-> next(p ... if p.name == 'skills')"),
              ("3 globs over skills/", "'*/haipipe-*' -> '*/*/haipipe-*'"),
              ("4 written skills/<family>/", "210 rewritten with their layer"),
-             ("5 bare tokens page/haipipe-page/...", "39 rewritten as 1_base/page/..."),
+             ("5 bare tokens page/haipipe-draft/...", "39 rewritten as 1_base/page/..."),
              ("6 relative links", "105 re-resolved from the pre-move spot"),
              ("7 paper venue submodule", ".git file, core.worktree, .gitmodules")]
     for i, (k, fix) in enumerate(kinds):
@@ -147,7 +147,7 @@ def draw():
 
     # 5b · concerns, in red text
     cy = bc + 60
-    for c in ["? 'Before' is Tools HEAD: moves made earlier and never committed (haipipe-board -> space-home,",
+    for c in ["? 'Before' is Tools HEAD: moves made earlier and never committed (haipipe-block -> space-home,",
               "  designs/tasks/bNN -> designs/bNN) already count as 'before' on disk but not in git.",
               "? Nothing is committed: the next git add must take the deletions and the new folders together,",
               "  or the history shows files vanishing.",

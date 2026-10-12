@@ -1,5 +1,5 @@
 # Which skills and Runs make the paper theme?
-state: 🟡 DRAFT · g04 run 2026-10-07, phases 1-6; two calls left to JL (venue/ out of skills/, one home for a venue)
+state: 🟡 DRAFT · g04 run 2026-10-07, phases 1-6; brought to b10's rules 2026-10-11; two calls left to JL (venue/ out of skills/, one home for a venue)
 answers: Q05
 answer-status: partial
 results-read: 2026-10-07T22:45-04:00
@@ -75,7 +75,24 @@ builders, the paper and Page `run-cards.md`, the paper workbench (`paper_theme.p
 - **Checks:** paper 8/8 · workbench-paper + _host 86/86 · assemble 66 pass, 2 known Word-conversion failures ·
   `table-workbench --check --cards` PASS.
 
-### 5 · Next
+### 5 · On b10's rules (2026-10-11)
+
+b10 settled who owns what for every Block: Studio, `related/` and `delivery/` are the Board's alone, and a
+version or a Section keeps none of them (s09-D01, s04-D05, s03-D06; JL 261011: "for the section, we will do
+not have the related studio and delivery"; "also for the Jobs"). The paper skills now say the same:
+
+- **Scaffold:** `paper_ladder.py spaces` gives a version only `reports/` and `runs/`; `next` copies a Section's
+  face and `draft/`, not a `studio/` (haipipe-paper 1.12.0, its contract `ref/paper-ladder.md`).
+- **Section:** `haipipe-paper-section` 0.11.1 drops the Section's own `studio/` and `delivery/` (Phase 5 above
+  gave it a `studio/`).
+- **Related papers:** one home, the Board's `related/related.md`; the Story's P-board is its rows
+  (haipipe-paper-story 0.20.0); a meeting batch cites `related/meetings/` (haipipe-paper-comments 1.2.1).
+- **Cards:** Add a related item and Read a paper are `Block › Related` (shown inside the Studio); Redraw the paper
+  map moves from `Job › Idea Studio`, which the frame never showed, to `Block › Idea Studio`
+  (haipipe-paper-workflow 1.9.2). `table-workbench --check --cards` PASS.
+- **Checks:** paper skills 12 pass; workbench-paper 13 pass; host 92 pass.
+
+### 6 · Next
 
 - JL's two calls: move `venue/` (its own 821 MB repo) out of `skills/`, and one home for a venue (the shared Venue
   Page or the Board's `venues/<venue>/call.md`, Q02).

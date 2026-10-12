@@ -25,7 +25,7 @@ SKILLS = "skills   haipipe-paper owns · haipipe-paper-story · -ideation · -ve
 
 LEVEL = {
     "Description": [("t", G.role("Block")), ("c", G.space_cards("Block")), ("m", SKILLS),
-                    ("t", "Story and Ideation are studio topics; research questions have Board reports (s05-D06-D09)")],
+                    ("t", "Story and Ideation are studio topics; research questions have Board reports (s01-D06-D09)")],
     "Method": [("c", G.steps("Block")), ("t", "method cards"), ("c", G.method_cards("Block")),
                ("t", "step 3's work runs in the Project's work and discovery Blocks; the Board shows its answers")],
     "RoadMap Draw": [("w", G.drawings("Block")),
@@ -43,18 +43,18 @@ ON_DISK = {
                ("servers/workbench-paper/guide/methods/framing/", "2 cards: problematization, one main idea"),
                ("servers/workbench-paper/guide/methods/story/", "3 cards: claim and warrant, evidence first, reproducible run")],
     "RoadMap Draw": [("servers/workbench-paper/guide/guide.yaml", "roadmap: Block, two drawings"),
-                     ("Tools/blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/", "the ladder, boundaries and Story homes"),
+                     ("Tools/blueprints/b16_theme_paper/studio/s01-paper-tree/", "the ladder, boundaries and Story homes"),
                      ("Tools/blueprints/b16_theme_paper/studio/s11-paper-block/", "the Board's screens")],
     "Related Paper": [("servers/workbench-paper/related/papers.md", "rows with level Block: 8 papers"),
                       ("? a level Block row for step 0", "? a paper on choosing a venue or reading related work")],
 }
 
-OPEN = ["? The venue's home remains open in s05/Q02; the Guide's method still names Board venues",
-        "? Show Job studio topics and reports smoothly from the Block too (JL 261010, s05 open 15)"]
+OPEN = ["? The venue's home remains open in s04/Q02; the Guide's method still names Board venues",
+        "? Show Job studio topics and reports smoothly from the Block too (JL 261010, s01 open 15)"]
 
 CHANGES = ["✎ 261007 · step 0, Set up the paper, is in method.md's Block table, signed by naming the target venue (g03)",
            "✎ 261007 · skills stay one list in guide.yaml; the Block's line names its own skills (g03)",
            "✎ 261007 · the venue lives in both places: venues/ at the Board, the version's face for its one (g03)",
            "✎ 261007 · no Story Job: j00_story/ is gone (JL: the Story is not a Job)",
-           "✎ 261010 · current RoadMap drawings use s05 and s11; s01-s04 preserved outside the current Studio",
-           "✎ 261010 · Story/Ideation homes settled in s05; older Page migration remains separate work"]
+           "✎ 261010 · current RoadMap drawings use s01 (was s05) and s11; s01-s04 preserved outside the current Studio",
+           "✎ 261010 · Story/Ideation homes settled in s01 (was s05); older Page migration remains separate work"]

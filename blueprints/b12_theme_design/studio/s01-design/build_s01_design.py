@@ -5,7 +5,7 @@ overview frame of the design ladder, the design method's six steps and where eac
 in 3 families, how an insight Block steers a design, and the open points. Each level is drawn on its own
 (JL 261007, "instead of nesting all the things together"): s11 Block, s12 Job, s13 Task.
 
-The trees, skills and screens are defined once, in b03_project_workbench/studio/s01-overall-tree-structure/
+The trees, skills and screens are defined once, in b10_project_workbench/studio/s01-overall-tree-structure/
 (build_ladder_v4.py and level_views.py); edit them there, and b03's variant topics and this drawing all follow. This
 builder draws them into its own file through canvas.write, so every mark a person adds survives a rebuild.
 
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-B03 = Path(__file__).resolve().parents[3] / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
+B03 = Path(__file__).resolve().parents[3] / "b10_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402  (the shared trees and drawing helpers)

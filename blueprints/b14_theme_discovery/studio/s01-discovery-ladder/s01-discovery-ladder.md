@@ -8,7 +8,7 @@ with its folder, what it holds, its skills and its screens, the proposal (teal, 
 workbench (gray, dashed), and a Run-level frame: a Paper Run opened from Task › Runs.
 
 **Source:** the Board, Job and Task rows are defined once in
-`../../../b03_project_workbench/studio/s01-overall-tree-structure/` (`build_ladder_v4.py`, `level_views.py`; the
+`../../../b10_project_workbench/studio/s01-overall-tree-structure/` (`build_ladder_v4.py`, `level_views.py`; the
 discovery entries are this Block's, marked `b14 Q01`); edit them there and this drawing and b03's s06,
 s07, s08 follow on their next build. The overview and the Run frame are drawn by this topic's builder.
 

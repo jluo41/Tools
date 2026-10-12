@@ -83,7 +83,7 @@ Decisions
 Tests outside this change
 -------------------------
 
-On 2026-10-03 the wider sweep (`haipipe-board/tests`, `haipipe-page/tests`) had 17 failures
+On 2026-10-03 the wider sweep (`haipipe-block/tests`, `haipipe-draft/tests`) had 17 failures
 that this change did not cause and does not touch: Insight and Design workbench tests and the
 folder-contract checks (other sessions' work in progress on the Insight skills), and five
 standalone Page-server tests, one of which renders `engine/page_plugin.py` (a separate

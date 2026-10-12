@@ -5,7 +5,7 @@ not a Task, each level's six Spaces, where today's Views go, the open points in 
 rows of b03's s06 (Blocks) and s07 (Jobs), each with its proposed screens above today's. There is no
 cowork Task row: a Task appears only for a document written in rounds, and it is then a Page Task.
 
-The trees, skills and screens are defined once, in b03_project_workbench/studio/s01-overall-tree-structure/
+The trees, skills and screens are defined once, in b10_project_workbench/studio/s01-overall-tree-structure/
 (build_ladder_v4.py, level_views.py); edit the cowork entries there and b03's s06, s07 and this drawing
 follow. canvas.write keeps every mark a person adds.
 
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-B03 = Path(__file__).resolve().parents[3] / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
+B03 = Path(__file__).resolve().parents[3] / "b10_project_workbench" / "studio"      # the shared definitions and canvas.write live in b03
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402  (the shared trees and drawing helpers)

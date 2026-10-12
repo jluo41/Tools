@@ -38119,7 +38119,7 @@
    "locked": false
   },
   {
-   "id": "s-80050c3f09fb",
+   "id": "s-cf5f03f2917e",
    "type": "text",
    "x": 4106.75,
    "y": 3011.5,
@@ -38144,8 +38144,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "run-email-<thre…",
-   "originalText": "run-email-<thre…",
+   "text": "run-email-<slug>",
+   "originalText": "run-email-<slug>",
    "fontSize": 11,
    "fontFamily": 6,
    "textAlign": "left",
@@ -38263,7 +38263,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-d2ce1decbffc",
+   "id": "s-e85821a4f431",
    "type": "text",
    "x": 4106.75,
    "y": 3037.5,
@@ -38288,8 +38288,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "run-notes-<meet…",
-   "originalText": "run-notes-<meet…",
+   "text": "run-meeting-<sl…",
+   "originalText": "run-meeting-<sl…",
    "fontSize": 11,
    "fontFamily": 6,
    "textAlign": "left",
@@ -38407,7 +38407,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-5f651b442774",
+   "id": "s-752897822d74",
    "type": "text",
    "x": 4106.75,
    "y": 3063.5,
@@ -38432,8 +38432,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "run-update-job",
-   "originalText": "run-update-job",
+   "text": "run-face-<jNN>",
+   "originalText": "run-face-<jNN>",
    "fontSize": 11,
    "fontFamily": 6,
    "textAlign": "left",
@@ -38551,7 +38551,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-3493dbdf9706",
+   "id": "s-e806e3201636",
    "type": "text",
    "x": 4106.75,
    "y": 3089.5,
@@ -38576,8 +38576,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "run-check-<thre…",
-   "originalText": "run-check-<thre…",
+   "text": "run-review-emai…",
+   "originalText": "run-review-emai…",
    "fontSize": 11,
    "fontFamily": 6,
    "textAlign": "left",

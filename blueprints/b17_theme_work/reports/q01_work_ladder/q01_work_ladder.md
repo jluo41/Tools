@@ -89,8 +89,8 @@ Run types, one `runs/README.md` per level (the buttons in the Run types panel):
 
 - [work ladder](../../studio/s01-work-ladder/s01-work-ladder.excalidraw), frame "work ladder · Q01" (the
   grid, the moves, the open points); the frames below it are b03's work rows (s06, s07, s08).
-- The shared ladder: `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.md`
-  (s01-D13 to D23, D28) and the s08 decisions in `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s13-task-variants/s13-task-variants.md`.
+- The shared ladder: `Tools/blueprints/b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.md`
+  (s01-D13 to D23, D28) and the s08 decisions in `Tools/blueprints/b10_project_workbench/studio/s13-task-variants/s13-task-variants.md`.
 - Today's workbench: `Tools/plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/ref/workbench-table.md`.
 - Folder names read off a real task Block (names only, no data): its Job keeps its face in `diagram/`, its
   Tasks keep `runs/rNN_<slug>.sh` beside `results/rNN_<slug>/`, and no task Block holds a Page Job.

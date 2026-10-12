@@ -18,7 +18,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TOOLS = Path(__file__).resolve().parents[4]
-B03 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"    # the shared drawing helpers and the canvas writer
+B03 = TOOLS / "blueprints" / "b10_project_workbench" / "studio"    # the shared drawing helpers and the canvas writer
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402

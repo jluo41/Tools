@@ -1,6 +1,10 @@
 s12 · Job level
 ===============
 
+**Tags:** `Levels`
+
+**Stage:** shaping
+
 **Topic:** a paper version's tab on the shared frame: one version for one venue, its telling, its Sections
 and its build; its Spaces as full screens, "on disk" under each, two pop-outs, then Guide › Method
 opened from the Job tab (JL 261007).

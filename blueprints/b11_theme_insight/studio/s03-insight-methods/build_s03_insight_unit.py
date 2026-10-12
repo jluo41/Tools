@@ -23,7 +23,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TOOLS = Path(__file__).resolve().parents[4]
-B03 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03 = TOOLS / "blueprints" / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 sys.path.insert(0, str(HERE.parent / "_build"))

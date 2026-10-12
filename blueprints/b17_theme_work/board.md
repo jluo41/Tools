@@ -26,7 +26,7 @@ Most answers here are a change to the work skills (`2_theme/work/` (being set up
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); the stage pipelines a
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the stage pipelines a
 Task runs (haipipe-data, -nn, -end).
 
 ## Pipeline
@@ -40,7 +40,7 @@ chat section -> Related question -> haipipe-question -> skill, workbench or buil
 
 No Jobs yet. The shared drawing is `studio/s01-work-ladder/s01-work-ladder.excalidraw`:
 every work row, Block to Run, proposed and today. It is drawn from b03's shared definitions
-(`b03_project_workbench/studio/s01-overall-tree-structure/`) by `b03_project_workbench/studio/_build/theme_ladder.py`
+(`b10_project_workbench/studio/s01-overall-tree-structure/`) by `b10_project_workbench/studio/_build/theme_ladder.py`
 and rebuilt by b03's `studio/_build/make.sh`.
 
 ## Questions

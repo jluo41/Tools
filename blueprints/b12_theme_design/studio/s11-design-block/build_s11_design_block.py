@@ -370,7 +370,7 @@ SKILLS = {   # each root is a full path from skills/, so its children stay one l
     "Inputs": [("skills/2_theme/design/", ""), ("├── haipipe-design/", "freezes inputs/iN"), ("└── …-design-goal/", "the shared rules"),
                ("skills/2_theme/insight/", ""), ("└── haipipe-insight/", "signs the handoff W-NN")],
     "Questions": [("skills/1_base/question/", ""), ("├── haipipe-question/", "a question, its report"), ("└── …-question-asking/", "shapes a new question"),
-                  ("skills/1_base/page/", ""), ("└── haipipe-page/", "writes the report Page")],
+                  ("skills/1_base/page/", ""), ("└── haipipe-draft/", "writes the report Page")],
     "Cost": [("skills/1_base/project/", ""), ("└── haipipe-run/", "the receipt: time"), ("    └── ? usage:", "? tokens in · out, to do"),
              ("skills/2_theme/design/", ""), ("└── workbench-design/", "sums it per Job")],
     "Predicted": [("skills/2_theme/design/", ""), ("├── …-design-unit/", "④ ⑤ reviewer predicts"), ("└── ? …-design-workflow/", "? add-observed · score"),

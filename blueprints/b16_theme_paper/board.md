@@ -14,16 +14,18 @@ are Studio topics; its research questions have reports. A Job is one version for
 selecting questions and results, ordering Sections and answering comments. A Task is one Section,
 Abstract or letter, written as a Page Task. Scientific work runs in the Project's work and discovery Tasks.
 
-The shared ladder (b03) gives every level the same six Spaces: Description · Idea Studio ·
-Audience Report | Work Details | Runs · Delivery. This Block asks how paper fits that ladder level
+The shared ladder (b10) gives every level the same screen: Guide · Studio | Block · Job · Task | Delivery
+on top (Studio and Delivery are the Board's own, opened from every level, with Related folded inside
+Studio, b10 s04-D05), and Description · Report | Work | Runs below; a version and a Section keep no
+related/, studio/ or delivery/ of their own (JL 261011) (every level writes its own Report). This Block asks how paper fits that ladder level
 by level, and what it needs that no other Theme has.
 
 Most answers here are a change to the paper skills (`2_theme/paper/haipipe-paper` and its sub-skills, `workbench-paper`), the Paper workbench
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); the Page workflow every
-Section uses (haipipe-page-workflow).
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the Page workflow every
+Section uses (haipipe-draft-workflow).
 
 ## Pipeline
 
@@ -34,32 +36,39 @@ chat section -> Related question -> haipipe-question -> skill, workbench or buil
 
 ## Pages
 
-No Jobs yet. Studio topics:
+No Jobs yet. Studio topics (reorganized 261011, JL: "you just propose it"), one per view with b10's
+numbers, so the same number means the same view in every theme Block; groups in `studio/_groups.txt`:
 
-- `studio/s05-board-job-task-boundary/`: the current ladder and Board, Job and Task boundaries;
-  each level's Studio, reports and communication; shared ladder overview and all five Story/Ideation
-  decisions carried from s01 and s04. The Job-to-Block viewing proposal stays open here.
-- Retired s01-s04 are frozen under `_archive/20261010/studio/`, including s02's uncommitted work
-  and s03's migration history. Their numbers are not reused; they are not current build inputs.
-- `studio/s11-paper-block/`, `s12-paper-job/`, `s13-paper-task/`: one level each, as b11 does: the
-  level's tab on the shared frame, each Space a full screen with "on disk" under it, then Guide ›
-  Method opened from that tab (its level's section open). Drawn by `studio/_build/paper_ui.py`.
-- `studio/s21-paper-run-skill/s21-paper-run-skill.excalidraw`: Q05, the paper theme's skills and Runs:
-  every Run each level's buttons make (run-<type>-<target>) with its skill, agent and signs, one
-  version in order, the 9 paper skills and the base skills they borrow, the skill folders before →
-  after with each change's reason, skill × Run, the Runs on disk, and the skill update plan. Read
-  from disk by `build_s21_paper_run_skill.py`, in b12's s21 style. Run by `goals/g04-paper-skills.md`.
-- `studio/s31-paper-guide/s31-paper-guide.excalidraw`: the paper Guide cut by level (s03's style):
-  the four Views opened from each level's tab, read live from the paper Guide's files, each level's
-  proposals in red; one file per level (guide_block · guide_job · guide_task), one shared builder.
-- `studio/s32-paper-element-ui/s32-paper-element-ui.excalidraw`: the paper theme's element gallery, after b03's
-  s32: every element as the frame draws it at Block, Job and Task (every Space and view) and on the old pages
-  (flagged OLD), each with its proposed look (b03's picks) beside it, and the Theme elements list with its gaps
-  in red. Shot live and drawn by `build_s32_paper_element_ui.py` (b03's helpers imported).
-- `studio/s33-ui-issue/s33-ui-issue.excalidraw`: the paper workbench's UI issues as served (review 261008):
-  one frame per owner (shared frame · Board tab · version tab · Section tab), each a map of its Spaces and
-  views with the issue ids beside them and a table of where · what is wrong · what it should be · code; then
-  what works (keep) and the open questions. Drawn by `build_s33_ui_issue.py`.
+```text
+group          topic                  holds                                         stage    Q
+Structure      s01-paper-tree         Board · version · Section boundaries (was s05) shaping  Q01
+Views          s02-paper-studio       Story and Ideation as studio topics           explore  Q04
+Views          s03-paper-delivery     the built paper, per version                  explore  Q02
+Views          s04-paper-related      venues and related papers (ids from s04-D06)  explore  Q02
+Views          s05-paper-report       research questions and review rounds          explore  Q03
+Levels         s11 · s12 · s13        the Board, version and Section tabs           -        Q01
+Run and Skill  s21-paper-run-skill    the paper's Runs and skills                   explore  Q05
+Guide          s31-paper-guide        the Guide, cut by level                       explore
+UI             s32-paper-ui           elements and issues (s33-ui-issue merged in)  shaping
+```
+
+- `studio/s01-paper-tree/`: the current ladder and Board, Job and Task boundaries; each level's Studio,
+  reports and communication; shared ladder overview and all five Story/Ideation decisions (s01-D06..D10,
+  carried from the retired s04). The Job-to-Block viewing proposal stays open here.
+- `studio/s02-paper-studio/` to `s05-paper-report/`: what paper puts in each of the Block's views (Studio,
+  Delivery, Related, Report), each starting from b10's rule for every Block, its open points in red.
+- `studio/s11-paper-block/`, `s12-paper-job/`, `s13-paper-task/`: one level each (s11 explore; s12 and s13
+  shaping): the level's tab on the shared frame, each Space a full screen with "on disk" under it, then
+  Guide › Method opened from that tab. Drawn by `studio/_build/paper_ui.py`.
+- `studio/s21-paper-run-skill/`: Q05, every Run each level's buttons make with its skill, agent and signs,
+  the paper skills and the base skills they borrow, the skill folders before → after. Read from disk by
+  `build_s21_paper_run_skill.py`. Run by `goals/g04-paper-skills.md`.
+- `studio/s31-paper-guide/`: the paper Guide cut by level, read live from the paper Guide's files; one file
+  per level (guide_block · guide_job · guide_task), one shared builder.
+- `studio/s32-paper-ui/`: the element gallery (`s32-paper-ui.excalidraw`, shot live by
+  `build_s32_paper_ui.py`) and the served UI's issues (`ui-issue.excalidraw`, review 261008, by
+  `build_ui_issue.py`), one topic since 261011.
+- Retired s01-s04 stay frozen under `_archive/20261010/studio/`; they are not current build inputs.
 
 ## Questions
 
@@ -132,6 +141,22 @@ resources:
   - Q01
   - Q02
   - Q03
+```
+
+## Renumbered (261011)
+
+JL 261011: b16 takes b10's view numbers. A decision id moved with its topic.
+
+```text
+studio topic           was                            decision ids
+s01-paper-tree         s05-board-job-task-boundary    s05-D01..D10 → s01-D01..D10
+s02-paper-studio       new                            from s02-D01
+s03-paper-delivery     new                            from s03-D01
+s04-paper-related      new                            from s04-D06 (s04-D01..D05: retired Story, in s01)
+s05-paper-report       new                            from s05-D01
+s32-paper-ui           s32-paper-element-ui + s33-ui-issue   s32-D unchanged
+runs/run-draw-s01      runs/run-draw-s05
+runs/run-draw-s32      runs/run-draw-s33
 ```
 
 ## Blueprint home

@@ -5,8 +5,8 @@ s01 · labeling ladder
 this Block's open questions, then the Board, Job and Task levels, each row with its folder, what it
 holds, its skills, and its screens, the proposal (teal, solid) above today's workbench (gray, dashed).
 
-**Source:** the rows are defined once in `../../../b03_project_workbench/studio/s01-overall-tree-structure/`
-(`build_ladder_v4.py`, `level_views.py`) and drawn by `../../../b03_project_workbench/studio/_build/theme_ladder.py`;
+**Source:** the rows are defined once in `../../../b10_project_workbench/studio/s01-overall-tree-structure/`
+(`build_ladder_v4.py`, `level_views.py`) and drawn by `../../../b10_project_workbench/studio/_build/theme_ladder.py`;
 edit the rows there and this drawing follows on its next build.
 
 **Feeds:** `../../reports/` q01 (the ladder question).

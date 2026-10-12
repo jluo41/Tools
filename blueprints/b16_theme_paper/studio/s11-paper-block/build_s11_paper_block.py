@@ -2,7 +2,7 @@
 full screens with "on disk" under each, then Guide › Method opened from the Block tab (JL 261007: "add
 the s11 s12 s13 like b11").
 
-It draws Q01's proposal for the Board (s05-board-job-task-boundary): the Board keeps the paper's scope, venues,
+It draws Q01's proposal for the Board (s01-paper-tree): the Board keeps the paper's scope, venues,
 related work and questions; the Ideation and the Story show in its Audience Report (on disk not Pages but
 studio topics, s01-ideation/ and sNN-story-<telling>/, and Board Questions with reports: Q04, JL 261007); its Work Details are its versions, grants and slides. Placeholders only; written
 through canvas.write, so every mark a person adds survives a rebuild.

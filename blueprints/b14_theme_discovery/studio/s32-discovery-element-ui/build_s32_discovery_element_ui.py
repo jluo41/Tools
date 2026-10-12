@@ -20,7 +20,7 @@ Two steps:
         draws the gallery from shots/ and the planned screens from b03's level definitions (build_ladder_v4.py,
         level_views.py: the discovery rows, b14 Q01); marks are kept on rebuild (canvas.write).
 
-The shooting and picture helpers are b03's (../../../b03_project_workbench/studio/s32-element-ui/
+The shooting and picture helpers are b03's (../../../b10_project_workbench/studio/s32-element-ui/
 build_s32_element_ui.py), imported. b14 has no s11 · s12 · s13 of its own: its level designs are the discovery rows
 of b03's s11-block-variants, s12-job-variants and s13-task-variants, drawn here by b03's own wireframe().
 """
@@ -41,7 +41,7 @@ SHOTS = HERE / "shots"
 SPACE = Path(__file__).resolve().parents[5]
 TOOLS = Path(__file__).resolve().parents[4]
 SERVERS = TOOLS / "plugins" / "haipipe-toolkit" / "servers"
-B03S32 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "s32-element-ui"
+B03S32 = TOOLS / "blueprints" / "b10_project_workbench" / "studio" / "s32-element-ui"
 sys.path.insert(0, str(B03S32))
 import build_s32_element_ui as E  # noqa: E402  (b03's gallery: PICK_JS, picture, style_line; it loads L and canvas)
 import level_views as LV  # noqa: E402  (b03's s11 · s12 · s13 screens; on the path E set up)
@@ -233,7 +233,7 @@ PROPOSALS = {
               "? the Job draws no third row at all; s12 plans Description: Inquiry · Resources, Work Details: All · "
               "Search · Review · Synthesize, Runs: All · plan · delivery · from below"),
     "report": (("b03", "", "", ""), ".q-head-row|.q-row:not(.q-head-row)",
-               ["one Question │ Work │ Report row per Question, as every theme (b03 s04-D04)",
+               ["one Question │ Work │ Report row per Question, as every theme (b10 s02-D25)",
                 "the Question cell as the Insight row: label and state dot, short name, one sentence, › More",
                 "the Work cell: the Tasks that answer it and the papers they read (r01 · r02)"],
                "changed: the Question cell as Insight's (b03 s32-D05)",

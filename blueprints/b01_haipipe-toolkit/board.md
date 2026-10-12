@@ -1,14 +1,15 @@
 # b01 · haipipe-toolkit
 
 board-kind: task-block
-spine: Shared toolkit foundations: utilities, base skills, the project ladder and workbench frame, skill layout, and chat; one Job per area. Theme design belongs to the peer b11–b17 Blocks.
+spine: Shared toolkit foundations: utilities, base skills, skill layout, and chat; one Job per area. The shared ladder and workbench belong to b10_project_workbench. Theme design belongs to the peer b11–b17 Blocks.
 close: Every Job's questions have a report Page with an answer status, and every answered question names the skill, server or file change that settled it.
 
 ## Topic
 
 The shared foundations of `plugins/haipipe-toolkit`: utility and base skills,
-the project ladder and workbench frame, skill folders, and chat. Each area is a
-Job inside this Block. Each Theme has its own peer Block under `blueprints/`
+skill folders and chat. Each area is a Job inside this Block.
+The project ladder and shared workbench have their own peer Block,
+[b10_project_workbench](../b10_project_workbench/board.md). Each Theme has its own peer Block under `blueprints/`
 (261010), with its own questions, reports, studio topics and Runs.
 
 `b02_haipipe-utils` and `b03_inlab-human` remain the other package blueprints.
@@ -20,15 +21,15 @@ and several Theme Blocks.
 ```text
 j01_utils               utility skills and small helpers
 j02_base                base skill families
-j03_project_workbench   the project ladder and shared workbench frame
 j04_skill_folder        skill and server layout
 j05_chat                chat and workbench Runs
 ```
 
-## Theme Blocks
+## Related Blocks
 
 | Block | Focus |
 |---|---|
+| [b10_project_workbench](../b10_project_workbench/board.md) | shared project ladder and workbench |
 | [b11_theme_insight](../b11_theme_insight/board.md) | insight |
 | [b12_theme_design](../b12_theme_design/board.md) | design |
 | [b13_theme_cowork](../b13_theme_cowork/board.md) | cowork |
@@ -46,7 +47,7 @@ questions:
 - id: Q01
   title: How are the toolkit's blueprints organized?
   question: 'How does Tools/blueprints/ map the toolkit: shared foundation Jobs in b01,
-    independent Theme Blocks b11–b17, and what belongs to each level?'
+    shared Block b10, independent Theme Blocks b11–b17, and what belongs to each level?'
   hypothesis: b01 holds shared foundation Jobs and cross-theme questions; each
     Theme Block keeps its own studio, questions, reports and runs. Package membership
     does not determine the number of blueprint Blocks.

@@ -26,8 +26,8 @@ Most answers here are a change to the cowork skills (`2_theme/cowork/haipipe-cow
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); writing a report Page
-(haipipe-page).
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); writing a report Page
+(haipipe-draft).
 
 ## Pipeline
 
@@ -42,7 +42,7 @@ No Jobs yet. The studio topics:
 
 - `studio/s01-cowork-ladder/`: every cowork row, Block to Run, proposed and today, with Q01's
   proposed answer in its overview frame. Drawn from b03's shared definitions
-  (`b03_project_workbench/studio/s01-overall-tree-structure/`) by its own `build_s01_cowork_ladder.py`, and
+  (`b10_project_workbench/studio/s01-overall-tree-structure/`) by its own `build_s01_cowork_ladder.py`, and
   rebuilt by b03's `studio/_build/make.sh`.
 - `studio/s02-cowork-workbench/`: today's CoWork workbench design drawing, moved from
   `servers/workbench-cowork/studio/` (261007); the Guide's RoadMap Draw opens it.

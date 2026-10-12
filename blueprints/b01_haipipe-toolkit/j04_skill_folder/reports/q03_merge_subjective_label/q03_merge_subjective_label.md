@@ -61,7 +61,7 @@ Markdown and written paths: 56 `plugins/subjective-label/...` paths and 6 relati
 rewritten, each mapped through the table above. A few were edited by hand: the toolkit
 `servers/README.md` (tree, table rows, rule 4), the moved `workbench-labeling/README.md` (header,
 dependency notes, the Runs panel at `servers/workbench/task/runs_panel.py`), the labeling
-README's contents tree, the `standalone.md` and haipipe-page `SKILL.md` lines that said
+README's contents tree, the `standalone.md` and haipipe-draft `SKILL.md` lines that said
 "optional", the b03 studio s03/s04/s05 notes, and the b02 `build_s01_workbench_shared.py`
 `LABELING` path. Schema ids (`subjective-label/v2`, ...) and skill names are identifiers and
 stay as they are.
@@ -74,7 +74,7 @@ Checks
   (see Limits). The other is `test_prepared_page_is_discovered_before_contract_and_has_live_runs`,
   which fails on the Workbench's Page-URL check ("requires the matching generated Page URL"),
   not on a path.
-- `skills/1_base/page/haipipe-page/tests/test_labeling.py` plus `servers/_host/tests`:
+- `skills/1_base/page/haipipe-draft/tests/test_labeling.py` plus `servers/_host/tests`:
   96 passed, 1 skipped. `_host/tests` alone: 41 passed.
 - `serve.py --only labeling` on a temporary Board with one Page-local `labeling/` job:
   `/_board/labeling-board`, `/_board/labeling` and `/workbench/labeling` return 200;
@@ -90,8 +90,8 @@ Checks
   only history is left (this Block's HANDOFF.md and its q03 question text, the q02 report, and a
   dated "checked 261006 in ..." comment in b03 `level_views.py`).
 - Whole live tree: _host 41 · workbench-task (now workbench-work) 20 · cowork 8 · discovery 4 passed;
-  servers/haipipe-page 34 passed, 5 failed; haipipe-page-workflow 17 passed, 6 failed;
-  skills/1_base/page/haipipe-page 906 passed, 11 failed. None of these failures is a path or
+  servers/haipipe-page 34 passed, 5 failed; haipipe-draft-workflow 17 passed, 6 failed;
+  skills/1_base/page/haipipe-draft 906 passed, 11 failed. None of these failures is a path or
   import error (see q02).
 
 

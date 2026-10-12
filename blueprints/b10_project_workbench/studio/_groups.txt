@@ -1,0 +1,9 @@
+# Studio groups of this Block, in button order. The workbench writes this file when a group is
+# made, moved or deleted; a group's topics are the ones whose **Tags:** line names it.
+Structure
+Levels
+Guide
+Run and Skill
+Server
+UI
+Report

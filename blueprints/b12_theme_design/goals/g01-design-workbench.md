@@ -147,7 +147,7 @@ Verify (report each)
 
 1. Tests before and after, no new failures: `servers/_host/tests`, `servers/workbench-design/tests`
    (add: the theme pick for a new-ladder Block and for B00 · B01; each level's Spaces and views on the
-   fixture; every ↗ target; the Job reader without `_by-`), `skills/1_base/page/haipipe-page/tests`
+   fixture; every ↗ target; the Job reader without `_by-`), `skills/1_base/page/haipipe-draft/tests`
    (baseline 909 pass / 11 known failures).
 2. Restart the host on 5796 (the same command it runs with now); GET
    `/_board/workbench?path=<…>&format=json` for the fixture Block, one Job, t00, one design Task, t99,

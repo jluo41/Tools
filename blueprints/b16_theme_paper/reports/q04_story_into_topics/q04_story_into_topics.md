@@ -1,5 +1,5 @@
 # Where do the Story and Ideation live?
-state: 🟡 DRAFT · decided by JL 2026-10-07; decisions carried into s05 on 2026-10-10; remaining migration work is separate
+state: 🟡 DRAFT · decided by JL 2026-10-07; decisions carried into s05 on 2026-10-10, now s01 (261011); remaining migration work is separate
 answers: Q04
 answer-status: partial
 results-read: 2026-10-07T22:46-04:00
@@ -10,11 +10,11 @@ A paper Board takes b03's shape. Ideation and each telling of the paper are stud
 (`studio/s01-ideation/`, `studio/sNN-story-<telling>/`), each research question is a Board
 Question grouped by its topic with a report (`reports/qNN_<question>/`), and the Section Narrative
 with its compile order moves to the version that tells it. The Story and Ideation skills stay,
-called from the Idea Studio and the Audience Report.
+called from the Studio and the Report.
 
 **Where this Page sits:** [Q04 · Where do the Story and Ideation live?](../../board.md).
 
-**Why it matters:** the paper's Audience Report has had no Questions of its own; its answers sat
+**Why it matters:** the paper's Report has had no Questions of its own; its answers sat
 inside one Story Page. On b03's shape each question gets a row (Question │ Work │ Report) and a
 report that can be checked.
 
@@ -22,17 +22,17 @@ report that can be checked.
 
 ### 1 · Answer
 
-Drawn in [s05, frame 9](../../studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw). All five s04 decisions are preserved as s05-D06-D10, with their original ids. The full s04 record is frozen under `_archive/20261010/studio/`.
+Drawn in [s01, frame 9](../../studio/s01-paper-tree/s01-paper-tree.excalidraw). All five s04 decisions are preserved as s01-D06-D10, with their original ids. The full s04 record is frozen under `_archive/20261010/studio/`.
 
 | the part | goes to | shows in |
 |---|---|---|
-| Ideation (all of it) | `studio/s01-ideation/` | Idea Studio · Audience Report › Ideation |
-| §1 Identity · §2 Pitch · §4 Stakes | `studio/sNN-story-<telling>/` face | Description › Scope · Audience Report › Narrative |
-| the Story's drawings | `studio/sNN-story-<telling>/` | Idea Studio |
-| §3, one research question each | `board.md ## Questions` (group: its topic) + `reports/qNN_<question>/` | Audience Report › High-level logic + Low-level work |
+| Ideation (all of it) | `studio/s01-ideation/` | Studio · Report › Ideation |
+| §1 Identity · §2 Pitch · §4 Stakes | `studio/sNN-story-<telling>/` face | Description › Scope · Report › Narrative |
+| the Story's drawings | `studio/sNN-story-<telling>/` | Studio |
+| §3, one research question each | `board.md ## Questions` (group: its topic) + `reports/qNN_<question>/` | Report › High-level logic + Low-level work |
 | §5 · §6 · §7 | each report's Work | the Question's Work column |
 | §8 + compile order | the version face's `## Narrative` | the version's Draft-Main · the build |
-| related papers | `related/related.md` | Description › Related |
+| related papers | `related/related.md` | Studio › Related · Report › Related Papers |
 
 ### 2 · Evidence
 

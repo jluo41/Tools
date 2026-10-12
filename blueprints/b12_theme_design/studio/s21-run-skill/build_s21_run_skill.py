@@ -37,7 +37,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True                    # importing the level builders leaves no __pycache__ behind
 HERE = Path(__file__).resolve().parent
 DESIGNS = Path(__file__).resolve().parents[3]
-B03 = DESIGNS / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03 = DESIGNS / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402
@@ -91,7 +91,7 @@ RUN = {
     "run-propose-questions": ("soft", "propose the Block's questions", "designer agent", "another agent agrees",
                               "haipipe-question", None),
     "run-report-q<NN>": ("soft", "write a question's report", "designer agent", "another agent checks",
-                         "haipipe-page", None),
+                         "haipipe-draft", None),
     "run-propose-method-<slug>": ("soft", "propose a method or a version", "designer agent", "a person signs",
                                   "haipipe-design-method", None),
     "run-draw-s<NN>": ("soft", "draw a topic", "designer agent", "-", "excalidraw-report", None),
@@ -153,7 +153,7 @@ STALE = (r"Design Item|\bCommission\b|Design-<NN>|Design-NN|Design-\d\d|run-desi
          r"2-Design|0-BR-brief|ITEM\d\d")
 # the base skills a design borrows, by what they do for it
 BORROWS = [("shared Run and question contracts", ["haipipe-run", "haipipe-question"]),
-           ("a Block question's report", ["haipipe-page"]),
+           ("a Block question's report", ["haipipe-draft"]),
            ("drawings in Idea Studio", ["excalidraw-report"]),
            ("the signed insight a design reads", ["haipipe-insight"]),
            ("papers behind the methods", ["haipipe-discovery"]),

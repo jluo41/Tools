@@ -34,7 +34,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True                    # importing the level builders leaves no __pycache__ behind
 HERE = Path(__file__).resolve().parent
 DESIGNS = Path(__file__).resolve().parents[3]
-B03 = DESIGNS / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03 = DESIGNS / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 import build_ladder_v4 as L  # noqa: E402
@@ -48,7 +48,7 @@ TK = Path(__file__).resolve().parents[4] / "plugins" / "haipipe-toolkit"
 SKILLS = TK / "skills"
 PAPER = SKILLS / "2_theme" / "paper"
 CARDS = PAPER / "haipipe-paper-workflow" / "ref" / "run-cards.md"
-PAGE_CARDS = SKILLS / "1_base" / "page" / "haipipe-page-workflow" / "ref" / "run-cards.md"
+PAGE_CARDS = SKILLS / "1_base" / "page" / "haipipe-draft-workflow" / "ref" / "run-cards.md"
 LIVE = TK / "servers" / "workbench-paper" / "paper_theme.py"          # the paper workbench as it runs today
 BASE = TK / "servers" / "workbench"                                    # the frame every theme shares
 LEVELS = [("Block", "s11-paper-block/build_s11_paper_block.py"),
@@ -80,9 +80,9 @@ SKILL_JOB = {
 STALE = r"Story Page|Ideation Page|A1-Story|\bB[abc]-|RD<NN>|RD\d\d-|S-<desk>|S-[A-Z][A-Za-z]+-Main|-<MMDD>-"
 # the base skills a paper borrows, by what they do for it
 BORROWS = [("Page workflow: every Section and letter Task",
-            ["haipipe-page-workflow", "haipipe-page-context", "haipipe-page-structure", "haipipe-page-evidence",
-             "haipipe-page-writing", "haipipe-page-scratch", "haipipe-page-revise", "haipipe-page-delivery",
-             "haipipe-page-check"]),
+            ["haipipe-draft-workflow", "haipipe-draft-context", "haipipe-draft-structure", "haipipe-draft-evidence",
+             "haipipe-draft-writing", "haipipe-draft-scratch", "haipipe-draft-revise", "haipipe-draft-delivery",
+             "haipipe-draft-check"]),
            ("Ideation: the idea pool", ["haipipe-ideation", "haipipe-ideation-generate", "haipipe-ideation-test",
                                         "haipipe-ideation-select"]),
            ("supporting work: other themes' hard Runs", ["haipipe-task", "haipipe-discovery"]),
@@ -149,7 +149,7 @@ COUNTS = {"Narrative review": (r"^run-paper-narrative-", "story"), "Task review"
 FLOW = [("set up the Board", "-paper · -venue", "scope · venue · related"),
         ("the Story", "haipipe-paper-story", "RQs as Questions, G0-G2"),
         ("open a version", "haipipe-paper", "j0N_v<MMDD>_<desk>/"),
-        ("write the Sections", "haipipe-page-*", "t0N_ · t2N_, Page Runs"),
+        ("write the Sections", "haipipe-draft-*", "t0N_ · t2N_, Page Runs"),
         ("release a Section", "-paper-workflow ?", "G3, a person signs"),
         ("build · check", "-paper-assemble", "G4 submission ready"),
         ("send", "-paper-assemble ?", "with t31_ cover letter"),
@@ -310,7 +310,7 @@ CHANGES = {
                 "shaped like the design theme's skill: ref/paper-ladder.md + scripts/paper_ladder.py"],
     "done": ["base match (261007): the run cards carry a 🏷 RUN line, read here; shared buttons make the base Runs "
              "(run-face · run-add · run-draw · run-ask · run-report · run-figures · run-check · run-delivery)",
-             "faces follow haipipe-board / -job: board-kind, goal, close, ## Tasks, task-kind: page; no empty folders; "
+             "faces follow haipipe-block / -job: board-kind, goal, close, ## Tasks, task-kind: page; no empty folders; "
              "responds-to: (not answers:) on a version",
 "phase 1 done: ref/paper-ladder.md, scripts/paper_ladder.py (board · version · next · spaces · task · run · "
              "rollback), carry_over/, review_items.py add; tests 7/7",
@@ -737,7 +737,7 @@ def main():
     for lv in ("Block", "Job", "Task"):
         for r in by_level[lv]:
             sk, mark = r[6].rstrip(" ?"), "x ?" if r[6].endswith("?") else "x"
-            page = sk.startswith("haipipe-page") or sk == "haipipe-display"
+            page = sk.startswith("haipipe-draft") or sk == "haipipe-display"
             rows.append([f"{lv} · {r[0]}"] + [mark if sk == f else "" for f in full] +
                         [mark if page else "", "" if sk in full or page else (sk + (" ?" if mark != "x" else ""))])
     table(0, y + 90, cols, rows, mono=("Run",))

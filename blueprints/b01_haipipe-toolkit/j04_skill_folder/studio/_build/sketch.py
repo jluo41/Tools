@@ -20,7 +20,7 @@ TK = TOOLS / "plugins" / "haipipe-toolkit"
 SKILLS = TK / "skills"
 # b03's shared studio writer, found by its file (the Block folder has been renamed before)
 BUILD = next((p.parent for p in sorted((TOOLS / "blueprints").glob("*/*/studio/_build/canvas.py"))
-              if p.parent != HERE), TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "_build")
+              if p.parent != HERE), TOOLS / "blueprints" / "b10_project_workbench" / "studio" / "_build")
 sys.path.insert(0, str(BUILD))
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / "plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts"))  # canvas (haipipe-studio)
 import canvas  # noqa: E402  (the merge-safe writer)

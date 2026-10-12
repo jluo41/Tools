@@ -1,0 +1,28 @@
+run: run-draw-s08
+kind: soft
+type: draw
+scope: null
+target: s08
+ticket: run-draw-s08.md
+skill: haipipe-studio
+agent: null
+signs: JL 261011 (Stage → agreed, s08-D06)
+status: done
+passes:
+- p01-1011
+- p02-1011
+- p03-1011
+- p04-1011
+- p05-1011
+writes:
+- plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline
+- its CSS and script)
+- studio/s08-studio-timeline/ (builder
+- drawing
+- preview
+- face)
+- studio/s08-studio-timeline/ (face
+- builder
+- preview)
+feeds:
+- reports/q09_studio_report_on_screen

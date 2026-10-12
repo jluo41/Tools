@@ -177,7 +177,7 @@ s32-D06 · Proposed (261008): every labeling button is named `run-labeling-<view
     of its view's Run and a round its own Run (the list above). The 12 names wait for JL (they go into
     `labeling_theme.py` RUN_NAMES); the three clashes are fixed in b03's `run_names.DRAWN` (261008).
 s32-D07 · Done (261008, b03): both job links answer 200: `generated_page_url` in `labeling.py` accepts path=
-    with or without a leading "/" (test in haipipe-page/tests/test_labeling.py); reshot, the title frame's
+    with or without a leading "/" (test in haipipe-draft/tests/test_labeling.py); reshot, the title frame's
     link lines are green.
 
 

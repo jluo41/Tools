@@ -37,7 +37,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True                    # importing the level builders leaves no __pycache__ behind
 HERE = Path(__file__).resolve().parent
 DESIGNS = Path(__file__).resolve().parents[3]
-B03 = DESIGNS / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"
+B03 = DESIGNS / "b10_project_workbench" / "studio"
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 sys.path.insert(0, str(HERE.parent / "_build"))     # the insight level builders' shared screens (insight_ui.py)
@@ -104,12 +104,12 @@ STALE = (r"answers\.yaml|Prototype \+ Instance|one Job per (?:DIKW )?level|j0[1-
 OLDER = re.compile(r"older|still read|legacy|historical|was |were |carry_over|carry-over|carried|retired|readable|"
                    r"register board|before it", re.I)
 # the base skills insight borrows, by what they do for it
-BORROWS = [("the ladder: Board · Job · studio · report", ["haipipe-board", "haipipe-job", "haipipe-studio",
+BORROWS = [("the ladder: Board · Job · studio · report", ["haipipe-block", "haipipe-job", "haipipe-studio",
                                                           "haipipe-report"]),
            ("questions: asked, shaped and reviewed", ["haipipe-question", "haipipe-question-asking",
                                                       "haipipe-question-review"]),
            ("execution: the hard Runs, their tickets, Run names by Space", ["haipipe-task", "haipipe-run"]),
-           ("pages: every answering page", ["haipipe-page", "haipipe-page-workflow", "haipipe-page-check"]),
+           ("pages: every answering page", ["haipipe-draft", "haipipe-draft-workflow", "haipipe-draft-check"]),
            ("supporting", ["haipipe-discovery", "table-papers", "excalidraw-report"])]
 # a run type the workbench table has no row for: its owner skill (decided 261007; the plan gives each its card)
 OWNER = {"Add a data version": "haipipe-insight-meta", "Add a Job": "haipipe-insight",
@@ -119,7 +119,7 @@ OWNER = {"Add a data version": "haipipe-insight-meta", "Add a Job": "haipipe-ins
          "Update the coverage": "haipipe-insight-check", "Draw a track": "haipipe-insight-check",
          "Check consistency": "haipipe-insight-knowledge", "Compare with j02": "haipipe-insight-knowledge",
          "Ask a Block question": "haipipe-question", "Write the report": "haipipe-report",
-         "Write a report": "haipipe-insight-<level>", "Check a report": "haipipe-page-check",
+         "Write a report": "haipipe-insight-<level>", "Check a report": "haipipe-draft-check",
          "Open a version": "haipipe-insight", "Set the cuts": "haipipe-insight", "Sign a release": "haipipe-insight-workflow",
          "Open the Prototype Block ↗": "the frame", "Open the release ↗": "the frame", "Add a topic": "the frame"}
 # one name per Run, run-<type>-<target> (as b16's s21); a hard Run keeps rNN_<partition>

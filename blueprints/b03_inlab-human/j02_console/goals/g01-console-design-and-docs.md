@@ -31,7 +31,7 @@ Read first
   `j02_console/j02_console.md`, `j04_haichat/j04_haichat.md`.
 - The pattern to mirror: `Tools/blueprints/b11_theme_insight/studio/` (s01 ladder, s11 · s12 ·
   s13 levels, s21 runs and skills, s32 element UI, s33 UI issues) and
-  `j03_project_workbench/studio/s32-element-ui/build_s32_element_ui.py` (its `PICK_JS` and `shoot()`: Playwright
+  `blueprints/b10_project_workbench/studio/s32-element-ui/build_s32_element_ui.py` (its `PICK_JS` and `shoot()`: Playwright
   screenshots of one element per CSS selector, plus each element's computed style in `facts.json`).
 - How studio topics work: the `haipipe-studio` skill (`new_topic.py`, `canvas.write`, `render_png.py`); the shared
   lines-only helper `Tools/blueprints/_build/mapdraw.py`.

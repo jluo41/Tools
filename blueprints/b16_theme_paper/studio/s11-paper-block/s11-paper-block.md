@@ -1,9 +1,13 @@
 s11 · Block level
 =================
 
+**Tags:** `Levels`
+
+**Stage:** explore
+
 **Topic:** the paper Board's tab on the shared frame (Guide · Block · Job · Task): its six Spaces as full
 screens, "on disk" under each, two pop-outs, then Guide › Method opened from the Block tab (JL
-261007: "add the s11 s12 s13 like b11"). It draws Q01's proposal for the Board (`../s05-board-job-task-boundary/`).
+261007: "add the s11 s12 s13 like b11"). It draws Q01's proposal for the Board (`../s01-paper-tree/`).
 
 **Source:** the screens are drawn by `../_build/paper_ui.py`, shared by s11 · s12 · s13; the Guide's
 steps and method cards are read from `servers/workbench-paper/guide/method.md` and its `methods/`

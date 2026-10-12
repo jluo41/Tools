@@ -14,8 +14,8 @@ Code now finds the skills by name, not by counting folders:
 
 - `Tools/plugins/haipipe-toolkit/servers/_host/host_paths.py` has `skill_dir(name)`. It searches
   `skills/` for a skill or family folder by its name, nearest first, so the next layer move
-  breaks no server path. `PAGE_ENGINE` is `skill_dir("haipipe-page")`.
-- `Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-page/src/skill_paths.py` (new)
+  breaks no server path. `PAGE_ENGINE` is `skill_dir("haipipe-draft")`.
+- `Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-draft/src/skill_paths.py` (new)
   does the same for the Page engine: `SKILLS` (the folder named `skills` above the file),
   `skill_dir`, and `in_skills(rel)`, which also resolves a path written before the layers
   (`paper/venue/...`).
@@ -45,7 +45,7 @@ What broke, and the fix
    210 rewritten with their layer. Examples: AGENTS.md rule 8 (`page.py export`), the
    AGENTS.md Skills section, the `page.py export` run script that `src/page_export.py`
    writes, and the 40-permissions.js prompt.
-5. Bare skills-rooted tokens in backticks (`page/haipipe-page/ref/x.md`): 39 rewritten as
+5. Bare skills-rooted tokens in backticks (`page/haipipe-draft/ref/x.md`): 39 rewritten as
    `1_base/page/...`. `haipipe-writing/cli/agree.py` now accepts `1_base` and `2_theme` as
    heads, so it can check them.
 6. Relative links, both `[x](../..)` and backticked `../../x.md`: 105 rewritten, each resolved
@@ -56,7 +56,7 @@ What broke, and the fix
    `git -C .../venue status` works again.
 
 Tests changed to the layout: `test_interactive_skill_contract.py` (its entry-point list, and
-its expected `../haipipe-page/fn/runs.md`, which now resolves), `test_folder_contract.py` (its
+its expected `../haipipe-draft/fn/runs.md`, which now resolves), `test_folder_contract.py` (its
 skills root and its temporary fixture tree), and `test_aims_state.py`. `skills/README.md` has a
 new section, "The three layers".
 
@@ -69,15 +69,15 @@ Checks
   `servers/_host/tests` 41 passed · `workbench-task/tests` (now `workbench-work/tests`) 20 passed ·
   `workbench-cowork/tests` 8 passed · `workbench-discovery/tests` 4 passed ·
   `servers/haipipe-page/tests` 34 passed, 5 failed (standalone-server HTML and status
-  assertions, no path) · `haipipe-page-workflow/tests` 17 passed, 5 failed (the haipipe-run
+  assertions, no path) · `haipipe-draft-workflow/tests` 17 passed, 5 failed (the haipipe-run
   SKILL.md text no longer has `Closed records` and `run-structure-`; `docs/page-writing-philosophy.md`
-  exists nowhere) · `skills/1_base/page/haipipe-page/tests` 905 passed, 10 failed (baseline
+  exists nowhere) · `skills/1_base/page/haipipe-draft/tests` 905 passed, 10 failed (baseline
   before the move: 11). The 10 are folder-kind SKILL.md content (missing sections and outline
   blocks), insight register settlement in the design fixtures, and one Insight definition
   example. None is a missing path.
 - Live tree after the b02 merge: _host 41 · workbench-task (now workbench-work) 20 · cowork 8 · discovery 4 passed;
-  servers/haipipe-page 34 passed, 5 failed; haipipe-page-workflow 17 passed, 6 failed;
-  skills/1_base/page/haipipe-page 906 passed, 11 failed. The extra one,
+  servers/haipipe-page 34 passed, 5 failed; haipipe-draft-workflow 17 passed, 6 failed;
+  skills/1_base/page/haipipe-draft 906 passed, 11 failed. The extra one,
   `test_real_a00_board`, compares a cell mark on a real Insight Board: content, not a path.
 - guide_families.FAMILIES: 90 paths, 0 missing.
 - Link checker over skills, servers, agents, the toolkit README, `Tools/README.md`,

@@ -28,7 +28,7 @@ Most answers here are a change to the insight skills (`2_theme/insight/haipipe-i
 shared builder, not a Task Run. A Question may have no work entries; its report links the
 changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); the Design Theme
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the Design Theme
 that reads Insight's handoff (b12_theme_design); the DIKW methods, which live in the
 family's Guide.
 
@@ -57,7 +57,7 @@ studio/
 └── _build/insight_ui.py     the screen helpers and card reader s03 · s11-s13 share
 ```
 
-s01 is drawn from b03's shared definitions (`b03_project_workbench/studio/s01-overall-tree-structure/`)
+s01 is drawn from b03's shared definitions (`b10_project_workbench/studio/s01-overall-tree-structure/`)
 and rebuilt by b03's `studio/_build/make.sh`. s02 and s03 came from the Insight workbench's
 own studio (`servers/workbench-insight/studio/`, removed 261007).
 
@@ -146,8 +146,8 @@ resources:
   - Q03
   contribution: Today's five Spaces, the Prototype and Insight Views, the Check Space and the pop-outs.
   notes: ''
-- title: j03_project_workbench Q07 (how the workbench maps onto the ladder)
-  url: ../b01_haipipe-toolkit/j03_project_workbench/reports/q07_workbench_mapping/q07_workbench_mapping.md
+- title: b10_project_workbench Q07 (how the workbench maps onto the ladder)
+  url: ../b10_project_workbench/reports/q07_workbench_mapping/q07_workbench_mapping.md
   questions:
   - Q01
   contribution: The six Spaces every level shares, and the builder that draws them.

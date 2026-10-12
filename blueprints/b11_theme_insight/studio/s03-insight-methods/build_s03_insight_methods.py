@@ -1,6 +1,6 @@
 """s03 · Insight methods: s03-insight-methods.excalidraw, a plain prototype in the shape of b03 s04
 (JL 261007: "what is the methods? for the insight discovery? collect all the related code in the
-Tools and then create the excalidraw"; "you can follow s04-studio-and-report").
+Tools and then create the excalidraw"; "you can follow s02-studio-workbench-skill").
 
 1 · Three families           asking, answering, reading side by side: step, cards, skills, papers, tests
 2 · From card to screen      the card files -> the renderers -> Guide › Method; red: no card reaches a run
@@ -26,7 +26,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TOOLS = Path(__file__).resolve().parents[4]
-B03 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio"    # the shared drawing helpers and the canvas writer
+B03 = TOOLS / "blueprints" / "b10_project_workbench" / "studio"    # the shared drawing helpers and the canvas writer
 sys.path.insert(0, str(B03 / "s01-overall-tree-structure"))
 sys.path.insert(0, str(B03 / "_build"))
 sys.path.insert(0, str(HERE.parent / "_build"))

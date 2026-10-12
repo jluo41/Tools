@@ -102,7 +102,7 @@ Verify (report each)
 
 1. Tests before and after, no new failures: `servers/_host/tests`, `servers/workbench-insight/tests`
    (add: the theme pick for b52, each level's Spaces and subviews on the fixture, every ↗ target),
-   `skills/2_theme/insight/haipipe-insight-check/tests`, `skills/1_base/page/haipipe-page/tests`
+   `skills/2_theme/insight/haipipe-insight-check/tests`, `skills/1_base/page/haipipe-draft/tests`
    (baseline 909 pass / 11 known failures).
 2. Restart the host on 5796 (same command); GET `/_board/workbench?path=<…>&format=json` for the
    fixture Board, one fixture Job, one fixture Task, b52 and the register board; list each Space's

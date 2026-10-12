@@ -18,7 +18,8 @@ TK = BLOCK.parents[1] / "plugins" / "haipipe-toolkit"
 THEME_BLOCK = {"insight": "b11_theme_insight", "design": "b12_theme_design", "cowork": "b13_theme_cowork",
              "discovery": "b14_theme_discovery", "labeling": "b15_theme_labeling", "paper": "b16_theme_paper",
              "work": "b17_theme_work"}
-CHANGES = [("261010", "Themes are peer Blocks b11–b17; shared foundation Jobs remain in b01.")]                                          # (YYMMDD, what changed): a green note each
+CHANGES = [("261010", "Themes are peer Blocks b11–b17; shared foundation Jobs remain in b01."),
+           ("261010", "Shared project structure and workbench are the independent Block b10.")]                                          # (YYMMDD, what changed): a green note each
 
 
 def skills(folder: Path) -> int:
@@ -28,14 +29,14 @@ def skills(folder: Path) -> int:
 def rows():
     out = [["skills · 0_utils", "skills/0_utils/", f"{skills(TK / 'skills/0_utils')} skills", "j01_utils"]]
     for fam in sorted(p for p in (TK / "skills/1_base").iterdir() if p.is_dir()):
-        job = "j03_project_workbench" if fam.name == "project" else "j02_base"
+        job = "b10_project_workbench" if fam.name == "project" else "j02_base"
         out.append([f"skills · 1_base · {fam.name}", f"skills/1_base/{fam.name}/", f"{skills(fam)} skills", job])
     for th in sorted(p for p in (TK / "skills/2_theme").iterdir() if p.is_dir()):
         job = THEME_BLOCK.get(th.name, "? no Job")
         out.append([f"skills · 2_theme · {th.name}", f"skills/2_theme/{th.name}/", f"{skills(th)} skills", job])
     for srv in sorted(p for p in (TK / "servers").iterdir() if p.is_dir() and not p.name.startswith(".")):
         theme = srv.name.removeprefix("workbench-")
-        job = THEME_BLOCK.get(theme) if srv.name.startswith("workbench-") else "j03_project_workbench"
+        job = THEME_BLOCK.get(theme) if srv.name.startswith("workbench-") else "b10_project_workbench"
         py = sum(1 for f in srv.rglob("*.py") if "tests" not in f.parts)
         out.append([f"server · {srv.name}", f"servers/{srv.name}/", f"{py} .py files", job or "? no Job"])
     chat = [f for f in ("chat.py", "term.py") if (TK / "servers/workbench" / f).is_file()]
@@ -54,7 +55,7 @@ def main():
     s = Sheet()
     data = rows()
     cols = [("part", 330, 32), ("where, under plugins/haipipe-toolkit/", 420, 42), ("size", 260, 26),
-            ("owning Job / Theme Block", 280, 28)]
+            ("owning Job / Block", 280, 28)]
     f = s.frame("1 · The toolkit map", 0, 0, sum(w for _, w, _ in cols) + 80, 100)
     s.text(40, 30, "s01 · The toolkit map: every part of haipipe-toolkit, and its blueprint owner", 30, f)
     s.text(40, 80, "Counted from disk on each rebuild. Red: a part with no blueprint owner yet (? open).", 18, f)

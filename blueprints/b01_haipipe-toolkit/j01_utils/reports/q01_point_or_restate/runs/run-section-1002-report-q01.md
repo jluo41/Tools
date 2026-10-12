@@ -5,7 +5,7 @@ family: page
 operation: interactive-writing
 target: C1
 goal: Write the Q01 report from the response-format change history
-skills: haipipe-page-writing · haipipe-writing
+skills: haipipe-draft-writing · haipipe-writing
 status: closed
 started_at: 2026-10-02T23:50:55-04:00
 started_by: Claude

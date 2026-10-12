@@ -40,9 +40,9 @@ JOB = {"haipipe-paper": ("the door: routes a request to its owner", "all"),
        "haipipe-paper-section": ("Section Page: one Section", "Task")}
 # the base skills a paper borrows, by what they do for it
 BORROWS = [("Page workflow (every Story and Section Page)",
-            ["haipipe-page-workflow", "haipipe-page-context", "haipipe-page-structure", "haipipe-page-evidence",
-             "haipipe-page-writing", "haipipe-page-scratch", "haipipe-page-revise", "haipipe-page-delivery",
-             "haipipe-page-check"]),
+            ["haipipe-draft-workflow", "haipipe-draft-context", "haipipe-draft-structure", "haipipe-draft-evidence",
+             "haipipe-draft-writing", "haipipe-draft-scratch", "haipipe-draft-revise", "haipipe-draft-delivery",
+             "haipipe-draft-check"]),
            ("Ideation (the idea pool)", ["haipipe-ideation", "haipipe-ideation-generate", "haipipe-ideation-test",
                                          "haipipe-ideation-select"]),
            ("supporting work (other themes' hard Runs)", ["haipipe-task", "haipipe-discovery"]),

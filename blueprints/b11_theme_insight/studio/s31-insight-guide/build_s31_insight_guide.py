@@ -19,7 +19,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TOOLS = Path(__file__).resolve().parents[4]
-S03 = TOOLS / "blueprints" / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "s31-guide"   # was s03-guide (b03 renumbered, 261007)
+S03 = TOOLS / "blueprints" / "b10_project_workbench" / "studio" / "s31-guide"   # was s03-guide (b03 renumbered, 261007)
 sys.path.insert(0, str(S03))
 sys.path.insert(0, str(HERE))
 import build_s31_guide as S3  # noqa: E402  (b03's Guide screen, cards and helpers; draws nothing on import)

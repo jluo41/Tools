@@ -27,7 +27,7 @@ Most answers here are a change to the labeling skills (`2_theme/labeling/haipipe
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b03_project_workbench); moving the plugin's files
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench); moving the plugin's files
 (b04_skill_folder).
 
 ## Pipeline
@@ -41,7 +41,7 @@ chat section -> Related question -> haipipe-question -> skill, workbench or buil
 
 No Jobs yet. The shared drawing is `studio/s01-labeling-ladder/s01-labeling-ladder.excalidraw`:
 every labeling row, Block to Run, proposed and today. It is drawn from b03's shared definitions
-(`b03_project_workbench/studio/s01-overall-tree-structure/`) by `b03_project_workbench/studio/_build/theme_ladder.py`
+(`b10_project_workbench/studio/s01-overall-tree-structure/`) by `b10_project_workbench/studio/_build/theme_ladder.py`
 and rebuilt by b03's `studio/_build/make.sh`.
 
 `studio/s02-labeling-workbench/` is the Labeling workbench as built today (moved from the

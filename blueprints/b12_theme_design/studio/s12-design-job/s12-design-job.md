@@ -27,7 +27,7 @@ Proposed (261007)
 **Source:** the screens are drawn by `../_build/design_ui.py`, shared by s11 · s12 · s13 and borrowed from
 `../../../b11_theme_insight/studio/_build/insight_ui.py`; the method cards are read from
 `servers/workbench-design/guide/methods/` at build time. The rows of b03 (proposed above today's served
-screens) stay in `../../../b03_project_workbench/studio/` s11-block-variants, s12-job-variants and s13-task-variants.
+screens) stay in `../../../b10_project_workbench/studio/` s11-block-variants, s12-job-variants and s13-task-variants.
 
 **Feeds:** `../../reports/` q01_design_ladder · q02_design_workbench.
 

@@ -5,7 +5,7 @@ Retired 261010
 --------------
 
 Historical prompt only. Do not execute this goal: its Story Job and review Task decisions were
-superseded. Read `studio/s05-board-job-task-boundary/` and the current paper skills instead.
+superseded. Read `studio/s01-paper-tree/` and the current paper skills instead.
 The complete migration design and history are frozen under `_archive/20261010/studio/s03-paper-migration/`.
 Retiring this prompt does not migrate a real paper Board.
 
@@ -21,7 +21,7 @@ Read first
 ----------
 
 - Designs: `Tools/blueprints/b16_theme_paper/studio/` s11-paper-block (Board), s12-paper-job (a version), s13-paper-task
-  (a Section), s31-paper-guide (the Guide by level), s05-board-job-task-boundary (current design). The historical
+  (a Section), s31-paper-guide (the Guide by level), s01-paper-tree (current design). The historical
   migration design is `_archive/20261010/studio/s03-paper-migration/`, including its history/ folder.
 - Code: `Tools/plugins/haipipe-toolkit/servers/workbench-paper/paper_theme.py` and `paper.py`;
   `servers/workbench/frame.py` (`level_patterns`, `question_rows`, `page_task_spaces`) and `servers/workbench/README.md`

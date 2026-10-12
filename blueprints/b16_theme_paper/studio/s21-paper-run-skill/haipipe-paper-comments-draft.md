@@ -25,7 +25,7 @@ DRAFT (b16, 261007, JL: "change it to the haipipe-paper-comments … just for pr
 from all kinds of people, from review report and from the meeting"). Not installed: it lives in the paper
 design Block until the rename with haipipe-paper-round is planned (b04 owns skill renames).
 
-Load `haipipe-page`, `haipipe-page-workflow`, `haipipe-paper-workflow`, then this PageType. A batch Page is a
+Load `haipipe-draft`, `haipipe-draft-workflow`, `haipipe-paper-workflow`, then this PageType. A batch Page is a
 Page like any other (`page-type: comments`); triage alone allocates no Run.
 
 ## What changed from haipipe-paper-round

@@ -2,7 +2,7 @@ s31 · design Guide
 ==================
 
 **Topic:** the design workbench's Guide tab, cut by level (JL 261007: "follow
-b16_theme_paper/studio/s31-paper-guide … and Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide"), in
+b16_theme_paper/studio/s31-paper-guide … and Tools/blueprints/b10_project_workbench/studio/s31-guide"), in
 the style of b03's s31-guide: four Views, Description · Method · RoadMap Draw · Related Paper, each in
 three folding sections Block · Job · Task, its items as cards of one shape per View. One frame per level:
 the four Views opened from that level's tab, its section open and the other two folded, "on disk" under
@@ -13,7 +13,7 @@ each, then that level's open points in red.
 column) and the design theme's Spaces on the frame, over a placeholder design ladder that the design
 scaffold makes in a temp folder, by `design_guide_live.py`. Each level's file adds its proposals, marked
 "?" (red), from s00 and s11 to s13. The screen and card shapes are s31's
-(`../../../b03_project_workbench/studio/s31-guide/`); the builder is b16's s31, with the design Guide's words.
+(`../../../b10_project_workbench/studio/s31-guide/`); the builder is b16's s31, with the design Guide's words.
 
 **Feeds:** `../../reports/` q01_design_ladder · q02_design_workbench; the proposed Guide text goes into
 `guide.yaml` (a `levels:` section) and `method.md` once JL agrees.

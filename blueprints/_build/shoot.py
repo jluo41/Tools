@@ -1,6 +1,6 @@
 """Screenshot one UI element per CSS selector, with its computed style: the shared shooting helper.
 
-Lifted from b01_haipipe-toolkit/j03_project_workbench/studio/s32-element-ui/build_s32_element_ui.py (its PICK_JS and
+Lifted from b10_project_workbench/studio/s32-element-ui/build_s32_element_ui.py (its PICK_JS and
 the clip-and-snap inside shoot()), so every Block's element gallery shoots the same way. A builder opens the page
 (and clicks whatever it must to reach a view), then calls snap() per element:
 

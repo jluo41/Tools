@@ -52,7 +52,7 @@ LEVEL = {
     "Description": [
         ("t", "one Section, a Page Task: it tells one Narrative row to its reader"),
         ("c", SPACES),
-        ("m", "skills   haipipe-paper-section owns · haipipe-page-workflow works · workbench-paper shows"),
+        ("m", "skills   haipipe-paper-section owns · haipipe-draft-workflow works · workbench-paper shows"),
         ("t", "? variants: Section (Main · Appendix) · Round · Letter; only the Section is drawn yet"),
     ],
     "Method": [

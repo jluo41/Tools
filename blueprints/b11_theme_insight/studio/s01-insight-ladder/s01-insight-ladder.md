@@ -57,7 +57,7 @@ Decided so far
    plan B how to fit the workbench UI") The UI screens stay; a short text-only redraw that dropped
    them was undone. Cleaned instead: a Decide frame first, the Board rows' three empty Description
    columns dropped, frames 300 apart, "differs:" lines gray, and red only on the open points ① to ⑦.
-6. (261007) The Run level follows haipipe-run 0.31.0 and b03's s05-runs: each Run is one folder in `runs/`
+6. (261007) The Run level follows haipipe-run 0.31.0 and b10's s06-run-workbench-skill: each Run is one folder in `runs/`
    (hard `rNN_<dataset>_<partition>/` with `result/`, soft `run-<type>-<target>/`), and each level's Runs
    card is one list from `run.yaml` filtered by kind or type. Insight's move to it is open point ⑦.
 7. (261007, JL: "Board a column, job a column and then task a column") The frames sit in a grid under
@@ -77,7 +77,7 @@ Open
 ④ Today's Check (a question's gates): chips on each need in Task › Work Details?
 ⑤ Meta stays on the Board?
 ⑥ The older register boards: carry over, or keep?
-⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b03's s05-runs): `<dataset>_<partition>.sh`
+⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b10's s06-run-workbench-skill): `<dataset>_<partition>.sh`
   beside `results/` and `reports/` become `runs/rNN_<dataset>_<partition>/` with `result/` inside?
 
 (the drawing's Decide frame gives my answer to each; write here, or mark the drawing in red)

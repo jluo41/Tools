@@ -1,6 +1,10 @@
 s31 · paper Guide
 =================
 
+**Tags:** `Guide`
+
+**Stage:** explore
+
 **Topic:** the paper workbench's Guide tab, cut by level, in the style of b03's s31-guide (four
 Views, Description · Method · RoadMap Draw · Related Paper, each in three folding sections Block ·
 Job · Task, its items as cards of one shape per View). One frame per level: the four Views opened
@@ -10,7 +14,7 @@ level's open points in red (JL 261007: one session per level).
 **Source:** read at build time from the live paper Guide (`servers/workbench-paper/guide/guide.yaml`,
 `guide/method.md`, `related/papers.md`) and the paper theme's Spaces on the frame (over a placeholder
 Board in a temp folder), by `paper_guide_live.py`; each level's file adds its proposals, marked "?"
-(red). The screen and card shapes are s31's (`../../../b03_project_workbench/studio/s31-guide/`).
+(red). The screen and card shapes are s31's (`../../../b10_project_workbench/studio/s31-guide/`).
 
 **Feeds:** `../../reports/` q01_paper_ladder; the proposed Guide text goes into `guide.yaml` and
 `method.md` once JL agrees.

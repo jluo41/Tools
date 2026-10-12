@@ -19,7 +19,7 @@ skills/
 
 The servers follow the same split: `servers/workbench-shared` is the base (the Block / Job / Task
 frame, the Guide's four Views, Studio, the Runs panel) and each `servers/workbench-<theme>` gives its
-theme. The design drawings behind this are in `../b03_project_workbench/studio/` (s08 Task variants, s02 workbench-shared).
+theme. The design drawings behind this are in `../../b10_project_workbench/studio/` (s08 Task variants, s02 workbench-shared).
 
 Excluded: what each skill says (its owner's); this Block asks only where things live and that every
 path follows them.

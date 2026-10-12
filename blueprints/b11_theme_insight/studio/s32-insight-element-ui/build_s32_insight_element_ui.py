@@ -1,7 +1,7 @@
 """b11 s32 · Insight element UI: s32-insight-element-ui.excalidraw, a gallery of every kind of element the
 insight theme draws today, one card per version, each beside a "· proposed" frame with the unified look
 (b03 s32's picks), so the insight theme can take one look per element. It follows b03's element gallery
-(Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s32-element-ui/) and imports its helpers.
+(Tools/blueprints/b10_project_workbench/studio/s32-element-ui/) and imports its helpers.
 
 Two steps:
 
@@ -29,7 +29,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SHOTS = HERE / "shots"
 DESIGNS = Path(__file__).resolve().parents[3]
-B03_S32 = DESIGNS / "b01_haipipe-toolkit" / "j03_project_workbench" / "studio" / "s32-element-ui"
+B03_S32 = DESIGNS / "b10_project_workbench" / "studio" / "s32-element-ui"
 sys.path.insert(0, str(B03_S32))
 import build_s32_element_ui as S  # noqa: E402  (b03's gallery: its pick script, style line, drawing kit)
 
@@ -50,7 +50,7 @@ TASK = f"{JOB}/t05_I01_funnel-fundamentals"
 B52 = f"{PROJ}/tasks/b52_sms_question_dikw"                     # today's layout: an Insight Block, `workbench: insight`
 B52J = f"{B52}/j01_data"
 B52T = f"{B52J}/t01_extract_shape_and_quality"
-B03 = "Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench"
+B03 = "Tools/blueprints/b10_project_workbench"
 
 
 def wb(folder: str, space: str, sub: str = "") -> str:

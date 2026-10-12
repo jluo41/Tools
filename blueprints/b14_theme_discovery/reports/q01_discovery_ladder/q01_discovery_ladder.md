@@ -67,7 +67,7 @@ by `discovery_type`'s specialist; the Bib climbing from one entry per Result to 
 ### Limits
 
 - A proposal only: no skill, scaffold, server or real Block has changed. The rows are b03's shared
-  definitions (the discovery entries in `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s01-overall-tree-structure/`
+  definitions (the discovery entries in `Tools/blueprints/b10_project_workbench/studio/s01-overall-tree-structure/`
   `build_ladder_v4.py` and `level_views.py`); b03's s06, s07 and s08 drawings follow on their next build.
 - Five points change real folders and wait on JL: a Job face `jNN_<inquiry>.md`; a synthesis across a
   Job's Tasks; the Paper Run receipt in `result/` or in `passes/`; where screened candidates live once

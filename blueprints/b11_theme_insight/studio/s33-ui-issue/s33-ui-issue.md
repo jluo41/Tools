@@ -8,7 +8,7 @@ every third-row view was opened, shot with headless Chrome (1500 × 1400) and cu
 screen is judged against what JL asked for (clean, no nested boxes, no filler repeated on every row;
 b03's Question │ Work │ Report row; each level as s11 · s12 · s13 draw it; every link inside the frame;
 the Disk box naming the files each view reads) and against s01, s11, s12, s13, s31, s32 and b03's
-s04-studio-and-report. Review only: no workbench file was changed.
+s02-studio-workbench-skill. Review only: no workbench file was changed.
 
 **Feeds:** `reports/` q01_insight_ladder
 
