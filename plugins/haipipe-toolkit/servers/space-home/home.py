@@ -42,7 +42,7 @@ BOARD_STATE = re.compile(r"^state:\s*(✅|🟡|🔴|⏸️)\s*([A-Z][A-Z-]+)?", 
 
 # The Space view: Project -> Theme -> Block. A Theme is the Project-root folder a
 # Block sits in (skills/1_base/project/haipipe-project/ref/project-structure.md), listed in
-# the order of haipipe-page's src/themes.py; an old plural folder (`tasks/`, `papers/`, ...)
+# the order of haipipe-draft's src/themes.py; an old plural folder (`tasks/`, `papers/`, ...)
 # is an alias of its singular Theme folder and sorts with it.
 THEMES = tuple(folder for _, folder, _ in THEME_TABLE)
 THEME_ALIASES = {old: folder for _, folder, old in THEME_TABLE if old}

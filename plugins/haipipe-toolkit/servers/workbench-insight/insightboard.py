@@ -1670,7 +1670,7 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
         "check": [
             {"label": "Mechanical check", "skill": "cli/check.py", "rows": [],
              "prompt": f"/haipipe-insight application {rel} check"},
-            {"label": "Answer review", "skill": "haipipe-page-check", "rows": [],
+            {"label": "Answer review", "skill": "haipipe-draft-check", "rows": [],
              "prompt": f"/haipipe-insight application {rel} review {{question}} {{partition}}"},
         ],
         "delivery": [

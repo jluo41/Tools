@@ -23,6 +23,8 @@ URL uses the nested category path.
 from __future__ import annotations
 
 import datetime
+import os
+from src.common import delivery_dir, delivery_lane_dir, delivery_read_lane_dir, delivery_relative
 import html
 import json
 import pathlib
@@ -145,7 +147,7 @@ def check_delivery(page_src: pathlib.Path):
     source_mtime = page_src.stat().st_mtime
     lanes = []
     for lane, icon, label in _LANES:
-        lane_dir = base / "delivery" / lane
+        lane_dir = delivery_read_lane_dir(base, lane)
         if lane == "render" and not lane_dir.is_dir() and (base / "render").is_dir():
             lane_dir = base / "render"
         names = [name.format(stem=page_src.stem) for name in _MAIN.get(lane, ())]
@@ -165,7 +167,8 @@ def check_delivery(page_src: pathlib.Path):
             rows.append(_check_row("Page copy", "pass" if same else "stale",
                                    "reads the same as the Page" if same else "differs from the Page"))
         state = "not-built" if not files else "stale" if stale else "pass"
-        lanes.append({"lane": lane, "icon": icon, "label": label, "state": state, "rows": rows})
+        lanes.append({"lane": lane, "icon": icon, "label": label, "state": state, "rows": rows,
+                      "legacy": lane_dir != delivery_lane_dir(base, lane)})
     counts = {state: sum(1 for lane in lanes if lane["state"] == state) for state in ("pass", "stale", "not-built")}
     return {
         "schema": "page-delivery-consistency/v2",
@@ -241,30 +244,30 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str, *,
     delivery_runs = _delivery_run_instances(page_src)
 
     def row(icon, name, rel, hint, lane):
-        p = base / rel
+        p = delivery_dir(base) / rel
         if p.exists():
             state = "✅ built · %s" % _stamp(p)
         else:
             state = "⬜ not built — %s" % hint
         return ("<div class=row><b>%s %s</b><code>%s</code>"
                 "<span class=mut>%s</span></div>%s"
-                % (icon, name, html.escape(rel), html.escape(state),
+                % (icon, name, html.escape(delivery_relative(base) + "/" + rel), html.escape(state),
                    _delivery_run_contract(lane, delivery_runs[lane], page_src,
                                           path_q, file_q)))
 
-    rn = base / "delivery" / "render"
+    rn = delivery_read_lane_dir(base, "render")
     if not rn.is_dir() and (base / "render").is_dir():
         rn = base / "render"
     render_files = sorted(f.name for f in rn.iterdir() if f.is_file()) if rn.is_dir() else []
     n_render = len(render_files)
     home = "\n".join([
-        row("🌐", "Web", f"delivery/web/index.html",
+        row("🌐", "Web", f"web/index.html",
             "no current web artifact exists", "web"),
-        row("📜", "LaTeX", f"delivery/latex/{stem}.pdf",
+        row("📜", "LaTeX", f"latex/{stem}.pdf",
             "the delivery writer has not built it", "latex"),
-        row("📝", "Word", f"delivery/word/{stem}.docx",
+        row("📝", "Word", f"word/{stem}.docx",
             "the delivery writer has not built it", "word"),
-        row("🎞", "Slides", f"delivery/slide/{stem}-deck.html",
+        row("🎞", "Slides", f"slide/{stem}-deck.html",
             "authored on the 🎞 tab's ✨ bar, never auto-built here", "slide"),
         "<div class=row><b>📱 Render</b><code>delivery/render/</code>"
         "<span class=mut>%s</span></div>"
@@ -277,6 +280,7 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str, *,
     ctx = json.dumps({
         "path": path_q, "file": file_q, "stem": stem,
         "render_files": render_files,
+        "delivery_relative": delivery_relative(base),
         "render_legacy_flat": rn == base / "render",
         "interactive": interactive,
         "asset_base": asset_base.rstrip("/") if asset_base is not None else None,
@@ -305,15 +309,15 @@ storage stay with delivery/latex/ · delivery/word/ · delivery/slide/ · delive
   'use strict';
   var CTX = {ctx};
   function savedUrl(workbench, name) {{
-    if (CTX.asset_base !== null) return CTX.asset_base + '/' + workbench + '/' + name;
+    if (CTX.asset_base !== null) return new URL(CTX.delivery_relative + '/' + workbench.replace(/^delivery\\//, '') + '/' + name, location.origin + CTX.asset_base + '/').pathname;
     var p = decodeURIComponent(CTX.path || '');
     var cut = p.lastIndexOf('/board/');
     var base = cut >= 0 ? p.slice(0, cut)
              : (/\\.md$/.test(p) ? p.slice(0, p.lastIndexOf('/')) : '');
     if (!base) return '';
     var m = (CTX.file || '').match(/^(.*)\\/([^\\/]+)\\/\\2\\.md$/);
-    if (m) return base + '/' + m[1] + '/' + m[2] + '/' + workbench + '/' + name;
-    return base + '/' + workbench + '/' + name;
+    if (m) return new URL(CTX.delivery_relative + '/' + workbench.replace(/^delivery\\//, '') + '/' + name, location.origin + '/' + base.replace(/^\\//, '') + '/' + m[1] + '/' + m[2] + '/').pathname;
+    return new URL(CTX.delivery_relative + '/' + workbench.replace(/^delivery\\//, '') + '/' + name, location.origin + '/' + base.replace(/^\\//, '') + '/').pathname;
   }}
   /* build: a deterministic route safe to press on click; slides has an
      AUTHORING pen (claude -p) so it gets a ghost, never an auto-press. */

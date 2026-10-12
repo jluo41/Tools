@@ -137,7 +137,7 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | Boards, a project, or a SPACE root | `python servers/_host/serve.py --root <root>` |
 | One workbench only, own port and DOMAIN, no terminal, chat or Board writes | `python servers/_host/serve.py --root <root> --only <workbench>` |
 | The labeling host, for annotators | `python plugins/haipipe-toolkit/servers/_host/serve.py --only labeling --root <root>` |
-| One standalone Page Folder | `python skills/1_base/page/haipipe-page/cli/page.py serve <page>` (imports `servers/haipipe-page/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
+| One standalone Page Folder | `python skills/1_base/page/haipipe-draft/cli/page.py serve <page>` (imports `servers/haipipe-page/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
 | One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page_reader.py`) |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
 
@@ -165,7 +165,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
      `test | asks | when | source` rows of its own steps; then Why it works; then Reference,
      folded (terms and people with checked links, coined Chinese marked as ours). Every part
      is a fold, open at first except Reference. One made-up
-     example throughout; no file notes on screen. `blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/method-canvas.py`
+     example throughout; no file notes on screen. `blueprints/b10_project_workbench/studio/s31-guide/method-canvas.py`
      draws the canvas's first version from the document; after that the canvas is the source;
    - `table`: the Workbench Table, `ref/workbench-table.md` beside its skill
      (Space · View · Run type · Agent · Skill · Person signs; `skills/0_utils/table-workbench`);
@@ -190,10 +190,10 @@ Families older than a rule are listed in that test's `GAPS` with what they still
 ## Rules
 
 1. **Arrow one way.** Servers import the Page engine's grammar
-   (`skills/1_base/page/haipipe-page/src/`) and its `cli/` helpers (`check.py`, the Board
+   (`skills/1_base/page/haipipe-draft/src/`) and its `cli/` helpers (`check.py`, the Board
    checker; `draw.py`; `refs.py`). The Board skill is retired (JL 261005): its live
    parts moved into the Page skill, the rest was deleted. Skills import nothing from here, with one
-   declared bridge: `skills/1_base/page/haipipe-page/src/page_assets.py` reads the Page
+   declared bridge: `skills/1_base/page/haipipe-draft/src/page_assets.py` reads the Page
    look from `haipipe-page/assets`, so the reader and the web delivery agree.
 
    **One reader (JL 261004).** A Page is shown in exactly one way, the Page engine's
@@ -205,7 +205,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    Labeling workbench binds to the Page in the live reader too.
 2. **Routes are the contract.** `/_board/<name>` URLs did not change in the
    move; `/b/` and `/w/` are short forms that redirect to them, and
-   `haipipe-page/fn/serve-host.md` returns `board-url` and
+   `haipipe-draft/fn/serve-host.md` returns `board-url` and
    `workbench-url` in that short form. (The retired 🛠 skill map routes are
    the one removal: `/_board/skill*`, `/_board/skillview`, `/_board/mdview`.)
 3. **A workbench owns its files.** Python, JS, CSS and vendor files for one

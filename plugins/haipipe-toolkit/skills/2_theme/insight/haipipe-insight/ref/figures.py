@@ -18,7 +18,9 @@ one function serves every question that writes that shape:
                                                     zero line for a gap, gain, effect or drop): the
                                                     shape of most Knowledge tests
 
-A table of no known shape gets no figure and no lead line. Same message, same colour, in every
+A need may also declare its own figures (`figures:` in the question file, block-contract.md § The question
+file): kind line, bar, forest or heat over one of its output tables; those are drawn first, then any
+known shape. A table of no known shape and no declared figure gets no figure and no lead line. Same message, same colour, in every
 figure (sorted names). The PNG carries no timestamp, so a rerun on the same tables writes the same
 bytes. Generated files are never edited by hand (AGENTS.md rule 0): rerun the ticket.
 """
@@ -112,9 +114,11 @@ def _plt():
 
 def _save(fig, path):
     import warnings
-    with warnings.catch_warnings():               # a long label may not fit tight; the bbox below makes room
-        warnings.simplefilter("ignore", UserWarning)
-        fig.tight_layout()
+    if not getattr(fig, "_placed", False):        # a figure that placed its own parts (a heat's colour bar) keeps them
+        top = 1 - 0.6 / fig.get_size_inches()[1] if fig._suptitle is not None else 1
+        with warnings.catch_warnings():           # a long label may not fit tight; the bbox below makes room
+            warnings.simplefilter("ignore", UserWarning)
+            fig.tight_layout(rect=[0, 0, 1, top])  # room for the title above the first panel
     fig.savefig(path, dpi=DPI, metadata={"Software": None}, bbox_inches="tight", pad_inches=0.15)
     import matplotlib.pyplot as plt
     plt.close(fig)
@@ -351,6 +355,141 @@ def _estimate_lead(df):
     return out
 
 
+# ── declared figures: a need names its own (JL 261011: "I didn't see much tables and figures") ──
+def _cols(v):
+    return [v] if isinstance(v, str) else list(v or [])
+
+
+def _declared_draw(df, spec, path, title):
+    """One figure a need declares under `figures:`, drawn from its result table only.
+
+    kind line    x, y (one or a list), band [lo, hi], group (a line per value), facet (a panel per value)
+    kind bar     x, y (one or a list: bars side by side), group, facet
+    kind forest  label (one or a list of columns), x, lo, hi: a dot and its interval per row, a zero line
+                 (zero: false drops it)
+    kind heat    x, y, value: a grid of value by x and y (facet: a grid per value, one colour scale; cmap, clabel)
+    kind strip   y, start, end, group: a row per y (a day), a bar from start to end per row (an instant: a mark),
+                 a colour per group; xmin, xmax, xstep (hours by default)
+    every kind   hline [values] (reference lines), vline [values], ylabel, xlabel, title; sharex (bar panels
+                 keep their own x by default, line panels share it)
+    """
+    plt = _plt()
+    kind = spec.get("kind", "line")
+    facets = sorted(df[spec["facet"]].dropna().unique(), key=str) if spec.get("facet") else [None]
+    if kind == "forest":
+        d = df.dropna(subset=[spec["x"]])
+        labels = [" · ".join(_label(v) for v in r) for r in d[_cols(spec["label"])].itertuples(index=False)]
+        fig, ax = plt.subplots(figsize=(6.4, 0.9 + 0.32 * max(len(d), 2)))
+        y = list(range(len(d)))[::-1]
+        v, a, b = (d[c].to_numpy(float) for c in (spec["x"], spec["lo"], spec["hi"]))
+        ax.errorbar(v, y, xerr=[v - a, b - v], fmt="o", color=PALETTE[0], ms=4, capsize=2, lw=1)
+        if spec.get("zero", True):
+            ax.axvline(0, color="#c0504d", lw=.8, ls="--")
+        ax.set_yticks(y)
+        ax.set_yticklabels(labels, fontsize=8)
+        ax.set_xlabel(spec.get("xlabel") or f"{spec['x']}  ({spec['lo']} to {spec['hi']})", fontsize=8)
+        ax.grid(axis="x", color="#e4e4e7", lw=.6)
+        axes = [ax]
+    elif kind == "strip":                              # a row per y (a day), a bar per row from start to end
+        rows = sorted(df[spec["y"]].dropna().unique(), key=str)
+        groups = sorted(df[spec["group"]].dropna().unique(), key=str) if spec.get("group") else [None]
+        colour = _colour(groups)
+        fig, ax = plt.subplots(figsize=(9.5, 0.9 + 0.42 * max(len(rows), 2)))
+        ypos = {r: len(rows) - 1 - i for i, r in enumerate(rows)}
+        lanes = {g: k for k, g in enumerate(groups)}
+        h = 0.8 / max(len(groups), 1)
+        for g in groups:
+            part = df if g is None else df[df[spec["group"]] == g]
+            for _, r in part.iterrows():
+                y = ypos[r[spec["y"]]] - 0.4 + h * lanes[g] + h / 2
+                a, b = float(r[spec["start"]]), float(r[spec["end"]])
+                if b - a < 0.05:                       # an instant: a mark, not a bar
+                    ax.plot([a], [y], marker="|", ms=9, mew=2, color=colour[str(g)])
+                else:
+                    ax.broken_barh([(a, b - a)], (y - h / 2, h * 0.9), color=colour[str(g)])
+            ax.plot([], [], color=colour[str(g)], lw=6, label=_label(g) if g is not None else None)
+        ax.set_yticks([ypos[r] for r in rows])
+        ax.set_yticklabels([_label(r) for r in rows], fontsize=8)
+        ax.set_xlim(spec.get("xmin", 0), spec.get("xmax", 24))
+        ax.set_xticks(range(int(spec.get("xmin", 0)), int(spec.get("xmax", 24)) + 1, int(spec.get("xstep", 2))))
+        ax.grid(axis="x", color="#e4e4e7", lw=.6)
+        ax.set_axisbelow(True)
+        ax.set_xlabel(spec.get("xlabel") or "hour of day", fontsize=8)
+        if len(groups) > 1:
+            ax.legend(fontsize=7, frameon=False, ncol=min(5, len(groups)), loc="upper center", bbox_to_anchor=(0.5, -0.12))
+        axes = [ax]
+    elif kind == "heat":                               # a panel per facet value, one shared colour scale
+        mats = [df if fv is None else df[df[spec["facet"]] == fv] for fv in facets]
+        mats = [d.pivot_table(index=spec["y"], columns=spec["x"], values=spec["value"], aggfunc="mean") for d in mats]
+        lo = min(float(m.min().min()) for m in mats)
+        hi = max(float(m.max().max()) for m in mats)
+        w, h = max(m.shape[1] for m in mats), max(max(m.shape[0], 2) for m in mats)
+        fig, axs = plt.subplots(len(mats), 1, figsize=(min(1.6 + 0.32 * w, 11), (0.7 + 0.3 * h) * len(mats) + 0.4),
+                                squeeze=False)
+        axes = [a[0] for a in axs]
+        for ax, m, fv in zip(axes, mats, facets):
+            import numpy as np
+            import matplotlib
+            cmap = matplotlib.colormaps[spec.get("cmap", "YlOrRd")].copy()
+            cmap.set_bad("#d4d4d8")                     # no cell at all (outside the window): grey, never read as 0
+            im = ax.imshow(np.ma.masked_invalid(m.to_numpy(dtype=float)), cmap=cmap, aspect="auto", vmin=lo, vmax=hi)
+            ax.set_xticks(range(m.shape[1]))
+            ax.set_xticklabels([_label(c) for c in m.columns], fontsize=7)
+            ax.set_yticks(range(m.shape[0]))
+            ax.set_yticklabels([_label(i) for i in m.index], fontsize=7)
+            if fv is not None:
+                ax.set_title(str(fv), fontsize=9, loc="left")
+        h = fig.get_size_inches()[1]
+        fig.subplots_adjust(left=0.12, right=0.86, top=1 - 0.9 / h, bottom=0.3 / h, hspace=0.45)
+        cax = fig.add_axes([0.89, 0.25, 0.018, 0.5])            # the colour bar beside the panels, never on them
+        fig.colorbar(im, cax=cax, label=spec.get("clabel") or spec["value"])
+        fig._placed = True
+    else:
+        share = spec.get("sharex", kind == "line")       # bar panels keep their own categories (JL 261011)
+        fig, axs = plt.subplots(len(facets), 1, figsize=(7.2, 2.6 * len(facets) + 0.6), squeeze=False, sharex=share)
+        axes = [a[0] for a in axs]
+        for ax, fv in zip(axes, facets):
+            d = df if fv is None else df[df[spec["facet"]] == fv]
+            groups = sorted(d[spec["group"]].dropna().unique(), key=str) if spec.get("group") else [None]
+            colour = _colour(groups)
+            ys = _cols(spec["y"])
+            for gi, g in enumerate(groups):
+                part = d if g is None else d[d[spec["group"]] == g]
+                part = part.sort_values(spec["x"]) if kind == "line" else part
+                for yi, ycol in enumerate(ys):
+                    c = colour[str(g)] if g is not None else PALETTE[yi % len(PALETTE)]
+                    name = " · ".join(x for x in (_label(g) if g is not None else "", ycol if len(ys) > 1 else "") if x)
+                    if kind == "line":
+                        ax.plot(part[spec["x"]], part[ycol], color=c, lw=1.4, label=name or None, marker="o", ms=2.5)
+                        if spec.get("band"):
+                            lo, hi = spec["band"]
+                            ax.fill_between(part[spec["x"]], part[lo], part[hi], color=c, alpha=.15, lw=0)
+                    else:
+                        k = len(groups) * len(ys)
+                        w = 0.8 / k
+                        pos = list(range(len(part)))
+                        off = (gi * len(ys) + yi - (k - 1) / 2) * w
+                        ax.bar([p + off for p in pos], part[ycol], width=w, color=c, label=name or None)
+                        ax.set_xticks(pos)
+                        ax.set_xticklabels([_label(v) for v in part[spec["x"]]], fontsize=7,
+                                           rotation=45 if len(pos) > 8 else 0, ha="right" if len(pos) > 8 else "center")
+            if fv is not None:
+                ax.set_title(str(fv), fontsize=9, loc="left", fontweight="bold")     # a panel title in full, never cut
+            ax.set_ylabel(spec.get("ylabel") or ", ".join(ys), fontsize=8)
+            ax.grid(axis="y", color="#e4e4e7", lw=.6)
+            ax.set_axisbelow(True)                # grid lines behind the bars
+            if len(groups) > 1 or len(ys) > 1:
+                ax.legend(fontsize=7, frameon=False, ncol=min(4, len(groups) * len(ys)))
+        axes[-1].set_xlabel(spec.get("xlabel") or spec["x"], fontsize=8)
+    for ax in axes:
+        for h in spec.get("hline") or []:
+            ax.axhline(h, color="#c0504d", lw=.8, ls="--")
+        for v in spec.get("vline") or []:
+            ax.axvline(v, color="#6b6b6b", lw=.8, ls=":")
+    fig.suptitle(spec.get("title") or title, fontsize=10, x=0.01, ha="left", y=1 - 0.15 / fig.get_size_inches()[1])
+    _save(fig, path)
+
+
 KINDS = {"rates": (_rates_draw, _rates_lead), "grid": (_grid_draw, _grid_lead), "stab": (_stab_draw, _stab_lead),
          "balance": (_balance_draw, _balance_lead), "missing": (_missing_draw, _missing_lead),
          "share": (_share_draw, _share_lead), "estimate": (_estimate_draw, _estimate_lead)}
@@ -372,9 +511,29 @@ def draw(out, needs):
     for nid, n in needs.items():
         if n.get("kind") != "compute":
             continue
+        declared = {spec.get("table") for spec in n.get("figures") or []}
+        if "figures" in n and not n["figures"]:              # `figures: []` says no figure at all for this need
+            continue
+        for i, spec in enumerate(n.get("figures") or [], 1):          # the figures the need declares, first
+            path = out / spec.get("table", "")
+            if not spec.get("table") or not path.is_file():
+                made.append({"need": nid, "table": spec.get("table", ""), "file": "", "kind": spec.get("kind", ""),
+                             "problem": "declared table not written"})
+                continue
+            df = pd.read_csv(path)
+            fig = out / f"fig_{nid}_{Path(spec['table']).stem}_{i}.png"
+            if df.empty:
+                continue
+            try:
+                _declared_draw(df, spec, fig, f"{nid} · {Path(spec['table']).stem.replace('_', ' ')}")
+            except Exception as e:  # noqa: BLE001 · a figure that cannot be drawn is named, the run stands
+                made.append({"need": nid, "table": spec["table"], "file": "", "kind": spec.get("kind", ""),
+                             "problem": f"{type(e).__name__}: {e}"})
+                continue
+            made.append({"need": nid, "table": spec["table"], "file": fig.name, "kind": spec.get("kind", "line")})
         for f in n.get("output") or {}:
             path = out / f
-            if not f.endswith(".csv") or not path.is_file():
+            if not f.endswith(".csv") or not path.is_file() or f in declared:   # a declared figure replaces the shape's
                 continue
             df = pd.read_csv(path)
             k = shape(df)

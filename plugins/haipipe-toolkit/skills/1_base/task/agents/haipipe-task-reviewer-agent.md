@@ -14,7 +14,7 @@ metadata:
 
 # Task Reviewer
 
-Task Folder = Page Folder = `tNN_<task>/`. I reject a current plan, report, or
+Task Folder = `tNN_<task>/`; a Task may hold a draft. I reject a current plan, report, or
 Page that treats its parent Job as the Task Folder or creates a second Page
 Folder for the same Task.
 

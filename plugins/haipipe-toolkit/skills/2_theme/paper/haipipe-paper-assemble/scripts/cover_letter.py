@@ -53,7 +53,7 @@ def division(text: str, name: str = "cover letter") -> list[str] | None:
 
 
 def round_page(root: Path, rd: str, version: Path | None = None) -> Path | None:
-    """The batch page: today in B<x>-<desk>-Round/, on the ladder (0.10.0) in the version Job that holds delivery/."""
+    """The batch page: today in B<x>-<desk>-Round/, on the ladder (0.10.0) in the version Job it answers."""
     found = list(root.glob(f"B*-*-Round/{rd}-*/{rd}-*.md")) + (list(version.glob(f"{rd}[-_]*/{rd}[-_]*.md")) if version else [])
     hits = [p for p in found if p.parent.name == p.stem]
     return hits[0] if len(hits) == 1 else None

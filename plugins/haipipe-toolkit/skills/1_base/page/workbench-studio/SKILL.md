@@ -52,7 +52,7 @@ studio, as one page."
 ## 🗺 Status · 🟢 built 260831 evening
 
 The Studio is served by `servers/workbench/` inside every workbench. The static
-Board page's three-pane shell that also carried a `studio` tab (`servers/haipipe-board/shell.py`)
+Board page's three-pane shell that also carried a `studio` tab (`servers/haipipe-block/shell.py`)
 retired with the Board's static site (JL 261004); the old ids stay internal so every chat
 and draw mechanism runs untouched.
 

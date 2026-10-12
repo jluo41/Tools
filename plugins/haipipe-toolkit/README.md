@@ -63,7 +63,7 @@ Commands
 **Research axis:**
 
 ```
-/haipipe-page         a Page Folder, alone or in a Board; the Board checker and
+/haipipe-draft         a Page Folder, alone or in a Board; the Board checker and
                       the Run CLIs live here (the Board skill retired 261005)
 
 /haipipe-task         the internal executor — Plan → Build → Execute → Report
@@ -140,7 +140,7 @@ of it a skill:
 
 ```
 servers/               🌐 everything a browser is served by: _host/ (serve.py, auth,
-│                         the `live` namespace), space-home/, haipipe-page/, and one
+│                         the `live` namespace), space-home/, haipipe-draft/, and one
 │                         workbench-<name>/ per live tab; see servers/README.md
 mcp-servers/           🔌 MCP servers (codex-image2)
 agents/                🤖 plugin-level agent definitions
@@ -159,7 +159,7 @@ Where to read next
 
 ```
 skills/1_base/project/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
-skills/1_base/page/haipipe-page-workflow/  the Page workflow: the list of Runs and their routes
+skills/1_base/page/haipipe-draft-workflow/  the Page workflow: the list of Runs and their routes
 skills/1_base/page/workflow-runs/                 one skill per Page Run: context · structure · scratch · writing · evidence · revise · delivery · check
 skills/STRUCTURE.md      the skill-tree mental model
 skills/1_base/page/workbench/agents/README.md   the Page agents, the Board reviewer among them

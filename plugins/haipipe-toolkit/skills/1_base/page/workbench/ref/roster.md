@@ -10,7 +10,7 @@ Workbench may directly own one of its internal lanes.
 `source-content:` identifies an editable file import under materials; this is
 distinct from an immutable evidence capture and is not automatically evidence.
 `delivery/web/` is the Page-owned static reading export, built by
-`haipipe-page/cli/page.py build`; it does not add another public workbench.
+`haipipe-draft/cli/page.py build`; it does not add another public workbench.
 
 **📃 Page is one Workbench over context, plan, and evidence materials:** Citation/Bib,
 Value, and Display are internal lanes of its Evidence Space. The typed Evidence Item table
@@ -25,7 +25,7 @@ and SURVEY plans Supporting Runs, one Local Input, and one Local Run.
 | `slide/`   | DERIVED | `<stem>-deck.html`                  | the 🎞 segment inside the 📤 Delivery tab, now carrying the ✨ authoring bar (one explicit press → /_board/autodeck); the shell's native 🎞 row folded 260831 evening with the studio fold | `/_board/autodeck` (`servers/workbench/autodeck.py`: `claude -p` AUTHORS from the page's .md; overwrite always, validation before write) | 🟢 live |
 | `latex/`   | DERIVED | `<stem>.tex` + compiled `<stem>.pdf`| 📜 LaTeX segment inside the 📤 Delivery tab (`workbench-page`, 260831): the compiled PDF, tex fallback, built on click | `/_board/latex` → `md2tex.py` + LuaLaTeX      | 🟢 built this round |
 | `word/`    | DERIVED | `<stem>.docx` + preview `<stem>.pdf`| 📝 Word segment inside the 📤 Delivery tab (`workbench-page`, 260831): the PDF twin; ⬇ the .docx, built on click | `/_board/word` → `md2docx.py` + `docx2pdf.py` | 🟢 built this round |
-| `web/` | DERIVED | `delivery/web/index.html` plus imported static dependencies | standalone static reading site; live editing uses the Page server | `haipipe-page/cli/page.py build` | 🟢 Page-owned standalone export |
+| `web/` | DERIVED | `delivery/web/index.html` plus imported static dependencies | standalone static reading site; live editing uses the Page server | `haipipe-draft/cli/page.py build` | 🟢 Page-owned standalone export |
 | `CITE` | RESULT | ledger-selected `results/<re-run>/result.yaml` plus frozen `payload.bibliography` source | read-only Citation Cards in 📃 Page → Evidence Space | `workbench-page/ref/evidence/citations.md`; person verification belongs to the Item ledger | 🟢 current Result; old `outline/evidence/bibex/` is migration input only |
 | `DISPLAY` | RESULT | typed envelope at `results/<re-run>/result.yaml`; unit at `results/<re-run>/payload/<unit>/` with `intake/`, `recipe/`, `float.tex`, and README source records | 🖼 Displays section inside 📃 Page → Evidence Space, read-only over Page Results | `workbench-page/ref/evidence/displays.md` routes renderer craft and reserves the human `accepted:` tick | 🟢 Page Result; no separate `outline/evidence/display/` copy |
 | `materials/` | PRIMARY | Page imports or governed immutable source captures, recorded by the owning input contract | Folder inspection; Evidence Space presents the selected Result | import/capture owner records origin and classification; an import alone is not evidence | 🟢 source material; retired `outline/evidence/materials/` is migration input |

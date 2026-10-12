@@ -13,7 +13,7 @@ description: >-
   /haipipe-question.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.6.1"
+  version: "0.6.2"
   last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
@@ -107,7 +107,10 @@ To create one:
    ids never move or get reused.
 2. **Name the folder**: the id in lower case, then the topic in two or three snake_case
    words: `q07_<topic>` or `q-food-1_<topic>`.
-3. **Register it**: add the entry to `board.md`'s `## Questions` register.
+3. **Register it**: add the entry to `board.md`'s `## Questions` register. Its `group:` line,
+   comma-separated, puts its card on the Report's group bar, as a topic's **Tags:** line does in
+   the Studio; a drag on the bar writes the line, and a theme may add fixed groups of its own
+   (b10 s07-D01, D02).
 4. **Frame the report**: the same-stem `.md` with `answers:` and `answer-status: open`, and `page.toml`.
 5. **Hand it on**: from here the report is `haipipe-report`'s (the walk, the Page, its figures).
 
@@ -156,7 +159,7 @@ Boundary
 This skill owns the asking: what a Question is, its size, its id, folder and register
 entry, and the open report frame. The report (its header lines, Content divisions, the walk
 open → partial → answered, its figures and check, how work links by `answers:`) belongs to
-`haipipe-report` (b03 s21, 261007). Writing the report's text belongs to `haipipe-page`
+`haipipe-report` (b03 s21, 261007). Writing the report's text belongs to `haipipe-draft`
 (the report is an ordinary Page). The Task work a question cites
 belongs to `haipipe-task`. The screens that show questions belong to
 `workbench-work` and `workbench-paper`. Matching a chat's questions to

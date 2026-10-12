@@ -58,5 +58,82 @@ class SavedCopyIsThePaperTest(unittest.TestCase):
             self.assertFalse(paper_result_build.is_the_paper(other, title))   # another paper
 
 
+PMLR_PAGE = """<html><body>
+<a href="https://openreview.net/forum?id=qugRvYjaFx">OpenReview</a>
+<code class="citecode" id="bibtex">@InProceedings{pmlr-v306-wang26fy,
+  title = 	 {{C}on{F}lux: Multivariate Time Series in Flux, One Unified Forecast in Confluence},
+  author =       {Wang, Shiyu and Ni, Juntong and Xiang, Yang},
+  booktitle = 	 {Proceedings of the 43rd International Conference on Machine Learning},
+  pages = 	 {129221--129251},
+  year = 	 {2026},
+  volume = 	 {306},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v306/main/assets/wang26fy/wang26fy.pdf},
+  url = 	 {https://proceedings.mlr.press/v306/wang26fy.html},
+  abstract = 	 {Variables evolve &ldquo;in flux&rdquo;; we propose &lt;b&gt;ConFlux&lt;/b&gt;, a model.}
+}
+</code></body></html>"""
+
+
+class PmlrPageTest(unittest.TestCase):
+    """An ICML paper has no DOI: its PMLR page is the accepted record."""
+
+    def test_identity_comes_from_the_citation_block(self) -> None:
+        class Answer:
+            def read(self):
+                return PMLR_PAGE.encode("utf-8")
+        real = paper_result_build.fetch
+        paper_result_build.fetch = lambda url, timeout=30: Answer()
+        try:
+            meta = paper_result_build.pmlr("https://proceedings.mlr.press/v306/wang26fy.html")
+        finally:
+            paper_result_build.fetch = real
+        self.assertEqual("ConFlux: Multivariate Time Series in Flux, One Unified Forecast in Confluence", meta["title"])
+        self.assertEqual("Shiyu Wang; Juntong Ni; Yang Xiang", meta["authors"])
+        self.assertEqual(("Wang", 3, 2026), (meta["first_family"], meta["n_authors"], meta["year"]))
+        self.assertEqual("Proceedings of the 43rd International Conference on Machine Learning, PMLR 306: "
+                         "129221-129251 (2026)", meta["venue"])
+        self.assertEqual("Variables evolve \u201cin flux\u201d; we propose ConFlux, a model.", meta["abstract"])
+        self.assertEqual("https://openreview.net/forum?id=qugRvYjaFx", meta["openreview"])
+        self.assertTrue(meta["pdf"].endswith("/wang26fy.pdf"))
+
+
+class DisplayTextTest(unittest.TestCase):
+    def test_latex_accents_and_math_read_as_text(self) -> None:
+        plain = paper_result_build.plain
+        self.assertEqual("Ağırman, Ahmet", plain("A\\u{g}{\\i}rman, Ahmet"))
+        self.assertEqual("Schölkopf", plain('Sch\\"{o}lkopf'))
+        self.assertEqual("DT^2: Dual", plain("$\\text{DT}^\\text{2}$: Dual"))
+        self.assertEqual("Erdős and François", plain("Erd{\\H o}s and Fran\\c{c}ois"))
+
+
+class AcceptedFlagsTest(unittest.TestCase):
+    """The accepted flags mark a preprint Bib; they are refused before any network call otherwise."""
+
+    def run_main(self, *args):
+        import contextlib, io
+        argv = sys.argv
+        sys.argv = ["paper_result_build.py", "--task", "t01_x", "--run", "r01_x2026_y", "--address",
+                    "b01.j01.t01.r01", "--readout", "r", "--reuse", "u"] + list(args)
+        try:
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as stop:
+                paper_result_build.main()
+        finally:
+            sys.argv = argv
+        return stop.exception.code
+
+    def test_a_venue_without_its_page_is_refused(self) -> None:
+        self.assertEqual(2, self.run_main("--doi", "10.48550/arXiv.2510.25502", "--bib-from", "arxiv",
+                                          "--accepted-venue", "NeurIPS 2026, poster"))
+
+    def test_a_pmlr_record_is_not_a_preprint_stand_in(self) -> None:
+        self.assertEqual(2, self.run_main("--pmlr-url", "https://proceedings.mlr.press/v306/bao26c.html",
+                                          "--accepted-venue", "ICML 2026", "--accepted-url", "https://openreview.net/x"))
+
+    def test_a_venue_doi_is_not_a_preprint_stand_in(self) -> None:
+        self.assertEqual(2, self.run_main("--doi", "10.1145/3770855.3817572", "--accepted-venue", "KDD 2026",
+                                          "--accepted-url", "https://example.org/x"))
+
+
 if __name__ == "__main__":
     unittest.main()

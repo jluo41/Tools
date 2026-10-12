@@ -99,7 +99,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 
 🔘 BUTTON   Check a report · Block › Audience Report · ^run-check-q\d+$ · views findings
 🧩 SKILL    haipipe-report
-🤖 AGENT    haipipe-page-check-agent
+🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report check a Board question's report in {folder} in a fresh context, as run-check-q<NN>: every claim cites a Job, every number traces to a Run.
 
@@ -179,7 +179,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 
 🔘 BUTTON   Check a report · Job › Audience Report · ^run-check-t\d+$ · views current
 🧩 SKILL    haipipe-report
-🤖 AGENT    haipipe-page-check-agent
+🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report check a question's page in {folder} in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
 
@@ -287,7 +287,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 
 🔘 BUTTON   Check a report · Task › Audience Report · ^run-check-t\d+$
 🧩 SKILL    haipipe-report
-🤖 AGENT    haipipe-page-check-agent
+🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report check the page of {folder} in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
 

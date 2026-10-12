@@ -14,8 +14,8 @@ description: >-
   logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
   /haipipe-paper-story.
 metadata:
-  version: "0.19.0"
-  last_updated: "2026-10-07"
+  version: "0.20.0"
+  last_updated: "2026-10-11"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -27,7 +27,7 @@ metadata:
 # /haipipe-paper-story · the prospective blueprint for one paper
 
 For a discussion or content-structure sketch, apply this contract directly.
-For a Page edit or build, load `haipipe-page`, `haipipe-page-workflow`, the
+For a Page edit or build, load `haipipe-draft`, `haipipe-draft-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, then this semantic
 contract and relevant references. Their lifecycle records describe
 how the Story is authored; this skill defines what the Story says.
@@ -46,9 +46,10 @@ the folders that show them, and this skill writes each one there:
 | §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | Block › Audience Report › High-level logic + Low-level work |
 | §5 · §6 · §7 | the topic face, and each report's Work as the work lands | the Question's Work column |
 | §8 + compile order | each version face's `## Narrative` | the version's Draft-Main · the build |
-| related papers | `related/related.md` | Block › Description › Related |
+| related papers | `related/related.md` | Studio › Related (folded under the topics; was Block › Description › Related) |
 
-The topic face keeps the studio marks every topic has (haipipe-studio: `**Topic:**`, `**Feeds:**` its
+The topic face keeps the studio marks every topic has (haipipe-studio `ref/topic-contract.md`: `**Tags:**`,
+`**Stage:**` explore · shaping · agreed · closed, moved only by a person, `**Topic:**`, `**Feeds:**` its
 Questions' `qNN_` folders, Files, Decided, Open) and adds §1 · §2 · §4 under them; `board.md`'s `story-current:` names the telling the paper tells now,
 and every version face says `tells:` which one it tells. An earlier telling stays as an ended topic. An older
 Board's Story Page (`A1-Story/Story<Letter>-…/`, `page-type: story`) is still read; `haipipe-paper/scripts/
@@ -322,22 +323,28 @@ Separate evidence support (established / provisional / absent / contradicted /
 inconclusive) from execution progress. A completed, accepted analysis can
 contradict a proposition. Keep that result and its implication visible.
 
-The Novelty basis also holds the **P-board** (JL 260930): the papers this study
-stands beside, one row each, each held as a Discovery Paper Run (a §6 row names the
-Discovery Task that holds them):
+The **P-board** (JL 260930) is the papers this study stands beside, one row each,
+each held as a Discovery Paper Run (a §6 row names the Discovery Task that holds
+them). Its rows live once, at the Board, in `related/related.md` (b10 s01-D27, D34,
+s04-D01): a row of kind `paper`, read by every telling and by the build's
+`reference.bib`. The Novelty basis names its closest rows by `key` and states the
+delta; it keeps no table of its own. A paper row's columns:
 
 ```text
-P | paper | role | question | why it matters | keep | bears on | Discovery Run
+kind | date | item | link | feeds | group | key | role | venue | why here | keep | bears on | read
 ```
 
-`role` is `closest`, `question`, `background` or `caution`; `question` is an RQ id
-or `all`; `Discovery Run` is the Paper Run's address (`b01.j02.t01.r01`). Search the
+`item` is the paper; `group` the RQ it bears on most, or `all`; `role` is `closest`,
+`question`, `background` or `caution`; `read` is the Paper Run's address
+(`b01.j02.t01.r01`); `feeds` the reports and topics it feeds. An older telling that
+still holds its own `P | paper | role | question | …` table is read until its rows
+move to `related.md`. Search the
 venue the paper is written for first (JL 260930: "我们选 paper 一定要选一个 venue 的"),
 then add papers from other venues (JL 260930: "this is not limited to NMI"). The why
 line says in plain words what the paper shows for this study, from what was read (its
-abstract, or the PDF when the row says so). The Paper Workbench draws the P-board as
-Story › Related Papers: the target venue's papers first, then other venues, one card
-per row with the Run's `paper.pdf` inside.
+abstract, or the PDF when the row says so). The Paper Workbench draws the rows in the
+Studio's Related part (grouped by `related/` subfolder) and in Report › Related Papers (grouped by question), one card per
+row with the Run's `paper.pdf` inside.
 
 `keep` and `bears on` are optional (JL 261002: "make the related works be something we
 should keep"). `keep` says why THIS study keeps the paper: what it takes from it, or

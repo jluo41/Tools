@@ -32,11 +32,11 @@ Record the extract          haipipe-insight-meta                   Prototype ›
 Register a cut              haipipe-insight (ref/partition.md)     a proposed row for 0-Meta/partitions.md; a person signs
 Plan the evidence           haipipe-insight-evidence-plan          a question file's needs:, with agreed: ⬜
 Draw the question map       haipipe-insight (ref/question_map.py)  Prototype › studio/question-map.excalidraw, by the script
-Write the Data report       haipipe-insight-data + haipipe-page    Instance › <q>/<q>.md and draft/, through the Page flow
+Write the Data report       haipipe-insight-data + haipipe-draft    Instance › <q>/<q>.md and draft/, through the Page flow
 Write the Information report haipipe-insight-information + page    same
 Write the Knowledge report  haipipe-insight-knowledge + page       same
 Pool or split               haipipe-insight-knowledge              the cross section of a Knowledge page
-Write the counsel           haipipe-insight-wisdom + haipipe-page  Instance › 4-Wisdom/W<NN>-<name>/
+Write the counsel           haipipe-insight-wisdom + haipipe-draft  Instance › 4-Wisdom/W<NN>-<name>/
 Draft the handoff           haipipe-insight-wisdom                 the handoff draft, signed: ⬜; a person signs
 Add a method                workbench-insight              a method card and its index row
 ```
@@ -66,6 +66,6 @@ run type:  <one of the table's>
 board:     <Prototype or Instance path>
 status:    ok | blocked | failed
 wrote:     [<paths>]
-waits for: haipipe-insight-reviewer-agent | haipipe-page-check-agent | a person's signature
+waits for: haipipe-insight-reviewer-agent | haipipe-draft-check-agent | a person's signature
 summary:   <one line>
 ```

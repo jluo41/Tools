@@ -16,8 +16,8 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.1.2"
-  last_updated: "2026-10-09"
+  version: "3.3.1"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,6 +36,8 @@ Board       insight/Insight-<name>/          one dataset, its dated versions (bo
                                               release × data version jNN_pN_<D>vM/, a Task per question,
                                               a hard Run per cut runs/rNN_<partition>/
 ```
+
+A release is read as an **analysis plan** (`AP<N>`) and a data version as a **data freeze** (`F<M>`, its `label:` in words); folders and ids keep `pN` and `vM` (ref/insight-ladder.md, JL 261011).
 
 **How they work together.** A Board Job runs one signed release on one frozen data version and moves one clock from
 the Job before it (`moved: start | data | code`). What a Job finds feeds back only as proposals in the Prototype's
@@ -78,7 +80,7 @@ haipipe-insight-wisdom         the counsel and the Design handoff a person signs
 haipipe-insight-check          readings across Jobs (coverage, tracks), each answer against its question, the status grid
 haipipe-insight-workflow       run cards by level and Space, signing a release, launching and closing a Job, dispatch
 workbench-insight              the insight theme on the shared workbench frame
-haipipe-report · haipipe-page-check   a Board question's report; another agent's CHECK of any page
+haipipe-report · haipipe-draft-check   a Board question's report; another agent's CHECK of any page
 haipipe-insight-bind           answers.yaml, for register boards only (no ladder Run binds)
 haipipe-page-insight           the Task-side Insight Page and its RI Runs (its own route)
 ```

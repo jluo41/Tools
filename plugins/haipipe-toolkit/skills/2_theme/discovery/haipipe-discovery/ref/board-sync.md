@@ -13,7 +13,7 @@ Run    rNN  = execution record (never a Board Page)
 ## Ownership
 
 - Discovery owns the Block, Job, Task, Run, Result, and Task/Page semantics.
-- `haipipe-page` owns the Board parser, the live reader, navigation, aggregate
+- `haipipe-draft` owns the Board parser, the live reader, navigation, aggregate
   status, and the Board close check (`cli/check.py`); nothing is built.
 - The direct `jNN_/tNN_` filesystem is the membership and default-order
   authority for a `board-kind: discovery-block` Board.
@@ -92,7 +92,7 @@ The helper is the narrow Discovery seam. For a Board-only edit, use the Board
 skill directly:
 
 ```bash
-python3 <path/to/haipipe-page>/cli/check.py <block> --strict
+python3 <path/to/haipipe-draft>/cli/check.py <block> --strict
 ```
 
 If the checker fails, report the exact Page or Board finding and route back to

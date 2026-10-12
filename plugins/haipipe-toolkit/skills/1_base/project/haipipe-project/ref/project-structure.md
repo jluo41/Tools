@@ -268,7 +268,7 @@ valid profile-owned structure.
 | Project root, manifest, profile, Git mode, `external/` boundary | `haipipe-project` |
 | `work/` internals | `haipipe-task` + `haipipe-run` |
 | `discovery/` internals | `haipipe-discovery` |
-| Board/Page internals | `haipipe-page`, owning workflow |
+| Board/Page internals | `haipipe-draft`, owning workflow |
 | `paper/` internals | `haipipe-paper` |
 | `insight/` internals | `haipipe-insight` |
 | `design/` internals | `haipipe-design` |

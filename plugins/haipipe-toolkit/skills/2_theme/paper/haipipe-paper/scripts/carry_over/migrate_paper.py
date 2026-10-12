@@ -10,7 +10,7 @@ Folders move, names stay (no Page stem changes, so every Run, receipt and Story 
     A1-Story/ (or an earlier j00_story/)         -> studio/   then topics_paper.py: topics + Questions
     Ba-<desk>-Main/ · Bb-<desk>-Appendix/ ·      -> jNN_v<N>_<desk>/          one version Job per desk, in
       Bc-<desk>-Round/                                                        group-letter order; Rounds stay Tasks
-    delivery/                                    -> j<NN>_v<N>_<desk>/delivery/   the desk paper-build.toml names
+    delivery/ stays at the Block; version outputs rebuild under delivery/j<NN>_v<N>_<desk>/
 
 Then it edits, line by line, and records each edit: board.md's `## Pages` headings; paper-build.toml's
 [pages] paths (and the folder names in its comments); each relative Markdown link whose source or target
@@ -95,10 +95,7 @@ def plan(board):
             if child.name in JUNK:
                 continue
             moves.append((f"{old}/{child.name}", f"{new}/{child.name}"))
-    if (board / "delivery").is_dir() and versions:
-        want = toml_desk(board)
-        home = next((v for d, v in versions.items() if d.lower() == want), next(iter(versions.values())))
-        moves.append(("delivery", f"{home}/delivery"))
+    # Block Delivery stays at the Block. Rebuild outputs after moving their Page sources.
     if not moves:
         return {"renames": renames, "versions": versions, "moves": moves, "map": []}
     news = [n for _, n in moves]
@@ -154,7 +151,7 @@ def heading_edits(board, P):
 
 def tomls(board):
     """Each paper-build.toml: the Board's delivery/, or a version Job's (jNN_v…/delivery/)."""
-    return [t for t in [board / "delivery" / "paper-build.toml"] + sorted(board.glob("j[0-9][0-9]_v*/delivery/paper-build.toml"))
+    return [t for t in [board / "delivery" / "paper-build.toml"] + sorted(board.glob("delivery/j[0-9][0-9]_v*/paper-build.toml")) + sorted(board.glob("j[0-9][0-9]_v*/delivery/paper-build.toml"))
             if t.is_file()]
 
 

@@ -40,7 +40,7 @@ candidate or sealed text in a Page overview, prompt, embedding, or search.
 Attach the source owner to the Page first so its five Run Types and live
 Tickets are visible as each operation closes. Attachment is a reference, not
 a Run. Use the canonical `<Page>/<Page>.md` file. If a Board still stores this
-Page as a flat source, create its own Page folder with `/haipipe-page` first;
+Page as a flat source, create its own Page folder with `/haipipe-draft` first;
 never attach to the flat group source or create a shared `labeling/` lane beside
 it. Then run the five independent operations in order, passing the IDs
 returned by each command to the next one:

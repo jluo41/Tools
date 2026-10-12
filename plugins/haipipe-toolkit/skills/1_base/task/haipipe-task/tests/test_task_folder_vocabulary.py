@@ -20,12 +20,12 @@ class TaskFolderVocabularyTest(unittest.TestCase):
     def test_three_core_contracts_name_one_physical_folder(self):
         paths = (
             SKILL / "SKILL.md",
-            TOOLKIT_SKILLS / "board" / "haipipe-folder" / "SKILL.md",
-            TOOLKIT_SKILLS / "1_base" / "page" / "haipipe-page" / "SKILL.md",
+            TOOLKIT_SKILLS / "1_base" / "page" / "haipipe-folder" / "SKILL.md",
+            TOOLKIT_SKILLS / "1_base" / "page" / "haipipe-draft" / "SKILL.md",
         )
         for path in paths:
             with self.subTest(path=path):
-                self.assertIn("Task Folder = Page Folder", self.read(path))
+                self.assertIn("a Task may hold a draft", self.read(path))   # JL 261011: a Task is not a Page
 
     def test_current_authoring_never_calls_a_job_task_folder(self):
         paths = (

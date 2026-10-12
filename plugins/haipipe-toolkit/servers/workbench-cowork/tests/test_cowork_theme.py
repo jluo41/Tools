@@ -58,7 +58,7 @@ def test_the_block_fills_its_spaces_with_cowork_rows(tmp_path):
     root, block = demo(tmp_path)
     got = {s["name"]: s for s in data(root, block)["spaces"]}
     assert [s for s in got] == list(frame.SPACE_NAMES)
-    assert got["Description"]["subspaces"] == ["Scope", "People", "Resources", "Related"]
+    assert got["Description"]["subspaces"] == ["Scope", "People", "Resources"]   # Related: the top row
     assert got["Work Details"]["subspaces"] == ["All", "open", "waiting", "done"]
     assert "Open a job" in got["Work Details"]["run_doing"] and "run-add-<jNN>" in got["Work Details"]["run_types"]
     views = frame.spaces_for(THEME, "Block", block, root, "waiting")
@@ -97,12 +97,14 @@ def test_a_job_shows_its_emails_and_meetings_as_rows_not_tasks(tmp_path):
 
 
 def test_a_message_out_shows_in_delivery_with_its_attachments(tmp_path):
-    """A Job's delivery/<date>-<what>/ holds one message we send, its draft and its attachments (JL 261009):
-    the Job's Delivery lists it, its Timeline dates it, and the Block's delivery/ gathers every Job's."""
+    """One message we send, its draft and its attachments sit at the Block, under the Job's address,
+    delivery/j01_request/<date>-<what>/ (JL 261009; a Job keeps no delivery/, b10 s03-D01): the Job's
+    Delivery lists it, its Timeline dates it, and the Block's delivery/ gathers every Job's."""
     root, block = demo(tmp_path)
     job = block / "j01_request"
-    write(job / "delivery/2026-10-09-reply/2026-10-09-reply-draft.md", "# Reply to OFFICE_A\n\nstatus: draft\n")
-    write(job / "delivery/2026-10-09-reply/diagram.png", "png")
+    out = block / "delivery" / "j01_request" / "2026-10-09-reply"
+    write(out / "2026-10-09-reply-draft.md", "# Reply to OFFICE_A\n\nstatus: draft\n")
+    write(out / "diagram.png", "png")
     sent = frame.spaces_for(THEME, "Job", job, root)["Delivery"].html
     assert "Reply to OFFICE_A" in sent and "diagram.png" in sent and "draft ✎ not sent" in sent and "2026-10-09" in sent
     assert "Reply to OFFICE_A" in frame.spaces_for(THEME, "Job", job, root, "Timeline")["Work Details"].html

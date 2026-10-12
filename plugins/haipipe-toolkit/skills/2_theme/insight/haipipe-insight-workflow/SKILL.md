@@ -77,7 +77,7 @@ Who does a Run
 ```text
 makes       haipipe-insight-agent              asks, plans, writes pages and counsel, adds versions and Jobs
 judges      haipipe-insight-reviewer-agent      reviews questions and plans, checks alignment and consistency
-            haipipe-page-check-agent            CHECKs a page or a Board report
+            haipipe-draft-check-agent            CHECKs a page or a Board report
             haipipe-task-reviewer-agent         reviews a script
 runs        haipipe-task-orchestrator-agent     launches a Job, runs a hard Run's ticket
 writes code haipipe-task-creator-agent          writes a question's script

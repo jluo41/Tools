@@ -3,8 +3,8 @@
 Load this reference when creating, reading, repairing, or checking the
 same-stem Page inside one executable Task Folder. `haipipe-task` owns the Task
 Folder identity, execution, and closure; `haipipe-page-task` supplies the
-display-rich reader extension; `haipipe-page` supplies the shared Page frame
-and `haipipe-page-workflow` supplies CONTEXT through CHECK.
+display-rich reader extension; `haipipe-draft` supplies the shared Page frame
+and `haipipe-draft-workflow` supplies CONTEXT through CHECK.
 
 ## Ownership and identity
 
@@ -36,7 +36,7 @@ primary durable product:
 | Request centers on | Enter through | Owner-native product |
 |---|---|---|
 | executable, independently testable work | `haipipe-task` | `rNN` Ticket → Result + receipt |
-| human shaping, interpretation, or acceptance | `haipipe-page` | `rp-*` interaction → accepted Page state |
+| human shaping, interpretation, or acceptance | `haipipe-draft` | `rp-*` interaction → accepted Page state |
 
 Crossing the boundary uses one explicit handshake:
 
@@ -146,7 +146,7 @@ sentence's source line ends with its exact invisible stable backlink:
 <!-- realizes: C<n>.P<m>.B<k> -->
 ```
 
-Follow `haipipe-page-writing` for paragraph-scoped writing commissions; a
+Follow `haipipe-draft-writing` for paragraph-scoped writing commissions; a
 paragraph may realize several Bullets without pooling their evidence. A change
 to approved paragraph groups returns to SHAPE. This refines only the Task's
 Page Face, not its executable lifecycle or Result-store dialect. Diagrams,

@@ -4,7 +4,7 @@ description: >-
   The release of a design Job on the ladder, and the one file another system reads.
   Owns run-freeze-predictions-j<NN> (each kept design's predicted effect frozen,
   a person signs) and run-release-j<NN> (the kept, passed designs written word for
-  word into the Job's delivery/designs.json and designs.md, screens/ for a UI, and
+  word into the Block's delivery/jNN_<job>/designs.json and designs.md, screens/ for a UI, and
   gathered into the Block's delivery/; a person signs), and the designs.json
   schema. Use to freeze predictions, release a Job, read or check designs.json, or
   hand released designs to the system that sends them. Ends at the release:
@@ -17,6 +17,27 @@ metadata:
 ---
 
 # /haipipe-design-delivery · the release and designs.json
+
+
+Delivery storage (JL 261010)
+---------------------------
+
+Only the Block owns a physical `delivery/` directory. Job, Task and Report
+outputs retain their source identity under it: `delivery/jNN_<job>/`,
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and
+`delivery/reports/qNN_<report>/<lane>/`. The Block's own output uses
+`delivery/<lane>/`. Job and Task Delivery views select their source subtree
+and link to the whole Block Delivery; they never create local delivery folders.
+Runs and Results remain with their source. Every writer and reader uses the
+shared `haipipe-draft/src/common.py` Delivery helpers. Standalone Pages without
+a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
 
 ## Version governance
 
@@ -32,7 +53,7 @@ that last step and its file:
 t99 run-rank-t99 ─▶ project_predictions.py (haipipe-design-workflow): prediction.yaml frozen: draft, kept | dropped
                  ─▶ run-freeze-predictions-j<NN>    a person signs the predictions
                  ─▶ run-release-j<NN>               a person signs the release
-                    jNN_<goal>_<method>/delivery/designs.json · designs.md · screens/<dNN>.<ext>
+                    Design-<name>/delivery/jNN_<goal>_<method>/designs.json · designs.md · screens/<dNN>.<ext>
                     Design-<name>/delivery/designs.json · designs.md · screens/<jNN>-<dNN>.<ext>
                                                    every Job's release, gathered
 ```
@@ -42,7 +63,10 @@ to the Block (`haipipe-design-method`, `run-add-observed`), not here.
 
 ## run-freeze-predictions-j<NN>
 
-Each kept design's `prediction.yaml` (`predicted · against · by · frozen`) changes from `frozen: draft` to
+One review, one sign (JL 261012): the workbench shows this Run and the release as one button, Review and approve.
+A person reads each kept design as it reads, its prediction with its `why`, and its review, then signs once.
+
+Each kept design's `prediction.yaml` (`predicted · against · by · why · frozen`) changes from `frozen: draft` to
 `frozen: <YYMMDD>`, the day a person signs. A frozen prediction is never edited again; the Exp is scored against it.
 A dropped design's prediction stays a draft.
 
@@ -56,7 +80,8 @@ design before it writes anything, so a refusal leaves no prediction half frozen.
 
 - `delivery/designs.json`: the schema in [ref/designs-schema.md](ref/designs-schema.md), the words exactly as the
   design Task's `## Design` holds them;
-- `delivery/designs.md`: the same designs as a reader sees them, in rank order;
+- `delivery/designs.md`: the same designs as a reader sees them, in rank order: each under its Job's folder name
+  (never the bare `jNN`), its words, then `Predicted <effect> against <what>. Why: <the basis>`;
 - `delivery/screens/<dNN>.<ext>`: for a UI design, the rendered screen the last verify judged, copied from its
   Result;
 - the Block's `delivery/designs.json` and `designs.md`: this Job's designs added, never twice, each UI screen copied to

@@ -84,7 +84,7 @@ WORKBENCH_ROUTES = {
     "discovery": frozenset({"discovery-board"}),
     # workbench (the base): Studio's draw, chat and terminal routes (Guide is in ALWAYS_ROUTES).
     "shared": frozenset({"chat", "chat-keep", "sessions", "session-log", "session-name",
-                         "stop", "excalidraw", "excalidraw-save", "autodraw", "autodeck",
+                         "stop", "excalidraw", "excalidraw-save", "autodraw", "autodeck", "studio-group",
                          "diagram", "term", "terms", "term-probe", "term-type", "killall",
                          "local-cmd", "release", "shared", "workbench"}),
     "insight": frozenset({"insight", "insight-board"}),

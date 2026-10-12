@@ -1,5 +1,6 @@
 """GET /_board/workbench?path=<folder>[&space=<Space>][&sub=<subspace>][&studio=1][&theme=<name>][&format=json]
 GET /_board/workbench?view=<view>&path=<Page .md>[&...]
+GET /_board/workbench?view=docx&path=<file .docx>       a Word file read in place (frame.docx_preview)
 
 The base frame (frame.py) over one Block, Job or Task folder, in the theme its Block belongs to
 (or `theme=`), else the vanilla workbench. Without `path` it lists the Blocks under the root.
@@ -57,6 +58,26 @@ class FrameMixin:
         if get("view") in VIEW_METHODS:
             return self.page_task_view(get("view"), head_only=head_only)
         root = Path(self.root).resolve()
+        if get("view") == "docx":                    # a Word file read in place, read only (JL 261011)
+            doc = (root / get("path").lstrip("/")).resolve()
+            if root not in doc.parents or doc.suffix.lower() != ".docx" or not doc.is_file():
+                return self.guide_send("<h1>Not found</h1><p>No such .docx under this root.</p>", 404,
+                                       head_only=head_only)
+            try:
+                return self.guide_send(frame.docx_preview(doc, root), 200, head_only=head_only)
+            except Exception as err:                 # a broken package says so, never the server
+                return self.guide_send(f"<p>This .docx could not be read: {frame._e(err)}</p>", 200,
+                                       head_only=head_only)
+        if get("view") == "eml":                     # an email saved as it came, read only (b10 s04-D08)
+            mail = (root / get("path").lstrip("/")).resolve()
+            if root not in mail.parents or mail.suffix.lower() != ".eml" or not mail.is_file():
+                return self.guide_send("<h1>Not found</h1><p>No such .eml under this root.</p>", 404,
+                                       head_only=head_only)
+            try:
+                return self.guide_send(frame.eml_preview(mail, root), 200, head_only=head_only)
+            except Exception as err:                 # a broken message says so, never the server
+                return self.guide_send(f"<p>This .eml could not be read: {frame._e(err)}</p>", 200,
+                                       head_only=head_only)
         raw = get("path").lstrip("/")
         code = 200
         if not raw:

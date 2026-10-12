@@ -3,7 +3,7 @@
     python project_predictions.py <job folder> [--against "the control"] [--dry]
 
 Reads `t99_review-whole/runs/run-rank-t99/result/ranking.csv` (rank · design · predicted · why · kept) and, for each
-row, writes the design Task's `prediction.yaml` (predicted · against · by · frozen: draft) and moves its face's
+row, writes the design Task's `prediction.yaml` (predicted · against · by · why · frozen: draft) and moves its face's
 `state:` from `passed` to `kept` or `dropped`. A prediction already frozen (`frozen:` other than `draft`) is never
 touched, and a design not `passed` keeps its state. Prints what it changed. The rank Run itself writes only its
 result/; this projection is the workflow's.
@@ -74,7 +74,8 @@ def project(job: Path, against: str = "the control", dry: bool = False) -> list:
             new_state = ("kept" if kept else "dropped") if face.is_file() and _state(face) == "passed" else None
             if not dry:
                 pred.write_text(yaml.safe_dump({"predicted": row.get("predicted", ""), "against": against, "by": by,
-                                                "frozen": "draft"}, sort_keys=False, allow_unicode=True),
+                                                "why": row.get("why", ""), "frozen": "draft"},   # the basis, shown beside the number
+                                               sort_keys=False, allow_unicode=True, width=1000),
                                 encoding="utf-8")
                 if new_state:
                     _set_state(face, new_state)

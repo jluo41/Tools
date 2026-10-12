@@ -119,7 +119,7 @@ _synth twins, so the claim was false    was built to make
 
 Neither is a rendering bug. Both are CLAIM bugs, and a producer asked "is my
 figure right" says yes to both. So: write the receipt, hand off, and let
-`haipipe-board-reviewer-agent` read the claim against the frozen intake.
+`haipipe-block-reviewer-agent` read the claim against the frozen intake.
 
 ## 🧾 Receipt
 
@@ -149,4 +149,4 @@ skills/1_base/display/agents/
 The door is `../haipipe-display`; the unit's shape is
 `../ref/display-unit-output-contract.md`; the page-side rules are
 `1_base/page/workbench-page/ref/evidence/displays.md`; the intake law is that lane's
-§❄️; the judge is `page/workbench/agents/haipipe-board-reviewer-agent`.
+§❄️; the judge is `page/workbench/agents/haipipe-block-reviewer-agent`.

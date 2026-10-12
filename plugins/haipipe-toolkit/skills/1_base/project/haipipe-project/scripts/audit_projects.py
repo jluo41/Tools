@@ -17,7 +17,7 @@ SCHEMA = "haipipe-project/v1"
 PROFILES = {"research", "software", "hybrid"}
 GIT_MODES = {"workspace", "submodule"}
 STATES = {"active", "paused", "archived"}
-# Theme folders are singular (s01-D28, s01-D29, JL 261007); the same table as haipipe-page
+# Theme folders are singular (s01-D28, s01-D29, JL 261007); the same table as haipipe-draft
 # src/themes.py. An old plural folder is "rename pending" debt until its Project moves.
 WORLD_DIRS = {
     "work",          # computational Blocks (haipipe-task); was tasks/
@@ -34,7 +34,10 @@ OLD_WORLD_DIRS = {"tasks": "work", "discoveries": "discovery", "papers": "paper"
                   "designs": "design", "labelings": "labeling", "ideations": "ideation"}
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
 # cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
-COWORK_BLOCK_DIRS = {"studio", "reports", "runs", "_old"}  # Studio soft Runs live at Block scope.
+# Studio soft Runs live at Block scope; the one delivery/ of a Block holds every Job's built output
+# (delivery/jNN_<job>/...; haipipe-delivery, haipipe-cowork JL 261010).
+# related/ lists what came in, with its materials/ (haipipe-delivery, JL 261011)
+COWORK_BLOCK_DIRS = {"studio", "reports", "runs", "delivery", "related", "_old"}
 COWORK_JOB_DIRS = {"design", "materials", "emails", "meetings", "_old"}
 COWORK_BLOCK = re.compile(r"b\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 COWORK_JOB = re.compile(r"j\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
@@ -200,11 +203,11 @@ def audit(project: Path) -> Result:
     if profile in {"software", "hybrid"}:
         allowed.update(CODE_DIRS)
 
-    declared_legacy = {
-        Path(str(item)).parts[0]
-        for item in manifest.migration.get("legacy_paths", [])
-        if str(item).strip()
-    }
+    # a root folder, or a path inside a world (work/<block>/.../runs): the latter is known debt below the root
+    items = [Path(str(item).strip().strip("/")) for item in manifest.migration.get("legacy_paths", [])
+             if str(item).strip()]
+    nested = [i for i in items if len(i.parts) > 1 and i.parts[0] in allowed]
+    declared_legacy = {i.parts[0] for i in items if i not in nested}
     root_dirs = {
         entry.name
         for entry in project.iterdir()
@@ -229,8 +232,9 @@ def audit(project: Path) -> Result:
     migration_status = str(manifest.migration.get("status", "")).strip()
     if debts and migration_status not in {"needed", "planned"}:
         errors.append("existing legacy paths require migration.status")
+    debts.extend(f"declared {i.as_posix()}" for i in nested if (project / i).exists())
     debts.extend(f"{name} → {OLD_WORLD_DIRS[name]} (rename pending)" for name in pending)
-    if migration_status in {"needed", "planned"} and not declared_legacy:
+    if migration_status in {"needed", "planned"} and not (declared_legacy or nested):
         errors.append("migration.status requires legacy_paths")
 
     return Result(

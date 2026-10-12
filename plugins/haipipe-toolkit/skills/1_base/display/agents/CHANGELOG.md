@@ -30,7 +30,7 @@ Three boundaries, and each is a 260817 failure rather than a precaution:
   cells where 5 were expected, and a sentence claiming a unique `run_data_`
   prefix was disproved by the very listing the unit froze. A producer asked
   "is my figure right" says yes to both, so the judge is
-  `haipipe-board-reviewer-agent`, in its own context.
+  `haipipe-block-reviewer-agent`, in its own context.
 
 `looked_at: no` in the receipt is a HOLD, not a pass: a clipped label is
 invisible in the source and obvious in the picture, which is how the first

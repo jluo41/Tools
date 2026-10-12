@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 """Build one Discovery Paper Result from a DOI, so a Paper Run's Ticket can rebuild it.
 
-A Paper Run's Ticket (`runs/rNN_<author><year>_<slug>.sh`) calls this script with the
-paper's DOI and the two lines a person or agent wrote after reading the abstract
+A Paper Run's Ticket (`runs/rNN_<author><year>_<slug>/rNN_<author><year>_<slug>.sh`) calls this
+script with the paper's DOI (or, for a venue that issues none, its PMLR page) and the two lines a person or agent wrote after reading the abstract
 (the readout and the reuse). It writes the Result the Paper Workbench's Related Papers
 cards read (workbench-paper 0.16.0):
 
-  results/<run>/runtime.yaml          identity, venue string, reading depth, the bib block
-  results/<run>/<run>.bib             one verbatim entry (paper_bib_fetch.py)
-  results/<run>/source-access.json    links and identifiers (paper_source_access.py),
-  results/<run>/source-access.md      plus `local_pdf` when a free copy was saved
-  results/<run>/abstract.md           the abstract: PubMed, else OpenAlex, else Crossref, else arXiv (--arxiv or an arXiv DOI)
-  results/<run>/facts.md              the identity and one fact per abstract sentence
-  results/<run>/<run>.md              the Result card: question, readout, limits, reuse
-  results/<run>/paper.pdf             a free copy, when one exists (--pdf-from, OpenAlex, then arXiv)
-  results/<run>/logic-work.yaml       the paper's own logic and work, when the Task holds the authored
+  runs/<run>/result/runtime.yaml      identity, venue string, reading depth, the bib block
+  runs/<run>/result/<run>.bib         one verbatim entry (paper_bib_fetch.py)
+  runs/<run>/result/source-access.json  links and identifiers (paper_source_access.py),
+  runs/<run>/result/source-access.md    plus `local_pdf` when a free copy was saved
+  runs/<run>/result/abstract.md       the abstract: PubMed, else OpenAlex, else Crossref, else arXiv
+                                      (--arxiv or an arXiv DOI), or the PMLR citation block
+  runs/<run>/result/facts.md          the identity and one fact per abstract sentence
+  runs/<run>/result/<run>.md          the Result card: question, readout, limits, reuse
+  runs/<run>/result/paper.pdf         a free copy, when one exists (--pdf-from, OpenAlex, then arXiv)
+  runs/<run>/result/logic-work.yaml   the paper's own logic and work, when the Task holds the authored
                                       readout scripts/readouts/<run>/logic-work.yaml
+
+An older Task that still has a results/ folder and no runs/<run>/ folder gets results/<run>/.
 
 The task's question comes from its discovery.yaml. Every path written is relative to
 the Task folder. Nothing here judges relevance: the readout and reuse are inputs.
@@ -98,6 +101,58 @@ def arxiv(aid):
             "first_family": (names[0].split()[-1] if names else "anon"), "year": year,
             "journal": "arXiv", "venue": venue, "landing": "https://arxiv.org/abs/" + aid,
             "n_authors": len(names), "abstract": text("a:summary"), "bib_year": bib_year}
+
+
+ACCENT = {'"': "\u0308", "'": "\u0301", "`": "\u0300", "^": "\u0302", "~": "\u0303", "=": "\u0304",
+          ".": "\u0307", "u": "\u0306", "v": "\u030c", "H": "\u030b", "c": "\u0327", "k": "\u0328",
+          "r": "\u030a"}
+LETTER = {"i": "ı", "j": "ȷ", "ss": "ß", "o": "ø", "O": "Ø", "l": "ł", "L": "Ł", "aa": "å", "AA": "Å",
+          "ae": "æ", "AE": "Æ", "oe": "œ", "OE": "Œ"}
+
+
+def plain(tex):
+    """A BibTeX title or name as a reader sees it: `Sch\\"{o}lkopf` -> Schölkopf, `A\\u{g}{\\i}rman` ->
+    Ağırman, `$\\text{DT}^\\text{2}$` -> DT^2. Only the display copy; the .bib stays verbatim."""
+    s = re.sub(r"\\(?:text|mathrm|textrm|emph|textit|textbf)\s*\{([^{}]*)\}", r"\1", tex)
+    s = re.sub(r"\\(ss|aa|AA|ae|AE|oe|OE|[ijoOlL])(?![A-Za-z])\s*", lambda m: LETTER[m.group(1)], s)
+    s = re.sub(r"\\([\"'`^~=.]|[uvHckr](?=[\s{]))\s*\{?\s*([A-Za-zıȷ])\s*\}?",
+               lambda m: m.group(2) + ACCENT[m.group(1)], s)
+    s = unicodedata.normalize("NFC", s.replace("$", ""))
+    return " ".join(re.sub(r"[{}]", "", s).split())
+
+
+def _bib_field(entry, name):
+    """One field of a BibTeX entry, braces balanced (a PMLR title keeps {C}on{F}lux's case braces)."""
+    m = re.search(r"(?im)^\s*%s\s*=\s*\{" % name, entry)
+    if not m:
+        return ""
+    depth, i = 1, m.end()
+    while i < len(entry) and depth:
+        depth += {"{": 1, "}": -1}.get(entry[i], 0)
+        i += 1
+    return " ".join(entry[m.end():i - 1].split())
+
+
+def pmlr(url):
+    """Identity, abstract and free copy of a PMLR paper (proceedings.mlr.press/vNNN/<key>.html).
+    PMLR issues no DOI, so the page's own citation block is the record: the accepted ICML or
+    AISTATS version, which an arXiv preprint must not stand in for."""
+    page = fetch(url).read().decode("utf-8", "replace")
+    m = re.search(r'<code[^>]*\bid="bibtex"[^>]*>(.*?)</code>', page, re.S)
+    if not m:
+        raise SystemExit("no citation block on %s; is it a PMLR paper page?" % url)
+    entry = html.unescape(m.group(1))
+    names = [" ".join(reversed([x.strip() for x in n.split(",", 1)])) if "," in n else n.strip()
+             for n in re.split(r"\s+and\s+", plain(_bib_field(entry, "author"))) if n.strip()]
+    year = int(_bib_field(entry, "year") or 0) or None
+    book, vol, pages = _bib_field(entry, "booktitle"), _bib_field(entry, "volume"), _bib_field(entry, "pages")
+    review = re.search(r'href="(https://openreview\.net/forum\?id=[^"]+)"', page)
+    return {"title": plain(_bib_field(entry, "title")), "authors": "; ".join(names),
+            "first_family": names[0].split()[-1] if names else "anon", "year": year, "journal": book,
+            "venue": "%s, PMLR %s%s (%s)" % (book, vol, (": " + pages.replace("--", "-")) if pages else "", year),
+            "landing": url, "n_authors": len(names), "pdf": _bib_field(entry, "pdf"),
+            "abstract": re.sub(r"<[^>]+>", "", _bib_field(entry, "abstract")),
+            "openreview": review.group(1) if review else None}
 
 
 # The paper's own logic and work (haipipe-discovery 0.20): what it asks, the data and method it
@@ -194,8 +249,8 @@ def save_pdf(result, pdf_from, doi, space_root, aid="", pmcid="", title="", pdf_
         src = (space_root / pdf_from).resolve()
         shutil.copyfile(src, dest)
         return {"path": "paper.pdf", "version": pdf_version, "source": pdf_from}   # what the Ticket says it is
-    try:
-        w = json.load(fetch("https://api.openalex.org/works/doi:" + urllib.parse.quote(doi)))
+    try:            # a PMLR paper has no DOI, so nothing to ask OpenAlex
+        w = json.load(fetch("https://api.openalex.org/works/doi:" + urllib.parse.quote(doi))) if doi else {}
     except Exception:
         w = {}
     if pdf_url:  # a lawful free copy the Ticket names (an author page, a preprint server): tried first,
@@ -233,7 +288,12 @@ def main():
     ap.add_argument("--task", required=True, type=Path, help="the Discovery Task folder (tNN_<slug>/)")
     ap.add_argument("--run", required=True, help="rNN_<author><year>_<slug>")
     ap.add_argument("--address", required=True, help="bNN.jNN.tNN.rNN")
-    ap.add_argument("--doi", required=True)
+    ap.add_argument("--doi", default="", help="the publication DOI (an arXiv paper: 10.48550/arXiv.<id>)")
+    ap.add_argument("--pmlr-url", default="", help="in place of --doi: the PMLR paper page of a venue "
+                                                   "that issues no DOI (ICML, AISTATS)")
+    ap.add_argument("--accepted-venue", default="", help="the venue that accepted a paper whose proceedings "
+                                                         "record does not exist yet, e.g. 'NeurIPS 2026, poster'")
+    ap.add_argument("--accepted-url", default="", help="that venue's page for it (OpenReview forum)")
     ap.add_argument("--readout", required=True, help="what the paper shows, from its abstract")
     ap.add_argument("--reuse", required=True, help="what this study takes from it")
     ap.add_argument("--pdf-from", default="", help="a free copy already on disk, relative to the SPACE root")
@@ -253,6 +313,13 @@ def main():
     ap.add_argument("--set-aside-abstract", default="", metavar="REASON",
                     help="the retrieved abstract is not this paper's (say why); the Run stays metadata-only")
     a = ap.parse_args()
+    if bool(a.doi) == bool(a.pmlr_url):
+        ap.error("give exactly one of --doi or --pmlr-url")
+    if bool(a.accepted_venue) != bool(a.accepted_url):
+        ap.error("--accepted-venue and --accepted-url go together")
+    if a.accepted_venue and not (arxiv_id(a.doi, a.arxiv) and a.bib_from == "arxiv"):
+        ap.error("--accepted-venue marks a preprint Bib standing in for an accepted paper: it needs an "
+                 "arXiv identity and --bib-from arxiv; a PMLR page or venue DOI is the accepted record itself")
     if a.bib_from == "dblp" and (not a.dblp_bib_file or not a.dblp_record):
         ap.error("--bib-from dblp requires --dblp-bib-file and --dblp-record")
     if a.bib_from != "dblp" and (a.dblp_bib_file or a.dblp_record):
@@ -262,8 +329,9 @@ def main():
     space_root = next((p for p in [task] + list(task.parents) if (p / "env.sh").is_file()), None)
     if space_root is None:
         sys.exit("no env.sh above %s" % task)
-    run_folder = task / "runs" / a.run              # one folder per Run, else the older results/<run>/
-    result = run_folder / "result" if run_folder.is_dir() else task / "results" / a.run
+    run_folder = task / "runs" / a.run              # one folder per Run; an older Task keeps results/<run>/
+    older = not run_folder.is_dir() and (task / "results").is_dir()
+    result = task / "results" / a.run if older else run_folder / "result"
     result.mkdir(parents=True, exist_ok=True)
     y = (task / "discovery.yaml").read_text(encoding="utf-8") if (task / "discovery.yaml").is_file() else ""
     qm = re.search(r"(?ms)^question:\s*\|\s*\n(.*?)(?=^\S)", y)
@@ -271,29 +339,42 @@ def main():
 
     aid = arxiv_id(a.doi, a.arxiv)
     ax = None
-    try:
-        meta, id_src = crossref(a.doi), "Crossref"
-        bib_url = "https://api.crossref.org/works/%s/transform/application/x-bibtex" % urllib.parse.quote(a.doi, safe="")
-    except urllib.error.HTTPError as err:
-        if err.code != 404 or not aid:      # only a DOI Crossref does not register (a DataCite arXiv DOI)
-            raise
-        meta = ax = arxiv(aid)
-        id_src = "arXiv"
-        bib_url = "https://arxiv.org/bibtex/" + aid   # DataCite keys an arXiv entry by its URL, which \cite cannot take
+    if a.pmlr_url:                          # the PMLR page is the record; there is no DOI to look up
+        meta, id_src, bib_url = pmlr(a.pmlr_url), "PMLR", a.pmlr_url
+    else:
+        try:
+            meta, id_src = crossref(a.doi), "Crossref"
+            bib_url = "https://api.crossref.org/works/%s/transform/application/x-bibtex" % urllib.parse.quote(a.doi, safe="")
+        except urllib.error.HTTPError as err:
+            if err.code != 404 or not aid:      # only a DOI Crossref does not register (a DataCite arXiv DOI)
+                raise
+            meta = ax = arxiv(aid)
+            id_src = "arXiv"
+            bib_url = "https://arxiv.org/bibtex/" + aid   # DataCite keys an arXiv entry by its URL, which \cite cannot take
     if a.bib_from == "dblp":
         if id_src != "Crossref":
             sys.exit("a dblp venue export needs the venue publication DOI, not an arXiv-only identity")
         bib_url = re.sub(r"\.(?:bib|html)$", "", a.dblp_record.rstrip("/")) + ".bib"
-    subprocess.run([sys.executable, str(HERE / "paper_source_access.py"), "--doi", a.doi, "--title", meta["title"],
-                    "--bib-url", bib_url, "--output-dir", str(result)], check=True, stdout=subprocess.DEVNULL)
+    sys.path.insert(0, str(HERE))
+    import paper_source_access as psa
+    if id_src == "PMLR":
+        psa.write_outputs(psa.build_venue_record(meta["title"], meta["landing"], bib_url, pdf_url=meta["pdf"] or None,
+                                                 abstract=meta["abstract"], abstract_source=meta["landing"],
+                                                 openreview_url=meta["openreview"]), result)
+    else:
+        subprocess.run([sys.executable, str(HERE / "paper_source_access.py"), "--doi", a.doi, "--title", meta["title"],
+                        "--bib-url", bib_url, "--output-dir", str(result)], check=True, stdout=subprocess.DEVNULL)
     sa = json.loads((result / "source-access.json").read_text(encoding="utf-8"))
+    if a.accepted_url:
+        sa["links"]["accepted"] = a.accepted_url
     if a.set_aside_abstract:            # a person read the retrieved text and found it is not this paper's
         sa["abstract"] = {"source": (sa.get("abstract") or {}).get("source"), "text": None,
                           "set_aside": a.set_aside_abstract}
         (result / "abstract.md").unlink(missing_ok=True)
     abstract = (sa.get("abstract") or {}).get("text") or ""
     _src = (sa.get("abstract") or {}).get("source") or ""
-    abs_src = "OpenAlex" if "openalex.org" in _src else "Crossref" if "api.crossref.org" in _src else "PubMed"
+    abs_src = ("PMLR" if id_src == "PMLR" else "OpenAlex" if "openalex.org" in _src else
+               "Crossref" if "api.crossref.org" in _src else "PubMed")
     if not abstract and aid:                # no PubMed abstract: a machine-learning paper's is on arXiv
         ax = ax or arxiv(aid)
         abstract, abs_src = ax["abstract"], "arXiv"
@@ -302,7 +383,7 @@ def main():
                                             % (aid, abstract), encoding="utf-8")
     depth = "abstract" if abstract else "metadata-only"
     pdf = save_pdf(result, a.pdf_from, a.doi, space_root, aid, (sa.get("identifiers") or {}).get("pmcid") or "",
-                   meta["title"], a.pdf_url, a.pdf_version)
+                   meta["title"], a.pdf_url or meta.get("pdf") or "", a.pdf_version)
     sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "pending",
                             "locator_status": "complete" if abstract else "pending",
                             "depth_note": ("The Run reads the %s abstract. The full text was not read." % abs_src
@@ -311,13 +392,8 @@ def main():
         sa["local_pdf"] = pdf
     (result / "source-access.json").write_text(json.dumps(sa, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     # paper_source_access.py wrote the human summary before this Run read the abstract;
-    # carry the updated retrieval state into it so the .md never disagrees with the .json.
-    access_md = (result / "source-access.md").read_text(encoding="utf-8")
-    for label, key in (("Reading depth", "reading_depth"), ("Claim support", "claim_support"),
-                       ("Locator", "locator_status")):
-        access_md = re.sub(r"(?m)^- \*\*%s:\*\* .*$" % label,
-                           lambda _m, label=label, key=key: "- **%s:** %s" % (label, sa["retrieval"][key]), access_md)
-    (result / "source-access.md").write_text(access_md, encoding="utf-8")
+    # render it again from the updated record so the .md never disagrees with the .json.
+    (result / "source-access.md").write_text(psa.render_markdown(sa), encoding="utf-8")
     if pdf:
         with (result / "source-access.md").open("a", encoding="utf-8") as f:
             f.write("\n- **Local copy:** paper.pdf (%s), source %s\n" % (pdf["version"], pdf["source"]))
@@ -332,19 +408,25 @@ def main():
         "operation: paper-analysis",
         "status: complete",
         "result_contract: paper-source-v2",
-        "ticket: %s" % ("runs/%s/%s.sh" % (a.run, a.run) if run_folder.is_dir() else "runs/%s.sh" % a.run),
+        "ticket: %s" % ("runs/%s.sh" % a.run if older else "runs/%s/%s.sh" % (a.run, a.run)),
         "result: %s/" % result.relative_to(task).as_posix(),
         "trigger:",
         "  kind: user_request",
         "  input: %s" % q(a.trigger or question),
-        "  resolved: %s" % q("https://doi.org/" + a.doi),
+        "  resolved: %s" % q(a.pmlr_url or "https://doi.org/" + a.doi),
         "subject:",
         "  kind: paper",
         "  title: %s" % q(meta["title"]),
         "  canonical_url: %s" % q(meta["landing"]),
-        "  doi: %s" % q(a.doi),
+        ("  doi: %s" % q(a.doi)) if a.doi else "  pmlr: %s" % q(a.pmlr_url),
         "  authors: %s" % q(meta["authors"]),
         "  venue: %s" % q(meta["venue"]),
+    ] + ([
+        "  accepted_venue: %s" % q(a.accepted_venue),
+        "  accepted_url: %s" % q(a.accepted_url),
+        "  accepted_note: %s" % q("Accepted, but its proceedings record does not exist yet; the Bib is the "
+                                  "preprint until it does, then a superseding Run cites the venue record."),
+    ] if a.accepted_venue else []) + [
         "source_access:",
         "  manifest: source-access.json",
         "  summary: source-access.md",
@@ -357,17 +439,21 @@ def main():
                                if a.set_aside_abstract else "No abstract was available; the card rests on metadata only."),
         "worker:",
         "  kind: api",
-        "  name: %s" % q("%s + %s + OpenAlex; haipipe-discovery scripts/paper_result_build.py"
+        "  name: %s" % q("PMLR paper page; haipipe-discovery scripts/paper_result_build.py" if id_src == "PMLR" else
+                         "%s + %s + OpenAlex; haipipe-discovery scripts/paper_result_build.py"
                          % (id_src, abs_src) if abstract else "%s + OpenAlex; haipipe-discovery scripts/paper_result_build.py" % id_src),
         "  calls:",
-        "    - %s" % q("%s lookup by %s" % (id_src, "DOI" if id_src == "Crossref" else "arXiv id")),
+        "    - %s" % q("PMLR paper page and its citation block" if id_src == "PMLR" else
+                       "%s lookup by %s" % (id_src, "DOI" if id_src == "Crossref" else "arXiv id")),
         "    - %s" % q("PubMed E-utilities abstract (paper_source_access.py)" if abs_src == "PubMed"
                        else "OpenAlex abstract_inverted_index (paper_source_access.py; no PubMed abstract)"
-                       if abs_src == "OpenAlex" else "Crossref deposited abstract (paper_source_access.py; no PubMed or OpenAlex text)"
+                       if abs_src == "OpenAlex" else "the abstract in the PMLR citation block"
+                       if abs_src == "PMLR" else "Crossref deposited abstract (paper_source_access.py; no PubMed or OpenAlex text)"
                        if abs_src == "Crossref" else "arXiv API abstract (no PubMed record)"),
-        "    - %s" % q("OpenAlex open-access location" + (", then the arXiv PDF" if aid else "")),
+        "    - %s" % q("the PDF the PMLR citation block names" if id_src == "PMLR" else
+                       "OpenAlex open-access location" + (", then the arXiv PDF" if aid else "")),
         "    - %s" % q("BibTeX through scripts/paper_bib_fetch.py (%s)" % (
-            "dblp exact venue record" if a.bib_from == "dblp" else
+            "dblp exact venue record" if a.bib_from == "dblp" else "PMLR page citation block" if id_src == "PMLR" else
             "arXiv export" if (id_src == "arXiv" or a.bib_from == "arxiv") else "Crossref, doi.org, then DataCite")),
         "executed_at: %s" % q(now),
         "",
@@ -377,6 +463,7 @@ def main():
         sys.exit("--bib-from arxiv needs --arxiv or an arXiv DOI")
     ident = (["--dblp-bib-file", str(a.dblp_bib_file), "--dblp-record", a.dblp_record,
               "--expected-doi", a.doi] if a.bib_from == "dblp" else
+             ["--publisher-url", a.pmlr_url] if id_src == "PMLR" else
              ["--arxiv", aid] if (id_src == "arXiv" or a.bib_from == "arxiv") else ["--doi", a.doi])
     arxiv_bib = id_src == "arXiv" or a.bib_from == "arxiv"
     bib_year = ((ax or arxiv(aid)).get("bib_year") if arxiv_bib and aid else None) or meta["year"]
@@ -403,8 +490,8 @@ def main():
 
     cite = "%s %s" % (who(meta), meta["year"])
     facts = ["# %s · facts from the abstract" % cite, "",
-             "- `F01` · Subject identity: %s, %s; %s; DOI %s%s. Locator: %s record." % (
-                 q(meta["title"]), meta["authors"], meta["venue"], a.doi,
+             "- `F01` · Subject identity: %s, %s; %s; %s%s. Locator: %s record." % (
+                 q(meta["title"]), meta["authors"], meta["venue"], ("DOI " + a.doi) if a.doi else a.pmlr_url,
                  ("; PMID %s" % ids["pmid"]) if ids.get("pmid") else "", id_src)]
     for i, s in enumerate(sentences(abstract), start=2):
         facts.append("- `F%02d` · Abstract sentence: %s Locator: abstract S%d." % (i, q(s), i - 1))
@@ -417,8 +504,11 @@ def main():
         "- run: %s" % a.run,
         "- address: %s" % a.address,
         "- cite: @%s" % key,
-        "- subject: [%s](%s) · DOI [%s](https://doi.org/%s)" % (meta["journal"] or "article", meta["landing"], a.doi, a.doi),
+        ("- subject: [%s](%s) · DOI [%s](https://doi.org/%s)" % (meta["journal"] or "article", meta["landing"], a.doi, a.doi)
+         if a.doi else "- subject: [%s](%s) · no DOI; the PMLR page is the record" % (meta["journal"], meta["landing"])),
         "- venue: %s" % meta["venue"],
+    ] + (["- accepted: %s ([page](%s)); its proceedings record does not exist yet, so the Bib is the preprint"
+          % (a.accepted_venue, a.accepted_url)] if a.accepted_venue else []) + [
         "- status: complete",
         "- citation verification: pending person-level confirmation", "",
         "## Question", "", question or "(the Task's question)", "",

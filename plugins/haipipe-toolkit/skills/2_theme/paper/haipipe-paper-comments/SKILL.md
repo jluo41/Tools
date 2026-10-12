@@ -8,8 +8,8 @@ description: >-
   response. Use when taking in comments, triaging them, answering a review, or turning recurring comments
   into questions. Replaces haipipe-paper-round (renamed 2026-10-07).
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-10-07"
+  version: "1.2.1"
+  last_updated: "2026-10-11"
   group-token: "CM"
   legacy-group-token: "RD"
   outline:
@@ -21,7 +21,7 @@ metadata:
 
 # /haipipe-paper-comments · take in what people say, answer every point once
 
-Load `haipipe-page`, `haipipe-page-workflow`, the current Run Workflow/Spec owner, `haipipe-paper-workflow`,
+Load `haipipe-draft`, `haipipe-draft-workflow`, the current Run Workflow/Spec owner, `haipipe-paper-workflow`,
 then this PageType and its references. Use the shared Page contract for Page work and `response.<batch>` for a
 commissioned response package; triage alone does not allocate a Run. Declare `page-type: comments`. A Page
 that still declares `page-type: round` (written before 1.0.0) is a review batch of this PageType, read as is.
@@ -64,7 +64,7 @@ one Review Item and is routed exactly once (the Story's §5 support and §6/§7 
 Section Narrative row for retelling, a Section for rework), and a person approves the response receipt. A
 meeting, advisor or internal batch closes when every point has a terminal state and its proposed questions are
 decided. `haipipe-paper-workflow` holds the full gate assertions; this block only binds the Page owner. The page
-itself always runs through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK), never a private
+itself always runs through `/haipipe-draft` and `haipipe-draft-workflow` (OUTLINE → … → CHECK), never a private
 lifecycle. A batch is a Page-level control surface, not a Run, an Evidence/Execution owner, or a second Story.
 
 ## 🔄 Grain and boundary
@@ -139,8 +139,10 @@ and the Review Items they answer. A batch with no external reader records `no ex
 The next review batch normally starts by copying this batch's `released/` into its `sent/`. If an intervening
 rebuild changes the manuscript, that new build is the next batch's base and its different `built` time is
 recorded explicitly; never silently reuse an older snapshot. Root `delivery/` stays the factory; `sent/` and
-`released/` are copies cut from it, never edited. Store supplied letters, memos and meeting notes in `feedback/`
-and preserve their wording; never rewrite received material into a cleaner second source.
+`released/` are copies cut from it, never edited. Store supplied letters and memos in `feedback/` and preserve
+their wording; never rewrite received material into a cleaner second source. A meeting's notes are kept once, in
+the Board's `related/meetings/` with a row in `related/related.md` (b10 s04-D01); a meeting batch cites that row
+instead of holding a copy. An older batch's own `meeting/` folder is still read.
 
 ### 🪪 Naming law
 
@@ -319,7 +321,7 @@ governing Story. A request about the telling becomes a human-approved §8 candid
 foreign Section or let the batch write a second manuscript.
 
 **Where a routed item LANDS on its owner**: the owning page's `draft/records/<stem>-feedback.md` (a section per
-batch), a register the page projects from this table during its own OUTLINE pass (`haipipe-page-structure` ⓪
+batch), a register the page projects from this table during its own OUTLINE pass (`haipipe-draft-structure` ⓪
 COLLECT). This page never writes into another page's folder, and it never dispatches an agent at its targets:
 it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands every register in one process with no
 agent at all, and `cli/feedback.py reopen <board>` lists which pages hold an open row, in the order this table's

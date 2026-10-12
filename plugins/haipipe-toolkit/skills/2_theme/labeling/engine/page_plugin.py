@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Standalone 🏷 Labeling presenter for one Page-local subjective-label job.
 
-This module intentionally lives with the domain plugin, not in haipipe-page.
+This module intentionally lives with the domain plugin, not in haipipe-draft.
 It reads safe receipts and Run envelopes only.  The current Codex task is the
 interaction transport; semantic writes still go through the family workflow.
 """

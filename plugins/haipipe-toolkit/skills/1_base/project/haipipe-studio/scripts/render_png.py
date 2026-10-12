@@ -11,6 +11,8 @@ import base64
 import io
 import json
 import math
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -71,9 +73,19 @@ def render(src, dst, s=None):
             elif st != "transparent":
                 dr.rounded_rectangle([x, y, x + w, y + h], radius=r, outline=st, width=sw)
         elif e["type"] == "image" and e.get("fileId") in data.get("files", {}):
-            raw = base64.b64decode(data["files"][e["fileId"]]["dataURL"].split(",", 1)[1])
-            pic = Image.open(io.BytesIO(raw)).convert("RGB").resize((max(1, int(w)), max(1, int(h))))
-            im.paste(pic, (int(x), int(y)))
+            data_url = data["files"][e["fileId"]]["dataURL"]
+            raw = base64.b64decode(data_url.split(",", 1)[1])
+            if data_url.startswith("data:image/svg+xml"):
+                converter = shutil.which("rsvg-convert")
+                if not converter:
+                    raise RuntimeError("SVG preview requires rsvg-convert")
+                raw = subprocess.run(
+                    [converter, "--width", str(max(1, int(w))),
+                     "--height", str(max(1, int(h)))],
+                    input=raw, capture_output=True, check=True, timeout=15,
+                ).stdout
+            pic = Image.open(io.BytesIO(raw)).convert("RGBA").resize((max(1, int(w)), max(1, int(h))))
+            im.paste(pic, (int(x), int(y)), pic)
         elif e["type"] == "ellipse":
             dr.ellipse([x, y, x + w, y + h], fill=bg, outline=None if st == "transparent" else st, width=sw)
         elif e["type"] in ("arrow", "line"):

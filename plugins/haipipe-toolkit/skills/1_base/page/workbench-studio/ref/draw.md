@@ -106,7 +106,7 @@ contract for new drawing work.
 
 ## 📂 Files
 
-- `../../haipipe-page/cli/draw.py`
+- `../../haipipe-draft/cli/draw.py`
   split · sync · compose · verify · retire.
 - `../../../../../servers/workbench/xcal.py`
   The live editor's save path, owner modes, and the mint.

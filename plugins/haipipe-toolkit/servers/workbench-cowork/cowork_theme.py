@@ -5,7 +5,7 @@ email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`t
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.
 
-    Block  Description: Scope · People · Resources · Related | Audience Report: the base's Question rows
+    Block  Description: Scope · People · Resources (Related: folded inside the Studio) | Audience Report: the base's Question rows
            (Logic │ Work │ Report, the report's drawing live in Report)
            | Work Details: its Jobs, All · open · waiting · done | Delivery: delivery/ (every Job's messages
            out) · Reports · Done jobs
@@ -16,6 +16,7 @@ left vanilla and its tab is greyed until a Job has one.
 Idea Studio and Runs read as vanilla (studio/ topics; runs/ grouped by type); the theme adds its
 run types. It reads the Block through coworkboard.py and writes nothing; no run sends a message.
 """
+from src.common import delivery_dir, delivery_lane_dir, delivery_relative
 import re
 from pathlib import Path
 from urllib.parse import urlencode
@@ -36,12 +37,12 @@ BLOCK_RUNS = {"Description": (_run("Update the Block status", "update the Block 
                               _run("Add a person", "add a person to"), _run("Add a resource", "add a resource to")),
               "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-question-asking {folder}"},
                                   {"label": "Review the questions", "prompt": "/haipipe-question-review {folder}"},
-                                  {"label": "Write the report", "prompt": "/haipipe-page-writing {folder}/reports/"},
-                                  {"label": "Check a report", "prompt": "/haipipe-page-check {folder}/reports/"}),
+                                  {"label": "Write the report", "prompt": "/haipipe-draft-writing {folder}/reports/"},
+                                  {"label": "Check a report", "prompt": "/haipipe-draft-check {folder}/reports/"}),
               "Work Details": (_run("Open a job", "open a job in"), _run("Update a job", "update a job in")),
               "Runs": (_run("Update the Block status", "update the Block status of"),
                        {"label": "Draw", "prompt": "/workbench-studio draw a topic in {folder}/studio/"}),
-              "Delivery": ({"label": "Check a report", "prompt": "/haipipe-page-check {folder}/reports/"},)}
+              "Delivery": ({"label": "Check a report", "prompt": "/haipipe-draft-check {folder}/reports/"},)}
 JOB_RUNS = {"Description": (_run("Update the Job", "update the job"), _run("Add a file", "add a file to")),
             "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-question-asking {folder}"},),
             "Work Details": (_run("Add an entry", "add a Timeline entry to"),
@@ -89,7 +90,7 @@ def _question_rows(rows, block, root):
 def _deliveries(job_dir, block):
     """One message we send per `delivery/<date>-<what>/` of a Job: its draft (.md) and its attachments
     (JL 261009: "add it to the delivery"), newest first."""
-    out, d = [], job_dir / "delivery"
+    out, d = [], delivery_dir(job_dir)
     for p in sorted(d.iterdir(), reverse=True) if d.is_dir() else []:
         if p.name.startswith((".", "_")):
             continue
@@ -125,14 +126,14 @@ def _block(block, root, sub):
     rows, _ = jobs(block, root)
     out = {}
 
-    d_sub = _pick(sub, ("Scope", "People", "Resources", "Related"))
+    d_sub = _pick(sub, ("Scope", "People", "Resources"))       # Related folds inside the Studio (b10 s04-D05)
     if d_sub == "Scope":
         body = None                                                     # vanilla: the face's fields
     elif d_sub == "People":
         page = people_page(block)
         body = (f'<p class=mut>{link(reader(page, root), rel(page, root))}</p><pre>{esc(read(page, block))}</pre>'
                 if page.is_file() else '<p class=mut>No people page yet (j00_people/j00_people.md).</p>')
-    elif d_sub == "Resources":
+    else:
         res, _ = register(text, "Related resources", "resources")
         found = [(link(words(r.get("url")), words(r.get("title"))), esc(", ".join(r.get("questions") or [])))
                  for r in res if words(r.get("title")) and words(r.get("url")).startswith(("http://", "https://"))]
@@ -141,11 +142,7 @@ def _block(block, root, sub):
                   for j in rows for d in ("materials", "design") for f in j[d]]
         found += [(esc(p.strip()), "OneDrive") for p in head["onedrive"].split(",") if p.strip()]
         body = table(("resource", "for"), found)
-    else:
-        related = block / "related" / "related.md"
-        body = (f'<p>{link(reader(related, root), "related/related.md")}</p>' if related.is_file()
-                else '<p class=mut>No related/related.md yet.</p>')
-    out["Description"] = Space(html=body or "", subspaces=("Scope", "People", "Resources", "Related"), open=d_sub,
+    out["Description"] = Space(html=body or "", subspaces=("Scope", "People", "Resources"), open=d_sub,
                                run_types=BLOCK_RUNS["Description"])
 
     q_html, groups = question_rows("Block", block, root, sub)            # one look with the other Block workbenches
@@ -176,9 +173,18 @@ def _block(block, root, sub):
     elif v_sub == "Done jobs":
         html = table(("Job", "title", "since"), [(_job_link(j, block, root), esc(j["title"]), esc(j["since"] or "—"))
                                                   for j in rows if j["state"].startswith(DONE)])
-    else:                                                               # delivery/: every Job's messages out
+    else:                                                               # Block files and every Job's messages out
+        own = []
+        for lane in ("word", "latex", "web", "slide", "render"):
+            output = delivery_lane_dir(block, lane)
+            found = sorted(f for f in output.rglob("*")
+                           if f.is_file() and not any(p.startswith((".", "_"))
+                                                     for p in f.relative_to(output).parts)) if output.is_dir() else []
+            if found:
+                own.append((esc(lane), " · ".join(pop("/" + rel(f, root), f.name) for f in found)))
         sent = [r for j in rows for r in _delivery_rows(block / j["name"], block, root, with_job=True)]
-        html = table(("Job", "date", "message", "attachments", "state"), sent) if sent else ""   # none: vanilla
+        html = (("<h2>Block files</h2>" + table(("lane", "files"), own) if own else "")
+                + (table(("Job", "date", "message", "attachments", "state"), sent) if sent else ""))
     out["Delivery"] = Space(html=html, subspaces=("delivery/", "Reports", "Done jobs"), open=v_sub or "delivery/",
                             run_types=BLOCK_RUNS["Delivery"])
     return out

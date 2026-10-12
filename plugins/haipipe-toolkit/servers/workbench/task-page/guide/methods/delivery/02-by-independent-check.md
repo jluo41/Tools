@@ -36,7 +36,7 @@ limitations: Two agents of the same model may share the same blind spots; a pers
 Applied to AI
 -------------
 
-agent: haipipe-page-check-agent, which makes nothing and cannot approve a version it
+agent: haipipe-draft-check-agent, which makes nothing and cannot approve a version it
   produced.
 steps: 1. Read the Page version. 2. Check coverage, evidence, freshness and clarity. 3.
   Return CLOSE or a route.
@@ -46,4 +46,4 @@ risk: A checker that sees the writer's reasoning may adopt it; it reads the plan
   Page, not the writer's notes (ours).
 evidence on ai: Self-preference [Panickssery 2024] and failed self-correction [Huang
   2023] are why the writer never checks its own Page.
-skill: haipipe-page-check
+skill: haipipe-draft-check

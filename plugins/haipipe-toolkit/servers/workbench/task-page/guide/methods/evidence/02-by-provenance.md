@@ -43,4 +43,4 @@ returns: the item's Supporting Run and Local Run lines.
 verify: Every item's Run and Result exist on disk (T2).
 risk: An agent could copy a receipt by hand; only the Run's Ticket writes it (ours).
 evidence on ai: No study tests provenance kept by agents for Pages (ours).
-skill: haipipe-page-evidence
+skill: haipipe-draft-evidence

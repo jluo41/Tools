@@ -725,7 +725,7 @@ class XcalMixin(ExcalidrawProxyMixin):
         except ValueError:
             md_rel = ""
         scene = {"type": "excalidraw", "version": 2,
-                 "source": "haipipe-board/mint",
+                 "source": "haipipe-block/mint",
                  "elements": [],
                  "appState": {"gridSize": None,
                               "viewBackgroundColor": "#ffffff"},
@@ -752,7 +752,7 @@ class XcalMixin(ExcalidrawProxyMixin):
                 or not (f.parent.parent / "board.md").is_file()):
             return None
         scene = {"type": "excalidraw", "version": 2,
-                 "source": "haipipe-board/mint",
+                 "source": "haipipe-block/mint",
                  "elements": [],
                  "appState": {"gridSize": None,
                               "viewBackgroundColor": "#ffffff"},

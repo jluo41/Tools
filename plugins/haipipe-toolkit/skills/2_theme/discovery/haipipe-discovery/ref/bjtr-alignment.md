@@ -34,35 +34,35 @@ discovery/                                  bank; no address segment
             ├── discovery.yaml                Task Face manifest
             ├── draft/                        Page process and derived evidence
             ├── scripts/                      optional reusable instrument
-            ├── runs/
-            │   └── r01_smith2024_clock.sh    executable Run ticket
-            └── results/
-                └── r01_smith2024_clock/      exact same-stem Run projection
-                    ├── r01_smith2024_clock.md
-                    ├── facts.md
-                    ├── runtime.yaml
-                    └── r01_smith2024_clock.bib
+            └── runs/
+                └── r01_smith2024_clock/      one folder per Run
+                    ├── r01_smith2024_clock.sh    executable Run ticket
+                    └── result/               the Run's projection
+                        ├── r01_smith2024_clock.md
+                        ├── facts.md
+                        ├── runtime.yaml
+                        └── r01_smith2024_clock.bib
 ```
 
 The address is b01.j02.t03.r01 (or b01j02t03r01 in compact form). A Block can
 contain several sibling Jobs; a Job can contain several Task Pages; one Task
 Page can contain many Runs. One Run analyzes one admitted canonical Subject,
-normally one paper. Result is the Run's readout, not a fifth level. The exact
-same-stem pair runs/rNN_*.sh and results/rNN_*/ is mandatory. PDF, raw text,
+normally one paper. Result is the Run's readout, not a fifth level. The pair
+runs/rNN_*/rNN_*.sh and runs/rNN_*/result/ is mandatory. PDF, raw text,
 and captured Trigger material are optional Result attachments.
 
 ## 3. Retrofit of the old numbered design
 
 | Historical label | Current interpretation | Lawful owner | Never infer |
 |---|---|---|---|
-| 00/01/02/03/04 | Shared Page workflow records | haipipe-page-workflow and its phases | b00/b01/t01 or a Run |
+| 00/01/02/03/04 | Shared Page workflow records | haipipe-draft-workflow and its phases | b00/b01/t01 or a Run |
 | 1_search | FIND and canonical-identity capability family | D1 ACQUIRE intake | Job j01, one Run, or a phase named “1” |
 | 2_review | Per-Subject review capability family | D1 ACQUIRE source review | Job j02 or one aggregate Run |
 | haipipe-discovery-synthesize | Cross-Result synthesis capability family | D1 SYNTHESIZE and Page CONTENT | r03 or a new hierarchy level |
 | 3_idea, 4_idea, or other old Idea labels | Unsupported retired labels | stop and request a new haipipe-discovery-synthesize Page or sibling haipipe-ideation unit | a live route, migration target, or inferred Run |
 | D1 SCOPE…CLOSE | Domain lifecycle | haipipe-discovery-inquiry | b/j/t/r segments |
-| runs/rNN_*.sh | Level-4 executable analysis ticket | D1 ACQUIRE only | search query, API call, or synthesis pass |
-| results/rNN_*/ | Paired Run readout | D1 ACQUIRE result contract | a second Run or a Page phase |
+| runs/rNN_*/rNN_*.sh | Level-4 executable analysis ticket | D1 ACQUIRE only | search query, API call, or synthesis pass |
+| runs/rNN_*/result/ | Paired Run readout | D1 ACQUIRE result contract | a second Run or a Page phase |
 
 Semantic direction work leaves Discovery through the sibling haipipe-ideation
 skill. It is not represented by a Discovery capability family, Page type, or

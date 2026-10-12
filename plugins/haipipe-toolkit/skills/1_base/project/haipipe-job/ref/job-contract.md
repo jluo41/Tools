@@ -64,7 +64,7 @@ answers: Q01                    # optional: the Block Question it answers (haipi
 2. **Add a Task** (`run-add-<tNN>`): `new_job.py task <job> --slug … --title …` makes the next
    `tNN_<task>/` with a bare face and lists it; `haipipe-task` then builds the Task (Build the
    Task, at Task level).
-3. **Build the delivery** (`run-delivery-<target>`): this skill's at a Job, as a Block's is haipipe-board's
+3. **Build the delivery** (`run-delivery-<target>`): this skill's at a Job, as a Block's is haipipe-block's
    (decided, b03 s21, 261007).
 
 ## A theme's own Job names
@@ -78,7 +78,7 @@ THEME = Theme(name="<theme>", ..., level_patterns={"Job": r"^<job regex>", "Task
 
 1. **Where it counts**: a Job pattern only directly under its Block, a Task pattern only
    directly under one of its Jobs; `jNN_` and `tNN_` still count everywhere.
-2. **Which theme's**: the theme that reads the Block (`haipipe-board`: its claim, else its
+2. **Which theme's**: the theme that reads the Block (`haipipe-block`: its claim, else its
    Theme folder); the vanilla frame has no patterns.
 3. **Scaffold**: `new_job.py job <block> --name <folder>` and `new_job.py task <job> --name
    <folder>` take the theme's name as given; the face's title line starts with that name.

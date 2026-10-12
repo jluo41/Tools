@@ -27,8 +27,8 @@ task execution / discovery work
 1. Resolve the board from the explicit path, the nearest `board.md`, or the project's Task Board. Ask only if more than one plausible board remains.
 2. Search the board registry and aliases for an Insight instance whose topic
    and data context match. Then match the requested question to an item.
-3. If one exists, open that Page through `haipipe-page`; never create a near-duplicate because its wording differs.
-4. If none exists, create one `I<NN>-<slug>/` Folder through `haipipe-page`;
+3. If one exists, open that Page through `haipipe-draft`; never create a near-duplicate because its wording differs.
+4. If none exists, create one `I<NN>-<slug>/` Folder through `haipipe-draft`;
    its readable face is `I<NN>-<slug>.md` with `page-type: insight`,
    `scope: task`, `insight-layout: items-v2`, and `insight-instance:`. Declare
    snapshot inputs and item intent in `workflow/insight.yaml`. Each item has

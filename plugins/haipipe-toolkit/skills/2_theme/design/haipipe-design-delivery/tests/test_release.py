@@ -40,7 +40,7 @@ class ReleaseTest(unittest.TestCase):
     def test_a_draft_prediction_is_refused_without_freeze(self):
         with self.assertRaises(SystemExit):
             R.release(self.job)
-        self.assertFalse((self.job / "delivery" / "designs.json").exists())
+        self.assertFalse((self.block / "delivery" / self.job.name / "designs.json").exists())
 
     def test_a_ranked_job_is_not_released_before_its_ranking_is_projected(self):
         job = self.block / "j02_g01_m04"
@@ -60,12 +60,13 @@ class ReleaseTest(unittest.TestCase):
             R.release(self.job, freeze="261007")
         self.assertEqual(str(yaml.safe_load((self.job / "t01_d01_option-1" / "prediction.yaml").read_text())["frozen"]),
                          "draft")                              # d01 was checked, not frozen: nothing half written
-        self.assertFalse((self.job / "delivery" / "designs.json").exists())
+        self.assertFalse((self.block / "delivery" / self.job.name / "designs.json").exists())
 
     def test_release_writes_job_and_block_delivery_once(self):
         R.release(self.job, freeze="261007")
+        self.assertFalse((self.job / "delivery").exists())
         R.release(self.job)                                      # again: the states are released now, so nothing new
-        designs = json.loads((self.job / "delivery" / "designs.json").read_text())["designs"]
+        designs = json.loads((self.block / "delivery" / self.job.name / "designs.json").read_text())["designs"]
         self.assertEqual([(d["job"], d["design"]) for d in designs], [("j01", "d01"), ("j01", "d02")])
         self.assertEqual(designs[0]["words"], "<words 1>")
         self.assertEqual(designs[0]["pins"], {"goal": "G01", "method": "M04 m2", "inputs": "i2"})
@@ -76,7 +77,10 @@ class ReleaseTest(unittest.TestCase):
         self.assertIn("state: dropped", (self.job / "t03_d03_option-3" / "t03_d03_option-3.md").read_text())
         self.assertEqual(str(yaml.safe_load((self.job / "t01_d01_option-1" / "prediction.yaml").read_text())["frozen"]),
                          "261007")
-        self.assertIn("## j01 · d02", (self.block / "delivery" / "designs.md").read_text())
+        md = (self.block / "delivery" / "designs.md").read_text()
+        self.assertIn("## j01_g01_m04 · d02 · option-2", md)            # the Job by its folder name, never the bare jNN
+        self.assertIn("Predicted +2 against the control.", md)
+        self.assertEqual({d["job_name"] for d in designs}, {"j01_g01_m04"})
 
     def test_a_ui_design_carries_its_last_judged_screen(self):
         render = self.job / "t01_d01_option-1" / "runs" / "run-verify-d01-v1" / "result" / "render"
@@ -84,7 +88,7 @@ class ReleaseTest(unittest.TestCase):
         (render / "screen-v1.png").write_bytes(b"png")
         out = R.release(self.job, freeze="261007")
         self.assertEqual(out[0]["screen"], "screens/d01.png")
-        self.assertTrue((self.job / "delivery" / "screens" / "d01.png").is_file())
+        self.assertTrue((self.block / "delivery" / self.job.name / "screens" / "d01.png").is_file())
 
 
 if __name__ == "__main__":

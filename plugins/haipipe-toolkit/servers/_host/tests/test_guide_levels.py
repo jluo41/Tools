@@ -160,7 +160,7 @@ class RouteTest(unittest.TestCase):
             self.assertEqual(sent["code"], 200, sent["body"][:200])
             self.assertEqual(here(sent["body"]), ["Job"])
             self.assertIn('href="https://example.test/?view=radial&amp;measure=studios" target="_top" data-guide-index', sent["body"])
-            self.assertEqual(len(space_cards(sent["body"], "Job")), 6)
+            self.assertEqual(len(space_cards(sent["body"], "Job")), len(frame.SPACE_NAMES))
             task = folders(root)["Task"]                                 # a Task's face is not a Board Page
             handler.path = ("/_board/guide?family=work&view=method&embed=1&level=Task&path="
                             + (task / "t01_task.md").relative_to(root).as_posix() + "&file=t01_task.md")

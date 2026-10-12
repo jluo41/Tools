@@ -69,8 +69,12 @@ def probe(t: Path) -> tuple[str, str]:
     m = re.search(r"__RD__=(.*)", run.stdout)
     got = m.group(1).strip() if m else ""
     want = t.parent.parent.parent if want_task else t.parent / "result"
-    if got and (os.path.realpath(got) == os.path.realpath(want)
-                or (not want_task and got.rstrip("/").endswith("/".join(t.parent.parts[-2:]) + "/result"))):
+    # a relative answer reads from the ticket's folder or the SPACE root (a ticket that cd's there first); the
+    # tail match takes the Task too, so runs/runs/<run>/result (a self-location one level short) never passes
+    bases = [""] if os.path.isabs(got) else [str(t.parent)] + [str(d) for d in t.parents if (d / "env.sh").is_file()]
+    if got and (any(os.path.realpath(os.path.join(b, got)) == os.path.realpath(want) for b in bases)
+                or (not want_task and ("/" + got.rstrip("/")).endswith(
+                    "/" + "/".join(t.parent.parts[-3:]) + "/result"))):
         return "resolves", got
     if not got and re.search(r"BLOCKED", run.stderr):
         return "gated", run.stderr.strip().splitlines()[-1][:160]

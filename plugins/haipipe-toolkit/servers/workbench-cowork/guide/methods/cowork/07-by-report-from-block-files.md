@@ -27,10 +27,10 @@ limitations: A cited file can change after the report; the check reads the file 
 Applied to AI
 -------------
 
-agent: haipipe-page-writing-agent writes; haipipe-page-check-agent checks.
+agent: haipipe-draft-writing-agent writes; haipipe-draft-check-agent checks.
 steps: 1. Read the Logic and the files. 2. Write the report. 3. Cite each claim. 4. Stop for the checker.
 returns: reports/qNN_<topic>/qNN_<topic>.md.
 verify: Every claim names a file that exists (T6).
 risk: An agent may state an answer the files do not hold; the check reads each cited file (ours).
 evidence on ai: No study tests agents reporting from coordination files (ours).
-skill: haipipe-page-writing
+skill: haipipe-draft-writing

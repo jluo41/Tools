@@ -95,7 +95,7 @@ Step 5 - Check the new Board
 Run both contracts before reporting the scaffold complete:
 
 ```bash
-python3 Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-page/cli/check.py <block>
+python3 Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-draft/cli/check.py <block>
 python3 Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/ref/check_task_tree.py <block>
 ```
 

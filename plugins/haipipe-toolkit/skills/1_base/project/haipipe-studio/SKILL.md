@@ -1,7 +1,7 @@
 ---
 name: haipipe-studio
 description: >-
-  Owns the Idea Studio at any level (Block, Job, Task): a studio topic `studio/sNN-<topic>/`
+  Owns the Block Studio, shared across Block, Job and Task views: a studio topic `studio/sNN-<topic>/`
   with its face (Topic · Feeds · Files · Decided · Open), its drawings, and its builder
   `build_*.py` that redraws from disk while keeping every mark a person drew (canvas.write,
   a seed snapshot beside the drawing); the numbering (s0x concepts · s1x levels · s2x runs and
@@ -14,29 +14,72 @@ description: >-
   section written out, /haipipe-studio.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-10-10"
+  version: "0.11.0"
+  last_updated: "2026-10-12"
   # version history: ./CHANGELOG.md
 ---
 
-# /haipipe-studio · the topics a level thinks on
+# /haipipe-studio · the topics a Block owns
 
-Every level has an Idea Studio: its `studio/` folder, one topic per `sNN-<topic>/`, each a
-drawing to think on together and a short face that says what it settles and which
-Questions it feeds. This skill owns the folder, the face, the numbering, the builders that
+The Block owns its Studio topics in `studio/`, one topic per `sNN-<topic>/`.
+Block, Job and Task views share that Studio. Each topic has a drawing to think on
+together and a short face that says what it settles and which Questions it feeds. This skill owns the folder, the face, the numbering, the builders that
 keep a person's marks, and the sessions. How a drawing should look is `excalidraw-report`'s.
 
 ```text
-<level>/studio/sNN-<topic>/
+<block>/studio/sNN-<topic>/
 ├── sNN-<topic>.md            Topic · Feeds · Files · Decided · Open
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
 └── build_sNN_<topic>.py      the builder, when a script draws it
-<level>/runs/run-draw-<sNN>/  one pass per working session
+<block>/runs/run-draw-<sNN>/  one pass per working session
 ```
 
 Read `ref/topic-contract.md` before adding a topic or writing a builder.
 
+
+Topic count per Block
+---------------------
+
+Recommend at most **10 sNN topics per Block**. This counts topic folders, not the
+largest sNN number: s51 can be one of a Block's ten topics. Keep each topic about
+one connected subject. Before adding an eleventh, reuse a related topic or split
+an independent area into a peer Block. This is guidance, not a hard limit;
+existing topics keep their ids and files. `new_topic.py` gives a non-blocking
+reminder above ten, and a Job/Task input creates the topic in its owning Block.
+
+
+Infer topics from the work
+--------------------------
+
+A Block that has Jobs and Tasks but no topics (an old Block, a new one brought up to date) gets its topics
+from what its work already does, never from a generic list (JL 261012: "learn how to infer the relevant
+studios from the existing block job and task"; b10 s10). `scripts/block_inventory.py <block>` reads every
+Job and Task face and prints what repeats; read `ref/infer-topics.md` for the rules.
+
+1. **A recurring Task kind** is a method topic: how that kind of Task is done (b00: 281 profile Tasks).
+2. **A field that splits the Tasks** is one topic when the method differs by it (b00: 7 raw families).
+3. **What stands out** goes to a topic's Open list and to the Report, naming the Jobs.
+4. **No work, no topic**: each topic's **Topic:** line names the Tasks it explains.
+
+
+Groups
+------
+
+A topic's groups are its `**Tags:**` line. The workbench's Studio row edits them: `+ Group`
+names one, dragging a card onto a group adds the tag, × on a card's group (shown under the
+mouse) takes it out, × beside a group deletes the tag from every topic. `studio/_groups.txt`
+keeps the Block's groups in button order, empty ones included; dragging a group sideways
+rewrites it. Both are plain text: edit them by hand when that is quicker. Current is the
+person's own and stays in the browser (b10 s02-D16, D17). Related, folded under the topics, has
+the same bar: there an item's groups are its subfolder (`meetings/` → meetings) and the names in
+its row's `group` cell of `related/related.md`, and `related/_groups.txt` keeps their order (JL
+261011); `haipipe-related` owns that folder.
+
+Timeline, folded under Related, shows what moved when on one axis down the page, the oldest day at the
+top, at three levels (Days · Topics · Everything), and follows the same bar (JL 261011; b10 s08). It reads only what a topic keeps: a decision's date in its brackets (`sNN-DNN · …
+(JL 261011)`), a session's pass `pNN-<MMDD>`, a drawing's green `✎ <YYMMDD>` notes. A decision with no
+date is listed at its end, so date every decision.
 
 Numbering
 ---------
@@ -55,12 +98,13 @@ Add, redraw, save
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts
 python $S/new_topic.py topic <level> --slug <topic> --title '<title>' --band run [--feeds q01_x] [--builder]
-python <level>/studio/sNN-<topic>/build_sNN_<topic>.py          # redraw: the person's marks are kept
+python <block>/studio/sNN-<topic>/build_sNN_<topic>.py          # redraw: the person's marks are kept
 python $S/render_png.py <drawing>.excalidraw <drawing>.png        # the preview
-python $S/new_topic.py session <level> sNN --title '<session>' [--ask …] [--summary …] [--changed …]
+python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--summary …] [--changed …]
 ```
 
-1. **Face marks**: `**Topic:**`, `**Feeds:** qNN_<topic>`, `sNN-DNN` decisions, a numbered Open list.
+1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** qNN_<topic>`,
+   `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-contract.md` § The face.
 2. **Builder**: draws through `canvas.write`; never hand-edit its output, change the builder.
 3. **Marks kept**: what a person adds, edits or deletes survives a rebuild (the seed snapshot).
 4. **Session**: a pass of `run-draw-<sNN>`, written by `haipipe-run`'s `soft_run.py`.
@@ -87,6 +131,12 @@ green  #2f9e44   a change we made, where we made it (✎ <date> …)    canvas.G
    (images and the person's own marks untouched; a slide draft s61-s69 is left as drawn).
    `canvas.off_palette(els)` lists them first, if a builder wants to see.
 4. **Not here**: a report drawing's plots and embedded figures follow `excalidraw-report`'s report mode.
+5. **A screen in colour**: a frame that draws the workbench's screen wears the workbench's own light colours
+   (JL 261012: "make the UI to be more colorful, like the same to what we see"). Mark it
+   `canvas.ui_frame(frame)`; `canvas.write` then colours it by `colour_ui` from `canvas.UI`, the colours of
+   `servers/workbench/frame.py`: gray panes, white buttons, the open tab blue, a proposed one violet dashed,
+   stage pills in their own colours, links blue, a status word (answered, partial, open) its colour, a
+   count bar blue. Red questions and green notes in it keep their colour; the rest of the drawing stays black.
 
 One readable font (JL 261009: "I think the font should be more readable"): every word in Nunito,
 Excalidraw's "Normal" font (`fontFamily` 6, `canvas.FONT`); paths and code may use Cascadia (3,
@@ -119,6 +169,9 @@ Each frame fits the screen (JL 261010, on a 9,200 px idea frame: "This is too hu
    only), `canvas.small_text(els)` the frames whose words are mostly under 20 px (green notes not
    counted), and `canvas.numbered_frames(els)` one piece cut into "· 1", "· 2"; `canvas.write` warns
    about each.
+7. **Side notes smaller**: notes beside the main content (the page pictures they explain) are written
+   smaller than it, and `canvas.aside(e)` keeps them out of `small_text` (JL 261011: "The content or the
+   font size, can be much smaller, than the main content").
 
 
 Change notes
@@ -134,8 +187,11 @@ changed"):
 
 1. **Where**: beside the thing that changed, inside its frame, never in a separate legend only.
 2. **Short**: `✎ <YYMMDD> <what changed>`, one line, a few words; who asked goes in the face.
-3. **Also listed**: the same line in the drawing's title frame, so all changes read in one place. A
-   slide draft is the exception: a note about one slide sits only under that slide (`excalidraw-slide`).
+3. **Never stacked in a corner**: no list of changes above the title or in a corner (JL 261010: "why the
+   changes here is always in the left up corner ... add it to the places where we change it"). All the
+   changes in one place is the face's Decided list. A whole new topic, frame or a rename gets no canvas
+   note; it goes in the face. An old builder's top list moves next to what it describes (b10 s01
+   `changes_at`: under the screen that shows it, else beside or above it, never on top of other words).
 4. **How**: `canvas.change_note(x, y, what, date, frame)` returns the green text element.
 5. **Kept**: old notes stay; a note is removed only when its thing is removed.
 
@@ -185,7 +241,10 @@ the rest are its passes.
 | redraw a topic | a pass of `run-draw-<sNN>` | rerun its builder, then the preview |
 | save this session | a pass of `run-draw-<sNN>` | `new_topic.py session` |
 
-At every level, in the Idea Studio Space.
+In the shared Studio reached from Block, Job or Task. Save new shared-topic
+sessions against the Block; a Job/Task input also finds the Block when the topic
+has no retained local copy. An explicitly selected legacy local topic keeps its
+local Run and passes until that topic is moved.
 
 
 Moved here
@@ -218,8 +277,10 @@ haipipe-studio/
 ├── CHANGELOG.md
 ├── agents/openai.yaml
 ├── ref/topic-contract.md      the folder, face, numbering, builders, sessions, buttons, a proposal topic
+├── ref/infer-topics.md        topics inferred from a Block's Jobs and Tasks (b10 s10)
 ├── scripts/canvas.py          the merge-safe writer
 ├── scripts/render_png.py      the offline PNG preview
 ├── scripts/new_topic.py       topic · session
+├── scripts/block_inventory.py what a Block's Jobs and Tasks already do: kinds, splits, sub-questions
 └── tests/test_haipipe_studio.py
 ```

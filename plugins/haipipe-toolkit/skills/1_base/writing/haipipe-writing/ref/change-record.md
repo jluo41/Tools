@@ -44,7 +44,7 @@ Three rules from `haipipe-sentence` bind this skill directly:
 plain words   SURVIVED the edit          ← the whole reason this is word-level
 ```
 
-`haipipe-page/src/body.py` renders it: `render_change()` turns `~…~` into
+`haipipe-draft/src/body.py` renders it: `render_change()` turns `~…~` into
 `<del class="chg-old">` and `*…*` into `<ins class="chg-new">`.
 
 Because `~` and `*` are the marks, they cannot appear in the text.

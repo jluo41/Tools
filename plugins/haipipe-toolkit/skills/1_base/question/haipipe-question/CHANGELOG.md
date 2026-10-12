@@ -1,6 +1,11 @@
 haipipe-question — Changelog
 ============================
 
+## [0.6.2] · 2026-10-11 · A Question's group puts it on the Report's bar
+
+- Step 3: the register row's `group:` line (comma-separated) is the Question's tag on the Report's group
+  bar, as a topic's **Tags:** line is in the Studio; the workbench writes it on a drag (b10 s07-D01, D02).
+
 ## [0.6.1] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

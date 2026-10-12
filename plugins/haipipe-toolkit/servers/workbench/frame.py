@@ -1,12 +1,16 @@
 """The base frame every theme draws in, and the vanilla workbench when no theme is laid over it.
 
-    Guide · Studio | Block · Job ▾ · Task ▾                            top navigation
-    Description | Report | Work Details | Runs · Delivery          work mode only
+    Guide · Studio | Block · Job ▾ · Task ▾ | Delivery                top navigation
+    Description | Report | Work | Runs                             work mode only
     <subspaces>                                                           the third row
     content                                                  │ Runs panel
 
-The frame owns the levels, shared Guide and Studio, the five work Spaces, their order and
-dividers, the third row, the Runs panel and the look (Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench, Q08 and studio/s02-workbench-shared). A theme
+Studio and Delivery are the Block's shared views (b10 s09-D05): one Studio and one delivery/ per
+Block, opened from every level; Delivery at a Job or Task shows that level's part. Related, the
+Block's related/ (what came in), folds inside the Studio, under its topic cards (b10 s04 Open 1,
+JL 261011: "put the related as the second collapse part in the box of the studio items").
+The frame owns the levels, shared Guide, Studio (with Related) and Delivery, the work Spaces, their order and
+dividers, the third row, the Runs panel and the look (Tools/blueprints/b10_project_workbench, Q08 and studio/s02-studio-workbench-skill). A theme
 gives only what each Space holds at each level: `servers/workbench-<theme>/<theme>_theme.py`
 exports `THEME`, a `Theme`. A Space a theme leaves out shows the vanilla default, read from the
 standard folders (the face `.md`, `studio/`, `reports/`, the child `jNN_` / `tNN_` folders,
@@ -20,7 +24,10 @@ Read-only: nothing here writes. Every link is origin-relative (`/_board/workbenc
 """
 from __future__ import annotations
 
+from src.common import delivery_dir, delivery_owner, delivery_read_lane_dir, delivery_relative
+import datetime
 import html
+import os
 import json
 import re
 from dataclasses import dataclass, field, replace
@@ -30,9 +37,16 @@ from urllib.parse import quote, urlencode
 
 LEVELS = ("Block", "Job", "Task")
 # (Space, divider group, optional): the bars in the Spaces row fall between groups
-SPACES = (("Description", 0, False), ("Idea Studio", 1, True), ("Audience Report", 1, True),
+SPACES = (("Description", 0, False), ("Related", 1, True), ("Idea Studio", 1, True), ("Audience Report", 1, True),
           ("Work Details", 2, False), ("Runs", 3, False), ("Delivery", 3, True))
+# the Block's shared views: each has its one entry in the top row, never in the Spaces row
+TOP_ROW = ("Idea Studio", "Delivery")
+# shown inside the Studio, under its topic cards, never in a row (b10 s04, JL 261011)
+IN_STUDIO = ("Related",)
 SPACE_NAMES = tuple(name for name, _, _ in SPACES)
+# what a Space button says; the key stays, so old space= links keep working
+# (s02-D10 Report; s02-D19 Work, JL 261010: "change the Work Details into Work")
+SPACE_LABELS = {"Audience Report": "Report", "Work Details": "Work"}
 _LEVEL_OF = {"b": "Block", "j": "Job", "t": "Task"}
 _PREFIXED = re.compile(r"^([bjt])\d+_")
 # a Project's Theme folder -> the theme that reads it (old plural names read the same, s01-D29)
@@ -43,7 +57,7 @@ THEME_FOLDERS = {"tasks": "work", "work": "work", "discoveries": "discovery", "d
 ROUTE = "/_board/workbench"
 # the skill that owns each level's own buttons (Update the description, Add a Job or Task, Build the delivery);
 # every frame button names its skill (b03 s21-D02; haipipe-run ref/run-types-by-space.md)
-LEVEL_SKILL = {"Block": "haipipe-board", "Job": "haipipe-job", "Task": "haipipe-task"}
+LEVEL_SKILL = {"Block": "haipipe-block", "Job": "haipipe-job", "Task": "haipipe-task"}
 
 
 def _e(value) -> str:
@@ -93,6 +107,17 @@ class Theme:
     # option(folder) -> (label, group) for the Job ▾ / Task ▾ dropdown, or None for the folder's name
     # (b12 s32, 261008: a design Task shows "Task · d04 · reason-then-ask", grouped by its step)
     option: Callable | None = None
+    # the Report's groups (b10 s07, JL 261011: "for someother report, the groups are of the special forms,
+    # and that ones are fixed, depending on different theme"): report_fixed(row, owner) -> the groups a
+    # register row has by the theme's own rule, shown with no × (a paper's from its telling's **Feeds:**, so it
+    # gets the owner folder; insight's level letter needs only the row, and report_fixed(row) works too);
+    # report_groups, the groups its bar shows from the start, even empty; report_cards(level, folder, root)
+    # -> [{id, title, groups, status, html}], the theme's own cards that are no register row (a paper's ideas
+    # and its standing Questions, s07-D05, D08), drawn beside the register's, not draggable, their groups
+    # fixed. Every other group is a tag, made and added as on a Studio topic.
+    report_fixed: Callable | None = None
+    report_groups: tuple = ()
+    report_cards: Callable | None = None
 
     def level_name(self, level: str) -> str:
         return self.level_names.get(level, level)
@@ -370,8 +395,9 @@ RUN_ANY = run_type("run-<type>-<target>", "start a Run (a work Task's hard Runs:
                    "Start a Run in {folder}/runs/.", "haipipe-run")
 
 
-def vanilla(level: str, folder: Path, root: Path, sub: str = "") -> dict:
-    """{Space: Space}: what every Space shows when no theme fills it."""
+def vanilla(level: str, folder: Path, root: Path, sub: str = "", theme: "Theme | None" = None) -> dict:
+    """{Space: Space}: what every Space shows when no theme fills it; `theme` lends the Report its fixed and
+    starting groups (Theme.report_fixed, report_groups)."""
     out = {}
     tag = (_PREFIXED.match(folder.name).group(0).rstrip("_") if _PREFIXED.match(folder.name)
            else {"Block": "<bNN>", "Job": "<jNN>"}.get(level, "<tNN>"))
@@ -386,36 +412,25 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "") -> dict:
     else:
         out["Description"] = Space(f'<p class=mut>No face file: {_e(folder.name)}.md is missing.</p>')
 
+    # Related is the Block's (spaces_for gives a Job or Task its Block's)
+    out["Related"] = related_view(folder, root, sub) if level == "Block" else Space()
     out["Idea Studio"] = Space(studio_cards(folder, root), run_types=(
         run_type("run-draw-<sNN>", "add a topic · redraw it · save this session, each a pass",
                  "/haipipe-studio a topic of {folder}: new topic → studio/sNN-<topic>/ and runs/run-draw-<sNN>/; "
                  "redraw or this session → a pass of run-draw-<sNN>.", "haipipe-studio",
                  rows=studio_sessions(folder, root)),))
 
-    view = sub if sub in AUDIENCE_VIEWS else "High-level logic + Low-level work"
-    face_name = _e(md.name) if md else "the face"
-    if view == "Ideation":
-        rows_html = _topic_rows(folder, root, ("ideation", "idea")) or _empty_view(
-            "No ideas yet. A studio topic holds them, ranked, admitted and eliminated: studio/sNN-ideation/.")
-    elif view == "Narrative":
-        rows_html = _topic_rows(folder, root, ("story", "narrative")) or _empty_view(
-            "No narrative yet. A studio topic tells this level's story, what it is, why it matters and the "
-            "questions it answers: studio/sNN-story-&lt;idea&gt;/.")
-    elif view == "Related Questions":
-        rows_html, _ = question_rows(level, folder, root, keep=lambda g: g in WHO_ASKS)
-        if "q-row" not in rows_html:
-            rows_html = _empty_view(f"No questions yet. Ask one a reviewer, a coauthor, an editor or a reader will "
-                                    f"ask; {face_name} ## Questions, group: {' · '.join(WHO_ASKS)}.")
-    else:
-        rows_html, _ = question_rows(level, folder, root, keep=lambda g: g not in WHO_ASKS)
-        if level == "Task" and "q-row" not in rows_html and md:   # a Task's report is its own face
+    # the Report: one card per Question under the Studio's group bar (b10 s07, JL 261011: "if the report card to
+    # show, it will be the same as the sNN, we can create and add the tags"); the paper Board's four buttons,
+    # once drawn on every theme (AUDIENCE_VIEWS, 261009), stay the paper theme's own
+    rows_html = report_view(level, folder, root, theme)
+    if rows_html is None:
+        rows_html = '<p class=mut>No Questions at this level yet.</p>'
+        if level == "Task" and md:                               # a Task's report is its own face (s07-D06)
             rows_html = (f'<div class=q-row><div class=q-l><p class=q-head><b>the Page</b></p></div>'
                          f'<div class=q-w>{" · ".join(_e(r["run"]) for r in runs_of(folder)) or "<span class=mut>no Runs yet</span>"}</div>'
                          f'<div class=q-r>{pop(_reader(md, root), "the Page", _title(md) + " ↗")}</div></div>')
-    # the four views, always, on every level a theme does not draw itself (JL 261009, over the paper Board's
-    # Audience Report: "I want you to follow things like this"; b03 s01-D22); the register's own groups head
-    # the High-level logic view's table (s04-D04)
-    out["Audience Report"] = Space(rows_html, subspaces=AUDIENCE_VIEWS, open=view, run_types=(
+    out["Audience Report"] = Space(rows_html, run_types=(
         run_type("run-ask-<qNN>", "ask a Question", "Ask a new Question of {folder}: its register row and "
                  "reports/qNN_<topic>/.", "haipipe-question"),
         run_type("run-report-<qNN>", "write the report", "Write or update a report of {folder}.", "haipipe-report"),
@@ -456,7 +471,7 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "") -> dict:
         subspaces=("All",) + tuple(types) if runs else (), open=sub or ("All" if runs else ""),
         run_types=(RUN_ANY,))
 
-    deliv = folder / "delivery"
+    deliv = delivery_dir(folder)
     rows = [(_e(p.name + ("/" if p.is_dir() else "")), _e(sum(1 for _ in p.rglob("*") if _.is_file()) if p.is_dir() else ""))
             for p in sorted(deliv.iterdir()) if not p.name.startswith(".")] if deliv.is_dir() else []
     out["Delivery"] = Space(_table(("item", "files"), rows),
@@ -505,7 +520,7 @@ def disk_markup(entries, folder: Path, root: Path, most: int = 4) -> str:
         return ""
 
     def row(p: Path) -> str:
-        rel = p.relative_to(folder).as_posix() if p != folder else "."
+        rel = Path(os.path.relpath(p, folder)).as_posix() if p != folder else "."
         if p.is_dir():
             n = sum(1 for c in p.iterdir() if not c.name.startswith("."))
             return (f'<li title="{_e(rel)}/"><span class=disk-p>{_e(p.name if p != folder else ".")}/</span>'
@@ -521,8 +536,9 @@ def disk_markup(entries, folder: Path, root: Path, most: int = 4) -> str:
         else:
             target = folder if path in ("", "./", ".") else folder / path
             found = [target] if target.exists() else []
-        found = [m for m in found if (m.resolve() == folder.resolve() or folder.resolve() in m.resolve().parents)
-                 and (m.resolve() == root.resolve() or root.resolve() in m.resolve().parents)]
+        found = [m for m in found if m.resolve().is_relative_to(root.resolve())
+                 and (m.resolve().is_relative_to(folder.resolve())
+                      or m.resolve().is_relative_to(delivery_dir(folder)))]
         if not found:
             body = f'<li class=miss title="{_e(path)}"><span class=disk-p>{_e(path)}</span><span class=disk-n>not yet</span></li>'
         else:
@@ -566,26 +582,38 @@ DISK_CSS = """
 """
 
 
-# ── Idea Studio: one closed row per studio topic, opened in place (b03 s04-D04, s04-D06) ───────
+# ── Idea Studio: one closed row per studio topic, opened in place (b10 s02-D25, D27) ───────
+# a topic's stage, its **Stage:** line (b10 s09-D03): a person moves it; the badge only shows it
+STAGES = ("explore", "shaping", "agreed", "closed")   # in order; the badge fills one step per stage
+
+
 def _note_facts(md: Path | None) -> dict:
-    """What a topic's notes file says: its **Topic:** line, decisions, open points, feeds."""
+    """What a topic's notes file says: its **Topic:** line, stage, decisions, open points, feeds."""
     if not md:
-        return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": []}
+        return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": [], "stage": ""}
     text = md.read_text(encoding="utf-8", errors="ignore")
     m = re.search(r"\*\*Topic:\*\*\s*(.+?)(?:\n\s*\n|\Z)", text, re.S)
     topic = re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
     opened = re.search(r"(?ims)^(?:#+\s*)?Open\b[^\n]*\n(?:[-=]{3,}\n)?(.*?)(?=^\S[^\n]*\n[-=]{3,}\n|^#+ |\Z)", text)
     feeds = re.search(r"\*\*Feeds:\*\*(.+?)(?:\n\s*\n|\Z)", text, re.S)
-    tags = []
-    for line in re.findall(r"(?mi)^\*\*(?:Tags|Type):\*\*[^\S\n]*([^\n]*)", text):
-        for value in re.split(r"[,·|]", line):
-            value = value.strip().strip(chr(96)).strip()
-            if value and value.casefold() not in {tag.casefold() for tag in tags}:
-                tags.append(value)
-    return {"topic": topic, "tags": tags,
+    tags = _split_tags(",".join(re.findall(r"(?mi)^\*\*(?:Tags|Type):\*\*[^\S\n]*([^\n]*)", text)))
+    stage = re.search(r"(?mi)^\*\*Stage:\*\*[^\S\n]*`?([A-Za-z]+)", text)
+    stage = stage.group(1).lower() if stage and stage.group(1).lower() in STAGES else ""
+    return {"topic": topic, "tags": tags, "stage": stage,
             "decided": len(re.findall(r"(?m)^s\d+-D\d+\b", text)),
             "open": len(re.findall(r"(?m)^\d+\.\s", opened.group(1))) if opened else 0,
             "feeds": list(dict.fromkeys(re.findall(r"q\d\d_[A-Za-z0-9_]+", feeds.group(1)))) if feeds else []}
+
+
+def _split_tags(line: str) -> list:
+    """The groups on a **Tags:** line or in a related row's group cell: split at , · or |, backticks off,
+    each name once whatever its case."""
+    tags = []
+    for value in re.split(r"[,·|]", line):
+        value = value.strip().strip(chr(96)).strip()
+        if value and value.casefold() not in {tag.casefold() for tag in tags}:
+            tags.append(value)
+    return tags
 
 
 def _notes(topic: Path) -> Path | None:
@@ -619,7 +647,7 @@ def _feed_chip(name: str, folder: Path, root: Path) -> str:
 
 def _sessions(topic: Path, folder: Path) -> list:
     """A topic's sessions: the passes of its soft Run `runs/run-draw-<sNN>/passes/pNN-<MMDD>/`
-    (s04-D06), then the older `chat/` summaries until they move into passes."""
+    (b10 s02-D27), then the older `chat/` summaries until they move into passes."""
     out = []
     m = re.match(r"(s\d+)", topic.name)
     passes = folder / "runs" / f"run-draw-{m.group(1)}" / "passes" if m else None
@@ -633,15 +661,28 @@ def _sessions(topic: Path, folder: Path) -> list:
     return out
 
 
+def _group_parts(key: str, name: str, tags: list, source: str = "", noun: str = "topic", fixed=()) -> tuple:
+    """What a row needs under a group bar (b10 s02-D16), a Studio topic or a Related item alike: its data-
+    attributes, the ⋮⋮ handle, the Add to Current button, and its group chips, each with × to take it out;
+    a group in `fixed` (a related item's subfolder, a theme's own Report group) has no ×, since only moving the
+    file, or the theme, changes it; `data-studio-fixed` keeps it so when the page redraws the chips."""
+    fixed = {t.casefold() for t in fixed if t}
+    attrs = (f' data-studio-key="{_e(key)}" data-studio-name="{_e(name)}" data-studio-source="{_e(source)}"'
+             + (f' data-studio-fixed="{_e(json.dumps(sorted(fixed)))}"' if fixed else ""))
+    handle = (f'<span class=studio-drag draggable=false title="Drag this {noun} onto a group"'
+              f' aria-label="Drag this {noun} onto a group">⋮⋮</span>')
+    current = '<button type=button class=studio-current aria-pressed=false>Add to Current</button>'
+    chips = "".join(f'<span class=chip data-tag="{_e(tag)}">{_e(tag)}</span>' if tag.casefold() in fixed else
+                    f'<span class=chip data-tag="{_e(tag)}">{_e(tag)}<button type=button class=tag-x title="Take '
+                    f'out of {_e(tag)}" aria-label="Take {_e(name)} out of {_e(tag)}">×</button></span>' for tag in tags)
+    return attrs, handle, current, f'<span class=topic-tags>{chips}</span>' if chips else ""
+
+
 def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Path | None = None) -> str:
-    """One closed row, its name and one line; opened in place, the live drawing across the row."""
+    """One closed row with its name, tags and controls; opened in place, its live drawing."""
     md = _notes(topic)
     facts = _note_facts(md)
     name = topic.name if topic.is_dir() else topic.stem
-    sessions = _sessions(topic, folder)
-    meta = ([f'decided {facts["decided"]}', f'open {facts["open"]}'] if md else [])
-    meta.append(f'{len(sessions)} session' + ("" if len(sessions) == 1 else "s"))
-    feeds = (" · feeds " + " ".join(_feed_chip(q, folder, root) for q in facts["feeds"])) if facts["feeds"] else ""
     first = drawings[0] if drawings else None
     full = pop(_draw_url(first, root), f"{name} · the topic, full size", "↗") if first else ""
     scripts = sorted(topic.glob("build_*.py")) if topic.is_dir() else []
@@ -655,22 +696,25 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
     else:
         files = sorted(p.name for p in topic.iterdir() if p.is_file() and not p.name.startswith(".")) if topic.is_dir() else []
         body = f'<p class="mut none">No drawing; it holds {_e(" · ".join(files)) or "nothing yet"}.</p>'
-    tags = "".join(f'<span class=chip>{_e(tag)}</span>' for tag in facts["tags"])
+    tags = "".join(f'<span class=chip data-tag="{_e(tag)}">{_e(tag)}</span>' for tag in facts["tags"])
     badges = f'<span class=topic-tags>{tags}</span>' if tags else ""
+    stage = facts["stage"]
+    # a coloured pill with four steps, filled up to the stage (JL 261010: no emoji, more vivid)
+    steps = "".join(f'<b class="{"on" if stage and k <= STAGES.index(stage) else ""}"></b>' for k in range(len(STAGES)))
+    stage_badge = (f'<span class="stage stage-{stage}" title="Stage {STAGES.index(stage) + 1} of 4: {stage} '
+                   f'(its **Stage:** line)"><i class=stage-steps>{steps}</i>{stage}</span>' if stage else
+                   '<span class="stage stage-none" title="No **Stage:** line yet">no stage</span>')
     topic_id, attrs, focus = "topic-" + name, "", ""
-    if shared is not None:
+    if shared is not None:                  # in the shared Studio: the group bar's handle, Current and chips with ×
         topic_id = studio_anchor(topic, folder, shared)
         source = folder.relative_to(shared).as_posix() if folder != shared else ""
-        attrs = (f' data-studio-key="{_e(topic.relative_to(shared).as_posix())}"'
-                 f' data-studio-name="{_e(name)}" data-studio-source="{_e(source)}"')
-        badges += f'<span class=topic-source>{_e(short_name(folder.name) if source else "Block")}</span>'
-        focus = ('<span class=studio-drag draggable=false title="Drag this topic to Current"'
-                 ' aria-label="Drag this topic to Current">⋮⋮</span>')
-        tools.insert(0, '<button type=button class=studio-current aria-pressed=false>Add to Current</button>')
-    return (f'<details class=topic id="{_e(topic_id)}" data-studio-tags="{_e(json.dumps(facts["tags"]))}"{attrs}>'
+        attrs, focus, current, badges = _group_parts(topic.relative_to(shared).as_posix(), name, facts["tags"], source)
+        tools.insert(0, current)
+    return (f'<details class=topic id="{_e(topic_id)}" data-studio-tags="{_e(json.dumps(facts["tags"]))}"'
+            f' data-stage="{_e(stage)}"{attrs}>'
             f'<summary>{focus}<b>{_e(name)}</b>{badges}'
-            f'<span class=topic-meta>{" · ".join(meta)}{feeds}</span>'
-            f'<span class=topic-pop>{" ".join(tools + ([full] if full else []))}</span></summary>{body}</details>')
+            f'<span class=topic-pop>{" ".join(tools + ([full] if full else []))}</span>'
+            f'{stage_badge}</summary>{body}</details>')       # the stage sits at the far right (JL 261010)
 
 
 def _studio_topics(folder: Path) -> list:
@@ -694,6 +738,515 @@ WHO_ASKS = ("reviewer", "coauthor", "editor", "reader")
 
 def _empty_view(text: str) -> str:
     return f'<p class=space-empty>{text}</p>'
+
+
+# ── Related: what the Block sits beside (b10 s04-related-workbench-skill, s01-D34) ──────────────────
+# One related/ per Block, read by its Jobs and Tasks: meetings/, papers/, files/, emails/ and one table,
+# related/related.md (kind · date · item · link · feeds · group); each subfolder is a group of its files
+# (s04-D08), and /haipipe-related owns the rule (s04-D09). It folds inside the Studio, the second part
+# under the topic cards (JL 261011), since what came in is what the topics think with.
+
+
+def related_rows(block: Path) -> tuple:
+    """(heads, rows) of the Block's related/related.md table: heads lower-cased, each row a dict."""
+    table = block / "related" / "related.md"
+    heads, rows = [], []
+    if not table.is_file():
+        return heads, rows
+    for line in table.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.startswith("|") or set(line.replace("|", "").strip()) <= set("-: "):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not heads:
+            heads = [c.lower() for c in cells]
+            continue
+        rows.append(dict(zip(heads, cells + [""] * (len(heads) - len(cells)))))
+    return heads, rows
+
+
+def _related_target(cell: str) -> str:
+    return cell.strip().strip("`").strip()
+
+
+def _related_link(cell: str, block: Path, root: Path) -> str:
+    """A related row's link: a web address links out; a file under related/ opens in the pop-out, a .md in
+    the reader and a .docx as its preview; anything else stays as written."""
+    target = _related_target(cell)
+    if not target:
+        return ""
+    if re.match(r"https?://", target):
+        return f'<a href="{_e(target)}" target=_blank rel=noopener>{_e(target.split("//", 1)[1][:48])} ↗</a>'
+    path = block / "related" / target
+    if path.is_file():
+        return pop(_file_url(path, root), path.name, target)
+    return _e(target)
+
+
+def _file_url(path: Path, root: Path) -> str:
+    """Where a kept file opens: a .md in the reader, a .docx or an .eml as its preview, anything else as
+    itself."""
+    if path.suffix == ".md":
+        return _reader(path, root)
+    if path.suffix.lower() in (".docx", ".eml"):
+        return ROUTE + "?" + urlencode({"view": path.suffix.lower()[1:], "path": _rel(path, root)})
+    return "/" + quote(_rel(path, root))
+
+
+PREVIEW_FRAME = {".md", ".docx", ".eml", ".pdf", ".html", ".htm", ".txt", ".csv"}
+PREVIEW_IMAGE = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
+
+
+def _related_preview(target: str, block: Path, root: Path) -> str:
+    """An opened related row: the file itself, read in place (JL 261011: "could we preview the word here?"):
+    Word through its package (`docx_preview`), a PDF, a page or a picture; else what it is and a link."""
+    if re.match(r"https?://", target):
+        return f'<p class="mut none">A web link: {_related_link(target, block, root)}</p>'
+    path = block / "related" / target if target else None
+    if path is None or not path.is_file():
+        return (f'<p class="mut none">Not on this computer: <code>related/{_e(target)}</code> (an office '
+                'file stays on the machine that saved it).</p>' if target else '<p class="mut none">No file.</p>')
+    url, ext = _file_url(path, root), path.suffix.lower()
+    if ext in PREVIEW_IMAGE:
+        return f'<img class=related-img loading=lazy src="{_e(url)}" alt="{_e(path.name)}">'
+    if ext in PREVIEW_FRAME:
+        return (f'<iframe class=st-frame title="{_e(path.name)}" data-src="{_e(url)}" '
+                'referrerpolicy=no-referrer></iframe>')
+    return f'<p class="mut none">No preview for {_e(ext or "this file")}: {pop(url, path.name, path.name + " ↗")}</p>'
+
+
+_DOCX_CACHE: dict = {}
+
+
+def docx_preview(path: Path, root: Path) -> str:
+    """A .docx as a page: the Word renderer's projection of its package (text, tables, images, comments in
+    the margin; workbench/task-page/exporters/docx2pdf.py `docx_html`), read only, cached by the file's stamp."""
+    import importlib.util
+    stamp = (str(path), path.stat().st_mtime_ns, path.stat().st_size)
+    if stamp not in _DOCX_CACHE:
+        spec = importlib.util.spec_from_file_location(
+            "docx2pdf", Path(__file__).resolve().parent / "task-page" / "exporters" / "docx2pdf.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        page, counts = module.docx_html(path)
+        line = (f'<p style="font:13px -apple-system,sans-serif;color:#555;margin:0 0 14px">{_e(path.name)} · read '
+                f'from the Word package: {counts["paragraphs"]} paragraphs · {counts["tables"]} tables · '
+                f'{counts["images"]} images · {counts["comments"]} comments · '
+                f'<a href="/{_e(quote(_rel(path, root)))}">the .docx ↓</a></p>')
+        screen = ("<style>@media screen{body{line-height:1.5;padding:20px 28px;max-width:8.5in;margin:0 auto;"
+                  "background:#fff;color:#111}}</style>")
+        _DOCX_CACHE.clear()                   # one file kept: the one being read
+        _DOCX_CACHE[stamp] = page.replace("<div class='page'>", screen + line + "<div class='page'>", 1)
+    return _DOCX_CACHE[stamp]
+
+
+def _related_folder(target: str) -> str:
+    """The subfolder of related/ a kept file sits in, read off its link (`meetings/…` → meetings): the
+    item's own group, as a topic's **Type:** line is (b10 s04-D08); '' for a web link or a file at the top."""
+    if re.match(r"[a-z][a-z0-9+.-]*:", target, re.I) or "/" not in target:
+        return ""
+    head = target.split("/", 1)[0]
+    return "" if head.startswith((".", "_")) or head == ".." else head
+
+
+def eml_preview(path: Path, root: Path) -> str:
+    """An email saved as it came (`related/emails/<date> <subject>.eml`, s04-D08) as a page: its From, To,
+    Cc, Date and Subject, its text, and its attachments by name. An HTML-only body shows in a sandboxed
+    frame, so nothing in it runs; read only."""
+    from email import policy
+    from email.parser import BytesParser
+    msg = BytesParser(policy=policy.default).parsebytes(path.read_bytes())
+    heads = "".join(f"<tr><th>{h}</th><td>{_e(str(msg[h]))}</td></tr>" for h in ("From", "To", "Cc", "Date", "Subject")
+                    if msg[h])
+    part = msg.get_body(preferencelist=("plain", "html"))
+    text = part.get_content() if part is not None else ""
+    if part is not None and part.get_content_type() == "text/html":
+        body = (f'<iframe sandbox title="the email" style="width:100%;height:70vh;border:1px solid #ddd" '
+                f'srcdoc="{_e(text)}"></iframe>')
+    else:
+        body = f'<pre style="white-space:pre-wrap;font:14px/1.55 -apple-system,sans-serif">{_e(text.strip())}</pre>'
+    files = [(a.get_filename() or "attachment", len(a.get_payload(decode=True) or b"")) for a in msg.iter_attachments()]
+    kept = ("<p><b>Attachments</b>: " + " · ".join(f"{_e(n)} ({k // 1024 or 1} KB)" for n, k in files) + "</p>"
+            if files else "")
+    return ('<!doctype html><meta charset=utf-8><title>' + _e(str(msg["Subject"] or path.name)) + '</title>'
+            '<style>body{font:15px/1.5 -apple-system,sans-serif;max-width:880px;margin:0 auto;padding:18px 28px;'
+            'background:#fff;color:#111}th{text-align:left;padding:2px 14px 2px 0;color:#555;font-weight:500}'
+            'table{margin-bottom:12px}</style>'
+            f'<p style="font-size:13px;color:#666">{_e(path.name)} · an email, as it came · '
+            f'<a href="/{_e(quote(_rel(path, root)))}">the .eml ↓</a></p><table>{heads}</table>{kept}<hr>{body}')
+
+
+def related_items(block: Path) -> list:
+    """Each related item, in the order its rows show: one per related/related.md row, then each file kept in
+    a subfolder of related/ that no row names yet ("no row yet"). Its groups are its subfolder first, then
+    the row's `group` cell, names split at commas like a topic's **Tags:** line (JL 261011: "for the related,
+    we have the things like subfolders and can give them the group name"): a meeting's notes in meetings/
+    sit under meetings, not Untagged. `key` is the row's link, else its item."""
+    folder = block / "related"
+    heads, rows = related_rows(block)
+    meta_cols = [h for h in heads if h and h not in ("item", "link", "group")]
+    items, keys = [], set()
+    for n, r in enumerate(rows):
+        target = _related_target(r.get("link", ""))
+        key = target or "item:" + (r.get("item") or str(n))
+        key = key if key not in keys else f"{key}#{n}"
+        keys.add(key)
+        meta = " · ".join((f"{h} {r[h]}" if h not in ("kind", "date") else r[h]).replace("`", "")
+                          for h in meta_cols if r.get(h))
+        sub = _related_folder(target)
+        items.append({"key": key, "title": r.get("item") or target or "—", "meta": meta, "target": target,
+                      "row": n, "folder": sub, "groups": _split_tags(",".join([sub, r.get("group", "")]))})
+    for d in sorted(x for x in folder.iterdir() if x.is_dir() and not x.name.startswith((".", "_"))) if folder.is_dir() else []:
+        for f in sorted(d.rglob("*")):
+            rel_ = f.relative_to(folder).as_posix()
+            if f.is_file() and not f.name.startswith(".") and rel_ not in keys:
+                keys.add(rel_)
+                items.append({"key": rel_, "title": f.name, "meta": f"related/{rel_} · no row yet", "target": rel_,
+                              "row": None, "folder": d.name, "groups": [d.name]})
+    return items
+
+
+def _related_set_groups(block: Path, item: dict, groups: list) -> None:
+    """Write a related item's groups into its row's `group` cell in related/related.md. A table with no
+    `group` column gets one at its end; a file with no row yet gets one (its item, link and group). Its
+    subfolder's group is never written: the path already says it."""
+    groups = [g for g in groups if g.casefold() != (item.get("folder") or "").casefold()]
+    table = block / "related" / "related.md"
+    lines = table.read_text(encoding="utf-8").splitlines() if table.is_file() else []
+    is_rule = lambda line: set(line.replace("|", "").strip()) <= set("-: ")
+    cells = lambda line: [c.strip() for c in line.strip().strip("|").split("|")]
+    draw = lambda cs: "| " + " | ".join(cs) + " |"
+    if not any(line.startswith("|") and not is_rule(line) for line in lines):     # no table yet: the frame's own
+        lines += ([""] if lines and lines[-1].strip() else []) + ["| kind | date | item | link | feeds |",
+                                                                  "|---|---|---|---|---|"]
+    body = [i for i, line in enumerate(lines) if line.startswith("|") and not is_rule(line)]
+    head = body.pop(0)
+    heads = [c.lower() for c in cells(lines[head])]
+    if "group" not in heads:
+        n = len(heads)
+        for i, line in enumerate(lines):
+            if line.startswith("|"):
+                fill = "---" if i != head and is_rule(line) else ""
+                cs = cells(line) + [fill] * max(0, n - len(cells(line)))
+                cs.insert(n, "group" if i == head else fill)
+                lines[i] = "|" + "|".join(cs) + "|" if fill else draw(cs)       # a rule line stays |---|
+        heads.append("group")
+    if item["row"] is None:
+        at = max(i for i, line in enumerate(lines) if line.startswith("|")) + 1
+        lines.insert(at, draw([{"item": item["title"], "link": f"`{item['target']}`"}.get(h, "") for h in heads]))
+    else:
+        at = body[item["row"]]
+    cs = cells(lines[at]) + [""] * max(0, len(heads) - len(cells(lines[at])))
+    cs[heads.index("group")] = ", ".join(groups)
+    lines[at] = draw(cs)
+    table.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def related_view(block: Path, root: Path, sub: str = "") -> Space:
+    """The Related view: one folding row per item, opened on its file's preview, under the Studio's group
+    bar (group_list, JL 261011): Current, the groups in related/_groups.txt order, Untagged, + Group. Each
+    subfolder is a group of its files (meetings/ → meetings, s04-D08); a file no row names yet sits there too,
+    and a drag onto another group gives it a row."""
+    folder = block / "related"
+    items, table_md = related_items(block), folder / "related.md"
+    if not items:
+        html_ = _empty_view("Nothing related yet. What came in from outside (a meeting's notes, a paper, a file "
+                            "we were sent, an email, a repo or dataset) is kept once, here, in a subfolder of "
+                            "related/ (meetings/, papers/, files/, emails/), and one row in related/related.md (kind "
+                            "· date · item · link · feeds · group); the subfolder is its first group, the group "
+                            "column adds more.")
+    else:
+        rows = []
+        for i in items:
+            attrs, handle, current, chips = _group_parts(i["key"], i["title"], i["groups"], noun="item",
+                                                          fixed=(i["folder"],))
+            link = _related_link(i["target"], block, root) if i["target"] else ""
+            rows.append(f'<details class="topic{"" if i["row"] is not None else " missing"}" data-studio-tags='
+                        f'"{_e(json.dumps(i["groups"]))}"{attrs}><summary>{handle}<span class=related-head>'
+                        f'<b>{_e(i["title"])}</b>{chips}'
+                        + (f'<br><span class=topic-meta>{_e(i["meta"])}</span>' if i["meta"] else "") + "</span>"
+                        + f'<span class=topic-pop>{current} {link}</span>'
+                        + f"</summary>{_related_preview(i['target'], block, root)}</details>")
+        note = (f'<p class=mut>{_link(_reader(table_md, root), "related/related.md")}: one row per item. A '
+                'subfolder is a group of its files (meetings/ → meetings); the row\'s group column adds more. '
+                'What lands here is not edited again.</p>' if table_md.is_file() else
+                '<p class=mut>No related/related.md yet: these files have no row; a drag onto a group adds one.</p>')
+        html_ = note + group_list(block, root, "related", [i["groups"] for i in items], "".join(rows))
+    return Space(html_,
+                 run_types=(run_type("run-add-related-<slug>", "add a related item",
+                                     "Add an item to the related/ of {folder}: the file, as it came, in a subfolder "
+                                     "of related/ (meetings/, papers/ (open-licensed PDFs only), files/, emails/), "
+                                     "and one row in related/related.md (kind · date · item · link · feeds · group; "
+                                     "the subfolder is its first group, more go in the group cell, comma-"
+                                     "separated).", "haipipe-related"),),
+                 disk=(("related/related.md", "one row per item: kind · date · item · link · feeds · group"),
+                       ("related/_groups.txt", "the groups, in button order")))
+
+
+def studio_related(view: Space, block: Path, root: Path, unfold: bool = False) -> Space:
+    """Related inside the Studio: the second folding part, under the topic cards (JL 261011: "put the
+    related as the second collapse part in the box of the studio items"). `view` is the Block's Related
+    Space as its theme fills it (paper: cards by question), else the vanilla table; folded unless a
+    Related link opened the page."""
+    view = view if view.html else related_view(block, root)
+    _, rows = related_rows(block)
+    kinds = {}
+    for r in rows:
+        kind = r.get("kind", "").lower() or "item"
+        kinds[kind] = kinds.get(kind, 0) + 1
+    counts = " · ".join(f"{k} {n}" for k, n in kinds.items())
+    meta = f'related/ · {len(rows)} item{"s" if len(rows) != 1 else ""}' + (f" · {counts}" if counts else "")
+    html_ = (f'<details class=studio-related id=studio-related{" open" if unfold else ""}>'
+             f'<summary><b>Related</b><span class=related-meta>{_e(meta)}</span></summary>'
+             f'<div class=related-in>{view.html}</div></details>')
+    return Space(html_, run_types=view.run_types, disk=view.disk)
+
+
+# ── Studio › Timeline: what moved when, the third folding part (JL 261011) ─────────────────
+# Read from what is already on disk, nothing new to write: each topic's dated decisions (sNN-DNN …
+# (JL 261011)), its sessions (runs/run-draw-<sNN>/passes/pNN-<MMDD>/) and the green change notes in
+# its drawing (✎ <YYMMDD> <what>, haipipe-studio's change notes). Newest day first; the page script
+# hides a topic's lines when the group bar hides its row.
+_YYMMDD = re.compile(r"(?<!\d)(2[4-9])(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(?!\d)")
+_NOTES_SEEN: dict = {}
+
+
+def _yymmdd(m) -> str:
+    return f"20{m.group(1)}-{m.group(2)}-{m.group(3)}"
+
+
+def _drawing_notes(d: Path) -> list:
+    """(day, what) for each green change note in a drawing, read once per version of the file."""
+    try:
+        stat = d.stat()
+    except OSError:
+        return []
+    key = (str(d), stat.st_mtime_ns, stat.st_size)
+    if key not in _NOTES_SEEN:
+        try:
+            elements = json.loads(d.read_text(encoding="utf-8")).get("elements") or []
+        except (OSError, ValueError, AttributeError):
+            elements = []
+        notes = []
+        for el in elements:
+            if not isinstance(el, dict) or el.get("type") != "text" or el.get("isDeleted"):
+                continue
+            text = re.sub(r"\s+", " ", str(el.get("text") or "")).strip()
+            m = _YYMMDD.match(text[1:].strip()) if text.startswith("✎") else None
+            if m:
+                notes.append((_yymmdd(m), text[1:].strip()[m.end():].strip()))
+        if len(_NOTES_SEEN) > 2000:
+            _NOTES_SEEN.clear()
+        _NOTES_SEEN[key] = notes
+    return _NOTES_SEEN[key]
+
+
+def _decisions(md: Path | None) -> list:
+    """(day or "", id, what) for each `sNN-DNN · <what>` line of a topic's notes, its indented lines
+    included; the day is the first YYMMDD in it, when it was decided."""
+    if not md:
+        return []
+    out, cur = [], None
+    for line in md.read_text(encoding="utf-8", errors="ignore").splitlines():
+        m = re.match(r"(s\d+-D\d+)\b[ \t]*[·:\-–]?[ \t]*(.*)", line)
+        if m:
+            cur = [m.group(1), m.group(2)]
+            out.append(cur)
+        elif cur and line[:1] in (" ", "\t") and line.strip():
+            cur[1] += " " + line.strip()
+        else:
+            cur = None
+    found = []
+    for did, what in out:
+        day = _YYMMDD.search(what)
+        found.append((_yymmdd(day) if day else "", did, re.sub(r"\s+", " ", what.replace(chr(96), "")).strip()))
+    return found
+
+
+def _session_day(name: str, md: Path | None) -> str:
+    """A session's day: pNN-<MMDD> with the year its notes give it, else the latest year not ahead of today;
+    an older chat/ session by the date in its name."""
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})", name)
+    if m:
+        return "-".join(m.groups())
+    m = re.match(r"p\d+-(\d{2})(\d{2})$", name)
+    if not m:
+        return ""
+    text = md.read_text(encoding="utf-8", errors="ignore") if md and md.is_file() else ""
+    years = [y.group(1) for y in _YYMMDD.finditer(text) if (y.group(2), y.group(3)) == m.groups()]
+    if years:
+        return f"20{years[0]}-{m.group(1)}-{m.group(2)}"
+    today = datetime.date.today()
+    try:
+        day = datetime.date(today.year, int(m.group(1)), int(m.group(2)))
+    except ValueError:
+        return ""
+    return (day if day <= today else day.replace(year=today.year - 1)).isoformat()
+
+
+def timeline_events(block: Path, root: Path) -> tuple:
+    """(events, undated): every dated thing of the Block's Studio topics, newest first. An event is a dict
+    of day, key (the topic's row key under the group bar), name, anchor, tags (its groups), kind (decided ·
+    session · drawing) and its html."""
+    block, root = block.resolve(), root.resolve()
+    events, undated = [], []
+    for source, topic, drawings in studio_inventory(block, root):
+        name = topic.name if topic.is_dir() else topic.stem
+        base = {"key": topic.relative_to(block).as_posix(), "name": name, "anchor": studio_anchor(topic, source, block),
+                "tags": _note_facts(_notes(topic))["tags"]}
+        for day, did, what in _decisions(_notes(topic)):
+            if not day:
+                undated.append(did)
+                continue
+            short = what if len(what) <= 150 else what[:149].rsplit(" ", 1)[0] + " …"
+            events.append(dict(base, day=day, kind="decided",
+                               html=f'<b>{_e(did)}</b> <span title="{_e(what)}">{_e(short)}</span>'))
+        for s in _sessions(topic, source):
+            md = s["path"] if s["path"].is_file() else None
+            day = _session_day(s["name"], md)
+            if day:
+                events.append(dict(base, day=day, kind="session",
+                                   html=pop(_reader(s["path"], root), f'{name} · {s["name"]}', f'{s["name"]} · {s["title"]}')
+                                   if md else _e(f'{s["name"]} · {s["title"]}')))
+        for d in drawings:
+            by_day = {}
+            for day, what in _drawing_notes(d):
+                by_day.setdefault(day, []).append(what)
+            for day, whats in by_day.items():
+                events.append(dict(base, day=day, kind="drawing", n=len(whats),
+                                   html=f'{pop(_draw_url(d, root), d.stem, d.stem + " ↗")} '
+                                        f'{_e(" · ".join(dict.fromkeys(w for w in whats if w)))}'))
+    order = {"decided": 0, "session": 1, "drawing": 2}
+    events.sort(key=lambda e: (e["name"], order[e["kind"]]))
+    events.sort(key=lambda e: e["day"], reverse=True)          # newest day first, topics in sNN order
+    return events, undated
+
+
+TIMELINE_LEVELS = ("Days", "Topics", "Everything")
+TIMELINE_KINDS = (("decided", "decided", "decided"), ("session", "session", "sessions"), ("drawing", "note", "notes"))
+
+
+def studio_timeline(block: Path, root: Path) -> str:
+    """The Studio's third folding part, Timeline, under Related (b10 s08; JL 261011: "add another section of
+    the Timeline", "a real timelne ... very concise ... with a axis down", "up to down", "different level of
+    details", then "it is not that beautiful ... like using the visualization tools"): time runs down one
+    axis, the oldest day at the top. Days, the default, is a chart: a row per day, a column per topic, a
+    bubble sized by how much that topic moved that day, and the day's total as a bar. Topics turns each day
+    into a line per topic with a stacked bar of its kinds; Everything adds each decision, session and note.
+    The chart's columns are the topic groups (the group bar's, in its order, Untagged last) or the topics
+    (JL 261011: "the columns can also be the topic groups"); a group's bubble adds up its topics, so a
+    topic in two groups counts in both, and the day's bar still counts each change once."""
+    events, undated = timeline_events(block, root)
+    days, topics = {}, {}
+    for e in sorted(events, key=lambda e: e["day"]):          # oldest first; topics stay in sNN order
+        days.setdefault(e["day"], {}).setdefault(e["key"], []).append(e)
+    for e in sorted(events, key=lambda e: e["name"]):
+        topics.setdefault(e["key"], (e["name"], e["anchor"]))
+    years = {day[:4] for day in days}
+    tags = {}
+    for e in events:
+        tags.setdefault(e["key"], e.get("tags") or [])
+    groups, loose = {}, [k for k in topics if not tags.get(k)]
+    for name in studio_group_order(block) + sorted({g for gs in tags.values() for g in gs}, key=str.casefold):
+        groups.setdefault(name.casefold(), (name, []))
+    for k in topics:
+        for g in tags.get(k) or []:
+            groups[g.casefold()][1].append(k)
+    groups = {g: v for g, v in groups.items() if v[1]}
+    if loose:
+        groups["__untagged__"] = ("Untagged", loose)
+
+    def size(items: list) -> int:
+        return sum(e.get("n", 1) for e in items)
+
+    def tally(items: list) -> dict:
+        return {k: sum(e.get("n", 1) for e in items if e["kind"] == k) for k, _, _ in TIMELINE_KINDS}
+
+    def says(items: list) -> str:
+        t = tally(items)
+        return " · ".join(f"{t[k]} {one if t[k] == 1 else many}" for k, one, many in TIMELINE_KINDS if t[k])
+
+    def label(day: str) -> str:
+        try:
+            return datetime.date.fromisoformat(day).strftime("%a %d %b" + (" %Y" if len(years) > 1 else ""))
+        except ValueError:
+            return day
+
+    def sid(name: str) -> str:
+        m = re.match(r"s\d+", name)
+        return m.group(0) if m else name
+
+    cell_peak = max((size(items) for ts in days.values() for items in ts.values()), default=1)
+    day_peak = max((size([e for items in ts.values() for e in items]) for ts in days.values()), default=1)
+    group_peak = max((sum(size(ts[k]) for k in ks if k in ts) for ts in days.values() for _, ks in groups.values()),
+                     default=1) or 1
+    cols = "groups" if any(g != "__untagged__" for g in groups) else "topics"
+    ghead = "".join(f'<button type=button class=tl-gcol data-tl-group="{_e(g)}" title="{_e(n)}: '
+                    f'{_e(" · ".join(sid(topics[k][0]) for k in ks))}">'
+                    f'{"" if g == "__untagged__" else _e(group_emoji(n)) + " "}{_e(n)}</button>'
+                    for g, (n, ks) in groups.items())
+    # Days: the chart, a row per day down the axis and a column per topic
+    head = "".join(f'<a class=tl-col data-tl-key="{_e(k)}" href="#{_e(a)}" title="{_e(n)}">{_e(sid(n))}</a>'
+                   for k, (n, a) in topics.items())
+    chart = []
+    for day, ts in days.items():
+        cells, n_day = [], 0
+        for k, (n, a) in topics.items():
+            items = ts.get(k)
+            if not items:
+                cells.append(f'<span class=tl-cell data-tl-key="{_e(k)}"></span>')
+                continue
+            n_day += size(items)
+            px = round(8 + 18 * (size(items) / cell_peak) ** 0.5)
+            cells.append(f'<span class=tl-cell data-tl-key="{_e(k)}" data-tl-count={size(items)}>'
+                         f'<a class=tl-b href="#{_e(a)}" style="--s:{px}px" '
+                         f'title="{_e(n)} · {_e(label(day))} · {_e(says(items))}"></a></span>')
+        for g, (gname, ks) in groups.items():
+            parts = {k: size(ts[k]) for k in ks if k in ts}
+            n_g = sum(parts.values())
+            ball = (f'<button type=button class=tl-gb style="--s:{round(8 + 22 * (n_g / group_peak) ** 0.5)}px" '
+                    f'title="{_e(gname)} · {_e(label(day))} · {n_g} changes: '
+                    f'{_e(" · ".join(f"{sid(topics[k][0])} {v}" for k, v in parts.items()))}"></button>' if n_g else "")
+            cells.append(f'<span class=tl-gcell data-tl-group="{_e(g)}" data-tl-parts="{_e(json.dumps(parts))}">{ball}</span>')
+        chart.append(f'<div class=tl-mrow data-day="{_e(day)}"><time datetime="{_e(day)}">{_e(label(day))}</time>'
+                     f'<span class=tl-dot></span>{"".join(cells)}<span class=tl-bar><span class=tl-track>'
+                     f'<i style="width:{round(n_day / day_peak * 100)}%"></i></span><b>{n_day}</b></span></div>')
+    # Topics and Everything: a line per topic under its day, a stacked bar of its kinds, then its items
+    days_html = []
+    for day, ts in days.items():
+        lines = []
+        for k, items in ts.items():
+            n, a = topics[k]
+            t = tally(items)
+            stack = "".join(f'<i class=k-{kind} style="flex:{t[kind]}"></i>' for kind, _, _ in TIMELINE_KINDS if t[kind])
+            lis = "".join(f'<li><i class="tl-kd k-{e["kind"]}" title="{dict((k_, o) for k_, o, _ in TIMELINE_KINDS)[e["kind"]]}">'
+                          f'</i>{e["html"]}</li>' for e in items)
+            lines.append(f'<div class=tl-topic data-tl-key="{_e(k)}" data-tl-count={size(items)}>'
+                         f'<a class=tl-name href="#{_e(a)}" title="{_e(n)}"><b>{_e(sid(n))}</b>'
+                         f'<span>{_e(n[len(sid(n)):].lstrip("-_ "))}</span></a>'
+                         f'<span class=tl-meter title="{_e(says(items))}"><span class=tl-stack style="width:'
+                         f'{max(round(size(items) / cell_peak * 240), 6)}px">{stack}</span><span class=tl-n>{size(items)}</span>'
+                         f'</span><ul class=tl-items>{lis}</ul></div>')
+        days_html.append(f'<li class=tl-day data-day="{_e(day)}"><time datetime="{_e(day)}">{_e(label(day))}</time>'
+                         f'<div class=tl-body>{"".join(lines)}</div></li>')
+    levels = "".join(f'<button type=button data-tl-level={lv.lower()} aria-pressed={"true" if lv == "Days" else "false"}>'
+                     f'{lv}</button>' for lv in TIMELINE_LEVELS)
+    keys = "".join(f'<i class="tl-kd k-{kind}"></i>{one}' for kind, one, _ in TIMELINE_KINDS)
+    rest = (f'<p class="mut tl-undated">No date on {len(undated)} decision{"s" if len(undated) != 1 else ""}: '
+            f'{_e(" · ".join(undated))}</p>' if undated else "")
+    body = (f'<div class=tl-wrap data-level=days><nav class=tl-levels aria-label="How much the Timeline shows">{levels}'
+            f'<span class="tl-cols tl-legend-b">columns <button type=button data-tl-cols=groups aria-pressed='
+            f'{"true" if cols == "groups" else "false"}>by group</button><button type=button data-tl-cols=topics '
+            f'aria-pressed={"true" if cols == "topics" else "false"}>by topic</button></span>'
+            f'<span class="tl-help tl-legend-b">a bubble: how much moved that day · click topics to read them · '
+            f'follows the group picked above</span><span class="tl-help tl-legend-k">{keys}</span></nav>'
+            f'<div class=tl-map data-cols={cols}><div class=tl-mhead><span></span><span></span>{head}{ghead}'
+            f'<span class=tl-bar-h>changes</span>'
+            f'</div>{"".join(chart)}</div><div class=tl-picked></div>'
+            f'<ol class="tl-axis tl-list">{"".join(days_html)}</ol></div>' if days else
+            '<p class=mut>Nothing dated yet: a decision gets its date in brackets, (JL 261011).</p>')
+    return (f'<details class="studio-related studio-timeline" id=studio-timeline>'
+            f'<summary><b>Timeline</b></summary>'                # no counts (JL 261011: "I don't need this")
+            f'<div class=related-in>{body}{rest}</div></details>')
 
 
 def _topic_rows(folder: Path, root: Path, words: tuple) -> str:
@@ -737,32 +1290,267 @@ def studio_anchor(topic: Path, source: Path, block: Path) -> str:
     return "topic-" + prefix + (topic.name if topic.is_dir() else topic.stem)
 
 
+_GROUP_BAD = re.compile(r"[`,·|*\n\r\t]")
+# A group's emoji comes from its name (JL 261010): the first word of the table found in the name, else a
+# fixed pick from the palette, so a new group gets one at once and everyone sees the same. The browser
+# reads this same table from the nav's data-studio-emoji to give a group made there its emoji.
+GROUP_EMOJI = {
+    "current": "🎯", "guide": "🧭", "level": "🪜", "server": "🖥️", "structure": "🏗️", "ui": "🎨",
+    "design": "🎨", "workflow": "🔁", "flow": "🔁", "run": "⚙️", "skill": "🛠️", "tool": "🛠️",
+    "data": "📊", "model": "🧠", "paper": "📄", "report": "📑", "question": "❓", "idea": "💡",
+    "draft": "✏️", "review": "🔍", "test": "🧪", "bug": "🐞", "issue": "🐞", "todo": "📌", "plan": "🗺️",
+    "people": "👥", "meeting": "🗓️", "email": "✉️", "delivery": "📦", "method": "🧮", "evidence": "🔎",
+    "slide": "🖼️", "chat": "💬", "agent": "🤖", "code": "💻", "focus": "🎯", "archive": "🗄️",
+    "当前": "🎯", "指南": "🧭", "层级": "🪜", "服务": "🖥️", "结构": "🏗️", "界面": "🎨", "设计": "🎨",
+    "流程": "🔁", "技能": "🛠️", "数据": "📊", "模型": "🧠", "论文": "📄", "报告": "📑", "问题": "❓",
+    "想法": "💡", "草稿": "✏️", "测试": "🧪", "计划": "🗺️", "会议": "🗓️", "交付": "📦", "方法": "🧮",
+}
+GROUP_PALETTE = ("🔷", "🟣", "🟢", "🟠", "🧩", "🔖", "🌱", "📌", "💠", "🪐", "🍀", "🔸")
+
+
+def group_emoji(label: str) -> str:
+    """Pick a group's emoji from its name; the browser's emojiFor() follows the same steps."""
+    low = label.lower()
+    tokens = [t for t in re.split(r"[ _/&+-]+", low) if t]
+    for word, emoji in GROUP_EMOJI.items():
+        if word.isascii():
+            if any(t == word or (t.endswith("s") and t[:-1] == word) for t in tokens):
+                return emoji
+        elif word in low:
+            return emoji
+    return GROUP_PALETTE[sum(ord(c) for c in label) % len(GROUP_PALETTE)]
+_GROUP_RESERVED = {"current", "all", "untagged"}
+
+
+def _set_tags(md: Path, tags: list) -> None:
+    """Write a topic's **Tags:** line, placed above **Topic:**; drop it when no tag is left."""
+    text = md.read_text(encoding="utf-8")
+    line = "**Tags:** " + " · ".join(f"`{t}`" for t in tags) if tags else ""
+    found = re.search(r"(?m)^\*\*Tags:\*\*[^\n]*(?:\n|\Z)", text)
+    if found:
+        end = found.end()
+        if not line and re.match(r"[ \t]*\n", text[end:]):
+            end += re.match(r"[ \t]*\n", text[end:]).end()
+        text = text[:found.start()] + (line + "\n" if line else "") + text[end:]
+    elif line:
+        topic = re.search(r"(?m)^\*\*Topic:\*\*", text)
+        under = re.search(r"(?m)^[=-]{3,}[ \t]*\n", text)
+        if topic:
+            text = text[:topic.start()] + line + "\n\n" + text[topic.start():]
+        elif under:
+            text = text[:under.end()] + "\n" + line + "\n" + text[under.end():]
+        else:
+            text = line + "\n\n" + text
+    md.write_text(text, encoding="utf-8")
+
+
+GROUP_FILE = "_groups.txt"      # studio/_groups.txt, related/_groups.txt: a bar's groups in button order (b10 s02-D17)
+# What a group bar sorts: kind -> (its rows are called, its view's name). One bar, one script, one op for both.
+GROUP_SHELVES = {"studio": ("topic", "Studio"), "related": ("item", "Related"), "reports": ("question", "Report")}
+
+
+def studio_group_order(owner: Path, shelf: str = "studio") -> list:
+    """The group names in <shelf>/_groups.txt (studio/ or related/), in order; [] when the file is missing."""
+    f = owner / shelf / GROUP_FILE
+    if not f.is_file():
+        return []
+    names, seen = [], set()
+    for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
+        name = line.strip()
+        if name and not name.startswith("#") and name.casefold() not in seen:
+            seen.add(name.casefold())
+            names.append(name)
+    return names
+
+
+def _write_group_order(owner: Path, names: list, shelf: str = "studio") -> None:
+    what = {"studio": "topics are the ones whose **Tags:** line names it",
+            "related": "items are the related/related.md rows whose group cell names it",
+            "reports": "Questions are the register rows whose group: line names it"}[shelf]
+    (owner / shelf).mkdir(exist_ok=True)
+    (owner / shelf / GROUP_FILE).write_text(
+        f"# {shelf.title()} groups of this level, in button order. The workbench writes this file when a group is\n"
+        f"# made, moved or deleted; a group's {what}.\n"
+        + "".join(n + "\n" for n in names), encoding="utf-8")
+
+
+def _group_members(owner: Path, root: Path, kind: str) -> dict:
+    """key -> (name, groups, write) for what a group bar sorts: the Studio's topics (their **Tags:** line) or
+    the Block's related items (their row's group cell) or a level's Questions (their register group: line, after
+    the theme's fixed groups); write(groups) returns (groups read back, error)."""
+    out = {}
+    if kind == "reports":
+        md, theme = face(owner), themes().get(theme_of(owner, root), VANILLA)
+        for row in _register(md):
+            qid, fixed = str(row["id"]), _theme_fixed(theme, row, owner)
+
+            def write(new, qid=qid, fixed=fixed):
+                drop = {g.casefold() for g in fixed}
+                _register_set_groups(md, qid, [g for g in new if g.casefold() not in drop])
+                back = next((r for r in _register(md) if str(r["id"]) == qid), {})
+                return _split_tags(",".join(fixed + [str(back.get("group") or "")])), None
+            out[qid] = (qid, _split_tags(",".join(fixed + [str(row.get("group") or "")])), write)
+        return out
+    if kind == "related":
+        for item in related_items(owner):
+            def write(new, item=item):
+                _related_set_groups(owner, item, new)
+                return next((i["groups"] for i in related_items(owner) if i["key"] == item["key"]), []), None
+            out[item["key"]] = (item["title"], item["groups"], write)
+        return out
+    for _, topic, _ in studio_inventory(owner, root):
+        md = _notes(topic)
+
+        def write(new, topic=topic, md=md):
+            if md is None:
+                return None, f"{topic.name} has no notes file to hold its groups."
+            _set_tags(md, new)
+            return _note_facts(md)["tags"], None
+        out[topic.relative_to(owner).as_posix()] = (topic.name, _note_facts(md)["tags"], write)
+    return out
+
+
+def studio_group_op(root: Path, p: dict) -> tuple:
+    """Add a row to a group, take it out, or delete the group from every row: the Studio's topics, or with
+    `kind: related` the Block's related items (JL 261011: Related's groups work like the Studio's).
+
+    A group is a tag saved on disk beside what it sorts (a topic's **Tags:** line, a related row's group
+    cell), so every person and agent sees the same groups (b10 s02-D16). Returns (result, error).
+    """
+    root = Path(root).resolve()
+    owner = (root / str(p.get("path") or "").lstrip("/")).resolve()
+    if (owner != root and root not in owner.parents) or not owner.is_dir():
+        return None, "No such folder under this root."
+    kind = str(p.get("kind") or "studio")
+    if kind not in GROUP_SHELVES:
+        return None, "kind must be studio, related or reports."
+    op, tag = p.get("op"), str(p.get("tag") or "").strip()
+    if op not in ("add", "remove", "delete", "create", "order"):
+        return None, "op must be add, remove, delete, create or order."
+    bad = lambda name: not name or len(name) > 30 or _GROUP_BAD.search(name) or name.casefold() in _GROUP_RESERVED
+    rule = "A group name is 1 to 30 characters, without ` , · | or *, and is not Current, All or Untagged."
+    order = studio_group_order(owner, kind)
+    if op == "order":                       # the buttons' new order; a name left out keeps its place at the end
+        wanted = [str(n).strip() for n in (p.get("groups") or []) if isinstance(n, str)]
+        if any(bad(n) for n in wanted):
+            return None, rule
+        keys = {n.casefold() for n in wanted}
+        names = list(dict.fromkeys(wanted)) + [n for n in order if n.casefold() not in keys]
+        _write_group_order(owner, names, kind)
+        return {"order": names}, None
+    if bad(tag):
+        return None, rule
+    if op == "create":
+        if tag.casefold() not in {n.casefold() for n in order}:
+            order.append(tag)
+            _write_group_order(owner, order, kind)
+        return {"order": order}, None
+    members, (noun, label) = _group_members(owner, root, kind), GROUP_SHELVES[kind]
+    if op == "delete":
+        picked = list(members)
+    elif str(p.get("topic") or "") in members:
+        picked = [str(p.get("topic"))]
+    else:
+        return None, f"That {noun} is not in this {label}."
+    key, out, changed = tag.casefold(), {}, 0
+    for k in picked:
+        name, tags, write = members[k]
+        has = any(t.casefold() == key for t in tags)
+        if op == "add" and not has:
+            new = tags + [tag]
+        elif op != "add" and has:
+            new = [t for t in tags if t.casefold() != key]
+        else:
+            if op != "delete":                      # nothing to change; report its groups as they are
+                out[k] = tags
+            continue
+        after, err = write(new)
+        if err:
+            return None, err
+        if op != "add" and any(t.casefold() == key for t in after):
+            return None, (f"{name}: that group is its subfolder, related/{tag}/; it changes only when the file "
+                          "moves." if kind == "related" else
+                          f"{name}: {tag} is fixed by the theme (s07-D02); it cannot be taken out here."
+                          if kind == "reports" else
+                          f"{name}: that group comes from a **Type:** line; change it in the notes.")
+        out[k] = after
+        changed += 1
+    if op == "delete" and any(n.casefold() == key for n in order):
+        _write_group_order(owner, [n for n in order if n.casefold() != key], kind)
+    return {"changed": changed, "topics": out}, None
+
+
+def group_list(owner: Path, root: Path, kind: str, tag_lists: list, listing: str, picker: str = "",
+               add: str = "", starting: tuple = ()) -> str:
+    """A list under its group bar, the Studio's topics, Related's items or a Report's Questions (b10 s02-D16,
+    D17; Related and Report JL 261011): Current first (kept in the browser), then each group with its count, in
+    <kind>/_groups.txt order, then `starting` (a theme's groups, shown even empty), then the rest, Untagged,
+    + Group. No group picked shows every row (no All button, JL 261010). `tag_lists` holds each row's groups;
+    the page script drives the bar."""
+    noun, label = GROUP_SHELVES[kind]
+    counts, untagged = {}, 0
+    for tags in tag_lists:
+        untagged += not tags
+        for tag in tags:
+            key = tag.casefold()
+            name, count = counts.get(key, (tag, 0))
+            counts[key] = (name, count + 1)
+    options = [("__current__", "Current", 0)]
+    for name in studio_group_order(owner, kind) + list(starting):   # the saved order, then a theme's own; empty kept
+        if any(key == name.casefold() for key, _, _ in options):
+            continue
+        name, count = counts.pop(name.casefold(), (name, 0))
+        options.append((name.casefold(), name, count))
+    if kind == "reports":                                  # a name the Studio uses too keeps the Studio's order (s07-D04)
+        for name in studio_group_order(owner if level_of(owner) == "Block" else (_block_above(owner) or owner)):
+            if name.casefold() in counts:
+                name, count = counts.pop(name.casefold())
+                options.append((name.casefold(), name, count))
+    options += [(key, name, count) for key, (name, count) in sorted(counts.items())]
+    if untagged:
+        options.append(("__untagged__", "Untagged", untagged))
+
+    def icon(key: str, name: str) -> str:
+        return "" if key == "__untagged__" else f'<span class=grp-emoji aria-hidden=true>{group_emoji(name)}</span>'
+
+    def group_button(key: str, name: str, count: int) -> str:
+        button = (f'<button type=button class=tab data-studio-label="{_e(name)}" '
+                  f'data-studio-tag="{_e(key)}" aria-pressed="false">{icon(key, name)}{_e(name)} <span class=tag-count>{count}</span></button>')
+        if key in ("__current__", "__untagged__"):
+            return button
+        # a group is a tag: × deletes it from every row, the rows stay (b10 s02-D16)
+        return (f'<span class=grp>{button}<button type=button class=grp-x data-studio-delete="{_e(key)}" '
+                f'title="Delete group {_e(name)}" aria-label="Delete group {_e(name)}">×</button></span>')
+
+    buttons = "".join(group_button(*option) + ("<span class=bar></span>" if option[0] == "__current__" else "")
+                      for option in options)
+    new_group = (f'<button type=button class=grp-new title="Make a new group, then drag {noun}s onto it">+ Group</button>'
+                 '<span class=grp-form hidden><input type=text maxlength=30 placeholder="Group name" '
+                 'aria-label="New group name"><button type=button class=grp-ok>Add</button>'
+                 '<button type=button class=grp-cancel>Cancel</button></span>')
+    table = json.dumps({"words": GROUP_EMOJI, "palette": GROUP_PALETTE}, ensure_ascii=False)
+    filters = (f'<nav class="row studio-filters" aria-label="{label} {noun} groups" data-studio-emoji="{_e(table)}">'
+               f'{buttons}{new_group}</nav>')
+    where = {"studio": "each topic's notes", "related": "the group column of related/related.md",
+             "reports": "each Question's group: line in the face's ## Questions"}[kind]
+    help_ = (f'<p class="mut studio-help">Every {noun} shows until you pick a group; pick it again to see them all. '
+             f'Drag a{"n" if noun[0] in "aeiou" else ""} {noun} by ⋮⋮ onto a group; drag a group sideways to move it. '
+             f'Groups are saved in {_e(where)}; Current is saved in this browser.</p>')
+    empty = '<p class="mut studio-empty" hidden>This group is empty.</p>'
+    status = '<p class="mut studio-status" role=status aria-live=polite></p>'
+    marks = "" if kind == "studio" else f' data-group-kind={kind} data-group-noun={noun}'
+    return (f'<div class=studio-topics data-studio-owner="{_e(_rel(owner, root))}"{marks}>{filters}'
+            f'{picker}{help_}{status}{empty}{listing}{add}</div>')
+
+
 def studio_cards(folder: Path, root: Path) -> str:
-    """Current first, tag groups in between, All last; sNN is a topic, never a group."""
+    """The Studio's topic rows under their group bar (group_list); sNN is a topic, never a group."""
     folder, root = folder.resolve(), root.resolve()
     topics = studio_inventory(folder, root)
     own = [(t, d) for source, t, d in topics if source == folder]
     last = max([int(m.group(1)) for t, _ in own for m in [re.match(r"s(\d+)", t.name)] if m] or [0])
     add = f'<p class="mut add">+ Add topic → studio/s{last + 1:02d}-&lt;topic&gt;/</p>'
     rows = "".join(_topic_row(t, d, root, source, shared=folder) for source, t, d in topics)
-    counts, untagged = {}, 0
-    for _, topic, _ in topics:
-        tags = _note_facts(_notes(topic))["tags"]
-        untagged += not tags
-        for tag in tags:
-            key = tag.casefold()
-            label, count = counts.get(key, (tag, 0))
-            counts[key] = (label, count + 1)
-    options = [("__current__", "Current", 0)]
-    options += [(key, label, count) for key, (label, count) in sorted(counts.items())]
-    if untagged:
-        options.append(("__untagged__", "Untagged", untagged))
-    options.append(("", "All", len(topics)))
-    buttons = "".join(
-        f'<button type=button class="tab{" on" if key == "__current__" else ""}" data-studio-tag="{_e(key)}" '
-        f'aria-pressed="{"true" if key == "__current__" else "false"}">{_e(label)} <span class=tag-count>{count}</span></button>'
-        for key, label, count in options)
-    filters = f'<nav class="row studio-filters" aria-label="Studio topic groups">{buttons}</nav>'
     sources = dict.fromkeys(source for source, _, _ in topics)
     picker = ""
     if len(sources) > 1:
@@ -770,12 +1558,8 @@ def studio_cards(folder: Path, root: Path) -> str:
                           f'{_e(short_name(source.name) if source != folder else "Block")}</option>' for source in sources)
         picker = ('<label class=studio-source>Source <select aria-label="Studio source" data-studio-source-filter>'
                   '<option value="__all__">All sources</option>' + choices + '</select></label>')
-    help_ = '<p class="mut studio-help">Drag a topic by ⋮⋮ into Current, or use Add to Current. Your selection is saved in this browser.</p>'
-    empty = '<p class="mut studio-empty" hidden>Current is empty. Open All and add the topics you want to focus on.</p>'
-    status = '<p class="mut studio-status" role=status aria-live=polite></p>'
-    listing = rows or '<p class=mut>No studio topics yet.</p>'
-    return (f'<div class=studio-topics data-studio-owner="{_e(_rel(folder, root))}">{filters}'
-            f'{picker}{help_}{status}{empty}{listing}{add}</div>')
+    return group_list(folder, root, "studio", [_note_facts(_notes(t))["tags"] for _, t, _ in topics],
+                      rows or '<p class=mut>No studio topics yet.</p>', picker, add)
 
 
 def studio_sessions(folder: Path, root: Path) -> list:
@@ -802,7 +1586,41 @@ def studio_sessions(folder: Path, root: Path) -> list:
     return rows
 
 
-# ── Audience Report: one row per Question, Logic │ Work │ Report (b03 s04-D04) ──────────────
+# ── Audience Report: one row per Question, Logic │ Work │ Report (b10 s02-D25) ──────────────
+def _register_set_groups(md: Path, qid: str, groups: list) -> None:
+    """Write a Question's groups into its register row's `group:` line (b10 s07-D01): the line replaced, or
+    added after the row's `title:` (else after its `id:`); no groups, no line. Only that line changes; the rest
+    of the face stays as written."""
+    text = md.read_text(encoding="utf-8")
+    m = re.search(r"(?ms)^## Questions[ \t]*\n.*?```ya?ml\n(.*?)```", text)
+    if not m:
+        raise ValueError(f"{md.name} has no ## Questions register")
+    lines = m.group(1).split("\n")
+    start = next((i for i, ln in enumerate(lines)
+                  if re.match(rf"""^\s*-\s+id:\s*['"]?{re.escape(qid)}['"]?\s*$""", ln)), None)
+    if start is None:
+        raise ValueError(f"{qid} is not in the register of {md.name}")
+    dash = len(lines[start]) - len(lines[start].lstrip())
+    indent = lambda ln: len(ln) - len(ln.lstrip())
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].strip() and indent(lines[i]) <= dash), len(lines))
+    pad = " " * next((indent(lines[i]) for i in range(start + 1, end) if lines[i].strip()), dash + 2)
+    value = ", ".join(groups)
+    if re.search(r"""[:#\[\]{}&*!|>'"%@`]""", value) or value[:1] in "-?":
+        value = json.dumps(value, ensure_ascii=False)
+    at = next((i for i in range(start + 1, end) if lines[i].startswith(pad + "group:")), None)
+    if at is not None:
+        if groups:
+            lines[at] = f"{pad}group: {value}"
+        else:
+            del lines[at]
+    elif groups:
+        after = next((i for i in range(start + 1, end) if lines[i].startswith(pad + "title:")), start)
+        while after + 1 < end and lines[after + 1].strip() and indent(lines[after + 1]) > len(pad):
+            after += 1                                    # past a title that wraps
+        lines.insert(after + 1, f"{pad}group: {value}")
+    md.write_text(text[:m.start(1)] + "\n".join(lines) + text[m.end(1):], encoding="utf-8")
+
+
 def _register(md: Path | None) -> list:
     """The face's `## Questions` register (a fenced yaml `questions:` list), or []."""
     if not md:
@@ -827,6 +1645,13 @@ def _opening(page: Path) -> str:
     para = re.sub(r"<!--.*?-->", "", para, flags=re.S)
     para = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", para)
     return re.sub(r"\s+", " ", para.replace("**", "").replace("`", "")).strip()
+
+
+def _answer_ids(md: Path | None) -> set:
+    """The Question ids a face's `answers:` line names, lowercased; a need `<id>.E<n>` counts as its id."""
+    m = re.search(r"(?m)^answers:\s*(.+)$", md.read_text(encoding="utf-8", errors="ignore")) if md else None
+    return {re.sub(r"(?i)\.E\d+$", "", w.strip()).lower() for w in re.split(r"[,\s\[\]]+", m.group(1)) if w.strip()} \
+        if m else set()
 
 
 def _answering(folder: Path, level: str, qid: str, root: Path) -> list:
@@ -864,18 +1689,100 @@ def _report_cell(qid: str, page: Path | None, root: Path) -> str:
             + pic + f'<p class=rp-tags>report {_e(tag)} · {_e(status)}</p>')
 
 
+Q_HEAD = ('<div class="q-row q-head-row"><div>Logic · the question</div><div>Work · the Jobs, Tasks and Runs</div>'
+          '<div>Report · what it says</div></div>')
+
+
 def question_rows(level: str, folder: Path, root: Path, sub: str = "", keep=None) -> tuple:
     """(html, groups): one row per Question of this level: Logic (the question, its status, the
     studio topics that feed it) │ Work (the Jobs and Tasks that answer it) │ Report."""
+    _, groups, recs = _question_records(level, folder, root, keep)
+    out = [(q["group"], q["html"]) for q in recs if sub in ("", "All") or q["group"] == sub]
+    if not out:
+        return '<p class=mut>No Questions at this level yet.</p>', groups
+    if groups and sub in ("", "All"):              # All: the table grouped the same way, a heading per group (b10 s02-D25)
+        return Q_HEAD + "".join(f'<h3 class=q-group>{_e(g or "other")}</h3>' + "".join(h for k, h in out if k == g)
+                                for g in groups + ([""] if any(not k for k, _ in out) else [])), groups
+    return Q_HEAD + "".join(h for _, h in out), groups
+
+
+def _theme_fixed(theme: "Theme | None", row: dict, owner: Path) -> list:
+    """A theme's fixed Report groups for one register row: report_fixed(row, owner), the owner being the level
+    whose register is read (a paper's come from its telling's **Feeds:**, b16 s05-D01), or report_fixed(row)
+    for a rule that needs only the row (insight's level letter)."""
+    fn = theme.report_fixed if theme is not None else None
+    if not fn:
+        return []
+    import inspect
+    try:
+        takes_owner = len(inspect.signature(fn).parameters) >= 2
+    except (TypeError, ValueError):
+        takes_owner = False
+    return [str(g) for g in ((fn(row, owner) if takes_owner else fn(row)) or []) if g]
+
+
+def report_view(level: str, folder: Path, root: Path, theme: "Theme | None" = None) -> str | None:
+    """The Report as the Studio shows its topics (b10 s07-D01, JL 261011: "if the report card to show, it will
+    be the same as the sNN, we can create and add the tags"): one folding card per Question under the group
+    bar, Current · groups · Untagged · + Group; opened, its Logic │ Work │ Report row. A Question's groups are
+    the theme's fixed ones for it (Theme.report_fixed, no ×) and then its register `group:` line, comma-separated;
+    a drag writes that line (_register_set_groups); reports/_groups.txt keeps the order. None: no Question."""
+    owner, _, recs = _question_records(level, folder, root)
+    extra = list((theme.report_cards(level, folder, root) or []) if theme is not None and theme.report_cards else [])
+    if not recs and not extra:
+        return None
+    cards, tag_lists = [], []
+    for c in extra:                     # the theme's own cards (a paper's ideas, its standing Questions): fixed
+        groups = _split_tags(",".join(str(g) for g in (c.get("groups") or [])))
+        name = f'{c["id"]} · {c.get("title") or ""}'.rstrip(" ·")
+        attrs, _, current, chips = _group_parts(str(c["id"]), name, groups, noun="question", fixed=groups)
+        status = str(c.get("status") or "")
+        cards.append(f'<details class="topic q-card q-theme" data-studio-tags="{_e(json.dumps(groups))}"{attrs}>'
+                     f'<summary><span class=related-head><b>{_e(name)}</b>{chips}'
+                     + (f'<br><span class=topic-meta>{_e(status)}</span>' if status else "")
+                     + f'</span><span class=topic-pop>{current}</span></summary>{c.get("html") or ""}</details>')
+        tag_lists.append(groups)
+    for q in recs:
+        fixed = _theme_fixed(theme, q["row"], owner)
+        groups = _split_tags(",".join(fixed + [q["group"]]))
+        name = f'{q["id"]} · {q["title"]}'
+        attrs, handle, current, chips = _group_parts(q["id"], name, groups, noun="question", fixed=fixed)
+        dot = "answered" if q["status"].startswith("answered") else "partial" if q["status"].startswith("partial") else "open"
+        meta = f'{q["status"]} · {q["work"]} piece{"" if q["work"] == 1 else "s"} of work'
+        cards.append(f'<details class="topic q-card" data-studio-tags="{_e(json.dumps(groups))}"{attrs}><summary>'
+                     f'{handle}<span class="q-dot {dot}" title="{_e(q["status"])}"></span><span class=related-head>'
+                     f'<b>{_e(name)}</b>{chips}<br><span class=topic-meta>{_e(meta)}</span></span>'
+                     f'<span class=topic-pop>{current}</span></summary>{Q_HEAD}{q["html"]}</details>')
+        tag_lists.append(groups)
+    where = _rel(face(owner), root) if face(owner) else "the face"
+    note = (f'<p class=mut>{_link(_reader(face(owner), root), where) if face(owner) else where}: one card per Question; its '
+            'groups are its register group: line, made and added as on a Studio topic' +
+            (', and the theme\'s own, fixed' if theme is not None and (theme.report_fixed or theme.report_cards)
+             else '') + '.</p>')
+    return note + group_list(owner, root, "reports", tag_lists, "".join(cards),
+                             starting=tuple(theme.report_groups) if theme is not None else ())
+
+
+def _question_records(level: str, folder: Path, root: Path, keep=None) -> tuple:
+    """(owner, groups, records): one record per Question of this level (id, group, its register row, title,
+    status, how much work answers it, and its Logic │ Work │ Report row). `owner` is the level whose register
+    is read: the folder, or a Job's Block when the Job has none of its own but `answers:` the Block's."""
     md = face(folder)
-    reports = {q.name.split("_", 1)[0].lower(): q for q in sorted((folder / "reports").glob("q[0-9]*/"))} \
-        if (folder / "reports").is_dir() else {}
     register = _register(md)
+    owner = folder                              # the level whose register, reports and studio are read
+    block = _block_above(folder) if level == "Job" and not register else None
+    asked = _answer_ids(md) if block else set()
+    if asked:   # a Job with no Questions of its own shows the Block's its face answers: (JL 261011, an empty j51)
+        owner = block
+        register = [r for r in _register(face(block)) if str(r["id"]).lower() in asked]
+    reports = {q.name.split("_", 1)[0].lower(): q for q in sorted((owner / "reports").glob("q[0-9]*/"))} \
+        if (owner / "reports").is_dir() else {}
     rows = [dict(r) for r in register]
     known = {str(r["id"]).lower() for r in rows}
-    rows += [{"id": k.upper(), "title": ""} for k in reports if k not in known]     # a report not yet registered
+    if owner == folder:
+        rows += [{"id": k.upper(), "title": ""} for k in reports if k not in known]  # a report not yet registered
     feeders = {}
-    for topic, drawings in _studio_topics(folder):
+    for topic, drawings in _studio_topics(owner):
         for q in _note_facts(_notes(topic))["feeds"]:
             feeders.setdefault(q.split("_", 1)[0].lower(), []).append((topic, drawings[0] if drawings else None))
     if keep is not None:                        # keep(group) -> bool: the rows one view shows
@@ -883,11 +1790,9 @@ def question_rows(level: str, folder: Path, root: Path, sub: str = "", keep=None
     groups = list(dict.fromkeys(str(r["group"]) for r in rows if r.get("group")))
     out = []
     for r in rows:
-        if sub not in ("", "All") and str(r.get("group") or "") != sub:
-            continue
         qid = str(r["id"])
         rp = r.get("report")
-        page = (folder / rp) if rp and (folder / rp).is_file() else None
+        page = (owner / rp) if rp and (owner / rp).is_file() else None
         if not page and qid.lower() in reports:
             q = reports[qid.lower()]
             page = q / (q.name + ".md") if (q / (q.name + ".md")).is_file() else None
@@ -898,21 +1803,18 @@ def question_rows(level: str, folder: Path, root: Path, sub: str = "", keep=None
         logic = question_cell(qid, r, title, status) + (
             f'<p class=from>from the Idea Studio</p><ul class=from-list>{studio}</ul>' if studio else "")
         work = [str(w.get("task") or w.get("path") or w) if isinstance(w, dict) else str(w) for w in (r.get("work") or [])]
+        if owner != folder:                     # the Block's work under this Job, named from the Job
+            here = folder.relative_to(owner).as_posix() + "/"
+            work = [w[len(here):] for w in work if w.startswith(here)]
         kids = _answering(folder, level, qid, root)
         work_html = " · ".join([_link(ROUTE + "?" + urlencode({"path": _rel(k, root)}), _rel(k, folder)) for k in kids]
                                + [_link(_reader(folder / w, root), w) if (folder / w).is_file() else _e(w)
                                   for w in work if w]) or '<span class=mut>no work yet</span>'   # a file opens in the reader
-        out.append((str(r.get("group") or ""),
-                    f'<div class=q-row id="question-{_e(qid)}"><div class=q-l>{logic}</div>'
-                    f'<div class=q-w>{work_html}</div><div class=q-r>{_report_cell(qid, page, root)}</div></div>'))
-    if not out:
-        return '<p class=mut>No Questions at this level yet.</p>', groups
-    head = ('<div class="q-row q-head-row"><div>Logic · the question</div><div>Work · the Jobs, Tasks and Runs</div>'
-            '<div>Report · what it says</div></div>')
-    if groups and sub in ("", "All"):              # All: the table grouped the same way, a heading per group (s04-D04)
-        return head + "".join(f'<h3 class=q-group>{_e(g or "other")}</h3>' + "".join(h for k, h in out if k == g)
-                              for g in groups + ([""] if any(not k for k, _ in out) else [])), groups
-    return head + "".join(h for _, h in out), groups
+        out.append({"id": qid, "group": str(r.get("group") or ""), "row": r, "title": str(title),
+                    "status": str(status), "work": len(kids) + len([w for w in work if w]),
+                    "html": f'<div class=q-row id="question-{_e(qid)}"><div class=q-l>{logic}</div>'
+                            f'<div class=q-w>{work_html}</div><div class=q-r>{_report_cell(qid, page, root)}</div></div>'})
+    return owner, groups, out
 
 def _first_sentence(text: str, most: int = 160) -> str:
     """The question's first sentence, cut at `most` characters: the short explanation under its name."""
@@ -961,7 +1863,7 @@ def lays_out_page(name: str, subspaces, space=None) -> bool:
 
 def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = "") -> dict:
     """The theme's Spaces over the vanilla default, field by field."""
-    base = vanilla(level, folder, root, sub)
+    base = vanilla(level, folder, root, sub, theme)
     own = theme.spaces(level, folder, root, sub) if theme.spaces else {}
     if theme.run_names:                         # the theme's buttons named by their Runs, this folder's tag filled
         names = {k: fill_tag(n, folder) for k, n in theme.run_names.items()}
@@ -986,11 +1888,25 @@ def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = ""
             if sub in v.keep and sub not in (t.subspaces or ()):    # a theme's own view of that name wins
                 merged = replace(merged, html=v.html, open=sub, disk=v.disk)
         out[name] = merged
-    # Studio is one Block-owned view, shared with that Block's Jobs and Tasks (b03 s02-D09).
+    # Studio and Related are Block-owned views, shared with that Block's Jobs and Tasks (b03 s02-D09,
+    # b10 s04-related-workbench-skill)
     if level != "Block":
         block = chain(folder, root).get("Block")
-        out["Idea Studio"] = (spaces_for(theme, "Block", block, root)["Idea Studio"] if block else
-                              Space('<p class=mut>Studio needs an owning Block.</p>'))
+        shared = spaces_for(theme, "Block", block, root) if block else {}
+        out["Idea Studio"] = shared.get("Idea Studio") or Space('<p class=mut>Studio needs an owning Block.</p>')
+        out["Related"] = shared.get("Related") or Space('<p class=mut>Related needs an owning Block.</p>')
+    # Delivery has one physical owner, the Block (b10 s03-D06, JL 261011: "for the section, we will do not
+    # have the related studio and delivery"; "also for the Jobs"). A Job's or Task's view is only its part of
+    # the Block's Delivery, picked in the source row (render), and links back down to its folder.
+    destination = delivery_dir(folder)
+    block = delivery_owner(folder)
+    address = destination.relative_to(block).as_posix() + "/"
+    note = (f'<p class=space-reads>The Block\'s delivery/: <code>delivery/</code>; each Job\'s and Task\'s part '
+            'is under its own path, picked in the row above.</p>' if folder.resolve() == block else
+            f'<p class=space-reads>Its part of the Block\'s Delivery: <code>{_e(address)}</code> · from '
+            f'{_link(ROUTE + "?" + urlencode({"path": _rel(folder, root)}), folder.name)}</p>')
+    out["Delivery"] = replace(out["Delivery"], html=note + out["Delivery"].html,
+                              disk=((delivery_relative(folder) + "/", "Block-owned delivery files for this source"),))
     return out
 
 
@@ -1036,16 +1952,107 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .studio-drag-preview{position:fixed;z-index:9999;pointer-events:none;padding:8px 12px;border:1px solid var(--tab-on);border-radius:8px;background:var(--bg);color:var(--fg);box-shadow:0 3px 14px #0002;font:600 14px system-ui,sans-serif;max-width:340px}
 .studio-current{font:400 12px system-ui,sans-serif;white-space:nowrap;border:1px solid var(--tab-line);border-radius:6px;padding:3px 7px;background:var(--bg);color:var(--fg);cursor:pointer}
 .studio-current[aria-pressed=true]{color:var(--tab-on);border-color:var(--tab-on);background:var(--tab-wash)}
-.topic-source{color:var(--mut);font-size:12px}.studio-source{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+/* groups you make and delete (b10 s02-D16): × beside a group deletes it, + Group makes one, × on a topic's chip takes it out */
+.studio-filters.row{gap:8px;padding-top:8px}
+.studio-filters .bar{background:var(--line);height:20px;margin:0 2px}
+/* the × is a small corner badge that shows only under the mouse (JL 261010), so the row keeps even gaps */
+.grp{position:relative;display:inline-flex}
+.grp-emoji{margin-right:6px;font-size:15px}
+.grp>.tab{touch-action:none;user-select:none}.studio-filters.sorting,.studio-filters.sorting .tab{cursor:grabbing}
+.grp.moving>.tab{opacity:.6;border-style:dashed;border-color:var(--tab-on)}.grp.moving .grp-x{display:none}
+.studio-filters .grp-x{position:absolute;top:-7px;right:-7px;width:18px;height:18px;padding:0;border:1px solid var(--tab-line);
+ border-radius:50%;background:var(--bg);color:var(--mut);font:400 12px/16px system-ui,sans-serif;text-align:center;
+ opacity:0;pointer-events:none;transition:opacity .12s}
+.grp:hover .grp-x,.grp:focus-within .grp-x{opacity:1;pointer-events:auto}
+.studio-filters .grp-x:hover{background:var(--warn);border-color:var(--warn);color:#fff}
+.grp-new{font:400 14px system-ui,sans-serif;border:1px dashed var(--line);border-radius:6px;padding:6px 12px;background:transparent;color:var(--mut)}
+.grp-new:hover{border-color:var(--tab-on);border-style:solid;color:var(--tab-on);background:var(--tab-wash)}
+.grp-form{display:inline-flex;gap:6px;align-items:center}.grp-form[hidden],.grp-new[hidden]{display:none}
+.grp-form input{font:400 15px system-ui,sans-serif;border:1px solid var(--tab-on);border-radius:6px;padding:5px 10px;width:160px;background:var(--bg);color:var(--fg);outline:none}
+.grp-ok,.grp-cancel{font:400 13px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:4px 10px;background:var(--bg);color:var(--fg);cursor:pointer}
+.grp-ok{border-color:var(--tab-on);color:var(--tab-on)}
+.topic-tags .chip{position:relative}
+.tag-x{position:absolute;top:-6px;right:-6px;width:14px;height:14px;padding:0;border:1px solid var(--line);border-radius:50%;
+ background:var(--bg);color:var(--mut);font:400 10px/12px system-ui,sans-serif;text-align:center;cursor:pointer;
+ opacity:0;pointer-events:none;transition:opacity .12s}
+.chip:hover>.tag-x,.chip:focus-within>.tag-x{opacity:1;pointer-events:auto}
+.tag-x:hover{background:var(--warn);border-color:var(--warn);color:#fff}
+.studio-source{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .studio-source select{font:400 13px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:4px 8px;background:var(--bg);color:var(--fg)}
 .studio-help,.studio-empty,.studio-status{font-size:13px;margin:8px 0 12px}.studio-status:empty{display:none}
+.studio-topics .topic-pop{margin-left:auto}
 .topic[hidden]{display:none}.topic-tags{display:inline-flex;gap:6px;flex-wrap:wrap}.topic-tags .chip{font-size:12px;color:var(--mut);border-color:var(--line)}
 .wf-table{border-collapse:collapse;width:100%;font-size:14px}.wf-table th,.wf-table td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .wf-table th{font-weight:600;color:var(--mut);font-size:12.5px}
 .topic{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:0 0 8px;overflow:hidden}
 .topic>summary{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.stage{--st:#868e96;--st-bg:#f1f3f5;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 10px 2px 8px;border:1px solid var(--st);border-radius:999px;white-space:nowrap;color:var(--st);background:var(--st-bg)}
+.stage-explore{--st:#2b8a3e;--st-bg:#ebfbee}.stage-shaping{--st:#7048e8;--st-bg:#f3f0ff}.stage-agreed{--st:#1971c2;--st-bg:#e7f5ff}.stage-closed{--st:#495057;--st-bg:#f1f3f5}
+@media(prefers-color-scheme:dark){.stage{--st-bg:transparent}.stage-explore{--st:#8ce99a}.stage-shaping{--st:#b197fc}.stage-agreed{--st:#74c0fc}.stage-closed{--st:#adb5bd}}
+.stage-steps{display:inline-flex;gap:2px}.stage-steps b{width:7px;height:7px;border-radius:2px;border:1px solid var(--st);opacity:.55}.stage-steps b.on{background:var(--st);opacity:1}
+.stage-none{color:var(--mut);border-style:dashed;font-weight:400}
 .topic>summary::-webkit-details-marker{display:none}.topic>summary::before{content:"▸";color:var(--mut)}
 .topic[open]>summary::before{content:"▾"}.topic[open]>summary{border-bottom:1px solid var(--line)}
+.studio-related{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:16px 0 8px;overflow:hidden}
+.related-in .topic>summary{flex-wrap:nowrap}.related-in .topic>summary>.related-head{flex:1 1 auto;min-width:0}.related-in .topic>summary b{font-weight:600}.related-in .topic-pop{margin-left:auto;flex:0 0 auto;max-width:34%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.related-img{display:block;max-width:100%;border-top:1px solid var(--line)}
+.studio-related>summary{display:flex;gap:10px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.studio-related>summary::-webkit-details-marker{display:none}.studio-related>summary::before{content:"▸";color:var(--mut)}
+.studio-related[open]>summary::before{content:"▾"}.studio-related[open]>summary{border-bottom:1px solid var(--line)}
+.studio-related>.related-in{padding:6px 14px 12px}.related-meta{color:var(--mut);font-size:13px}
+.tl-wrap{--tl-time:92px;--tl-dot:28px;--tl-cell:40px;--tl-gcell:100px}.tl-wrap [hidden]{display:none!important}
+.tl-levels{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px}.tl-help{font-size:12px;color:var(--mut);margin-left:8px}
+.tl-levels button{font:inherit;font-size:13px;border:1px solid var(--tab-line);border-radius:6px;padding:2px 10px;background:var(--bg);color:var(--fg);cursor:pointer}
+.tl-levels button[aria-pressed=true]{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+.tl-kd{display:inline-block;width:9px;height:9px;border-radius:2px;margin:0 6px 0 2px;flex:0 0 auto}.tl-legend-k .tl-kd{margin-left:10px}
+.k-decided{background:var(--ok)}.k-session{background:var(--acc)}.k-drawing{background:var(--warn)}
+.tl-wrap[data-level=days]:not(.picking) .tl-list,.tl-wrap[data-level=days] .tl-legend-k,.tl-wrap:not([data-level=days]) .tl-map,
+.tl-wrap:not([data-level=days]) .tl-legend-b,.tl-wrap[data-level=topics] .tl-items{display:none}
+.tl-map{position:relative;overflow-x:auto;padding:0 0 26px}
+.tl-map::before{content:"";position:absolute;left:calc(var(--tl-time) + var(--tl-dot) / 2 - 1px);top:40px;bottom:9px;border-left:2px solid var(--fg)}
+.tl-map::after{content:"";position:absolute;left:calc(var(--tl-time) + var(--tl-dot) / 2 - 6px);bottom:0;border:6px solid transparent;border-top:10px solid var(--fg);border-bottom:0}
+.tl-mhead,.tl-mrow{display:flex;align-items:center;min-width:max-content}.tl-mhead{height:28px}
+.tl-mhead>span:first-child,.tl-mrow>time{flex:0 0 var(--tl-time);text-align:right;font-size:13px;font-weight:600;white-space:nowrap}
+.tl-mhead>span:nth-child(2),.tl-dot{flex:0 0 var(--tl-dot);display:flex;justify-content:center;position:relative;z-index:1}
+.tl-dot::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 3px var(--card)}
+.tl-col,.tl-cell{flex:0 0 var(--tl-cell);display:flex;align-items:center;justify-content:center;position:relative}
+.tl-col{font-size:11px;color:var(--mut);text-decoration:none;align-self:flex-end;padding-bottom:4px}.tl-col:hover{color:var(--tab-on)}
+.tl-mrow{height:38px;border-radius:8px}.tl-mrow:hover{background:var(--wash)}
+.tl-cell{height:38px}.tl-cell::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid var(--line)}
+.tl-b{position:relative;display:block;width:var(--s);height:var(--s);border-radius:50%;background:var(--acc);opacity:.8;
+ box-shadow:0 0 0 2px var(--card);transition:transform .12s,opacity .12s}.tl-b:hover{transform:scale(1.2);opacity:1}
+.tl-bar,.tl-bar-h{flex:0 0 170px;margin-left:14px;display:flex;align-items:center;gap:8px}.tl-bar-h{font-size:11px;color:var(--mut);align-self:flex-end;padding-bottom:4px}
+.tl-track{flex:0 0 120px;height:8px;border-radius:4px;background:var(--wash);overflow:hidden}.tl-track i{display:block;height:100%;background:var(--mut);opacity:.6}
+.tl-bar b{font-size:12px;font-weight:600;color:var(--mut)}
+.tl-axis{list-style:none;margin:0;padding:0 0 26px;position:relative}
+.tl-axis::before{content:"";position:absolute;left:111px;top:6px;bottom:9px;border-left:2px solid var(--fg)}
+.tl-axis::after{content:"";position:absolute;left:106px;bottom:0;border:6px solid transparent;border-top:10px solid var(--fg);border-bottom:0}
+.tl-day{position:relative;display:grid;grid-template-columns:92px minmax(0,1fr);column-gap:40px;padding:0 0 14px}
+.tl-day::after{content:"";position:absolute;left:107px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 3px var(--card)}
+.tl-day>time{text-align:right;font-size:13px;font-weight:600;white-space:nowrap;line-height:20px}
+.tl-topic{display:grid;grid-template-columns:minmax(160px,280px) minmax(0,1fr);column-gap:12px;align-items:center;line-height:20px;padding:1px 0}
+.tl-name{font-size:13px;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-name b{font-weight:600;margin-right:6px}.tl-name span{color:var(--mut)}.tl-name:hover span{color:var(--tab-on)}
+.tl-meter{display:flex;align-items:center;gap:8px}.tl-stack{display:flex;flex:0 0 auto;height:8px;border-radius:4px;overflow:hidden}.tl-n{font-size:12px;color:var(--mut)}
+.tl-items{grid-column:1/-1;list-style:none;margin:3px 0 8px 3px;padding:0 0 0 12px;border-left:2px solid var(--line);display:grid;gap:2px}
+.tl-items li{display:flex;align-items:center;font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-items li>span,.tl-items li>a{overflow:hidden;text-overflow:ellipsis}.tl-items li b{color:var(--fg);font-weight:600;margin-right:6px}
+.tl-undated{margin-top:10px;font-size:12px}
+.tl-map[data-cols=groups] .tl-col,.tl-map[data-cols=groups] .tl-cell,.tl-map[data-cols=topics] .tl-gcol,.tl-map[data-cols=topics] .tl-gcell{display:none}
+.tl-gcol,.tl-gcell{flex:0 0 var(--tl-gcell);position:relative}.tl-gcell{height:38px;display:flex;align-items:center;justify-content:center}
+.tl-gcell::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid var(--line)}
+.tl-gcol{font:inherit;font-size:11px;color:var(--mut);background:none;border:0;cursor:pointer;align-self:flex-end;padding:0 4px 4px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}.tl-gcol:hover{color:var(--tab-on)}
+.tl-gb{position:relative;display:block;width:var(--s);height:var(--s);border-radius:50%;background:var(--acc);opacity:.8;border:0;padding:0;
+ cursor:pointer;box-shadow:0 0 0 2px var(--card);transition:transform .12s,opacity .12s}.tl-gb:hover{transform:scale(1.2);opacity:1}
+.tl-cols{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:var(--mut);margin-left:8px}
+.tl-levels .tl-cols button{font-size:12px;padding:1px 8px}
+.tl-wrap[data-level=days].picking .tl-off,.tl-wrap:not(.picking) .tl-picked,.tl-wrap:not([data-level=days]) .tl-picked{display:none}
+.tl-col{cursor:pointer}.tl-col.on{color:var(--tab-on);font-weight:700}.tl-cell.on .tl-b{background:var(--tab-on);opacity:1}
+.tl-wrap.picking .tl-cell:not(.on) .tl-b{opacity:.3}
+.tl-picked{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 12px;font-size:13px}
+.tl-picked button{font:inherit;font-size:12px;border:1px solid var(--tab-line);border-radius:6px;padding:1px 8px;background:var(--bg);color:var(--fg);cursor:pointer}
+@media(max-width:700px){.tl-wrap{--tl-time:62px}.tl-day{grid-template-columns:62px minmax(0,1fr);column-gap:30px}
+ .tl-axis::before{left:76px}.tl-axis::after{left:71px}.tl-day::after{left:72px}.tl-topic{grid-template-columns:minmax(0,1fr) 120px}}
 .topic-meta{color:var(--mut);font-size:13px;flex:1}.topic-pop a{text-decoration:none;font-size:15px}
 .topic .none{margin:10px 14px}.topic-pop{display:flex;gap:10px;align-items:baseline;font-size:13px}
 .chip{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid var(--acc);border-radius:999px;color:var(--acc);font-size:12px;text-decoration:none}
@@ -1101,84 +2108,231 @@ function hashTarget(){
   var found=document.getElementById(id);if(found)return found;
   if(id.indexOf('topic-')!==0)return null;
   var name=id.slice(6),path=new URL(location.href).searchParams.get('path')||'';
-  var matches=Array.from(document.querySelectorAll('[data-studio-name]')).filter(function(r){return r.dataset.studioName===name;});
+  var matches=Array.from(document.querySelectorAll('[data-studio-name]')).filter(function(r){return r.dataset.studioName===name&&!r.closest('[data-group-kind]');});
   return matches.find(function(r){return path.endsWith('/'+r.dataset.studioSource);})||matches[0]||null;
 }
 document.querySelectorAll('details.topic').forEach(function(d){d.addEventListener('toggle',function(){load(d);});});
+// a #question-QNN link opens that Question's card in the Report (b10 s07: each Question is a folding card)
+(function(){var h=decodeURIComponent(location.hash.slice(1));if(h.indexOf('question-')!==0)return;
+  var el=document.getElementById(h),card=el&&el.closest('details.q-card');if(card){card.open=true;el.scrollIntoView();}})();
 document.querySelectorAll('.studio-topics').forEach(function(list){
+  // Groups (b10 s02-D16): Current lives in this browser; every other group is a tag on the topic's
+  // **Tags:** line, written by POST /_board/studio-group, so it is the same for everyone. The same bar
+  // sorts Related's items (data-group-kind=related, JL 261011): there a group is the row's group cell.
   var rows=Array.from(list.querySelectorAll('details[data-studio-key]'));
-  var buttons=Array.from(list.querySelectorAll('[data-studio-tag]'));
-  var currentButton=buttons.find(function(b){return b.dataset.studioTag==='__current__';});
+  var nav=list.querySelector('.studio-filters');
   var empty=list.querySelector('.studio-empty'),status=list.querySelector('.studio-status');
   var source=list.querySelector('[data-studio-source-filter]');
-  var storageKey='workbench.studio.current.v1:'+list.dataset.studioOwner,current=new Set(),active='__current__';
-  function read(){try{var value=JSON.parse(localStorage.getItem(storageKey)||'[]');
-    return new Set(Array.isArray(value)?value.filter(function(k){return typeof k==='string';}):[]);
-  }catch(e){return new Set();}}
+  var owner=list.dataset.studioOwner,kind=list.dataset.groupKind||'studio',noun=list.dataset.groupNoun||'topic',pre=kind+'_';
+  var storageKey='workbench.'+kind+'.current.v1:'+owner,groupsKey='workbench.studio.groups.v1:'+owner;
+  var current=new Set(),active='';
+  function buttons(){return Array.from(nav.querySelectorAll('[data-studio-tag]'));}
+  function button(key){return buttons().find(function(b){return b.dataset.studioTag===key;})||null;}
+  function isGroup(key){return key!=='__current__'&&key!=='__untagged__'&&key!=='';}
+  function readList(k){try{var v=JSON.parse(localStorage.getItem(k)||'[]');
+    return Array.isArray(v)?v.filter(function(x){return typeof x==='string';}):[];}catch(e){return [];}}
+  function writeList(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+  function read(){return new Set(readList(storageKey));}
   current=read();
-  function tags(row){return JSON.parse(row.dataset.studioTags||'[]').map(function(tag){return tag.toLowerCase();});}
+  function labels(row){try{return JSON.parse(row.dataset.studioTags||'[]');}catch(e){return [];}}
+  function tags(row){return labels(row).map(function(t){return t.toLowerCase();});}
   function matches(row,key){var names=tags(row);
     return !key||(key==='__current__'?current.has(row.dataset.studioKey):key==='__untagged__'?names.length===0:names.indexOf(key)>=0);}
-  function paintCurrent(){
-    currentButton.querySelector('.tag-count').textContent=rows.filter(function(r){return current.has(r.dataset.studioKey);}).length;
+  function say(text){status.textContent=text;}
+  // the Studio's Timeline follows this bar: a topic's lines show when its row shows (JL 261011)
+  function timeline(key){var tl=document.querySelector('.studio-timeline');if(!tl)return;
+    var hidden={},shown=0;rows.forEach(function(r){hidden[r.dataset.studioKey]=r.hidden;});
+    var peak=0,sums=[];
+    tl.querySelectorAll('[data-tl-key]').forEach(function(t){t.hidden=!!hidden[t.dataset.tlKey];});
+    tl.querySelectorAll('.tl-mrow').forEach(function(r){var n=0;
+      r.querySelectorAll('.tl-cell:not([hidden])').forEach(function(c){n+=Number(c.dataset.tlCount||0);});
+      r.hidden=!n;shown+=n;peak=Math.max(peak,n);sums.push([r,n]);});
+    sums.forEach(function(s){var i=s[0].querySelector('.tl-track i'),b=s[0].querySelector('.tl-bar b');
+      if(i)i.style.width=(peak?Math.round(s[1]/peak*100):0)+'%';if(b)b.textContent=s[1];});
+    tl.querySelectorAll('.tl-day').forEach(function(d){d.hidden=!d.querySelector('.tl-topic:not([hidden])');});
+    // a group's bubble adds up its topics that still show; a group with none left drops its column
+    var gsum={},gpeak=0,gcells=tl.querySelectorAll('.tl-gcell');
+    gcells.forEach(function(c){var n=0,parts={};try{parts=JSON.parse(c.dataset.tlParts||'{}');}catch(e){}
+      Object.keys(parts).forEach(function(k){if(!hidden[k])n+=parts[k];});c.dataset.tlNow=n;gpeak=Math.max(gpeak,n);
+      gsum[c.dataset.tlGroup]=(gsum[c.dataset.tlGroup]||0)+n;});
+    gcells.forEach(function(c){var n=Number(c.dataset.tlNow),b=c.querySelector('.tl-gb');c.hidden=!gsum[c.dataset.tlGroup];
+      if(b){b.hidden=!n;if(n)b.style.setProperty('--s',Math.round(8+22*Math.sqrt(n/gpeak))+'px');}});
+    tl.querySelectorAll('.tl-gcol').forEach(function(h){h.hidden=!gsum[h.dataset.tlGroup];});
+  }
+  function labelOf(key){var b=button(key);return b?(b.dataset.studioLabel||key):key;}
+  function paint(){
+    buttons().forEach(function(b){var key=b.dataset.studioTag;
+      b.querySelector('.tag-count').textContent=rows.filter(function(r){return matches(r,key);}).length;});
     rows.forEach(function(r){var b=r.querySelector('.studio-current'),on=current.has(r.dataset.studioKey);
       b.textContent=on?'Remove from Current':'Add to Current';b.setAttribute('aria-pressed',String(on));});
   }
   function apply(key,save){
-    if(!buttons.some(function(b){return b.dataset.studioTag===key;}))key='';
+    if(!button(key))key='';
     active=key;
     rows.forEach(function(row){row.hidden=!matches(row,key)||(source&&source.value!=='__all__'&&row.dataset.studioSource!==source.value);});
-    buttons.forEach(function(b){var on=b.dataset.studioTag===key;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-    paintCurrent();
+    buttons().forEach(function(b){var on=b.dataset.studioTag===key;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+    paint();
     empty.hidden=rows.some(function(r){return !r.hidden;})||rows.length===0;
-    empty.textContent=key==='__current__'?'Current is empty here. Open All and add the topics you want to focus on.':'No topics match this group and source.';
+    if(kind==='studio')timeline(key);
+    empty.textContent=key==='__current__'?'Current is empty. Unpick it to see every '+noun+', then add the ones you want to focus on.':
+      isGroup(key)?'This group is empty. Unpick it to see every '+noun+', then drag '+noun+'s onto it by ⋮⋮.':'No '+noun+'s in this source.';
     if(save){var url=new URL(location.href);
-      url.searchParams.delete('studio_tag');url.searchParams.delete('studio_group');
-      if(key==='__current__')url.searchParams.set('studio_group','current');
-      else if(key)url.searchParams.set('studio_tag',key);else url.searchParams.set('studio_group','all');
+      url.searchParams.delete(pre+'tag');url.searchParams.delete(pre+'group');
+      if(key==='__current__')url.searchParams.set(pre+'group','current');
+      else if(key)url.searchParams.set(pre+'tag',key);
       if(source&&source.value!=='__all__')url.searchParams.set('studio_source',source.value);else url.searchParams.delete('studio_source');
       var target=hashTarget();if(target&&target.hidden)url.hash='';history.replaceState(null,'',url);}
   }
   function setCurrent(row,on){
     var next=new Set(current);if(on)next.add(row.dataset.studioKey);else next.delete(row.dataset.studioKey);
-    try{localStorage.setItem(storageKey,JSON.stringify(Array.from(next)));}
-    catch(e){status.textContent='Could not save Current in this browser. Your selection has not changed.';return false;}
+    if(!writeList(storageKey,Array.from(next))){say('Could not save Current in this browser. Your selection has not changed.');return false;}
     current=next;apply(active,false);
-    status.textContent=row.dataset.studioName+(on?' added to Current.':' removed from Current.');return true;
+    say(row.dataset.studioName+(on?' added to Current.':' removed from Current.'));return true;
   }
-  buttons.forEach(function(b){b.addEventListener('click',function(){
-    if(b.dataset.studioTag===''&&source)source.value='__all__';apply(b.dataset.studioTag,true);});});
+  function chips(row){
+    var box=row.querySelector('.topic-tags');
+    if(!box){box=document.createElement('span');box.className='topic-tags';row.querySelector('summary b').after(box);}
+    box.textContent='';
+    var fixed=[];try{fixed=JSON.parse(row.dataset.studioFixed||'[]');}catch(e){}   // a subfolder's or a theme's: no ×
+    labels(row).forEach(function(t){var c=document.createElement('span');c.className='chip';c.dataset.tag=t;c.textContent=t;
+      if(fixed.indexOf(t.toLowerCase())<0){var x=document.createElement('button');x.type='button';x.className='tag-x';
+        x.title='Take out of '+t;x.setAttribute('aria-label','Take '+row.dataset.studioName+' out of '+t);x.textContent='×';
+        c.appendChild(x);}
+      box.appendChild(c);});
+  }
+  function makeGroup(label){
+    var key=label.toLowerCase(),b=button(key);if(b)return b;
+    var wrap=document.createElement('span');wrap.className='grp';
+    b=document.createElement('button');b.type='button';b.className='tab';b.dataset.studioLabel=label;b.dataset.studioTag=key;
+    b.setAttribute('aria-pressed','false');
+    var em=document.createElement('span');em.className='grp-emoji';em.setAttribute('aria-hidden','true');em.textContent=emojiFor(label);
+    b.appendChild(em);b.appendChild(document.createTextNode(label+' '));
+    var n=document.createElement('span');n.className='tag-count';n.textContent='0';b.appendChild(n);
+    var x=document.createElement('button');x.type='button';x.className='grp-x';x.dataset.studioDelete=key;
+    x.title='Delete group '+label;x.setAttribute('aria-label','Delete group '+label);x.textContent='×';
+    wrap.appendChild(b);wrap.appendChild(x);nav.insertBefore(wrap,button('__untagged__')||nav.querySelector('.grp-new'));return b;
+  }
+  var emo={};try{emo=JSON.parse(nav.dataset.studioEmoji||'{}');}catch(e){}
+  function emojiFor(label){var low=label.toLowerCase(),words=emo.words||{},pal=emo.palette||[];
+    var tokens=low.split(/[ _/&+-]+/).filter(Boolean);
+    for(var w in words){var ascii=w.split('').every(function(c){return c.charCodeAt(0)<128;});
+      if(ascii?tokens.some(function(t){return t===w||t.replace(/s$/,'')===w;}):low.indexOf(w)>=0)return words[w];}
+    if(!pal.length)return '';var n=0;for(var ch of label)n+=ch.codePointAt(0);return pal[n%pal.length];}
+  function post(body){body.path=owner;body.kind=kind;
+    return fetch('/_board/studio-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {ok:false,err:'HTTP '+r.status};})
+        .then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||('HTTP '+r.status));return j;});});}
+  function update(j){Object.keys(j.topics||{}).forEach(function(k){
+    var row=rows.find(function(r){return r.dataset.studioKey===k;});
+    if(row){row.dataset.studioTags=JSON.stringify(j.topics[k]);chips(row);}});apply(active,false);}
+  function addTo(row,key){
+    if(key==='__current__'){setCurrent(row,true);return;}
+    var label=labelOf(key),name=row.dataset.studioName;
+    post({op:'add',topic:row.dataset.studioKey,tag:label}).then(function(j){update(j);
+      say(name+(j.changed?' added to ':' is already in ')+label+'.');})
+      .catch(function(e){say('Could not add '+name+' to '+label+': '+e.message);});
+  }
+  function takeOut(row,label){var name=row.dataset.studioName;
+    post({op:'remove',topic:row.dataset.studioKey,tag:label}).then(function(j){update(j);say(name+' taken out of '+label+'.');})
+      .catch(function(e){say('Could not take '+name+' out of '+label+': '+e.message);});
+  }
+  function dropGroup(key){
+    var label=labelOf(key),n=rows.filter(function(r){return tags(r).indexOf(key)>=0;}).length;
+    function gone(){var b=button(key);if(b)(b.closest('.grp')||b).remove();
+      apply(active===key?'':active,active===key);}
+    if(!n){post({op:'delete',tag:label}).then(function(){gone();say('Group '+label+' deleted.');})
+      .catch(function(e){say('Could not delete '+label+': '+e.message);});return;}
+    say('');status.append('Delete group '+label+'? It comes off '+n+' '+noun+(n===1?'':'s')+'; the '+noun+'s stay. ');
+    var yes=document.createElement('button');yes.type='button';yes.className='grp-ok';yes.textContent='Delete';
+    var no=document.createElement('button');no.type='button';no.className='grp-cancel';no.textContent='Cancel';
+    status.append(yes,' ',no);
+    no.addEventListener('click',function(){say('');});
+    yes.addEventListener('click',function(){say('Deleting '+label+' …');
+      post({op:'delete',tag:label}).then(function(j){update(j);gone();
+        say('Group '+label+' deleted. Its '+j.changed+' '+noun+(j.changed===1?' is':'s are')+' still listed.');})
+        .catch(function(e){say('Could not delete '+label+': '+e.message);});});
+  }
+  var newBtn=nav.querySelector('.grp-new'),form=nav.querySelector('.grp-form'),input=form.querySelector('input');
+  function openForm(on){form.hidden=!on;newBtn.hidden=on;if(on){input.value='';input.focus();}}
+  function create(){var label=input.value.trim();
+    if(!label){openForm(false);return;}
+    if(label.length>30||/[`,·|*]/.test(label)||['current','all','untagged'].indexOf(label.toLowerCase())>=0){
+      say('A group name is 1 to 30 characters, without ` , · | or *, and is not Current, All or Untagged.');return;}
+    openForm(false);
+    if(button(label.toLowerCase())){say('Group '+label+' already exists.');return;}
+    post({op:'create',tag:label}).then(function(){makeGroup(label);apply(active,false);
+      say('Group '+label+' made. Drag '+noun+'s onto it by ⋮⋮.');}).catch(function(e){say('Could not make '+label+': '+e.message);});}
+  // groups made before they were saved on disk waited in this browser: save them once, then forget them
+  if(kind==='studio'){readList(groupsKey).forEach(function(label){if(!button(label.toLowerCase()))
+    post({op:'create',tag:label}).then(function(){makeGroup(label);apply(active,false);}).catch(function(){});});
+  try{localStorage.removeItem(groupsKey);}catch(e){}}
+  // drag a group button sideways to move it; the order is saved to studio/ (or related/) _groups.txt (b10 s02-D17)
+  var dragged=false;
+  nav.addEventListener('pointerdown',function(ev){
+    var tab=ev.target.closest('.grp>.tab');if(!tab||ev.button!==0)return;
+    var wrap=tab.parentNode,startX=ev.clientX,startY=ev.clientY,moved=false;
+    function move(e){if(e.pointerId!==ev.pointerId)return;
+      if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
+      if(!moved){moved=true;wrap.classList.add('moving');nav.classList.add('sorting');}
+      var over=Array.from(nav.querySelectorAll('.grp')).find(function(g){if(g===wrap)return false;var r=g.getBoundingClientRect();
+        return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8;});
+      if(over){var r=over.getBoundingClientRect();nav.insertBefore(wrap,e.clientX<r.left+r.width/2?over:over.nextSibling);}
+    }
+    function finish(e){if(e.pointerId!==ev.pointerId)return;
+      document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);
+      if(!moved)return;
+      wrap.classList.remove('moving');nav.classList.remove('sorting');dragged=true;setTimeout(function(){dragged=false;},0);
+      var order=Array.from(nav.querySelectorAll('.grp>.tab')).map(function(b){return b.dataset.studioLabel;});
+      post({op:'order',groups:order}).then(function(){say('Group order saved.');})
+        .catch(function(e2){say('Could not save the group order: '+e2.message);});
+    }
+    document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+  });
+  newBtn.addEventListener('click',function(){openForm(true);});
+  form.querySelector('.grp-ok').addEventListener('click',create);
+  form.querySelector('.grp-cancel').addEventListener('click',function(){openForm(false);});
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();create();}else if(e.key==='Escape'){openForm(false);}});
+  nav.addEventListener('click',function(ev){
+    var del=ev.target.closest('[data-studio-delete]');if(del){ev.preventDefault();dropGroup(del.dataset.studioDelete);return;}
+    var b=ev.target.closest('[data-studio-tag]');if(!b||dragged)return;
+    apply(b.dataset.studioTag===active?'':b.dataset.studioTag,true);});
+  list.addEventListener('click',function(ev){var x=ev.target.closest('.tag-x');if(!x)return;
+    ev.preventDefault();ev.stopPropagation();var row=x.closest('details[data-studio-key]'),chip=x.closest('.chip');
+    if(row&&chip)takeOut(row,chip.dataset.tag);});
   if(source)source.addEventListener('change',function(){apply(active,true);});
   rows.forEach(function(row){
     row.querySelector('.studio-current').addEventListener('click',function(ev){
       ev.preventDefault();ev.stopPropagation();setCurrent(row,!current.has(row.dataset.studioKey));});
     var handle=row.querySelector('.studio-drag');
+    if(!handle)return;                      // a theme's own Report card (b10 s07): not draggable, its groups fixed
     handle.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();});
     handle.addEventListener('pointerdown',function(ev){
       if(ev.button!==0)return;ev.preventDefault();ev.stopPropagation();
-      var startX=ev.clientX,startY=ev.clientY,ghost=null,moved=false;
+      var startX=ev.clientX,startY=ev.clientY,ghost=null,moved=false,hot=null;
       if(handle.setPointerCapture)handle.setPointerCapture(ev.pointerId);
-      function over(x,y){var r=currentButton.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;}
+      function under(x,y){return buttons().find(function(b){var k=b.dataset.studioTag;if(k==='__untagged__')return false;
+        var r=b.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null;}
+      function mark(b){if(hot)hot.classList.remove('drop-ready');hot=b;if(hot)hot.classList.add('drop-ready');}
       function move(e){
         if(e.pointerId!==ev.pointerId)return;
         if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
         if(!moved){moved=true;row.classList.add('dragging');ghost=document.createElement('div');
           ghost.className='studio-drag-preview';ghost.textContent=row.dataset.studioName;document.body.appendChild(ghost);}
         ghost.style.left=(e.clientX+12)+'px';ghost.style.top=(e.clientY+12)+'px';
-        currentButton.classList.toggle('drop-ready',over(e.clientX,e.clientY));
+        mark(under(e.clientX,e.clientY));
       }
       function finish(e){
         if(e.pointerId!==ev.pointerId)return;
         document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);
-        row.classList.remove('dragging');currentButton.classList.remove('drop-ready');if(ghost)ghost.remove();
-        if(moved&&e.type==='pointerup'&&over(e.clientX,e.clientY)&&setCurrent(row,true)){
-          if(source)source.value='__all__';apply('__current__',true);}
+        row.classList.remove('dragging');mark(null);if(ghost)ghost.remove();
+        var b=moved&&e.type==='pointerup'?under(e.clientX,e.clientY):null;
+        if(b)addTo(row,b.dataset.studioTag);
       }
       document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
     });
   });
-  function restore(){var url=new URL(location.href),group=url.searchParams.get('studio_group');
-    var key=url.searchParams.get('studio_tag')||(group==='all'?'':'__current__');
+  function restore(){var url=new URL(location.href),group=url.searchParams.get(pre+'group');
+    var key=url.searchParams.get(pre+'tag')||(group==='current'?'__current__':'');
     if(source){var wanted=url.searchParams.get('studio_source')||'__all__';
       source.value=Array.from(source.options).some(function(o){return o.value===wanted;})?wanted:'__all__';}
     var target=hashTarget();
@@ -1186,8 +2340,51 @@ document.querySelectorAll('.studio-topics').forEach(function(list){
     apply(key,false);
   }
   restore();window.addEventListener('popstate',restore);
-  window.addEventListener('storage',function(ev){if(ev.key===storageKey){current=read();apply(active,false);}});
+  window.addEventListener('storage',function(ev){
+    if(ev.key===storageKey){current=read();apply(active,false);}});
 });
+document.querySelectorAll('.studio-timeline .tl-levels').forEach(function(nav){
+  // how much the Timeline shows: Days · Topics · Everything (JL 261011), remembered in this browser
+  var axis=nav.closest('.tl-wrap'),saved='';if(!axis)return;
+  function show(level){axis.dataset.level=level;nav.querySelectorAll('[data-tl-level]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(b.dataset.tlLevel===level));});}
+  try{saved=localStorage.getItem('workbench.timeline.level.v1')||'';}catch(e){}
+  if(nav.querySelector('[data-tl-level="'+saved+'"]'))show(saved);
+  nav.addEventListener('click',function(ev){var b=ev.target.closest('[data-tl-level]');if(!b)return;show(b.dataset.tlLevel);
+    try{localStorage.setItem('workbench.timeline.level.v1',b.dataset.tlLevel);}catch(e){}});});
+document.querySelectorAll('.studio-timeline .tl-map').forEach(function(map){
+  // the chart's columns: the topic groups or the topics (JL 261011), remembered in this browser; a group's
+  // column or bubble picks that group in the bar above and shows its topics
+  var nav=map.closest('.tl-wrap').querySelector('.tl-cols'),saved='';if(!nav)return;
+  function cols(c){map.dataset.cols=c;nav.querySelectorAll('[data-tl-cols]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(b.dataset.tlCols===c));});}
+  try{saved=localStorage.getItem('workbench.timeline.cols.v1')||'';}catch(e){}
+  if(saved==='groups'||saved==='topics')cols(saved);
+  nav.addEventListener('click',function(ev){var b=ev.target.closest('[data-tl-cols]');if(!b)return;cols(b.dataset.tlCols);
+    try{localStorage.setItem('workbench.timeline.cols.v1',b.dataset.tlCols);}catch(e){}});
+  // pick topics in the chart (JL 261011: "we can select the topics we are interest in we show there content"):
+  // their decisions, sessions and notes show under it, on the same axis; pick again to drop one
+  var wrap=map.closest('.tl-wrap'),list=wrap.querySelector('.tl-list'),line=wrap.querySelector('.tl-picked'),picked=new Set();
+  function pick(){wrap.classList.toggle('picking',picked.size>0);
+    map.querySelectorAll('.tl-col,.tl-cell').forEach(function(c){c.classList.toggle('on',picked.has(c.dataset.tlKey));});
+    list.querySelectorAll('.tl-topic').forEach(function(t){t.classList.toggle('tl-off',!picked.has(t.dataset.tlKey));});
+    list.querySelectorAll('.tl-day').forEach(function(d){d.classList.toggle('tl-off',!d.querySelector('.tl-topic:not(.tl-off)'));});
+    line.textContent='';if(!picked.size)return;
+    var names=Array.from(map.querySelectorAll('.tl-col')).filter(function(c){return picked.has(c.dataset.tlKey);})
+      .map(function(c){return c.title||c.textContent;});
+    line.appendChild(document.createTextNode('Reading '+names.join(' · ')));
+    var x=document.createElement('button');x.type='button';x.textContent='Clear';
+    x.addEventListener('click',function(){picked.clear();pick();});line.appendChild(x);}
+  map.addEventListener('click',function(ev){var g=ev.target.closest('.tl-gcol,.tl-gb');
+    if(g){var key=(g.closest('[data-tl-group]')||g).dataset.tlGroup;
+      var t=document.querySelector('.studio-topics:not([data-group-kind]) [data-studio-tag="'+CSS.escape(key)+'"]');
+      if(t&&!t.classList.contains('on'))t.click();cols('topics');return;}
+    var c=ev.target.closest('.tl-col,.tl-cell');if(!c||(c.classList.contains('tl-cell')&&!c.querySelector('.tl-b')))return;
+    ev.preventDefault();var k=c.dataset.tlKey;if(picked.has(k))picked.delete(k);else picked.add(k);pick();});});
+document.querySelectorAll('.studio-timeline .tl-name').forEach(function(a){a.addEventListener('click',function(ev){
+  // a topic's name in the Timeline opens its row above
+  var d=document.getElementById(decodeURIComponent(a.hash.slice(1)));if(!d)return;
+  ev.preventDefault();d.open=true;load(d);d.scrollIntoView({block:'start'});history.replaceState(null,'',a.hash);});});
 document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addEventListener('click',function(ev){
   ev.preventDefault();ev.stopPropagation();
   var d=b.closest('details'),f=d.querySelector('iframe'),on=b.textContent==='Edit';
@@ -1249,6 +2446,28 @@ dlg.addEventListener('close',function(){fr.removeAttribute('src');});})();
 """
 
 
+# an old theme page's view -> the frame Space it became (cowork-board, work-board, discovery-board)
+OLD_VIEW_SPACE = {"scope": "Description", "block": "Description", "people": "Description",
+                  "resources": "Description", "work": "Work Details", "jobs": "Work Details",
+                  "tasks": "Work Details", "task": "Work Details", "papers": "Work Details",
+                  "questions": "Audience Report", "reports": "Audience Report", "check": "Audience Report",
+                  "runs": "Runs", "delivery": "Delivery", "related": "Related"}
+
+
+def frame_redirect(handler, block: Path, root: Path, view: str = "") -> None:
+    """Send an old theme page's Block to the shared frame (JL 261011: every workbench has the one
+    structure, Studio | Block · Job · Task | Delivery). Its pop-outs, reports and JSON stay where they are;
+    an `--only` host serves no frame and keeps its own page."""
+    query = {"path": _rel(block.resolve(), root.resolve())}
+    space = OLD_VIEW_SPACE.get((view or "").lower(), "")
+    if space and space != "Description":
+        query["space"] = space
+    handler.send_response(302)
+    handler.send_header("Location", ROUTE + "?" + urlencode(query))
+    handler.send_header("Content-Length", "0")
+    handler.end_headers()
+
+
 def href(folder: Path, root: Path, theme: Theme, space: str = "", sub: str = "", *, studio: bool = False) -> str:
     query = {"path": _rel(folder, root)}
     if theme.name != "vanilla":
@@ -1263,18 +2482,26 @@ def href(folder: Path, root: Path, theme: Theme, space: str = "", sub: str = "",
 
 
 def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str, sub: str = "", *, studio: bool = False) -> str:
-    """Guide (mounted first) · Studio | Block · Job ▾ · Task ▾; context stays in the title."""
+    """Guide (mounted first) · Studio | Block · Job ▾ · Task ▾ | Delivery; context stays in the title.
+    Studio and Delivery are the Block's shared views (b10 s09-D05, JL 261010: "Studio | Block Job Task |
+    Delivery"); Related opens the Studio, where it folds under the topics (b10 s04, JL 261011: "I might
+    just want to keep Guide, Studio | Block, Job, Task | Delivery"); a level button goes back to its work view."""
     up = chain(folder, root)
-    studio = studio or space in ("Idea Studio", "Studio")
-    space = "Description" if space in ("Idea Studio", "Studio") else space
-    studio_on = " on" if studio else ""
-    studio_current = ' aria-current="page"' if studio_on else ""
-    parts = [f'<a class="tab{studio_on}" href="{_e(href(folder, root, theme, space, sub, studio=True))}"'
-             f'{studio_current}>Studio</a>', '<span class=bar></span>']
+    studio = studio or space in ("Idea Studio", "Studio") or space in IN_STUDIO
+    delivery = space == "Delivery" and not studio
+    if delivery or space in IN_STUDIO:
+        sub = ""
+    space = "Description" if space in ("Idea Studio", "Studio", "Delivery") + IN_STUDIO else space
+    shared_on = studio or delivery
+    current = ' aria-current="page"'
+    tab = lambda label, url, on: (f'<a class="tab{" on" if on else ""}" href="{_e(url)}"'
+                                  f'{current if on else ""}>{label}</a>')
+    parts = [tab("Studio", href(folder, root, theme, space, sub, studio=True), studio),
+             '<span class=bar></span>']
     for lv in theme.levels:
         name = theme.level_name(lv)
         here = up.get(lv)
-        on = " on" if lv == level and not studio else ""
+        on = " on" if lv == level and not shared_on else ""
         if lv == "Block":
             if here:
                 parts.append(f'<a class="tab{on}" href="{_e(href(here, root, theme, space, sub if here == folder else ""))}" '
@@ -1287,7 +2514,7 @@ def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str, s
                 continue
             parts.append(f'<select disabled aria-label="{_e(name)}"><option>{_e(name)} ▾</option></select>')
             continue
-        if here and (lv != level or studio):
+        if here and (lv != level or shared_on):
             # below this level (a Task under its Job): the open item is a button that goes up to its tab, and a
             # ▾ beside it switches to a sibling; a dropdown alone ignores a click on the item already picked
             # (JL 261008: "I want to click the job button at the top, but it is not react")
@@ -1300,22 +2527,16 @@ def _level_row(theme: Theme, root: Path, folder: Path, level: str, space: str, s
         pick = "" if here else f'<option value="" selected>{_e(name)} ▾</option>'
         parts.append(f'<select class="{on.strip()}" aria-label="{_e(name)}" '
                      f'onchange="if(this.value)location.href=this.value">{pick}{opts}</select>')
+    parts += ['<span class=bar></span>', tab("Delivery", href(folder, root, theme, "Delivery"), delivery)]
     return '<nav class="row levels">' + "".join(parts) + "</nav>"
 
 
 def short_name(name: str, most: int = 26) -> str:
-    """A folder's short name for the Job ▾ / Task ▾ dropdown (b03 s32-D13): its tag and its parts' ids
-    (j04_g01-<goal>_m04-<method> -> j04 · g01 · m04), or its tag and first words (j11_fit_the_model ->
-    j11 · fit the model); a name without a tag stays as it is."""
-    m = _PREFIXED.match(name)
-    if not m:
-        return name
-    tag, rest = name.split("_", 1)
-    ids = re.findall(r"(?:^|_)([a-z]\d{2,})(?=-|_|$)", rest)
-    if ids and re.fullmatch(r"(?:[a-z]\d{2,}(?:-[^_]*)?_?)+", rest):
-        return " · ".join([tag] + ids)
-    words = rest.replace("_", " ").replace("-", " ")
-    return f"{tag} · " + (words if len(words) <= most else words[:most].rsplit(" ", 1)[0] + " …")
+    """A folder's name for the Job ▾ / Task ▾ dropdown: the folder name exactly as it is on disk (b10 s32-D15,
+    JL 261011: "could we do not use · … like the folder name of the j01"). A folder name is made readable where it
+    is made (a design Job is jNN_<goal name>_<method name>), so the screen shows it as is, never cut to its ids.
+    `most` is kept for callers that pass it; nothing is cut."""
+    return name
 
 
 def _label(theme: Theme, folder: Path) -> str:
@@ -1351,15 +2572,63 @@ def _options(theme: Theme, root: Path, space: str, options: list, here, sub: str
 def _spaces_row(theme, root, folder, space) -> str:
     out, last = [], None
     for name, group, optional in SPACES:
-        if name == "Idea Studio":                 # its one entry is beside Guide in the top row
+        if name in TOP_ROW or name in IN_STUDIO:  # the top row's own, or folded in the Studio (b10 s09-D05, s04)
             continue
         if last is not None and group != last:
             out.append('<span class=bar></span>')
         last = group
         cls = "tab" + (" on" if name == space else "") + (" opt" if optional else "")
-        label = "Report" if name == "Audience Report" else name
+        label = SPACE_LABELS.get(name, name)
         out.append(f'<a class="{cls}" href="{_e(href(folder, root, theme, name))}">{_e(label)}</a>')
     return '<nav class="row spaces">' + "".join(out) + "</nav>"
+
+
+def delivery_parts(block: Path) -> list:
+    """[(source folder, depth)] for each Job, and each Task under it, that has a part in the Block's
+    delivery/ (b10 s03-D06): the path is the link, delivery/jNN_<job>/tNN_<task>/ -> jNN_<job>/tNN_<task>/."""
+    out = []
+    for job in children(block, "Block"):
+        tasks = [t for t in children(job, "Job") if delivery_dir(t).is_dir()]
+        if delivery_dir(job).is_dir() or tasks:
+            out.append((job, 1))
+            out += [(t, 2) for t in tasks]
+    return out
+
+
+def _delivery_row(theme, root, block: Path, folder: Path) -> str:
+    """Delivery's source row: Block, then each Job with a part (and the open Job or Task even before it has
+    one); the open folder is picked. A Task shows beside its Job, `jNN › tNN`."""
+    up = chain(folder, root)
+    shown = [(f, d) for f, d in delivery_parts(block) if d == 1 or f in (folder, up.get("Task"))]
+    for lv, d in (("Job", 1), ("Task", 2)):              # the open one, even with nothing built yet
+        f = up.get(lv)
+        if f and f not in [x for x, _ in shown]:
+            at = next((i + 1 for i, (x, _) in enumerate(shown) if x == up.get("Job")), len(shown))
+            shown.insert(at if lv == "Task" else len(shown), (f, d))
+    current = ' aria-current="true"'                  # the page's own mark stays on the top row's Delivery
+    chip = lambda f, label: (f'<a class="tab{" on" if f == folder else ""}" href="{_e(href(f, root, theme, "Delivery"))}"'
+                             f'{current if f == folder else ""}>{_e(label)}</a>')
+    parts = [chip(block, theme.level_name("Block"))]
+    for f, d in shown:
+        parts.append(chip(f, (f.parent.name.split("_", 1)[0] + " › " if d == 2 else "") + _label(theme, f)))
+    return '<nav class="row subs delivery-parts">' + "".join(parts) + "</nav>"
+
+
+def delivery_by_source(theme, block: Path, root: Path) -> str:
+    """The Block's Delivery, by source: one row per Job's and Task's part, its files, and links to that part
+    and back down to its folder."""
+    rows, parts = [], delivery_parts(block)
+    task_parts = {delivery_dir(f) for f, d in parts if d == 2}
+    for f, d in parts:
+        part = delivery_dir(f)                   # a Job's own files: not its Tasks' parts under it
+        n = sum(1 for x in part.rglob("*") if x.is_file() and not any(t != part and t in x.parents for t in task_parts)) \
+            if part.is_dir() else 0
+        rows.append((("└ " if d == 2 else "") + _link(href(f, root, theme, "Delivery"),
+                                                                       part.relative_to(block).as_posix() + "/"),
+                     _link(ROUTE + "?" + urlencode({"path": _rel(f, root)}), f.name), _e(n)))
+    if not rows:
+        return ""
+    return "<h3>By source</h3>" + _table(("part", "from", "files"), rows)
 
 
 def _subs_row(theme, root, folder, space, view: Space) -> str:
@@ -1379,20 +2648,31 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
 
     root, folder = root.resolve(), folder.resolve()
     level = level_of(folder) or "Block"
-    studio = studio or space in ("Idea Studio", "Studio")   # saved Space links still open Studio
-    space = space if space in SPACE_NAMES and space != "Idea Studio" else "Description"
+    # a Related link (space=Related, or the older Description › Related) opens the Studio with its
+    # Related part unfolded (b10 s04, JL 261011)
+    unfold = space in IN_STUDIO or (space == "Description" and sub in IN_STUDIO)
+    studio = studio or space in ("Idea Studio", "Studio") or unfold   # saved Space links still open Studio
+    space = space if space in SPACE_NAMES and space not in ("Idea Studio",) + IN_STUDIO else "Description"
+    if unfold:
+        sub = ""
     block = chain(folder, root).get("Block")
-    owner = block if studio and block else folder
+    owner = block if studio and block else folder      # the Block's, at every level
     owner_level = "Block" if studio and block else level
     views = spaces_for(theme, owner_level, owner, root, "" if studio else sub)
     view = views["Idea Studio" if studio else space]
+    if studio:                                  # Related, the second folding part under the topic cards
+        part = studio_related(views.get("Related") or Space(), owner, root, unfold)
+        # then Timeline, the third: what moved when (JL 261011)
+        view = replace(view, html=view.html + part.html + studio_timeline(owner, root),
+                       run_types=tuple(view.run_types) + tuple(part.run_types),
+                       disk=tuple(view.disk) + tuple(part.disk))
     rel = _rel(owner, root)
     kinds = [dict(k, prompt=k.get("prompt", "").replace("{folder}", rel)) for k in view.run_types]
     panel = panel_markup("Idea Studio" if studio else space, kinds, [list(k.get("rows") or []) for k in kinds], base=root, fill=lambda row: {"page": rel, "folder": rel},
                          whole=f"this {theme.level_name(owner_level)}",
                          extra=f'<p class=mut style="margin:6px 0">{_e(view.note)}</p>' if view.note else "",
                          top=disk_markup(view.disk, owner, root),   # Disk folds with the Runs (JL 261007)
-                         title="Disk · Runs" if view.disk else "Runs", compact=True)
+                         title="Disk · Runs" if view.disk else "Runs", compact=True, folded=True)
     md = face(folder)
     title = f"{theme.icon} {theme.label} · {folder.name}"     # the browser tab: the full folder name
     # the page's own title, under the level row (b03 s32-D13, JL 261008: "make the first line like the
@@ -1411,18 +2691,30 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
     guide_title = f"{theme.icon} {theme.label} · Guide" + (f" · {block_context}" if block_context else "")
     heading = (f'{_e(theme.icon)} {_e(theme.label)} · <span class=lv>{_e(lead)} ·</span> {_e(named)}'
                if named != folder.name or tag else f'{_e(theme.icon)} {_e(theme.label)} · {_e(named)}')
-    if studio:
+    delivery = not studio and space == "Delivery"
+    if studio or (delivery and block):          # a Block-owned view: the Block's name, from any level
         studio_context = block_tag or (short_name(block.name) if block else "No Block")
         block_md = face(block) if block else None
         block_name = _title(block_md) if block_md else (block.name if block else "")
         if block_tag:
             block_name = re.sub(rf"^{re.escape(block_tag)}\b\s*[·:\-–]?\s*", "", block_name, flags=re.I) or block_name
-        heading = f'{_e(theme.icon)} {_e(theme.label)} · Studio · <span class=lv>{_e(studio_context)}</span>'
+        elif block_name.startswith(studio_context):          # an untagged Board's title starts with its name: once
+            block_name = block_name[len(studio_context):].lstrip(" ·:-–") or block_name
+        heading = (f'{_e(theme.icon)} {_e(theme.label)} · {"Studio" if studio else "Delivery"} · '
+                   f'<span class=lv>{_e(studio_context)}</span>')
         if block_name and block_name != studio_context:
             heading += f' · {_e(block_name)}'
-    work_rows = "" if studio else (_spaces_row(theme, root, folder, space)
-                                     + _subs_row(theme, root, folder, space, view))
-    body_class = "frame-body studio-body" if studio else "frame-body"
+    if delivery and block and folder == block:  # the Block's own Delivery lists every part, by source
+        view = replace(view, html=view.html + delivery_by_source(theme, block, root))
+    if studio:
+        work_rows = ""
+    elif delivery:                              # no Spaces row: the source row (Block · jNN · tNN), then a
+        work_rows = ((_delivery_row(theme, root, block, folder) if block else "")   # lanes row if there is a choice
+                     + (_subs_row(theme, root, folder, space, view) if len(view.subspaces or ()) > 1 else ""))
+    else:
+        work_rows = _spaces_row(theme, root, folder, space) + _subs_row(theme, root, folder, space, view)
+    body_class = ("frame-body studio-body" if studio else "frame-body delivery-body" if delivery
+                  else "frame-body")
     # No band line: the title keeps the Block context when the top button just says Block
     # (b03 s02-D08, JL 261010); the folder's path stays one hover away, on the title.
     where = f"{theme.level_name(level)} · {_rel(folder, root)} · " + (f"{theme.label} theme" if theme.name != "vanilla" else "vanilla")
@@ -1485,7 +2777,7 @@ PAGE_TASK_RUNS = {
     "Delivery": ("Build", "Check"),
 }
 # a Page run card -> the Run it makes (JL 261007: buttons named by their Runs; the Page skills' own
-# names: haipipe-page-scratch · -structure · -writing · -revise · -evidence, haipipe-display); the two
+# names: haipipe-draft-scratch · -structure · -writing · -revise · -evidence, haipipe-display); the two
 # Supporting kinds are hard Runs of other Tasks
 PAGE_RUN_NAMES = {"Scratch": "run-scratch-<target>", "Structure revise": "run-structure-<slug>",
                   "Evidence embed": "run-<value|display|citation>-<slug>", "Section revise": "run-section-<slug>",
@@ -1579,9 +2871,11 @@ def _delivery_cards(folder: Path, root: Path, md: Path | None) -> str:
     cards = []
     for lane in lanes:
         key = lane.get("lane", "")
-        ldir = folder / "delivery" / key
+        ldir = delivery_read_lane_dir(folder, key)
         files = sorted(f for f in ldir.rglob("*") if f.is_file() and not f.name.startswith(".")) if ldir.is_dir() else []
         state = lane.get("state", "")
+        legacy_note = ('<p class="mut dl-note">Old local output: read only; rebuild from source into Block Delivery.</p>'
+                       if lane.get("legacy") else "")
         mark = {"pass": "st-ok", "stale": "st-warn"}.get(state, "mut")
         word = {"pass": "current", "stale": "stale", "not-built": "not built"}.get(state, state)
         show = {"web": [ldir / "index.html"], "latex": [ldir / f"{stem}.pdf"], "word": [ldir / f"{stem}.pdf"],
@@ -1599,7 +2893,7 @@ def _delivery_cards(folder: Path, root: Path, md: Path | None) -> str:
             body = '<p class="mut dl-note">built; no preview for this kind yet</p>'
         else:
             body = '<p class="mut dl-note">not built yet: run Build</p>'
-        cards.append(f'<div class=topic>{head}{body}</div>')
+        cards.append(f'<div class=topic>{head}{legacy_note}{body}</div>')
     return ("<h2>Deliveries</h2>" + "".join(cards) if cards else
             '<p class=space-empty>Nothing built yet: delivery/ holds no files. Run Build.</p>')
 

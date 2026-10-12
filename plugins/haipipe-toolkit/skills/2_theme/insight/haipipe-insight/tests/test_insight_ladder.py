@@ -190,6 +190,44 @@ def test_board_jobs_one_clock_and_the_reader(project):
     assert "a-cut" in [x["title"] for x in b["prototype"]["proposals"]]
 
 
+def test_a_lower_case_dataset_job_is_still_a_job(project):
+    """j01_p1_<d>v1 with a lower-case dataset also fits a release's name; a Task under it is a Board Task."""
+    p, proto, board = project
+    v1 = proto / "j01_p1"
+    L("board", board, "--dataset", "demo", "--prototype", "tasks/Prototype-b01-Demo")
+    L("data", board, "v1", "--extract", "_WorkSpace/<store>/demo_v1.parquet")
+    _agree_and_need(v1)
+    _cuts(v1)
+    L("sign", v1, "--date", "261011")
+    L("job", board, "--release", "p1", "--data", "v1")
+    task = board / "j01_p1_demov1" / "t02_I01_rates-by-cut"
+    assert IL.level_of(task) == "task"
+    assert IL.level_of(v1 / "t02_I01_rates-by-cut") == "question"
+    L("run", task, "write", "t02")
+    assert (task / "runs" / "run-write-t02" / "run.yaml").is_file()
+
+
+def test_a_need_draws_its_declared_figures(tmp_path):
+    """A need's figures: list draws each figure from its table; a declared table gets no shape-based figure too."""
+    import pandas as pd
+    spec_f = importlib.util.spec_from_file_location("figures", HERE.parent / "ref" / "figures.py")
+    F = importlib.util.module_from_spec(spec_f)
+    spec_f.loader.exec_module(F)
+    pd.DataFrame({"hour": range(24), "mean": [120 + h for h in range(24)], "p25": [110] * 24, "p75": [140] * 24}) \
+        .to_csv(tmp_path / "by_hour.csv", index=False)
+    pd.DataFrame({"event": ["a", "b"], "est": [1.0, -2.0], "est_lo": [0.0, -3.0], "est_hi": [2.0, -1.0]}) \
+        .to_csv(tmp_path / "effects.csv", index=False)
+    needs = {"E1": {"kind": "compute", "output": {"by_hour.csv": [], "effects.csv": []}, "figures": [
+        {"table": "by_hour.csv", "kind": "line", "x": "hour", "y": "mean", "band": ["p25", "p75"], "hline": [180]},
+        {"table": "effects.csv", "kind": "forest", "label": "event", "x": "est", "lo": "est_lo", "hi": "est_hi"},
+        {"table": "missing.csv", "kind": "bar", "x": "a", "y": "b"}]}}
+    made = F.draw(tmp_path, needs)
+    files = sorted(m["file"] for m in made if m["file"])
+    assert files == ["fig_E1_by_hour_1.png", "fig_E1_effects_2.png"]          # the estimate shape is not drawn again
+    assert [m["problem"] for m in made if not m["file"]] == ["declared table not written"]
+    assert all((tmp_path / f).stat().st_size > 1000 for f in files)
+
+
 def test_dry_run_changes_nothing(tmp_path):
     p = tmp_path / "Project-Demo"
     made = L("prototype", p / "tasks" / "Prototype-b01-Demo", "--serves", "insights/Insight-Demo", "--dry-run")

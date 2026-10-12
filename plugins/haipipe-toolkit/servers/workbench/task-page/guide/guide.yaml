@@ -15,7 +15,7 @@ description: 'The Page Workbench works on one Page: a paper Section, a Task repo
   It reads the Page''s Markdown and Run receipts on every open; the person approves the plan, checks sources
   and releases the Page.'
 skills:
-- skill: haipipe-page-workflow
+- skill: haipipe-draft-workflow
   role: Page planning, writing, evidence and delivery
 - skill: workbench-page
   role: The Page's workbench and native lanes

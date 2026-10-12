@@ -3,6 +3,15 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.8.0 · 2026-10-11 · A top-venue pass reads the official lists
+
+- Channel law: the NeurIPS, ICML and ICLR accepted-paper JSON files, Crossref by exact proceedings
+  `container-title` for KDD, IJCAI and AAAI, and PMLR volume pages; dblp and OpenReview are
+  browser-only. A community list checked on 2026-10-10 matched 89 of 116 labels.
+- The Source map is named as a block, not a `## Source map` section.
+- ADMIT creates `runs/<RUNNAME>/<RUNNAME>.sh` and `runs/<RUNNAME>/result/runtime.yaml`, with its
+  `trigger:` and `subject:` blocks.
+
 ## 0.7.5 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

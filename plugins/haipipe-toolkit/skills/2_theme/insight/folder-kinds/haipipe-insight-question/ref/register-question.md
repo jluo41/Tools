@@ -7,7 +7,7 @@
 
 ## (was) /haipipe-insight-question · make the board's ask explicit
 
-Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Load `haipipe-folder`, `haipipe-draft`, `haipipe-insight`, and the workflow.
 Existing registers may retain `page-type: question`; new ones use
 `folder-kind: question` plus `question-level:`.
 

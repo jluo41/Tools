@@ -45,7 +45,7 @@ import rename_themes as RT  # noqa: E402
 STEPS = ["tools", "root", "themes", "convert", "runs", "faces"]
 SKILLS = HERE.parents[3]                    # …/skills (1_base/project/haipipe-project/scripts → skills)
 TEMPLATE = SKILLS / "1_base/task/haipipe-task/ref/run-sh-template.sh"
-THEMES_PY = SKILLS / "1_base/page/haipipe-page/src/themes.py"
+THEMES_PY = SKILLS / "1_base/page/haipipe-draft/src/themes.py"
 NEW_JOB = SKILLS / "1_base/project/haipipe-job/scripts/new_job.py"
 BOARD_SYNC = SKILLS / "2_theme/discovery/haipipe-discovery/scripts/board_sync.py"
 V081 = "Canonical haipipe-task v0.8.1 execution context"
@@ -53,7 +53,7 @@ V081 = "Canonical haipipe-task v0.8.1 execution context"
 
 @dataclass
 class Finding:
-    step: str            # tools · root · themes · convert · runs · faces · person
+    step: str            # tools · root · themes · convert · runs · faces · person · debt (declared)
     where: str
     what: str
 
@@ -111,8 +111,13 @@ def check(project: Path) -> Report:
             else "person"
         rep.findings.append(Finding(step, project.name, e))
     for d in res.debts:
-        rep.findings.append(Finding("themes" if "rename pending" in d else "person", project.name,
-                                    d if "rename pending" in d else f"legacy root {d}/: its destination is a person's call"))
+        if "rename pending" in d:
+            rep.findings.append(Finding("themes", project.name, d))
+        elif d.startswith("declared "):                       # a path inside a world, declared with a reason
+            rep.findings.append(Finding("debt", d[len("declared "):], "declared in project.yaml migration"))
+        else:
+            rep.findings.append(Finding("debt", project.name,
+                                        f"legacy root {d}/: declared in project.yaml; its destination is a person's call"))
     for w in L.LADDER_WORLDS:
         world = project / w
         if not world.is_dir():
@@ -136,6 +141,21 @@ def check(project: Path) -> Report:
         where = str(n.path.relative_to(project)) if project in n.path.parents or n.path == project else n.path.name
         for sev, msg in n.findings:
             rep.findings.append(Finding(classify(msg, sev), where, msg))
+    # a finding inside a path the Project declared as migration debt (project.yaml legacy_paths, with its
+    # reason) is known debt, not a step's work or a person's open call
+    manifest = project / "project.yaml"
+    declared = [str(x).strip().strip("/") for x in
+                (AP.read_manifest(manifest).migration.get("legacy_paths", []) if manifest.is_file() else [])
+                if str(x).strip()]
+    for f in rep.findings:
+        if f.step in ("debt", "themes", "root"):
+            continue
+        for d in declared:
+            last = d.rsplit("/", 1)[-1]
+            if f.where == d or f.where.startswith(d + "/") or (
+                    d == f"{f.where}/{last}" and (f"{last}/" in f.what or (last == "runs" and "Run" in f.what))):
+                f.step = "debt"
+                break
     return rep
 
 
@@ -154,7 +174,7 @@ def print_report(rep: Report, root: Path) -> None:
     groups = rep.by_step()
     state = "clean" if not rep.findings else ", ".join(f"{k} {len(v)}" for k, v in groups.items())
     print(f"{rep.project.relative_to(root)}  ·  {state}")
-    for step in STEPS + ["person"]:
+    for step in STEPS + ["person", "debt"]:
         for f in groups.get(step, [])[:8]:
             print(f"    {step:8} {f.where}: {f.what}")
         extra = len(groups.get(step, [])) - 8
@@ -453,6 +473,8 @@ def cmd_plan(a) -> int:
                     print(f"    {step:8} {out}   ({len(groups.get(step, []))} finding(s))")
         for f in groups.get("person", []):
             print(f"    decide   {f.where}: {f.what}")
+        for f in groups.get("debt", []):
+            print(f"    debt     {f.where}: {f.what}")
     return 0
 
 

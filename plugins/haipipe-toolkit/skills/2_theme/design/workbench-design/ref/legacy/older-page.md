@@ -691,7 +691,7 @@ DS folder still on disk answers 410 for itself, and a folder parked under the
 board's `_archive/` (the way a closed record is retired) leaves its old links
 healing to the folder that replaced it.
 Fixture material for this tab is built by
-`haipipe-page/tests/fixture_design_v2.py`, which writes only contract-valid
+`haipipe-draft/tests/fixture_design_v2.py`, which writes only contract-valid
 records. `--demo` rebuilds the demo DesignBoard under `skills/diagrams/`, and
 refuses when the demo already holds runs (people make runs by clicking on it),
 unless `--force`, which deletes those runs.

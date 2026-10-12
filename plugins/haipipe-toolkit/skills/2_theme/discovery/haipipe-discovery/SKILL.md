@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.22.1"
-  last_updated: "2026-10-09"
+  version: "0.23.0"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md
 ---
 
@@ -27,7 +27,7 @@ Page Face and a Task Face. It never references its
 consumer upward; consumers link to its public Run Results, typed records, or
 Page Evidence Items from their own side.
 
-For durable work, LOAD haipipe-folder and haipipe-page for the two Faces, and
+For durable work, LOAD haipipe-folder and haipipe-draft for the two Faces, and
 the Block container is read live in the workbench (the Board skill is retired). Load
 `workbench-page` for the Page's Outline + Evidence Workspace and its
 CITE-item/aggregate-Bib authority. Once the Task Page owns a Paper Run, LOAD `haipipe-run`
@@ -119,12 +119,15 @@ capability groups, one skill each:
 discovery/
 ├── haipipe-discovery/                 public door
 ├── haipipe-discovery-inquiry/         D1 Run controller
-├── haipipe-discovery-search/          1 · acquisition, identity, Run allocation
 ├── haipipe-discovery-review/          2 · per-Subject reading, Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis
-├── 1_search/                          vendored originals: ARIS channels and readers, paper-analyzer
+├── workbench-discovery/               the Block's live view
 ├── 2_review/                          vendored originals: research-lit, comm-lit-review, academic-researcher
 └── agents/                            execution roles
+
+1_base/search/                         Search is shared with other themes
+├── haipipe-search/                    skill haipipe-discovery-search · 1 · acquisition, identity, Run allocation
+└── 1_search/                          vendored originals: ARIS channels and readers, paper-analyzer
 ~~~
 
 The external ARIS reference is pinned at `Tools/references/aris` and is pulled
@@ -257,6 +260,10 @@ separate Bibex workbench.
    `curated-index-export` (dblp), `authoritative-export` (venue/DOI/arXiv),
    and `person-export` (including Google Scholar). Read
    `ref/paper-run-contract.md` for the dblp import and fallback commands.
+   ICML and AISTATS papers cite their PMLR page (`--pmlr-url`); a NeurIPS or
+   ICLR paper accepted before its proceedings record exists cites its arXiv
+   preprint with `--accepted-venue` and `--accepted-url`, and a superseding Run
+   cites the venue record later (contract § Machine-learning venues without a DOI).
    `complete` is technical Result completeness; citation verification may
    still be `pending`, but then the Task cannot close as `ok` or
    `inconclusive`.
@@ -304,8 +311,8 @@ replace the Page or become Runs. Full article grammar and permitted
 
 Page-local evidence follows the shared Page contract: use `draft/evidence/`,
 especially `draft/evidence/bibex/` and the generated Outline Evidence
-Workspace. Discovery Paper/Source Results remain in `results/` and are not
-copied into that workspace. The derived aggregate Bib is a projection, not a
+Workspace. Discovery Paper/Source Results remain in `runs/<RUNNAME>/result/` and are
+not copied into that workspace. The derived aggregate Bib is a projection, not a
 typed CITE Evidence Item. The D1 root Page uses direct Result/Card/cite lineage
 and does not manufacture a local Page Evidence Item Run to repackage its own
 evidence. A consumer Page may declare a typed item and own its local Run in the
@@ -353,7 +360,7 @@ Each name uses a concrete noun plus distinguishing qualifier. Scaffold the Task
 Page's two Faces and only the lanes the workflow needs. The Page filename
 equals the Task folder stem. Scaffold the shared `draft/` process records as
 the Page is used; create `draft/evidence/` lanes only when the Evidence
-Workspace needs them. Do not scaffold empty scripts/, runs/, or results/
+Workspace needs them. Do not scaffold an empty scripts/ or runs/
 merely for symmetry, and never create a root `<task>/evidence/` lane.
 
 A Block is a Board-level evidence program, not a wrapper around one Job. Reuse
@@ -364,7 +371,7 @@ than one Block per Job.
 
 Every canonical Discovery Block carries `board.md` with
 `board-kind: discovery-block`. This declaration selects the shared BJTR projection:
-Block = Board, Job = Group, Discovery Task = Page, and Paper/Source Run =
+Block = Board, Job = Group, Discovery Task = a face with a draft, and Paper/Source Run =
 execution record. SPACE Home classifies the resulting container as a Discovery
 Board from its `discovery/` ownership path. The `## Pages` section may list
 only Job headings because the direct `jNN_/tNN_` tree supplies membership and
@@ -394,7 +401,8 @@ runtime receipt. For every admitted canonical Subject:
 ~~~text
 allocate rNN_authorYEAR_slug
 write executable runs/<RUNNAME>/<RUNNAME>.sh
-write runs/<RUNNAME>/result/runtime.yaml with status: planned
+write runs/<RUNNAME>/result/runtime.yaml with status: planned,
+      family: discovery, operation, a trigger: block and a subject: block
 stamp address: bNN.jNN.tNN.rNN and address_compact: bNNjNNtNNrNN
 ~~~
 
@@ -411,7 +419,7 @@ A materially changed analysis allocates a new Run with `supersedes:`.
 The ticket sets runtime to running, calls the selected workers, then writes its
 paired Result only. On success write the Card, facts, one-entry Bib (through
 `scripts/paper_bib_fetch.py`, identity before entry), optional PDF/raw/trigger,
-and status complete. For a paper with a DOI, `scripts/paper_result_build.py` writes that
+and status complete. For a paper with a DOI, an arXiv id, or a PMLR page, `scripts/paper_result_build.py` writes that
 whole Result, so the Ticket can simply call it and rerunning the Ticket rebuilds the Result. After Subject allocation, an analysis,
 retrieval, or Bib failure preserves blocked or unresolved plus a reason. Never
 claim complete around missing evidence.
@@ -419,7 +427,7 @@ claim complete around missing evidence.
 ### 6. D1 `SYNTHESIZE` · dispatch the Page workflow
 
 Derive the specialist route from `discovery_type`, then enter or resume
-`haipipe-page-workflow` at the authority that owns the next change. Search
+`haipipe-draft-workflow` at the authority that owns the next change. Search
 owns acquisition craft and materializes admitted candidates as Runs. Review
 extracts and checks one source at a time; Synthesize combines those accepted
 Results under the current Page phase. Missing evidence routes back through
@@ -464,7 +472,7 @@ its evidence basis and assessment receipt as defined in
 `ref/discovery-yaml-schema.md#confidence-and-evidence-axes`. Source-map Tasks
 retain `confidence: not-applicable`; record retrieval coverage and candidate
 dispositions in their respective records: coverage facts in the root Task
-Page's `## Source map` body and candidate decisions in `discovery.yaml#sources`.
+Page's Source map (division 1) and candidate decisions in `discovery.yaml#sources`.
 Do not assign source-map confidence or a completeness-confidence label.
 
 ## Maintenance · migrate or repair a legacy bank

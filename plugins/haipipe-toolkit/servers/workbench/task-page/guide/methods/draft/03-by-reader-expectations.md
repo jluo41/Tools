@@ -47,4 +47,4 @@ verify: Folder health checks every Draft equals its Page sentence (T0); the chec
 risk: A model writes fluent sentences that may move the point away from the stress
   position, or add a claim no Bullet makes (ours).
 evidence on ai: No study tests these rules on agent-drafted Pages (ours).
-skill: haipipe-page-writing
+skill: haipipe-draft-writing

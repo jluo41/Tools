@@ -139,6 +139,10 @@ needs:
     output:
       <file>.csv: [<column>, …]          # columns in order
       metrics.json: [<dotted.key>, …]    # a json file may be shared by several needs
+    figures:                       # optional: the figures the run report draws from these tables
+      - {table: <file>.csv, kind: line, x: <col>, y: <col>, band: [<lo>, <hi>], group: <col>, hline: [<value>]}
+      - {table: <file>.csv, kind: forest, label: <col>, x: <estimate>, lo: <low>, hi: <high>}
+      # kinds: line · bar · forest · heat (x, y, value); facet: <col> makes a panel per value
   E2: {kind: cite, what: <what is borrowed>, from: D01.E1}
   E3: {kind: judge, what: <the reading>, from: [E1, E2]}
   E4: {kind: compute, what: …, retired: <why>}   # history: kept, never run, never cited
@@ -280,7 +284,7 @@ importable, the question's own Job first, and the receipt follows every module a
   in plain words, pointing at each run's report and figures for the evidence. It is what a
   CHECK judges, and at Wisdom what a person signs. One per question, one section per run
   (datasets in board.md order, partitions in partitions.md order; a run the question is not
-  asked on has no section), written through the `haipipe-page` flow
+  asked on has no section), written through the `haipipe-draft` flow
   (`ref/write_answer_page.py`, `page.py adopt`, a CHECK by another agent). Its Evidence
   Items name the need (`**Need**: I01.E1`) and the run's file (`results/<run>/<file>`). A
   sentence that two partitions differ needs a test, so it belongs to a cross question. The

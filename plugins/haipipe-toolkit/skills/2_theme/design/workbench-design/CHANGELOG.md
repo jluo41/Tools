@@ -1,5 +1,20 @@
 - 261007 · review fixes (version unchanged): Description: read-only display only (setup and launch are haipipe-design's); the cards are the authority until design_views.py reads them; ref/design-board.md and ref/space-mapping.md carry an "older board page only" banner (they stay in place because other skills link them); placeholder examples replace the domain ones.
 
+## 0.15.1 · 2026-10-12 · Summary first, Rounds, the prediction's basis, one review (version unchanged)
+
+- (JL 261012, from the 10-08 Loop demo to leadership; b12 related/): the Block's Audience Report opens on Summary (goal, each Job's state, its top design as it reads with its
+  prediction and why, the next step, close:) and adds Rounds (one round per inputs version: Jobs, releases, Exp
+  results); Cost moves last. Every predicted number shows against · by · why (`_pred`; the reader falls back to
+  ranking.csv's why). A held Job's Cost card says why. Freeze and release show as one button, Review and approve.
+
+## 0.15.1 · 2026-10-11 · A Job is named by its folder (version unchanged)
+
+- SKILL.md § A Job is named by its folder (JL 261011: "I don't want we just have jNN here, not readable"): every
+  view that names a Job shows `jNN_<goal name>_<method name>` as the Job ▾ menu does, never the bare `jNN`.
+  design_views.py follows it: the Cost and Method scorecard card titles, the Map, Goals, Methods and Inputs
+  views, Task Work, Predicted vs observed, Block Delivery, the Job's Method table and a design's Job line.
+- `_passed` counts `kept` designs too (kept comes after passed); the Method scorecard read 0% for Jobs with 10 kept.
+
 ## 0.15.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

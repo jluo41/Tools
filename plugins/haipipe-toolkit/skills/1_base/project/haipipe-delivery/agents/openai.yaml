@@ -1,0 +1,6 @@
+interface:
+  display_name: "Block Delivery"
+  short_description: "the Block's one delivery/ folder: paths by source, the Delivery view, sent by a person"
+  default_prompt: "Use $haipipe-delivery to find where an output goes in the Block's delivery/, check that no Job or Task keeps its own delivery/, or move old local outputs into the Block."
+policy:
+  allow_implicit_invocation: true

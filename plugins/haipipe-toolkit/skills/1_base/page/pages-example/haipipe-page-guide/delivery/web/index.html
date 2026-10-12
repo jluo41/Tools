@@ -1578,6 +1578,21 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
  border-radius:var(--radius-surface);background:#fff;
  box-shadow:0 0 0 1px var(--line)}
 .fightml .fsopen{display:inline-block;margin-top:6px;font-size:12.5px}
+/* Markdown `![](path.mp4)` plays in place: a native player sized for a phone
+   recording, several to a row, with the open link under each as the no-JS path. */
+.figvideo{display:inline-block;vertical-align:top;margin:12px 16px 12px 0;max-width:100%}
+.figvideo video{display:block;height:min(56vh,420px);max-width:100%;
+ border-radius:var(--radius-surface);background:#000;box-shadow:0 0 0 1px var(--line)}
+.figvideo .fp{display:block;margin-top:6px;font-size:12.5px;max-width:300px}
+/* Each Markdown line is its own paragraph, so a paragraph holding a player sits
+   inline: consecutive videos share a row instead of one tall column. */
+p:has(> .figvideo){display:inline-block;vertical-align:top;margin:0}
+/* Markdown `![](https://www.youtube.com/watch?v=…)`: YouTube's own player, 16:9. */
+.figyt{display:inline-block;vertical-align:top;margin:12px 16px 12px 0;width:min(100%,420px)}
+.figyt iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--radius-surface);
+ background:#000;box-shadow:0 0 0 1px var(--line)}
+.figyt .fp{display:block;margin-top:6px;font-size:12.5px}
+p:has(> .figyt){display:inline-block;vertical-align:top;margin:0}
 .xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
  word-break:break-all;user-select:all}
 
@@ -1949,7 +1964,21 @@ body.standalone #chatfab,body.standalone #chatfabmore,
 body.standalone .chatbtn,body.standalone .schatbar{display:none!important}
 @media(max-width:800px){body.workbench-open .page-stage{display:block}.page-workbench-pane{position:fixed;inset:53px 0 0;z-index:35;height:auto;border-left:0;border-top:1px solid var(--line)}}
 @media(max-width:640px){.page-toolbar{padding:12px 16px}.page-toolbar nav{gap:12px}.source-html{min-height:450px}}
-</style></head><body class="single split standalone" data-live="false"><header class="page-toolbar" id="top"><strong>haipipe / page</strong><nav><a href="#reading">Page</a><button class="live-only" id="page-workbench-button" type="button" aria-expanded="false" aria-controls="page-workbench-menu">🔌 Workbenches</button><div class="page-workbench-menu live-only" id="page-workbench-menu" role="menu" hidden></div></nav></header><div class="page-stage"><div class="page-primary"><main id="reading" class="wrap"><section class="slide q wip" id="haipipe-page-guide" data-title="Haipipe-page: ownership and workflow" data-file="haipipe-page-guide.md" data-session="" data-page-type="" data-folder-kind=""><div class="qh"><span class="pill wip">🟡 Content adopted; Web and LaTeX built; Word DOCX built; Word PDF twin unavailable; independent CHECK pending</span><span class="mut">🔧 Codex</span><a class="src" href="haipipe-page-guide.md" target="_blank" title="Open this question&#x27;s raw markdown">📄 haipipe-page-guide.md</a><a class="top" href="#top">↑ Top</a></div><h2 class="h2"><span class="hid">haipipe-page-guide </span>Haipipe-page: ownership and workflow</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🚪 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Haipipe-page turns one document into a continuing workspace: its own source, readable Page, planning records, and delivery files. This Page explains how to create and revise that workspace, how its workbenches use the same files, and how Board can organize it without owning its content.</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">More details</div><div class="cbody flat"><p class="pnew"><b>Covered elsewhere</b>: Board group descriptions and ordering belong to haipipe-board; workbench implementation details belong to each workbench's own skill.</p></div></div></details></div></div><details class="sect content"><summary class="ch"><span class="chl">📚 Content</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></summary><details class="csec"><summary>1 · Page ownership</summary><div class="cbody"><p class="pnew"><b>Division map</b>: editable sources and generated delivery in one Page Folder.</p>
+/* Reader mode (JL 261004: "as simple and understandable as possible"). The workbench and the
+   web delivery are one reader: a section's sentences run on as paragraphs, the per-sentence
+   badges and evidence lanes step back, and each subsection ends with one folded Sources list
+   (page.js). The Evidence button in the toolbar shows every sentence with its lanes again. */
+body.reader .cbody>details.sent{display:none}
+p.rpara{margin:.6em 0}
+body:not(.reader) p.rpara{display:none}
+details.psrc{margin:8px 0 16px;font-size:12.5px;color:var(--mut)}
+details.psrc>summary{cursor:pointer;width:max-content;list-style:none}
+details.psrc>summary::-webkit-details-marker{display:none}
+details.psrc .lane{font-size:12.5px;margin:2px 0 2px 14px;overflow-wrap:anywhere}
+body:not(.reader) details.psrc{display:none}
+#page-reader-toggle{border:1px solid var(--line);border-radius:var(--radius-pill);padding:4px 10px;background:transparent;color:var(--fg);cursor:pointer}
+#page-reader-toggle[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+</style></head><body class="single split standalone reader" data-live="false"><header class="page-toolbar" id="top"><strong>haipipe / page</strong><nav><a href="#reading">Page</a><button class="live-only" id="page-workbench-button" type="button" aria-expanded="false" aria-controls="page-workbench-menu">🔌 Workbenches</button><div class="page-workbench-menu live-only" id="page-workbench-menu" role="menu" hidden></div></nav></header><div class="page-stage"><div class="page-primary"><main id="reading" class="wrap"><section class="slide q wip" id="haipipe-page-guide" data-title="Haipipe-page: ownership and workflow" data-file="haipipe-page-guide.md" data-session="" data-page-type="" data-folder-kind=""><div class="qh"><span class="pill wip">🟡 Content adopted; Web and LaTeX built; Word DOCX built; Word PDF twin unavailable; independent CHECK pending</span><span class="mut">🔧 Codex</span><a class="src" href="haipipe-page-guide.md" target="_blank" title="Open this question&#x27;s raw markdown">📄 haipipe-page-guide.md</a><a class="top" href="#top">↑ Top</a></div><h2 class="h2"><span class="hid">haipipe-page-guide </span>Haipipe-page: ownership and workflow</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🚪 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Haipipe-page turns one document into a continuing workspace: its own source, readable Page, planning records, and delivery files. This Page explains how to create and revise that workspace, how its workbenches use the same files, and how Board can organize it without owning its content.</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">More details</div><div class="cbody flat"><p class="pnew"><b>Covered elsewhere</b>: Board group descriptions and ordering belong to haipipe-block; workbench implementation details belong to each workbench's own skill.</p></div></div></details></div></div><details class="sect content"><summary class="ch"><span class="chl">📚 Content</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></summary><details class="csec"><summary>1 · Page ownership</summary><div class="cbody"><p class="pnew"><b>Division map</b>: editable sources and generated delivery in one Page Folder.</p>
 <pre class="asc">Page Folder
 ├── page.toml         source registration
 ├── Page.md           Opening · Content · Aims
@@ -2018,7 +2047,7 @@ Adopted Content → refreshed delivery</pre>
 <p class="pnew">A request to revise Opening sets the editing boundary; it does not authorize rewriting the rest of the Page. </p>
 <p>During planning, the Outline workspace pairs each planned point with candidate prose for discussion. </p>
 <p>A Writing Run preserves the goal and feedback history through Versions and Steps, while accepted wording is adopted into Content through the Page workflow. </p>
-<p>Those records do not imply that a browser button executes an agent, and accepting one passage does not accept the whole Page.</p></div></details></details></section></main><p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p><footer class="page-footer">Page Folder · source-owned · Board optional</footer></div><aside class="page-workbench-pane live-only" id="page-workbench-pane" aria-label="Page workbenches" hidden><div class="page-workbench-tabs" id="page-workbench-tabs" role="tablist"></div><div class="page-workbench-frames" id="page-workbench-frames"></div></aside></div><script type="application/json" id="page-workbench-config">{"page": "haipipe-page-guide.md", "default": "outline", "workbenches": [{"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces", "order": 10, "url": "/_board/draft?path=%2F\u0026file=haipipe-page-guide.md\u0026lens=div"}, {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page", "order": 40, "url": "/_board/delivery?path=%2F\u0026file=haipipe-page-guide.md"}, {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness", "order": 50, "url": "/_board/folderstat?path=%2F\u0026file=haipipe-page-guide.md"}]}</script><script>/* Native details remain usable without script, including static exports. */
+<p>Those records do not imply that a browser button executes an agent, and accepting one passage does not accept the whole Page.</p></div></details></details></section></main><p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p><footer class="page-footer">Page Folder · source-owned · Board optional</footer></div><aside class="page-workbench-pane live-only" id="page-workbench-pane" aria-label="Page workbenches" hidden><div class="page-workbench-tabs" id="page-workbench-tabs" role="tablist"></div><div class="page-workbench-frames" id="page-workbench-frames"></div></aside></div><script type="application/json" id="page-workbench-config">{"page": "haipipe-page-guide.md", "default": "outline", "workbenches": [{"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Delivery spaces", "order": 10, "url": "/_board/draft?path=%2F\u0026file=haipipe-page-guide.md\u0026lens=div"}, {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page", "order": 40, "url": "/_board/delivery?path=%2F\u0026file=haipipe-page-guide.md"}, {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness", "order": 50, "url": "/_board/folderstat?path=%2F\u0026file=haipipe-page-guide.md"}]}</script><script>/* Native details remain usable without script, including static exports. */
 document.addEventListener('click', event => {
   const button = event.target.closest('.secall');
   if (!button) return;
@@ -2033,6 +2062,65 @@ document.addEventListener('click', event => {
   const label = button.querySelector('.lbl');
   if (label) label.textContent = open ? 'collapse all' : 'expand all';
 });
+/* Reader mode: one folded Sources list per subsection, built from the sentences' evidence lanes,
+   and the Evidence toggle. Without script the page still reads (lanes stay one click away). */
+(() => {
+  const ready = fn => document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', fn) : fn();
+  ready(() => {
+    const body = document.body;
+    document.querySelectorAll('.cbody').forEach(section => {
+      let lanes = [], anchor = null;
+      const flush = before => {
+        const seen = new Map();
+        lanes.forEach(l => { const k = l.textContent.trim(); if (k && !seen.has(k)) seen.set(k, l); });
+        lanes = [];
+        if (!seen.size) return;
+        const box = document.createElement('details');
+        box.className = 'psrc';
+        box.innerHTML = '<summary>Sources · ' + seen.size + '</summary>';
+        seen.forEach(l => box.appendChild(l.cloneNode(true)));
+        section.insertBefore(box, before);
+      };
+      let para = null;
+      [...section.children].forEach(child => {
+        if (!child.matches('details.sent')) { para = null; if (child.classList.contains('ph')) flush(child); return; }
+        lanes.push(...child.querySelectorAll('.sapp .lane'));
+        const sentence = child.querySelector(':scope>summary p');
+        if (!sentence) return;
+        if (!para || sentence.classList.contains('pnew')) {
+          para = document.createElement('p');
+          para.className = 'rpara';
+          section.insertBefore(para, child);
+        }
+        const copy = sentence.cloneNode(true);
+        copy.querySelectorAll('.sbz').forEach(b => b.remove());
+        para.append(...copy.childNodes, ' ');
+      });
+      flush(null);
+    });
+    document.addEventListener('click', event => {
+      const summary = event.target.closest('details.sent>summary');
+      if (summary && body.classList.contains('reader') && !event.target.closest('a')) event.preventDefault();
+    });
+    const nav = document.querySelector('.page-toolbar nav');
+    if (!nav || document.getElementById('page-reader-toggle')) return;
+    const button = document.createElement('button');
+    button.id = 'page-reader-toggle';
+    button.type = 'button';
+    button.textContent = '🔍 Evidence';
+    button.title = 'Show every sentence with its evidence lanes';
+    const set = evidence => {
+      body.classList.toggle('reader', !evidence);
+      button.setAttribute('aria-pressed', String(evidence));
+      try { localStorage.setItem('page-evidence', evidence ? '1' : ''); } catch (e) { /* storage off */ }
+    };
+    let start = false;
+    try { start = localStorage.getItem('page-evidence') === '1'; } catch (e) { /* storage off */ }
+    set(start);
+    button.addEventListener('click', () => set(body.classList.contains('reader')));
+    nav.insertBefore(button, nav.firstChild);
+  });
+})();
 /* The standalone host for the same category-workbench shape used by Board Pages.
  * The server supplies applicable entries; this shell only opens, switches,
  * closes, and remembers their frames. Internal lanes never become rows. */

@@ -42,7 +42,7 @@ class ProjectPredictionsTest(unittest.TestCase):
         P.project(self.job)
         pred, face = self._read("d02")
         self.assertEqual(pred, {"predicted": "+x [lo; hi]", "against": "the control", "by": "reviewer agent",
-                                "frozen": "draft"})
+                                "why": "<why>", "frozen": "draft"})
         self.assertIn("state: kept", face)
         self.assertIn("state: dropped", self._read("d01")[1])
 

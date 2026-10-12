@@ -471,13 +471,22 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
     }, "Block", {"Description": d_open, "Audience Report": a_read, "Runs": r_open, "Delivery": "handoff"})
 
 
-def _job_link(href, j: dict) -> str:
-    return f'<a href="{esc(href("", "", j["path"]))}">{esc(j["name"])}</a>'
+def _job_link(href, j: dict, short: bool = False) -> str:
+    """A Job by its folder name, or (short, where its row and column already say the plan and the data) by `j01`."""
+    text = j["name"].split("_", 1)[0] if short else j["name"]
+    return f'<a href="{esc(href("", "", j["path"]))}" title="{esc(j["name"])}">{esc(text)}</a>'
 
 
 def _rlabel(b: dict, name: str) -> str:
-    """A release by its name and slug (`p1 · replicate-paper`), from the Prototype's release folder."""
-    return next((r.get("label") or r["name"] for r in b["prototype"]["releases"] if r["name"] == name), name)
+    """An analysis plan (a release) by its code and words, `AP1 · first ladder`, from the Prototype's release folder."""
+    return next((r.get("label") or r["name"] for r in b["prototype"]["releases"] if r["name"] == name), P.plan_code(name))
+
+
+def _vlabel(b: dict, version: str) -> str:
+    """A data freeze (a data version) by its code and words, `F1 · first 5 days`, from board.md versions:."""
+    v = next((v for v in b["versions"] if str(v.get("version")) == str(version)), {})
+    words = P.freeze_words(v)
+    return f"{P.freeze_code(version)} · {words}" if words else P.freeze_code(version)
 
 
 def _map(b: dict, root: Path, href) -> str:
@@ -487,7 +496,7 @@ def _map(b: dict, root: Path, href) -> str:
     rels = b["prototype"]["releases"] or [{"name": n, "label": n, "questions": {}, "partitions": [], "face": {}}
                                           for n in sorted({j["release"] for j in b["jobs"]})]
     cell = {(j["release"], j["data"]): j for j in b["jobs"]}
-    head = "".join(f'<th><b>{esc(b["dataset"])} {esc(v.get("version", ""))}</b><br><span class=mut>'
+    head = "".join(f'<th><b>{esc(_vlabel(b, v.get("version", "")))}</b><br><span class=mut>'
                    + esc(" · ".join(x for x in (f'frozen {v["frozen"]}' if v.get("frozen") else "",
                                                 f'{v["rows"]} rows' if v.get("rows") else "") if x))
                    + "</span></th>" for v in versions)
@@ -509,10 +518,11 @@ def _map(b: dict, root: Path, href) -> str:
             runs = ", ".join(f"{n} {s}" for s, n in sorted(count.items(), key=lambda kv: -kv[1]))
             pages = sum(bool(t["face"].get("answer")) for t in j["tasks"])
             checked = sum(bool(t["face"].get("check")) for t in j["tasks"])
-            cells.append(f'<td>{_job_link(href, j)} · {_st(j["state"])}<br><span class=mut>{len(hard)} runs: '
+            cells.append(f'<td>{_job_link(href, j, short=True)} · {_st(j["state"])}<br><span class=mut>{len(hard)} runs: '
                          f'{esc(runs) or "none"}<br>{pages} of {len(j["tasks"])} pages written · {checked} checked</span></td>')
         body.append("<tr>" + "".join(cells) + "</tr>")
-    return (f'<table class=wf-table style="width:auto"><tr><th>release \\ data</th>{head}</tr>{"".join(body)}</table>')
+    return (f'<table class=wf-table style="width:auto"><tr><th>analysis plan \\ data freeze</th>{head}</tr>'
+            f'{"".join(body)}</table>')
 
 
 def _prototype(b: dict, root: Path, href) -> str:
@@ -789,7 +799,7 @@ def _jobs(b: dict, root: Path, href, only: str) -> str:
     for j in b["jobs"]:
         if only != "All" and j["release"] != only:
             continue
-        rows.append((_job_link(href, j), esc(f'{_rlabel(b, j["release"])} × {b["dataset"]} {j["data"]}'),
+        rows.append((_job_link(href, j), esc(f'{_rlabel(b, j["release"])} × {_vlabel(b, j["data"])}'),
                      esc(j["moved"] or "—"), esc(_answered(j)), _st(j["state"])))
     out = [table(("Job", "pins", "the clock that moved", "answered by DIKW level", "state"), rows)]
     for j in (j for j in b["jobs"] if j["state"] != "closed" and (only == "All" or j["release"] == only)):
@@ -832,7 +842,7 @@ def _band(j: dict, b: dict) -> str:
     moved = {"code": "the code", "data": "the data", "start": "the first Job"}.get(j["moved"], j["moved"] or "—")
     prev = f' · moved from {esc(j["previous"][:3])}: {esc(moved)}' if j["previous"] else f" · {esc(moved)}"
     frozen = ", frozen" if j["state"] == "closed" else ""
-    return (f'<p class=mut><code>{esc(_rlabel(b, j["release"]))} × {esc(b["dataset"])} {esc(j["data"])}</code> · '
+    return (f'<p class=mut><code>{esc(_rlabel(b, j["release"]))} × {esc(_vlabel(b, j["data"]))}</code> · '
             f'{esc(j["state"])}{frozen}{prev}</p>')
 
 
@@ -910,7 +920,7 @@ def _job_prototype(j: dict, r: dict, root: Path) -> str:
     power = (r["thresholds"].get("power") or {})
     compare = r["thresholds"].get("compare")
     code = [d for d in ("src", "configs") if r["job"] and (r["job"] / d).is_dir()]
-    return (f'<p class=mut>Release {esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>' + body
+    return (f'<p class=mut>Analysis plan {esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>' + body
             + _fold("the cuts, as defined in the release", f"{len(defs)}", table(("partition", "where", "why"), defs))
             + f'<p class=mut>Power floor: {esc(power.get("smallest_effect_pp", "—"))} pp · compare rule: '
               f'{esc(compare) if compare else "not set (still open)"} · shared code: {esc(", ".join(code) or "none")}</p>')
@@ -1121,7 +1131,7 @@ def render_task_page(tdir: Path, root: Path) -> str:
     text = md.split("---", 2)[2] if md.startswith("---") else md
     fields = " · ".join(f"{k} {f[k]}" for k in ("question", "answer-status", "how-sure", "check") if f.get(k) not in (None, ""))
     body = [f'<p class="where mut"><code>{esc(rel(tdir, root))}</code></p><p>{esc(fields)}</p>',
-            '<div class=doc>' + _md_view(text) + '</div>']
+            '<div class=doc>' + _md_view(text, base="/" + rel(tdir, root) + "/") + '</div>']   # its figures, by path
     if not f.get("answer"):
         body.append('<p class=mut>The answer is not written yet: run-write writes it here from the runs below.</p>')
     rows = []

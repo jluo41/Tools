@@ -102,11 +102,11 @@ panel shows that name as the button (`run-draw-<sNN>`, `run-face-b03`), what it 
 under it; buttons that make one Run are one button (JL 261007):
 
 ```text
-Description      Update the description   haipipe-board · haipipe-job · haipipe-task   run-face-<level>
+Description      Update the description   haipipe-block · haipipe-job · haipipe-task   run-face-<level>
 Idea Studio      add · redraw · save       haipipe-studio                               run-draw-<sNN> (one button)
 Audience Report  Ask                       haipipe-question                             run-ask-<qNN>
                  Write · Drawing · Check   haipipe-report                               run-report|figures|check-<qNN>
-Work Details     Add a Job · Add a Task    haipipe-board · haipipe-job                  run-add-<jNN|tNN>
+Work Details     Add a Job · Add a Task    haipipe-block · haipipe-job                  run-add-<jNN|tNN>
                  Build the Task            haipipe-task                                 run-build-<tNN>
 Runs             Run                       haipipe-run                                  run-<type>-<target> · rNN_<slug>
 Delivery         Build the delivery        the level's skill                          run-delivery-<target>

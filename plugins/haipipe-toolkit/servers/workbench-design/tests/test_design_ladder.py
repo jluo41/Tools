@@ -29,8 +29,7 @@ import design_fixture as F  # noqa: E402
 # Idea Studio is the Block's, shared by its Jobs and Tasks (frame, 261010, b03 s02-D09).
 BLOCK = {"Description": (["Map", "Goals", "Methods", "Inputs"], ["run-add-job-<jNN>"]),
          "Idea Studio": ([], ["run-draw-<sNN>"]),
-         "Audience Report": (["Questions", "Cost", "Predicted vs observed", "Method scorecard"],
-                             ["run-propose-questions", "run-report-<qNN>"]),
+         "Audience Report": (["Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost"], []),
          "Work Details": (["All", "G01", "G02"], ["run-add-job-<jNN>"]),
          "Runs": (["All", "Set up", "Launch a Job", "Report"],
                   ["run-add-goal-<goal>", "run-add-job-<jNN>", "run-propose-questions"]),
@@ -38,7 +37,8 @@ BLOCK = {"Description": (["Map", "Goals", "Methods", "Inputs"], ["run-add-job-<j
 BLOCK_VIEWS = {("Description", "Goals"): ["run-add-goal-<goal>"], ("Description", "Methods"): ["run-propose-method-<slug>"],
                ("Description", "Inputs"): ["run-add-inputs-<iN>"], ("Audience Report", "Cost"): [],
                ("Audience Report", "Predicted vs observed"): ["run-add-observed-<eNN>", "run-score-<eNN>"],
-               ("Audience Report", "Method scorecard"): []}
+               ("Audience Report", "Method scorecard"): [], ("Audience Report", "Rounds"): ["run-add-inputs-<iN>"],
+               ("Audience Report", "Questions"): ["run-propose-questions", "run-report-<qNN>"]}
 JOB = {"Description": (["Goal", "Method", "Inputs"], ["run-setup-goal-j03", "run-close-j03"]),
        "Idea Studio": ([], ["run-draw-<sNN>"]),
        "Audience Report": (["Reason ideas", "Design display", "Review whole", "Predicted vs observed", "Performance"],
@@ -50,13 +50,13 @@ JOB = {"Description": (["Goal", "Method", "Inputs"], ["run-setup-goal-j03", "run
 JOB_VIEWS = {("Description", "Method"): ["run-setup-method-j03"], ("Description", "Inputs"): ["run-setup-inputs-j03"],
              ("Audience Report", "Design display"): ["run-generate-dNN", "run-verify-dNN-v1"],
              ("Audience Report", "Review whole"): ["run-rank-t99"],
-             ("Audience Report", "Predicted vs observed"): ["run-freeze-predictions-j03"],
-             ("Audience Report", "Performance"): ["run-freeze-predictions-j03"],
+             ("Audience Report", "Predicted vs observed"): ["run-release-j03"],      # review and approve: one sign
+             ("Audience Report", "Performance"): ["run-release-j03"],
              ("Work Details", "Conduct & review"): ["run-generate-dNN", "run-verify-dNN-v1", "run-revise-dNN"],
              ("Work Details", "Review whole"): ["run-rank-t99"],
              ("Runs", "Reason ideas"): ["run-reason-t00"],
              ("Runs", "Conduct & review"): ["run-generate-dNN", "run-verify-dNN-v1", "run-revise-dNN"],
-             ("Runs", "Review whole"): ["run-rank-t99", "run-freeze-predictions-j03", "run-release-j03"]}
+             ("Runs", "Review whole"): ["run-rank-t99", "run-release-j03"]}
 T00 = {"Description": (["Task"], ["run-reason-t00"]), "Idea Studio": ([], ["run-draw-<sNN>"]),
        "Audience Report": (["Topics", "Ideas"], ["run-reason-t00"]), "Work Details": (["Chains"], ["run-reason-t00"]),
        "Runs": (["All", "hard", "soft"], ["run-reason-t00"]), "Delivery": ([], [])}
@@ -165,6 +165,22 @@ class DesignLadderTest(unittest.TestCase):
         self.assertIn("{LINK}", page(self.design, "Description", "Design"))
         self.assertIn("draft 2", page(self.design, "Audience Report", "Drafts"))
         self.assertIn("kept", page(self.t99, "Work Details"))
+
+    def test_the_summary_rounds_and_prediction_basis(self):
+        """JL 261012, from the 10-08 demo: a Summary first, the rounds as the Block's memory, and every predicted
+        number with its why; freeze and release are one review step."""
+        page = lambda folder, space, sub="": space_html(self.root, folder, space, sub)
+        summary = page(self.block, "Audience Report", "Summary")
+        self.assertIn("<b>Next:</b>", summary)
+        self.assertIn("j03_g01_m04", summary)                               # each Job by its folder name
+        self.assertIn("top design, as it reads", summary)
+        self.assertIn("why: &lt;why&gt;", summary)                          # the ranking's why, beside the number
+        self.assertIn("direction right", summary)                           # what the Exp returned
+        rounds = page(self.block, "Audience Report", "Rounds")
+        self.assertIn("Round 1 · i1", rounds)
+        self.assertIn("Round 2 · i2", rounds)
+        self.assertIn("e01_demo-exp", rounds)
+        self.assertIn("why", page(self.job, "Audience Report", "Design display"))
 
     def test_the_b12_s32_rulings(self):
         """b12 s32 (b03's rulings, 261008): no tags, the base table, dropped plain, the Map's every method, a row per

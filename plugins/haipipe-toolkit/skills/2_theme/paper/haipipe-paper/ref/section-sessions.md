@@ -76,7 +76,7 @@ Every session starts with the same five rules, written into its first prompt:
 1. write only inside its own page folder (the Appendix unit: the Appendix group folder); list other pages' problems, never fix them;
 2. never edit `Tools/`, `code/`, the Story page, or the paper-level `delivery/` unasked;
 3. never start a compute or regression Run unasked;
-4. load `haipipe-paper-section` (and `haipipe-page`) before any edit;
+4. load `haipipe-paper-section` (and `haipipe-draft`) before any edit;
 5. while the author has a Run open, edit only the Draft file `draft/<stem>-draft-v<N>.md`; Page Content, logs, receipts, `results/` and delivery wait for the close.
 
 ## Talking to Section sessions afterwards

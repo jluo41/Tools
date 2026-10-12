@@ -84,7 +84,7 @@ def apply(path, old, new, who, when, host="board"):
         raise SystemExit("✗ the old text appears %d times; it must appear exactly once" % n)
     if old.lstrip().startswith(">"):
         # `> WHO:` and `> ✎` lines are the durable review trail and are never
-        # erased (haipipe-page/ref/writing-rules.md). This tool rewrites
+        # erased (haipipe-draft/ref/writing-rules.md). This tool rewrites
         # SENTENCES; a lane is somebody's signed record, not prose to improve.
         raise SystemExit("✗ that is a lane, not a sentence. Lanes are appended, never rewritten.")
     # Two guards, because they answer two questions. `mine` must GROW by one, or

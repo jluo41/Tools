@@ -7,8 +7,8 @@ description: >-
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-10-09"
+  version: "0.7.3"
+  last_updated: "2026-10-11"
   workflow: haipipe-discovery-inquiry
   phase: D1 # compatibility selector for the Discovery controller contract; not a Run identity
   folder_kind: discovery
@@ -39,7 +39,7 @@ Discovery source Runs and, when commissioned, the separately owned Page Runs.
 SCOPE, PREPARE, ACQUIRE, SYNTHESIZE, and CLOSE are controller Steps that route
 between those Runs and their gates; they are not Run identities or additional
 workflow units. The Page Face independently advances through
-`haipipe-page-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
+`haipipe-draft-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
 it does not write Page artifacts through a private lifecycle. Each admitted
 canonical paper or source is one Discovery Level-4 Run. The D1 root uses the
 direct Result/cite route for its evidence objects, but it does not bypass the
@@ -67,7 +67,7 @@ while the project address remains Block -> Job -> Task Page -> Run.
 
 The D1 controller forms the Board as the BJTR path is opened. Block is Board,
 Job is Group, Task is Page Folder, and Run is an execution record. Discovery
-owns the source tree; `haipipe-page` reads it live (nothing is built). On
+owns the source tree; `haipipe-draft` reads it live (nothing is built). On
 `open-block`, `open-job`, and `open`, call
 `../haipipe-discovery/scripts/board_sync.py <block>` so `board.md` and its
 managed Job span remain current. After a Run batch, Page `04 CHECK`, and before
@@ -133,7 +133,7 @@ material and, when the inquiry needs citation material, `draft/evidence/`
 holds the derived Bib. The D1 root Page uses direct Result/Card/cite lineage
 and does not create a local typed Evidence Item for its own Results.
 Discovery's own analysis receipts remain the local `rNN` subset of the shared
-`runs/` ↔ `results/` lanes. Page-owned `rpNN` records may coexist in those
+`runs/` lane. Page-owned `rpNN` records may coexist in those
 folders, but are not Discovery inventory and are validated by the Page
 workflow. Do not copy Discovery Results into `draft/evidence/` or create a
 second local Evidence Run merely to repackage a paper.
@@ -143,7 +143,7 @@ second local Evidence Run merely to repackage a paper.
 - **ALLOWED**: `paper-analysis`, `source-analysis`.
 - **TARGET**: one canonical paper, dataset, report, webpage, media item, or
   other source Subject.
-- **TICKET**: executable `runs/rNN_<author-or-source><year>_<slug>.sh`.
+- **TICKET**: executable `runs/rNN_<author-or-source><year>_<slug>/rNN_<...>.sh`, with its `result/` beside it.
 - **INPUTS**: Trigger provenance, resolved Subject identity, question, and
   admission rationale.
 - **WORKER**: the selected research/source-analysis skill.
@@ -175,9 +175,9 @@ second local Evidence Run merely to repackage a paper.
 
 ### Page Run boundary
 
-The `runs/` ↔ `results/` pair in a Discovery Task Folder is reserved for
+The `runs/` lane in a Discovery Task Folder is reserved for
 `paper-analysis` and `source-analysis` `rNN` Runs. The Page-facing `rpNN` lane
-is owned by `haipipe-page-workflow` and may be shown by the Runs presenter, but
+is owned by `haipipe-draft-workflow` and may be shown by the Runs presenter, but
 it is not copied into the Discovery `runs/` inventory and does not change
 `R_discovery = N_admitted`. D1 SYNTHESIZE may request or resume Page-owned
 interaction; it may not mint `division-writing`, a per-division Discovery Run,
@@ -221,7 +221,7 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 - `../haipipe-discovery/ref/page-types.md` — type-specific payload promises.
 - `../haipipe-discovery/ref/paper-run-contract.md` — Level-4 artifacts.
 - `../haipipe-discovery/scripts/paper_runs.py` — deterministic gate.
-- `../../../1_base/page/haipipe-page-workflow/SKILL.md` — the only
+- `../../../1_base/page/haipipe-draft-workflow/SKILL.md` — the only
   Page lifecycle and phase router.
 - `../../../1_base/page/workbench-page/SKILL.md` — Outline and
   Evidence Workspace owner.

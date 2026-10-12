@@ -1,0 +1,14 @@
+run: run-delivery-webpage
+kind: soft
+type: delivery
+scope: null
+target: web
+ticket: run-delivery-webpage.sh
+skill: haipipe-draft-delivery
+agent: null
+signs: null
+status: done
+passes: []
+writes:
+- delivery/web/
+feeds: []

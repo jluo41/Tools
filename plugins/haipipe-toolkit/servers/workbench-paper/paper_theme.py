@@ -22,6 +22,7 @@ the band, until this replaces it. Read-only: nothing here writes; a run type onl
 """
 from __future__ import annotations
 
+from src.common import delivery_dir, delivery_read_lane_dir, delivery_relative
 import re
 from pathlib import Path
 
@@ -153,11 +154,14 @@ def _pick(sub: str, options: tuple) -> str:
 
 
 OTHER = "Datasets and repos"        # Related's group with no research question (b16 g03 D9)
+NOT_PAPERS = ("meeting", "file", "email")    # in related.md but no related work: Related Papers leaves them out (b10 s01-D34, s04-D09)
 
 
 def _related_rows(d, block):
     """(group, kind, key, title, venue, why, run) per related item: related/related.md when the Board has
-    it (b03 s01-D27), else the current Story's related-papers table; run = the deep read it links, or None."""
+    it (b03 s01-D27), else the current Story's related-papers table; run = the deep read it links, or None.
+    A row's `group` cell is comma-separated (b10 s04-D07): a paper bearing on two questions is one row per
+    question. Its subfolder is the Studio's group (s04-D08), not a question, so it is not read here."""
     table = block / "related" / "related.md"
     rows = []
     if table.is_file():
@@ -170,9 +174,10 @@ def _related_rows(d, block):
         get = lambda r, *names: next((r[heads.index(n)] for n in names if n in heads and heads.index(n) < len(r)), "")
         for r in body:
             addr = next(iter(P._addresses(get(r, "read", "discovery"))), "")
-            rows.append((get(r, "group") or OTHER, get(r, "kind") or "paper", get(r, "key"),
-                         get(r, "paper", "item"), get(r, "venue"), get(r, "why here", "why"),
-                         P._disc_run(d, addr) if addr else None))
+            run = P._disc_run(d, addr) if addr else None
+            for g in [g.strip() for g in get(r, "group").split(",") if g.strip()] or [OTHER]:
+                rows.append((g, get(r, "kind") or "paper", get(r, "key"), get(r, "paper", "item"),
+                             get(r, "venue"), get(r, "why here", "why"), run))
         return rows
     for s in P.current_stories(d):
         for r in s["pp"]:
@@ -189,10 +194,11 @@ def _related_rows(d, block):
     return rows
 
 
-def _related(d, block, root):
+def _related(d, block, root, skip=()):
     """Related as paper cards, grouped by `group` (RQn first, then Datasets and repos, then the rest). A card folds;
-    opened, it shows the paper's drawing from its deep read, view only (JL 261007, s11-paper-block)."""
-    rows = _related_rows(d, block)
+    opened, it shows the paper's drawing from its deep read, view only (JL 261007, s11-paper-block). skip: the
+    kinds left out (Related Papers leaves out meetings, files and emails)."""
+    rows = [r for r in _related_rows(d, block) if r[1] not in skip]
     if not rows:
         return '<p class=mut>No related item yet: related/related.md, one row each, any kind.</p>'
     order = lambda g: (0 if g.upper().startswith("RQ") else 1 if g == OTHER else 2, g)
@@ -215,7 +221,7 @@ def _related(d, block, root):
                 body = (f'<iframe class=st-frame title="{esc(title)}" data-src="{esc(url)}" '
                         'referrerpolicy=no-referrer></iframe>')
             elif kind != "paper":
-                body = '<p class="mut none">A dataset or repo: no drawing.</p>'
+                body = f'<p class="mut none">A {esc(kind)}: no drawing.</p>'
             else:
                 body = ('<p class="mut none">⚠ No drawing yet: the paper\'s deep read draws it '
                         '(question → data · method → finding → limits). Run type: Read a paper.</p>')
@@ -225,7 +231,7 @@ def _related(d, block, root):
 
 
 def _description(d, block, root, sub):
-    opts = ("Scope", "Venue", "Resources", "Related")
+    opts = ("Scope", "Venue", "Resources")              # Related folds inside the Studio (_related_space)
     s = _pick(sub, opts)
     if s == "Scope":
         html = (f'<p class=mut>{esc(P._shell_band(d))}</p>'
@@ -237,16 +243,23 @@ def _description(d, block, root, sub):
                 f'<p>Target now: <b>{esc(P.venue_name(d) or "—")}</b> (from the Story).</p>'
                 '<p class=mut>No venues/&lt;venue&gt;/call.md yet: one folder per venue the paper writes for '
                 '(proposed, b16 Q02).</p>')
-    elif s == "Resources":
+    else:
         from live.task_questions import register, words
         res, _ = register(P.read(block / "board.md"), "Related resources", "resources")
         rows = [(link(words(r.get("url")), words(r.get("title"))), esc(", ".join(r.get("questions") or [])))
                 for r in res if words(r.get("title"))]
         html = table(("resource", "for"), rows)
-    else:
-        html = (_related(d, block, root) if (block / "related" / "related.md").is_file()
-                else pv(P.related_html(d)))                     # the old Related Papers cards (JL 261007)
     return Space(html=html, subspaces=opts, open=s, run_types=_run_cards("Block", "Description", s))
+
+
+def _related_space(d, block, root, sub):
+    """The Block's Related, folded inside the Studio (b10 s04-D05, was Description › Related): the frame's own
+    view, grouped by related/ subfolder, each file previewed (JL 261011: "this is also for the whole workbench
+    system"); the paper's buttons. A Board with no related/ yet shows its telling's old P-board cards. The
+    cards by research question stay in Report › Related Papers."""
+    if not (block / "related").is_dir():
+        return Space(html=pv(P.related_html(d)), run_types=_run_cards("Block", "Related"))   # the old Story cards
+    return Space(run_types=_run_cards("Block", "Related"))
 
 
 # ── the paper's views in the base's look (JL 261007: base styles only, no theme stylesheet) ────────
@@ -661,7 +674,7 @@ def _report(d, block, root, sub):
             _empty("No questions yet. Ask one a reviewer, a coauthor, an editor or a reader will ask; "
                    "board.md ## Questions, group: reviewer · coauthor · editor · reader.")
     elif s == "Related Papers":                     # the related work under the question each bears on (JL 261009);
-        html = (_related(d, block, root) if (block / "related" / "related.md").is_file()   # related.md groups by it
+        html = (_related(d, block, root, NOT_PAPERS) if (block / "related" / "related.md").is_file()   # groups by it
                 else pv(P.related_by_question_html(d, [(str(r.get("id") or ""), str(r.get("title") or ""))
                                                        for r, _ in _questions(block, root)])))
     else:                                           # the current telling's research questions
@@ -799,6 +812,50 @@ def _rounds_table(d):
 VERSION_DELIVERY = ("LaTeX", "Word", "Cover letter", "Checks")      # the Board's; a version's is cards
 
 
+def section_states(board: Path, version: Path) -> list:
+    """Each Section of one version's build, from its build-manifest.json (JL 261011: "how could the delivery from
+    the section level link back to the block level delivery"): (Section folder, ready, why not, fragment, state),
+    state ✅ when the fragment is older than the build, ❗ when it changed after it, ⬜ when it was never exported."""
+    import json
+    from datetime import datetime
+    man_path = delivery_dir(version) / "build-manifest.json"
+    try:
+        man = json.loads(man_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    try:
+        built = datetime.fromisoformat(str(man.get("built") or "")).timestamp()
+    except ValueError:
+        built = None
+    out = []
+    for page in man.get("pages") or []:
+        sid = str(page.get("id") or "")
+        frag = board / str(page.get("fragment") or "") if page.get("fragment") else None
+        if frag is None or not frag.is_file():
+            state = "⬜ not exported"
+        elif built is not None and frag.stat().st_mtime > built:
+            state = "❗ changed after the build: rebuild"
+        else:
+            state = "✅ in the build"
+        out.append((version / sid, bool(page.get("ready")), "; ".join(page.get("reasons") or []), frag, state,
+                    str(man.get("built") or "")[:16].replace("T", " ")))
+    return out
+
+
+def _section_rows(board: Path, versions, root: Path) -> str:
+    """The Sections of each version's build as one table: Section (its part of the Delivery), ready, in the build."""
+    from live.frame import ROUTE, href
+    from urllib.parse import urlencode
+    rows = []
+    for v in versions:
+        for sec, ready, why, frag, state, built in section_states(board, v):
+            rows.append((link(href(sec, root, THEME, "Delivery"), f"{v.name.split('_', 1)[0]} › {sec.name}"),
+                         esc("✅ ready" if ready else "✗ " + (why or "not ready")),
+                         esc(f"{state} · built {built}" if built else state),
+                         link(ROUTE + "?" + urlencode({"path": rel(sec, root)}), "folder ↗")))
+    return table(("Section", "ready at the build", "in the build", "back to"), rows) if rows else ""
+
+
 def _version_delivery(d, board, job, root):
     """A version's Delivery as folding item cards, no third row (JL 261007: "item card based", s12): Manuscript
     (the PDF, the Word file), Letters (the cover letter), Checks (submission readiness), Sent (each frozen send)."""
@@ -829,6 +886,9 @@ def _version_delivery(d, board, job, root):
     else:
         out.append(("Letters", _fold("cover letter", "not built", _empty(
             "No cover letter built yet: add a [coverletter] block to delivery/paper-build.toml and run the build."))))
+    sections = _section_rows(board, [job], root)
+    if sections:
+        out.append(("Sections", sections))
     man = dv["manifest"] or {}
     rd = man.get("readiness") or {}
     g4 = next((v for g, _, v in d.get("gates") or [] if g == "G4"), "")
@@ -855,11 +915,15 @@ def _delivery_runs():
     return _run_cards("Job", "Delivery")
 
 
-def _delivery(d, sub, opts=("LaTeX", "Word", "Cover letter", "Rounds")):
+def _delivery(d, sub, opts=("LaTeX", "Word", "Cover letter", "Rounds"), board=None, root=None):
     s = _pick(sub, opts)
     if s in ("LaTeX", "Word"):
         html = (_empty("No delivery/ yet.") if d["delivery"]["dir"] is None else
                 _built(d, ".pdf" if s == "LaTeX" else ".docx", checks="Checks" not in opts))
+        if board is not None and root is not None:      # each version's Sections, in the build or not
+            versions = [v for v in sorted(board.glob("j[0-9][0-9]_*/")) if (delivery_dir(v) / "build-manifest.json").is_file()]
+            rows = _section_rows(board, versions, root)
+            html += ('<h3 class="space-h">Sections in the build</h3>' + rows) if rows else ""
     elif s == "Cover letter":
         html = _cover(d)
     elif s == "Checks":
@@ -1051,7 +1115,7 @@ def _draft_work(folder, stem):
 def _draft_links(d, folder, stem, root):
     """The rendered draft and the logic drawing, each a pop-out link, only when it exists."""
     out = []
-    web = folder / "delivery" / "web" / "index.html"
+    web = delivery_read_lane_dir(folder, "web") / "index.html"
     if web.is_file():
         out.append(pop(P._tree_url(d, web), f"{stem} · draft", "draft ↗"))
     drawing = next((x for x in [folder / "studio" / f"{stem}-sections.excalidraw"]
@@ -1211,8 +1275,8 @@ def version_spaces(job, root, sub):
     d = _data(board, root, job)
     # two versions may hold the same Section names (j02 starts as a copy of j01): this tab reads its own
     d = dict(d, sections=[p for p in d["sections"] if p["rel"] and _mine(board, job, p["rel"])])
-    if (job / "delivery").is_dir():                 # on the ladder each version builds its own (g03 D4)
-        d = dict(d, delivery=P.delivery_info(d, job / "delivery"))
+    if delivery_dir(job).is_dir():                 # on the ladder each version builds its own (g03 D4)
+        d = dict(d, delivery=P.delivery_info(d, delivery_dir(job)))
     return _disk_version(d, board, job, {"Description": _version_description(d, board, job, root, sub),
                                          "Audience Report": _version_report(d, board, job, root, sub),
                                          "Work Details": _version_work(d, board, job, root, sub),
@@ -1324,7 +1388,7 @@ def _ready(folder, md):
     approved = _header(plan).get("approved", "") if plan else ""
     units = sorted(d for d in folder.glob("results/run-display-*/payload/Display*") if d.is_dir())
     previews = sum((d / "preview.pdf").is_file() for d in units)
-    pdf = (folder / "delivery" / "latex" / f"{stem}.pdf").is_file()
+    pdf = (delivery_read_lane_dir(folder, "latex") / f"{stem}.pdf").is_file()
     checks = sorted(folder.glob("runs/run-check-*.md"))
     lights = [_st(bool(approved) and not approved.startswith("⬜"), "outline approved"),
               _st(previews == len(units), f"displays with preview.pdf: {previews} of {len(units)}"),
@@ -1438,7 +1502,10 @@ def _disk_block(d, block, out):
         ("Description", "Scope"): [("board.md", "the face: spine · close · Topic")],
         ("Description", "Venue"): [("venues/", "one folder per venue, its call.md")] + tell,
         ("Description", "Resources"): [("board.md", "## Related resources")],
-        ("Description", "Related"): [("related/related.md", "the related items")] + tell,
+        ("Related", ""): [("related/related.md", "the related items: kind · group · why here · the deep read")]
+                         + [(f"related/{x}/", what) for x, what in (("meetings", "a meeting's notes"),
+                                                                     ("papers", "open-licensed PDFs"),
+                                                                     ("files", "what we were sent"))] + tell,
         ("Idea Studio", ""): [("studio/", "one row per topic"), ("studio/s*/", "the topics")],
         ("Audience Report", "Ideation"): idea + reg,
         ("Audience Report", "Narrative"): tell + reg,
@@ -1505,11 +1572,12 @@ def spaces(level, folder, root, sub):
         return {}
     d = _data(folder, root)
     return _disk_block(d, folder, {"Description": _description(d, folder, root, sub),
+                                   "Related": _related_space(d, folder, root, sub),
                                    "Idea Studio": _studio(d, folder, root),
                                    "Audience Report": _report(d, folder, root, sub),
                                    "Work Details": _sections(d, sub),
                                    "Runs": Space(run_types=_run_cards("Block", "Runs")),
-                                   "Delivery": _delivery(d, sub)})
+                                   "Delivery": _delivery(d, sub, board=folder, root=root)})
 
 
 THEME = Theme(name="paper", label="Paper", icon="📄", guide="paper",

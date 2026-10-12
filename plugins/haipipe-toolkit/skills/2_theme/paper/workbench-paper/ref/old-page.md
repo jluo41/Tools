@@ -124,7 +124,7 @@ table with cell edges and a shaded label cell, never text nested in text; every
 table has cell edges; long prose is set one sentence per line, for display only.
 No type under 12px, inside the Runs panel too; a closed card shows its whole
 headline (never an ellipsis on a claim or an idea). Checked by
-`skills/1_base/page/haipipe-page/tests/audit_paper_views.py`, which drives all
+`skills/1_base/page/haipipe-draft/tests/audit_paper_views.py`, which drives all
 nineteen routes in real Chrome at 1360px and 2000px: no page overflow, no pane
 leaking, nothing past the right edge, a Runs panel beside every view.
 

@@ -23,6 +23,9 @@ import pin_method as P  # noqa: E402
 import score_exp as S  # noqa: E402
 
 READER = DESIGN.parents[2] / "servers" / "workbench-design" / "design_reader.py"
+sys.path.insert(0, str(READER.parents[1] / "_host"))
+from host_paths import bootstrap  # noqa: E402
+bootstrap()  # the reader imports src.common, the Page engine's shared paths
 STEPS = ("① See input", "② Reason ideas", "③ Conduct process", "④ Review item", "⑤ Review whole")
 
 

@@ -8,7 +8,7 @@ Evidence Workspace, and Page release.
 ## 1. Ownership boundary
 
 ```text
-haipipe-page
+haipipe-draft
   Page Folder · Page Face · Page Run names · Page Runs · Evidence Workspace
   Page release · Page delivery · Page CHECK
 
@@ -37,8 +37,8 @@ no content hash is pinned (JL 260928). The Paper update record documents the che
 
 ## 2. Paper and Page routing
 
-`haipipe-paper` selects the Paper operation. `haipipe-page` resolves an actual
-Page's Folder/Face owner and `haipipe-page-workflow` loads the current Run Spec,
+`haipipe-paper` selects the Paper operation. `haipipe-draft` resolves an actual
+Page's Folder/Face owner and `haipipe-draft-workflow` loads the current Run Spec,
 Paper Workflow, exact Paper PageType, and relevant references in its set
 order. Load the Paper-specific owner only for that Page. A generic Page never
 loads every Paper skill.

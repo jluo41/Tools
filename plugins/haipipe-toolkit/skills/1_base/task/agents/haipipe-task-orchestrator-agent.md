@@ -19,7 +19,7 @@ metadata:
 
 # Task Orchestrator
 
-Task Folder = Page Folder = `tNN_<task>/`. One lifecycle targets that Folder;
+Task Folder = `tNN_<task>/`; a Task may hold a draft. One lifecycle targets that Folder;
 a Job or Block request only enumerates canonical Task Folders. A container with
 none is malformed and must fail.
 

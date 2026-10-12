@@ -15,7 +15,7 @@ python3 <haipipe-project>/scripts/project.py audit <project>|--all [--root <SPAC
 
 One read-only pass over a Project: the root audit below, the ladder audit (§ Any level), a Job-centred
 v0.8.1 layout or ticket header, and the Tools gate with its contract-drift check (the decided Theme
-names in haipipe-page `src/themes.py` against this audit's worlds). Each finding names the step of
+names in haipipe-draft `src/themes.py` against this audit's worlds). Each finding names the step of
 `update` that fixes it (`root`, `themes`, `convert`, `runs`, `faces`) or `person` when only a person
 can decide (fn/update.md § A Project · the steps). A Project with no finding prints `clean`.
 
@@ -32,7 +32,7 @@ The audit checks only root facts: README, manifest schema, id, profile, Git
 mode, state, mission, allowed worlds, profile-owned code roots, and declared
 migration debt. Inside `cowork/` it also checks each CoWork Block `bNN_<topic>/`:
 a `board.md` declaring `board-kind: cowork-block`; only `studio/`, `reports/`,
-`_old/` and `jNN_<job>/` Jobs at its top (no `README.md` or `PEOPLE.md`); a
+`delivery/` (the Block's one delivery, haipipe-delivery), `related/` (what came in), `_old/` and `jNN_<job>/` Jobs at its top (no `README.md` or `PEOPLE.md`); a
 `j00_people/`; and each Job's `jNN_<job>.md` page declaring `job-kind: cowork-job`, with
 only `design/`, `materials/`, `emails/`, `meetings/`, `_old/` inside. An old numbered
 topic folder is a finding. It does not inspect

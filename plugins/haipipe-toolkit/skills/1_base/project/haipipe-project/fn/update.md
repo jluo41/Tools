@@ -113,7 +113,7 @@ python3 <haipipe-project>/scripts/project.py update <project> --apply [--steps r
 ```text
 tools    gate   the Tools this SPACE runs must read the new layout (the Ticket template writes
                 runs/<run>/result/ and accepts work/), and the audit's worlds must match the decided
-                Theme names (haipipe-page src/themes.py); otherwise --apply refuses and changes nothing
+                Theme names (haipipe-draft src/themes.py); otherwise --apply refuses and changes nothing
 root     auto   README.md and project.yaml from disk; mission "open" when no README says it
 themes   auto   tasks/ → work/, discoveries/ → discovery/, papers/ → paper/ … (scripts/rename_themes.py)
 convert  auto   a Job-centred v0.8.1 Job (scripts/<tNN>/, runs/<tNN>/) into Task folders; a v0.8.1

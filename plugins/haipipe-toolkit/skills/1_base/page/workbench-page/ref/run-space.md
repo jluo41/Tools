@@ -273,7 +273,7 @@ human's rough-thinking capture card; Section is the section-writing card;
 Paragraph is the paragraph-writing card; Revise is the change ledger card. Review
 feedback on a candidate is input to the Section or Paragraph Run, expressed as
 `Paragraph (Review & Modify)`. Revise is its own Run (`run-revise-<slug>`,
-`haipipe-page-revise`) with two doors: the person edits the paragraph's Draft
+`haipipe-draft-revise`) with two doors: the person edits the paragraph's Draft
 in one box in Draft Space → Revise, and every Save appends one Step whose
 ledger holds one red/green card per changed Bullet with Decision `accept`; or an
 agent compares two frozen texts of one target and writes the same ledger with

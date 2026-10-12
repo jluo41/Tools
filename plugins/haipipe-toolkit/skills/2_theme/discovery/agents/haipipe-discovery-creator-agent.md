@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.19.0"
-  last_updated: "2026-09-21"
+  version: "1.19.1"
+  last_updated: "2026-10-11"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
 
@@ -74,8 +74,8 @@ For every incoming Trigger:
    `rNN`; a materially changed analysis records `supersedes:` on a new Run.
 6. Only for a new or changed analysis, allocate the next immutable
    rNN_authorYEAR_slug.
-7. Create executable runs/<RUNNAME>.sh and
-   results/<RUNNAME>/runtime.yaml with status planned in the same edit pass.
+7. Create executable runs/<RUNNAME>/<RUNNAME>.sh and
+   runs/<RUNNAME>/result/runtime.yaml with status planned in the same edit pass.
    Runtime declares `family: discovery` and `operation: paper-analysis` for a
    paper Subject or `source-analysis` for another source Subject, plus the full
    `bNN.jNN.tNN.rNN` and `bNNjNNtNNrNN` addresses.

@@ -70,7 +70,7 @@ Knowledge claim and does not belong here. Covariates are cuts inside a run
 
 ## The page · Report
 
-The page is a `haipipe-page` Page Face written through that skill's flow
+The page is a `haipipe-draft` Page Face written through that skill's flow
 (`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
 adopt`, `page.py health`, a page CHECK by another agent. The Opening asks the
 question in plain words and answers with the pattern ("Weekday barely moves

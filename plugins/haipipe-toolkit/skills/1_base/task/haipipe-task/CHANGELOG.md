@@ -1,3 +1,12 @@
+## 1.13.0 · 2026-10-11 · A Task may hold a draft; a Task is not a Page (JL 261011, b51_base_draft)
+
+- "Task Folder = Page Folder = Page" is gone from SKILL.md, `ref/hierarchy.md`, `ref/task-structure.md`,
+  `ref/block-job-task-run.md` and the three Task agents: a Task Folder is `tNN_<task>/`, its face, and a
+  draft (`draft/`) when it writes prose. 102 Task folders in WellDoc hold a draft; compute Tasks hold none.
+- `tests/test_task_folder_vocabulary.py` checks the new phrase and reads `haipipe-folder` at its
+  `1_base/page/` path (the old `board/` path failed before this change).
+- `haipipe-page` is now `haipipe-draft` (b51); every reference here was swept.
+
 ## 1.12.1 · 2026-10-09 · Theme folders are singular
 
 - `ref/run-sh-template.sh`: a Ticket under `work/` (or `labeling/`) runs; the older `tasks/` and `labelings/`
@@ -61,7 +70,7 @@
 
 ## 1.8.1 · 2026-09-29 · A Task Page has no `## Outline` (JL 260929)
 
-- `ref/task-page.md` and `ref/task-page-template.md` no longer say the renderer generates `## Outline`: since haipipe-page 0.121 the plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline table in Draft Space, and a Task Page has no `## Outline` section. The word Outline stays where haipipe-page keeps it: the OUTLINE workflow stage, the Outline table, and the `outline:` grammar key.
+- `ref/task-page.md` and `ref/task-page-template.md` no longer say the renderer generates `## Outline`: since haipipe-draft 0.121 the plan lives in `draft/<stem>-draft-v<G>.<S>.md` and shows as the Outline table in Draft Space, and a Task Page has no `## Outline` section. The word Outline stays where haipipe-draft keeps it: the OUTLINE workflow stage, the Outline table, and the `outline:` grammar key.
 
 ## 1.8.0 · 2026-09-29 · Reviews carry no commit id (JL 260929)
 
@@ -127,7 +136,7 @@
 
 ## 1.2.0 — 2026-09-13
 
-- Establish `haipipe-task` and `haipipe-page` as peer top-level doors over one
+- Establish `haipipe-task` and `haipipe-draft` as peer top-level doors over one
   physical Task Folder.
 - Define the cross-face handshake from Page proposal through native Task Result
   and back to Page evidence binding and release.

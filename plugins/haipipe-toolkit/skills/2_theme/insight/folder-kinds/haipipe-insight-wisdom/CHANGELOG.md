@@ -3,7 +3,7 @@
 
 ## 1.9.0 · 2026-10-01 · The page flow (JL 261001)
 
-- The page is a haipipe-page Page written through its flow; its Content follows its needs (cite: the Knowledge relied on; judge: counsel and forbidden overreach), then the Design Handoff division.
+- The page is a haipipe-draft Page written through its flow; its Content follows its needs (cite: the Knowledge relied on; judge: counsel and forbidden overreach), then the Design Handoff division.
 
 ## 1.8.0 · 2026-10-01 · Evidence needs (JL 261001)
 

@@ -1,3 +1,26 @@
+## 0.38.1 · 2026-10-11 · Related Papers: each question, no emails
+
+- b10 s04-D07, D09: a related row's `group` cell is comma-separated, and an email is no related work. `paper_theme._related_rows` gives a paper one row per question in its cell, so Report › Related Papers lists it under each; `NOT_PAPERS` adds `email`. The subfolder group (s04-D08) stays the Studio's and is not read as a question. Test `test_related_papers_by_each_question_and_no_email`.
+- SKILL.md's Related row names `haipipe-related` and says how it groups (subfolder, then cell) and that an email opens with its headers.
+
+## 0.38.0 · 2026-10-11 · Each Section's build state in Delivery
+
+- JL 261011: "how could the delivery from the section level link back to the block level delivery". `paper_theme.section_states()` reads a version's `build-manifest.json`: each Section, whether it was ready when the build ran and why not, and its fragment: ✅ in the build, ❗ changed after the build (rebuild), ⬜ not exported. The version's Delivery shows them as a Sections group; the Board's LaTeX view adds Sections in the build for every version; each row links to the Section's part of the Board's Delivery and back to its folder. Test `test_each_sections_build_state_links_back_to_it`.
+
+## 0.37.0 · 2026-10-11 · Related: groups by subfolder, files previewed
+
+- Studio › Related is the frame's own view for every theme (JL 261011: "this is also for the whole workbench system"): one folding row per `related/related.md` row, grouped by the `related/` subfolder its file sits in, opened on the file itself (a Word file through `view=docx`). `paper_theme._related_space` gives only its buttons when the Board has `related/`; a Board without one still shows its telling's old P-board cards. The cards grouped by research question stay in Report › Related Papers.
+- `ref/workbench-table.md`: Redraw the paper map is a Block › Idea Studio row (haipipe-paper-workflow 1.9.2).
+
+## 0.36.0 · 2026-10-11 · Related folds inside the Studio
+
+- The top row is Guide · Studio | Paper Board · Version · Section | Delivery again; Related is the Studio's second folding part, under the topic cards, with `paper_theme.py`'s cards grouped by question inside it (b10 s04; JL 261011: "I might just want to keep Guide, Studio | Block, Job, Task | Delivery"). A `space=Related` or `space=Description&sub=Related` link opens the Studio with it unfolded.
+
+## 0.35.0 · 2026-10-11 · Related moves to the top row
+
+- Related leaves Description for the shared frame's top row, before Studio: `Guide · Related · Studio | Paper Board · Version · Section | Delivery` (b10 s04-related-workbench-skill, Open 1; JL 261011: "where we should put the Related button"). It is the Board's, shown the same from a version or a Section. `paper_theme.py` `_related_space()` draws the same cards, grouped by question; a kind button keeps one kind; an old `space=Description&sub=Related` link opens it. Description keeps Scope · Venue · Resources. Audience Report › Related Papers stays.
+- The Delivery rows name the Board's `delivery/jNN_<version>/`; a version keeps no `delivery/` (b10 s09-D05).
+
 ## 0.34.0 · 2026-10-09 · Block › Audience Report › Related Papers
 
 - JL 261009: "we might add a Related Paper after the related Questions". A new view after Related Questions shows the related papers under the research question each bears on (Q00 … Q06), the whole-paper ones first and the closest first inside each, with no venue order (Tools/blueprints/b16_theme_paper s05: the Board is venue-free, its related work grouped by question). It reads `related/related.md` when the Board has one (already grouped by question), else the current telling's related-papers table (`RQ3` → Q03), through the same cards as Description › Related, so a card's PDF opens inside it. `paper.py` `related_by_question_html()`; `paper_theme.py` `AUDIENCE`, `_report()`, its Disk rows.
@@ -99,7 +122,7 @@
 
 - Story › High-level logic + Low-level work gains a third column, **Report** (JL 261003: "following the question --> Work and report"): each question's Report Page from the paper's board-level `reports/qNN_<topic>/qNN_<topic>.md` (haipipe-paper 1.6.0), its state, its answer in a line and Open ↗; a question without one says "No report yet". `paper.py`: `paper_reports` (keyed by the Report's `answers: RQ<n>`, else its folder number), `_report_cell`, `_lw_row(report=…)`.
 - A hypothesis shows ✅ only when its question's Report says `answered`; before that 📝 (stated, not yet shown), so a ✅ no longer means only that the prose says so.
-- Run cards and Workbench Table: Write the report (haipipe-page-writing-agent) and Review the report (haipipe-page-check-agent, signs the answer, G2); `--check --cards` PASS. Guide's folder map gains Story / Report.
+- Run cards and Workbench Table: Write the report (haipipe-draft-writing-agent) and Review the report (haipipe-draft-check-agent, signs the answer, G2); `--check --cards` PASS. Guide's folder map gains Story / Report.
 - Logic + Work keeps its columns side by side at every width (JL 261003: "always be two columns no matter of the page width"); the 1100px single-column rule is gone.
 - Sections › Table shows a Section's state as a word; the Page band drops its emoji. Tests: `test_a_report_per_question_fills_the_report_column`; the established-but-unreported hypothesis now reads 📝; 17 passed; `audit_paper_views.py` 0 flagged.
 
@@ -149,7 +172,7 @@
 ## 0.18.0 · 2026-09-30 · Story › RoadMap Draw
 
 - A Story tab between Spine and High-level logic + Low-level work, named by JL: "RoadMap Draw", `#story/roadmap-draw` (`#story/roadmap` still sends old links of the retired Roadmap tab to the logic view) (JL 260930: "I also want to have a view of subspace to show the excalidraw draw which will be saved here: …/studio"). It embeds the server's Excalidraw, editable, on a drawing in `<paper>/studio/`: the Story's own `<Story stem>.excalidraw` if it exists, else the first drawing there, else the Story's own, new; with several drawings, each is a button above the canvas; the iframe sends no referrer, as the Draw panel's does, because Excalidraw refuses a same-site embed ("I'm not a pretzel!"); "Open full screen ↗" opens it alone. `paper.py`: `roadmap_html`, `STORY_TABS`, `.rd-*` CSS and the switch handler.
-- `servers/workbench-studio/xcal.py`: `mint_board_scene` writes a plain empty scene the first time a Board's `studio/<name>.excalidraw` is opened, as a Page's `studio/draw/` scene already was, so the first stroke has a file to save into. Opening a drawing never saves it; only a stroke does (haipipe-board 1.1.5, `xcal-boot.js`).
+- `servers/workbench-studio/xcal.py`: `mint_board_scene` writes a plain empty scene the first time a Board's `studio/<name>.excalidraw` is opened, as a Page's `studio/draw/` scene already was, so the first stroke has a file to save into. Opening a drawing never saves it; only a stroke does (haipipe-block 1.1.5, `xcal-boot.js`).
 - Tests: `test_paper_workbench.py` (tab order, the lazy canvas, the switcher, nothing written on render), `test_linked_live.py` (minting only beside a `board.md`); `audit_paper_views.py` visits `story/roadmap-draw`; the design drawing gains the tab.
 
 ## 0.17.0 · 2026-09-30 · A work item is its stage, a short name, and a plain line
@@ -250,7 +273,7 @@
   their `Q` column) → their folders; a row with no Q comes last; a range address such as
   `b03.j02.t01–t03` names each task; selecting a Q filters the Runs panel to its runs.
 - New buttons with skills: Select idea (Ideation, haipipe-ideation-select), Page check (Sections,
-  haipipe-page-check).
+  haipipe-draft-check).
 
 ## 0.8.0 · 2026-09-28 · Question first; every run names its skill
 
@@ -370,7 +393,7 @@
   with an ellipsis; a card subline that repeats the `where` label (the RQ on a
   claim card) is dropped; a long name clipped deep in the folder tree carries
   its full name as a tooltip. The audit is kept as a tool:
-  `board/haipipe-board/tests/audit_paper_views.py --base … --paper …`.
+  `board/haipipe-block/tests/audit_paper_views.py --base … --paper …`.
 - Cold-read fixes (a fresh agent was handed a pasted `⧉ copy to chat` snippet
   and asked to act on it, dry run; its friction log): the §7 card resolved
   only the FIRST address on a row while the claim counted them all, so
@@ -480,7 +503,7 @@
   only); an open card shows its whole title. Every card's
   Discussion row joins the judgment Run whose ticket `target:` names the row
   (ridea · rclaim · rtask · rnarra; run-naming.md §8).
-- Tooth: `board/haipipe-board/tests/test_paper_workbench.py`.
+- Tooth: `board/haipipe-block/tests/test_paper_workbench.py`.
 
 ## 0.1.0 · 2026-09-16
 

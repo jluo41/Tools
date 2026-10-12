@@ -60,7 +60,7 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 
 🔘 BUTTON   Write a report · Block › Audience Report · ^run-report- · views questions
 🧩 SKILL    haipipe-report
-🤖 AGENT    haipipe-page-writing-agent
+🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report write the report of one Block question in {folder}/reports/qNN_<topic>/ from the Jobs it names, as run-report-q<NN>; another agent checks it.
 
@@ -150,17 +150,14 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 
 ## Job › Audience Report and Delivery · predictions and the release
 
-🔘 BUTTON   Freeze the predictions · Job › Audience Report · ^run-freeze-predictions- · views predicted-vs-observed performance
-🧩 SKILL    haipipe-design-delivery
-🤖 AGENT    haipipe-designer-agent
-✍️ SIGNS    the predictions, with the release
-💬 PROMPT   /haipipe-design-delivery freeze the kept designs' predictions of {folder} (frozen: <date>), as run-freeze-predictions-j<NN>; I sign them together with the release.
+One review, one sign (JL 261012, from the 10-08 demo: the one place a person reviews before launch): the button shows
+in Audience Report › Predicted vs observed and Performance, Runs › Review whole and Delivery, and records two Runs.
 
-🔘 BUTTON   Release · Job › Delivery · ^run-release-
+🔘 BUTTON   Review and approve · Job › Delivery · ^run-release-
 🧩 SKILL    haipipe-design-delivery
 🤖 AGENT    haipipe-designer-agent
-✍️ SIGNS    the release
-💬 PROMPT   /haipipe-design-delivery release {folder}'s kept, passed designs: delivery/designs.json and designs.md, word for word, added to the Block's delivery/, as run-release-j<NN>; I sign the release.
+✍️ SIGNS    the predictions and the release, once
+💬 PROMPT   /haipipe-design-delivery review and approve {folder}: show me each kept design as it reads, its prediction (predicted · against · why) and its review; when I sign, freeze the predictions and release the designs in one session (release.py --freeze <YYMMDD>), recorded as run-freeze-predictions-j<NN> and run-release-j<NN>.
 
 ## Task › Runs · a design Task's own buttons
 

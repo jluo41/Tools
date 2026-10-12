@@ -48,7 +48,7 @@ def read(path):
 
 
 def task_roots(root):
-    # the work Theme, by its folder and its old name (haipipe-page src/themes.py)
+    # the work Theme, by its folder and its old name (haipipe-draft src/themes.py)
     return [p for theme in ('work', 'tasks') for p in glob.glob(os.path.join(root, 'examples*', '*', theme))
             if os.path.isdir(p)]
 

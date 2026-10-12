@@ -5,7 +5,7 @@
 ## 0.6.1 · 2026-09-28
 
 - A ninth typed lane, `> Supporting Run:` (⚙️): the Task or Discovery Run behind a sentence's
-  evidence, written by `page.py adopt` (haipipe-page 0.119.0). Lane counts and lists updated.
+  evidence, written by `page.py adopt` (haipipe-draft 0.119.0). Lane counts and lists updated.
 
 ## 0.6.0 · 2026-09-20
 
@@ -30,7 +30,7 @@ haipipe-sentence · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
 SKILL.md frontmatter `version:`. Newest first.
 
-**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
+**v0-series rule:** inherited from `haipipe-block`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
 ## 0.4.1 - 2026-08-10
@@ -48,7 +48,7 @@ never reaches `1.0.0` without JL's explicit say-so.
 - Renamed from `haipipe-board-sentence` to `haipipe-sentence` (JL 260809).
 - No contract change. The address grammar, the three verbs, the lanes, the
   evidence card, and the archive-never-delete lifecycle are unchanged.
-- The authority is still `haipipe-board/ref/board-form.md` §5, and this skill
+- The authority is still `haipipe-block/ref/board-form.md` §5, and this skill
   still owns no scripts.
 
 ## 0.3.1 - 2026-08-03
@@ -59,12 +59,12 @@ never reaches `1.0.0` without JL's explicit say-so.
 
 ## 0.3.0 - 2026-08-02
 
-**🚪 Became the DOOR for one sentence, not only its spec** (JL 260802: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-sentence, just like haipipe-page, right?").
+**🚪 Became the DOOR for one sentence, not only its spec** (JL 260802: "if we want to put sentence things, we migrate that part from haipipe-block to haipipe-sentence, just like haipipe-draft, right?").
 
-The `haipipe-page` precedent is precise about what migrates: that skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. This unit had it the other way round, with the operating detail living in `haipipe-board`'s SKILL.md while this file was 94 lines of spec carrying no verbs at all.
+The `haipipe-draft` precedent is precise about what migrates: that skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. This unit had it the other way round, with the operating detail living in `haipipe-block`'s SKILL.md while this file was 94 lines of spec carrying no verbs at all.
 
-- **Three verbs**, migrated out of `haipipe-board` 0.111.0: `comment` (a person's remark under one line), `edit` (one line replaced, one word-level record), `card` (a panel on a few words inside the line).
-- **The boundary block**, mirroring the page skill's: this holds what a sentence IS, what may attach, which gesture reaches which, and the two anchors. `haipipe-board` keeps the renderer, the write routes, the controls, the checker and the recorded drive.
+- **Three verbs**, migrated out of `haipipe-block` 0.111.0: `comment` (a person's remark under one line), `edit` (one line replaced, one word-level record), `card` (a panel on a few words inside the line).
+- **The boundary block**, mirroring the page skill's: this holds what a sentence IS, what may attach, which gesture reaches which, and the two anchors. `haipipe-block` keeps the renderer, the write routes, the controls, the checker and the recorded drive.
 - **The reader's controls**: hover rail, double-click to edit, one `⋯` on touch, every record shut by default.
 - **What every verb must hold**: the anchor is an exact match and a miss fails visibly; a form CLOSES before it asks for the repaint, because the live swap will not run while a textarea inside `div.wrap` holds text.
 
@@ -81,7 +81,7 @@ The `haipipe-page` precedent is precise about what migrates: that skill owns the
 - `### What every verb must hold` is new, and every line of it is a scar: the anchor is an EXACT match on the source line and a miss FAILS VISIBLY; a form CLOSES before it asks for the repaint, or the swap refuses it, which is what stops a rebuild eating a half-written comment; a write needs `serve.py` and with it down the page keeps a pending line rather than growing a comment area at its foot; and the badge names WHICH KIND is underneath.
 - `## 🏷 The reader's controls` is new: hover for the address plus Comment and Chat, double-click to edit, one quiet `⋯` on touch, every attached record SHUT by default, and a single click on the body left unclaimed so selecting and copying still work.
 
-**Two consequences nobody recorded either.** The roster on the design board's `QC1b` filed this unit as a pure SPEC beside `haipipe-page`, which stopped being true here; and `### What every verb must hold` restates the addressing law that `QC4a` owns, which is a second copy of a rule rather than a citation of it.
+**Two consequences nobody recorded either.** The roster on the design board's `QC1b` filed this unit as a pure SPEC beside `haipipe-draft`, which stopped being true here; and `### What every verb must hold` restates the addressing law that `QC4a` owns, which is a second copy of a rule rather than a citation of it.
 
 ## 0.2.0 - 2026-08-02
 
@@ -90,7 +90,7 @@ The `haipipe-page` precedent is precise about what migrates: that skill owns the
 - `## 💬 The lanes` — `> Card the words: what to show` joins the lane figure, marked as the one lane that renders INSIDE the sentence rather than under it.
 - `## 🃏 The evidence card` — opens with the two-anchor table, then the card's two sources: a record that quotes its span, and a paper marker that names itself. Adds the rule that the words keep the prose's own font, colour and weight.
 
-Engine and board-page work shipped in `haipipe-board` 0.108.0-0.110.0; this is the loadable contract catching up.
+Engine and board-page work shipped in `haipipe-block` 0.108.0-0.110.0; this is the loadable contract catching up.
 
 ## 0.1.2 - 2026-08-02
 
@@ -111,7 +111,7 @@ Engine and board-page work shipped in `haipipe-board` 0.108.0-0.110.0; this is t
 
 ## 0.1.0 - 2026-07-31
 
-- First cut, created on JL's order alongside `haipipe-page` and
+- First cut, created on JL's order alongside `haipipe-draft` and
   `haipipe-board-routing`, from QC6 §8's settled shape: one door, two SPECS, two
   VERBS. This is the sentence SPEC, the one a routed write loads so its output
   reads like the board.
@@ -119,6 +119,6 @@ Engine and board-page work shipped in `haipipe-board` 0.108.0-0.110.0; this is t
   the `>` lane grammar with its standing rules (append only, never delete a user's
   lane, signed and dated, one nesting level), the evidence card's show-the-thing
   contract, and the archive-never-delete record lifecycle.
-- The authority stays `haipipe-board/ref/board-form.md` §5; this contract cites it
+- The authority stays `haipipe-block/ref/board-form.md` §5; this contract cites it
   and must never fork it, which is the same no-second-copy rule that motivated the
   whole extraction (serve.py's prose copies rotted once already).

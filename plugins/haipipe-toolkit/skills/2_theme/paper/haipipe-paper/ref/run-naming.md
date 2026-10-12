@@ -1,6 +1,6 @@
 # Paper Run naming and ownership
 
-The shared `haipipe-page/src/run_names.py` owns Page Run naming;
+The shared `haipipe-draft/src/run_names.py` owns Page Run naming;
 `haipipe-run` owns native Tickets and Results. This adapter adds Paper context
 and judgment targets. Read `haipipe-paper-workflow/ref/run-workflow.md` for
 Spec bindings and the compile/response profiles.

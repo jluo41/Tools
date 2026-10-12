@@ -1,3 +1,7 @@
+## 0.11.2 · 2026-10-11 · A version holds no delivery/
+
+- `scripts/cover_letter.py` `round_page()`: its docstring no longer says the version Job holds `delivery/`; the build is the Board's `delivery/jNN_<version>/` (b10 s09-D05, haipipe-paper 1.12.0).
+
 ## 0.11.1 · 2026-10-09 · No /Users/ path in the manifest, no stale snapshot
 
 - `scripts/build_delivery.py`: the Word and LaTeX output kept in `build-manifest.json` (`docx_tail`, `latexmk_tail`) has the SPACE root cut off its paths; the Word lane prints every file it writes, so each manifest held four `/Users/...` paths (JL 260927).

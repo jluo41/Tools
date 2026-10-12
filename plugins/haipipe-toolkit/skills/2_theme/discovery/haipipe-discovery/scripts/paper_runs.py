@@ -229,7 +229,7 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
             path.name: path
             for path in results_dir.iterdir()
             # Page-owned rpNN Results share the Folder's results/ lane but are
-            # validated by haipipe-page-workflow, not this D1 checker.
+            # validated by haipipe-draft-workflow, not this D1 checker.
             if path.is_dir() and not PAGE_RUN_RE.fullmatch(path.name)
         }
         if results_dir.is_dir()
@@ -463,7 +463,7 @@ def _page_errors(
             errors.append(f"page-opening-too-long: {page}: {len(visible)}")
     if not re.search(r"(?m)^## Content\s*$", text):
         errors.append(f"page-content-missing: {page}")
-    # The Page Face is Opening -> Content (haipipe-page 0.121). Aims are
+    # The Page Face is Opening -> Content (haipipe-draft 0.121). Aims are
     # backstage target records; a legacy Page that still carries `## Aims`
     # is checked for Aim/division agreement, a current Page carries none.
     has_aims = re.search(r"(?m)^## Aims\s*$", text) is not None

@@ -3,7 +3,7 @@
 WHAT THIS ANSWERS: the 📄 Page Runs stepper (65-workbench-pageflow.js) has to
 say where ONE Page stands in its Run list (context · structure · evidence ·
 writing · check). That truth is not in
-the rendered page: the run contract (haipipe-page-workflow) writes it to
+the rendered page: the run contract (haipipe-draft-workflow) writes it to
 `<board>/_runs/page/<page-id>/<run-id>.json`, one legacy-named receipt trail
 per workflow pass. So
 the stepper asks this route, and this route reads those files and nothing

@@ -69,7 +69,7 @@ Information.
 
 ## The page · Report (brief)
 
-The page is a `haipipe-page` Page Face written through that skill's flow
+The page is a `haipipe-draft` Page Face written through that skill's flow
 (`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
 adopt`, `page.py health`, a page CHECK by another agent. For Data it is brief:
 the Opening asks what was observed, in plain words, and answers with the

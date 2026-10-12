@@ -224,8 +224,10 @@ def prototype(block: Path) -> dict:
         name = rel.get("release") or job.name.split("_")[1]
         slug = job.name.split("_", 2)[2] if job.name.count("_") >= 2 else ""
         face = front(job / f"{job.name}.md")                # its title (`title:`), else the folder's slug
-        title = face.get("title") or slug
-        out["releases"].append({"name": name, "slug": slug, "label": f"{name} - {title}" if title else name, "job": job,
+        title = face.get("title") or slug.replace("-", " ")
+        code = plan_code(name)
+        out["releases"].append({"name": name, "slug": slug, "code": code, "words": title,
+                                "label": f"{code} · {title}" if title else code, "job": job,
                                 "face": face, "questions": qs,
                                 "partitions": front(job / "partitions.md").get("partitions") or [],
                                 "thresholds": _yaml(job / "thresholds.yaml")})
@@ -233,6 +235,36 @@ def prototype(block: Path) -> dict:
     if pdir.is_dir():
         out["proposals"] = [dict(front(p), file=p, title=p.stem) for p in sorted(pdir.glob("*.md")) if p.name != "README.md"]
     return out
+
+
+# ── the words a person reads (JL 261011): an analysis plan AP<N> is the release pN, a data freeze F<M> the data
+# version vM; folders and files keep pN and vM, which every script and ticket reads ──────────────────────
+def plan_code(release: str) -> str:
+    return re.sub(r"^p(\d+)$", r"AP\1", str(release or ""))
+
+
+def freeze_code(version: str) -> str:
+    return re.sub(r"^v(\d+)$", r"F\1", str(version or ""))
+
+
+def freeze_words(v: dict) -> str:
+    """A data version's few words: its `label:`, else the start of `new:` up to a colon."""
+    words = str(v.get("label") or str(v.get("new") or "").split(":")[0]).strip()
+    return "" if words.startswith("<") else words              # a scaffold placeholder is no words
+
+
+def job_title(jdir: Path) -> str:
+    """`first ladder × first 5 days`: the Job's analysis plan and data freeze in words, read from the faces only."""
+    fm = front(jdir / f"{jdir.name}.md")
+    m = JOB_NAME.match(jdir.name)
+    rel, ver = fm.get("release") or (m.group(1) if m else ""), fm.get("data") or (m.group(3) if m else "")
+    bface = front(jdir.parent / "board.md")
+    proto = _project(jdir.parent) / str(bface.get("prototype", ""))
+    rdir = next((p for p in sorted(proto.glob(f"j*_{rel}_*")) if p.is_dir()), None) if proto.is_dir() else None
+    plan = ((front(rdir / f"{rdir.name}.md").get("title") or rdir.name.split("_", 2)[2].replace("-", " "))
+            if rdir else plan_code(rel))
+    v = next((v for v in bface.get("versions") or [] if str(v.get("version")) == str(ver)), {})
+    return f"{plan} × {freeze_words(v) or freeze_code(ver)}"
 
 
 def release(proto: dict, name: str) -> dict:

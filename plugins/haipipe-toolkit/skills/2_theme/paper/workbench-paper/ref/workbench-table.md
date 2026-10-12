@@ -3,7 +3,7 @@ Paper Workbench Table
 
 Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Rows run input →
 process → output, level by level: the Guide, then the Board (Block), then a
-version (Job), each in the order of its six Spaces (b16 Q05, JL 261007).
+version (Job), each in the order of its Spaces (b16 Q05, JL 261007); Related is the Block's alone.
 
 The paper workbench (`servers/workbench-paper/paper_theme.py`) draws the shared
 frame's levels Guide · Block · Job · Task. Each working row is one `🔘 BUTTON`
@@ -23,58 +23,58 @@ but not built yet.
 | Level | Space | View | Run type | Agent | Skill | Person signs |
 |---|---|---|---|---|---|---|
 | block | Guide | Description | none | none | none | none |
-| block | Guide | Method | Add a method | haipipe-page-writing-agent | workbench-paper | none |
+| block | Guide | Method | Add a method | haipipe-draft-writing-agent | workbench-paper | none |
 | block | Guide | RoadMap Draw | Redraw the Workbench design | haipipe-studio-agent (new) | workbench-paper | none |
 | block | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
-| block | Description | scope | Update the Board | haipipe-page-writing-agent | haipipe-paper | none |
-| block | Description | scope · venue | Add a venue | haipipe-page-writing-agent | haipipe-paper-venue | none |
-| block | Description | venue | Check the rules | haipipe-page-check-agent | haipipe-paper-venue | none |
-| block | Description | resources | Add a resource | haipipe-page-writing-agent | haipipe-paper | none |
-| block | Description | related | Add a related item | haipipe-page-writing-agent | haipipe-paper | none |
-| block | Description | related | Read a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
+| block | Description | scope | Update the Board | haipipe-draft-writing-agent | haipipe-paper | none |
+| block | Description | scope · venue | Add a venue | haipipe-draft-writing-agent | haipipe-paper-venue | none |
+| block | Description | venue | Check the rules | haipipe-draft-check-agent | haipipe-paper-venue | none |
+| block | Description | resources | Add a resource | haipipe-draft-writing-agent | haipipe-paper | none |
+| block | Related | All | Add a related item | haipipe-draft-writing-agent | haipipe-paper | none |
+| block | Related | All | Read a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
 | block | Idea Studio | All | Redraw | haipipe-studio-agent (new) | haipipe-studio | none |
-| block | Audience Report | ideation · related-questions | Ask a Question | haipipe-page-writing-agent | haipipe-question | none |
+| block | Idea Studio | All | Redraw the paper map | haipipe-studio-agent (new) | excalidraw-section | none |
+| block | Audience Report | ideation · related-questions | Ask a Question | haipipe-draft-writing-agent | haipipe-question | none |
 | block | Audience Report | ideation | Generate ideas | haipipe-ideation-agent (new) | haipipe-ideation-generate | none |
 | block | Audience Report | ideation | Test idea | haipipe-ideation-agent (new) | haipipe-ideation-test | none |
-| block | Audience Report | ideation | Idea review | haipipe-board-reviewer-agent | haipipe-paper-ideation | none |
+| block | Audience Report | ideation | Idea review | haipipe-block-reviewer-agent | haipipe-paper-ideation | none |
 | block | Audience Report | ideation | Select idea | haipipe-ideation-agent (new) | haipipe-ideation-select | the admitted idea (G0) |
-| block | Audience Report | narrative | Story revise | haipipe-page-writing-agent | haipipe-paper-story | the Story version |
-| block | Audience Report | narrative | Narrative review | haipipe-board-reviewer-agent | haipipe-paper-story | release of one Section (G3) |
-| block | Audience Report | narrative | Review for an audience | haipipe-board-reviewer-agent | haipipe-paper-story | none |
-| block | Audience Report | logic-work | Claim review | haipipe-board-reviewer-agent | haipipe-paper-story | the claim state (G2) |
-| block | Audience Report | logic-work | Task review | haipipe-board-reviewer-agent | haipipe-paper-story | release of Task work (G1) |
-| block | Audience Report | logic-work · related-questions | Write the report | haipipe-page-writing-agent | haipipe-report | none |
-| block | Audience Report | logic-work · related-questions | Review the report | haipipe-page-check-agent | haipipe-report | the answer (G2) |
-| block | Audience Report | logic-work · related-questions | Rebuild report drawing | haipipe-page-writing-agent | haipipe-report | none |
+| block | Audience Report | narrative | Story revise | haipipe-draft-writing-agent | haipipe-paper-story | the Story version |
+| block | Audience Report | narrative | Narrative review | haipipe-block-reviewer-agent | haipipe-paper-story | release of one Section (G3) |
+| block | Audience Report | narrative | Review for an audience | haipipe-block-reviewer-agent | haipipe-paper-story | none |
+| block | Audience Report | logic-work | Claim review | haipipe-block-reviewer-agent | haipipe-paper-story | the claim state (G2) |
+| block | Audience Report | logic-work | Task review | haipipe-block-reviewer-agent | haipipe-paper-story | release of Task work (G1) |
+| block | Audience Report | logic-work · related-questions | Write the report | haipipe-draft-writing-agent | haipipe-report | none |
+| block | Audience Report | logic-work · related-questions | Review the report | haipipe-draft-check-agent | haipipe-report | the answer (G2) |
+| block | Audience Report | logic-work · related-questions | Rebuild report drawing | haipipe-draft-writing-agent | haipipe-report | none |
 | block | Audience Report | logic-work | Task runs | haipipe-task-orchestrator-agent | haipipe-task | none |
 | block | Audience Report | logic-work | Discovery runs | haipipe-discovery-orchestrator-agent | haipipe-discovery | none |
-| block | Work Details | All | Open a version | haipipe-page-writing-agent | haipipe-paper | none |
-| block | Runs | All | Update the Board status | haipipe-page-writing-agent | haipipe-paper | none |
-| job | Description | version | Update the version | haipipe-page-writing-agent | haipipe-paper | none |
-| job | Description | venue-rules | Check the rules | haipipe-page-check-agent | haipipe-paper-venue | none |
-| job | Idea Studio | All | Redraw the paper map | haipipe-studio-agent (new) | excalidraw-section | none |
-| job | Audience Report | questions | Ask a Question | haipipe-page-writing-agent | haipipe-question | none |
-| job | Audience Report | questions | Write the report | haipipe-page-writing-agent | haipipe-report | none |
-| job | Audience Report | questions | Review the report | haipipe-page-check-agent | haipipe-report | the answer (G2) |
-| job | Audience Report | questions | Rebuild report drawing | haipipe-page-writing-agent | haipipe-report | none |
-| job | Audience Report | draft-main · draft-appendix | Narrative review | haipipe-board-reviewer-agent | haipipe-paper-story | release of one Section (G3) |
-| job | Audience Report | draft-main · draft-appendix | Release a Section | haipipe-page-writing-agent | haipipe-paper-story | release of one Section (G3) |
-| job | Audience Report | comments | Add comments | haipipe-page-writing-agent | haipipe-paper-comments | none |
-| job | Audience Report | comments | Route an item | haipipe-page-writing-agent | haipipe-paper-comments | none |
-| job | Audience Report | comments | Reply to an item | haipipe-page-writing-agent | haipipe-paper-comments | none |
-| job | Audience Report | cover-letter | Write the cover letter | haipipe-page-writing-agent | haipipe-paper-assemble | the letter |
-| job | Audience Report | cover-letter | Check the letter | haipipe-page-check-agent | haipipe-paper-assemble | none |
-| job | Work Details | main · appendix | Add a Section | haipipe-page-writing-agent | haipipe-paper-section | none |
-| job | Work Details | main · appendix | Draft runs | haipipe-page-writing-agent | haipipe-paper-section | none |
-| job | Work Details | main · appendix | Evidence runs | haipipe-page-evidence-agent | haipipe-page-evidence | none |
-| job | Work Details | main · appendix | Delivery runs | haipipe-page-writing-agent | haipipe-page-delivery | none |
-| job | Work Details | main · appendix | Page check | haipipe-page-check-agent | haipipe-page-check | none |
-| job | Work Details | letters | Add a letter | haipipe-page-writing-agent | haipipe-paper-section | none |
-| job | Work Details | letters | Cover letter | haipipe-page-writing-agent | haipipe-paper-assemble | the letter |
-| job | Work Details | letters | Response | haipipe-page-writing-agent | haipipe-paper-comments | every response answered (G5) |
-| job | Runs | All | Update the version | haipipe-page-writing-agent | haipipe-paper | none |
+| block | Work Details | All | Open a version | haipipe-draft-writing-agent | haipipe-paper | none |
+| block | Runs | All | Update the Board status | haipipe-draft-writing-agent | haipipe-paper | none |
+| job | Description | version | Update the version | haipipe-draft-writing-agent | haipipe-paper | none |
+| job | Description | venue-rules | Check the rules | haipipe-draft-check-agent | haipipe-paper-venue | none |
+| job | Audience Report | questions | Ask a Question | haipipe-draft-writing-agent | haipipe-question | none |
+| job | Audience Report | questions | Write the report | haipipe-draft-writing-agent | haipipe-report | none |
+| job | Audience Report | questions | Review the report | haipipe-draft-check-agent | haipipe-report | the answer (G2) |
+| job | Audience Report | questions | Rebuild report drawing | haipipe-draft-writing-agent | haipipe-report | none |
+| job | Audience Report | draft-main · draft-appendix | Narrative review | haipipe-block-reviewer-agent | haipipe-paper-story | release of one Section (G3) |
+| job | Audience Report | draft-main · draft-appendix | Release a Section | haipipe-draft-writing-agent | haipipe-paper-story | release of one Section (G3) |
+| job | Audience Report | comments | Add comments | haipipe-draft-writing-agent | haipipe-paper-comments | none |
+| job | Audience Report | comments | Route an item | haipipe-draft-writing-agent | haipipe-paper-comments | none |
+| job | Audience Report | comments | Reply to an item | haipipe-draft-writing-agent | haipipe-paper-comments | none |
+| job | Audience Report | cover-letter | Write the cover letter | haipipe-draft-writing-agent | haipipe-paper-assemble | the letter |
+| job | Audience Report | cover-letter | Check the letter | haipipe-draft-check-agent | haipipe-paper-assemble | none |
+| job | Work Details | main · appendix | Add a Section | haipipe-draft-writing-agent | haipipe-paper-section | none |
+| job | Work Details | main · appendix | Draft runs | haipipe-draft-writing-agent | haipipe-paper-section | none |
+| job | Work Details | main · appendix | Evidence runs | haipipe-draft-evidence-agent | haipipe-draft-evidence | none |
+| job | Work Details | main · appendix | Delivery runs | haipipe-draft-writing-agent | haipipe-draft-delivery | none |
+| job | Work Details | main · appendix | Page check | haipipe-draft-check-agent | haipipe-draft-check | none |
+| job | Work Details | letters | Add a letter | haipipe-draft-writing-agent | haipipe-paper-section | none |
+| job | Work Details | letters | Cover letter | haipipe-draft-writing-agent | haipipe-paper-assemble | the letter |
+| job | Work Details | letters | Response | haipipe-draft-writing-agent | haipipe-paper-comments | every response answered (G5) |
+| job | Runs | All | Update the version | haipipe-draft-writing-agent | haipipe-paper | none |
 | job | Delivery | All | Build | haipipe-paper-assemble-agent (new) | haipipe-paper-assemble | none |
-| job | Delivery | All | Check | haipipe-page-check-agent | haipipe-paper-assemble | submission readiness (G4) |
+| job | Delivery | All | Check | haipipe-draft-check-agent | haipipe-paper-assemble | submission readiness (G4) |
 | job | Delivery | All | Send | haipipe-paper-assemble-agent (new) | haipipe-paper-assemble | the send |
 
 Notes
@@ -82,7 +82,7 @@ Notes
 
 - **One skill per row.** The cards for Story revise and Draft runs used to name
   two skills (`haipipe-paper-story · haipipe-writing`, `haipipe-paper-section ·
-  haipipe-page-writing`); the row names the one that owns the work, and the
+  haipipe-draft-writing`); the row names the one that owns the work, and the
   writing skill is loaded by it.
 - **Gates.** Person signs carries the gates G0–G5 of `workbench-paper`:
   the screen shows them, the person closes them; no run closes a gate.

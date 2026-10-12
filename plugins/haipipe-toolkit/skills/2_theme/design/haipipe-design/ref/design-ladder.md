@@ -44,7 +44,7 @@ design/Design-<name>/                      Block: one application, one channel
     ├── tNN_d<NN>_<slug>/                   ③ ④ one design, its short name born with its idea in t00
     │   ├── tNN_d<NN>_<slug>.md             state · name · idea · rank; ## Design · ## Evaluation
     │   ├── elements.yaml                   one entry per element: element · words · from · because · step · changed
-    │   ├── prediction.yaml                 predicted · against · by · frozen (a draft until the release)
+    │   ├── prediction.yaml                 predicted · against · by · why · frozen (a draft until the release)
     │   └── runs/                           hard: run-generate-d<NN>/result/ (design.md · elements.yaml) ·
     │                                             run-verify-d<NN>-v<k>/result/ (review.md)
     │                                       soft: run-revise-d<NN>/passes/pNN-<MMDD>/ (one pass per new draft:
@@ -56,7 +56,7 @@ design/Design-<name>/                      Block: one application, one channel
 
 A design Block is a special board (JL 261008: Paper, Insight, Prototype and Design are the special boards; Labeling will be one too), named by its kind: `Design-<name>[-<YYMMDD>]`, e.g. `Design-<app>-<round>-<YYMMDD>`. The folder name is a label; a reader knows the Block by its `board.md` (`board-kind: design-board`). An older `bNN_<app>` Block stays readable.
 
-`jNN_<goal>-<goal-slug>_<method>-<method-slug>` names the goal and the method by their ids, lowercased, each followed by its slug so a person can read the folder (JL 261008: "MNN, GNN are not human readable … add the <slug>"): `j03_g01-review-new-rx_m04-actionable-insights`. The goal's slug is its `name:` in `board.md ## Goals`; the method's is its registry folder's (`M04-actionable-insights`). Both slugs are optional for an older folder. The folder name is only a label; the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses.
+`jNN_<goal name>_<method name>` names the Job in words: the goal's `name:` in `board.md ## Goals` and the method's registry slug (`M01-goal-only` gives `goal-only`), so a person reads the folder as it is, and the workbench shows it as it is, wherever it names the Job, never the bare `jNN` (JL 261011: "make the j01 job folder name to be as readable as possible"; "I don't want we just have jNN here, not readable"; b10 s32-D15): `j01_prepare-before-visit_goal-only`, `j02_prepare-before-visit_actionable-insights`. The ids are not in the name: the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses, and the scaffold refuses a name whose words do not match them. The face's heading is in words too: `# Prepare before visit, by Actionable insights`. The older id form `jNN_<goal>[-<goal-slug>]_<method>[-<method-slug>]` (`j03_g01-review-new-rx_m04-actionable-insights`, JL 261008) stays readable.
 
 
 The rules
@@ -97,9 +97,11 @@ The rules
    `state: passed | revise`).
 9. **A prediction is a draft until the release.** t99's `run-rank-t99` writes the ranking and each design's
    predicted effect into its own `result/ranking.csv` (a hard Run writes nothing else). When it closes,
-   `haipipe-design-workflow` projects each row into its design Task: `prediction.yaml` (`frozen: draft`) and
-   `state: kept` or `dropped`. `run-freeze-predictions-jNN` freezes them (`frozen: <date>`) when a person releases
-   (`run-release-jNN`); both are signed together. Dropped designs keep their Tasks, folded at the end.
+   `haipipe-design-workflow` projects each row into its design Task: `prediction.yaml` (`frozen: draft`, with the
+   row's `why`, so every predicted number on screen carries its basis: JL 261012, from the 10-08 demo, where a leader
+   asked of a +3.6 "where is that from?") and `state: kept` or `dropped`. `run-freeze-predictions-jNN` freezes them
+   (`frozen: <date>`) when a person releases (`run-release-jNN`); both are signed together, as one review step
+   (Review and approve: the one place a person reviews before launch). Dropped designs keep their Tasks, folded at the end.
 10. **What an Exp returns lands once, at the Block.** `run-add-observed-eNN` writes `observed/eNN_<exp>/arms.csv`
    (`arm · job · design · n · observed`: per-arm totals only, never rows) from an insight Block's signed handoff
    or a vendor's per-arm report; `run-score-eNN` scores every arm's design into the `scores.csv` in its own folder. A

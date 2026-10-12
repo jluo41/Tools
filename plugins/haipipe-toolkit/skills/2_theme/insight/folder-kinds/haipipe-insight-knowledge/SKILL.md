@@ -47,7 +47,7 @@ population/window/unit boundary.
 ## The page
 
 The answering page (`<n>-<partition>/K<NN>-<partition>-<slug>/`) is a
-`haipipe-page` Page Face written through that skill's flow
+`haipipe-draft` Page Face written through that skill's flow
 (`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
 adopt`, `page.py health`, a page CHECK by another agent. A page may answer
 several QK questions; the register cell names it. The Opening asks the question

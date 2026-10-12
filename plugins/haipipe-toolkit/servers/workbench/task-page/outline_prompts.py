@@ -99,7 +99,7 @@ class RunPrompts:
             chosen = max(matches, key=lambda row: row["run_id"])   # a full name sorts by its day
         board = "standalone Page" if self.board_path == "/" else self.board_path
         lines = [
-            "/haipipe-page %s %s" % (RUN_NAMES[kind], scope),
+            "/haipipe-draft %s %s" % (RUN_NAMES[kind], scope),
             "Board: %s · Page: %s" % (board, self.page_path or self.path(self.page)),
             "Outline: " + self.path(self.plan),
         ]

@@ -31,17 +31,20 @@ numbers being permanent domain ids.
 discovery/
 ├── haipipe-discovery/                 public door
 ├── haipipe-discovery-inquiry/         D1 Run controller (the former workflow-phases/ path)
-├── haipipe-discovery-search/          1 · acquisition: identity, admission, Run allocation
 ├── haipipe-discovery-review/          2 · per-Subject reading and Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis into the Task Page
-├── 1_search/                          vendored originals, callable
-│   ├── arxiv · semantic-scholar · exa-search · openalex · gemini-search   ARIS @0472e53 · candidate channels
-│   ├── alphaxiv · deepxiv                                                  ARIS · source reading
-│   └── paper-analyzer                                                      nature-paper-skills @44cff42
+├── workbench-discovery/               the Block's live view
 ├── 2_review/
 │   ├── research-lit · comm-lit-review                                      ARIS · review craft
 │   └── academic-researcher                                                 nature-paper-skills
 └── agents/                            execution roles (agent definitions only)
+
+1_base/search/                         Search moved here to serve every theme
+├── haipipe-search/                    skill haipipe-discovery-search · 1 · acquisition: identity, admission, Run allocation
+└── 1_search/                          vendored originals, callable
+    ├── arxiv · semantic-scholar · exa-search · openalex · gemini-search   ARIS @0472e53 · candidate channels
+    ├── alphaxiv · deepxiv                                                  ARIS · source reading
+    └── paper-analyzer                                                      nature-paper-skills @44cff42
 ~~~
 
 Ours run by default. An original runs only when the Search or Review skill
@@ -77,7 +80,7 @@ bank        discovery/
 L1 Block    bNN_<noun>_<qualifier>/  (Discovery Board; board.md)
 L2 Job      jNN_<noun>_<qualifier>/
 L3 TaskPage tNN_<noun>_<qualifier>/  (Page Folder)
-L4 Run      runs/rNN_<author><year>_<paper>.sh <-> results/rNN_.../
+L4 Run      runs/rNN_<author><year>_<paper>/rNN_<...>.sh <-> runs/rNN_<...>/result/
 ~~~
 
 L1 is a broad evidence domain; L2 is a self-contained inquiry/campaign; L3 owns
@@ -100,9 +103,9 @@ and close checkpoints.
 Page Face                              Task Face
 tNN_<task>.md                         discovery.yaml
 draft/                               scripts/ optional
-draft/evidence/bibex/tNN_<task>.bib  runs/
-(CITE lane owned by Outline)           results/
-topic-level synthesis                  runtime receipts
+draft/evidence/bibex/tNN_<task>.bib  runs/rNN_<...>/ (ticket + result/)
+(CITE lane owned by Outline)           runtime receipts
+topic-level synthesis
 ~~~
 
 Configuration is not a Folder kind. Each workflow phase configures the Face it

@@ -7,11 +7,11 @@ kind: files · authored · sources and retained materials have distinct roles
 - **Role**: writes
 
 ### F2 · Page base and source authority
-- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/SKILL.md
+- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-draft/SKILL.md
 - **Role**: contract
 
 ### F3 · Page template
-- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/ref/page-template.md
+- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-draft/ref/page-template.md
 - **Role**: contract
 
 ### F4 · Workbench responsibilities
@@ -23,5 +23,5 @@ kind: files · authored · sources and retained materials have distinct roles
 - **Role**: archive
 
 ### F6 · Page workflow
-- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-page-workflow/SKILL.md
+- **Path**: Tools/plugins/haipipe-toolkit/skills/page/haipipe-draft-workflow/SKILL.md
 - **Role**: contract

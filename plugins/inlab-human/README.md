@@ -84,5 +84,5 @@ contract changes, re-sync the copy.
 ## Study data lives with the study
 
 The plugin is the engine. Endpoint configs, frozen bundles, `responses.jsonl`, and analysis
-outputs live in the study's project repo (e.g. `examples/Project-InLabHumanEval-Reach/`),
+outputs live in the study's project repo (e.g. `examples-2-agent/Project-InLabHumanEval-Reach/` in REACH-SPACE),
 never inside the plugin.

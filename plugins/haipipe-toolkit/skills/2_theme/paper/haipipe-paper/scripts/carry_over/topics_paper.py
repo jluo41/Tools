@@ -157,7 +157,7 @@ def questions(board, P):
     return out
 
 
-TOMLS = "j[0-9][0-9]_v*/delivery/paper-build.toml"
+TOMLS = "delivery/j[0-9][0-9]_v*/paper-build.toml"
 
 
 def order_story(toml):
@@ -173,7 +173,7 @@ def versions_telling(board, stem):
     out = []
     for face in sorted(board.glob("j[0-9][0-9]_v*/j[0-9][0-9]_v*.md")):
         tells = re.search(r"(?m)^tells:\s*(\S+)", read(face))
-        toml = face.parent / "delivery" / "paper-build.toml"
+        toml = board / "delivery" / face.parent.name / "paper-build.toml"
         unset = not tells or not tells.group(1).strip("—-")
         if face.stem == face.parent.name and (
                 (tells and Path(tells.group(1)).name == stem)
@@ -311,9 +311,9 @@ def rewrites(board, P, Q):
                             lambda m: m.group(1) + Path(cur_topic).name, nt)
                 if nt != st:
                     change[srel] = (srel, fix_links(nt, srel, srel, board, mapping))
-            toml = v / "delivery" / "paper-build.toml"
+            toml = board / "delivery" / v.name / "paper-build.toml"
             if toml.is_file():
-                tt = re.sub(r'(?m)^(order\s*=\s*")[^"]*(")', lambda m: m.group(1) + f"../{v.name}.md" + m.group(2), read(toml))
+                tt = re.sub(r'(?m)^(order\s*=\s*")[^"]*(")', lambda m: m.group(1) + f"../../{v.name}/{v.name}.md" + m.group(2), read(toml))
                 tt = tt.replace(cur_page + "/", cur_topic + "/")
                 change[toml.relative_to(board).as_posix()] = (toml.relative_to(board).as_posix(), tt)
 

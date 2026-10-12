@@ -1,5 +1,5 @@
 """Build a Question's report drawing from studio frames (haipipe-report; moved here from
-excalidraw-report/ref/ on 261007; designed in b03 studio/s04-studio-and-report).
+excalidraw-report/ref/ on 261007; designed in b03 studio/s02-studio-workbench-skill).
 
 A report drawing is generated, never drawn by hand. The report's own .md lists its figures,
 each one named frame of a studio drawing. This script copies each frame, with what the person

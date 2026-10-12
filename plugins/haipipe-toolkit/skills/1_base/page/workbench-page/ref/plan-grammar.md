@@ -1,6 +1,6 @@
 # The plan file · one grammar, with Run Spec-owned outline policy
 
-For release, `../../haipipe-page/ref/release-decisions.md` controls profile
+For release, `../../haipipe-draft/ref/release-decisions.md` controls profile
 precedence. The Shape approval rules below apply to the non-interactive/legacy
 profile; interactive Pages reuse acceptance of the exact Structure/Writing
 versions and a recorded release instruction.
@@ -9,7 +9,7 @@ versions and a recorded release instruction.
 The plan is `<page>/draft/<stem>-draft-v<G>.<S>[.<E>].md` (Page skill 0.118; an
 unmigrated Page still has `outline/<stem>-outline-v…md`): what the page WILL say,
 agreed before it says it. On disk it has three sections, `## 1 · Structure`,
-`## 2 · Scratch` and `## 3 · Draft` (`haipipe-page` SKILL.md § The Draft
+`## 2 · Scratch` and `## 3 · Draft` (`haipipe-draft` SKILL.md § The Draft
 Markdown); `src/plan_layout.py::to_canonical` folds them into the one grammar
 below, which `checks/outline.py`, `src/plan_shape.py` and the Page workbench
 parse, and `from_canonical` writes an edited plan back to the three sections. A Run Spec
@@ -392,5 +392,5 @@ The four head and Note teeth are REPORTED by the board-wide sweep
 OUTLINE gate (`cli/outline-pass.py`), which judges only the plan being written.
 ```
 
-Run them: `python3 <haipipe-page>/checks/outline.py --boards <board>` and
-`python3 <haipipe-page>/cli/check.py <board> | grep <PAGE>`.
+Run them: `python3 <haipipe-draft>/checks/outline.py --boards <board>` and
+`python3 <haipipe-draft>/cli/check.py <board> | grep <PAGE>`.

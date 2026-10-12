@@ -11,6 +11,7 @@ Read-only: this module only reads.
 """
 from __future__ import annotations
 
+from src.common import delivery_dir, delivery_lane_dir, delivery_relative
 import csv
 import re
 from datetime import datetime
@@ -235,6 +236,11 @@ def job(jdir: Path) -> dict:
     reason = next((r for r in runs(t00) if r["type"] == "reason"), None) if t00 else None
     rank = next((r for r in runs(t99) if r["type"] == "rank"), None) if t99 else None
     designs = [design(t) for t in tasks if kind_of(t) == "design"]
+    ranking = _csv(rank["path"] / "result" / "ranking.csv") if rank else []
+    why = {r.get("design", ""): r.get("why", "") for r in ranking}
+    for d in designs:                       # a prediction projected before 261012 has no why: the ranking's row holds it
+        if d["prediction"] and not d["prediction"].get("why") and why.get(d["id"]):
+            d["prediction"] = {**d["prediction"], "why": why[d["id"]]}
     files = []
     if fence.is_dir():
         for p in sorted(fence.iterdir()):
@@ -243,7 +249,7 @@ def job(jdir: Path) -> dict:
             target = str(p.readlink()) if p.is_symlink() else ""
             files.append({"name": p.name + ("/" if p.is_dir() else ""), "link": target,
                           "broken": p.is_symlink() and not p.exists()})
-    delivered = _yaml(jdir / "delivery" / "designs.json") if (jdir / "delivery" / "designs.json").is_file() else {}
+    delivered = _yaml(delivery_dir(jdir) / "designs.json") if (delivery_dir(jdir) / "designs.json").is_file() else {}
     return {"path": jdir, "name": jdir.name, "id": jdir.name.split("_")[0], "goal": str(f.get("goal", "")),
             "method": mid, "version": version, "method_name": METHODS.get(mid, ("", ""))[0],
             "type": METHODS.get(mid, ("", "—"))[1], "sha": str(f.get("method-sha", "")), "inputs": str(f.get("inputs", "")),
@@ -253,9 +259,9 @@ def job(jdir: Path) -> dict:
             "t00": t00, "t99": t99, "reason": reason, "rank": rank,
             "topics": (_yaml(reason["path"] / "result" / "chains.yaml") or {}).get("topics", []) if reason else [],
             "ideas": (_yaml(reason["path"] / "result" / "ideas.yaml") or {}).get("ideas", []) if reason else [],
-            "ranking": _csv(rank["path"] / "result" / "ranking.csv") if rank else [],
+            "ranking": ranking, "hold": _sections(face(jdir)).get("Hold", ""),
             "designs": designs, "delivered": (delivered or {}).get("designs", []) if isinstance(delivered, dict) else [],
-            "delivery": jdir / "delivery"}
+            "delivery": delivery_dir(jdir)}
 
 
 def board(block: Path, with_jobs: bool = True) -> dict:
@@ -280,7 +286,9 @@ def board(block: Path, with_jobs: bool = True) -> dict:
                 scores[(row.get("job", ""), row.get("design", ""))] = {**row, "run": r["run"]}
     jobs = [job(p) for p in sorted(block.iterdir()) if re.match(r"^j\d+_", p.name) and is_job(p)] if with_jobs else []
     delivered = _yaml(block / "delivery" / "designs.json") if (block / "delivery" / "designs.json").is_file() else {}
-    return {"path": block, "face": md, "goals": goals if isinstance(goals, list) else [],
+    close = re.search(r"(?m)^close:\s*(.+)$", md.read_text(encoding="utf-8", errors="ignore")) if md.is_file() else None
+    return {"path": block, "face": md, "close": close.group(1).strip() if close else "",
+            "goals": goals if isinstance(goals, list) else [],
             "questions": questions if isinstance(questions, list) else [], "inputs": inputs, "observed": observed,
             "scores": scores, "runs": rs, "jobs": jobs,
             "delivered": (delivered or {}).get("designs", []) if isinstance(delivered, dict) else []}
@@ -292,6 +300,32 @@ def block_of(folder: Path) -> Path | None:
         if re.match(r"^b\d+_", p.name) or (p / "board.md").is_file():
             return p
     return None
+
+
+def block_goals(block: Path | None) -> list:
+    """board.md ## Goals of a design Block (its ```yaml goals: list), or []."""
+    md = (block / "board.md") if block else None
+    if not md or not md.is_file():
+        return []
+    m = re.search(r"(?ms)^##\s+Goals\s*\n.*?```yaml\n(.*?)```", md.read_text(encoding="utf-8", errors="ignore"))
+    data = _yaml_of(m.group(1)) if m else {}
+    return (data or {}).get("goals", []) if isinstance(data, dict) else []
+
+
+def venue_of(folder: Path | None) -> str:
+    """The channel a design is drawn in (JL 261011: "it is not message"): the venue of the goal its Job pins,
+    from board.md ## Goals, lowercased (sms · checklist · questionnaire · …); "" when none is found, which the
+    views read as an SMS (the older Blocks)."""
+    if folder is None:
+        return ""
+    for p in (folder, *folder.parents):
+        if p.is_dir() and is_job(p):
+            goal = str(front(face(p)).get("goal", ""))
+            for g in block_goals(block_of(p.parent)):
+                if str(g.get("id", "")) == goal:
+                    return str(g.get("venue", "")).strip().lower()
+            return ""
+    return ""
 
 
 def arm_of(b: dict, jid: str, did: str) -> dict:

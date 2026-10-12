@@ -21,8 +21,8 @@ metadata:
 
 # /haipipe-paper-venue · make one external desk inspectable
 
-For a concrete Venue Page update, load `haipipe-page`,
-`haipipe-page-workflow`, the current Run Workflow/Spec owner,
+For a concrete Venue Page update, load `haipipe-draft`,
+`haipipe-draft-workflow`, the current Run Workflow/Spec owner,
 `haipipe-paper-workflow`, this PageType and relevant references in their set order. Name the Page
 `QBv<n>-<slug>.md` and declare `page-type: venue`. The shared Page resolver
 selects its owner; the filename fallback remains readable for existing Pages.

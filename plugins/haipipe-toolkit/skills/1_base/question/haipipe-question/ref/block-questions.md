@@ -4,7 +4,7 @@ Read for question-driven Block work: the Question register and its related
 resources. `haipipe-question` owns this register (moved from `haipipe-task`,
 2026-10-03); `haipipe-report` owns the report, its header lines and the walk
 (moved here 261007); `haipipe-task` owns the Task work a Question cites;
-`haipipe-page` owns writing each report; `workbench-work` presents them. What makes a good Question (a topic, not a decision) is
+`haipipe-draft` owns writing each report; `workbench-work` presents them. What makes a good Question (a topic, not a decision) is
 `../SKILL.md` § A question is a topic.
 
 ## Placement

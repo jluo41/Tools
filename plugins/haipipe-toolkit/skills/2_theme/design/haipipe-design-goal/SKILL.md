@@ -149,7 +149,7 @@ them (its run cards name it). Show the person the changed lines before writing a
 
 ```bash
 python scripts/make_inputs.py freeze design/Design-<name>/inputs/i2 --new "a new handoff"
-python scripts/make_inputs.py job design/Design-<name>/j03_g01_m04
+python scripts/make_inputs.py job design/Design-<name>/j03_<goal-name>_<method-name>
 ```
 
 

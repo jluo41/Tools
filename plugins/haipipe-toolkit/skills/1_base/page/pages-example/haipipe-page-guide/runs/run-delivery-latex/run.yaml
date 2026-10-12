@@ -1,0 +1,14 @@
+run: run-delivery-latex
+kind: soft
+type: delivery
+scope: null
+target: latex
+ticket: run-delivery-latex.sh
+skill: haipipe-draft-delivery
+agent: null
+signs: null
+status: done
+passes: []
+writes:
+- delivery/latex/
+feeds: []

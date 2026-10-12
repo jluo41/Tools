@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import html
 import importlib.util
 import json
 import re
@@ -280,10 +281,25 @@ def crossref_record(doi: str, timeout: float) -> dict[str, Any]:
     }
 
 
+# A PMLR paper page (proceedings.mlr.press/vNNN/<key>.html) has no .bib endpoint: its BibTeX is
+# the page's own `Cite this Paper` block, which the page's Download button saves as is.
+CITECODE_RE = re.compile(r'<code[^>]*\bid="bibtex"[^>]*>(.*?)</code>', re.S)
+
+
 def fetch_by_publisher(url: str, timeout: float) -> tuple[str, str, str] | None:
-    """A venue's own .bib endpoint, e.g. proceedings.neurips.cc/.../-Bibtex.bib."""
+    """A venue's own .bib endpoint, e.g. proceedings.neurips.cc/.../-Bibtex.bib, or the
+    citation block of a PMLR paper page, read verbatim."""
     status, content_type, body = _get(url, timeout, BIBTEX_ACCEPT)
-    if status != 200 or content_type.startswith("text/html") or not parse_entries(body):
+    if status != 200:
+        return None
+    if content_type.startswith("text/html"):
+        if (urllib.parse.urlparse(url).hostname or "") != "proceedings.mlr.press":
+            return None             # an HTML page is a venue export only on PMLR, whose page IS the record
+        block = CITECODE_RE.search(body)
+        if not block:
+            return None
+        body = html.unescape(block.group(1))
+    if not parse_entries(body):
         return None
     return body.strip() + "\n", url, "publisher"
 
@@ -690,7 +706,8 @@ def main() -> int:
     identity.add_argument("--arxiv", help="Resolved arXiv identifier.")
     identity.add_argument(
         "--publisher-url",
-        help="A venue's own .bib endpoint; stamped authoritative-export/publisher.",
+        help="A venue's own .bib endpoint, or a PMLR paper page (its citation block); "
+        "stamped authoritative-export/publisher.",
     )
     identity.add_argument(
         "--dblp-bib-file",
@@ -717,7 +734,8 @@ def main() -> int:
     parser.add_argument(
         "--result-dir",
         type=Path,
-        help="results/<RUNNAME>/; writes <RUNNAME>.bib and stamps runtime.yaml.",
+        help="runs/<RUNNAME>/result/ (or the older results/<RUNNAME>/); writes <RUNNAME>.bib "
+        "and stamps runtime.yaml.",
     )
     parser.add_argument("--output", type=Path, help="Explicit .bib path instead.")
     parser.add_argument("--timeout", type=float, default=20.0)
@@ -885,7 +903,11 @@ def main() -> int:
             summary["key"] = {"from": key_from, "to": args.key}
 
     if args.result_dir:
-        bib_path = args.result_dir / f"{args.result_dir.name}.bib"
+        # runs/<run>/result/ (one folder per Run) or the older results/<run>/; resolved first,
+        # so `--result-dir .` or a relative `result` still names the Run
+        result_dir = args.result_dir.resolve()
+        run = result_dir.parent.name if result_dir.name == "result" else result_dir.name
+        bib_path = result_dir / f"{run}.bib"
         runtime_path = args.result_dir / "runtime.yaml"
     else:
         bib_path = args.output

@@ -1,3 +1,19 @@
+## 1.9.3 · 2026-10-11 · Add a related item names /haipipe-related
+
+- `ref/run-cards.md`: both Add a related item cards (Block › Related, Block › Audience Report) say the folder's rules are `/haipipe-related`, a file goes as it came into its subfolder (meetings/ · papers/ · files/ · emails/), which is already its first group, and the group cell holds the research questions, comma-separated (b10 s04-D07, D08, D09).
+
+## 1.9.2 · 2026-10-11 · Redraw the paper map is the Board's
+
+- `ref/run-cards.md`: Redraw the paper map moves from Job › Idea Studio to Block › Idea Studio; a version keeps no Studio (b10 s09-D01), so the frame never showed the version's card. Its prompt draws one version's map as a Board topic, `studio/sNN-papermap-<version>/`. `workbench-paper/ref/workbench-table.md` matches; `table-workbench --check --cards` passes.
+
+## 1.9.1 · 2026-10-11 · The version keeps no studio/ or delivery/
+
+- The file-system projection follows b10 (s09-D01, D05): the Board holds `studio/`, `related/` and `delivery/jNN_<version>/`; a version holds its face, `reports/` and `runs/`. The Build card's prompt names `delivery/jNN_<version>/` (haipipe-paper 1.12.0).
+
+## 1.9.0 · 2026-10-11 · Cards for the Block's Related
+
+- `ref/run-cards.md`: Add a related item and Read a paper move from Block › Description (views related) to a new `Block › Related` section, every view; the Space list names Related among the seven, shown folded inside the Studio with its buttons in the Studio's Runs panel (b10 s04-D05, workbench-paper 0.36.0). The Audience Report › Related Papers cards stay. `workbench-paper/ref/workbench-table.md` matches; `table-workbench --check --cards` passes.
+
 ## 1.8.2 · 2026-10-09 · Cards for Block › Audience Report › Related Papers
 
 - `ref/run-cards.md`: Add a related item and Read a paper also sit in Block › Audience Report, for its new Related Papers view (workbench-paper 0.34.0); with no card of its own the view's Runs panel fell back to the question buttons.

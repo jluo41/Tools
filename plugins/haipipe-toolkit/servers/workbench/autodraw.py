@@ -202,7 +202,7 @@ def autodraw(root, payload):
             return _fail("an element is missing id/type/x/y — not written")
 
     base = scene or {"type": "excalidraw", "version": 2,
-                     "source": "haipipe-board/autodraw",
+                     "source": "haipipe-block/autodraw",
                      "appState": {"gridSize": None,
                                   "viewBackgroundColor": "#ffffff"},
                      "files": {}}

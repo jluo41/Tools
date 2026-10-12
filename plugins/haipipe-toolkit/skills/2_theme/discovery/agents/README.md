@@ -57,7 +57,7 @@ existing Task Page. It never appends anonymous source prose.
 ## Truth gates
 
 ~~~text
-runs/<RUNNAME>.sh <-> results/<RUNNAME>/runtime.yaml
+runs/<RUNNAME>/<RUNNAME>.sh <-> runs/<RUNNAME>/result/runtime.yaml
 runtime family: discovery; operation matches paper/source Subject kind
 runtime address: bNN.jNN.tNN.rNN and bNNjNNtNNrNN
 complete -> <RUNNAME>.md + facts.md + one-entry <RUNNAME>.bib

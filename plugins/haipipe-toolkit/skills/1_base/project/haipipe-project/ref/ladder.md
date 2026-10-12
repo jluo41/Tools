@@ -6,14 +6,15 @@ Block → Job → Task → Run → pass. `scripts/ladder.py` reads the yaml bloc
 `/haipipe-project update <path>` fixes what is safe. Edit the table here, never in the script.
 
 This skill checks the **shape** (names, faces, which folders sit where, the Run card).
-The owning skill keeps the **content**: a Page's sections belong to haipipe-page, a
+The owning skill keeps the **content**: a Page's sections belong to haipipe-draft, a
 ticket's body to haipipe-task, a Run's kinds and passes to haipipe-run.
 
 ## The levels
 
 ```text
 level   name            face               may hold                                     children
-Block   bNN_<topic>/    board.md           studio/ reports/ delivery/ resources/ src/   jNN_<job>/
+Block   bNN_<topic>/    board.md           studio/ reports/ delivery/ related/          jNN_<job>/
+                                           resources/ src/
 Job     jNN_<job>/      jNN_<job>.md       studio/ reports/ delivery/ src/ sbatch/      tNN_<task>/
                                            runs/ (soft Runs only)
 Task    tNN_<task>/     tNN_<task>.md      studio/ reports/ delivery/ scripts/ draft/   runs/<run>/
@@ -38,7 +39,7 @@ Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ 
 ```yaml
 levels:
   block:
-    may_hold: [studio, reports, delivery, resources, src, runs, _old]
+    may_hold: [studio, reports, delivery, related, resources, src, runs, _old]   # related/: what came in (haipipe-delivery, JL 261011)
     debt:
       diagram: "diagram/ is retired: drawings go in studio/"
       diagram-ceiling: "diagram/ is retired: drawings go in studio/"

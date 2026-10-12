@@ -15,7 +15,7 @@ paragraph opens its Revise run, `run-revise-<c1-p2>` (one ticket in
 `runs/`, which keeps the paragraph's text before the Save as its Before); later
 Saves change only the Draft (a Why note is kept in that ticket). `page.py
 close-run` writes the Before / After ledger into the run's pass `runs/<run>/passes/` when the person
-says close (haipipe-page-revise). The Runs panel lists the run under Revise edits.
+says close (haipipe-draft-revise). The Runs panel lists the run under Revise edits.
 
 Nothing here touches Page Content; `page.py adopt` copies the Drafts into it when the person asks.
 """
@@ -272,7 +272,7 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
             "Drafts stay in the Outline for the writing Run to adopt.\n"
             % (target, run_id, ticket_rel(base, run_id), rel, run_id, display), encoding="utf-8")
         if runs.name == run_id:
-            write_card(base, run_id, type="revise", target=target, skill="haipipe-page-revise",
+            write_card(base, run_id, type="revise", target=target, skill="haipipe-draft-revise",
                        status="running", writes=[], feeds=[])
     total = len(re.findall(r"(?m)^##### R\d+ ·", text))
     summary = "%d change%s over %d Step%s" % (total, "s"[:total != 1], step_number, "s"[:step_number != 1])

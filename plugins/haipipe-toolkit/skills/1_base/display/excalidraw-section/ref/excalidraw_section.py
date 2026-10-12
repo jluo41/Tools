@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
-sys.path.insert(0, str(SKILLS / "1_base" / "page" / "haipipe-page"))
+sys.path.insert(0, str(SKILLS / "1_base" / "page" / "haipipe-draft"))
 sys.path.insert(0, str(SKILLS / "0_utils" / "draw-logic-tree" / "ref"))
 
 from src.item_table import read_items  # noqa: E402

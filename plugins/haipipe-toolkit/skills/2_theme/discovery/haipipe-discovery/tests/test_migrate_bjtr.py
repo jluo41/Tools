@@ -103,7 +103,7 @@ report:
             self.assertNotIn("## Writing Style", page)
             self.assertIn("### 2 · Type payload", page)
             self.assertIn("### 3 · Evidence map", page)
-            # Page Face is Opening -> Content; Aims are backstage (haipipe-page 0.121).
+            # Page Face is Opening -> Content; Aims are backstage (haipipe-draft 0.121).
             self.assertNotIn("## Aims", page)
             readme = (bank.parent / "README.md").read_text(encoding="utf-8")
             self.assertIn(

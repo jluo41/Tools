@@ -97,7 +97,7 @@ def col_widths(rows, ncol, total=BODY_TW, pad=216):
 
 # lanes that are EVIDENCE and become comments; see QC0 on typed lanes
 # THE EVIDENCE LANES, and there are exactly three. This is not our list: it is
-# the board's own, at haipipe-page/src/body.py:288, "Typed evidence lanes
+# the board's own, at haipipe-draft/src/body.py:288, "Typed evidence lanes
 # (`> Citation:`, `> Value:`, `> Display:`)". Each one answers "what backs this
 # sentence" and resolves against a file: the .bib, a run, a display unit.
 EVIDENCE_LANES = ("Value", "Citation", "Display")
@@ -751,6 +751,7 @@ class Inline:
         self.num = numbering          # {'table': n, 'figure': n, label -> label}
         self.report = report
         self.prose_refs = []          # units a SENTENCE has cited, in order: only these are placed
+        self.cited = set()            # citation keys used; empty when no sentence was rendered
         self._captioning = False
 
     def _cite(self, m):
@@ -1520,7 +1521,7 @@ def main():
                 f"{len(declared)} keys. {len(gap)} declared key(s) are absent, so "
                 f"citing any of them prints a bare key: "
                 f"{', '.join(gap[:6])}{' …' if len(gap) > 6 else ''}. "
-                f"Regenerate: python3 <haipipe-page>/cli/refs.py <paper-root>"))
+                f"Regenerate: python3 <haipipe-draft>/cli/refs.py <paper-root>"))
     bbl = Bbl(bbl_path)
     disp = Displays(root, extra_root=a.display_root)
     inline = Inline(bbl, disp, num, report)

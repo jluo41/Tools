@@ -33,6 +33,8 @@ set -euo pipefail
 TASK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RESULT_DIR="$TASK_DIR/results/r01_smith2020_demo"
 '''
+# the same self-location written with `dirname --`, which the ticket patch once missed (left one level short)
+PAPER_TICKET_DD = PAPER_TICKET.replace('dirname "', 'dirname -- "').replace("r01_smith2020", "r02_jones2021")
 V081_TICKET = '''#!/bin/bash
 
 # Canonical haipipe-task v0.8.1 execution context.
@@ -57,12 +59,15 @@ def write(p: Path, text: str) -> None:
 def old_project(space: Path) -> Path:
     p = space / "examples-9-demo" / "Project-Demo"
     t = p / "tasks/b01_demo/j01_demo/t01_demo"
-    write(t / "t01_demo.md", "# t01 · demo\n\nMetrics: [metrics](../results/t01_demo/r01_a/metrics.json)\n")
+    write(t / "t01_demo.md", "# t01 · demo\n\nMetrics: [metrics](../results/t01_demo/r01_a/metrics.json)\n"
+          "Which tasks/subgroups are harder stays prose.\n")
     write(t / "scripts/config/r01_a.yaml", "notebook: off\n")
     write(t / "runs/r01_a.sh", OLD_TICKET)
     write(p / "tasks/b01_demo/j01_demo/results/t01_demo/r01_a/runtime.yaml", "status: complete\nrun: r01_a\n")
     write(p / "tasks/b01_demo/j01_demo/results/t01_demo/r01_a/metrics.json", "{}\n")
     write(p / "tasks/b01_demo/j01_demo/diagram/01-overview.txt", "a drawing\n")
+    # a bNN_ name inside a Job's workflow/ is history, not a Block: it moves with workflow/ to _old/
+    write(p / "tasks/b01_demo/j01_demo/workflow/context/b93_demo/diagram/old.txt", "old\n")
     write(p / "tasks/b01_demo/studio/01-overview.txt", "BLOCK\n\nPurpose\n  Show every older layout.\n\nContents\n")
     old = p / "tasks/b01_demo/j02_old"
     write(old / "scripts/t01_fit/01_fit.py", "print('fit')\n")
@@ -73,6 +78,8 @@ def old_project(space: Path) -> Path:
     write(d / "t01_landscape.md", "# t01 · landscape\n")
     write(d / "runs/r01_smith2020_demo.sh", PAPER_TICKET)
     write(d / "results/r01_smith2020_demo/runtime.yaml", "status: complete\n")
+    write(d / "runs/r02_jones2021_demo.sh", PAPER_TICKET_DD)
+    write(d / "results/r02_jones2021_demo/runtime.yaml", "status: complete\n")
     return p
 
 
@@ -124,13 +131,15 @@ class MigrateTest(unittest.TestCase):
         self.assertTrue((run / "run.yaml").is_file())
         self.assertIn("runs/r01_a/result/metrics.json",
                       (p / "work/b01_demo/j01_demo/t01_demo/t01_demo.md").read_text())
+        self.assertIn("Which tasks/subgroups are harder", (p / "work/b01_demo/j01_demo/t01_demo/t01_demo.md").read_text())
         self.assertTrue((p / "work/b01_demo/j02_old/t01_fit/runs/r01_fit/r01_fit.sh").is_file())
         self.assertTrue((p / "work/b01_demo/board.md").is_file())
         self.assertIn("Show every older layout.", (p / "work/b01_demo/board.md").read_text())
         self.assertTrue((p / "work/b01_demo/j01_demo/studio/01-overview.txt").is_file())
         counts = PT.probe_all(p, quiet=True)
         self.assertEqual(counts["unexpected"], 0, counts)
-        self.assertGreaterEqual(counts["resolves"], 3, counts)
+        self.assertGreaterEqual(counts["resolves"], 4, counts)
+        self.assertTrue((p / "work/b01_demo/j01_demo/_old/workflow/context/b93_demo/diagram/old.txt").is_file())
         self.assertIn("newly broken 0", out.stdout)
 
     def test_update_apply_refuses_when_tools_cannot_read_the_new_layout(self):

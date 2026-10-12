@@ -1,21 +1,93 @@
 # Workbench · the base: Studio and Guide, reused by every theme
 
+Delivery storage (JL 261010)
+---------------------------
+
+Only the Block owns a physical `delivery/` directory. Job, Task and Report
+outputs retain their source identity under it: `delivery/jNN_<job>/`,
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and
+`delivery/reports/qNN_<report>/<lane>/`. The Block's own output uses
+`delivery/<lane>/`. Job and Task Delivery views select their source subtree
+and link to the whole Block Delivery; they never create local delivery folders.
+Runs and Results remain with their source. Every writer and reader uses the
+shared `haipipe-draft/src/common.py` Delivery helpers. Standalone Pages without
+a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
+
+
 (Renamed from `workbench-shared`, 261007. Each theme is a sibling `workbench-<theme>`; the base
 with no theme on top is the vanilla workbench. The `shared` route row and `/w/shared` keep
 their names.)
 
-The frame: shared Guide and Studio, five work Spaces (frame.py)
---------------------------------------------------------------
+The frame: shared Guide and Studio (with Related), the work Spaces (frame.py)
+-----------------------------------------------------------------------------
 
 `GET /_board/workbench?path=<folder>[&space=<Space>][&sub=<subspace>][&studio=1][&theme=<name>][&format=json]`
 draws any Block, Job or Task folder in one frame (`frame.py`, route `frame_view.py`):
 
 ```text
-Guide · Studio | Block · Job ▾ · Task ▾                         top navigation
-Description | Report | Work Details | Runs · Delivery          work mode only
+Guide · Studio | Block · Job ▾ · Task ▾ | Delivery             top navigation
+Description | Report | Work | Runs                             work mode only
 <subspaces>                                                             the third row
 content                                                    │ Runs panel (runs_panel.py)
 ```
+
+Studio and Delivery are the Block's two shared views (b10 s02-D18, s09-D05): thinking comes in
+through the Studio, outputs leave through the Delivery. Selecting either selects only it and hides
+the work Spaces row. A Job or Task has no Related, Studio or Delivery of its own (b10 s03-D06; JL
+261011: "for the section, we will do not have the related studio and delivery"; "also for the
+Jobs"): from any level, Delivery is the Block's, titled with the Block. Its source row (Block · jNN ·
+jNN › tNN) picks one part, the open Job or Task picked when opened from there; a part shows what is
+under its own path, `delivery/jNN_<job>/tNN_<task>/`, and links back down to its folder. The Block's
+own Delivery ends with "By source", one row per part with its files (`frame.delivery_parts`,
+`delivery_by_source`, `_delivery_row`). A lanes row follows only when a part has more than one lane.
+`space=Delivery` links keep working.
+
+Related, the Block's `related/` (what came in: meetings, papers, files we were sent), folds inside
+the Studio as its second part, under the topic cards (b10 s04-related-workbench-skill; JL 261011:
+"put the related as the second collapse part in the box of the studio items", "I might just want to
+keep Guide, Studio | Block, Job, Task | Delivery"). One folding row per `related/related.md` row,
+under the Studio's own group bar (JL 261011: "🎯Current 0 / Untagged 4 / + Group — for the studio"):
+Current stays in the browser, a group is a name in the row's `group` cell (comma-separated, like a
+topic's **Tags:** line), `related/_groups.txt` keeps the button order. Drag a row by ⋮⋮ onto a group,
+× on its chip takes it out, × on a group clears it from every row. One bar, one script and one
+`POST /_board/studio-group` (`kind: related`) serve both (`frame.group_list`, `studio_group_op`).
+The subfolders (`materials/`, `meetings/`, `papers/` …) only keep the files; a file no row names yet
+shows dashed under Untagged ("no row yet"), and a drag gives it a row. An opened
+row is the file itself, read in place: a Word file through its package (`view=docx`,
+`frame.docx_preview`, the Word renderer's projection: text, tables, images, comments in the margin;
+JL 261011: "could we preview the word here?"), a PDF, a page or a picture (`frame.related_view`,
+wrapped by `frame.studio_related`). Every theme shows this one view; paper's cards by question stay in
+Report › Related Papers. Folded by default; a
+`space=Related` link, or an older `space=Description&sub=Related` one, opens the Studio with it unfolded.
+
+Timeline is the Studio's third folding part, under Related (JL 261011: "add another section of the
+Timeline"; b10 s08-studio-timeline): what moved when, on one axis down the page, the oldest day at the
+top and the newest at the bottom, a dot per day (JL 261011: "a real timelne ... with a axis down", "up to
+down"). Three levels of detail (JL: "different level of details"): Days, the default, a chart, a row per
+day, a column per topic group (by group, the default; JL: "the columns can also be the topic groups") or per
+topic (by topic), a bubble sized by how much moved that day and the day's total as a bar; a group's column
+picks that group in the bar above and shows its topics; clicking topics picks them and their items show under
+the chart, on the same axis (JL: "select the topics we are interest in we show there content");
+Topics, a line per topic with a stacked bar of its kinds (decided, session, note); Everything, each
+decision, session and note. The browser keeps the level picked. The chart is plain HTML and CSS in the
+page, no chart library (JL 261011: "it is not that beautiful ... like using the versualiaation tools?"). Nothing new is written for it; it reads what the topics already keep: each decision
+`sNN-DNN · … (JL 261011)` by the first date in it, each session `runs/run-draw-<sNN>/passes/pNN-<MMDD>/`,
+and the green change notes `✎ <YYMMDD> …` in the topic's drawings (`frame.timeline_events`,
+`frame.studio_timeline`). It follows the group bar above: pick a group and only its topics' lines stay.
+A topic's name, column or bubble opens its row. Decisions with no date are listed at the end.
+
+Every theme opens in this one frame (JL 261011). The themes' older Block pages,
+`/_board/cowork-board`, `/_board/work-board` and `/_board/discovery-board`, send a Block to
+the frame (`frame_redirect`, their old view mapped to its Space), as `/_board/insight-board`
+already did; their pop-outs, report pages and `format=json` stay. An `--only` host serves no
+frame and keeps its theme's own page.
 
 Studio has one entry immediately after Guide and before the Block / Job / Task controls
 (261010, b03 s02-D07–D09). Like Guide, it opens a shared view: only Studio is highlighted,
@@ -35,17 +107,26 @@ The Report button is shortened from Audience Report (s02-D10); existing `space=A
 links and theme adapters keep their names.
 Studio topics may record **Tags:** (or one **Type:**) in their notes, separated by commas,
 middle dots or vertical bars. One topic may have several tags. The shared list shows each
-tag on its row. Current comes first, tag groups follow, and All comes last. An sNN is one
-topic; a group is a set of topic references. Drag a card by its handle into Current, or use
-Add to Current / Remove from Current. Current is personal to this browser and origin,
-saved in localStorage under the Block's relative path, and shared across that Block's
+tag on its row. Current comes first and the tag groups follow; there is no All button: with
+no group picked every topic shows (the default), and picking the open group again unpicks it
+(s02-D16). An sNN is one topic; a group is a set of topic references. A group other than
+Current is a tag: `+ Group` names a new one, dragging a card by its handle onto a group writes
+that tag into the topic's **Tags:** line, × on a card's chip takes it out, and × beside a group
+deletes the tag from every topic (the topics stay). The writes go through POST
+`/_board/studio-group` (`studio_group_op`), so groups live on disk and every person and agent
+sees the same ones. `studio/_groups.txt` keeps the groups in button order, empty ones
+included; dragging a group button sideways rewrites it (s02-D17). Each group shows an emoji
+picked from its name by `group_emoji` (a word table, else a fixed palette pick); the × controls
+show only under the mouse.
+Current is personal: drop a card on it, or use Add to Current / Remove from Current. It is
+saved in localStorage under the Block's relative path and shared across that Block's
 Block, Job and Task views. It does not sync to another browser or machine. A failed save
-keeps the old selection and reports the failure. Current is the default view; its empty
-state points to All. The URL stores studio_group=current/all or the existing studio_tag.
-Existing Job and Task topics are listed with their source until their files are moved;
-a Source picker can narrow the list. Repeated sNN names use their source-qualified path
-for membership and anchors, so two old topics cannot overwrite each other. All clears
-the Source filter. The SPACE index counts this same list. No source files are moved or
+keeps the old selection and reports the failure. The URL stores studio_tag, or
+studio_group=current; studio_group=all still opens the unpicked view.
+Existing Job and Task topics remain in the shared list until their files are moved;
+a Source picker can narrow the list. Cards show the topic name, tags and controls;
+source badges, decision/open/session counts and feeds chips are omitted. Repeated sNN names use their source-qualified path
+for membership and anchors, so two old topics cannot overwrite each other. The SPACE index counts this same list. No source files are moved or
 renumbered by grouping. New topics still go into the owning Block's studio/.
 A direct topic anchor reveals its row even when a saved filter would hide it.
 Topic-to-Job construction, linked-topic filters and migration of existing local Studios remain
@@ -77,14 +158,12 @@ from `live.frame`: `Space`, `Theme`, `face`, `chain`, `children`, `runs_of`, `es
 
 `_host/tests/test_frame.py`.
 
-Studio and Report follow b03's `studio/s04-studio-and-report` (s02-D04, D06):
+Studio and Report follow b03's `studio/s02-studio-workbench-skill` (s02-D04, D06):
 
-- **Studio** (`studio_cards`): one closed row per studio topic, by name, with one line:
-  decided (`sNN-Dxx` lines) · open (its Open list) · sessions · feeds (Question chips, each
-  popping out that report). A click opens the row in place: how it is made ("built by
-  `build_*.py`", view only; or drawn by hand with Edit, which switches the canvas to the editor in
-  place), the notes and any other drawings as pop-out links, the **Topic:** line, and the live
-  drawing across the row, loaded only when opened. ↗ pops the topic out full size;
+- **Studio** (`studio_cards`): one closed row per topic with its name, tags,
+  Current control and drawing links. A click opens its live drawing in place, loaded
+  only when opened. A hand-drawn topic has Edit to switch its canvas to the editor;
+  a builder's drawing stays view only. ↗ pops the topic out full size;
   `#topic-<name>` in the address opens that row. A topic's sessions are the passes of
   `runs/run-draw-<sNN>/passes/pNN-<MMDD>/` (and its older `chat/*.md` until they move), listed
   under "Save this session" in the Runs panel (`studio_sessions`).
@@ -203,7 +282,7 @@ Guide › <View>
 - **Family key.** The work family is `work`; `guide_families.ALIASES` keeps `task` answering. A
   frame folder with no face file still opens its family's Guide, its cards read from the folder.
 - **Tests.** `_host/tests/test_guide_levels.py`; the status of every family is frame 6 of
-  `Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/s31-guide.excalidraw`, read off the code.
+  `Tools/blueprints/b10_project_workbench/studio/s31-guide/s31-guide.excalidraw`, read off the code.
 
 ## Studio
 
@@ -229,9 +308,9 @@ A new workbench family fills its Guide by the checklist in `../README.md` § Add
 Guide has four Views: **Description** (what the Workbench does), **Method**
 (its steps, as text), **RoadMap Draw** (one drawing of its skills, method,
 Workbench and folders) and **Related Paper**. Guide's UI design artifacts (once this folder's `studio/`) live in
-the b03 design Block (`Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/`), not here: `studio/s31-guide/` (the Guide tab, one screen per View, each
+the b10 Workbench Block (`Tools/blueprints/b10_project_workbench/`), not here: `studio/s31-guide/` (the Guide tab, one screen per View, each
 family's status; `method-canvas.py`; the 261002 design in its `history/`). The base's RoadMap Draw is
-`studio/s02-workbench-shared/` (the frame). The Studio runtime stays.
+`studio/s02-studio-workbench-skill/` (the frame). The Studio runtime stays.
 
 The design follows the existing Paper and Insight studios: white surfaces,
 light gray panels, blue selected tabs, and named Spaces and Views. The View
@@ -439,14 +518,14 @@ another Workbench family supplies diagrams based on its own contracts.
 
 | Guide View | Drawing explains | Editable scene |
 |---|---|---|
-| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/parts/guide-skill-set.excalidraw) |
-| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/parts/guide-methods.excalidraw) |
-| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/parts/guide-workbench.excalidraw) |
-| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/parts/guide-folder-map.excalidraw) |
-| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/parts/guide-roadmap-draw.excalidraw) |
+| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-skill-set.excalidraw) |
+| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-methods.excalidraw) |
+| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-workbench.excalidraw) |
+| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-folder-map.excalidraw) |
+| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-roadmap-draw.excalidraw) |
 
-- [All five Guide Views, as they appear in Guide](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/s02-guide-views.excalidraw)
-- [Drawing generator](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py)
+- [All five Guide Views, as they appear in Guide](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/s02-guide-views.excalidraw)
+- [Drawing generator](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py)
 
 Diagram nodes are grouped for editing. RoadMap Draw embeds the four existing diagram files in
 their own rows. It explains the
@@ -473,7 +552,7 @@ stores are named as conventions; Guide does not follow them outside the root.
 
 ## Predefined drawing types
 
-[drawing-catalog.json](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/drawing-catalog.json) defines the drawing types. Each
+[drawing-catalog.json](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/drawing-catalog.json) defines the drawing types. Each
 entry fixes a reader question, required elements, expected source owners and
 placement. Diagram types are shared across Workbench families; their concrete
 names, relationships, sources and states come from the selected family or
@@ -515,15 +594,15 @@ by their generators; preserve separately edited scenes before regenerating.
 
 ## Current artifacts · Guide v4
 
-- [Editable Excalidraw scene](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/s04-guide-design.excalidraw)
-- [Generator](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py)
+- [Editable Excalidraw scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/s04-guide-design.excalidraw)
+- [Generator](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py)
 
 The generator owns these generated artifacts. Keep independently edited
 Excalidraw copies under another filename before regenerating.
 
 ```sh
-python3 blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py
-python3 blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py
+python3 blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py
+python3 blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py
 ```
 
 `studio/` keeps only the Excalidraw scenes and their generators. Each generator
@@ -538,21 +617,21 @@ Excalidraw font IDs as the existing Paper and Insight drawings.
 These remain for comparison. Their sharing boundaries do not describe the
 current proposal:
 
-- [v3 scene](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v3.excalidraw): horizontal Views;
+- [v3 scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v3.excalidraw): horizontal Views;
   explanatory and instance Views were both in Guide.
-- [v2 scene](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v2.excalidraw): the earlier grouped
+- [v2 scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v2.excalidraw): the earlier grouped
   sidebar, with both kinds of Views in Guide.
-- [Original scene](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-design.excalidraw): the initial
+- [Original scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-design.excalidraw): the initial
   proposal before the Guide boundary was settled.
 
 ## References
 
-- [Workbench design principle](../../../../blueprints/b01_haipipe-toolkit/j03_project_workbench/j03_project_workbench.md)
+- [Workbench design principle](../../../../blueprints/b10_project_workbench/board.md)
 - [Paper Workbench implementation](../workbench-paper/paper.py)
 - [Paper workflow contract](../../skills/2_theme/paper/haipipe-paper-workflow/SKILL.md)
 - [Paper Story contract](../../skills/2_theme/paper/haipipe-paper-story/SKILL.md)
 - [Paper Workbench contract](../../skills/2_theme/paper/workbench-paper/SKILL.md)
-- [Paper design studio](../../../../blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw)
+- [Paper design studio](../../../../blueprints/b16_theme_paper/studio/s01-paper-tree/s01-paper-tree.excalidraw)
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
 - [Insight design studio](../../../../blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw)
 - [Studio contract](../../skills/1_base/page/workbench-studio/SKILL.md)

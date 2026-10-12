@@ -16,6 +16,8 @@ written there (block-contract.md § The question file, § The script); only wher
 its proposals to its signature, is [release.md](release.md).
 
 
+**The words a person reads (JL 261011).** A release is called an **analysis plan**, `AP<N>` (release `pN`): the questions and their code, frozen once signed. A data version is called a **data freeze**, `F<M>` (data version `vM`), with a few words in its `label:`. Screens, faces and docs say `AP1 · first ladder × F1 · first 5 days`; the Job ▾ menu says `j01 · first ladder × first 5 days`. Folder names, YAML ids and Run names keep `pN` and `vM`, which every script and ticket reads.
+
 The two trees
 -------------
 
@@ -124,7 +126,7 @@ The rules
    (named by its manifest.json `output_file`, else the one .parquet on top), and may hold manifest.json,
    data_dictionary.csv, cohort_summary.txt, figures/ and documents, all shown on Description › Dataset; a name
    starting with `_` is work beside it, listed, never read. `preview:` names the columns its few sample rows show
-   first. An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
+   first. `label:` gives the data freeze its few words (`first 5 days`; `insight_ladder.py data --label`). An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
    through a variable), never absolute.
    `accumulates:` says whether a later version holds the earlier rows. `meta/meta.md` says what the extract holds.
 7. **A Job's Tasks are its release's questions.** `run-add-jNN` writes the face, one Task per question (the same

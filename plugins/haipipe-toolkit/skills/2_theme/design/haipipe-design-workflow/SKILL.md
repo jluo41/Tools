@@ -139,7 +139,7 @@ writes `state: passed` or `revise`.
 
 `scripts/project_predictions.py <job>` reads `t99_review-whole/runs/run-rank-t99/result/ranking.csv`
 (`rank · design · predicted · why · kept`) and writes each design Task's `prediction.yaml` (`predicted · against ·
-by · frozen: draft`) and its `state` (kept or dropped, only from `passed`). It never touches a prediction already
+by · why · frozen: draft`; the `why` is shown beside the number everywhere, JL 261012) and its `state` (kept or dropped, only from `passed`). It never touches a prediction already
 frozen, and prints what it changed.
 
 ## Where a Job stands

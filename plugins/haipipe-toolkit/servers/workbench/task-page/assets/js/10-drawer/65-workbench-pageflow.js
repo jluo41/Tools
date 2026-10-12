@@ -14,7 +14,7 @@
  *
  * WHERE ITS DATA COMES FROM. `GET /_board/pageruns` is a compatibility route
  * for the receipts the Page workflow-pass contract
- * (haipipe-page-workflow) writes to `<board>/_runs/page/<page-id>/<run-id>.json` —
+ * (haipipe-draft-workflow) writes to `<board>/_runs/page/<page-id>/<run-id>.json` —
  * and nothing else. Not `## States` (those are the page's Aims, not its
  * construction), and not the DOM. NO RECEIPTS IS AN ANSWER: most pages have no
  * workflow pass, and the empty state says the contract's entry rule instead of an error.
@@ -31,17 +31,17 @@
 (function () {
   'use strict';
 
-  /* One row per Run, in list order; id = the skill suffix (haipipe-page-<id>). */
+  /* One row per Run, in list order; id = the skill suffix (haipipe-draft-<id>). */
   var RUNS = [
-    { run: 'context', icon: '🧭', name: 'Context', skill: 'haipipe-page-context',
+    { run: 'context', icon: '🧭', name: 'Context', skill: 'haipipe-draft-context',
       job: 'collect, resolve, and freeze the Page context before planning' },
-    { run: 'structure', icon: '🧩', name: 'Structure', skill: 'haipipe-page-structure',
+    { run: 'structure', icon: '🧩', name: 'Structure', skill: 'haipipe-draft-structure',
       job: 'SHAPE the Bullet plan, then SURVEY every Evidence Item run graph' },
-    { run: 'evidence', icon: '🔍', name: 'Evidence', skill: 'haipipe-page-evidence',
+    { run: 'evidence', icon: '🔍', name: 'Evidence', skill: 'haipipe-draft-evidence',
       job: 'LAND supporting and local Results, then EMBED them into Bullets' },
-    { run: 'writing', icon: '✏️', name: 'Writing', skill: 'haipipe-page-writing',
+    { run: 'writing', icon: '✏️', name: 'Writing', skill: 'haipipe-draft-writing',
       job: 'WRITE each division through Draft, Revise, Build, and Pre-check' },
-    { run: 'check',  icon: '✅', name: 'Check',  skill: 'haipipe-page-check',
+    { run: 'check',  icon: '✅', name: 'Check',  skill: 'haipipe-draft-check',
       job: 'judge the BUILT version and route its authority; only check may CLOSE' }
   ];
   /* Receipts written before 2026-09-22 carry uppercase tokens; map them once. */
@@ -224,7 +224,7 @@
   function cmdRow(file, run) {
     var name = file.split('/').pop();
     return '<div class="wf-act"><div class="wf-runrow">'
-      + '<code class="wf-cmd">/haipipe-page-workflow run ' + esc(name)
+      + '<code class="wf-cmd">/haipipe-draft-workflow run ' + esc(name)
       + ' from ' + esc(run) + '</code>'
       + '<button class="wf-copy" type="button">copy</button>'
       + '<span class="wf-note">paste into the 💬 Chat pane to start '

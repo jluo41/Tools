@@ -1,6 +1,6 @@
 ---
 name: haipipe-discovery-orchestrator-agent
-description: "ORCHESTRATOR for Discovery Task Page Folders. Runs FULL or ENRICH mode; routes Triggers into canonical one-Subject Paper Runs; enforces runs/<RUNNAME>.sh ↔ results/<RUNNAME>/; dispatches creator, reviewer, and read-only search workers; returns Topic/Run/Result paths without consumer vocabulary."
+description: "ORCHESTRATOR for Discovery Task Page Folders. Runs FULL or ENRICH mode; routes Triggers into canonical one-Subject Paper Runs; enforces runs/<RUNNAME>/<RUNNAME>.sh ↔ runs/<RUNNAME>/result/; dispatches creator, reviewer, and read-only search workers; returns Topic/Run/Result paths without consumer vocabulary."
 tools:
   - Read
   - Write
@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.9.0"
-  last_updated: "2026-09-21"
+  version: "2.9.1"
+  last_updated: "2026-10-11"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
@@ -103,15 +103,15 @@ is no separate question claim, ticket, folder, or answer-bank digest.
 Before reporting success, require:
 
 ~~~text
-runs/<RUNNAME>.sh                      executable
-results/<RUNNAME>/runtime.yaml         valid state
+runs/<RUNNAME>/<RUNNAME>.sh           executable
+runs/<RUNNAME>/result/runtime.yaml    valid state
                                        address: bNN.jNN.tNN.rNN
                                        address_compact: bNNjNNtNNrNN
                                        family: discovery
                                        operation: paper-analysis | source-analysis
-results/<RUNNAME>/<RUNNAME>.md         when complete
-results/<RUNNAME>/facts.md             when complete
-results/<RUNNAME>/<RUNNAME>.bib        one entry when complete
+runs/<RUNNAME>/result/<RUNNAME>.md    when complete
+runs/<RUNNAME>/result/facts.md        when complete
+runs/<RUNNAME>/result/<RUNNAME>.bib   one entry when complete
 Card cite: @Key == Bib key
 ~~~
 

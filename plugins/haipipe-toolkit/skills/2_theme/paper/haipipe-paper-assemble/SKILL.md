@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-10-09"
+  version: "0.11.2"
+  last_updated: "2026-10-11"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -30,6 +30,27 @@ The public Paper door routes `assemble` here. The implementation is expected to
 be a reusable engine plus a small paper configuration; a paper must not copy a
 large venue-specific builder and edit it by hand for every new manuscript.
 
+
+Delivery storage (JL 261010)
+---------------------------
+
+Only the Block owns a physical `delivery/` directory. Job, Task and Report
+outputs retain their source identity under it: `delivery/jNN_<job>/`,
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and
+`delivery/reports/qNN_<report>/<lane>/`. The Block's own output uses
+`delivery/<lane>/`. Job and Task Delivery views select their source subtree
+and link to the whole Block Delivery; they never create local delivery folders.
+Runs and Results remain with their source. Every writer and reader uses the
+shared `haipipe-draft/src/common.py` Delivery helpers. Standalone Pages without
+a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
+
 ## 🧭 Authority and source of record
 
 The layers have different jobs:
@@ -37,26 +58,18 @@ The layers have different jobs:
 Layout: the ladder (the Story as `studio/` topics and `reports/` Questions, `jNN_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
 
 ```text
-Paper-<Slug>/                          the board at the paper root
-  └── j01_v<MMDD>_<desk>/                one version: its face's ## Narrative + haipipe:compile-order
-        │                                block = reading order (an older Board: the Story's §8)
-        └── t0N_<title>/                 stable Section identity; each Page owns its words:
-        └── delivery/latex/            <page>.tex (body fragment, what the paper
-                                       \inputs) · <page>-master.tex → <page>.pdf (the
-                                       page's own standalone deliverable) ·
-                                       selected-bibliography/<page>.bib
-              ↓
-delivery/paper-build.toml              paper configuration
-              ↓
-delivery/latex/                        GENERATED whole from the pages
-  ├── master.tex                       one \input per page, Story compile order
-  ├── sections/ · appendices/          copies of the pages' <page>.tex fragments
-  ├── displays/                        copies of accepted display floats + assets
-  └── reference.bib                    merged from delivery/latex/selected-bibliography/<page>.bib
-              ↓
-shared assembly engine + venue profile
-              ↓
-DOCX / PDF / supplement / snapshots / build manifest
+Paper-<Slug>/
+  j01_v<MMDD>_<desk>/<version>.md       Narrative and compile order
+  j01_v<MMDD>_<desk>/t0N_<title>/       Page source, Draft, Runs, Results
+  delivery/j01_v<MMDD>_<desk>/
+    paper-build.toml · build.py         maintained build inputs
+    latex/ · word/                     generated complete manuscript
+    t0N_<title>/latex/<page>.tex         generated Page body fragment
+    t0N_<title>/latex/<page>.pdf         standalone Page preview
+    t0N_<title>/latex/selected-bibliography/<page>.bib
+    t0N_<title>/word/ · web/             generated Page snapshots
+    build-manifest.json                build checks; never approval
+
 ```
 
 The Board and Page files decide what the paper is allowed to claim and whether
@@ -120,7 +133,7 @@ failed build must not be presented as freshly verified results.
 
 | Lane | Input | Output | Purpose |
 |---|---|---|---|
-| Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<page>/delivery/word/` | coauthor review of one Section/Page |
+| Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<Block>/delivery/<page-source-path>/word/` | coauthor review of one Section/Page |
 | Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `delivery/latex/selected-bibliography/<page>.bib` | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
 
 The Page's `delivery/latex/selected-bibliography/<page>.bib` is the citation
@@ -323,7 +336,7 @@ never produces.
 
 ## ⚙️ Configuration
 
-The paper keeps one `delivery/paper-build.toml`. Paths are resolved relative
+Each version keeps one `delivery/jNN_<version>/paper-build.toml` at the Block. Paths are resolved relative
 to that config file. The following is the minimum contract; fields may be
 omitted only when the selected profile supplies a declared default:
 
@@ -337,11 +350,11 @@ venue_profile = "misq"
 [pages]
 # where the words come from: the version folder that holds the Sections, and the face whose
 # `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
-# <page>/delivery/latex/<page>.tex, its delivery/latex/selected-bibliography/<page>.bib, and the float.tex +
+# <Block>/delivery/<page-source-path>/latex/<page>.tex, its delivery/latex/selected-bibliography/<page>.bib, and the float.tex +
 # asset of every display unit its fragment \ref's. (An older Board names its Ba-/Bb- groups and its Story Page.)
-main = ".."
-appendix = ".."
-order = "../j01_v<MMDD>_<desk>.md"   # the version face's compile-order block
+main = "../../j01_v<MMDD>_<desk>"
+appendix = "../../j01_v<MMDD>_<desk>"
+order = "../../j01_v<MMDD>_<desk>/j01_v<MMDD>_<desk>.md"   # the version face's compile-order block
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -378,7 +391,8 @@ Reject duplicate or malformed Section entries instead of silently omitting
 them; candidate tellings are narrative plans, not additional active blocks.
 
 The engine validates configuration before any write or cleanup.
-`paper-build.toml` lives in `<paper>/delivery/`; `source.room` is exactly
+`paper-build.toml` lives in `<Block>/delivery/` for a Block build, or
+`<Block>/delivery/jNN_<version>/` for a version build; `source.room` is exactly
 `latex`. Generated paths must remain inside their declared output directory,
 with no `..`, absolute path, symlink escape or overlap with authored inputs.
 Missing `[pages]` or required output keys is an error, not a legacy fallback.

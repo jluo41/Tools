@@ -16,7 +16,7 @@ runs a Ticket. The Block-level writes (the Questions register, a report scaffold
 drawing) need an agent of their own, planned as `haipipe-task-block-agent (new)`.
 Questions are asked and reviewed by the question skills in `skills/1_base/question/`
 (`haipipe-question-asking`, `haipipe-question-review`), recorded by `haipipe-question`.
-Reports are Pages: one agent plans, another writes, `haipipe-page-check-agent` checks.
+Reports are Pages: one agent plans, another writes, `haipipe-draft-check-agent` checks.
 `haipipe-task` routes and gates; it is no row's Skill: each row names the small skill
 that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 
@@ -38,12 +38,12 @@ that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 | board | Task | each group | Review the Task code | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | Block › CODE_REVIEW.md beside the code it reviews |
 | board | Task | each group | Run a Task | haipipe-task-orchestrator-agent | haipipe-task-run (new) | none | $OUTPUT_ROOT › tNN_<task>/results/rNN_<run>/ |
 | board | Task | each group | Report the Run | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/report.yaml · RUN_AUDIT.md |
-| board | Task | each group | Plan the report | haipipe-page-structure-agent | haipipe-page-structure | none | Block › reports/qNN_<topic>/draft/ |
-| board | Task | each group | Write the report | haipipe-page-writing-agent | haipipe-page-writing | none | Block › reports/qNN_<topic>/ |
+| board | Task | each group | Plan the report | haipipe-draft-structure-agent | haipipe-draft-structure | none | Block › reports/qNN_<topic>/draft/ |
+| board | Task | each group | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
 | board | Check | Runs | none | none | none | none | none |
 | board | Check | Tasks | Check a Task | haipipe-task-reviewer-agent | haipipe-task-audit (new) | none | none |
-| board | Check | Reports | Check a report | haipipe-page-check-agent | haipipe-page-check | none | Block › reports/qNN_<topic>/runs/ |
-| board | Delivery | Reports | Build the report | haipipe-page-writing-agent | haipipe-page-delivery | the release | Block › reports/qNN_<topic>/ (web, LaTeX, Word) |
+| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-check | none | Block › reports/qNN_<topic>/runs/ |
+| board | Delivery | Reports | Build the report | haipipe-draft-writing-agent | haipipe-draft-delivery | the release | Block › reports/qNN_<topic>/ (web, LaTeX, Word) |
 
 Notes
 -----

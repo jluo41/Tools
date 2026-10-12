@@ -77,7 +77,7 @@ novelty report, a selection record, or an authority for factual claims.
 
 After I1 and whenever I2 changes evidence or an Idea, refresh
 `projection/paper-ideation-sync.yaml`. If a Paper P0 path is bound, hand the
-packet to `haipipe-paper-ideation`, which applies the current `haipipe-page`
+packet to `haipipe-paper-ideation`, which applies the current `haipipe-draft`
 update boundary. Updating this packet is the semantic-source step; it does not
 by itself publish the P0 Page's adopted Markdown or delivery.
 

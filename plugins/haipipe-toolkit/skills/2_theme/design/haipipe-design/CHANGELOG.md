@@ -2,6 +2,9 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
+- 261012 · (JL 261012, from the 10-08 Loop demo to leadership; b12 related/) (version unchanged): ref/design-ladder.md rule 9: `prediction.yaml` carries the ranking's `why`;
+  freeze and release are one review step.
+
 - 261007 · review fixes (version unchanged): SKILL.md: each skill keeps its own version; the agents' scope (designer: the Block and Job soft Runs and the maker steps; reviewer: verify, rank, fence check, score); a person signs goal, rules, the frozen predictions with the release, and the close; run-report is haipipe-report's; run-add-job's gates (signed goal and rules, registered method, frozen inputs, ids that match) and n from the goal; run-open-designs' first pass is the reviewer's fence-check.md and every idea gets a Task. ref/design-ladder.md: projections (rule 8), T2 when the method lists it and T3 inside t99's rank, arms.csv `observed`, screens/ per Job and per Block, the run.yaml card fields, revise passes, the fence never changes after t00, sha256 as 12 hex. Both agents rewritten to match. Paths to ref/legacy/method-folders.md fixed.
 
 - 0.4.0 current, 261007 (version unchanged; only a person may change it): the design ladder (JL 261007, b12 s11 · s12 · s13 · s21).

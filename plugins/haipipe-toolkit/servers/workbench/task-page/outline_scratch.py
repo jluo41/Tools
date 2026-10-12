@@ -309,7 +309,7 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
     (result / "runtime.yaml").write_text(runtime, encoding="utf-8")
     if runs.name == record["run"]:
         write_card(base, record["run"], type="scratch", target=record["target"] or None,
-                   skill="haipipe-page-scratch", status="done" if closed else "running", writes=[], feeds=[])
+                   skill="haipipe-draft-scratch", status="done" if closed else "running", writes=[], feeds=[])
     return {
         "run": record["run"], "scope": record["scope"],
         "target": record["target"], "status": record["status"],

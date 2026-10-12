@@ -16,7 +16,7 @@
    inside a Result, `passes/`, `notebooks/`, `delivery/`, `_legacy/`, `_old/`, a file marked generated, or
    a receipt; a run.yaml changes only its `scope:` line (its `moved_from:` is history).
 
-The same pairs as haipipe-page `src/themes.py`; readers accept both names until every SPACE has moved.
+The same pairs as haipipe-draft `src/themes.py`; readers accept both names until every SPACE has moved.
 """
 from __future__ import annotations
 
@@ -123,7 +123,12 @@ def rules_for(project: Path, olds: list[tuple[str, str]]) -> list[tuple[re.Patte
     pn = re.escape(project.name)
     for old, new in olds:
         rules.append((re.compile(rf'(?<![\w-]){pn}/{old}{END}'), f"{project.name}/{new}", None))
-        rules.append((re.compile(rf'(?<![\w-])(?<![a-z0-9_-]/){old}/'), f"{new}/", project))   # a path, never a word
+        # a bare `<old>/` is a path only when what follows names something in that folder (or a placeholder,
+        # or nothing): "which tasks/subgroups are harder" and "18 papers/preprints" are prose, never relinked
+        folder = project / new if (project / new).is_dir() else project / old
+        held = sorted((c.name for c in folder.iterdir()), key=len, reverse=True) if folder.is_dir() else []
+        nxt = "|".join([re.escape(h) + r'(?=[/\s"\'`)\]>,;:#|]|$)' for h in held] + [r'[<*{$]', r'(?=[\s"\'`)\]>,;:#|]|$)'])
+        rules.append((re.compile(rf'(?<![\w-])(?<![a-z0-9_-]/){old}/(?=(?:{nxt}))'), f"{new}/", project))
     return rules
 
 

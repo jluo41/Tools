@@ -1,3 +1,13 @@
+## 0.20.0 · 2026-10-11 · The P-board lives in related/related.md; topics carry Tags and Stage
+
+- The P-board's rows move from the telling's Novelty basis to the Board's `related/related.md`, one row of kind `paper` each (b10 s01-D27, D34, s04-D01), so every telling and the build read one list; the Novelty basis names its closest rows by `key`. The columns keep the P-board's (`role`, `keep`, `bears on`, the Paper Run as `read`), with `group` for the question. An older telling's own table is still read (the paper workbench falls back to it).
+- A telling's topic face keeps the studio marks of haipipe-studio's topic contract, now with `**Tags:**` and `**Stage:**` (b10 s09-D03).
+- The workbench draws the rows in Studio's Related part and Report › Related Papers (workbench-paper 0.36.0); "Story › Related Papers" was the old page's name.
+
+## 0.19.1 · 2026-10-11 · Related papers show in Studio's Related part
+
+- The related papers' row names Studio › Related, which replaced Block › Description › Related (b10 s04-D05, workbench-paper 0.36.0).
+
 ## 0.19.0 · 2026-10-07 · A telling on the ladder; Narrative and the audience review (b16 Q04, Q05)
 
 - The Story is not a Page on the ladder: a new section says where each part lives and is written. §1 · §2 · §4 and the drawings in the telling's studio topic (`studio/sNN-story-<desk>-<idea>/`), §3 as Board Questions with `reports/qNN_`, §5–§7 in the topic face and each report's Work, §8 and the compile order in each version face's `## Narrative`, related papers in `related/related.md`. An older Board's Story Page is still read; `carry_over/topics_paper.py` moves it.
@@ -108,7 +118,7 @@
 
 - Renamed `haipipe-paper-story` → `haipipe-page-story` and moved to
   `paper/page-types/` (JL 260907: Page Types are named like every other
-  `haipipe-page-<type>`, cf. `insight/haipipe-page-insight`). Contract
+  `haipipe-draft-<type>`, cf. `insight/haipipe-page-insight`). Contract
   body unchanged from 0.9.0. Written by Claude Peer.
 - The Story design and all generated outlines remain `v0.x`, `approved: ⬜`;
   the rename does not imply human approval or permit `v1.0` promotion.

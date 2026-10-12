@@ -115,7 +115,7 @@ style. Academic voice retains evidence-tied hedging and legitimate passive voice
 ## 🤝 Interactive Page writing
 
 When the host is a collaborative Page Writing Run, load
-`../../page/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../page/haipipe-draft-workflow/ref/interactive-writing-run.md`.
 The host saves original feedback and the Step result; this worker owns the
 requested prose patch, not Run allocation, human acceptance or publication.
 
@@ -145,7 +145,7 @@ that changes no prose, return no Before/After or preference card; the host
 records the ordinary disposition.
 
 On a Page handoff, the host's
-`haipipe-page/ref/user-check-packet.md` controls the full-paragraph return and
+`haipipe-draft/ref/user-check-packet.md` controls the full-paragraph return and
 three final Draft Space, Evidence Space, and Current Run links. No
 chat-only polishing, implicit acceptance, or silent rewrite of accepted/out-of-scope
 paragraphs.

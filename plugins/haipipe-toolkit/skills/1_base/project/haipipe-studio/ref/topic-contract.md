@@ -1,7 +1,17 @@
-# The topic contract · studio/sNN-<topic>/ at any level
+Topic count and ownership
+=========================
 
-Read before adding, redrawing or saving a studio topic, or writing a builder. The Idea
-Studio of every level (Block, Job, Task) is its `studio/` folder: one topic per folder,
+The Block owns sNN topics; Job and Task views share them. Recommend at most 10
+topics per Block, counting folders rather than the highest sNN number. Reuse a
+related topic or split an independent area into a peer Block before adding an
+eleventh. This is a recommended maximum, not a refusal or an instruction to
+delete or renumber existing topics. Older local topics and their sessions stay
+readable until explicitly moved.
+
+# The topic contract · Block-owned studio/sNN-<topic>/
+
+Read before adding, redrawing or saving a studio topic, or writing a builder. The Block
+owns the shared `studio/` folder shown from Block, Job and Task: one topic per folder,
 each a drawing to think on together and a short face that says what it settles. How a
 drawing should look (a dense scratch, a plain design prototype, a report picture) is
 `excalidraw-report`'s; this contract is the folder, its face, its builder and its sessions.
@@ -9,7 +19,7 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 ## The folder
 
 ```text
-<level>/studio/
+<block>/studio/
 ├── sNN-<topic>/
 │   ├── sNN-<topic>.md              the face: Topic · Feeds · Files · Decided · Open
 │   ├── sNN-<topic>.excalidraw      its drawing (the first one the Idea Studio shows)
@@ -19,12 +29,13 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 │   └── history/                    older builders or drawings kept on a redesign
 ├── _build/                         the level's shared builder helpers and make.sh
 └── <loose>.excalidraw              a loose drawing: its own topic
-<level>/runs/run-draw-<sNN>/        the topic's soft Run: one pass per working session
+<block>/runs/run-draw-<sNN>/        the topic's soft Run: one pass per working session
 ```
 
 1. **One topic, one folder**: a topic is a question being thought through, not a picture.
-2. **At any level**: a Block's `studio/` holds what the whole Block shares; a Job's or a
-   Task's holds its own. A report's own drawing goes in its report folder (`haipipe-report`).
+2. **Block ownership**: the Block's `studio/` owns the topics. A Job or Task links to
+   those topics; older local topics stay readable until moved. A report's own drawing
+   goes in its report folder (`haipipe-report`).
 3. **Its drawings**: the first `.excalidraw` is the one the Idea Studio opens across the row;
    more are links beside it. A topic with a builder opens view only; one drawn by hand edits
    in place.
@@ -51,6 +62,10 @@ s61-s69   slide drafts      a proposed deck: its logic flow and its slides, befo
 sNN · <title>
 =============
 
+**Tags:** `<tag>` · `<tag>`
+
+**Stage:** explore
+
 **Topic:** <one paragraph: what this topic thinks through, and why now>
 
 **Feeds:** `reports/` qNN_<topic> · qNN_<topic>
@@ -67,6 +82,20 @@ Open
 ----
 1. <an open point>
 ```
+
+The stage (b10 s09-D03): how far along the topic is, one word on its **Stage:** line.
+
+```text
+🌱 explore   rough drawing, many red ?, no plan yet
+🔶 shaping   decisions made, open points and red ? still left
+✅ agreed    no red ? and no open point left; JL signs; a Job may be built from it
+📦 closed    its Jobs closed, the Reports it feeds answered; frozen
+```
+
+1. **A person moves it**: change the line and add a decision row, `sNN-DNN · Stage → agreed (JL <date>)`.
+2. **The gate only counts**: red marks left, Open items, dated decisions, frame checks; it never moves the stage.
+3. **New topics** start at explore (`new_topic.py`); the shared Studio shows the stage as a badge on each card,
+   and "no stage" when the line is missing.
 
 The Idea Studio reads the face by these marks, so keep them:
 
@@ -113,7 +142,8 @@ screen, and is never cut into frames "· 1", "· 2" (JL 261010: "the draft take 
 the Written out should be one large frame"); the builder marks it `canvas.reads_down(frame)`, and its height
 is not checked. `canvas.oversized(els)` lists the frames over the size,
 `canvas.small_text(els)` the frames whose words are mostly under 20 px, `canvas.numbered_frames(els)` one piece
-cut into frames "· 1", "· 2", and `canvas.write` warns about each.
+cut into frames "· 1", "· 2", and `canvas.write` warns about each. Notes beside the main content (the page
+pictures they explain) are smaller than it, marked `canvas.aside(e)`, and not counted (JL 261011).
 
 ## A proposal topic: one section, drawn so it can be written
 
@@ -222,8 +252,10 @@ canvas.write(out, els, "build_sNN_<topic>.py", redraw_frames=())
 A working session on a topic (a chat that redrew it, a person's round of marks answered) is
 one pass of the topic's soft Run, `runs/run-draw-<sNN>/` (`haipipe-run`): the Run is made on
 the first session, and each session adds `passes/pNN-<MMDD>/pass.md` (its title, its ask, a
-summary, what it changed). The Idea Studio counts them on the row and lists them in the Runs
-panel under `run-draw-<sNN>`. Older `chat/` summaries in a topic folder stay readable.
+summary, what it changed). The Idea Studio lists them in the Runs
+panel under `run-draw-<sNN>`. Older `chat/` summaries in a topic folder stay readable. A Job/Task input uses
+the Block when the topic is not local; an existing local topic keeps its local
+Run and passes. Use the Block explicitly for new shared-topic sessions.
 
 ## The buttons
 
@@ -233,7 +265,7 @@ One button, `run-draw-<sNN>` (the frame names a button by its Run); its cards ar
 |---|---|---|
 | add a topic | `run-draw-<sNN>`, new | `new_topic.py topic <level> --slug … --title … --band …` |
 | redraw a topic | a pass of `run-draw-<sNN>` | rerun its `build_*.py` (or draw by hand), then the preview |
-| save this session | a pass of `run-draw-<sNN>` | `new_topic.py session <level> sNN --title …` |
+| save this session | a pass of `run-draw-<sNN>` | `new_topic.py session <block> sNN --title …` |
 
 ## The scripts
 

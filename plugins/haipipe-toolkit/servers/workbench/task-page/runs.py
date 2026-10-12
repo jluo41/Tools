@@ -17,6 +17,7 @@ Nothing in this module executes or edits a Run, Result, or feedback record.
 """
 from __future__ import annotations
 
+from src.common import delivery_dir, delivery_read_lane_dir, delivery_relative
 import difflib
 import html
 import re
@@ -69,7 +70,7 @@ _SECTION_RUN = re.compile(r"rp-sec-(?:0[1-9]|[1-9]\d+)", re.I)
 _SCRATCH_RUN = re.compile(r"rp-scratch-(?:0[1-9]|[1-9]\d+)_([A-Za-z0-9._-]+)", re.I)
 # Revise: compare two frozen texts of one target and settle each change. Its
 # Result is the change ledger; the accepted text returns to the writing Run
-# as a Version (haipipe-page-revise).
+# as a Version (haipipe-draft-revise).
 _REVISE_RUN = re.compile(r"rp-revise-(?:0[1-9]|[1-9]\d+)_([A-Za-z0-9._-]+)", re.I)
 # Auto write and Evidence embed: an agent writes the Draft sentences, or folds
 # accepted evidence into the plan, for one target (page-run-families.md).
@@ -1390,10 +1391,10 @@ def _fixed_delivery_run(page_src: Path, ticket: Path) -> dict | None:
     lane = LANE_OF_RUN.get(ticket.stem)
     if lane is None:
         return None
-    folder = page_src.parent / "delivery" / lane
+    folder = delivery_read_lane_dir(page_src.parent, lane)
     return {"run_id": ticket.stem, "global_id": ticket.stem, "compact_id": "", "ticket": ticket,
-            "runtime": None, "result_path": folder, "result": "delivery/%s/" % lane,
-            "target": "delivery/%s" % lane, "outcome": "", "kind": "Delivery", "origin": "Local",
+            "runtime": None, "result_path": folder, "result": delivery_relative(page_src.parent) + "/%s/" % lane,
+            "target": delivery_relative(page_src.parent) + "/%s" % lane, "outcome": "", "kind": "Delivery", "origin": "Local",
             "lane": "page", "family": "page", "operation": "delivery", "version": "", "step": "",
             "mode": "", "target_scope": "", "participants": "", "coordinator": "", "contributors": "",
             "goal": "", "audit": [], "refs": []}

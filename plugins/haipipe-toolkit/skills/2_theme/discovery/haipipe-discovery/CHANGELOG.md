@@ -8,6 +8,40 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.23.0 · 2026-10-11 · Machine-learning venues without a DOI; the one-folder Bib fix
+
+Found by building a 24-paper sweep of six 2026 conferences.
+- Fix: `scripts/paper_bib_fetch.py --result-dir runs/<run>/result/` wrote `result.bib`, because it
+  named the Bib after the folder; since 0.22.0 every DOI Paper Run in the one-folder layout then
+  failed in `paper_result_build.py`, which reads `<run>.bib`. It now takes the Run's name.
+- `scripts/paper_bib_fetch.py --publisher-url` also reads a PMLR paper page, whose BibTeX is the
+  page's own citation block (`<code id="bibtex">`); PMLR has no `.bib` endpoint.
+- `scripts/paper_result_build.py --pmlr-url <page>` builds a whole Result for an ICML or AISTATS
+  paper, which has no DOI: identity, abstract and PDF from the citation block, `subject.pmlr` in
+  the receipt. `--doi` is no longer required; exactly one of the two is.
+- `--accepted-venue` and `--accepted-url` record a paper accepted before its proceedings record
+  exists (NeurIPS before December, ICLR on OpenReview): the Bib is the arXiv preprint, the receipt
+  says so, and a superseding Run cites the venue record later.
+- `scripts/paper_source_access.py::build_venue_record` gives a DOI-less venue record the links the
+  checker requires; `source-access.md` shows OpenReview and the accepted page when known.
+- `ref/paper-run-contract.md` § Machine-learning venues without a DOI. `ref/discovery-yaml-schema.md`:
+  `sources.candidate_ledger` for a sweep too broad for YAML. The Source map is a block in Content
+  division 1, as the Page frame (Opening, Content) requires; it was still written as `## Source map`.
+- The one-folder-per-Run layout now reads the same in every ref, `DESIGN.md`, the agents and the
+  workbench docs (17 files still described `runs/<run>.sh` + `results/<run>/`). The family tree
+  names Search where it lives, `1_base/search/haipipe-search/` with `1_search/`.
+- A fresh-context check (a new agent building two Results from the docs alone) found more, now fixed:
+  the accepted page was missing from `source-access.md`; the accepted flags were unchecked (now both or
+  neither, and only with an arXiv identity); `--result-dir .` wrote `.bib` (the path is resolved
+  first); any host's HTML with a citation block passed as a publisher export (now only
+  `proceedings.mlr.press`); PMLR titles and names kept raw LaTeX (`plain()` resolves accents for the
+  Card; the `.bib` stays verbatim); a PMLR Run asked OpenAlex for an empty DOI; a new Task without
+  `runs/<run>/` fell back to `results/`. Docs: the checker's Page grammar in `ref/page-types.md`, the
+  planned receipt's `trigger:` and `subject:` blocks, a PMLR ticket, and the RUNNAME year for an
+  accepted preprint. Six more old-layout lines (the builder's `--help`, the migration Page text, the
+  inquiry TICKET line, the orchestrator description, the Search skill's ADMIT step).
+- Tests: 98 (11 new).
+
 ## 0.22.1 · 2026-10-09 · Theme folders are singular
 
 - `scripts/paper_runs.py` accepts a Task under `discovery/` (or the older `discoveries/`). Docs name `discovery/`.
@@ -42,7 +76,7 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 
 ## 0.20.0 · 2026-10-01 · Discovery Pages drop `## Aims` (Page Face is Opening → Content)
 
-- Aligns Discovery with `haipipe-page` 0.121: the reader Page is Opening → Content, and Aims are backstage records, never Page sections (JL 261001: "we have no more Aims").
+- Aligns Discovery with `haipipe-draft` 0.121: the reader Page is Opening → Content, and Aims are backstage records, never Page sections (JL 261001: "we have no more Aims").
 - `scripts/paper_runs.py`: `page-aims-missing` is gone. A Page without `## Aims` passes; a legacy Page that still carries one is checked as before (Aim set, Aim/division name agreement, `page-done-with-open-aim`). Content now runs to the next `##` heading or end of file (`CONTENT_RE`), so division-diagram checks work with or without Aims.
 - `scripts/migrate_bjtr.py`: migrated Pages are written without an Aims block (the migration signature is the `method:` line, unchanged).
 - Docs: `ref/page-types.md` (Page Face, one-division-per-run rule 4), `SKILL.md` (CLOSE and migration notes), `haipipe-discovery-inquiry` SKILL and `ref/workflow-table.md`, `haipipe-discovery-synthesize` SKILL say Aims are backstage.

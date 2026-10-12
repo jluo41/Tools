@@ -1,3 +1,8 @@
+## 0.7.3 · 2026-10-11 · One folder per Run in the docs
+
+- `SKILL.md` and `ref/workflow-table.md` name the `runs/<run>/` lane (ticket and `result/`) in place of
+  the old `runs/` ↔ `results/` pair.
+
 ## 0.7.2 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

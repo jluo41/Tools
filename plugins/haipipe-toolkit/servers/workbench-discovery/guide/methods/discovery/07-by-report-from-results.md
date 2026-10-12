@@ -27,10 +27,10 @@ limitations: A report is only as wide as the Runs behind it (ours).
 Applied to AI
 -------------
 
-agent: haipipe-page-writing-agent writes the Page; haipipe-page-check-agent checks it.
+agent: haipipe-draft-writing-agent writes the Page; haipipe-draft-check-agent checks it.
 steps: 1. Read the Results. 2. Write the Page. 3. Name the Runs. 4. Stop for the checker.
 returns: reports/qNN_<topic>/qNN_<topic>.md.
 verify: Every claim names a Run that exists (T6).
 risk: An agent may write a confident Answer over thin evidence; Limits says how thin (ours).
 evidence on ai: No study tests agents writing evidence reports from filed Results (ours).
-skill: haipipe-page-writing
+skill: haipipe-draft-writing

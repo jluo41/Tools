@@ -2,8 +2,8 @@
 
 One research article/question = one `tNN_` Discovery Task Page. `discovery.yaml`
 is its Task Face manifest; `tNN_<task>.md` and its lanes are the Page Face. Neither Face
-replaces the other. Level-4 Run inventory is derived from `runs/` and
-`results/`, never copied into YAML.
+replaces the other. Level-4 Run inventory is derived from `runs/<RUNNAME>/`
+(ticket and `result/`), never copied into YAML.
 
 ```text
 discovery/                                  bank
@@ -17,8 +17,9 @@ discovery/                                  bank
             │   └── evidence/
             │       └── bibex/t01_<...>.bib   derived
             ├── scripts/                      optional instrument
-            ├── runs/r01_<author><year>_<paper>.sh
-            ├── results/r01_<author><year>_<paper>/
+            ├── runs/r01_<author><year>_<paper>/
+            │   ├── r01_<author><year>_<paper>.sh
+            │   └── result/
             └── summary.md | verdict.md | landscape.md
 ```
 
@@ -95,7 +96,8 @@ per-Run cardinality, or make a candidate evidentiary without independent
 identity and content verification.
 
 The factual retrieval-coverage declaration lives in the root Task Page's
-`## Source map` body, as specified by `source-format.md`; it records channels,
+Source map (a `#### Source map` block in Content division 1), as specified by
+`source-format.md`; it records channels,
 queries, filters, limits, and stopping rule. `sources` frontmatter stores the
 machine-readable candidate rule, per-candidate decisions, and retrieval-order
 context. Keep these records consistent; there is no separate YAML `coverage`
@@ -119,6 +121,14 @@ evaluator and timestamp, and links either to the admitted owning Run or to a
 saved candidate-record URI (required for excluded or unresolved candidates,
 which have no Run). This preserves what the evaluator actually screened, not
 just the rule they meant to apply.
+
+A sweep too broad for YAML (a venue sweep screens hundreds of titles) keeps its
+dispositions in a ledger beside its instrument and names it in
+`sources.candidate_ledger`: one TSV row per screened candidate, with the
+candidate's link, disposition, rationale, rule version, `decided_by`,
+`decided_at`, and the owning Run for an admitted row. `candidate_decisions` then
+lists only the admitted rows. The instrument that wrote the ledger rewrites it
+from the same saved lists, so a row is never edited by hand.
 
 No content hash is written or compared. The rule is identified by
 `candidate_rule_version` and `candidate_rule_frozen_at`; the decision log is
@@ -149,7 +159,7 @@ sources:
       decided_by: "person:<identifier>"
       decided_at: "2026-09-01T10:14:00-04:00"
       candidate_snapshot:
-        uri: "results/search/s2-record-123.json"
+        uri: "scripts/search/s2-record-123.json"
 ```
 
 `sources.from_topic` is a read-only supporting reference to another Discovery
@@ -348,7 +358,7 @@ Use the following four records for different questions. Never substitute one
 for another:
 
 - **Retrieval coverage** is the factual channel/query/screening boundary in the
-  root Task Page's frozen `## Source map` declaration: what was searched, what
+  root Task Page's frozen Source map declaration: what was searched, what
   was not, filters, limits, and stopping rule. Candidate-selection rules and
   decisions are stored in `discovery.yaml#sources` and linked to that
   declaration. Do not summarize coverage as high/medium/low confidence. A
@@ -415,8 +425,8 @@ evidence object.
 The terminal `source-map` type writes a factual coverage record, not a
 substantive synthesis or source-extraction judgment. Preserve the mandatory
 legacy `report.confidence` key as `not-applicable` for that type; do not use
-high/medium/low to rate search completeness. Its Task Page `## Source map`
-body records channel/query/boundary facts; `discovery.yaml#sources` records
+high/medium/low to rate search completeness. Its Task Page Source map
+records channel/query/boundary facts; `discovery.yaml#sources` records
 candidate decisions. `source-reading` uses the
 source-extraction anchors above, and topic-level types use the synthesis
 anchors. Each assessed judgment points `assessment.criteria_ref` at its exact
@@ -459,7 +469,7 @@ One bounded answer organized by findings, not one paragraph per paper.
 One paragraph answering the Topic question.
 
 ## Evidence
-- [r03_author2025_slug](results/r03_author2025_slug/r03_author2025_slug.md)
+- [r03_author2025_slug](runs/r03_author2025_slug/result/r03_author2025_slug.md)
   — what this Result establishes — cite: @Key
 
 ## Caveats

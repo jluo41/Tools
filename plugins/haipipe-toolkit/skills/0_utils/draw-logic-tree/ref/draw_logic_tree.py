@@ -39,8 +39,8 @@ import sys
 import textwrap
 from pathlib import Path
 
-# the Page grammar (Draft plan, Evidence Items) lives with haipipe-page
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "1_base" / "page" / "haipipe-page"))
+# the Page grammar (Draft plan, Evidence Items) lives with haipipe-draft
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "1_base" / "page" / "haipipe-draft"))
 
 from src.item_table import read_items  # noqa: E402
 from src.outline_version import latest_outline, plan_dir, version_tag  # noqa: E402

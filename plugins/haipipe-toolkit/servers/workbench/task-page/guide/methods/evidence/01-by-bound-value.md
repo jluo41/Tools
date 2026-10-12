@@ -47,4 +47,4 @@ verify: Every value names its Result (T2) and no Result is newer than results-re
 risk: A model asked for a number may produce a plausible one; a value that names no
   Result is refused (ours).
 evidence on ai: No study tests agent-bound values on Pages (ours).
-skill: haipipe-page-evidence
+skill: haipipe-draft-evidence

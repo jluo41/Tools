@@ -9,6 +9,7 @@
 
     --find        list the ranked places only; open nothing
     --no-open     check the link and print it, but do not open the browser
+    --no-studio   open a Block, Job or Task on its own level view, not on its Studio
     --json        print one JSON object instead of text
     --root DIR    the SPACE root (default: the nearest folder above holding env.sh or .server_config)
     --no-restart  never restart a server that fails to answer
@@ -18,7 +19,8 @@ The link is checked on this SPACE's running server before it is printed: the run
 and one that fails to answer (connection drop, 5xx) is restarted with its own flags and asked again.
 The search reuses the server's own lists (home.discover_boards for Blocks, frame.children and
 frame.level_of for Jobs and Tasks, frame.theme_of for the theme), so a found place and the screen
-always agree. Words that name a level (block, job, task, project) or a theme (paper, cowork,
+always agree. A Block, Job or Task opens on its Studio (`studio=1`, JL 261011), the Block's
+shared studio topics; `--no-studio` opens the level view instead. Words that name a level (block, job, task, project) or a theme (paper, cowork,
 discovery, insight, design, labeling) narrow the search instead of being matched.
 """
 from __future__ import annotations
@@ -38,7 +40,7 @@ import webbrowser
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlencode
+from urllib.parse import urlencode
 from urllib.request import urlopen
 
 SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
@@ -102,8 +104,9 @@ def project_above(folder: Path, root: Path) -> Path | None:
     return None
 
 
-def target(folder: Path, root: Path) -> dict:
-    """What a folder opens: Home, a Project's Home view, or the frame over a Block, Job or Task."""
+def target(folder: Path, root: Path, studio: bool = True) -> dict:
+    """What a folder opens: Home, a Project's Home view, or the frame over a Block, Job or Task
+    (on its Studio unless studio is False)."""
     if folder.is_file():
         folder = folder.parent
     if folder == root:
@@ -113,7 +116,8 @@ def target(folder: Path, root: Path) -> dict:
         place, level = found
         theme = frame.theme_of(place, root)
         return {"level": level, "path": rel(place, root),
-                "url": "/_board/workbench?" + urlencode({"path": rel(place, root)}, safe="/"),
+                "url": "/_board/workbench?" + urlencode({"path": rel(place, root), **({"studio": "1"} if studio else {})},
+                                                        safe="/"),
                 "theme": theme, "skill": theme_skill(theme)}
     project = project_above(folder, root)
     if project:
@@ -434,6 +438,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-open", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--no-restart", action="store_true")
+    ap.add_argument("--no-studio", action="store_true")
     a = ap.parse_args(argv)
 
     root = Path(a.root).resolve() if a.root else space_root(Path.cwd().resolve())
@@ -458,7 +463,7 @@ def main(argv: list[str] | None = None) -> int:
             if result["clear"]:
                 folder = root / ranked[0].path
     if folder is not None and not a.find:
-        result.update(checked_link(target(folder, root), root, not a.no_restart))
+        result.update(checked_link(target(folder, root, not a.no_studio), root, not a.no_restart))
         if result["status"] == 200 and not a.no_open:
             webbrowser.open(result["link"])
 

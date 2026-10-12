@@ -683,7 +683,7 @@ dispatch metadata, never additional Workflow units. Context resolution, adoption
 and independent Check are controller operations unless separately commissioned
 under a complete Run contract. Do not create a Run for every feedback Step or retry.
 
-First interpret this message's scope using /haipipe-page:
+First interpret this message's scope using /haipipe-draft:
 - Candidate wording or structure feedback: resume the matching open rp-struct-NN,
   rp-sec-NN, or rp-para-NN_Pxx[-Pyy] Run. Preserve its fixed target and original
   feedback; append a complete Step. Revisit the same target/goal in a new Version.
@@ -698,7 +698,7 @@ First interpret this message's scope using /haipipe-page:
 - Evidence work belongs to its typed RE and owner-native Supporting Runs. Current
   evidence comes from the exact Result selected in the Evidence Item ledger;
   never silently substitute legacy display/bib folders or an older Result.
-- Page release: apply haipipe-page/ref/release-decisions.md. Reuse applicable human
+- Page release: apply haipipe-draft/ref/release-decisions.md. Reuse applicable human
   acceptance of the exact Structure/Writing versions and record the release request.
   Missing acceptance, stale evidence, a refusal, or a different version remains a
   named blocker. Machine checked: is not human approval.

@@ -67,7 +67,7 @@ Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
    `runs:` header lists its tickets.
 8. **Check.** Run `haipipe-insight-check` for the page. Report each need's
    binding and any GAP left; a GAP for an uncited need is expected until the
-   page is written through `haipipe-page` (`haipipe-insight` `ref/report.md`).
+   page is written through `haipipe-draft` (`haipipe-insight` `ref/report.md`).
 
 ## Rules
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""write_answer_page — lay one answering page out in the haipipe-page shape, from a spec.
+"""write_answer_page — lay one answering page out in the haipipe-draft shape, from a spec.
 
 The writer authors a YAML spec: the title, the Opening, and one Content
 division per evidence need, each with its paragraphs and Bullets, every Bullet

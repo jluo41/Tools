@@ -109,14 +109,107 @@ def _open(path: Path, root: Path, label: str, text: str = "") -> str:
     return pop(reader(path, root), label, text or label) if path.exists() else esc(text or label)
 
 
-def phone(message: str, small: bool = False) -> str:
-    """An SMS as the reader sees it: one bubble on a phone, the {LINK} where the platform puts it."""
+def phone(message: str, small: bool = False, label: str = "Text message") -> str:
+    """An SMS (or a push, a reminder) as the reader sees it: one bubble on a phone, the {LINK} where the platform puts it."""
     body = esc(message or "—").replace("{LINK}", '<span style="color:var(--acc);text-decoration:underline">{LINK}</span>')
     w, f = ("190px", "12.5px") if small else ("280px", "14.5px")
     return (f'<div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;'
             f'max-width:{w};background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">'
-            f'Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;'
+            f'{esc(label)}</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;'
             f'font-size:{f};white-space:pre-wrap;word-break:break-word">{body}</div></div>')
+
+
+# a design is drawn in its channel (JL 261011, a pre-visit questionnaire shown as a text message: "it is not
+# message"): the goal's venue picks the look (venue/venue-<name>/README.md); no venue is an SMS (the older Blocks)
+PHONE_LABEL = {"": "Text message", "sms": "Text message", "push": "Push notification", "reminder": "Reminder"}
+CARD_LABEL = {"checklist": "Checklist", "questionnaire": "Questionnaire", "email": "Email", "report": "Report",
+              "dashboard": "Dashboard", "ui-card": "In-app card"}
+_ITEM = re.compile(r"^\s*(?:[-*]\s+)?(?:\[\s?[xX ]?\s?\]|☐|☑|\d+[.)])\s*(.+)$")
+_DONE = re.compile(r"^\s*(?:you are done|done when|done)\b[:\s]*", re.I)
+_ANSWER = re.compile(r"^\s*answer\s*:\s*(.+)$", re.I)
+
+
+def _parse(message: str) -> tuple:
+    """(title, intro lines, items as (text, answer kind), done line) from a design.md body."""
+    title, intro, items, done = "", [], [], ""
+    for raw in (message or "").splitlines():
+        line = raw.rstrip()
+        if not line.strip() or set(line.strip()) <= set("-─=_"):
+            continue
+        a = _ANSWER.match(line)
+        if a and items:
+            items[-1] = (items[-1][0], a.group(1).strip())
+            continue
+        if _DONE.match(line):
+            done = line.strip()
+            continue
+        m = _ITEM.match(line)
+        if m:
+            items.append((m.group(1).strip(), ""))
+        elif not title:
+            title = line.strip().lstrip("#").strip()
+        elif not items:
+            intro.append(line.strip())
+        else:
+            done = done or line.strip()
+    return title, intro, items, done
+
+
+def _channel_card(label: str, title: str, intro: list, rows: str, done: str, small: bool) -> str:
+    w, f = ("230px", "12px") if small else ("420px", "14px")
+    return (f'<div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:4px 0;max-width:{w};'
+            f'background:var(--bg);font-size:{f}"><div class=mut style="font-size:11px;margin-bottom:6px">{esc(label)}</div>'
+            + (f'<div style="font-weight:600;margin-bottom:6px">{esc(title)}</div>' if title else "")
+            + "".join(f'<div class=mut style="margin-bottom:6px">{esc(t)}</div>' for t in intro)
+            + rows + (f'<div class=mut style="margin-top:8px;font-size:12px">{esc(done)}</div>' if done else "") + "</div>")
+
+
+def checklist_card(message: str, small: bool = False) -> str:
+    """A checklist as the reader works through it: a tick box per item, the day labels as written, the done line."""
+    title, intro, items, done = _parse(message)
+    rows = "".join('<div style="display:flex;gap:8px;align-items:flex-start;margin:4px 0">'
+                   '<span style="flex:none;width:14px;height:14px;border:1.5px solid var(--mut,#888);border-radius:3px;'
+                   f'margin-top:2px"></span><span>{esc(t)}</span></div>' for t, _ in items)
+    return _channel_card("Checklist", title, intro, rows, done, small)
+
+
+def _answer_box(kind: str) -> str:
+    k = (kind or "sentence").lower()
+    box = 'border:1px solid var(--line);border-radius:6px;background:var(--bg);'
+    if k.startswith("time"):
+        return f'<div style="{box}width:90px;height:24px;margin:4px 0 0;padding:2px 8px" class=mut>__ : __</div>'
+    if k.startswith(("yes", "y/n")):
+        return '<div class=mut style="margin-top:4px">○ Yes &nbsp; ○ No</div>'
+    if k.startswith("choice"):
+        opts = [o.strip() for o in k.split(":", 1)[-1].split("/") if o.strip()]
+        return '<div class=mut style="margin-top:4px">' + " &nbsp; ".join(f"○ {esc(o)}" for o in opts) + "</div>"
+    lines = 3 if "sentences" in k or "paragraph" in k else 2
+    return f'<div style="{box}height:{lines * 18}px;margin-top:4px"></div>'
+
+
+def questionnaire_card(message: str, small: bool = False) -> str:
+    """A questionnaire as the reader fills it in: each question numbered, an answer box under it (its kind:
+    sentence · sentences · time · yes-no · choice: a / b), the done line. Never a tick box: the reader writes."""
+    title, intro, items, done = _parse(message)
+    rows = "".join(f'<div style="margin:8px 0"><div><b>{i}.</b> {esc(t)}</div>{_answer_box(kind)}</div>'
+                   for i, (t, kind) in enumerate(items, 1))
+    return _channel_card("Questionnaire", title, intro, rows, done, small)
+
+
+def as_read(message: str, venue: str = "", small: bool = False) -> str:
+    """A design in its channel's look: a phone for an SMS, a push or a reminder; tick boxes for a checklist;
+    answer boxes for a questionnaire; a card named by its channel for the rest."""
+    v = (venue or "").strip().lower()
+    if v in PHONE_LABEL:
+        return phone(message, small, PHONE_LABEL[v])
+    if v == "checklist":
+        return checklist_card(message, small)
+    if v == "questionnaire":
+        return questionnaire_card(message, small)
+    w = "230px" if small else "420px"
+    return (f'<div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:4px 0;max-width:{w};'
+            f'background:var(--bg)"><div class=mut style="font-size:11px;margin-bottom:6px">{esc(CARD_LABEL.get(v, v.title()))}'
+            f'</div><div style="white-space:pre-wrap;word-break:break-word">{esc(message or "—")}</div></div>')
 
 
 def screen_of(task: Path | None, root: Path) -> Path | None:
@@ -125,11 +218,12 @@ def screen_of(task: Path | None, root: Path) -> Path | None:
     return shots[0] if shots else None
 
 
-def as_it_reads(message: str, task: Path | None, root: Path, small: bool = False) -> str:
-    """A design as its reader sees it: a UI design's screen (its screens/ PNG), else the SMS on a phone (b03, 261008)."""
+def as_it_reads(message: str, task: Path | None, root: Path, small: bool = False, venue: str | None = None) -> str:
+    """A design as its reader sees it: a UI design's screen (its screens/ PNG), else drawn in its goal's channel
+    (b03, 261008; JL 261011: checklist and questionnaire are not messages)."""
     png = screen_of(task, root)
     if png is None:
-        return phone(message, small)
+        return as_read(message, R.venue_of(task) if venue is None else venue, small)
     w = "190px" if small else "280px"
     return (f'<a href="/{esc(rel(png, root))}" target=_blank rel=noopener>'
             f'<img loading=lazy alt="{esc(png.stem)}" src="/{esc(rel(png, root))}" style="max-width:{w};border:1px solid var(--line)"></a>')
@@ -173,8 +267,26 @@ def _live(designs: list) -> list:
     return [d for d in designs if d["state"] != "dropped"]
 
 
+def _pred(p: dict, mode: str = "full") -> str:
+    """A predicted effect with its basis: against what, by whom and why (JL 261012, from the 10-08 demo, where a leader
+    asked of a +3.6 "where is that from?"). full: the reason shown; fold: folded under the number; cell: on hover."""
+    p = p if isinstance(p, dict) else {}
+    num, why = str(p.get("predicted") or ""), str(p.get("why") or "")
+    if not num:
+        return "<span class=mut>—</span>"
+    if mode == "cell":
+        return (f'<span title="{esc(why)}" style="border-bottom:1px dotted">{esc(num)}</span>' if why else esc(num))
+    head = (f'{esc(num)} <span class=mut>against {esc(p.get("against") or "the control")}'
+            + (f' · by {esc(p["by"])}' if p.get("by") else "") + "</span>")
+    if not why:
+        return head
+    if mode == "fold":
+        return head + f'<details class=q-more><summary>› why</summary><p class=mut>{esc(why)}</p></details>'
+    return head + f'<p class=mut>why: {esc(why)}</p>'
+
+
 def _passed(designs: list) -> list:
-    return [d for d in designs if d["state"] in ("passed", "released")]
+    return [d for d in designs if d["state"] in ("passed", "kept", "released")]   # kept comes after passed
 
 
 def _cost(j: dict) -> dict:
@@ -203,6 +315,10 @@ DISK = {
         "Methods": ((J + "inputs/method.md", "each Job's pinned method (the registry is the skill's)"),),
         "Inputs": (("inputs/i*/", "the inputs versions"), ("inputs/i*/manifest.yaml", "each file's sha256, frozen"),
                    (J + "inputs/manifest.yaml", "each Job's fence")),
+        "Summary": (("board.md", "## Goals · close"), (J + "t99_*/runs/run-rank-t99/result/ranking.csv", "each Job's top design"),
+                    (J + "t*_d*/prediction.yaml", "predicted · against · by · why"), ("runs/run-score-*/scores.csv", "what an Exp returned")),
+        "Rounds": (("inputs/i*/manifest.yaml", "one round per inputs version: frozen · new · parts"), (J, "each Job's inputs pin"),
+                   ("delivery/designs.json", "what was released"), ("observed/e*/arms.csv", "what an Exp returned")),
         "Questions": (("board.md", "## Questions: one row each"), ("reports/q*/q*.md", "Report: its title and opening"),
                       (J, "Task Work: the Jobs a question names")),
         "Cost": ((J + "runs/*/run.yaml", "started_at · finished_at · usage"), (J + "t*_*/runs/*/run.yaml", "each Task's Runs")),
@@ -271,7 +387,7 @@ def _disk(level: str, view: str, folder: Path) -> tuple:
 # ── Block (s11) ──────────────────────────────────────────────────────────────────────────────
 B_SKILLS = {"add-goal": ("haipipe-design-goal",), "setup-rules": ("haipipe-design-goal",), "add-inputs": ("haipipe-design-goal",),
             "add-job": ("haipipe-design",), "propose": ("haipipe-design-method",), "propose-questions": ("haipipe-question",),
-            "report": ("haipipe-question", "haipipe-page"), "add-observed": ("haipipe-design-method",),
+            "report": ("haipipe-question", "haipipe-draft"), "add-observed": ("haipipe-design-method",),
             "score": ("haipipe-design-method",), "draw": ("workbench-studio",), "release": ("haipipe-design-delivery",)}
 
 
@@ -296,11 +412,14 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
                               "Jobs (run-propose-method-<slug>); a new version is cut in the design skill's registry, not here."),),
               "Inputs": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add an inputs version to {folder}: inputs/iN/ (rules · "
                              "theory · handoff links) and its frozen manifest.yaml (run-add-inputs-<iN>)."),)}[d_open]
-    ar = ("Questions", "Cost", "Predicted vs observed", "Method scorecard")
-    a_open = first if first in ar else "Questions"
-    a_html = {"Questions": _questions, "Cost": _costs, "Predicted vs observed": _predicted,
-              "Method scorecard": _scorecard}[a_open](b, root, href)
-    a_runs = {"Questions": (_bk(b, root, "run-propose-questions", "propose-questions", "Propose {folder}'s report questions "
+    ar = ("Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost")
+    a_open = first if first in ar else "Summary"
+    a_html = {"Summary": _summary, "Rounds": _rounds, "Questions": _questions, "Cost": _costs,
+              "Predicted vs observed": _predicted, "Method scorecard": _scorecard}[a_open](b, root, href)
+    a_runs = {"Summary": (), "Rounds": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add the next inputs version "
+                                            "to {folder}: inputs/iN/ with the last round's Exp results and the insight "
+                                            "Board's newer data version, frozen (run-add-inputs-<iN>)."),),
+              "Questions": (_bk(b, root, "run-propose-questions", "propose-questions", "Propose {folder}'s report questions "
                                 "from the Map, scores.csv and the method scorecard, into board.md ## Questions; another agent "
                                 "agrees (run-propose-questions)."),
                             _bk(b, root, "run-report-<qNN>", "report", "Write a Block question's report in "
@@ -365,7 +484,7 @@ def _map(b: dict, root: Path, rest: str, href) -> str:
         row = [f"<b>{esc(g)}</b>"]
         for m in methods:
             chain = cell.get((g, m), [])
-            row.append("<br>".join(f'{_job_link(href, j, j["id"])} <span class=mut>{esc(j["version"])}·{esc(j["inputs"])}</span> '
+            row.append("<br>".join(f'{_job_link(href, j)} <span class=mut>{esc(j["version"])}·{esc(j["inputs"])}</span> '
                                    f'{_st(j["state"])}' for j in chain) or '<span class=mut>· Add a Job</span>')
             pairs += [(a, c) for a, c in zip(chain, chain[1:])]
         rows.append(row)
@@ -391,7 +510,7 @@ def _compare(b: dict, rest: str, href) -> str:
         moved.append(f"the inputs, {a['inputs']} → {c['inputs']}")
     ca, cc = _cost(a), _cost(c)
     held = "inputs held" if a["inputs"] == c["inputs"] else "method held" if a["version"] == c["version"] else "both moved"
-    return (f'<h2>{esc(a["id"])} → {esc(c["id"])} · two Jobs in one Map cell</h2>'
+    return (f'<h2>{esc(a["name"])} → {esc(c["name"])} · two Jobs in one Map cell</h2>'
             + _pairs([("what moved", esc(" · ".join(moved) or "nothing") + f" <span class=mut>({esc(held)})</span>"),
                       ("passed", esc(f"{ca['passed']} → {cc['passed']} of {cc['n']}")),
                       ("first try", esc(f"{ca['first']} → {cc['first']}")),
@@ -405,13 +524,13 @@ def _goals(b: dict, href) -> str:
     for g in b["goals"]:
         jobs = [j for j in b["jobs"] if j["goal"] == g.get("id")]
         meta = (f'for {esc(g.get("who", ""))} · {esc(g.get("venue", ""))} · N = {esc(g.get("n", ""))} · '
-                + (f'Jobs {esc(" ".join(j["id"] for j in jobs))} · ' if jobs else "")
+                + (f'Jobs {esc(" · ".join(j["name"] for j in jobs))} · ' if jobs else "")
                 + (_st(g["signed"]) if g.get("signed") else "<span class=st-warn>proposed · not signed</span>"))
         body = _pairs([("aim", esc(g.get("aim", ""))), ("who", esc(g.get("who", ""))), ("venue", esc(g.get("venue", ""))),
                        ("N", esc(f'{g.get("n", "")} designs a Job (N + 5 ideas)')),
                        ("rules", esc(" · ".join(g.get("rules") or []) or "the shared ones only (Inputs)")),
                        ("leave out", esc(g.get("leave-out", "") or "—")),
-                       ("Jobs", " ".join(_job_link(href, j, j["id"]) for j in jobs) or "—"),
+                       ("Jobs", " · ".join(_job_link(href, j) for j in jobs) or "—"),
                        ("signed", esc(g.get("signed") or "not yet") + " <span class=mut>· once, here; a Job only pins it</span>")])
         out.append(_fold(f'{g.get("id", "")} {g.get("aim", "")}', meta, body, opened=not out, missing=not g.get("signed")))
     return "".join(out) or '<p class=mut>No goal list yet: board.md ## Goals.</p>'
@@ -433,13 +552,13 @@ def _methods(b: dict, href) -> str:
             versions.setdefault(j["version"], []).append(j)
         rate = " · ".join(f'{v}: {len(_passed(sum((x["designs"] for x in js), [])))} passed' for v, js in versions.items())
         body = _pairs([("type", pop(GUIDE_METHOD, f"{mtype} · a method card", f"{mtype} ↗") + " <span class=mut>one of the 13 cards</span>"),
-                       ("versions", " · ".join(f'{esc(v)} (' + " ".join(_job_link(href, x, x["id"]) for x in js) + ")"
+                       ("versions", " · ".join(f'{esc(v)} (' + " · ".join(_job_link(href, x) for x in js) + ")"
                                                for v, js in versions.items())),
                        ("step ① sees", esc((jobs[-1]["method_card"].get("steps") or {}).get("① See input", "—"))),
                        ("runs it", esc(jobs[-1]["method_card"].get("runs-it", "—"))),
                        ("scorecard", esc(rate))])
         out.append(_fold(f"{mid} · {name}", f'type {esc(mtype)} · {esc(" · ".join(versions))} · Jobs '
-                                            f'{esc(" ".join(j["id"] for j in jobs))}', body, opened=not out))
+                                            f'{esc(" · ".join(j["name"] for j in jobs))}', body, opened=not out))
     return ('<p class=mut>Read only: the registered methods live in the design skill; a proposal from here goes there.</p>'
             + "".join(out))
 
@@ -453,7 +572,7 @@ def _inputs(b: dict, root: Path, href) -> str:
         man = v["manifest"]
         sha = {f.get("path"): f.get("sha256", "") for f in man.get("files", [])}
         jobs = sorted((j for j in b["jobs"] if j["inputs"] == v["id"]), key=lambda j: (j["method"], j["id"]))
-        head = "".join(f'<th>{_job_link(href, j, j["method"])} <span class=mut>{esc(j["id"])}</span><br>'
+        head = "".join(f'<th>{_job_link(href, j, j["method"])} <span class=mut>{esc(j["name"])}</span><br>'
                        f'<span class=mut>{esc(j["method_name"])}</span></th>' for j in jobs)
         rows = []
         for p in man.get("parts", []):
@@ -512,7 +631,7 @@ def _task_work(q: dict, b: dict, root: Path, href) -> str:
         gives = (f'{len(_passed(live))} of {len(live)} passed'
                  + (f' · {", ".join(tested)} tested' if tested else ""))
         outs = [x for x in ("ranking.csv" if j["ranking"] else "", "scores.csv" if tested else "") if x]
-        items.append(f'<li><b>{_job_link(href, j, j["id"])}</b> · {esc(j["goal"])} × {esc(j["method"])} {esc(j["version"])} × '
+        items.append(f'<li><b>{_job_link(href, j)}</b> · {esc(j["goal"])} × {esc(j["method"])} {esc(j["version"])} × '
                      f'{esc(j["inputs"])} · {esc(gives)}'
                      + (f' <span class=mut>→ {esc(" · ".join(outs))}</span>' if outs else "") + "</li>")
     tree = "".join(f'<div style="padding-left:22px"><code>{esc(j["id"])}</code> {esc(j["name"][4:])} '
@@ -543,14 +662,114 @@ def _questions(b: dict, root: Path, href) -> str:
 def _costs(b: dict, root: Path, href) -> str:
     out = []
     for j in sorted(b["jobs"], key=lambda x: x["state"] != "released"):
+        if j["state"] == "held" and not _live(j["designs"]):
+            out.append(_fold(j["name"], f'{esc(j["method"])} {esc(j["version"])} · {esc(j["inputs"])} · held, no designs yet',
+                             f'<p class=mut>{esc(j["hold"]) or "Held: its face says why."}</p>', mono=True))
+            continue
         c = _cost(j)
         body = _pairs([("tokens / design", f'{esc(c["tokens"])} <span class=mut>(usage: not in the Run receipt yet)</span>'),
                        ("time / design", esc(_mins(c["per_design"]))), ("rounds", esc(f'{c["rounds"]:.1f} drafts a design')),
                        ("first try", esc(f'{c["first"]} of {c["n"]} passed on draft 1')),
                        ("per passed", esc(_mins(c["per_passed"]))), ("read from", "each Run's started_at → finished_at")])
-        out.append(_fold(j["id"], f'{esc(j["method"])} {esc(j["version"])} · {esc(j["inputs"])} · {esc(_mins(c["per_design"]))} '
+        out.append(_fold(j["name"], f'{esc(j["method"])} {esc(j["version"])} · {esc(j["inputs"])} · {esc(_mins(c["per_design"]))} '
                                   f'a design · {c["first"]} of {c["n"]} first try', body, opened=not out, mono=True))
     return "".join(out) or '<p class=mut>No Job yet.</p>'
+
+
+def _rank1(j: dict) -> dict | None:
+    """The Job's top design by t99's ranking, or None before a rank."""
+    order = sorted(j["ranking"], key=lambda r: int(r["rank"]) if str(r.get("rank", "")).isdigit() else 999)
+    top = order[0].get("design") if order else None
+    return next((d for d in j["designs"] if d["id"] == top), None)
+
+
+def _summary(b: dict, root: Path, href) -> str:
+    """The Block on one page, for a reader with five minutes (JL 261012, from the 10-08 demo: "the first page should be
+    overview and summary"): the goal, where each Job stands, each Job's top design as it reads with its prediction and
+    why, what an Exp returned, and the next step. Bottom up from the files the Runs wrote; it claims nothing new."""
+    jobs = b["jobs"]
+    if not jobs:
+        return '<p class=mut>No Job yet: launch one from Description › Map.</p>'
+    goals = "".join(f'<p><b>{esc(g.get("aim") or g.get("id", ""))}</b> <span class=mut>· {esc(g.get("who", ""))} · '
+                    f'{esc(g.get("venue", ""))} · {esc(g.get("n", ""))} designs a Job · goal {esc(g.get("id", ""))}</span></p>'
+                    for g in b["goals"])
+    ranked = [j for j in jobs if j["ranking"]]
+    kept = sum(d["state"] in ("kept", "released") for j in jobs for d in j["designs"])
+    released = sum(d["state"] == "released" for j in jobs for d in j["designs"])
+    held = [j for j in jobs if j["state"] == "held"]
+    scores = list(b["scores"].values())
+    counts = (f'{len(jobs)} Jobs · {len(ranked)} ranked · {kept} designs kept · {released} released'
+              + (f' · {len(held)} held' if held else "")
+              + (f' · {len(scores)} tested in an Exp' if scores else " · no Exp result yet"))
+    waiting = [j for j in ranked if any(d["state"] == "kept" for d in j["designs"])]
+    if waiting:
+        nxt = ("a person reviews and approves " + " · ".join(_job_link(href, j) for j in waiting)
+               + ": one sign freezes each kept design's prediction and releases the designs (each Job's Runs › Review whole)")
+    elif released and not b["observed"]:
+        nxt = "run the Exp; its per-arm totals come back here as observed/eNN (run-add-observed-eNN)"
+    elif b["observed"] and not scores:
+        nxt = "score each tested design against its frozen prediction (run-score-eNN)"
+    else:
+        nxt = "the next round: a new inputs version (Rounds)"
+    rows = []
+    for j in jobs:
+        d, n_kept = _rank1(j), sum(x["state"] in ("kept", "released") for x in j["designs"])
+        n_rel = sum(x["state"] == "released" for x in j["designs"])
+        state = (f'<span title="{esc(j["hold"])}" style="border-bottom:1px dotted">held</span>' if j["state"] == "held"
+                 else _st(f"released {n_rel}") if n_rel else "kept · waiting for review" if n_kept
+                 else "ranked" if j["ranking"] else esc(j["state"]))
+        rows.append((_job_link(href, j), f'{esc(j["method_name"] or j["method"])} <span class=mut>{esc(j["method"])} '
+                     f'{esc(j["version"])} · {esc(j["inputs"])}</span>',
+                     esc(f'{n_kept} kept of {len(j["designs"])}') if j["designs"] else "—", state,
+                     f'<a href="{esc(href("", "", d["path"]))}">{esc(d["id"])} · {esc(d["short"])}</a>' if d else "—",
+                     _pred(d["prediction"], "cell") if d else "—"))
+    tops = [_qhead("Each Job's top design, as it reads", "Predicted · against · why", "Where it stands")]
+    for j in ranked:
+        d = _rank1(j)
+        if d:
+            tops.append(_qrow(f'<b>{_job_link(href, j)} · <a href="{esc(href("", "", d["path"]))}">{esc(d["id"])} · '
+                              f'{esc(d["short"])}</a></b>' + as_it_reads(d["message"], d["path"], root),
+                              _pred(d["prediction"]) + f'<p class=mut>frozen {esc(d["prediction"].get("frozen", "—"))}</p>',
+                              _st(d["state"])))
+    hits = sum(s.get("direction") == "✓" for s in scores)
+    inr = sum(s.get("in_range") == "✓" for s in scores)
+    return (goals + f'<p>{esc(counts)}</p><p><b>Next:</b> {nxt}.</p>'
+            + table(("Job", "method · inputs", "designs", "state", "top design", "predicted"), rows)
+            + ("".join(f'<p class=mut>{esc(j["name"])} is held: {esc(j["hold"])}</p>' for j in held if j["hold"]))
+            + ("".join(tops) if len(tops) > 1 else "")
+            + (f'<p>Exp results: {len(scores)} designs tested · direction right {hits} of {len(scores)} · in range '
+               f'{inr} of {len(scores)} <span class=mut>(Predicted vs observed)</span></p>' if scores else "")
+            + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] else ""))
+
+
+def _rounds(b: dict, root: Path, href) -> str:
+    """The Block's memory, one round per inputs version (JL 261012, from the 10-08 demo: each round's results feed the
+    next design): what the version holds, its Jobs and where they stand, what was released, what an Exp returned."""
+    if not b["inputs"]:
+        return '<p class=mut>No inputs version yet: Description › Inputs (run-add-inputs-i1).</p>'
+    out = []
+    for k, v in enumerate(b["inputs"]):
+        man = v["manifest"]
+        js = [j for j in b["jobs"] if j["inputs"] == v["id"]]
+        ids = {j["id"] for j in js}
+        n_rel = sum(d["state"] == "released" for j in js for d in j["designs"])
+        n_kept = sum(d["state"] in ("kept", "released") for j in js for d in j["designs"])
+        exps = [e for e in b["observed"] if any(a.get("job") in ids for a in e["arms"])]
+        scored = [s for (jid, _), s in b["scores"].items() if jid in ids]
+        body = _pairs([("inputs", f'<code>{esc(v["id"])}</code> · frozen {esc(man.get("frozen", "—"))} · {esc(man.get("new", ""))}'),
+                       ("it holds", esc(" · ".join(dict.fromkeys(str(x.get("part", "")) for x in man.get("parts", []))) or "—")),
+                       ("Jobs", "<br>".join(f'{_job_link(href, j)} {_st(j["state"])}' for j in js) or "—"),
+                       ("released", esc(f"{n_rel} of {n_kept} kept designs")),
+                       ("Exp results", " · ".join(esc(e["name"]) for e in exps)
+                        or "<span class=mut>none yet: run-add-observed-eNN</span>"),
+                       ("scored", esc(f"{len(scored)} designs") if scored else "—")])
+        meta = (f'{len(js)} Jobs · {n_rel} released · ' + (esc("Exp " + ", ".join(e["id"] for e in exps)) if exps else "no Exp yet"))
+        out.append(_fold(f'Round {k + 1} · {v["id"]}', meta, body, opened=k == len(b["inputs"]) - 1))
+    nxt = f'i{len(b["inputs"]) + 1}'
+    return ('<p class=mut>One round per inputs version: what it saw, what it made, what came back. A later version '
+            'starts new Jobs (moved: inputs); a released design is never edited.</p>' + "".join(out)
+            + f'<p class=mut>Next round: inputs version <code>{nxt}</code> (run-add-inputs-{nxt}) once an Exp has returned, '
+              "holding its results and the insight Board's newer data version.</p>")
 
 
 def _predicted(b: dict, root: Path, href) -> str:
@@ -565,10 +784,9 @@ def _predicted(b: dict, root: Path, href) -> str:
                 continue
             tested.append(d["path"])
             p, s = d["prediction"], b["scores"].get((j["id"], did), {})
-            rows.append(_qrow(f'<b>{_job_link(href, j, j["id"])} · <a href="{esc(href("", "", d["path"]))}">{esc(did)}</a></b>'
-                              + phone(d["message"]),
-                              f'{esc(p.get("predicted", "—"))} <span class=mut>against {esc(p.get("against", "the control"))}</span>'
-                              f'<p class=mut>by {esc(p.get("by", "—"))} · frozen {esc(p.get("frozen", "—"))}</p>'
+            rows.append(_qrow(f'<b>{_job_link(href, j)} · <a href="{esc(href("", "", d["path"]))}">{esc(did)}</a></b>'
+                              + as_it_reads(d["message"], d["path"], root),
+                              f'{_pred(p)}<p class=mut>frozen {esc(p.get("frozen", "—"))}</p>'
                               f'<p class=mut>{esc(j["method"])} {esc(j["version"])} · {esc(j["inputs"])}</p>',
                               f'{esc(a.get("observed", "—"))} <span class=mut>· arm {esc(a.get("arm", ""))} of {esc(e["id"])}</span>'
                               f'<p>direction {_st(s.get("direction", "—"))} · in range {_st(s.get("in_range", "—"))}</p>'
@@ -589,11 +807,11 @@ def _scorecard(b: dict, root: Path, href) -> str:
         hit = sum(s.get("direction") == "✓" for s in scores)
         inr = sum(s.get("in_range") == "✓" for s in scores)
         rate = f'{100 * len(_passed(live)) // max(len(live), 1)}%'
-        body = _pairs([("Jobs", " ".join(_job_link(href, j, j["id"]) for j in js)), ("pass rate", esc(rate)),
+        body = _pairs([("Jobs", " · ".join(_job_link(href, j) for j in js)), ("pass rate", esc(rate)),
                        ("first try", esc(f'{sum(d["first_try"] for d in live)} of {len(live)}')),
                        ("tested", esc(f"{len(scores)} designs")), ("direction", esc(f"{hit} of {len(scores)}")),
                        ("in range", esc(f"{inr} of {len(scores)}")), ("tokens per passed", "—")])
-        out.append(_fold(f"{m} {v}", f'{esc(" · ".join(j["id"] for j in js))} · pass {esc(rate)} · predictions '
+        out.append(_fold(f"{m} {v}", f'{esc(" · ".join(j["name"] for j in js))} · pass {esc(rate)} · predictions '
                                      f'{inr} of {len(scores)} in range', body, opened=not out, mono=True))
     return ('<p class=mut>Summed from each Exp\'s scores.csv; with few arms tested, a match is only a hint.</p>'
             + ("".join(out) or '<p class=mut>No Job yet.</p>'))
@@ -658,10 +876,10 @@ def _block_delivery(b: dict, href) -> str:
     for d in b["delivered"]:
         j = jobs.get(d.get("job", ""))
         pins = d.get("pins", {})
-        cells.append((_id(d.get("design", ""), pins.get("goal", "")), phone(d.get("words", "")),
-                      f'{_job_link(href, j, j["id"]) if j else esc(d.get("job", ""))} · {esc(pins.get("method", ""))} · '
+        cells.append((_id(d.get("design", ""), pins.get("goal", "")), as_read(d.get("words", ""), R.venue_of(j["path"]) if j else ""),
+                      f'{_job_link(href, j) if j else esc(d.get("job", ""))} · {esc(pins.get("method", ""))} · '
                       f'{esc(pins.get("inputs", ""))}',
-                      f'{_st("released " + str(d.get("released", "")))} · predicted {esc(d.get("predicted", "—"))}'))
+                      f'{_st("released " + str(d.get("released", "")))} · predicted {_pred(d, "cell")}'))
     return ((table(("design", "as it reads", "Job · method · inputs", "released · predicted"), cells) if cells
              else '<p class=mut>Nothing released yet: delivery/designs.json.</p>')
             + '<p class=mut>→ the Exp (outside the theme); its per-arm result returns into observed/.</p>')
@@ -709,17 +927,17 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
             "verify again.", rows=_rows(_task_runs(j), root, "revise"))
     rank = k("run-rank-t99", "rank", "Review the whole of {folder} (⑤ run-rank-t99): rank the N + 5, keep the top N, "
              "each with its predicted outcome; another agent.", rows=_rows(R.runs(j["t99"]), root) if j["t99"] else [])
-    freeze = k(f"run-freeze-predictions-{jid}", "freeze-predictions", "Freeze the kept designs' predictions of {folder} at "
-               f"release (run-freeze-predictions-{jid}); a person signs.")
-    release = k(f"run-release-{jid}", "release", f"Release {{folder}}'s kept designs (run-release-{jid}): designs.json · "
-                "designs.md · screens/; a person signs.")
+    approve = dict(k(f"run-release-{jid}", "release", f"Review and approve {{folder}}: read each kept design as it reads, "
+                     f"its prediction and why, and its review; one sign freezes the predictions (run-freeze-predictions-{jid}) "
+                     f"and releases the designs (run-release-{jid}).", rows=_rows(j["runs"], root, "freeze-predictions", "release")),
+                   doing="review and approve: one sign freezes the predictions and releases the designs")
     opend = k(f"run-open-designs-{jid}", "open-designs", f"Open one design Task per idea in {{folder}} (run-open-designs-{jid}).")
     ar = ("Reason ideas", "Design display", "Review whole", "Predicted vs observed", "Performance")
     a_open = sub if sub in ar else "Reason ideas"
     a_html = {"Reason ideas": _reason_ideas, "Design display": _display, "Review whole": _review_whole,
               "Predicted vs observed": _job_observed, "Performance": _performance}[a_open](j, b, root, href)
     a_runs = {"Reason ideas": (reason,), "Design display": (gen, ver), "Review whole": (rank,),
-              "Predicted vs observed": (freeze,), "Performance": (freeze,)}[a_open]
+              "Predicted vs observed": (approve,), "Performance": (approve,)}[a_open]
     wd = ("Reason ideas", "Conduct & review", "Review whole")     # one casing, as the Audience Report's (b03, 261008)
     w_open = sub if sub in wd else "Reason ideas"
     w_html = {"Reason ideas": _wd_reason, "Conduct & review": _wd_conduct, "Review whole": _wd_whole}[w_open](j, root, href)
@@ -727,7 +945,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
     rv = ("Setup", "Reason ideas", "Conduct & review", "Review whole")
     r_open = sub if sub in rv else "Setup"
     r_runs = {"Setup": (setup["Goal"], setup["Method"], setup["Inputs"], opend), "Reason ideas": (reason,),
-              "Conduct & review": (gen, ver, rev), "Review whole": (rank, freeze, release)}[r_open]
+              "Conduct & review": (gen, ver, rev), "Review whole": (rank, approve)}[r_open]
     dv = ("designs.md", "designs.json")
     v_open = sub if sub in dv else "designs.md"
     return {
@@ -741,7 +959,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                               disk=_disk("Job", "WD " + w_open, jdir)),
         "Runs": Space(html=_job_runs(j, root, r_open), subspaces=rv, open=r_open, run_types=r_runs, page=True,
                       disk=_disk("Job", r_open if r_open == "Setup" else "Runs " + r_open, jdir)),
-        "Delivery": Space(html=_job_delivery(j, root, v_open), subspaces=dv, open=v_open, run_types=(release,), page=True,
+        "Delivery": Space(html=_job_delivery(j, root, v_open), subspaces=dv, open=v_open, run_types=(approve,), page=True,
                           disk=_disk("Job", v_open, jdir)),
     }
 
@@ -835,7 +1053,7 @@ def _job_method(j: dict, b: dict, root: Path, href=None) -> str:
             f'<span class=mut>· type {pop(GUIDE_METHOD, j["type"] + " · a method card", j["type"] + " ↗")} · '
             f'pinned {_open(j["fence"] / "method.md", root, "inputs/method.md")} · {esc(j["sha"])}</span></p>'
             + (f'<p>{esc(about)}</p>' if about else ""))
-    return (head + (table(("step", f'{j["version"]} says', f'in {j["id"]}'), rows) if steps
+    return (head + (table(("step", f'{j["version"]} says', f'in {j["name"]}'), rows) if steps
                     else '<p class=mut>No steps in inputs/method.md yet.</p>')
             + "".join(f'<p class=mut>{esc(p)}</p>' for p in note.split("\n\n") if p.strip()))
 
@@ -906,7 +1124,7 @@ def _card(d: dict, j: dict, href, root: Path) -> str:
                              + "".join(f'<p>{esc(e.get("words", ""))} <span class=mut>← {esc(e.get("from", ""))}</span></p>'
                                        for e in d["elements"]) + '</details>' if d["elements"] else ""),
                           f'<p>④ {" · ".join(f"{_test(t)} {esc(v)}" for t, v in tests.items()) or "—"} · {_st(d["state"])}</p>'
-                          f'<p>expected {esc(d["prediction"].get("predicted", "—"))}</p>'
+                          f'<p>expected {_pred(d["prediction"], "fold")}</p>'
                           + (f'<p class=mut>⑤ rank #{esc(r.get("rank"))} · {"kept" if r.get("kept") == "yes" else "dropped"}</p>' if r else ""))
 
 
@@ -927,8 +1145,8 @@ def _job_observed(j: dict, b: dict, root: Path, href) -> str:
         if not a:
             continue
         s = b["scores"].get((j["id"], d["id"]), {})
-        rows.append(_qrow(f'<b>{esc(d["id"])}</b>' + phone(d["message"]),
-                          f'{esc(d["prediction"].get("predicted", "—"))}<p class=mut>frozen {esc(d["prediction"].get("frozen", "—"))}</p>',
+        rows.append(_qrow(f'<b>{esc(d["id"])}</b>' + as_it_reads(d["message"], d["path"], root),
+                          f'{_pred(d["prediction"])}<p class=mut>frozen {esc(d["prediction"].get("frozen", "—"))}</p>',
                           f'{esc(a.get("observed", "—"))} <span class=mut>· arm {esc(a.get("arm", ""))} of {esc(a.get("exp", ""))}</span>'
                           f'<p>direction {_st(s.get("direction", "—"))} · in range {_st(s.get("in_range", "—"))}</p>'))
     if len(rows) == 1:
@@ -941,7 +1159,7 @@ def _performance(j: dict, b: dict, root: Path, href) -> str:
     for d in _live(j["designs"]):
         mins = [r["minutes"] for r in d["runs"] if r["minutes"] is not None]
         rows.append((f'<code>{esc(d["id"])}</code>', "—", esc(_mins(sum(mins)) if mins else "—"), esc(len(d["drafts"])),
-                     esc(f'{len(d["message"])} ch'), esc(d["prediction"].get("predicted", "—")),
+                     esc(f'{len(d["message"])} ch'), _pred(d["prediction"], "cell"),
                      _st(d["prediction"].get("frozen", "—"))))
     return (table(("design", "tokens", "time", "rounds", "length", "predicted", "frozen"), rows)
             + '<p class=mut>tokens: — until usage: is in the Run receipt; a prediction is frozen at release.</p>')
@@ -965,7 +1183,7 @@ def _wd_conduct(j: dict, root: Path, href) -> str:
             out.append(_fold(f'{d["name"][:3]} · {d["id"]}', "dropped by t99 · " + line, mono=True))
             continue
         body = _pairs([(r["run"], esc(f'{r["status"]} · {r["by"]}')) for r in d["runs"]]
-                      + [("design", phone(d["message"], small=True)), ("opens", f'<a href="{esc(href("", "", d["path"]))}">the Task</a>')])
+                      + [("design", as_read(d["message"], R.venue_of(d["path"]), small=True)), ("opens", f'<a href="{esc(href("", "", d["path"]))}">the Task</a>')])
         out.append(_fold(f'{d["name"][:3]} · {d["id"]}', line, body, opened=not out, mono=True))
     return '<p class=mut>One Task per design, in order; one Task, two Runs: generate · verify.</p>' + "".join(out)
 
@@ -1005,8 +1223,8 @@ def _job_delivery(j: dict, root: Path, view: str) -> str:
         return f'<p class=mut>Nothing released yet: delivery/{esc(view)} is written by run-release-{esc(j["id"])}.</p>'
     text = path.read_text(encoding="utf-8", errors="ignore")
     if view == "designs.md":
-        return (table(("design", "as it reads", "predicted"), [(_id(d.get("design", "")), phone(d.get("words", "")),
-                                                                 esc(d.get("predicted", "—"))) for d in j["delivered"]])
+        return (table(("design", "as it reads", "predicted"), [(_id(d.get("design", "")), as_read(d.get("words", ""), R.venue_of(j["path"])),
+                                                                 _pred(d, "cell")) for d in j["delivered"]])
                 + f'<p class=mut>{_open(path, root, "designs.md", rel(path, root) + " ↗")}: for people, written from designs.json</p>')
     return f'<p class=mut>delivery/designs.json · what the experiment platform reads</p><pre>{esc(text)}</pre>'
 
@@ -1152,7 +1370,7 @@ def _design(d: dict, j: dict, href, root: Path) -> str:
             + _pairs([("state", _st(d["state"]) + esc(f' · draft {len(d["drafts"])} · {kept} · '
                                                           + ("released" if released else "not released yet"))),
                       ("name", esc(f'{d["short"]} · born with its idea {d["idea"]} in t00')),
-                      ("Job", esc(f'{j["id"]} · {j["goal"]} × design method {j["method"]}, version {j["version"]} × inputs {j["inputs"]}'))]))
+                      ("Job", esc(f'{j["name"]} · {j["goal"]} × design method {j["method"]}, version {j["version"]} × inputs {j["inputs"]}'))]))
 
 
 def _evaluation(d: dict) -> str:
@@ -1175,7 +1393,8 @@ def _drafts(d: dict, j: dict, b: dict, root: Path) -> str:
         f = r["path"] / "result" / "design.md"
         if f.is_file():
             text = f.read_text(encoding="utf-8", errors="ignore").strip()
-        out.append((f"draft {k}", _id(r["run"]), as_it_reads(text, d["path"] if k == len(d["drafts"]) else None, root)))
+        out.append((f"draft {k}", _id(r["run"]), as_it_reads(text, d["path"] if k == len(d["drafts"]) else None, root,
+                                                         venue=R.venue_of(d["path"]))))
     return table(("draft", "Run", "as it reads"), out) if out else '<p class=mut>No draft yet.</p>'
 
 
@@ -1185,7 +1404,7 @@ def _task_perf(d: dict, j: dict, b: dict, root: Path) -> str:
     mins = [r["minutes"] for r in d["runs"] if r["minutes"] is not None]
     return _pairs([("tokens", "— <span class=mut>(usage: not in the Run receipt yet)</span>"),
                    ("time", esc(_mins(sum(mins)) if mins else "—")), ("rounds", esc(len(d["drafts"]))),
-                   ("predicted", esc(d["prediction"].get("predicted", "—"))), ("frozen", _st(d["prediction"].get("frozen", "—"))),
+                   ("predicted", _pred(d["prediction"])), ("frozen", _st(d["prediction"].get("frozen", "—"))),
                    ("observed (Exp)", esc(f'{a.get("observed")} · arm {a.get("arm")} of {a.get("exp")}') if a else "<span class=mut>not tested</span>"),
                    ("matched", (f'direction {_st(s.get("direction"))} · in range {_st(s.get("in_range"))}') if s else "—")])
 
@@ -1200,5 +1419,5 @@ def _elements(d: dict) -> str:
 def _task_delivery(d: dict, j: dict) -> str:
     rel_ = next((x for x in j["delivered"] if x.get("design") == d["id"]), None)
     if rel_:
-        return phone(rel_.get("words", "")) + f'<p class=mut>released {_st("✅ " + str(rel_.get("released", "")))} · predicted {esc(rel_.get("predicted", ""))}</p>'
+        return as_read(rel_.get("words", ""), R.venue_of(d["path"])) + f'<p class=mut>released {_st("✅ " + str(rel_.get("released", "")))} · predicted</p>' + _pred(rel_)
     return '<p class=mut>Not released: released with the Job\'s run-release (a person); the prediction freezes then.</p>'

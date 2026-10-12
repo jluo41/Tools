@@ -1,3 +1,7 @@
+## 0.11.1 · 2026-10-11 · A Section keeps no studio/ or delivery/
+
+- A Section holds its face, `draft/`, `runs/`, `results/` and `reports/`; its drawings are Board topics and its build is the Board's `delivery/jNN_<version>/tNN_<section>/` (b10 s09-D01, s03-D06; JL 261011). Matches haipipe-paper 1.12.0's scaffold, which no longer makes them.
+
 ## 0.11.0 · 2026-10-07 · A Section Task in its version (b16 Q05)
 
 - A Section executes one row of its version face's `## Narrative` (an older Board: the Story's §8 row); `story-row:` is `<version> ## Narrative / <stem>`. The compile order is the version face's.
@@ -198,7 +202,7 @@ does not exist, and nothing checked.
 - `ref/generic-template.md` drops the `section-page-template: 1` header, the
   marker of the universe 0.2.0 declared dead.
 
-Companion fix outside this skill: `haipipe-board/cli/pagestatus.py` counted
+Companion fix outside this skill: `haipipe-block/cli/pagestatus.py` counted
 divisions with `^### \d+ · `, narrower than `check.py:1176`'s `§?[\d.]+`, so
 every Section Page numbering its divisions by the MANUSCRIPT (`### §6.1 …`)
 reported `§ 0`; and it counted only current `A<n>.<m>` Aims, not the LEGACY
@@ -271,7 +275,7 @@ haipipe-paper-section · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
 SKILL.md frontmatter `version:`. Newest first.
 
-**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
+**v0-series rule:** inherited from `haipipe-block`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
 ## 0.1.1 - 2026-08-05

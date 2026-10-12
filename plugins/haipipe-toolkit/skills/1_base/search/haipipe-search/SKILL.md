@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical paper/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.5"
-  last_updated: "2026-10-09"
+  version: "0.8.0"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md
 ---
 
@@ -53,8 +53,21 @@ journal sweep. For a clinical or biomedical scope, include medRxiv alongside
 arXiv when relevant and use PubMed with Crossref as the biomedical/DOI
 fallback; record each channel as searched or not searched. Full novelty work
 adds a field-appropriate top-venue pass; light mode records the omitted pass in
-the Task Page's `## Source map` coverage declaration (see
+the Task Page's Source map coverage declaration (see
 `../../../2_theme/discovery/haipipe-discovery/ref/source-format.md`).
+
+A top-venue pass reads each conference's own accepted list, not a community
+list (a community list checked on 2026-10-10 matched only 89 of its 116
+NeurIPS, ICML and ICLR 2026 labels). NeurIPS, ICML and ICLR publish one JSON
+file per year, `<venue>.cc/static/virtual/data/<venue>-<year>-orals-posters.json`,
+with each paper's decision (oral, spotlight, poster) and OpenReview link; an
+oral appears twice, and its oral entry's link is a placeholder. Proceedings
+with DOIs (KDD, IJCAI, AAAI) come from Crossref filtered by the proceedings'
+exact `container-title`, paged with a cursor. PMLR volume pages list the ICML
+papers with their accepted-record pages. dblp and OpenReview answer scripts
+with a challenge, so they are browser-only. Keep the downloaded lists outside
+Git; keep the screen as an instrument under the Task's `scripts/` and its
+ledger in `sources.candidate_ledger`.
 
 Keep this Page-body coverage declaration factual: report channels, queries,
 filters, limits, and stopping rule. Store the frozen candidate policy and
@@ -103,8 +116,9 @@ candidate packet before any Run is opened.
    automatically the Subject.
 4. ADMIT only candidates relevant enough to analyze. For each Subject call the
    Task Page's add operation: allocate the next RUNNAME and create BOTH
-   runs/<RUNNAME>.sh and results/<RUNNAME>/runtime.yaml (`family: discovery`,
-   matching paper/source analysis operation, `status: planned`).
+   runs/<RUNNAME>/<RUNNAME>.sh and runs/<RUNNAME>/result/runtime.yaml (`family: discovery`,
+   matching paper/source analysis operation, `status: planned`, a `trigger:` block
+   and a `subject:` block).
    One candidate paper = one Run. A Trigger mentioning N papers fans out to N
    Runs.
 5. EXECUTE each pending ticket. Dispatch the appropriate read worker and write

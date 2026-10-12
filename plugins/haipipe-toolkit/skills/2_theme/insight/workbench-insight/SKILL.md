@@ -13,8 +13,8 @@ description: >-
   insight tab, insight Board tab, insight Job tab, insight Task tab, insight
   spaces on screen, /workbench-insight.
 metadata:
-  version: "1.0.1"
-  last_updated: "2026-10-09"
+  version: "1.1.0"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -52,7 +52,7 @@ Job       the Job's line (pN × vM ·    topics             Partition × Period:
 Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
 ```
 
-Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
+The words (JL 261011): the Map's corner reads `analysis plan \ data freeze`, a row `AP1 · first ladder`, a column `F1 · first 5 days`; the Job ▾ menu reads `j01 · first ladder × first 5 days` (`insight_theme.option`, `insight_plan_c.job_title`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
 (`release.yaml`, `partitions.md`, each question's `question.md`), a Job's face and `reports/vs-<prev>.md`, a Task's
 page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Prototype in `work/`
 opens in the work theme until a Prototype level is drawn (s21 lists its run types).

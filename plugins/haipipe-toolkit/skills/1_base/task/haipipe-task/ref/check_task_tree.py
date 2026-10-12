@@ -12,7 +12,7 @@ before trusting a pass (haipipe-task GATE-1).
 """
 import pathlib, re, sys, collections
 
-# the work Theme's folder, then its old name (haipipe-page src/themes.py)
+# the work Theme's folder, then its old name (haipipe-draft src/themes.py)
 WORK_THEMES = ("work", "tasks")
 
 SHAPE = {"data","table","pipeline","analysis","pool","rank","set","list","baseline","scope","processing"}

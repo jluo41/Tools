@@ -13,7 +13,7 @@ An insight Board reads one dataset (Tools/blueprints/b11_theme_insight). b11 pro
 per pair, Prototype version × data version; no Board has those Jobs on disk yet, so this theme fills
 the Block tab from today's folders, with the old page's content (JL: carry over what exists) drawn in
 the base's look only (JL 261007: no theme stylesheet): the frame's .topic folds, .wf-table, .q-row,
-.chip, .st-ok / .st-warn, and the bj- work rows. b03 (s02-workbench-shared) placed the old Spaces:
+.chip, .st-ok / .st-warn, and the bj- work rows. b03 (s02-studio-workbench-skill) placed the old Spaces:
 
     Description      Prototype · Dataset · Partitions      (was Scope › Dataset · Partitions, and Prototype)
     Idea Studio      vanilla: studio/ topics; the generated question map is a row (studio/)
@@ -318,5 +318,14 @@ RUN_NAMES = {"Prepare extract": "run-add-version-<d>vM", "Ask": "run-ask-<L><NN>
              "Information runs": "rNN_<partition>", "Mechanical check": "run-check-alignment-<tNN>",
              "Answer review": "run-check-<tNN>", "Handoff draft": "run-draft-handoff"}
 
+def option(folder):
+    """The Job ▾ menu (JL 261011, "this is very hard to understand"): `j01 · first ladder × first 5 days`, the
+    Job's analysis plan and data freeze in words; any other folder keeps its own name."""
+    from live import insight_plan_c as P
+    if P.JOB_NAME.match(folder.name) and (folder.parent / "board.md").is_file():
+        return (f"{folder.name.split('_', 1)[0]} · {P.job_title(folder)}", "")
+    return None
+
+
 THEME = Theme(name="insight", label="Insight", icon="🔎", guide="insight", spaces=spaces, claims=claims,
-              run_names=RUN_NAMES)
+              run_names=RUN_NAMES, option=option)

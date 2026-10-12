@@ -2,7 +2,7 @@
 
 Each Space (Draft, Evidence, Delivery) shows its own runs in a column on the
 right of its content: on top the run types that the Run cards give that Space
-(`🔘 BUTTON` lines in haipipe-page-workflow/ref/run-cards.md), below them one run with its
+(`🔘 BUTTON` lines in haipipe-draft-workflow/ref/run-cards.md), below them one run with its
 prompt to copy, its process and its results. A selected paragraph or item
 narrows the panel to that target. A panel folds to one line.
 
@@ -21,7 +21,7 @@ from src.run_folders import folder_for, space_of
 from src import run_names
 
 from host_paths import skill_dir  # noqa: E402
-CARDS = skill_dir("haipipe-page-workflow") / "ref" / "run-cards.md"
+CARDS = skill_dir("haipipe-draft-workflow") / "ref" / "run-cards.md"
 _CARD = re.compile(r"^## `(?P<card>[^`]+)`", re.M)
 _BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][A-Za-z]+)\s+·\s+"
                      r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w ]+?))?\s*$")
@@ -70,7 +70,7 @@ def run_types(cards: Path = CARDS) -> list[dict]:
 
 
 def _skill_list(text: str) -> list[str]:
-    """`haipipe-page-writing · haipipe-writing` → both names, without a leading slash."""
+    """`haipipe-draft-writing · haipipe-writing` → both names, without a leading slash."""
     return [s.strip().lstrip("/") for s in re.split(r"[·,]", text or "") if s.strip()]
 
 
@@ -341,7 +341,7 @@ def panel_html(page_src: Path, space: str, rows: list[dict], types: list[dict], 
         buckets.append(discovery)
     if other:
         kinds.append({"card": "", "label": "Other", "space": space, "pattern": "", "views": "",
-                      "prompt": "/haipipe-page run {page} {run} again: {target}."})
+                      "prompt": "/haipipe-draft run {page} {run} again: {target}."})
         buckets.append(other)
     return panel_markup(space, kinds, buckets, base=base, fill=lambda row: fill, extra=extra,
                         named=len(mine) + (2 if space == "evidence" and supporting else 0), folded=folded)

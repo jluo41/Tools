@@ -1,5 +1,37 @@
 # haipipe-insight · version history
 
+## 3.3.1 · 2026-10-11 · Figures for a dataset picture
+
+- JL 261011: "after we read the q, ... I have a complete picture of what dataset I have". `ref/figures.py`: a heat map
+  draws a panel per facet with one colour scale and its colour bar beside the panels; a cell with no data is grey,
+  never read as 0; bar panels keep their own x axis (`sharex`, line panels share it); panel titles drop
+  "<facet> ="; the figure title keeps clear of the first panel; grid lines sit behind bars.
+- New figure kind `strip`: a row per day, a coloured bar per event from its start to its end (an instant is a mark),
+  so the events of a day show side by side (JL 261011: "what the events look like").
+- A need with `figures: []` draws no figure at all (a table whose rows mix units, such as event durations in
+  hours and minutes, gets no shape-based forest).
+
+## 3.3.0 · 2026-10-11 · Analysis plan and data freeze
+
+- JL 261011: "the p1 this is kind of confusing, could we have a better name for it?"; picked "analysis plan and data
+  freeze". A release reads as an analysis plan `AP<N>`, a data version as a data freeze `F<M>` with a `label:`; ids,
+  folders and Run names keep `pN` and `vM`. `ref/insight-ladder.md` (terms, `label:`), `ref/release.md`, `SKILL.md`.
+- `scripts/insight_ladder.py`: `data --label`; the Board's and a new analysis plan's face text use the new words.
+  `ref/open_job.py`: a Job's face says `Analysis plan AP1 (release p1) on data freeze F1 (data version v1)`, and its
+  heading reads in words, `# j01 · first ladder × first 5 days`, which the frame shows as the Job's page title.
+
+## 3.2.0 · 2026-10-11 · Declared figures; a Board Task under a lower-case dataset
+
+- JL 261011: "for the DIKW run and DIKW report, I didn't see much tables and figures"; "try to add more figures when
+  you build the DIKW runs". `ref/figures.py` draws the figures a need declares (`figures:` in the question file:
+  line with a band, bar, forest, heat; group, facet, reference lines), from its result tables only and before any
+  known shape; a declared table gets no second, shape-based figure. `ref/block-contract.md` § The question file
+  shows the field. Test: `tests/test_insight_ladder.py::test_a_need_draws_its_declared_figures`.
+- `scripts/insight_ladder.py` `level_of`: a Task folder is a Board Task or a release question by the board kind two
+  folders up, not by its parent's name alone; a Board Job named after a lower-case dataset (`j01_p1_s1023v1`) also
+  fits the release pattern and was read as a release, so `run <Task> write tNN` refused. Test:
+  `test_a_lower_case_dataset_job_is_still_a_job`.
+
 ## 3.1.2 · 2026-10-09 · No hand-drawn font
 
 - JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `ref/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic Shanns (8).
@@ -63,7 +95,7 @@
 - `ref/report.md` § Plain-reader rules: lead with the point, a list is a table, round in
   prose, names only when needed, close with what it allows, at most four sentences. Pages
   read in reader mode in the workbench and the web delivery; Word and LaTeX carry the same
-  subsections and tables (haipipe-page 0.122.0).
+  subsections and tables (haipipe-draft 0.122.0).
 
 ## 2.8.1 · 2026-10-03 · report.md names both layouts
 
@@ -101,14 +133,14 @@
 
 ## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
 
-- Work specs: every compute need carries cut, unit, measure, grouping or contrast, uncertainty, rivals and output columns, written from the ask before any task is searched; binding is exact-match only; configs list need ids; refusals need a probe run. `ref/report.md` defines no page shape of its own: every answering page at every level is a haipipe-page Page written through its flow (plan with one Evidence Item and division per need, Draft, adopt, health, page CHECK).
+- Work specs: every compute need carries cut, unit, measure, grouping or contrast, uncertainty, rivals and output columns, written from the ask before any task is searched; binding is exact-match only; configs list need ids; refusals need a probe run. `ref/report.md` defines no page shape of its own: every answering page at every level is a haipipe-draft Page written through its flow (plan with one Evidence Item and division per need, Draft, adopt, health, page CHECK).
 
 ## 2.3.0 · 2026-10-01 · Evidence needs join Logic, Work and Report (JL 261001)
 
 - New `ref/evidence-needs.md`: each question lists evidence needs `<QID>.E<n>` (compute · cite · judge) before any run; the answering page's `answers.yaml` binds each need to result files and the fields its `pass:` names; the page cites `[<QID>.E<n>]` and records `results-read:`; `haipipe-insight-check` returns OK · GAP · STALE · UNBOUND · UNPLANNED per cell and fails an overclaimed ✅.
 - New verbs `plan` and `bind`; `climb`, `report` and `check` use them. Three new skills: `haipipe-insight-evidence-plan`, `haipipe-insight-bind`, `haipipe-insight-check`.
 - The page ticket is no longer called the join; a config's `answers:` is a cross-check derived from the bindings.
-- `ref/report.md` § Shape: the answering page is a Page Face (`haipipe-page`): an objective title, an Opening that carries the answer, one Content division per evidence need; `state:` holds the state word only, `answers:` and `strength:` are their own lines; Aims, States, Files and Log move to `draft/records/`. Replaces the rule that the headline states the finding.
+- `ref/report.md` § Shape: the answering page is a Page Face (`haipipe-draft`): an objective title, an Opening that carries the answer, one Content division per evidence need; `state:` holds the state word only, `answers:` and `strength:` are their own lines; Aims, States, Files and Log move to `draft/records/`. Replaces the rule that the headline states the finding.
 
 ## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
 
@@ -177,7 +209,7 @@
   (`haipipe-application/fn/question.md`, `fn/verdict.md`): a person asks in
   plain words, the verb decides level, partitions and lineage, then writes the
   row through `python3 -m live.insightboard ask`.
-- `check|review` names `haipipe-page-check`; `for-question` is
+- `check|review` names `haipipe-draft-check`; `for-question` is
   `haipipe-insight-question`; the workbench's audit view is the Check Space.
 - Fix the bare `ref/partition.md` path: the file lives under haipipe-application.
 

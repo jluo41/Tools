@@ -30,8 +30,7 @@ discovery/                                  bank, not Block
     └── j02_<noun>_<qualifier>/               sibling group on the same Board
         └── t01_<noun>_<qualifier>/           Task: one typed article Page
             ├── t01_<noun>_<qualifier>.md     Page Face
-            ├── runs/r01_<author><year>_<paper>.sh
-            └── results/r01_<author><year>_<paper>/
+            └── runs/r01_<author><year>_<paper>/   ticket + result/
 ```
 
 One Task Page holds MANY numbered Paper Runs. Each Run owns exactly one
@@ -85,12 +84,12 @@ Page Face                              Task Face
 ---------                              ---------
 tNN_<task>.md                         discovery.yaml
 draft/                               scripts/ (optional instrument)
-draft/evidence/bibex/tNN_<task>.bib  runs/
-(derived union of complete Result Bibs)    results/
-typed Page synthesis                   runtime receipts
+draft/evidence/bibex/tNN_<task>.bib  runs/rNN_<...>/ (ticket + result/)
+(derived union of complete Result Bibs)    runtime receipts
+typed Page synthesis
 ```
 
-The shared `runs/` and `results/` lanes can also carry Page-owned
+The shared `runs/` lane can also carry Page-owned
 `rp00_mermaid-structure` and `rpNN_pNN[-pNN]` records/results. Those are
 validated by the Page workflow and excluded from the D1 `rNN` inventory.
 
@@ -104,7 +103,7 @@ whole folder or the only file that matters.
 |---|---|---|---|
 | `SCOPE` | freeze BJTR identity, type, question, boundary, and admission rule | `discovery.yaml` intent | none |
 | `PREPARE` | author optional reusable instrument | optional used `scripts/` | none |
-| `ACQUIRE` | resolve Triggers, admit Subjects, and execute one analysis per Subject | `runs/`, paired `results/`, Task receipts | `paper-analysis` / `source-analysis` x `N_admitted` |
+| `ACQUIRE` | resolve Triggers, admit Subjects, and execute one analysis per Subject | `runs/rNN_*/` (ticket + `result/`), Task receipts | `paper-analysis` / `source-analysis` x `N_admitted` |
 | `SYNTHESIZE` | hand accepted Results to the shared Page workflow | Task progress and optional typed record only | no Discovery Run; the D1 root records that CONTENT commissions no *Discovery* writing Run. Page-owned `rp00`/`rpNN` interaction remains governed by the shared Page workflow |
 | `CLOSE` | reconcile the already-CHECKed Page with the Task Face | `discovery.yaml report/status` and handoff | none |
 
@@ -117,7 +116,7 @@ The complete contract table is owned by
 `../../haipipe-discovery-inquiry/ref/workflow-table.md`. It also
 contains the Runs Overview, Human Actions, exact skill chains, and Skill
 Coverage. The separate `haipipe-discovery-workflow` skill is retired; the
-Discovery controller owns the domain Run table while `haipipe-page-workflow`
+Discovery controller owns the domain Run table while `haipipe-draft-workflow`
 independently owns Page writes.
 
 Expected total native Discovery Level-4 Runs is `R_discovery = N_admitted canonical Subjects`. Search
@@ -195,7 +194,7 @@ the substantive answer.
 `draft/evidence/supporting-runs/` is pointer-only lineage for a Page Evidence
 Item that the approved Outline explicitly declares. The derived aggregate Bib
 does not create such an item by itself. Discovery's own Paper/Source Runs remain
-the local `runs/` ↔ `results/` inventory; a consumer does not create a second
+the local `runs/` inventory; a consumer does not create a second
 Evidence Run just to repackage one of those Results.
 
 ## Command routing

@@ -37,11 +37,11 @@ limitations: A report can cite the right file and still misread it; the check re
 Applied to AI
 -------------
 
-agent: haipipe-page-writing-agent writes; it does not run Tasks.
+agent: haipipe-draft-writing-agent writes; it does not run Tasks.
 steps: 1. Read the Logic and the Results. 2. Write each part. 3. Cite each claim. 4. Record
   the reading time.
 returns: the report Page with its answer-status.
 verify: Every claim names a Result (T6); no cited Result is newer than the reading (T7).
 risk: A model may state a number it remembers rather than one it read (ours).
 evidence on ai: No study tests agent-written reports against their cited Results (ours).
-skill: haipipe-page-writing
+skill: haipipe-draft-writing

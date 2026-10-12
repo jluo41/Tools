@@ -30,6 +30,7 @@ the clipboard only; the surface does not write Paper files, allocate a Run,
 or infer a human tick. A gate shows a receipt when the named file exists and
 `⬜ open` otherwise.
 """
+from src.common import delivery_dir as source_delivery_dir, delivery_read_lane_dir, delivery_relative
 import html
 import json
 import os
@@ -1347,14 +1348,15 @@ def _links(text):
 
 
 def delivery_dir(b):
-    """The Board's delivery/: at the Board today, inside the newest version Job on the
-    ladder (j01_v1_<desk>/delivery/, b16 g03 D4). A path that may not exist."""
-    if (b / "delivery").is_dir():
-        return b / "delivery"
-    found = sorted((v for v in b.iterdir() if v.is_dir() and VERSION_DIR.match(v.name)
-                    and (v / "delivery").is_dir()), key=lambda v: VERSION_DIR.match(v.name).group(1)) if b.is_dir() else []
-    built = [v for v in found if (v / "delivery" / "build-manifest.json").is_file()]   # a built one first
-    return (built or found)[-1] / "delivery" if found else b / "delivery"
+    """Paper output at Block storage; choose the latest built version if needed."""
+    root = source_delivery_dir(b)
+    if (root / "paper-build.toml").is_file() or (root / "build-manifest.json").is_file():
+        return root
+    versions = sorted((v for v in b.iterdir() if v.is_dir() and VERSION_DIR.match(v.name)),
+                      key=lambda v: VERSION_DIR.match(v.name).group(1)) if b.is_dir() else []
+    found = [source_delivery_dir(v) for v in versions if source_delivery_dir(v).is_dir()]
+    built = [d for d in found if (d / "build-manifest.json").is_file()]
+    return (built or found)[-1] if found else root
 
 
 def delivery_info(d, ddir=None):
@@ -1362,7 +1364,7 @@ def delivery_info(d, ddir=None):
     its manifest, the compile order with every Section page's fragment and lanes,
     the display register, the checks, the Round pages and returned manuscripts.
     `ddir` reads one version's delivery/ in place of the Board's newest."""
-    b = d["board"]
+    b = Path(d["board"]).resolve()
     text = read(b / "board.md")
     ddir = ddir or delivery_dir(b)
     at = ddir.relative_to(b).as_posix() + "/"               # delivery/ · j01_v1_<desk>/delivery/
@@ -1428,15 +1430,15 @@ def delivery_info(d, ddir=None):
         rel = pg["rel"] if pg else ""
         folder = (b / rel).parent if rel else None
         md_t = _mtime(b / rel) if rel else 0.0
-        frag = folder / "delivery" / "latex" / (pid + ".tex") if folder else None
+        frag = delivery_read_lane_dir(folder, "latex") / (pid + ".tex") if folder else None
         lanes = []
         if folder:
-            lat = folder / "delivery" / "latex"
+            lat = delivery_read_lane_dir(folder, "latex")
             pdfs = [x for x in (lat.glob(pid + "*.pdf") if lat.is_dir() else [])]
             lanes.append(("📜", "latex", bool(pdfs), max((_mtime(x) for x in pdfs), default=0.0)))
-            wd = folder / "delivery" / "word" / (pid + ".docx")
+            wd = delivery_read_lane_dir(folder, "word") / (pid + ".docx")
             lanes.append(("📝", "word", wd.is_file(), _mtime(wd)))
-            web = folder / "delivery" / "web" / "index.html"
+            web = delivery_read_lane_dir(folder, "web") / "index.html"
             lanes.append(("🌐", "web", web.is_file(), _mtime(web)))
         mp = mpages.get(pid, {})
         stale = bool(rel and built_t and md_t > built_t + 5)

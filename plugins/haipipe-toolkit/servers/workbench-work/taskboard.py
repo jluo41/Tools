@@ -447,7 +447,11 @@ class TaskBoardMixin:
                 content_type = "application/json; charset=utf-8"
                 body = json.dumps(snap, ensure_ascii=False)
             else:
-                body = render_task_board(snap, (query.get("view") or query.get("space") or ["task"])[0])
+                view = (query.get("view") or query.get("space") or ["task"])[0]
+                if not getattr(self, "only", ()):   # retired: the Block opens in the shared frame (JL 261011)
+                    from live.frame import frame_redirect
+                    return frame_redirect(self, board, root, (query.get("view") or query.get("space") or [""])[0])
+                body = render_task_board(snap, view)
         encoded = body.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", content_type)

@@ -8,7 +8,7 @@
 
 ## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
 
-- The page is a haipipe-page Page written through its flow (plan, Draft, adopt, health, page CHECK by another agent); each need is one Evidence Item carrying `**Need**:`, with no id in the prose. Binding follows each need's work spec exactly; configs list need ids ; a refusal needs a probe run.
+- The page is a haipipe-draft Page written through its flow (plan, Draft, adopt, health, page CHECK by another agent); each need is one Evidence Item carrying `**Need**:`, with no id in the prose. Binding follows each need's work spec exactly; configs list need ids ; a refusal needs a probe run.
 
 ## 2.3.0 · 2026-10-01 · Evidence needs (JL 261001)
 

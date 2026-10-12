@@ -7,8 +7,8 @@ tools:
   - Glob
 model: inherit
 metadata:
-  version: "1.11.0"
-  last_updated: "2026-09-21"
+  version: "1.11.1"
+  last_updated: "2026-10-11"
   summary: "Reviewer for BJTR Task Page + Paper Run architecture."
 ---
 
@@ -60,8 +60,8 @@ and ask the creator to run `scripts/board_sync.py <block> --build --check
 Run the deterministic checker, then independently spot-check:
 
 ~~~text
-[ ] every runs/<RUNNAME>.sh is executable
-[ ] every Run has exact same-stem results/<RUNNAME>/runtime.yaml
+[ ] every runs/<RUNNAME>/<RUNNAME>.sh is executable
+[ ] every Run has its runs/<RUNNAME>/result/runtime.yaml
 [ ] no orphan Result
 [ ] one Run resolves exactly one canonical Subject
 [ ] Trigger and Subject are distinguished in runtime

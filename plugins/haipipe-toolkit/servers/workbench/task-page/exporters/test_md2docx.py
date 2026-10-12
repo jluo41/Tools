@@ -206,3 +206,23 @@ Table \\ref{tab:c} pools them. <!-- realizes: C1.P2.B2 -->
             self.assertLess(xml.index("pools them"), at["b"])                    # B and C after all of P2
             self.assertLess(at["b"], at["c"])
             self.assertIn("pooled rows of Table 3", xml.replace("Table 3", "Table 3"))   # forward number
+
+
+class WordPreviewTests(unittest.TestCase):
+    def test_renderer_success_without_fresh_pdf_preserves_old_preview(self):
+        import docx2pdf
+        import sys
+        import zipfile
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "test.docx"
+            out = docx.with_suffix(".pdf")
+            out.write_bytes(b"OLD PREVIEW")
+            with zipfile.ZipFile(docx, "w") as z:
+                z.writestr("word/document.xml", '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Words</w:t></w:r></w:p></w:body></w:document>')
+            with patch.object(sys, "argv", ["docx2pdf.py", str(docx)]), patch.object(docx2pdf.shutil, "which", return_value="soffice"), patch.object(docx2pdf.subprocess, "run", return_value=SimpleNamespace(returncode=0)):
+                with self.assertRaisesRegex(RuntimeError, "no fresh Word PDF"):
+                    docx2pdf.main()
+            self.assertEqual(out.read_bytes(), b"OLD PREVIEW")
+            self.assertFalse((Path(tmp) / ".test.render.html").exists())

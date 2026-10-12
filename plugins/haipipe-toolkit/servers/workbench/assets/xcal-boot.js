@@ -25,12 +25,38 @@
   // An embedded drawing must never move the page around it: the app focuses itself on load, and a
   // plain focus() scrolls every page that holds it to that frame (a column of report drawings jumped
   // to the last one, JL 261009). So inside a frame, every focus() keeps the page where it is.
+  // Nor may it take the keyboard from the page: until the person presses inside the drawing, focus()
+  // does nothing, so Cmd+C still copies the text picked in the page around it (JL 261011: copying a
+  // topic's link names gave {"type":"excalidraw/clipboard","elements":[],"files":{}}).
   if (window.top !== window) {
-    var focus = HTMLElement.prototype.focus;
+    var focus = HTMLElement.prototype.focus, pressed = false;
+    addEventListener("pointerdown", function () { pressed = true; }, true);
     HTMLElement.prototype.focus = function (o) {
+      if (!pressed) return;
       return focus.call(this, Object.assign({}, o || {}, { preventScroll: true }));
     };
   }
+
+  // Cmd+C with no shape picked: the app writes an empty copy over the clipboard. Copy the text picked
+  // in the page around the frame instead, or leave the clipboard as it was.
+  addEventListener("copy", function (e) {
+    var dt = e.clipboardData;
+    if (!dt) return;
+    var set = dt.setData.bind(dt), get = dt.getData.bind(dt), stop = e.preventDefault.bind(e), kept = {};
+    dt.setData = function (type, value) {
+      var empty = false;
+      try { var j = JSON.parse(value); empty = j.type === "excalidraw/clipboard" && !(j.elements || []).length; } catch (_) {}
+      if (!empty) return set(type, value);
+      kept[type] = value;                    // the app reads it back to check the write
+    };
+    dt.getData = function (type) { return type in kept ? kept[type] : get(type); };
+    e.preventDefault = function () {
+      if (!Object.keys(kept).length) return stop();
+      var text = "";
+      try { if (window.top !== window) text = String(window.parent.getSelection() || ""); } catch (_) {}
+      if (text.trim()) { set("text/plain", text); stop(); }
+    };
+  }, true);
 
   // The app's own module script was held back by the proxy so that seeding can
   // finish first: localStorage is synchronous, but IndexedDB (where the IMAGES

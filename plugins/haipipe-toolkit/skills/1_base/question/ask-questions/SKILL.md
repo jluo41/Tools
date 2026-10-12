@@ -103,7 +103,7 @@ For an explicit request to create or maintain question records, read
 [haipipe-question](../haipipe-question/SKILL.md) and its
 [Block Questions contract](../haipipe-question/ref/block-questions.md);
 for Report writing also read
-[haipipe-page](../../page/haipipe-page/SKILL.md). Those owners govern question
+[haipipe-draft](../../page/haipipe-draft/SKILL.md). Those owners govern question
 identity, work references and the Report's writing flow. Check the actual owner
 tooling against the requested destination before using a creation helper; a chat
 placement convention is not proof that older tooling supports that path.

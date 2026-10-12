@@ -557,6 +557,15 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             status = 200 if res.get("ok") else (409 if res.get("conflict") else 400)
             return self.reply(status, res)
+        if self.path == "/_board/studio-group":
+            # A Studio group is a tag on each topic's **Tags:** line (b10 s02-D16): add a topic to
+            # a group, take it out, or delete the group. Targets a Block's Studio, not a Page file.
+            from live.frame import studio_group_op
+            try:
+                res, err = studio_group_op(self.root, p)
+            except Exception as e:
+                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
+            return self.reply(200 if not err else 400, {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/terms":       # 列出所有在跑的终端（跨板）
             return self.reply(200, {"ok": True, "terms": self.list_terms()})
         if self.path == "/_board/killall":     # 一键全关

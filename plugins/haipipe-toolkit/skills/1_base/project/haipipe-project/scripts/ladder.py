@@ -22,7 +22,7 @@ import yaml
 
 LADDER_MD = Path(__file__).resolve().parents[1] / "ref" / "ladder.md"
 # the Themes the ladder checks, each by its singular folder and its old plural one (the same table as
-# haipipe-page src/themes.py); cowork/ has its own check; paper/, design/, insight/ keep their family layouts
+# haipipe-draft src/themes.py); cowork/ has its own check; paper/, design/, insight/ keep their family layouts
 LADDER_WORLDS = ("work", "tasks", "discovery", "discoveries", "labeling", "labelings")
 TICKET_EXT = (".sh", ".cmd", ".yaml", ".yml", ".md")   # .cmd: a desktop where only cmd.exe runs (REACH SAFER)
 ORDER = {"ok": 0, "debt": 1, "failed": 2}
@@ -91,7 +91,7 @@ def family_of(block: Path) -> str:
         return "labeling"
     if block.name.startswith("Paper-") or block.parent.name in ("paper", "papers"):
         return "paper"
-    # the special boards are named by their kind (haipipe-board, JL 261008)
+    # the special boards are named by their kind (haipipe-block, JL 261008)
     if block.name.startswith(("Insight-", "Prototype-")) or block.parent.name in ("insight", "insights"):
         return "insight"
     if block.name.startswith("Design-") or block.parent.name in ("design", "designs"):
@@ -214,7 +214,7 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     if kind == "soft" and NAMES["soft_dated"].match(name):
         node.add("debt", "soft name carries a date; the date belongs in passes/pNN-<MMDD>/")
     # A soft Run's ticket is its ask, `.md`; a Page's Delivery Run (`run-delivery-<lane>`) is one fixed
-    # command, so its ticket is that command, `.sh` (haipipe-page 0.125, JL 261009).
+    # command, so its ticket is that command, `.sh` (haipipe-draft 0.125, JL 261009).
     soft = (".md", ".sh") if name.startswith("run-delivery-") else (".md",)
     tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".yaml", ".yml") if kind == "hard" else soft)]
     ticket = next((t for t in tickets if t.is_file()), None)
@@ -464,7 +464,7 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
 # After a move (fn/update.md § Relink). A moved ticket resolves its folders as it did from runs/
 # (one more dirname on its own path) and writes its Result to runs/<run>/result/.
 PATCH_MARK = "# ladder: moved to one folder per Run; resolves as runs/<run>.sh did, writes runs/<run>/result/"
-SELF = re.compile(r'dirname "(\$0|\$\{0\}|\$\{BASH_SOURCE\[0\]\}|\$BASH_SOURCE|\$TICKET)"')
+SELF = re.compile(r'dirname (-- )?"(\$0|\$\{0\}|\$\{BASH_SOURCE\[0\]\}|\$BASH_SOURCE|\$TICKET)"')
 TASK_VAR = r'\$\{?[A-Z_]*TASK[A-Z_]*\}?'
 RUN_VAR = r'\$\{?[A-Z_]*RUN(?:_NAME|_ID)?\}?'
 
@@ -476,9 +476,10 @@ def patch_ticket(text: str) -> tuple[str, bool]:
     found = bool(SELF.search(text))
     # A ticket that builds TICKET from its own path and then takes dirname "$TICKET" needs the extra
     # level once: keep TICKET the real path (never wrap the TICKET= line) and wrap the dirname of it.
-    via_ticket = 'dirname "$TICKET"' in text
+    via_ticket = bool(re.search(r'dirname (-- )?"\$TICKET"', text))
     t = "\n".join(line if via_ticket and re.match(r"\s*TICKET=", line)
-                  else SELF.sub(lambda m: f'dirname "$(dirname "{m.group(1)}")"', line)
+                  else SELF.sub(lambda m: f'dirname {m.group(1) or ""}"$(dirname {m.group(1) or ""}"{m.group(2)}")"',
+                                line)
                   for line in text.split("\n"))
     t = re.sub(r'results/\$\{?RUN_REL\}?(?![A-Za-z_])', '$TASK_SEG/runs/$RUN_NAME/result', t)
     t = re.sub(rf'results/({TASK_VAR})/({RUN_VAR})(?![A-Za-z_])', r'\1/runs/\2/result', t)
@@ -579,7 +580,7 @@ def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
     levels = [path] + [d for d in sorted(path.rglob("*")) if d.is_dir() and NAMES["block"].match(d.name) or
                        d.is_dir() and NAMES["job"].match(d.name) or d.is_dir() and NAMES["task"].match(d.name)]
     for d in levels:
-        if any(part.startswith(("_", ".")) or part in ("runs", "results", "notebooks", "studio")
+        if any(part.startswith(("_", ".")) or part in ("runs", "results", "notebooks", "studio", "workflow")
                for part in d.relative_to(path).parts):
             continue
         diagram = d / "diagram"
@@ -602,7 +603,8 @@ def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
                         dest = task / "notebooks" / f.name
                         if not dest.exists():
                             out.append((f, dest, "a Job holds no notebooks/: into its Task"))
-    return out
+    # a folder inside one that already moves whole goes with it (a bNN_ name under workflow/context/)
+    return [m for m in out if not any(o[0] != m[0] and o[0] in m[0].parents for o in out)]
 
 
 def update(path: Path, root: Path, apply: bool) -> int:

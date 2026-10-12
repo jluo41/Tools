@@ -22,7 +22,7 @@ receipts, and Folder closure. This skill owns the reader-facing extension:
 what a Task Page must show so a reader can inspect the evidence without
 reconstructing the scripts.
 
-Load this skill together with haipipe-page, haipipe-task,
+Load this skill together with haipipe-draft, haipipe-task,
 haipipe-task/ref/task-page.md, the current Page workflow route/action, and the
 display contracts. It does not replace any of those authorities and it never
 executes a producing Task merely to make a Page look complete.
@@ -197,7 +197,7 @@ names it as missing instead of returning an older preview.
 
 ## 📂 Governing references
 
-- haipipe-page/SKILL.md · shared Page Face and reader-facing packet
+- haipipe-draft/SKILL.md · shared Page Face and reader-facing packet
 - haipipe-task/ref/task-page.md · Task Page grammar and READING closure
 - haipipe-task/ref/task-page-template.md · new Task Page shape
 - workbench-page/ref/plan-grammar.md · typed DISPLAY planning

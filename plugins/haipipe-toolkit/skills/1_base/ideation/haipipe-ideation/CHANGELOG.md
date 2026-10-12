@@ -60,7 +60,7 @@
 
 ## 0.3.2 · 2026-09-13
 
-- Aligned the Paper P0 sync contract with `haipipe-page`'s three update
+- Aligned the Paper P0 sync contract with `haipipe-draft`'s three update
   boundaries: semantic source, working projection, and released Page Content /
   delivery.
 - Clarified that sync does not mint a Page Run or imply publication; the Page

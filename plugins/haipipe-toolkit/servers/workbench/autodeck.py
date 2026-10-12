@@ -162,7 +162,7 @@ def autodeck(root, payload):
         if need not in text:
             return _fail(f"the deck does not link {need} — its assets would 404")
 
-    slide_dir.mkdir(exist_ok=True)
+    slide_dir.mkdir(parents=True, exist_ok=True)
     when = dt.datetime.now().strftime("%y%m%d %H%M")
     text += f"\n<!-- autodeck: claude · {when} · ask: {ask or '(page)'} -->\n"
     tmp = out.with_suffix(".html.tmp")

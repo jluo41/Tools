@@ -140,7 +140,7 @@ All four are soft (`haipipe-run`: `run-<type>-<target>/run.yaml`, `passes/`).
 
 ```bash
 python scripts/pin_method.py --list
-python scripts/pin_method.py design/Design-<name>/j03_g01_m04          # run-setup-method-j03
+python scripts/pin_method.py design/Design-<name>/j03_<goal-name>_<method-name>          # run-setup-method-j03
 python scripts/score_exp.py design/Design-<name> e01                    # run-score-e01
 ```
 

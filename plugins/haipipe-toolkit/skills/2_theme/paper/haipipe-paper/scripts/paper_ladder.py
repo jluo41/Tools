@@ -5,7 +5,7 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
     python paper_ladder.py board   <paper/>Paper-<Slug>  [--title "<paper>"]             a new paper Board
     python paper_ladder.py version <board> --desk <desk> --date MMDD [--venue "<venue>"]  the first (or a fresh) version
     python paper_ladder.py next    <board> --from <version> --date MMDD                   the next version, from an earlier one
-    python paper_ladder.py spaces  <board> <version>                                      give a version studio/ reports/ runs/
+    python paper_ladder.py spaces  <board> <version>                                      give a version reports/ runs/
     python paper_ladder.py task    <version folder> tNN_<title>                           a Section, the Abstract or a letter
     python paper_ladder.py run     <Board or version folder> <type> <target>              a soft Run: runs/run-<type>-<target>/
     python paper_ladder.py rollback <board>                                               undo the newest version, next, spaces
@@ -13,16 +13,17 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
     (add --dry-run to version, next, spaces, task or run: print what it would do; change nothing)
 
 board writes only the face and needs no record: it makes a new folder. A Space folder (studio/, reports/, runs/,
-venues/, related/, delivery/) comes with its first item, never ahead of it (haipipe-board); `spaces` makes a
-version's three only when asked. version, next, spaces and task also edit board.md's ## Pages, so each keeps the old text of what it rewrites in <board>/.paper-version-N/ with its
+venues/, related/, delivery/) comes with its first item, never ahead of it (haipipe-block); `spaces` makes a
+version's two only when asked. studio/, related/ and delivery/ are the Board's alone (b10 s09-D01, D05, s04): a
+version or a Section opens the Board's and keeps none of its own. version, next, spaces and task also edit board.md's ## Pages, so each keeps the old text of what it rewrites in <board>/.paper-version-N/ with its
 record .paper-version-N.yaml, the same records the retired version_paper.py wrote, and rollback undoes the newest.
 A Section's Runs are the Page workflow's (page.py open-run); `run` is for the Board's and a version's own Runs, written
 by the shared writer (haipipe-run scripts/soft_run.py new): runs/run-<type>-<target>/ with its run.yaml card (skill,
 agent and signs from the paper's run card whose pattern names it) and its ticket; `soft_run.py pass` adds its passes.
 
 next: the next version starts from the one it follows (JL 261007: "j02 will make a copy of it and we will modify
-    based on that"). Each Section's own writing is copied: its face, draft/ (not draft/records/ or draft/previous/)
-    and studio/. Its results/, runs/, delivery/ and notebooks/ are generated or receipts and are not copied; the new
+    based on that"). Each Section's own writing is copied: its face and draft/ (not draft/records/ or
+    draft/previous/); its drawings are Board topics. Its results/, runs/, delivery/ and notebooks/ are generated or receipts and are not copied; the new
     version rebuilds them. The build's inputs (paper-build.toml, preamble.tex, build.py) are copied, its order
     pointed at the new face. The face says from: and tells:, and keeps the Narrative it follows.
 A review batch into a version's reports/ is haipipe-paper-comments' (scripts/review_items.py add).
@@ -42,6 +43,10 @@ import sys
 from datetime import date
 from pathlib import Path
 
+_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+sys.path.insert(0, str(_PAGE_ENGINE))
+from src.common import delivery_dir
+
 HERE = Path(__file__).resolve().parent
 _spec = importlib.util.spec_from_file_location("topics_paper", HERE / "carry_over" / "topics_paper.py")
 T = importlib.util.module_from_spec(_spec)
@@ -56,7 +61,8 @@ VERSION = re.compile(r"^j(\d{2})_v([^_]+)_(.+)$")
 SECTION = re.compile(r"^t[0-2]\d_")
 TASK = re.compile(r"^t(\d)(\d)_([a-z0-9][a-z0-9-]*)$")
 RUN = re.compile(r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
-WRITTEN = ("draft", "studio")                 # a Section's own writing, besides its face
+WRITTEN = ("draft",)                          # a Section's own writing, besides its face; its drawings are
+                                              # Board topics (b10 s09-D01), so an older Section's studio/ stays put
 NOT_COPIED = {"records", "previous", "_archive", "__pycache__", ".DS_Store"}
 DELIVERY_INPUTS = ("paper-build.toml", "preamble.tex", "build.py")
 TEXT = {".md", ".toml", ".yaml", ".yml"}
@@ -68,9 +74,7 @@ RUN_TYPES = {"Board": "update-board · add-venue · check-venue · add-resource 
                         "review-report · release-section · add-review · route-item · reply-item · write-letter · "
                         "check-letter · write-response · add-section · build-version · check-submission · "
                         "send-version"}
-README = {"studio": "Idea Studio of this {level}: one topic per folder, sNN-<topic>/ (its drawings and a face: "
-                    "decided · open · feeds).\n",
-          "reports": "Audience Report of this {level}: one Question per folder, qNN_<topic>/, registered in the "
+README = {"reports": "Report of this {level}: one Question per folder, qNN_<topic>/, registered in the "
                      "face's ## Questions. A comments batch is a report with page-type: comments.\n",
           "runs": "Runs of this {level}: one soft Run per folder, run-<type>-<target>/ (no date in the name), "
                   "with its run.yaml card, its ticket run-<type>-<target>.md and passes/pNN-<MMDD>/, one per "
@@ -191,7 +195,7 @@ def board(path: Path, title: str, dry: bool) -> list:
 
 # ── version · spaces ──────────────────────────────────────────────────────────────────────────────
 def spaces(run, version):
-    for d in README:
+    for d in README:                            # reports/ and runs/; Studio is the Board's (b10 s09-D01)
         if not (run.board / version / d).is_dir() and not any(r.startswith(f"{version}/{d}/") for r in run.create):
             run.create[f"{version}/{d}/README.md"] = readme(d, "version")
 
@@ -242,13 +246,15 @@ def next_version(run, frm, mmdd):
             if nt != t:
                 run.create[rel] = nt
     for name in DELIVERY_INPUTS:               # the build's inputs, its order pointed at the new face
-        f = b / frm / "delivery" / name
+        f = delivery_dir(b / frm) / name
         if f.is_file():
-            run.create[f"{to}/delivery/{name}"] = f
-    toml = b / frm / "delivery" / "paper-build.toml"
+            run.create[f"delivery/{to}/{name}"] = f
+    toml = delivery_dir(b / frm) / "paper-build.toml"
     if toml.is_file():
-        t = re.sub(r'(?m)^(order\s*=\s*")[^"]*(")', lambda x: x.group(1) + f"../{to}.md" + x.group(2), read(toml))
-        run.create[f"{to}/delivery/paper-build.toml"] = t.replace(frm + "/", to + "/")
+        t = re.sub(r'(?m)^(order\s*=\s*")[^"]*(")', lambda x: x.group(1) + f"../../{to}/{to}.md" + x.group(2), read(toml))
+        run.create[f"delivery/{to}/paper-build.toml"] = t.replace(frm + "/", to + "/")
+        t = re.sub(r'(?m)^(main|appendix)\s*=\s*"[^"\n]*"', lambda x: x.group(1) + ' = "../../' + to + '"', t)
+        run.create[f"delivery/{to}/paper-build.toml"] = t
     old = read(b / frm / (frm + ".md"))        # the face: from, tells, the Narrative it follows; its own Questions
     face = re.sub(r"(?m)\A# .*$", f"# {to} · the next version of the paper, from {frm}", old, count=1)
     for k, v in (("send", to), ("state", "drafting"), ("from", frm)):

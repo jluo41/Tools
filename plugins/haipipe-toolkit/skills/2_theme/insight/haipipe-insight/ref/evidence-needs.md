@@ -177,7 +177,7 @@ QK2:
 
 ## 3 · The report, through the page's Evidence Items (Report)
 
-The answering page is a `haipipe-page` Page Face written through its own flow
+The answering page is a `haipipe-draft` Page Face written through its own flow
 (`ref/report.md`). Each compute or cite need becomes Evidence Items in the
 page's `draft/<stem>-evidence-items.md`: one item per bound file, every item of
 the need carrying the same `**Need**:` id. The plan cites each item from the
@@ -252,6 +252,6 @@ For each question: plan its needs and specs from the prose
 (`haipipe-insight-evidence-plan`), have an independent agent agree them, bind each need on
 the answering page (`haipipe-insight-bind`, which commissions any missing run
 through `haipipe-task`), sync the configs' `answers:`, rewrite the page through
-the `haipipe-page` flow (`ref/report.md`), then run both checks. A cell the
+the `haipipe-draft` flow (`ref/report.md`), then run both checks. A cell the
 check finds overclaimed drops to `🟡` in the register until its page is
 rewritten.

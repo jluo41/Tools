@@ -15,7 +15,7 @@ description: >-
   design spaces on screen, theory of design, /workbench-design.
 metadata:
   version: "0.15.1"
-  last_updated: "2026-10-09"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -39,6 +39,21 @@ draws every level from the folders. Any other design Block reads as vanilla, and
 (below). The tabs are the frame's: Guide · Block · Job ▾ (every Job of the Block) · Task ▾ (the Job's Tasks, grouped
 by step: t00, the designs in order with the dropped folded at the end, t99).
 
+## A Job is named by its folder
+
+Every view that names a Job shows its folder name as it is, `jNN_<goal name>_<method name>`
+(`j01_prepare-before-visit_goal-only`), as the Job ▾ menu does: a card title, a link, a list of Jobs, a column head
+(JL 261011: "I don't want we just have jNN here, not readable"). Never the bare `jNN`: it says nothing on its own.
+The ids (`G01`, `M01 m2`, `i1`) stay on the face as pins and may follow the name as plain detail. An older id-form
+folder (`j03_g01-review-new-rx_m04-actionable-insights`) shows the same way, by its folder name.
+
+## What a reader with five minutes sees (JL 261012)
+
+From the 10-08 demo to leadership: the Block's Audience Report opens on **Summary**, one page built only from what the
+Runs wrote (no new claim); **Rounds** is the Block's memory, one round per inputs version; every predicted number
+shows its basis (`against · by · why`: in full on a card, on hover in a table); a held Job says why instead of empty
+counts; and freezing and releasing are one button, **Review and approve**, the one place a person reviews.
+
 ## The six Spaces, level by level
 
 Each view reads the files named beside it; nothing is stored twice and nothing is computed that a Run did not write.
@@ -49,7 +64,7 @@ Each view reads the files named beside it; nothing is stored twice and nothing i
 |---|---|---|
 | Description | Map · Goals · Methods · Inputs | `board.md ## Goals`; the Jobs' pins (the Map: goals down × methods across, each cell its chain of Jobs); the method registry (read only); `inputs/iN/manifest.yaml` |
 | Idea Studio | the Block's topics | `studio/sNN-<topic>/` |
-| Audience Report | Questions · Cost · Predicted vs observed · Method scorecard | `board.md ## Questions` and `reports/`; each Job's Run cards (`usage:`, times, rounds); `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version |
+| Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, each Job's state, its top design as it reads with its prediction and why, the next step, `close:`; Rounds: one round per `inputs/iN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
 | Work Details | All · one per goal | one card per Job: goal · method version · inputs · state; open, a preview of its Tasks |
 | Runs | All · Set up · Launch a Job · Report | the Block's `runs/run-<type>-<target>/run.yaml` |
 | Delivery | — | `delivery/designs.json` · `designs.md`: every Job's release |

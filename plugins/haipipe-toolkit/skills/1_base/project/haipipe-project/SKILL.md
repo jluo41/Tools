@@ -94,7 +94,7 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 ## Boundary and ownership
 
 ```text
-work/          → haipipe-task       BJTR execution; Task = Page; Run = identity
+work/          → haipipe-task       BJTR execution; a Task may hold a draft; Run = identity
 discovery/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 paper/         → haipipe-paper      academic consumer
 insight/       → haipipe-insight    older register-kind <Dataset>-InsightBoard/ only (new work: an Insight Block in work/)

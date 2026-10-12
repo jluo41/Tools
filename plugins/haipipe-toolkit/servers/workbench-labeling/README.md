@@ -48,7 +48,7 @@ and `<page>` a Page id (`S-Label-1`). The server fills in `path=`, `file=` and
 `workbench-labeling/labeling.py` is a mixin for the shared host: it takes
 `target()`, `reply()` and the HTTP plumbing from `haipipe-toolkit/servers/_host`,
 and reads a Board's page list through one adapter, `_board_pages()`, which is
-the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/page/haipipe-page/src`).
+the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/page/haipipe-draft/src`).
 The dedicated Page-folder route uses its own checked resolver and does not
 call the Board parser.
 The shared Guide Space is mounted through

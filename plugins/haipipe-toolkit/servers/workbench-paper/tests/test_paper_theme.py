@@ -53,7 +53,7 @@ ROUND = """# RD01-demo
 | Review-demo-claim | R1.1 · E1.2 | S-desk-Main-1-Introduction ¶2 · C1 | run-revise-demo-claim | P3 | answered |
 | Review-other-page | R2.1 | S-desk-Main-2-Methods ¶1 | — | — | open |
 """
-SUBS = {"Description": ("Scope", "Venue", "Resources", "Related"), "Idea Studio": ("",),
+SUBS = {"Description": ("Scope", "Venue", "Resources"), "Related": ("",), "Idea Studio": ("",),
         "Audience Report": ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions",
                             "Related Papers"),
         "Work Details": ("Jobs", "Main", "Appendix", "Evidence"), "Runs": ("",),
@@ -91,6 +91,33 @@ class PaperThemeTest(unittest.TestCase):
             if subs != ("",):
                 self.assertEqual(tuple(spaces[space]["subspaces"]), subs)
         self.assertTrue(spaces["Runs"]["run_types"])
+
+    def test_related_folds_inside_the_studio(self):
+        # b10 s04, JL 261011: Related is the Studio's second folding part; a Related link, or an old
+        # Description › Related one, opens the Studio with it unfolded
+        page = frame.render(self.theme, self.root, self.board, "Related")
+        self.assertIn('aria-current="page">Studio</a>', page)
+        self.assertNotIn(">Related</a>", page.split("<header")[0])
+        self.assertIn("<details class=studio-related id=studio-related open>", page)
+        self.assertIn("run-add-related-", page)
+        old = frame.render(self.theme, self.root, self.board, "Description", "Related")
+        self.assertIn("<details class=studio-related id=studio-related open>", old)
+
+    def test_related_papers_by_each_question_and_no_email(self):
+        # b10 s04-D07, D09: a group cell is comma-separated, and an email is no related work; the subfolder
+        # (emails/, meetings/) is the Studio's group, never a research question
+        (self.board / "related" / "emails").mkdir(parents=True)
+        (self.board / "related" / "related.md").write_text(
+            "| kind | date | item | link | feeds | group |\n|---|---|---|---|---|---|\n"
+            "| paper | 2024 | <paper-a> | https://doi.org/x | q01 | RQ1, RQ2 |\n"
+            "| email | 2026-10-09 | <email-b> | `emails/2026-10-09-0900 b.eml` | q01 | RQ1 |\n"
+            "| meeting | 2026-10-10 | <meeting-c> | `meetings/2026-10-10-1800 c.md` | s01 | |\n", encoding="utf-8")
+        page = frame.render(self.theme, self.root, self.board, "Audience Report", "Related Papers")
+        body = page.split("<h3>RQ1</h3>")[1]
+        self.assertIn("&lt;paper-a&gt;", body.split("<h3>RQ2</h3>")[0])
+        self.assertIn("&lt;paper-a&gt;", body.split("<h3>RQ2</h3>")[1])
+        self.assertNotIn("&lt;email-b&gt;", page)
+        self.assertNotIn("<h3>emails</h3>", page)
 
     def test_a_section_folder_is_left_to_the_base(self):
         # a Section is a Page Task: its Spaces are the base's Page Task views (frame.page_task_spaces,
@@ -198,7 +225,7 @@ class LayoutsTest(unittest.TestCase):
         if ladder:
             (board / "board.md").write_text(LADDER_BOARD, encoding="utf-8")
             (folders["version"] / "j01_v1_desk.md").write_text(FACE, encoding="utf-8")
-            (folders["version"] / "delivery").mkdir()
+            (board / "delivery" / main).mkdir(parents=True)     # a version's build is the Board's (b10 s03-D01)
         else:
             (board / "board.md").write_text(BOARD.replace("### Ba", "### Bb · Bb-desk-Appendix\n- S-desk-Appendix-A-Data\n\n"
                                                           "### Bc · Bc-desk-Round\n- RD01-demo\n\n### Ba"),
@@ -264,7 +291,7 @@ class LayoutsTest(unittest.TestCase):
         root, board, f = self._board(True)
         d = P.collect(board, "x")
         self.assertEqual(P.paper_desk(d), "desk")
-        self.assertEqual(P.delivery_dir(board), f["version"] / "delivery")
+        self.assertEqual(P.delivery_dir(board), (board / "delivery" / f["version"].name).resolve())
 
     def test_a_round_has_no_reader_contract(self):
         # the Task session's ask: the reader contract is a Section's, never a review batch's
@@ -357,6 +384,42 @@ class LayoutsTest(unittest.TestCase):
         for sub in ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions", "Related Papers"):
             html = spaces("Block", board, root, sub)["Audience Report"].html
             self.assertNotIn("No Story yet", html, sub)
+
+    def test_each_sections_build_state_links_back_to_it(self):
+        # JL 261011: "how could the delivery from the section level link back to the block level delivery"
+        import json, os, time
+        from live import paper_theme as T
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        board = root / "examples-demo" / "Project-Demo" / "paper" / "Paper-Ladder"
+        v = board / "j01_v0101_desk"
+        for sec in ("t01_introduction", "t02_results"):
+            (v / sec).mkdir(parents=True)
+            frag = board / "delivery" / v.name / sec / "latex" / f"{sec}.tex"
+            frag.parent.mkdir(parents=True)
+            frag.write_text("x", encoding="utf-8")
+        (board / "board.md").write_text("# Paper-Ladder\n\nboard-kind: paper-board\n", encoding="utf-8")
+        built = time.time()
+        (board / "delivery" / v.name / "build-manifest.json").write_text(json.dumps({
+            "built": time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(built)),
+            "pages": [{"id": "t01_introduction", "ready": True, "reasons": [],
+                       "fragment": f"delivery/{v.name}/t01_introduction/latex/t01_introduction.tex"},
+                      {"id": "t02_results", "ready": False, "reasons": ["outline not approved"],
+                       "fragment": f"delivery/{v.name}/t02_results/latex/t02_results.tex"},
+                      {"id": "t03_discussion", "ready": False, "reasons": [], "fragment": None}]}), encoding="utf-8")
+        newer = board / "delivery" / v.name / "t02_results" / "latex" / "t02_results.tex"
+        os.utime(newer, (built + 60, built + 60))                  # written after the build
+        os.utime(board / "delivery" / v.name / "t01_introduction" / "latex" / "t01_introduction.tex",
+                 (built - 60, built - 60))
+        states = {sec.name: (ready, why, state) for sec, ready, why, _, state, _ in T.section_states(board, v)}
+        self.assertEqual(states["t01_introduction"], (True, "", "✅ in the build"))
+        self.assertEqual(states["t02_results"], (False, "outline not approved", "❗ changed after the build: rebuild"))
+        self.assertEqual(states["t03_discussion"][2], "⬜ not exported")
+        html = T._section_rows(board, [v], root)
+        self.assertIn("j01 › t02_results", html)
+        self.assertIn("space=Delivery", html)                      # to the Section's part of the Delivery
+        self.assertIn("folder ↗", html)                            # and back to its folder
 
     def test_related_names_its_other_group(self):
         # g03 D9: "Resources" is Description › Resources only; Related's other group is Datasets and repos

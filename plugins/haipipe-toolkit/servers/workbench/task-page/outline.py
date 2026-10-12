@@ -25,6 +25,7 @@ same data sorted twice, both rendered server-side, toggled client-side by
 chips with no second request. The 🚦 lens lists ⬜ before ✅ on purpose:
 opening it is asking what the page still owes.
 """
+from src.common import delivery_dir, delivery_read_lane_dir, delivery_relative
 import html
 import pathlib
 import re
@@ -61,7 +62,7 @@ from live.outline_structure import (structure_card_html, save_structure,
 from live.outline_revise import (save_revise, revise_rows_html,
                                  assets_html as revise_assets_html)
 
-# Aim state emoji (haipipe-page): current set + the older ones still parsed.
+# Aim state emoji (haipipe-draft): current set + the older ones still parsed.
 DONE = {"✅"}
 STATE_EMOJI = ("✅", "⬜", "🔨", "🧠", "❄️", "🟡", "🟠", "⏸️")
 
@@ -3014,7 +3015,7 @@ def _no_plan_html(page_src):
     note = ('<div class=card><h2>No plan yet</h2><p class=mut>This page has no Draft plan, so Table, '
             'Reading and Revise have nothing to show. <b>Structure revise</b>, in the Runs panel, '
             'writes the first plan: its headings, paragraph jobs and Bullet Points.</p></div>')
-    tex = Path(page_src).parent / "delivery" / "latex" / (Path(page_src).stem + ".tex")
+    tex = delivery_read_lane_dir(Path(page_src).parent, "latex") / (Path(page_src).stem + ".tex")
     try:
         raw = tex.read_text(encoding="utf-8", errors="replace")
     except OSError:

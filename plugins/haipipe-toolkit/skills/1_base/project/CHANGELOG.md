@@ -1,3 +1,10 @@
+## 2026-10-11 — haipipe-related joins the project group
+
+- `haipipe-related` 0.1.0 (new): the Block's `related/` (meetings/, papers/, files/, emails/), its
+  table `related.md`, its groups (a subfolder is a group of its files) and the Related view in the
+  Studio (b10 s04-D08, D09). The project group now holds one skill per shared Block shelf:
+  haipipe-studio, haipipe-related, haipipe-delivery, plus haipipe-report and haipipe-run.
+
 ## 2026-10-06 — hard and soft Runs; the audit reaches every level
 
 - `haipipe-run` 0.31.0: Block → Job → Task → Run → pass. A Run is one folder in `runs/`,

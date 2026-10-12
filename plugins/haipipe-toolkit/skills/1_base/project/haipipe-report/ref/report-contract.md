@@ -3,7 +3,7 @@
 Read for anything about a Question's answer: the row the Audience Report draws, how
 work links to a Question, where a Question stands, the report Page, its figures and its
 check. Asking the Question (its size, id, register row, folder) is `haipipe-question`;
-writing the Page's prose is `haipipe-page`. This reference was moved here from
+writing the Page's prose is `haipipe-draft`. This reference was moved here from
 `haipipe-question/ref/block-questions.md` (b03 s21, 261007); the words are kept.
 
 ## The row
@@ -32,6 +32,9 @@ owner: haipipe-question (ask)    owner: the theme's work skills;     owner: haip
 4. **A report not yet registered** still gets its row; the check calls it an error until a
    register row names it.
 5. **A Task with no register** shows its own face as its report: a Task's Page is its answer.
+6. **A Job with no register** shows the Block's rows its face `answers:` names, each with its
+   Block report and the register's `work:` under this Job, named from the Job (JL 261011, over an
+   empty j51 in REACH-SPACE). Its Ideation and Narrative read the Block's studio, as Studio does.
 
 The frame draws this row (`servers/workbench/frame.py` `question_rows`); a theme may draw
 its own row over it but reads the same three sources.
@@ -50,7 +53,7 @@ answers: QK10.E1                # one need of a Question: <id>.E<n> links to <id
 2. **Ids are the register's**: `Q` and two or more digits, or `Q-<word>-<number>`; a theme
    may use its own prefix (`QK10`). An id the level's register does not have is an error.
 3. **A need**: `<id>.E<n>` names the Evidence Item `E<n>` a Task supplies; it counts for its
-   Question. The need's own contract is the Page's (`haipipe-page`).
+   Question. The need's own contract is the Page's (`haipipe-draft`).
 4. **The register's `work:`** also links (a path from the Block), for work whose face cannot
    say it; a face's `answers:` is preferred, so the link lives with the work.
 5. **The report's own `answers:`** names its Question; a report that answers several names each.
@@ -84,8 +87,8 @@ reports/qNN_<topic>/
 └── studio/                 this report's own drawings, when it draws them by hand
 ```
 
-The Report is a `haipipe-page` Page, with its normal Opening, Content, Draft, evidence
-records, adoption, CHECK and release. Load `haipipe-page` before writing it. Do not apply
+The Report is a `haipipe-draft` Page, with its normal Opening, Content, Draft, evidence
+records, adoption, CHECK and release. Load `haipipe-draft` before writing it. Do not apply
 the executable Task Page grammar or `folder-kind: task` to this report Folder. No new
 Folder kind is needed for an ordinary report Page.
 
@@ -205,7 +208,7 @@ warn   answered with no Work and no Evidence link (reasoning only: say so in Lim
 ```
 
 The check is mechanical. Judging whether the answer is right is the report Page's CHECK,
-in a fresh context by an agent that wrote none of it (`haipipe-page-check-agent`).
+in a fresh context by an agent that wrote none of it (`haipipe-draft-check-agent`).
 
 ## The buttons
 

@@ -41,4 +41,4 @@ returns: delivery/<lane>/ files and their build log.
 verify: The one source builds every lane without hand edits (T5).
 risk: A quick fix in a built file is lost at the next build and hides the fault (ours).
 evidence on ai: No study tests agent-run single-source builds (ours).
-skill: haipipe-page-delivery
+skill: haipipe-draft-delivery

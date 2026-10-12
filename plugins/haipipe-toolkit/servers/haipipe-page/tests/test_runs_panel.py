@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
-PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "1_base" / "page" / "haipipe-page"
+PAGE_ROOT = SERVER_DIR.parents[1] / "skills" / "1_base" / "page" / "haipipe-draft"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR.parent / "workbench" / "task-page"))
 sys.path.insert(0, str(SERVER_DIR.parent / "workbench"))   # runs_panel.py: the base's, every theme's
@@ -49,7 +49,7 @@ class RunsPanelTest(unittest.TestCase):
         skills = {t["label"]: t["skills"] for t in types}
         # one skill per button (2026-10-03); haipipe-display loads the evidence skill it needs
         self.assertEqual(skills["Build figure / table"], ["haipipe-display"])
-        self.assertEqual(skills["Bind / update value"], ["haipipe-page-evidence"])
+        self.assertEqual(skills["Bind / update value"], ["haipipe-draft-evidence"])
         # Each view lists only its own run types (JL 260927).
         self.assertEqual(views["Paragraph revise"], "revise")
         self.assertEqual(views["Scratch"], "scratch")

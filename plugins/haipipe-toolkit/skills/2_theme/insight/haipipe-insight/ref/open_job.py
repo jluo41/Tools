@@ -62,9 +62,14 @@ def open_job(board, release, data, previous="", moved="start", number=None):
     name = f"_{release}_{face.get('dataset', '')}{data}"
     job = next((j for j in jobs if j.name.endswith(name)), None) or board / f"j{number or len(jobs) + 1:02d}{name}"
     made = []
+    plan_words = rdir.name.split("_", 2)[2].replace("-", " ") if rdir.name.count("_") >= 2 else release.replace("p", "AP", 1)
+    ver = next((v for v in face.get("versions") or [] if v.get("version") == data), {})
+    freeze_words = str(ver.get("label") or "").strip() or data.replace("v", "F", 1)
+    heading = f"{job.name.split('_', 1)[0]} · {plan_words} × {freeze_words}"   # JL 261011: words, not codes
     _write(job / f"{job.name}.md", _front({"release": release, "prototype": str(rdir.relative_to(board.parent.parent)),
                                            "data": data, "state": "open", "moved": moved, "previous": previous},
-                                          f"# {job.name}\n\nPrototype release {release} on data version {data}. "
+                                          f"# {heading}\n\nAnalysis plan {release.replace('p', 'AP', 1)} (release {release}) on data freeze "
+                                          f"{data.replace('v', 'F', 1)} (data version {data}). "
                                           "Frozen once closed (run-close).\n"), made)
     rows = yaml.safe_load((rdir / "release.yaml").read_text())["questions"]
     partitions = RQ.front(rdir / "partitions.md")[0]["partitions"]

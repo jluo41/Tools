@@ -12,8 +12,8 @@ the workbench's server folder (`servers/workbench-cowork/`); `none` writes no fi
 Agents: the Block-level writes (a job page, the Questions register, an email draft, meeting
 notes, a drawing) need an agent of their own, planned as `haipipe-cowork-agent (new)`;
 a draft or a register change is judged by `haipipe-cowork-reviewer-agent (new)`, never
-by the agent that wrote it. Reports are Pages: `haipipe-page-writing-agent` writes,
-`haipipe-page-check-agent` checks. No agent sends a message: the person signs the send.
+by the agent that wrote it. Reports are Pages: `haipipe-draft-writing-agent` writes,
+`haipipe-draft-check-agent` checks. No agent sends a message: the person signs the send.
 
 | Level | Space | View | Run type | Agent | Skill | Person signs | Folder |
 |---|---|---|---|---|---|---|---|
@@ -29,11 +29,11 @@ by the agent that wrote it. Reports are Pages: `haipipe-page-writing-agent` writ
 | board | Work | Jobs | Update a job | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/jNN_<job>.md (header) · Timeline.md · CHECKLIST.md |
 | board | Work | Questions | Ask a Question | haipipe-cowork-agent (new) | haipipe-question-asking | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
 | board | Work | Questions | Review the questions | haipipe-cowork-reviewer-agent (new) | haipipe-question-review | a change | none |
-| board | Work | Questions | Write the report | haipipe-page-writing-agent | haipipe-page-writing | none | Block › reports/qNN_<topic>/ |
+| board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
 | board | Work | Emails | Draft an email | haipipe-cowork-agent (new) | haipipe-writing | the send | Block › jNN_<job>/emails/<thread>.md · CHECKLIST.md |
 | board | Work | Meetings | Write meeting notes | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/meetings/YYYY-MM-DD-<topic>.md |
 | board | Check | Waiting on | Draft a follow-up | haipipe-cowork-agent (new) | haipipe-writing | the send | Block › jNN_<job>/emails/<thread>.md |
 | board | Check | Drafts | Review a draft | haipipe-cowork-reviewer-agent (new) | haipipe-writing | the send | none |
-| board | Check | Reports | Check a report | haipipe-page-check-agent | haipipe-page-check | release or hold | none |
+| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-check | release or hold | none |
 | board | Delivery | Reports | none | none | none | none | none |
 | board | Delivery | Done jobs | none | none | none | none | none |

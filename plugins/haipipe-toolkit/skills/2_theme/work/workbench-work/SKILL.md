@@ -8,7 +8,7 @@ description: >-
   Question: Logic, Task Work, Report), Check and Delivery, each with the shared
   Runs panel, and the shared Guide with its Method page. Use for visual
   tracking across one work/bNN_* Block and opening its Question reports.
-  Execution belongs to haipipe-task; report writing to haipipe-page.
+  Execution belongs to haipipe-task; report writing to haipipe-draft.
 metadata:
   version: "0.7.4"
   last_updated: "2026-10-09"

@@ -36,7 +36,7 @@ This Design family remains pre-1.0. Only explicit user approval may authorize
 `1.0.0` or any higher major version. Architecture size, clean breaks, and
 field-test repairs do not independently authorize a major-version jump.
 
-Load `haipipe-folder`, `haipipe-page`, and `haipipe-design`. A current Brief
+Load `haipipe-folder`, `haipipe-draft`, and `haipipe-design`. A current Brief
 uses `folder-kind: brief` and its own Page workflow.
 
 ## Position

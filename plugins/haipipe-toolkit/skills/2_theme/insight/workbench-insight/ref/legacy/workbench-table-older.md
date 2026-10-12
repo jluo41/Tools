@@ -33,7 +33,7 @@ routes Runs and evaluates the GI gates; it is no row's Skill.
 | board | Insight | each partition | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | none |
 | board | Insight | each partition | Pool or split | haipipe-insight-agent | haipipe-insight-knowledge | none | Instance › <q>/<L><NN>-<name>.md (the cross section) |
 | board | Check | Gates | none | none | none | none | none |
-| board | Check | Checks | Review an answer | haipipe-page-check-agent | haipipe-insight-check | none | Instance › <q>/runs/run-check-<MMDD>-<slug>.md |
+| board | Check | Checks | Review an answer | haipipe-draft-check-agent | haipipe-insight-check | none | Instance › <q>/runs/run-check-<MMDD>-<slug>.md |
 | board | Check | Runtime | none | none | none | none | none |
 | board | Delivery | Handoff | Write the counsel | haipipe-insight-agent | haipipe-insight-wisdom | none | Instance › 4-Wisdom/W<NN>-<name>/W<NN>-<name>.md |
 | board | Delivery | Handoff | Draft the handoff | haipipe-insight-agent | haipipe-insight-wisdom | the handoff | Instance › 4-Wisdom/W<NN>-<name>/W<NN>-<name>.md (signed:) |

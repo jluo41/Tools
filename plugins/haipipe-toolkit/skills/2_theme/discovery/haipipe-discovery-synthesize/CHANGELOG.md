@@ -4,6 +4,10 @@ haipipe-discovery-synthesize — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions
 match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.3.3 · 2026-10-11 · One folder per Run in the docs
+
+- The boundary line names the `runs/` folder; the old `results/` lane is gone.
+
 ## 0.3.2 · 2026-09-22
 
 - Moved to the family root beside the door: every skill we wrote sits flat, the numbered folders hold vendored originals only. Relative links lost one `../`.

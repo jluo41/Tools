@@ -1,9 +1,9 @@
 # Delivery Space · what the Page ships, and the one Run per lane that builds it
 
 **LOAD `../SKILL.md` (`workbench-page`) FIRST.** This reference owns the
-Delivery Space of the Page workbench: the built files under `<page>/delivery/`,
+Delivery Space of the Page workbench: the built files under `<Block>/delivery/<source-relative-path>/`,
 the check that says whether each lane is current, and the fixed Delivery Runs
-listed in its Runs panel. Rebuilding itself is `haipipe-page-delivery`.
+listed in its Runs panel. Rebuilding itself is `haipipe-draft-delivery`.
 
 ```text
 the Space     Delivery · tabs Web · LaTeX · Word · Slides, each with its state
@@ -13,7 +13,7 @@ the Runs      one fixed Run per lane in the Runs panel on the right:
               (Done while the lane is current, Ready when the Page changed)
 the command   page.py export <page> [--lane web|latex|word|all] [--author "<name>"]
               writes runs/run-delivery-<lane>.sh and the lane's files
-the writers   web    → haipipe-page/src/page_workspace.py (build_page)
+the writers   web    → haipipe-draft/src/page_workspace.py (build_page)
               latex  → exporters/md2tex.py + LuaLaTeX      (ExportMixin.export_latex)
               word   → exporters/md2docx.py + docx2pdf.py  (ExportMixin.export_word)
               slides → servers/workbench/autodeck.py, only on the ✨ press
@@ -48,14 +48,14 @@ The Checks view frames `/_board/delivery?path=…&file=…&workspace=1`
 `pass` when its built files are at least as new as the Page, `stale` when one is
 older, and `not built` when it has none; the web copy must also read the same as
 the Page. Each row names the file and its build time. A current lane is
-delivery evidence, not a whole-Page acceptance: `haipipe-page-check` remains
+delivery evidence, not a whole-Page acceptance: `haipipe-draft-check` remains
 the only whole-Page close gate. `/_board/delivery` without `workspace=1` is the
 older 📤 tab, kept for old links.
 
 ## 📂 Files
 
-- `../../workflow-runs/haipipe-page-delivery/SKILL.md` · the fixed Runs and how to rerun them
-- `../../haipipe-page/src/page_export.py` · `cli/page.py export` · the command and the ticket writer
+- `../../workflow-runs/haipipe-draft-delivery/SKILL.md` · the fixed Runs and how to rerun them
+- `../../haipipe-draft/src/page_export.py` · `cli/page.py export` · the command and the ticket writer
 - `../../../../../servers/workbench/task-page/space_views.py` · `delivery_space_html`, the Space
 - `../../../../../servers/workbench/task-page/delivery.py` · `check_delivery`, `FIXED_RUNS`, the Checks view
 - `../../../../../servers/workbench/task-page/runs.py` · `_fixed_delivery_run`, the Runs panel rows

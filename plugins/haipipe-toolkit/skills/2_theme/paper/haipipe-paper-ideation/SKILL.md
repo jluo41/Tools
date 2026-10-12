@@ -14,8 +14,8 @@ description: >-
   generation, novelty testing, pressure testing, and selection to
   haipipe-ideation.
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-10-07"
+  version: "1.3.0"
+  last_updated: "2026-10-11"
   group-token: "s01-ideation"
   outline:
     mode: grammar
@@ -25,7 +25,7 @@ metadata:
 
 # /haipipe-paper-ideation · one evergreen Paper view of an evidence-tested direction
 
-For a concrete Page update load `haipipe-page`, `haipipe-page-workflow`, the
+For a concrete Page update load `haipipe-draft`, `haipipe-draft-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, then this PageType.
 For semantic idea generation/testing/selection, enter `haipipe-ideation`; this
 adapter only loads Page work when its projection or Page content is involved.
@@ -61,7 +61,7 @@ and the person selected the Idea plus intended target/category. The Page may
 then display verdict, target, and `went to` exactly as that receipt records
 them. `haipipe-paper-workflow` tests G0 from the same receipt and reciprocal
 Story links; it never asks for another selection tick. The Page itself always
-runs through `/haipipe-page` and `haipipe-page-workflow`
+runs through `/haipipe-draft` and `haipipe-draft-workflow`
 (CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK), never a private lifecycle.
 
 ## 🔌 Semantic adapter and single authority
@@ -89,7 +89,7 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
   routes. It does not create a second portfolio or decision.
 - Material Generate or Test changes increment `sync_revision` (the only source
   identity; no content hash), classify the change as `state`, `portfolio`, or `structure`,
-  and route the packet through the current `haipipe-page` update boundary. A
+  and route the packet through the current `haipipe-draft` update boundary. A
   `state` change refreshes the generated working projection. A `portfolio`
   change refreshes it by stable `idea_id` and checks whether the authored shell
   is affected. A `structure` change stops at the Page OUTLINE/SHAPE workflow
@@ -99,7 +99,7 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
   `paper_projection` extension lives inside the normal Page controller receipt. The
   adapter reads that Page-owned receipt and remains the only writer of the sync
   packet's nested `paper_page` status.
-- When `paper_page.state: missing`, use `/haipipe-page` to mint or bind the one
+- When `paper_page.state: missing`, use `/haipipe-draft` to mint or bind the one
   Ideation Page and leave all three surfaces `not-requested` until a
   projection is actually recorded. When it is `blocked`, preserve the
   Page path and each last honest surface revision/receipt, report the
@@ -136,8 +136,10 @@ silently renumbers Page-global paragraph identities; the stable key is
 ## 🪜 On the ladder (b16 Q04, JL 261007)
 
 The Ideation is not a Page on the ladder (`haipipe-paper/ref/paper-ladder.md`): it is the Board's first studio
-topic, `studio/s01-ideation/`, whose face carries the divisions below (Direction, Discovery Landscape,
-Opportunity Map, Ideas ranked, one division per admitted Idea, Eliminated, Next Evidence Queue, Execution order).
+topic, `studio/s01-ideation/`, whose face carries the studio marks of haipipe-studio's topic contract
+(`**Tags:**`, `**Stage:**` explore · shaping · agreed · closed, moved only by a person) and the divisions below
+(Direction, Discovery Landscape, Opportunity Map, Ideas ranked, one division per admitted Idea, Eliminated, Next
+Evidence Queue, Execution order). Studio is the Board's alone (b10 s09-D01): a version or Section opens it.
 Each admitted Idea is also a Board Question, `board.md ## Questions` with `group: ideation`, its report in
 `reports/qNN_<idea>/` holding its tests; the Block's Audience Report › Ideation shows them as Question │ Work │
 Report. Its buttons (Generate ideas, Test idea, Idea review, Select idea, Ask a Question) are the

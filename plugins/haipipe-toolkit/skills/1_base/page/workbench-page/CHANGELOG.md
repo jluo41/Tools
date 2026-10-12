@@ -36,13 +36,13 @@
 - Draft Space laid out as Guide's (JL 261003): the View row (Table · Reading · Scratch · Revise) comes first, with a rule under it and no "View" label; the Structure fold shows only in Table, the view that reads `## 1 Structure`; the "Reads draft/… · Table ## 1 Structure …" line is now the View row's tooltip.
 - Draft › Table: the Bullet and Draft columns are 1 : 3 (`minmax(0,1fr) minmax(0,3fr)`, was 2 : 3), so the written draft gets the room (JL 261003); `test_outline_preview.py` reads the new ratio.
 - Draft › RoadMap Draw holds the Section's logic (rules, first draw and check now in the skill `0_utils/draw-logic-tree`, JL 261003: "could you make a skill for it?") (JL 261003: "the logic just go to the roadmap draw", "make it deeper", "make the logic clear"): a top-down logic tree, claim → the reasons it rests on → Bullets as leaves, on an editable canvas (`edit=1`). The drawing is the source: `page_roadmap.py --logic <outline>` draws its first version and refuses to replace an existing one without `--force`; the run card is now "Draw the logic" (Person signs: the logic). Every Bullet starts on one shared row and a Bullet under a Bullet one row below (JL 261003: "make the Bullet point to be in the same start in the same level", as JL rearranged the Abstract's canvas, which is kept as saved). First tree: S-ManSci-Main-Abstract, B8 as the claim over three reasons (why a rule is needed, how messages are measured, what decides the choice), 48 elements.
-- Draft › RoadMap Draw, a fifth View between Scratch and Revise (JL 261003: "add the excalidraw to show the structure of this section"): the Page's structure drawing `studio/<stem>-roadmap.excalidraw`, read-only at 640px, loaded the first time the View shows (`outline.page_roadmap_html`). New generator `haipipe-page/cli/page_roadmap.py <page.md>` (`--check` writes nothing): a branching tree read top to bottom (JL 261003: "like a tree plot? up to bottom", "concise and high level", then JL's sketch of one parent over side-by-side children): the Section's title, each paragraph's one-line job, and its Bullets spread below it five to a row with org-chart connectors, each box role + gist; solid green when its evidence is verified, dashed orange while waiting; no separate evidence boxes. Studio style. New run card `Page.roadmap` (Redraw · Draft · views roadmap) and its Workbench Table row; first scene: S-ManSci-Main-Abstract (10 Bullets, 7 waiting, 36 elements). `test_outline_preview.py` reads the new view list.
+- Draft › RoadMap Draw, a fifth View between Scratch and Revise (JL 261003: "add the excalidraw to show the structure of this section"): the Page's structure drawing `studio/<stem>-roadmap.excalidraw`, read-only at 640px, loaded the first time the View shows (`outline.page_roadmap_html`). New generator `haipipe-draft/cli/page_roadmap.py <page.md>` (`--check` writes nothing): a branching tree read top to bottom (JL 261003: "like a tree plot? up to bottom", "concise and high level", then JL's sketch of one parent over side-by-side children): the Section's title, each paragraph's one-line job, and its Bullets spread below it five to a row with org-chart connectors, each box role + gist; solid green when its evidence is verified, dashed orange while waiting; no separate evidence boxes. Studio style. New run card `Page.roadmap` (Redraw · Draft · views roadmap) and its Workbench Table row; first scene: S-ManSci-Main-Abstract (10 Bullets, 7 waiting, 36 elements). `test_outline_preview.py` reads the new view list.
 - Guide: `description`, `ref/workbench-table.md` (17 rows; `table-workbench --check` PASS), `ref/page-papers.md` (8 papers; `table-papers --online` PASS), and RoadMap Draw's Workbench design: the hand-made `studio/page-workbench-design.excalidraw`, edited (JL 261003: "could you update your workbench design as well?"): a Part 0 for the shared shell, plain Space names, no Reads line or View label in Draft, the View row above Structure, a RoadMap Draw tab (370 elements). `page` leaves `GAPS` in `test_workbench_conformance.py`.
 - Tests: host 37/37; `test_outline_v4_workspaces.py` reads the plain Space names; page suites keep their 5 earlier failures, board suite its earlier ones, none new.
 
 ## 0.94.2 · 2026-09-30 · Runs panel reads a Page's Evidence Items once
 
-- `servers/workbench-page/runs.py`: `local_runs` and `_insight_runs` read the Page's Evidence Markdown (`read_items`) once and pass it to `_evidence_refs` as `ledger`; before, every run re-read it. On Paper-AgreeablePrescriptionDiscretion the Paper Workbench's Sections Space made 582 reads for 18 Pages (33 s of a 59 s open); now 18. The rendered page is byte-identical before and after; one warm open fell from 40-52 s on 5601 to about 7 s on a restarted 5599 (load average 40-80, so seconds are noisy). Tests: `test_runs_workbench.py`, `test_insight_items_integration.py`, `test_revise_run.py`, `test_outline_v4_workspaces.py`, `test_paper_workbench.py` (57 pass) and four haipipe-page suites (36 pass).
+- `servers/workbench-page/runs.py`: `local_runs` and `_insight_runs` read the Page's Evidence Markdown (`read_items`) once and pass it to `_evidence_refs` as `ledger`; before, every run re-read it. On Paper-AgreeablePrescriptionDiscretion the Paper Workbench's Sections Space made 582 reads for 18 Pages (33 s of a 59 s open); now 18. The rendered page is byte-identical before and after; one warm open fell from 40-52 s on 5601 to about 7 s on a restarted 5599 (load average 40-80, so seconds are noisy). Tests: `test_runs_workbench.py`, `test_insight_items_integration.py`, `test_revise_run.py`, `test_outline_v4_workspaces.py`, `test_paper_workbench.py` (57 pass) and four haipipe-draft suites (36 pass).
 
 ## 0.94.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
@@ -75,7 +75,7 @@
   (`page_workspace.py`, drawer `07-workbench-outline.js`).
 - Revise saves show in the Runs panel: a Revise-view Save makes `rp-revise-NN_<C.P>`, which no
   button matched, so the panel filed it under "Other". New card `Page.revise` with the button
-  `Revise edits · Draft · ^rp-revise- · views revise` (`haipipe-page-workflow/ref/run-cards.md`).
+  `Revise edits · Draft · ^rp-revise- · views revise` (`haipipe-draft-workflow/ref/run-cards.md`).
   The save message reads `Saved · run-revise-01 · 1 sentence` (`outline_revise.py`; was the
   `rp-` id, the step and "→ Run Space").
 - The All-runs view labels its writing section "Page Writing" (was "Paper Writing" on every
@@ -95,7 +95,7 @@
   `runs.py::_valid_page_run_id` (else Held), its label helpers and an owner skill. The recipe now
   lists every place and a search that finds them by mirroring `rp-revise`.
 - Each run in the Runs panel names the skill it uses (JL 260928): every card in `run-cards.md` has a
-  `🧩 SKILL` line (e.g. `haipipe-page-writing · haipipe-writing`); a run whose ticket or runtime has
+  `🧩 SKILL` line (e.g. `haipipe-draft-writing · haipipe-writing`); a run whose ticket or runtime has
   a `skills:` line shows that instead; `+ New Run` shows its type's skills (`runs_panel.py`).
 - `servers/haipipe-page/tests/test_run_family_lists.py`: reads the RP and RE kind tokens from
   `page-run-families.md` and checks every list knows each kind (Space folder, `_TICKET_NAME`, a
@@ -104,7 +104,7 @@
 
 - The studio drawing's new section "The runs of a Page" is built (JL 260929): Context joins the
   Draft Table view (was a Page-level run no Space showed); the Page-level Check button is gone (Check
-  lives in Delivery › Checks); Displays name `haipipe-page-evidence · haipipe-display` through a
+  lives in Delivery › Checks); Displays name `haipipe-draft-evidence · haipipe-display` through a
   per-button `🧩 SKILL <label>: …` line; the Supporting Runs tab splits into `Task runs`
   (haipipe-task) and `Discovery runs` (haipipe-discovery).
 - Readable run names end to end: `run-cards.md` patterns read `run-<kind>-…` and the older names;
@@ -232,7 +232,7 @@
 ## 0.87.0 · 2026-09-22
 
 - Run Space gains the Revise card under Page Writing (`rp-revise-NN_<target>`,
-  `haipipe-page-revise`): before/after cards with a Decision line. The old sentence that
+  `haipipe-draft-revise`): before/after cards with a Decision line. The old sentence that
   review is never its own Run is replaced: review feedback stays input to the writing Run;
   Revise is a separate Run that owns decisions, never prose.
 
@@ -723,7 +723,7 @@
   Context Workspace containing Overview, Policy & Requirements, Related
   Information, Feedback & Decisions, and Records.
 - Add generated `outline/<stem>-context.md` as the ninth process-record kind;
-  `haipipe-page-context` writes it and the Outline workbench presents it.
+  `haipipe-draft-context` writes it and the Outline workbench presents it.
 - Make Context, Bullet, and Evidence the three peer workspaces shared by the
   CONTEXT, OUTLINE, and EVIDENCE phases.
 - Remove PageX from the active Evidence Workspace and Evidence Item grammar;
@@ -1081,7 +1081,7 @@ instead of paragraphs inside this skill:
 - **The requirement generator exists**: `cli/requirement.py` writes V (venue
   division: shape, moves, refusals, format values), N (Narrative row and
   Writing Style) and B (board hard rules, plain-English floor) records; run
-  by `haipipe-page-structure` ⓪ REQUIRE. Teeth: `requirement-missing`,
+  by `haipipe-draft-structure` ⓪ REQUIRE. Teeth: `requirement-missing`,
   `requirement-hand-edited`, `requirement-stale`. 15 MISQ section pages got
   their file; the 📏 chip now draws.
 - **`### Stage Record` is a retired block** (`check.py retired-block`, JL:
@@ -1184,7 +1184,7 @@ Field test on SM08 (15 frictions, ledger 5 MATCH · 2 SKILL GAP · 0 EXPECTATION
 
 - **Fourth kind: `<stem>-feedback.md`**, what OTHERS said, one file per Round
   (JL 260831: "it will have its own file and folder"). Rows are PROJECTED from
-  the Round's §2A/§2B by `haipipe-board/cli/feedback.py collect`, never
+  the Round's §2A/§2B by `haipipe-block/cli/feedback.py collect`, never
   paraphrased; the page writes exactly one field, `landed:`. PULL, not push:
   the page collects during OUTLINE ⓪ and no Round writes into another page's
   folder. First run: 15 pages, 104 rows, from RD01 on the MISQ board.
@@ -1413,7 +1413,7 @@ carries no id and no card backlinks it.
 
 ## 0.4.0 — 2026-08-17
 
-**The PHASE moves out to `workflow-runs/haipipe-page-structure`** (0.1.0, same
+**The PHASE moves out to `workflow-runs/haipipe-draft-structure`** (0.1.0, same
 day). This file kept both the material and the phase's rules while the phase had
 no home; now it states neither twice and points at the contract instead. DRAFT's
 own §🗂 was trimmed at the same time and no longer owns the outline.

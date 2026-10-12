@@ -17,6 +17,16 @@ metadata:
 
 # /haipipe-job · one Job, its face and its Tasks in order
 
+Delivery belongs to the Block (JL 261010). Only the Block has a physical
+`delivery/` folder. A Job writes `delivery/jNN_<job>/`, a Task writes
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and a Report writes
+`delivery/reports/qNN_<report>/<lane>/`, all relative to its Block. Child
+Delivery views select their own source subtree. Runs and Results remain at
+their source; a build grants no acceptance or release. Use
+`haipipe-draft/src/common.py` for the path, never create Job/Task-local delivery.
+Standalone Pages without a Block retain their own output root.
+
+
 A Job is a group of Tasks in a Block that share inputs, code or one question: `jNN_<job>/`
 with its face `jNN_<job>.md`. This skill owns the Job level of the frame and the order of
 its Tasks; building each Task is `haipipe-task`'s, the folder's shape `haipipe-project`'s.
@@ -59,7 +69,7 @@ The buttons it owns
 | Work Details | Add a Task | `run-add-<tNN>` | `new_job.py task <job>` |
 | Delivery | Build the delivery | `run-delivery-<target>` | the theme's delivery rule (decided 261007: stays here) |
 
-At Block level, Add a Job is `haipipe-board`'s button and calls `new_job.py job`.
+At Block level, Add a Job is `haipipe-block`'s button and calls `new_job.py job`.
 
 
 A theme's own names
@@ -77,7 +87,7 @@ Boundary
 | Owner | Owns |
 |---|---|
 | `haipipe-project` | the ladder's shape and its audit |
-| `haipipe-board` | the Block above, and its Add a Job button |
+| `haipipe-block` | the Block above, and its Add a Job button |
 | `haipipe-job` | the Job face, its Tasks in order, its Job-level buttons, a theme's Job names |
 | `haipipe-task` | each Task: its Page, its kind, its Runs (not changed by this skill) |
 | `haipipe-report` | how a Job's `answers:` links it to a Question |

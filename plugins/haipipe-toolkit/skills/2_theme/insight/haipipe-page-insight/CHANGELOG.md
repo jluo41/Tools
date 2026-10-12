@@ -55,7 +55,7 @@
 
 ## 0.7.0 — 2026-09-04
 
-- Reparent the Insight Page Type directly to `haipipe-page` after retirement
+- Reparent the Insight Page Type directly to `haipipe-draft` after retirement
   of the standalone Task Page variant.
 - Replace active Probe/PageX intake with the shared Supporting Run, frozen
   Local Input, and local Evidence Item Run graph.

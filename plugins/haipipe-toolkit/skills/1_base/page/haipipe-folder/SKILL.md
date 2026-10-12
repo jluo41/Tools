@@ -9,19 +9,29 @@ description: >-
   whether something is a page or a task, binding Run Specs to Folder resources, or routing a legacy page-type.
   Trigger: folder contract, page face, task face, folder kind, Folder ownership, Run Spec, /haipipe-folder.
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-09-29"
+  version: "0.8.0"
+  last_updated: "2026-10-11"
 ---
 
 # /haipipe-folder · one work object, two faces
+
+Delivery belongs to the Block (JL 261010). Only the Block has a physical
+`delivery/` folder. A Job writes `delivery/jNN_<job>/`, a Task writes
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and a Report writes
+`delivery/reports/qNN_<report>/<lane>/`, all relative to its Block. Child
+Delivery views select their own source subtree. Runs and Results remain at
+their source; a build grants no acceptance or release. Use
+`haipipe-draft/src/common.py` for the path, never create Job/Task-local delivery.
+Standalone Pages without a Block retain their own output root.
+
 
 A Folder is the addressable unit of work. It is not a Page with a Task
 attached, and it is not a Task with documentation attached. It owns two
 orthogonal faces:
 
-For `folder-kind: task`, **Task Folder = Page Folder = `tNN_<task>/`**. The
-two phrases select different faces of one address; they do not name nested or
-sibling directories. Its parent `jNN_<job>/` is a Job container, never a Task
+For `folder-kind: task`, **Task Folder = `tNN_<task>/`; a Task may hold a draft**.
+Its Page Face and, when it writes prose, its draft (`draft/`) live at that one
+address; there is no nested or sibling Page directory (JL 261011: a Task is not a Page). Its parent `jNN_<job>/` is a Job container, never a Task
 Folder.
 
 ```text
@@ -75,7 +85,7 @@ Design retains one `folder-kind: design` with native Design Runs.
 
 A Page Face belongs to the Folder owner. Do not create a duplicate
 `haipipe-page-for-<kind>` when the owner already supplies that face. Page work
-uses `haipipe-page-workflow`; executable work uses declared native Run owners.
+uses `haipipe-draft-workflow`; executable work uses declared native Run owners.
 `workflow/` holds control records and does not imply a product or allocated Run.
 
 ## Runtime shape
@@ -88,7 +98,7 @@ A Folder may materialize only the lanes its owner selects:
 ├── draft/                human plan and decision record, when selected
 ├── workflow/             machine intent/progress/receipts, when selected
 ├── evidence/             evidence lanes selected by the owner
-├── delivery/             outward projections selected by the owner
+├── (Block delivery)      outward projections, source path inside Block delivery/
 ├── studio/               human authoring room selected by the owner
 ├── scripts/config/       optional reusable implementation material
 ├── runs/                 authored Run tickets; the only execution door
@@ -106,7 +116,7 @@ Job-backed Task  <job>/<task>/runs/<run>.sh ↔ $OUTPUT_ROOT/<task>/results/<run
 ```
 
 Page Writing uses Markdown Tickets (`runs/rp-*.md`) under the
-[interactive writing profile](../../page/haipipe-page-workflow/ref/interactive-writing-run.md).
+[interactive writing profile](../../page/haipipe-draft-workflow/ref/interactive-writing-run.md).
 Design uses YAML Tickets (`runs/rdNN_<operation>_<slug>.yaml`) under
 [haipipe-design-workflow](../../../2_theme/design/haipipe-design-workflow/SKILL.md).
 Neither requires a shell wrapper merely to count as a Run.
@@ -204,7 +214,7 @@ closure is mechanical apart from any selected workbench ticks.
 Run the structural gate after adding or revising a Folder owner:
 
 ```bash
-python3 ../haipipe-page/cli/foldercontracts.py --check
+python3 ../haipipe-draft/cli/foldercontracts.py --check
 ```
 
 ## Canonical family-owner contract
@@ -222,7 +232,7 @@ metadata:
 ```
 
 The skill owns both faces, selected workbenches, cross-face closure and handoff.
-Its Page Face uses `haipipe-page-workflow`; execution uses the family's Run
+Its Page Face uses `haipipe-draft-workflow`; execution uses the family's Run
 Specs and native workers. No extra lifecycle object or identity record is
 required. Both owner forms resolve by `folder_kind`; `legacy_page_type` is
 only a read alias for old Pages.
@@ -276,8 +286,8 @@ current resource owner. New domain Pages write `folder-kind:`.
 
 ## Files
 
-- `../haipipe-page/src/folder_contract.py` discovers and validates Folder owner contracts.
-- `../haipipe-page/cli/foldercontracts.py` is the executable inventory/gate.
-- `../../page/haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
+- `../haipipe-draft/src/folder_contract.py` discovers and validates Folder owner contracts.
+- `../haipipe-draft/cli/foldercontracts.py` is the executable inventory/gate.
+- `../../page/haipipe-draft/SKILL.md` owns the shared Page frame and Page workflow entry.
 - `../../page/workbench/SKILL.md` owns reusable workbench mechanics.
 - `../../project/haipipe-run/SKILL.md` owns the neutral Level-4 Run contract.

@@ -8,10 +8,9 @@ same text fitted in 13 pages instead of 47. For a file whose whole purpose is
 carrying evidence to a coauthor, that is not a lossy render, it is a different
 document.
 
-WHY NOT LibreOffice. Not installed. `brew install --cask libreoffice` would give
-a faithful engine and `soffice --headless --convert-to pdf` would be one line.
-Until then this reads the OOXML package we ourselves wrote, which is the one
-format this family can be sure it understands.
+LibreOffice is used when soffice is available, with comments in the margin.
+Otherwise the fallback reads the OOXML package we ourselves wrote and prints
+that projection with Chrome. Both paths require a fresh PDF before reporting success.
 
 WHAT IT RENDERS, from the package rather than from the source markdown, so the
 PDF shows what the .docx actually contains:
@@ -31,9 +30,12 @@ PDF's page count is comparable to the LaTeX one and textutil's was not.
 import argparse
 import base64
 import html
+import json
 import os
 import re
+import shutil
 import subprocess
+import tempfile
 import zipfile
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
@@ -105,15 +107,13 @@ def text_lines(node):
                    for el in node.iter() if el.tag in (W + "t", W + "br"))
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("docx")
-    ap.add_argument("-o", "--out")
-    a = ap.parse_args()
-    out = a.out or os.path.splitext(a.docx)[0] + ".pdf"
+def docx_html(path):
+    """-> (the HTML projection of a .docx package, its counts): paragraphs, tables, images and comments
+    in the margin, read from the package itself. The PDF twin prints it; the workbench shows it as the
+    file's preview (frame.py `docx_preview`, JL 261011: "could we preview the word here?")."""
     import xml.etree.ElementTree as ET
 
-    z = zipfile.ZipFile(a.docx)
+    z = zipfile.ZipFile(path)
     doc = ET.fromstring(z.read("word/document.xml"))
     comments = {}
     if "word/comments.xml" in z.namelist():
@@ -128,6 +128,8 @@ def main():
 
     body = doc.find(W + "body")
     html_parts, cards, n_card = [], [], 0
+    carry = []        # comment ranges opened in an earlier paragraph and still open: a comment on two
+                      # paragraphs lost its card, since its end found no start in its own paragraph (261011)
 
     def render_para(p):
         """-> (paragraph html, [card html, ...]) for THIS paragraph only."""
@@ -139,7 +141,7 @@ def main():
             st = ppr.find(W + "pStyle")
             if st is not None:
                 style = st.get(W + "val") or ""
-        pieces, open_ids = [], []
+        pieces, open_ids = ['<span class="anchor">' for _ in carry], list(carry)
         for el in p.iter():
             tag = el.tag
             if tag == W + "commentRangeStart":
@@ -165,9 +167,8 @@ def main():
                 tgt = (rels.get(emb) or "").split("/")[-1]
                 if tgt in media:
                     pieces.append('<img src="data:image/png;base64,%s">' % media[tgt])
-        while open_ids:
-            pieces.append("</span>")
-            open_ids.pop()
+        carry[:] = open_ids                    # reopened at the next paragraph's start
+        pieces.extend("</span>" for _ in open_ids)
         inner = "".join(pieces)
         if not inner.strip():
             return "<p>&nbsp;</p>", mine
@@ -196,25 +197,50 @@ def main():
                 cols = "<colgroup>%s</colgroup>" % "".join(
                     '<col style="width:%.2f%%">' % (100.0 * w / sum(widths))
                     for w in widths)
-            rows = []
+            rows, table_cards = [], []
             for tr in child.findall(W + "tr"):
                 cells = []
                 for tc in tr.findall(W + "tc"):
                     jc = tc.find(".//" + W + "jc")
                     span = tc.find(".//" + W + "gridSpan")
-                    bold = tc.find(".//" + W + "b") is not None
+                    # bold only when every run is: a cell with one bold word (a template's guidance) was
+                    # printed bold whole (261011)
+                    runs = [r for r in tc.iter(W + "r") if text_of(r).strip()]
+                    bold = bool(runs) and all(r.find(W + "rPr/" + W + "b") is not None for r in runs)
+                    # each paragraph of the cell as the body's are, so a comment, a line break or an image
+                    # inside a table is kept (a template's text sits in tables: its one comment and both
+                    # images were dropped, 261011)
+                    inner = []
+                    for cp in tc.iter(W + "p"):
+                        para_html, para_cards = render_para(cp)
+                        table_cards.extend(para_cards)
+                        inner.append(para_html)
                     cells.append(
                         '<td%s%s%s>%s</td>'
                         % (' colspan="%s"' % span.get(W + "val") if span is not None else "",
                            ' style="text-align:%s"' % jc.get(W + "val")
                            if jc is not None else "",
                            ' class="b"' if bold else "",
-                           html.escape(text_of(tc))))
+                           "".join(inner)))
                 rows.append("<tr>%s</tr>" % "".join(cells))
+            html_parts.extend(table_cards)
             html_parts.append("<table>%s%s</table>" % (cols, "".join(rows)))
 
     page = ("<!doctype html><meta charset='utf-8'><style>%s</style>"
             "<div class='page'>%s</div>" % (CSS, "".join(html_parts)))
+    counts = {"paragraphs": sum(1 for x in html_parts if x.startswith("<p")),
+              "tables": sum(1 for x in html_parts if x.startswith("<table")),
+              "images": len(media), "comments": n_card}
+    return page, counts
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("docx")
+    ap.add_argument("-o", "--out")
+    a = ap.parse_args()
+    out = a.out or os.path.splitext(a.docx)[0] + ".pdf"
+    page, counts = docx_html(a.docx)
     # the intermediate goes to a dot-file so the delivery folder holds
     # only the .docx and its .pdf
     tmp = os.path.join(os.path.dirname(out) or ".",
@@ -223,26 +249,42 @@ def main():
     open(tmp, "w", encoding="utf-8").write(page)
 
     chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    subprocess.run([chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
-                    "--print-to-pdf=" + os.path.abspath(out),
-                    "file://" + os.path.abspath(tmp)],
-                   capture_output=True)
-    try:                       # the intermediate is only for the print; leave nothing beside the output
-        os.remove(tmp)
-    except OSError:
-        pass
+    # A separate profile avoids forwarding this print to an already-open Chrome.
+    # Print to a temporary file so a stale PDF cannot count as a successful build.
+    try:
+        with tempfile.TemporaryDirectory() as work:
+            office = shutil.which("soffice")
+            if office:
+                # Render the original Word package, including comments in the margin.
+                options = json.dumps({"ExportNotesInMargin": {"type": "boolean", "value": "true"}})
+                subprocess.run([office, "--headless", "--convert-to", "pdf:writer_pdf_Export:" + options,
+                                "--outdir", work, os.path.abspath(a.docx)],
+                               capture_output=True, check=True, timeout=60)
+                fresh = os.path.join(work, os.path.splitext(os.path.basename(a.docx))[0] + ".pdf")
+            else:
+                fresh = os.path.join(work, "preview.pdf")
+                subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+                                "--user-data-dir=" + os.path.join(work, "profile"),
+                                "--print-to-pdf=" + fresh,
+                                "file://" + os.path.abspath(tmp)],
+                               capture_output=True, check=True, timeout=60)
+            if not os.path.isfile(fresh):
+                raise RuntimeError("Renderer produced no fresh Word PDF preview")
+            shutil.move(fresh, out)
+    finally:
+        try:                   # the intermediate is only for the print
+            os.remove(tmp)
+        except OSError:
+            pass
     print("✅ %s" % out)
     print("   %d paragraphs · %d tables · %d image(s) · %d evidence card(s) printed"
-          % (sum(1 for x in html_parts if x.startswith("<p")),
-             sum(1 for x in html_parts if x.startswith("<table")),
-             len(media), n_card))
+          % (counts["paragraphs"], counts["tables"], counts["images"], counts["comments"]))
     if os.path.exists(out):
-        import shutil
         tool = shutil.which("pdfinfo") or "/opt/homebrew/bin/pdfinfo"
         info = subprocess.run([tool, out], capture_output=True,
                               text=True).stdout if os.path.exists(tool) else ""
         pg = next((l.split()[-1] for l in info.split("\n") if l.startswith("Pages")), "?")
-        print("   📄 %s pages, MISQ page setup (TNR 12pt, double-spaced, 1in, letter)" % pg)
+        print("   📄 %s pages · %s" % (pg, "Word page setup, comments in margin" if office else "HTML preview: TNR 12pt, double-spaced, 1in, letter"))
 
 
 if __name__ == "__main__":

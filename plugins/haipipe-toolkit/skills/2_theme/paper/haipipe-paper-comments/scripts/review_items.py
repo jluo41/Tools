@@ -139,8 +139,8 @@ def route(run, report, item, to, work, decline):
                    state="declined" if decline else "routed")
     if not decline:
         stem = to.split()[0]
-        print(f"then: python haipipe-page/cli/feedback.py collect --all <board> · "
-              f"python haipipe-page/cli/page.py open-run <{stem}> --kind revise --slug {slug}")
+        print(f"then: python haipipe-draft/cli/feedback.py collect --all <board> · "
+              f"python haipipe-draft/cli/page.py open-run <{stem}> --kind revise --slug {slug}")
     return row
 
 

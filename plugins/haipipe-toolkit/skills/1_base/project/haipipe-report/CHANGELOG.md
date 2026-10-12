@@ -1,6 +1,14 @@
 haipipe-report · Changelog
 ==========================
 
+## [0.2.0] · 2026-10-12 · Questions inferred from the work, at each level
+
+- `ref/infer-reports.md`: a Task asks its own sub-questions (its report is its face); a Job, what its one Task
+  of a kind answers when the Jobs differ; a Block, where the Jobs' answers differ and what that means next. A
+  Question is kept only if named Tasks answer it and not all the same way (JL 261012: "I don't ask the
+  questions that is meaningless"; b10 s10). Reads `haipipe-studio`'s `scripts/block_inventory.py`; worked on
+  b00_rawdata (4 Block Questions, one per Job).
+
 ## [0.1.1] · 2026-10-07
 
 - A comments batch's `<kind>` is its theme's (a paper's: review · editor · coauthor · meeting ·

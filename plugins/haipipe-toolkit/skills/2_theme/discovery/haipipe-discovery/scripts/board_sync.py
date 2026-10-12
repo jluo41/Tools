@@ -181,7 +181,7 @@ def sync_source(
 
 def _run_board_cli(block: Path, command: str, strict: bool = False) -> int:
     skills_root = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
-    engine = skills_root / "1_base" / "page" / "haipipe-page" / "cli" / f"{command}.py"   # the Board checker lives with Page
+    engine = skills_root / "1_base" / "page" / "haipipe-draft" / "cli" / f"{command}.py"   # the Board checker lives with Page
     if not engine.is_file():
         raise FileNotFoundError(f"Board {command} CLI not found: {engine}")
     args = [sys.executable, str(engine), str(block)]

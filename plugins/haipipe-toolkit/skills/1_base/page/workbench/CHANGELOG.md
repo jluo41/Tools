@@ -1,3 +1,120 @@
+## 1.19.2 · 2026-10-12 · Pick topics in the chart, read them under it; no counts in the header
+
+- JL 261011: "Or we can select the topics we are interest in we show there content". In the Timeline's Days
+  chart a click on a topic's column (its sNN) or bubble picks it: picked bubbles turn blue, the rest fade,
+  and the picked topics' decisions, sessions and notes show under the chart on the same axis ("Reading … ·
+  Clear"). The topic's name in that list opens its row above. Picks live in the page only.
+- JL 261011, on the header "129 decided · 15 sessions · 105 drawing notes · since 2026-10-06 · 174 shown in
+  Structure": "I don't need this, we can delete this part as well". The summary now says only Timeline;
+  its count line and the script that kept it are gone.
+- b10 s08-D08 and s08-D09 recorded; the drawing shows both with green notes.
+
+## 1.19.1 · 2026-10-11 · A theme's Report: the owner, and its own cards
+
+- For the paper (b16 s05-D01): `Theme.report_fixed(row, owner)` gets the folder whose register is read, so a
+  paper's fixed group can come from its telling's **Feeds:**; a one-argument `report_fixed(row)` still works
+  (`_theme_fixed`). The group op uses the same rule, so a drag refuses to take a fixed group out.
+- `Theme.report_cards(level, folder, root)` -> [{id, title, groups, status, html}]: a theme's own cards that
+  are no register row (a paper's ideas, its standing Questions), drawn first under the same bar, not
+  draggable, their groups fixed and counted; an op on one is refused (no register line).
+- b10 s07-D09.
+
+## 1.19.0 · 2026-10-11 · The Report's groups are tags, as the Studio's
+
+- JL 261011: "if the report card to show, it will be the same as the sNN, we can create and add the tags";
+  "for someother report, the groups are of the special forms, and that ones are fixed, depending on different
+  theme". `frame.report_view`: the vanilla Report is one folding card per Question under the Studio's group
+  bar (`group_list(kind="reports")`: Current · groups · Untagged · + Group); opened, its Logic │ Work │ Report
+  row. The paper Board's four buttons (`AUDIENCE_VIEWS`) are no longer drawn on every theme.
+- A Question's groups are its register `group:` line; a drag writes it (`_register_set_groups`, that line
+  only); `reports/_groups.txt` keeps the order, then a theme's starting groups, then the Studio's order.
+- `Theme.report_fixed(row)` and `Theme.report_groups`: a theme's fixed groups (no ×, `data-studio-fixed`,
+  a remove refused) and its starting ones. The chips keep no × on a fixed group after a drag (Related's
+  subfolder groups too). A `#question-QNN` link opens its card.
+- b10 s07-D01, D02, D09.
+
+## 1.18.1 · 2026-10-11 · The chart's columns can be the topic groups
+
+- JL 261011: "I think here the columns can also be the topic groups". `frame.studio_timeline`: the Days
+  chart has a second set of columns, one per topic group in the group bar's order (`studio_group_order`,
+  then other tags, Untagged last), switched by "columns: by group · by topic" (by group when any topic has
+  a group; the browser keeps the pick, `workbench.timeline.cols.v1`). A group's cell carries its topics'
+  counts (`data-tl-parts`), so the page script re-adds it from the topics the group bar still shows; a
+  topic in two groups counts in both, the day's bar counts each change once. A group's column or bubble
+  picks that group in the bar and switches to its topics. `timeline_events` now gives each event its
+  topic's `tags`.
+- b10 s08-D07 recorded; its screen frame draws the group columns, with a green note.
+
+## 1.18.0 · 2026-10-11 · The Timeline's Days is a chart
+
+- JL 261011, on the Topics list: "it is not that beautiful, how could we have better version? like using
+  the versualiaation tools?". `frame.studio_timeline`: Days is now a chart down the same axis, a row per
+  day, a column per topic (its sNN on top), a bubble sized by how much that topic moved that day (area by
+  the square root), and the day's total as a bar. Topics is a line per topic, `sNN` and its name, a
+  stacked bar of decided · session · note and its count; Everything adds each item with a coloured
+  mark, one line each. Plain HTML and CSS in the page, no chart library: it takes the frame's light and
+  dark colours, and the group bar hides columns and recounts the bars (`timeline()` in the page script).
+- b10 s08-studio-timeline: s08-D05 recorded, its screen frame redrawn as the chart.
+- Test updated: `test_studio_timeline_reads_dated_decisions_sessions_and_change_notes`.
+
+## 1.17.0 · 2026-10-11 · The Timeline runs down one axis, at three levels
+
+- JL 261011: "I want it to be a real timelne, and make it very concise ... Like the timeline with a axis
+  down", "it should also be up to done [down]", "we can show different level of details", "We should
+  create a new sNN for it, and show the UI". `servers/workbench/frame.py` `studio_timeline`: an `<ol
+  class=tl-axis>` with a dot per day on one line down the page and an arrowhead at the end, the oldest day
+  at the top. Three levels, buttons Days · Topics · Everything (`data-level` on the axis, CSS shows the
+  parts): Days, each day's topics as sNN chips and its count; Topics, a line per topic with how many
+  decided, sessions and notes; Everything, each item. The page script keeps the level in localStorage
+  (`workbench.timeline.level.v1`), recounts each day when the group bar hides topics, and a chip opens
+  its topic like a name does.
+- Its topic: Tools/blueprints/b10_project_workbench/studio/s08-studio-timeline/ (s08-D01 to D04), whose
+  builder draws the UI from `frame.timeline_events`.
+- Test: `test_studio_timeline_reads_dated_decisions_sessions_and_change_notes`, updated for the axis.
+
+## 1.16.1 · 2026-10-11 · One host per SPACE
+
+- JL 261011: "when we use the /wb we will just start from the SPACE, and then we pickup the board".
+  SKILL.md now says it outright: every /wb link goes through the one host rooted at the SPACE, a
+  board is a path inside it, and no host is ever rooted at a Project or board folder. A Tools
+  blueprint Block opens on the Tools SPACE host. `cli/wb.py` already worked this way; no code change.
+
+## 1.16.0 · 2026-10-11 · The Studio gets a Timeline
+
+- JL 261011: "for the layout of the studio, I think we can also add another section of the Timeline".
+  `servers/workbench/frame.py`: Timeline is the Studio's third folding part, under Related, on every
+  Block, Job and Task view and in every theme: one block per day, newest first, one line per topic that
+  moved that day. It writes nothing; it reads each topic's decisions by the first date in them (b10 has
+  110 dated, 13 undated), its sessions (`runs/run-draw-<sNN>/passes/pNN-<MMDD>/`) and the green `✎` change
+  notes in its drawings, read once per file version (`timeline_events`, `studio_timeline`, `_decisions`,
+  `_drawing_notes`, `_session_day`).
+- It follows the group bar: the page script's `apply()` hides a topic's lines when its row is hidden,
+  and the summary says how many show in the picked group; a topic's name opens its row.
+- Not lifted from the cowork theme's `timeline_view.py`: that one draws an authored Date | Track |
+  Development table of one report, oldest first, as cards; the Studio's reads the topics and needs one
+  dense line per topic.
+- Test: `test_studio_timeline_reads_dated_decisions_sessions_and_change_notes`.
+
+## 1.15.1 · 2026-10-11 · Related's groups work like the Studio's
+
+- JL 261011, relayed by the b02_aid_ai session: "for the group in the related, I want it to be things like
+  this: 🎯Current 0 / Untagged 4 / + Group — for the studio". `servers/workbench/frame.py`: Related (folded
+  in the Studio, every Block, every theme) now sits under the Studio's group bar, not one heading per
+  `related/` subfolder. A group is a name in the row's `group` cell of `related/related.md`
+  (comma-separated; the column is added the first time a row gets a group), `related/_groups.txt` keeps
+  the button order, Current stays in the browser. A file no row names yet shows under Untagged ("no row
+  yet"); dragging it onto a group adds its row.
+- One copy of the code: `group_list()` draws the bar for both (`studio_cards()` calls it), `_group_parts()`
+  gives a row its ⋮⋮, Add to Current and chips, and `studio_group_op()` takes `kind: related`
+  (`_group_members()`, `related_items()`, `_related_set_groups()`). The page script reads
+  `data-group-kind` / `data-group-noun`; Related's link keeps its own `related_tag` / `related_group`.
+
+## 1.15.0 · 2026-10-11 · /wb opens a Block, Job or Task on its Studio
+
+- JL 261011: "make the studio to be opened as the default". `cli/wb.py` `target()` adds `studio=1`
+  to a Block, Job or Task link, so the frame opens on the Block's shared Studio topics; the new
+  `--no-studio` opens the level view as before. SPACE Home and Project links are unchanged.
+
 ## 1.14.1 · 2026-10-09 · Audience Report: the paper Board's four views on every level
 
 - JL 261009: "why the Audience Report, there are not sub buttons, it is not correct", then, over the paper Board's
@@ -7,7 +124,7 @@
   High-level logic + Low-level work (the register's Questions, Logic │ Work │ Report, the open view) · Related
   Questions (the Questions others ask: register group reviewer · coauthor · editor · reader). An empty view says what
   belongs there (b03 s01-D22). Before, the row came only from register groups, and no blueprint Block had one, so
-  none showed a third row. `question_rows(…, keep=)` picks a view's rows; with groups, a heading per group (s04-D04).
+  none showed a third row. `question_rows(…, keep=)` picks a view's rows; with groups, a heading per group (b10 s02-D25).
 - `frame.py` `studio_sessions()`: the Idea Studio's Runs panel shows each run-draw Run's own status from its
   run.yaml (it wrote "done" for every one; recorded first in workbench-studio 0.6.1).
 
@@ -293,7 +410,7 @@ Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md fro
 ## 0.2.0 - 2026-08-15
 
 - Per-plugin skills gained a home: `page-plugins/haipipe-plugin-<name>/` (folder retired 2026-09-22; the skills now sit flat in their families as `haipipe-workbench-<name>`)
-  (JL: one skill per workbench, keep haipipe-board small) — the same third leg
+  (JL: one skill per workbench, keep haipipe-block small) — the same third leg
   page-types/ and page-phases/ give the page family. `-word` is the first
   instance: the paragraph rule, the page-bib preference, the twin, the
   flags, and the warts, loadable without the board open.
@@ -306,7 +423,7 @@ Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md fro
   the eleven-name roster in `ref/roster.md`.
 - First conforming instances: the latex/word/bibex tabs
   (`assets/js/10-drawer/82-workbench-exports.js` + `servers/workbench-page/export.py` in
-  haipipe-board 0.128.0), registered with the `tab: {url, write}` spec.
+  haipipe-block 0.128.0), registered with the `tab: {url, write}` spec.
 ## 0.9.0 · 2026-09-04
 
 - Define the Outline category as three peer workspaces: Context, Bullet, and

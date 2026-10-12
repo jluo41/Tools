@@ -245,7 +245,7 @@ Scope rules:
 1. Write only inside {own}. Other pages' problems: list them, never fix them.
 2. Never edit Tools/, code/, the Story page, or the paper-level delivery/ unless the author asks.
 3. Never start a compute or regression Run unasked.
-4. Before any edit, load the haipipe-paper-section skill (and haipipe-page for the page contract).
+4. Before any edit, load the haipipe-paper-section skill (and haipipe-draft for the page contract).
 5. While the author has a Run open, edit only the Draft file draft/<stem>-draft-v<N>.md; Page Content, logs, receipts, results/ and delivery wait for the Run's close.
 
 First turn, READ ONLY: {first}. Then reply: line 1 = {line1}; then a numbered list of what is done, what is open, and the one next step. Then stop and wait."""

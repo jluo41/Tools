@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-reviewer-agent
-description: "REVIEWER agent for Insight boards. Runs the Insight workbench's judging run types in a fresh context: review the questions (Q1-Q7, propose keep, split, merge or move), review the evidence plan (agree or return a question's needs), and check alignment (each answered cell against its question, by the Instance checker). It never judges anything it made, never rewords a question, never signs, and writes only an agreed: mark on a plan it agrees and the checker's own output. Always paired with haipipe-insight-agent; a page's CHECK is haipipe-page-check-agent."
+description: "REVIEWER agent for Insight boards. Runs the Insight workbench's judging run types in a fresh context: review the questions (Q1-Q7, propose keep, split, merge or move), review the evidence plan (agree or return a question's needs), and check alignment (each answered cell against its question, by the Instance checker). It never judges anything it made, never rewords a question, never signs, and writes only an agreed: mark on a plan it agrees and the checker's own output. Always paired with haipipe-insight-agent; a page's CHECK is haipipe-draft-check-agent."
 tools:
   - Read
   - Grep

@@ -1,6 +1,65 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.11.0] · 2026-10-12 · A screen in its own colours**
+
+A frame that draws the workbench's screen is marked `canvas.ui_frame(frame)`, and `canvas.write` colours what
+is drawn in it with the workbench's own light colours (`canvas.UI`, `STAGE_UI`, `STATUS_UI`, read from
+`servers/workbench/frame.py`): gray panes behind white buttons, the open tab blue, a proposed button violet
+dashed, stage pills, links, status words and count bars in their screen colours (JL 261012: "make the UI to
+be more colorful, like the same to what we see"). A pane moves behind what it holds. Red questions, green
+notes, arrows and every frame not marked stay as before. First used in b10 s02, s03, s05 to s08.
+
+**[0.10.0] · 2026-10-12 · Topics inferred from a Block's work**
+
+`scripts/block_inventory.py <block>` reads every Job and Task face of a Block (writes nothing) and prints what
+repeats: Task kinds across Jobs, the fields that split them, the sub-questions most Tasks of a kind answer and
+how their answers spread, and what stands out; then candidate topics and Questions, each naming its Tasks.
+`ref/infer-topics.md`: a recurring kind is a method topic, a split one topic, no work no topic (JL 261012:
+"learn how to infer the relevant studios from the existing block job and task"; b10 s10). Worked on b00_rawdata.
+
+**[0.9.2] · 2026-10-11 · A topic's Run starts with its close rule**
+
+`new_topic.py session` writes the close rule into the ticket when a topic's first session makes
+`run-draw-<sNN>`: a person moves the topic's Stage to agreed, or names what is still wrong in red on the
+drawing (`DRAW_CLOSE`). It used to leave `close: <what settles it>`, so the Run had no end (b10 s06-D06).
+
+**[0.9.1] · 2026-10-11 · The Timeline runs down one axis**
+
+The Studio's Timeline is one axis down the page, oldest day at the top, at three levels (Days · Topics ·
+Everything); its own topic is b10 s08-studio-timeline (JL 261011). A drawing's sample of a change note must
+not start with ✎, or the Timeline reads it as one.
+
+**[0.9.0] · 2026-10-11 · The Studio's Timeline reads each decision's date**
+
+Timeline folds under Related in the Studio (JL 261011: "add another section of the Timeline"): what moved
+when, newest day first, following the group bar. It reads a decision's date in its brackets, a session's
+pass `pNN-<MMDD>` and a drawing's green `✎ <YYMMDD>` notes; Groups in SKILL.md says so, and that a
+decision with no date is listed at the end.
+
+**[0.8.4] · 2026-10-11 · Related's groups start from its subfolders**
+
+In Related, under the topics, an item's subfolder is its first group (`meetings/` → meetings), the row's `group` cell adds more (b10 s04-D08); the folder belongs to the new `haipipe-related`.
+
+**[0.8.3] · 2026-10-11 · Side notes smaller than the content**
+
+A note beside the main content (excalidraw-read's revise mode: the change, why and who answers, beside the
+page pictures) is written smaller than the pictures it explains (JL 261011: "The content or the font size,
+can be much smaller, than the main content"). `canvas.aside(e)` marks such a note, and `small_text` leaves it
+out, as it leaves out green change notes.
+
+**[0.8.2] · 2026-10-10 · A topic's stage**
+
+Each topic face carries a `**Stage:**` line: explore · shaping · agreed · closed (b10 s09-D03).
+A person moves it with a decision row; the gate only counts. `new_topic.py` writes `explore`;
+the shared Studio shows the stage as a badge on each card, "no stage" when the line is missing.
+
+**[0.8.1] · 2026-10-10 · Block topics and recommended count**
+
+Recommend at most 10 topics per Block, counting folders rather than sNN values.
+The writer resolves Job/Task inputs to their Block and reminds above ten without
+refusing creation. Existing topics and legacy session reads stay intact.
+
 ## [0.8.0] · 2026-10-10 · A proposal topic
 
 - b03_event_cgm's s03 (SHIFT Task 2.1) is the worked example of a topic that works on one section of a

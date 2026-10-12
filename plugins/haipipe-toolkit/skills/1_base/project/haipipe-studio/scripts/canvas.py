@@ -43,6 +43,16 @@ PALETTE = (INK, RED, GREEN)
 # from canvas)
 ACCENT, ACCENT_FILL, MUTED = "#1971c2", "#d0ebff", "#868e96"
 SLIDE_PALETTE = (ACCENT, MUTED)
+# a screen drawn in a studio drawing wears the workbench's own light colours, read from
+# servers/workbench/frame.py's CSS (JL 261012: "make the UI to be more colorful, like the same to what we
+# see"); the rest of the drawing stays black, red and green. A builder marks the frame with ui_frame().
+UI = {"wash": "#f8f9fa", "box": "#ffffff", "line": "#ced4da", "edge": "#adb5bd", "text": "#1c1c1c",
+      "mut": "#6f6f6b", "link": "#3e5c84", "on": "#1864ab", "on_bg": "#e7f5ff",
+      "new": "#7048e8", "new_bg": "#f3f0ff", "dot": "#3e5c84"}   # dot: the Timeline's bubble, var(--acc) at .8
+STATUS_UI = {"answered": "#2b8a3e", "done": "#2b8a3e", "sent": "#2b8a3e", "partial": "#e67700",   # a status word
+             "draft": "#e67700", "open": "#868e96", "not judged": "#868e96"}
+STAGE_UI = {"explore": ("#2b8a3e", "#ebfbee"), "shaping": ("#7048e8", "#f3f0ff"),   # the stage pills
+            "agreed": ("#1971c2", "#e7f5ff"), "closed": ("#495057", "#f1f3f5")}
 
 
 # the studio font (JL 261009: "I think the font should be more readable"): Nunito, Excalidraw's "Normal"
@@ -71,8 +81,8 @@ def off_palette(els, slides=False):
     slide accent, its light fill and the muted caption gray."""
     strokes = PALETTE + (SLIDE_PALETTE if slides else ())
     fills = ("transparent", "#ffffff", "") + ((ACCENT_FILL,) if slides else ())
-    return [e for e in els if str(e.get("strokeColor", INK)).lower() not in strokes
-            or str(e.get("backgroundColor", "transparent")).lower() not in fills]
+    return [e for e in els if not is_ui(e) and (str(e.get("strokeColor", INK)).lower() not in strokes
+            or str(e.get("backgroundColor", "transparent")).lower() not in fills)]
 
 
 def apply_palette(els):
@@ -81,7 +91,7 @@ def apply_palette(els):
     stays). An image keeps its stroke, fill and picture. Returns how many elements changed."""
     n = 0
     for e in els:
-        if e.get("type") == "image":
+        if e.get("type") == "image" or is_ui(e):          # a screen keeps the workbench's colours (ui_frame)
             continue
         stroke, fill = str(e.get("strokeColor", INK)).lower(), str(e.get("backgroundColor", "transparent")).lower()
         if stroke not in PALETTE + ("transparent", ""):          # an invisible stroke stays invisible
@@ -146,6 +156,124 @@ def is_read_down(e):
     return (e.get("customData") or {}).get("reads") == "down"
 
 
+def aside(e):
+    """Mark a side note: words beside the main content (the page pictures it explains), written smaller than
+    it on purpose (JL 261011, on revise mode's notes: "The content or the font size, can be much smaller,
+    than the main content"). `small_text` does not count it. Returns it."""
+    e.setdefault("customData", {})["aside"] = True
+    return e
+
+
+def is_aside(e):
+    return bool((e.get("customData") or {}).get("aside"))
+
+
+def ui_frame(frame, since=None):
+    """Mark a frame that draws the workbench's screen: write() gives what is drawn in it the workbench's own
+    colours (UI) instead of black (JL 261012). Red open questions and green change notes in it keep their
+    colour and meaning. `since` (YYMMDD): the day it turned to colour, written as a green change note in the
+    frame's top right corner. Returns it."""
+    frame.setdefault("customData", {})["ui"] = True
+    if since:
+        frame["customData"]["ui_since"] = since
+    return frame
+
+
+def is_ui(e):
+    return bool((e.get("customData") or {}).get("ui"))
+
+
+def _inside(a, b, pad=2):
+    """Box a lies inside box b."""
+    return (a["x"] >= b["x"] - pad and a["y"] >= b["y"] - pad and a["x"] + a["width"] <= b["x"] + b["width"] + pad
+            and a["y"] + a["height"] <= b["y"] + b["height"] + pad)
+
+
+def colour_ui(els):
+    """The screens in each ui_frame() take the workbench's colours, by what each element is:
+
+    a box holding other boxes  a pane: light wash fill, gray edge (an outer pane wash, an inner one white)
+    a box holding none          a button, tab, chip or card: white, light gray edge
+    ... drawn bold              the open tab or button: blue edge and wash, its words blue
+    ... drawn dashed            a proposed or new one: violet edge and wash
+    ... holding a stage word    the stage pill's own colours (explore, shaping, agreed, closed)
+    ... thin, holding no words  a bar: filled blue, as the Timeline draws a count
+    a word: small · a path/link muted gray · link blue; a status (answered, partial, open) its colour
+    a line, an ellipse          a separator gray; a dot or bubble filled blue-gray at 80%, as the Timeline's
+    Red and green, arrows, frames and images are left as drawn. A pane now has a fill, so it moves behind what
+    it holds (a builder may draw the pane last, to fit it). Returns how many elements it coloured."""
+    frames = {e["id"] for e in els if e.get("type") == "frame" and is_ui(e)}
+    if not frames:
+        return 0
+    n, panes = 0, []
+    for fid in frames:
+        mine = [e for e in els if e.get("frameId") == fid and not e.get("isDeleted")
+                and str(e.get("strokeColor", INK)).lower() not in (RED, GREEN)]
+        boxes = [e for e in mine if e.get("type") == "rectangle"]
+        texts = [e for e in mine if e.get("type") == "text"]
+        holds = {id(b): [o for o in boxes if o is not b and _inside(o, b)] for b in boxes}
+        within = {id(b): [o for o in boxes if o is not b and _inside(b, o)] for b in boxes}
+        for b in boxes:
+            words = [t for t in texts if _inside(t, b) and not any(_inside(t, c) for c in holds[id(b)])]
+            stage = next((w for t in words for w in STAGE_UI if re.search(rf"\b{w}\b", str(t.get("text", "")))), None)
+            if holds[id(b)]:
+                stroke, fill = UI["edge"], UI["wash"] if not within[id(b)] else UI["box"]
+                colour = None
+                panes.append((b, [o for o in mine if o is not b and _inside(o, b)]))
+            elif stage and len(words) <= 2:
+                stroke, fill = STAGE_UI[stage]
+                colour = stroke
+            elif b["height"] <= 14 and not words:                  # a bar: a count drawn as a length
+                stroke, fill, colour = UI["on"], UI["on"], None
+            elif b.get("strokeStyle") == "dashed":
+                stroke, fill, colour = UI["new"], UI["new_bg"], UI["new"]
+            elif float(b.get("strokeWidth", 1)) >= 2.5:
+                stroke, fill, colour = UI["on"], UI["on_bg"], UI["on"]
+            else:
+                stroke, fill, colour = UI["line"], UI["box"], None
+            b.update(strokeColor=stroke, backgroundColor=fill, fillStyle="solid")
+            b.setdefault("customData", {})["ui"] = True
+            n += 1
+            for t in words if colour else ():
+                t["strokeColor"] = colour
+                t.setdefault("customData", {})["ui"] = True
+        for t in texts:
+            if is_ui(t):
+                continue
+            s = str(t.get("text", ""))
+            status = next((c for w, c in STATUS_UI.items() if len(s) <= 40 and re.match(rf"\s*{w}\b", s)), None)
+            if status:
+                t["strokeColor"] = status
+            elif "↗" in s or re.fullmatch(r"[\w./<>@+-]+/[\w./<>@+-]*", s.strip()):
+                t["strokeColor"] = UI["link"]
+            elif float(t.get("fontSize", 20)) < 20:
+                t["strokeColor"] = UI["mut"]
+            else:
+                t["strokeColor"] = UI["text"]
+            t.setdefault("customData", {})["ui"] = True
+            n += 1
+        for e in mine:
+            if e.get("type") == "line":
+                e["strokeColor"] = UI["edge"]
+            elif e.get("type") == "ellipse":
+                e.update(strokeColor=UI["dot"], backgroundColor=UI["dot"], fillStyle="solid", opacity=80)
+            else:
+                continue
+            e.setdefault("customData", {})["ui"] = True
+            n += 1
+    for f in [e for e in els if e.get("id") in frames and (e.get("customData") or {}).get("ui_since")]:
+        what = "the screen in the workbench's colours (JL)"
+        w = len(f"✎ {f['customData']['ui_since']} {what}") * 16 * 0.55
+        els.append(change_note(round(f["x"] + f["width"] - w - 40), round(f["y"] + 16), what,
+                               f["customData"]["ui_since"], f["id"]))
+    for pane, held in sorted(panes, key=lambda ph: ph[0]["width"] * ph[0]["height"]):   # inner panes first
+        first = min((i for i, e in enumerate(els) if any(e is h for h in held)), default=None)
+        at = next(i for i, e in enumerate(els) if e is pane)
+        if first is not None and first < at:
+            els.insert(first, els.pop(at))
+    return n
+
+
 def oversized(els):
     """Frames bigger than FRAME_MAX, as (name, width, height): too big to read whole at 50% zoom (JL 261010:
     "when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of the frame").
@@ -158,12 +286,13 @@ def oversized(els):
 
 def small_text(els):
     """Frames whose words are mostly below TEXT_MIN, as (name, median size): they will not read at 50% zoom, as
-    after scaling a whole drawing down. Change notes (green) may be smaller and are not counted."""
+    after scaling a whole drawing down. Change notes (green) and side notes (`aside`) may be smaller and are
+    not counted."""
     frames = {e["id"]: e for e in els if e["type"] == "frame" and not e.get("isDeleted")}
     sizes = {}
     for e in els:
         if e["type"] == "text" and e.get("frameId") in frames and e.get("strokeColor") != GREEN \
-                and not e.get("isDeleted"):
+                and not is_aside(e) and not e.get("isDeleted"):
             sizes.setdefault(e["frameId"], []).append(e["fontSize"])
     out = []
     for fid, s in sizes.items():
@@ -277,6 +406,7 @@ def write(out, els, source, redraw_frames=(), files=None, palette=None):
     out = Path(out)
     snap_path = seed_path(out)
     if palette if palette is not None else not is_slide_draft(out):
+        colour_ui(els)
         apply_palette(els)
         apply_font(els)
     if not is_slide_draft(out) and one_column(els):

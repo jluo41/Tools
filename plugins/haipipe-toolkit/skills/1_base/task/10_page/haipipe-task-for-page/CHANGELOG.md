@@ -70,8 +70,8 @@ QA digests, proposes the owning-block task for any value with no source
 generic dispatch for a page's TASK-route values; the Discovery route, the
 probe card address (PP<NN>.v<n>) and the one-door dispatch rule
 (haipipe-probe-q-executor-agent) are unchanged. Registered in haipipe-task
-0.10.0 (type table + keyword map), haipipe-page 0.44.0, haipipe-workbench-chat
-0.3.0, haipipe-page-probe 0.12.0, haipipe-page-evidence 0.13.0.
+0.10.0 (type table + keyword map), haipipe-draft 0.44.0, haipipe-workbench-chat
+0.3.0, haipipe-page-probe 0.12.0, haipipe-draft-evidence 0.13.0.
 
 Field-tested same day (cold subagent, scratchpad job for SM05-results: 0 landed ·
 3 owed · GATE-3 proven to fail first). Frictions folded back: QA files keep

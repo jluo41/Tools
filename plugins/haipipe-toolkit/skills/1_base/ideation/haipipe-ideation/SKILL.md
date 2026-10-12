@@ -73,7 +73,7 @@ happened. A router invocation or a receipt alone is not a Run.
 
 `haipipe-paper` may route semantic idea work here. `haipipe-paper-ideation`
 loads this owner when a Paper Idea portfolio needs semantic work or sync.
-`haipipe-page` resolves that adapter for an Ideation Page and owns Page writing,
+`haipipe-draft` resolves that adapter for an Ideation Page and owns Page writing,
 release and delivery. Load only the requested capability and reuse already
 loaded owners; do not recursively re-enter the routers. An Ideation-only audit
 stays within its declared read-only scope. Sync/release does not create or
@@ -153,7 +153,7 @@ Load the relevant owner before acting on that owner's artifact:
 5. `haipipe-paper-ideation` after Generate or Test when syncing the evolving
    portfolio into the Paper-specific P0 cockpit, and after Select when
    projecting the final verdict/target/`went to` edges. That adapter must use
-   the current `haipipe-page` update boundary: a working projection may be
+   the current `haipipe-draft` update boundary: a working projection may be
    refreshed without publishing adopted Page Content or delivery. Load the
    base Page workflow only when actually updating that Page, not for an
    Ideation-only audit.
@@ -278,7 +278,7 @@ changes:
    Landscape, Opportunity Map, and candidate set into that same evergreen Page.
    Treat this as a semantic-source update followed by a Page working-projection
    update; do not claim that adopted Page Content or delivery is current unless
-   the Page release barrier has opened and `haipipe-page-writing` has completed
+   the Page release barrier has opened and `haipipe-draft-writing` has completed
    its Page-level pass.
 2. **2 Test:** run every admitted card through claim-level closest-work
    verification, falsifiability and feasibility review, and broad journal
@@ -345,7 +345,7 @@ stop at the Page OUTLINE/SHAPE workflow until any required human decision is
 made. Ideation does not send prose changes through this adapter. A narrow Page
 update may refresh the working projection and leave adopted Content and
 `delivery/` stale by design. Only after all required Page Runs and evidence
-Results are ready may `haipipe-page-writing` perform the Page-level CONTENT pass
+Results are ready may `haipipe-draft-writing` perform the Page-level CONTENT pass
 and refresh delivery.
 
 The sync operation itself is not a Page Run, does not mint `rpNN`, and does not

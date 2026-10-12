@@ -46,7 +46,7 @@ skills:
   role: A question's evidence needs, agreed by a reviewer
 - skill: haipipe-insight-check
   role: Question rules and each cell's status from receipts and checks
-- skill: haipipe-page-workflow
+- skill: haipipe-draft-workflow
   role: One page per question, checked by an agent that did not write it
 - skill: workbench-insight
   role: Scope, Prototype, Insight, Check and Delivery over the Block

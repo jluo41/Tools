@@ -382,7 +382,11 @@ class CoworkBoardMixin:
                 content_type = "application/json; charset=utf-8"
                 body = json.dumps(snap, ensure_ascii=False)
             else:
-                body = render_block(snap, (query.get("view") or query.get("space") or ["work"])[0])
+                view = (query.get("view") or query.get("space") or ["work"])[0]
+                if not only:                    # retired: the Block opens in the shared frame (JL 261011)
+                    from live.frame import frame_redirect
+                    return frame_redirect(self, target, root, (query.get("view") or query.get("space") or [""])[0])
+                body = render_block(snap, view)
         elif kind in ("project", "all"):
             body = render_projects(projects_snapshot(root, target if kind == "project" else None),
                                    target.relative_to(root).as_posix() if kind == "project" else "")

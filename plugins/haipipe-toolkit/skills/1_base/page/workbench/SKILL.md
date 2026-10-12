@@ -13,8 +13,8 @@ description: >-
   block, find a block, workbench link, page workbench, workbench folder,
   workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.14.1"
-  last_updated: "2026-10-09"
+  version: "1.19.2"
+  last_updated: "2026-10-11"
   aliases: [wb]
 ---
 
@@ -30,9 +30,16 @@ the skill OPENS a workbench; every section after this one is the contract the op
 /wb                        SPACE Home, every Project     /
 /wb <Project>              that Project only             /?project=<Project>
 /wb <Project>/cowork       that Project, one kind        /?project=<Project>&kind=cowork
-/wb <Block | Job | Task>   the shared frame, its theme   /_board/workbench?path=<folder>
+/wb <Block | Job | Task>   its Studio, in its theme      /_board/workbench?path=<folder>&studio=1
 /wb <words>                find the place, then open it as above
 ```
+
+**One host per SPACE, the board is a path in it** (JL 261011: "when we use the /wb we will
+just start from the SPACE, and then we pickup the board"). Every row above goes through the
+one host rooted at the SPACE; a Project, Block, Job or Task is picked up inside it by its
+path. Never start a host rooted at a Project or a board folder: such hosts outlive renames
+and serve gone folders (DrFirst's 8765, 8766 and 8767 did, stopped 261011). A Tools
+blueprint Block belongs to the Tools SPACE, so it opens on the host rooted at `Tools/`.
 
 1. **Run the script** from inside the SPACE: `.venv/bin/python <this skill's folder>/cli/wb.py <input>`
    (from the SPACE root, `Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb.py`).
@@ -42,6 +49,8 @@ the skill OPENS a workbench; every section after this one is the contract the op
    loads the link, and restarts a server that drops the request (a server started before another
    session renamed something in Tools holds old paths). Then it opens the browser and prints the link,
    the folder, its level and the skill for its theme. `--no-open` only prints; `--no-restart` never restarts.
+   A Block, Job or Task opens on its Studio (`studio=1`), the Block's shared studio topics;
+   `--no-studio` opens the level view instead (JL 261011).
 3. **Words**: it ranks every Project, Theme folder, Block, Job and Task by folder name, title and
    `spine:`/`goal:`/`status:` lines, using the server's own lists (`home.discover_boards`,
    `frame.children`, `frame.theme_of`), so a found place and the screen agree. Level words
@@ -55,7 +64,7 @@ the skill OPENS a workbench; every section after this one is the contract the op
    `workbench-design`, `workbench-labeling`, or this skill when the folder has no theme. Reply with
    the printed link; its Tailscale address also opens on a phone.
 
-`haipipe-page` owns what the page's `.md` SAYS; this skill owns what sits BESIDE it.
+`haipipe-draft` owns what the page's `.md` SAYS; this skill owns what sits BESIDE it.
 A page lives in its own home folder (QPf1 on the design board), and every
 Board-material subfolder is ROSTERED. A roster row may be an internal lane
 owned by a category Workbench; folder count and Workbench count are not required to
@@ -142,7 +151,7 @@ Server-side builders live as one `live/` module per concern and one `/_board/<wo
 ## 🚧 Boundary
 
 Discovery (`src/common.py`) never surfaces a workbench folder's files as pages, so a `chat/` transcript full of `.md` can never become ghost pages.
-The `session:` line and the page's own text stay `haipipe-page`'s; this contract begins at the folder.
+The `session:` line and the page's own text stay `haipipe-draft`'s; this contract begins at the folder.
 
 ## 🗂 The roster, and each workbench's own skill
 

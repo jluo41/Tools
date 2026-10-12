@@ -29,12 +29,13 @@ This table covers the three package directories directly under `plugins/`. The H
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
 and [skill and server layout](blueprints/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
 For the shared Workbench, Run Type, and Skill relationship, see
-[the shared project workbench blueprint](blueprints/b01_haipipe-toolkit/j03_project_workbench/j03_project_workbench.md).
+[the shared project workbench blueprint](blueprints/b10_project_workbench/board.md).
 
 ## Blueprints
 
-`b01_haipipe-toolkit` holds shared foundation Jobs j01–j05. Each Theme is its
-own peer Block; a package may have several blueprint Blocks. Each Theme's
+`b01_haipipe-toolkit` holds shared foundation Jobs j01, j02, j04 and j05. Each Theme is its
+own peer Block; b10 owns the shared project ladder and Workbench. A package may
+have several blueprint Blocks. Recommend at most 10 sNN topics per Block. Each Theme's
 board.md records its questions and links its reports, studio topics and Runs.
 
 | Block | Area |
@@ -42,6 +43,7 @@ board.md records its questions and links its reports, studio topics and Runs.
 | [b01_haipipe-toolkit](blueprints/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
 | [b02_haipipe-utils](blueprints/b02_haipipe-utils/board.md) | Utilities |
 | [b03_inlab-human](blueprints/b03_inlab-human/board.md) | Human studies |
+| [b10_project_workbench](blueprints/b10_project_workbench/board.md) | Shared project ladder and Workbench |
 | [b11_theme_insight](blueprints/b11_theme_insight/board.md) | Insight Theme |
 | [b12_theme_design](blueprints/b12_theme_design/board.md) | Design Theme |
 | [b13_theme_cowork](blueprints/b13_theme_cowork/board.md) | Cowork Theme |

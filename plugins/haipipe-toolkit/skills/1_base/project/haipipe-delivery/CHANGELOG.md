@@ -1,0 +1,32 @@
+haipipe-delivery · Changelog
+============================
+
+**[0.2.3] · 2026-10-11 · Its twin has a skill**
+
+The boundary names `haipipe-related`, new, which owns `related/` (what came in), as this skill owns `delivery/` (b10 s04-D09).
+
+**[0.2.2] · 2026-10-11 · From a Job or Task, Delivery opens the Block's**
+
+The top row's Delivery opened from a Job or Task shows the Block's Delivery with a source row
+(Block · jNN · tNN) and the open source picked, as Studio does (b10 s03-D06; JL 261011: "apply
+it to all the workbench").
+
+**[0.2.1] · 2026-10-11 · Related folds inside Studio**
+
+The top row stays `Guide · Studio | Block · Job · Task | Delivery`; Related (what came in, the
+twin of Delivery) folds inside the Studio under its topic cards (b10 s04-D05; JL 261011).
+
+**[0.2.0] · 2026-10-11 · One row per send, no dNN**
+
+A delivery folder keeps its source's name (`delivery/jNN_<job>/`); the dNN card is dropped (b10
+s03-D05; JL: "could this be still the today's version or to make it like dNN_j01_vXXXX?"). Each
+send is one row of `delivery/delivery.md` (date · for · from · status), the twin of the Block's
+`related/related.md` (what came in, b10 s04).
+
+**[0.1.0] · 2026-10-10 · A skill for the Block's Delivery**
+
+New, beside haipipe-studio and haipipe-report (JL 261010: "should we have a skill named
+/haipipe-delivery? ... just as we have the /haipipe-studio"). It holds the Block-only Delivery
+rule once (b10 s02-D14, s09-D05), which haipipe-block, haipipe-report, haipipe-cowork and
+haipipe-draft-delivery each carried as a copy; they now point here. The dNN card per send is
+written as a proposal (b10 s03 Open 1), not applied.

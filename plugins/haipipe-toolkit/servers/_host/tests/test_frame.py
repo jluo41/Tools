@@ -70,10 +70,10 @@ class OptionTest(unittest.TestCase):
             row = frame._level_row(theme, root, task, "Task", "Description")
             self.assertIn('<optgroup label="steps">', row)
             self.assertIn(">Task · t01</option>", row)
-            self.assertIn(">t02 · other</option>", row)                # None: the folder's short name
+            self.assertIn(">t02_other</option>", row)                  # None: the folder name as on disk (b10 s32-D15)
             plain = frame._level_row(frame.VANILLA, root, task, "Task", "Description")
             self.assertNotIn("optgroup", plain)
-            self.assertIn('title="t01_task" selected>t01 · task</option>', plain)   # full name on hover
+            self.assertIn('title="t01_task" selected>t01_task</option>', plain)     # the folder name, as on disk
 
 
 class FillTagTest(unittest.TestCase):
@@ -172,9 +172,9 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual((q["path"][0], q["file"][0], q["embed"][0], q["space"][0], q["view"][0]),
                              ("Project-X/paper/Paper-Demo/board.md", "Ba-Desk-Main/S-Desk-Main-1-Intro/S-Desk-Main-1-Intro.md",
                               "1", "bullet", "table"))
-            (section / "delivery" / "latex" / "draft-bibliography").mkdir(parents=True)
-            (section / "delivery" / "latex" / "S-Desk-Main-1-Intro.tex").write_text("x")
-            (section / "delivery" / "latex" / "draft-bibliography" / "S-Desk-Main-1-Intro.bib").write_text("x")
+            (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "draft-bibliography").mkdir(parents=True)
+            (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "S-Desk-Main-1-Intro.tex").write_text("x")
+            (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "draft-bibliography" / "S-Desk-Main-1-Intro.bib").write_text("x")
             runs = frame.page_task_spaces(section, root)["Runs"]               # the Page Runs view, embedded (s13)
             self.assertEqual((runs.subspaces, runs.page), ((), True))
             self.assertIn("/_board/runs?", runs.html)
@@ -284,25 +284,188 @@ class ClaimTest(unittest.TestCase):
 
 
 class FrameTest(unittest.TestCase):
-    def test_every_level_keeps_one_studio_entry_above_the_five_space_buttons(self):
+    def test_delivery_is_the_blocks_with_a_part_per_source_and_links_down(self):
+        # b10 s03-D06 (JL 261011: "for the section, we will do not have the related studio and delivery";
+        # "also for the Jobs"): one Delivery, the Block's; a Job or Task picks its part and links back down
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            task = block / "j01_job/t01_task"
+            (block / "delivery/j01_job/t01_task/latex").mkdir(parents=True)
+            (block / "delivery/j01_job/t01_task/latex/t01_task.tex").write_text("x", encoding="utf-8")
+            (block / "delivery/j01_job/report.pdf").write_bytes(b"x")
+            page = frame.render(frame.VANILLA, root, block, "Delivery")
+            table = page.split("<h3>By source</h3>", 1)[1]
+            self.assertIn(frame._e(frame.href(task, root, frame.VANILLA, "Delivery")), table)   # to the part
+            self.assertIn(frame._e("/_board/workbench?path=Project%2Ftasks%2Fb01_topic%2Fj01_job%2Ft01_task"), table)
+            self.assertIn("└ ", table)                                                       # a Task under its Job
+            self.assertEqual(re.findall(r"<td>(\d+)</td>", table), ["1", "1"])              # a Job's own file only
+            for folder, picked in ((block / "j01_job", "j01_job"), (task, "j01 › t01_task")):     # folder names (s32-D15)
+                with self.subTest(folder=folder.name):
+                    page = frame.render(frame.VANILLA, root, folder, "Delivery")
+                    parts = re.search(r'<nav class="row subs delivery-parts">(.*?)</nav>', page).group(1)
+                    self.assertEqual(re.findall(r'aria-current="true">([^<]+)</a>', parts), [picked])
+                    self.assertIn("Its part of the Block's Delivery", page)
+                    self.assertIn("· Delivery · <span class=lv>b01</span>", page)
+
+    def test_related_folds_inside_the_studio_at_every_level(self):
+        # b10 s04, JL 261011: Related is the Studio's second folding part, under the topic cards
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            (block / "related/meetings").mkdir(parents=True)
+            (block / "related/meetings/2026-10-10-1800 kickoff.md").write_text("# kickoff\n", encoding="utf-8")
+            (block / "related/files").mkdir()
+            (block / "related/files/draft.docx").write_bytes(b"x")
+            (block / "related/related.md").write_text(
+                "| kind | date | item | link | feeds |\n|---|---|---|---|---|\n"
+                "| meeting | 2026-10-10 | Kickoff | `meetings/2026-10-10-1800 kickoff.md` | s01 |\n"
+                "| paper | 2024 | A paper | https://example.org/paper | q01 |\n", encoding="utf-8")
+            for folder in (block, block / "j01_job/t01_task"):
+                with self.subTest(level=frame.level_of(folder)):
+                    page = frame.render(frame.VANILLA, root, folder, "Related")
+                    self.assertIn("<details class=studio-related id=studio-related open>", page)  # a Related link unfolds it
+                    self.assertIn("related/ · 2 items · meeting 1 · paper 1", page)
+                    self.assertNotIn('<nav class="row subs">', page)
+                    self.assertIn("Kickoff", page)
+                    self.assertIn("A paper", page)
+                    self.assertIn("/_board/page?path=%2FProject%2Ftasks%2Fb01_topic%2Frelated%2Fmeetings", page)
+                    self.assertIn("example.org/paper ↗", page)
+                    # the Studio's group bar; a subfolder is a group of its files (s04-D08, JL 261011)
+                    self.assertNotIn("related-group", page)
+                    bar = re.search(r'data-group-kind=related data-group-noun=item>(.*?)</nav>', page).group(1)
+                    self.assertEqual(re.findall(r'data-studio-tag="([^"]*)"', bar),
+                                     ["__current__", "files", "meetings", "__untagged__"])
+                    self.assertIn('meetings <span class=tag-count>1</span>', bar)
+                    self.assertIn('Untagged <span class=tag-count>1</span>', bar)         # only the web link
+                    self.assertIn('<span class=chip data-tag="meetings">meetings</span>', page)  # no ×: the folder
+                    self.assertIn("class=grp-new", bar)
+                    self.assertIn("related/files/draft.docx · no row yet", page)   # the sent file has no row
+                    self.assertIn("files/draft.docx", page)
+                    # a Word file opens on its preview, read from its package (frame.docx_preview)
+                    self.assertIn(frame._e("/_board/workbench?view=docx&path=Project%2Ftasks%2Fb01_topic%2Frelated"
+                                           "%2Ffiles%2Fdraft.docx"), page)
+                    self.assertIn("run-add-related-", page)
+                    studio = frame.render(frame.VANILLA, root, folder, "Idea Studio")
+                    self.assertIn("<details class=studio-related id=studio-related>", studio)  # folded by default
+                    self.assertIn("Kickoff", studio)
+                    old = frame.render(frame.VANILLA, root, folder, "Description", "Related")
+                    self.assertIn("<details class=studio-related id=studio-related open>", old)
+
+    def test_a_word_file_previews_from_its_package(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            doc = root / "Project/tasks/b01_topic/related/materials/form.docx"
+            doc.parent.mkdir(parents=True)
+            w = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+            with zipfile.ZipFile(doc, "w") as z:
+                z.writestr("word/document.xml", f'<w:document {w}><w:body>'
+                           '<w:p><w:commentRangeStart w:id="0"/><w:r><w:t>Your text here</w:t></w:r></w:p>'
+                           '<w:tbl><w:tr><w:tc><w:p><w:r><w:t>in a cell</w:t></w:r><w:commentRangeEnd w:id="0"/>'
+                           '</w:p></w:tc></w:tr></w:tbl></w:body></w:document>')
+                z.writestr("word/comments.xml", f'<w:comments {w}><w:comment w:id="0" w:author="GG">'
+                           '<w:p><w:r><w:t>one comment</w:t></w:r></w:p></w:comment></w:comments>')
+            page = frame.docx_preview(doc, root)
+            self.assertIn("Your text here", page)
+            self.assertIn("in a cell", page)                  # a table's text is kept
+            self.assertIn("1 comments", page)                 # a comment over two blocks keeps its card
+            self.assertIn("one comment", page)
+
+    def test_an_email_previews_as_it_came(self):
+        # JL 261011: "the related can have /emails as well"; an .eml opens on its headers and its text
+        from email.message import EmailMessage
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            mail = block / "related/emails/2026-10-09-0900 IRB question.eml"
+            mail.parent.mkdir(parents=True)
+            msg = EmailMessage()
+            msg["From"], msg["To"], msg["Subject"] = "a@x.org", "b@y.org", "IRB question"
+            msg.set_content("Can we share <the> data?")
+            msg.add_attachment(b"pdf", maintype="application", subtype="pdf", filename="form.pdf")
+            mail.write_bytes(bytes(msg))
+            page = frame.eml_preview(mail, root)
+            self.assertIn("<th>Subject</th><td>IRB question</td>", page)
+            self.assertIn("Can we share &lt;the&gt; data?", page)                          # escaped
+            self.assertIn("form.pdf (1 KB)", page)
+            listing = frame.render(frame.VANILLA, root, block, "Related")
+            self.assertIn('<span class=chip data-tag="emails">emails</span>', listing)   # its subfolder's group
+            self.assertIn(frame._e("/_board/workbench?view=eml&path=Project%2Ftasks%2Fb01_topic%2Frelated%2F"
+                                   "emails%2F2026-10-09-0900+IRB+question.eml"), listing)
+
+    def test_a_meeting_note_reads_as_plain_markdown(self):
+        # JL 261011: a related meeting opened on "Not a Page"; any .md that is no Page reads as Markdown
+        from live.page_reader import markdown_document, markdown_html
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            note = root / "Project/tasks/b01_topic/related/meetings/2026-10-10-1800 kickoff.md"
+            note.parent.mkdir(parents=True)
+            note.write_text("---\ntitle: kickoff\n---\n\n# Kickoff\n\n## Recording\n![[rec.webm]]\n\n"
+                            "> [!quote]- Live transcript (2 lines)\n> [0:09] S1 hello\n> [0:11] S2 <b>hi</b>\n\n"
+                            "| kind | link |\n|---|---|\n| paper | [it](papers/a.pdf) |\n\n- [ ] S1 push\n",
+                            encoding="utf-8")
+            page = markdown_document(note, root)
+            self.assertIn("<pre class=front>title: kickoff</pre>", page)
+            self.assertIn("<h1>Kickoff</h1>", page)
+            self.assertIn("⤷ rec.webm", page)                                     # an Obsidian embed names its file
+            self.assertIn('<details class="callout quote"><summary>Live transcript (2 lines)</summary>', page)
+            self.assertIn("[0:09] S1 hello<br>[0:11] S2 &lt;b&gt;hi&lt;/b&gt;", page)  # one line per turn, escaped
+            self.assertIn('href="/Project/tasks/b01_topic/related/meetings/papers/a.pdf"', page)
+            self.assertIn("<li>☐ S1 push</li>", page)
+            self.assertIn("<h1>related</h1>", markdown_html("related\n=======\n\nrows\n"))   # an underlined heading
+            self.assertNotIn("javascript", markdown_html("[x](javascript:alert(1))"))
+
+    def test_every_level_keeps_studio_and_delivery_in_the_top_row(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
             block = root / "Project/tasks/b01_topic"
             for folder in (block, block / "j01_job", block / "j01_job/t01_task"):
-                for space in ("Description", "Idea Studio", "Audience Report"):
+                for space in ("Description", "Related", "Idea Studio", "Audience Report", "Delivery"):
                     with self.subTest(level=frame.level_of(folder), space=space):
                         page = frame.render(frame.VANILLA, root, folder, space)
                         levels = re.search(r'<nav class="row levels">(.*?)</nav>', page).group(1)
                         spaces = re.search(r'<nav class="row spaces">(.*?)</nav>', page)
                         self.assertEqual(re.findall(r'>([^<]+)</a>', levels)[:2], ["Studio", "Block"])
+                        self.assertEqual(re.findall(r'>([^<]+)</a>', levels)[-1], "Delivery")  # Studio | B J T | Delivery
+                        self.assertNotIn(">Related</a>", levels)          # Related folds in the Studio (JL 261011)
                         self.assertEqual(levels.count(">Studio</a>"), 1)
+                        self.assertEqual(levels.count(">Delivery</a>"), 1)
                         self.assertNotIn(">Index</a>", levels)
-                        self.assertEqual(levels.count("<span class=bar></span>"), 1)
-                        self.assertEqual('aria-current="page"' in levels, space == "Idea Studio")
-                        work_space = "Description" if space == "Idea Studio" else space
+                        self.assertEqual(levels.count("<span class=bar></span>"), 2)
+                        shared = space in frame.TOP_ROW + frame.IN_STUDIO
+                        self.assertEqual(levels.count('aria-current="page"'), int(shared))
+                        work_space = "Description" if shared else space
                         self.assertIn(frame._e(frame.href(folder, root, frame.VANILLA, work_space, studio=True)), levels)
+                        self.assertIn(frame._e(frame.href(folder, root, frame.VANILLA, "Delivery")), levels)
                         heading = re.search(r"<header class=page-title>(.*?)</header>", page).group(1)
-                        if space == "Idea Studio":
+                        if space == "Delivery":
+                            self.assertIsNone(spaces)                    # no Spaces row: Delivery is in the top row
+                            self.assertEqual(levels.count('class="tab on"'), 1)
+                            self.assertIn('class="tab on" href="' + frame._e(frame.href(folder, root, frame.VANILLA, "Delivery")), levels)
+                            self.assertNotIn('select class="on"', levels)
+                            self.assertIn("· Delivery ·", heading)       # the Block's, from every level (s03-D06)
+                            self.assertIn("b01", heading)
+                            self.assertNotIn("· Job", heading)
+                            parts = re.search(r'<nav class="row subs delivery-parts">(.*?)</nav>', page).group(1)
+                            picked = re.findall(r'aria-current="true">([^<]+)</a>', parts)
+                            self.assertEqual(len(picked), 1)
+                            self.assertEqual(re.findall(r'>([^<]+)</a>', parts)[0], "Block")
+                            if folder == block:
+                                self.assertEqual(picked, ["Block"])
+                                self.assertIn("The Block's delivery/", page)
+                            else:
+                                self.assertIn("Its part of the Block's Delivery", page)
+                        elif space == "Related":                     # opens the Block's Studio, Related unfolded
+                            self.assertIsNone(spaces)
+                            self.assertEqual(levels.count('class="tab on"'), 1)
+                            self.assertNotIn('select class="on"', levels)
+                            self.assertIn("· Studio ·", heading)
+                            self.assertIn("b01", heading)
+                            self.assertNotIn("· Job", heading)
+                            self.assertIn("<details class=studio-related id=studio-related open>", page)
+                            self.assertIn("Nothing related yet", page)
+                        elif space == "Idea Studio":
                             self.assertIsNone(spaces)
                             self.assertNotIn('<nav class="row subs">', page)
                             self.assertEqual(levels.count('class="tab on"'), 1)
@@ -316,15 +479,19 @@ class FrameTest(unittest.TestCase):
                             self.assertIsNotNone(spaces)
                             self.assertNotIn(">Studio</a>", spaces.group(1))
                             self.assertEqual(re.findall(r'>([^<]+)</a>', spaces.group(1)),
-                                             ["Report" if name == "Audience Report" else name
-                                              for name in frame.SPACE_NAMES if name != "Idea Studio"])
+                                             [{"Audience Report": "Report", "Work Details": "Work"}.get(name, name)
+                                              for name in frame.SPACE_NAMES
+                                              if name not in frame.TOP_ROW + frame.IN_STUDIO])
+                            self.assertNotIn(">Delivery</a>", spaces.group(1))
+                            self.assertNotIn(">Related</a>", spaces.group(1))
                             self.assertEqual(spaces.group(1).count("<span class=bar></span>"), 3)
                             self.assertIn("Block b01", heading)
                         self.assertIn("j01_job", page)
                         self.assertIn("runs-panel", page)
             studio = self._space(root, block, "Idea Studio")
             self.assertIn('<details class=topic id="topic-s01-flow" data-studio-tags="[]"', studio)  # one closed row per topic
-            self.assertIn("decided 1 · open 0 · 0 sessions · feeds", studio)
+            self.assertNotIn("class=topic-meta", studio)
+            self.assertNotIn("class=topic-source", studio)
             self.assertIn('data-src="/_excalidraw/?board=Project%2Ftasks%2Fb01_topic%2Fstudio%2Fs01-flow%2Fflow.excalidraw"',
                           studio)                                            # its canvas loads when opened
             self.assertIn("s02-&lt;topic&gt;", studio)                       # where the next topic goes
@@ -335,6 +502,96 @@ class FrameTest(unittest.TestCase):
             self.assertIn("One line that answers it.", report)               # the report's answer line
             self.assertIn(">j01_job</a>", report)                            # the Job that answers it
             self.assertIn("s01-flow ↗", report)                              # the studio topic that feeds it
+
+    def test_an_old_theme_page_sends_its_block_to_the_frame(self):
+        class Handler:                                   # records what frame_redirect sends
+            def __init__(self): self.sent = {}
+            def send_response(self, code): self.sent["code"] = code
+            def send_header(self, key, value): self.sent[key] = value
+            def end_headers(self): pass
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            for view, space in (("", ""), ("work", "&space=Work+Details"), ("questions", "&space=Audience+Report"),
+                                ("scope", ""), ("nonsense", "")):
+                h = Handler()
+                frame.frame_redirect(h, block, root, view)
+                self.assertEqual(h.sent["code"], 302)
+                self.assertEqual(h.sent["Location"], "/_board/workbench?path=Project%2Ftasks%2Fb01_topic" + space)
+
+    def test_studio_timeline_reads_dated_decisions_sessions_and_change_notes(self):
+        # JL 261011: "add another section of the Timeline" to the Studio, the third folding part
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            (block / "studio/s01-flow/s01-flow.md").write_text(
+                "s01 · Flow\n=========\n\n**Tags:** `Structure`\n\nDecided\n-------\n\n"
+                "s01-D01 · The flow reads down (JL 261009).\n"
+                "s01-D02 · Two boxes merged, refined later\n    (JL 261011; revised 261012).\n"
+                "s01-D03 · No date on this one.\n", encoding="utf-8")
+            (block / "studio/s01-flow/flow.excalidraw").write_text(json.dumps({"elements": [
+                {"type": "text", "text": "✎ 261011 boxes merged"},
+                {"type": "text", "text": "✎ 261011 arrow added"},
+                {"type": "text", "text": "✎ 261009 gone", "isDeleted": True},
+                {"type": "text", "text": "a plain box"}]}), encoding="utf-8")
+            passes = block / "runs/run-draw-s01/passes/p01-1010"
+            passes.mkdir(parents=True)
+            (passes / "pass.md").write_text("# First pass\n\nJL 261010: draw it.\n", encoding="utf-8")
+            events, undated = frame.timeline_events(block, root)
+            self.assertEqual([(e["day"], e["kind"]) for e in events],
+                             [("2026-10-11", "decided"), ("2026-10-11", "drawing"),
+                              ("2026-10-10", "session"), ("2026-10-09", "decided")])
+            self.assertEqual(undated, ["s01-D03"])
+            self.assertIn("boxes merged · arrow added", events[1]["html"])      # a deleted note is not read
+            for folder in (block, block / "j01_job/t01_task"):
+                with self.subTest(level=frame.level_of(folder)):
+                    page = frame.render(frame.VANILLA, root, folder, studio=True)
+                    self.assertLess(page.index("id=studio-related"), page.index("id=studio-timeline"))
+                    self.assertIn("<summary><b>Timeline</b></summary>", page)       # no counts (JL 261011)
+                    # one axis down the page, oldest day at the top (JL 261011: "up to down"; b10 s08)
+                    days = re.findall(r'<li class=tl-day data-day="([^"]+)"', page)
+                    self.assertEqual(days, ["2026-10-09", "2026-10-10", "2026-10-11"])
+                    self.assertEqual(re.findall(r'<div class=tl-mrow data-day="([^"]+)"', page), days)
+                    self.assertIn('<div class=tl-wrap data-level=days>', page)
+                    self.assertEqual(re.findall(r'data-tl-level=(\w+)', page), ["days", "topics", "everything"])
+                    # Days is a chart: a bubble per topic and day, sized by how much moved, and the day's bar
+                    self.assertIn('<span class=tl-cell data-tl-key="studio/s01-flow" data-tl-count=3>'
+                                  '<a class=tl-b href="#topic-s01-flow" style="--s:26px" '
+                                  'title="s01-flow · Sun 11 Oct · 1 decided · 2 notes"></a></span>', page)
+                    self.assertIn('<i style="width:100%"></i></span><b>3</b>', page)
+                    self.assertIn('<a class=tl-col data-tl-key="studio/s01-flow" href="#topic-s01-flow" title="s01-flow">s01</a>', page)
+                    # the chart's columns are the topic groups by default, or the topics (JL 261011)
+                    self.assertIn('<div class=tl-map data-cols=groups>', page)
+                    self.assertIn('<button type=button class=tl-gcol data-tl-group="structure" title="Structure: s01">'
+                                  '🏗️ Structure</button>', page)
+                    self.assertIn('<span class=tl-gcell data-tl-group="structure" data-tl-parts="{&quot;studio/s01-flow&quot;: 3}">'
+                                  '<button type=button class=tl-gb style="--s:30px" '
+                                  'title="Structure · Sun 11 Oct · 3 changes: s01 3"></button></span>', page)
+                    self.assertIn('data-tl-cols=groups aria-pressed=true>by group</button>', page)
+                    # Topics: a line per topic, a stacked bar of its kinds; Everything adds the items
+                    self.assertIn('<a class=tl-name href="#topic-s01-flow" title="s01-flow"><b>s01</b><span>flow</span></a>', page)
+                    self.assertIn('<i class=k-decided style="flex:1"></i><i class=k-drawing style="flex:2"></i>', page)
+                    self.assertIn("No date on 1 decision: s01-D03", page)
+                    self.assertIn("timeline(key)", page)                                  # follows the group bar
+
+    def test_studio_card_shows_the_topic_stage_or_no_stage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            note = block / "studio/s01-flow/s01-flow.md"
+            note.write_text(note.read_text() + "\n**Stage:** shaping\n")
+            (block / "studio/s02-bare").mkdir()
+            page = frame.render(frame.VANILLA, root, block, studio=True)
+            self.assertIn('data-stage="shaping"', page)
+            self.assertIn('<span class="stage stage-shaping"', page)            # the badge, at the far right (JL 261010)
+            # step 2 of 4 filled, the word after it, no emoji (JL 261010: "more vivid")
+            self.assertIn('<i class=stage-steps><b class="on"></b><b class="on"></b><b class=""></b><b class=""></b></i>'
+                          'shaping</span></summary>', page)
+            self.assertNotIn("🔶", page)
+            self.assertIn('<span class="stage stage-none" title="No **Stage:** line yet">no stage</span></summary>', page)
+            self.assertRegex(page, r'<b>s02-bare</b>.*?<span class=topic-pop>.*?</span><span class="stage stage-none"')
+            note.write_text(note.read_text().replace("shaping", "maybe"))     # an unknown word shows no stage
+            self.assertIn('data-stage=""', frame.render(frame.VANILLA, root, block, studio=True))
 
     def test_studio_tags_are_explicit_shared_and_keep_untyped_topics_visible(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -350,8 +607,10 @@ class FrameTest(unittest.TestCase):
                 with self.subTest(level=frame.level_of(folder)):
                     page = frame.render(frame.VANILLA, root, folder, studio=True)
                     listing = re.search(r"<div class=studio-topics[^>]*>(.*?)</div>", page).group(1)
-                    self.assertIn('data-studio-tag="" aria-pressed="false">All <span class=tag-count>2</span>', listing)
-                    self.assertIn('data-studio-tag="ui" aria-pressed="false">UI <span class=tag-count>1</span>', listing)
+                    self.assertNotIn('data-studio-tag=""', listing)          # no All button; nothing picked shows all (JL 261010)
+                    self.assertNotIn(' on"', listing.split("</nav>", 1)[0])    # no group is picked by default
+                    self.assertIn('data-studio-tag="ui" aria-pressed="false"><span class=grp-emoji aria-hidden=true>🎨</span>'
+                                  'UI <span class=tag-count>1</span>', listing)
                     self.assertIn('data-studio-tag="__untagged__" aria-pressed="false">Untagged <span class=tag-count>1</span>', listing)
                     self.assertIn('Reading &amp; writing', listing)
                     self.assertIn('id="topic-s02-legacy" data-studio-tags="[]"', listing)
@@ -455,11 +714,196 @@ class FrameTest(unittest.TestCase):
                 for name in ("s99-secret", "s99-external", "s02-alias", "s98-old"):
                     self.assertNotIn(name, listing)
                 groups = re.findall(r'data-studio-tag="([^"]*)"', listing)
-                self.assertEqual((groups[0], groups[-1]), ("__current__", ""))
+                self.assertEqual((groups[0], groups[-1]), ("__current__", "__untagged__"))
                 self.assertIn('data-studio-key="j01_job/studio/s01-flow"', page)
                 local = re.search(r'<details class=topic id="topic-j01_job--s01-flow"(.*?)</details>', page).group(1)
-                self.assertIn("j01_job%2Freports%2Fq01_ask", local)
+                self.assertIn('data-studio-source="j01_job"', local)
+                self.assertNotIn("reports%2Fq01_ask", local)
                 self.assertIn("s02-&lt;topic&gt;", page)  # old local numbers don't allocate new Block numbers
+
+    def test_studio_groups_are_tags_written_to_the_topic_notes(self):
+        """+ Group, drag onto a group, × on a chip, × on a group (b10 s02-D16): each is one tag edit."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            note = block / "studio/s01-flow/s01-flow.md"
+            plain = block / "studio/s02-bare"
+            plain.mkdir()
+            (plain / "s02-bare.md").write_text("s02 · Bare\n==========\n\nNo topic line.\n")
+            local = block / "j01_job/studio/s01-flow"
+            local.mkdir(parents=True)
+            (local / "s01-flow.md").write_text("s01 local\n====\n\n**Tags:** `UI`\n\n**Topic:** a Job one.\n")
+            path = frame._rel(block, root)
+            op = lambda **p: frame.studio_group_op(root, {"path": path, **p})
+            res, err = op(op="add", topic="studio/s01-flow", tag="Levels")
+            self.assertIsNone(err)
+            self.assertEqual(res["topics"], {"studio/s01-flow": ["Levels"]})
+            self.assertIn("**Tags:** `Levels`\n\n**Topic:** how it flows.", note.read_text())   # above **Topic:**
+            res, err = op(op="add", topic="studio/s02-bare", tag="Levels")
+            self.assertIn("\n==========\n\n**Tags:** `Levels`\n", (plain / "s02-bare.md").read_text())
+            res, err = op(op="add", topic="j01_job/studio/s01-flow", tag="levels")           # a local topic, any case
+            self.assertEqual(res["topics"]["j01_job/studio/s01-flow"], ["UI", "levels"])
+            self.assertEqual(op(op="add", topic="studio/s01-flow", tag="Levels")[0]["changed"], 0)
+            res, err = op(op="remove", topic="studio/s01-flow", tag="levels")
+            self.assertEqual(res["topics"], {"studio/s01-flow": []})
+            self.assertNotIn("**Tags:**", note.read_text())                                # no empty line left
+            self.assertIn("=====\n\n**Topic:** how it flows.", note.read_text())
+            res, err = op(op="delete", tag="Levels")
+            self.assertEqual((res["changed"], sorted(res["topics"])), (2, ["j01_job/studio/s01-flow", "studio/s02-bare"]))
+            self.assertEqual(frame._note_facts(local / "s01-flow.md")["tags"], ["UI"])
+            for bad in ({"op": "add", "topic": "studio/s01-flow", "tag": "a, b"},
+                        {"op": "add", "topic": "studio/s01-flow", "tag": "All"},
+                        {"op": "add", "topic": "../outside", "tag": "X"},
+                        {"op": "rename", "tag": "X"}):
+                with self.subTest(bad=bad):
+                    self.assertIsNone(op(**bad)[0])
+            self.assertEqual(frame.studio_group_op(root, {"path": "../..", "op": "delete", "tag": "X"})[0], None)
+            page = frame.render(frame.VANILLA, root, block, studio=True)
+            self.assertIn('class=grp-new', page)
+            self.assertIn('data-studio-delete="ui"', page)
+            self.assertIn('class=tag-x', page)
+            # each group's emoji comes from its name; an unknown name gets a fixed palette pick (JL 261010)
+            self.assertEqual([frame.group_emoji(n) for n in ("Levels", "guide-ui", "层级", "Draft")], ["🪜", "🧭", "🪜", "✏️"])
+            self.assertEqual(frame.group_emoji("My stuff"), frame.group_emoji("My stuff"))
+            self.assertIn(frame.group_emoji("My stuff"), frame.GROUP_PALETTE)
+            self.assertIn('data-studio-emoji="', page)
+            # the group list file: + Group writes it, a drag rewrites the order, × removes the name
+            self.assertIsNone(op(op="create", tag="Empty one")[1])
+            self.assertEqual(op(op="create", tag="empty ONE")[0]["order"], ["Empty one"])          # no duplicate
+            res, err = op(op="order", groups=["UI", "Empty one"])
+            self.assertEqual(res["order"], ["UI", "Empty one"])
+            self.assertEqual(frame.studio_group_order(block), ["UI", "Empty one"])
+            listing = frame.studio_cards(block, root)
+            self.assertEqual(re.findall(r'data-studio-tag="([^"]*)"', listing)[:3], ["__current__", "ui", "empty one"])
+            self.assertIn('data-studio-tag="empty one" aria-pressed="false"><span class=grp-emoji aria-hidden=true>', listing)
+            op(op="delete", tag="Empty one")
+            self.assertEqual(frame.studio_group_order(block), ["UI"])
+            self.assertIsNone(op(op="order", groups=["a, b"])[0])
+
+    def test_related_groups_are_the_group_cell_of_related_md(self):
+        """Related's groups work like the Studio's (JL 261011): a drag writes the row's group cell, a file with
+        no row gets one, × on a group clears it from every row, the order is related/_groups.txt."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            (block / "related/materials").mkdir(parents=True)
+            (block / "related/materials/form.docx").write_bytes(b"x")
+            table = block / "related/related.md"
+            table.write_text("Related\n=======\n\n| kind | date | item | link | feeds |\n|---|---|---|---|---|\n"
+                             "| meeting | 2026-10-10 | Kickoff | `meetings/kickoff.md` | s01 |\n"
+                             "| paper | 2024 | A paper | https://example.org/paper |\n", encoding="utf-8")
+            op = lambda **p: frame.studio_group_op(root, {"path": frame._rel(block, root), "kind": "related", **p})
+            # a subfolder is a group of its files (s04-D08): the meeting is in meetings before any drag
+            self.assertEqual([i["groups"] for i in frame.related_items(block)], [["meetings"], [], ["materials"]])
+            res, err = op(op="add", topic="meetings/kickoff.md", tag="Meetings")              # it is there already
+            self.assertEqual((err, res["topics"]), (None, {"meetings/kickoff.md": ["meetings"]}))
+            self.assertNotIn("group", table.read_text())                                     # nothing written
+            res, err = op(op="add", topic="meetings/kickoff.md", tag="SHIFT")
+            self.assertIsNone(err)
+            self.assertEqual(res["topics"], {"meetings/kickoff.md": ["meetings", "SHIFT"]})
+            lines = table.read_text().splitlines()
+            self.assertEqual(lines[:2], ["Related", "======="])                                     # the rest kept
+            self.assertEqual(lines[3:6], ["| kind | date | item | link | feeds | group |",
+                                          "|---|---|---|---|---|---|",
+                                          "| meeting | 2026-10-10 | Kickoff | `meetings/kickoff.md` | s01 | SHIFT |"])
+            self.assertEqual(lines[6], "| paper | 2024 | A paper | https://example.org/paper |  |  |")  # padded
+            op(op="add", topic="meetings/kickoff.md", tag="IRB")
+            self.assertIn("| s01 | SHIFT, IRB |", table.read_text())                          # comma-separated
+            res, err = op(op="add", topic="materials/form.docx", tag="SHIFT")                # no row yet: one is added
+            self.assertIsNone(err)
+            self.assertEqual(table.read_text().splitlines()[-1], "|  |  | form.docx | `materials/form.docx` |  | SHIFT |")
+            self.assertEqual([i["row"] for i in frame.related_items(block)], [0, 1, 2])
+            res, err = op(op="remove", topic="meetings/kickoff.md", tag="IRB")
+            self.assertEqual(res["topics"], {"meetings/kickoff.md": ["meetings", "SHIFT"]})
+            res, err = op(op="remove", topic="meetings/kickoff.md", tag="meetings")          # the folder stays
+            self.assertIsNone(res)
+            self.assertIn("related/meetings/", err)
+            self.assertIsNone(op(op="create", tag="Papers")[1])
+            self.assertEqual(frame.studio_group_order(block, "related"), ["Papers"])
+            self.assertTrue((block / "related/_groups.txt").is_file())
+            self.assertFalse((block / "studio/_groups.txt").exists())                      # the Studio's own stays apart
+            page = frame.render(frame.VANILLA, root, block, studio=True)
+            bar = re.search(r'data-group-kind=related data-group-noun=item>(.*?)</nav>', page).group(1)
+            self.assertEqual(re.findall(r'data-studio-tag="([^"]*)"', bar),
+                             ["__current__", "papers", "materials", "meetings", "shift", "__untagged__"])
+            self.assertIn('SHIFT <span class=tag-count>2</span>', bar)
+            self.assertIn('data-studio-key="materials/form.docx"', page)
+            self.assertIn('class=tag-x title="Take out of SHIFT"', page)
+            res, err = op(op="delete", tag="SHIFT")
+            self.assertEqual((res["changed"], sorted(res["topics"])), (2, ["materials/form.docx", "meetings/kickoff.md"]))
+            self.assertNotIn("SHIFT", table.read_text())
+            self.assertIsNone(op(op="add", topic="nowhere.md", tag="X")[0])
+            self.assertIsNone(frame.studio_group_op(root, {"path": frame._rel(block, root), "kind": "other",
+                                                           "op": "create", "tag": "X"})[0])
+
+    def test_report_groups_are_tags_like_the_studios(self):
+        # b10 s07, JL 261011: "if the report card to show, it will be the same as the sNN, we can create and add
+        # the tags"; "for someother report, the groups are of the special forms, and that ones are fixed"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            face = block / "b01_topic.md"
+            face.write_text("# b01 · Topic\n\nboard-kind: task-block\n\n## Questions\n\n```yaml\nquestions:\n"
+                            "- id: Q01\n  title: What is asked?\n  question: What is asked,\n    in two lines?\n"
+                            "  report: reports/q01_ask/q01_ask.md\n- id: Q02\n  title: Who asks?\n  group: reviewer\n```\n",
+                            encoding="utf-8")
+            page = frame.render(frame.VANILLA, root, block, "Audience Report")
+            bar = re.search(r'data-group-kind=reports data-group-noun=question>(.*?)</nav>', page).group(1)
+            self.assertEqual(re.findall(r'data-studio-tag="([^"]*)"', bar), ["__current__", "reviewer", "__untagged__"])
+            self.assertEqual(page.count('class="topic q-card"'), 2)                  # one card per Question
+            self.assertIn("<b>Q01 · What is asked?</b>", page)
+            self.assertIn("One line that answers it.", page)                         # opened: Logic │ Work │ Report
+            self.assertNotIn(">Related Questions<", page)                            # the paper's four buttons are gone
+            op = lambda **p: frame.studio_group_op(root, {"path": frame._rel(block, root), "kind": "reports", **p})
+            res, err = op(op="add", topic="Q01", tag="Levels")
+            self.assertEqual((err, res["topics"]), (None, {"Q01": ["Levels"]}))
+            text = face.read_text()
+            self.assertIn("- id: Q01\n  title: What is asked?\n  group: Levels\n  question: What is asked,", text)
+            op(op="add", topic="Q01", tag="UI")
+            self.assertIn("  group: Levels, UI\n", face.read_text())                # comma-separated, like Tags:
+            op(op="remove", topic="Q02", tag="reviewer")
+            self.assertNotIn("group: reviewer", face.read_text())                   # no groups, no line
+            self.assertEqual(frame._register(face)[1], {"id": "Q02", "title": "Who asks?"})
+            self.assertIsNone(op(op="create", tag="Asked by others")[1])
+            self.assertEqual(frame.studio_group_order(block, "reports"), ["Asked by others"])
+            self.assertTrue((block / "reports/_groups.txt").is_file())
+            # a theme's own groups are fixed: no ×, and they cannot be taken out
+            theme = frame.Theme(report_fixed=lambda row: ["Data"] if str(row["id"]) == "Q01" else [],
+                                report_groups=("Data", "Wisdom"))
+            html = frame.report_view("Block", block, root, theme)
+            bar = re.search(r'data-group-kind=reports data-group-noun=question>(.*?)</nav>', html).group(1)
+            self.assertEqual(re.findall(r'data-studio-label="([^"]*)"', bar)[:4], ["Current", "Asked by others", "Data", "Wisdom"])
+            self.assertIn('Wisdom <span class=tag-count>0</span>', bar)            # a starting group shows, empty
+            self.assertIn('data-studio-fixed="[&quot;data&quot;]"', html)
+            self.assertIn('<span class=chip data-tag="Data">Data</span>', html)      # no ×
+            orig = frame.themes, frame.theme_of                     # the op finds the Block's theme, here this one
+            frame.themes, frame.theme_of = (lambda: {"fixed": theme}), (lambda folder, root: "fixed")
+            try:
+                res, err = op(op="remove", topic="Q01", tag="Data")
+            finally:
+                frame.themes, frame.theme_of = orig
+            self.assertIsNone(res)
+            self.assertIn("fixed by the theme", err)
+            # b16's two hooks: report_fixed(row, owner) reads the owner folder; report_cards adds the theme's own
+            seen = []
+            paper = frame.Theme(report_fixed=lambda row, owner: seen.append(owner.name) or (["Research questions"]
+                                                                                            if row["id"] == "Q01" else []),
+                                report_cards=lambda level, folder, root: [
+                                    {"id": "IDEA-01", "title": "five axes", "groups": ["Ideation"], "status": "sent",
+                                     "html": "<p>its verdict</p>"}])
+            html = frame.report_view("Block", block, root, paper)
+            self.assertIn("b01_topic", seen)                                        # the owner reached the rule
+            self.assertIn('<span class=chip data-tag="Research questions">Research questions</span>', html)
+            card = re.search(r'<details class="topic q-card q-theme".*?</details>', html, re.S).group(0)
+            self.assertIn("<b>IDEA-01 · five axes</b>", card)
+            self.assertNotIn("studio-drag", card)                                   # not draggable
+            self.assertIn('<span class=chip data-tag="Ideation">Ideation</span>', card)   # its group fixed, no ×
+            self.assertIn("<p>its verdict</p>", card)
+            self.assertIn('Ideation <span class=tag-count>1</span>', html)          # counted on the bar
+            self.assertIsNone(op(op="add", topic="IDEA-01", tag="UI")[0])            # no register line: refused
+            # a Task with no Questions: its own Page, no bar
+            task = block / "j01_job/t01_task"
+            self.assertNotIn("data-group-kind=reports", frame.render(frame.VANILLA, root, task, "Audience Report"))
 
     def test_a_themes_studio_is_also_shared_from_its_block(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -587,7 +1031,7 @@ class ButtonSkillTest(unittest.TestCase):
             seen = {(level, k.get("doing") or k["label"]): k["skills"] for level, _, k in buttons}
         self.assertTrue(all(k["label"].startswith(("run-", "rNN_")) for _, _, k in buttons),
                         [k["label"] for _, _, k in buttons if not k["label"].startswith(("run-", "rNN_"))])
-        self.assertEqual(seen[("Block", "add a Job")], ["haipipe-board"])
+        self.assertEqual(seen[("Block", "add a Job")], ["haipipe-block"])
         self.assertEqual(seen[("Job", "add a Task")], ["haipipe-job"])
         self.assertEqual(seen[("Task", "build the Task")], ["haipipe-task"])
         self.assertEqual(seen[("Job", "write the report")], ["haipipe-report"])

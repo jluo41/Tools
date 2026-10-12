@@ -44,7 +44,7 @@ clear   t01_physician_rankings_compared
 ```text
 bNN Block   = Task Board
 jNN Job     = Board Group
-tNN Task    = Task Folder = Page Folder = Board Page
+tNN Task    = Task Folder (a face; a Task may hold a draft)
 rNN Run     = config/Ticket/Result/notebook execution record
 ```
 

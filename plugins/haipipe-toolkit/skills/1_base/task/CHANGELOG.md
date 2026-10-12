@@ -151,7 +151,7 @@ makes its own, and an empty bank looks real while holding nothing.
 Acceptance (10/10, `07_engagement_funnel`): dispatch-only routes to the store
 with the task folder untouched; removing every store sends the same run back to
 the task folder and fires the warning naming the other bank; restoring the
-config key routes it again. New tests in `board/haipipe-board/tests/
+config key routes it again. New tests in `board/haipipe-block/tests/
 test_board_store.py` cover the key's validation and pin the three contracts.
 
 2026-08-21 — two defects found in the store change, both fixed

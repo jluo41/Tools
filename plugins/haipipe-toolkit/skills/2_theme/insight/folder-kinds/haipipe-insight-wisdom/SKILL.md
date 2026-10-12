@@ -17,12 +17,12 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Page Face (haipipe-page flow): Content one division per need (cite: the Knowledge relied on; judge: counsel, forbidden overreach), then the Design Handoff division"
+    shape: "Page Face (haipipe-draft flow): Content one division per need (cite: the Knowledge relied on; judge: counsel, forbidden overreach), then the Design Handoff division"
 ---
 
 # /haipipe-insight-wisdom · counsel, then hand off
 
-Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Load `haipipe-folder`, `haipipe-draft`, `haipipe-insight`, and the workflow.
 Read `../../haipipe-insight/ref/page-v2-adapter.md` before authoring counsel or
 exporting the handoff.
 
@@ -55,7 +55,7 @@ external-parent assertion. The second form is evidence input, not a handoff.
 
 ## Page Face
 
-The page is a `haipipe-page` Page Face written through that skill's flow
+The page is a `haipipe-draft` Page Face written through that skill's flow
 (`../../haipipe-insight/ref/report.md` § The flow). Its Content follows its
 needs: the cite needs name the Knowledge relied on, the judge needs give the
 counsel and the forbidden overreach, and the last division is the Design

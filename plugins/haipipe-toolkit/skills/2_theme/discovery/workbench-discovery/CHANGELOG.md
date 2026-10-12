@@ -1,3 +1,7 @@
+## 0.3.2 · 2026-10-11 · One folder per Run in the docs
+
+- Papers, BibTeX and the Result card read from `runs/rNN_*/result/`; an older Task's `results/` is noted.
+
 ## 0.3.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

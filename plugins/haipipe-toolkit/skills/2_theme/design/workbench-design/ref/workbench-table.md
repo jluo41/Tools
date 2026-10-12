@@ -12,7 +12,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Folder is where the 
 | Block | Description | map | Launch a Job (`run-add-job-<target>`) | haipipe-designer-agent | haipipe-design | none | Block › runs/`run-add-job-<target>/` |
 | Block | Description | methods | Propose a method change (`run-propose-method-<target>`) | haipipe-designer-agent | haipipe-design-method | the proposal | Block › runs/`run-propose-method-<target>/` |
 | Block | Audience Report | questions | Propose questions (`run-propose-questions`) | haipipe-designer-agent | haipipe-question | none | Block › runs/`run-propose-questions/` |
-| Block | Audience Report | questions | Write a report (`run-report-<target>`) | haipipe-page-writing-agent | haipipe-report | none | Block › runs/`run-report-<target>/` |
+| Block | Audience Report | questions | Write a report (`run-report-<target>`) | haipipe-draft-writing-agent | haipipe-report | none | Block › runs/`run-report-<target>/` |
 | Block | Audience Report | predicted-vs-observed | Add the Exp's data (`run-add-observed-<target>`) | haipipe-designer-agent | haipipe-design-method | none | Block › runs/`run-add-observed-<target>/` |
 | Block | Audience Report | predicted-vs-observed method-scorecard | Score the predictions (`run-score-<target>`) | haipipe-design-reviewer-agent | haipipe-design-method | none | Block › runs/`run-score-<target>/` |
 | Block | Idea Studio | every view | Draw a topic (`run-draw-<target>`) | haipipe-designer-agent | excalidraw-report | none | Block › runs/`run-draw-<target>/` |
@@ -26,8 +26,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Folder is where the 
 | Job | Work Details | conduct-review | Verify a design (`run-verify-<target>`) | haipipe-design-reviewer-agent | haipipe-design-unit | none | Job › runs/`run-verify-<target>/` |
 | Job | Work Details | conduct-review | Revise a design (`run-revise-<target>`) | haipipe-designer-agent | haipipe-design-unit | none | Job › runs/`run-revise-<target>/` |
 | Job | Work Details | review-whole | Rank the designs (`run-rank-<target>`) | haipipe-design-reviewer-agent | haipipe-design-unit | none | Job › runs/`run-rank-<target>/` |
-| Job | Audience Report | predicted-vs-observed performance | Freeze the predictions (`run-freeze-predictions-<target>`) | haipipe-designer-agent | haipipe-design-delivery | the predictions, with the release | Job › runs/`run-freeze-predictions-<target>/` |
-| Job | Delivery | every view | Release (`run-release-<target>`) | haipipe-designer-agent | haipipe-design-delivery | the release | Job › runs/`run-release-<target>/` |
+| Job | Delivery | every view | Review and approve (`run-release-<target>`) | haipipe-designer-agent | haipipe-design-delivery | the predictions and the release, once | Job › runs/`run-release-<target>/` |
 | Task | Runs | every view | Reason ideas (`run-reason-<target>`) | haipipe-designer-agent | haipipe-design-unit | none | Task › runs/`run-reason-<target>/` |
 | Task | Runs | every view | Generate (`run-generate-<target>`) | haipipe-designer-agent | haipipe-design-unit | none | Task › runs/`run-generate-<target>/` |
 | Task | Runs | every view | Verify (`run-verify-<target>`) | haipipe-design-reviewer-agent | haipipe-design-unit | none | Task › runs/`run-verify-<target>/` |

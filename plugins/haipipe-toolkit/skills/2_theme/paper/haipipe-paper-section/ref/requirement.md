@@ -11,7 +11,7 @@ The four parts
 
 ```text
 part   what                                              read from                                       written by
-V      the venue's rules for this section kind           draft/records/<stem>-requirement.md, the        haipipe-page cli/requirement.py
+V      the venue's rules for this section kind           draft/records/<stem>-requirement.md, the        haipipe-draft cli/requirement.py
        (length, order, required moves, format)           generated V block, from the bound venue's         (it replaces only V)
                                                          division (structure-source · structure-division)
 W      the Page's own writing rules                      the same file, the authored W<n> records          a person or a writing Run;

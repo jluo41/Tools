@@ -19,7 +19,7 @@ metadata:
 
 # Task Creator
 
-Task Folder = Page Folder = `tNN_<task>/`. I write both faces at that one
+Task Folder = `tNN_<task>/`; a Task may hold a draft. I write both faces at that one
 address; the parent `jNN_<job>/` is only the shared and generated container.
 
 Load `haipipe-task` and the selected type specialist before writing. The

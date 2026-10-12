@@ -16,12 +16,17 @@ Each box copies as rich text and plain text, so Outlook keeps the paragraphs, th
 bullets. Numbers and bullets are written as text, not <ol>/<ul>, so a plain paste keeps them too
 (the shape b12_epic_streaming's first reply to PACE used, JL 261009: "I want the format like this").
 
-    python email_page.py <draft.md>      writes <draft>.html beside it
+    python email_page.py <draft.md>      writes <draft>.html in Block Delivery
 """
 import html
+import shutil
 import re
 import sys
 from pathlib import Path
+
+_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+sys.path.insert(0, str(_PAGE_ENGINE))
+from src.common import delivery_dir, delivery_owner
 
 ITEM = re.compile(r"^(\s*)(\d+\.|-) (.*)$")
 
@@ -128,13 +133,37 @@ function copyBox(id, btn) {{
 
 
 def write(draft, made_by="this folder's build.py") -> Path:
-    """Write <draft>.html beside the draft; refuse when an Attach: file is not in the draft's folder."""
+    """Write <draft>.html in Block Delivery; refuse when an Attach: file is not in the draft's folder."""
     draft = Path(draft)
     _, head, _ = parts(draft)
     absent = [f.strip() for f in head.get("Attach", "").split(";") if f.strip() and not (draft.parent / f.strip()).exists()]
     if absent:
         sys.exit(f"not written: the draft's Attach: line names files not in {draft.parent.name}/: " + ", ".join(absent))
-    out = draft.with_suffix(".html")
+    draft = draft.resolve()
+    block = delivery_owner(draft.parent)
+    if draft.is_relative_to(block / "delivery"):
+        destination = draft.parent
+    else:
+        relative = draft.parent.relative_to(block)
+        parts_ = relative.parts
+        if "delivery" in parts_:
+            cut = parts_.index("delivery")
+            destination = delivery_dir(block.joinpath(*parts_[:cut])).joinpath(*parts_[cut + 1:])
+        else:
+            destination = delivery_dir(draft.parent)
+    destination.mkdir(parents=True, exist_ok=True)
+    for attachment in (x.strip() for x in head.get("Attach", "").split(";")):
+        if not attachment:
+            continue
+        name = Path(attachment)
+        if name.is_absolute() or ".." in name.parts:
+            sys.exit("attachment must stay inside the draft folder")
+        source = draft.parent / name
+        target = destination / name
+        if source.resolve() != target.resolve():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+    out = destination / (draft.stem + ".html")
     out.write_text(page(draft, made_by), encoding="utf-8")
     return out
 

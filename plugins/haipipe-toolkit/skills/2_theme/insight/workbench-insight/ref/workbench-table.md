@@ -18,7 +18,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Block | Audience Report | consistency | Check consistency | haipipe-insight-reviewer-agent | haipipe-insight-knowledge | none | Board › runs/`run-consistency-<jA>-<jB>/` |
 | Block | Audience Report | findings | Ask a Block question | haipipe-insight-agent | haipipe-question | none | Board › runs/`run-ask-q<NN>/` |
 | Block | Audience Report | findings | Write the report | haipipe-insight-agent | haipipe-report | none | Board › runs/`run-report-q<NN>/` |
-| Block | Audience Report | findings | Check a report | haipipe-page-check-agent | haipipe-report | none | Board › runs/`run-check-q<NN>/` |
+| Block | Audience Report | findings | Check a report | haipipe-draft-check-agent | haipipe-report | none | Board › runs/`run-check-q<NN>/` |
 | Block | Work Details | every view | Add a Job | haipipe-insight-agent | haipipe-insight | none | Board › runs/`run-add-j<NN>/` |
 | Block | Work Details | every view | Close a Job | haipipe-insight-agent | haipipe-insight-check | the close | Board › runs/`run-close-j<NN>/` |
 | Block | Runs | every view | Add a Job | haipipe-insight-agent | haipipe-insight | none | Board › runs/`run-add-j<NN>/` |
@@ -30,7 +30,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Job | Audience Report | current | Write the Information report | haipipe-insight-agent | haipipe-insight-information | none | Job › runs/`run-write-t<NN>/` |
 | Job | Audience Report | current | Write the Knowledge report | haipipe-insight-agent | haipipe-insight-knowledge | none | Job › runs/`run-write-t<NN>/` |
 | Job | Audience Report | current | Write the Wisdom report | haipipe-insight-agent | haipipe-insight-wisdom | none | Job › runs/`run-write-t<NN>/` |
-| Job | Audience Report | current | Check a report | haipipe-page-check-agent | haipipe-report | none | Job › runs/`run-check-t<NN>/` |
+| Job | Audience Report | current | Check a report | haipipe-draft-check-agent | haipipe-report | none | Job › runs/`run-check-t<NN>/` |
 | Job | Audience Report | cross | Pool or split | haipipe-insight-agent | haipipe-insight-knowledge | none | Job › runs/`run-pool-t<NN>/` |
 | Job | Audience Report | vs-previous | Compare with the Job before | haipipe-insight-agent | haipipe-insight-knowledge | none | Job › runs/`run-compare-j<prev>/` |
 | Job | Audience Report | vs-previous | Propose questions | haipipe-insight-agent | haipipe-insight-question | none | Job › runs/`run-propose-j<NN>/` |
@@ -47,7 +47,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Task | Audience Report | every view | Write the Information report | haipipe-insight-agent | haipipe-insight-information | none | Task › runs/`run-write-t<NN>/` |
 | Task | Audience Report | every view | Write the Knowledge report | haipipe-insight-agent | haipipe-insight-knowledge | none | Task › runs/`run-write-t<NN>/` |
 | Task | Audience Report | every view | Write the Wisdom report | haipipe-insight-agent | haipipe-insight-wisdom | none | Task › runs/`run-write-t<NN>/` |
-| Task | Audience Report | every view | Check a report | haipipe-page-check-agent | haipipe-report | none | Task › runs/`run-check-t<NN>/` |
+| Task | Audience Report | every view | Check a report | haipipe-draft-check-agent | haipipe-report | none | Task › runs/`run-check-t<NN>/` |
 | Task | Audience Report | reading | Pool or split | haipipe-insight-agent | haipipe-insight-knowledge | none | Task › runs/`run-pool-t<NN>/` |
 | Task | Work Details | every view | Run a partition | haipipe-task-orchestrator-agent | haipipe-insight | none | Task › runs/`rNN_<partition>/` |
 | Task | Work Details | every view | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-alignment-t<NN>/` |

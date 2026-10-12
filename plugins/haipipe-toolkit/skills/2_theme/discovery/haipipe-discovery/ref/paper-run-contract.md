@@ -114,24 +114,24 @@ does not receive its own Run identity.
 │       └── bibex/<task>.bib            DERIVED union of completed Result bibs
 ├── scripts/                           optional reusable instrument
 │   └── readouts/<RUNNAME>/logic-work.yaml   optional authored logic-and-work readout
-├── runs/
-│   ├── r01_chen2025_trace.sh          executable D1 ticket
-│   └── rp00_mermaid-structure.md      optional Page-owned interaction record
-└── results/
-    ├── r01_chen2025_trace/            D1 Result
-    └── rp00_mermaid-structure/        optional Page-owned Result
-        ├── r01_chen2025_trace.md      Paper/Source Card readout
-        ├── r01_chen2025_trace.bib     exactly one authoritative entry
-        ├── facts.md                   atomic reusable findings
-        ├── source-access.json         article/index/search/full-text routes
-        ├── source-access.md           same routes, human-clickable
-        ├── abstract.md                optional retrieved abstract
-        ├── trigger.md                 optional captured trigger
-        ├── runtime.yaml               state + provenance + subject identity
-        ├── raw.md                     optional extraction/worker output
-        ├── logic-work.yaml            optional: the paper's own logic and work
-        ├── *.pdf                      optional companions (supplement, review file, earlier version)
-        └── paper.pdf                  optional: the article itself
+└── runs/
+    ├── rp00_mermaid-structure/        optional Page-owned interaction record
+    └── r01_chen2025_trace/            one folder per Run
+        ├── r01_chen2025_trace.sh      executable D1 ticket
+        ├── run.yaml                   the Run's card (haipipe-run)
+        └── result/                    D1 Result
+            ├── r01_chen2025_trace.md      Paper/Source Card readout
+            ├── r01_chen2025_trace.bib     exactly one authoritative entry
+            ├── facts.md                   atomic reusable findings
+            ├── source-access.json         article/index/search/full-text routes
+            ├── source-access.md           same routes, human-clickable
+            ├── abstract.md                optional retrieved abstract
+            ├── trigger.md                 optional captured trigger
+            ├── runtime.yaml               state + provenance + subject identity
+            ├── raw.md                     optional extraction/worker output
+            ├── logic-work.yaml            optional: the paper's own logic and work
+            ├── *.pdf                      optional companions (supplement, review file, earlier version)
+            └── paper.pdf                  optional: the article itself
 ```
 
 `scripts/` exists only when the Task Page owns a reusable instrument. Low-level
@@ -419,7 +419,8 @@ The routes:
 --doi           Crossref REST transform -> doi.org content negotiation -> DataCite
 --arxiv         arxiv.org/bibtex/<id>
 --dblp-bib-file a browser-saved one-record venue export, with --dblp-record
---publisher-url a venue's own .bib endpoint, e.g. proceedings.neurips.cc/...-Bibtex.bib
+--publisher-url a venue's own .bib endpoint, e.g. proceedings.neurips.cc/...-Bibtex.bib, or a
+                PMLR paper page, whose citation block is read verbatim
 --bib-file      a person's or Scholar's export, with --source-url
 --resolve-title proposes Crossref + OpenAlex + arXiv candidates, refuses, exits 2
 ```
@@ -447,10 +448,56 @@ python3 scripts/paper_bib_fetch.py \
 For a venue record without a DOI, omit `--expected-doi` and keep the accepted
 venue record as the Subject. `paper_result_build.py` can select
 `--bib-from dblp --dblp-bib-file ... --dblp-record ...` when the venue DOI is
-known; its DOI-driven builder does not represent a DOI-less venue identity.
-Do not pass a preprint DOI to that builder and silently substitute a venue Bib.
-The direct fetcher can import the DOI-less venue export into a separately
-resolved Result.
+known. Of the DOI-less venue records it builds only PMLR (`--pmlr-url`, below);
+for any other, the direct fetcher imports the venue export into a separately
+resolved Result. Do not pass a preprint DOI to that builder and silently
+substitute a venue Bib.
+
+### Machine-learning venues without a DOI
+
+ICML, NeurIPS and ICLR issue no DOI, so their accepted record is a venue page:
+
+```text
+ICML, AISTATS   the PMLR paper page, proceedings.mlr.press/v<N>/<key>.html. It has no
+                .bib endpoint; its citation block is the venue's own export.
+                paper_result_build.py --pmlr-url <page> builds the whole Result from it:
+                identity, abstract and PDF from the block, `subject.pmlr` in the receipt.
+NeurIPS         proceedings.neurips.cc, published only after the December conference.
+ICLR            OpenReview only. OpenReview answers scripts with a challenge (HTTP 403),
+                like dblp, so its BibTeX is a person's browser export (--bib-file).
+```
+
+A PMLR Run's ticket names the page and nothing else about identity:
+
+```bash
+python3 scripts/paper_result_build.py --task <task> --run <run> --address <bNN.jNN.tNN.rNN> \
+  --pmlr-url https://proceedings.mlr.press/v306/<key>.html --readout '...' --reuse '...'
+```
+
+The Card's title and names are shown with LaTeX accents resolved (`Sch\"{o}lkopf`
+reads Schölkopf); the `.bib` keeps the export verbatim.
+
+**Accepted, proceedings pending.** A paper on a conference's official accepted list
+whose proceedings record does not exist yet (NeurIPS before December, ICLR always
+unless a person exports its OpenReview entry) is still the accepted paper. Build its
+Result from the arXiv preprint and record the acceptance:
+
+```bash
+python3 scripts/paper_result_build.py --task <task> --run <run> --address <bNN.jNN.tNN.rNN> \
+  --doi 10.48550/arXiv.<id> --bib-from arxiv \
+  --accepted-venue 'NeurIPS 2026, poster' --accepted-url https://openreview.net/forum?id=<id> \
+  --readout '...' --reuse '...'
+```
+
+The receipt carries `subject.accepted_venue`, `accepted_url` and `accepted_note`,
+`source-access.md` links the accepted page, and the Card says the Bib is the
+preprint. The two flags go together and only with an arXiv identity and
+`--bib-from arxiv`. The RUNNAME year is the accepted venue's year
+(`r16_moroshan2026_tempopfn` for a NeurIPS 2026 paper first posted in 2025), while
+the Card's cite label and the Bib keep the preprint's own years. When the venue record appears, a superseding
+Run cites it; the preprint Run is never edited into a venue Run. A listed paper with
+no DOI, no arXiv copy and no proceedings record opens its Run as `blocked`, with the
+reason in the receipt and a ticket that exits non-zero until a route exists.
 
 `--resolve-title` EXITS 2 by design, because refusing to write is its whole
 purpose. In a Run ticket written with `set -euo pipefail` that exit kills the
@@ -528,7 +575,8 @@ person-export          a person's own export, including google-scholar-export
 ```
 
 `publisher` is reached with `--publisher-url`, which GETs the venue's `.bib`
-directly and requires an `application/x-bibtex` body. Do NOT route a publisher
+directly and requires a BibTeX body; the one HTML page it reads is a PMLR paper
+page (host `proceedings.mlr.press`), whose citation block is the venue export. Do NOT route a publisher
 export through `--bib-file`: that stamps `person-export` and makes the receipt
 untrue, because no person was involved.
 
@@ -578,7 +626,7 @@ the Result may retain its Card/facts but MUST stay `blocked` or
 The Task Page Bib is derived:
 
 ```text
-results/*/*.bib
+runs/*/result/*.bib
       -> validate complete Results
       -> deduplicate exact entries
       -> reject key/DOI conflicts
@@ -593,7 +641,7 @@ Aggregation may normalize only the ordering and blank separators between whole
 entries. It must not rewrite an entry's fields or use the aggregate as proof
 that the authoritative Result entry was person-verified.
 
-The Result is not Page evidence merely because it exists under `results/`.
+The Result is not Page evidence merely because it exists under `runs/`.
 D1 SYNTHESIZE rebuilds the derived aggregate through
 `workbench-page/ref/evidence/citations.md`, then dispatches the Page
 workflow. The D1 root Page uses direct Result/Card/cite lineage and does not
@@ -602,7 +650,7 @@ Results. A consumer Page may use a Discovery Result as Supporting evidence and
 owns any local Evidence Item Run in the consumer Folder. The standalone
 Evidence and Bibex workbenches are compatibility redirects, not authorities.
 
-Discovery's `rNN` subset of the shared `runs/` ↔ `results/` lanes remains the
+Discovery's `rNN` subset of the shared `runs/` lane remains the
 primary analysis receipt. Page-owned `rpNN` records/results are governed by the
 Page workflow and are not part of the Discovery inventory. `draft/evidence/`
 is the shared Page Evidence Workspace: it records derived citation material,

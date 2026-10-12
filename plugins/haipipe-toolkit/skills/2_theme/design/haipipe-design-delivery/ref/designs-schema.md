@@ -1,7 +1,7 @@
 designs.json: the released designs
 ==================================
 
-The one file another system reads (b12 s12, JL 261007). A Job writes its own `delivery/designs.json`; the Block's
+The one file another system reads (b12 s12, JL 261007). A Job writes `<Block>/delivery/jNN_<job>/designs.json`; the Block's
 `delivery/designs.json` gathers every Job's, one entry per released design, never twice. Written only by
 `run-release-j<NN>` (`scripts/release.py`); never by hand.
 
@@ -10,10 +10,13 @@ The one file another system reads (b12 s12, JL 261007). A Job writes its own `de
   "designs": [
     {
       "job": "j03",
+      "job_name": "j03_<goal name>_<method name>",
       "design": "d04",
       "name": "<short name>",
       "words": "<the design, word for word>",
       "predicted": "<effect against the control, with its interval>",
+      "against": "the control",
+      "why": "<the ranking's basis for the predicted effect>",
       "released": "<YYMMDD>",
       "pins": {"goal": "G01", "method": "M04 m2", "inputs": "i2"},
       "screen": "screens/d04.png"
@@ -25,13 +28,17 @@ The one file another system reads (b12 s12, JL 261007). A Job writes its own `de
 | field | from | note |
 |---|---|---|
 | `job` | the Job folder's id | `jNN` |
+| `job_name` | the Job folder's name | what a reader sees (JL 261011: never the bare `jNN`) |
 | `design` | the design Task's id | `dNN`; with `job`, the key: never twice |
 | `name` | the design face's `name:` | optional |
 | `words` | the design face's `## Design`, verbatim (projected from the closed draft; never the scaffold's placeholder) | for a UI, the screen's visible text |
 | `predicted` | `prediction.yaml` `predicted:` | frozen before the release |
+| `against` | `prediction.yaml` `against:` | what the effect is measured against |
+| `why` | `prediction.yaml` `why:`, from t99's `ranking.csv` | the basis shown beside the number |
 | `released` | the day a person signed | `YYMMDD` |
 | `pins` | the Job face's `goal:` · `method:` · `inputs:` | what made this design |
 | `screen` | relative to the file's own `delivery/`: `screens/<dNN>.<ext>` in a Job's, `screens/<jNN>-<dNN>.<ext>` in the Block's | a UI design only |
 
 A system that sends has its own shape; an adapter reads this file, never the Tasks. `designs.md` holds the same
-designs for a reader: one `## <job> · <design>` heading each, then the words.
+designs for a reader: one `## <job_name> · <design> · <name>` heading each, the words, then the prediction and its
+why.

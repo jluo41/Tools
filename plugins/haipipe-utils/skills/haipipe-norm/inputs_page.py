@@ -26,7 +26,7 @@ WHAT COMES OUT, AND WHY IT IS MARKDOWN
                         per shape with its four-column table
     <noun>-sources.md   who wrote these inputs: the cohort table
 
-Both are fragments of the Task Page. The haipipe-page renderer turns the Page
+Both are fragments of the Task Page. The haipipe-draft renderer turns the Page
 into the Board page, so the Board is the website and this module draws no HTML
 of its own (JL 260912: "not creating your own website"). The Page copies each
 fragment between `<!-- haipipe:inputs:start run=... sha256=... -->` markers,
@@ -162,7 +162,7 @@ def _corpus_block(readme: Path) -> tuple[list[str], list[list[str]]]:
 
 def _cell(s: Any) -> str:
     """One pipe-table cell: a single line with no bare `|`, which the Board's
-    table reader splits on (haipipe-page src/body.py table_flush)."""
+    table reader splits on (haipipe-draft src/body.py table_flush)."""
     return str(s).replace("\r", "").replace("\n", " ⏎ ").replace("|", "¦").strip()
 
 

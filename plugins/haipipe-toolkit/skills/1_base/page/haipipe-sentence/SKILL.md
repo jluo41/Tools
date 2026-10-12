@@ -22,7 +22,7 @@ Its consumers are the routing and digest verbs (a routed write must READ LIKE TH
 **The boundary, and it is a hard one:**
 
 ```
-haipipe-sentence           haipipe-page
+haipipe-sentence           haipipe-draft
 ─────────────────────            ──────────────────────────────
 what a sentence IS               rendering it (src/body.py)
 the lane grammar                 the read-only Page controls
@@ -31,7 +31,7 @@ the record lifecycle             the details panel's controls
 ```
 
 This skill NEVER renders or serves.
-The grammar's authority is `haipipe-page/ref/board-form.md` → Body grammar; this contract cites it and must never fork it.
+The grammar's authority is `haipipe-draft/ref/board-form.md` → Body grammar; this contract cites it and must never fork it.
 
 ## ✍️ The unit and its address
 
@@ -45,12 +45,12 @@ QB8.C1.P1.S1        Content division 1 · paragraph 1 · sentence 1
 
 The rendered address locates the passage in a copied prompt. It is recomputed on rebuild, so the agent must also use the source path and quoted wording when finding a sentence.
 
-**The boundary, and it is the same hard one `haipipe-page` keeps:**
+**The boundary, and it is the same hard one `haipipe-draft` keeps:**
 
-**Who owns what**: this skill holds the contract, `haipipe-page` holds the machinery.
+**Who owns what**: this skill holds the contract, `haipipe-draft` holds the machinery.
 
 ```
-haipipe-sentence           haipipe-page
+haipipe-sentence           haipipe-draft
 ─────────────────────            ──────────────────────────────
 what a sentence IS               rendering it (src/body.py)
 what may attach, and how         the source helpers (servers/space-home/write.py)
@@ -65,7 +65,7 @@ This skill never CONTAINS the renderer, the server or the controls. It CALLS the
 
 Request these actions in an agent conversation, with a copied passage and an explicit instruction. The browser Page itself is read-only. Resolve the owning Page workflow before
 writing: a bounded sentence/paragraph feedback request resumes or selects its
-Page Run as described in `../haipipe-page/SKILL.md`. During a Writing Step,
+Page Run as described in `../haipipe-draft/SKILL.md`. During a Writing Step,
 save the candidate and feedback in that Run; adopted Page Content and delivery
 are updated at Page release. For a direct source maintenance change outside a
 Run, apply the authorized change to the matched source and rebuild the Page.
@@ -196,7 +196,7 @@ The words KEEP THE PROSE'S OWN FONT, COLOUR AND WEIGHT and take one dotted under
 
 A marker in a sentence (a citation, a value, a display unit) renders as a chip whose card shows the THING, not a description of it: the reference as the paper's own .bst prints it, the figure itself, the rows themselves.
 The card is a strict superset of a bare link, which is why a display unit's name in prose ALWAYS renders as the card (JL 260727).
-This contract owns what a card must show; the paper dialect that resolves markers stays deletable (`haipipe-page/src/dialect_paper.py`).
+This contract owns what a card must show; the paper dialect that resolves markers stays deletable (`haipipe-draft/src/dialect_paper.py`).
 
 A generic `> Card` payload may name an exact Page id from the current Board, such as `S-Main-4`.
 That id renders as a live route inside the Card, and the split-site writer relinks the detached popover to the generated Page file.
@@ -222,5 +222,5 @@ haipipe-sentence/
 └── CHANGELOG.md        version history
 ```
 
-Reads `haipipe-page/ref/board-form.md` → Body grammar as the authority; owns no scripts.
+Reads `haipipe-draft/ref/board-form.md` → Body grammar as the authority; owns no scripts.
 The named next step (QC1b §1): the drawer's lane instructions in `servers/workbench/chat.py` become this contract's consumer instead of a second prose copy.

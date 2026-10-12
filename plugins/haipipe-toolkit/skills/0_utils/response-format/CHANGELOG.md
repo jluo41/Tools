@@ -1,10 +1,33 @@
 response-format — Changelog
 ===========================
 
+**[0.23.0] · 2026-10-11 · Look in the Tools blueprint Blocks too**
+
+JL 261011: "Please also refer to the blocks in the Tools/blueprint as well, when we do
+it." A Studio match now checks both the Project's Blocks and `Tools/blueprints/bNN_*/studio/`;
+tool work (a skill, server, workbench or theme) takes a blueprint topic, and a project
+board's own content stays in its Project. A blueprint link uses the host rooted at `Tools/`.
+
+**[0.22.0] · 2026-10-11 · No Related question line**
+
+JL 261011: "Related question: ... <--- no more question. I think we are using
+/response-format and use the Studio only." A section closes on its Studio line alone;
+the Related question line, its Question URL and its rules are gone.
+
+**[0.21.0] · 2026-10-11**
+
+The closing association line is labelled **Studio:** (JL 261011: "maybe just call it Studio");
+it was **Related studio:**. Related question keeps its name.
+
+**[0.20.1] · 2026-10-10 · Shared Workbench Block**
+
+The shared-Studio example now opens b10_project_workbench with a Block topic
+anchor, following the promotion of the former b01/j03 area.
+
 **[0.20.0] · 2026-10-10**
 -------------------------
 
-- Related studio is the default closing association: the owning Block, its sNN
+- The Studio line is the default closing association: the owning Block, its sNN
   topic and the section's contribution. It names a discussion topic, not only a drawing.
 - Related question is optional for work directly addressing a recorded Question;
   Summary and Next still has neither association line.
@@ -15,7 +38,7 @@ response-format — Changelog
 
 ## [0.19.0] — 2026-10-06
 
-- **Related studio** line after the Related question (JL: "besides the Question, you can
+- **Studio** line after the Related question (JL: "besides the Question, you can
   also add what is the Studio related to it if possible"; "block-level studio"): the Block
   drawing that shows the section, linked to the workbench Studio view with it open,
   `…/board.md&view=studio#drawing-<name>`. Block `studio/` only, one drawing, only when one

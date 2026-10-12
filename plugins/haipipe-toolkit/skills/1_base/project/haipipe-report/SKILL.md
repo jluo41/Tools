@@ -12,12 +12,19 @@ description: >-
   rebuild report drawing, check a report, comments batch, /haipipe-report.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
+  version: "0.2.0"
   last_updated: "2026-10-07"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-report · a Question, the work on it, and what it says
+
+A Report keeps its Page source at its owning level. Its delivered formats go to
+its containing Block's `delivery/<report-source-path>/<lane>/`; for a Block
+Report this is `delivery/reports/qNN_<topic>/<lane>/`. Report ownership and
+answer status do not change when storage moves. Use the shared Delivery path
+helper (owner: `haipipe-delivery`); no Job, Task or Report owns another physical `delivery/` directory.
+
 
 A level's Audience Report is one row per Question: the Question on the left, the Work that
 answers it in the middle, the Report on the right (JL 261007: "to define the question -
@@ -70,10 +77,10 @@ have is an error.
 The report Page
 ---------------
 
-An ordinary `haipipe-page` Page in `reports/qNN_<topic>/`, with three header lines
+An ordinary `haipipe-draft` Page in `reports/qNN_<topic>/`, with three header lines
 (`answers:`, `answer-status:`, `results-read:`), an Opening that states the answer, and the
 Content divisions **Answer · Evidence · Limits · Next**. Write it through the Page flow
-(load `haipipe-page`); never type final prose into generated Content. A comments batch is a
+(load `haipipe-draft`); never type final prose into generated Content. A comments batch is a
 report of type comments: `reports/qNN_<kind>-<MMDD>/`, `page-type: comments`, a register row
 in `group: comments`.
 
@@ -90,7 +97,23 @@ python $S/check_report.py <level folder>                           # the rows, a
 1. **One drawing**: built from the studio frames the report's `## Figures` lists; never by hand.
 2. **Preview**: `haipipe-studio`'s `scripts/render_png.py <drawing> <png>`.
 3. **Check**: mechanical (states, links, Evidence, freshness); exit 1 on an error.
-4. **Judgement**: the Page's CHECK, in a fresh context (`haipipe-page-check-agent`).
+4. **Judgement**: the Page's CHECK, in a fresh context (`haipipe-draft-check-agent`).
+
+
+Infer the reports from the work
+-------------------------------
+
+A Block with Jobs and Tasks but no Questions gets them from what its work answers, at each level (JL 261012:
+"I don't ask the questions that is meaningless ... ask the questions that are closely related to the jobs and
+tasks"; b10 s10). Read it with `haipipe-studio`'s `scripts/block_inventory.py <block>`; the rules and a worked
+example are `ref/infer-reports.md`.
+
+1. **Task**: its own sub-questions; its report is its face, nothing new registered.
+2. **Job**: what its one Task of a kind answers for it, when the Jobs differ (b00: ready for Source?).
+3. **Block**: where the Jobs' answers differ, and what that means next (b00: 3 drops blocked; 60 tables with
+   no event time).
+4. **Kept only if** named Tasks answer it and they do not all answer it the same way; the theme's kinds only
+   group it. `haipipe-question` then makes the row and the folder.
 
 
 The buttons it owns
@@ -113,7 +136,7 @@ Boundary
 |---|---|
 | `haipipe-question` | the asking: a Question's size, id, register row, folder, the open frame |
 | `haipipe-report` | the row's Work link and Report cell, the walk, the report Page's header and divisions, figures, check |
-| `haipipe-page` | writing the report's prose, its Draft, evidence binding, CHECK and release |
+| `haipipe-draft` | writing the report's prose, its Draft, evidence binding, CHECK and release |
 | `excalidraw-report` | the drawing kit: scratch and report modes, plot kit, pictures |
 | `haipipe-studio` | the studio topics a Question's row lists as feeding it |
 | theme workbenches | the screens: `servers/workbench/frame.py` `question_rows`, and each theme's own row |
@@ -128,6 +151,7 @@ haipipe-report/
 ├── CHANGELOG.md
 ├── agents/openai.yaml
 ├── ref/report-contract.md        the full contract
+├── ref/infer-reports.md          Questions and reports inferred from a Block's Jobs and Tasks (b10 s10)
 ├── scripts/build_report_drawing.py   the report drawing from ## Figures (moved from excalidraw-report)
 ├── scripts/check_report.py       the row reader and mechanical check
 └── tests/test_haipipe_report.py

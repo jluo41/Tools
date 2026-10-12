@@ -20,6 +20,8 @@ excalidraw-section/         🗺 working drawing · paper → Sections → parag
                                → evidence cards, left to right, generated from the plans
 excalidraw-report/          🗺 dense hand-drawn scratch · real trees, receipts, counts,
                                open-question stickies; the person keeps drawing on it
+excalidraw-read/            🗺 one paper on a canvas · its logic, key passages shot
+                               with the quote highlighted, comments, links to our paper
 html-to-svg/ · icon-to-svg/ 🔧 converters
 figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and

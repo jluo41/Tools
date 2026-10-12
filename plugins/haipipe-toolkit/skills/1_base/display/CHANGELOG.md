@@ -3,6 +3,13 @@ display — Changelog
 
 Family-level changes. Skill implementation history stays in each skill's own CHANGELOG.
 
+## 2026-10-10 · excalidraw-read joins the family
+
+JL 261010: read a paper's PDF, extract its logic, screenshot the key parts with the quote
+highlighted, comment on each, and link each to our paper. `excalidraw-read` 0.1.0 does it with
+one script (`text`, `shoot`, `draw`) and `haipipe-studio`'s merge-safe canvas writer. It is a
+working drawing, like `excalidraw-report` and `excalidraw-section`, not a display unit.
+
 ## 2026-09-28 · No content hashes (JL 260928)
 
 AGENTS.md rule 9: a display intake records where its snapshot came from and

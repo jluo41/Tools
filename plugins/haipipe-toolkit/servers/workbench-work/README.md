@@ -52,7 +52,7 @@ for the optional fenced YAML registers and authoring helper, and the
 [report contract](../../skills/1_base/project/haipipe-report/ref/report-contract.md) for report metadata.
 The helper creates an empty report Page and registers it; it allocates no
 execution and writes no answer or accepted Content. Continue writing through
-`haipipe-page`. The full report uses the existing Page reader and offers a Page Workbench
+`haipipe-draft`. The full report uses the existing Page reader and offers a Page Workbench
 link for Draft, evidence and writing. This also works before a Draft exists.
 
 Report Opening supplies the answer summary. Content divisions **Answer**,
@@ -138,7 +138,7 @@ Guide's four Views come from `guide/guide.yaml` (family `task`), loaded by
 `workbench/guide_families.py`. Description is text there. Method is the shared
 method page (`/_board/guide?family=work&mode=method`): the methods drawing
 `guide/methods.excalidraw` first (drawn once by
-`blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s31-guide/method-canvas.py`, then edited as the source), then
+`blueprints/b10_project_workbench/studio/s31-guide/method-canvas.py`, then edited as the source), then
 `guide/method.md` as fold cards with its method cards in `guide/methods/`. RoadMap Draw
 draws the Workbench Table (the skill's `ref/workbench-table.md`, checked by `table-workbench --check`)
 and opens the **Workbench design** drawing; Related Paper shows `related/papers.md`

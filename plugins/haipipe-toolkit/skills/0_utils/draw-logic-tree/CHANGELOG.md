@@ -54,7 +54,7 @@
   orange waiting). JL 261003: "could you make it like a tree plot? up to bottom", "make it
   deeper", "make the logic clear", "the logic just go to the roadmap draw", "make the
   Bullet point to be in the same start in the same level", "could you make a skill for it?".
-- `ref/draw_logic_tree.py` (moved from `haipipe-page/cli/page_roadmap.py`): `--logic` draws
+- `ref/draw_logic_tree.py` (moved from `haipipe-draft/cli/page_roadmap.py`): `--logic` draws
   an indented outline; `--force` is required to replace an existing drawing; `--check-scene`
   checks an edited drawing (every Bullet named, one Bullet row, sub-Bullets below, no fills,
   bound connectors). Checked: PASS on S-ManSci-Main-Abstract as JL arranged it; a copy with

@@ -6,7 +6,7 @@
     python new_topic.py session <level folder> sNN --title '…' [--ask '…'] [--summary '…'] [--changed a,b]
                               [--date MMDD]
 
-`topic` makes `studio/sNN-<topic>/` in a Block, Job or Task, with its face `sNN-<topic>.md` (Topic ·
+`topic` makes `studio/sNN-<topic>/` in the owning Block (also from a Job/Task input), with its face `sNN-<topic>.md` (Topic ·
 Feeds · Files · Decided · Open), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
 skills · s31-s39 Guide · s51-s59 server · s61-s69 slide drafts. `--builder` adds `build_sNN_<topic>.py`, a builder that draws
 through canvas.write (a rebuild keeps the person's marks), and runs it once.
@@ -25,6 +25,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RUN_SCRIPTS = HERE.parents[1] / "haipipe-run" / "scripts"
+# the close rule of a topic's soft Run, written into its ticket when the first session makes it; without one
+# the ticket said `close: <what settles it>` and the Run had no end (b10 s06-D06, 261011)
+DRAW_CLOSE = "a person moves the topic's Stage to agreed, or names what is still wrong in red on the drawing"
+RECOMMENDED_TOPICS = 10
 BANDS = {"concept": (1, 9), "level": (11, 19), "run": (21, 29), "guide": (31, 39), "server": (51, 59),
          "slides": (61, 69)}
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
@@ -55,6 +59,7 @@ def face_text(nn: int, title: str, feeds: list[str]) -> str:
     feed = " · ".join(feeds) if feeds else "<the Questions it feeds: qNN_<topic>>"
     return "\n".join([
         name, "=" * len(name), "",
+        "**Stage:** explore", "",
         "**Topic:** <one paragraph: what this topic thinks through, and why now>", "",
         f"**Feeds:** `reports/` {feed}", "",
         "", "Files", "-----", "",
@@ -124,10 +129,18 @@ if __name__ == "__main__":
 '''
 
 
+def block_owner(level: Path) -> Path:
+    """The shared Studio owner, retaining standalone folders without a Block."""
+    return next((candidate for candidate in (level, *level.parents)
+                 if (candidate / "board.md").is_file() or re.match(r"^b\d+[_-]", candidate.name)), level)
+
+
 def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int | None = None,
               feeds: list[str] | None = None, builder: bool = False, dry_run: bool = False) -> Path:
     if not level.is_dir():
         raise ValueError(f"{level}: no such folder")
+    # A Job or Task uses the same Block Studio; old local sessions remain readable.
+    level = block_owner(level)
     if not SLUG.match(slug):
         raise ValueError(f"slug {slug!r}: lower-case letters, digits and - only")
     if band not in BANDS:
@@ -137,6 +150,11 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
         raise ValueError(f"s{nn:02d} is taken: {topics(level)[nn].name}")
     folder = level / "studio" / f"s{nn:02d}-{slug}"
     md = folder / f"{folder.name}.md"
+    count = len(topics(level)) + 1
+    if count > RECOMMENDED_TOPICS:
+        print(f"Recommendation: {level.name} would have {count} studio topics; "
+              f"aim for at most {RECOMMENDED_TOPICS}. Reuse a related topic or split "
+              "an independent area into a peer Block.", file=sys.stderr)
     if dry_run:
         return md
     folder.mkdir(parents=True)
@@ -154,6 +172,8 @@ def save_session(level: Path, snn: str, title: str, ask: str = "", summary: str 
                  date: str = "") -> Path:
     """A pass of `runs/run-draw-<sNN>/`, the topic's soft Run, made on its first session."""
     m = re.fullmatch(r"s(\d+)", snn)
+    if m and int(m.group(1)) not in topics(level):
+        level = block_owner(level)
     if not m or int(m.group(1)) not in topics(level):
         raise ValueError(f"{snn}: no studio topic of that number in {level.name}/studio/")
     sys.path.insert(0, str(RUN_SCRIPTS))
@@ -166,7 +186,7 @@ def save_session(level: Path, snn: str, title: str, ask: str = "", summary: str 
             if face.is_file() else None              # the Questions its face says it feeds
         feeds = [f"reports/{q}" for q in dict.fromkeys(re.findall(r"q\d\d_[A-Za-z0-9_]+", fed.group(1)))] if fed else []
         soft_run.new(level, "draw", snn, skill="haipipe-studio", feeds=feeds,
-                     ask=f"work on the studio topic {topic.name}")
+                     ask=f"work on the studio topic {topic.name}", close=DRAW_CLOSE)
     return soft_run.add_pass(run, title, ask, summary, list(changed or []), date)
 
 

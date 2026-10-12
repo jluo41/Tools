@@ -27,7 +27,7 @@ limitations: Two agents of the same model may share blind spots; a person still 
 Applied to AI
 -------------
 
-agent: haipipe-cowork-reviewer-agent (planned) for drafts; haipipe-page-check-agent for reports.
+agent: haipipe-cowork-reviewer-agent (planned) for drafts; haipipe-draft-check-agent for reports.
 steps: 1. Read the draft or report. 2. Check it against the job page or the cited files. 3. Return ready or a route.
 returns: a verdict with its route.
 verify: The reviewer differs from every writer of the thing (T2, T7).

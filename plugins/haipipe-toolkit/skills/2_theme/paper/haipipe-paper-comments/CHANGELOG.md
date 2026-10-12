@@ -1,3 +1,7 @@
+## 1.2.1 · 2026-10-11 · A meeting's notes live in related/meetings/
+
+- A meeting batch cites its notes in the Board's `related/meetings/` (one row in `related/related.md`, b10 s04-D01) instead of holding a copy in the batch; letters and memos stay in `feedback/`; an older batch's `meeting/` folder is still read.
+
 ## 1.2.0 · 2026-10-07 · Its runner: review_items.py (b16 Q05)
 
 - New `scripts/review_items.py <board> add | route | reply | rollback` (with `--dry-run`), the runner of the run cards Add comments, Route an item and Reply to an item. `add` was `version_paper.py comments`. `route` and `reply` edit one row of a report's `## Review Items` table; nothing is written into a Section's folder. Tested in the paper family's `tests/test_paper_ladder.py`, rollback included.

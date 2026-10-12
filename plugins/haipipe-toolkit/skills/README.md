@@ -23,9 +23,9 @@ skills/
 ```
 
 A skill in `0_utils` is one folder deep (`0_utils/<skill>/`); a skill in `1_base`
-or `2_theme` sits in its family (`1_base/page/haipipe-page/`, `2_theme/paper/workbench-paper/`).
+or `2_theme` sits in its family (`1_base/page/haipipe-draft/`, `2_theme/paper/workbench-paper/`).
 Code finds the skills root by its folder name and a skill by its folder name
-(`servers/_host/host_paths.py` `skill_dir`, `1_base/page/haipipe-page/src/skill_paths.py`),
+(`servers/_host/host_paths.py` `skill_dir`, `1_base/page/haipipe-draft/src/skill_paths.py`),
 never by counting parent folders, so moving a family to another layer breaks no path.
 The servers pair with the layers the same way: `servers/workbench` is the base
 every workbench reuses, and each `servers/workbench-<theme>` gives its theme.
@@ -71,7 +71,7 @@ instance Page Folder. Its items are runnable questions, not extra Pages.
 | Research topic/data context | haipipe-page-insight | One instance Page Folder |
 | Shared analysis | haipipe-task | Reusable recipe; isolated instance inputs and outputs |
 | Insight work | haipipe-page-insight + haipipe-run | Item ticket and versioned DIKW/RF Results |
-| Item table / Runs view | haipipe-page | Read projections of intent and receipts |
+| Item table / Runs view | haipipe-draft | Read projections of intent and receipts |
 | Consumer-specific Design authority | haipipe-insight-workflow | Exact item/RF evidence contextualized in person-signed Wisdom |
 
 The detailed contracts are the Insight skill's `ref/instance-items.md`,
@@ -84,8 +84,8 @@ The Page workflow
 =================
 
 The Page family is canonical under `skills/1_base/page/` (the Board family was retired
-into it, JL 261005): `haipipe-page`, `haipipe-folder`, `haipipe-sentence`, `workbench`,
-`haipipe-page-workflow` with its Run skills under `workflow-runs/`, and the two Page workbench skills, `workbench-page` and `workbench-studio`. The Page runtime owns file intake,
+into it, JL 261005): `haipipe-draft`, `haipipe-folder`, `haipipe-sentence`, `workbench`,
+`haipipe-draft-workflow` with its Run skills under `workflow-runs/`, and the two Page workbench skills, `workbench-page` and `workbench-studio`. The Page runtime owns file intake,
 individual rendering and standalone editing/hosting, the Board checker and the
 Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
@@ -94,13 +94,13 @@ The Page Face is a small, numbered workflow. The numbers are records, not
 extra folder levels:
 
 ```text
-00 CONTEXT   -> haipipe-page-context   gather policy, requirements, audience,
+00 CONTEXT   -> haipipe-draft-context   gather policy, requirements, audience,
                                          source scope, and freeze the brief
-01 OUTLINE   -> haipipe-page-structure   SHAPE the plan; SURVEY evidence items
-02 EVIDENCE  -> haipipe-page-evidence LAND Supporting/Local Run Results;
+01 OUTLINE   -> haipipe-draft-structure   SHAPE the plan; SURVEY evidence items
+02 EVIDENCE  -> haipipe-draft-evidence LAND Supporting/Local Run Results;
                                          EMBED accepted evidence
-03 CONTENT   -> haipipe-page-writing  WRITE -> DRAFT -> REVISE -> BUILD
-04 CHECK     -> haipipe-page-check    whole-page consistency and readiness
+03 CONTENT   -> haipipe-draft-writing  WRITE -> DRAFT -> REVISE -> BUILD
+04 CHECK     -> haipipe-draft-check    whole-page consistency and readiness
 ```
 
 The outline workbench owns the Draft and Evidence Spaces. The evidence
@@ -204,7 +204,7 @@ Where to read next
 
 * `README.md` — user-facing doors and the Run/Result overview.
 * `skills/1_base/project/haipipe-run/SKILL.md` — the neutral Level-4 contract.
-* `skills/1_base/page/haipipe-page-workflow/SKILL.md` — the Page loop.
+* `skills/1_base/page/haipipe-draft-workflow/SKILL.md` — the Page loop.
 * `skills/1_base/page/workbench-page/` — Bullet/Evidence
   Workspaces, the evidence-item table, and `ref/run-space.md`, the
   read-only Runs view.

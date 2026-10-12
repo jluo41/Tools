@@ -2,8 +2,9 @@
 name: haipipe-task
 description: >-
   Canonical Task-family door for creating, running, auditing, and closing
-  Task Folders. Task Folder = Page Folder at the tNN Task level. The hierarchy
-  is Project → bNN Block/Board → jNN Job/Group → tNN Task Folder/Page → rNN Run.
+  Task Folders. A Task Folder is tNN_<task>/: its face, and a draft when it
+  writes (a Task may hold a draft; a Task is not a Page). The hierarchy
+  is Project → bNN Block/Board → jNN Job/Group → tNN Task Folder → rNN Run.
   Use for Task Board work, Plan → Build → Execute → Report, Run/Result
   interpretation, Block Questions and their Report Pages, block or job
   iteration, and task-side Insight routing.
@@ -12,8 +13,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.12.1"
-  last_updated: "2026-10-09"
+  version: "1.13.0"
+  last_updated: "2026-10-11"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -25,6 +26,16 @@ metadata:
 ---
 
 # haipipe-task
+
+Delivery belongs to the Block (JL 261010). Only the Block has a physical
+`delivery/` folder. A Job writes `delivery/jNN_<job>/`, a Task writes
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and a Report writes
+`delivery/reports/qNN_<report>/<lane>/`, all relative to its Block. Child
+Delivery views select their own source subtree. Runs and Results remain at
+their source; a build grants no acceptance or release. Use
+`haipipe-draft/src/common.py` for the path, never create Job/Task-local delivery.
+Standalone Pages without a Block retain their own output root.
+
 
 > ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means Run tickets a `scripts/gen_*.py` writes and every file a Run's code writes into `results/`: fix the generator or the Run's script, then rerun it.
 
@@ -39,7 +50,7 @@ Project
         ├── reports/qNN_<topic>/            Block Question's ordinary Page Folder; its drawings in its studio/
         └── jNN_<job>/                     Job = Board Group
             ├── src/                       code shared by two or more Tasks
-            ├── tNN_<task>/                Task Folder = Page Folder = Board Page
+            ├── tNN_<task>/                Task Folder: its face; a Task may hold a draft
             │   ├── tNN_<task>.md          reader-facing Page
             │   ├── draft/                 Page plan <stem>-draft-v<G>.<S>.md, records/, previous/
             │   ├── workflow/              Plan/Report receipts
@@ -75,12 +86,12 @@ Read `ref/hierarchy.md` before acting. It is the conceptual authority.
 ## Board mapping
 
 ```text
-Block = Board  →  Job = Group  →  Task Folder = Page Folder = Page
+Block = Board  →  Job = Group  →  Task Folder (a face; a Task may hold a draft)
                                       └── Run = execution record
 ```
 
 Every Block contains `board.md` with `board-kind: task-block`. The disk tree
-owns membership and default order. Board rendering belongs to `haipipe-page`;
+owns membership and default order. Board rendering belongs to `haipipe-draft`;
 this Skill owns executable identity, P-B-E-R, Run/Result pairing, and closure.
 
 A Task Page declares `folder-kind: task`. The Task state becomes settled only
@@ -90,13 +101,13 @@ dependent reading.
 
 ## Two top-level doors, one Folder
 
-`haipipe-task` and `haipipe-page` are peer entry doors over the same physical
+`haipipe-task` and `haipipe-draft` are peer entry doors over the same physical
 `tNN_<task>/` Folder. Choose the door by the primary product of the requested
 work, then preserve the other face's authority:
 
 ```text
 haipipe-task  independently testable work → Task Run → durable Result
-haipipe-page  human-shaped meaning → Page Run → accepted text → release
+haipipe-draft  human-shaped meaning → Page Run → accepted text → release
 ```
 
 Task owns Folder identity, P-B-E-R, native `rNN` allocation, execution,
@@ -191,7 +202,7 @@ For a Block Question or its readable Report, load `haipipe-question` (`skills/1_
 it owns the register, the question's size and its report folder.
 The Block's `board.md` registers the question, its logic, native work references
 and `reports/qNN_<topic>/qNN_<topic>.md`. This Report is written through
-`haipipe-page`; it is independent of P-B-E-R's `workflow/report.yaml`.
+`haipipe-draft`; it is independent of P-B-E-R's `workflow/report.yaml`.
 Reasoning or existing evidence can answer a Question without allocating work.
 Open the question-driven interface through `../workbench-work/SKILL.md`.
 

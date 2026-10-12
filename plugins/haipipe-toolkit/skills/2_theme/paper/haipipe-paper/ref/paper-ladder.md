@@ -1,12 +1,35 @@
 Paper ladder: the paper theme's Board · version · Task · Run
 =============================================================
 
+Delivery storage (JL 261010)
+---------------------------
+
+Only the Block owns a physical `delivery/` directory. Job, Task and Report
+outputs retain their source identity under it: `delivery/jNN_<job>/`,
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and
+`delivery/reports/qNN_<report>/<lane>/`. The Block's own output uses
+`delivery/<lane>/`. Job and Task Delivery views select their source subtree
+and link to the whole Block Delivery; they never create local delivery folders.
+Runs and Results remain with their source. Every writer and reader uses the
+shared `haipipe-draft/src/common.py` Delivery helpers. Standalone Pages without
+a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
+
+
 (JL 261007, designed in Tools/blueprints/b16_theme_paper: s11 Board, s12 version, s13 Section, s21 skills and Runs;
 Q01 and Q04, and Q05 for this file; was paper-structure.md.) A paper sits on the shared ladder: one Board per
 paper, one Job per version (one send to one venue), one Task per Section, the Abstract or a letter, and the Runs
-that make and check them. Each level has the six Spaces of the base workbench (Description · Idea Studio ·
-Audience Report | Work Details | Runs · Delivery); the paper workbench fills them
-(servers/workbench-paper/paper_theme.py). `scripts/paper_ladder.py` makes each folder.
+that make and check them. On screen every level shows the shared frame's two rows (b10_project_workbench s02,
+s09, s04-D05): the top row `Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, whose Studio
+(with Related folded under its topic cards) and Delivery are the Board's alone and open the same from every
+level; and each level's own work row, `Description | Report | Work | Runs`. The paper workbench fills them (servers/workbench-paper/paper_theme.py).
+`scripts/paper_ladder.py` makes each folder.
 
 Read this reference when creating, naming or auditing a paper folder. `haipipe-paper` keeps only the routing in
 its entrypoint; the Page, Story, Venue, comments and assembly owners stay authoritative for their own records.
@@ -17,10 +40,11 @@ The tree
 
 ```text
 paper/Paper-<Slug>/                  Board: one paper
-├── board.md                         its face (haipipe-board): board-kind: paper-board · dialect: paper ·
+├── board.md                         its face (haipipe-block): board-kind: paper-board · dialect: paper ·
 │                                    story-current · spine · close ·
 │                                    ## Pages (### J01 · j01_v<MMDD>_<desk>, its Tasks) · ## Questions (group: <topic>)
-├── studio/                          Idea Studio: the paper's thinking, one topic per folder
+├── studio/                          Studio, the Board's only: the paper's thinking, one topic per folder; each
+│                                    face has **Tags:** and **Stage:** (haipipe-studio topic contract)
 │   ├── s01-ideation/                the ideas, ranked, admitted and eliminated (haipipe-paper-ideation)
 │   ├── sNN-story-<desk>-<idea>/     a telling (haipipe-paper-story): identity · pitch · stakes · roadmaps;
 │   │                                feeds: its Questions; an earlier telling is an ended topic
@@ -28,24 +52,32 @@ paper/Paper-<Slug>/                  Board: one paper
 ├── reports/qNN_<question>/          Audience Report: one per research question (Answer · Evidence · Limits · Next)
 ├── runs/run-<type>-<target>/        a soft Run (haipipe-run, soft_run.py): run.yaml · its ticket .md · passes/pNN-<MMDD>/
 ├── venues/<venue>/                  call.md (dates, limits, format, review rules) · kit/ (haipipe-paper-venue)
-├── related/related.md               the related work, one row per card; read rNN ↗ a discovery deep read
-├── delivery/                        the Board's own (reference.bib); each version builds its own paper
+├── related/                         what came in, kept once as it came, read only (/haipipe-related; b10
+│                                    s04-D01, D02): related.md, one row per item (kind · date · item · link ·
+│                                    feeds · group; a paper row adds key · venue · why here · read ↗ its
+│                                    discovery deep read) · meetings/ · papers/ · files/ · emails/ (an .eml as
+│                                    it came, b10 s04-D09) · any subfolder. A row's groups on the Studio's bar:
+│                                    its subfolder first, then its group cell, comma-separated, a paper's
+│                                    research questions among them (b10 s04-D07, D08)
+├── delivery/                        Block-owned: jNN_<version>/ manuscript and Task outputs
 └── j01_v<MMDD>_<desk>/              Job: one version, one send to one venue, named for the day it is sent
     ├── j01_v<MMDD>_<desk>.md        its face (haipipe-job): send · desk · venue · state · tells · from · goal ·
     │                                close · responds-to (the comments report it answers) · ## Tasks (in order) ·
     │                                ## Narrative (one row per Section; the compile order) · ## Questions
-    ├── studio/ · reports/ · runs/   the version's own topics, Questions (the standing J1-J5 first) and Runs
+    ├── reports/ · runs/             the version's own Questions (the standing J1-J5 first) and Runs; its
+    │                                drawings are Board topics (studio/sNN-<topic>/, b10 s09-D01)
     │   └── reports/qNN_<kind>-<MMDD>/   a comments batch: page-type: comments, in the version that answers it
-    │                                (haipipe-paper-comments); feedback/ · meeting/ · sent/ inside
+    │                                (haipipe-paper-comments); feedback/ · sent/ inside; a meeting's
+    │                                notes sit once in the Board's related/meetings/ (b10 s04-D01)
     ├── t00_abstract/                Task: the Abstract
     ├── t0N_<title>/                 Task: a Main Section, in reading order (t01-t19)
     ├── t2N_<title>/                 Task: an Appendix Section, A = t21 (t20-t29)
     ├── t3N_<title>/                 Task: a letter (t30-t39): t31_cover-letter · t32_response
     │   ├── tNN_<title>.md           its face: task-kind: page · page-type: section · the reader contract · story-row
-    │   ├── draft/ · studio/ · reports/   its writing, its drawings, its own Questions
-    │   └── runs/ · results/ · delivery/  the Page workflow's Runs and Results; delivery/latex/ is the fragment
-    └── delivery/                    the generated paper of this version
-        ├── paper-build.toml         [pages] main = appendix = "..": the version folder
+    │   ├── draft/ · reports/        its writing and its own Questions (no studio/: the Board's)
+    │   └── runs/ · results/              Page workflow; outputs in Block delivery/jNN/tNN/
+    └── (no delivery here)          generated paper in Block delivery/jNN_<version>/
+        ├── paper-build.toml         [pages] main = appendix = "../../jNN_<version>"
         └── latex/ · word/           generated, never edited
 ```
 
@@ -66,7 +98,8 @@ Run       runs/run-<type>-<target>/  run.yaml · ticket          paper_ladder.py
 ```
 
 A Space folder (`studio/`, `reports/`, `runs/`, `venues/`, `related/`, `delivery/`) comes with its first item,
-never ahead of it (haipipe-board, haipipe-job): `paper_ladder.py` writes faces only. `answers:` on a face names a
+never ahead of it (haipipe-block, haipipe-job): `paper_ladder.py` writes faces only. `studio/`, `related/` and
+`delivery/` exist only at the Board; every level keeps its own `reports/` and `runs/` (b10 s09-D01, D02, D05). `answers:` on a face names a
 Question id it answers (haipipe-report); a version that answers a comments report says `responds-to:` instead.
 
 Every Run is `run-<type>-<target>`, with no date (JL 261007). Where a paper button does a base button's job it
@@ -92,7 +125,8 @@ Naming and routing invariants
   Section's stem is its first table cell.
 - Compile order is read only from the version face's `<!-- haipipe:compile-order:start -->` / `end` markers with
   `- ` ids.
-- `reports/` and `studio/` are level folders, not Page groups: board.md lists neither. A report answers one
+- `reports/` (every level) and `studio/` (the Board only) are level folders, not Page groups: board.md lists
+  neither. A report answers one
   Question in the shape `haipipe-question` gives every board's questions (`state:`, `answers:`,
   `answer-status:`, an Opening whose first paragraph is the answer, then Answer · Evidence · Limits · Next, and a
   `page.toml`). A research question's report is the G2 record.
@@ -106,7 +140,7 @@ Source and delivery law
 Section Tasks own the manuscript wording and their Page-local Evidence Results. Each Section's
 `delivery/latex/<stem>.tex` body fragment is the version build's input. `haipipe-paper-assemble` regenerates the
 version's `delivery/` from those fragments, the version face's compile order, the accepted display assets and the
-declared build config. Generated Word and PDF files, frozen sends and old desk-room copies are never wording or
+declared build config, into the Board's `delivery/jNN_<version>/`. Generated Word and PDF files, frozen sends and old desk-room copies are never wording or
 evidence sources.
 
 Assembly may run early, but its manifest stays `DRAFT` until the intended Sections have current outlines,
@@ -127,7 +161,7 @@ Paper-<Slug>/
 ├── Ba-<desk>-Main/                  → jNN_v<N>_<desk>/  (S-<desk>-Main-<N>-<Title>)  migrate_paper.py
 ├── Bb-<desk>-Appendix/              → jNN_v<N>_<desk>/  (S-<desk>-Appendix-<L>-<Title>)
 ├── Bc-<desk>-Round/                 → jNN_v<N>_<desk>/  (RD<NN> feedback Rounds)
-└── delivery/                        → jNN_v<N>_<desk>/delivery/
+└── delivery/                        → stays at Block; rebuild each version in delivery/jNN_v<N>_<desk>/
 then: rename_tasks.py <board> --date MMDD   the version dated, S-… → t0N_/t2N_, RD<NN>-… → reports/qNN_<kind>-<MMDD>/
 ```
 

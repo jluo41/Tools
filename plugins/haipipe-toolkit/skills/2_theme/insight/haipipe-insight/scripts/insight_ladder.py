@@ -12,7 +12,7 @@ versions and questions, the insight Board and its data versions, its Jobs and th
                                                                         [--level data|information|knowledge|wisdom] [--why "…"]
     python insight_ladder.py board     <Project>/insight/Insight-<name> --dataset <D> --prototype work/Prototype-<name>
                                                                         [--title "…"] [--accumulates yes|no|?]
-    python insight_ladder.py data      <board> v<M> --data-folder <SPACE-relative data folder>/ [--new "…"]
+    python insight_ladder.py data      <board> v<M> --data-folder <SPACE-relative data folder>/ [--label "first 5 days"] [--new "…"]
                                        (or --extract <SPACE-relative .parquet> [--rows <n>], a lone file)
     python insight_ladder.py job       <board> --release p<N> --data v<M>   the next Job j0N_pN_<D>vM/: its Tasks, tickets
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
@@ -85,7 +85,7 @@ TYPES = {
     ("board", "consistency"): ("haipipe-insight-knowledge", "haipipe-insight-reviewer-agent", "none", False),
     ("board", "ask"): ("haipipe-question", "haipipe-insight-agent", "another agent agrees", False),
     ("board", "report"): ("haipipe-report", "haipipe-insight-agent", "none", False),
-    ("board", "check"): ("haipipe-report", "haipipe-page-check-agent", "none", False),
+    ("board", "check"): ("haipipe-report", "haipipe-draft-check-agent", "none", False),
     ("board", "map"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
     ("board", "write"): ("haipipe-insight-wisdom", "haipipe-insight-agent", "none", False),
     ("board", "draft"): ("haipipe-insight-wisdom", "haipipe-insight-agent", "a person (the handoff)", False),
@@ -97,7 +97,7 @@ TYPES = {
     ("job", "close"): ("haipipe-insight-check", "haipipe-insight-agent", "a person", False),
     ("task", "partition"): ("haipipe-insight", "haipipe-task-orchestrator-agent", "none", True),
     ("task", "write"): ("haipipe-insight-<its level>", "haipipe-insight-agent", "none", False),
-    ("task", "check"): ("haipipe-report", "haipipe-page-check-agent", "none", False),
+    ("task", "check"): ("haipipe-report", "haipipe-draft-check-agent", "none", False),
     ("task", "pool"): ("haipipe-insight-knowledge", "haipipe-insight-agent", "none", False),
     ("task", "check-alignment"): ("haipipe-insight-check", "haipipe-insight-reviewer-agent", "none", False)}
 ALONE = {("board", "coverage")}                       # a Run whose target is the whole level: run-coverage
@@ -209,7 +209,7 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
     prev = old[-1] if old else None
     plan.write(path / f"{path.name}.md", with_front(
         {"release": rel, "state": "open", "signed": "", "from": VERSION.match(prev.name).group(2) if prev else ""},
-        f"\n# {rel} · the release\n\n<what this version changes, and which proposals it takes>\n"))
+        f"\n# AP{n} · analysis plan {n}\n\n<what this analysis plan changes, and which proposals it takes>\n"))
     rows = {}
     if prev:
         for q, row in (release(prev).get("questions") or {}).items():
@@ -379,14 +379,14 @@ def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, pl
     plan.write(path / "board.md", with_front(
         {"board-kind": "insight-board", "workbench": "insight", "dataset": dataset, "prototype": proto,
          "accumulates": accumulates, "versions": []},
-        f"\n# {title or path.name}\n\nOne dataset, its dated versions, and one Job per pair (Prototype version × data "
-        "version).\n\n## Questions\n\n```yaml\nquestions: []\n```\n"))
+        f"\n# {title or path.name}\n\nOne dataset, its data freezes, and one Job per pair (analysis plan × data "
+        "freeze).\n\n## Questions\n\n```yaml\nquestions: []\n```\n"))
     plan.write(path / "meta" / "meta.md", f"# {dataset} · what the extract holds\n\n<grain · window · sources · "
                "limits; one line per data version on what is new>\n")
     runs_readme(path, "board", plan)
 
 
-def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, folder: str = "") -> None:
+def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, folder: str = "", label: str = "") -> None:
     if face_kind(path) != "board":
         sys.exit(f"{path.name} is not an insight Board (board.md board-kind: insight-board)")
     if not re.fullmatch(r"v\d+", ver or "") or not (extract or folder):
@@ -404,6 +404,8 @@ def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, fo
     # reads them all, the Runs find the data file in it (run_job.version_extract)
     entry = ({"version": ver, "folder": folder.rstrip("/") + "/", "frozen": today()} if folder else
              {"version": ver, "extract": extract, "frozen": today(), "rows": rows or "<n>"})
+    if label:                                  # the data freeze's few words, shown as F<M> · <label> (JL 261011)
+        entry = {"version": ver, "label": label, **{k: v for k, v in entry.items() if k != "version"}}
     fields.setdefault("versions", []).append(dict(entry, new=new or "<what is new>"))
     plan.write(path / "board.md", with_front(fields, body), replace=True)
 
@@ -478,10 +480,11 @@ def level_of(folder: Path) -> str:
         return "version"
     if JOB.match(name) and face_kind(folder.parent) == "board":
         return "job"
-    if TASK.match(name):
-        if VERSION.match(folder.parent.name):
+    if TASK.match(name):                       # a Board Job's name (j01_p1_<D>v1) also fits VERSION: ask the face above
+        above = face_kind(folder.parent.parent)
+        if VERSION.match(folder.parent.name) and above == "prototype":
             return "question"
-        if JOB.match(folder.parent.name):
+        if JOB.match(folder.parent.name) and above == "board":
             return "task"
     sys.exit(f"not an insight Block, version, Job or Task folder: {folder}")
 
@@ -585,6 +588,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--data-folder", dest="data_folder", default="")
     ap.add_argument("--rows", default="")
     ap.add_argument("--new", default="")
+    ap.add_argument("--label", default="")
     ap.add_argument("--release", default="")
     ap.add_argument("--data", default="")
     ap.add_argument("--dry-run", action="store_true")
@@ -608,7 +612,7 @@ def main(argv=None) -> list[Path]:
     elif c == "board":
         board(a.folder, a.dataset, a.prototype, a.title, a.accumulates, plan)
     elif c == "data":
-        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder)
+        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label)
     elif c == "job":
         job(a.folder, a.release, a.data, plan)
     else:

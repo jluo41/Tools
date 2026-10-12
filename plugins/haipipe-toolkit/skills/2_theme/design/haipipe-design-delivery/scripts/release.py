@@ -18,6 +18,10 @@ from pathlib import Path
 
 import yaml
 
+_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+sys.path.insert(0, str(_PAGE_ENGINE))
+from src.common import delivery_dir
+
 DESIGN = re.compile(r"^t\d+_(d\d+)_(.+)$")
 PLACEHOLDER = re.compile(r"\s*<the design, word for word>\s*")   # the scaffold's unfilled ## Design
 
@@ -56,7 +60,14 @@ def _merge(path: Path, new: list) -> list:
 
 
 def _md(designs: list, title: str) -> str:
-    return f"# {title}\n\n" + "".join(f"## {d['job']} · {d['design']}\n\n{d['words']}\n\n" for d in designs)
+    """For a reader: each design under its Job's name in words (never the bare jNN), its words, then what it is
+    predicted to do and why (JL 261011)."""
+    def one(d: dict) -> str:
+        head = f"## {d.get('job_name') or d['job']} · {d['design']}" + (f" · {d['name']}" if d.get("name") else "")
+        pred = (f"Predicted {d['predicted']} against {d.get('against') or 'the control'}."
+                + (f" Why: {d['why']}" if d.get("why") else "")) if d.get("predicted") else ""
+        return f"{head}\n\n{d['words']}\n\n" + (f"{pred}\n\n" if pred else "")
+    return f"# {title}\n\n" + "".join(one(d) for d in designs)
 
 
 def release(job: Path, freeze: str = "", dry: bool = False) -> list:
@@ -99,8 +110,9 @@ def release(job: Path, freeze: str = "", dry: bool = False) -> list:
         if not words or PLACEHOLDER.fullmatch(words):
             sys.exit(f"{t.name}: its face's ## Design still holds no design ({words[:40]!r}); project the passed draft "
                      "into it first (haipipe-design-workflow/scripts/project_draft.py draft)")
-        d = {"job": jid, "design": m.group(1), "name": str(front(face).get("name", m.group(2))), "words": words,
-             "predicted": str(pred.get("predicted", "")), "released": freeze if draft else str(pred.get("frozen")),
+        d = {"job": jid, "job_name": job.name, "design": m.group(1), "name": str(front(face).get("name", m.group(2))),
+             "words": words, "predicted": str(pred.get("predicted", "")), "against": str(pred.get("against", "")),
+             "why": str(pred.get("why", "")), "released": freeze if draft else str(pred.get("frozen")),
              "pins": {"goal": str(pins.get("goal", "")), "method": str(pins.get("method", "")),
                       "inputs": str(pins.get("inputs", ""))}}
         screen = last_screen(t)
@@ -117,18 +129,18 @@ def release(job: Path, freeze: str = "", dry: bool = False) -> list:
     for t, pred_path, pred, draft, screen, d in plan:
         if draft:
             pred["frozen"] = freeze
-            pred_path.write_text(yaml.safe_dump(pred, sort_keys=False, allow_unicode=True), encoding="utf-8")
+            pred_path.write_text(yaml.safe_dump(pred, sort_keys=False, allow_unicode=True, width=1000), encoding="utf-8")
             print(f"froze {t.name}: {freeze}")
         if screen is not None:
-            (job / "delivery" / "screens").mkdir(parents=True, exist_ok=True)
+            (delivery_dir(job) / "screens").mkdir(parents=True, exist_ok=True)
             (block / "delivery" / "screens").mkdir(parents=True, exist_ok=True)
-            shutil.copy2(screen, job / "delivery" / d["screen"])
+            shutil.copy2(screen, delivery_dir(job) / d["screen"])
             shutil.copy2(screen, block / "delivery" / "screens" / f"{jid}-{d['design']}{screen.suffix}")
-    (job / "delivery").mkdir(parents=True, exist_ok=True)
-    jdesigns = _merge(job / "delivery" / "designs.json", out)
-    (job / "delivery" / "designs.json").write_text(json.dumps({"designs": jdesigns}, indent=2, ensure_ascii=False) + "\n",
+    (delivery_dir(job)).mkdir(parents=True, exist_ok=True)
+    jdesigns = _merge(delivery_dir(job) / "designs.json", out)
+    (delivery_dir(job) / "designs.json").write_text(json.dumps({"designs": jdesigns}, indent=2, ensure_ascii=False) + "\n",
                                                    encoding="utf-8")
-    (job / "delivery" / "designs.md").write_text(_md(jdesigns, "Released designs"), encoding="utf-8")
+    (delivery_dir(job) / "designs.md").write_text(_md(jdesigns, "Released designs"), encoding="utf-8")
     (block / "delivery").mkdir(parents=True, exist_ok=True)
     at_block = [{**d, "screen": f"screens/{d['job']}-{d['design']}{Path(d['screen']).suffix}"} if "screen" in d else d
                 for d in out]                                              # relative to the Block's delivery/

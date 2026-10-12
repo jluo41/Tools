@@ -788,7 +788,7 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertTrue(paper_runs.default_bib_path(topic).is_file())
 
     def test_page_without_aims_is_valid(self) -> None:
-        # Page Face is Opening -> Content; Aims are backstage (haipipe-page 0.121).
+        # Page Face is Opening -> Content; Aims are backstage (haipipe-draft 0.121).
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))
             make_pair(topic, "r01_example2026_demo")

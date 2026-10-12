@@ -15,6 +15,9 @@ import design_ladder as D  # noqa: E402
 from ladder_kit import ready  # noqa: E402
 
 READER = HERE.parents[4] / "servers" / "workbench-design" / "design_reader.py"
+sys.path.insert(0, str(READER.parents[1] / "_host"))
+from host_paths import bootstrap  # noqa: E402
+bootstrap()  # the reader imports src.common, the Page engine's shared paths
 
 
 def reader():
@@ -88,13 +91,29 @@ class DesignLadderTest(unittest.TestCase):
                 D.main(argv)
 
     def test_a_job_name_carries_readable_slugs(self):
-        """jNN_<goal>-<goal-slug>_<method>-<method-slug> (JL 261008: ids alone are not human readable)."""
+        """The older id form jNN_<goal>-<goal-slug>_<method>-<method-slug> (JL 261008) stays readable."""
         job = self.block / "j02_g01-a-goal_m04-actionable-insights"
         D.main(["job", str(job), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2", "--n", "3"])
         self.assertTrue((job / f"{job.name}.md").is_file())
         self.assertEqual(D.level_of(job), "Job")
         with self.assertRaises(SystemExit):                              # the ids must still match the pins
             D.main(["job", str(self.block / "j03_g02-a-goal_m04-x"), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2"])
+
+    def test_a_job_is_named_by_its_goal_and_method_in_words(self):
+        """jNN_<goal name>_<method name> (JL 261011): the ids stay in the face's pins; the title is in words."""
+        board = self.block / "board.md"
+        board.write_text(board.read_text().replace("id: G01", "id: G01\n  name: prepare-before-visit", 1))
+        job = self.block / "j02_prepare-before-visit_actionable-insights"
+        D.main(["job", str(job), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2", "--n", "3"])
+        face = (job / f"{job.name}.md").read_text()
+        self.assertIn("goal: G01", face)
+        self.assertIn("method: M04 m2", face)
+        self.assertIn("# Prepare before visit, by Actionable insights", face)
+        self.assertEqual(D.level_of(job), "Job")
+        D.main(["task", str(job), "t00"])                                  # a Task opens in a readable Job
+        for wrong in ("j03_prepare-before-visit_goal-only", "j03_questions-before-visit_actionable-insights"):
+            with self.assertRaises(SystemExit):                          # the words must name the pinned goal and method
+                D.main(["job", str(self.block / wrong), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2"])
 
     def test_a_block_is_named_by_its_kind(self):
         """A design Block is a special board, Design-<name>[-<YYMMDD>] (JL 261008); bNN_<app> stays readable."""

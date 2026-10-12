@@ -1,3 +1,7 @@
+## 1.3.0 · 2026-10-11 · The ideation topic carries Tags and Stage
+
+- `studio/s01-ideation/`'s face keeps haipipe-studio's topic marks, `**Tags:**` and `**Stage:**` (b10 s09-D03), beside its divisions; Studio is the Board's alone (b10 s09-D01).
+
 ## 1.2.0 · 2026-10-07 · The Ideation as a studio topic and Questions (b16 Q04, Q05)
 
 - On the ladder the Ideation is the Board's studio topic `studio/s01-ideation/` (its face carries the same divisions) and each admitted Idea is a Board Question with `group: ideation` and its report; the Block's Audience Report › Ideation shows them. Its buttons are the `Block › Audience Report` run cards; G0 is Select idea. An older `A1-Story/Story00-ideation/` Page is still read.
@@ -44,7 +48,7 @@
 
 ## 1.0.1 · 2026-09-13
 
-- Aligned P0 projection with the current `haipipe-page` update boundaries:
+- Aligned P0 projection with the current `haipipe-draft` update boundaries:
   working Outline/preview/Bullet Workspace can refresh before adopted Content
   and delivery, which wait for the Page release barrier.
 - Clarified that Ideation sync is not a Page Run and that the P0 return must
@@ -79,7 +83,7 @@
 - Renamed `haipipe-page-ideation` to `haipipe-paper-ideation` and moved the
   contract from `paper/page-types/` to `paper/workflow-phases/` so P0 follows
   the same Paper-family naming law as Story, Section, and Round.
-- Retained `page-type: ideation` and the shared `haipipe-page` lifecycle; the
+- Retained `page-type: ideation` and the shared `haipipe-draft` lifecycle; the
   rename changes the semantic owner, not the Page Face or G0 authority.
 
 ## 0.8.1 · 2026-09-07
@@ -113,7 +117,7 @@
 
 - Renamed `haipipe-paper-ideation` → `haipipe-page-ideation` and moved to
   `paper/page-types/` (JL 260907: Page Types are named like every other
-  `haipipe-page-<type>`). Contract body unchanged from 0.7.2. Written by Claude Peer.
+  `haipipe-draft-<type>`). Contract body unchanged from 0.7.2. Written by Claude Peer.
 
 ## 0.7.2 · 260907
 

@@ -60,7 +60,29 @@ type or the Topic is invalid.
 
 ## Page Face contract
 
-The Page keeps the shared `haipipe-page` Page Face: Opening, then Content.
+What `paper_runs.py check` requires of the root Page, in the four-division layout:
+
+~~~text
+---                                   frontmatter: folder-kind: discovery (never page-type: task),
+folder-kind: discovery                address, address_compact, discovery_type, status, state
+...
+---
+# <Title>
+## Opening                            first paragraph at most 520 characters; the Board check
+<one question, alone on line 1>       also wants its first line to be the question
+## Content
+### 1 · Question and boundary · <name>      the four role names, in this order
+**<Label>**: <one line>                     every division opens with a bold label line
+```text                                     and then a text block (its face diagram)
+### 2 · Type payload · <name>
+### 3 · Evidence map · <name>
+### 4 · Limits and next move · <name>
+~~~
+
+The Board check (`board_sync.py --check`) also warns on a division name over six
+reader-facing words and on prose hard-wrapped mid-sentence.
+
+The Page keeps the shared `haipipe-draft` Page Face: Opening, then Content.
 Outline, Aims and other process records are backstage in the Page Folder and
 are never added as Page sections (a legacy `## Aims` is still checked when
 present). Its Content makes four promises, with headings chosen for the

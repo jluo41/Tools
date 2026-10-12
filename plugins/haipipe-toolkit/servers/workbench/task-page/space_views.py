@@ -15,10 +15,12 @@ and the selected paragraph or item.
 from __future__ import annotations
 
 import datetime
+import os
+from src.common import delivery_dir, delivery_relative
 import html
 import re
 from pathlib import Path
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urljoin
 
 from src.outline_version import latest_outline, plan_dir
 from src.item_table import short_name
@@ -330,7 +332,7 @@ def evidence_space_html(page_src: Path, *, card_url: str, supporting: list[dict]
 def file_url(rel: str, *, path_q: str, file_q: str, asset_base) -> str:
     """A Page file's URL on this host (the Python twin of delivery.py's savedUrl)."""
     if asset_base is not None:
-        return "%s/%s" % (asset_base.rstrip("/"), quote(rel))
+        return urljoin(asset_base.rstrip("/") + "/", quote(rel))
     board = unquote(path_q or "")
     cut = board.rfind("/board/")
     base = board[:cut] if cut >= 0 else (board.rsplit("/", 1)[0] if board.endswith(".md") else "")
@@ -341,8 +343,8 @@ def file_url(rel: str, *, path_q: str, file_q: str, asset_base) -> str:
     base = "/" + base.lstrip("/")
     folder = re.match(r"^(.*)/([^/]+)/\2\.md$", file_q or "")
     if folder:
-        return "%s/%s/%s/%s" % (base, folder.group(1), folder.group(2), quote(rel))
-    return "%s/%s" % (base, quote(rel))
+        return urljoin("%s/%s/%s/" % (base, folder.group(1), folder.group(2)), quote(rel))
+    return urljoin(base.rstrip("/") + "/", quote(rel))
 
 
 def _stamp(path: Path) -> str:
@@ -368,10 +370,12 @@ def delivery_space_html(page_src: Path, *, checks_url: str, path_q: str, file_q:
     base = page_src.parent
     stem = page_src.stem
     states = delivery_states(page_src)
-    built = [key for key, _l, folder, _p in FORMATS if (base / folder).is_dir()]
+    formats = [(key, label, delivery_relative(base) + "/" + folder.split("/", 1)[1], names)
+               for key, label, folder, names in FORMATS]
+    built = [key for key, _l, folder, _p in formats if (base / folder).is_dir()]
     first = "latex" if "latex" in built else (built[0] if built else "latex")
     tabs, previews, artifacts = [], [], []
-    for key, label, folder, wanted in FORMATS:
+    for key, label, folder, wanted in formats:
         state = states.get(_CHECK_LANE[key], "not-built")
         tabs.append('<button type=button class="space-tab%s" data-tab="%s" data-label="%s">%s '
                     '<span class="space-count st-%s">%s</span></button>'

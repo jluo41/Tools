@@ -105,7 +105,7 @@ run=<exact run id>                        opens the All-runs view at that Run
 /w/runs · /w/delivery · /w/folder · /w/evidence   tab words ride on the short address
 ```
 
-A writing Step handoff follows `../haipipe-page/ref/user-check-packet.md`.
+A writing Step handoff follows `../haipipe-draft/ref/user-check-packet.md`.
 
 The Page shell's tab strip is 📃 Page (this workbench, first and default),
 📤 Delivery (the full lane surface, `ref/delivery.md`) and 📂 Folder
@@ -135,7 +135,7 @@ unit, Task folders included.
 ```
 
 The Draft Markdown has three sections that repeat one skeleton
-(`### C<n>.P<m>` headings, `- B<k>` numbers); `haipipe-page` SKILL.md
+(`### C<n>.P<m>` headings, `- B<k>` numbers); `haipipe-draft` SKILL.md
 § "The Draft Markdown and Runs beside the content" owns it:
 
 ```text
@@ -191,7 +191,7 @@ and section each view reads is its tooltip); the Structure card shows in Table o
    own sentences where no Draft exists), one sentence per line, a blank line
    between points. `Save` or Cmd+Enter (`action: revise`) writes the changed
    Draft fields only. The first Save on a paragraph opens its Revise run,
-   `run-revise-<c1-p2>` (`haipipe-page-revise`), whose ticket keeps the
+   `run-revise-<c1-p2>` (`haipipe-draft-revise`), whose ticket keeps the
    text before; later Saves change only the Draft; `page.py close-run` writes the
    Before / After ledger when the person says close. The status line under the
    box says `Saved · run-revise-0929-c1-p2 · 1 sentence` at once; the Runs panel is
@@ -230,7 +230,7 @@ types list the same Runs with their Result files. An unknown address shows under
 stays its Task or Discovery folder, never this Page.
 
 Five layers stay distinct (full binding contract:
-`../haipipe-page/ref/page-run-families.md`):
+`../haipipe-draft/ref/page-run-families.md`):
 
 ```text
 Evidence Item   authored obligation: what this Bullet needs        draft/<stem>-evidence-items.md
@@ -260,14 +260,14 @@ Page or its exporter, then rebuilt. Lanes, writers and doors:
    strip, `◂` opens it; the choice is remembered per Space in this browser.
    The folded strip turns green when a run awaits the person.
 2. **Run types**: the `🔘 BUTTON` lines of
-   `../haipipe-page-workflow/ref/run-cards.md`, as `label · Space · ticket
+   `../haipipe-draft-workflow/ref/run-cards.md`, as `label · Space · ticket
    pattern · views <names>`. A view or tab shows only the buttons that name it,
    each with its run count for the current target, then `+ New Run`.
 3. **Target**: the selected paragraph or item narrows every list; nothing
    selected means the whole Page.
 4. **Run card**: an id strip when there are two or more runs, the name, a state
    badge (Closed · Held · Awaiting you · Running), Rerun, the skill it uses
-   (`Skill haipipe-page-writing · haipipe-writing`: a `skills:` line in its ticket
+   (`Skill haipipe-draft-writing · haipipe-writing`: a `skills:` line in its ticket
    or runtime, else its card's `🧩 SKILL` line; JL 260928), a folded `▸ Prompt`
    with Copy, the running process, and the Results folder with its files.
 5. **Starts nothing**: Rerun, `+ New Run` and Copy copy a prompt (the
@@ -330,8 +330,8 @@ Run when the work belongs to it. A new family needs all of:
    `_run_name`, `_run_action`.
 3. **`runs_panel.py::_DISPLAY`**: its full-word name (`run-…-NN`); a family
    already named in full words (`run-delivery-latex`) needs none.
-4. **`../haipipe-page/src/run_folders.py::_KINDS`**: its `runs/<space>-run/` folder.
-5. **Docs**: `../haipipe-page/ref/page-run-families.md`, `../haipipe-page-workflow/`
+4. **`../haipipe-draft/src/run_folders.py::_KINDS`**: its `runs/<space>-run/` folder.
+5. **Docs**: `../haipipe-draft/ref/page-run-families.md`, `../haipipe-draft-workflow/`
    (SKILL.md, `ref/interactive-writing-run.md`), `../../project/haipipe-run/ref/run-catalog.md`,
    and a case in `servers/haipipe-page/tests/test_runs_panel.py`.
 
@@ -351,7 +351,7 @@ file                         written by                                         
 plan (draft-v*.md)           run-structure (SHAPE/SURVEY); evidence embed appends; never
                              the Structure card, Scratch and Revise saves
 evidence-items.md            SHAPE/SURVEY item contract                           never (authored)
-records/context              CONTEXT (haipipe-page-context)                       haipipe-page-context
+records/context              CONTEXT (haipipe-draft-context)                       haipipe-draft-context
 records/requirement V | W    V: cli/requirement.py · W: the author, kept verbatim cli/requirement.py <page>.md
 records/discussion           any Run or the page chat, as D<nn> records           never (authored)
 records/feedback             cli/feedback.py collect; the Page writes Landed      cli/feedback.py collect
@@ -382,7 +382,7 @@ The version is `v<G>.<S>[.<E>]`; no `E` means zero. `G=0` never touches
 Content. A Shape change increments `S` and resets `E`; an evidence fold
 increments `E` and inherits its Shape's approval (`shape-base:`). `approved:`
 is a person's act; a machine only transcribes it. At release,
-`../haipipe-page/ref/release-decisions.md` decides profile precedence.
+`../haipipe-draft/ref/release-decisions.md` decides profile precedence.
 
 ## 🤝 Review packet
 
@@ -406,11 +406,11 @@ nothing.
 - `ref/content-preview.md` · candidate prose storage and the CONTENT handoff
 - `ref/review-packet.md` · the review packet
 - `ref/skill-record.md` · the ranked Page Skills store
-- `../haipipe-page-workflow/ref/run-cards.md` · the run types and prompts the panel shows
+- `../haipipe-draft-workflow/ref/run-cards.md` · the run types and prompts the panel shows
 - `../../../../servers/workbench/task-page/outline.py` · the page shell, the Spaces, the Draft views
 - `../../../../servers/workbench/task-page/space_views.py` · Evidence and Delivery tabs, views, selection
 - `../../../../servers/workbench/runs_panel.py` · the Runs panel
 - `../../../../servers/workbench/task-page/outline_structure.py` · `outline_scratch.py` · `outline_revise.py` · the three writers
 - `../../../../servers/workbench/task-page/evidence.py` · `delivery.py` · `export.py` · `exporters/` · `runs.py` · `folderstat.py`
 - `../../../../servers/workbench/task-page/studio/page-workbench-design.excalidraw` · the design drawing
-- `../haipipe-page/src/plan_layout.py` · `outline_version.py` · `item_table.py` · `page_question.py`
+- `../haipipe-draft/src/plan_layout.py` · `outline_version.py` · `item_table.py` · `page_question.py`

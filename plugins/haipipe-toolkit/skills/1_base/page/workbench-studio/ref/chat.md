@@ -23,14 +23,14 @@ address; one opened from the Studio surface is page-level.
 ## Interactive writing route
 
 For collaborative drafting/feedback, load
-`../../haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../haipipe-draft-workflow/ref/interactive-writing-run.md`.
 The chat session is the interaction surface, not the Run identity. Its agent
 saves original feedback and full outputs in the paired Run/Version/Step records,
 then updates the current Markdown preview. A kept Studio transcript is optional
 context, never a substitute for the durable Step history.
 
 Routine writing returns the selected full paragraphs, reasons and two final
-Workspace links under `haipipe-page/ref/user-check-packet.md`. It does not
+Workspace links under `haipipe-draft/ref/user-check-packet.md`. It does not
 require full builds/checks, a fresh Run agent, or prose regeneration. Accepted
 text is protected; reopening it requires explicit scope. Existing GUI save/
 keep controls do not automatically implement this protocol.
@@ -74,14 +74,14 @@ what you type                         lands in                                gr
 "why 8.69 million?"  answerable       the reply + a reply lane                >> CC<MMDD>: answer · source path       none · haipipe-sentence
 "should the title get a subtitle?"    draft/records/<stem>-discussion.md              ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
   an open question                                                            Decide (board-wide id)                    ref/record-shape.md
-"make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-page-writing
-"add a sentence on X" · "drop S7"     draft/<stem>-draft-v<G>.<S>[.<E>].md      a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-page-structure
+"make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-draft-writing
+"add a sentence on X" · "drop S7"     draft/<stem>-draft-v<G>.<S>[.<E>].md      a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-draft-structure
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
-"where is S6's number?"  a fact       draft/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-page-structure
+"where is S6's number?"  a fact       draft/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-draft-structure
   the page lacks
-"the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         CONTENT/WRITE · haipipe-page-writing
+"the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         CONTENT/WRITE · haipipe-draft-writing
   a promise change
 "rerun the LBP regression"            <task folder>/…                         plan.yaml · code · report.yaml · results/  the task family · haipipe-task
   task work                                                                                                             + the for-<kind> its plan names
@@ -111,7 +111,7 @@ every row above                       draft/records/<stem>-log.md               
 
 ## 🔁 Chat continues the selected Page Run
 
-A Workflow is a list of Runs. Studio uses `/haipipe-page` to resolve the
+A Workflow is a list of Runs. Studio uses `/haipipe-draft` to resolve the
 current target and its owning Run. The receipt's `run`/`cycle` fields (older receipts say `phase`) help
 read old receipts; they do not commission work or require a Run announcement.
 
@@ -123,7 +123,7 @@ read old receipts; they do not commission work or require a Run announcement.
 | Independent goal or different target | Use the owning workflow to commission the appropriate new Run after prerequisites are satisfied. |
 | Current evidence needed | Work through the selected typed RE and its Supporting Runs; bind its exact Result. |
 | Published-source maintenance explicitly requested | Follow the Sentence source-change contract; preserve signed lanes and edit records. |
-| Release or build | Apply `../../haipipe-page/ref/release-decisions.md`; reuse the exact existing acceptance evidence and record release authorization. |
+| Release or build | Apply `../../haipipe-draft/ref/release-decisions.md`; reuse the exact existing acceptance evidence and record release authorization. |
 | Check | Independently judge the exact built version; show findings and every required human gate, including owner rulings. |
 | Status | Report current scope, Run/Version/Step, saved result, blocker or next decision. |
 
@@ -147,7 +147,7 @@ context and the status-strip duty. PageX bindings are compatibility history,
 not current boot context.
 
 Per message the session loads ONE skill's ⚡ Brief, the one §🗺's row names,
-and announces it (`loading haipipe-page-structure · plan change`); it never
+and announces it (`loading haipipe-draft-structure · plan change`); it never
 loads the family. A skill the list names and the disk lacks is said out loud,
 never guessed around.
 

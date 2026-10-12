@@ -14,7 +14,7 @@ metadata:
     mode: fixed
     source: "this SKILL.md"
     shape: "Origin → Instance and Scope → Insight Items → Synthesis → Reusable Findings"
-  parent: haipipe-page
+  parent: haipipe-draft
 ---
 
 # /haipipe-page-insight · one topic instance, independently runnable items
@@ -27,7 +27,7 @@ The RI ticket points to one normal `rNN` Run ticket/recipe and freezes the new
 dataset binding; it never rewrites or impersonates that base R. An item is not
 another Page Folder. The Page organizes the findings from its items.
 
-Load `haipipe-page` and `haipipe-page-workflow` for the shared Page frame and
+Load `haipipe-draft` and `haipipe-draft-workflow` for the shared Page frame and
 authoring controls. Read `ref/instance-items.md` for identity, schemas, runtime
 structure, and citations; `ref/workflow-table.md` when planning or resuming;
 `ref/task-calls.md` when invoking reusable analysis. Migration from the previous

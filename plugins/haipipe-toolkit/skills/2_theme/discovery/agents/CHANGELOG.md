@@ -3,6 +3,12 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-10-11 · One folder per Run
+
+- Creator 1.19.1, reviewer 1.11.1 and orchestrator 2.9.1 open, check and gate
+  `runs/<RUNNAME>/<RUNNAME>.sh` with `runs/<RUNNAME>/result/`, the orchestrator's description
+  included; `README.md` truth gates match.
+
 ## 2026-09-21 · Block-as-Board checkpoints
 
 - Creator 1.19.0, orchestrator 2.9.0, and reviewer 1.11.0 require the

@@ -1623,7 +1623,7 @@ def _evidence_run_contract(kind: str) -> dict[str, str]:
     return {
         "name": label,
         "work": work,
-        "owner": "haipipe-page-workflow → haipipe-page-evidence",
+        "owner": "haipipe-draft-workflow → haipipe-draft-evidence",
         "workers": worker,
         "actor": "agent / system / hybrid; any declared human verification remains a human decision",
         "prerequisites": ("Fresh Page Context; accepted Shape and Survey contracts; this item's typed Expected/Acceptance; "
@@ -1692,7 +1692,7 @@ def _evidence_copy_prompt(record: dict[str, object], page_src: pathlib.Path,
         next_action = ("Reconcile this item against the current Run/Result and its Acceptance. The owner must decide "
                        "whether to resume, hold, or commission a new attempt; do not silently replace a Result.")
     lines = [
-        "Use haipipe-page-workflow and haipipe-page-evidence for this one typed Page Evidence item.",
+        "Use haipipe-draft-workflow and haipipe-draft-evidence for this one typed Page Evidence item.",
         "Board: " + board,
         "Folder: " + folder,
         "Page: " + page_src.stem,

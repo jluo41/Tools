@@ -436,5 +436,100 @@ class KeyRenameTest(unittest.TestCase):
             self.assertIn("  mode: verbatim_copy", runtime)
 
 
+PMLR_PAGE = """<html><body>
+<a href="https://openreview.net/forum?id=qugRvYjaFx">OpenReview</a>
+<code class="citecode" id="bibtex">@InProceedings{pmlr-v306-wang26fy,
+  title = 	 {{C}on{F}lux: Multivariate Time Series in Flux, One Unified Forecast in Confluence},
+  author =       {Wang, Shiyu and Ni, Juntong and Xiang, Yang},
+  booktitle = 	 {Proceedings of the 43rd International Conference on Machine Learning},
+  pages = 	 {129221--129251},
+  year = 	 {2026},
+  volume = 	 {306},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v306/main/assets/wang26fy/wang26fy.pdf},
+  url = 	 {https://proceedings.mlr.press/v306/wang26fy.html},
+  abstract = 	 {Variables evolve &ldquo;in flux&rdquo;; we propose &lt;b&gt;ConFlux&lt;/b&gt;, a model.}
+}
+</code></body></html>"""
+
+
+class PublisherPageTest(unittest.TestCase):
+    """PMLR has no .bib endpoint; its paper page's citation block is the venue's own export."""
+
+    def test_citation_block_is_read_verbatim_and_unescaped(self) -> None:
+        real = paper_bib_fetch._get
+        paper_bib_fetch._get = lambda url, timeout, accept=None: (200, "text/html", PMLR_PAGE)
+        try:
+            got = paper_bib_fetch.fetch_by_publisher("https://proceedings.mlr.press/v306/wang26fy.html", 5)
+        finally:
+            paper_bib_fetch._get = real
+        self.assertIsNotNone(got)
+        bibtex, source, channel = got
+        self.assertEqual(("publisher", "https://proceedings.mlr.press/v306/wang26fy.html"), (channel, source))
+        self.assertTrue(bibtex.startswith("@InProceedings{pmlr-v306-wang26fy,"))
+        self.assertIn("\u201cin flux\u201d", bibtex)
+        self.assertEqual(1, len(paper_bib_fetch.parse_entries(bibtex)))
+
+    def test_html_without_a_citation_block_is_refused(self) -> None:
+        real = paper_bib_fetch._get
+        paper_bib_fetch._get = lambda url, timeout, accept=None: (200, "text/html", "<html>login</html>")
+        try:
+            self.assertIsNone(paper_bib_fetch.fetch_by_publisher("https://example.org/paper", 5))
+        finally:
+            paper_bib_fetch._get = real
+
+
+class ResultDirNameTest(unittest.TestCase):
+    """One folder per Run: runs/<run>/result/ must still produce <run>.bib, not result.bib."""
+
+    def test_one_folder_per_run_names_the_bib_after_the_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            result = Path(tmp) / "runs" / "r01_hou2024_rankers" / "result"
+            result.mkdir(parents=True)
+            entry = Path(tmp) / "entry.bib"
+            entry.write_text(ARXIV_MULTILINE, encoding="utf-8")
+            argv = sys.argv
+            sys.argv = ["paper_bib_fetch.py", "--bib-file", str(entry), "--source-url", "https://arxiv.org/abs/2305.08845",
+                        "--title", "Large Language Models are Zero-Shot Rankers for Recommender Systems",
+                        "--expected-year", "2024", "--result-dir", str(result), "--no-runtime"]
+            try:
+                import contextlib, io
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, paper_bib_fetch.main())
+            finally:
+                sys.argv = argv
+            self.assertEqual(["r01_hou2024_rankers.bib"], sorted(x.name for x in result.iterdir()))
+
+
+class PublisherPageHostTest(unittest.TestCase):
+    def test_a_citation_block_off_pmlr_is_not_a_venue_export(self) -> None:
+        real = paper_bib_fetch._get
+        paper_bib_fetch._get = lambda url, timeout, accept=None: (200, "text/html", PMLR_PAGE)
+        try:
+            self.assertIsNone(paper_bib_fetch.fetch_by_publisher("https://example.org/copy-of-a-pmlr-page", 5))
+        finally:
+            paper_bib_fetch._get = real
+
+    def test_a_relative_result_dir_still_names_the_run(self) -> None:
+        import contextlib, io, os
+        with tempfile.TemporaryDirectory() as tmp:
+            result = Path(tmp) / "runs" / "r02_hou2024_rankers" / "result"
+            result.mkdir(parents=True)
+            entry = Path(tmp) / "entry.bib"
+            entry.write_text(ARXIV_MULTILINE, encoding="utf-8")
+            argv, cwd = sys.argv, os.getcwd()
+            os.chdir(result)
+            sys.argv = ["paper_bib_fetch.py", "--bib-file", str(entry), "--source-url", "https://arxiv.org/abs/2305.08845",
+                        "--title", "Large Language Models are Zero-Shot Rankers for Recommender Systems",
+                        "--expected-year", "2024", "--result-dir", ".", "--no-runtime"]
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, paper_bib_fetch.main())
+            finally:
+                sys.argv = argv
+                os.chdir(cwd)
+            self.assertTrue((result / "r02_hou2024_rankers.bib").is_file())
+
+
 if __name__ == "__main__":
     unittest.main()

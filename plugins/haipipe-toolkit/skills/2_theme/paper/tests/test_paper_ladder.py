@@ -77,7 +77,7 @@ class PaperLadderTest(unittest.TestCase):
         card = (run / "run.yaml").read_text()
         self.assertIn("kind: soft", card)
         self.assertIn("skill: haipipe-paper\n", card)                # from the Open a version run card
-        self.assertIn("agent: haipipe-page-writing-agent", card)
+        self.assertIn("agent: haipipe-draft-writing-agent", card)
         quiet(L.main, ["run", str(v), "release-section", "t01"])        # a card that a person signs
         self.assertIn("release of one Section (G3)", (v / "runs" / "run-release-section-t01" / "run.yaml").read_text())
         with self.assertRaises(SystemExit):              # the same Run twice: a new round is a pass
@@ -86,6 +86,9 @@ class PaperLadderTest(unittest.TestCase):
             quiet(L.main, ["run", str(v / "t01_introduction"), "revise", "x"])
         with self.assertRaises(SystemExit):              # a Task is tNN_<lowercase-kebab>
             quiet(L.main, ["task", str(v), "S-Desk-Main-1-Intro"])
+        quiet(L.main, ["spaces", str(self.board), "j01_v0101_desk"])    # a version's own: reports/ and runs/
+        self.assertTrue((v / "reports" / "README.md").is_file())
+        self.assertFalse((v / "studio").exists())        # Studio, Related, Delivery are the Board's (b10 s09)
 
     def test_next_comments_and_rollback(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
@@ -99,11 +102,14 @@ class PaperLadderTest(unittest.TestCase):
         batch.mkdir()
         (batch / "RD01-editor-0916.md").write_text("# RD01-editor-0916 · Editor decision\n\n## Opening\n\n"
                                                    "The editor asks for a major revision.\n")
+        (v / "t01_introduction" / "studio" / "s01-map").mkdir(parents=True)   # an older Section's own topic
+        (v / "t01_introduction" / "studio" / "s01-map" / "s01-map.md").write_text("# s01 · map\n")
         before = snapshot(self.board)
         quiet(L.main, ["next", str(self.board), "--from", "j01_v0101_desk", "--date", "0202"])
         n = self.board / "j02_v0202_desk"
         self.assertTrue((n / "t01_introduction" / "draft" / "t01_introduction-draft-v0.1.md").is_file())
         self.assertFalse((n / "t01_introduction" / "runs").exists())   # receipts are not copied
+        self.assertFalse((n / "t01_introduction" / "studio").exists()) # Studio is the Board's (b10 s09-D01)
         self.assertIn("from: j01_v0101_desk", (n / "j02_v0202_desk.md").read_text())
         quiet(R.main, [str(self.board), "add", "j01_v0101_desk/RD01-editor-0916", "--to", "j02_v0202_desk"])
         rep = n / "reports" / "q01_editor-0916" / "q01_editor-0916.md"

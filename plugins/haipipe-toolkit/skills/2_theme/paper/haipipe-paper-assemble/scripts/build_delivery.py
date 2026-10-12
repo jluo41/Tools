@@ -36,6 +36,17 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
+_PAGE_ENGINE = next(p for p in Path(globals().get("__engine_dir__") or __file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+if str(_PAGE_ENGINE) not in sys.path:
+    sys.path.insert(0, str(_PAGE_ENGINE))
+from src.common import delivery_dir, delivery_owner, delivery_source, delivery_lane_dir, delivery_lane_dirs
+
+
+def page_latex(folder):
+    """Block output first; an old fragment is readable until its source rebuilds."""
+    lanes = delivery_lane_dirs(folder, "latex")
+    return lanes[0] if lanes else delivery_lane_dir(folder, "latex")
+
 def validate_build_config(config, delivery):
     """Reject unsafe generated paths before any build side effect."""
     delivery = Path(delivery).resolve()
@@ -51,8 +62,7 @@ def validate_build_config(config, delivery):
             value = config[table].get(key)
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f"paper-build.toml requires a nonempty [{table}] {key}")
-    if delivery.name != "delivery":
-        raise ValueError("paper-build.toml must live in <paper>/delivery/")
+    delivery_source(delivery)
 
     def child(base, value, label):
         if not isinstance(value, str) or not value.strip():
@@ -79,7 +89,7 @@ def validate_build_config(config, delivery):
     # 0.10.0 (b16 g03): on the ladder a version Job holds its Sections and its own delivery/, so a
     # [pages] group may be the folder that holds delivery/ ("..": j01_v1_<desk>/). A page is found there
     # by its id (S-…), never delivery/ itself, so the generated room cannot overwrite it.
-    holder = delivery.parent
+    holder = delivery_source(delivery)
     inputs = [x for x in inputs if x != holder]
     for key in ("preamble", "head", "opening", "supplement_head", "supplement_opening", "store"):
         if config["source"].get(key):
@@ -120,8 +130,8 @@ if not CONFIG_PATH.exists():
 HERE = CONFIG_PATH.parent                              # <paper>/delivery/
 # the paper: delivery/'s folder, or on the ladder (0.10.0, b16 g03) the Board above the version Job that
 # holds it (Paper-<Slug>/j01_v1_<desk>/delivery/); VERSION is the folder holding delivery/ either way
-VERSION = HERE.parent
-ROOT = next((q for q in (VERSION, VERSION.parent) if (q / "board.md").is_file()), VERSION)
+VERSION = delivery_source(HERE)
+ROOT = delivery_owner(VERSION)
 # where Section Pages sit: today's B<x>-<desk>-<part>/ groups, or the version Job itself
 PAGE_HOMES = ("B*",) if VERSION == ROOT else ("B*", VERSION.relative_to(ROOT).as_posix())
 CFG = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
@@ -454,8 +464,8 @@ def purge_retired_delivery_receipts(value):
 # ── one page ──────────────────────────────────────────────────────────────────
 def inspect(pid: str, group: Path):
     d = group / pid
-    frag = d / "delivery" / "latex" / f"{pid}.tex"
-    pdfs = [d / "delivery" / "latex" / f"{pid}.pdf"]      # the Page export's compiled wrapper
+    frag = page_latex(d) / f"{pid}.tex"
+    pdfs = [page_latex(d) / f"{pid}.pdf"]      # the Page export's compiled wrapper
     units = page_display_units(d)
     reasons = []
     if not d.exists(): reasons.append("page folder missing")
@@ -752,12 +762,12 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
 def page_bib(p):
     """The Bib a Page's own LaTeX delivery cites: the export freezes it from the Page's
     selected, verified CITE Results at `delivery/latex/selected-bibliography/<page>.bib`."""
-    return p["dir"] / "delivery" / "latex" / "selected-bibliography" / f"{p['id']}.bib"
+    return page_latex(p["dir"]) / "selected-bibliography" / f"{p['id']}.bib"
 
 
 def page_draft_bib(p):
     """0.9.1 · the unverified Bib a `delivery: draft` Page's export writes beside its verified one."""
-    return p["dir"] / "delivery" / "latex" / "draft-bibliography" / f"{p['id']}.bib"
+    return page_latex(p["dir"]) / "draft-bibliography" / f"{p['id']}.bib"
 
 
 def citing_bib(p):
@@ -779,7 +789,7 @@ def require_page_bibs(pages):
     for p in pages:
         if not p.get("included", p.get("ready", True)):
             continue
-        fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
+        fragment = page_latex(p["dir"]) / f"{p['id']}.tex"
         if (not citing_bib(p).is_file() and fragment.is_file()
                 and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8"))):
             raise RuntimeError(_missing_bib(p))
@@ -850,7 +860,7 @@ def merge_bib(pages):
         if b.is_file() and b == page_draft_bib(p):
             DRAFT_CITED.append(p["id"])
         if not b.is_file():
-            fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
+            fragment = page_latex(p["dir"]) / f"{p['id']}.tex"
             if fragment.is_file() and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8")):
                 raise RuntimeError(_missing_bib(p))
         for b in [b] if b.is_file() else []:
@@ -1627,7 +1637,7 @@ def check():
     for lane, ids, group in (("main", main_ids, g_main), ("appendix", appx_ids, g_app)):
         for pid in ids:
             d = group / pid if group else None
-            frag = d / "delivery" / "latex" / f"{pid}.tex" if d else None
+            frag = page_latex(d) / f"{pid}.tex" if d else None
             state = ("no [pages] group" if d is None else "page folder missing" if not d.is_dir()
                      else "fragment" if frag.is_file() else "no fragment")
             missing += state in ("no [pages] group", "page folder missing")

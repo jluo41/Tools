@@ -86,5 +86,22 @@ class PaperSourceAccessTest(unittest.TestCase):
         self.assertIn("navigation aids, not evidence authority", rendered)
 
 
+    def test_a_doi_less_venue_record_carries_every_required_link(self) -> None:
+        """A PMLR paper has no DOI; the checker still needs article, publisher, PubMed,
+        Scholar, Google and BibTeX links, and the OpenReview row shows only when known."""
+        page = "https://proceedings.mlr.press/v306/wang26fy.html"
+        record = paper_source_access.build_venue_record(
+            "ConFlux: Multivariate Time Series in Flux", page, page,
+            pdf_url="https://example.org/wang26fy.pdf", abstract="word " * 40, abstract_source=page,
+            openreview_url="https://openreview.net/forum?id=qugRvYjaFx")
+        for name in ("article", "publisher", "pubmed", "google_scholar", "google", "bibtex"):
+            self.assertTrue(record["links"][name].startswith("https://"), name)
+        self.assertIsNone(record["subject"]["doi"])
+        self.assertEqual("abstract", record["retrieval"]["reading_depth"])
+        self.assertIn("**OpenReview:**", paper_source_access.render_markdown(record))
+        record["links"]["openreview"] = None
+        self.assertNotIn("OpenReview", paper_source_access.render_markdown(record))
+
+
 if __name__ == "__main__":
     unittest.main()

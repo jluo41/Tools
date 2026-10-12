@@ -8,8 +8,8 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.8.2"
-  last_updated: "2026-10-09"
+  version: "1.9.3"
+  last_updated: "2026-10-11"
 ---
 
 # /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
@@ -178,12 +178,12 @@ only the named human receipt can release or close it.
 Layout: the ladder (the Story as `studio/` topics and `reports/` Questions, `jNN_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
 
 ```text
-Paper-<Slug>/                           Board: board.md · studio/ · reports/ · runs/ · venues/ · related/
-└── jNN_v<MMDD>_<desk>/                 a version: its face (## Narrative · ## Questions), studio/ · reports/ · runs/
+Paper-<Slug>/                           Board: board.md · studio/ · related/ · reports/ · runs/ · venues/
+├── delivery/jNN_<version>/             the Board's: each version's generated Compile projection
+└── jNN_v<MMDD>_<desk>/                 a version: its face (## Narrative · ## Questions), reports/ · runs/
     ├── t00_abstract/ · t0N_<title>/    Section Tasks (Main), t2N_<title>/ (Appendix)
     ├── t3N_<title>/                    letters: t31_cover-letter · t32_response
-    ├── reports/qNN_<kind>-<MMDD>/      a comments report
-    └── delivery/                       generated Compile projection
+    └── reports/qNN_<kind>-<MMDD>/      a comments report
 ```
 
 Evidence execution remains outside the Paper folder:

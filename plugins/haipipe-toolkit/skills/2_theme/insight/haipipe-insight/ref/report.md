@@ -1,4 +1,4 @@
-# Report · the answering page is a haipipe-page Page
+# Report · the answering page is a haipipe-draft Page
 
 Read when writing or reading an answer. The report is the third column of the
 Insight workbench (Logic · Work · Report; JL 261001): the question asks, the
@@ -24,19 +24,19 @@ flow and what Insight adds to the Page Face are the same for both.
 On a register board the report IS the answering page: one Page Folder per question per partition
 (`<L><NN>-<partition>-<slug>/`), at every level, Data, Information, Knowledge
 and Wisdom. There is no separate report file and no Insight page shape. The
-page is a `haipipe-page` Page Face and is written through that skill's own
+page is a `haipipe-draft` Page Face and is written through that skill's own
 flow; this reference adds only what an answer needs on top of it. The page
 folder is also a task folder, so the page sits beside the runs it rests on:
 
 ```text
 <board>/<n>-<partition>/<L><NN>-<partition>-<slug>/
-├── <L><NN>-<partition>-<slug>.md                Page Face: Opening · Content (haipipe-page)
+├── <L><NN>-<partition>-<slug>.md                Page Face: Opening · Content (haipipe-draft)
 ├── answers.yaml                                 each evidence need → its result files (evidence-needs.md § 2)
-├── draft/<stem>-draft-v<G>.<S>.md               the plan: Structure · Scratch · Draft (haipipe-page)
+├── draft/<stem>-draft-v<G>.<S>.md               the plan: Structure · Scratch · Draft (haipipe-draft)
 ├── draft/<stem>-evidence-items.md               one Evidence Item per need (evidence-needs.md § 3)
 ├── draft/records/<stem>-<record>.md             log, files, context, discussion
 ├── runs/run_bNNjNNtNNrNN_<partition>_<task>.sh  one ticket per task run it rests on
-├── runs/run-check-<MMDD>-<slug>.md              the page CHECK (haipipe-page)
+├── runs/run-check-<MMDD>-<slug>.md              the page CHECK (haipipe-draft)
 └── results/<ticket>/                            each ticket's result, generated
 ```
 
@@ -46,18 +46,18 @@ questions; the register cell is the join.
 
 ## The flow
 
-Every answering page is written the `haipipe-page` way (its `SKILL.md`,
+Every answering page is written the `haipipe-draft` way (its `SKILL.md`,
 `ref/page-template.md`, `ref/page-checklist.md`; the Board's
 `ref/writing-rules.md`; the plan grammar in `workbench-page/ref/plan-grammar.md`):
 
 ```text
 1 needs      the questions' needs and specs are planned and bound          evidence-needs.md
-2 structure  the plan's Structure: one C division per need, Bullets in       haipipe-page structure
+2 structure  the plan's Structure: one C division per need, Bullets in       haipipe-draft structure
              reader order, one Evidence Item per bound file of a need
-3 draft      the plan's Draft: one candidate sentence line per Bullet        haipipe-page writing
-4 adopt      `page.py adopt <page>` writes the Draft into Content             haipipe-page
-5 health     `page.py health <page>` has no FAIL                              haipipe-page
-6 check      a page CHECK by an agent that did not write the page            haipipe-page-check-agent
+3 draft      the plan's Draft: one candidate sentence line per Bullet        haipipe-draft writing
+4 adopt      `page.py adopt <page>` writes the Draft into Content             haipipe-draft
+5 health     `page.py health <page>` has no FAIL                              haipipe-draft
+6 check      a page CHECK by an agent that did not write the page            haipipe-draft-check-agent
 7 evidence   `haipipe-insight-check` finds the cell OK                        haipipe-insight-check
 ```
 
@@ -71,7 +71,7 @@ reference keeps its old sections until it is rewritten through the flow.
 
 ## What Insight adds to the Page Face
 
-Only these, everything else is `haipipe-page`'s:
+Only these, everything else is `haipipe-draft`'s:
 
 - **No personal marks.** A board is read by the public: no page, plan, item or
   register line carries a person's name or initials (no `owner:` line).
@@ -89,7 +89,7 @@ Only these, everything else is `haipipe-page`'s:
   question in plain words, defining each term it uses inline, then answers it
   in one or two sentences. No question, need, page or run id appears in it; a
   page may be named after its plain description as a short handle. Interval
-  detail stays in Content. The drawer keeps `haipipe-page`'s parts:
+  detail stays in Content. The drawer keeps `haipipe-draft`'s parts:
   `**Where this Page sits:**` (the neighbouring pages, by what they show),
   `**Why it matters:**` (the consequence for the reader, such as what a design
   can or cannot do), and `**Covered elsewhere:**` (what this page leaves out).
@@ -99,7 +99,7 @@ Only these, everything else is `haipipe-page`'s:
   <QID>.E<n> from …`. A Knowledge page's judge division holds the proposition,
   its strength and the reason, the rivals and the boundary.
 - **Figures** come from the bound results (`results/<ticket>/fig_<name>.png`),
-  each with its caption line above it, as `haipipe-page` requires.
+  each with its caption line above it, as `haipipe-draft` requires.
 
 ## Plain-reader rules
 
@@ -152,7 +152,7 @@ its next writing Run applies them.
 ## Who writes and who checks
 
 The level's folder skill (`haipipe-insight-data`, `-information`,
-`-knowledge`, `-wisdom`) owns what the answer must contain; `haipipe-page`
+`-knowledge`, `-wisdom`) owns what the answer must contain; `haipipe-draft`
 owns how the page is written. A writing agent plans and drafts; a different
 agent runs the page CHECK; the register cell settles at GI6 only after both
 checks pass. Writing a page never settles a cell by itself.

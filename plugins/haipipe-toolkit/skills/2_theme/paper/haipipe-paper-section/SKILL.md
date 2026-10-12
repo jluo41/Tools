@@ -9,8 +9,8 @@ description: >-
   to typed Page-local Evidence Item Results. Use when adding, outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-10-07"
+  version: "0.11.1"
+  last_updated: "2026-10-11"
   page_ruling: none
   group-token: "t0N_<title> | t2N_<title> (legacy S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>)"
   outline:
@@ -26,7 +26,7 @@ metadata:
 
 > ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the Section's `delivery/latex/` and `delivery/word/` files: fix the Page, its Draft or the exporter, then rebuild.
 
-For a Section Page update, load `haipipe-page`, `haipipe-page-workflow`, the
+For a Section Page update, load `haipipe-draft`, `haipipe-draft-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, this PageType and
 its relevant references in the shared set order. Read
 `../haipipe-paper/ref/page-integration.md` when planning a Run or release.
@@ -42,12 +42,12 @@ do not invent Page paths, accepted Results, or a release to complete a proposal.
 This skill owns the Paper Section Page and its `page-type: section` contract below. Enter through gate G3, one page per
 row of its version face's `## Narrative` (an older Board's Story §8), each row released by a person independently
 (the Release a Section card). A new Section is made by `haipipe-paper/scripts/paper_ladder.py task <version>
-t0N_<title>` (the Add a Section card), with its reader-contract header and its own `studio/` and `reports/`.
+t0N_<title>` (the Add a Section card), with its reader-contract header; its `reports/` come with their first item.
 Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
 is a separately commissioned build, and runs anytime from `delivery/` on the Story's
 compile-order block. `haipipe-paper-workflow` holds the full gate assertions; this block only
-binds the Page owner. The page itself always runs through `/haipipe-page` and
-`haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
+binds the Page owner. The page itself always runs through `/haipipe-draft` and
+`haipipe-draft-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
 never a private lifecycle.
 
 ## 📄 Grain and authority
@@ -99,10 +99,12 @@ Paper-<Slug>/
     └── reports/qNN_<kind>-<MMDD>/   a comments batch: a report of type comments, never a Task
 ```
 
-Each Section Task holds, beside its face and the Page workflow's `draft/`, `runs/`, `results/` and `delivery/`, its
-own `studio/sNN-<topic>/` (its drawings: the logic by hand, the Section map) and `reports/qNN_<topic>/` (the
-discussion questions kept while it is changed, each a row in the face's `## Questions`, shown in Audience Report ›
-Questions as Question │ Work │ Report). Both start empty (b16 s13, JL 261007).
+Each Section Task holds its face, the Page workflow's `draft/`, `runs/` and `results/`, and its own
+`reports/qNN_<topic>/` (the discussion questions kept while it is changed, each a row in the face's
+`## Questions`, shown in Report › Questions as Question │ Work │ Report; b16 s13, JL 261007). It keeps no
+`studio/` and no `delivery/` (b10 s09-D01, s03-D06; JL 261011: "for the section, we will do not have the
+related studio and delivery"): its drawings (the logic by hand, the Section map) are Board topics,
+`studio/sNN-<topic>/`, and its built output is the Board's `delivery/jNN_<version>/tNN_<section>/`.
 
 A Section is a Task of its version, named by series (JL 261007: "no more S-xxx"): the number band says the
 part (Main, Appendix, letters), the title is lowercase-kebab and says the page job, and the version folder

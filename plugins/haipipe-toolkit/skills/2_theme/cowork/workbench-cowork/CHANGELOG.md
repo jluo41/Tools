@@ -1,3 +1,15 @@
+## 0.5.2 · 2026-10-11 · Related: groups by subfolder, Word previewed
+
+- Studio › Related groups its rows by the `related/` subfolder their file sits in and opens each on the file itself; a Word file (a coauthor's form in `materials/`) is read in place, comments included (frame.docx_preview; JL 261011: "could we preview the word here?").
+
+## 0.5.1 · 2026-10-11 · Related folds inside the Studio
+
+- Related leaves the top row for the Studio's second folding part, under the topic cards (b10 s04; JL 261011). The top row is Guide · Studio | Block · Job · Task | Delivery.
+
+## 0.5.0 · 2026-10-11 · Related moves to the top row
+
+- Description › Related is gone: the shared frame's top row has Related before Studio, the Block's `related/related.md` as a table with a button per kind (b10 s04; JL 261011). `cowork_theme.py` Description keeps Scope · People · Resources.
+
 ## 0.4.1 · 2026-10-07 · The Guide moves into the server folder (JL, via b02)
 
 - `ref/cowork-method.md`, `ref/methods/cowork/`, `ref/cowork-methods.excalidraw` and

@@ -35,14 +35,14 @@ A Page Run has a local identity and a Version that stores its feedback Steps. Ta
 
 The Page's Runs function proposes bounded interaction goals when a person needs to shape, compare, revise, or accept the Page itself. A proposal is not yet a Run and receives no \texttt{rpNN} until the person selects or directly commissions it. A selected candidate resumes a matching open Page Run or allocates the next \texttt{rpNN} for an independent goal, and later feedback appends Steps to that Run's current Version. Code, search, data, rendering, build, Discovery, and other output-producing work remains a normal Task Run even when a later human gate reviews its Result.
 
-The first Page Run is always \texttt{rp00\_mermaid-structure}, where the person and agent iterate on the complete Mermaid argument map until the person explicitly closes it. That Mermaid Structure closure freezes the Page-global reading order as \texttt{P01}, \texttt{P02}, through \texttt{PN}, with every serial mapped to its plan address. After the Mermaid Structure closes, the Runs function creates Steps, each with a scope covering one or more of the \texttt{N} numbered paragraphs. Each selected paragraph Run uses a short identity that exposes the exact serial or contiguous range, such as \texttt{rp01\_p01} or \texttt{rp02\_p02-p03}; its descriptive wording stays in Goal. Different human questions or acceptance boundaries call for different Step scopes, while code, Discovery, data, rendering, and build remain normal Task Runs.
+The first Page Run is always \texttt{rp-struct-01}: one shared Structure Run in which the person and agent complete both SHAPE and SURVEY for the whole Page. The Structure Run's closure freezes the Page-global reading order as \texttt{P01}, \texttt{P02}, through \texttt{PN}, with every serial mapped to its plan address; multiple people may contribute Steps to this same Run. After \texttt{rp-struct-01} closes, the Runs function creates paragraph Runs, each with a scope covering one or more of the \texttt{N} numbered paragraphs. Each selected paragraph Run uses a typed identity that exposes the exact serial or contiguous range, such as \texttt{rp-para-01\_P01} or \texttt{rp-para-02\_P02-P03}; its descriptive wording stays in Goal. Different human questions or acceptance boundaries call for different Step scopes, while code, Discovery, data, rendering, and build remain normal Task Runs.
 
 \begin{verbatim}
 flowchart LR
-  O["rp00_mermaid-structure"] -->|human closes Mermaid Structure + P01..PN| I["numbered paragraph index"]
-  I --> R1["rp01_p01"]
-  I --> R2["rp02_p02-p03"]
-  I --> RN["rpNN_pNN"]
+  O["rp-struct-01"] -->|human closes SHAPE + SURVEY + P01..PN| I["numbered paragraph index"]
+  I --> R1["rp-para-01_P01"]
+  I --> R2["rp-para-02_P02-P03"]
+  I --> RN["rp-para-NN_PNN"]
 \end{verbatim}
 
 \section{Continuing work}

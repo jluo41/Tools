@@ -39,7 +39,7 @@ work/
         └── tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
-`Task Folder = Page Folder`. Do not create a second Page container for it.
+A Task may hold a draft, in its own `draft/`. Do not create a second Page container for it.
 
 `draft/` is the Page's plan folder (Page skill 0.118; older Pages call it
 `outline/`, which tools still read through `src/outline_version.py::plan_dir`
@@ -50,7 +50,7 @@ when no `draft/` exists). It holds the current plan
 Task or a whole `work/` tree, `page.py check-page-folder <task-folder | tasks-dir>`
 says whether each Page is on the latest layout and names the fix, and
 `page.py draft-layout <task-folder | tasks-dir> --sort-runs` migrates it
-(both under `<toolkit>/skills/1_base/page/haipipe-page/cli/`).
+(both under `<toolkit>/skills/1_base/page/haipipe-draft/cli/`).
 
 Because a Task Folder is a Board Page, it may hold the Page-owned `studio/`
 lane, whose storage and writer belong to `workbench-studio`. A Task never

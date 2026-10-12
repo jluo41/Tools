@@ -183,7 +183,7 @@ haipipe-paper-venue · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
 SKILL.md frontmatter `version:`. Newest first.
 
-**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
+**v0-series rule:** inherited from `haipipe-block`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
 ## 0.1.2 - 2026-08-04

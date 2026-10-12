@@ -1,3 +1,17 @@
+## 1.1.0 · 2026-10-11 · Job menu and Map in words
+
+- JL 261011 on the Job ▾ menu ("THIS IS VERY HARD TO UNDERSTAND"); picked "one line each". `insight_theme.option`:
+  `j01 · first ladder × first 5 days`. The Map's corner reads `analysis plan \ data freeze`, its rows `AP1 · first
+  ladder`, its columns `F1 · first 5 days` (`insight_plan_c.plan_code`, `freeze_code`, `freeze_words`, `job_title`;
+  `insight_views._vlabel`). A scaffold placeholder (`<what is new>`) is never shown as words. A Map cell links its
+  Job as `j01` (its row and column already say the plan and the data); a Job's Prototype line reads `Analysis plan`.
+
+## 1.0.2 · 2026-10-11 · A Task page shows its figures
+
+- `servers/workbench-insight/insight_views.py` `render_task_page`: the page's Markdown is drawn with its folder as the
+  base, so a line `![…](runs/<run>/result/fig_….png)` shows the run's figure in the page pop-out (JL 261011: more
+  tables and figures).
+
 ## 1.0.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

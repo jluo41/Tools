@@ -10,7 +10,7 @@ Rules:
 
 1. **One skill per button**: the button's `skills:` names it; the agent loads it first.
 2. **The level's skill**: Update the description, Add a Job or Task, and Build the delivery
-   belong to the level they sit on (`haipipe-board` · `haipipe-job` · `haipipe-task`).
+   belong to the level they sit on (`haipipe-block` · `haipipe-job` · `haipipe-task`).
 3. **The shared Spaces**: Idea Studio is `haipipe-studio`, Audience Report is
    `haipipe-question` (asking) and `haipipe-report` (the rest), Runs is `haipipe-run`.
 4. **Soft Run names**: `run-<type>-<target>`, no date; a new round is a pass
@@ -32,7 +32,7 @@ The button's name is the Run column; "what it does" is the small line under it.
 
 | Space | What it does | Skill | Run (the button's name) | Levels |
 |---|---|---|---|---|
-| Description | Update the description | `haipipe-board` | `run-face-<bNN>` | Block |
+| Description | Update the description | `haipipe-block` | `run-face-<bNN>` | Block |
 | Description | Update the description | `haipipe-job` | `run-face-<jNN>` | Job |
 | Description | Update the description | `haipipe-task` | `run-face-<tNN>` | Task · Page Task |
 | Idea Studio | add a topic · redraw it · save this session, each a pass | `haipipe-studio` | `run-draw-<sNN>` (one button) | every level |
@@ -40,11 +40,11 @@ The button's name is the Run column; "what it does" is the small line under it.
 | Audience Report | Write the report | `haipipe-report` | `run-report-<qNN>` | every level |
 | Audience Report | Rebuild report drawing | `haipipe-report` | `run-figures-<qNN>` | Block · Job · Task |
 | Audience Report | Check a report | `haipipe-report` | `run-check-<qNN>` | Block · Job · Task |
-| Work Details | Add a Job | `haipipe-board` | `run-add-<jNN>` | Block |
+| Work Details | Add a Job | `haipipe-block` | `run-add-<jNN>` | Block |
 | Work Details | Add a Task | `haipipe-job` | `run-add-<tNN>` | Job |
 | Work Details | Build the Task | `haipipe-task` | `run-build-<tNN>` | Task |
 | Runs | Run | `haipipe-run` | `run-<type>-<target>` or `rNN_<slug>` | every level (hard Runs in a work Task only) |
-| Delivery | Build the delivery | `haipipe-board` | `run-delivery-<target>` | Block |
+| Delivery | Build the delivery | `haipipe-block` | `run-delivery-<target>` | Block |
 | Delivery | Build the delivery | `haipipe-job` | `run-delivery-<target>` | Job |
 | Delivery | Build the delivery | `haipipe-task` | `run-delivery-<target>` | Task |
 
@@ -52,20 +52,20 @@ The button's name is the Run column; "what it does" is the small line under it.
 
 | Space | What it does (the card) | Skill | Run (the button's name) | Opens in |
 |---|---|---|---|---|
-| Work Details | Scratch | `haipipe-page-scratch` | `run-scratch-<target>` | Draft-Scratch |
-| Work Details | Structure revise | `haipipe-page-structure` | `run-structure-<slug>` | Draft-Scratch |
-| Work Details | Evidence embed | `haipipe-page-evidence` | `run-<value\|display\|citation>-<slug>` | Draft-Scratch |
-| Work Details | Section revise | `haipipe-page-writing` | `run-section-<slug>` | Draft-Revise |
-| Work Details | Paragraph revise | `haipipe-page-writing` | `run-paragraph-<slug>` | Draft-Revise |
-| Work Details | Revise edits | `haipipe-page-revise` | `run-revise-<target>` | Draft-Revise |
-| Work Details | Auto write | `haipipe-page-writing` | `run-section-<slug>` | Draft-Revise |
-| Work Details | Bind / update citation | `haipipe-page-evidence` | `run-citation-<slug>` | Evidence-Citation |
+| Work Details | Scratch | `haipipe-draft-scratch` | `run-scratch-<target>` | Draft-Scratch |
+| Work Details | Structure revise | `haipipe-draft-structure` | `run-structure-<slug>` | Draft-Scratch |
+| Work Details | Evidence embed | `haipipe-draft-evidence` | `run-<value\|display\|citation>-<slug>` | Draft-Scratch |
+| Work Details | Section revise | `haipipe-draft-writing` | `run-section-<slug>` | Draft-Revise |
+| Work Details | Paragraph revise | `haipipe-draft-writing` | `run-paragraph-<slug>` | Draft-Revise |
+| Work Details | Revise edits | `haipipe-draft-revise` | `run-revise-<target>` | Draft-Revise |
+| Work Details | Auto write | `haipipe-draft-writing` | `run-section-<slug>` | Draft-Revise |
+| Work Details | Bind / update citation | `haipipe-draft-evidence` | `run-citation-<slug>` | Evidence-Citation |
 | Work Details | Build figure / table | `haipipe-display` | `run-display-<slug>` | Evidence-Display |
-| Work Details | Bind / update value | `haipipe-page-evidence` | `run-value-<slug>` | Evidence-Value |
-| Delivery | Build | `haipipe-page-delivery` | `run-delivery-<target>` | Delivery |
-| Delivery | Check | `haipipe-page-check` | `run-check-<page>` | Delivery |
+| Work Details | Bind / update value | `haipipe-draft-evidence` | `run-value-<slug>` | Evidence-Value |
+| Delivery | Build | `haipipe-draft-delivery` | `run-delivery-<target>` | Delivery |
+| Delivery | Check | `haipipe-draft-check` | `run-check-<page>` | Delivery |
 
-The Page's run names are its own (`haipipe-page`'s run families); the card for each is in
+The Page's run names are its own (`haipipe-draft`'s run families); the card for each is in
 the Page's `run-cards.md`, which is where these skills are read from. The panel shows the Run's
 name (`frame.PAGE_RUN_NAMES`) and the card's label under it.
 
@@ -111,7 +111,7 @@ design      Add a goal × method run-add-job-j<NN> · Set shared rules run-setup
 
 ## Settled and handed over (b03 s21, 261007)
 
-1. **Delivery at Block and Job** (decided): stays in each level skill (`haipipe-board`,
+1. **Delivery at Block and Job** (decided): stays in each level skill (`haipipe-block`,
    `haipipe-job`); no `haipipe-delivery` until a theme's Block delivery needs one.
 2. **Checked** (decided): not a fourth answer state; the report Page's CHECK verdict is shown
    beside answered (`haipipe-report`).

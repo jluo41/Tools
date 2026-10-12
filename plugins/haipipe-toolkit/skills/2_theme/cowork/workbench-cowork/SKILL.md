@@ -8,10 +8,10 @@ description: >-
   and the shared Guide. Also the Project view: every cowork Block of a Project in
   one table. Use to see who we wait on, which drafts are not sent, a Job's
   state, or a Block's Questions. The Block contract belongs to haipipe-cowork;
-  report writing to haipipe-page.
+  report writing to haipipe-draft.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-07"
+  version: "0.5.2"
+  last_updated: "2026-10-11"
 ---
 
 # CoWork Block Workbench
@@ -77,7 +77,8 @@ base's default.
 
 | Level › Space | Third row | Contents |
 |---|---|---|
-| Block › Description | Scope · People · Resources · Related | the face's fields; `j00_people`; Related resources, Job files, OneDrive; `related/related.md` |
+| Block › Studio › Related (folds under the topics) | one part, folded until a Related link opens it | `related/related.md`, grouped by `related/` subfolder (`materials/`, `meetings/` …), each row opening on its file; a Word file is read in place (the frame's own view) |
+| Block › Description | Scope · People · Resources | the face's fields; `j00_people`; Related resources, Job files, OneDrive |
 | Block › Audience Report | none | Question │ Work │ Report from the Questions register |
 | Block › Work Details | All · open · waiting · done | one row per Job: state, waiting on (days), next; a row opens the Job |
 | Block › Delivery | delivery/ · Reports · Done jobs | `delivery/`; answered reports; Jobs marked ✅ DONE |
@@ -93,5 +94,5 @@ Today's Check Space has no place here; where waiting-on and drafts show is b13 Q
 ## Boundary
 
 The Workbench reads; `haipipe-cowork` and its agents write the Block, `haipipe-question`
-the Questions, `haipipe-page` the reports. The Project view only lists Blocks and their
+the Questions, `haipipe-draft` the reports. The Project view only lists Blocks and their
 open Jobs; it has no registers of its own.

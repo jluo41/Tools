@@ -2,15 +2,15 @@
 name: workbench-paper
 description: >-
   The paper theme of the shared workbench frame: a paper Board, each version and
-  each Section open on the frame's tabs Guide · Block · Job ▾ · Task ▾, each with
-  the six Spaces (Description · Idea Studio · Audience Report | Work Details |
-  Runs · Delivery) and a Runs panel whose buttons are the paper's run cards by
-  level and Space. Read-only: it shows the paper's Markdown and copies prompts.
+  each Section open on the frame's top row Guide · Studio | Paper Board ·
+  Version ▾ · Section ▾ | Delivery, each level with its work row (Description ·
+  Report · Work · Runs) and a Runs panel whose buttons are the paper's run cards by
+  level and Space; Studio (with Related folded under its topics) and Delivery are the Board's. Read-only: it shows the paper's Markdown and copies prompts.
   Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
   Section tab, paper spaces, /workbench-paper.
 metadata:
-  version: "0.34.0"
-  last_updated: "2026-10-09"
+  version: "0.38.1"
+  last_updated: "2026-10-11"
 ---
 
 # /workbench-paper · the paper theme on the shared frame
@@ -46,15 +46,16 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 
 | Level › Space | Its third-row views | Reads |
 |---|---|---|
-| Block › Description | Scope · Venue · Resources · Related | `board.md`; `venues/*/call.md`; `## Related resources`; `related/related.md` as cards, each opening on its deep read's drawing |
+| Block › Studio › Related (folds under the topics) | one part, folded until a Related link opens it | the frame's own view (`haipipe-related`): one row per `related/related.md` row, grouped by its subfolder first and then its `group` cell, each opening on its file (a Word file read in place, an email with its headers); files with no row yet, dashed. By question: Report › Related Papers, which leaves out meetings, files and emails and lists a paper under each question in its `group` cell |
+| Block › Description | Scope · Venue · Resources | `board.md`; `venues/*/call.md`; `## Related resources` |
 | Block › Idea Studio | one row per topic | `studio/sNN-<topic>/` (the frame's studio rows) |
 | Block › Audience Report | Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers | `board.md ## Questions` by `group:`, their `reports/qNN_`; the current telling's studio topic; the related papers under the question each bears on (`related/related.md`, else the telling's related-papers table) |
 | Block › Work Details | Jobs · Main · Appendix · Evidence | the versions; every Section by part; the Evidence Items |
-| Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/` |
+| Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/jNN_<version>/`; then Sections in the build, every version's Sections from its `build-manifest.json`: ready at the build, in the build or changed after it, a link to each Section's part and its folder |
 | Job › Description | Version · Venue rules | the version face; its venue's `call.md` |
 | Job › Audience Report | Questions · Draft-Main · Draft-Appendix · Comments · Cover letter | the face's `## Questions` and the standing J1–J5; each Section as Question │ Work │ Report with its rendered draft beside its drawing; the comments reports' `## Review Items`; the letter by paragraph |
 | Job › Work Details | All · Main · Appendix · Letters | its `t0N_` · `t2N_` · `t3N_` Tasks; the comments reports the letters answer |
-| Job › Runs · Delivery | (Delivery) one card per kind: manuscript · letters · checks · sent | the version's `runs/` and `delivery/` |
+| Job › Runs · Delivery | (Delivery) one card per kind: manuscript · letters · Sections · checks · sent | the version's `runs/`; its part of the Board's delivery, `delivery/jNN_<version>/` |
 | Task › every Space | the Page Task's own views (`servers/workbench/task-page`) | the Section folder; the paper adds the reader contract (Scope), its `SUB-*` rows (Requirement), Comments, and "ready for the build" apart from "done" (Delivery) |
 
 **Markdown is the only truth source (JL 260918).** Every view is drawn from the paper's `.md` files (and

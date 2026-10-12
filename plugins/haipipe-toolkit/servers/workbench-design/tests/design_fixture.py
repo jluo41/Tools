@@ -220,8 +220,8 @@ def _job(block: Path, job: str, goal: str, method: str, version: str, inputs: st
         designs = [{"job": jid, "design": f"d{k:02d}", "words": SMS[(k - 1) % len(SMS)], "predicted": "+x [lo; hi]",
                     "released": "261007", "pins": {"goal": goal, "method": f"{method} {version}", "inputs": inputs}}
                    for k in (4, 1)]
-        _write(j / "delivery" / "designs.json", json.dumps({"designs": designs}, indent=2, ensure_ascii=False))
-        _write(j / "delivery" / "designs.md", "# Released designs\n\n" + "".join(
+        _write(block / "delivery" / j.name / "designs.json", json.dumps({"designs": designs}, indent=2, ensure_ascii=False))
+        _write(block / "delivery" / j.name / "designs.md", "# Released designs\n\n" + "".join(
             f"## {d['design']}\n\n{d['words']}\n\n" for d in designs))
 
 
@@ -232,7 +232,7 @@ def make(root: Path) -> Path:
     _block(block)
     for spec in JOBS:
         _job(block, *spec)
-    released = json.loads((block / "j03_g01_m04/delivery/designs.json").read_text())["designs"]
+    released = json.loads((block / "delivery/j03_g01_m04/designs.json").read_text())["designs"]
     released.append({"job": "j04", "design": "d02", "words": SMS[1], "predicted": "+x [lo; hi]", "released": "261007",
                      "pins": {"goal": "G01", "method": "M01 m1", "inputs": "i2"}})
     _write(block / "delivery" / "designs.json", json.dumps({"designs": released}, indent=2, ensure_ascii=False))

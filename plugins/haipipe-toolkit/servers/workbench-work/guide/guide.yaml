@@ -22,7 +22,7 @@ skills:
   role: Block / Job / Task / Run ownership and execution
 - skill: haipipe-question
   role: A Block's Questions, their register and report folders
-- skill: haipipe-page-workflow
+- skill: haipipe-draft-workflow
   role: Task Page reasoning, evidence and readings
 - skill: workbench-work
   role: Scope, Task, Check and Delivery over the Block's native records
@@ -128,18 +128,18 @@ roadmap:
     board: Tools/blueprints/b17_theme_work/studio/s01-work-ladder/s01-work-ladder.excalidraw
   - title: the Block's screens
     shows: the six Spaces on the Block tab, for each Block variant
-    board: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s11-block-variants/s11-block-variants-proposed.excalidraw
+    board: Tools/blueprints/b10_project_workbench/studio/s11-block-variants/s11-block-variants-proposed.excalidraw
   - title: the work workbench before the frame
     shows: the old Task Workbench page, the old page the band links
     board: Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
   Job:
   - title: the Job's screens
     shows: the six Spaces on the Job tab, for each Job variant
-    board: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s12-job-variants/s12-job-variants.excalidraw
+    board: Tools/blueprints/b10_project_workbench/studio/s12-job-variants/s12-job-variants.excalidraw
   Task:
   - title: the Task's screens
     shows: the six Spaces on the Task tab, for each Task variant
-    board: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s13-task-variants/s13-task-variants-proposed.excalidraw
-  - title: a Run's life
-    shows: hard and soft Runs, in the folder and on screen
-    board: Tools/blueprints/b01_haipipe-toolkit/j03_project_workbench/studio/s05-runs/s05-runs.excalidraw
+    board: Tools/blueprints/b10_project_workbench/studio/s13-task-variants/s13-task-variants-proposed.excalidraw
+  - title: what a Run is
+    shows: a Run, what it leaves (hard or soft), its passes, and the Runs Space
+    board: Tools/blueprints/b10_project_workbench/studio/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw

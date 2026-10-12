@@ -32,7 +32,7 @@ must be run BY HAND until someone adds it, because a rule filed under
 Run them, do not re-implement them:
 
 ```bash
-python3 <toolkit>/skills/1_base/page/haipipe-page/cli/check.py <board> | grep '^<page>.md'
+python3 <toolkit>/skills/1_base/page/haipipe-draft/cli/check.py <board> | grep '^<page>.md'
 ```
 
 ## Craft · write these, they are not yet checked anywhere

@@ -106,7 +106,7 @@ relationship, evidence_depth, citation_keys, gap, limit, next_move
 ```
 
 The synthesis specialist uses this packet to write the shared Page CONTENT
-phase. It never creates `runs/`, `results/`, a local `rNN`, or a second Bib.
+phase. It never creates a `runs/` folder, a local `rNN`, or a second Bib.
 
 ## Non-adoption rules
 

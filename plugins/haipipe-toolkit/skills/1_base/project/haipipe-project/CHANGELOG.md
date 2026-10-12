@@ -1,3 +1,18 @@
+## 0.14.1 · 2026-10-11 · fixes found running update over the whole WellDoc SPACE
+
+- `scripts/ladder.py`: the ticket patch now also wraps `dirname -- "<self>"`; 68 Proj61 discovery tickets had
+  been left one level short (`runs/runs/<run>/result`). The tidy step skips `workflow/` (a `bNN_` name in
+  `workflow/context/` is history, not a Block) and drops a planned move nested in another one.
+- `scripts/probe_tickets.py`: the tail match takes the Task too, so a ticket one level short no longer passes;
+  a relative answer resolves from the ticket's folder or the SPACE root.
+- `scripts/rename_themes.py`: a bare `<old>/` is relinked only when what follows names something in that
+  folder ("which tasks/subgroups" and "18 papers/preprints" are prose).
+- `scripts/audit_projects.py`, `ref/ladder.md`: a Block may hold `delivery/` and `related/` (haipipe-delivery,
+  JL 261010, 261011), cowork Blocks included. A `legacy_paths` entry inside a world (`work/<b>/.../results`)
+  is declared debt there, not a legacy root.
+- `scripts/project.py`: declared debt has its own step, `debt`: a declared legacy root, and any finding under
+  a declared path (with its reason in project.yaml), so "clean or only declared debt" can be read off the audit.
+
 ## 0.14.0 · 2026-10-09 · audit and update at Project level: every step, planned then applied
 
 - `scripts/project.py` (fn/audit.md § A Project, fn/update.md § A Project · the steps): `audit` lists

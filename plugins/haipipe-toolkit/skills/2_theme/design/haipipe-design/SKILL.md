@@ -82,7 +82,7 @@ refuses any of them missing, and a folder whose ids differ from `--goal` and `--
 pins; `n` comes from the goal's line (`--n` only to say the same):
 
 ```bash
-python scripts/design_ladder.py job design/Design-<name>/j03_g01_m04 --goal G01 --method "M04 m2" --inputs i2 --moved method
+python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_<method-name> --goal G01 --method "M04 m2" --inputs i2 --moved method
 python scripts/design_ladder.py run design/Design-<name> add-job j03
 ```
 

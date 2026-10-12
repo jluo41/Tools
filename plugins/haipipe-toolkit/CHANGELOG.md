@@ -30,17 +30,17 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   owns Questions, resource links and report placement under Block `reports/`.
   Ordinary report Pages reuse Page writing and CHECK; Run completion never
   supplies a Question answer. Shared Guide supplies the family instructions.
-- Correct the Page skill's Task Result path example (`haipipe-page` 0.121.4).
+- Correct the Page skill's Task Result path example (`haipipe-draft` 0.121.4).
 
 ### page, board: no Aims required; Discovery Pages build · 2026-10-01
 
-- `haipipe-board` 1.1.6: `check.py` no longer requires Aims or warns `no-aims`.
-- `haipipe-page` 0.121.3: the static build skips links into `results/` and other private lanes
+- `haipipe-block` 1.1.6: `check.py` no longer requires Aims or warns `no-aims`.
+- `haipipe-draft` 0.121.3: the static build skips links into `results/` and other private lanes
   instead of refusing the Page, so Discovery Pages (which link their Run Cards) build.
 
 ### discovery: Pages drop `## Aims` · 2026-10-01
 
-- Discovery Task Pages follow the `haipipe-page` Page Face, Opening → Content; Aims are
+- Discovery Task Pages follow the `haipipe-draft` Page Face, Opening → Content; Aims are
   backstage. `paper_runs.py check` no longer requires `## Aims` and still checks a legacy one;
   `migrate_bjtr.py` stops writing it (`haipipe-discovery` 0.20.0).
 
@@ -58,10 +58,10 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
 
 - A drafted Bullet puts its Draft on the dash line and its planned point in `Point:`, so the
   Outline Markdown reads as prose when folded; the served UI is unchanged. Every reader accepts
-  both shapes; every Draft save writes Draft-first (`haipipe-page` 0.117.0,
+  both shapes; every Draft save writes Draft-first (`haipipe-draft` 0.117.0,
   `haipipe-workbench-page` 0.91.0).
 - `outline/` keeps one current plan; superseded versions move to `outline/previous/`
-  (`page.py outline-tidy <page>`; `haipipe-page-structure` 0.49.0, `haipipe-page-evidence` 0.29.0).
+  (`page.py outline-tidy <page>`; `haipipe-draft-structure` 0.49.0, `haipipe-draft-evidence` 0.29.0).
 - The six process records move to `outline/records/`; `outline/` keeps only the current plan and
   the Evidence Item contract. Board, Studio, Insight and page readers resolve records through
   `record_path`, which still finds flat records in unmigrated Pages.
@@ -105,12 +105,12 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   specimen Page Folder, `haipipe-page-guide`, and no `SKILL.md`, so the installers never treat it
   as a skill; the name now says it is an example, not a lane. Its own source-path records were
   repointed; nothing outside the folder referenced it.
-- `skills/page/page-workflows/` is gone. `haipipe-page-workflow` (the list of Runs) sits
-  flat beside `haipipe-page`; each Run Spec has one skill under `skills/page/workflow-runs/`, named
-  by the Run: `haipipe-page-context`, `haipipe-page-structure` (was `haipipe-page-outline`),
-  `haipipe-page-scratch` (new), `haipipe-page-writing` (was `haipipe-page-content`),
-  `haipipe-page-evidence`, `haipipe-page-revise` (new), `haipipe-page-delivery` (new),
-  `haipipe-page-check`. The 00–04 phase labels survive as route and Step names only.
+- `skills/page/page-workflows/` is gone. `haipipe-draft-workflow` (the list of Runs) sits
+  flat beside `haipipe-draft`; each Run Spec has one skill under `skills/page/workflow-runs/`, named
+  by the Run: `haipipe-draft-context`, `haipipe-draft-structure` (was `haipipe-page-outline`),
+  `haipipe-draft-scratch` (new), `haipipe-draft-writing` (was `haipipe-page-content`),
+  `haipipe-draft-evidence`, `haipipe-draft-revise` (new), `haipipe-draft-delivery` (new),
+  `haipipe-draft-check`. The 00–04 phase labels survive as route and Step names only.
 - New Run `rp-revise-NN_<target>` (asked by JL): compare two frozen texts of one target and
   settle every change; the Result is a change ledger the Run Space renders as red/green
   cards with a Decision line; the accepted text returns to the writing Run as a Version.
@@ -162,14 +162,14 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
 
 - New plugin-level `servers/` tree, a sibling of `skills/`, `agents/` and
   `mcp-servers/`: `_host/` (serve.py, auth, config, the `live` namespace, shell
-  JS), `haipipe-board/`, `haipipe-page/`, and five workbenches: `workbench-page/`
+  JS), `haipipe-block/`, `haipipe-draft/`, and five workbenches: `workbench-page/`
   (outline, evidence, value, runs, delivery, folder), `workbench-paper/`,
   `workbench-studio/`, `workbench-insight/`, `workbench-design/`.
   `subjective-label` ships `servers/workbench-labeling/`. The 🛠 skill map
   workbench and its routes were retired. See `servers/README.md`.
 - The Board and Page skills keep their grammar, CLIs, refs and tests; no server
   code remains under `skills/`. Routes (`/_board/...`) and both serve doors
-  (`/haipipe-board serve`, `/haipipe-page serve`) are unchanged.
+  (`/haipipe-block serve`, `/haipipe-draft serve`) are unchanged.
 
 ### Paper Ideation naming · 2026-09-08
 
@@ -197,7 +197,7 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   0.6.0 (P4, G5, `story` field), README/TODO, board tooling
   (`context-record.py` retired owners, `check.py` skips dangling symlinks,
   `test_aims_state.py` four current types), page-context/page-workflow/
-  haipipe-page prose, STRUCTURE and README (Claude Peer, pair
+  haipipe-draft prose, STRUCTURE and README (Claude Peer, pair
   haipipe-paper-workflow-redesign). First migrated paper:
   `Paper-AgreeablePrescription`. Same session, second slice: the Page Types
   are `paper/page-types/haipipe-page-ideation` (0.7.3) and
@@ -237,9 +237,9 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
 - Expanded the Board creator and reviewer into the separated producer and judge
   roles consumed by RUN while retaining their ordinary batch-review behavior.
 
-- Promoted `haipipe-board` from `skills/0_utils/` to
-  `skills/board/haipipe-board/`, parallel to paper, probe, and task.
-- Added `skills/board/agents/haipipe-board-reviewer-agent.md`, a read-only
+- Promoted `haipipe-block` from `skills/0_utils/` to
+  `skills/board/haipipe-block/`, parallel to paper, probe, and task.
+- Added `skills/board/agents/haipipe-block-reviewer-agent.md`, a read-only
   fresh-context judge for mechanical, readability, and visible-staleness checks,
   and registered it through the plugin's top-level `agents/`.
 - Kept all working design Boards in `skills/diagrams/`; no diagram folder moved.

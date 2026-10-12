@@ -267,6 +267,58 @@ def build_record(
     }
 
 
+def build_venue_record(
+    title: str,
+    landing_url: str,
+    bib_url: str,
+    *,
+    pdf_url: str | None = None,
+    abstract: str | None = None,
+    abstract_source: str | None = None,
+    openreview_url: str | None = None,
+) -> dict[str, Any]:
+    """The same record for a venue paper that has no DOI (a PMLR volume, for one): the
+    venue's own page is the article, Crossref and OpenAlex hold nothing to look up, and
+    PubMed gets an exact-title search link in place of a DOI query."""
+    title = _clean_text(title)
+    exact_title = f'"{title}"'
+    pubmed_search = "https://pubmed.ncbi.nlm.nih.gov/?" + urllib.parse.urlencode({"term": f"{title}[Title]"})
+    abstract = _clean_text(abstract or "") or None
+    if abstract and len(abstract.split()) < MIN_ABSTRACT_WORDS:
+        abstract = None
+    return {
+        "schema_version": 1,
+        "subject": {"kind": "paper", "title": title, "doi": None, "venue_url": landing_url},
+        "links": {
+            "article": landing_url,
+            "doi": None,
+            "publisher": landing_url,
+            "pubmed": pubmed_search,
+            "pubmed_search": pubmed_search,
+            "google_scholar": "https://scholar.google.com/scholar?"
+            + urllib.parse.urlencode({"hl": "en", "q": exact_title}),
+            "google": "https://www.google.com/search?" + urllib.parse.urlencode({"q": exact_title}),
+            "bibtex": bib_url,
+            "crossref": None,
+            "openalex": None,
+            "openreview": openreview_url,
+            "full_text": pdf_url,
+        },
+        "retrieval": {
+            "crossref": "no-doi",
+            "pubmed": "title-search-link",
+            "openalex": "no-doi",
+            "full_text": "found" if pdf_url else "not-found",
+            "full_text_kind": "venue-pdf" if pdf_url else None,
+            "reading_depth": "abstract" if abstract else "metadata-only",
+            "claim_support": "pending",
+            "locator_status": "pending",
+        },
+        "identifiers": {"pmid": None, "pmcid": None, "openalex": None},
+        "abstract": {"source": abstract_source if abstract else None, "text": abstract},
+    }
+
+
 def render_markdown(record: dict[str, Any]) -> str:
     links = record["links"]
     retrieval = record["retrieval"]
@@ -277,12 +329,16 @@ def render_markdown(record: dict[str, Any]) -> str:
         ("Google Scholar", links.get("google_scholar")),
         ("Google", links.get("google")),
         ("BibTeX source", links.get("bibtex")),
+        ("OpenReview", links.get("openreview")),
+        ("Accepted version", links.get("accepted")),
         ("Crossref", links.get("crossref")),
         ("OpenAlex", links.get("openalex")),
         ("Full text", links.get("full_text")),
     ]
     lines = ["# Source access", ""]
     for label, url in rows:
+        if label in ("OpenReview", "Accepted version") and not url:   # only some records carry them
+            continue
         lines.append(f"- **{label}:** [{url}]({url})" if url else f"- **{label}:** not found")
     lines.extend(
         [

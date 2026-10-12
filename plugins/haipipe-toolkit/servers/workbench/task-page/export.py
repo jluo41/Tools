@@ -435,7 +435,7 @@ class ExportMixin:
             draft_bib = out_dir / "draft-bibliography" / (page_src.stem + ".bib")
             if draft_bib.is_file():
                 record["draft_bibliography"] = {
-                    "path": draft_bib.relative_to(page_src.parent).as_posix(),
+                    "path": Path(os.path.relpath(draft_bib, page_src.parent)).as_posix(),
                     "from": page_head(page_src, "draft-bibliography"),
                     "verified": False}
         (out_dir / "evidence-selection.json").write_text(
@@ -599,6 +599,12 @@ document.getElementById('rebuild').onclick = function () {
         page_src, out_dir, board, err = self._export_target(p, "latex")
         if err:
             return None, err
+        old_fragment = page_src.parent / "delivery" / "latex" / (page_src.stem + ".tex")
+        if old_fragment.is_file() and old_fragment.parent.resolve() != out_dir.resolve():
+            first = old_fragment.read_text(encoding="utf-8", errors="replace").splitlines()
+            if not first or not first[0].startswith("% GENERATED from"):
+                return None, ("Unmarked old TeX fragment preserved; move its words into the Page "
+                              "and adopt before rebuilding Block Delivery: " + page_src.stem)
         p = {**p, **self._canon_ctx(board, p)}   # the view bakes p; make it canonical
         stem = page_src.stem
         title = _tex_text(self._page_title(page_src))

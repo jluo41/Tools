@@ -97,7 +97,7 @@ the authored W records verbatim. A manuscript Section carries no `###
 Writing Style` block in the product `<page>.md` and no separate writing file.
 
 **Context** is the generated PREPARE projection described by
-`../../workflow-runs/haipipe-page-context/ref/context-record.md`. Its stable
+`../../workflow-runs/haipipe-draft-context/ref/context-record.md`. Its stable
 records `CTX1` to `CTX6` resolve identity, purpose/scope,
 policy/structure/style, related information, feedback/decisions, and
 planning/evidence readiness. It summarizes for orientation but every rule

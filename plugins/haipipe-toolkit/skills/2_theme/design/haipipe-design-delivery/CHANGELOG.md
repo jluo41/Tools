@@ -1,5 +1,8 @@
 # haipipe-design-delivery · version history
 
+- 261012 · (JL 261012, from the 10-08 Loop demo to leadership; b12 related/) (version unchanged): `release.py` carries `job_name`, `against` and `why` into designs.json;
+  designs.md heads each design by its Job's folder name and adds its prediction and why. One review, one sign.
+
 - 261007 · review fixes (version unchanged): Screens: the Job's delivery/screens/<dNN>.<ext>, the Block's delivery/screens/<jNN>-<dNN>.<ext>; a ranked Job releases only after its ranking is projected; placeholder words are refused; everything is checked before anything is written; a person signs the freeze with the release and later the close; trigger "design delivery", not bare "delivery".
 
 0.4.0 current · 261007 · created (JL 261007; b12 s12, s21)

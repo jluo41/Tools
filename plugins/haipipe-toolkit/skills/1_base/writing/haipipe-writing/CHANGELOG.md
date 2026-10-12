@@ -9,7 +9,7 @@
 ## 0.22.1 · 2026-09-28
 
 - A ninth typed lane, `> Supporting Run:` (⚙️): the Task or Discovery Run behind a sentence's
-  evidence, written by `page.py adopt` (haipipe-page 0.119.0). Lane counts and lists updated.
+  evidence, written by `page.py adopt` (haipipe-draft 0.119.0). Lane counts and lists updated.
 
 ## 0.22.0 · 2026-09-22
 
@@ -286,7 +286,7 @@ lanes, a 💬 comment, and the ✎ record, with a badge naming the kind.
   fewer `✎` lines than it started with.
 
 That last guard exists because the rule was already written, in
-`haipipe-board/ref/writing-rules.md:66` ("do not erase them"), and was broken
+`haipipe-block/ref/writing-rules.md:66` ("do not erase them"), and was broken
 by hand on 260801: eighteen `✎` records were removed with a regex to reposition
 them. Repositioning is the legitimate need; erasing was the wrong way to get it.
 

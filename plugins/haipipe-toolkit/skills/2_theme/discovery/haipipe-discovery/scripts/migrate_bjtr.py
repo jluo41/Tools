@@ -419,7 +419,7 @@ These records preserve the earlier synthesis and source boundary without pretend
 ```
 
 The linked source and note files remain readable indexes.
-They do not become Paper Run receipts unless a canonical Subject is admitted and analyzed through `runs/rNN_*.sh`.
+They do not become Paper Run receipts unless a canonical Subject is admitted and analyzed through a `runs/rNN_*/` Run.
 
 ### 4 · {division_names[3]}
 **{subject} handoff**: what structural migration establishes and what evidence work remains.

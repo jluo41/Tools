@@ -7,7 +7,7 @@ owner: Codex
 Haipipe-page turns one document into a continuing workspace: its own source, readable Page, planning records, and delivery files.
 This Page explains how to create and revise that workspace, how its workbenches use the same files, and how Board can organize it without owning its content.
 
-**Covered elsewhere**: Board group descriptions and ordering belong to haipipe-board; workbench implementation details belong to each workbench's own skill.
+**Covered elsewhere**: Board group descriptions and ordering belong to haipipe-block; workbench implementation details belong to each workbench's own skill.
 
 ## Content
 

@@ -76,6 +76,6 @@ Boundary
 --------
 
 This skill draws the structure; it writes nothing else. The plan and its Bullets belong to
-`haipipe-page-structure`; the Evidence Items to `haipipe-page-evidence`; the Section order
+`haipipe-draft-structure`; the Evidence Items to `haipipe-draft-evidence`; the Section order
 to the paper board (`haipipe-paper`). Why a Section's claim holds is `draw-logic-tree`. A
 manuscript figure is a display unit (`haipipe-display`); this map is a working drawing.

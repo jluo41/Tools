@@ -1,0 +1,1 @@
+../skills/1_base/page/workbench/agents/haipipe-draft-creator-agent.md

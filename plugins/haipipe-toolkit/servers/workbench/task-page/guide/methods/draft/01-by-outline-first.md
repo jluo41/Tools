@@ -51,4 +51,4 @@ risk: A model asked for an outline may return headings rather than claims, so th
   reads as a table of contents (ours).
 evidence on ai: No study tests an agent's outline-first Page against draft-first writing
   (ours).
-skill: haipipe-page-structure
+skill: haipipe-draft-structure

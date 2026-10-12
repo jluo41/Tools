@@ -95,6 +95,7 @@ venue-sms               160-character SMS messages · light
 venue-push              push notifications · light
 venue-reminder          recurring reminders · light
 venue-checklist         actionable checklist, 5-12 items · medium
+venue-questionnaire     questions the reader answers, 3-12 · medium
 venue-email             longer-form email with sections · medium
 venue-dashboard         data-rich provider dashboard · full
 venue-ui-card           in-app card/widget · full

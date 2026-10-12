@@ -10,6 +10,7 @@ Verify), and a new register row; they live in
 """
 from __future__ import annotations
 
+from src.common import delivery_dir, delivery_read_lane_dir, delivery_relative
 import difflib
 import html
 import importlib.util
@@ -863,13 +864,13 @@ def _renders(folder: Path, runs: list[dict]) -> dict[str, list[dict]]:
     """Read Result-local evidence first; retain old Delivery manifests as history."""
     try:
         import json
-        rows = json.loads(_read(folder / "delivery" / "render" / "manifest.json") or "[]")
+        rows = json.loads(_read(delivery_read_lane_dir(folder, "render") / "manifest.json") or "[]")
     except ValueError:
         rows = []
     out: dict[str, list[dict]] = {}
     for row in rows if isinstance(rows, list) else []:
         if isinstance(row, dict) and row.get("item") and row.get("render"):
-            path = folder / "delivery" / "render" / str(row["render"])
+            path = delivery_read_lane_dir(folder, "render") / str(row["render"])
             out.setdefault(str(row["item"]), []).append(
                 {**row, "path": path, "picture": path.suffix.lower() in _PICTURE and path.is_file()})
     gate = None

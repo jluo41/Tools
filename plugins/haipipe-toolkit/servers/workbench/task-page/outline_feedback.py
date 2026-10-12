@@ -6,7 +6,7 @@ Page Writing Run (RP) that owns the paragraph, appended to that Run's current
 Version journal `results/<run>/v<NNN>.md`. The plan file under `draft/` and
 the Page source are never written here: the agent completes the pending Step
 on its next turn through the fast feedback path of
-`haipipe-page-workflow/ref/interactive-writing-run.md`.
+`haipipe-draft-workflow/ref/interactive-writing-run.md`.
 
 The owning Run is chosen in this order:
 
@@ -659,7 +659,7 @@ def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: 
            para["p"], para["p"], author, now),
         encoding="utf-8")
     results = working_dir(page.parent, run_id)        # its first pass: the run writes into it while open
-    write_card(page.parent, run_id, type="paragraph", target=paragraph, skill="haipipe-page-writing",
+    write_card(page.parent, run_id, type="paragraph", target=paragraph, skill="haipipe-draft-writing",
                agent=author or None, status="running", writes=[], feeds=[])
     return {"id": run_id, "kind": "para", "nn": len(rows) + 1, "ticket": ticket, "results": results,
             "runtime": results / "runtime.yaml", "status": "ready", "version": "", "step": "",

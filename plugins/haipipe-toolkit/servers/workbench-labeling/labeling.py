@@ -1404,7 +1404,7 @@ def _preparation_view(vm: dict) -> str:
     if not vm.get("page_ready", True) and not has_job:
         source = vm["page_src"]
         target = vm["page_candidate"]
-        prompt = (f"Use /haipipe-page to create the canonical Page folder for {source}. "
+        prompt = (f"Use /haipipe-draft to create the canonical Page folder for {source}. "
                   f"The Page file should be {target}. Preserve the Board source and its "
                   "existing content. Return to Data → Preparation after the Page folder exists.")
         return _card("Page folder needed", "".join([

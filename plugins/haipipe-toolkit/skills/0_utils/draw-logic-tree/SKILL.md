@@ -157,7 +157,7 @@ Boundary
 --------
 
 This skill owns the logic tree's shape, its first draw and its check. The Page's Bullets
-and their wording belong to the Draft plan (`haipipe-page-structure`, `haipipe-page-writing`);
+and their wording belong to the Draft plan (`haipipe-draft-structure`, `haipipe-draft-writing`);
 when the tree exposes a missing or misplaced Bullet, route a Structure revise rather than
 inventing a Bullet in the drawing. The canvas and its saving belong to the shared Studio
 (`workbench-studio`); the View that shows the drawing to `workbench-page`.

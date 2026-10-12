@@ -43,7 +43,7 @@ Route
 | a Task of one kind | `haipipe-task-for-<kind>`: data, raw, description, algo, fit, eval, endpoint, individual, display, stata, agent, page | `1_base/task/<N>_<kind>/` |
 | plan a Run graph: Run Specs, dependencies, gates, routes | `haipipe-workflow` | `1_base/task/` |
 | a Block Question, its register and its report folder | `haipipe-question` | `1_base/question/` |
-| write a Question's report Page | `haipipe-page` | `1_base/page/` |
+| write a Question's report Page | `haipipe-draft` | `1_base/page/` |
 | the stage pipelines a Task runs (data, nn, end, individual) | `haipipe-data`, `haipipe-nn`, `haipipe-end`, `haipipe-individual` | `1_base/task/<N>_<stage>/`; not part of the theme |
 
 Name the skill you route to before acting; never perform its work here.

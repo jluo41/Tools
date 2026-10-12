@@ -42,7 +42,7 @@ Project/
             ├── Timeline.md         the dates, one line each
             ├── CHECKLIST.md        the steps, numbered; each draft message inside its step
             ├── design/ materials/ emails/ meetings/   only when the Job has them
-            └── delivery/<date>-<what>/   one message we send: its draft and its attachments
+            └── (delivery in Block)       delivery/jNN_<job>/<date>-<what>/
 ```
 
 No other names at a Block's top level: not `README.md` (the Block's README is its
@@ -50,6 +50,21 @@ No other names at a Block's top level: not `README.md` (the Block's README is it
 `emails/` or `meetings/` (they live inside a Job). There is no `tNN` level: a Job's
 items are single files and nothing in cowork runs code. Work that runs code (a lab
 test, a data pull) is a Task Block in the Project's `work/`; a cowork Question cites it.
+
+
+Delivery storage (JL 261010)
+---------------------------
+
+The rule is owned by `haipipe-delivery`: only the Block keeps a `delivery/`; a Job writes
+`delivery/jNN_<job>/`, a Task `delivery/jNN_<job>/tNN_<task>/<lane>/`, a Report
+`delivery/reports/qNN_<report>/<lane>/`, all through the `haipipe-draft/src/common.py` helpers.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
 
 ## Block numbers
 
@@ -116,10 +131,10 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
 
 1. **Drafts are not sent by agents.** A message is drafted in its checklist step or the
    Job's `emails/`; one that goes out with attachments is a folder of its own,
-   `delivery/<date>-<what>/` (the draft and the files, together; JL 261009), which the
+   `<Block>/delivery/jNN_<job>/<date>-<what>/` (the draft and the files, together; JL 261009), which the
    Job's Delivery lists. `scripts/email_page.py <draft.md>` turns the draft into
    `<draft>.html`, a page with a Copy button for To, Cc, Subject and the body, so it pastes
-   into Outlook with its paragraphs, numbers and bullets; the Job's `delivery/build.py`
+   into Outlook with its paragraphs, numbers and bullets; the Block's `delivery/jNN_<job>/build.py`
    calls it after making the attachments. The person reviews and sends it. Mark a draft with `status: draft`
    on its own line, or `draft` in the file name, until it is sent.
 2. **One home per file.** A ticket page, email or meeting belongs to the Job whose work

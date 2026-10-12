@@ -59,7 +59,7 @@ Endpoint not live? Start it (background) and wait for `/ping` — model load tak
 ~20-40s, so warm it up BEFORE the user picks a model:
 
 ```bash
-.venv/bin/python examples/Project-InLabHumanEval-Reach/tasks/A01_serve_endpoint_local/serve_endpoint.py \
+.venv/bin/python examples-2-agent/Project-InLabHumanEval-Reach/work/b01_serve_endpoint_local/j01_serve_endpoint_local/serve_endpoint.py \
     --endpoint-path _WorkSpace/6-EndpointStore/<pkg> --port <5050 adhd|5051 pd2d|5052 mimic>
 ```
 

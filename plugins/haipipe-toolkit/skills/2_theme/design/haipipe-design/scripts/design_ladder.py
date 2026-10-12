@@ -32,7 +32,11 @@ RUN_TYPES = {"Block": "add-goal · setup-rules · add-inputs · add-job · propo
              "t00": "reason (hard)",
              "design": "generate (hard) · verify (hard, another agent) · revise (soft)",
              "t99": "rank (hard, another agent)"}
-JOB = re.compile(r"^j\d+_(g\d+)(?:-[a-z0-9-]+)?_(m\d+)(-[a-z0-9-]+)?$")   # j03_g01-<goal-slug>_m04-<method-slug>; slugs optional
+# a Job folder is jNN_<goal name>_<method name> (JL 261011: "make the j01 job folder name to be as readable as
+# possible"): the goal's `name:` in board.md ## Goals and the method's registry slug, j01_prepare-before-visit_goal-only.
+# The ids live in the face's pins. The older id form j03_g01[-<goal-slug>]_m04[-<method-slug>] stays readable.
+JOB = re.compile(r"^j\d+_([a-z0-9]+(?:-[a-z0-9]+)*)_([a-z0-9]+(?:-[a-z0-9]+)*)$")
+JOB_IDS = re.compile(r"^j\d+_(g\d+)(?:-[a-z0-9-]+)?_(m\d+)(-[a-z0-9-]+)?$")
 METHOD = re.compile(r"^(M\d\d) (m\d+)$")
 REGISTRY = Path(__file__).resolve().parents[2] / "haipipe-design-method" / "methods"
 # where each run type may run, its owning skill, agent and who signs (ref/design-ladder.md § Runs)
@@ -132,26 +136,54 @@ def _gates(block: Path, goal: str, method: str, inputs: str, n) -> int:
     return int(goal_n) if goal_n not in (None, "") else int(n if n is not None else 10)
 
 
+def method_card(mid: str) -> tuple:
+    """A registered method's (slug, name): M04 -> ("actionable-insights", "Actionable insights")."""
+    folder = next(iter(sorted(REGISTRY.glob(f"{mid}-*"))), None)
+    if folder is None:
+        return "", ""
+    face = folder / "method.md"
+    m = re.match(r"(?s)^---\n(.*?)\n---\n", face.read_text(encoding="utf-8")) if face.is_file() else None
+    name = str(((yaml.safe_load(m.group(1)) or {}) if m else {}).get("name") or "")
+    return folder.name.split("-", 1)[1], name
+
+
+def readable_name(block: Path, goal: str, method: str) -> str:
+    """The Job folder's words for its pins: <goal name>_<method name> (prepare-before-visit_goal-only)."""
+    g = next((x for x in goals(block) if str(x.get("id")) == goal), None) or {}
+    return f"{str(g.get('name') or '').strip().lower()}_{method_card(method.split()[0])[0]}"
+
+
+def _job_title(block: Path, goal: str, method: str) -> str:
+    """The Job face's heading in words: <Goal name>, by <Method name> (Prepare before visit, by Goal only)."""
+    g = next((x for x in goals(block) if str(x.get("id")) == goal), None) or {}
+    words = str(g.get("name") or goal).replace("-", " ").strip()
+    return f"{words[:1].upper()}{words[1:]}, by {method_card(method.split()[0])[1] or method}"
+
+
 def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: list) -> None:
     if not JOB.match(path.name):
-        sys.exit(f"a Job folder is jNN_<goal>[-<slug>]_<method>[-<slug>], ids lowercased (j03_g01-<goal-slug>_m04-<method-slug>): {path.name}")
+        sys.exit(f"a Job folder is jNN_<goal name>_<method name> (j01_prepare-before-visit_goal-only): {path.name}")
     if not re.match(r"^G\d\d$", goal or ""):
         sys.exit(f"--goal is a goal id from the Block's goal list (G01): {goal!r}")
     if not METHOD.match(method or ""):
         sys.exit(f"--method is a registered method and version (M04 m2): {method!r}")
     if not re.match(r"^i\d+$", inputs or ""):
         sys.exit(f"--inputs is an inputs version of the Block (i2): {inputs!r}")
-    m = JOB.match(path.name)
-    if (m.group(1), m.group(2)) != (goal.lower(), method.split()[0].lower()):
-        sys.exit(f"the folder names its goal and method ({m.group(1)}, {m.group(2)}); the pins say {goal}, {method}")
+    old = JOB_IDS.match(path.name)
+    if old and (old.group(1), old.group(2)) != (goal.lower(), method.split()[0].lower()):
+        sys.exit(f"the folder names its goal and method ({old.group(1)}, {old.group(2)}); the pins say {goal}, {method}")
+    want = readable_name(path.parent, goal, method)
+    if not old and path.name.split("_", 1)[1] != want:
+        if want.startswith("_"):
+            sys.exit(f"{goal} has no name: in board.md ## Goals: give it one (the Job folder is named by it)")
+        sys.exit(f"the folder is named by its goal and method: {path.name.split('_', 1)[0]}_{want}")
     if (path / f"{path.name}.md").exists():
         return                                           # already launched: nothing is overwritten
     n = _gates(path.parent, goal, method, inputs, n)
-    jid = path.name.split("_", 1)[0]
     _write(path / f"{path.name}.md", _front(
         [("goal", goal), ("method", method), ("method-sha", "<sha, written by run-setup-method>"), ("inputs", inputs),
          ("n", n), ("state", "open"), ("moved", moved)],
-        f"# {jid} · {goal} by {method} · inputs {inputs}\n"), made)
+        f"# {_job_title(path.parent, goal, method)}\n"), made)
     (path / "inputs").mkdir(parents=True, exist_ok=True)
     for d in ("studio", "reports", "delivery"):
         (path / d).mkdir(parents=True, exist_ok=True)
@@ -160,7 +192,7 @@ def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: li
 
 def task(job_dir: Path, which: str, slug: str, made: list) -> Path:
     if not JOB.match(job_dir.name):
-        sys.exit(f"a Task sits in a Job folder jNN_<goal>_<method>: {job_dir.name}")
+        sys.exit(f"a Task sits in a Job folder jNN_<goal name>_<method name>: {job_dir.name}")
     if which == "t00":
         path, kind, step = job_dir / "t00_reason-ideas", "t00", "②"
         _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step)], "# t00 · reason ideas\n"), made)

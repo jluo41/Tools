@@ -4,9 +4,10 @@ This file is the conceptual authority for the Task family. Load
 `../../../project/haipipe-run/SKILL.md` when Run identity, Ticket/Result pairing,
 receipts, or audit semantics are in scope.
 
-**Task Folder = Page Folder = `tNN_<task>/`.** It is one physical Folder with
-an executable Task Face and a reader-facing Page Face. Its parent
-`jNN_<job>/` is only the Job container.
+**Task Folder = `tNN_<task>/`; a Task may hold a draft.** It is one physical
+Folder with an executable Task Face and a reader-facing Page Face; when it
+writes prose, its draft lives in its own `draft/` (JL 261011: a Task is not a
+Page). Its parent `jNN_<job>/` is only the Job container.
 
 ```text
 level    canonical path                                      meaning
@@ -51,7 +52,7 @@ The tree owns executable Board membership and default
 order:
 
 ```text
-Block = Board  →  Job = Group  →  Task Folder = Page Folder = Page
+Block = Board  →  Job = Group  →  Task Folder (a face; a Task may hold a draft)
                                       └── Run = execution record
 ```
 
@@ -222,7 +223,7 @@ data dependency: downstream config names an exact upstream Run receipt.
 `src/` contains only code or defaults shared by multiple Tasks in this Job.
 Task-owned code always lives in that Task's `scripts/` lane.
 
-## Task Folder = Page Folder
+## One Task, one folder (a Task may hold a draft)
 
 ```text
 tNN_<task>/

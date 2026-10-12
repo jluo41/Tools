@@ -2,7 +2,7 @@
 
 The check agent is read-only; the coordinator records its verdict here
 (ref/block-contract.md § Status is computed). It opens a check Run with
-haipipe-page's page.py, appends the review verbatim under its VERDICT line,
+haipipe-draft's page.py, appends the review verbatim under its VERDICT line,
 closes the Run, and on CLOSE approves the current plan, promoting a v0 plan to
 v1.0 (a v0 plan cannot be approved). The cell's ✅ is then computed by
 haipipe-insight-check ref/check_block.py; nothing here writes a status.
@@ -54,7 +54,7 @@ def record(page, verdict, review):
     if verdict not in VERDICTS:
         raise SystemExit(f"VERDICT is one of {', '.join(sorted(VERDICTS))}")
     root = space_root(page)
-    cli = [str(root / ".venv/bin/python"), str(root / "Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-page/cli/page.py")]
+    cli = [str(root / ".venv/bin/python"), str(root / "Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-draft/cli/page.py")]
     before = set((page / "runs").glob("run-check-*.md"))
     subprocess.run(cli + ["open-run", str(page), "--kind", "check", "--slug", "page check", "--target", "C1",
                           "--by", "check agent", "--goal", "independent CHECK of the current draft"],

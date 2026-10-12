@@ -14,7 +14,7 @@ matrices, not citation listings.
 The canonical durable presentation is:
 
 ```text
-results/<RUNNAME>/<RUNNAME>.md
+runs/<RUNNAME>/result/<RUNNAME>.md
 ```
 
 Required identity header:
@@ -54,12 +54,14 @@ evidence authority.
 
 ## Coverage declaration
 
-Coverage belongs to the Task Page's source-map section, not to every Result.
-It states channels searched, channels not searched, date, and candidate
-selection rule:
+Coverage belongs to the Task Page's Source map, not to every Result. The Page
+Face is Opening then Content (`page-types.md`), so the Source map is a
+`#### Source map` block inside Content division 1, Question and boundary. It
+states channels searched, channels not searched, date, and candidate selection
+rule:
 
 ```md
-## Source map
+#### Source map
 
 Coverage: Semantic Scholar (S2) topic search + arXiv API, 2026-09-01.
 Queries: "adaptive sampling" and "rare phenotype"; no citation-count filter.
@@ -95,9 +97,9 @@ is written; the receipt is stale when the Page changes after it (file time).
 The Page may list completed Results as one subsection each:
 
 ```md
-### r01_hou2024_zero_shot_rankers — Large Language Models are Zero-Shot Rankers for Recommender Systems
+### r01_hou2024_zero_shot_rankers · Large Language Models are Zero-Shot Rankers for Recommender Systems
 
-- [Readout](results/r01_hou2024_zero_shot_rankers/r01_hou2024_zero_shot_rankers.md)
+- [Readout](runs/r01_hou2024_zero_shot_rankers/result/r01_hou2024_zero_shot_rankers.md)
 - ECIR 2024 · doi:10.1007/978-3-031-56060-6_24
 - role: adjacent method · cite: @Hou2024ZeroShotRankers
 - finding: LLM rankings are sensitive to candidate position and popularity.

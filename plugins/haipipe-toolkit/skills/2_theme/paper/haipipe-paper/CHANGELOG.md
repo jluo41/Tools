@@ -1,3 +1,16 @@
+## 1.12.1 · 2026-10-11 · Related's subfolders are its groups; emails/
+
+- b10 s04-D08, D09 (JL 261011, sent by b10_BluePrint-ProjectWorkbench-dNN): a subfolder of `related/` is a group of its files, so `meetings/x.md` is in the meetings group without a group cell; a new subfolder `emails/` keeps an `.eml` as it came; the new base skill `haipipe-related` (1_base/project, 0.1.0) owns `related/`, `related.md`, its groups and the Related view.
+- `ref/paper-ladder.md`: the `related/` lines name `/haipipe-related`, list `emails/`, put the columns in its order (kind · date · item · link · feeds · group) and say a row's groups are its subfolder first, then its group cell.
+- SKILL.md's workbench table: Studio › Related groups by subfolder, then the group cell; `haipipe-related` is its first owner.
+
+## 1.12.0 · 2026-10-11 · Studio, Related and Delivery are the Board's (b10)
+
+- b10_project_workbench settled who owns what for every Block (s09-D01, D02, D05; s04-D01): Studio, `related/` and `delivery/` are the Block's alone, and every level keeps its own `reports/` and `runs/`. JL 261011 (b16): "do you think we want to update the skills as well?"
+- `scripts/paper_ladder.py`: `spaces` gives a version `reports/` and `runs/` only, no `studio/`; `next` copies a Section's face and `draft/`, no longer its `studio/` (an older Section's topics stay where they are and show in the Board's Studio). New test lines in `tests/test_paper_ladder.py`.
+- `ref/paper-ladder.md`: the screen is the shared frame's two rows (`Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, Related folded inside Studio, then `Description | Report | Work | Runs`); the tree drops the version's and the Section's `studio/`, names the Board's `related/` folders, and keeps a comments batch's meeting notes in `related/meetings/`; the build lands in `delivery/jNN_<version>/`. `group` is every related row's column (b10 s04-D07), not a paper-only one.
+- SKILL.md's workbench table: Studio, Studio › Related and Delivery rows for the Board's shared views; Description is Scope · Venue · Resources. Studio › Related groups its rows by `related/` subfolder and opens each on its file; the cards by question are Report › Related Papers.
+
 ## 1.11.1 · 2026-10-09 · The carry-over scripts, run on ScalingGlucose
 
 - First Board moved with `scripts/carry_over/` (Paper-ScalingGlucose-NatSeries2026, branch `v1009-paper-ladder`); four faults found and fixed at the source:
@@ -19,7 +32,7 @@
 - Family test `tests/test_paper_ladder.py`: every level is made, `next` copies only written files, a comments batch becomes a report, and rollback restores the Board byte for byte.
 - Board and version soft Runs follow the shared Run contract (`haipipe-run`): `paper_ladder.py run` calls the shared writer, `haipipe-run/scripts/soft_run.py new`, which makes `runs/run-<type>-<target>/` with its `run.yaml` card (skill, agent and signs from the paper's run card whose pattern names it) and its ticket; `soft_run.py pass` adds its passes. A Section's Runs stay the Page engine's.
 - `scripts/create_section_sessions.py`: Sections are the newest version's `t0N_` (Main) and `t2N_` (Appendix, A = t21) Tasks, in its face's compile order; an older Board's `S-` pages are still read.
-- Matched to the project skills (haipipe-board, -job, -report, -studio, -run): the Board face carries `board-kind: paper-board`; a version face has `goal:`, `close:` and an ordered `## Tasks` list, kept by `paper_ladder.py task`; a Section face has `task-kind: page`; `board` and `version` write faces only (a Space folder comes with its first item); a version answering a comments report says `responds-to:`, since `answers:` names Question ids.
+- Matched to the project skills (haipipe-block, -job, -report, -studio, -run): the Board face carries `board-kind: paper-board`; a version face has `goal:`, `close:` and an ordered `## Tasks` list, kept by `paper_ladder.py task`; a Section face has `task-kind: page`; `board` and `version` write faces only (a Space folder comes with its first item); a version answering a comments report says `responds-to:`, since `answers:` names Question ids.
 
 ## 1.10.0 · 2026-10-07 · The Story as studio topics and Questions (b16 Q04)
 
@@ -102,7 +115,7 @@
 - A Section Run has two bookends the author calls (JL 260928): only the Section's Draft file
   changes in between; records and one log entry are written at the close; Content adoption and
   the web → LaTeX → Word lanes follow on request; assembly sees a mid-Run Section's previous
-  export. Contract lives in `haipipe-page-workflow` 0.65.0 (`interactive-writing-run.md` §🔖).
+  export. Contract lives in `haipipe-draft-workflow` 0.65.0 (`interactive-writing-run.md` §🔖).
 
 ## 1.3.0 · 2026-09-21
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Block Related"
+  short_description: "the Block's one related/ folder: meetings, papers, files and emails as they came, one row each in related.md"
+  default_prompt: "Use $haipipe-related to add a meeting's notes, a paper, a file or an email to the Block's related/ and write its row in related.md."
+policy:
+  allow_implicit_invocation: true

@@ -8,8 +8,8 @@ description: >-
   build a landscape, connect findings, /haipipe-discovery-synthesize.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-09-22"
+  version: "0.3.3"
+  last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,7 +34,7 @@ papers relate, where they converge, where they disagree, what remains absent,
 and what the bounded evidence can honestly support.
 
 The Page-facing interaction lane remains Page-owned. If human structure or
-prose review is needed, dispatch through `haipipe-page-workflow`: it allocates
+prose review is needed, dispatch through `haipipe-draft-workflow`: it allocates
 `rp00_mermaid-structure` first and selected `rpNN_pNN[-pNN]` Runs afterward.
 This skill never allocates those Page Runs, never treats them as Discovery
 `rNN` Runs, and never enters CONTENT before the shared Page release barrier.
@@ -153,7 +153,7 @@ limits the stated answer.
 
 ## Run and handoff laws
 
-- `haipipe-discovery-synthesize` never creates `runs/`, `results/`, or a local `rNN`.
+- `haipipe-discovery-synthesize` never creates a `runs/` folder or a local `rNN`.
 - `haipipe-discovery-synthesize` never creates or names `rpNN` Page Runs; the shared Page
   workflow owns Page interaction and its Version/Step history.
 - D1 `ACQUIRE` remains the only Discovery Run commissioner: one admitted

@@ -671,11 +671,12 @@ def _ladder_paper(tmp_path, monkeypatch):
     """0.10.0 (b16 g03): a paper on the ladder, its Sections and its delivery/ inside one version Job."""
     root = tmp_path / "Paper-L"
     version = root / "j01_v1_t"
-    delivery = version / "delivery"; delivery.mkdir(parents=True)
+    version.mkdir(parents=True)
+    delivery = root / "delivery" / version.name; delivery.mkdir(parents=True)
     (root / "board.md").write_text("# Paper-L\n")
     (delivery / "paper-build.toml").write_text(
         '[paper]\nid = "Paper-L"\ntitle = "L"\n'
-        '[pages]\nmain = ".."\nappendix = ".."\norder = "../../j00_story/StoryA-t-fixture/StoryA-t-fixture.md"\n'
+        '[pages]\nmain = "../../j01_v1_t"\nappendix = "../../j01_v1_t"\norder = "../../j00_story/StoryA-t-fixture/StoryA-t-fixture.md"\n'
         '[source]\nroom = "latex"\nmaster = "master.tex"\nsections = "sections"\nappendices = "appendices"\n'
         'displays = "displays"\nbibliography = "reference.bib"\n'
         '[outputs]\nmain_pdf = "latex/L.pdf"\nmain_docx = "word/L.docx"\nmanifest = "build-manifest.json"\n')
@@ -706,6 +707,16 @@ def test_a_version_folder_holding_delivery_is_a_page_group(tmp_path, monkeypatch
 def test_check_counts_a_missing_page_folder(tmp_path, monkeypatch, capsys):
     m = _ladder_paper(tmp_path, monkeypatch)
     assert m.ROOT.name == "Paper-L" and m.VERSION.name == "j01_v1_t"
+    assert m.HERE == m.ROOT / "delivery" / m.VERSION.name
+    assert not (m.VERSION / "delivery").exists()
     (m.VERSION / "S-T-Appendix-A-Data").rmdir()
     assert m.check() == 1
     assert "page folder missing" in capsys.readouterr().out
+
+
+def test_paper_wrapper_can_load_the_shared_delivery_helpers(paper):
+    namespace = {"__name__": "wrapper_test", "__file__": str(paper.HERE / "build.py"),
+                 "__engine_dir__": ENGINE.parent}
+    exec(compile(ENGINE.read_text(), str(ENGINE), "exec"), namespace)
+    assert namespace["ROOT"] == paper.ROOT
+    assert namespace["HERE"] == paper.HERE
