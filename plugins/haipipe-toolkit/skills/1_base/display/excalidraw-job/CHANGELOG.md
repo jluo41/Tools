@@ -1,6 +1,48 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.6.0] · 2026-10-13 · The staircase: Tasks as steps, results as charts and tables, frames as stairs
+
+- Asked 261013 on Physician-SPACE's LLMRec Blocks, with a hand sketch: "先是 Job，下面跟着 Task 1、Task 2、Task 3 …
+  相当于一个阶梯状的图 … 右边就开始说明每一个具体的结果都是什么", "current ones in the job sNN are very bad", "这个 frame
+  可以很大，但核心是留出足够的空白", "你的 results 应该是图和表格呀", "for the task, we might want to add the figures and
+  table from it", "主次分明 … 大小有致", "棋盘上不能落满所有的子", "你不能每一个都是朝左对齐".
+- `scripts/job_ladder.py`, the default drawing (`draw_job` sends every Job here unless `layout: classic | plain`):
+  ① the staircase: the Job on top (why, done when, answers; in and out beside it), each Task a step 380 px lower and
+  right (`columns`: four columns at most, several Tasks may share one), its card (asks, did, → details: sNN), its Runs
+  branching right. A face's `runs: {<t>/<r>: {says, current: true}}` marks 📌 the Run to read; the others go grey,
+  names only. Runs with nothing to report fold into one row; a rerun that says the same says `↺ as r01`.
+- Results, outside ①, level with each step, small: one sentence of the finding, then `charts:` (bars drawn with
+  matplotlib from the current Run's result: `each` with `value`/`low`/`high`, or `bars`; 95% whiskers, a zero line,
+  model names shortened), `tables:` (rows from a CSV under the Run's result), else the `show` picks as a table, then
+  the figures the Task already holds (`figures:`, else its Runs' results, then its draft). Dashed while nothing is
+  found. Charts are generated into the topic's `assets/` on every build.
+- ② 📖 its words (`terms`, `sure`, `open` with each `closer`), small (`canvas.explains`); ③ the face's design grids,
+  models, chart, settings, `detail: true` and the Job's own pictures (a Task's stay in its results). ② and ③ step
+  down and right of ① (`canvas.stairs`); no act names down a left edge.
+- Shared, for this: haipipe-studio `canvas.stairs` and `canvas.explains`, and `job_results.dig` reads a name with a
+  dot whole (`codex-gpt-5.6-luna`, in JSON and in a CSV row's `col=value`); excalidraw-studio `check.py` holds an
+  explaining frame to neither a screen's size nor a dense frame's words.
+- Tests: `tests/test_job_ladder.py` (steps right, quiet reruns, charts and a table from results, a Task's figures and
+  tables, frames as stairs); `test_job_drawing.py` reads the staircase.
+- First drawn: LLMRec `work/b04_analyses_of_llm_ranks/studio/s27` (j08: six charts from three Runs' metrics.json).
+
+## [0.5.0] · 2026-10-13 · A family of Jobs, a table per Job
+
+- Asked 261013 on Proj01 b00_rawdata: "describe for each task, what we have done, what are the content, I might want
+  more figures and tables, to understand what I have".
+- `group`, when a Job's words hold a `table`: one act per Job (`table_acts`): ① its steps (`flow`, each line's slots
+  read under the Job), its reading, one row per Task with each cell read from that Task's own file (`table_rows`,
+  `cell`), the `bar` columns drawn as bars lined up with the rows (`bars_png_rows`); ② its `chart` (chart_frame);
+  ③ its pictures and its named Tasks' own pictures (`figures_frame`, key point `shows`). Several Jobs first get a box
+  each (`gist`) and the Jobs as a table (`jobs_frame`). `each:` holds the words every Job shares.
+- `fill`: `{<file>:<key>|<fmt>|<when empty>}` and `{count:<glob>}` in any line, read on every build.
+- A cell's `most: N` keeps a list's first N and says how many more (a table's measured columns: `only: {role:
+  [value]}`), after the first reviews asked what each table's columns hold.
+- excalidraw-studio's `draw.py`: `grid_table(pad=)` and `rows_at` (each row's top and height), `picture(fid=)` (two
+  pictures with one file name no longer share one image).
+- First drawn: Proj01 b00_rawdata s21 (seven WellDoc drops), s22 (AI-READI v3), s23 (six external cohorts).
+
 ## [0.4.0] · 2026-10-13 · The design: each Task's Runs, one mark per Run
 
 - Asked 261013 on Proj11 b01 s21: "How could I see in a glance about the design for each task and their runs? … and

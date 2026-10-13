@@ -108,13 +108,15 @@ class Drawing:
                        points=[[x - x0, y - y0] for x, y in points], lastCommittedPoint=None, startBinding=None,
                        endBinding=None, startArrowhead=None, endArrowhead="arrow" if arrow else None)
 
-    def grid_table(self, x, y, columns, rows, widths, size=30):
+    def grid_table(self, x, y, columns, rows, widths, size=30, pad=40):
         """A table drawn as b03's model × engine grid (asked 261012 of b01: "I want the tables like this"): column
         names in small type, one grey rule above each row, no boxes. `rows`: [{cells, dim}]; a cell is words, or a
         value {big, tag, color}: its number large, its mark and Run small under it (grey unchecked, red broken).
-        A dim row (a candidate, not chosen) is grey. Returns the y below the last row."""
+        A dim row (a candidate, not chosen) is grey. `pad`: the room in a row around its words (a long table of
+        one-line rows reads closer). Returns the y below the last row."""
         xs = [x + sum(widths[:k]) for k in range(len(widths))]
         right = x + sum(widths)
+        self.rows_at = []                              # each row's (top, height): a chart beside it lines up
         hh = max(self.height(c, w - 24, 28) for c, w in zip(columns, widths))
         for cx, c, w in zip(xs, columns, widths):
             self.para(cx, y, c, w - 24, 28, GREY)
@@ -123,17 +125,19 @@ class Drawing:
             cells, dim = r.get("cells") or [], r.get("dim")
             tall = [(c.get("size", 44) * 1.25 + (34 if c.get("tag") else 0)) if isinstance(c, dict)
                     else self.height(str(c), w - 24, size) for c, w in zip(cells, widths)]
-            rh = max(tall + [size * 1.25]) + 40
+            rh = max(tall + [size * 1.25]) + pad
+            self.rows_at.append((y, rh))
             self.line([(x, y), (right, y)], GREY, arrow=False)
             for cx, c, w in zip(xs, cells, widths):
                 if isinstance(c, dict):
                     col = c.get("color") or (GREY if dim else INK)
                     if c.get("big"):
-                        self.text(cx, y + 20, str(c["big"]), c.get("size", 44), col)
+                        self.text(cx, y + pad / 2, str(c["big"]), c.get("size", 44), col)
                     if c.get("tag"):
-                        self.text(cx, y + 20 + (c.get("size", 44) * 1.25 if c.get("big") else 0), str(c["tag"]), 24, col)
+                        self.text(cx, y + pad / 2 + (c.get("size", 44) * 1.25 if c.get("big") else 0), str(c["tag"]),
+                                  24, col)
                 elif str(c):
-                    self.para(cx, y + 20, str(c), w - 24, size, GREY if dim else None)
+                    self.para(cx, y + pad / 2, str(c), w - 24, size, GREY if dim else None)
             y += rh
         self.line([(x, y), (right, y)], GREY, arrow=False)
         return y
@@ -151,8 +155,9 @@ class Drawing:
         if sub:
             self.para(40, 110, sub, width, T_SMALL)
 
-    def picture(self, path, x, y, w, hmax):
-        """A preview (png), scaled to fit w x hmax, embedded as a jpeg at 1.5x; returns its height."""
+    def picture(self, path, x, y, w, hmax, fid=None):
+        """A preview (png), scaled to fit w x hmax, embedded as a jpeg at 1.5x; returns its height. `fid`: its own
+        id, when two pictures share a file name (every Task's full_scan.png); else one is drawn twice."""
         from PIL import Image
         img = Image.open(path).convert("RGB")
         scale = min(w / img.width, hmax / img.height)
@@ -160,7 +165,7 @@ class Drawing:
         small = img.resize((max(1, int(dw * 1.5)), max(1, int(dh * 1.5))), Image.LANCZOS)
         buf = io.BytesIO()
         small.save(buf, "JPEG", quality=82)
-        fid = "img-" + re.sub(r"[^a-z0-9]+", "-", Path(path).stem.lower())
+        fid = fid or "img-" + re.sub(r"[^a-z0-9]+", "-", Path(path).stem.lower())
         self.files[fid] = {"mimeType": "image/jpeg", "id": fid, "created": 1,
                            "dataURL": "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()}
         self.box(x - 2, y - 2, dw + 4, dh + 4, INK, 1)

@@ -519,3 +519,27 @@ class StudioTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_a_csv_row_is_read_by_its_columns(tmp_path):
+    import job_results as jr
+    (tmp_path / "slopes.csv").write_text("model_id,context,estimate\nm5,lbp,9.19\nm5,cancer,0.12\n")
+    assert jr.at_value(tmp_path, "slopes.csv:model_id=m5&context=cancer.estimate", "") == "0.12"
+
+
+class StairsTest(unittest.TestCase):
+    """canvas.stairs (JL 261013: "你不能每一个都是朝左对齐"): the main frame at the origin, each next frame lower and
+    further right, so no two share a left edge; each frame moves with what is drawn in it."""
+
+    def test_frames_step_down_and_right(self):
+        els = [{"id": f, "type": "frame", "x": 0, "y": 0, "width": w, "height": h}
+               for f, w, h in (("main", 2000, 1500), ("a", 900, 600), ("b", 700, 400))]
+        els.append({"id": "t", "type": "text", "x": 10, "y": 10, "frameId": "a"})
+        placed = canvas.stairs(els, ["main", ("a", 600), "b"], gap=200, step=400)
+        main, a, b = placed
+        self.assertEqual((main["x"], main["y"]), (0, 0))
+        self.assertEqual((a["x"], a["y"]), (600, 1700))
+        self.assertEqual((b["x"], b["y"]), (1000, 2500))
+        self.assertEqual(next(e for e in els if e["id"] == "t")["x"], 610)
+        with self.assertRaises(AssertionError):
+            canvas.stairs(els, ["main", "a"])                         # every frame placed once

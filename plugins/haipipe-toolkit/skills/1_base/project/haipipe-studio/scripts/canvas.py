@@ -196,6 +196,41 @@ def grid(els, rows, gap=150):
     return els
 
 
+def explains(frame):
+    """Mark a frame small on purpose: it explains the main frame beside it (JL 261013: "主次分明 … 一个很大的 frame，
+    然后有一些小的 frame 是解释这些大的 frame 的", and "大小有致"). check.py then holds it to neither a screen's size nor
+    a dense frame's words: its room is the point. Returns it."""
+    frame.setdefault("customData", {})["explains"] = True
+    return frame
+
+
+def is_explains(e):
+    return bool((e.get("customData") or {}).get("explains"))
+
+
+def stairs(els, order, gap=260, step=520):
+    """Place the frames as stairs, not as left-aligned rows (JL 261013: "你不能每一个都是朝左对齐。你朝左对齐好像就是每一个
+    一列都是非常重要的"): the first, the main frame, at the origin; each next one lower and further right, so no two
+    share a left edge and the main frame reads first. `order` lists every frame id once, in reading order; an
+    `(id, dx)` pair sets that frame's own step right (negative steps back left). Returns the placed frames in order."""
+    frames = {e["id"]: e for e in els if e["type"] == "frame"}
+    ids = [o[0] if isinstance(o, tuple) else o for o in order]
+    assert sorted(ids) == sorted(frames), f"stairs() places each frame once: {ids} vs {list(frames)}"
+    x = y = 0
+    placed = []
+    for k, o in enumerate(order):
+        fid, dx = o if isinstance(o, tuple) else (o, step)
+        f = frames[fid]
+        if k:
+            x, y = x + dx, placed[-1]["y"] + placed[-1]["height"] + gap
+        mx, my = x - f["x"], y - f["y"]
+        for e in els:
+            if e["id"] == fid or e.get("frameId") == fid:
+                e["x"], e["y"] = e["x"] + mx, e["y"] + my
+        placed.append(f)
+    return placed
+
+
 def reads_down(frame):
     """Mark a frame that is read top to bottom: one piece of writing, or a source's pages marked up. It stays
     one frame however long (JL 261010: "the draft take should be one single frame, and the Written out should

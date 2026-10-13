@@ -94,6 +94,11 @@ def check_frame(els, f, slide=False, s00=False):
         out["floor"] = dfloor
         out["⑥"] = ("✅" if per >= dfloor else "❌") + f" {per} (floor {dfloor}, a detail frame at its type size)"
         out["⑦"] = DETAIL_OWN if kind == "map" else out["⑦"]
+    if getattr(canvas, "is_explains", lambda e: False)(f):  # small on purpose, beside the main frame (JL 261013)
+        out["①"] = out["①"] if out["①"].startswith("❌ over") else "✅ small on purpose: it explains the main frame"
+        out["⑥"] = out["⑦"] = "— small on purpose: its room is the point (canvas.explains)"
+        out["⑤"] = ("❌" if small > 0.2 * max(words, 1) else "✅") + \
+            f" words under {canvas.TEXT_MIN} px: {round(100 * small / max(words, 1))}% · its key point is the main frame's"
     out["⑨"] = ("❌ a wall of text: " + f"{words} words and no picture (at most {WALL_WORDS}); draw a chart, a real row, "
                 "a screenshot or a scoreboard, and keep the words in the face") \
         if kind != "picture" and words > WALL_WORDS and tree < 10 \

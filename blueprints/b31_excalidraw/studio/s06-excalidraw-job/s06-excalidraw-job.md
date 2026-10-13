@@ -6,13 +6,14 @@ make the job's aim plan and results"), beside s02 to s05 (report, slide, read, s
 
 **Stage:** agreed
 
-**Topic:** what the skill `excalidraw-job` draws and how: a Job as one Studio topic of its Block, in two frames and few
-words (excalidraw-studio ⑦). ① why the Job exists (its aim, each Task's question, when it is done), ② what goes in,
-its Tasks in order with each one's state and finding, and what comes out, the Job's reading as the key point. A Task's
-detail is its own topic (excalidraw-task). Every word is read from the Job on disk on every build; the topic's face
-adds only the aim and the reading. This topic draws the skill's parts, its workflow, its
-folder, and the first Jobs it drew (Knowledge-Base's Proj10 b01 s21 to s23), so a session knows what a Job drawing
-holds before it makes one.
+**Topic:** what the skill `excalidraw-job` draws and how: a Job as one Studio topic of its Block, a staircase (since
+0.6.0, 261013). The main frame: the Job on top (why it exists, when it is done), each Task a step lower and further
+right, its Runs branching from its step (the current one marked 📌, reruns quiet). Each Task's results stand outside
+the frame, small, level with its step: one sentence, then charts and tables read from its Runs' result files, then
+the figures the Task already holds. A small frame of its words (terms, how sure, what closes each open point) steps
+down and right. Every number is read from disk on every build; the face holds words and paths. This topic draws the
+skill's parts, its workflow, its folder, and the first staircase it drew (Physician-SPACE LLMRec b04 s27), so a
+session knows what a Job drawing holds before it makes one.
 
 **Feeds:** none yet
 
@@ -24,44 +25,42 @@ Files
 s06-excalidraw-job/
 ├── s06-excalidraw-job.md              this face; the drawing's words are its yaml blocks
 ├── build_s06_excalidraw_job.py        the builder; reads this face, the skill and the first Jobs drawn
-├── s06-excalidraw-job.excalidraw      four frames in two acts, joined by named arrows
+├── s06-excalidraw-job.excalidraw      four frames as stairs: ① the skill, then ② ③ ④ each lower and further right
 ├── s06-excalidraw-job.png             its preview
 ├── .s06-excalidraw-job.seed.json      generated snapshot for preserving marks
 └── examples/                          the first Job drawn, copied so the drawing stays true without Knowledge-Base
-    ├── b01-s21-j01-math-classic-ml.png    its preview, drawn in frame ④
-    └── facts.json                     check.py's verdicts on b01 s21 to s23, from the last build that could read them
+    ├── demo-staircase.png             a made-up Job drawn as a staircase at this build, drawn in frame ④
+    ├── b01-s21-j01-math-classic-ml.png    the first Job drawn (Proj10, 261012), kept as history
+    └── facts.json                     check.py's verdict on the demo, from the last build
 ```
 
 
 What the drawing holds
 ----------------------
 
-Four frames in two acts, a row each, the act named at the left, a named arrow for each step (b31 s01 principle ③).
+Four frames as stairs (b31 s01, 261013): ① the skill, the main frame, at the origin; ②, ③ and ④ each lower and
+further right (`canvas.stairs`), a named arrow into each; no act names down a left edge.
 Facts (version, functions, tests, the first Jobs' checks) are read from disk on every build; `{name}` in a yaml
 string below is filled by the builder.
 
 ```yaml
-acts:
-- name: Act 1 · What it draws
-  frames: [①, ②]
-  arrow: drawn by
-- name: Act 2 · Where it lives and what it made
-  frames: [③, ④]
-  arrow: made
-between: {from: ①, to: ③, label: kept in}
+stairs:
+  order: [①, ②, ③, ④]
+  arrows: [drawn by, kept in, made]
 ```
 
 ```text
-Act 1 · What it draws          ① the skill, one mind map ─drawn by─▶ ② the workflow, a Job to two frames
-         │ kept in
-Act 2 · Where it lives         ③ its folder, as a tree ─made─▶ ④ the first Jobs drawn, checked
+① the skill, one mind map
+   └─drawn by─▶ ② the workflow: a Job's files to a staircase and its results
+                   └─kept in─▶ ③ its folder, as a tree
+                                  └─made─▶ ④ a demo staircase, checked; the real ones named
 ```
 
-① 🧠 the skill as a mind map: centre "a Job as one drawing, in few words"; the ask, its two frames, a Task's
-   detail, its words, its script, and what it never does.
-② 🔁 the workflow: the Job's files into the script, then what one build does, frame by frame.
+① 🧠 the skill as a mind map: centre "a Job as a staircase, its results beside it"; the ask, the staircase, its
+   results, its Runs, its words, its script, and what it never does.
+② 🔁 the workflow: the Job's files into job_ladder.py, then what one build does.
 ③ 🧰 the skill folder and the folder a Job topic is written into, both as trees, and who owns each input.
-④ 🖼️ the first Job drawn (b01 s21), its preview, and check.py's verdicts on b01 s21 to s23; red where one fails.
+④ 🖼️ a made-up Job drawn as a staircase, its preview and check.py's verdict; the real ones named (Tools is public).
 
 Rebuild: `python build_s06_excalidraw_job.py`, then `check.py` on the drawing.
 
@@ -71,25 +70,25 @@ The skill as a mind map (①)
 
 ```yaml
 mindmap:
-  centre: "a Job as one drawing, in few words"
+  centre: "a Job as a staircase, its results beside it"
   branches:
   - title: 🙋 What was asked
-    by: asked 261012
-    summary: "aim, plan, results; all on one canvas; few words"
-  - title: 🎯 ① Why
-    summary: "the aim, each Task's question, when done"
+    by: asked 261013
+    summary: "Job, then Tasks as steps, results on the right"
+  - title: 🪜 ① The staircase
+    summary: "each Task a step lower and further right"
     by: standing
-  - title: 🔁 ② In → Tasks → out
-    summary: "each Task: its state, its finding, → its topic"
+  - title: 📊 Its results
+    summary: "charts and tables from disk; the Task's figures"
     by: standing
-  - title: 🧩 A Task's detail
-    summary: "its own topic: excalidraw-task"
+  - title: 📌 Its Runs
+    summary: "the current one marked; reruns quiet"
     by: standing
-  - title: 📥 Its words
-    summary: "from disk; the face: aim and reading"
+  - title: 📖 ② Its words
+    summary: "terms, how sure, what closes each open point"
     by: standing
   - title: 🐍 Its script
-    summary: "job_drawing.py, {n_funcs} functions, v{version}"
+    summary: "job_ladder.py, {n_funcs} functions, v{version}"
     by: standing
   - title: 🚫 It never
     summary: "edits the Job, a Task page or a Run"
@@ -109,21 +108,21 @@ flow_in:
   - title: 📝 the Task pages
     lines: ["question, finding"]
   - title: 🧾 the Runs
-    lines: ["their state"]
-  - title: 🐍 job_drawing.py
+    lines: ["state, result files"]
+  - title: 🐍 job_ladder.py
     key: true
-    lines: ["two frames"]
+    lines: ["a staircase"]
   - title: 🗺️ the topic
-    lines: ["sNN-<jNN>-<job>/"]
+    lines: ["sNN-<jNN>-<job>/, assets/"]
 flow_run:
   labels: [then, then, then]
   steps:
   - title: 📖 Read
     lines: ["Tasks, Runs, pages"]
-  - title: 🎯 ① Why
-    lines: ["a mind map"]
-  - title: 🔁 ② In → out
-    lines: ["a workflow"]
+  - title: 🪜 The stairs
+    lines: ["Job, Tasks, Runs"]
+  - title: 📊 Results
+    lines: ["charts, tables"]
   - title: 💾 Write
     lines: ["marks kept"]
 ```
@@ -145,13 +144,17 @@ commands:
 - "adopt <topic>: a one-Job results topic, now the whole Job"
 - "preview <job> <out>: draw a Job anywhere, its Block untouched"
 first:
-  source: ../Knowledge-SPACE/examples-2-tech/Proj10-LLM-Baseline/discovery/b01_ml_foundations/studio
-  picture: s21-j01-math-classic-ml-results
-  topics: [s21-j01-math-classic-ml-results, s22-j02-rl-basics-results, s23-j03-pre-llm-nlp-results]
+  title: "🖼️ What it draws: a made-up Job as a staircase"
+  sub: "excalidraw-job's own test fixture, drawn at every build; the real Jobs drawn stay in their SPACEs (Tools is public)"
+  key: "Key point: each Job says why it exists and what it found, its results as charts beside its steps; before, a
+    column of text boxes no one read."
+  drawn:
+  - "first real staircase: Physician-SPACE LLMRec b04 s27 (j08), 261013"
+  - "the paper's s01-ideation redrawn by the same principles, 261013"
   open:
-  - "⏳ later: the -results folder names; rename with renamed-from: kept"
-  - "⏳ later: many Job faces leave goal: and close: open; the aims sit in the topics' faces"
-  - "⏳ later: a Job with pictures of its own (④) is not drawn yet"
+  - "⏳ later: the other 17 LLMRec Job faces name no charts yet; their results fall back to tables"
+  - "⏳ later: results kept outside the repository cannot be charted from a clone"
+  - "⏳ later: excalidraw-task to follow the same staircase (s07)"
 ```
 
 
@@ -173,6 +176,15 @@ s06-D05 · Few words (asked 261012: "add at least of words, (especially the smal
 s06-D06 · Open 4 settled: a workflow of four steps (three arrows) is a map; draw.py's kind() takes three (261012)
 s06-D07 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the open points move to Later, drawn plain as
     "⏳ later:" (261012)
+s06-D08 · A Job is a staircase (asked 261013, with a hand sketch: "先是 Job，下面跟着 Task 1、Task 2、Task 3 … 相当于一个
+    阶梯状的图 … 右边就开始说明每一个具体的结果都是什么"; "current ones in the job sNN are very bad"): excalidraw-job 0.6.0,
+    job_ladder.py, the default for every Job; `layout: classic | plain` keeps the old frames (261013)
+s06-D09 · Results are charts and tables, not words (asked 261013: "你的 results 应该是图和表格呀 … 如果你有 Python 画的图，
+    也一起扔过来"; "for the task, we might want to add the figures and table from it"): the face's `charts:` and
+    `tables:` are read from the current Run's files; the Task's own figures follow (261013)
+s06-D10 · 主次分明, frames as stairs (asked 261013: "一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的 … 你不能
+    每一个都是朝左对齐"): the staircase is the main frame; its words frame is small (`canvas.explains`) and steps down and
+    right (`canvas.stairs`); this topic's own four frames are placed the same way (261013)
 
 
 Open

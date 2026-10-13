@@ -176,3 +176,23 @@ def test_a_detail_frame_is_measured_by_6_not_7():
     assert rows[0]["kind"] == "map" and rows[0]["⑦"].startswith("❌")
     assert rows[1]["⑦"].startswith("📖") and "floor 88" in rows[1]["⑥"]     # 120 × (24 / 28)², its leaves at 28 px
     assert Drawing.detail_floor([], "none") == FLOOR
+
+
+def test_a_small_frame_that_explains_is_not_held_to_a_screen():
+    """JL 261013: "主次分明 … 一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的" and "大小有致". A frame marked
+    canvas.explains may be small and roomy: check.py's ① (a third of a screen), ⑥ and ⑦ do not hold it; ⑤ needs no key
+    point of its own. An unmarked frame of the same size still fails ①."""
+    from check import check
+    from draw import canvas
+    d = Drawing()
+    small = d.frame("② a small note", 900, 500)
+    d.text(40, 30, "One note that explains the main frame.", 30)
+    canvas.explains(small)
+    plain = d.frame("③ a small frame, not marked", 900, 500)
+    d.text(40, 30, "One note, unmarked.", 30)
+    out = Path(tempfile.mkdtemp()) / "t.excalidraw"
+    d.write(out, "test")
+    rows = {r["name"][0]: r for r in check(out)["rows"]}
+    assert rows["②"]["①"].startswith("✅ small on purpose") and rows["②"]["⑥"].startswith("—")
+    assert rows["②"]["⑤"].startswith("✅")
+    assert rows["③"]["①"].startswith("❌")

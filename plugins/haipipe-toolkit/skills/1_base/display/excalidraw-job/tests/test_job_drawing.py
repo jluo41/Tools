@@ -78,13 +78,13 @@ def test_make_draws_the_whole_job(tmp_path):
     assert "job:\n  name: j01_losses" in face and "**Tags:** `Jobs`" in face
     els = json.loads(out.read_text())["elements"]
     frames = sorted(e["name"] for e in els if e["type"] == "frame")
-    assert [f[0] for f in frames] == ["①", "②"]                           # why, then in → Tasks → out (no picture)
+    assert [f[0] for f in frames] == ["①"]                                # the ladder (no picture, no detail asked)
     words = " ".join(e.get("text", "").replace("\n", " ") for e in els if e["type"] == "text")
-    assert "Explain the losses LLMs use." in words                       # ① the aim, from the goal: line
-    assert "How are entropy and KL related" in words                     # ① a Task's question
-    assert "❓ close: not written on the Job face" in words               # ① what is missing, in red
-    assert "1 video: 1 blocked" in words                                  # ② a Task's Runs and their state
-    assert "Cross-entropy is the next-token loss of every LLM." in words  # ② its finding, from Why it matters
+    assert "Explain the losses LLMs use." in words                       # the Job row: its aim, from the goal: line
+    assert "How are entropy and KL related" in words                     # a Task row: its question
+    assert "❓ close: not written on the Job face" in words               # the Job row: what is missing, in red
+    assert "r01 · video" in words and "⬜ no Run yet" in words           # a Run row under its Task; an empty Task
+    assert "Cross-entropy is the next-token loss of every LLM." in words  # right of the Task: its finding
     assert "a video's own point" not in words                             # division 1 only, not a Run's
     assert "Is KL a distance?" not in words                               # a Task's detail is its own topic's
     r = check(out)
@@ -94,7 +94,7 @@ def test_make_draws_the_whole_job(tmp_path):
 
 
 def test_a_task_topic_is_named_in_the_workflow(tmp_path):
-    """A face whose `task:` yaml names a Task (excalidraw-task's) is pointed to from the Job's ②."""
+    """A face whose `task:` yaml names a Task (excalidraw-task's) is pointed to from that Task's row."""
     job = block(tmp_path)
     other = job.parent / "studio/s24-j01-t01-entropy-kl"
     other.mkdir(parents=True)

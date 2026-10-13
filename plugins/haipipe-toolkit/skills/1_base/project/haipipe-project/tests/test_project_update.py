@@ -153,5 +153,23 @@ class MigrateTest(unittest.TestCase):
             M.TEMPLATE = real
 
 
+class PatchTicketTest(unittest.TestCase):
+    def test_a_ticket_that_spells_its_result_folder_moves_it(self):
+        import ladder as L
+        text = ('#!/usr/bin/env bash\n'
+                'task_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"\n'
+                'result_dir="$task_dir/results/r01_build"\n'
+                'other="$task_dir/results/r01_build_more"\n')
+        out, found = L.patch_ticket(text, "r01_build")
+        self.assertTrue(found)
+        self.assertIn('result_dir="$task_dir/runs/r01_build/result"', out)
+        self.assertIn('other="$task_dir/results/r01_build_more"', out)   # another Run's name is left alone
+
+    def test_a_lowercase_run_variable_moves_its_result(self):
+        import ladder as L
+        out, _ = L.patch_ticket('#!/usr/bin/env bash\nexport RESULT_DIR="$task_dir/results/$run"\n', "r01_x")
+        self.assertIn('RESULT_DIR="$task_dir/runs/$run/result"', out)
+
+
 if __name__ == "__main__":
     unittest.main()

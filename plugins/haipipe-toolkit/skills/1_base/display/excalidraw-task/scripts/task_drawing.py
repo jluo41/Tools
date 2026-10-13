@@ -1136,7 +1136,7 @@ def transcript_pages(run: dict, assets: Path, dpi: int = 200) -> tuple[list, lis
 
 
 def transcript_frame(d: Drawing, run: dict, w: dict, assets: Path, noun: str = "transcript",
-                     us: str = "This Task") -> dict | None:
+                     us: str = "This Task", name: str = "") -> dict | None:
     """The video's transcript as /excalidraw-read reads a paper (JL 261012 on b11 s47: "the pdf of the transcript
     should be looks like what we did in the /excalidraw-read, to put them in the most left, and highlight them, and
     in the right, we give the comments"): its PDF pages whole on the left, each read passage highlighted where it
@@ -1144,14 +1144,14 @@ def transcript_frame(d: Drawing, run: dict, w: dict, assets: Path, noun: str = "
     the passages' order. Each passage and its note carry the same number in a yellow circle, the passage's in the
     page's margin; no arrows (JL 261012, after long slanted ones: "this looks ugly"). None when the video has no
     reading. `noun` and `us` name the source and what it links to: a related paper reads "The paper, read" and
-    "→ Our paper" (excalidraw-read's topic_drawing.py)."""
+    "→ Our paper" (excalidraw-read's topic_drawing.py); `name`, when given, is the frame's whole name."""
     pages, missing, total = transcript_pages(run, assets)
     if not pages:
         return None
     _, spec = read_of(run, assets)
     targets = {t["id"]: t.get("label", t["id"]) for t in (spec.get("ours") or {}).get("targets") or []}
     pdf_name = Path(str((spec.get("paper") or {}).get("pdf") or "")).name
-    name = f"{run['rid']} · The {noun}, read"
+    name = name or f"{run['rid']} · The {noun}, read"
     f = d.frame(name, W, TALLEST)
     d.room(f)
     shown = (f"{total} pages, the {len(pages)} with passages shown, each cut to them" if total > len(pages) else

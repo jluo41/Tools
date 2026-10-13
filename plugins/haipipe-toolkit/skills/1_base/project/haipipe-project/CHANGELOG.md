@@ -1,3 +1,9 @@
+## 0.15.2 · 2026-10-13 · a moved ticket that spells its own Result folder
+
+- `ladder.py` `patch_ticket(text, run)`: a ticket that writes `$task_dir/results/<its own name>` (not `$RUN`), or uses a
+  lowercase `$run`, now writes `runs/<run>/result` after the move. Found on OpioidRx b00 and b01 (25 tickets the probe
+  called unexpected, 261013); two new tests.
+
 ## 0.15.1 · 2026-10-12 · s00 has one name, and an old index's number is never reused
 
 - `audit --today` now checks a Block's background index (JL 261012: "s00 has a constant name"): a Block with

@@ -1,6 +1,6 @@
 [
- "✅ s21 · j01 math classic ml: 2 frames, every check passes: 137 words · 170 words",
- "✅ s22 · j02 rl basics: 2 frames, every check passes: 117 words · 180 words",
- "✅ s23 · j03 pre llm nlp: 2 frames, every check passes: 117 words · 166 words",
- "its builder calls job_drawing.draw"
+ "✅ the demo Job: 2 frames, every check passes",
+ "its charts drawn from the demo Runs' metrics.json, into assets/",
+ "first real staircase: Physician-SPACE LLMRec b04 s27 (j08), 261013",
+ "the paper's s01-ideation redrawn by the same principles, 261013"
 ]

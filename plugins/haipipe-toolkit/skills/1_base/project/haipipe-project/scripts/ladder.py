@@ -543,11 +543,12 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
 PATCH_MARK = "# ladder: moved to one folder per Run; resolves as runs/<run>.sh did, writes runs/<run>/result/"
 SELF = re.compile(r'dirname (-- )?"(\$0|\$\{0\}|\$\{BASH_SOURCE\[0\]\}|\$BASH_SOURCE|\$TICKET)"')
 TASK_VAR = r'\$\{?[A-Z_]*TASK[A-Z_]*\}?'
-RUN_VAR = r'\$\{?[A-Z_]*RUN(?:_NAME|_ID)?\}?'
+RUN_VAR = r'\$\{?(?:[A-Z_]*RUN(?:_NAME|_ID)?|run(?:_name|_id)?)\}?'   # $RUN_NAME or a lowercase $run
 
 
-def patch_ticket(text: str) -> tuple[str, bool]:
-    """The patched ticket and whether its self-location was found."""
+def patch_ticket(text: str, run: str | None = None) -> tuple[str, bool]:
+    """The patched ticket and whether its self-location was found. `run` is the Run's name: a ticket that
+    spells its own Result folder (`$task_dir/results/<run>`) instead of a variable is moved with it."""
     if PATCH_MARK in text:
         return text, True
     found = bool(SELF.search(text))
@@ -562,6 +563,8 @@ def patch_ticket(text: str) -> tuple[str, bool]:
     t = re.sub(rf'results/({TASK_VAR})/({RUN_VAR})(?![A-Za-z_])', r'\1/runs/\2/result', t)
     t = re.sub(rf'results/({RUN_VAR})(?![A-Za-z_])', r'runs/\1/result', t)
     t = re.sub(r'runs/(\$\{?RUN_NAME\}?)\.sh', r'runs/\1/\1.sh', t)
+    if run:
+        t = re.sub(rf'(?<![\w-])results/{re.escape(run)}(?![\w.-])', f'runs/{run}/result', t)
     t = re.sub(r'(\$\{?OUTPUT_ROOT\}?)/notebooks/(\$\{?TASK_SEG\}?)', r'\1/\2/notebooks', t)
     lines = t.split("\n", 1)
     if lines[0].startswith("#!"):
@@ -713,7 +716,7 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
                     shutil.move(str(a), str(b))
                 tk = dest / (ticket or "")
                 if op == "move" and kind == "hard" and tk.suffix == ".sh" and tk.is_file():
-                    patched, found = patch_ticket(tk.read_text(encoding="utf-8"))
+                    patched, found = patch_ticket(tk.read_text(encoding="utf-8"), dest.name)
                     tk.write_text(patched, encoding="utf-8")
                     if not found:
                         unpatched.append(str(tk.relative_to(root)))

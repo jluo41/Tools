@@ -14,8 +14,8 @@ description: >-
   frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.3.7"
-  last_updated: "2026-10-12"
+  version: "0.3.8"
+  last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -54,14 +54,18 @@ The principles
 
 ```text
 ① 🖼️ one frame, as large as possible    fill one screen (about 2560 x 1440, at most 2800 x 1600) with facts;
-                                       never many small frames that each say one thing (a slide)
+                                       never many small frames that each say one thing (a slide), never many
+                                       equal frames; 主次分明 (JL 261013): one main frame, largest, and small
+                                       frames that explain it (canvas.explains: not held to a screen), 大小有致
 ② 🗺️ inside it, a workflow map or a     steps joined by arrows, a loop drawn closed, checks beside the step;
      mind map                          or one centre with branches by meaning; never a list or a table of names
 ③ 📖 the frames form the narrative      laid out by the story's shape (a row, a grid, a branch), never one row
                                        by habit or one long column; acts, a row of frames each, named at the
                                        left; an arrow between frames only where one leads on (not by habit),
                                        never through a third frame; the main picture first and largest; one long piece
-                                       read down is one tall frame (canvas.reads_down: its width fits)
+                                       read down is one tall frame (canvas.reads_down: its width fits); never
+                                       left-aligned rows ("你不能每一个都是朝左对齐", JL 261013): the frames after the
+                                       main one step down and right of it (canvas.stairs)
 ④ 🚫 a folder tree only for folders     servers/, a skill folder, a Block's files: yes; ideas, rules, steps,
                                        Questions, groups: no
 ⑤ 🔍 big words, one slight colour       titles and arrows large enough to read zoomed out (frame title 60 px,
@@ -85,7 +89,8 @@ The principles
                                        measured values come first, as
                                        a scoreboard: each number large, its label small above it ("for a task,
                                        we want to salient show the numbers and the values"); the room is not
-                                       thinness: a frame marked Drawing.room has ⑥ measured over its boxes
+                                       thinness: a frame marked Drawing.room has ⑥ measured over its boxes; a board
+                                       is allowed, a full board is not ("你可以是棋盘，但棋盘上不能落满所有的子")
 ⑨ 🎨 vivid, never a wall of text       every frame leads with something to look at: a chart read from disk, a
                                        real data row, a screenshot, a formula worked through, a scoreboard;
                                        a frame of only text boxes is forbidden (asked 261012: "things like this

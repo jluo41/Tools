@@ -10,6 +10,9 @@
   and a numbered note level with each (excalidraw-task's `transcript_frame`, which gains `noun` and `us`), then
   its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy
   s06 to s10.
+- Each paper's row starts with its reference frame (JL 261013: "for each paper, you didn't give the paper
+  reference, the names, the authors"): title, every author, venue and year, link, PDF, deep read and the version
+  read, from the face's `ref:` block; the theme's cards carry each full title.
 
 ## 0.5.0 · 2026-10-13 · Revise mode is its own skill
 

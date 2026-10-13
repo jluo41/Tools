@@ -13,8 +13,8 @@ description: >-
   block_index.py.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.17"
-  last_updated: "2026-10-12"
+  version: "0.13.19"
+  last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -256,6 +256,10 @@ Frames in rows, never one long column (JL 261009: "don't put all the things in o
 places its frames with `canvas.grid(els, [[...], [...]])`, read left to right and then down, two to four a
 row; each frame moves with what is drawn in it. `canvas.write` warns when 4 or more frames stand in one
 column.
+Frames as stairs, not left-aligned rows (JL 261013: "你不能每一个都是朝左对齐。你朝左对齐好像就是每一个一列都是非常
+重要的"): a drawing with one main frame places it first, at the origin, and each frame after it lower and further
+right, `canvas.stairs(els, [main, (id, dx), …])`; a small frame that explains the main one is marked
+`canvas.explains(frame)`, so check.py does not hold it to a screen's size ("主次分明 … 大小有致").
 One idea, one dense frame (JL 261010: "既然是 idea，你搞那么多 frame 干嘛呀？... 一个 frame 的信息量是非常大的"):
 a topic's idea is drawn as one connected flow, dense with facts, its most important part the largest;
 a separate frame is for separate material (a source marked up, a reference picture), never for one more

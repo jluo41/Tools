@@ -25,15 +25,15 @@ open point in red. The words are each branch's `title` and `summary` in the `min
 are the detail, kept here and not drawn (⑦).
 
 ```text
-① 🖼️ One frame, as large as possible            fill one screen with facts; never a slide
+① 🖼️ One frame, as large as possible            one main frame, largest; small ones explain it (主次分明)
 ② 🗺️ Inside it, a workflow map or a mind map    a workflow or a mind map inside; never a list
-③ 📖 The frames form the narrative              one story: laid out by its shape, acts, named arrows
+③ 📖 The frames form the narrative              one story; frames step down and right, never left-aligned
 ④ 🚫 A folder tree only for folders             a folder tree only for real folders
 ⑤ 🔍 Big words and one slight colour            big words for the logic; one soft colour for the key point
 ⑥ 📊 A text frame's density, measured          enough words in a text frame; merge a thin one
 ⑦ 🪶 Few words in a workflow, fewest small ones  a map reads from boxes and arrows: few words, few small
-⑧ 🌬️ Room between boxes, numbers big            stairs; no circling-back line; big numbers
-⑨ 🎨 Vivid, never a wall of text                a chart, a real row, a picture first
+⑧ 🌬️ Room between boxes, numbers big            stairs; a board, never a full board; big numbers
+⑨ 🎨 Vivid, never a wall of text                a chart, a table, a picture first; results never as words
 🎨 The look                                      black lines, red open, green a change; names no one
 📚 Shapes that keep their own rules              screens, s00, reports and slides keep their own rules
 ```
@@ -106,13 +106,15 @@ mindmap:
   centre: a Studio drawing reads as one story
   branches:
   - title: 🖼️ ① One frame, as large as possible
-    summary: "fill one screen with facts; never a slide"
+    summary: "one main frame, largest; small ones explain it"
     by: asked 261012
     leaves:
     - fills one screen, about 2560 x 1440, at most 2800 x 1600
     - dense with facts; words 20 px or more
     - never many small frames that each say one thing (a slide)
     - "✅ one screen, or one tall frame read down (Open 1 settled)"
+    - "主次分明: one main frame, the largest; small frames that explain it, marked canvas.explains (261013)"
+    - "大小有致: frames of different sizes; never many equal frames (261013)"
   - title: 🗺️ ② Inside it, a workflow map or a mind map
     summary: "a workflow or mind map; never a list"
     by: asked 261012
@@ -122,12 +124,13 @@ mindmap:
     - not a list, not a table of names
     - draw the logic, flows, checks, loops and gates
   - title: 📖 ③ The frames form the narrative
-    summary: "one story: acts, named arrows"
+    summary: "one story; frames as stairs"
     by: asked 261012
     leaves:
     - the main picture first and largest (261011)
     - "laid out by the story's shape: a row, a grid or a branch; never one row by habit, never one long column (261012)"
-    - "acts: a row of frames per act, the act named at the left (s52)"
+    - "acts: a row of frames per act, the act named at the left (s52); retired where a main frame leads (261013)"
+    - "never left-aligned rows: each frame after the main one lower and further right, canvas.stairs (261013)"
     - "a named arrow between frames: checked by, applied to, lives in (261010)"
     - one long piece read down is one tall frame (261010)
   - title: 🚫 ④ A folder tree only for folders
@@ -164,7 +167,7 @@ mindmap:
     - "the detail goes to its own frame or topic, or stays in the face"
     - "check.py's ⑦ row; draw.py's badge: 🪶 words, % small"
   - title: 🌬️ ⑧ Room between boxes, numbers big
-    summary: "stairs; no circling-back line; big numbers"
+    summary: "stairs; a board, never a full board"
     by: asked 261012
     leaves:
     - "each box only as wide as its words need; never stretched to fill a row (261012)"
@@ -172,6 +175,7 @@ mindmap:
     - "a row hangs off the row above by a short straight drop; never a line circling back (261012)"
     - "a Task's measured values first, as a scoreboard: each number large (261012)"
     - "the room is not thinness: Drawing.room, ⑥ measured over the boxes"
+    - "a board is allowed, a full board is not: 棋盘上不能落满所有的子; room invites the reader to think (261013)"
   - title: 🎨 ⑨ Vivid, never a wall of text
     summary: "a chart, a real row, a picture first"
     by: asked 261012
@@ -179,6 +183,7 @@ mindmap:
     - "every frame leads with something to look at: a chart, a real row, a screenshot, a formula, a scoreboard"
     - "a frame of only text boxes is forbidden: 'so rigid, not vivid, no one have the incentive to zoom in and read' (261012)"
     - "check.py ⑨ fails a frame with no picture and more than 600 words; the words stay in the face"
+    - "results are charts and tables read from disk, and the figures a Task already holds; never paragraphs (261013)"
   - title: 🎨 The look
     summary: "black lines, red open, green a change; names no one"
     by: standing
@@ -552,6 +557,13 @@ s01-D23 · Decided (JL 261012, on a Job's ③ "explained from zero" frame of tex
     of text. Every frame leads with something to look at; a frame of only text boxes is forbidden. Built in
     excalidraw-studio 0.3.6 (SKILL.md ⑨, check.py ⑨: no picture and over 600 words fails) and excalidraw-job (③ text
     frame off by default; ③ chart_frame from a face's job: chart:).
+s01-D24 · Decided (JL 261013, on LLMRec's Job drawings and the paper's s01-ideation, 19 equal frames in left-aligned
+    rows: "主次分明 … 一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的"; "一定要用阶梯状的结构 … 没有留白的
+    话，很难激发 reader 的思考能力"; "你可以是棋盘，但棋盘上不能落满所有的子"; "你不能每一个都是朝左对齐"; "你的 results
+    应该是图和表格呀"): ① one main frame, small ones that explain it (大小有致); ③ frames step down and right, never
+    left-aligned; ⑧ a board, never a full board; ⑨ results as charts and tables. Built in excalidraw-studio 0.3.8
+    (principles, check.py: canvas.explains), haipipe-studio 0.13.19 (canvas.stairs, canvas.explains) and
+    excalidraw-job 0.6.0 (the staircase); first drawn on LLMRec b04 s27 and the paper's s01-ideation.
 s01-D10 · Decided (JL 261012: "no need to put JL, it can be anyone"): a drawing names no one. A principle says
     when it was asked ("asked 261012"), a check says "a person"; who asked stays in the face's Decided lines,
     the record, never on the drawing.

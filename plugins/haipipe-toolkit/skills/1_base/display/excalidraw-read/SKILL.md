@@ -152,7 +152,9 @@ passages highlighted and a numbered note level with each, then its logic and its
 ```
 
 1. **The face holds the words.** A `related:` yaml block: `key`, `what`, `why`, the `papers` in reading order
-   (`id`, `item` as its `related/related.md` row starts, `says` in one line) and `open` (see the script's header).
+   (`id`, `item` as its `related/related.md` row starts, `says` in one line, `ref` its reference: title, every
+   author from Crossref or arXiv, venue, year, link) and `open` (see the script's header). Each paper's row opens
+   on its reference frame (JL 261013: "for each paper, you didn't give the paper reference, the names, the authors").
 2. **One reading per paper**, `reads/<id>-<paper>/reading.yaml`, its `paper.pdf` the Block's `related/paper/` file.
 3. **Unread is red.** A paper with no reading yet shows as one red card: "PDF kept, not read yet" or "no PDF yet".
 4. The page frame is excalidraw-task's `transcript_frame` with `noun="paper"`, `us="Our paper"`. Worked example:

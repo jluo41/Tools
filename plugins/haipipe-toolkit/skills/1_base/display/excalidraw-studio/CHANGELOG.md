@@ -1,6 +1,16 @@
 excalidraw-studio · Changelog
 =============================
 
+## [0.3.8] · 2026-10-13 · 主次分明: a main frame, small frames that explain it, frames as stairs
+
+- JL 261013, on LLMRec's s27 and the paper's s01-ideation (19 equal frames in left-aligned rows, his counterexample):
+  "主次分明 … 一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的", "大小有致", "你可以是棋盘，但棋盘上不能
+  落满所有的子", "你不能每一个都是朝左对齐".
+- Principles ①, ③ and ⑧ say so: one main frame and small explaining frames; the frames after it step down and right
+  (haipipe-studio `canvas.stairs`); a board, never a full board.
+- `check.py`: a frame marked `canvas.explains` is small on purpose: ① does not hold it to a third of a screen, ⑥ and
+  ⑦ do not measure it, ⑤ needs no key point of its own (the main frame's is). New test.
+
 ## [0.3.7] · 2026-10-12 · Tables as a grid; arrows between frames only where one leads on
 
 - Asked 261012 on Proj10 work/b01, showing b03's model × engine table: "I want the tables like this", and "no need to

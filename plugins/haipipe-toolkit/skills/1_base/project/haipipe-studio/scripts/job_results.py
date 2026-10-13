@@ -72,6 +72,14 @@ def load(path: Path):
             return json.loads(text)
         if path.suffix in (".yaml", ".yml") and yaml:
             return yaml.safe_load(text)
+        if path.suffix == ".csv":           # a table: its rows, numbers as numbers; dig picks a row by col=value
+            import csv
+            def num(v):
+                try:
+                    return float(v) if any(c in v for c in ".eE") else int(v)
+                except (TypeError, ValueError):
+                    return v
+            return [{k: num(v) for k, v in row.items()} for row in csv.DictReader(text.splitlines())]
     except Exception:                     # a broken receipt reads as missing, never stops the build
         return None
     return None
@@ -141,8 +149,13 @@ def runs_of(task: Path) -> list[dict]:
         elif p.suffix == ".sh" and RUN.match(p.stem) and p.stem not in found:
             found[p.stem] = {"name": p.stem, "dir": runs, "result": results / p.stem}
     for p in sorted(results.iterdir()) if results.is_dir() else []:
-        if p.is_dir() and RUN.match(p.name) and p.name not in found:
+        # a Stata Task's older layout names its Result folder run_<cohort>_<window>_<model>_<trait> (OpioidRx)
+        if p.is_dir() and (RUN.match(p.name) or p.name.startswith("run_")) and p.name not in found:
             found[p.name] = {"name": p.name, "dir": p, "result": p}
+        elif p.is_dir() and not p.name.startswith((".", "_")):     # results/<trait>/rNN_…: a Stata Task's trait folder
+            for q in sorted(p.iterdir()):
+                if q.is_dir() and RUN.match(q.name) and q.name not in found:
+                    found[q.name] = {"name": q.name, "dir": q, "result": q}
     return [found[k] for k in sorted(found)]
 
 
@@ -170,7 +183,8 @@ def state_of(run: dict) -> str:
             return f"failed (exit {code})" if code else state     # completed, yet its metrics say it exited nonzero
         if isinstance(data, dict) and isinstance(data.get("return_code"), int):
             return "completed" if data["return_code"] == 0 else "failed"
-    if result.is_dir() and any(f.is_file() for f in result.iterdir()):
+    if result.is_dir() and any(f.is_file() or (f.is_dir() and any(g.is_file() for g in f.iterdir()))
+                               for f in result.iterdir()):   # files, or tables/ and describe/ holding them
         return "receipt present"
     return "no result yet"
 
@@ -200,15 +214,36 @@ def subject_of(run: dict) -> str:
 
 
 # ── values: named by the face, else found by a known key ─────────────────────────────────────────────────────
+def _row(data: list, part: str):
+    want = dict(c.split("=", 1) for c in part.split("&"))
+    return next((r for r in data if isinstance(r, dict) and all(str(r.get(k)) == v for k, v in want.items())), None)
+
+
 def dig(data, key: str):
-    for part in key.split(".") if key else []:
+    """`a.b.0.col=v` into nested data. A name with a dot in it (`codex-gpt-5.6-luna`, LLMRec 261013) is matched
+    whole: when a part is not there, the longest run of parts joined by dots that is there wins."""
+    parts = key.split(".") if key else []
+    i = 0
+    while i < len(parts):
+        part, step = parts[i], 1
         if isinstance(data, dict):
+            if part not in data:
+                step = next((k for k in range(len(parts) - i, 1, -1) if ".".join(parts[i:i + k]) in data), 1)
+                part = ".".join(parts[i:i + step])
             data = data.get(part)
         elif isinstance(data, list) and part.lstrip("-").isdigit():
-            i = int(part)
-            data = data[i] if -len(data) <= i < len(data) else None
+            n = int(part)
+            data = data[n] if -len(data) <= n < len(data) else None
+        elif isinstance(data, list) and "=" in part:                 # a row of a table: col=value&col2=value2
+            found = _row(data, part)
+            if found is None:                                        # col=codex-gpt-5.6-luna: the value has a dot
+                step = next((k for k in range(len(parts) - i, 1, -1)
+                             if _row(data, ".".join(parts[i:i + k])) is not None), 1)
+                found = _row(data, ".".join(parts[i:i + step])) if step > 1 else None
+            data = found
         else:
             return None
+        i += step
     return data
 
 

@@ -1,6 +1,24 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.13.19] · 2026-10-13 · Frames as stairs, a small frame that explains, a name with a dot**
+
+- `canvas.stairs(els, order, gap, step)`: the main frame at the origin, each next frame lower and further right
+  (JL 261013: "你不能每一个都是朝左对齐"); every frame placed once; each moves with what is drawn in it. New test.
+- `canvas.explains(frame)` / `is_explains`: a frame small on purpose, explaining the main one ("主次分明 … 大小有致");
+  excalidraw-studio's check.py reads it.
+- `job_results.dig`: a name with a dot in it (`codex-gpt-5.6-luna`) is matched whole, as a JSON key and in a CSV
+  row's `col=value`; every other path reads as before.
+
+**[0.13.18] · 2026-10-13 · job_results reads a Stata Task's older layout and a CSV table**
+
+- Asked 261013 (Physician-SPACE OpioidRx: "report the results of each job as the new sNN"): the Stata Blocks keep
+  `results/run_<cohort>_<window>_<model>_<trait>/` and `results/<trait>/rNN_<…>/`; `runs_of` now finds both, so a Job or
+  Task drawing lists those Runs and their state instead of "no Run yet".
+- `state_of`: a result folder whose files sit one level down (`tables/`, `describe/`) reads as a result on disk.
+- `load` reads a `.csv` as its rows (numbers as numbers) and `dig` picks a row by `col=value&col2=value2`, so a face can
+  show `tables/h2-slopes.csv:model_id=m5&context=lbp.estimate` read from disk on every build. New test.
+
 **[0.13.17] · 2026-10-12 · Folder, the Studio's fourth folding part; an undated decision is left off the Timeline**
 
 - JL 261012: "在 related 和 timeline 下面再搞一个 folder，这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）

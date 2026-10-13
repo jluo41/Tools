@@ -150,12 +150,22 @@ s07-D02 · First drawn on b01's six Tasks (s24 to s29) and b51's ten (s01 to s10
     with the short words written from each page (261012)
 s07-D03 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the open points move to Later, drawn plain as
     "⏳ later:" (261012)
+s07-D04 · A Task follows excalidraw-job's staircase (JL 261013: "you should also think about how to update the
+    /excalidraw-task as well, we try to follow the same idea"): the Task's question on top, each Run or video a step
+    lower and further right, the current Run marked; each step's results outside the frame, small (charts, curves,
+    tables, its figures, a video's screenshots); a small frame for its words and formulas; transcripts only when
+    asked. Proposed, not yet built (261013)
 
 
 Open
 ----
 
-(none open: agreed 261012, s07-D03)
+1. Build s07-D04 in a new file, excalidraw-task `scripts/task_stairs.py`, reusing excalidraw-job's charts and cards
+   and haipipe-studio's `canvas.stairs` and `canvas.explains`; every `task:` field keeps its meaning; `layout: rows`
+   keeps today's frames.
+2. Hook it into `task_drawing.py`'s `draw_task` once the other session's uncommitted edits to that file land.
+3. Draw two first: a work Task (LLMRec b04 j08 t02) and one Proj10 video Task, and read them before the default
+   changes; Proj10's ten video topics change look on their next rebuild.
 
 
 Later

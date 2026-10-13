@@ -1,6 +1,6 @@
 interface:
   display_name: "Job Drawing"
-  short_description: "a Job as one Studio drawing, in few words: why, in and out, what each Task found"
-  default_prompt: "Use $excalidraw-job to draw a Job as one Studio topic, or to redraw a Job's results topic as the whole Job."
+  short_description: "a Job as a staircase: why it exists, its Tasks as steps, each Task's results as charts and tables"
+  default_prompt: "Use $excalidraw-job to draw a Job as a staircase Studio topic, with each Task's results as charts and tables, or to redraw a Job's results topic as the whole Job."
 policy:
   allow_implicit_invocation: true

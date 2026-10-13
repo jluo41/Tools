@@ -15,12 +15,14 @@ The topic's face carries a `related:` yaml block; each paper's reading is `reads
       - id: p01
         item: Gillani & Baig 2026     # the start of its related/related.md item
         says: <the paper in one line: its frames' key point>
+        ref: {title: ..., authors: ..., venue: ..., year: ..., link: ...}   # its reference, from Crossref or arXiv
       open: [<a choice the person makes>, ...]
 
-Act 1 · the theme: the key point, what the papers share and why it matters, one card per paper, the open choices
-in red. Then one row per paper, as excalidraw-task draws a video's transcript: its pages with the read passages
-highlighted and a numbered note level with each (Says · Comment · → Our paper), then its logic as a chain of steps
-and the links to our paper. A paper with no reading yet (no PDF) gets one red card from its related.md row.
+Act 1 · the theme: the key point, what the papers share and why it matters, one card per paper (its full title),
+the open choices in red. Then one row per paper: its reference first (title, every author, venue, year, link, PDF,
+deep read; JL 261013: "for each paper, you didn't give the paper reference, the names, the authors"), then, as
+excalidraw-task draws a video's transcript, its pages with the read passages highlighted and a numbered note level
+with each (Says · Comment · → Our paper), then its logic as a chain of steps and the links to our paper. A paper with no reading yet (no PDF) gets one red card from its related.md row.
 Written with haipipe-studio's canvas.write, so a person's marks survive every rebuild.
 """
 from __future__ import annotations
@@ -89,8 +91,8 @@ def theme_frame(d: Drawing, title: str, cfg: dict, papers: list[dict]) -> dict:
     y = td.heading(d, f"⓪ {title}", sub, str(cfg.get("key") or "❓ no key point in the face's related: yaml"))
     rows = [[("What these papers share", [str(cfg.get("what") or "❓")], INK),
              ("Why it matters to our paper", [str(cfg.get("why") or "❓")], INK)]]
-    cards = [(f"{p['id']} · {who(p['item'])}", [str(p.get("says") or ""), state(p)], INK if p["reading"] else RED)
-             for p in papers]
+    cards = [(f"{p['id']} · {who(p['item'])}", [f"“{ref(p)['title']}”", str(p.get("says") or ""), state(p)],
+              INK if p["reading"] else RED) for p in papers]
     rows += [cards[k:k + 3] for k in range(0, len(cards), 3)]
     labels = ["why it matters", "the papers, in reading order"] + [""] * len(cards)
     if cfg.get("open"):
@@ -102,7 +104,7 @@ def theme_frame(d: Drawing, title: str, cfg: dict, papers: list[dict]) -> dict:
 def logic_frame(d: Drawing, p: dict, spec: dict) -> dict:
     """A paper's own argument as a chain of steps, each naming the passages it rests on, then one card per claim of
     ours that a passage links to."""
-    name = f"{p['id']} · Its logic, and our link"
+    name = f"{p['id']} · {who(p['item'])} · its logic, and our link"
     f = d.frame(name, td.W, td.TALLEST)
     d.room(f)
     paper = spec.get("paper") or {}
@@ -129,21 +131,43 @@ def logic_frame(d: Drawing, p: dict, spec: dict) -> dict:
     return td.fit(d, f, td.rows_of(d, y, rows, labels))
 
 
-def unread_frame(d: Drawing, p: dict, row: dict) -> dict:
-    """A paper with no reading yet: its related.md row in red, and what to do to read it."""
-    name = f"{p['id']} · {who(p['item'])}, not read yet"
-    head = "⬜ Its PDF is kept, not read yet" if pdf_of(p) else "❓ No PDF yet"
-    todo = (f"Read related/{pdf_of(p)} with excalidraw-read into reads/{p['id']}-<paper>/reading.yaml, then rebuild."
-            if pdf_of(p) else "Save its PDF in related/paper/ and give it a reading here, then rebuild: its pages and "
-            "logic will show.")
+def ref(p: dict) -> dict:
+    """The paper's reference: the face's `ref:` block, else what its related.md row says."""
+    row, r = p.get("row") or {}, dict(p.get("ref") or {})
+    r.setdefault("title", (row.get("item") or p["item"]).split(" · ", 1)[-1])
+    r.setdefault("venue", row.get("venue", ""))
+    r.setdefault("year", row.get("date", ""))
+    r.setdefault("link", row.get("source", ""))
+    r.setdefault("authors", "")
+    return r
+
+
+def reference_frame(d: Drawing, p: dict) -> dict:
+    """A paper's reference, first in its row: title, every author, venue and year, link, PDF, deep read, and the
+    version read. A paper with no reading yet adds one red card: what to do to read it."""
+    r, row, spec = ref(p), p.get("row") or {}, (p["reading"] or (None, {}))[1]
+    name = f"{p['id']} · {who(p['item'])} · the paper"
     f = d.frame(name, td.NARROW, 700)
-    y = td.heading(d, name, f"{row.get('venue', '')} · {row.get('source', '')}", str(p.get("says") or row.get("why here") or ""),
-                   td.NARROW)
-    body = [f"Why here (its abstract): {row.get('why here', '❓')}",
-            f"Deep read: {row.get('read') or 'none yet'}", todo]
-    hh = td.card_height(head, body, td.NARROW - 80)
-    td.card(d, 40, y, td.NARROW - 80, hh, head, body, RED, dashed=True)
-    return td.fit(d, f, y + hh)
+    y = td.heading(d, name, f"{r['venue']} · {r['year']}", f"“{r['title']}”", td.NARROW)
+    body = [f"Authors: {r['authors'] or '❓ not found'}", f"Published: {r['venue']}, {r['year']}", f"Link: {r['link']}",
+            f"PDF: related/{pdf_of(p)}" if pdf_of(p) else "PDF: none kept",
+            f"Deep read (Discovery): {row.get('read') or 'none yet'}"]
+    if (spec.get("paper") or {}).get("cite"):
+        body.append(f"Read from: {spec['paper']['cite']}")
+    hh = td.card_height("📚 Reference", body, td.NARROW - 80)
+    td.card(d, 40, y, td.NARROW - 80, hh, "📚 Reference", body, INK)
+    y += hh
+    if not p["reading"]:
+        head = "⬜ Its PDF is kept, not read yet" if pdf_of(p) else "❓ No PDF yet"
+        todo = (f"Read related/{pdf_of(p)} with excalidraw-read into reads/{p['id']}-<paper>/reading.yaml, then rebuild."
+                if pdf_of(p) else "Save its PDF in related/paper/ and give it a reading here, then rebuild: its pages "
+                "and logic will show.")
+        red = [f"Why here (its abstract): {row.get('why here', '❓')}", todo]
+        y += 40
+        rh = td.card_height(head, red, td.NARROW - 80)
+        td.card(d, 40, y, td.NARROW - 80, rh, head, red, RED, dashed=True)
+        y += rh
+    return td.fit(d, f, y)
 
 
 def draw(topic: Path) -> Path:
@@ -168,14 +192,13 @@ def draw(topic: Path) -> Path:
     acts = [{"name": "Act 1 · The theme", "frames": [theme["id"]]}]
     for k, p in enumerate(papers, 1):
         run, w = {"rid": p["id"], "summary": p.get("says") or ""}, {"says": p.get("says") or ""}
-        frames = []
+        frames = [reference_frame(d, p)["id"]]
         if p["reading"]:
-            pages = td.transcript_frame(d, run, w, assets, noun="paper", us=US)
-            frames = ([pages["id"]] if pages else []) + [logic_frame(d, p, p["reading"][1])["id"]]
-        else:
-            frames = [unread_frame(d, p, p["row"])["id"]]
+            pages = td.transcript_frame(d, run, w, assets, noun="paper", us=US,
+                                        name=f"{p['id']} · {who(p['item'])} · the paper, read")
+            frames += ([pages["id"]] if pages else []) + [logic_frame(d, p, p["reading"][1])["id"]]
         acts.append({"name": f"Act {k + 1} · {p['id']} · {who(p['item'])}", "frames": frames,
-                     "arrow": "read, then its logic"})
+                     "arrow": ["its pages, read", "its logic"][:len(frames) - 1]})
     between = [(theme["id"], acts[1]["frames"][0], "one row per paper, in reading order")] if len(acts) > 1 else []
     between += [(acts[i]["frames"][0], acts[i + 1]["frames"][0], f"next: {papers[i]['id']}") for i in range(1, len(acts) - 1)]
     d.acts(acts, between=between, gap=td.GAP)
