@@ -35,7 +35,7 @@ sys.path.insert(0, str(SKILLS / "display/excalidraw-studio/scripts"))
 sys.path.insert(1, str(SKILLS / "display/excalidraw-task/scripts"))   # ③ uses excalidraw-task's boxes
 import canvas  # noqa: E402
 import job_results as jr  # noqa: E402
-from draw import INK, MAP_WORDS, RED, W, Drawing  # noqa: E402
+from draw import GREY, INK, MAP_WORDS, RED, W, Drawing  # noqa: E402
 
 MAP_BUDGET = MAP_WORDS - 8                # ② stays under ⑦ with room for the badge's change of words
 
@@ -423,7 +423,9 @@ def task_lines(t: dict, cfg: dict, topics: dict, word: str, level: int) -> list[
     if level >= 5:                                           # the tightest: its marks, its count, its topic
         marks = "".join(sorted({r["mark"] for r in t["runs"]})) or "⬜"
         return [f"{marks}{'' if level >= 7 else ' ' + n_of(len(t['runs']), word)}" + (f" → {here[:3]}" if here else "")]
-    lines = [f"{n_of(len(t['runs']), word)}: {states(t['runs'])}" if t["runs"] else "⬜ no Run yet"]
+    tal = (cfg.get("_tally") or {}).get(t["name"])
+    lines = [f"{n_of(len(t['runs']), word)}: {states(t['runs'])}" if t["runs"] else
+             tally_line(tal, cfg.get("_runs_word", "Runs")) if tal and tal["runs"] else "⬜ no Run yet"]
     if level == 0:
         lines += ([f"📥 {short(put)}"] if put else []) + ([f"📤 {short(got)}"] if got else [])
     if t["values"] and level <= 3:
@@ -752,11 +754,128 @@ def chart_frame(d: Drawing, info: dict, spec: dict, block: Path, assets: Path, m
     return finish(d, f, bottom)
 
 
+# ── the design: each Task's Runs as grids, one mark per Run ─────────────────────────────────────────────────
+MARKS = {"done": "✅", "part": "🔶", "ticket": "⬜", "failed": "❌", "none": "·"}
+MARK_WORDS = {"done": "every eval found", "part": "some evals found", "ticket": "a ticket, no eval found",
+              "failed": "dropped as failed", "none": "not in the design"}
+
+
+def _found(block: Path, pat: str) -> bool:
+    """`<path under the Block>` exists, or `<path>:<key.inside>` holds a value: read from disk on every build."""
+    path, _, key = pat.partition(":")
+    p = block / path
+    if not key:
+        return p.exists()
+    return jr.dig(jr.load(p), key) is not None if p.is_file() else False
+
+
+def design_of(block: Path, spec: dict) -> dict:
+    """A Job's design (asked 261013 of Proj11 b01 s21: "How could I see in a glance about the design for each task and
+    their runs? … and for these runs, what are their status?"): per grid, its rows × columns of Runs, each cell's state
+    from disk (a ticket, its evals, a listed failure); per Task, a tally. `{row}`, `{col}` and a column's own fields fill
+    the patterns; a pattern `<path>:<key>` asks for a value inside a file."""
+    grids, tally = [], {}
+    for fr in spec.get("frames") or []:
+        for g in fr.get("grids") or []:
+            rows = [str(r) for r in g.get("rows") or []]
+            cols = [c if isinstance(c, dict) else {"label": str(c)} for c in g.get("cols") or []]
+            evals = g.get("evals") or []
+            cells = {}
+            t = tally.setdefault(str(g.get("task", "")), Counter())
+            for r in rows:
+                for c in cols:
+                    v = {k: str(x) for k, x in c.items()}
+                    v.setdefault("col", v["label"])
+                    v["row"] = r
+                    ticket = bool(g.get("ticket")) and _found(block, str(g["ticket"]).format(**v))
+                    found = sum(_found(block, str(e).format(**v)) for e in evals)
+                    failed = any(str(f.get("row", "*")) in (r, "*") and str(f.get("col", "*")) in (v["label"], "*")
+                                 for f in g.get("failed") or [])
+                    state = ("failed" if failed and (ticket or found) else "done" if evals and found == len(evals)
+                             else "part" if found else "ticket" if ticket else "none")
+                    cells[(r, v["label"])] = state
+                    if state != "none":
+                        t[state] += 1
+                        t["runs"] += 1
+                        t["no ticket"] += 0 if ticket or state == "ticket" else 1
+            grids.append({"g": g, "rows": rows, "cols": [c["label"] for c in cols], "cells": cells})
+    return {"grids": grids, "tally": tally}
+
+
+def tally_line(t: Counter, word: str = "Runs") -> str:
+    marks = " · ".join(f"{t[k]} {MARKS[k]}" for k in ("done", "part", "ticket", "failed") if t[k])
+    return f"{t['runs']} {word}: {marks}" + (f" ({t['no ticket']} with no ticket)" if t["no ticket"] else "")
+
+
+def grid_size(rows: list, cols: list, title: str, size: float = 28) -> tuple[float, float]:
+    lw = max([Drawing.measure(r, size) for r in rows] + [60]) + 30
+    cw = [max(Drawing.measure(c, 24) + 26, 66) for c in cols]
+    return max(lw + sum(cw), Drawing.measure(title, 32) + 20), 56 + 44 + len(rows) * size * 1.55 + 10
+
+
+def mark_grid(d: Drawing, x: float, y: float, gr: dict, size: float = 28) -> None:
+    """One grid: its title, its column names small and grey, a row per row value, a mark per Run (❌ red)."""
+    rows, cols, cells = gr["rows"], gr["cols"], gr["cells"]
+    lw = max([Drawing.measure(r, size) for r in rows] + [60]) + 30
+    cw = [max(Drawing.measure(c, 24) + 26, 66) for c in cols]
+    d.text(x, y, str(gr["g"].get("title", "")), 32)
+    if gr["g"].get("col_name") or gr["g"].get("row_name"):
+        d.text(x, y + 100 + len(rows) * size * 1.55, f"rows: {gr['g'].get('row_name', '')} · columns: "
+               f"{gr['g'].get('col_name', '')}", 20, GREY)
+    cx = x + lw
+    for c, w in zip(cols, cw):
+        d.text(cx, y + 56, c, 24, GREY)
+        cx += w
+    yy = y + 100
+    for r in rows:
+        d.text(x, yy, r, size)
+        cx = x + lw
+        for c, w in zip(cols, cw):
+            st = cells[(r, c)]
+            d.text(cx + 10, yy, MARKS[st], size, RED if st == "failed" else (GREY if st == "none" else INK))
+            cx += w
+        yy += size * 1.55
+
+
+def design_frame(d: Drawing, info: dict, fr: dict, design: dict, mark: str) -> dict:
+    """A frame of grids: its title, a key point with each Task's tally, the grids laid left to right and wrapped, then
+    what each mark means and the frame's own caption."""
+    title = str(fr.get("title") or f"🧭 {info['id']}'s Runs: the design and where each stands")
+    f = d.frame(f"{mark} {title}")
+    d.room(f)
+    d.heading(title)
+    y = (d.para(40, 112, str(fr["sub"]), W - 680, 28) + 24) if fr.get("sub") else 130
+    mine = [gr for gr in design["grids"] if any(gr["g"] is g for g in fr.get("grids") or [])]
+    tasks = list(dict.fromkeys(str(gr["g"].get("task", "")) for gr in mine))
+    word = str(fr.get("runs_word") or "Runs")
+    key = str(fr.get("key") or "") or " · ".join(f"{t[:3]}: {tally_line(design['tally'][t], word)}" for t in tasks)
+    kh = Drawing.height(key, W - 140, 34) + 40
+    d.key(40, y, W - 80, kh)
+    d.para(70, y + 20, key, W - 140, 34)
+    y += kh + 50
+    x, row_h = 40, 0
+    for gr in mine:
+        gw, gh = grid_size(gr["rows"], gr["cols"], str(gr["g"].get("title", "")))
+        gh += 30 if (gr["g"].get("col_name") or gr["g"].get("row_name")) else 0
+        if x > 40 and x + gw > W - 40:
+            x, y, row_h = 40, y + row_h + 60, 0
+        mark_grid(d, x, y, gr)
+        x, row_h = x + gw + 110, max(row_h, gh)
+    y += row_h + 30
+    legend = "   ".join(f"{MARKS[k]} {MARK_WORDS[k]}" for k in ("done", "part", "ticket", "failed", "none"))
+    y = d.para(40, y, legend, W - 80, 26) + 10
+    if fr.get("caption"):
+        y = d.para(40, y, str(fr["caption"]), W - 80, 26)
+    return finish(d, f, y)
+
+
 # ── the drawing ──────────────────────────────────────────────────────────────────────────────────────────────
 def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") -> tuple[Path, list[dict]]:
     """Draw one Job into `out` (and its preview beside it); returns the drawing and its Task rows."""
     cfg = cfg or {}
     job = job.resolve()
+    design = design_of(job.parent, cfg["design"]) if cfg.get("design") else {"grids": [], "tally": {}}
+    cfg = {**cfg, "_tally": design["tally"], "_runs_word": str((cfg.get("design") or {}).get("runs_word") or "Runs")}
     rows = jr.job_rows(job.parent, job, {"show": cfg.get("show") or {}})
     tasks = [task_info(r, {"show": cfg.get("show") or {}}) for r in rows]
     info = job_info(job)
@@ -767,7 +886,8 @@ def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") ->
     if pics:
         fs.append(shown_frame(d, info, pics, job))
     plain = str(cfg.get("layout") or "") == "plain"                    # tables first, no arrows between frames
-    nxt = iter("③④⑤⑥")
+    nxt = iter("③④⑤⑥⑦⑧⑨⑩")
+    designs = [design_frame(d, info, fr, design, next(nxt)) for fr in (cfg.get("design") or {}).get("frames") or []]
     if plain:                                                           # (asked 261012: "I want the tables like
         pick = matrix_frame(d, info, cfg["models"], job, next(nxt)) if cfg.get("models") else None   # this")
         found = chart_frame(d, info, cfg["chart"], job.parent, out.parent / "assets", next(nxt)) if cfg.get("chart") else None
@@ -784,17 +904,27 @@ def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") ->
     acts = [{"name": "Act 1 · the Job: why, what it did, what it found", "frames": [f["id"] for f in fs],
              "arrow": ["planned as", "shown in"][:len(fs) - 1]}]
     later = [x for x in ((pick, found, plan, detail) if plain else (plan, pick, found, detail)) if x]
+    later = designs + later                                             # the design first: what was planned, and its state
     if plain:                                                           # named acts, no arrow between frames
         acts[0]["arrow"] = []
         if later:
             acts.append({"name": "Act 2 · each model, what it found, the Runs", "frames": [x["id"] for x in later],
                          "arrow": []})
         later = []
-    if later:
-        words = {id(pick): "chosen from", id(found): "so it found", id(detail): "in words"}
-        acts.append({"name": "Act 2 · what it ran, and what it found", "frames": [x["id"] for x in later],
-                     "arrow": [words[id(x)] for x in later[1:]]})
-    d.acts(acts, between=[(fs[0]["id"], later[0]["id"], "the Runs" if plan else "what it found")] if later else [])
+    between = []
+    if later and designs:                                               # the design is its own act (asked 261013):
+        acts.append({"name": "Act 2 · what each Task ran: its Runs, and where each stands",   # every Run at a glance
+                     "frames": [x["id"] for x in designs], "arrow": ["then"] * (len(designs) - 1)})
+        between.append((fs[0]["id"], designs[0]["id"], "its Runs"))
+    rest = [x for x in later if all(x is not g for g in designs)]
+    if rest:
+        words = {id(pick): "chosen from", id(found): "so it found", id(detail): "in words", id(plan): "at each end"}
+        acts.append({"name": f"Act {len(acts) + 1} · what it ran, and what it found" if not designs else
+                     f"Act {len(acts) + 1} · what the Runs found", "frames": [x["id"] for x in rest],
+                     "arrow": [words[id(x)] for x in rest[1:]]})
+        between.append((designs[0]["id"], rest[0]["id"], "what they found") if designs else
+                       (fs[0]["id"], rest[0]["id"], "the Runs" if plan else "what it found"))
+    d.acts(acts, between=between)
     # plain: `later` was emptied above, so no arrow runs down between the acts either
     d.write(out, source or f"excalidraw-job scripts/job_drawing.py {job.name}")
     from render_png import render
