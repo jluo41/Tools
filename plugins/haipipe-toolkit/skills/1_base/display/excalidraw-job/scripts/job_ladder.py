@@ -110,9 +110,13 @@ def tells(r: dict, cfg: dict, task: str) -> bool:
 
 def shown_runs(t: dict, cfg: dict) -> tuple[list[dict], list[dict]]:
     """The Runs drawn as rows, and the rest folded into one row: a Run with nothing to report never takes a row of
-    its own (b02 j05: 80 Runs whose results live outside the repository), and past MOST, the latest that report."""
-    says = [r for r in t["runs"] if tells(r, cfg, t["name"])]
-    keep = says[-(MOST - 1):] if len(says) > MOST else says
+    its own (b02 j05: 80 Runs whose results live outside the repository); past MOST, the 📌 current Runs always, then
+    the latest that report (a current Run never folds away: found by the b03 s21 trial, 261013)."""
+    now = [r for r in t["runs"] if run_current(cfg, t["name"], r["name"])]
+    says = [r for r in t["runs"] if tells(r, cfg, t["name"]) and r not in now]
+    room = max(MOST - 1 - len(now), 0)
+    chosen = now + (says[-room:] if len(says) + len(now) > MOST and room else [] if len(says) + len(now) > MOST else says)
+    keep = [r for r in t["runs"] if r in chosen]                       # in the Task's own order
     return keep, [r for r in t["runs"] if r not in keep]
 
 
@@ -214,6 +218,10 @@ def chart_png(spec: dict, result: Path | None, out: Path) -> Path | None:
     ax.set_xlim(min(lows) - span * 0.05 if min(lows) < 0 else 0, max(ends + [0]) + span * 0.28)
     ax.set_yticks(ys)
     ax.set_yticklabels([r[0] for r in rows], fontsize=22, color="#1e1e1e")
+    from matplotlib.ticker import FuncFormatter, MaxNLocator
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=4))                   # a few ticks, never run together
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.0f}%" if pct else
+                                               f"{v:,.0f}" if abs(v) >= 100 else f"{v:g}"))
     ax.tick_params(axis="x", labelsize=16, colors="#868e96")
     ax.tick_params(axis="y", length=0)
     for side in ("top", "right", "left"):

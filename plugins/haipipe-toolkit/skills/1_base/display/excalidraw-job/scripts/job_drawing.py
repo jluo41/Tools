@@ -629,7 +629,7 @@ def cell_text(block: Path, c) -> str:
         return str(c.get("text", ""))
     vals = [chart_value(block, a) for a in (c["at"] if isinstance(c["at"], list) else [c["at"]])]
     pct = c.get("fmt") == "pct"
-    shown = " / ".join("?" if v is None else f"{v * 100:.1f}%" if pct else f"{v:,.4g}" for v in vals)
+    shown = " / ".join("?" if v is None else f"{v * 100:.1f}%" if pct else (f"{v:,.0f}" if abs(v) >= 1000 else f"{v:,.4g}") for v in vals)
     return f"{c.get('label', '')} {shown}".strip()
 
 
@@ -717,7 +717,7 @@ def matrix_frame(d: Drawing, info: dict, spec: dict, job: Path, mark: str = "③
             hit = found.get((mid, k))
             if hit:
                 v, rid = hit
-                cells.append({"big": f"{v * 100:.1f}%" if ms.get("fmt") == "pct" else f"{v:,.4g}", "tag": f"✅ {rid[:3]}"})
+                cells.append({"big": f"{v * 100:.1f}%" if ms.get("fmt") == "pct" else (f"{v:,.0f}" if abs(v) >= 1000 else f"{v:,.4g}"), "tag": f"✅ {rid[:3]}"})
             else:
                 cells.append({"tag": "⬜ to run"} if picked else "")
         rows.append({"cells": cells, "dim": not picked})

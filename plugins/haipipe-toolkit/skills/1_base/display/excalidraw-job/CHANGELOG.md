@@ -26,6 +26,9 @@ excalidraw-job · Changelog
 - Tests: `tests/test_job_ladder.py` (steps right, quiet reruns, charts and a table from results, a Task's figures and
   tables, frames as stairs); `test_job_drawing.py` reads the staircase.
 - First drawn: LLMRec `work/b04_analyses_of_llm_ranks/studio/s27` (j08: six charts from three Runs' metrics.json).
+- From a fresh-agent trial on LLMRec b03 s21 (the same day): a 📌 current Run never folds into the "more Runs" row;
+  a chart's axis has a few ticks with thousands separators (they ran together); a settings or model cell prints
+  71,427, not 7.143e+04. New test.
 
 ## [0.5.0] · 2026-10-13 · A family of Jobs, a table per Job
 

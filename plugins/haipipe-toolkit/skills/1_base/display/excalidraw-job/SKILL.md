@@ -55,7 +55,7 @@ The frames
 1. **The stairs**: each Task one step lower and 380 px further right; past four Tasks, several share a column.
 2. **Room on purpose**: 170 px between steps; the frame may be large (`canvas.large`), never filled.
 3. **Quiet reruns**: once a Task marks a 📌 current Run, the others are grey names; only the current one speaks.
-4. **Quiet Runs fold**: a Run with nothing to report never takes a row; past six, the latest that report show.
+4. **Quiet Runs fold**: a Run with nothing to report never takes a row; past six, the 📌 current ones, then the latest.
 5. **Results are pictures**: a chart per `charts:` entry, a table per `tables:` entry, then the Task's own figures.
 6. **No left-aligned frames**: ② and ③ step down and right (`canvas.stairs`); ② is small (`canvas.explains`).
 7. **Red is real**: ❓ names something missing on disk (no reading, no close, no finding), never a guess.

@@ -123,3 +123,14 @@ def test_a_tasks_own_figures_and_named_tables_join_its_results(tmp_path):
     assert sum(e["type"] == "image" for e in els) >= 2                            # the chart and the figure
     names = [e.get("name", "") for e in els if e["type"] == "frame"]
     assert not any("pictures" in n for n in names)                                 # no Job-level repeat of it
+
+
+def test_a_current_run_never_folds_away():
+    """Found by the b03 s21 trial (261013): past MOST Runs that report, the current one still has its own row."""
+    runs = [{"name": f"r{k:02d}_m{k}", "values": ["n 1"], "result": Path("/nonexistent"), "state": "complete",
+             "mark": "✅", "subject": ""} for k in range(1, 10)]
+    t = {"name": "t01_x", "runs": runs}
+    keep, folded = job_ladder.shown_runs(t, {"runs": {"t01_x/r02_m2": {"current": True}}})
+    names = [r["name"] for r in keep]
+    assert "r02_m2" in names and len(keep) <= job_ladder.MOST and names == sorted(names)
+    assert len(keep) + len(folded) == 9
