@@ -700,6 +700,16 @@ def from_store(p, path: str, exts=("", ".tex")):
     return path
 
 
+def drop_room_defined(unresolved):
+    """0.9.1 · a \\ref to a label the document itself defines (a fragment's own float or equation,
+    a stored table) resolves in LaTeX; only a label nothing in the room defines stays unresolved."""
+    defined = set()
+    for tex in LATEX.rglob("*.tex"):
+        text = re.sub(r"(?m)(?<!\\)%.*$", "", tex.read_text(encoding="utf-8", errors="replace"))
+        defined.update(re.findall(r"\\label\{([^}]+)\}", text))
+    return [u for u in unresolved if u["ref"] not in defined]
+
+
 def place_fragment(p, dest_dir: Path, labels, unresolved):
     """copy the fragment, retarget its \\input paths, return the list of floats to \\input after it"""
     t = p["fragment"].read_text(encoding="utf-8", errors="replace")
@@ -1388,6 +1398,7 @@ def build():
     prescan_embedded(pages)
     main_f = [(p, place_fragment(p, SEC, labels, unresolved) if p["included"] else []) for p in main]
     appx_f = [(p, place_fragment(p, APP, labels, unresolved) if p["included"] else []) for p in appx]
+    unresolved[:] = drop_room_defined(unresolved)
     nbib = merge_bib(pages)
     ready = [p for p in pages if p["ready"]]
     status = build_readiness(pages, unresolved)["status"]

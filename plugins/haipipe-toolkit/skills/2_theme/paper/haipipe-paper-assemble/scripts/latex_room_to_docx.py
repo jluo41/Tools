@@ -73,6 +73,10 @@ LATEX_ROOM = (WORD_ROOM / Path(str(SOURCE_CONFIG.get("room", ".")))).resolve()
 SECTION_DIR = LATEX_ROOM / str(SOURCE_CONFIG.get("sections", "sections"))
 DISPLAY_DIR = LATEX_ROOM / str(SOURCE_CONFIG.get("displays", "displays"))
 MASTER = LATEX_ROOM / str(SOURCE_CONFIG.get("master", "main.tex"))
+# 0.9.1: a paper that prints its supplement separately (profile appendices = "supplement") has a
+# master.tex without the appendices; the engine's combined.tex holds both halves, so Word reads it
+if (LATEX_ROOM / "combined.tex").is_file():
+    MASTER = LATEX_ROOM / "combined.tex"
 BIB_PATH = LATEX_ROOM / str(SOURCE_CONFIG.get("bibliography", "reference.bib"))
 
 
@@ -1907,7 +1911,9 @@ def build() -> tuple[Path, Path]:
         return build_jama_internal_medicine(raw_master, evidence)
     running_match = re.search(r"Running title\s*\(<[^>]+>\):\s*(.+)", raw_master)
     running_title = running_match.group(1).strip() if running_match else RUNNING_TITLE_FALLBACK
-    title = latex_to_text(extract_command(raw_master, "title"))
+    # a paper-owned head may write \title{\thetitle}, a macro this reader cannot expand: use the
+    # configured title then (0.9.1)
+    title = latex_to_text(extract_command(raw_master, "title")) or str(PAPER_CONFIG.get("title", ""))
     author = latex_to_text(extract_command(raw_master, "author"))
     body = clean_fragment(raw_master, MASTER.parent, remove_abstract=False)
     body = body.split(r"\begin{document}", 1)[-1].split(r"\end{document}", 1)[0]

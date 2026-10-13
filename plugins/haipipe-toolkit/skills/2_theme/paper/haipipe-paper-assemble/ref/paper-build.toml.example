@@ -18,6 +18,16 @@ sections = "sections"
 appendices = "appendices"
 displays = "displays"
 bibliography = "reference.bib"
+# Optional, a paper that owns its LaTeX (SKILL.md § A paper that owns its LaTeX):
+# head = "../latex-assets/master-head.tex"          # \documentclass, packages, \title
+# opening = "../latex-assets/master-opening.tex"    # after \begin{document}; default \maketitle
+# supplement_head = "../latex-assets/supplement-head.tex"
+# supplement_opening = "../latex-assets/supplement-opening.tex"
+# store = "../displays"                             # a shared display store, each read a G4 blocker
+
+# [evidence]
+# draft_includes_unready = true    # a DRAFT prints every Page that has a fragment
+# draft_citations = true           # a DRAFT merges each Page's unverified draft Bib, as a G4 blocker
 
 [outputs]
 main_docx = "word/<stem>-submission-draft.docx"
@@ -35,3 +45,7 @@ manifest = "build-manifest.json"
 # include_references = true
 # include_supplement = true
 # appendix_float_numbering = "per-appendix"   # Table A1 … B1 …: floats restart in each lettered appendix (LaTeX and Word); default "continuous"
+# appendices = "supplement"   # master.tex main, supplement.tex the appendices, combined.tex both (add supplement_pdf, combined_pdf)
+# [profile.latex]
+# engine = "pdflatex"         # latexmk -pdf, for a paper head that loads no fontspec
+# bibstyle = "naturemag"

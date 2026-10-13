@@ -1,3 +1,11 @@
+## 0.11.3 · 2026-10-13 · A paper that owns its LaTeX, built and tested
+
+- Documented the opt-in keys added in 0.9.1 (JL 260929, Paper-FairGlucose-preprint): `[source] head`, `opening`, `supplement_head`, `supplement_opening`, `store`; profile `appendices = "supplement"` and `[latex] engine = "pdflatex"`; `[evidence] draft_citations`. SKILL.md § A paper that owns its LaTeX; `ref/paper-build.toml.example` lists them commented.
+- `scripts/build_delivery.py` `drop_room_defined()`: a `\ref` to a label the room itself defines (a fragment's own float, a stored table) is no longer listed as unresolved; FairGlucose reported 24 while all three LaTeX logs had 0.
+- `scripts/latex_room_to_docx.py`: reads `combined.tex` when the build wrote one (a split supplement leaves `master.tex` without `\appendix`, which stopped the Word lane); `\title{\thetitle}` falls back to `[paper] title`.
+- Tests: 76 pass, 7 new in `tests/test_paper_owned_documents.py` (each option with a tooth that fails when it is off). The two Word-equation failures noted in 0.11.1 were a missing `latex2mathml` in the workspace venv, now installed; 79 equations reach FairGlucose's Word file.
+- First paper on these keys: Paper-FairGlucose-preprint builds 18 / 27 / 40 pages (npj main, SI, arXiv) and both Word files from its Section Pages, same text as its retired paper-local `build.py`.
+
 ## 0.11.2 · 2026-10-11 · A version holds no delivery/
 
 - `scripts/cover_letter.py` `round_page()`: its docstring no longer says the version Job holds `delivery/`; the build is the Board's `delivery/jNN_<version>/` (b10 s09-D05, haipipe-paper 1.12.0).

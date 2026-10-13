@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.11.2"
-  last_updated: "2026-10-11"
+  version: "0.11.3"
+  last_updated: "2026-10-13"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -409,6 +409,26 @@ claims, values, citations, captions, or table cells. If a paper needs a
 special section boundary or a nonstandard supplement, that behavior belongs in
 the venue profile or an explicitly named adapter, not in a second hidden Word
 source.
+
+### A paper that owns its LaTeX (0.9.1, 0.11.3)
+
+All opt-in; a paper that sets none of these builds exactly as before. Used by
+Paper-FairGlucose-preprint (npj Digital Medicine main + SI, and one arXiv file).
+
+| Key | What it does |
+|---|---|
+| `[source] head = "<file>"` | the paper's own preamble, `\documentclass` and `\title` included, inlined in place of the engine's package head and title block; the `.sty`/`.tex`/`.cls`/`.bst` files beside it are copied into the room, so the room stays self-contained for arXiv |
+| `[source] opening = "<file>"` | what follows `\begin{document}` (default `\maketitle`) |
+| `[source] supplement_head`, `supplement_opening` | the same pair for `supplement.tex` (S-numbering, its title, its note and contents) |
+| profile `appendices = "supplement"` | `master.tex` is the main article and its references, `supplement.tex` the appendix lane alone (each appendix on a new page, its own references), `combined.tex` both; outputs `main_pdf`, `supplement_pdf`, `combined_pdf`. The Word lane reads `combined.tex` and still splits at `\appendix` |
+| profile `[latex] engine = "pdflatex"` | `latexmk -pdf` instead of `-xelatex`, for a head that loads no fontspec |
+| `[source] store = "<dir>"` | a paper-level display store a fragment reads by path (`displays/Figure/x.pdf`): each file it reaches, and each stored `.tex` it `\input`s, is copied into the room at that path; every Page that reads it is a G4 blocker until its floats are DISPLAY Results |
+| `[evidence] draft_citations = true` | a DRAFT merges a Page's `draft-bibliography/<page>.bib` (written by a `delivery: draft` Page) when it has no `selected-bibliography/<page>.bib`; `reference.bib` says UNVERIFIED and every such Page is a G4 blocker |
+
+Independently of these keys, a `\ref` to a label the room itself defines (a
+fragment's own float or equation, a stored table) is not counted as unresolved
+(`drop_room_defined()`); the LaTeX logs remain the check for what LaTeX could
+not resolve. Teeth: `tests/test_paper_owned_documents.py`.
 
 ### Evidence receipt boundary
 
