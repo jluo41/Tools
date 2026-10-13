@@ -51,17 +51,22 @@ def test_content_escaped_and_sources_confined_to_workspace(tmp_path):
     assert 'source.md' in html and 'https://example.test/source' in html
 
 
-def test_only_selected_group_with_event_table_uses_chronology(tmp_path):
+def test_a_report_with_an_event_table_adds_a_timeline_view(tmp_path):
+    """The Questions sit on the base's group bar (b10 s05-D05); a report that carries an event table adds a
+    Timeline view above the list, a lens and not a group (s05-D09); without one there is no view row."""
     block = tmp_path / 'Project/cowork/b01_demo'
     write(block / 'board.md', '# Demo\nboard-kind: cowork-block\n\n## Questions\n```yaml\nquestions:\n'
           '- id: Q01\n  title: History\n  group: Timeline\n  question: What changed?\n'
           '  work: []\n  report: reports/q01_history/q01_history.md\n```\n')
     p = write(block / 'reports/q01_history/q01_history.md', '# History\nanswers: Q01\nanswer-status: partial\n'
               + TABLE + '| 2026-05-18 | Work | Began | recorded | |\n')
-    chronological = frame.spaces_for(THEME, 'Block', block, tmp_path, 'Timeline')['Audience Report'].html
-    ordinary = frame.spaces_for(THEME, 'Block', block, tmp_path, 'All')['Audience Report'].html
+    report = frame.spaces_for(THEME, 'Block', block, tmp_path, 'Timeline')['Audience Report']
+    chronological = report.html
+    ordinary = frame.spaces_for(THEME, 'Block', block, tmp_path, 'Questions')['Audience Report'].html
+    assert report.subspaces == ('Questions', 'Timeline') and report.open == 'Timeline'
     assert 'class=tl-native' in chronological and 'class=tl-native' not in ordinary
+    assert 'data-group-kind=reports' in ordinary and 'What changed?' in ordinary     # the shared bar, its card
     p.write_text('# History\nanswers: Q01\nanswer-status: open\n')
-    fallback = frame.spaces_for(THEME, 'Block', block, tmp_path, 'Timeline')['Audience Report'].html
-    assert 'class=tl-native' not in fallback and 'What changed?' in fallback
+    fallback = frame.spaces_for(THEME, 'Block', block, tmp_path, 'Timeline')['Audience Report']
+    assert 'class=tl-native' not in fallback.html and 'What changed?' in fallback.html and not fallback.subspaces
     assert group_timeline(block, tmp_path, [{'group':'Timeline','report':'../../../outside.md'}], 'Timeline') == ''

@@ -26,14 +26,17 @@ runs/run-rank-t99/result/
 
 ```text
 rank,design,predicted,why,kept
-1,d04,+x [lo; hi],<why it ranks here>,yes
-2,d01,+x [lo; hi],<why>,yes
+1,d04,+x pp [lo; hi],<why it ranks here>,yes
+2,d01,+x pp [lo; hi],<why>,yes
 …
-15,d09,+x [lo; hi],<why it is dropped>,no
+15,d09,+x pp [lo; hi],<why it is dropped>,no
 ```
 
 `predicted` is the expected effect against the control as a direction and a range, never a single number with no
-range; `kept` is `yes` or `no`, and exactly N rows say `yes`.
+range, and always in percentage points (pp = the arm's outcome rate minus the control's, in points): `+3.6 pp
+[+2.0; +4.7]`. Never a relative lift (`+5%`), bare points or no unit: Jobs of one Block are compared and scored side
+by side, so every row of every Job uses the one unit (JL 261012, after the 10-08 demo read `+5%` beside `+3.6`).
+`kept` is `yes` or `no`, and exactly N rows say `yes`.
 
 
 Rules

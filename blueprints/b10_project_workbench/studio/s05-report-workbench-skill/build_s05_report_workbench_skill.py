@@ -1,17 +1,20 @@
-"""s05 · Report: its workbench and its skill: s05-report-workbench-skill.excalidraw, one story read left to right
-(JL 261011: "s02 studio, s03 delivery, and s04 related, and s05 report, and s06 run"; drawn the way s06 is):
+"""s05 · Report: its workbench, its skill and its groups: s05-report-workbench-skill.excalidraw, one story in five
+acts, each a row named at the left, a named arrow for each step (JL 261011: "s02 studio, s03 delivery, and s04
+related, and s05 report, and s06 run"; s07 merged in 261012, JL: "could you merge s07 to the s05?"):
 
-    ① every level reports  -->  ② work names its Question  -->  ③ the report says the answer  -->  ④ the Report
-                                                                                                   Space shows it,
-                                                                                                   /haipipe-report
-                                                                                                   keeps it
-    still open (red)            this Block's Questions (reference)
+    Act 1  ① a report, from its Question to its answer (one map, in colour: where it is asked, the Work that
+           answers it, open → partial → answered, its Page and drawing) --> ② the Report Space shows it,
+           /haipipe-report keeps it (a screen); ① was three frames until 261012
+    Act 2  the group bar is live: base, work, cowork, labeling (report_groups.py, one frame per theme)
+    Act 3  their own Report today: paper, insight, design, discovery
+    Act 4  ③ how a group reaches the Report --> ④ every part in one map
+    Act 5  ⑤ still open (red), and this Block's Questions --> ⑥ In Tools, a map of the skills and code
 
 Read from disk on every build: this Block's Questions (board.md ## Questions), each report's answer-status,
 which studio topics feed each Question (their **Feeds:** lines, read as frame.py reads them), the Runs that
 target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/frame.py draws
-it for this Block, and haipipe-report's version. Typed, since they are the design: the level tree of ①, the
-link rule of ②, the walk of ③, the open points.
+it for this Block, and haipipe-report's version; Acts 2 to 4 read what report_groups.py says it reads. Typed,
+since they are the design: ①'s steps and colours, the open points.
 
     python build_s05_report_workbench_skill.py [out.excalidraw]
 """
@@ -34,6 +37,7 @@ sys.path.insert(0, str(SERVERS / "_host"))
 import build_ladder_v4 as L  # noqa: E402  (the shared drawing helpers: base, text, path, frames)
 sys.path.insert(0, str(SKILLS / "project/haipipe-studio/scripts"))
 import canvas  # noqa: E402
+import report_groups as G  # noqa: E402  (Acts 2 to 4: the Report's groups across the themes, merged from s07)
 
 TODAY = "261011"
 EXAMPLE = "Q05"                                            # ②'s and ④'s row
@@ -80,7 +84,7 @@ def questions(frame):
 def report_space(frame):
     """(third-row buttons, the open one, the row's three heads, Runs-panel buttons) of this Block's Report Space."""
     sp = frame.spaces_for(frame.VANILLA, "Block", BLOCK, ROOT)["Audience Report"]
-    heads = re.findall(r'q-head-row"><div>(.*?)</div><div>(.*?)</div><div>(.*?)</div>', sp.html)
+    heads = re.findall(r'q-head-row"><div>([^<]*)</div><div>([^<]*)</div></div>', sp.html)   # Logic │ Report (s05-D04)
     buttons = [(k["label"], k.get("doing", ""), " · ".join(k.get("skills") or [])) for k in sp.run_types]
     return list(sp.subspaces), sp.open, list(heads[0]) if heads else [], buttons
 
@@ -124,178 +128,196 @@ def note(x, y, what):
 
 
 def heading(n, title, under):
-    say(0, 0, f"{n} {title}", T)
-    return say(0, 58, under, SUB)
+    say(0, 0, f"{n} {title}", 60)                             # a frame title is 60 px (excalidraw-studio ⑤)
+    return say(0, 84, under, 24)
 
 
-def card(x, y, w, h, title, body, bold=False, code=""):
-    rect(x, y, w, h, bold=bold)
-    say(x + 22, y + 16, title, HEAD)
-    yy = y + 58
+KEY_LINES = []                                                # (frame id, text, box): boxed after colour_ui, as G's
+
+
+def key_line(fr, y, words):
+    """The frame's one key point (excalidraw-studio ⑤), boxed in the slight colour once the screen is coloured."""
+    say(18, y, "🔑 " + words, 30)
+    KEY_LINES.append((fr["id"], L.els[-1], (0, y - 8, len(words) * 30 * 0.55 + 80, 52)))
+    return y + 70
+
+
+# ── ① a report, from its Question to its answer: one map, in colour ──────────────────────────────
+# Act 1's own colours (JL 261012: "merging the n frames into few frames ... and by adding the colors"): one colour
+# per part, the report's state in the workbench's own status colours (canvas.STATUS_UI); the key point stays in the
+# one slight colour, red stays open, green a change. This topic's only: no rule for other topics.
+ROLE = {"studio": ("#7048e8", "#f3f0ff"),                    # violet: the Studio, where what to report is set
+        "level": ("#1971c2", "#e7f5ff"),                     # blue: a level, which keeps its own reports/
+        "work": ("#0c8599", "#e3fafc"),                      # teal: the Work that answers a Question
+        "open": (canvas.STATUS_UI["open"], "#f1f3f5"),       # the report's state, as the screen colours it
+        "partial": (canvas.STATUS_UI["partial"], "#fff4e6"),
+        "answered": (canvas.STATUS_UI["answered"], "#ebfbee"),
+        "file": ("#495057", "#f8f9fa")}                      # gray: a file the skill writes
+WHAT = {"open": "asked, no answer yet; its writer moves it on, never a Run that ends alone", "partial": "some Work answers part; the report says which",
+        "answered": "the Opening states it; Evidence links the Results. Checked is not a fourth state: the CHECK "
+                    "verdict shows beside it (s21-D04)"}
+
+
+def coloured(e, role):
+    e.setdefault("customData", {})["s05_colour"] = role
+    return e
+
+
+def cnode(x, y, w, title, body="", asks=(), role=None, size=32, key=False, code=""):
+    """A step of ①: a box in its role's edge and wash (the key point in the slight colour), its title in the edge's
+    colour, `code` in Cascadia, the body, then its open asks in red. Returns (x, y, w, h)."""
+    edge, wash = ROLE[role] if role else (L.INK, G.KEY)
+    i0, yy = len(L.els), y + 14
+    t = G.wrap(title, w - 36, size)
+    L.text(x + 18, yy, t, size, edge)
+    coloured(L.els[-1], role or "key")
+    yy += size * 1.25 * (t.count("\n") + 1) + 8
     if code:
-        yy = say(x + 22, yy, code, CODE, font=L.MONO) + 4
+        L.text(x + 18, yy, code, CODE, L.INK, L.MONO)
+        yy += CODE * 1.25 * (code.count("\n") + 1) + 8
     if body:
-        say(x + 22, yy, body, BODY)
+        b = G.wrap(body, w - 36, BODY)
+        L.text(x + 18, yy, b, BODY)
+        yy += BODY * 1.25 * (b.count("\n") + 1) + 6
+    for a in asks:
+        b = G.wrap(a, w - 36, BODY)
+        L.text(x + 18, yy, b, BODY, L.RED)
+        yy += BODY * 1.25 * (b.count("\n") + 1) + 4
+    h = yy - y + 12
+    L.base("rectangle", x, y, w, h, edge, 3 if key else 2, rough=0)
+    box = coloured(L.els.pop(), role or "key")
+    box.update(backgroundColor=wash, fillStyle="solid")
+    L.els.insert(i0, box)                                    # filled, so it goes under its words
+    return x, y, w, h
 
 
-# ── ① every level reports ────────────────────────────────────────────────────────────────────────
-def frame_levels(qs):
-    fr = L.open_frame("Every level reports")
-    y = heading("①", "Every level reports",
-                "The Studio, at the Block, sets what to report; Block, Job and Task each answer their own Questions.") + 40
-    card(520, y, 640, 130, "STUDIO   the centre, one per Block", "", bold=True, code="studio/sNN-<topic>/")
-    say(1180, y + 30, "(s09-D01)", BODY)
-    say(1180, y + 74, "↓ sets what each level reports", BODY)
-    top = y + 130 + 90
-    levels = [("BLOCK", "reports/qNN_<topic>/"), ("JOB", "jNN_<job>/reports/qNN_<topic>/"),
-              ("TASK", "tNN_<task>/reports/qNN_<topic>/")]
-    for i, (lv, path) in enumerate(levels):
-        x = i * 570
-        line([(840, y + 130), (x + 270, top)])
-        card(x, top, 540, 130, f"{lv}   its own Questions", "", code=path)
-    y = top + 160
-    y = say(0, y, "A reader goes to the level to read its report (s09-D02, s09-D08).", BODY) + 40
-    say(0, y, "What a report is", HEAD)
-    y += 46
-    for k, s in enumerate(["a Page that answers one Question: reports/qNN_<topic>/qNN_<topic>.md",
-                           "the Question and its report share one id, qNN (s02-D30)",
-                           "the Question is asked in the level's face: board.md ## Questions, for a Block",
-                           "its built pdf or docx goes to the Block's delivery/reports/qNN_<topic>/ (s03)"], 1):
-        y = say(0, y, f"{k}  {s}", BODY) + 4
-    y += 36
-    say(0, y, f"This Block today, read from board.md and reports/: {len(qs)} Questions, "
-              f"{sum(1 for q in qs if q['report'])} reports", HEAD)
-    y += 56
-    for i, st in enumerate(STATES):
-        ids = [q["id"] for q in qs if q["status"] == st]
-        x = i * 570
-        rect(x, y, 540, 120, bold=st == "answered")
-        say(x + 22, y + 16, f"{st}   {len(ids)}", HEAD)
-        say(x + 22, y + 60, wrap(" · ".join(ids), 40) or "none", CODE, font=L.MONO)
-    y += 150
+def legend(x, y):
+    """The colour key, one chip per colour, under the frame's title."""
+    for role, words in (("studio", "the Studio"), ("level", "a level"), (None, "the key: the Question"),
+                        ("work", "the Work"), ("open", "open"), ("partial", "partial"), ("answered", "answered"),
+                        ("file", "a file")):
+        edge, wash = ROLE[role] if role else (L.INK, G.KEY)
+        L.base("rectangle", x, y, 40, 34, edge, 2, rough=0)
+        coloured(L.els[-1], role or "key").update(backgroundColor=wash, fillStyle="solid")
+        L.text(x + 52, y + 2, words, 24, edge if role in STATES else L.INK)
+        coloured(L.els[-1], role or "key")
+        x += 52 + len(words) * 24 * 0.55 + 46
+
+
+def frame_story(qs):
+    """①: where a Question is asked, the Work that answers it, the report that says the answer, its Page and its
+    drawing; one map, read left to right (was ① ② ③ until 261012)."""
+    fr = L.open_frame("① A report, from its Question to its answer")
+    say(0, 0, "① A report, from its Question to its answer", 60)
+    say(0, 84, "Asked at a level, answered by the Work, said by the report: read from disk on every build. "
+               "Red is still open.", 24)
+    legend(0, 138)
+    W, W4, X, Y, GAP = 520, 640, (0, 660, 1320, 1980), 230, 70
     jobs = [p for p in BLOCK.glob("j[0-9]*_*/") if p.is_dir()]
-    say(0, y, wrap(f"? this Block has {len(jobs)} Jobs, so no Job or Task report yet; and the Block's Report lists "
-                   "only its own reports/, while s09-D08 says it lists Job and Task reports by source too (not built).",
-                   120), BODY, L.RED)
-    L.close_frame(fr, pad=60)
-    return fr
 
+    studio = cnode(X[0], Y, W, "🎨 The Studio sets it", "one per Block, the centre; it sets what each level "
+                   "reports (s09-D01)", ["? what must each level's report answer? (Open 1)"], "studio",
+                   code="studio/sNN-<topic>/")
+    levels, y = [], studio[1] + studio[3] + 100
+    for name, path in (("🧱 Block", "reports/qNN_<topic>/"), ("📦 Job", "jNN_<job>/reports/qNN_<topic>/"),
+                       ("🔧 Task", "tNN_<task>/reports/qNN_<topic>/")):
+        levels.append(cnode(X[0], y, W, f"{name} keeps its own", "", (), "level", size=28, code=path))
+        y = levels[-1][1] + levels[-1][3] + 14
+    G.arrow(studio, levels[0], "sets what each reports", side="v")
+    y = say(X[0], y + 10, G.wrap("A reader goes to the level to read its report (s09-D02, s09-D08).", W), BODY) + 8
+    say(X[0], y, G.wrap(f"? b10 has {len(jobs)} Jobs, so no Job or Task report yet; the Block's Report lists only "
+                        "its own reports/, not Job and Task reports by source (s09-D08; Open 2)", W), BODY, L.RED)
 
-# ── ② work names its Question ────────────────────────────────────────────────────────────────────
-def frame_link(qs):
-    fr = L.open_frame("Work names its Question")
-    y = heading("②", "Work names its Question",
-                "A Job or a Task says on its own face which Question it answers; a studio topic says which it feeds.") + 40
-    cols = (0, 640, 1240)
-    for c, h in zip(cols, ("feeds it", "the Question", "answers it")):
-        say(c, y, h, HEAD)
-    y += 50
-    card(0, y, 560, 120, "STUDIO TOPIC", "", code="sNN-<topic>.md\n**Feeds:** qNN_<topic>")
-    card(640, y + 90, 520, 150, "QUESTION  qNN", "board.md ## Questions:\nid · title · acceptance", bold=True)
-    card(1240, y, 560, 120, "JOB", "", code="jNN_<job>.md\nanswers: Q01")
-    card(1240, y + 160, 560, 120, "TASK", "", code="tNN_<task>.md\nanswers: Q01.E2, Q04")
-    card(1240, y + 320, 560, 120, "REPORT", "", code="reports/q01_<topic>/\nanswer-status: partial")
-    line([(565, y + 60), (635, y + 150)])
-    for yy in (y + 60, y + 220, y + 380):
-        line([(1235, yy), (1165, y + 165)])
-    say(1240, y + 450, "Q01.E2 = one need (an Evidence Item) of Q01; it counts for Q01.", BODY)
-    y += 520
+    reports = sum(1 for q in qs if q["report"])
+    quest = cnode(X[1], Y, W, "❓ The Question, qNN", f"asked in the level's face: id · title · acceptance. Its "
+                  f"report shares its id (s02-D30). b10: {len(qs)} Questions, {reports} reports", key=True, size=34,
+                  code="board.md ## Questions")
+    feeds = cnode(X[1], quest[1] + quest[3] + 100, W, "🔗 A studio topic feeds it", "named on the topic's face, read "
+                  "as frame.py reads it", (), "studio", code="sNN-<topic>.md\n**Feeds:** qNN_<topic>")
     q = next(x for x in qs if x["id"] == EXAMPLE)
-    say(0, y, f"In this Block: {q['id']} · {q['title']}", HEAD)
-    y += 50
-    rows = [("fed by", " · ".join(q["fed"]) or "no topic"),
-            ("Jobs and Tasks", " · ".join(str(w) for w in q["work"]) or "none (this Block has no Jobs)"),
-            ("Runs on it", " · ".join(q["runs"]) or "none"),
-            ("report", f"{q['report'].relative_to(BLOCK) if q['report'] else 'none'} · {q['status']}")]
-    for k, (a, b) in enumerate(rows):
-        say(0, y + k * 36, a, BODY)
-        say(260, y + k * 36, b, CODE, font=L.MONO)
-    y += 4 * 36 + 30
-    if q["runs"] and not q["work"]:
-        y = say(0, y, wrap(f"? its Work cell on screen says \"no work yet\": the row lists Jobs and Tasks, not this "
-                           f"level's own Runs on {q['id']} ({', '.join(q['runs'])}).", 110), BODY, L.RED) + 10
-    say(0, y, "An id the register does not have is an error: check_report.py finds it.", BODY)
+    work = [str(w) for w in q["work"]] + q["runs"]          # the row's Work cell: Jobs, Tasks, then its own Runs
+    example = cnode(X[1], feeds[1] + feeds[3] + 50, W, f"📌 In b10: {q['id']}", G.wrap(q["title"], W - 36), (),
+                    "level", size=28,
+                    code="\n".join([f"fed by  {' · '.join(q['fed']) or 'no topic'}",
+                                    f"work    {' · '.join(work[:1]) or 'no work yet'}"]
+                                   + [f"        {w}" for w in work[1:]]
+                                   + [f"report  {q['report'].parent.name if q['report'] else 'none'}"]))
+    say(X[1], example[1] + example[3] + 16, G.wrap("An id the register does not have is an error: "
+                                                    "check_report.py finds it.", W), BODY)
+    G.arrow(levels[0], quest, "asks")
+    G.arrow(feeds, quest, "feeds", side="v")
+
+    job = cnode(X[2], Y, W, "📦 A Job answers it", "on its own face", (), "work", code="jNN_<job>.md\nanswers: Q01")
+    task = cnode(X[2], job[1] + job[3] + GAP, W, "🔧 A Task answers a part", "Q01.E2 is one need (an Evidence "
+                 "Item) of Q01; it counts for Q01", (), "work", code="tNN_<task>.md\nanswers: Q01.E2, Q04")
+    run = cnode(X[2], task[1] + task[3] + GAP, W, "▶️ A Run targets it", "this level's own Runs, shown in the "
+                "row's Work cell (s05-D03)", (), "work", code=f"runs/<run>/run.yaml\ntarget: {EXAMPLE}")
+    G.arrow(quest, job, "answered by")
+    for b in (task, run):
+        G.arrow(quest, b)
+
+    states, y = [], Y
+    for st in STATES:
+        ids = [x["id"] for x in qs if x["status"] == st]
+        states.append(cnode(X[3], y, W4, f"{st}   {len(ids)} in b10", WHAT[st], (), st, size=30,
+                            key=False, code=G.wrap(" · ".join(ids), W4 - 36, CODE * 1.1) or "none"))
+        y = states[-1][1] + states[-1][3] + GAP
+    G.arrow(states[0], states[1], "its writer moves it", side="v")
+    G.arrow(states[1], states[2], side="v")
+    G.arrow(task, states[1], "read")
+
+    page = cnode(X[3], y, W4, "📄 The report Page", "its built pdf or docx goes to the Block's "
+                 "delivery/reports/qNN_<topic>/ (s03)", (), "file", size=30,
+                 code="\n".join(["reports/qNN_<topic>/", "├── qNN_<topic>.md   answer-status:",
+                                 "│    ## Opening: the answer, one paragraph", "│    ## Answer · Evidence · Limits",
+                                 "├── qNN_<topic>.excalidraw   generated", "└── draft/   the Page flow's versions"]))
+    G.arrow(states[2], page, "the Opening states it", side="v")
+    figs = figures()
+    drawing = cnode(X[2], page[1], W, "🖼️ Its drawing, built", "build_report_drawing.py draws the frames its "
+                    "## Figures lists; change a frame, rebuild. A frame's name is the contract (s02-D24)",
+                    ["? a cited frame changes: flag the report first? (Open 6)"], "file", size=30,
+                    code="\n".join(f"{t.split('-')[0]} › {n}" for t, n in figs))
+    G.arrow(page, drawing, "## Figures")
+    note(X[2], drawing[1] + drawing[3] + 14, f"{FIGURES.split('_')[0]} now cites s06's \"Hard or soft\" and "
+                                             "\"For reference\"")
+    e = canvas.change_note(X[0], max(page[1] + page[3], drawing[1] + drawing[3]) + 60,
+                           "①②③ merged into this one map, in colour", "261012", L.FRAME[0], size=18)
+    L.els.append(e)
     L.close_frame(fr, pad=60)
     return fr
 
 
-# ── ③ the report says the answer ─────────────────────────────────────────────────────────────────
-PAGE = [("reports/qNN_<topic>/", ""),
-        ("├── qNN_<topic>.md", "answers: · answer-status: · results-read:"),
-        ("│     ## Opening", "states the answer, in one paragraph"),
-        ("│     ## Answer · Evidence · Limits · Next", ""),
-        ("├── qNN_<topic>.excalidraw", "generated from ## Figures, never by hand"),
-        ("└── draft/", "the Page flow's versions")]
-
-
-def frame_answer(qs):
-    fr = L.open_frame("The report says the answer")
-    y = heading("③", "The report says the answer",
-                "open → partial → answered; its writer moves it, never a Run that finishes alone.") + 50
-    bw, gap = 420, 90
-    for i, st in enumerate(STATES):
-        x = i * (bw + gap)
-        n = sum(1 for q in qs if q["status"] == st)
-        what = {"open": "asked, no answer yet", "partial": "some Work answers part;\nthe report says which",
-                "answered": "the Opening states it;\nEvidence links the Results"}[st]
-        card(x, y, bw, 150, f"{st}   ({n} here)", what, bold=st == "answered")
-        if i < 2:
-            line([(x + bw + 8, y + 75), (x + bw + gap - 8, y + 75)])
-    say(0, y + 170, "checked is not a fourth state: the Page's CHECK verdict shows beside answered (s21-D04).", BODY)
-    y += 240
-    say(0, y, "The report Page", HEAD)
-    y += 46
-    for k, (path, what) in enumerate(PAGE):
-        say(0, y + k * 32, path, CODE, font=L.MONO)
-        if what:
-            say(640, y + k * 32 + 1, what, BODY)
-    y += len(PAGE) * 32 + 40
-    say(0, y, f"Its drawing, from studio frames: {FIGURES}", HEAD)
-    y += 46
-    for k, (topic, name) in enumerate(figures()):
-        say(0, y + k * 32, f"{topic}  ›  \"{name}\"", CODE, font=L.MONO)
-    n = len(figures())
-    line([(1100, y + n * 16), (1240, y + n * 16)])
-    card(1250, y - 20, 470, 130, "build_report_drawing.py", "one drawing, generated;\nchange a frame, rebuild")
-    y += n * 32 + 20
-    note(0, y, "q01 now cites s06's \"Hard or soft\" and \"For reference\"")
-    y += 50
-    say(0, y, wrap("A frame's name is the contract: rename a studio frame and every report citing it fails its "
-                   "build with the names it finds (s02-D24).", 110), BODY)
-    L.close_frame(fr, pad=60)
-    return fr
-
-
-# ── ④ the Report Space shows it, the skill keeps it ──────────────────────────────────────────────
+# ── ② the Report Space shows it, the skill keeps it ──────────────────────────────────────────────
 def frame_screen(qs, space, versions):
     subs, opened, heads, buttons = space
     fr = L.open_frame("Workbench and skill")
     canvas.ui_frame(fr, since="261012")                      # a screen: the workbench's colours (JL 261012)
-    y = heading("④", "The Report Space shows it; /haipipe-report keeps it",
-                "One row per Question; its four buttons name haipipe-question and haipipe-report.") + 40
+    y = heading("②", "The Report Space shows it; /haipipe-report keeps it",
+                "The screen as frame.py draws it for this Block, beside the skill that writes and checks each report.")
+    y = key_line(fr, y + 24, "one card per Question under the group bar, opened as Logic │ Report (s05-D04)") + 20
     say(0, y, f"On screen: Block {BLOCK.name.split('_')[0]} › Report  (read from frame.py)", HEAD)
     y += 50
     x = 0
-    for s in subs:                                                # the third row
+    for s in subs:                                                # a theme's row above the list, if any
         w = int(len(s) * BODY * 0.55) + 40
         rect(x, y, w, 46, bold=s == opened)
         say(x + 20, y + 10, s, BODY)
         x += w + 12
-    y += 76
-    cw = (330, 300, 360)
-    xs = (0, cw[0] + 10, cw[0] + cw[1] + 20)
-    for c, w, h in zip(xs, cw, heads):
-        say(c, y, wrap(h, 22), BODY)
+    y += 76 if subs else 10
+    cw = (440, 560)
+    xs = (0, cw[0] + 10)
+    for c, h in zip(xs, heads):
+        say(c, y, wrap(h, 34), BODY)
     y += 70
     q = next(x for x in qs if x["id"] == EXAMPLE)
-    cells = [f"{q['id']} · {q['status']}\n" + wrap(q["title"], 22) + "\nfrom the Studio:\n" + " ↗ ".join(q["fed"]) + " ↗",
-             "no work yet" if not q["work"] else "\n".join(map(str, q["work"])),
-             (q["report"].stem + " ↗\nits answer line\nits drawing, live\n" + f"report {q['id'].lower()} · {q['status']}")
-             if q["report"] else "No report yet"]
+    work = "Work: " + (" · ".join(map(str, q["work"] + q["runs"])) or "no work yet")   # its own Runs too (s05-D03)
+    cells = [f"{q['id']} · {q['status']}\n" + wrap(q["title"], 30) + "\nfrom the Studio:\n" + " ↗ ".join(q["fed"]) + " ↗",
+             (q["report"].stem + " ↗\nits answer line\n" + wrap(work, 40) + "\nits drawing, live\n"
+              + f"report {q['id'].lower()} · {q['status']}") if q["report"] else "No report yet\n" + wrap(work, 40)]
     for c, w, s in zip(xs, cw, cells):
-        rect(c, y, w, 210)
-        say(c + 16, y + 14, s, BODY, L.RED if s == "no work yet" else L.INK)
-    y += 240
+        rect(c, y, w, 250)
+        say(c + 16, y + 14, s, BODY)
+    y += 280
     say(0, y, "Runs panel, beside the Report Space (read from frame.py)", HEAD)
     y += 46
     for label, doing, skill in buttons:
@@ -303,7 +325,7 @@ def frame_screen(qs, space, versions):
         say(300, y, doing, BODY)
         say(660, y, skill, CODE, font=L.MONO)
         y += 36
-    xr, yr = 1100, 140
+    xr, yr = 1100, 260
     rect(xr, yr, 700, 470, bold=True)
     say(xr + 24, yr + 18, f"SKILL  /haipipe-report  {versions['report']}", HEAD)
     say(xr + 24, yr + 56, "skills/1_base/project/haipipe-report", CODE, font=L.MONO)
@@ -324,58 +346,159 @@ def frame_screen(qs, space, versions):
               "haipipe-draft writes the report's prose",
               "haipipe-studio feeds it frames (s02)", "haipipe-delivery keeps the built files (s03)"]:
         by = say(xr + 24, by, s, BODY)
+    say(0, max(y, yr + 740) + 60, "blue: the open one and the skill · gray: a button or a path · the rest as the "
+                                  "screen draws it", 21)       # under it, ②'s badge
     L.close_frame(fr, pad=60)
     return fr
 
 
-# ── still open, and the reference ───────────────────────────────────────────────────────────────
+# ── ⑤ still open, and this Block's Questions; ⑥ In Tools (Act 5, one frame each since 261012) ───────
+def face_opens():
+    """[(n, words)] of the face's Open list, the settled ones left out: read on every build, never typed."""
+    face = (HERE / "s05-report-workbench-skill.md").read_text(encoding="utf-8")
+    block = re.search(r"(?ms)^Open\n-+\n(.*?)^\(write here", face).group(1)
+    items = re.findall(r"(?ms)^(\d+)\. (.*?)(?=^\d+\. |\Z)", block)
+    return [(int(n), " ".join(w.split())) for n, w in items if not w.startswith("Settled")]
+
+
 def frame_open(qs, unread):
-    fr = L.open_frame("Still open")
-    y = say(0, 0, "Still open", T) + 20
-    items = [
-        "What must each level's report answer? The Studio sets it, each level reports (s09 Open 2).",
-        "List Job and Task reports in the Block's Report, by source (s09-D08), once a Job has one?",
-        "The Work column lists Jobs and Tasks only: show the level's own Runs on a Question too?",
-        "Ideation and Narrative, on Report's third row, list studio topics; s02-D05 keeps Studio and "
-        "Report apart: keep them, or link out to Studio? (proposed: to the Studio, s07-D05)",
-        "A Task without Questions shows its own face as its report; s09-D08 gives a Task "
-        "reports/qNN_<topic>/: which one? (proposed: its own result, s07-D06)",
-        "When a cited studio frame changes, flag the report for review before its answer changes?",
-        "The third row says \"High-level logic + Low-level work\", the row heads \"Logic · Work · Report\": "
-        "one name? (proposed: the view becomes the plain list, s07-D05)",
-    ]
+    """⑤: this Block's Questions as the register holds them, then the face's Open list in red, in two columns
+    (was two frames, Still open and This Block's Questions, until 261012)."""
+    fr = L.open_frame("⑤ Still open, and this Block's Questions")
+    items = [f"{n}. {words}" for n, words in face_opens()]
     for tag, text in unread:
         items.append(f"{tag}'s Feeds line names a Question without its folder name ({text.strip('`. ')}), so "
                      f"the Report Space does not see it.")
-    for k, item in enumerate(items, 1):
-        y = say(0, y, wrap(f"{k}. {item}", 74), BODY, L.RED) + 16
-    L.close_frame(fr, pad=60)
-    return fr
-
-
-def frame_reference(qs):
-    fr = L.open_frame("This Block's Questions")
-    y = say(0, 0, "For reference: this Block's Questions", T) + 6
-    y = say(0, y, "read from board.md ## Questions, each report's answer-status, the topics' Feeds lines and runs/",
-            SUB) + 30
+    y = heading("⑤", "Still open, and this Block's Questions",
+                "read from board.md ## Questions, each report's answer-status, the topics' Feeds lines, runs/ "
+                "and this face's Open list")
+    n = {st: sum(1 for q in qs if q["status"] == st) for st in STATES}
+    y = key_line(fr, y + 24, f"{n['answered']} of {len(qs)} Questions answered, {n['partial']} partial; "
+                             f"{len(items)} points still open") + 10
     cx = {"id": 0, "Question": 100, "status": 900, "fed by (studio)": 1060, "Runs on it": 1430}
     for name, x in cx.items():
         say(x, y, name, HEAD)
     y += 44
-    line([(0, y), (1900, y)], arrow=False)
+    line([(0, y), (1960, y)], arrow=False)
     y += 12
     for q in qs:
         say(cx["id"], y, q["id"], CODE, font=L.MONO)
         say(cx["Question"], y, q["title"][:62] + ("…" if len(q["title"]) > 62 else ""), BODY)
-        say(cx["status"], y, q["status"], BODY)
+        say(cx["status"], y, q["status"], BODY, ROLE[q["status"]][0])
+        coloured(L.els[-1], q["status"])                  # the state's colour, as in ①
         say(cx["fed by (studio)"], y, " · ".join(q["fed"]) or "·", CODE, font=L.MONO)
         say(cx["Runs on it"], y, " · ".join(q["runs"]) or "·", CODE, font=L.MONO)
         if q["id"] == EXAMPLE:
-            rect(-10, y - 6, 1920, 38, bold=True)
+            rect(-10, y - 6, 1980, 38, bold=True)
         y += 40
-    line([(0, y), (1900, y)], arrow=False)
+    line([(0, y), (1960, y)], arrow=False)
+    y = say(0, y + 40, "Still open: the face's Open list, the settled ones left out", 30) + 16
+    wrapped = [wrap(item, 78) for item in items]
+    half, run = sum(w.count("\n") + 1 for w in wrapped) / 2, 0
+    split = next((i for i, w in enumerate(wrapped) if (run := run + w.count("\n") + 1) > half), len(wrapped) - 1) + 1
+    for x, column in ((0, wrapped[:split]), (1000, wrapped[split:])):
+        yy = y
+        for w in column:
+            yy = say(x, yy, w, BODY, L.RED) + 14
     L.close_frame(fr, pad=60)
     return fr
+
+
+TOOLS_SKILLS = ("1_base/project/haipipe-report", "1_base/question/haipipe-question")
+TOOLS_CODE = [("servers/workbench/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
+              ("servers/workbench/page_reader.py", ["page_document"])]
+AROUND = ["haipipe-draft writes the prose", "haipipe-studio feeds it frames (s02)",
+          "haipipe-delivery keeps built files (s03)"]
+
+
+def boxed(x, y, w, draw, title):
+    """A titled box around what `draw(x, y)` writes (it returns the y under it). Returns (x, y, w, h)."""
+    i0 = len(L.els)
+    say(x + 20, y + 14, title, 30)
+    bottom = draw(x + 20, y + 66)
+    L.base("rectangle", x, y, w, bottom - y + 16, L.INK, 2, rough=0)
+    L.els.insert(i0, L.els.pop())
+    return x, y, w, bottom - y + 16
+
+
+def frame_tools():
+    """⑥ In Tools as a map: where the skills sit, each skill's folder, the code that draws its row, how each
+    SKILL.md reads; every box read off the disk on every build, joined by named arrows. s05's own (261012): the
+    shared L.tools_frame, which s02 to s06 use, draws the same facts unboxed."""
+    fr = L.open_frame("In Tools: haipipe-report")
+    y = heading("⑥", "In Tools: the Report's skills and code",
+                "read from disk on every build, under Tools/plugins/haipipe-toolkit/: each folder as it is, "
+                "each function looked up in its file")
+    y = key_line(fr, y + 24, "/haipipe-report writes and checks each report; frame.py draws its row") + 10
+    report, question = (L.TOOLKIT / "skills" / s for s in TOOLS_SKILLS)
+    home = report.parent
+
+    def where(x, yy):
+        sibs = sorted(p for p in home.iterdir() if p.is_dir() and (p / "SKILL.md").is_file())
+        say(x, yy, home.relative_to(L.TOOLKIT).as_posix() + "/", CODE, font=L.MONO)
+        for i, p in enumerate(sibs):
+            mark = "└── " if i == len(sibs) - 1 else "├── "
+            say(x + 20, yy + 34 + i * 30, mark + p.name + "/", CODE, font=L.MONO)
+            say(x + 360, yy + 35 + i * 30, ("◀ this topic" if p == report else L.SKILL_TOPIC.get(p.name, "")), CODE)
+        return yy + 34 + len(sibs) * 30
+
+    def tree(skill):
+        def draw(x, yy):
+            say(x, yy, f"skills/{skill.relative_to(L.TOOLKIT / 'skills').as_posix()}/", CODE, font=L.MONO)
+            rows = L.skill_tree(skill, most=12)
+            for i, (ln, why) in enumerate(rows):
+                say(x + 20, yy + 34 + i * 30, ln, CODE, font=L.MONO)
+                if why:
+                    say(x + 380, yy + 35 + i * 30, why, CODE)
+            return yy + 34 + len(rows) * 30
+        return draw
+
+    def code(x, yy):
+        for rel, functions in TOOLS_CODE:
+            source = (L.TOOLKIT / rel).read_text(encoding="utf-8")
+            say(x, yy, rel, CODE, font=L.MONO)
+            yy += 34
+            for fn in functions:
+                found = re.search(rf"^\s*(?:def|class) {re.escape(fn)}\b", source, re.M)
+                say(x + 30, yy, fn + "()" if found else f"? {fn}() not found", CODE, L.INK if found else L.RED, L.MONO)
+                yy += 30
+            yy += 12
+        return yy
+
+    def around(x, yy):
+        for s in AROUND:
+            yy = say(x, yy, s, BODY) + 2
+        return yy
+
+    def outline(skill):
+        return lambda x, yy: L.skill_md_column(x, yy, skill, most=14)
+
+    A, B, C, WA, WC = 0, 880, 1760, 740, 880
+    top = y + 20
+    w_home = boxed(A, top, WA, where, "📁 Where it sits, beside its kin")
+    w_q = boxed(A, w_home[1] + w_home[3] + 90, WA, tree(question), f"🧰 /haipipe-question {skill_ver(question)}")
+    w_r = boxed(B, top, WA, tree(report), f"🧰 /haipipe-report {skill_ver(report)}")
+    w_code = boxed(B, w_r[1] + w_r[3] + 70, WA, code, "💻 The code that draws its row")
+    w_around = boxed(B, w_code[1] + w_code[3] + 60, WA, around, "🤝 Around it")
+    w_md = boxed(C, top, WC, outline(report), "📖 Its SKILL.md, top to bottom")
+    w_qmd = boxed(C, w_md[1] + w_md[3] + 60, WC, outline(question), "📖 haipipe-question's SKILL.md")
+    G.arrow(w_home, w_r, "its skill")
+    G.arrow(w_q, w_r, "asks")
+    G.arrow(w_r, w_code, "its row is drawn by", side="v")
+    G.arrow(w_r, w_md, "reads as")
+    low = max(w_q[1] + w_q[3], w_around[1] + w_around[3], w_qmd[1] + w_qmd[3]) + 50
+    qx, mx = A + WA / 2, C + WC / 2                  # under the code, never through it
+    L.path([(qx, w_q[1] + w_q[3] + 6), (qx, low), (mx, low), (mx, w_qmd[1] + w_qmd[3] + 6)], color=L.INK)
+    say(qx + 20, low - 34, "reads as", 22)
+    note(A, low + 24, "its skills' folders and code, read from disk (JL)")
+    L.els.append(canvas.change_note(A + 760, low + 24,
+                                    "a map now: boxes joined by named arrows", "261012", L.FRAME[0], size=18))
+    L.close_frame(fr, pad=60)
+    return fr
+
+
+def skill_ver(skill):
+    return L.skill_version(skill)
 
 
 # ── the story ────────────────────────────────────────────────────────────────────────────────────
@@ -388,42 +511,44 @@ def main():
     space = report_space(frame)
     versions = {"report": version(SKILLS / "project/haipipe-report"),
                 "question": version(SKILLS / "question/haipipe-question")}
-    story = [frame_levels(qs), frame_link(qs), frame_answer(qs), frame_screen(qs, space, versions)]
-    tall = max(f["height"] for f in story)
-    for f in story:                                   # one strip: every chapter the same height
-        f["height"] = tall
-    below = [frame_open(qs, unread), frame_reference(qs),
-             L.tools_frame("In Tools: haipipe-report",                # its skills' folders and code (JL 261011)
-                           ["1_base/project/haipipe-report", "1_base/question/haipipe-question"],
-                           [("servers/workbench/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
-                            ("servers/workbench/page_reader.py", ["page_document"])],
-                           around=["haipipe-question asks: the row, the folder", "haipipe-draft writes the prose",
-                                   "haipipe-studio feeds it frames (s02)", "haipipe-delivery keeps built files (s03)"],
-                           note="its skills' folders and code, read from disk (JL)")]
-    canvas.grid(L.els, [[f["id"] for f in story], [f["id"] for f in below]], gap=260)
+    KEY_LINES.clear()
+    story = [frame_story(qs), frame_screen(qs, space, versions)]     # Act 1: two frames, ① ② ③ were one idea
+    themes, flow, mind = G.draw(frame)                # Acts 2 to 4, merged from s07 (JL 261012)
+    below = [frame_open(qs, unread), frame_tools()]                   # Act 5: two frames since 261012
+    G.KEYS.extend(KEY_LINES)                          # ②'s, ⑤'s and ⑥'s key lines, boxed with the theme frames'
+    for fr in story + below:                          # every frame measured, as Acts 2 to 4 are (excalidraw-studio ⑥)
+        G.badge(fr)
+    live = [themes[t] for t in ("base", "work", "cowork", "labeling")]
+    own = [themes[t] for t in ("paper", "insight", "design", "discovery")]
+    G.acts([story, live, own, [flow, mind], below],
+           ["Act 1 · What a report is, and where it shows",
+            "Act 2 · The group bar is live: base, work, cowork, labeling",
+            "Act 3 · Their own Report today: paper, insight, design, discovery",
+            "Act 4 · How a group reaches it, and every part",
+            "Act 5 · Still open, and for reference"],
+           [["shows"], ["work adds\nthree", "cowork adds\nthree", "names\nguessed"],
+            ["also draws\nits own"] * 3, ["every part,\nin one map"], ["the code\nbehind it"]],
+           [(story[0], live[0], "its Questions, in groups"), (live[0], own[0], "not on the bar yet"),
+            (own[0], flow, "how a group gets there"), (flow, below[0], "what is still open")])
 
     top = story[0]["y"]
-    L.text(0, top - 250, "s05 in one sentence: every level asks its own Questions ①, the Work that answers one names it "
-                         "②, the report says the answer, open → partial → answered ③, and the Report Space shows each "
-                         "row while /haipipe-report writes and checks it ④.", 40)
-    L.text(0, top - 180, "Read left to right along the arrows. Below the strip: what is still open, and this Block's "
-                         "twelve Questions.", BODY)
-    for k, what in enumerate(("new topic, the Report from both sides, in the screen's order: s02 Studio · s03 "
-                              "Delivery · s04 Related · s05 Report · s06 Run (JL)",)):
-        L.els.append(canvas.change_note(0, top - 130 + k * 26, what, TODAY, None, size=18))
-    for a, b, word in zip(story, story[1:], ("asks", "answers", "shows")):
-        ay = a["y"] + 180
-        x0, x1 = a["x"] + a["width"] + 20, b["x"] - 20
-        line([(x0, ay), (x1, ay)])
-        L.els[-1]["strokeWidth"] = 3
-        L.text(x0 + 30, ay - 44, word, HEAD)
-    first, ref = story[0], below[1]
-    ax = max(first["x"] + first["width"] - 300, ref["x"] + 200)
-    line([(ax, first["y"] + first["height"] + 20), (ax, ref["y"] - 20)], dashed=True)
-    L.text(ax + 20, first["y"] + first["height"] + 90, "every Question", HEAD)
+    L.text(0, top - 250, "s05 in one sentence: every level asks its own Questions, the Work that answers one names it, "
+                         "the report says the answer, open → partial → answered ①; the Report Space shows each row "
+                         "while /haipipe-report writes and checks it ②; and every theme groups them on one bar ③ ④.", 40)
+    L.text(0, top - 180, "Read left to right along the arrows, act by act, then down.", BODY)
+    for k, (what, when) in enumerate((("new topic, the Report from both sides, in the screen's order: s02 Studio · "
+                                       "s03 Delivery · s04 Related · s05 Report · s06 Run (JL)", TODAY),
+                                      ("s07 merged in: its frames are Acts 2 to 4 (JL)", "261012"),
+                                      ("Act 1: four frames merged into ① and ②, in colour; ⑤ ⑥ are now ③ ④ (JL)",
+                                       "261012"))):
+        L.els.append(canvas.change_note(0, top - 130 + k * 26, what, when, None, size=18))
+    canvas.colour_ui(L.els)                           # the screens in the workbench's colours, then the font
+    canvas.apply_font(L.els)
+    G.key_boxes()
     for e in canvas.off_palette(L.els):
-        print("off the studio palette:", e["type"], e.get("text", "")[:40])
-    canvas.write(out, list(L.els), "build_s05_report_workbench_skill.py")
+        if not (e.get("backgroundColor") == G.KEY or {"ui_kind", "s05_colour"} & set(e.get("customData") or {})):
+            print("off the studio palette:", e["type"], e.get("text", "")[:40])
+    canvas.write(out, list(L.els), "build_s05_report_workbench_skill.py", palette=False)   # keeps the key colour
 
 
 if __name__ == "__main__":

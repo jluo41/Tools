@@ -262,8 +262,9 @@ def _cwd(pid: int) -> Path | None:
     return Path(names[-1]) if names else None
 
 
-def servers(root: Path) -> list[Server]:
-    """This SPACE's running hosts (`servers/_host/serve.py --root <root>`, not an --only host)."""
+def servers(root: Path, share: bool = False) -> list[Server]:
+    """This SPACE's running hosts (`servers/_host/serve.py --root <root>`, not an --only host). A share door
+    (`--share`, behind its public name) is never one of them: it signs people in; `share=True` lists those instead."""
     out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, text=True).stdout
     found = []
     for line in out.splitlines():
@@ -279,7 +280,7 @@ def servers(root: Path) -> list[Server]:
             continue
         args = argv[at + 1:]
         opt = lambda name: args[args.index(name) + 1] if name in args[:-1] else ""
-        if opt("--only"):
+        if opt("--only") or ("--share" in args) != share:
             continue
         cwd = _cwd(int(pid))
         if cwd is None:
@@ -344,12 +345,32 @@ def _python(root: Path) -> str:
     return str(venv) if venv.exists() else sys.executable
 
 
-def start(root: Path) -> Server:
-    """Start this SPACE's host from its settings (.server_config/settings.env), on a free port."""
-    config = load_server_config(root)
-    port = int(config.get("PORT") or 5602)
+def space_port(root: Path) -> int:
+    """This SPACE's one port (JL 261012: "if things are sharing the same SPACE, they should be of the same port
+    number"). It is settings.env's PORT, and a taken one stops here rather than drifting to the next free port:
+    drifting is how WellDoc came to run on 5602, 5622 and 5641 and Physician on six ports. A SPACE with no PORT
+    gets the first free port from 5602, written into its .server_config/settings.env so every later start uses it."""
+    configured = load_server_config(root).get("PORT")
+    if configured:
+        if not _port_free(int(configured)):
+            raise SystemExit(f"wb: {root.name}'s port {configured} (.server_config/settings.env) is held by another "
+                             f"host; one SPACE, one port: see `lsof -nP -iTCP:{configured} -sTCP:LISTEN`, free it or "
+                             f"change PORT there")
+        return int(configured)
+    port = 5602
     while not _port_free(port):
         port += 1
+    settings = root / ".server_config" / "settings.env"
+    settings.parent.mkdir(exist_ok=True)
+    with settings.open("a", encoding="utf-8") as f:
+        f.write(f"# written by wb.py on its first start (one SPACE, one port)\nPORT={port}\n")
+    return port
+
+
+def start(root: Path) -> Server:
+    """Start this SPACE's host from its settings (.server_config/settings.env), on its one port."""
+    config = load_server_config(root)
+    port = space_port(root)
     host = config.get("BIND_HOST") or config.get("TAILSCALE_ADDRESS") or "127.0.0.1"
     name = re.sub(r"[^a-z0-9]+", "-", (config.get("SPACE_NAME") or root.name).lower()).strip("-")
     args = ["--root", str(root), "--host", host, "--port", str(port), "--no-terminal",
@@ -431,6 +452,19 @@ def by_name(name: str, found: list[Place]) -> list[Place]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv[:1] == ["update"]:                      # /wb update <block>: cli/wb_update.py (b10 s10)
+        import wb_update
+        return wb_update.main(argv[1:])
+    if argv[:1] == ["share"]:                       # /wb share <folder> <email>: cli/wb_share.py (b10 s52)
+        import wb_share
+        return wb_share.main(argv[1:])
+    if argv[1:2] == ["share"] and not argv[0].startswith("-"):     # /wb <folder> share [<email>]: folder first
+        root = space_root(Path.cwd().resolve())
+        folder = resolve_path(argv[0], root) if root else None
+        if folder is not None and folder.is_dir():
+            import wb_share
+            return wb_share.main([str(folder), *argv[2:]])
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("words", nargs="*")
     ap.add_argument("--root")

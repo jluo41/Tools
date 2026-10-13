@@ -13,6 +13,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Folder is where the 
 | Block | Description | methods | Propose a method change (`run-propose-method-<target>`) | haipipe-designer-agent | haipipe-design-method | the proposal | Block › runs/`run-propose-method-<target>/` |
 | Block | Audience Report | questions | Propose questions (`run-propose-questions`) | haipipe-designer-agent | haipipe-question | none | Block › runs/`run-propose-questions/` |
 | Block | Audience Report | questions | Write a report (`run-report-<target>`) | haipipe-draft-writing-agent | haipipe-report | none | Block › runs/`run-report-<target>/` |
+| Block | Audience Report | summary | Build the one-page summary (`run-build-summary`) | haipipe-designer-agent | haipipe-design-delivery | none | Block › runs/`run-build-summary/` |
 | Block | Audience Report | predicted-vs-observed | Add the Exp's data (`run-add-observed-<target>`) | haipipe-designer-agent | haipipe-design-method | none | Block › runs/`run-add-observed-<target>/` |
 | Block | Audience Report | predicted-vs-observed method-scorecard | Score the predictions (`run-score-<target>`) | haipipe-design-reviewer-agent | haipipe-design-method | none | Block › runs/`run-score-<target>/` |
 | Block | Idea Studio | every view | Draw a topic (`run-draw-<target>`) | haipipe-designer-agent | excalidraw-report | none | Block › runs/`run-draw-<target>/` |

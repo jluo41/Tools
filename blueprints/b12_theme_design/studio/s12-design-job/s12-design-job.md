@@ -3,7 +3,7 @@ s12 · Design Job
 
 **Topic:** One design Job's tab, drawn for j03_<goal>_<design-method> (G01 × design method M04, version m2 × inputs i2, N = 10) (JL 261007: "s11, s12, s13 … for the Block level, Job level and task level … instead of
 nesting all the things together"), drawn the way b11 draws its levels (JL 261007: "check s11 s12 and s13
-[of b11] … borrow their ideas"). It follows `../s00-design-structure/`: a Job pins one goal, one method
+[of b11] … borrow their ideas"). It follows `../s04-design-structure/`: a Job pins one goal, one method
 version and one inputs version, and returns N designs, each a Task.
 
 The drawing, top to bottom:

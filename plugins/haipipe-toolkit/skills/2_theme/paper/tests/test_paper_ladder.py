@@ -88,7 +88,7 @@ class PaperLadderTest(unittest.TestCase):
             quiet(L.main, ["task", str(v), "S-Desk-Main-1-Intro"])
         quiet(L.main, ["spaces", str(self.board), "j01_v0101_desk"])    # a version's own: reports/ and runs/
         self.assertTrue((v / "reports" / "README.md").is_file())
-        self.assertFalse((v / "studio").exists())        # Studio, Related, Delivery are the Board's (b10 s09)
+        self.assertFalse((v / "studio").exists())        # Studio, Related, Delivery are the Board's (b10 s01, s09-D05)
 
     def test_next_comments_and_rollback(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])

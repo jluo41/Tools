@@ -1,0 +1,395 @@
+{
+ "audience": "leadership and product, not technical",
+ "length": "five minutes, high level; nothing is run live",
+ "shown": "2026-10-08",
+ "groups": [
+  [
+   "why",
+   "Why",
+   "the pain everyone already feels"
+  ],
+  [
+   "loop",
+   "The loop",
+   "1 insight · 2 design · 3 launch, each shown in the workbench"
+  ],
+  [
+   "solve",
+   "What it solves",
+   "the pains from the meeting"
+  ]
+ ],
+ "slides": [
+  {
+   "n": "01",
+   "slug": "cover",
+   "group": "why",
+   "title": "Looped Experimental Learning",
+   "kind": "cover"
+  },
+  {
+   "n": "02",
+   "slug": "today",
+   "group": "why",
+   "title": "Today's challenges",
+   "kind": "timeline"
+  },
+  {
+   "n": "03",
+   "slug": "loop",
+   "group": "loop",
+   "title": "The loop",
+   "kind": "cycle"
+  },
+  {
+   "n": "04",
+   "slug": "insights",
+   "group": "loop",
+   "title": "Step 1 · Data to insights",
+   "kind": "flow"
+  },
+  {
+   "n": "05",
+   "slug": "insight-workbench",
+   "group": "loop",
+   "title": "Step 1 · In the Insight workbench",
+   "kind": "screen"
+  },
+  {
+   "n": "06",
+   "slug": "designs",
+   "group": "loop",
+   "title": "Step 2 · Insights to designs",
+   "kind": "flow"
+  },
+  {
+   "n": "07",
+   "slug": "design-workbench",
+   "group": "loop",
+   "title": "Step 2 · In the Design workbench",
+   "kind": "screen"
+  },
+  {
+   "n": "08",
+   "slug": "design-sms",
+   "group": "loop",
+   "title": "Step 2 · A design, with its reasons",
+   "kind": "figure"
+  },
+  {
+   "n": "09",
+   "slug": "design-ui",
+   "group": "loop",
+   "title": "Step 2 · Not only SMS: a screen",
+   "kind": "figure"
+  },
+  {
+   "n": "10",
+   "slug": "next-experiment",
+   "group": "loop",
+   "title": "Step 3 · Launch the new experiment",
+   "kind": "converge"
+  },
+  {
+   "n": "11",
+   "slug": "testing-learning",
+   "group": "loop",
+   "title": "The loop · Testing and learning",
+   "kind": "figure"
+  },
+  {
+   "n": "12",
+   "slug": "shared",
+   "group": "solve",
+   "title": "What it solves · Shared, not lost",
+   "kind": "pains"
+  },
+  {
+   "n": "13",
+   "slug": "automatic",
+   "group": "solve",
+   "title": "What it solves · Automatic",
+   "kind": "pains"
+  },
+  {
+   "n": "14",
+   "slug": "everyone",
+   "group": "solve",
+   "title": "What it solves · Everyone, every team",
+   "kind": "pains"
+  }
+ ],
+ "check": [],
+ "meeting": "2026-10-05",
+ "minutes": "36",
+ "time": [
+  [
+   "Mon 10-05",
+   "the meeting: the ask",
+   "0:00-36:00"
+  ],
+  [
+   "Wed 10-07 evening",
+   "send the slides  ← now",
+   "24:11, 34:19"
+  ],
+  [
+   "Thu 10-08, after 11:00",
+   "the five-minute demo to a few colleagues",
+   "22:24, 33:52"
+  ],
+  [
+   "next week",
+   "the onsite: next year's direction is set; authentication may lead",
+   "26:38-27:05"
+  ],
+  [
+   "after the onsite",
+   "the next round with your ~50 messages",
+   "29:06-29:21"
+  ],
+  [
+   "these two weeks",
+   "you may propose new messages or UI",
+   "27:27-27:39"
+  ],
+  [
+   "before Thursday",
+   "they send a concrete prompt you can copy",
+   "33:01"
+  ],
+  [
+   "before Thursday",
+   "ask whether the senior lead joins",
+   "35:47"
+  ]
+ ],
+ "pains": [
+  [
+   "AI so far is chat or automation, no real impact",
+   "0:32-1:00",
+   "slide 13"
+  ],
+  [
+   "our experiments are knowledge no outside tool has: a gold mine",
+   "1:00-1:37",
+   "slides 01 · 03"
+  ],
+  [
+   "lessons flow past like water: each run, each chat, then gone",
+   "19:12-20:09",
+   "slide 12"
+  ],
+  [
+   "no visibility: V1 to V4, then what is V5?",
+   "13:05, 21:32",
+   "slides 02 · 12"
+  ],
+  [
+   "a finding gets handed on and loses track",
+   "18:17",
+   "slide 14"
+  ],
+  [
+   "scale: timing, SMS, authentication, UI; the best insight of each",
+   "20:39-21:11",
+   "slides 10 · 13"
+  ]
+ ],
+ "changes": [
+  [
+   "all",
+   "261007",
+   "frames left to right again, as the first layout; black lines and boxes around the slides"
+  ],
+  [
+   "all",
+   "261007",
+   "each slide highlights its key thing in one blue accent"
+  ],
+  [
+   "all",
+   "261007",
+   "renumbered s01 → s02 → s61: a slide draft (s61-s69); s01 is now what they want"
+  ],
+  [
+   "all",
+   "261008",
+   "open questions sit in a small red box in the slide's top-right corner; change notes in green under it"
+  ],
+  [
+   "disk",
+   "261007",
+   "the deck lives in this topic: s61-demo-layout/delivery/ (the Job's delivery/ points here)"
+  ],
+  [
+   "disk",
+   "261008",
+   "the deck is built: build_deck.py → delivery/insight-design-demo.pptx · .pdf"
+  ],
+  [
+   "01",
+   "261007",
+   "retitled: Looped Experimental Learning (was Experimental learning)"
+  ],
+  [
+   "02",
+   "261007",
+   "Round 1 … Round 5 ? (was V1 … V5)"
+  ],
+  [
+   "02",
+   "261008",
+   "Today's challenges: the Round line again, the four challenges as bullets under it"
+  ],
+  [
+   "02",
+   "261008",
+   "bullets cut to a few words each; the lead stands out"
+  ],
+  [
+   "03",
+   "261007",
+   "arrows numbered 1 · insight, 2 · design, 3 · test"
+  ],
+  [
+   "03",
+   "261008",
+   "3 · launch (was 3 · test): testing is what slide 11 does with the data"
+  ],
+  [
+   "04",
+   "261007",
+   "text that overflowed its box is shortened"
+  ],
+  [
+   "05",
+   "261007",
+   "new: the Insight workbench, a screenshot"
+  ],
+  [
+   "06",
+   "261008",
+   "a person reviews and releases the safest and best (was: releases the best)"
+  ],
+  [
+   "07",
+   "261007",
+   "new: the Design workbench, a screenshot"
+  ],
+  [
+   "08",
+   "261008",
+   "new: an SMS design with its reasons (design board ITEM01)"
+  ],
+  [
+   "09",
+   "261008",
+   "new: a UI coupon screen with its reasons (design board ITEM05)"
+  ],
+  [
+   "10",
+   "261007",
+   "the new experiment, the arms flowing into it (was a method table)"
+  ],
+  [
+   "10",
+   "261008",
+   "what a design can be (SMS, authentication UI, chatbot script) → a new experiment, feedback"
+  ],
+  [
+   "10",
+   "261008",
+   "timing removed: a prediction, not a design (meeting 23:05)"
+  ],
+  [
+   "10",
+   "261008",
+   "title: Step 3 · Launch the new experiment"
+  ],
+  [
+   "11",
+   "261008",
+   "new: the whole loop, testing and learning, the concept figure"
+  ],
+  [
+   "12",
+   "261007",
+   "what it solves, from the meeting; split into 12 · 13 · 14, two pains each"
+  ],
+  [
+   "13",
+   "261007",
+   "new: what it solves · automatic"
+  ],
+  [
+   "14",
+   "261007",
+   "new: what it solves · everyone"
+  ],
+  [
+   "14",
+   "261008",
+   "a third row: everyone can see and build insights and propose new ideas"
+  ],
+  [
+   "14",
+   "261008",
+   "everyone means every team: leaders, product, dev and data"
+  ]
+ ],
+ "open": [
+  "Say \"V1-V4\" (the team's word) or \"Stage 1, Stage 2\" (the paper's)? One word for the whole deck.",
+  "Put the 69.8% result up front, after slide 03, as the hook?",
+  "Which template: DrFirst's own slide master, or a plain white one?",
+  "Slide 07 promises a chat window later: keep it, or leave the channel out?",
+  "Slide 08 \"built\": confirm what to claim for the design method."
+ ],
+ "frames01": [
+  "1 · the ask at a glance",
+  "2 · your time",
+  "3 · what hurts, and the slide that answers it",
+  "4 · later, not Thursday",
+  "open"
+ ],
+ "frames61": [
+  "1 · logic flow",
+  "2 · the slides",
+  "3 · on disk",
+  "open"
+ ],
+ "pdf": "insight-design-demo.pdf",
+ "delivery": [
+  [
+   "insight-design-demo.pdf",
+   923222
+  ],
+  [
+   "insight-design-demo.pptx",
+   1006619
+  ]
+ ],
+ "screens": [
+  "design-workbench.png",
+  "insight-workbench.png"
+ ],
+ "figures": [
+  "design-sms-item01.png",
+  "design-ui-item05.png",
+  "loop-testing-learning.png"
+ ],
+ "tree": [
+  "s61-demo-layout/",
+  "├── build_deck.py    writes the deck",
+  "├── build_s61_demo_layout.py draws the layout",
+  "├── capture_screens.py retakes screens/",
+  "├── s61-demo-layout.excalidraw",
+  "├── s61-demo-layout.md the face",
+  "├── s61-demo-layout.png",
+  "├── slides.py        the one source: 14 slides",
+  "├── delivery/        the deck, generated, 2 files",
+  "├── figures/         the loop, two designs, 3 files",
+  "└── screens/         workbench screens, 2 files"
+ ],
+ "pages": 14
+}

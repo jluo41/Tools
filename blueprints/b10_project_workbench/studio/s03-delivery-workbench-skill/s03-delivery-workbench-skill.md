@@ -154,7 +154,8 @@ Open
    their source folder inside it; Status turns `sent` only by a person, never by a build. Today the
    folders are named by source (`delivery/j01_v1009_nmi/`): rename now, or at the next send?
 2. A Report's own build (`delivery/reports/qNN_<topic>/`): a row in `delivery.md` too?
-3. Do Delivery rows take the Studio's groups (Current and tags), the same code?
+3. Settled 261012 by b10 s32-D18 (JL: "for the delivery, we should also have the group tags as well, and have
+   the delivery card, similar to the studio"): yes, the same group bar; one card per result; built in the base.
 4. Built 261011 (b16 session): the Block's own Delivery ends with "By source" (part · from · files),
    one row per Job and Task part, each linking back to its folder (s03-D02).
 5. A deliverable that pulls from several Blocks (a meeting deck): its own Block, as a paper Board is?

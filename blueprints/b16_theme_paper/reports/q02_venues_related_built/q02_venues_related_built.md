@@ -33,7 +33,7 @@ questions it answers; its build lands in the Board's `delivery/jNN_<version>/`.
 
 ### 2 · Evidence
 
-- [b10 s09 · Studio, Block, Job, Task, Delivery](../../../b10_project_workbench/studio/s09-studio-block-job-task-delivery/s09-studio-block-job-task-delivery.md):
+- [b10 s01 · Studio, Block, Job, Task, Delivery (was s09)](../../../b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.md):
   Studio and Delivery are the Block's alone (D01, D05).
 - [b10 s04 · Related](../../../b10_project_workbench/studio/s04-related-workbench-skill/s04-related-workbench-skill.md):
   one `related/` per Block, read only, its table's columns; s04-D05 folds it inside the Studio.

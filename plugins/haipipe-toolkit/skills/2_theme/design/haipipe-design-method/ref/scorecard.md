@@ -27,6 +27,11 @@ in_range    ✓ the observed point is inside the predicted [lo; hi] · ✗ outsi
 error       observed point − predicted point, signed, 2 decimals · ? when either is not a number
 ```
 
+Both sides are in percentage points (pp) against the control, the unit `run-rank-t99` writes
+(haipipe-design-unit `references/rank.md`). A frozen prediction in another unit (`+5%`, `pts`, none) is not
+edited: the scorer states in the Run how it read it (relative lift times the control's rate, or points as pp), or
+scores it `?`.
+
 A prediction still `frozen: draft` is not scored: only a released design was sent. Scoring again (a corrected
 `arms.csv`) moves the old `scores.csv` into the Run's `passes/` first; the script never overwrites.
 

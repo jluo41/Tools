@@ -4,7 +4,7 @@
   if (!window.boardWorkbenches) return;
   function url() { return '/_board/work-board?path=' + encodeURIComponent(boardPath()); }
   window.boardWorkbenches.register({
-    id: 'task-board', label: '📋 Task Block', order: 29, menu: 'workbench',
+    id: 'task-board', label: '🧪 Task Block', order: 29, menu: 'workbench',
     hint: 'Jobs, Task progress, Run receipts and readings across this Block',
     applies: function (page, type) {
       if (document.body.getAttribute('data-board-kind') === 'task-block') return true;

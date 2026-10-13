@@ -96,8 +96,11 @@ def cmd_boxes(a):
 # ---------------------------------------------------------------- shoot: find, highlight, crop
 
 def norm(s):
+    """Letters and digits only, so line breaks, spacing and punctuation never block a match. Chinese, Japanese
+    and Korean characters are kept (b11 s47, 261012: a Chinese quote shrank to its few ASCII words and
+    'matched' a title)."""
     s = unicodedata.normalize("NFKC", s).lower()
-    return re.sub(r"[^0-9a-z%.]+", "", s.replace("’", "'")).strip(".")
+    return re.sub(r"[^0-9a-z%.\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]+", "", s.replace("’", "'")).strip(".")
 
 
 def page_tokens(page):
@@ -121,6 +124,25 @@ def page_tokens(page):
     return [t for t in toks if t[0]]
 
 
+def trim(word, k0, k1):
+    """The word with its box narrowed to its normalized characters k0..k1-1: a run of Chinese text is one
+    pdftotext word, so a quote that starts or ends inside it highlights only its own characters. Widths are
+    weighed per character (a wide East Asian character 1, any other 0.55); the whole word when unsure."""
+    raw, pos = word["t"], []
+    for i, ch in enumerate(raw):
+        pos += [i] * len(re.sub(r"[^0-9a-z%.\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]+", "",
+                                unicodedata.normalize("NFKC", ch).lower()))
+    if not raw or k1 <= k0 or k1 > len(pos):
+        return word
+    wide = [1.0 if unicodedata.east_asian_width(ch) in "WF" else 0.55 for ch in raw]
+    cum = [0.0]
+    for v in wide:
+        cum.append(cum[-1] + v)
+    a, b = pos[k0], pos[k1 - 1] + 1
+    x0, y0, x1, y1 = word["b"]
+    return dict(word, b=[x0 + (x1 - x0) * cum[a] / cum[-1], y0, x0 + (x1 - x0) * cum[b] / cum[-1], y1])
+
+
 def find(page, quote):
     """(ratio, matched [(word, block, line)]) for the quote on this page. The match runs on characters with
     the spaces taken out, so a word the PDF splits or joins differently from paper.txt (`CI95` as `CI` + `95`,
@@ -134,8 +156,23 @@ def find(page, quote):
         text += key
         owner += [i] * len(key)
 
-    def words(c0, c1):                                # the tokens covering characters c0..c1-1
-        return [m for t in toks[owner[c0]:owner[c1 - 1] + 1] for m in t[1]]
+    starts = []
+    for key, _ in toks:
+        starts.append(len("".join(k for k, _ in toks[:len(starts)])) if not starts else starts[-1] + len(toks[len(starts) - 1][0]))
+
+    def words(c0, c1):                                # the tokens covering characters c0..c1-1, the ends trimmed
+        i0, i1 = owner[c0], owner[c1 - 1]
+        out = []
+        for i in range(i0, i1 + 1):
+            ms = toks[i][1]
+            if len(ms) == 1 and (i == i0 or i == i1):  # a one-word token the quote enters or leaves partway
+                k0 = c0 - starts[i] if i == i0 else 0
+                k1 = c1 - starts[i] if i == i1 else len(toks[i][0])
+                w, bi, li = ms[0]
+                out.append((trim(w, k0, k1), bi, li))
+            else:
+                out += ms
+        return out
     at = text.find(qs)
     if at >= 0:
         return 1.0, words(at, at + len(qs))

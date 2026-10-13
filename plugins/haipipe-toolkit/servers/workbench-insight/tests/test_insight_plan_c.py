@@ -54,7 +54,7 @@ class PlanCTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.board = F.make(self.root) / F.BOARD
-        self.job = self.board / "j03_p2_demov2"
+        self.job = self.board / "j03_prototype-p2_data-demov2"
         self.task = self.job / "t03_K01_question-c"
 
     def tearDown(self):
@@ -89,15 +89,22 @@ class PlanCTest(unittest.TestCase):
 
     def test_the_map_crosses_the_two_clocks(self):
         page = frame.render(THEME, self.root, self.board, "Description", "Map")
-        self.assertIn("j03_p2_demov2", page)
+        self.assertIn("j03_prototype-p2_data-demov2", page)
         self.assertIn("Add a Job", page)                 # an empty cell (p1 × v3)
+
+    def test_the_job_menu_shows_the_folder_name(self):
+        """JL 261012: "I just want to show the job folder name": each Job ▾ option is the folder as it is on disk."""
+        page = frame.render(THEME, self.root, self.job, "Description", "Dataset")
+        options = re.findall(r'<option value="[^"]*" title="(j\d+_[^"]+)"[^>]*>([^<]+)</option>', page)
+        self.assertEqual([n for n, _ in options], [j[0] for j in F.JOBS])
+        self.assertEqual([label for _, label in options], [j[0] for j in F.JOBS])
 
     def test_the_job_tab_reads_its_pair_and_its_tree(self):
         desc = frame.render(THEME, self.root, self.job, "Description", "Dataset")
         self.assertIn("AP2 × F2", frame.render(THEME, self.root, self.job, "Description", "Prototype"))
         for space in ("Audience Report", "Work Details", "Runs"):      # no band beside the tab (s12, 261007)
             self.assertNotIn("AP2 × F2", spaces("Job", self.job, self.root, "")[space].html, space)
-        self.assertIn("refused", frame.render(THEME, self.root, self.board / "j02_p1_demov2", "Description", "Dataset"))
+        self.assertIn("refused", frame.render(THEME, self.root, self.board / "j02_prototype-p1_data-demov2", "Description", "Dataset"))
         tree = frame.render(THEME, self.root, self.job, "Work Details", "")
         self.assertIn("t03_K01_question-c", tree)
         self.assertIn("r04_cross", tree)
@@ -129,6 +136,76 @@ class PlanCTest(unittest.TestCase):
                 page = frame.render(THEME, self.root, folder, space, "")
                 for old in OLD_CLASSES:
                     self.assertNotIn(old, page)
+
+
+class OverallReportTest(unittest.TestCase):
+    """JL 261012: "before the Full, we should have a Overall Report ... we can click and read it". A release that asks
+    an Executive question (X) puts an Overall Report button before Full at the Job and the Board: its X pages as one
+    document, each (K01 · t03) a link to that Task's page; no cut's table lists X."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        base = F.make(self.root)
+        self.board, rel = base / F.BOARD, base / F.PROTO / "j02_p2"
+        self.job = self.board / "j03_prototype-p2_data-demov2"
+        F._write(rel / "t07_X01_what-we-ran" / "question.md", F._front(
+            {"id": "X01", "level": "executive", "name": "What We Ran", "question": "what did we run?"}, "# What We Ran\n"))
+        rows = F.yaml.safe_load((rel / "release.yaml").read_text())
+        rows["questions"]["X01"] = {"task": "t07_X01_what-we-ran", "change": "new"}
+        (rel / "release.yaml").write_text(F.yaml.safe_dump(rows, sort_keys=False))
+        F._write(self.job / "t07_X01_what-we-ran" / "t07_X01_what-we-ran.md", F._front(
+            {"question": "X01", "answer-status": "written", "answer": "<the plain answer>", "how-sure": "<how sure>",
+             "figures": [{"name": "funnel", "title": "<the outcome>", "kind": "bars",
+                          "table": "t03_K01_question-c/runs/r01_full/result/rates.csv"},
+                         {"name": "not-drawn", "title": "<another outcome>", "kind": "dots",
+                          "table": "t01_D01_question-a/runs/r01_full/result/rates.csv"}]},
+            "# X01 · What We Ran\n\n**The ask**: <the ask>\n\n## Answer\n\n1. <a point> (K01 · t03).\n\n"
+            "## What it rests on\n\n- <a limit> (D01 · t01).\n"))
+        F._write(self.board / "delivery" / self.job.name / "overall-report.pdf", "%PDF placeholder")
+        F._write(self.board / "delivery" / self.job.name / "figures" / "X01-funnel.png", "<png placeholder>")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_the_overall_report_comes_before_full(self):
+        for folder, runs in ((self.job, ["Write the overall report", "Check a report"]), (self.board, ["Open the latest Job ↗"])):
+            got = {s["name"]: s for s in json.loads(frame.frame_json(THEME, self.root, folder, ""))["spaces"]}["Audience Report"]
+            with self.subTest(level=folder.name):
+                self.assertEqual(got["subspaces"], ["Overall Report", "Full", "part-a", "part-b", "Cross"])
+                self.assertEqual(got["run_doing"], runs)
+
+    def test_it_reads_as_one_document_with_its_cites_as_links(self):
+        for folder in (self.job, self.board):
+            page = spaces("Job" if folder == self.job else "Block", folder, self.root, "")["Audience Report"].html
+            with self.subTest(level=folder.name):
+                self.assertIn("<article class=report-doc>", page)
+                self.assertIn("1. What We Ran", page)
+                self.assertIn("&lt;the plain answer&gt;", page)
+                self.assertIn("t03_K01_question-c", page)                      # (K01 · t03) opens that Task's page
+                self.assertIn(">K01 · t03</a>)", page)
+                self.assertIn("overall-report.pdf", page)
+                self.assertNotIn("Reading:", page)
+                self.assertNotIn("Period:", page)
+
+    def test_each_answer_shows_its_figure_and_the_top_shows_them_all(self):
+        """JL 261013: "figures to show it to quickly get the outcome": the outcome above each picture, under its
+        answer and in the At a glance grid; a figure not drawn yet says so and names its source."""
+        page = spaces("Job", self.job, self.root, "")["Audience Report"].html
+        png = f"/Project-InsightDemo/{F.BOARD}/delivery/{self.job.name}/figures/X01-funnel.png"
+        self.assertIn("<nav class=rep-glance>", page)
+        self.assertIn(f'<b>&lt;the outcome&gt;</b><img src="{png}"', page)              # the glance card
+        self.assertIn("<figure class=rep-fig><figcaption>&lt;the outcome&gt;</figcaption>", page)
+        self.assertIn(">K01 · t03</a>)", page)                                        # its source, a link
+        self.assertIn("Figure not drawn yet: ref/overall_report.py draws it from (D01 · t01)", page)
+
+    def test_no_cut_lists_the_executive_questions(self):
+        for folder, level in ((self.job, "Job"), (self.board, "Block")):
+            page = spaces(level, folder, self.root, "Full")["Audience Report"].html
+            with self.subTest(level=folder.name):
+                self.assertIn("question-K01", page)
+                self.assertNotIn("question-X01", page)
+                self.assertNotIn("Executive", page)
 
 
 class TodaysLayoutTest(unittest.TestCase):

@@ -8,7 +8,7 @@
 
 `topic` makes `studio/sNN-<topic>/` in the owning Block (also from a Job/Task input), with its face `sNN-<topic>.md` (Topic ·
 Feeds · Files · Decided · Open), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
-skills · s31-s39 Guide · s51-s59 server · s61-s69 slide drafts. `--builder` adds `build_sNN_<topic>.py`, a builder that draws
+skills · s31-s39 Guide · s51-s59 server · s61-s69 slide drafts. `--builder` adds `build_sNN_<topic>.py`, a builder on excalidraw-studio's draw.py that draws
 through canvas.write (a rebuild keeps the person's marks), and runs it once.
 
 `session` saves one working session as a pass of the topic's soft Run `runs/run-draw-<sNN>/`
@@ -72,9 +72,11 @@ def face_text(nn: int, title: str, feeds: list[str]) -> str:
         "(write here, or mark the drawing in red)", ""])
 
 
-BUILDER = '''"""s{nn} · {title}: s{nn}-{slug}.excalidraw, drawn by this builder (haipipe-studio).
+BUILDER = '''"""s{nn} · {title}: s{nn}-{slug}.excalidraw, drawn by this builder.
 
-A rebuild keeps whatever a person drew on the canvas (canvas.write, a seed snapshot beside the drawing).
+How it looks and reads: /excalidraw-studio, its principles and scripts/draw.py (frames, a map, the key point,
+the density badge, acts). The topic, its face and sessions: /haipipe-studio. A rebuild keeps whatever a person drew
+on the canvas (canvas.write, a seed snapshot beside the drawing). Check it: excalidraw-studio's scripts/check.py.
 
     python {script}
 """
@@ -82,46 +84,31 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str((HERE / "{to_scripts}").resolve()))
-import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
+sys.path.insert(0, str((HERE / "{to_draw}").resolve()))
+from draw import Drawing, canvas  # noqa: E402  (excalidraw-studio's helpers; canvas.write keeps a person's marks)
 
-INK, RED = canvas.INK, canvas.RED      # the studio look: black; red for an open question; green notes
-els = []
 # every change to this drawing: (date YYMMDD, what changed). Each gets a green note where it changed
 # (canvas.change_note beside the changed thing) and a line in the title frame (JL 261007)
 CHANGES = []
 
 
-def el(kind, x, y, w, h, **extra):
-    e = {{"id": f"e{{len(els)}}", "type": kind, "x": x, "y": y, "width": w, "height": h, "angle": 0,
-          "strokeColor": INK, "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 1,
-          "strokeStyle": "solid", "roughness": 1, "opacity": 100, "groupIds": [], "frameId": None,
-          "roundness": None, "seed": 1, "version": 1, "versionNonce": 1, "isDeleted": False,
-          "boundElements": [], "updated": 1, "link": None, "locked": False}}
-    e.update(extra)
-    els.append(e)
-    return e
-
-
-def text(x, y, s, size=20, frame=None, color=INK):
-    lines = s.split("\\n")
-    return el("text", x, y, max(len(l) for l in lines) * size * 0.55, len(lines) * size * 1.25, text=s,
-              originalText=s, fontSize=size, fontFamily=6, textAlign="left", verticalAlign="top",  # 6 Nunito, the studio font
-              containerId=None, autoResize=True, lineHeight=1.25, frameId=frame, strokeColor=color)
-
-
 def main():
     out = HERE / "s{nn}-{slug}.excalidraw"
-    els.clear()
-    f1 = el("frame", 0, 0, 1600, 900, name="1 · {title}")
-    text(40, 40, "s{nn} · {title}", 36, f1["id"])
-    text(40, 110, "<draw the topic here: a tree, lines and boxes, in black>", 22, f1["id"])
-    text(40, 140, "? <an open question, in red>", 22, f1["id"], RED)
-    for i, (date, what) in enumerate(CHANGES):          # the title frame's list of changes
-        els.append(canvas.change_note(40, 190 + i * 26, what, date, f1["id"]))
-    for e in canvas.off_palette(els):                    # the look: black, red, green only
-        print("off the studio palette:", e["type"], e.get("text", "")[:40])
-    canvas.write(out, els, "{script}")
+    d = Drawing()
+    f1 = d.frame("① {title}")                                    # one idea, one screen-sized frame
+    d.heading("s{nn} · {title}", "<one line: what this frame says>")
+    d.key(40, 196, 1400, 140)                                     # the frame's key point, the one slight colour
+    d.para(64, 220, "<the key point, in one line>", 1350, 30)
+    d.flow([{{"title": "<step 1>", "lines": ["<a fact read from disk>"]}},     # inside: a workflow map, or d.mind_map
+            {{"title": "<step 2>", "lines": ["<a fact>"]}},
+            {{"title": "? <an open question, in red>", "lines": []}}], 40, 400, 2480, labels=["<leads to>", "<then>"])
+    for i, (date, what) in enumerate(CHANGES):                    # the title frame's list of changes
+        e = canvas.change_note(1480, 220 + i * 26, what, date, f1["id"])
+        e["id"] = f"c{{i}}"
+        d.els.append(e)
+    d.badge(f1)                                                   # its density, measured
+    d.acts([{{"name": "Act 1 · <what the topic is about>", "frames": [f1["id"]]}}])
+    d.write(out, "{script}")
 
 
 if __name__ == "__main__":
@@ -158,12 +145,14 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
     if dry_run:
         return md
     folder.mkdir(parents=True)
-    md.write_text(face_text(nn, title, feeds or []).replace("<topic>", slug), encoding="utf-8")
+    feeds = [f.strip().removeprefix("reports/").strip("/") for f in feeds or []]   # `reports/q01_x` or `q01_x`
+    md.write_text(face_text(nn, title, feeds).replace("<topic>", slug), encoding="utf-8")
     if builder:
         script = folder / f"build_s{nn:02d}_{slug.replace('-', '_')}.py"
-        to_scripts = os.path.relpath(HERE, folder.resolve())    # both resolved: the builder resolves its own path
+        draw = HERE.parents[2] / "display" / "excalidraw-studio" / "scripts"   # excalidraw-studio's draw.py
+        to_draw = os.path.relpath(draw, folder.resolve())       # both resolved: the builder resolves its own path
         script.write_text(BUILDER.format(nn=f"{nn:02d}", title=title, slug=slug, script=script.name,
-                                         to_scripts=Path(to_scripts).as_posix()), encoding="utf-8")
+                                         to_draw=Path(to_draw).as_posix()), encoding="utf-8")
         subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
     return md
 

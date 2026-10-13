@@ -22,14 +22,19 @@ from src.themes import THEMES as THEME_TABLE, kind_of as theme_kind_of
 
 # Folders that cannot contain a board and are expensive to walk. `board` is the
 # GENERATED tree under every board; `_WorkSpace` is the gitignored data store.
-SKIP_PARTS = {".git", ".venv", "node_modules", "__pycache__", "_archive",
+# `_old` holds retired Blocks and backup copies of a board.md: listing them made
+# ghost duplicates on Home (EB-1A Petition three times, JL 261012).
+SKIP_PARTS = {".git", ".venv", "node_modules", "__pycache__", "_archive", "_old",
               "_fixture", "fixtures", "board", "_WorkSpace", "site-packages",
               ".pytest_cache", "dist", "build"}
+# A Block kept below one of these is a legacy copy: listed, but hidden from the default
+# view in the Chart and the List alike (`?archived=1` shows it in both; JL 261012).
+LEGACY_PARTS = frozenset({"_legacy", "_old", "_archive"})
 TITLE = re.compile(r"^#\s+(.+?)\s*$", re.M)
 SPINE = re.compile(r"^spine:\s*(.+?)\s*$", re.M)
 STATE = re.compile(r"^state:\s*(✅|🟡|🔴|⏸️)", re.M)
 BOARD_KINDS = (
-    ("Task Board", "📋"),
+    ("Task Board", "🧪"),
     ("Discovery Board", "🔭"),
     ("CoWork Board", "📨"),
     ("Paper Board", "📄"),
@@ -38,7 +43,8 @@ BOARD_KINDS = (
 )
 HOME_BRAND = "SPACE Home"      # the heading when settings.env has no SPACE_NAME
 PROJECT_FIELD = re.compile(r"^(id|profile|state):\s*(.*?)\s*$")
-BOARD_STATE = re.compile(r"^state:\s*(✅|🟡|🔴|⏸️)\s*([A-Z][A-Z-]+)?", re.M)
+# the face's own mark and word, whatever the mark (`🟢 RUNNING`, `🔄 ACTIVE`), as the Chart reads it
+BOARD_STATE = re.compile(r"^state:[ \t]*([^\w\s]+)?[ \t]*([A-Z][A-Z-]+)?", re.M)
 
 # The Space view: Project -> Theme -> Block. A Theme is the Project-root folder a
 # Block sits in (skills/1_base/project/haipipe-project/ref/project-structure.md), listed in
@@ -50,7 +56,7 @@ THEME_KIND = {folder: kind for kind, folder, _ in THEME_TABLE}
 # The block type the kind filter toggles: its order, emoji and the label a card shows.
 KIND_ORDER = ("task", "discovery", "cowork", "paper", "insight", "design",
               "labeling", "skill")
-KIND_ICON = {"task": "📋", "discovery": "🔭", "cowork": "📨", "paper": "📄",
+KIND_ICON = {"task": "🧪", "discovery": "🔭", "cowork": "📨", "paper": "📄",
              "insight": "🔎", "design": "🎨", "labeling": "🏷", "skill": "🧩"}
 ROUTE_KIND = {"work-board": "task", "cowork-board": "cowork",
               "discovery-board": "discovery", "paper-board": "paper",
@@ -117,9 +123,12 @@ def kind_query(kinds, rest: str = "") -> str:
 
 
 def project_matches(card: dict[str, object], wanted: str) -> bool:
-    """`?project=` names a Project by its SPACE-relative folder, its folder name, or its id."""
+    """`?project=` names a Project by its SPACE-relative folder, its folder name, or its id; or a SPACE bucket
+    (SPACE / Shared, Tools & Skills) by its key, `shared:space`, so the Guide's Project link works outside a Project."""
     wanted = (wanted or "").strip().strip("/").lower()
     path = str(card.get("project_path") or "").lower()
+    if wanted and wanted == str(card.get("project_key") or "").lower():   # a SPACE bucket, e.g. shared:space
+        return True
     return card.get("project_scope") == "project" and wanted in {
         path, path.rsplit("/", 1)[-1], str(card.get("project") or "").lower()}
 
@@ -173,7 +182,7 @@ def board_kind(board: Path, root: Path) -> tuple[str, str]:
         return "Design Board", "🎨"
     if any(theme_kind_of(part) == "paper" for part in parts) or "0-lifecycle" in parts:
         return "Paper Board", "📄"
-    return "Task Board", "📋"
+    return "Task Board", "🧪"
 
 
 def _project_manifest(project: Path) -> dict[str, str]:
@@ -254,6 +263,11 @@ def project_owner(board: Path, root: Path) -> dict[str, str]:
             "project_profile": "", "project_state": ""}
 
 
+def other_space(folder: Path) -> bool:
+    """A folder below the served root that is a SPACE of its own: it holds `env.sh`."""
+    return (folder / "env.sh").is_file()
+
+
 def _manifests(root: Path):
     """Every `board.md` below root, WITHOUT walking into what cannot hold one.
 
@@ -263,10 +277,15 @@ def _manifests(root: Path):
     ten files. Warm that is 2.7 s; on a cold filesystem cache it was measured at
     95 s (260802), which is not "slow", it is a page JL could not open at all.
     Pruning in place is the whole fix: the same ten files, without the walk.
+
+    A folder below root holding its own `env.sh` is another SPACE, served by its
+    own host (one host per SPACE, JL 261011): a replication package such as
+    DrFirst's `platforms/SMSDesign-SPACE/` carries pinned copies of Tools and a
+    Project, whose Boards are not this SPACE's (JL 261013).
     """
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames
-                       if d not in SKIP_PARTS and not d.startswith(".")]
+                       if d not in SKIP_PARTS and not d.startswith(".") and not other_space(Path(dirpath) / d)]
         if "board.md" in filenames:
             yield Path(dirpath) / "board.md"
 
@@ -313,6 +332,7 @@ def discover_boards(root: Path, *, include_page_state: bool = True, include_link
                 "workbench": workbench or "",
                 # the Board's own state word only (`🟡 OPEN`), never the free text after it
                 "board_state": " ".join(g for g in state_match.groups() if g) if state_match else "",
+                "archived": any(part in LEGACY_PARTS for part in Path(rel).parts),
                 **owner}
         card["theme"] = block_theme(card)
         card["kind_key"] = block_kind_key(card)
@@ -327,13 +347,15 @@ def discover_boards(root: Path, *, include_page_state: bool = True, include_link
 
 
 def home_folder_path(card: dict[str, object]) -> str:
-    """Return the short folder address shown below a Home Board title."""
-    kind = str(card.get("kind_key") or "").capitalize() or str(card["kind"])
-    if kind.endswith(" Board"):
-        kind = kind[:-len(" Board")]
-    kind = {"Cowork": "CoWork"}.get(kind, kind)
-    folder = Path(str(card["path"])).name
-    return f"/{kind}/{folder}"
+    """The Block's real folder below its Title: from the Project root (`work/b00_rawdata`), or
+    from the SPACE root outside a Project, so the row reads like the file tree (JL 261012)."""
+    path = Path(str(card["path"]))
+    if card.get("project_scope") == "project":
+        try:
+            return path.relative_to(str(card["project_path"])).as_posix()
+        except ValueError:        # the server root sits inside the Project
+            pass
+    return path.as_posix()
 
 
 def home_section(card: dict[str, object]) -> str:
@@ -606,9 +628,98 @@ def resolve_short(root: Path, slug: str, anchor: str = "", only=frozenset()) -> 
     return landing if not pages and anchor.lower() in groups else None
 
 
+def _numbered(node: dict[str, object]) -> str:
+    """A topic's or Job's face title, led by its folder number (s01, j02) when the title lacks it."""
+    title = str(node.get("title") or node.get("name") or "")
+    number = re.match(r"^([sj]\d+)", str(node.get("folder") or node.get("name") or ""))
+    if number and not re.search(rf"\b{number.group(1)}\b", title.lower()):
+        title = f"{number.group(1)} · {title}"
+    return title
+
+
+
+def _stage_pill(stage: str) -> str:
+    """The workbench's stage pill (frame._topic_row): four steps, filled up to the topic's stage."""
+    from live.frame import STAGES
+    if stage not in STAGES:
+        return '<span class="stage stage-none" title="No **Stage:** line yet">no stage</span>'
+    at = STAGES.index(stage)
+    steps = "".join(f'<b class="{"on" if k <= at else ""}"></b>' for k in range(len(STAGES)))
+    return (f'<span class="stage stage-{stage}" title="Stage {at + 1} of {len(STAGES)}: {stage} (its **Stage:** '
+            f'line)"><i class="stage-steps">{steps}</i>{stage}</span>')
+
+
+def _topic_rows(topics: list[dict[str, object]]) -> str:
+    """A Block's Studio topics as the workbench's Studio list draws them (JL 261012: "it is more like this ... and
+    I can preview the content of the draw as well"): one folded row each, its folder name, tags, ↗ to the topic
+    in the Studio and its stage; opened, its first drawing, live, loaded only then."""
+    rows = []
+    for topic in topics:
+        name = html.escape(str(topic.get("folder") or topic.get("name") or ""))
+        chips = "".join(f'<span class="chip">{html.escape(str(tag))}</span>' for tag in topic.get("tags") or [])
+        draw = str(topic.get("draw") or "")
+        body = (f'<iframe class="st-frame" title="{name}" data-src="{html.escape(draw, quote=True)}" '
+                f'referrerpolicy="no-referrer"></iframe>' if draw else '<p class="topic-none">No drawing yet.</p>')
+        rows.append(f'<details class="topic"><summary title="{html.escape(_numbered(topic), quote=True)}">'
+                    f'<b>{name}</b>{f"<span class=topic-tags>{chips}</span>" if chips else ""}'
+                    f'<span class="topic-pop"><a href="{html.escape(str(topic.get("href") or ""), quote=True)}" '
+                    f'title="Open this topic in the Studio">↗</a></span>{_stage_pill(str(topic.get("stage") or ""))}'
+                    f'</summary>{body}</details>')
+    return f'<div class="topic-rows">{"".join(rows)}</div>'
+
+
+def _job_rows(jobs: list[dict[str, object]]) -> str:
+    """A Block's Jobs as rows like its Studio rows (JL 261012, on the Job cards: "could you make it to do the same?"):
+    one folded row each, its folder name, title and Task count, ↗ to the Job and its status; opened, its Tasks and
+    its face, read in place and loaded only then."""
+    rows = []
+    for job in jobs:
+        name = html.escape(str(job.get("folder") or job.get("name") or ""))
+        tasks = [t for t in job.get("children") or [] if t.get("level") == "Task"]
+        status = str(job.get("status") or "")
+        status = "" if status == "unknown" else status
+        meta = " · ".join(part for part in (str(job.get("title") or ""), f"{len(tasks)} Task{'s' * (len(tasks) != 1)}")
+                          if part)
+        pill = f'<span class="job-st job-st-{html.escape(status)}">{html.escape(status)}</span>' if status else ""
+        listed = "".join(
+            f'<li><a href="{html.escape(str(t.get("href") or ""), quote=True)}"><b>{html.escape(str(t.get("folder") or ""))}</b>'
+            f'</a> {html.escape(str(t.get("title") or ""))}'
+            + (f' <span class="job-st job-st-{html.escape(str(t["status"]))}">{html.escape(str(t["status"]))}</span>'
+               if t.get("status") not in (None, "", "unknown") else "") + '</li>' for t in tasks)
+        read = str(job.get("read") or "")
+        body = ((f'<ul class="job-tasks">{listed}</ul>' if listed else "")
+                + (f'<iframe class="st-frame job-frame" title="{name}" data-src="{html.escape(read, quote=True)}" '
+                   f'referrerpolicy="no-referrer"></iframe>' if read else '<p class="topic-none">No face yet.</p>'))
+        rows.append(f'<details class="topic"><summary><b>{name}</b><span class="topic-meta">{html.escape(meta)}</span>'
+                    f'<span class="topic-pop"><a href="{html.escape(str(job.get("href") or ""), quote=True)}" '
+                    f'title="Open this Job">↗</a></span>{pill}</summary>{body}</details>')
+    return f'<div class="topic-rows">{"".join(rows)}</div>'
+
+
+def _block_groups(node: dict[str, object] | None) -> tuple[str, str, str]:
+    """A Block's two groups, its Studio topics (sNN) and its Jobs (jNN), each a list of folded rows as the
+    workbench's Studio list draws them, read from the same chart data the Chart · Progress view draws. Returns
+    (the groups, their counts, their words to search)."""
+    topics = list((node or {}).get("studios") or [])
+    jobs = [child for child in (node or {}).get("children") or [] if child.get("level") == "Job"]
+
+    groups = []
+    for key, label, items, empty in (
+            ("studio", "🧠 Studio", topics, "No Studio topics yet"),
+            ("jobs", "🗂 Jobs", jobs, "No Jobs yet")):
+        body = (f'<p class="block-cards-empty">{empty}</p>' if not items else
+                _topic_rows(items) if key == "studio" else _job_rows(items))
+        groups.append(f'<section class="block-cards" data-group="{key}"><h4 class="block-cards-head">{label} '
+                      f'<span class="block-cards-count">{len(items)}</span></h4>{body}</section>')
+    counts = (f'<span class="home-counts" title="Studio topics · Jobs">🧠 {len(topics)} · 🗂 {len(jobs)}</span>')
+    words = " ".join(_numbered(item) for item in topics + jobs)
+    return f'<div class="block-groups">{"".join(groups)}</div>', counts, words
+
+
 def _home_row(card: dict[str, object], project_name: str, href: str,
-              shown: bool) -> str:
-    """One Block card: kind emoji, title, folder, and the Board's state word."""
+              shown: bool, node: dict[str, object] | None = None) -> str:
+    """One Block card, folded: kind emoji, title (the link that opens the Block), folder, its counts and
+    the Board's state word; open, its Studio topics and its Jobs as two groups of cards (JL 261012)."""
     kind_key = str(card["kind_key"])
     title = html.escape(str(card["title"]))
     folder = html.escape(home_folder_path(card))
@@ -617,21 +728,25 @@ def _home_row(card: dict[str, object], project_name: str, href: str,
     state = html.escape(str(card.get("board_state") or ""))
     state_html = (f'<span class="home-state" title="Board state">{state}</span>'
                   if state else "")
+    groups, counts, words = _block_groups(node)
     row_search = html.escape(
         " ".join((project_name, str(card["title"]), str(card["slug"]),
                   str(card["path"]), str(card["spine"]), str(card["kind"]),
-                  kind_key, str(card.get("theme") or ""))),
+                  kind_key, str(card.get("theme") or ""), words)),
         quote=True,
     )
     hidden = "" if shown else " hidden"
-    return (f'''<a class="ir home-row" href="{html.escape(href, quote=True)}" data-kind="{html.escape(kind_key, quote=True)}"
-  data-search="{row_search}" role="listitem"{hidden}><span class="home-kind" role="img"
-  aria-label="{kind_label}" title="{kind_label}">{icon}</span><span class="home-copy"><span class="t">{title}</span>
-  <span class="home-folder">{folder}</span></span>{state_html}</a>''')
+    archived = ' data-archived="1"' if card.get("archived") else ""
+    return (f'''<details class="home-block" data-kind="{html.escape(kind_key, quote=True)}"
+  data-block-key="{html.escape(str(card["path"]), quote=True)}" data-search="{row_search}" role="listitem"{archived}{hidden}>
+  <summary class="ir home-row"><span class="home-kind" role="img"
+  aria-label="{kind_label}" title="{kind_label}">{icon}</span><span class="home-copy"><a class="t" href="{html.escape(href, quote=True)}">{title}</a>
+  <span class="home-folder">{folder}</span></span>{counts}{state_html}</summary>
+  {groups}</details>''')
 
 
 def render_home(root: Path, space_name: str = "", public_url: str = "",
-                kind: str = "", project: str = "") -> str:
+                kind: str = "", project: str = "", archived: bool = False) -> str:
     """Render the Space view: every Project, its Themes, and their Block cards.
 
     Home offers a live hierarchy chart and an entry list. Only Boards that can be
@@ -653,7 +768,8 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
     scoped = [card for card in cards if project_matches(card, project)] if project else []
     if scoped:
         cards = scoped
-    rest = "project=" + quote(str(scoped[0]["project_path"]), safe="/") if scoped else ""
+    rest = ("project=" + quote(str(scoped[0]["project_path"] if scoped[0].get("project_scope") == "project"
+                                   else scoped[0]["project_key"]), safe="/:") if scoped else "")
     open_cards = [card for card in cards if card["ready"] or card.get("workbench_ready")]
     slug_counts: dict[str, int] = {}
     for card in cards:   # the same match board_by_slug makes: a slug or a full folder name
@@ -662,12 +778,18 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
         for key in {str(card["slug"]), str(card["name"]).lower()}:
             slug_counts[key] = slug_counts.get(key, 0) + 1
 
+    from live.space_chart import block_nodes, chart_data, chart_parts
+    chart = chart_data(root, open_cards, space_name.strip() or HOME_BRAND)
+    nodes = block_nodes(chart["tree"])     # each Block's topics and Jobs, the same in the chart and the list
     present = sorted({str(card["kind_key"]) for card in open_cards}, key=kind_sort_key)
     kinds = [k for k in parse_kinds(kind) if k in present]
     selected = set(kinds)
 
+    def listed(card):        # a legacy copy only with `?archived=1`, as the Chart's "Include legacy Blocks"
+        return archived or not card.get("archived")
+
     def shown(card):
-        return not selected or card["kind_key"] in selected
+        return listed(card) and (not selected or card["kind_key"] in selected)
 
     section_groups: dict[str, dict[str, list[dict[str, object]]]] = {}
     for card in open_cards:
@@ -718,7 +840,8 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
                 count = sum(shown(card) for card in theme_cards)
                 project_count += count
                 rows = "".join(_home_row(card, project_name,
-                                         block_link(card, slug_counts), shown(card))
+                                         block_link(card, slug_counts), shown(card),
+                                         nodes.get(str(card["path"])))
                                for card in theme_cards)
                 theme_attr = html.escape(theme, quote=True)
                 hidden = "" if count else " hidden"
@@ -769,7 +892,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
             f'aria-pressed="{"false" if selected else "true"}">all</a>')
         for key in present:
             after = selected ^ {key}
-            count = sum(card["kind_key"] == key for card in open_cards)
+            count = sum(card["kind_key"] == key and listed(card) for card in open_cards)
             toggles.append(
                 f'<a class="kind-toggle" role="button" href="{html.escape(kind_query(after, rest), quote=True)}" '
                 f'data-kind="{html.escape(key, quote=True)}" '
@@ -790,8 +913,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
     elif project:
         scope_line = (f'<p class="home-scope">No Project matches “{html.escape(project)}”; '
                       'showing every Project.</p>')
-    from live.space_chart import chart_parts
-    chart_markup, chart_css, chart_js = chart_parts(root, open_cards, space_name.strip() or HOME_BRAND)
+    chart_markup, chart_css, chart_js = chart_parts(root, open_cards, space_name.strip() or HOME_BRAND, chart)
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title><style>
@@ -799,12 +921,15 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--accent:#6ea8f0;--focus:#9dc8ff}}}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}}
 :where(a,input):focus-visible{{outline:3px solid var(--focus);outline-offset:3px;border-radius:var(--radius-control)}}
-main{{max-width:820px;margin:0 auto;padding:34px 22px 90px}}
+main{{max-width:none;margin:0;padding:34px clamp(14px,2.5vw,32px) 90px}}
 .site-head{{margin:0 0 22px}}h1{{font-size:26px;line-height:1.35;margin:0;font-weight:700}}
 .toolbar{{margin:0 0 12px}}.search{{display:block;max-width:420px}}.search input{{width:100%;min-height:38px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card);color:var(--fg);font:inherit;padding:5px 9px;outline:none}}.search input::placeholder{{color:var(--mut)}}.search input:focus{{border-color:var(--accent)}}
 .kind-filter{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}}.kind-toggle{{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font-size:14px;text-decoration:none}}.kind-toggle:hover{{border-color:var(--accent)}}.kind-toggle[aria-pressed="true"]{{border-color:var(--accent);background:var(--accent);color:var(--bg)}}.kind-count{{color:inherit;opacity:.7;font:12px/1 ui-monospace,Menlo,monospace}}
-.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-scope{{margin:4px 0 0;color:var(--mut);font-size:14px}}.home-scope b{{color:var(--fg)}}.home-scope a{{color:var(--accent)}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
-@media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}.theme-group{{margin-left:8px}}}}
+.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-block{{margin:6px 0;min-width:0}}.home-block>.ir{{margin:0;cursor:pointer;list-style:none;align-items:center}}.home-block>.ir::-webkit-details-marker{{display:none}}.home-block>.ir::before{{content:"▸";flex:none;width:12px;color:var(--accent);font-size:15px;line-height:1}}.home-block[open]>.ir::before{{content:"▾"}}.home-block[open]>.ir{{border-radius:var(--radius-surface) var(--radius-surface) 0 0}}.ir a.t{{align-self:flex-start;color:var(--fg);text-decoration:none}}.ir a.t:hover{{color:var(--accent);text-decoration:underline}}.home-counts{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.block-groups{{display:grid;gap:10px;padding:10px 12px 12px 26px;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius-surface) var(--radius-surface)}}.block-cards-head{{margin:0 0 4px;font-size:12px;line-height:1.5;letter-spacing:.06em;color:var(--mut);font-weight:600}}.block-cards-count{{font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-cards-empty{{margin:0;color:var(--mut);font-size:13px}}
+.topic-rows .topic{{border:1px solid var(--line);border-radius:10px;background:var(--bg);margin:0 0 6px;overflow:hidden}}.topic-rows .topic>summary{{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}}.topic-rows .topic>summary::-webkit-details-marker{{display:none}}.topic-rows .topic>summary::before{{content:"▸";color:var(--mut)}}.topic-rows .topic[open]>summary::before{{content:"▾"}}.topic-rows .topic[open]>summary{{border-bottom:1px solid var(--line)}}.topic-rows .topic>summary>b{{font-size:15px;overflow-wrap:anywhere}}.topic-tags{{display:inline-flex;gap:6px;flex-wrap:wrap}}.topic-tags .chip{{display:inline-block;padding:0 8px;border:1px solid var(--line);border-radius:999px;color:var(--mut);font-size:12px}}.topic-pop{{margin-left:auto}}.topic-pop a{{color:var(--accent);text-decoration:none;font-size:15px}}.topic-none{{margin:8px 12px;color:var(--mut);font-size:13px}}.st-frame{{display:block;width:100%;height:520px;border:0;background:#fff}}.job-frame{{height:440px;border-top:1px solid var(--line)}}.topic-rows .topic-meta{{color:var(--mut);font-size:13px;overflow-wrap:anywhere}}.job-tasks{{margin:8px 0;padding:0 14px 0 34px;font-size:14px}}.job-tasks li{{margin:3px 0}}.job-tasks a{{color:var(--fg);text-decoration:none}}.job-st{{display:inline-block;padding:0 9px;border:1px solid var(--mut);border-radius:999px;color:var(--mut);font-size:12px;font-weight:600;white-space:nowrap}}.job-st-active{{color:#2b8a3e;border-color:#2b8a3e}}.job-st-open{{color:#1971c2;border-color:#1971c2}}.job-st-done{{color:#495057;border-color:#495057}}.job-st-blocked{{color:#e03131;border-color:#e03131}}
+.stage{{--st:#868e96;--st-bg:#f1f3f5;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 10px 2px 8px;border:1px solid var(--st);border-radius:999px;white-space:nowrap;color:var(--st);background:var(--st-bg)}}.stage-explore{{--st:#2b8a3e;--st-bg:#ebfbee}}.stage-shaping{{--st:#7048e8;--st-bg:#f3f0ff}}.stage-agreed{{--st:#1971c2;--st-bg:#e7f5ff}}.stage-closed{{--st:#495057;--st-bg:#f1f3f5}}@media(prefers-color-scheme:dark){{.stage{{--st-bg:transparent}}.stage-explore{{--st:#8ce99a}}.stage-shaping{{--st:#b197fc}}.stage-agreed{{--st:#74c0fc}}.stage-closed{{--st:#adb5bd}}}}.stage-steps{{display:inline-flex;gap:2px}}.stage-steps b{{width:7px;height:7px;border-radius:2px;border:1px solid var(--st);opacity:.55}}.stage-steps b.on{{background:var(--st);opacity:1}}.stage-none{{color:var(--mut);border-style:dashed;font-weight:400}}
+.home-scope{{margin:4px 0 0;color:var(--mut);font-size:14px}}.home-scope b{{color:var(--fg)}}.home-scope a{{color:var(--accent)}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+@media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}.theme-group{{margin-left:8px}}.block-groups{{padding-left:12px}}}}
 {chart_css}
 </style></head><body><main><header class="site-head"><h1>{heading}</h1>{scope_line}</header>
 <div class="toolbar"><label class="search"><span class="sr-only">Search boards</span><input id="board-filter" type="search" placeholder="Search boards" aria-label="Search boards" autocomplete="off"></label>{kind_bar}</div>
@@ -825,6 +950,8 @@ const collapsedStorageKey = storagePrefix + ':project-collapsed:v3';
 let selectedKinds = new Set(kindToggles
   .filter((toggle) => toggle.dataset.kind !== 'all' && toggle.getAttribute('aria-pressed') === 'true')
   .map((toggle) => toggle.dataset.kind));
+// legacy Blocks follow the Chart's "Include legacy Blocks" box, so both views count the same Blocks
+let includeLegacy = {"true" if archived else "false"};
 
 function readStorage(key, fallback) {{
   try {{
@@ -961,6 +1088,40 @@ groups.forEach((group) => {{
 }});
 restoreOrder();
 restoreCollapsed();
+// A Block card folds over its two groups, Studio topics and Jobs; it starts closed, and only the
+// folds a person opens are remembered ({{block path: true}}).
+const blockStorageKey = storagePrefix + ':block-open:v1';
+const blocks = Array.from(document.querySelectorAll('.home-block'));
+function blockChoices() {{
+  const saved = readStorage(blockStorageKey, {{}});
+  return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {{}};
+}}
+function restoreBlocks() {{
+  const choices = blockChoices();
+  blocks.forEach((block) => {{ block.open = Boolean(choices[block.dataset.blockKey]); }});
+}}
+blocks.forEach((block) => {{
+  const summary = block.querySelector(':scope > summary');
+  summary.addEventListener('click', (event) => {{
+    if (!event.target.closest('a')) block.dataset.userToggle = '1';   // the title link opens the Block
+  }});
+  block.addEventListener('toggle', () => {{
+    if (block.dataset.userToggle !== '1') return;
+    delete block.dataset.userToggle;
+    const choices = blockChoices();
+    if (block.open) choices[block.dataset.blockKey] = true;
+    else delete choices[block.dataset.blockKey];
+    writeStorage(blockStorageKey, choices);
+  }});
+}});
+restoreBlocks();
+// a Studio row loads its drawing, a Job row its face, only when opened, as the workbench's Studio list does
+document.querySelectorAll('.topic-rows details.topic').forEach((row) => {{
+  row.addEventListener('toggle', () => {{
+    const view = row.querySelector('iframe');
+    if (row.open && view && !view.getAttribute('src')) view.src = view.dataset.src;
+  }});
+}});
 function kindQuery(kinds) {{
   const ordered = KIND_ORDER.filter((kind) => kinds.has(kind));
   return ordered.length ? '?kind=' + ordered.join(',') : '';
@@ -991,10 +1152,13 @@ function applyFilter() {{
     let groupVisible = 0;
     group.querySelectorAll('.theme-group').forEach((theme) => {{
       let themeVisible = 0;
-      theme.querySelectorAll('.home-row').forEach((row) => {{
+      theme.querySelectorAll('.home-block').forEach((row) => {{
         const kindMatch = selectedKinds.size === 0 || selectedKinds.has(row.dataset.kind);
-        const match = kindMatch && (groupMatch || row.dataset.search.toLowerCase().includes(query));
+        const legacyMatch = includeLegacy || row.dataset.archived !== '1';
+        const match = legacyMatch && kindMatch && (groupMatch || row.dataset.search.toLowerCase().includes(query));
         row.hidden = !match;
+        // a search that hits a topic or a Job opens its Block, so the hit shows
+        if (match && query && row.querySelector('.block-groups').textContent.toLowerCase().includes(query)) row.open = true;
         if (match) themeVisible += 1;
       }});
       theme.hidden = themeVisible === 0;
@@ -1014,6 +1178,7 @@ function applyFilter() {{
     section.hidden = !Array.from(section.querySelectorAll('.project-group'))
       .some((group) => !group.hidden);
   }});
+  if (!query) restoreBlocks();
   noResults.hidden = visible !== 0 || (!query && selectedKinds.size === 0);
   document.dispatchEvent(new CustomEvent('space-home-filter', {{detail: {{query, kinds: [...selectedKinds]}}}}));
 }}
@@ -1033,6 +1198,8 @@ kindToggles.forEach((toggle) => {{
   }});
 }});
 filter.addEventListener('input', applyFilter);
+const legacyBox = document.getElementById('chart-archived');
+if (legacyBox) legacyBox.addEventListener('change', () => {{ includeLegacy = legacyBox.checked; applyFilter(); }});
 </script><script>{chart_js}</script></body></html>'''
 
 
@@ -1049,6 +1216,7 @@ class HomeMixin:
             getattr(self, "public_url", ""),
             kind=kind,
             project=project,
+            archived=(query.get("archived") or [""])[0] == "1",
         ).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")

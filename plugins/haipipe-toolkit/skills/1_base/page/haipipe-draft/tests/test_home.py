@@ -45,7 +45,7 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertNotIn("Fusion Space", page)
             self.assertNotIn('class="workspace-title"', page)
             self.assertIn("A &lt;Board&gt;", page)
-            self.assertIn('class="t">A &lt;Board&gt;</span>', page)
+            self.assertIn('>A &lt;Board&gt;</a>\n  <span class="home-folder">', page)
             self.assertIn('class="ir home-row"', page)
             self.assertIn('id="board-list"', page)
             self.assertIn('placeholder="Search boards"', page)
@@ -53,7 +53,7 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertIn('class="project-group"', page)
             self.assertIn('<span class="project-name">SPACE / Shared</span>', page)
             self.assertIn('href="/w/topic"', page)    # no declared workbench: the base frame opens it
-            self.assertIn('<span class="home-folder">/Task/01-topic</span>', page)
+            self.assertIn('<span class="home-folder">project/diagram/01-topic</span>', page)
             self.assertNotIn("Open board", page)
             self.assertNotIn("JJ-LUO", page)
             self.assertNotIn("Physician-SPACE", page)
@@ -123,7 +123,7 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertEqual(cards["Paper Skill"]["kind"], "Skill Board")
             page = render_home(root)
             for title in ("Task", "Discovery", "Paper", "Design", "Paper Skill"):
-                self.assertIn(f'class="t">{title}</span>', page)
+                self.assertIn(f'>{title}</a>\n  <span class="home-folder">', page)
             for project in ("Project-A", "SPACE / Shared", "Tools &amp; Skills"):
                 self.assertIn(f'<span class="project-name">{project}</span>', page)
             self.assertIn('<section class="space-section" data-space-key="examples"', page)
@@ -192,7 +192,7 @@ class SpaceHomeTest(unittest.TestCase):
 
             page = render_home(root)
             for title in ("One Task", "One Paper", "Two Task"):
-                self.assertIn(f'class="t">{title}</span>', page)
+                self.assertIn(f'>{title}</a>\n  <span class="home-folder">', page)
             self.assertIn('<span class="project-name">Project-One</span>', page)
             self.assertIn('<span class="project-name">Project-Two</span>', page)
             self.assertLess(
@@ -243,8 +243,8 @@ class SpaceHomeTest(unittest.TestCase):
             (pending / "board.md").write_text("# Pending Board\nspine: s\n")
 
             page = render_home(root)
-            self.assertIn('class="t">Ready Board</span>', page)
-            self.assertIn('<span class="home-folder">/Task/01-ready</span>', page)
+            self.assertIn('>Ready Board</a>\n  <span class="home-folder">', page)
+            self.assertIn('<span class="home-folder">project/diagram/01-ready</span>', page)
             self.assertNotIn("Pending Board", page)
 
     def test_legacy_examples_project_groups_without_a_manifest(self):
@@ -366,12 +366,12 @@ class SpaceViewTest(unittest.TestCase):
             self.assertIn('<span class="theme-name">tasks</span>\n  '
                           '<span class="theme-count" aria-label="2 blocks">2</span>', page)
             self.assertIn('<span class="project-count" aria-label="7 blocks">7</span>', page)
-            self.assertLess(page.index('class="t">Task One</span>'),
-                            page.index('class="t">Task Two</span>'))
+            self.assertLess(page.index('>Task One</a>\n  <span class="home-folder">'),
+                            page.index('>Task Two</a>\n  <span class="home-folder">'))
             for kind in ("task", "discovery", "cowork", "paper", "insight", "design"):
                 self.assertIn(f'data-kind="{kind}"', page)
             # the card: kind emoji, title, folder, and only the state word
-            self.assertIn('<span class="home-folder">/Design/B01_DesignBoard-X</span>', page)
+            self.assertIn('<span class="home-folder">designs/B01_DesignBoard-X</span>', page)
             self.assertIn('<span class="home-state" title="Board state">🟡 OPEN</span>', page)
             self.assertNotIn("free text never shown", page)
 
@@ -397,7 +397,7 @@ class SpaceViewTest(unittest.TestCase):
             self.assertIn('data-kind="all" aria-pressed="false"', page)
             self.assertIn('href="?" data-kind="task" aria-pressed="true"', page)
             self.assertIn('href="?kind=task,paper" data-kind="paper"', page)
-            rows = re.findall(r'<a class="ir home-row"[^>]*>', page)
+            rows = re.findall(r'<details class="home-block"[^>]*>', page)
             self.assertEqual(len(rows), 7)
             for row in rows:
                 self.assertEqual('data-kind="task"' in row, " hidden" not in row, row)
@@ -427,6 +427,51 @@ class SpaceViewTest(unittest.TestCase):
             self.assertEqual(request.code, 200)
             self.assertIn('data-kind="paper" aria-pressed="true"', body)
 
+    def test_a_block_card_folds_over_its_studio_topics_and_its_jobs(self):
+        # JL 261012: "for each block, I want them to be collapable as well, and show to groups of the cards,
+        # a group of studio and a group of the jobs"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = self.full_project(root)
+            block = root / base / "tasks" / "b01_data"
+            topic = block / "studio" / "s01-the-tree"
+            topic.mkdir(parents=True)
+            (topic / "s01-the-tree.md").write_text("s01 · The tree\n==============\n\n**Tags:** `Structure`\n\n"
+                                                   "**Stage:** shaping\n")
+            (topic / "s01-the-tree.excalidraw").write_text('{"elements": []}')
+            job = block / "j01_clean"
+            (job / "t01_load").mkdir(parents=True)
+            (job / "j01_clean.md").write_text("# Clean the data\nstate: 🟡 ACTIVE\n")
+            (job / "t01_load" / "t01_load.md").write_text("# Load\n")
+            page = render_home(root)
+            # one Block card runs to the next card: its Studio rows are <details> too
+            cards = {re.search(r'data-block-key="([^"]+)"', c).group(1).rsplit("/", 1)[-1]: '<details class="home-block"' + c
+                     for c in page.split('<details class="home-block"')[1:]}
+            card = cards["b01_data"]
+            self.assertNotIn(" open", card.split(">", 1)[0])                 # it starts folded
+            self.assertIn('<span class="home-counts" title="Studio topics · Jobs">🧠 1 · 🗂 1</span>', card)
+            self.assertIn('data-group="studio"', card)
+            self.assertIn('data-group="jobs"', card)
+            # JL 261012: the Studio group reads as the workbench's Studio list, a row a topic, its drawing inside
+            row = re.search(r'<details class="topic">.*?</details>', card, re.S).group(0)
+            self.assertIn('<b>s01-the-tree</b><span class=topic-tags><span class="chip">Structure</span></span>', row)
+            self.assertIn('class="stage stage-shaping"', row)
+            self.assertIn('data-src="/_excalidraw/?board=', row)                # loaded only when the row opens
+            self.assertNotIn(' src="/_excalidraw', row)
+            # JL 261012, on the Job cards: "could you make it to do the same?": a Job is a row too, opening its face
+            jobs = card[card.index('data-group="jobs"'):]
+            job = re.search(r'<details class="topic">.*?</details>', jobs, re.S).group(0)
+            self.assertIn('<b>j01_clean</b><span class="topic-meta">Clean the data · 1 Task</span>', job)
+            self.assertIn('<span class="job-st job-st-active">active</span>', job)
+            self.assertIn('<b>t01_load</b></a> Load', job)                         # its Tasks, listed
+            self.assertIn('data-src="/_board/page?path=%2Fexamples%2FProject-A%2Ftasks%2Fb01_data%2Fj01_clean%2F'
+                          'j01_clean.md"', job)                                  # its face, loaded on open
+            self.assertIn("#topic-s01-the-tree", card)                        # it opens the topic in the Studio
+            self.assertIn("The tree", re.search(r'data-search="([^"]*)"', card).group(1))   # search finds it
+            empty = cards["b02_model"]
+            self.assertIn("No Studio topics yet", empty)
+            self.assertIn("No Jobs yet", empty)
+
     def test_project_filter_shows_one_project_and_keeps_it_in_kind_links(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -439,7 +484,7 @@ class SpaceViewTest(unittest.TestCase):
             for name in ("examples/Project-A", "Project-A", "project-a", "/examples/Project-A/"):
                 page = render_home(root, project=name)
                 self.assertNotIn("Other Task", page, name)
-                self.assertIn('class="t">Task One</span>', page)
+                self.assertIn('>Task One</a>\n  <span class="home-folder">', page)
                 self.assertIn("<title>Project-A · ", page)
                 self.assertIn('Project <b>Project-A</b> · <a href="?">all Projects</a>', page)
                 self.assertIn(' role="listitem" open>', page)     # one Project: open
@@ -472,7 +517,7 @@ class SpaceViewTest(unittest.TestCase):
             body = request.wfile.getvalue().decode("utf-8")
             self.assertEqual(request.code, 200)
             self.assertIn("Other Task", body)
-            self.assertNotIn('class="t">Task One</span>', body)
+            self.assertNotIn('>Task One</a>\n  <span class="home-folder">', body)
 
     def test_projects_start_open_only_when_the_view_is_small(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -506,7 +551,7 @@ class SpaceViewTest(unittest.TestCase):
             self.add_board(root, f"{other}/tasks/b10_plain", "Plain")   # no workbench
             page = render_home(root)
             hrefs = dict(re.findall(
-                r'<a class="ir home-row" href="([^"]+)".*?class="t">([^<]+)</span>', page, re.S))
+                r'<a class="t" href="([^"]+)">([^<]+)</a>', page))
             by_title = {title: href for href, title in hrefs.items()}
             self.assertEqual(by_title["Task One"], "/w/b01_data")
             self.assertEqual(by_title["Paper X"], "/w/paper-x")
@@ -705,6 +750,27 @@ class SpaceChartTest(unittest.TestCase):
             self.assertFalse(by_name["b01_demo"]["archived"])
             self.assertTrue(by_name["b02_old"]["archived"])
             self.assertEqual(by_name["b02_old"]["children"][0]["children"][0]["name"], "t01_old")
+
+    def test_list_matches_the_chart_and_the_file_tree(self):
+        # JL 261012: the List counted two work/_legacy copies the Chart hides, wrote /Task/ for
+        # work/, and dropped any state mark but four
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = self._chart_fixture(root)
+            (block / "board.md").write_text("# Demo\nboard-kind: task-block\nstate: 🟢 RUNNING · two Runs\n")
+            legacy = block.parent / "_legacy" / "b02_old"; legacy.mkdir(parents=True)
+            (legacy / "board.md").write_text("# Old work\nboard-kind: task-block\nstate: 🔴 OPEN\n")
+            page = render_home(root)
+            self.assertIn('<span class="home-folder">work/b01_demo</span>', page)
+            self.assertNotIn("/Task/", page)
+            self.assertIn('<span class="home-state" title="Board state">🟢 RUNNING</span>', page)
+            self.assertIn('<span class="theme-count" aria-label="1 blocks">1</span>', page)
+            self.assertRegex(page, r'data-block-key="[^"]*_legacy/b02_old"[^>]*data-archived="1"[^>]* hidden')
+            self.assertIn("includeLegacy = false", page)
+            shown = render_home(root, archived=True)
+            self.assertIn('<span class="theme-count" aria-label="2 blocks">2</span>', shown)
+            self.assertIn('<span class="home-folder">work/_legacy/b02_old</span>', shown)
+            self.assertIn("includeLegacy = true", shown)
 
     def test_home_chart_escapes_source_titles_and_keeps_list_and_filter_controls(self):
         import json

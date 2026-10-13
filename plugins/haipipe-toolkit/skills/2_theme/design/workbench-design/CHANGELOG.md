@@ -6,6 +6,12 @@
   prediction and why, the next step, close:) and adds Rounds (one round per inputs version: Jobs, releases, Exp
   results); Cost moves last. Every predicted number shows against · by · why (`_pred`; the reader falls back to
   ranking.csv's why). A held Job's Cost card says why. Freeze and release show as one button, Review and approve.
+- Same day, JL: "do we really need to report this anywhere?": the Summary drops its top-design cards and the long hold
+  note; one row per Job, the reason on hover. The cards' content stays on each design's page and in Review whole.
+- 261013, JL "please go ahead and do it" (from the 10-08 demo's asks): the Summary leads with the Opening of each
+  question partly or fully answered; method ids move to hover; each released Job shows who approved it and when
+  (`_approved`, from the release card's `signed:`); the Next line drops Run names; it links `delivery/summary.pdf`.
+  A Block question's status falls back to its report's `answer-status:`, its asks to `question:`, its Jobs to `work:`.
 
 ## 0.15.1 · 2026-10-11 · A Job is named by its folder (version unchanged)
 

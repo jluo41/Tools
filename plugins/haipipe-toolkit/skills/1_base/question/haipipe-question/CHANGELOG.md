@@ -1,10 +1,19 @@
 haipipe-question — Changelog
 ============================
 
+## [0.7.0] · 2026-10-12 · A Question's group, set by the helper
+
+- `ref/block_questions.py add-question --group '<Group>'` writes the row's `group:` line with the row;
+  `set-group <block> --id <id> --group '<A, B>'` writes it on a Question already registered, and changes that
+  one line only (comments and layout of a long register kept; the same rule as the workbench's drag,
+  `frame._register_set_groups`). `/wb update` (b10 s10) uses both: Block Questions made from a Block's tick
+  list carry their topic's group, and b51_externalstore's 35 registered Questions get theirs.
+- Test: `servers/workbench-work/tests/test_taskboard.py::test_a_question_gets_its_group_on_add_and_later`.
+
 ## [0.6.2] · 2026-10-11 · A Question's group puts it on the Report's bar
 
 - Step 3: the register row's `group:` line (comma-separated) is the Question's tag on the Report's group
-  bar, as a topic's **Tags:** line is in the Studio; the workbench writes it on a drag (b10 s07-D01, D02).
+  bar, as a topic's **Tags:** line is in the Studio; the workbench writes it on a drag (b10 s05-D05, D06).
 
 ## [0.6.1] · 2026-10-09 · Theme folders are singular
 

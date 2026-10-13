@@ -36,7 +36,7 @@ the design workbench's Guide opens them here (261007: the servers hold code only
 
 ```text
 studio/
-├── s00-design-structure/  the thinking: what a design method is, how it evolves (a scratch)
+├── s04-design-structure/  the thinking: what a design method is, how it evolves (a scratch)
 ├── s01-design/          the design ladder at a glance
 ├── s02-workbench-ui/    the workbench's drawing (Guide › RoadMap Draw)
 ├── s03-design-methods/  the methods drawing and the design unit (Guide › Method)

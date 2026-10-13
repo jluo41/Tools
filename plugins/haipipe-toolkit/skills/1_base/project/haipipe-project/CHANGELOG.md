@@ -1,3 +1,25 @@
+## 0.15.1 · 2026-10-12 · s00 has one name, and an old index's number is never reused
+
+- `audit --today` now checks a Block's background index (JL 261012: "s00 has a constant name"): a Block with
+  topics and no `studio/s00-background-and-index/` owes one; any other `s00-*` or `sNN-…background-index/` is debt
+  ("its one name is s00-background-and-index"); and a topic that takes the number an old index gave up when it
+  became s00 (read from `s00-background-and-index/history/pre-s00-*/topic/`) is debt. The name is the `today:`
+  table's new `s00:` key. On Project-EB1A it found b21's `s01-charge-timeline` reusing s01; all 92 s00 topics in
+  the repo, the Tools blueprints and the four SPACEs already carry the one name.
+- `tests/test_ladder_s00.py`: a clean Block, a Block without s00, a misnamed index, a reused number.
+
+## 0.15.0 · 2026-10-12 · today's rules: `audit --today`, `update --today`
+
+- `ref/ladder.md` gains a `today:` key and a section: b10's rules since 261012 (b10 s10). A Block's `studio/`
+  holds `sNN-<topic>/` topics; its face has a `## Questions` register; each registered Block Question has its
+  `reports/qNN_*/`; `related/` and `delivery/` sit at the Block only; a Job's or Task's `studio/` topics belong
+  to the Block. b00_rawdata passed the shape audit (1 Block, 14 Jobs, 310 Tasks, 621 Runs) and broke three of
+  these, which no check found before.
+- `scripts/ladder.py`: `today_findings`, `today_moves`, `add_today`; `audit --today` reports them as debt,
+  `update --today [--apply]` makes the one safe move: a data file in `studio/` goes to the Block root, never
+  over a file; a drawing, its builder or a note waits for the topic a person names. `/wb update` (workbench
+  1.20.0) calls both.
+
 ## 0.14.1 · 2026-10-11 · fixes found running update over the whole WellDoc SPACE
 
 - `scripts/ladder.py`: the ticket patch now also wraps `dirname -- "<self>"`; 68 Proj61 discovery tickets had

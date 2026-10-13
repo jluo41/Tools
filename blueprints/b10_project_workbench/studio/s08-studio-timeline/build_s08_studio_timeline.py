@@ -131,7 +131,10 @@ def frame_sources():
         text(920, y + 22, what, 23, fid)
         text(920, y + 60, why, 20, fid)
         y += 150
-    text(84, y - 20, f"{len(UNDATED)} decisions carry no date: listed under the axis (later: Later 3)", 20, fid)
+    text(84, y - 20, f"{len(UNDATED)} decisions carry no date: left off the Timeline", 20, fid)
+    e = canvas.change_note(640, y - 18, "undated are not listed (JL)", "261012", fid, 17)
+    e["id"] = f"e{len(els)}"
+    els.append(e)
     y += 60
     box(60, y, 1560, 96, fid, width=2)
     text(84, y + 14, "one event  =  day · topic · kind", 26, fid)
@@ -139,17 +142,24 @@ def frame_sources():
                      f"{max(e['day'] for e in EVENTS)}", 20, fid)
     line(340, y + 96, 340, y + 150, fid, arrow=True)
     y += 160
-    steps = [("a dot per day", "the axis runs down: the oldest day at the top, the newest at the bottom"),
+    steps = [("a dot per day", "the axis runs down, oldest at the top; a day with nothing: a hollow dot"),
              ("a line per topic", "under its day: how many decided, sessions, notes"),
              ("its items", "each decision, session and note, in that topic's line")]
     for i, (name, why) in enumerate(steps):
         box(60, y, 470, 70, fid)
         text(84, y + 20, name, 23, fid)
         text(560, y + 22, why, 20, fid)
+        if i == 0:                                      # the quiet days stay on the axis (s08-D13)
+            e = canvas.change_note(560, y + 50, "days between stay, hollow (JL)", "261012", fid, 17)
+            e["id"] = f"e{len(els)}"
+            els.append(e)
         if i < len(steps) - 1:
             line(295, y + 70, 295, y + 100, fid, arrow=True)
         y += 100
-    text(60, y + 20, "the group bar above the topics hides a topic's lines; a day left empty hides too", 20, fid)
+    text(60, y + 20, "a group picked, above the topics or in the Timeline, hides the other topics; a day left empty turns hollow", 20, fid)
+    e = canvas.change_note(60, y - 6, "group row in the Timeline too (JL)", "261012", fid, 17)
+    e["id"] = f"e{len(els)}"
+    els.append(e)
     text(60, y + 56, "Days · Topics · Everything: how far down the three steps the screen shows; this browser keeps it", 20, fid)
     # agreed 261011 (s08-D06): the open points wait for later, in black (JL: "close the timeline now")
     text(60, y + 110, "later, not needed now (the face's Later list):", 20, fid)
@@ -217,6 +227,25 @@ def frame_screen():
     gpeak = max(gsize(ts, keys) for ts in days.values() for _, keys in cols)
     ax, cx0, step = x0 + 150, x0 + 240, 120
     bar_x = cx0 + step * len(cols) - 50
+    # the Timeline's own group picker, the bar's groups again (JL 261012: "我这怎么选其他的？比如说 group 呢")
+    count_ = {}
+    for _, topic, _ in frame.studio_inventory(BLOCK, ROOT):
+        for g in frame._note_facts(frame._notes(topic))["tags"]:
+            count_[g.casefold()] = count_.get(g.casefold(), 0) + 1
+    picks = [("All", sum(1 for _ in frame.studio_inventory(BLOCK, ROOT))), ("Current", None)] + \
+            [(g, count_[g.casefold()]) for g in frame.studio_group_order(BLOCK) if g.casefold() in count_]
+    text(x0, top + 3, "groups", 20, fid)
+    gx = x0 + 80
+    for i, (name, n) in enumerate(picks):
+        word = name if n is None else f"{name} {n}"
+        w = len(word) * 10 + 16
+        box(gx, top, w, 32, fid, width=3 if i == 0 else 1)
+        text(gx + 9, top + 3, word, 20, fid)
+        gx += w + 6
+    e = canvas.change_note(x0, top + 44, "pick a group here too; by group shows them all (JL)", "261012", fid, 17)
+    e["id"] = f"e{len(els)}"
+    els.append(e)
+    top += 110                                          # the chart starts under the picker
     for i, (name, _) in enumerate(cols):
         text(cx0 + i * step - len(name) * 5.5, top, name, 20, fid)
     text(bar_x, top, "changes", 20, fid)
@@ -238,6 +267,7 @@ def frame_screen():
     e = canvas.change_note(x0, y + 54, "pick topics, read them below (JL)", "261011", fid, 17)
     e["id"] = f"e{len(els)}"
     els.append(e)
+    top -= 110                                          # Topics and Everything start at the old top
     # Topics: a line per topic under its day; the oldest days fold away to fit
     x1 = 1240
     column_head(x1, 236, 760, "Topics", fid, "Topics: a line per topic, a bar of its changes")

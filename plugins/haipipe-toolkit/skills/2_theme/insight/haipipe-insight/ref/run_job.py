@@ -27,9 +27,9 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import figures  # noqa: E402
 import run_question as RQ  # noqa: E402
+from open_job import JOB  # noqa: E402  (a Board Job's folder name; groups: number, release, dataset, version)
 
-JOB = re.compile(r"^j\d+_(p\d+)_(.+?)(v\d+)$")
-TASK = re.compile(r"^t\d+_([DIKW]\d+)_")
+TASK = re.compile(r"^t\d+_([DIKWX]\d+)_")
 RUN = re.compile(r"^r\d{2}_(.+)$")
 
 
@@ -67,8 +67,8 @@ def resolve(task, stem):
     bface, _ = RQ.front(board / "board.md")
     tface, _ = RQ.front(task / f"{task.name}.md")
     qid = tface.get("question") or (TASK.match(task.name).group(1) if TASK.match(task.name) else "")
-    rel = jface.get("release") or (jm.group(1) if jm else "")
-    data = jface.get("data") or (jm.group(3) if jm else "")
+    rel = jface.get("release") or (jm.group(2) if jm else "")
+    data = jface.get("data") or (jm.group(4) if jm else "")
     proto = project / str(bface.get("prototype", ""))
     rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_pN or jNN_pN_<slug>
                  and re.match(rf"^j\d+_{rel}(_.+)?$", p.name)), None)

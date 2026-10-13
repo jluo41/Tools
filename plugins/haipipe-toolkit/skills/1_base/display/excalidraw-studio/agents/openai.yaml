@@ -1,0 +1,6 @@
+interface:
+  display_name: "Studio Drawing"
+  short_description: "how a Studio topic's drawing reads: seven principles, the look, and the drawing helpers (draw.py)"
+  default_prompt: "Use $excalidraw-studio to draw, redraw or check a Studio topic's drawing against its principles."
+policy:
+  allow_implicit_invocation: true

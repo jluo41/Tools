@@ -1,20 +1,19 @@
 ---
 name: haipipe-studio
 description: >-
-  Owns the Block Studio, shared across Block, Job and Task views: a studio topic `studio/sNN-<topic>/`
-  with its face (Topic · Feeds · Files · Decided · Open), its drawings, and its builder
-  `build_*.py` that redraws from disk while keeping every mark a person drew (canvas.write,
-  a seed snapshot beside the drawing); the numbering (s0x concepts · s1x levels · s2x runs and
-  skills · s3x Guide · s5x server · s6x slide drafts, a proposed deck drawn from one slides.py);
-  sessions as passes of the topic's soft Run
-  `run-draw-<sNN>`; and the scripts canvas.py, render_png.py and new_topic.py. Use to add,
-  redraw or number a studio topic, write a builder, preview a drawing, or save a session.
-  Trigger: studio, studio topic, Idea Studio, add a topic, redraw, save this session, sNN,
-  build_*.py, canvas.write, render_png, seed snapshot, proposal topic, draft marked up,
-  section written out, /haipipe-studio.
+  Owns Block Studio topics shared across Block, Job and Task views: their faces,
+  numbering, drawings, builders that preserve human marks, and session passes.
+  Use to add or redraw a Studio topic, build or update a Block's s00 background
+  index from its Studios and Jobs, explain their progress and expected outputs
+  as a connected tree, preview a drawing, or save a Studio session. Also covers
+  proposal topics and s61-s69 slide drafts under their specific contracts.
+  How a topic's drawing looks and reads is excalidraw-studio's: load
+  /excalidraw-studio before drawing or redrawing a topic (its principles,
+  draw.py, check.py). Scripts: canvas.py, render_png.py, new_topic.py and
+  block_index.py.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.11.0"
+  version: "0.13.17"
   last_updated: "2026-10-12"
   # version history: ./CHANGELOG.md
 ---
@@ -24,7 +23,9 @@ metadata:
 The Block owns its Studio topics in `studio/`, one topic per `sNN-<topic>/`.
 Block, Job and Task views share that Studio. Each topic has a drawing to think on
 together and a short face that says what it settles and which Questions it feeds. This skill owns the folder, the face, the numbering, the builders that
-keep a person's marks, and the sessions. How a drawing should look is `excalidraw-report`'s.
+keep a person's marks, and the sessions. How a topic's drawing looks and reads is `excalidraw-studio`'s: load
+`/excalidraw-studio` before drawing or redrawing a topic (its principles, `scripts/draw.py` to draw with,
+`scripts/check.py` to check); a report's drawing is `excalidraw-report`'s.
 
 ```text
 <block>/studio/sNN-<topic>/
@@ -44,7 +45,7 @@ Topic count per Block
 Recommend at most **10 sNN topics per Block**. This counts topic folders, not the
 largest sNN number: s51 can be one of a Block's ten topics. Keep each topic about
 one connected subject. Before adding an eleventh, reuse a related topic or split
-an independent area into a peer Block. This is guidance, not a hard limit;
+an independent area into a peer Block. s00, the background and index, is not counted. This is guidance, not a hard limit;
 existing topics keep their ids and files. `new_topic.py` gives a non-blocking
 reminder above ten, and a Job/Task input creates the topic in its owning Block.
 
@@ -79,17 +80,103 @@ its row's `group` cell of `related/related.md`, and `related/_groups.txt` keeps 
 Timeline, folded under Related, shows what moved when on one axis down the page, the oldest day at the
 top, at three levels (Days · Topics · Everything), and follows the same bar (JL 261011; b10 s08). It reads only what a topic keeps: a decision's date in its brackets (`sNN-DNN · …
 (JL 261011)`), a session's pass `pNN-<MMDD>`, a drawing's green `✎ <YYMMDD>` notes. A decision with no
-date is listed at its end, so date every decision.
+date is left off it (b10 s08-D10), so date every decision.
+
+Folder, folded under Timeline, shows the Block's own folder as one tree (JL 261012; b10 s09): a folder says how many
+things it holds and what it is for (a shared name's fixed line, a Run's card, else its face's title), a file opens in
+the pop-out. Nothing is written for it; a topic's folder is listed like any other.
 
 Numbering
 ---------
 
 ```text
+s00     background and index: one per Block, drawn by block_index.py (next section), never by hand
 s01-s09 concepts · s11-s19 levels · s21-s29 runs and skills · s31-s39 Guide · s51-s59 server
 s61-s69 slide drafts: a proposed deck, its logic flow and its slides, before the deck is built
 ```
 
-The next free number in the band; a number is never reused.
+The next free number in the band; a number is never reused, unless a person asks for it back (b10 s09, 261012):
+then the new topic's decisions start after the old ids still kept where the old topic merged, and the old
+`runs/run-draw-<sNN>/` moves into that topic's `history/`, so the Timeline does not read it as the new one's.
+s00 is only ever `s00-background-and-index`: an older s00 topic moves to the next free s0x (b11 and b12's `s00-*-structure` became s04 on 261012).
+
+
+Background and index (s00)
+--------------------------
+
+Read [ref/background-index.md](ref/background-index.md) when making or updating this entry point.
+It connects the Block's purpose to all its Studios and Jobs, then to what the work should produce;
+the generated inventory and the proposed finish stay distinct.
+
+Every Block has `studio/s00-background-and-index/` (JL 261012: "for every block, we also want to have the
+s00-background-and-index to show the background information, and what are the sNN and jNN and what are the
+progress of them"). It is the first topic a newcomer opens.
+
+```text
+① Studio plan   the face's `studio_plan` yaml, when a Block's session writes one: the topics it needs as one
+                story, steps joined by named arrows (b32 EB1A's first frame)
+② Background    the face's `background:` yaml, typed by a person: boxes with arrows, or a tree
+③ Index         read from disk on every build, a mind map read left to right, one row per item:
+                🎯 Block ─thinks in─▶ 🧠 Studio ─▶ [ a topic: what it is for ] ──────▶ 📝 the Questions it feeds
+                         └works in──▶ 🧱 Jobs   ─▶ [ a Job: state · steps · next ] ─▶ 🏁 what it must deliver
+④ Proposed      the face's `studio_proposals` and `job_proposals`, when any is not made yet; one row each:
+                ❓ the gap it closes ─▶ 🧠 the topic ─▶ 🧱 the Job ─▶ 🏁 what it delivers (red dashed until made)
+```
+
+The index (JL 261012, on b10's: "This one can be larger, of height. Currently it is too compact. each studio
+should be a row."; then "this one is much better"):
+
+1. **One row per item**: each topic and Job in its own box, in one column; never two or three columns.
+2. **Taller, not tighter**: the frame grows down as its rows need; only its width stays one screen.
+3. **The root**: the Block's box; under it its state, why it exists, when it is done, where it stands now.
+4. **Arrows out**: from a topic's Feeds and a Job's `close:` line; dashed when the Job is on hold.
+5. **No counts, no links**: tallies go stale; red names only real gaps (a Question nobody feeds).
+6. **Proposed, not made**: not in the index; one red line per branch names them, and ④ draws them (JL 261012:
+   "we also need to propose the new studio and new jobs in a new frame"). See `ref/background-index.md`.
+
+How s00 looks, and only s00 (JL 261012: "I just mean for the s00 to have the tree, why you make all the others to
+be the tree as well"; other topics keep their own drawings):
+
+1. **Four frames at most**: the Studio plan (if written), the background, the index, what we propose next.
+2. **Trees, boxes, arrows**: a background is a folder tree, or boxes with trees joined by named arrows.
+3. **Emoji lead nodes**: ✅ done · 🔶 partly · ⬜ open · ❓ open (red) · 🧠 📝 🧱 📤 things.
+4. **Sizes set apart**: title 60 · Block 44 · branch 38 · item 30 · heading 26 · output 22 · detail 20.
+5. **Every language**: Chinese and other scripts are kept and wrap a character at a time; only emoji are
+   stripped from the faces' own words.
+
+
+The writer also creates `build_s00_background_and_index.py` in the topic. It forwards to the current
+shared generator through the SPACE's `Tools` symlink, using a relative path; it contains no copied drawing
+logic. Workbench therefore recognizes the drawing as generated and opens it view only. Existing local
+builders are preserved. Rerun this builder after shared Tools changes to refresh the scene and preview.
+
+`python $S/block_index.py <block> --draw` draws it; `--all <root>` draws every Block under a root. A face's
+optional `index:` yaml says what no face does: `first` (where to start), `boundary`, `open`, and per Job
+`label`, `finish` (what it must deliver) and `action`; per topic a `note` (b32 EB1A's index_plan, the model JL
+picked on 261012: "for the index, I love this type of things ... This is more like the mindmap, right?").
+
+
+A Job's current results (s21-s29)
+---------------------------------
+
+Each Job gets a topic that shows what its Runs have produced so far (JL 261012: "for each jNN, make the sNN to
+show what are the current results"). It is the Block's, `studio/sNN-<jNN>-<job>-results/`, in the runs band;
+a Job keeps no studio/ of its own. `scripts/job_results.py` makes it and its builder redraws it:
+
+```bash
+python $S/job_results.py <block>                                 # one topic per Job not drawn yet
+python $S/job_results.py <block> --jobs j11_x,j12_y --slug <s> --title '<t>'   # a group of Jobs, a frame each
+```
+
+1. **From disk, every build**: each Task, each Run (`runs/<run>/result/`, or the older `results/<run>/`), its
+   state, its headline values (a before and after pair as one: `acc 26.1% → 41.0%`), a source Run's title.
+2. **Words in the face**: the `results:` yaml holds per Job its `reading` (the frame's key point), per Run the
+   values to `show` (`at: <file>:<key>`), and the `open` points; the face's "Runs on disk" list is generated.
+3. **More Jobs than the band**: group the Jobs that share their Tasks into one topic, one frame per Job and a
+   first frame with a row per Job (Proj10 b03: 31 Jobs in five topics).
+4. **The whole Job**: to show why the Job exists, what goes in and out, what it concluded and its tables and
+   pictures (asked 261012), draw it with `excalidraw-job` (`job_drawing.py make <job>`), or `adopt` a one-Job
+   results topic: its builder then calls excalidraw-job, and its `results:` words move into a `job:` yaml.
 
 
 Add, redraw, save
@@ -97,22 +184,43 @@ Add, redraw, save
 
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts
+X=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts
 python $S/new_topic.py topic <level> --slug <topic> --title '<title>' --band run [--feeds q01_x] [--builder]
 python <block>/studio/sNN-<topic>/build_sNN_<topic>.py          # redraw: the person's marks are kept
 python $S/render_png.py <drawing>.excalidraw <drawing>.png        # the preview
+python $X/check.py <drawing>.excalidraw                            # against excalidraw-studio's principles
 python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--summary …] [--changed …]
 ```
 
+0. **Draw with excalidraw-studio**: before drawing or redrawing a topic, load `/excalidraw-studio` (the Skill
+   tool) and follow its "Redraw a topic with the principles"; a new builder (`--builder`) already starts on its
+   `draw.py`, and `check.py` says what still breaks. This skill keeps the folder, the face and the sessions.
 1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** qNN_<topic>`,
    `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-contract.md` § The face.
 2. **Builder**: draws through `canvas.write`; never hand-edit its output, change the builder.
 3. **Marks kept**: what a person adds, edits or deletes survives a rebuild (the seed snapshot).
 4. **Session**: a pass of `run-draw-<sNN>`, written by `haipipe-run`'s `soft_run.py`.
 5. **Changes**: red for open; every change to a drawing gets a short green note where it changed.
+6. **Read it as a reader, then a reviewer** (JL 261012: "after you create such a draw, you should ask it yourself,
+   If I am a reader, will this answer my questions for this job etc. Maybe you need to call a reviewer for it as
+   well"): `check.py` passing is not done. Answer the reader's questions for the topic's kind (Job, Task, video or
+   Run frame, s00) from the rendered frames alone; then call `haipipe-studio-reviewer-agent` in a fresh context, fix
+   its gaps in the face or the builder, and repeat until it returns `answers`. The questions and the loop:
+   `ref/reader-review.md`.
 
 
 The look
 --------
+
+**How a topic's drawing reads now lives in `excalidraw-studio`** (`skills/1_base/display/excalidraw-studio/`,
+agreed on b31 s01-drawing-principles, 261012): its principles (one frame as large as a screen; a workflow
+map or a mind map inside; the frames as one story, in acts, joined by named arrows; a folder tree only for real
+folders; big words and one slight colour for the key point; each frame's density measured; few words in a
+workflow, fewest small ones) and its drawing
+helpers, `scripts/draw.py`. Read it before drawing a topic. This section keeps what `canvas.py` enforces when a
+builder writes; where the two differ (a mind map instead of a tree), follow `excalidraw-studio`. The slight
+key-point colour is part of the look since 0.13.14: `canvas.KEY`, kept by the palette (b31 s01-D18). The tree,
+boxes and emoji shape below is s00's alone.
 
 A studio drawing is a tree, lines and boxes, in black (JL 261007: "I just want the tree and lines with
 box with no much colors, just the color of black, with red for uncertainty questions, and green for
@@ -152,6 +260,9 @@ One idea, one dense frame (JL 261010: "既然是 idea，你搞那么多 frame �
 a topic's idea is drawn as one connected flow, dense with facts, its most important part the largest;
 a separate frame is for separate material (a source marked up, a reference picture), never for one more
 step of the same idea. Large means much information, not a large canvas (next rule).
+
+`canvas.tree(x, y, nodes, width, frame, cols=N)` draws one tree; a leaf starting "❓" or "? " draws red,
+"✎ " green. Use ❓ only for what is open.
 Each frame fits the screen (JL 261010, on a 9,200 px idea frame: "This is too huge, what I want is: when I zoom in 50% I can read the whole workflow, when I read 100%, I can see most part of the frame"):
 
 1. **50% zoom**: the whole frame is on screen and its words still read.
@@ -167,8 +278,8 @@ Each frame fits the screen (JL 261010, on a 9,200 px idea frame: "This is too hu
    be one large frame"). The builder marks it `canvas.reads_down(frame)`.
 6. **Checked**: `canvas.oversized(els)` lists the frames over the size (a `reads_down` frame by its width
    only), `canvas.small_text(els)` the frames whose words are mostly under 20 px (green notes not
-   counted), and `canvas.numbered_frames(els)` one piece cut into "· 1", "· 2"; `canvas.write` warns
-   about each.
+   counted), and `canvas.numbered_frames(els)` one piece cut into "· 1", "· 2"; `canvas.write` warns about
+   each. For a Block's s00 only, it also warns past three frames and on a frame that reads like a slide.
 7. **Side notes smaller**: notes beside the main content (the page pictures they explain) are written
    smaller than it, and `canvas.aside(e)` keeps them out of `small_text` (JL 261011: "The content or the
    font size, can be much smaller, than the main content").
@@ -262,7 +373,9 @@ Boundary
 | Owner | Owns |
 |---|---|
 | `haipipe-studio` | the topic folder, its face, numbering, builders and their writer, previews, sessions |
-| `excalidraw-report` | how a drawing looks: scratch and report modes, elements, plot kit, pictures |
+| `excalidraw-studio` | how a topic's drawing looks and reads: its principles, `draw.py`, `check.py`; loaded before drawing |
+| `excalidraw-job` | a Job as one topic: why, in and out, what it concluded, its tables; reads `job_results.py`'s readers |
+| `excalidraw-report` | a report's drawing and a scratch: their modes, elements, plot kit, pictures |
 | `haipipe-report` | a report's own drawing, built from studio frames its `## Figures` lists |
 | `haipipe-run` | the soft Run `run-draw-<sNN>` and its card |
 | `workbench-studio` | the Page's Studio tab (drawing and chat together) |
@@ -282,5 +395,8 @@ haipipe-studio/
 ├── scripts/render_png.py      the offline PNG preview
 ├── scripts/new_topic.py       topic · session
 ├── scripts/block_inventory.py what a Block's Jobs and Tasks already do: kinds, splits, sub-questions
+├── scripts/block_index.py     a Block's s00: its background, then its index as a map with each topic's and Job's progress
+├── scripts/topic_map.py       a topic's frames from its face: trees, or boxes with their trees joined by named arrows
+├── scripts/job_results.py     a Job's current results as a topic, read from its Runs on every build
 └── tests/test_haipipe_studio.py
 ```

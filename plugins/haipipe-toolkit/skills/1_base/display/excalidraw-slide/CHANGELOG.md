@@ -1,6 +1,24 @@
 excalidraw-slide · Changelog
 ============================
 
+## [0.2.0] · 2026-10-12 · The ask first, and j51 the job to copy
+
+- Asked 261012: "could you update the skills of the excalidraw-slide?", after b31 s03 was redrawn on j51
+  ("I think you should use the examples from .../Paper-TestToLearn-MS2026, there is a slide job").
+- The ask comes first (b31 s03 Open 1): a topic before the draft (j51's `s01-what-they-want`) holds who,
+  how long, when it is shown, what is due when, and each pain with the slide that answers it, every line
+  with where it was said. SKILL.md step 0; `ref/slide-draft.md` § The ask, before the draft; the folder now
+  shows the Job's studio/.
+- j51 is the slide job to copy (b31 s03 Open 2): SKILL.md § The slide job to copy, its folder and what each
+  file shows; the deck writer starts from j51's `build_deck.py`.
+- Screens and figures: a `screen` or `figure` visual names its `file`; a screen is retaken by a script,
+  never pasted (step 7, ref § Screens and figures). `slide_kit.check` fails a visual whose `file` is not on
+  disk and warns on a screen or figure that names none (a new test; 10 pass). the eleven visual kinds
+  j51's builders render are listed.
+- Sizes and words (b31 s03 Open 5): a slide draft keeps its own; `canvas.is_slide_draft` skips those
+  checks and excalidraw-studio's `check.py` names a slide draft without judging them.
+- Still open: one deck writer in the skill (b31 s03 Open 3), one drawing kit (Open 4).
+
 ## [0.1.3] · 2026-10-08 · Exporting a deck's PDF
 
 - The deck writer exports the PDF from a temporary copy of the .pptx, never the file itself: PowerPoint

@@ -522,12 +522,15 @@ def ideation(d):
     if rows:
         out["source"] = "Content · Ideas (ranked) table"
         headers = _table_headers(p["text"], idea_id) or []
+        named = [h.strip().lower() for h in headers]        # the contract orders novelty · pilot · venue fit ·
+        vi = next((k for k, h in enumerate(named) if h.startswith("verdict")), 4)   # verdict · target · went to;
+        wi = next((k for k, h in enumerate(named) if h.startswith("went")), 5)      # read those two by name
         for c in rows:
             fields = [(headers[i] if i < len(headers) else "col %d" % (i + 1), c[i])
                       for i in range(2, len(c)) if c[i] and c[i] not in ("—", "-")]
             out["ideas"].append({"id": c[0], "title": c[1] if len(c) > 1 else "",
-                                 "verdict": c[4] if len(c) > 4 else "⬜ open",
-                                 "went": c[5] if len(c) > 5 else "",
+                                 "verdict": c[vi] if len(c) > vi else "⬜ open",
+                                 "went": c[wi] if len(c) > wi else "",
                                  "address": "", "chips": [], "bullets": [],
                                  "fields": fields, "items": []})
     # ② else the plan's `Idea <n>: <research question>` divisions (an Ideation Page before Content)

@@ -3,9 +3,9 @@
 Plan C: the Prototype (questions + scripts) is its own work Block, `work/bNN_<topic>_prototype/`, whose
 Jobs are versions `j0N_pN/` (release.yaml · partitions.md · thresholds.yaml · the questions' Tasks). The
 insight Board, `insights/bNN_<topic>/`, holds one dataset with dated versions (board.md `dataset:`,
-`versions:`, `prototype:`); its Jobs `j0N_pN_<d>vM/` pin one Prototype version and one data version; a
-Job's Tasks are its questions, their hard Runs `runs/rNN_<partition>/`; the Job's `reports/vs-<prev>.md`
-is written by its run-compare. Read-only: this module only reads.
+`versions:`, `prototype:`); its Jobs `jNN_prototype-pN-<slug>_data-<d>vM/` pin one Prototype version and
+one data version; a Job's Tasks are its questions, their hard Runs `runs/rNN_<partition>/`; the Job's
+`reports/vs-<prev>.md` is written by its run-compare. Read-only: this module only reads.
 """
 from __future__ import annotations
 
@@ -14,9 +14,12 @@ from pathlib import Path
 
 import yaml
 
-JOB_NAME = re.compile(r"^j\d+_(p\d+)_(.+?)(v\d+)$")
-TASK_NAME = re.compile(r"^t\d+_([DIKW]\d+)_")
-LEVEL_OF = {"D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
+# a Board Job's folder (JL 261012): jNN_prototype-pN-<release slug>_data-<D>vM, read left to right; underscores
+# part its three fields, hyphens join the words inside one. The older jNN_pN_<D>vM still reads. Groups: release,
+# dataset, version (haipipe-insight ref/open_job.py writes the name).
+JOB_NAME = re.compile(r"^j\d+_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?(.+?)(v\d+)$")
+TASK_NAME = re.compile(r"^t\d+_([DIKWX]\d+)_")
+LEVEL_OF = {"X": "executive", "D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 
 
 Loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)      # the C parser when PyYAML has it
@@ -253,20 +256,6 @@ def freeze_words(v: dict) -> str:
     return "" if words.startswith("<") else words              # a scaffold placeholder is no words
 
 
-def job_title(jdir: Path) -> str:
-    """`first ladder × first 5 days`: the Job's analysis plan and data freeze in words, read from the faces only."""
-    fm = front(jdir / f"{jdir.name}.md")
-    m = JOB_NAME.match(jdir.name)
-    rel, ver = fm.get("release") or (m.group(1) if m else ""), fm.get("data") or (m.group(3) if m else "")
-    bface = front(jdir.parent / "board.md")
-    proto = _project(jdir.parent) / str(bface.get("prototype", ""))
-    rdir = next((p for p in sorted(proto.glob(f"j*_{rel}_*")) if p.is_dir()), None) if proto.is_dir() else None
-    plan = ((front(rdir / f"{rdir.name}.md").get("title") or rdir.name.split("_", 2)[2].replace("-", " "))
-            if rdir else plan_code(rel))
-    v = next((v for v in bface.get("versions") or [] if str(v.get("version")) == str(ver)), {})
-    return f"{plan} × {freeze_words(v) or freeze_code(ver)}"
-
-
 def release(proto: dict, name: str) -> dict:
     return next((r for r in proto["releases"] if r["name"] == name), {"name": name, "questions": {}, "partitions": [],
                                                                      "thresholds": {}, "face": {}, "job": None})
@@ -300,7 +289,7 @@ def vs_report(jdir: Path) -> dict:
     rows = {}
     for line in text.splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 5 and re.match(r"^[DIKW]\d+$", cells[0]):
+        if len(cells) == 5 and re.match(r"^[DIKWX]\d+$", cells[0]):
             rows[cells[0]] = {"previous": cells[1], "this": cells[2], "status": cells[3], "why": cells[4]}
     return {"file": files[0], "face": front(files[0]), "rows": rows}
 

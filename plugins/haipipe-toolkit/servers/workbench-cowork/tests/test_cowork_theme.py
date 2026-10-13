@@ -92,7 +92,8 @@ def test_a_job_shows_its_emails_and_meetings_as_rows_not_tasks(tmp_path):
     head = frame.spaces_for(THEME, "Job", job, root)["Description"].html
     assert "PERSON_002" in head and "send v2" in head
     cites = frame.spaces_for(THEME, "Job", job, root)["Audience Report"].html
-    assert "Q01 Is it ready?" in cites
+    assert "<b>Q01 · Is it ready?</b>" in cites and "data-group-kind=reports" in cites   # the base's cards (s05-D17)
+    assert 'data-studio-tag="needs"' in cites                                        # cowork's suggested groups
     assert "Q01" not in frame.spaces_for(THEME, "Job", block / "j02_done", root)["Audience Report"].html
 
 
@@ -110,6 +111,23 @@ def test_a_message_out_shows_in_delivery_with_its_attachments(tmp_path):
     assert "Reply to OFFICE_A" in frame.spaces_for(THEME, "Job", job, root, "Timeline")["Work Details"].html
     gathered = frame.spaces_for(THEME, "Block", block, root, "delivery/")["Delivery"].html
     assert "j01_request" in gathered and "diagram.png" in gathered
+
+
+def test_only_a_person_marks_a_message_sent_and_a_built_table_is_no_message(tmp_path):
+    """Sent is a person's word (haipipe-delivery): a message with no mark is not called sent, a row marked sent in
+    delivery/delivery.md is; a table built into delivery/<job>/ is a file, not a message (JL 261012, b32 EB-1A)."""
+    root, block = demo(tmp_path)
+    job = block / "j01_request"
+    write(block / "delivery" / "j01_request" / "2026-10-09-reply" / "reply.md", "# Reply to OFFICE_A\n\nTo: a@b\n")
+    write(block / "delivery" / "j01_request" / "2026-10-11-follow-up" / "follow-up.md", "# Follow-up\n\nTo: a@b\n")
+    write(block / "delivery" / "j01_request" / "evidence-table.md", "# Evidence table\n\nstatus: partial\n")
+    write(block / "delivery" / "delivery.md", "| date | for | from | status |\n| --- | --- | --- | --- |\n"
+                                              "| 261011 | OFFICE_A | j01_request/2026-10-11-follow-up/ | sent |\n")
+    messages = frame.spaces_for(THEME, "Job", job, root)["Delivery"].html.split("<h3>Messages</h3>", 1)[1]
+    row = {name: next(r for r in messages.split("<tr") if name in r) for name in ("Reply to OFFICE_A", "Follow-up")}
+    assert "Evidence table" not in messages
+    assert "not marked sent" in row["Reply to OFFICE_A"]
+    assert "not marked sent" not in row["Follow-up"] and ">sent<" in row["Follow-up"]
 
 
 def test_the_task_tab_opens_only_for_a_document_written_in_rounds(tmp_path):

@@ -96,6 +96,25 @@ python scripts/release.py <job folder> [--freeze YYMMDD] [--dry]
 then it freezes the predictions first (this is `run-freeze-predictions` and `run-release` in one session, each still
 its own Run folder). It prints what it wrote. Run it again and nothing is added twice.
 
+## The one-page summary for leaders (JL 261012)
+
+From the 10-08 demo: leaders want one page, "the first page should be overview and summary", and one drive-home
+example. `summary.py` builds it from what the Runs wrote, never by hand, into the Block's `delivery/summary.html` and
+`summary.pdf` (printed by a local Chrome, headless; without one only the HTML):
+
+- the goal, then the bottom line: the Opening of each Block question whose report is partly or fully answered;
+- one row per Job: its method by name, designs released, its rank-1 design and prediction; a held Job's first `## Hold`
+  sentence; who approved, when and how, from each `run-release-j<NN>` card's `signed:` line;
+- one design traced: its words as they read, where it came from (its `why`), its frozen prediction; by default the
+  rank-1 design with the narrowest predicted range (the most certain), or `--example jNN:dNN`;
+- the next step, and the sources it read.
+
+```bash
+python scripts/summary.py <block folder> [--example jNN:dNN] [--no-pdf]
+```
+
+Rebuild it after a release, an answered question or an experiment result. The workbench's Summary links the PDF.
+
 ## Boundaries
 
 - A person signs both Runs (the frozen predictions and the release, together) and later the Job's close; an agent
@@ -112,5 +131,6 @@ haipipe-design-delivery/
 ├── SKILL.md                    this file
 ├── ref/designs-schema.md       the designs.json schema
 ├── scripts/release.py          freeze (with --freeze) and release one Job
-└── tests/test_release.py
+├── scripts/summary.py          the Block's one-page summary: delivery/summary.html · .pdf
+└── tests/test_release.py · test_summary.py
 ```

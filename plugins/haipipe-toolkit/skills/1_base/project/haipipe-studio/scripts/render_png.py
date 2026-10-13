@@ -11,6 +11,7 @@ import base64
 import io
 import json
 import math
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,41 @@ MONO = ["/System/Library/Fonts/Menlo.ttc", "/usr/share/fonts/truetype/dejavu/Dej
 
 
 HAND = ["/System/Library/Fonts/Supplemental/ChalkboardSE.ttc", "/System/Library/Fonts/Noteworthy.ttc"]
+# emoji draw in colour, as Excalidraw shows them (JL 261012: "add the things like the emoji"): a bitmap font,
+# drawn once at its own size and scaled to the line
+EMOJI_FONT = "/System/Library/Fonts/Apple Color Emoji.ttc"
+_BASE = ("[\\U0001F000-\\U0001FAFF\\u2600-\\u27BF\\u2B05-\\u2B07\\u2B1B\\u2B1C\\u2B50\\u23E9-\\u23FA"
+         "\\u231A\\u231B][\\uFE0F\\U0001F3FB-\\U0001F3FF]?")
+EMOJI = re.compile("((?:[0-9#*]\\uFE0F?\\u20E3)|(?:" + _BASE + "(?:\\u200D" + _BASE + ")*))")   # whole: 7️⃣, 👩‍⚕️
+_emoji = {}
+
+
+def emoji(seq, px):
+    """The emoji `seq` as an RGBA picture `px` high, or None when no emoji font is there."""
+    key = (seq, int(px))
+    if key not in _emoji:
+        if not Path(EMOJI_FONT).exists():
+            return None
+        f = ImageFont.truetype(EMOJI_FONT, 160)
+        pic = Image.new("RGBA", (200 * max(1, len(seq)), 200), (0, 0, 0, 0))
+        ImageDraw.Draw(pic).text((0, 0), seq, font=f, embedded_color=True)
+        box = pic.getbbox()
+        _emoji[key] = pic.crop(box).resize((max(1, int(px * (box[2] - box[0]) / 160)), max(1, int(px)))) if box else None
+    return _emoji[key]
+
+
+def line_with_emoji(im, dr, x, y, line, f, fill, size):
+    """Draw one line left-aligned: its words in `f`, each emoji as a colour picture; returns nothing."""
+    for part in EMOJI.split(line):
+        if not part:
+            continue
+        pic = emoji(part, size * 0.95) if EMOJI.fullmatch(part) else None
+        if pic is not None:
+            im.paste(pic, (int(x), int(y + size * 0.1)), pic)
+            x += pic.width + size * 0.15
+        else:
+            dr.text((x, y), part, fill=fill, font=f)
+            x += f.getlength(part)
 
 
 def font(size, family=2):
@@ -106,6 +142,8 @@ def render(src, dst, s=None):
         for i, line in enumerate(e["text"].split("\n")):
             if e.get("textAlign") == "center":
                 dr.text((x + e["width"] * s / 2, y + i * step), line, fill=e["strokeColor"], font=f, anchor="ma")
+            elif EMOJI.search(line):
+                line_with_emoji(im, dr, x, y + i * step, line, f, e["strokeColor"], e["fontSize"] * s)
             else:
                 dr.text((x, y + i * step), line, fill=e["strokeColor"], font=f)
     im.save(dst)

@@ -14,7 +14,7 @@ versions and questions, the insight Board and its data versions, its Jobs and th
                                                                         [--title "…"] [--accumulates yes|no|?]
     python insight_ladder.py data      <board> v<M> --data-folder <SPACE-relative data folder>/ [--label "first 5 days"] [--new "…"]
                                        (or --extract <SPACE-relative .parquet> [--rows <n>], a lone file)
-    python insight_ladder.py job       <board> --release p<N> --data v<M>   the next Job j0N_pN_<D>vM/: its Tasks, tickets
+    python insight_ladder.py job       <board> --release p<N> --data v<M>   the next Job jNN_prototype-pN-<slug>_data-<D>vM/
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> partition <name|all>   a hard Run runs/rNN_<partition>/ (planned)
     (add --dry-run to any command: print what it would make; change nothing)
@@ -22,7 +22,8 @@ versions and questions, the insight Board and its data versions, its Jobs and th
 Two special boards (b11 s00, JL 261007 plan C; named by their kind, JL 261008). The Prototype, `work/Prototype-<name>/`,
 holds the questions and their scripts; each of its Jobs is one version (a release), j0N_pN/, frozen once a person
 signs it. The insight Board, `insight/Insight-<name>/`, holds one dataset and its dated versions; each of its Jobs
-pins one release and one data version, j0N_pN_<D>vM/, and moves one clock from the Job before it (`moved: start |
+pins one release and one data version, jNN_prototype-pN-<slug>_data-<D>vM/ (JL 261012:
+j01_prototype-p1-basic-questions_data-SMSR2v1), and moves one clock from the Job before it (`moved: start |
 data | code`). `job` checks the gates (the release is signed, the data version is in board.md, the pair is new, only
 one clock moved), then writes the Job through ref/open_job.py: its face, a Task per question, a ticket per asked cut.
 A hard Run's ticket runs ref/run_job.py. A reader knows each Block by its board.md, never its folder name; the older
@@ -51,15 +52,15 @@ _spec.loader.exec_module(SOFT)
 sys.path.insert(0, str(HERE.parent / "ref"))
 import open_job as OJ  # noqa: E402  (writes a Job's face, Tasks and tickets; ref/open_job.py)
 
-QID = re.compile(r"^([DIKW])(\d\d)$")
+QID = re.compile(r"^([DIKWX])(\d\d)$")                    # X: the Executive level (JL 261012)
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 VERSION = re.compile(r"^j(\d+)_(p\d+)(?:_([a-z0-9][a-z0-9-]*))?$")   # a release: j02_p2_<slug> (JL 261008)
-JOB = re.compile(r"^j(\d+)_(p\d+)_([A-Za-z][A-Za-z0-9]*?)(v\d+)$")  # a Board Job: j03_p2_<D>v2
+JOB = OJ.JOB                                                    # a Board Job: j03_prototype-p2-<slug>_data-<D>v2
 PROTO_NAME = re.compile(r"^(Prototype-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")    # special board; bNN_ stays readable
 BOARD_NAME = re.compile(r"^(Insight-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")
-TASK = re.compile(r"^t(\d+)_([DIKW]\d\d)_([a-z0-9-]+)$")      # a question Task: t03_K01_<slug>
+TASK = re.compile(r"^t(\d+)_([DIKWX]\d\d)_([a-z0-9-]+)$")     # a question Task: t03_K01_<slug>
 LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # the C loader when built (a Board has many faces)
-LEVEL = {"D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
+LEVEL = {"X": "executive", "D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 KINDS = ("new question", "fix", "retire", "cut")
 # run types: (level, type) -> (skill, agent, signs, hard); ref/insight-ladder.md § Runs
 TYPES = {
@@ -94,6 +95,7 @@ TYPES = {
     ("job", "power"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
     ("job", "compare"): ("haipipe-insight-knowledge", "haipipe-insight-agent", "none", False),
     ("job", "propose"): ("haipipe-insight-question", "haipipe-insight-agent", "none", False),
+    ("job", "overall"): ("haipipe-insight", "haipipe-insight-agent", "none", False),   # the Overall Report (JL 261012)
     ("job", "close"): ("haipipe-insight-check", "haipipe-insight-agent", "a person", False),
     ("task", "partition"): ("haipipe-insight", "haipipe-task-orchestrator-agent", "none", True),
     ("task", "write"): ("haipipe-insight-<its level>", "haipipe-insight-agent", "none", False),
@@ -264,7 +266,7 @@ def question(ver: Path, qid: str, slug: str, plan: Plan) -> Path:
     _version_open(ver)
     m = QID.match(qid or "")
     if not m or not SLUG.match(slug or ""):
-        sys.exit("a question is: question <version> <L><NN> <slug>  (L = D · I · K · W; slug lower-case, -)")
+        sys.exit("a question is: question <version> <L><NN> <slug>  (L = X · D · I · K · W; slug lower-case, -)")
     rel = release(ver)
     if qid in (rel.get("questions") or {}):
         sys.exit(f"{qid} is already in {ver.name}: change it (insight_ladder.py change), never ask it twice")
@@ -454,7 +456,7 @@ def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
                      "first, so each Job's change has one cause")
         moved = "code" if prel != rel else "data"
     n = int(JOB.match(prev.name).group(1)) + 1 if prev else 1
-    path = block / f"j{n:02d}_{rel}_{fm['dataset']}{ver}"
+    path = block / OJ.job_name(n, rel, OJ.release_slug(pver), fm["dataset"], ver)
     if plan.dry:
         plan.made.append(path / f"{path.name}.md")
         return path
@@ -480,7 +482,7 @@ def level_of(folder: Path) -> str:
         return "version"
     if JOB.match(name) and face_kind(folder.parent) == "board":
         return "job"
-    if TASK.match(name):                       # a Board Job's name (j01_p1_<D>v1) also fits VERSION: ask the face above
+    if TASK.match(name):                       # an older Board Job's name (j01_p1_<D>v1) fits VERSION: ask the face above
         above = face_kind(folder.parent.parent)
         if VERSION.match(folder.parent.name) and above == "prototype":
             return "question"
@@ -545,7 +547,8 @@ def run(folder: Path, rtype: str, target: str, plan: Plan) -> list[Path]:
     if hard:
         return hard_run(folder, target or "all", plan)
     if level == "task" and rtype == "write":
-        skill = f"haipipe-insight-{LEVEL[TASK.match(folder.name).group(2)[0]]}"
+        letter = TASK.match(folder.name).group(2)[0]          # an Executive page is the door's own: no level skill
+        skill = "haipipe-insight" if letter == "X" else f"haipipe-insight-{LEVEL[letter]}"
     if (level, rtype) in ALONE:
         path = folder / "runs" / f"run-{rtype}"
         if not path.exists() and not plan.dry:
@@ -580,7 +583,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--date", default="")
     ap.add_argument("--kind", default="")
     ap.add_argument("--from", dest="source", default="")
-    ap.add_argument("--level", default="", choices=("", "data", "information", "knowledge", "wisdom"))
+    ap.add_argument("--level", default="", choices=("", "executive", "data", "information", "knowledge", "wisdom"))
     ap.add_argument("--dataset", default="")
     ap.add_argument("--prototype", default="")
     ap.add_argument("--accumulates", default="?", choices=("yes", "no", "?"))

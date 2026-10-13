@@ -12,6 +12,10 @@ passes:
 - p01-1008
 - p02-1010
 - p03-1011
+- p04-1012
+- p05-1012
+- p06-1012
+- p07-1012
 writes:
 - Tools/blueprints/b10_project_workbench/studio/s21_project-run-skill/s21_project-run-skill.md
 - Tools/blueprints/b10_project_workbench/studio/s21_project-run-skill/build_s21_project_run_skill.py
@@ -32,6 +36,9 @@ writes:
 - runs/run-report-q05/run.yaml
 - runs/run-check-q05/run.yaml
 - runs/run-draw-s21/passes/p01-1008/pass.md
+- studio/s21_project-run-skill/history/build_s21_project_run_skill-261012.py
+- studio/s21_project-run-skill/history/s21_project-run-skill-261012.md
+- studio/s21_project-run-skill/history/s21_project-run-skill-261012.png
 feeds:
 - reports/q05_skill_per_level
 - reports/q08_workbench_base

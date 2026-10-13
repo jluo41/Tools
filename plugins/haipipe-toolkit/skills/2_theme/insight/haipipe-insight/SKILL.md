@@ -16,7 +16,7 @@ description: >-
   /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.3.1"
+  version: "3.4.0"
   last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -33,8 +33,8 @@ its proposals to its signature, is [`ref/release.md`](ref/release.md).
 Prototype   work/Prototype-bNN-<Topic>/      the questions + their scripts; a Job per release jNN_pN_<slug>/,
                                               frozen once a person signs it; proposals/ is its backlog
 Board       insight/Insight-<name>/          one dataset, its dated versions (board.md versions:); a Job per
-                                              release × data version jNN_pN_<D>vM/, a Task per question,
-                                              a hard Run per cut runs/rNN_<partition>/
+                                              release × data version jNN_prototype-pN-<slug>_data-<D>vM/,
+                                              a Task per question, a hard Run per cut runs/rNN_<partition>/
 ```
 
 A release is read as an **analysis plan** (`AP<N>`) and a data version as a **data freeze** (`F<M>`, its `label:` in words); folders and ids keep `pN` and `vM` (ref/insight-ladder.md, JL 261011).
@@ -54,7 +54,7 @@ Resolve the folder first, by its `board.md` (never its folder name), then load o
 |---|---|---|
 | a Prototype (`board-kind: prototype`) | proposals · a version · a question | this door → the version's Run owner (§ Runs) |
 | an insight Board (`board-kind: insight-board`, or `prototype:` in board.md) | data versions · Jobs · readings | this door → the Board's Run owner |
-| a Board Job `jNN_pN_<D>vM/` or its Task `tNN_<L><NN>_<slug>/` | hard Runs · pages · compare | this door → `haipipe-insight-workflow` |
+| a Board Job `jNN_prototype-pN-<slug>_data-<D>vM/` or its Task `tNN_<L><NN>_<slug>/` | hard Runs · pages · compare | this door → `haipipe-insight-workflow` |
 | a new topic | — | `insight_ladder.py prototype`, then `board` (ref/insight-ladder.md § Scripts) |
 | a dataset-first topic for one Task Board | Task-side | `haipipe-task` → `fn/insight.md` → `haipipe-page-insight` |
 | an Insight Block with `j01_data` … `j04_wisdom` | older layout | [`ref/block-contract.md`](ref/block-contract.md); carry it with `ref/prototype_from_block.py` |
@@ -69,7 +69,8 @@ Who owns what
 
 ```text
 haipipe-insight                the door; the ladder contract and scaffold; open a version, set the cuts, add a Job,
-                               the hard Runs' runner (ref/run_job.py, ref/run_question.py), the question map, carry-over
+                               the hard Runs' runner (ref/run_job.py, ref/run_question.py), the question map, carry-over;
+                               the Executive level X, read as the Overall Report (ref/overall_report.py, figures ref/overall_figures.py)
 haipipe-insight-question       proposals and their triage; asking a question into a version; Q1-Q7 with
                                haipipe-question-review
 haipipe-insight-evidence-plan  one question's needs and work specs, planned before any run, agreed by another agent

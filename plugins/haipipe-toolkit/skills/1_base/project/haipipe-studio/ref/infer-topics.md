@@ -39,6 +39,23 @@ From the reading to topics
 6. **No topic without work**: a subject no Task touches waits until a Job does it.
 
 
+
+Groups, proposed with the topics
+--------------------------------
+
+`/wb update` proposes each topic's group with the topic, and the same name tags the Questions the topic feeds,
+so the Studio and the Report share one bar (b10 s05-D05, D08). A person keeps or renames it with the tick.
+
+1. **Names a subject of this Block's work**, in its own words: Profile · Handoff · Splits · Build status.
+2. **Never the Block's name or a status**: `Aidatastore`, `Done`, `Open` say nothing (b10_aidatastore, 261012).
+3. **One topic, usually one group**; two topics share one only when they are halves of one subject.
+4. **Two to six per Block**: one per topic is fine; more than six means the subjects are cut too fine.
+5. **Order**: `studio/_groups.txt` lists them in topic order, s01 first; the Report's bar follows it.
+6. **s00 has none**: the background and index covers the whole Block.
+
+The script's first guess is the Task kind or the split field (`profile` gives Profile, `raw-family` gives
+Family); the agent rewords it from the work before the tick.
+
 Worked example: b00_rawdata (261012)
 ------------------------------------
 

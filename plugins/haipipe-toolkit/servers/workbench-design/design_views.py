@@ -19,7 +19,7 @@ from pathlib import Path
 
 from host_paths import skill_dir
 from live import design_reader as R
-from live.frame import Space, esc, pop, reader, rel, table
+from live.frame import Space, delivery_view, esc, pop, reader, rel, table, themes
 
 GUIDE_METHOD = "/_board/guide?family=design&view=method"
 OK = ("passed", "closed", "released", "answered", "ok", "kept", "yes", "✓", "✅")
@@ -316,7 +316,9 @@ DISK = {
         "Inputs": (("inputs/i*/", "the inputs versions"), ("inputs/i*/manifest.yaml", "each file's sha256, frozen"),
                    (J + "inputs/manifest.yaml", "each Job's fence")),
         "Summary": (("board.md", "## Goals · close"), (J + "t99_*/runs/run-rank-t99/result/ranking.csv", "each Job's top design"),
-                    (J + "t*_d*/prediction.yaml", "predicted · against · by · why"), ("runs/run-score-*/scores.csv", "what an Exp returned")),
+                    (J + "t*_d*/prediction.yaml", "predicted · against · by · why"), ("runs/run-score-*/scores.csv", "what an Exp returned"),
+                    ("reports/q*/q*.md", "the bottom line: each answered question's Opening"),
+                    (J + "runs/run-release-*/run.yaml", "who approved: signed:"), ("delivery/summary.pdf", "the one-page PDF")),
         "Rounds": (("inputs/i*/manifest.yaml", "one round per inputs version: frozen · new · parts"), (J, "each Job's inputs pin"),
                    ("delivery/designs.json", "what was released"), ("observed/e*/arms.csv", "what an Exp returned")),
         "Questions": (("board.md", "## Questions: one row each"), ("reports/q*/q*.md", "Report: its title and opening"),
@@ -416,7 +418,10 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
     a_open = first if first in ar else "Summary"
     a_html = {"Summary": _summary, "Rounds": _rounds, "Questions": _questions, "Cost": _costs,
               "Predicted vs observed": _predicted, "Method scorecard": _scorecard}[a_open](b, root, href)
-    a_runs = {"Summary": (), "Rounds": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add the next inputs version "
+    a_runs = {"Summary": (_bk(b, root, "run-build-summary", "build-summary", "Build {folder}'s one-page summary with "
+                              "haipipe-design-delivery's summary.py into delivery/summary.html and summary.pdf, and check "
+                              "it is one page (run-build-summary)."),),
+              "Rounds": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add the next inputs version "
                                             "to {folder}: inputs/iN/ with the last round's Exp results and the insight "
                                             "Board's newer data version, frozen (run-add-inputs-<iN>)."),),
               "Questions": (_bk(b, root, "run-propose-questions", "propose-questions", "Propose {folder}'s report questions "
@@ -435,7 +440,7 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
     goals = tuple(sorted({j["goal"] for j in b["jobs"]}))
     w_open = first if first in goals else "All"
     groups = {"Set up": ("add-goal", "setup-rules", "add-inputs"), "Launch a Job": ("add-job",),
-              "Report": ("add-observed", "score", "propose-questions", "report")}
+              "Report": ("add-observed", "score", "propose-questions", "report", "build-summary")}
     r_views = ("All",) + tuple(groups)
     r_open = first if first in r_views else "All"
     return {
@@ -456,7 +461,9 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
                                  _bk(b, root, "run-add-job-<jNN>", "add-job", "Launch a Job in {folder} (run-add-job-<jNN>)."),
                                  _bk(b, root, "run-propose-questions", "propose-questions",
                                      "Propose {folder}'s report questions (run-propose-questions)."))),
-        "Delivery": Space(html=_block_delivery(b, href), page=True, disk=_disk("Block", "Delivery", block),
+        "Delivery": Space(html=delivery_view(block, root, themes()["design"])      # result cards (b10 s32-D18)
+                          + "<h3>Released designs</h3>" + _block_delivery(b, href), page=True,
+                          disk=_disk("Block", "Delivery", block),
                           run_types=(_kind("run-release-<jNN>", "Release a Job's kept designs into {folder}/delivery/ "
                                            "(the Job's run-release-jNN; a person signs).", "haipipe-design"),)),
     }
@@ -606,15 +613,47 @@ def _pill(text: str) -> str:
     return f'<span class="item-kind">{esc(text)}</span>'
 
 
-def _report_side(q: dict, b: dict, root: Path) -> str:
+def _report_page(q: dict, b: dict) -> Path | None:
+    """A Block question's report Page: its `report:` folder's .md, or the .md itself."""
     rep = b["path"] / str(q.get("report", "")).rstrip("/") if q.get("report") else None
-    page = next(iter(sorted(rep.glob("*.md"))), None) if rep and rep.is_dir() else None
-    status = str(q.get("answer-status", "open"))
+    if rep and rep.is_file():
+        return rep
+    return next(iter(sorted(rep.glob("*.md"))), None) if rep and rep.is_dir() else None
+
+
+def _q_status(q: dict, b: dict) -> str:
+    """Where a question stands: the register's answer-status, else its report's header (haipipe-report: the report's
+    writer moves it), else open."""
+    if q.get("answer-status"):
+        return str(q["answer-status"])
+    page = _report_page(q, b)
+    m = re.search(r"(?m)^answer-status:\s*(\w+)", page.read_text(encoding="utf-8", errors="ignore")) if page else None
+    return m.group(1) if m else "open"
+
+
+def _q_asks(q: dict) -> str:
+    return str(q.get("asks") or q.get("question") or "")
+
+
+def _q_evidence(q: dict) -> list:
+    """The Jobs a question rests on: `evidence:` (the design register), else `work:` (haipipe-question's)."""
+    return [str(e).split("_")[0] for e in (q.get("evidence") or q.get("work") or [])]
+
+
+def _opening(page: Path) -> str:
+    """A report's Opening: its first paragraph that is not a header line or a heading."""
+    text = page.read_text(encoding="utf-8", errors="ignore")
+    return next((p.strip() for p in text.split("\n\n")[1:] if p.strip() and not p.lstrip().startswith(("#", "---"))), "")
+
+
+def _report_side(q: dict, b: dict, root: Path) -> str:
+    page = _report_page(q, b)
+    status = _q_status(q, b)
     if page is None:
         return f'<p>{_pill("Report")} <span class=mut>{esc(_WORD.get(status, status))}</span></p><p class=mut>No report yet</p>'
     text = page.read_text(encoding="utf-8", errors="ignore")
     head = next((l[2:].strip() for l in text.splitlines() if l.startswith("# ")), page.stem)
-    opening = next((p.strip() for p in text.split("\n\n")[1:] if p.strip() and not p.lstrip().startswith(("#", "---"))), "")
+    opening = _opening(page)
     return (f'<p>{_pill("Report")} <span class=mut>{esc(_WORD.get(status, status))}</span></p>'
             f'<p class=rp-title><b>{pop(reader(page, root), head, head + " ↗")}</b></p>'
             + (f'<p class=rp-text>{esc(opening)}</p>' if opening else "")
@@ -623,7 +662,7 @@ def _report_side(q: dict, b: dict, root: Path) -> str:
 
 def _task_work(q: dict, b: dict, root: Path, href) -> str:
     jobs = {j["id"]: j for j in b["jobs"]}
-    ev = [jobs[e] for e in q.get("evidence", []) if e in jobs]
+    ev = [jobs[e] for e in _q_evidence(q) if e in jobs]
     items = []
     for j in ev:
         live = _live(j["designs"])
@@ -645,12 +684,14 @@ def _task_work(q: dict, b: dict, root: Path, href) -> str:
 def _questions(b: dict, root: Path, href) -> str:
     rows = [_qhead("Question", "Task Work", "Report")]
     for n, q in enumerate(b["questions"], 1):
-        status = str(q.get("answer-status", "open"))
-        more = [f'<li><b>asks</b> · {esc(q["asks"])}</li>'] if q.get("asks") else []
-        more += [f'<li><b>evidence</b> · {esc(" · ".join(q.get("evidence", [])))}</li>',
-                 '<li><b>asked by</b> · run-propose-questions, agreed by another agent</li>']
+        status, asks = _q_status(q, b), _q_asks(q)
+        more = [f'<li><b>asks</b> · {esc(asks)}</li>'] if asks else []
+        more += [f'<li><b>evidence</b> · {esc(" · ".join(_q_evidence(q)))}</li>',
+                 '<li><b>asked by</b> · run-propose-questions, agreed by another agent</li>'
+                 if any(r["type"] == "propose-questions" for r in b["runs"])
+                 else '<li><b>asked by</b> · written into board.md, no run-propose-questions</li>']
         left = (f'<p>{_pill(f"Question {n}")} {_MARK.get(status, "⬜")}</p><p><b>{esc(q.get("title", ""))}</b></p>'
-                + (f'<p>{esc(q["asks"])}</p>' if q.get("asks") and q["asks"] != q.get("title") else "")
+                + (f'<p>{esc(asks)}</p>' if asks and asks != q.get("title") else "")
                 +                 f'<details><summary class=mut>More</summary><ul>{"".join(more)}</ul></details>')
         rows.append(f'<div class=q-row id="question-{esc(q.get("id", ""))}"><div class=q-l>{left}</div>'
                     f'<div class=q-w>{_task_work(q, b, root, href)}</div><div class=q-r>{_report_side(q, b, root)}</div></div>')
@@ -683,16 +724,38 @@ def _rank1(j: dict) -> dict | None:
     return next((d for d in j["designs"] if d["id"] == top), None)
 
 
+def _approved(j: dict) -> tuple:
+    """Who approved a Job's release and when, from its run-release Run: (short, full). `signed:` on the card says it
+    in full ("JL 261012 · in chat, all 10 at once"); an older card only says "signed by <who>" in `by:`."""
+    r = next((r for r in j["runs"] if r["type"] == "release" and r["status"] == "closed"), None)
+    if not r:
+        return "", ""
+    card = r["card"]
+    full = str(card.get("signed") or "")
+    who = full.split()[0] if full else (re.search(r"signed by (\S+)", str(card.get("by", ""))) or [None, ""])[1]
+    when = str(card.get("finished_at", ""))[5:10]
+    return (f"approved by {who}" + (f" {when}" if when else "") if who else "approved"), full or str(card.get("by", ""))
+
+
 def _summary(b: dict, root: Path, href) -> str:
     """The Block on one page, for a reader with five minutes (JL 261012, from the 10-08 demo: "the first page should be
-    overview and summary"): the goal, where each Job stands, each Job's top design as it reads with its prediction and
-    why, what an Exp returned, and the next step. Bottom up from the files the Runs wrote; it claims nothing new."""
+    overview and summary"): the goal, what the Block questions answer so far (the bottom line), one row per Job (its
+    method, state and who approved it, top design and prediction, the reason on hover), what the experiment returned,
+    and the next step, in plain words: ids such as M04 m3 or i1 only on hover (the demo: "without naming every part").
+    Bottom up from the files the Runs wrote; it claims nothing new. No design cards and no long reasons here (JL
+    261012: "do we really need to report this anywhere?"): each design's page and its Job's Review whole show them."""
     jobs = b["jobs"]
     if not jobs:
         return '<p class=mut>No Job yet: launch one from Description › Map.</p>'
     goals = "".join(f'<p><b>{esc(g.get("aim") or g.get("id", ""))}</b> <span class=mut>· {esc(g.get("who", ""))} · '
-                    f'{esc(g.get("venue", ""))} · {esc(g.get("n", ""))} designs a Job · goal {esc(g.get("id", ""))}</span></p>'
+                    f'{esc(g.get("venue", ""))} · {esc(g.get("n", ""))} designs a Job</span></p>'
                     for g in b["goals"])
+    answers = []
+    for q in b["questions"]:
+        status, page = _q_status(q, b), _report_page(q, b)
+        if status in ("partial", "answered") and page:
+            answers.append(f'<p>{_MARK.get(status, "")} <b>{pop(reader(page, root), q.get("title", ""), q.get("title", "") + " ↗")}</b> '
+                           f'<span class=mut>({esc(_WORD.get(status, status).lower())})</span> {esc(_opening(page))}</p>')
     ranked = [j for j in jobs if j["ranking"]]
     kept = sum(d["state"] in ("kept", "released") for j in jobs for d in j["designs"])
     released = sum(d["state"] == "released" for j in jobs for d in j["designs"])
@@ -700,46 +763,43 @@ def _summary(b: dict, root: Path, href) -> str:
     scores = list(b["scores"].values())
     counts = (f'{len(jobs)} Jobs · {len(ranked)} ranked · {kept} designs kept · {released} released'
               + (f' · {len(held)} held' if held else "")
-              + (f' · {len(scores)} tested in an Exp' if scores else " · no Exp result yet"))
+              + (f' · {len(scores)} tested in an experiment' if scores else " · no experiment result yet"))
     waiting = [j for j in ranked if any(d["state"] == "kept" for d in j["designs"])]
     if waiting:
         nxt = ("a person reviews and approves " + " · ".join(_job_link(href, j) for j in waiting)
-               + ": one sign freezes each kept design's prediction and releases the designs (each Job's Runs › Review whole)")
+               + ": one sign freezes each kept design's prediction and releases it (each Job's Review and approve)")
     elif released and not b["observed"]:
-        nxt = "run the Exp; its per-arm totals come back here as observed/eNN (run-add-observed-eNN)"
+        nxt = "launch the experiment with the released designs; each arm's result comes back here"
     elif b["observed"] and not scores:
-        nxt = "score each tested design against its frozen prediction (run-score-eNN)"
+        nxt = "score each tested design against its frozen prediction"
     else:
-        nxt = "the next round: a new inputs version (Rounds)"
+        nxt = "the next round, with new inputs (Rounds)"
     rows = []
     for j in jobs:
         d, n_kept = _rank1(j), sum(x["state"] in ("kept", "released") for x in j["designs"])
         n_rel = sum(x["state"] == "released" for x in j["designs"])
+        short, full = _approved(j) if n_rel else ("", "")
         state = (f'<span title="{esc(j["hold"])}" style="border-bottom:1px dotted">held</span>' if j["state"] == "held"
-                 else _st(f"released {n_rel}") if n_rel else "kept · waiting for review" if n_kept
+                 else _st(f"released {n_rel}") + (f' <span class=mut title="{esc(full)}" style="border-bottom:1px dotted">'
+                                                   f'{esc(short)}</span>' if short else "")
+                 if n_rel else "kept · waiting for review" if n_kept
                  else "ranked" if j["ranking"] else esc(j["state"]))
-        rows.append((_job_link(href, j), f'{esc(j["method_name"] or j["method"])} <span class=mut>{esc(j["method"])} '
-                     f'{esc(j["version"])} · {esc(j["inputs"])}</span>',
+        codes = f'{j["method"]} {j["version"]} · inputs {j["inputs"]}'
+        rows.append((_job_link(href, j), f'<span title="{esc(codes)}" style="border-bottom:1px dotted">'
+                     f'{esc(j["method_name"] or j["method"])}</span>',
                      esc(f'{n_kept} kept of {len(j["designs"])}') if j["designs"] else "—", state,
                      f'<a href="{esc(href("", "", d["path"]))}">{esc(d["id"])} · {esc(d["short"])}</a>' if d else "—",
                      _pred(d["prediction"], "cell") if d else "—"))
-    tops = [_qhead("Each Job's top design, as it reads", "Predicted · against · why", "Where it stands")]
-    for j in ranked:
-        d = _rank1(j)
-        if d:
-            tops.append(_qrow(f'<b>{_job_link(href, j)} · <a href="{esc(href("", "", d["path"]))}">{esc(d["id"])} · '
-                              f'{esc(d["short"])}</a></b>' + as_it_reads(d["message"], d["path"], root),
-                              _pred(d["prediction"]) + f'<p class=mut>frozen {esc(d["prediction"].get("frozen", "—"))}</p>',
-                              _st(d["state"])))
     hits = sum(s.get("direction") == "✓" for s in scores)
     inr = sum(s.get("in_range") == "✓" for s in scores)
-    return (goals + f'<p>{esc(counts)}</p><p><b>Next:</b> {nxt}.</p>'
-            + table(("Job", "method · inputs", "designs", "state", "top design", "predicted"), rows)
-            + ("".join(f'<p class=mut>{esc(j["name"])} is held: {esc(j["hold"])}</p>' for j in held if j["hold"]))
-            + ("".join(tops) if len(tops) > 1 else "")
-            + (f'<p>Exp results: {len(scores)} designs tested · direction right {hits} of {len(scores)} · in range '
+    return (goals + "".join(answers) + f'<p>{esc(counts)}</p><p><b>Next:</b> {nxt}.</p>'
+            + table(("Job", "method", "designs", "state", "top design", "predicted"), rows)
+            + (f'<p>Experiment results: {len(scores)} designs tested · direction right {hits} of {len(scores)} · in range '
                f'{inr} of {len(scores)} <span class=mut>(Predicted vs observed)</span></p>' if scores else "")
-            + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] else ""))
+            + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] else "")
+            + (f'<p>{pop("/" + rel(pdf, root), "summary.pdf", "One-page PDF ↗")} <span class=mut>for readers outside the '
+               f'workbench (haipipe-design-delivery summary.py)</span></p>' if (pdf := b["path"] / "delivery" / "summary.pdf").is_file()
+               else ""))
 
 
 def _rounds(b: dict, root: Path, href) -> str:
@@ -959,7 +1019,8 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                               disk=_disk("Job", "WD " + w_open, jdir)),
         "Runs": Space(html=_job_runs(j, root, r_open), subspaces=rv, open=r_open, run_types=r_runs, page=True,
                       disk=_disk("Job", r_open if r_open == "Setup" else "Runs " + r_open, jdir)),
-        "Delivery": Space(html=_job_delivery(j, root, v_open), subspaces=dv, open=v_open, run_types=(approve,), page=True,
+        "Delivery": Space(html=delivery_view(jdir, root, themes()["design"]) + _job_delivery(j, root, v_open),
+                          subspaces=dv, open=v_open, run_types=(approve,), page=True,
                           disk=_disk("Job", v_open, jdir)),
     }
 

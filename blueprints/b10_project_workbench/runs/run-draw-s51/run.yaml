@@ -1,0 +1,28 @@
+run: run-draw-s51
+kind: soft
+type: draw
+scope: null
+target: s51
+ticket: run-draw-s51.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1012
+- p02-1012
+- p03-1012
+- p04-1012
+writes:
+- blueprints/b10_project_workbench/studio/s51-server-runtime/build_s51_server_runtime.py
+- blueprints/b10_project_workbench/studio/s51-server-runtime/s51-server-runtime.md
+- s51-server-runtime.md
+- build_s51_server_runtime.py
+- s51-server-runtime.excalidraw
+- s51-server-runtime.png
+- _build/story.py
+feeds:
+- reports/q08_workbench_base
+- reports/q09_studio_report_on_screen
+- reports/q12_space_hosting
+- reports/q07_workbench_mapping

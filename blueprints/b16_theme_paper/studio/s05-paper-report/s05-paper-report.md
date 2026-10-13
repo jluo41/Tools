@@ -29,18 +29,18 @@ s05-paper-report/
 Decided
 -------
 
-s05-D01 · Proposed (b16 261011, answers b10 s07 Open 6): a paper Question's `group:` is its kind, one of
-    the paper's groups in b10 s07-D03 (Ideation · Narrative · Asked by others, with who asked: reviewer
-    · coauthor · editor · reader). Which telling a Question belongs to is said once, by the telling's
+s05-D01 · Proposed (b16 261011, answers b10 s05 Open 14): a paper Question's `group:` is its kind, one of
+    the paper's groups in b10 s05-D07 (Ideation · Narrative · Random thoughts, renamed in b10 s05-D22; who
+    asked, a reviewer, coauthor, editor or reader, goes in the Question's own text). Which telling a Question belongs to is said once, by the telling's
     **Feeds:** line, which already lists its reports (q00_… q06_…). So the Research questions are the
     Questions the current telling feeds, read by id, whatever their group line says, and a research
     question needs no group line. Why: a telling's name in `group:` says what Feeds already says, and a
     Question kept into the next telling would have to change group. ScalingGlucose's `group: nmi-cgm-
     scaling-axes` keeps working with no edit.
-s05-D02 · Proposed (b16 261011, answers b10 s07 Open 5 for the paper): b10 keeps the rule and its table;
-    b16 keeps the paper's words: its four groups (s07-D03's paper row) and its standing Questions,
+s05-D02 · Proposed (b16 261011, answers b10 s05 Open 13 for the paper): b10 keeps the rule and its table;
+    b16 keeps the paper's words: its four groups (b10 s05-D07's paper row) and its standing Questions,
     Narrative's three "Will it attract the editor / reviewer / public?" on the Board and J1 to J5 on
-    every version (`STANDING` in paper_theme.py; b10 s07-D08). A Section's is still open (Open 4).
+    every version (`STANDING` in paper_theme.py; b10 s05-D12). A Section's is still open (Open 4).
 
 
 Open
@@ -51,6 +51,6 @@ Open
 3. Section › Comments: the comments report's concern table as it is, or a ## Review Items table? (was s33 open 2)
 4. What a Section must report (the Board and the version: s05-D02).
 5. RQ0 to RQ6 in the telling and Q00 to Q06 in the register are the same Questions under two names
-   (b10 s07, read 261011): show one name on screen? Which one is JL's.
+   (b10 s05, read 261011): show one name on screen? Which one is JL's.
 
 (write here, or mark the drawing in red)

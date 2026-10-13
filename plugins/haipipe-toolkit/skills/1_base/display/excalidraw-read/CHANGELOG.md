@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.0 · 2026-10-13 · A topic of papers
+
+- JL 261013: "add more sNN to show the related paper by topics, just like ... s52-t06 ... using /excalidraw-read";
+  "we might want to see the most relevant papers in the details". New `ref/topic_drawing.py draw <topic>`: a
+  Studio topic of several papers on one theme, its face's `related:` yaml the words, each paper's reading in
+  `reads/<id>-<paper>/`. Act 1 is the theme (key point, what the papers share, why it matters, one card per
+  paper, the open choices in red); then one row per paper: its pages whole with the read passages highlighted
+  and a numbered note level with each (excalidraw-task's `transcript_frame`, which gains `noun` and `us`), then
+  its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy
+  s06 to s10.
+
+## 0.5.0 · 2026-10-13 · Revise mode is its own skill
+
+- JL 261013: "I think we want to have the /excalidraw-revise, a new skill for this type of tasks". The revise
+  mode (`ref/read_revise.py`, `ref/track_changes.py`, `ref/revise-spec.md`) moved to `excalidraw-revise`; this
+  skill keeps reading one paper, and `ref/read_paper.py`, which the revise drawing still uses for its pages.
+
 ## 0.4.0 · 2026-10-11 · Delivery from the draft; one box per paragraph
 
 - JL 261011: "OKAY, PLEASE DO IT" (the delivery, the last step). `read_revise.py deliver` writes the plan's `draft`

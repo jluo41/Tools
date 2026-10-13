@@ -1,9 +1,10 @@
 """open_job.py <insight Board> --release pN --data vM [--previous jNN_…] [--moved code|data|start]
 
-Open one plan-C Job on an insight Board (b11 s00 · s11 · s12, 261007): `jNN_pN_<dataset>vM/`, pinning one
-Prototype release (board.md `prototype:`) and one data version (board.md `versions:`). It writes:
+Open one plan-C Job on an insight Board (b11 s00 · s11 · s12, 261007):
+`jNN_prototype-pN-<release slug>_data-<dataset>vM/` (`job_name`), pinning one Prototype release (board.md
+`prototype:`) and one data version (board.md `versions:`). It writes:
 
-    jNN_pN_<d>vM.md                       the Job's face: release, data, state open, moved, previous
+    <job>.md                              the Job's face: release, data, state open, moved, previous
     tNN_<L><NN>_<slug>/tNN_….md           one Task per question of the release: `question:`, its answer
                                           fields empty until its page is written (run-write)
     tNN_…/runs/rNN_<partition>/run.sh     one ticket per cut the question is asked on (rNN = the cut's
@@ -22,6 +23,23 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_question as RQ  # noqa: E402
+
+# A Board Job's folder name, read left to right (JL 261012: "make the job folder name to be human readable"):
+# j01_prototype-p1-basic-questions_data-SMSR2v1. Underscores part its three fields (the number, the Prototype
+# release, the data version) and hyphens join the words inside one, as in a Task's tNN_<L><NN>_<slug>. The
+# older jNN_pN_<D>vM still reads. Groups: number, release, dataset, version.
+JOB = re.compile(r"^j(\d+)_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?([A-Za-z][A-Za-z0-9]*?)(v\d+)$")
+
+
+def release_slug(rdir: Path) -> str:
+    """A release folder's words: `basic-questions` from j01_p1_basic-questions ('' for a bare jNN_pN)."""
+    return rdir.name.split("_", 2)[2] if rdir.name.count("_") >= 2 else ""
+
+
+def job_name(number: int, release: str, slug: str, dataset: str, data: str) -> str:
+    """j01_prototype-p1-basic-questions_data-SMSR2v1: the Job's number, its release and words, its data."""
+    plan = "-".join(x for x in (release, slug) if x)
+    return f"j{int(number):02d}_prototype-{plan}_data-{dataset}{data}"
 
 TICKET = """#!/bin/bash
 # run.sh · one hard Run of a plan-C Job: this Task's question on this cut (haipipe-insight ref/run_job.py).
@@ -58,14 +76,14 @@ def open_job(board, release, data, previous="", moved="start", number=None):
         raise SystemExit(f"no release {release} in {proto}")
     if not any(v.get("version") == data for v in face.get("versions") or []):
         raise SystemExit(f"no data version {data} in {board.name}/board.md versions:")
-    jobs = sorted(p for p in board.glob("j[0-9][0-9]_*") if p.is_dir())
-    name = f"_{release}_{face.get('dataset', '')}{data}"
-    job = next((j for j in jobs if j.name.endswith(name)), None) or board / f"j{number or len(jobs) + 1:02d}{name}"
+    jobs = sorted(p for p in board.glob("j[0-9][0-9]_*") if p.is_dir() and JOB.match(p.name))
+    dataset = str(face.get("dataset", ""))
+    job = next((j for j in jobs if JOB.match(j.name).group(2, 3, 4) == (release, dataset, data)), None) \
+        or board / job_name(number or len(jobs) + 1, release, release_slug(rdir), dataset, data)
     made = []
-    plan_words = rdir.name.split("_", 2)[2].replace("-", " ") if rdir.name.count("_") >= 2 else release.replace("p", "AP", 1)
-    ver = next((v for v in face.get("versions") or [] if v.get("version") == data), {})
-    freeze_words = str(ver.get("label") or "").strip() or data.replace("v", "F", 1)
-    heading = f"{job.name.split('_', 1)[0]} · {plan_words} × {freeze_words}"   # JL 261011: words, not codes
+    rface, _ = RQ.front(rdir / f"{rdir.name}.md")
+    plan_words = str(rface.get("title") or release_slug(rdir).replace("-", " ") or release)
+    heading = f"{plan_words[:1].upper()}{plan_words[1:]} ({release}) on data {dataset}{data}"   # the folder, in words
     _write(job / f"{job.name}.md", _front({"release": release, "prototype": str(rdir.relative_to(board.parent.parent)),
                                            "data": data, "state": "open", "moved": moved, "previous": previous},
                                           f"# {heading}\n\nAnalysis plan {release.replace('p', 'AP', 1)} (release {release}) on data freeze "

@@ -11,6 +11,7 @@ status: done
 passes:
 - p01-1011
 - p02-1011
+- p03-1012
 writes:
 - b31 board.md (new); studio/s21-revise-mode-workflow face
 - builder
@@ -25,4 +26,8 @@ writes:
 - D02); builder generalized (box widths
 - lanes
 - loop from yaml); drawing rebuilt
+- s21-revise-mode-workflow.md
+- build_*.py
+- s21-revise-mode-workflow.excalidraw
+- s21-revise-mode-workflow.png
 feeds: []

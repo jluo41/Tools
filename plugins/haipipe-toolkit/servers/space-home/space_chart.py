@@ -41,13 +41,17 @@ def _face(folder: Path) -> dict:
         title = re.search(r"(?m)^([^\n]+)\n={3,}\s*$", text)
     state, raw = state_of(text)
     note = re.search(r"(?m)^(?:status|next|spine|goal):\s*(.+)$", text)
-    return {"name": title.group(1).strip() if title else folder.name,
-            "status": state, "state": raw, "note": note.group(1).strip() if note else ""}
+    out = {"name": title.group(1).strip() if title else folder.name,
+           "status": state, "state": raw, "note": note.group(1).strip() if note else ""}
+    stage = re.search(r"(?m)^\*\*Stage:\*\*\s*(\w+)", text)   # a Studio topic's stage (s09-D03)
+    if stage:
+        out["stage"] = stage.group(1).lower()
+    return out
 
 
 def chart_data(root: Path, cards: list[dict], name: str = "SPACE", *, include_linked: bool = True) -> dict:
     """Examples → Projects → Scenes → Blocks → Jobs → Tasks, as in the frame."""
-    from live.frame import children, studio_inventory, studio_anchor
+    from live.frame import _draw_url, _note_facts, _notes, _reader, children, face, studio_anchor, studio_inventory
     from src.themes import FOLDER
     tree = {"id": "space", "name": name, "level": "Space", "children": []}
     examples, projects, scenes = {}, {}, {}
@@ -88,7 +92,7 @@ def chart_data(root: Path, cards: list[dict], name: str = "SPACE", *, include_li
         block["title"] = str(card["title"])
         block["state"] = str(card.get("board_state") or "No recorded status")
         block["kind"] = kind
-        block["archived"] = any(part in {"_legacy", "_old", "_archive"} for part in Path(block["path"]).parts)
+        block["archived"] = bool(card.get("archived"))      # home.discover_boards decides it, for both views
         block["href"] = str(card["href"])
         # Count the shared Block list, including existing local topics until migration, once per folder.
         block["studios"] = []
@@ -99,12 +103,23 @@ def chart_data(root: Path, cards: list[dict], name: str = "SPACE", *, include_li
                 continue
             studio = folder_node(topic, "Studio")
             studio["drawings"] = len(drawings)
+            # the List's Studio row reads as the workbench's (frame._topic_row): its tags, its stage, and its first
+            # drawing, opened in place (JL 261012: "it is more like this ... and I can preview the content of the draw")
+            facts = _note_facts(_notes(topic))
+            studio["tags"] = facts["tags"]
+            if facts["stage"]:
+                studio["stage"] = facts["stage"]
+            if drawings:
+                studio["draw"] = _draw_url(drawings[0], root)
             studio["href"] = "/_board/workbench?" + urlencode({
                 "path": block["path"], "space": "Idea Studio"}) + "#" + studio_anchor(topic, source, root / str(card["path"]))
             block["studios"].append(studio)
         scenes[scene_key]["children"].append(block)
         for job_folder in children(root / str(card["path"]), "Block"):
             job = folder_node(job_folder, "Job")
+            page = face(job_folder)                     # the List's Job row opens its face, as a Studio row its drawing
+            if page:
+                job["read"] = _reader(page, root)
             block["children"].append(job)
             for task_folder in children(job_folder, "Job"):
                 job["children"].append(folder_node(task_folder, "Task"))
@@ -209,6 +224,9 @@ def _linked_groups(root: Path) -> list[dict]:
                 node["id"] = prefix + "/" + previous
             if node.get("path"):
                 node["path"] = prefix + "/" + node["path"]
+            for key in ("draw", "read"):
+                if node.get(key):
+                    node[key] = origin + "/" + node[key].lstrip("/")
             if node.get("href"):
                 if node["level"] == "Folder":
                     node["href"] = "/?" + urlencode({"view": "list", "q": node["name"]})
@@ -227,8 +245,20 @@ def _linked_groups(root: Path) -> list[dict]:
     return groups
 
 
-def chart_parts(root: Path, cards: list[dict], name: str) -> tuple[str, str, str]:
-    data = json.dumps(chart_data(root, cards, name), ensure_ascii=False, separators=(",", ":"))
+def block_nodes(tree: dict) -> dict[str, dict]:
+    """Every Block node of a chart tree by its path, so the list shows the same topics and Jobs."""
+    found, stack = {}, [tree]
+    while stack:
+        node = stack.pop()
+        if node.get("level") == "Block" and node.get("path"):
+            found[node["path"]] = node
+        else:
+            stack.extend(node.get("children", []))
+    return found
+
+
+def chart_parts(root: Path, cards: list[dict], name: str, data: dict | None = None) -> tuple[str, str, str]:
+    data = json.dumps(data or chart_data(root, cards, name), ensure_ascii=False, separators=(",", ":"))
     # A face title is source text, never executable HTML or a closing script tag.
     data = data.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     assets = Path(__file__).parent / "assets"

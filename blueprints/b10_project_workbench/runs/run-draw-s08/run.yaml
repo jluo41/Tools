@@ -14,6 +14,11 @@ passes:
 - p03-1011
 - p04-1011
 - p05-1011
+- p06-1012
+- p07-1012
+- p08-1012
+- p09-1012
+- p10-1012
 writes:
 - plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline
 - its CSS and script)
@@ -24,5 +29,17 @@ writes:
 - studio/s08-studio-timeline/ (face
 - builder
 - preview)
+- plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline · timeline(key)
+  · .tl-groups)
+- studio/s08-studio-timeline/ (face D10 and D11 · builder draws the group row · preview)
+- plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline · tlGaps · .tl-col
+  · .tl-quiet)
+- studio/s08-studio-timeline/ (face D12 and D13 · builder notes · preview)
+- plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline head · .tl-col
+  CSS · --tl-cell)
+- studio/s08-studio-timeline/ (face D14)
+- plugins/haipipe-toolkit/servers/workbench/frame.py (.tl-map handler keep)
+- studio/s08-studio-timeline/ (face D15)
+- studio/s08-studio-timeline/s08-studio-timeline.md (Stage closed · D16)
 feeds:
 - reports/q09_studio_report_on_screen

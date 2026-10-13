@@ -22,7 +22,7 @@ from pathlib import Path
 
 from live.discoveryboard import block_snapshot
 from live.discovery_views import table_rows
-from live.frame import Space, Theme, chain, esc, pop, rel, table
+from live.frame import Space, Theme, chain, esc, pop, rel, table, work_tree
 
 ORDER = {"failed": 0, "blocked": 1, "missing": 2, "running": 3, "waiting": 4, "planned": 5, "complete": 6}
 BAD = ("blocked", "failed", "missing")
@@ -237,7 +237,7 @@ def spaces(level, folder, root, sub):
                                  open=d, run_types=_kinds("Description")),
             "Audience Report": Space(html=_questions(snap["questions"]) if a == "Questions" else _reports(snap["questions"]),
                                      subspaces=("Questions", "Reports"), open=a, run_types=_kinds("Audience Report")),
-            "Work Details": Space(html={"Papers": lambda: _papers(snap), "Tasks": lambda: _tasks(snap["tasks"]),
+            "Work Details": Space(html={"Papers": lambda: _papers(snap), "Tasks": lambda: work_tree("Block", folder, root, THEME) or _tasks(snap["tasks"]),
                                         "Citations": lambda: _citations(snap)}[w](),
                                   subspaces=("Papers", "Tasks", "Citations"), open=w, run_types=_kinds("Work Details")),
             "Runs": Space(html=_runs(snap["runs"], r == "Blocked"), subspaces=("All", "Blocked"), open=r,
@@ -252,7 +252,8 @@ def spaces(level, folder, root, sub):
         questions = [q for q in snap["questions"] if any(w["task"]["id"] in ids for w in q["work"])]
         runs = [r for r in snap["runs"] if r["job"] == job["name"]]
         return {"Audience Report": Space(html=_questions(questions), run_types=_kinds("Audience Report", ("Questions",))),
-                "Work Details": Space(html=_tasks(job["tasks"]), run_types=_kinds("Work Details", ("Tasks",))),
+                "Work Details": Space(html=work_tree("Job", folder, root, THEME) or _tasks(job["tasks"]),
+                                      run_types=_kinds("Work Details", ("Tasks",))),
                 "Runs": Space(html=_runs(runs), run_types=_kinds("Runs"))}
     if level == "Task":
         task = next((t for t in snap["tasks"] if t["name"] == folder.name and t["job"] == folder.parent.name), None)

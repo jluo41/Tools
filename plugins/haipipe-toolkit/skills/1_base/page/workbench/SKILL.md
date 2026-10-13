@@ -13,8 +13,8 @@ description: >-
   block, find a block, workbench link, page workbench, workbench folder,
   workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.19.2"
-  last_updated: "2026-10-11"
+  version: "1.24.1"
+  last_updated: "2026-10-12"
   aliases: [wb]
 ---
 
@@ -32,7 +32,23 @@ the skill OPENS a workbench; every section after this one is the contract the op
 /wb <Project>/cowork       that Project, one kind        /?project=<Project>&kind=cowork
 /wb <Block | Job | Task>   its Studio, in its theme      /_board/workbench?path=<folder>&studio=1
 /wb <words>                find the place, then open it as above
+/wb update <Block>         bring it to today's rules      cli/wb_update.py (b10 s10), below
+/wb share <folder> <email> share it on its SPACE's door   cli/wb_share.py (b10 s52); --people <list>
+/wb <folder> share [<email>] the same, folder first; no email: who has it, its link
+/wb share --serve [<SPACE>] start that SPACE's share door  <space>.jjluo.com → 127.0.0.1:569x
 ```
+
+**One share door per SPACE** (JL 261012; b10 s52-D17): a second host on the same SPACE, `--share`,
+127.0.0.1 only, behind its public name through the tunnel; people sign in with an emailed code
+and see only what the SPACE's `.server_config/access.yaml` grants them. The table names its door
+(`public_url:`, `port:`): physician 5691, welldoc 5692, drfirst 5693, reach 5694, jluo41 5695,
+knowledge 5696 (Tools-SPACE's block.jjluo.com was dropped, s52-D18). A SPACE with no table has no
+door, and `/wb share` refuses it. A share door is never one of the SPACE's own hosts to `/wb`.
+
+**What a door can reach** (JL 261012: "will this make my mac studio unsafe?"): only 127.0.0.1 on this Mac,
+so the tunnel is its one way in; only named JHU emails get a code; a grant opens its folder and below, every
+other path is 404; for everyone but an owner it is read-only, with no terminal and no chat. The tables, the cookie
+secret and the mail key are git-ignored and mode 600, so a clone of this repo carries the code and no way in.
 
 **One host per SPACE, the board is a path in it** (JL 261011: "when we use the /wb we will
 just start from the SPACE, and then we pickup the board"). Every row above goes through the
@@ -40,6 +56,11 @@ one host rooted at the SPACE; a Project, Block, Job or Task is picked up inside 
 path. Never start a host rooted at a Project or a board folder: such hosts outlive renames
 and serve gone folders (DrFirst's 8765, 8766 and 8767 did, stopped 261011). A Tools
 blueprint Block belongs to the Tools SPACE, so it opens on the host rooted at `Tools/`.
+
+**A renamed folder keeps its old links** (JL 261012: "I cannot open you anymore"). Whoever renames a Block,
+Job or Task writes the old name into its face, `renamed-from: <old name>` (or a list); the host then answers
+an old `path=` with a 302 to the new one, the Space and subspace kept (`frame_view.renamed`). A name that never
+existed still says Not found.
 
 1. **Run the script** from inside the SPACE: `.venv/bin/python <this skill's folder>/cli/wb.py <input>`
    (from the SPACE root, `Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb.py`).
@@ -63,6 +84,31 @@ blueprint Block belongs to the Tools SPACE, so it opens on the host rooted at `T
    `workbench-work`, `workbench-cowork`, `workbench-discovery`, `workbench-paper`, `workbench-insight`,
    `workbench-design`, `workbench-labeling`, or this skill when the folder has no theme. Reply with
    the printed link; its Tailscale address also opens on a phone.
+
+## 🔧 Update: /wb update <Block> (b10 s10, JL 261012)
+
+One door that takes any Block, old or new and of any theme, to today's rules (JL 261012: "I want it work
+like /wb update-to-date path to the block"). `cli/wb.py update <Block>` hands it to `cli/wb_update.py`.
+
+```text
+1 shape      haipipe-project ladder.py audit           names, faces, folders, Run cards
+2 today      ladder.py audit --today                   studio topics, ## Questions, reports/, Block-only delivery/
+3 plan       what moves, what is made, what is proposed
+4 apply      --apply: the safe moves, then runs/run-update-<bNN>/ with a pass holding proposals.md
+5 topics     haipipe-studio block_inventory.py          topics the Block's own Jobs and Tasks stand on
+6 Questions  the same reading                          Block and Job Questions where the Jobs' answers differ
+7 open       the Block's Studio link
+```
+
+1. **Dry run first**: without `--apply` nothing is written; read all seven steps.
+2. **Apply**: `--apply --no-open` moves only data files out of `studio/` and writes the pass to tick.
+3. **Word it**: rewrite that `proposals.md` in the Block's words, per `haipipe-studio` `ref/infer-topics.md`
+   and `haipipe-report` `ref/infer-reports.md`: the script's lines are candidates, not the answer.
+4. **Tick**: a person ticks `[x]` the lines to keep; nothing proposed is made before (b10 s10-D03).
+5. **Make**: ticked topics by `haipipe-studio` `new_topic.py topic`, their groups in `studio/_groups.txt`;
+   ticked Questions by `haipipe-question` (`add-question --group`, the topic's group).
+
+A whole Project or theme folder: one agent per Block, each running steps 1 to 3 on its own Block.
 
 `haipipe-draft` owns what the page's `.md` SAYS; this skill owns what sits BESIDE it.
 A page lives in its own home folder (QPf1 on the design board), and every

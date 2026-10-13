@@ -185,11 +185,12 @@ def render_report(data, root):
     return ''.join(out)
 
 
-def group_timeline(block, root, rows, group):
-    """Use an authored event table for this group, otherwise preserve the Question rows."""
+def group_timeline(block, root, rows, group=None):
+    """The authored event tables of these Questions' reports, newest first in each; only `group`'s when one is
+    named. '' when no report carries one, and the Question cards stay."""
     reports = []
     for row in rows:
-        if str(row.get('group') or '') != group or not row.get('report'):
+        if (group is not None and str(row.get('group') or '') != group) or not row.get('report'):
             continue
         page = (block / str(row['report'])).resolve()
         if not page.is_relative_to(root.resolve()) or not page.is_file():

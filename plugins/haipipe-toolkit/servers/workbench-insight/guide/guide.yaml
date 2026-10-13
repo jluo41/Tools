@@ -153,7 +153,7 @@ levels:
         reads: reports/qNN_<topic>/
       Work Details:
         is: the Jobs, each opening to its Tasks' quick results
-        reads: j0N_pN_<d>vM/
+        reads: jNN_prototype-pN-<slug>_data-<d>vM/
       Runs:
         is: the Board's own soft Runs, and its Jobs' from below
         reads: runs/run-<type>-<target>/
@@ -165,12 +165,12 @@ levels:
     spaces:
       Description:
         is: 'its two pins: the Prototype release and the data version'
-        reads: j0N_pN_<d>vM.md · the release · <d>vM
+        reads: jNN_prototype-…_data-<d>vM.md · the release · <d>vM
       Idea Studio:
         is: 'optional: a drawing about this pair'
         reads: studio/
       Audience Report:
-        is: Question │ Work │ Report by D · I · K · W, filtered by Partition × Period
+        is: 'the Overall Report (its Executive answers, one document), then Question │ Work │ Report by D · I · K · W, filtered by Partition × Period'
         reads: tNN_<L><NN>_<q>.md · reports/vs-<prev>.md
       Work Details:
         is: 'the J-T-R tree: its Tasks, each open to its Runs'

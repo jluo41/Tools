@@ -16,9 +16,9 @@ INK, RED = canvas.INK, canvas.RED
 TITLE = 's05 · Paper Report: research questions and review rounds'
 TOPIC = "the paper's reports at every level (b10 s09-D02): the Board's research questions (board.md ## Questions, s01-D08) each with a report; a version Job's standing questions every send answers (haipipe-paper-workflow) and its comments and review rounds (haipipe-paper-comments); a Section's own questions. This topic settles where a review round and its answers live, and what each paper level must report."
 DISK = ['<paper Board>/reports/qNN_<question>/   a research question', '<version Job>/reports/qNN_<topic>/      standing questions, a round', "<Section Task>/reports/qNN_<topic>/     a Section's own"]
-B10 = ['b10 s05: every level writes its own Report', 'b10 s09 open 2: the centre says what each level reports',
-       'b10 s07 (proposed): the Report gets a group bar; the paper keeps', '  Ideation · Narrative · Research questions · Asked by others']
-PROPOSED = ['s05-D01 · a Question\'s group: is its kind; its telling is', '  the telling\'s Feeds: line, read by id (s07 Open 6)',
+B10 = ['b10 s05: every level writes its own Report', 'b10 s01 (s09 Later 1): the centre says what each level reports',
+       'b10 s05 (proposed): the Report gets a group bar; the paper keeps', '  Ideation · Narrative · Research questions · Random thoughts']
+PROPOSED = ['s05-D01 · a Question\'s group: is its kind; its telling is', '  the telling\'s Feeds: line, read by id (b10 s05 Open 14)',
             's05-D02 · b16 keeps the paper\'s groups and its standing', '  Questions (3 attract rows, J1 to J5); b10 the rule']
 OPEN = ['A review round: a report in the version Job, or Tasks in the same Job? (Q03)', 'A resubmission elsewhere: a new version Job with its own reports?', "Section › Comments: the comments report's concern table as it is, or a ## Review Items table? (was s33 open 2)", 'What a Section must report (the Board and the version: s05-D02)', 'RQ0 to RQ6 and Q00 to Q06 are the same Questions: show one name?']
 CHANGES = []

@@ -29,7 +29,8 @@ import design_fixture as F  # noqa: E402
 # Idea Studio is the Block's, shared by its Jobs and Tasks (frame, 261010, b03 s02-D09).
 BLOCK = {"Description": (["Map", "Goals", "Methods", "Inputs"], ["run-add-job-<jNN>"]),
          "Idea Studio": ([], ["run-draw-<sNN>"]),
-         "Audience Report": (["Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost"], []),
+         "Audience Report": (["Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost"],
+                             ["run-build-summary"]),                  # Summary opens first: its one-page PDF
          "Work Details": (["All", "G01", "G02"], ["run-add-job-<jNN>"]),
          "Runs": (["All", "Set up", "Launch a Job", "Report"],
                   ["run-add-goal-<goal>", "run-add-job-<jNN>", "run-propose-questions"]),
@@ -38,7 +39,8 @@ BLOCK_VIEWS = {("Description", "Goals"): ["run-add-goal-<goal>"], ("Description"
                ("Description", "Inputs"): ["run-add-inputs-<iN>"], ("Audience Report", "Cost"): [],
                ("Audience Report", "Predicted vs observed"): ["run-add-observed-<eNN>", "run-score-<eNN>"],
                ("Audience Report", "Method scorecard"): [], ("Audience Report", "Rounds"): ["run-add-inputs-<iN>"],
-               ("Audience Report", "Questions"): ["run-propose-questions", "run-report-<qNN>"]}
+               ("Audience Report", "Questions"): ["run-propose-questions", "run-report-<qNN>"],
+               ("Audience Report", "Summary"): ["run-build-summary"]}
 JOB = {"Description": (["Goal", "Method", "Inputs"], ["run-setup-goal-j03", "run-close-j03"]),
        "Idea Studio": ([], ["run-draw-<sNN>"]),
        "Audience Report": (["Reason ideas", "Design display", "Review whole", "Predicted vs observed", "Performance"],
@@ -173,9 +175,16 @@ class DesignLadderTest(unittest.TestCase):
         summary = page(self.block, "Audience Report", "Summary")
         self.assertIn("<b>Next:</b>", summary)
         self.assertIn("j03_g01_m04", summary)                               # each Job by its folder name
-        self.assertIn("top design, as it reads", summary)
-        self.assertIn("why: &lt;why&gt;", summary)                          # the ranking's why, beside the number
+        self.assertNotIn("as it reads", summary)                            # no design cards: one row per Job
+        self.assertIn('title="&lt;why&gt;"', summary)                       # the ranking's why, on hover
         self.assertIn("direction right", summary)                           # what the Exp returned
+        self.assertIn("Did m2 beat m1?", summary)                           # the bottom line: answered questions first
+        self.assertIn("&lt;the opening&gt;", summary)                       # ... by their report's Opening
+        self.assertNotIn("Which method suits G01?", summary)                # an open question is not a bottom line
+        self.assertIn('title="M04 m2 · inputs i2"', summary)                # method ids only on hover
+        j03 = next(j for j in R.board(self.block)["jobs"] if j["id"] == "j03")
+        self.assertEqual(V._approved(j03), ("approved by <person> 10-07", "<person> 261007 · one by one"))  # who, when, how
+        self.assertNotIn("run-add-observed", summary)                       # no Run names in the plain Next line
         rounds = page(self.block, "Audience Report", "Rounds")
         self.assertIn("Round 1 · i1", rounds)
         self.assertIn("Round 2 · i2", rounds)

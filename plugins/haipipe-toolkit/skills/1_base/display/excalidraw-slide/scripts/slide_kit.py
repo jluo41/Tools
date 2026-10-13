@@ -5,7 +5,8 @@ source that its drawing and its deck both read. This kit holds what every slide 
 
     ACCENT · ACCENT_FILL · MUTED   the one colour exception, inside a slide only
     off_palette(els)               what a slide draft drew outside black · red · green and the accent
-    load(path) · check(path)       read a slides.py; list what breaks its field contract
+    load(path) · check(path)       read a slides.py; list what breaks its field contract, and any
+                                   screen or figure whose file is not on disk
 
     python slide_kit.py check <studio/s6N-<deck>/slides.py>
 
@@ -29,6 +30,7 @@ SLIDE_KEYS = ("n", "slug", "group", "title", "headline", "visual", "caption", "s
 MODULE_KEYS = ("SLIDES", "GROUPS", "OPEN")
 MODULE_FACE = ("AUDIENCE", "LENGTH", "SHOWN")       # who it is for, how long, when it is shown
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+PICTURE_KINDS = ("screen", "figure")                # a visual that is a picture names its `file` (j51, 261012)
 
 
 def off_palette(els):
@@ -78,6 +80,13 @@ def check(path: Path) -> list[tuple[str, str]]:
         visual = s.get("visual")
         if not isinstance(visual, dict) or not visual.get("kind"):
             out.append(("error", f"{where}: visual needs a kind (ONE visual per slide)"))
+        else:                                         # a screen or a figure is a file beside slides.py (j51)
+            file = visual.get("file")
+            if file and not (Path(path).parent / file).is_file():
+                out.append(("error", f"{where}: visual file {file} is not on disk "
+                                     "(a screen: retake it with its script; a figure: add it)"))
+            elif visual["kind"] in PICTURE_KINDS and not file:
+                out.append(("warn", f"{where}: a {visual['kind']} visual names no file"))
         ask = s.get("ask", [])
         if not isinstance(ask, (list, tuple)) or not all(isinstance(q, str) and q.strip() for q in ask):
             out.append(("error", f"{where}: ask is a list of questions (strings), drawn in red under the slide"))

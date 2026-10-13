@@ -38,7 +38,7 @@ which points are still open.
   (1.1.0, JL 261007: "comments … are a special type of report"): the batch kinds and where each lands.
 - [Q01 §5](../q01_paper_ladder/q01_paper_ladder.md): the 2026-10-07 outcome, with the version face and
   the Section numbers (t3N_ letters).
-- [b10 s09-D02](../../../b10_project_workbench/studio/s09-studio-block-job-task-delivery/s09-studio-block-job-task-delivery.md):
+- [b10 s09-D02](../../../b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.md):
   every level writes its own Report, in its own `reports/`.
 - Applied on one Board, TestToLearn: `j02_v1007_mansci` answers `reports/q01_editor-decision-0916`;
   the paper workbench shows Report › Comments, Work › Letters and the routed items on each Section.

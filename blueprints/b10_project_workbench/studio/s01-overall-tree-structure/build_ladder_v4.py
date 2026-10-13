@@ -1,7 +1,9 @@
-"""b03 ladder: s01-overall-tree-structure/s01-overall-tree-structure.excalidraw, frame 1 only
-(frames 2-7 removed, JL 261007): each layer with its specials and its variants.
+"""b03 ladder: s01-overall-tree-structure/s01-overall-tree-structure.excalidraw, two frames: 1 · the ladder, each
+layer with its specials and its variants (the old frames 2-7 removed, JL 261007), and 2 · Studio sNN and Block,
+Job, Task, Delivery, which was s09's frame until s09 merged into s01 (JL 261012; studio_delivery_frame.py).
 
-The variant trees below are defined here and drawn by s11-s13 and the theme Blocks' ladders, each into its own drawing.
+The variant trees below are defined here and drawn by the theme Blocks' ladders, each into its own drawing
+(s11-s13 drew them too until they were deleted on 261012).
 
 One tree from Space down to Run, each layer one step down and to the right (JL 261006):
 
@@ -123,7 +125,7 @@ LAYERS = [  # (layer, node, [specials], [variants])
             "define": "its soft Runs: plan, launch and review its Tasks; no evidence here",
             "node": "README.md", "node_define": "the run types it has: tools write it, never by hand",
             "tree": [("run-plan-tasks", "→ the face's task_groups · new tNN_ · haipipe-task-plan"),
-                     ("run-launch-<group> ?", "→ sbatch/: its Tasks' hard Runs · haipipe-task-run ?"),
+                     ("run-launch-<group>", "→ sbatch/: its Tasks' hard Runs · later: haipipe-task-run"),   # s01-D40
                      ("run-review-job", "→ the face: state · next · haipipe-task-review"),
                      ("run-report-<qNN>", "→ its reports/; its outputs go to the Block's delivery/")]}),
         sp("tNN_<task>/ …", "holds its Tasks", holds=True)],
@@ -172,7 +174,7 @@ SKILLS = {  # Tools/ at the far right; one skills box per layer, read right to l
               "haipipe-insight", "haipipe-design", "haipipe-labeling"],
     "Block": ["haipipe-<family>  (owns bNN_<topic>.md)", "haipipe-question", "workbench-<family>",
               "excalidraw-report  (studio/)"],
-    "Job": ["haipipe-task", "haipipe-cowork", "? one Job skill per Theme"],
+    "Job": ["haipipe-task", "haipipe-cowork", "later: one Job skill per Theme"],   # s01-D40: closed, no longer red
     "Task": ["haipipe-task", "haipipe-draft", "haipipe-draft-workflow", "haipipe-discovery-inquiry"],
     "Run": ["haipipe-run  (hard and soft)", "haipipe-workflow"],
 }
@@ -309,7 +311,7 @@ def draw_special(s, sx, sy, child_x=None):
     return bottom
 
 
-LAYER_NOTES_S01 = {  # b10 s09 (JL 261010): each under its layer's box, where "on screen" is written
+LAYER_NOTES_S01 = {  # s09-D01, D05, now frame 2 (JL 261010): each under its layer's box, where "on screen" is written
     "Block": "✎ 261010 top row: Studio | Block · Job · Task | Delivery"}
 
 
@@ -1912,5 +1914,24 @@ def tools_frame(name, skills, code, around=(), note=""):
 
 if __name__ == "__main__":
     draw()
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import index_frame                               # frames 3 and 4, the SPACE Home index (261012, s01-D38, D39)
+    import studio_delivery_frame                     # frame 2, was s09's (merged 261012, s01-D37)
+    studio_delivery_frame.draw(sys.modules[__name__])
+    canvas.grid(els, [[e["id"] for e in els if e["type"] == "frame"]])   # the ladder, then frame 2, in one row
+    (f3, f4), files = index_frame.draw(sys.modules[__name__])
+    frames = {e["id"]: e for e in els if e["type"] == "frame"}
+    above = next(e for e in frames.values() if str(e.get("name", "")).startswith("2 · "))
+    for fid, says in ((f3, index_frame.words()["arrow_in"]), (f4, index_frame.words()["arrow_on"])):
+        f = frames[fid]                              # below the frame above it, the same left edge
+        dx, dy = above["x"] - f["x"], above["y"] + above["height"] + 340 - f["y"]
+        for e in els:
+            if e is f or e.get("frameId") == fid:
+                e["x"], e["y"] = e["x"] + dx, e["y"] + dy
+        x = f["x"] + 600
+        path([(x, above["y"] + above["height"] + 14), (x, f["y"] - 14)], color=INK)
+        els[-1]["strokeWidth"] = 6
+        text(x + 20, above["y"] + above["height"] + 140, says, 40)
+        above = f
     canvas.write(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / "s01-overall-tree-structure.excalidraw",
-                 els, "build_ladder_v4.py")
+                 els, "build_ladder_v4.py", files=files)

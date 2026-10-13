@@ -21,8 +21,10 @@ class PageViewRouteTest(unittest.TestCase):
         self.assertEqual(serve.new_route_name("/_board/draft", "POST"), "/_board/draft")   # the write twin
 
     def test_board_pages_take_their_themes_names(self):
-        self.assertEqual(serve.new_route_name("/_board/task-board?path=x"), "/_board/work-board?path=x")
-        self.assertEqual(serve.new_route_name("/_board/paper?path=x"), "/_board/paper-board?path=x")
+        """The old names answered as the themes' names until 261012; now they are not renamed (JL: dropped)."""
+        self.assertEqual(serve.new_route_name("/_board/task-board?path=x"), "/_board/task-board?path=x")
+        self.assertEqual(serve.new_route_name("/_board/paper?path=x"), "/_board/paper?path=x")
+        self.assertFalse(hasattr(serve, "OLD_ROUTES"))
 
     def test_only_page_host_serves_page_views_through_the_frame(self):
         self.assertTrue(R.route_allowed("/_board/workbench?view=draft&path=x", {"page"}))

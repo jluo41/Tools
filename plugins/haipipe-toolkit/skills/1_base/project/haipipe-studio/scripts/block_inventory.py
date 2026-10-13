@@ -36,6 +36,7 @@ from pathlib import Path
 FIELD = re.compile(r"(?m)^([a-z][a-z0-9_-]*):[ \t]*(\S.*)$")
 HEAD = re.compile(r"(?m)^#{2,4}[ \t]+(?:\d+[ \t]*·[ \t]*)?(.+\?)[ \t]*$")
 BOLD = re.compile(r"\*\*(.+?)\*\*")
+STATUS = {"state", "status", "stage", "answer-status", "updated", "date"}   # where the work stands, not what it is about
 
 
 def face(folder: Path) -> Path | None:
@@ -76,10 +77,14 @@ def runs(folder: Path) -> list:
     return out
 
 
-def kind_of(name: str) -> str:
-    """A Task's kind: its name less tNN_, cut to its first word (profile_glucose, profile_cgm -> profile)."""
-    stem = re.sub(r"^t\d+_", "", name)
-    return stem.split("_", 1)[0]
+def kind_of(name: str, subject: str = "") -> str:
+    """A Task's kind: its name less tNN_, cut to its first word (profile_glucose, profile_cgm -> profile). A first
+    word that only repeats the Block's subject is skipped: in b10_aidatastore, t01_aidatastore_materialize is a
+    materialize Task, not an "aidatastore" one."""
+    words = re.sub(r"^t\d+_", "", name).split("_")
+    if len(words) > 1 and subject and words[0].lower() == subject.lower():
+        words = words[1:]
+    return words[0]
 
 
 def bucket(answer: str) -> str:
@@ -94,6 +99,7 @@ def read_block(block: Path) -> dict:
     text = md.read_text(encoding="utf-8", errors="ignore") if md else ""
     reg = re.search(r"(?ms)^## Questions[ \t]*\n.*?```ya?ml\n(.*?)```", text)
     jobs = []
+    subject = block.name.split("_", 1)[1] if "_" in block.name else ""     # b10_aidatastore -> aidatastore
     for jf in sorted(p for p in block.glob("j[0-9]*_*") if p.is_dir()):
         jmd = face(jf)
         jtext = jmd.read_text(encoding="utf-8", errors="ignore") if jmd else ""
@@ -101,7 +107,7 @@ def read_block(block: Path) -> dict:
         for tf in sorted(p for p in jf.glob("t[0-9]*_*") if p.is_dir()):
             tmd = face(tf)
             ttext = tmd.read_text(encoding="utf-8", errors="ignore") if tmd else ""
-            tasks.append({"name": tf.name, "kind": kind_of(tf.name), "fields": fields(ttext), "opening": opening(ttext),
+            tasks.append({"name": tf.name, "kind": kind_of(tf.name, subject), "fields": fields(ttext), "opening": opening(ttext),
                           "answers": answers(ttext), "runs": runs(tf)})
         jobs.append({"name": jf.name, "fields": fields(jtext), "opening": opening(jtext), "tasks": tasks})
     return {"name": block.name, "face": md.name if md else None, "fields": fields(text),
@@ -122,6 +128,8 @@ def summarize(b: dict) -> dict:
         values = collections.Counter(t["fields"][key] for _, t in tasks if key in t["fields"])
         per_job = {jn: {t["fields"][key] for j2, t in tasks if j2 == jn and key in t["fields"]} for jn, _ in tasks}
         restates_job = all(len(v) <= 1 for v in per_job.values()) and len(values) > len(b["jobs"]) / 2
+        if key in STATUS:
+            continue
         if (n >= len(tasks) / 2 and 2 <= len(values) < max(3, len(b["jobs"])) and not restates_job
                 and max(len(v) for v in values) <= 60):          # a free-text field is no split
             splits[key] = dict(values.most_common())
@@ -183,7 +191,7 @@ def candidates(b: dict, s: dict) -> dict:
         if per_job and not settled:          # one Task of this kind per Job, not settled the same everywhere
             job_qs.append({"question": q["heading"], "answered_by": f"each Job's {q['kind']} Task"})
     return {"topics": topics, "block_questions": block_qs, "job_questions": job_qs,
-            "task_questions": "each Task's own sub-questions; its report is its face (b10 s07-D06)"}
+            "task_questions": "each Task's own sub-questions; its report is its face (b10 s05-D10)"}
 
 
 def main(argv=None) -> int:

@@ -125,7 +125,7 @@ def workflow(d):
     seven = next(s for s in steps if s["n"] == 7)
     most = max(d["draw_steps"], key=lambda s: float(re.sub(r"[^\d.]", "", s["cost"]) or 0))
     line([(at[7] + bw / 2, top + bh + 4), (at[7] + bw / 2, oy - 6)], dashed=True)
-    text(40, oy, f"7 opened · excalidraw-read/ref/read_revise.py draw: {seven['cost']}, of which {most['cost']} "
+    text(40, oy, f"7 opened · excalidraw-revise/ref/read_revise.py draw: {seven['cost']}, of which {most['cost']} "
                  f"{most['title'][0].lower() + most['title'][1:]}", 23)
     dg, dy, dh = 28, oy + 44, 320
     dw = (W - 80 - dg * (len(d["draw_steps"]) - 1)) // len(d["draw_steps"])
@@ -191,10 +191,10 @@ def history(d):
     for p in d["peers"]:
         y = para(60, y, p, W - 120, 20) + 6
     y += 24
-    text(40, y, "Open", 23, RED)
+    text(40, y, "Later (s21-D04: agreed, these moved to Later)", 23)
     y += 40
-    for n, o in enumerate(d["open"], 1):
-        y = para(60, y, f"? {n}. {o}", W - 120, 20, RED) + 6
+    for n, o in enumerate(d["later"], 1):
+        y = para(60, y, f"⏳ {n}. {o}", W - 120, 20) + 6
     f["height"] = y + 40
     return f
 

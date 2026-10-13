@@ -133,8 +133,9 @@ class ActivityMixin:
                 return cached
             found = []
             for dirpath, dirnames, filenames in os.walk(self.root):
-                dirnames[:] = [d for d in dirnames
-                               if d not in self.SKIP_DIRS and not d.startswith((".", "_"))]
+                dirnames[:] = [d for d in dirnames      # a folder with its own env.sh is another SPACE
+                               if d not in self.SKIP_DIRS and not d.startswith((".", "_"))
+                               and not os.path.isfile(os.path.join(dirpath, d, "env.sh"))]
                 if "board.md" not in filenames:
                     continue
                 here = Path(dirpath)

@@ -23,7 +23,6 @@ are drawn by b03's _build/screens.py (the s11 work Block screens, WORK_BLOCK) an
 """
 from __future__ import annotations
 
-import importlib.util
 import json
 import sys
 import urllib.parse as U
@@ -454,17 +453,65 @@ def shoot(base_url: str) -> None:
     print(f"{len(s.facts) - 1} shots in {SHOTS.relative_to(HERE.parent)}; {len(s.buttons)} buttons met")
 
 
-# ── the planned screens: b03 s11's work Block (WORK_BLOCK), this Block's s01 Job and Task rows ──────
-def _s11():
-    spec = importlib.util.spec_from_file_location("b03_s11_builder", B03S / "s11-block-variants" / "build_s11_block_variants.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+# ── the planned screens: the work Block (WORK_BLOCK, copied from b10's s11-block-variants when JL deleted that
+# topic on 261012), this Block's s01 Job and Task rows ──────
+WORK_BLOCK = [
+    dict(space="Description", third=["Scope", "Resources", "Related"], kind="lines",
+         content=["bNN_<topic>.md", "kind: task-block", "spine: the one line this Block answers",
+                  "covers: <topic> · <topic> · …", "excluded: what it leaves to others", "close: when it is done"],
+         runs=["Update the Block status", "Edit the spine"], recent="run-face-<bNN>   p02 closed",
+         note="the work theme: Resources lists data · code · heavy output", changed=True,
+         today="Scope › Block · Resources (two views)",
+         disk=[("bNN_<topic>/", ""), ("├── bNN_<topic>.md", "Scope: kind · spine · covers · close"),
+               ("│", "Resources: data · code · heavy, in the face"), ("└── related/related.md", "Related: one table")]),
+    dict(space="Idea Studio", kind="rows", content=["s01-<topic>", "s02-<topic>", "s03-question-map"],
+         runs=["Add a topic", "Redraw a topic", "Save this session"], recent="run-draw-s01   p03 open",
+         note="same as the base; s03-question-map is generated, view only",
+         today="Scope › RoadMap Draw (flat studio/*.excalidraw)",
+         disk=[("bNN_<topic>/studio/", "one row per topic folder"), ("├── s01-<topic>/s01-<topic>.excalidraw", "the live drawing"),
+               ("├── s01-<topic>/s01-<topic>.md", "its details, when opened"), ("└── s03-question-map/", "built from the register")]),
+    dict(space="Audience Report", third=["All", "<group A>", "<group B>"], kind="table",
+         heads=["Logic · the question", "Work · Tasks and Runs", "Report · what it says"], cols=(0, 420, 760),
+         content=[("q01 <question>", "j11 › t02 › r03", "<title> · answered"), ("q02 <question>", "j12 › t01", "<title> · draft"),
+                  ("q03 <question>", "—", "asked")],
+         runs=["Ask a Question", "Write the report", "Draw the report", "Check a report"], recent="run-report-q02   p02 closed",
+         note="same as the base: one row per Question, grouped as the register groups them",
+         today="Scope › Questions; Task › <group A> · <group B>",
+         disk=[("bNN_<topic>/bNN_<topic>.md", "the register: Questions and their groups"),
+               ("└── reports/qNN_<topic>/", "a row: the Page, its drawing (generated)"),
+               ("jNN_<job>/tNN_<task>/runs/rNN_<slug>/", "the Work column: the Runs it cites")]),
+    dict(space="Work Details", third=["All", "j0N", "j1N", "j5N"], kind="table",
+         heads=["Job", "Tasks · feeds", "state"],
+         content=[("j01_<data>", "3/3 · Q01", "done"), ("j11_<job>", "3/5 · Q01", "half · waits on t02"),
+                  ("j51_<dataset>", "0/2 · Q02", "stale · 30 days")],
+         runs=["Open a Job", "Update a Job"], recent="run-plan-jobs   p01 closed",
+         note="the work theme names the Job series: j0N data · j1N work · j5N per dataset", changed=True,
+         today="no Job list: Task › Not under a Question; Check › Tasks",
+         disk=[("bNN_<topic>/", ""), ("├── j01_<data>/ · j11_<job>/ · j51_<dataset>/", "one row per Job folder"),
+               ("│   └── jNN_<job>.md", "the row: Tasks · feeds · state"), ("└── jNN_<job>/src/ · sbatch/", "a Job's code (Job tab)")]),
+    dict(space="Runs", third=["All", "draw", "report", "check", "delivery"], kind="table",
+         heads=["Run", "type · writes", "state"],
+         content=[("run-draw-s01", "Draw · s01", "open · p03"), ("run-report-q02", "Write the report · q02", "closed · p02"),
+                  ("run-check-q02", "Check a report · q02", "waiting"), ("run-delivery-d01", "Build · d01", "closed · p01")],
+         runs=["Draw", "Write the report", "Check a report", "Build the report"], recent="run-check-q02   waiting",
+         note="same as the base: a Block's Runs are soft; its Tasks' hard Runs show one level down",
+         today="Check › Runs",
+         disk=[("bNN_<topic>/runs/", "one row per Run folder"), ("├── run-draw-s01/run.yaml", "the row: type · writes · state"),
+               ("└── run-report-q02/passes/p02-<MMDD>/", "the pop-out: its passes")]),
+    dict(space="Delivery", third=["All", "Report", "Export"], kind="lines",
+         content=["its own: empty (optional for a work Block)", "by source", "j11_<job>/t02   Report   released",
+                  "j12_<job>/t01   Report   web · LaTeX"],
+         runs=["Build a delivery", "Release"], recent="run-delivery-web   p01 closed",
+         note="the Block's only delivery/: each part named by its source; sends in delivery.md",
+         today="Delivery › Reports",
+         disk=[("bNN_<topic>/delivery/", "the only delivery/ (s03-D05)"), ("├── jNN_<job>/tNN_<task>/", "a Task's build, under its Job"),
+               ("└── delivery.md", "one row per send: date · for · from · status")]),
+]
 
 
 TD = LV.TASK_DEFAULT
 PLAN = {
-    "block": {d["space"]: d for d in _s11().WORK_BLOCK},
+    "block": {d["space"]: d for d in WORK_BLOCK},
     "job": {      # this Block's s01 GRID, its Job row: the Job takes the Block's six Spaces
         "Description": dict(space="Description", third=["Scope", "Shared code"], kind="lines",
                             content=["jNN_<job>.md   the Job's face", "goal: the one line this Job delivers",

@@ -3,17 +3,32 @@ s01 · Overall tree structure
 
 **Tags:** `Structure`
 
-**Stage:** shaping
+**Stage:** closed
 
 **Topic:** one tree from Space down to Run (Space → Project → Theme → Block → Job → Task →
 Run), each level with its specials, its variants, its skills and where it shows in the
 workbench. Studio topic = creation: drawn and argued here, settled in a report Question.
-Since 261010 the ladder follows `../s09-studio-block-job-task-delivery/`: the Block alone holds
-`studio/` and `delivery/`, every level holds its own `reports/` (s01-D32).
+Since 261010 the ladder follows frame 2: the Block alone holds `studio/` and `delivery/`, every
+level holds its own `reports/` (s01-D32).
+
+Frame 2 was s09 (Studio sNN and Block, Job, Task, Delivery) until s09 merged in here on 2026-10-12
+(s01-D37). It holds how a Block's Studio topics (`studio/sNN-<topic>/`) relate to the Block, its
+Jobs and its Tasks, and how far along each topic is. From the JL meeting of 261010: the Studio is the
+centre's policy paper, one copy per Block, sent down to every level; Block, Job and Task are the
+province, the city and the county, each doing the work and each writing its own report. A reader
+goes to the level to read its report. The Delivery is the Studio's twin: one per Block, collecting
+every level's output under the Block's `delivery/`. A topic stays a draft policy until it is agreed,
+so each sNN carries a stage, and the index shows the stages so the centre sees what moves and what
+does not.
 
 **Feeds:** `reports/q01_bjtr_boundary/` (what each level owns), `q02_bjtr_across_themes/`
 (how each Theme fills the levels), `q05_skill_per_level/` (skills), `q07_workbench_mapping/`
-(where each level shows on screen).
+(where each level shows on screen), `q03_block_questions/` and `q09_studio_report_on_screen/`
+(frame 2, from s09).
+
+**Source** (frame 2): `../../related/meetings/2026-10-10-1800 研究项目工作流程设计与结构优化.md`
+([58:10] centre and province, city, county; [58:26] and [74:02] a report at every level;
+[74:18] what the centre must write; [32:34] Delivery at the top level)
 
 
 Files
@@ -22,9 +37,11 @@ Files
 ```text
 s01-overall-tree-structure/
 ├── s01-overall-tree-structure.md   this face: what is decided, what is open
-├── s01-overall-tree-structure.excalidraw   the drawing: frame 1 · The ladder (was ladder-v3-proposed)
+├── s01-overall-tree-structure.excalidraw   the drawing: 1 · The ladder, 2 · Studio sNN and Block, Job, Task, Delivery
 ├── s01-overall-tree-structure.png          its preview
-├── build_ladder_v4.py              draws it; also holds the variant trees s11-s13 and the theme ladders draw
+├── build_ladder_v4.py              draws it; also holds the variant trees the theme ladders draw
+├── studio_delivery_frame.py        frame 2, was s09's builder (merged 261012, s01-D37)
+├── history/                        s09's face, drawing and builder; this face before the merge
 ├── level_views.py                  the screens per Level and Space, shared by s11-s13 and the theme ladders
 ├── run-skill-draft.md              the Run change to haipipe-run and haipipe-project (applied 261006)
 ├── theme-rename-plan.md            the move to work/ and singular Theme folders (s01-D28, D29): phases
@@ -41,12 +58,56 @@ What the drawing holds
 1 · The ladder             a node per level; specials branch right; a green "holds" arrow drops
                            to the next level; definition + variants box under each; Tools/ at the
                            far right, its skills pointing back into each level
+2 · Studio sNN and Block,  left: the Block's Studio issues down to Block, Job and Task, each level
+    Job, Task, Delivery    writes its own report, the Block's Delivery collects every level's
+                           output; right: the stage of one sNN, its gate, the index (was s09)
+3 · The SPACE Home index   frame 2's INDEX box drawn out: one read of the disk, the Chart and the List,
+                           and the Guide's SPACE and Project buttons back to it (s01-D38, D39)
+4 · The index today        the two screens as they look on 2026-10-12 (pictures, taken by hand)
 ```
 
-The variants that were frames 2-4 are their own topics now: `../s11-block-variants/`,
-`../s12-job-variants/`, `../s13-task-variants/`. The old frames 5 (Task → Run) and 6-7
+Frames 3 and 4 are drawn by `index_frame.py` on excalidraw-studio's `draw.py` (JL 261012: "for the s01 we want to
+put the index to it, the design of the index of the chart and list"); their words are this yaml block, and the two
+screens are `index-chart-261012.jpg` and `index-list-261012.jpg` beside this face.
+
+```yaml
+index_drawing:
+  title: "3 · The SPACE Home index: Chart and List"
+  key: "One read of the disk draws both views; every Guide leads back to its SPACE and its Project."
+  flow:
+  - title: "📂 On disk"
+    lines: ["Block, topic, Job and Task faces", "each topic's drawings"]
+  - title: "🗂 chart_data"
+    lines: ["one read, one tree", "SPACE → Project → Block → Job"]
+  - title: "📊 Chart · Progress"
+    lines: ["a ring per level", "coloured by each face's state:"]
+  - title: "📋 List · Index"
+    lines: ["a Block row folds open", "🧠 Studio rows · 🗂 Job rows"]
+  labels: ["read by", "draws", "or, a button"]
+  way_in:
+  - title: "🧭 a Block's Guide"
+    lines: ["[SPACE] [Project]"]
+  - title: "🏠 SPACE"
+    lines: ["the whole Home"]
+  - title: "📁 Project"
+    lines: ["that Project only"]
+  way_labels: ["SPACE opens", "Project opens"]
+  open:
+  - "later: the chart colours each sNN by its stage (s09-D04)"
+  - "later: Current, kept in one browser only"
+  - "later: folds and Project order, one browser only"
+  screens_title: "4 · The index today: the two screens"
+  screens_sub: "Taken by hand on 2026-10-12 from WellDoc (port 5622): left, the Chart sized by Block count, coloured by each face's state:; right, the List for Project-Samsung with b11 open, its Studio rows and its Job rows."
+  screens: ["index-chart-261012.jpg", "index-list-261012.jpg"]
+  arrow_in: "the INDEX box, drawn out"
+  arrow_on: "looks like this today"
+```
+
+The variants that were frames 2-4 became s11, s12 and s13 (Block, Job and Task variants), deleted on
+2026-10-12 at JL's ask. The old frames 5 (Task → Run) and 6-7
 (Workbench UI, Level · Space · Subspace) were removed with their builder (JL 261007); the
-notes below still name them by number.
+notes below still name them by number. Today's frame 2 is a different one: s09's frame, added when
+s09 merged in (s01-D37).
 
 
 Decided so far
@@ -306,6 +367,67 @@ s01-D36 · A Task is a folder that may hold a draft, not a Page (JL 261011, aske
     face; the Page is the face and its built output. haipipe-task 1.13.0, haipipe-folder 0.8.0 and
     haipipe-draft 0.126.0 (was haipipe-page) say so. In WellDoc, 102 Task folders hold `draft/`;
     compute Tasks hold none.
+s01-D37 · s09 (Studio sNN and Block, Job, Task, Delivery) is merged into s01 (JL 261012: "plesae merge the
+    s09 to the s01"). Its one frame is s01's frame 2, drawn by `studio_delivery_frame.py`; its decisions
+    keep their ids, s09-D01 to D09, below; its Later list is under Open. Its old face, drawing and
+    builder are in `history/`. The number s09 is retired; b10 has 12 topics.
+    Later the same day, at JL's ask, the number came back for a new topic, `../s09-block-folder/` (the Studio's
+    Folder part, what the Block folder holds); its decisions start at s09-D10, after these. The old s09's one
+    session moved to `history/run-draw-s09/`.
+s01-D38 · SPACE Home's List · Index folds each Block (JL 261012: "for each block, I want them to be collapable as
+    well, and show to groups of the cards, a group of studio and a group of the jobs"). A Block card starts
+    folded and shows its counts (🧠 topics · 🗂 Jobs); open, it holds two groups: Studio, one row per sNN read
+    as the workbench's Studio list (its folder name, tags, ↗ to the topic in the Studio, the stage pill; opened,
+    its first drawing, live and read-only, loaded only then; JL 261012: "it is more like this ... and I can
+    preview the content of the draw as well", replacing the first cards), and Jobs, one row per jNN the same way
+    (its folder name, title and Task count, ↗ to the Job, its status; opened, its Tasks and its face, read in
+    place; JL 261012, on the Job cards: "could you make it to do the same?"). The cards read the same data the Chart · Progress view draws; a search that hits a
+    topic or Job opens its Block; a person's folds are remembered in the browser. This is the INDEX box of
+    frame 2 (s09-D04), built in `servers/space-home/home.py`.
+s01-D39 · SPACE Home shows one Project from a link, and every workbench Guide has that link (JL 261012: "could you
+    make the index to be SPACE, and also I want to have a link to the Project"). The Guide's first two buttons
+    are SPACE (the SPACE Home, was Index) and Project, `/?project=<Project folder>`: the Home with only the
+    folder's Project. A folder outside any Project gets its SPACE bucket instead, `/?project=shared:space`
+    (SPACE / Shared) or `shared:tools`, which `?project=` now takes by its key. The Guide's buttons are
+    s02-D31's; the Home's filter is this topic's.
+s01-D40 · Stage → closed (JL 261012: "we can close s00 and s01"). Its Open points moved to Later and none blocks it: the ladder, the
+    Studio and Delivery at the Block (frame 2) and the SPACE Home index (frames 3 and 4) stand as drawn. The
+    drawing's red questions became black later lines, with a green note.
+
+
+From s09 (merged 2026-10-12)
+----------------------------
+
+s09 was agreed on 261011 (s09-D09). Its decisions, unchanged:
+
+s09-D01 · The Block's Studio is the centre: one copy per Block, shared down to its Jobs and
+    Tasks. It holds the plan (the drawing), the decisions, and what each level must report
+    (JL meeting 261010 [58:10], [73:52]; the same rule as s02-D03 and s02-D09).
+s09-D02 · Every level reports: Block, Job and Task each have their own Report, and a reader goes
+    to the level to read it, as low as a Task and as high as the Block (JL meeting 261010 [58:26],
+    [74:02]). This fills the Report half left open by s02-D06.
+s09-D03 · Each sNN has a stage: explore · shaping · agreed · closed. A person moves it; the gate
+    (red marks left, Open items, dated decisions, frame checks) only counts and never moves it
+    (JL 261010).
+s09-D04 · The index shows each sNN's stage and what we are working on now, so the centre sees at
+    a glance what moves and what does not (JL 261010).
+s09-D05 · Delivery is Block-level, the same as the Studio: only the Block holds `delivery/`. Job
+    and Task outputs keep their source path under it (`delivery/jNN_<job>/tNN_<task>/<lane>/`), and
+    the Job and Task views show their own part (JL 261010; confirms s02-D14 over the meeting's
+    "top level across Blocks" [32:34]). Refined by s03-D06 (261011): from a Job or Task, the
+    top row's Delivery opens the Block's Delivery with the open source picked, as Studio does.
+s09-D06 · The topic is renamed s09-studio-block-job-task-delivery, so its name carries Delivery
+    beside Block, Job and Task (JL 261010). The number s09 and its decision ids stay.
+s09-D07 · Every b10 topic has a **Stage:** line under its Tags (261010, JL asked; set by Claude from
+    the gate counts): 8 shaping (decisions made, open points or red marks left: s01 s02 s04 s05 s09
+    s21 s31 s32), 4 explore (no decisions yet: s11 s12 s13 s51). None is agreed: agreed needs JL's
+    sign. The shared Studio shows the stage as a badge before each topic's name.
+s09-D08 · Each level's report lives in its own folder: a Job's in `jNN_<job>/reports/qNN_<topic>/`, a
+    Task's in `tNN_<task>/reports/qNN_<topic>/`, the Block's in its `reports/` (JL 261010). This answers
+    Open 1; the Block's Report view lists all three by source, as the Studio does.
+s09-D09 · Stage → agreed (JL 261011: "I think for the s09, it can be closed as well"). Open 1 was settled
+    by s09-D08 and Open 7 moved to s03; the other five wait under Later, and none blocks it. The
+    drawing's red questions became a black later list with a green note.
 
 
 JL's notes on ladder-v3 (261006)
@@ -336,6 +458,14 @@ Also fixed in v4: frame 1's Block skills named `haipipe-block`, which no longer 
 Open
 ----
 
+(none: closed 261012, s01-D40)
+
+
+Later
+-----
+
+Not needed now; each comes back as a new point if it is wanted (the Open list when s01 closed, s01-D40).
+
 0. Runs: applied 261006 as haipipe-run 0.31.0 and haipipe-project 0.11.0 (audit and update
    at every level); `run-skill-draft.md` records what was taken. Next: haipipe-task's ticket
    template writes `runs/<run>/`, then the move, one Block at a time.
@@ -362,3 +492,18 @@ Open
    checks in Delivery › Reports? Proposed in s01-D18: no Check Space at any level. Still open:
    insight's seven gates as a column of its Insight rows?
 9. Save check for plain drawings in the workbench, so a stale tab cannot overwrite a build.
+
+
+Later (from s09)
+----------------
+
+Not needed now; each comes back as a new point if it is wanted.
+
+1. What each kind of Block, Job and Task must report: the centre writes it; learn it on one real
+   Block first ([74:18]).
+2. Who writes the decision row that moves a stage, and whether the workbench gets a button for it.
+3. Current (what we work on now) is saved in one browser; the index can only show it once it is
+   a file in the Block.
+4. Does the 10-topic cap count only explore and shaping topics? b10 had 16 topics on 261010, 12 on 261012.
+5. A deliverable that crosses Blocks (a meeting deck): does it get its own Block, as a paper Board
+   already is? (Where Delivery lives is settled by s09-D05; its design is s03's.)

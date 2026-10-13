@@ -1,0 +1,44 @@
+run: run-draw-s52
+kind: soft
+type: draw
+scope: null
+target: s52
+ticket: run-draw-s52.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1012
+- p02-1012
+- p03-1012
+- p04-1012
+- p05-1012
+- p06-1012
+- p07-1012
+- p08-1012
+- p09-1012
+- p10-1012
+- p11-1012
+- p12-1012
+- p13-1012
+- p14-1012
+- p15-1012
+- p16-1012
+- p17-1012
+writes:
+- blueprints/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.md
+- blueprints/b10_project_workbench/studio/s52-host-and-share/build_s52_host_and_share.py
+- blueprints/b10_project_workbench/studio/_build/story.py
+- blueprints/b10_project_workbench/studio/s51-server-runtime/build_s51_server_runtime.py
+- plugins/haipipe-toolkit/servers/_host/live/share.py
+- plugins/haipipe-toolkit/servers/_host/serve.py
+- plugins/haipipe-toolkit/servers/_host/tests/test_share.py
+- plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_share.py
+- s52-host-and-share.md
+- build_s52_host_and_share.py
+- s52-host-and-share.excalidraw
+- s52-host-and-share.png
+- _build/story.py
+feeds:
+- reports/q12_space_hosting

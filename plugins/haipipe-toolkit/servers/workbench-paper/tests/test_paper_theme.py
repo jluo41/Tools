@@ -57,7 +57,7 @@ SUBS = {"Description": ("Scope", "Venue", "Resources"), "Related": ("",), "Idea 
         "Audience Report": ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions",
                             "Related Papers"),
         "Work Details": ("Jobs", "Main", "Appendix", "Evidence"), "Runs": ("",),
-        "Delivery": ("LaTeX", "Word", "Cover letter", "Rounds")}
+        "Delivery": ("delivery/", "LaTeX", "Word", "Cover letter", "Rounds")}
 
 
 class PaperThemeTest(unittest.TestCase):
@@ -118,6 +118,32 @@ class PaperThemeTest(unittest.TestCase):
         self.assertIn("&lt;paper-a&gt;", body.split("<h3>RQ2</h3>")[1])
         self.assertNotIn("&lt;email-b&gt;", page)
         self.assertNotIn("<h3>emails</h3>", page)
+
+    def test_related_papers_by_bears_on_when_the_table_has_it(self):
+        # JL 261013: the Studio groups related items by kind, so what a paper bears on has its own column
+        (self.board / "related").mkdir(parents=True, exist_ok=True)
+        (self.board / "related" / "related.md").write_text(
+            "| kind | date | item | link | feeds | group | bears on |\n|---|---|---|---|---|---|---|\n"
+            "| paper | 2024 | <paper-a> | https://doi.org/x | s01 |  | Closest: LLMs, i02 Guardrail |\n", encoding="utf-8")
+        page = frame.render(self.theme, self.root, self.board, "Audience Report", "Related Papers")
+        self.assertIn("<h3>Closest: LLMs</h3>", page)
+        self.assertIn("<h3>i02 Guardrail</h3>", page)
+        self.assertNotIn("<h3>paper</h3>", page)
+
+    def test_a_related_paper_links_its_deep_read_in_one_folder_per_run(self):
+        # a Discovery Paper Run keeps its Result at runs/<run>/result/, its files named by the Run, not result
+        run = "r01_demo2026_paper"
+        result = (self.board.parents[1] / "discovery" / "b01_demo_board" / "j01_demo_job" / "t01_demo_task"
+                  / "runs" / run / "result")
+        result.mkdir(parents=True)
+        (result / f"{run}.md").write_text("# demo card\n", encoding="utf-8")
+        (self.board / "related").mkdir()
+        (self.board / "related" / "related.md").write_text(
+            "| kind | date | item | link | feeds | group | read |\n|---|---|---|---|---|---|---|\n"
+            "| paper | 2026 | <paper-a> | https://doi.org/x | s01 | RQ1 | b01.j01.t01.r01 |\n", encoding="utf-8")
+        page = frame.render(self.theme, self.root, self.board, "Audience Report", "Related Papers")
+        self.assertIn("read r01 ↗", page)
+        self.assertNotIn("no deep read yet", page)
 
     def test_a_section_folder_is_left_to_the_base(self):
         # a Section is a Page Task: its Spaces are the base's Page Task views (frame.page_task_spaces,
@@ -384,6 +410,24 @@ class LayoutsTest(unittest.TestCase):
         for sub in ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions", "Related Papers"):
             html = spaces("Block", board, root, sub)["Audience Report"].html
             self.assertNotIn("No Story yet", html, sub)
+
+    def test_the_ideas_table_reads_verdict_and_went_to_by_name(self):
+        # haipipe-paper-ideation 1.3.0 orders the Ideas (ranked) columns novelty · pilot · venue fit · verdict ·
+        # target · went to, so the verdict is the sixth cell, not the fifth
+        from live import paper as P
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        board = Path(tmp.name) / "examples-demo" / "Project-Demo" / "paper" / "Paper-Demo"
+        (board / "studio" / "s01-ideation").mkdir(parents=True)
+        (board / "board.md").write_text("# Paper-Demo\n\nboard-kind: paper-board\n", encoding="utf-8")
+        (board / "studio" / "s01-ideation" / "s01-ideation.md").write_text(
+            "# s01-ideation\n\n## Content\n\n### 4 · Ideas (ranked)\n\n"
+            "| id | idea | novelty | pilot | venue fit | verdict | target | went to |\n|---|---|---|---|---|---|---|---|\n"
+            "| i01 | <a question?> | partial | PENDING | 🔶 screen | ⬜ open | — | — |\n", encoding="utf-8")
+        (board.parents[1] / "project.yaml").write_text("name: Demo\n", encoding="utf-8")
+        idea = P.ideation(P.collect(board, "x"))["ideas"][0]
+        self.assertEqual(idea["verdict"], "⬜ open")
+        self.assertEqual(idea["went"], "—")
 
     def test_each_sections_build_state_links_back_to_it(self):
         # JL 261011: "how could the delivery from the section level link back to the block level delivery"

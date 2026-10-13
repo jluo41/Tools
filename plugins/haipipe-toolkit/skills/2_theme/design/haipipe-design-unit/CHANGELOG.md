@@ -1,5 +1,6 @@
 # haipipe-design-unit · version history
 
+- 261012 · rank writes every prediction in percentage points (`+x pp [lo; hi]` against the control), never a relative `%`, bare points or no unit (JL 261012: the Block Summary read j01 `+5%` beside j04 `+3.6`); `references/rank.md`.
 - 261007 · review fixes (version unchanged): Description lists revise as soft and gains a Trigger line; the draft and verdict reach the Task only by haipipe-design-workflow's project_draft.py; revise passes hold design.md · elements.yaml · feedback.md and draft k = 1 + the passes; T2 when the method's ④ lists it, T3 moved to t99's rank; a step may carry its own from; the strict fence rule; every idea has a name; a verify sets by: different from the generator's; a fix needing a new input is a hold, never a revise; the older-boards example uses placeholders.
 
 ## 0.4.1 current · 2026-10-07 · One step of a method on the ladder (JL 261007) (version unchanged at 0.4.1; the Design family version is frozen)

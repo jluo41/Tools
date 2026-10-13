@@ -2,8 +2,8 @@
 
 Plan C (Tools/blueprints/b11_theme_insight): the Prototype (questions + scripts) is its own work Block whose
 Jobs are versions (j0N_pN/); the insight Board holds one dataset with dated versions, and its Jobs pin one
-Prototype version and one data version (j0N_pN_<d>vM/). No real names and no data values: every value is a
-placeholder. `make(root)` writes the Project under root and returns its folder.
+Prototype version and one data version (jNN_prototype-pN_data-<d>vM/, a release without a slug). No real names
+and no data values: every value is a placeholder. `make(root)` writes the Project under root and returns its folder.
 
     python plan_c_fixture.py <out-dir>
 """
@@ -32,16 +32,16 @@ RELEASES = {   # release -> {qid: (release that holds its Task, change in this r
            "K02": ("p1", "kept"), "W01": ("p1", "kept"), "I04": ("p2", "new")},
 }
 JOBS = [   # (job, release, data version, state, moved, previous Job)
-    ("j01_p1_demov1", "p1", "v1", "closed", "start", ""),
-    ("j02_p1_demov2", "p1", "v2", "closed", "data", "j01_p1_demov1"),
-    ("j03_p2_demov2", "p2", "v2", "closed", "code", "j02_p1_demov2"),
-    ("j04_p2_demov3", "p2", "v3", "open", "data", "j03_p2_demov2"),
+    ("j01_prototype-p1_data-demov1", "p1", "v1", "closed", "start", ""),
+    ("j02_prototype-p1_data-demov2", "p1", "v2", "closed", "data", "j01_prototype-p1_data-demov1"),
+    ("j03_prototype-p2_data-demov2", "p2", "v2", "closed", "code", "j02_prototype-p1_data-demov2"),
+    ("j04_prototype-p2_data-demov3", "p2", "v3", "open", "data", "j03_prototype-p2_data-demov2"),
 ]
 VS = {   # the run-compare reports: job -> {qid: (status, why)}
-    "j02_p1_demov2": {"D01": ("held", "data moved: v1 → v2"), "I01": ("held", "data moved: v1 → v2"),
+    "j02_prototype-p1_data-demov2": {"D01": ("held", "data moved: v1 → v2"), "I01": ("held", "data moved: v1 → v2"),
                       "K01": ("held", "data moved: v1 → v2"), "K02": ("changed", "data moved: v1 → v2"),
                       "W01": ("held", "data moved: v1 → v2")},
-    "j03_p2_demov2": {"D01": ("held", "code moved: p1 → p2"), "I01": ("new finding", "code moved: p1 → p2"),
+    "j03_prototype-p2_data-demov2": {"D01": ("held", "code moved: p1 → p2"), "I01": ("new finding", "code moved: p1 → p2"),
                       "K01": ("changed", "code moved: K01's script fixed in p2"),
                       "K02": ("not comparable", "part-b was refused in j02"), "W01": ("held", "code moved: p1 → p2"),
                       "I04": ("new question", "asked first in p2")},
@@ -65,7 +65,7 @@ def _prototype(base: Path) -> None:
     proto = base / PROTO
     _write(proto / "board.md", _front({"board-kind": "prototype", "serves": BOARD},
                                       "# b01 · <topic> Prototype\n\nThe questions and their scripts, by version.\n"))
-    _write(proto / "proposals" / "p001-a-cut.md", _front({"kind": "cut", "from": "j03_p2_demov2", "state": "open"},
+    _write(proto / "proposals" / "p001-a-cut.md", _front({"kind": "cut", "from": "j03_prototype-p2_data-demov2", "state": "open"},
                                                          "# Propose a cut\n\n<why this cut>\n"))
     _write(proto / "proposals" / "p002-a-question.md", _front({"kind": "new question", "from": "q02_moved",
                                                                "state": "open"}, "# A new question\n\n<the ask>\n"))
@@ -123,10 +123,10 @@ def _board(base: Path) -> None:
     _write(board / "studio" / "s01-question-map" / "s01-question-map.md", "**Topic:** the question map, generated.\n")
     for run, rtype, target in (("run-coverage", "coverage", "every Job"), ("run-track-k01", "track", "K01"),
                                ("run-consistency-j02-j03", "consistency", "j02 · j03"), ("run-report-q03", "report", "Q03"),
-                               ("run-add-j04", "add", "j04_p2_demov3")):
+                               ("run-add-j04", "add", "j04_prototype-p2_data-demov3")):
         _write(board / "runs" / run / "run.yaml", yaml.safe_dump(
             {"run": run, "kind": "soft", "type": rtype, "target": target, "status": "closed", "passes": 1}, sort_keys=False))
-    _write(board / "delivery" / "handoff-w01.md", _front({"counsel": "W01", "job": "j03_p2_demov2",
+    _write(board / "delivery" / "handoff-w01.md", _front({"counsel": "W01", "job": "j03_prototype-p2_data-demov2",
                                                           "signed": "✅ <initials> <date>"},
                                                          "# W01 · the counsel\n\n<the counsel, one paragraph>\n"))
     order = list(QUESTIONS)
@@ -147,7 +147,7 @@ def _board(base: Path) -> None:
                 continue
             names = list(PARTS) + (["cross"] if level in ("information", "knowledge") else [])
             for k, part in enumerate(names, 1):
-                refused = q == "K02" and part == "part-b" and job == "j02_p1_demov2"
+                refused = q == "K02" and part == "part-b" and job == "j02_prototype-p1_data-demov2"
                 rdir = tdir / "runs" / f"r{k:02d}_{part}"
                 _write(rdir / "run.yaml", yaml.safe_dump({
                     "run": rdir.name, "kind": "hard", "type": "cross" if part == "cross" else "partition", "partition": part,

@@ -1,8 +1,8 @@
 """The insight theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
 Two layouts (b11, 261007). Plan C (a Board whose board.md names its `prototype:`, or whose Jobs pair a
-release and a data version, j0N_pN_<d>vM/): every level is drawn by insight_views.py from the folders
-(insight_plan_c.py): the Board (s11), a Job (s12), a Task (s13). Today's layout (a register board in
+release and a data version, jNN_prototype-pN-<slug>_data-<d>vM/): every level is drawn by insight_views.py
+from the folders (insight_plan_c.py): the Board (s11), a Job (s12), a Task (s13). Today's layout (a register board in
 insights/, or an Insight Block in tasks/ claimed by `workbench: insight`): the Block tab below, from the
 old page's data, with b11's Map, the Reading row (Coverage · Tracks · Consistency · Findings) and Check's
 gates as chips on each question row; its Jobs and Tasks stay the base's own.
@@ -318,14 +318,6 @@ RUN_NAMES = {"Prepare extract": "run-add-version-<d>vM", "Ask": "run-ask-<L><NN>
              "Information runs": "rNN_<partition>", "Mechanical check": "run-check-alignment-<tNN>",
              "Answer review": "run-check-<tNN>", "Handoff draft": "run-draft-handoff"}
 
-def option(folder):
-    """The Job ▾ menu (JL 261011, "this is very hard to understand"): `j01 · first ladder × first 5 days`, the
-    Job's analysis plan and data freeze in words; any other folder keeps its own name."""
-    from live import insight_plan_c as P
-    if P.JOB_NAME.match(folder.name) and (folder.parent / "board.md").is_file():
-        return (f"{folder.name.split('_', 1)[0]} · {P.job_title(folder)}", "")
-    return None
-
 
 THEME = Theme(name="insight", label="Insight", icon="🔎", guide="insight", spaces=spaces, claims=claims,
-              run_names=RUN_NAMES, option=option)
+              run_names=RUN_NAMES)

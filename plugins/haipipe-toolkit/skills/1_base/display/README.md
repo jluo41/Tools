@@ -22,6 +22,8 @@ excalidraw-report/          🗺 dense hand-drawn scratch · real trees, receipt
                                open-question stickies; the person keeps drawing on it
 excalidraw-read/            🗺 one paper on a canvas · its logic, key passages shot
                                with the quote highlighted, comments, links to our paper
+excalidraw-revise/          🗺 a file we change · each section's page beside the updated
+                               sentences, a note per change, the tracked Word file last
 html-to-svg/ · icon-to-svg/ 🔧 converters
 figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and

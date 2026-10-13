@@ -28,7 +28,7 @@ Every Run button of the frame now names the skill that owns it, through a `skill
 
 The level and Space skills are [haipipe-block](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-block/SKILL.md), [haipipe-job](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-job/SKILL.md), [haipipe-studio](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md), [haipipe-question](../../../../plugins/haipipe-toolkit/skills/1_base/question/haipipe-question/SKILL.md) and [haipipe-report](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/SKILL.md); [haipipe-task](../../../../plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/SKILL.md), [haipipe-run](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-run/SKILL.md) and [haipipe-project](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/SKILL.md) hold the levels around them. <!-- realizes: C2.P2.B1 -->
 The button table is haipipe-run's [run-types-by-space](../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-run/ref/run-types-by-space.md) reference, and the frame sets each button's skill in [frame.py](../../../../plugins/haipipe-toolkit/servers/workbench/frame.py). <!-- realizes: C2.P2.B2 -->
-The [s21 topic](../../studio/s21_project-run-skill/s21_project-run-skill.md) reads the frame back at build time and finds every button naming its owner; two of its frames are this report's figures. <!-- realizes: C2.P2.B3 -->
+The [s21 topic, now part of s10](../../studio/s10-haipipe-project/s10-haipipe-project.md) reads the frame back at build time and finds every button naming its owner; two of its frames are this report's figures. <!-- realizes: C2.P2.B3 -->
 
 ### 3 · Limits
 
@@ -47,7 +47,7 @@ Check this report again in a fresh context before it is called answered. <!-- re
 
 ```yaml
 figures:
-- from: ../../studio/s21_project-run-skill/s21_project-run-skill.excalidraw
+- from: ../../studio/s10-haipipe-project/history/s21_project-run-skill.excalidraw
   frame: "It names one skill"
   caption: who owns each Space at each level, one skill per level and one per shared Space
 ```

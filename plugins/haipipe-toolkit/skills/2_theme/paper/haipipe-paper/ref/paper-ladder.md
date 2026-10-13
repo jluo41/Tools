@@ -26,7 +26,7 @@ release, send or submission approval.
 Q01 and Q04, and Q05 for this file; was paper-structure.md.) A paper sits on the shared ladder: one Board per
 paper, one Job per version (one send to one venue), one Task per Section, the Abstract or a letter, and the Runs
 that make and check them. On screen every level shows the shared frame's two rows (b10_project_workbench s02,
-s09, s04-D05): the top row `Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, whose Studio
+s01, s04-D05): the top row `Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, whose Studio
 (with Related folded under its topic cards) and Delivery are the Board's alone and open the same from every
 level; and each level's own work row, `Description | Report | Work | Runs`. The paper workbench fills them (servers/workbench-paper/paper_theme.py).
 `scripts/paper_ladder.py` makes each folder.

@@ -1,36 +1,159 @@
 <!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>🎨 Design · j03_g01_m04</title><link rel="icon" href="data:,"><style>
-:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--acc:#3e5c84;--acc-soft:#e6edf5;--card:#fff;--ok:#24733d;--warn:#996b00;--miss:#c92a2a;--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff}
-@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--line:#2c2e33;--acc:#8aa7cc;--acc-soft:#22304a;--card:#161719;--ok:#8bd49a;--warn:#e4bd62;--miss:#ff8787;--tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749}}
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--acc:#3e5c84;--acc-soft:#e6edf5;--card:#fff;--ok:#24733d;--warn:#996b00;--miss:#c92a2a;--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff;--wash:#f6f6f7;--grp-fixed-bg:#e9ecef;--grp-fixed-line:#868e96;--grp-sug-bg:#fff4e6;--grp-sug-line:#f08c00}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--line:#2c2e33;--acc:#8aa7cc;--acc-soft:#22304a;--card:#161719;--ok:#8bd49a;--warn:#e4bd62;--miss:#ff8787;--tab-line:#414852;--tab-on:#91caff;--tab-wash:#253749;--wash:#1d1f22;--grp-fixed-bg:#2b2f34;--grp-fixed-line:#868e96;--grp-sug-bg:#3b2a12;--grp-sug-line:#d9822b}}
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:0 0 6px}a{color:var(--acc)}.mut{color:var(--mut);font-size:13px}
+main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}
+/* the level row is the page index, the title under it the page's own title, wide gaps (b03 s32-D13, JL 261008) */
+nav.levels{margin:0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+/* a faint line between the Spaces row and the view row, as light as the one under the index (JL 261008) */
+nav.subs{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.page-title .lv{color:var(--mut);font-weight:400}h2{font-size:16px;margin:0 0 6px}a{color:var(--acc)}.mut{color:var(--mut);font-size:13px}
 .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:8px 0}
 .tab{display:inline-block;padding:4px 12px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;font-size:14px;background:var(--card)}
 .tab.on{border-color:var(--acc);color:var(--acc);font-weight:600}.tab.opt{border-style:dashed}
-.levels select{font:inherit;font-size:14px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);field-sizing:content;max-width:32ch;text-overflow:ellipsis}
+.levels select{font:inherit;font-size:14px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);field-sizing:content;max-width:min(56ch,100%);text-overflow:ellipsis}
 .levels select.on{border-color:var(--acc);color:var(--acc);font-weight:600}
 .levels select:disabled{opacity:.45;cursor:default}
-/* top tabs: the Insight and Design board pages' buttons (b03 s03-element-ui, picked D · E, JL 261007):
+/* top tabs: the Insight and Design board pages' buttons (b03 s32-element-ui, picked D · E, JL 261007):
    16px, 6px corners, a grey border, the open one washed blue; the third row keeps its own until picked */
 .levels .tab,.spaces .tab,.levels select{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid var(--tab-line);
  border-radius:6px;background:var(--bg);color:var(--fg)}
 .levels select{padding:6px 10px}
+.levels .lvl{display:inline-flex}.levels .lvl .tab{border-radius:6px 0 0 6px}
+.levels .lvl select{border-radius:0 6px 6px 0;border-left:0;padding:6px 10px;appearance:none;-webkit-appearance:none;cursor:pointer}
 .levels .tab.on,.spaces .tab.on,.levels select.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
 .levels .tab:hover,.spaces .tab:hover{border-color:var(--tab-on)}
 .spaces .tab.opt{border-style:solid}   /* an optional Space looks like any other (JL 261007) */
 .bar{display:inline-block;width:1px;height:22px;background:var(--fg);margin:0 6px}
 .page-view{display:block;width:100%;height:calc(100vh - 260px);min-height:560px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
-/* the view row (third row): the Page workbench's view buttons (b03 s03-element-ui, picked E, JL 261007; not the
+/* the view row (third row): the Page workbench's view buttons (b03 s32-element-ui, picked E, JL 261007; not the
    small pills): 16px, 6px corners, padding 5px 12px, the open one washed blue */
-.subs .tab{font:400 16px system-ui,sans-serif;padding:5px 12px;border:1px solid var(--tab-line);border-radius:6px;
+.subs .tab,.studio-filters .tab{font:400 16px system-ui,sans-serif;padding:5px 12px;border:1px solid var(--tab-line);border-radius:6px;
  background:transparent;color:var(--fg)}
-.subs .tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
-.subs .tab:hover{border-color:var(--tab-on)}
+.subs .tab.on,.studio-filters .tab.on{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash);font-weight:400}
+.subs .tab:hover,.studio-filters .tab:hover{border-color:var(--tab-on)}
+.studio-filters{margin:0 0 12px;position:sticky;top:8px;z-index:2;padding:4px 0;background:var(--bg)}.studio-filters button{cursor:pointer}.tag-count{font-size:12px;opacity:.7;margin-left:4px}
+.studio-filters .drop-ready{outline:2px dashed var(--tab-on);outline-offset:3px;background:var(--tab-wash)}
+.studio-drag{cursor:grab;flex:none;user-select:none;touch-action:none;color:var(--mut);padding:0 4px}
+.studio-drag:active{cursor:grabbing}.topic.dragging{opacity:.55}
+.studio-drag-preview{position:fixed;z-index:9999;pointer-events:none;padding:8px 12px;border:1px solid var(--tab-on);border-radius:8px;background:var(--bg);color:var(--fg);box-shadow:0 3px 14px #0002;font:600 14px system-ui,sans-serif;max-width:340px}
+.studio-current{font:400 12px system-ui,sans-serif;white-space:nowrap;border:1px solid var(--tab-line);border-radius:6px;padding:3px 7px;background:var(--bg);color:var(--fg);cursor:pointer}
+.studio-current[aria-pressed=true]{color:var(--tab-on);border-color:var(--tab-on);background:var(--tab-wash)}
+/* groups you make and delete (b10 s02-D16): × beside a group deletes it, + Group makes one, × on a topic's chip takes it out */
+.studio-filters.row{gap:8px;padding-top:8px}
+.studio-filters .bar{background:var(--line);height:20px;margin:0 2px}
+/* the × is a small corner badge that shows only under the mouse (JL 261010), so the row keeps even gaps */
+.grp{position:relative;display:inline-flex}
+.grp-emoji{margin-right:6px;font-size:15px}
+.grp>.tab{touch-action:none;user-select:none}.studio-filters.sorting,.studio-filters.sorting .tab{cursor:grabbing}
+.grp.moving>.tab{opacity:.6;border-style:dashed;border-color:var(--tab-on)}.grp.moving .grp-x{display:none}
+.studio-filters .grp-x{position:absolute;top:-7px;right:-7px;width:18px;height:18px;padding:0;border:1px solid var(--tab-line);
+ border-radius:50%;background:var(--bg);color:var(--mut);font:400 12px/16px system-ui,sans-serif;text-align:center;
+ opacity:0;pointer-events:none;transition:opacity .12s}
+.grp:hover .grp-x,.grp:focus-within .grp-x{opacity:1;pointer-events:auto}
+.studio-filters .grp-x:hover{background:var(--warn);border-color:var(--warn);color:#fff}
+.studio-filters .tab.grp-fixed:not(.on),.grp-key.grp-fixed{background:var(--grp-fixed-bg);border-color:var(--grp-fixed-line)}
+.studio-filters .tab.grp-suggested:not(.on),.grp-key.grp-suggested{background:var(--grp-sug-bg);border-color:var(--grp-sug-line)}
+.grp-key{border:1px solid;border-radius:4px;padding:0 5px;color:var(--fg)}
+.grp-new{font:400 14px system-ui,sans-serif;border:1px dashed var(--line);border-radius:6px;padding:6px 12px;background:transparent;color:var(--mut)}
+.grp-new:hover{border-color:var(--tab-on);border-style:solid;color:var(--tab-on);background:var(--tab-wash)}
+.grp-form{display:inline-flex;gap:6px;align-items:center}.grp-form[hidden],.grp-new[hidden]{display:none}
+.grp-form input{font:400 15px system-ui,sans-serif;border:1px solid var(--tab-on);border-radius:6px;padding:5px 10px;width:160px;background:var(--bg);color:var(--fg);outline:none}
+.grp-ok,.grp-cancel{font:400 13px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:4px 10px;background:var(--bg);color:var(--fg);cursor:pointer}
+.grp-ok{border-color:var(--tab-on);color:var(--tab-on)}
+.topic-tags .chip{position:relative}
+.tag-x{position:absolute;top:-6px;right:-6px;width:14px;height:14px;padding:0;border:1px solid var(--line);border-radius:50%;
+ background:var(--bg);color:var(--mut);font:400 10px/12px system-ui,sans-serif;text-align:center;cursor:pointer;
+ opacity:0;pointer-events:none;transition:opacity .12s}
+.chip:hover>.tag-x,.chip:focus-within>.tag-x{opacity:1;pointer-events:auto}
+.tag-x:hover{background:var(--warn);border-color:var(--warn);color:#fff}
+.studio-source{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.studio-source select{font:400 13px system-ui,sans-serif;border:1px solid var(--tab-line);border-radius:6px;padding:4px 8px;background:var(--bg);color:var(--fg)}
+.studio-help,.studio-empty,.studio-status{font-size:13px;margin:8px 0 12px}.studio-status:empty{display:none}
+.studio-topics .topic-pop{margin-left:auto}
+.topic[hidden]{display:none}.topic-tags{display:inline-flex;gap:6px;flex-wrap:wrap}.topic-tags .chip{font-size:12px;color:var(--mut);border-color:var(--line)}
 .wf-table{border-collapse:collapse;width:100%;font-size:14px}.wf-table th,.wf-table td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .wf-table th{font-weight:600;color:var(--mut);font-size:12.5px}
 .topic{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:0 0 8px;overflow:hidden}
-.topic>summary{display:flex;gap:12px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.topic>summary{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.stage{--st:#868e96;--st-bg:#f1f3f5;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 10px 2px 8px;border:1px solid var(--st);border-radius:999px;white-space:nowrap;color:var(--st);background:var(--st-bg)}
+.stage-explore{--st:#2b8a3e;--st-bg:#ebfbee}.stage-shaping{--st:#7048e8;--st-bg:#f3f0ff}.stage-agreed{--st:#1971c2;--st-bg:#e7f5ff}.stage-closed{--st:#495057;--st-bg:#f1f3f5}
+@media(prefers-color-scheme:dark){.stage{--st-bg:transparent}.stage-explore{--st:#8ce99a}.stage-shaping{--st:#b197fc}.stage-agreed{--st:#74c0fc}.stage-closed{--st:#adb5bd}}
+.stage-steps{display:inline-flex;gap:2px}.stage-steps b{width:7px;height:7px;border-radius:2px;border:1px solid var(--st);opacity:.55}.stage-steps b.on{background:var(--st);opacity:1}
+.stage-none{color:var(--mut);border-style:dashed;font-weight:400}
 .topic>summary::-webkit-details-marker{display:none}.topic>summary::before{content:"▸";color:var(--mut)}
 .topic[open]>summary::before{content:"▾"}.topic[open]>summary{border-bottom:1px solid var(--line)}
+.studio-related{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:16px 0 8px;overflow:hidden}
+.related-in .topic>summary{flex-wrap:nowrap}.related-in .topic>summary>.related-head{flex:1 1 auto;min-width:0}.related-in .topic>summary b{font-weight:600}.related-in .topic-pop{margin-left:auto;flex:0 0 auto;max-width:34%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.related-img{display:block;max-width:100%;border-top:1px solid var(--line)}
+.studio-related>summary{display:flex;gap:10px;align-items:baseline;cursor:pointer;padding:9px 14px;list-style:none}
+.studio-related>summary::-webkit-details-marker{display:none}.studio-related>summary::before{content:"▸";color:var(--mut)}
+.studio-related[open]>summary::before{content:"▾"}.studio-related[open]>summary{border-bottom:1px solid var(--line)}
+.studio-related>.related-in{padding:6px 14px 12px}.related-meta{color:var(--mut);font-size:13px}
+.tl-wrap{--tl-time:92px;--tl-dot:28px;--tl-cell:60px;--tl-gcell:100px}.tl-wrap [hidden]{display:none!important}
+.tl-levels{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px}.tl-help{font-size:12px;color:var(--mut);margin-left:8px}
+.tl-levels button{font:inherit;font-size:13px;border:1px solid var(--tab-line);border-radius:6px;padding:2px 10px;background:var(--bg);color:var(--fg);cursor:pointer}
+.tl-levels button[aria-pressed=true]{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}
+.tl-kd{display:inline-block;width:9px;height:9px;border-radius:2px;margin:0 6px 0 2px;flex:0 0 auto}.tl-legend-k .tl-kd{margin-left:10px}
+.k-decided{background:var(--ok)}.k-session{background:var(--acc)}.k-drawing{background:var(--warn)}
+.tl-wrap[data-level=days]:not(.picking) .tl-list,.tl-wrap[data-level=days] .tl-legend-k,.tl-wrap:not([data-level=days]) .tl-map,
+.tl-wrap:not([data-level=days]) .tl-legend-b,.tl-wrap[data-level=topics] .tl-items{display:none}
+.tl-map{position:relative;overflow-x:auto;padding:0 0 26px;--tl-head:28px}.tl-map[data-cols=topics]{--tl-head:var(--tl-slant,28px)}
+.tl-map::before{content:"";position:absolute;left:calc(var(--tl-time) + var(--tl-dot) / 2 - 1px);top:calc(var(--tl-head) + 12px);bottom:9px;border-left:2px solid var(--fg)}
+.tl-map::after{content:"";position:absolute;left:calc(var(--tl-time) + var(--tl-dot) / 2 - 6px);bottom:0;border:6px solid transparent;border-top:10px solid var(--fg);border-bottom:0}
+.tl-mhead,.tl-mrow{display:flex;align-items:center;min-width:max-content}.tl-mhead{height:var(--tl-head)}
+.tl-mhead>span:first-child,.tl-mrow>time{flex:0 0 var(--tl-time);text-align:right;font-size:13px;font-weight:600;white-space:nowrap}
+.tl-mhead>span:nth-child(2),.tl-dot{flex:0 0 var(--tl-dot);display:flex;justify-content:center;position:relative;z-index:1}
+.tl-dot::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 3px var(--card)}
+.tl-col,.tl-cell{flex:0 0 var(--tl-cell);display:flex;align-items:center;justify-content:center;position:relative}
+.tl-col{font-size:12px;color:var(--mut);text-decoration:none;align-self:stretch}.tl-col:hover{color:var(--tab-on)}
+.tl-col>b{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-size:14px;font-weight:700;color:var(--fg)}
+.tl-col>span{position:absolute;left:50%;bottom:28px;transform-origin:0 100%;transform:rotate(-45deg);white-space:nowrap}
+.tl-col:hover>b,.tl-col.on>b{color:var(--tab-on)}
+.tl-mrow{height:38px;border-radius:8px}.tl-mrow:hover{background:var(--wash)}
+.tl-cell{height:38px}.tl-cell::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid var(--line)}
+.tl-b{position:relative;display:block;width:var(--s);height:var(--s);border-radius:50%;background:var(--acc);opacity:.8;
+ box-shadow:0 0 0 2px var(--card);transition:transform .12s,opacity .12s}.tl-b:hover{transform:scale(1.2);opacity:1}
+.tl-bar,.tl-bar-h{flex:0 0 170px;margin-left:14px;display:flex;align-items:center;gap:8px}.tl-bar-h{font-size:11px;color:var(--mut);align-self:flex-end;padding-bottom:4px}
+.tl-track{flex:0 0 120px;height:8px;border-radius:4px;background:var(--wash);overflow:hidden}.tl-track i{display:block;height:100%;background:var(--mut);opacity:.6}
+.tl-bar b{font-size:12px;font-weight:600;color:var(--mut)}
+.tl-axis{list-style:none;margin:0;padding:0 0 26px;position:relative}
+.tl-axis::before{content:"";position:absolute;left:111px;top:6px;bottom:9px;border-left:2px solid var(--fg)}
+.tl-axis::after{content:"";position:absolute;left:106px;bottom:0;border:6px solid transparent;border-top:10px solid var(--fg);border-bottom:0}
+.tl-day{position:relative;display:grid;grid-template-columns:92px minmax(0,1fr);column-gap:40px;padding:0 0 14px}
+.tl-day::after{content:"";position:absolute;left:107px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 3px var(--card)}
+.tl-day>time{text-align:right;font-size:13px;font-weight:600;white-space:nowrap;line-height:20px}
+.tl-topic{display:grid;grid-template-columns:minmax(160px,280px) minmax(0,1fr);column-gap:12px;align-items:center;line-height:20px;padding:1px 0}
+.tl-name{font-size:13px;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-name b{font-weight:600;margin-right:6px}.tl-name span{color:var(--mut)}.tl-name:hover span{color:var(--tab-on)}
+.tl-meter{display:flex;align-items:center;gap:8px}.tl-stack{display:flex;flex:0 0 auto;height:8px;border-radius:4px;overflow:hidden}.tl-n{font-size:12px;color:var(--mut)}
+.tl-items{grid-column:1/-1;list-style:none;margin:3px 0 8px 3px;padding:0 0 0 12px;border-left:2px solid var(--line);display:grid;gap:2px}
+.tl-items li{display:flex;align-items:center;font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-items li>span,.tl-items li>a{overflow:hidden;text-overflow:ellipsis}.tl-items li>a{margin-right:6px}.tl-items li b{color:var(--fg);font-weight:600;margin-right:6px}
+.tl-mrow.tl-quiet,.tl-quiet .tl-cell,.tl-quiet .tl-gcell{height:20px}.tl-quiet>time{font-weight:400;font-size:12px;color:var(--mut)}
+.tl-quiet .tl-bar,.tl-quiet .tl-b,.tl-quiet .tl-gb{visibility:hidden}
+.tl-quiet .tl-dot::before,.tl-day.tl-quiet::after{width:6px;height:6px;border:2px solid var(--mut);background:var(--card)}
+.tl-day.tl-quiet{padding-bottom:6px}.tl-day.tl-quiet>time{line-height:20px}
+.tl-groups{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:-6px 0 12px;font-size:12px;color:var(--mut)}
+.tl-groups:empty{display:none}.tl-groups>span{margin-right:4px}
+.tl-groups button{font:inherit;font-size:12px;border:1px solid var(--tab-line);border-radius:6px;padding:1px 8px;background:var(--bg);color:var(--fg);cursor:pointer}
+.tl-groups button[aria-pressed=true]{border-color:var(--tab-on);color:var(--tab-on);background:var(--tab-wash)}.tl-groups button:hover{border-color:var(--tab-on)}
+.tl-groups button i{font-style:normal;opacity:.7;margin-left:4px}
+.tl-map[data-cols=groups] .tl-col,.tl-map[data-cols=groups] .tl-cell,.tl-map[data-cols=topics] .tl-gcol,.tl-map[data-cols=topics] .tl-gcell{display:none}
+.tl-gcol,.tl-gcell{flex:0 0 var(--tl-gcell);position:relative}.tl-gcell{height:38px;display:flex;align-items:center;justify-content:center}
+.tl-gcell::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid var(--line)}
+.tl-gcol{font:inherit;font-size:11px;color:var(--mut);background:none;border:0;cursor:pointer;align-self:flex-end;padding:0 4px 4px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}.tl-gcol:hover{color:var(--tab-on)}
+.tl-gb{position:relative;display:block;width:var(--s);height:var(--s);border-radius:50%;background:var(--acc);opacity:.8;border:0;padding:0;
+ cursor:pointer;box-shadow:0 0 0 2px var(--card);transition:transform .12s,opacity .12s}.tl-gb:hover{transform:scale(1.2);opacity:1}
+.tl-cols{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:var(--mut);margin-left:8px}
+.tl-levels .tl-cols button{font-size:12px;padding:1px 8px}
+.tl-wrap[data-level=days].picking .tl-off,.tl-wrap:not(.picking) .tl-picked,.tl-wrap:not([data-level=days]) .tl-picked{display:none}
+.tl-col{cursor:pointer}.tl-col.on{color:var(--tab-on);font-weight:700}.tl-cell.on .tl-b{background:var(--tab-on);opacity:1}
+.tl-wrap.picking .tl-cell:not(.on) .tl-b{opacity:.3}
+.tl-picked{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 12px;font-size:13px}
+.tl-picked button{font:inherit;font-size:12px;border:1px solid var(--tab-line);border-radius:6px;padding:1px 8px;background:var(--bg);color:var(--fg);cursor:pointer}
+@media(max-width:700px){.tl-wrap{--tl-time:62px}.tl-day{grid-template-columns:62px minmax(0,1fr);column-gap:30px}
+ .tl-axis::before{left:76px}.tl-axis::after{left:71px}.tl-day::after{left:72px}.tl-topic{grid-template-columns:minmax(0,1fr) 120px}}
 .topic-meta{color:var(--mut);font-size:13px;flex:1}.topic-pop a{text-decoration:none;font-size:15px}
 .topic .none{margin:10px 14px}.topic-pop{display:flex;gap:10px;align-items:baseline;font-size:13px}
 .chip{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid var(--acc);border-radius:999px;color:var(--acc);font-size:12px;text-decoration:none}
@@ -43,8 +166,17 @@ main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:
 .dl-note{padding:0 14px 10px;margin:0}.dl-src{max-height:420px;overflow:auto;margin:0 14px 12px}
 .topic.missing{border:1px dashed var(--miss);background:transparent}.topic.missing>summary b{color:var(--mut)}
 .q-row{display:grid;grid-template-columns:1.1fr 1fr 1.3fr;border:1px solid var(--line);border-radius:10px;margin:0 0 8px;background:var(--card)}
+.q-row.q-two{grid-template-columns:1fr 1.7fr}.q-work{font-size:13.5px;margin:6px 0 8px}
 .q-row>div{padding:10px 12px;min-width:0}.q-row>div+div{border-left:1px solid var(--line)}
 .q-head-row{border:0;background:transparent;margin:0;color:var(--mut);font-size:12.5px}.q-head-row>div{padding:2px 12px}.q-head-row>div+div{border-left:0}
+/* level rows as the old Insight board drew them (b11, JL 261008): flush grey rows split by thin lines, a ▶
+   marker, a small link on the right; the q-rows inside flush, like one table. A theme opts in by the classes. */
+.dikw{border-top:1px solid var(--line);margin:4px 0 12px}
+.dikw>.topic{border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:var(--wash)}
+.dikw>.topic>summary{padding:8px 12px}.dikw>.topic>summary::before{content:"▶";color:var(--fg);font-size:11px}
+.dikw>.topic[open]>summary::before{content:"▼"}.dikw .topic-meta{flex:1;font-size:13px}.dikw .lv-link{font-size:12.5px}
+.q-table{padding:8px 0 12px;background:var(--bg)}.q-table>p.mut{margin:0 12px 6px;font-size:13px}
+.q-table>.q-row{border-radius:0;margin:0;border-bottom-width:0}.q-table>.q-row:last-child{border-bottom-width:1px}
 .q-head{margin:0}.kind{color:var(--mut);font-size:12.5px;font-weight:600}
 .q-top{display:flex;align-items:center;gap:6px}
 .q-label{display:inline-block;border:1px solid var(--tab-on);color:var(--tab-on);border-radius:999px;padding:0 8px;font:600 11.5px/1.6 system-ui,sans-serif}
@@ -53,16 +185,19 @@ main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:
 .q-slug{margin:6px 0 2px!important;font-weight:700}.q-text{margin:0 0 4px!important}
 .q-more summary{cursor:pointer;color:var(--acc);font-size:13px;list-style:none}.q-more summary::-webkit-details-marker{display:none}
 .q-more p{font-size:13px}.q-row p{margin:0 0 4px}
-.from{margin:8px 0 0!important;font-size:12px;color:var(--mut)}.from-list{margin:2px 0 0;padding-left:16px;font-size:13px}
+.q-group{margin:22px 0 6px;font-size:16px}.from{margin:8px 0 0!important;font-size:12px;color:var(--mut)}.from-list{margin:2px 0 0;padding-left:16px;font-size:13px}
 .q-w{font-size:13.5px}.rp-title{font-weight:600}.rp-title a{color:inherit}.rp-text{font-size:14px}
 .rp-thumb{display:block;margin:6px 0}.rp-thumb img{display:block;width:100%;max-height:200px;object-fit:contain;object-position:left top;border:1px dashed var(--line);border-radius:6px;background:#fff}
+.rp-live{cursor:zoom-in;margin:6px 0 2px}.rp-live.on{cursor:auto}
+.rp-draw{display:block;width:100%;height:300px;border:1px dashed var(--line);border-radius:6px;background:#fff}
+.rp-full{font-size:12.5px;margin:0 0 4px!important}
 .rp-tags{color:var(--mut);font-size:12.5px}
 #frame-pop{width:min(1300px,95vw);height:90vh;max-width:95vw;max-height:90vh;padding:0;border:0;border-radius:12px;background:var(--bg);color:var(--fg);overflow:hidden}
 #frame-pop::backdrop{background:rgba(0,0,0,.35)}#frame-pop[open]{display:flex;flex-direction:column}
 .pop-bar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid var(--line)}
 .pop-title{font-weight:650;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pop-x{border:0;background:transparent;font-size:20px;cursor:pointer;color:var(--fg)}.pop-frame{flex:1;border:0;width:100%;background:#fff}
-@media(max-width:600px){body{padding:12px}.row{flex-wrap:nowrap;overflow-x:auto}.q-row{grid-template-columns:1fr}.q-row>div+div{border-left:0;border-top:1px solid var(--line)}.q-head-row{display:none}}
+@media(max-width:600px){body{padding:12px}.row{flex-wrap:nowrap;overflow-x:auto}.q-row,.q-row.q-two{grid-template-columns:1fr}.q-row>div+div{border-left:0;border-top:1px solid var(--line)}.q-head-row{display:none}}
 
 .runs-panel button{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
  border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;background:var(--card);color:var(--fg)}
@@ -92,6 +227,7 @@ main{max-width:1600px}h1{font-size:18px;margin:0 0 2px}h2{font-size:16px;margin:
 .run-row-state{font:500 11px system-ui,sans-serif;color:var(--mut)}
 .run-row-of{grid-column:1/-1;font:400 11px system-ui,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .runs-panel[data-compact] .run-card{margin-top:6px}
+.run-list .run-more{background:none;border:0;padding:2px 0;color:var(--mut);font:400 12px system-ui,sans-serif;cursor:pointer;text-align:left}
 /* compact (the frame): a small card, its prompt folded (Copy still works) (JL 261007: "it is just too big") */
 .runs-panel[data-compact] .runs-detail{padding:8px 10px}
 .runs-panel[data-compact] .run-card header b{font:600 12.5px system-ui,sans-serif}
@@ -254,7 +390,15 @@ a.bj-run:hover .idtag{color:var(--acc);text-decoration:underline}
 .split>.runs-panel .run-card header>b,.split>.runs-panel .run-card p,.split>.runs-panel .run-results{overflow-wrap:anywhere}
 .split>.runs-panel .run-card button,.split>.runs-panel .run-state{flex:none;white-space:nowrap}
 .split>.runs-panel .run-results,.split>.runs-panel .run-results code{font-size:12px}
-</style></head><body><main><header><h1 title="Goal × method · Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 · Design theme">🎨 Design · j03_g01_m04</h1></header><nav class="row levels"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app&amp;theme=design&amp;space=Audience+Report">Design Board</a><select class="on" aria-label="Goal × method" onchange="if(this.value)location.href=this.value"><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj01_g01_m04&amp;theme=design&amp;space=Audience+Report">j01_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj02_g01_m04&amp;theme=design&amp;space=Audience+Report">j02_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report" selected>j03_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj04_g01_m01&amp;theme=design&amp;space=Audience+Report">j04_g01_m01</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj05_g02_m01&amp;theme=design&amp;space=Audience+Report">j05_g02_m01</option></select><select class="" aria-label="Design" onchange="if(this.value)location.href=this.value"><option value="" selected>Design ▾</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft00_reason-ideas&amp;theme=design&amp;space=Audience+Report">t00_reason-ideas</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft01_d01_reason-first&amp;theme=design&amp;space=Audience+Report">t01_d01_reason-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft02_d02_reason-question&amp;theme=design&amp;space=Audience+Report">t02_d02_reason-question</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft03_d03_sender-first&amp;theme=design&amp;space=Audience+Report">t03_d03_sender-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft04_d04_ask-only&amp;theme=design&amp;space=Audience+Report">t04_d04_ask-only</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft05_d05_reason-then-ask&amp;theme=design&amp;space=Audience+Report">t05_d05_reason-then-ask</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft06_d06_reason-first&amp;theme=design&amp;space=Audience+Report">t06_d06_reason-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft07_d07_reason-question&amp;theme=design&amp;space=Audience+Report">t07_d07_reason-question</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft08_d08_sender-first&amp;theme=design&amp;space=Audience+Report">t08_d08_sender-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft09_d09_ask-only&amp;theme=design&amp;space=Audience+Report">t09_d09_ask-only</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft10_d10_reason-then-ask&amp;theme=design&amp;space=Audience+Report">t10_d10_reason-then-ask</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft11_d11_reason-first&amp;theme=design&amp;space=Audience+Report">t11_d11_reason-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft12_d12_reason-question&amp;theme=design&amp;space=Audience+Report">t12_d12_reason-question</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft13_d13_sender-first&amp;theme=design&amp;space=Audience+Report">t13_d13_sender-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft14_d14_ask-only&amp;theme=design&amp;space=Audience+Report">t14_d14_ask-only</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft15_d15_reason-then-ask&amp;theme=design&amp;space=Audience+Report">t15_d15_reason-then-ask</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft99_review-whole&amp;theme=design&amp;space=Audience+Report">t99_review-whole</option></select></nav><section class="frame-body"><nav class="row spaces"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Description">Description</a><span class=bar></span><a class="tab opt" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Idea+Studio">Idea Studio</a><a class="tab on opt" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report">Audience Report</a><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Work+Details">Work Details</a><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Runs">Runs</a><a class="tab opt" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Delivery">Delivery</a></nav><nav class="row subs"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Reason+ideas">Reason ideas</a><a class="tab on" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Design+display">Design display</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Review+whole">Review whole</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Predicted+vs+observed">Predicted vs observed</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Performance">Performance</a></nav><div class=split><div class=space-main><div class='q-row q-head-row'><div>Design</div><div>Process (③): its idea, each element&#x27;s source</div><div>Review (④) · expected outcome</div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft01_d01_reason-first&amp;theme=design">d01 · reason-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I01</p><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p><p class=mut>③ run-generate-d01 · 1 draft(s)</p></div><div><p>④ T0 ✓ · T1 ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi]</p><p class=mut>⑤ rank #2 · kept</p></div></div><details class="topic"><summary><b>d02 · reason-question</b><span class=topic-meta>&lt;opening&gt;. &lt;the reason as a question&gt;? &lt;the ask&gt; … · <span class=st-ok>passed · rank #3 · kept</span></span></summary></details><details class="topic"><summary><b>d03 · sender-first</b><span class=topic-meta>&lt;sender&gt;. &lt;the reason&gt;. &lt;the ask&gt;: {LINK} … · <span class=st-ok>passed · rank #4 · kept</span></span></summary></details><details class="topic"><summary><b>d04 · ask-only</b><span class=topic-meta>&lt;opening&gt;. &lt;the ask&gt;: {LINK} … · <span class=st-ok>passed · rank #1 · kept</span></span></summary></details><details class="topic"><summary><b>d05 · reason-then-ask</b><span class=topic-meta>&lt;opening&gt;, &lt;the reason&gt;. &lt;the ask&gt; today: {LINK} … · <span class=st-warn>revise · rank #5 · kept</span></span></summary></details><details class="topic"><summary><b>d06 · reason-first</b><span class=topic-meta>&lt;opening&gt;. &lt;the reason&gt;. &lt;the ask&gt;: {LINK} … · <span class=st-ok>passed · rank #6 · kept</span></span></summary></details><details class="topic"><summary><b>d07 · reason-question</b><span class=topic-meta>&lt;opening&gt;. &lt;the reason as a question&gt;? &lt;the ask&gt; … · <span class=st-ok>passed · rank #7 · kept</span></span></summary></details><details class="topic"><summary><b>d08 · sender-first</b><span class=topic-meta>&lt;sender&gt;. &lt;the reason&gt;. &lt;the ask&gt;: {LINK} … · <span class=st-warn>verify · rank #8 · kept</span></span></summary></details><details class="topic"><summary><b>d09 · ask-only</b><span class=topic-meta>&lt;opening&gt;. &lt;the ask&gt;: {LINK} … · <span class=st-ok>passed · rank #9 · kept</span></span></summary></details><details class="topic"><summary><b>d10 · reason-then-ask</b><span class=topic-meta>&lt;opening&gt;, &lt;the reason&gt;. &lt;the ask&gt; today: {LINK} … · <span class=st-ok>passed · rank #10 · kept</span></span></summary></details><details class="topic missing"><summary><b>Dropped by t99, kept for the record · 5</b><span class=topic-meta>d11 · d12 · d13 · d14 · d15</span></summary></details></div><section class=runs-panel data-space="Audience Report" data-waiting="0" data-whole="this Goal × method" data-compact=1><div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Disk · Runs</b></div><div class=runs-body><div class=disk-in><p class=disk-head><b>Disk</b> <span class=mut>under j03_g01_m04/</span></p><ul class=disk-list><li class=disk-g><p class=disk-gl title="t*_d*/"><span>one card per design</span><span class=disk-n>15</span></p><ul><li title="t01_d01_reason-first/"><span class=disk-p>t01_d01_reason-first/</span><span class=disk-n>4</span></li><li title="t02_d02_reason-question/"><span class=disk-p>t02_d02_reason-question/</span><span class=disk-n>4</span></li><li title="t03_d03_sender-first/"><span class=disk-p>t03_d03_sender-first/</span><span class=disk-n>4</span></li><li title="t04_d04_ask-only/"><span class=disk-p>t04_d04_ask-only/</span><span class=disk-n>4</span></li><li class=disk-more><details><summary>+11 more</summary><ul><li title="t05_d05_reason-then-ask/"><span class=disk-p>t05_d05_reason-then-ask/</span><span class=disk-n>4</span></li><li title="t06_d06_reason-first/"><span class=disk-p>t06_d06_reason-first/</span><span class=disk-n>4</span></li><li title="t07_d07_reason-question/"><span class=disk-p>t07_d07_reason-question/</span><span class=disk-n>4</span></li><li title="t08_d08_sender-first/"><span class=disk-p>t08_d08_sender-first/</span><span class=disk-n>4</span></li><li title="t09_d09_ask-only/"><span class=disk-p>t09_d09_ask-only/</span><span class=disk-n>4</span></li><li title="t10_d10_reason-then-ask/"><span class=disk-p>t10_d10_reason-then-ask/</span><span class=disk-n>4</span></li><li title="t11_d11_reason-first/"><span class=disk-p>t11_d11_reason-first/</span><span class=disk-n>4</span></li><li title="t12_d12_reason-question/"><span class=disk-p>t12_d12_reason-question/</span><span class=disk-n>4</span></li><li title="t13_d13_sender-first/"><span class=disk-p>t13_d13_sender-first/</span><span class=disk-n>4</span></li><li title="t14_d14_ask-only/"><span class=disk-p>t14_d14_ask-only/</span><span class=disk-n>4</span></li><li title="t15_d15_reason-then-ask/"><span class=disk-p>t15_d15_reason-then-ask/</span><span class=disk-n>4</span></li></ul></details></li></ul></li><li class=disk-g><p class=disk-gl title="t*_d*/elements.yaml"><span>its process</span><span class=disk-n>15</span></p><ul><li title="t01_d01_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t02_d02_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t03_d03_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t04_d04_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li class=disk-more><details><summary>+11 more</summary><ul><li title="t05_d05_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t06_d06_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t07_d07_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t08_d08_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t09_d09_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t10_d10_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t11_d11_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t12_d12_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t13_d13_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t14_d14_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t15_d15_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li></ul></details></li></ul></li><li class=disk-g><p class=disk-gl title="t*_d*/runs/*/"><span>generate · verify</span><span class=disk-n>31</span></p><ul><li title="t01_d01_reason-first/runs/run-generate-d01/"><span class=disk-p>run-generate-d01/</span><span class=disk-n>2</span></li><li title="t01_d01_reason-first/runs/run-verify-d01-v1/"><span class=disk-p>run-verify-d01-v1/</span><span class=disk-n>1</span></li><li title="t02_d02_reason-question/runs/run-generate-d02/"><span class=disk-p>run-generate-d02/</span><span class=disk-n>2</span></li><li title="t02_d02_reason-question/runs/run-verify-d02-v1/"><span class=disk-p>run-verify-d02-v1/</span><span class=disk-n>1</span></li><li class=disk-more><details><summary>+27 more</summary><ul><li title="t03_d03_sender-first/runs/run-generate-d03/"><span class=disk-p>run-generate-d03/</span><span class=disk-n>2</span></li><li title="t03_d03_sender-first/runs/run-verify-d03-v1/"><span class=disk-p>run-verify-d03-v1/</span><span class=disk-n>1</span></li><li title="t04_d04_ask-only/runs/run-generate-d04/"><span class=disk-p>run-generate-d04/</span><span class=disk-n>2</span></li><li title="t04_d04_ask-only/runs/run-revise-d04/"><span class=disk-p>run-revise-d04/</span><span class=disk-n>2</span></li><li title="t04_d04_ask-only/runs/run-verify-d04-v1/"><span class=disk-p>run-verify-d04-v1/</span><span class=disk-n>1</span></li><li title="t04_d04_ask-only/runs/run-verify-d04-v2/"><span class=disk-p>run-verify-d04-v2/</span><span class=disk-n>1</span></li><li title="t05_d05_reason-then-ask/runs/run-generate-d05/"><span class=disk-p>run-generate-d05/</span><span class=disk-n>2</span></li><li title="t05_d05_reason-then-ask/runs/run-verify-d05-v1/"><span class=disk-p>run-verify-d05-v1/</span><span class=disk-n>1</span></li><li title="t06_d06_reason-first/runs/run-generate-d06/"><span class=disk-p>run-generate-d06/</span><span class=disk-n>2</span></li><li title="t06_d06_reason-first/runs/run-verify-d06-v1/"><span class=disk-p>run-verify-d06-v1/</span><span class=disk-n>1</span></li><li title="t07_d07_reason-question/runs/run-generate-d07/"><span class=disk-p>run-generate-d07/</span><span class=disk-n>2</span></li><li title="t07_d07_reason-question/runs/run-verify-d07-v1/"><span class=disk-p>run-verify-d07-v1/</span><span class=disk-n>1</span></li><li title="t08_d08_sender-first/runs/run-generate-d08/"><span class=disk-p>run-generate-d08/</span><span class=disk-n>2</span></li><li title="t09_d09_ask-only/runs/run-generate-d09/"><span class=disk-p>run-generate-d09/</span><span class=disk-n>2</span></li><li title="t09_d09_ask-only/runs/run-verify-d09-v1/"><span class=disk-p>run-verify-d09-v1/</span><span class=disk-n>1</span></li><li title="t10_d10_reason-then-ask/runs/run-generate-d10/"><span class=disk-p>run-generate-d10/</span><span class=disk-n>2</span></li><li title="t10_d10_reason-then-ask/runs/run-verify-d10-v1/"><span class=disk-p>run-verify-d10-v1/</span><span class=disk-n>1</span></li><li title="t11_d11_reason-first/runs/run-generate-d11/"><span class=disk-p>run-generate-d11/</span><span class=disk-n>2</span></li><li title="t11_d11_reason-first/runs/run-verify-d11-v1/"><span class=disk-p>run-verify-d11-v1/</span><span class=disk-n>1</span></li><li title="t12_d12_reason-question/runs/run-generate-d12/"><span class=disk-p>run-generate-d12/</span><span class=disk-n>2</span></li><li title="t12_d12_reason-question/runs/run-verify-d12-v1/"><span class=disk-p>run-verify-d12-v1/</span><span class=disk-n>1</span></li><li title="t13_d13_sender-first/runs/run-generate-d13/"><span class=disk-p>run-generate-d13/</span><span class=disk-n>2</span></li><li title="t13_d13_sender-first/runs/run-verify-d13-v1/"><span class=disk-p>run-verify-d13-v1/</span><span class=disk-n>1</span></li><li title="t14_d14_ask-only/runs/run-generate-d14/"><span class=disk-p>run-generate-d14/</span><span class=disk-n>2</span></li><li title="t14_d14_ask-only/runs/run-verify-d14-v1/"><span class=disk-p>run-verify-d14-v1/</span><span class=disk-n>1</span></li><li title="t15_d15_reason-then-ask/runs/run-generate-d15/"><span class=disk-p>run-generate-d15/</span><span class=disk-n>2</span></li><li title="t15_d15_reason-then-ask/runs/run-verify-d15-v1/"><span class=disk-p>run-verify-d15-v1/</span><span class=disk-n>1</span></li></ul></details></li></ul></li></ul></div><p class=runs-head><b>Runs</b> <span class=runs-sub>of this Space: pick a type</span></p><div class=runs-types><button type=button class="run-type on" data-type="0" data-label="run-generate-dNN" data-prompt="Run with haipipe-designer-agent. /haipipe-design-unit generate one design of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 from its idea, reading inputs/ only, with its elements.yaml, as run-generate-d&lt;NN&gt; in its Task; then project the draft (haipipe-design-workflow project_draft.py draft)." data-skills="haipipe-design-unit" data-views="" data-waiting="0" data-count="15">run-generate-dNN <span class=run-count>15</span></button><button type=button class="run-type" data-type="1" data-label="run-verify-dNN-v1" data-prompt="Run with haipipe-design-reviewer-agent. /haipipe-design-unit verify one design draft of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 in a fresh context (T0 rules · T1 sources in the manifest · T2 critique when the method lists it), as run-verify-d&lt;NN&gt;-v&lt;k&gt;, k its draft; then project the verdict (project_draft.py verdict)." data-skills="haipipe-design-unit" data-views="" data-waiting="0" data-count="15">run-verify-dNN-v1 <span class=run-count>15</span></button><button type=button class="run-type run-new">+ New Run</button></div><div class=runs-detail><div class=run-list></div><article class=run-card data-type="0" data-run="run-generate-d01" data-name="run-generate-d01" data-targets="" data-state="closed" data-views="" data-label="closed" hidden><p class=run-of>a run of · run-generate-dNN</p><header><b title="run-generate-d01">run-generate-d01</b><span class="run-state st-closed">closed</span><button type=button class=run-copy data-copy="Rerun run-generate-d01 as a new run-generate-dNN run.
+
+.work-body{padding:6px 14px 10px}.work-task{margin:6px 0}.work-runs{margin:6px 0 4px;padding-left:18px}
+.work-runs li{margin:4px 0}.work-head{font-size:14px;margin:2px 0}.work-files{font-size:13px}
+.work-files a{text-decoration:none}.work-sub{color:var(--mut);font-size:13px;margin:10px 0 2px}
+.work-act{display:inline-block;padding:2px 10px;border:1px solid var(--tab-on);border-radius:6px;color:var(--tab-on);
+background:var(--tab-wash);text-decoration:none;font-size:13px}.work-human>summary b::after{content:" ✎";color:var(--tab-on)}
+.work-none{margin:6px 0}.st{font-size:12px;padding:0 6px;border:1px solid var(--line);border-radius:999px}
+.st-done,.st-ok,.st-answered{color:var(--ok);border-color:var(--ok)}.st-failed,.st-error{color:var(--miss);border-color:var(--miss)}
+</style></head><body><main><nav class="row levels"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Design+display&amp;studio=1">Studio</a><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app&amp;theme=design&amp;space=Audience+Report" title="b01_demo_app">Design Board</a><select class="on" aria-label="Design Job" onchange="if(this.value)location.href=this.value"><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj01_g01_m04&amp;theme=design&amp;space=Audience+Report" title="j01_g01_m04">j01_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj02_g01_m04&amp;theme=design&amp;space=Audience+Report" title="j02_g01_m04">j02_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Design+display" title="j03_g01_m04" selected>j03_g01_m04</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj04_g01_m01&amp;theme=design&amp;space=Audience+Report" title="j04_g01_m01">j04_g01_m01</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj05_g02_m01&amp;theme=design&amp;space=Audience+Report" title="j05_g02_m01">j05_g02_m01</option></select><select class="" aria-label="Design Task" onchange="if(this.value)location.href=this.value"><option value="" selected>Design Task ▾</option><optgroup label="② Reason ideas"><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft00_reason-ideas&amp;theme=design&amp;space=Audience+Report" title="t00_reason-ideas">Task · t00 · reason ideas</option></optgroup><optgroup label="③ Conduct process"><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft01_d01_reason-first&amp;theme=design&amp;space=Audience+Report" title="t01_d01_reason-first">Task · d01 · reason-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft02_d02_reason-question&amp;theme=design&amp;space=Audience+Report" title="t02_d02_reason-question">Task · d02 · reason-question</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft03_d03_sender-first&amp;theme=design&amp;space=Audience+Report" title="t03_d03_sender-first">Task · d03 · sender-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft04_d04_ask-only&amp;theme=design&amp;space=Audience+Report" title="t04_d04_ask-only">Task · d04 · ask-only</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft05_d05_reason-then-ask&amp;theme=design&amp;space=Audience+Report" title="t05_d05_reason-then-ask">Task · d05 · reason-then-ask</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft06_d06_reason-first&amp;theme=design&amp;space=Audience+Report" title="t06_d06_reason-first">Task · d06 · reason-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft07_d07_reason-question&amp;theme=design&amp;space=Audience+Report" title="t07_d07_reason-question">Task · d07 · reason-question</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft08_d08_sender-first&amp;theme=design&amp;space=Audience+Report" title="t08_d08_sender-first">Task · d08 · sender-first</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft09_d09_ask-only&amp;theme=design&amp;space=Audience+Report" title="t09_d09_ask-only">Task · d09 · ask-only</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft10_d10_reason-then-ask&amp;theme=design&amp;space=Audience+Report" title="t10_d10_reason-then-ask">Task · d10 · reason-then-ask</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft11_d11_reason-first&amp;theme=design&amp;space=Audience+Report" title="t11_d11_reason-first">Task · d11 · reason-first · dropped</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft12_d12_reason-question&amp;theme=design&amp;space=Audience+Report" title="t12_d12_reason-question">Task · d12 · reason-question · dropped</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft13_d13_sender-first&amp;theme=design&amp;space=Audience+Report" title="t13_d13_sender-first">Task · d13 · sender-first · dropped</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft14_d14_ask-only&amp;theme=design&amp;space=Audience+Report" title="t14_d14_ask-only">Task · d14 · ask-only · dropped</option><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft15_d15_reason-then-ask&amp;theme=design&amp;space=Audience+Report" title="t15_d15_reason-then-ask">Task · d15 · reason-then-ask · dropped</option></optgroup><optgroup label="⑤ Review whole"><option value="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft99_review-whole&amp;theme=design&amp;space=Audience+Report" title="t99_review-whole">Task · t99 · review whole</option></optgroup></select><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Delivery">Delivery</a></nav><header class=page-title><h1 title="Design Job · Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 · Design theme · j03_g01_m04" data-guide="🎨 Design · Guide · Design Board b01">🎨 Design · <span class=lv>Design Board b01 · Design Job j03 ·</span> G01 by M04 m2 · inputs i2</h1></header><section class="frame-body" data-owner="Project-DesignDemo/designs/b01_demo_app/j03_g01_m04"><nav class="row spaces"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Description">Description</a><span class=bar></span><a class="tab on opt" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report">Report</a><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Work+Details">Work</a><span class=bar></span><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Runs">Runs</a></nav><nav class="row subs"><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Reason+ideas">Reason ideas</a><a class="tab on" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Design+display">Design display</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Review+whole">Review whole</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Predicted+vs+observed">Predicted vs observed</a><a class="tab" href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04&amp;theme=design&amp;space=Audience+Report&amp;sub=Performance">Performance</a></nav><div class=split><div class=space-main><div class='q-row q-head-row'><div>Design</div><div>Process (③): its idea, each element&#x27;s source</div><div>Review (④) · expected outcome</div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft01_d01_reason-first&amp;theme=design">d01 · reason-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I01 · ③ run-generate-d01 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #2 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft02_d02_reason-question&amp;theme=design">d02 · reason-question</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason as a question&gt;? &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I02 · ③ run-generate-d02 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #3 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft03_d03_sender-first&amp;theme=design">d03 · sender-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;sender&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I03 · ③ run-generate-d03 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #4 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft04_d04_ask-only&amp;theme=design">d04 · ask-only</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I04 · ③ run-generate-d04 · 2 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #1 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft05_d05_reason-then-ask&amp;theme=design">d05 · reason-then-ask</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;, &lt;the reason&gt;. &lt;the ask&gt; today: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I05 · ③ run-generate-d05 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✗ r2.3 · <span title="T1">fidelity</span> ✓ · <span class=st-warn>revise</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #5 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft06_d06_reason-first&amp;theme=design">d06 · reason-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I06 · ③ run-generate-d06 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #6 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft07_d07_reason-question&amp;theme=design">d07 · reason-question</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason as a question&gt;? &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I07 · ③ run-generate-d07 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #7 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft08_d08_sender-first&amp;theme=design">d08 · sender-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;sender&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I08 · ③ run-generate-d08 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ — · <span class=st-warn>verify</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #8 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft09_d09_ask-only&amp;theme=design">d09 · ask-only</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I09 · ③ run-generate-d09 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #9 · kept</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft10_d10_reason-then-ask&amp;theme=design">d10 · reason-then-ask</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;, &lt;the reason&gt;. &lt;the ask&gt; today: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I10 · ③ run-generate-d10 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=st-ok>passed</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #10 · kept</p></div></div><details class="topic"><summary><b>Dropped, kept for the record · 5</b><span class=topic-meta>d11 (rank #11) · d12 (rank #12) · d13 (rank #13) · d14 (rank #14) · d15 (rank #15)</span></summary><div style="padding:8px 14px"><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft11_d11_reason-first&amp;theme=design">d11 · reason-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I11 · ③ run-generate-d11 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=mut>dropped</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #11 · dropped</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft12_d12_reason-question&amp;theme=design">d12 · reason-question</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the reason as a question&gt;? &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I12 · ③ run-generate-d12 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=mut>dropped</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #12 · dropped</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft13_d13_sender-first&amp;theme=design">d13 · sender-first</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;sender&gt;. &lt;the reason&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I13 · ③ run-generate-d13 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=mut>dropped</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #13 · dropped</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft14_d14_ask-only&amp;theme=design">d14 · ask-only</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;. &lt;the ask&gt;: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I14 · ③ run-generate-d14 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=mut>dropped</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #14 · dropped</p></div></div><div class=q-row><div><b><a href="/_board/workbench?path=Project-DesignDemo%2Fdesigns%2Fb01_demo_app%2Fj03_g01_m04%2Ft15_d15_reason-then-ask&amp;theme=design">d15 · reason-then-ask</a></b><div style="border:1px solid var(--line);border-radius:18px;padding:10px 10px 14px;margin:4px 0;max-width:280px;background:var(--bg)"><div class=mut style="text-align:center;font-size:11px;margin-bottom:8px">Text message</div><div style="background:var(--acc-soft);border-radius:16px 16px 16px 4px;padding:7px 10px;font-size:14.5px;white-space:pre-wrap;word-break:break-word">&lt;opening&gt;, &lt;the reason&gt;. &lt;the ask&gt; today: <span style="color:var(--acc);text-decoration:underline">{LINK}</span></div></div></div><div><p class=mut>from idea I15 · ③ run-generate-d15 · 1 draft(s)</p><details class=q-more><summary>› Elements and sources · 3</summary><p>&lt;opening&gt; <span class=mut>← W-03 row 2</span></p><p>&lt;the reason&gt; <span class=mut>← W-03 row 4</span></p><p>&lt;the ask&gt; <span class=mut>← rule r2.1</span></p></details></div><div><p>④ <span title="T0">rules</span> ✓ · <span title="T1">fidelity</span> ✓ · <span class=mut>dropped</span></p><p>expected +x [lo; hi] <span class=mut>against the control · by the ④ ⑤ reviewer</span><details class=q-more><summary>› why</summary><p class=mut>&lt;why&gt;</p></details></p><p class=mut>⑤ rank #15 · dropped</p></div></div></div></details></div><section class=runs-panel data-space="Audience Report" data-waiting="0" data-whole="this Design Job" data-fold=1 data-compact=1><div class=runs-bar><button type=button class=runs-fold title="Fold or open">▸</button><b>Disk · Runs</b></div><div class=runs-body><div class=disk-in><p class=disk-head><b>Disk</b> <span class=mut>under j03_g01_m04/</span></p><ul class=disk-list><li class=disk-g><p class=disk-gl title="t*_d*/"><span>one card per design</span><span class=disk-n>15</span></p><ul><li title="t01_d01_reason-first/"><span class=disk-p>t01_d01_reason-first/</span><span class=disk-n>4</span></li><li title="t02_d02_reason-question/"><span class=disk-p>t02_d02_reason-question/</span><span class=disk-n>4</span></li><li title="t03_d03_sender-first/"><span class=disk-p>t03_d03_sender-first/</span><span class=disk-n>4</span></li><li title="t04_d04_ask-only/"><span class=disk-p>t04_d04_ask-only/</span><span class=disk-n>4</span></li><li class=disk-more><details><summary>+11 more</summary><ul><li title="t05_d05_reason-then-ask/"><span class=disk-p>t05_d05_reason-then-ask/</span><span class=disk-n>4</span></li><li title="t06_d06_reason-first/"><span class=disk-p>t06_d06_reason-first/</span><span class=disk-n>4</span></li><li title="t07_d07_reason-question/"><span class=disk-p>t07_d07_reason-question/</span><span class=disk-n>4</span></li><li title="t08_d08_sender-first/"><span class=disk-p>t08_d08_sender-first/</span><span class=disk-n>4</span></li><li title="t09_d09_ask-only/"><span class=disk-p>t09_d09_ask-only/</span><span class=disk-n>4</span></li><li title="t10_d10_reason-then-ask/"><span class=disk-p>t10_d10_reason-then-ask/</span><span class=disk-n>4</span></li><li title="t11_d11_reason-first/"><span class=disk-p>t11_d11_reason-first/</span><span class=disk-n>4</span></li><li title="t12_d12_reason-question/"><span class=disk-p>t12_d12_reason-question/</span><span class=disk-n>4</span></li><li title="t13_d13_sender-first/"><span class=disk-p>t13_d13_sender-first/</span><span class=disk-n>4</span></li><li title="t14_d14_ask-only/"><span class=disk-p>t14_d14_ask-only/</span><span class=disk-n>4</span></li><li title="t15_d15_reason-then-ask/"><span class=disk-p>t15_d15_reason-then-ask/</span><span class=disk-n>4</span></li></ul></details></li></ul></li><li class=disk-g><p class=disk-gl title="t*_d*/elements.yaml"><span>its process</span><span class=disk-n>15</span></p><ul><li title="t01_d01_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t02_d02_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t03_d03_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t04_d04_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li class=disk-more><details><summary>+11 more</summary><ul><li title="t05_d05_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t06_d06_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t07_d07_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t08_d08_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t09_d09_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t10_d10_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t11_d11_reason-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t12_d12_reason-question/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t13_d13_sender-first/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t14_d14_ask-only/elements.yaml"><span class=disk-p>elements.yaml</span></li><li title="t15_d15_reason-then-ask/elements.yaml"><span class=disk-p>elements.yaml</span></li></ul></details></li></ul></li><li class=disk-g><p class=disk-gl title="t*_d*/runs/*/"><span>generate · verify</span><span class=disk-n>31</span></p><ul><li title="t01_d01_reason-first/runs/run-generate-d01/"><span class=disk-p>run-generate-d01/</span><span class=disk-n>2</span></li><li title="t01_d01_reason-first/runs/run-verify-d01-v1/"><span class=disk-p>run-verify-d01-v1/</span><span class=disk-n>1</span></li><li title="t02_d02_reason-question/runs/run-generate-d02/"><span class=disk-p>run-generate-d02/</span><span class=disk-n>2</span></li><li title="t02_d02_reason-question/runs/run-verify-d02-v1/"><span class=disk-p>run-verify-d02-v1/</span><span class=disk-n>1</span></li><li class=disk-more><details><summary>+27 more</summary><ul><li title="t03_d03_sender-first/runs/run-generate-d03/"><span class=disk-p>run-generate-d03/</span><span class=disk-n>2</span></li><li title="t03_d03_sender-first/runs/run-verify-d03-v1/"><span class=disk-p>run-verify-d03-v1/</span><span class=disk-n>1</span></li><li title="t04_d04_ask-only/runs/run-generate-d04/"><span class=disk-p>run-generate-d04/</span><span class=disk-n>2</span></li><li title="t04_d04_ask-only/runs/run-revise-d04/"><span class=disk-p>run-revise-d04/</span><span class=disk-n>2</span></li><li title="t04_d04_ask-only/runs/run-verify-d04-v1/"><span class=disk-p>run-verify-d04-v1/</span><span class=disk-n>1</span></li><li title="t04_d04_ask-only/runs/run-verify-d04-v2/"><span class=disk-p>run-verify-d04-v2/</span><span class=disk-n>1</span></li><li title="t05_d05_reason-then-ask/runs/run-generate-d05/"><span class=disk-p>run-generate-d05/</span><span class=disk-n>2</span></li><li title="t05_d05_reason-then-ask/runs/run-verify-d05-v1/"><span class=disk-p>run-verify-d05-v1/</span><span class=disk-n>1</span></li><li title="t06_d06_reason-first/runs/run-generate-d06/"><span class=disk-p>run-generate-d06/</span><span class=disk-n>2</span></li><li title="t06_d06_reason-first/runs/run-verify-d06-v1/"><span class=disk-p>run-verify-d06-v1/</span><span class=disk-n>1</span></li><li title="t07_d07_reason-question/runs/run-generate-d07/"><span class=disk-p>run-generate-d07/</span><span class=disk-n>2</span></li><li title="t07_d07_reason-question/runs/run-verify-d07-v1/"><span class=disk-p>run-verify-d07-v1/</span><span class=disk-n>1</span></li><li title="t08_d08_sender-first/runs/run-generate-d08/"><span class=disk-p>run-generate-d08/</span><span class=disk-n>2</span></li><li title="t09_d09_ask-only/runs/run-generate-d09/"><span class=disk-p>run-generate-d09/</span><span class=disk-n>2</span></li><li title="t09_d09_ask-only/runs/run-verify-d09-v1/"><span class=disk-p>run-verify-d09-v1/</span><span class=disk-n>1</span></li><li title="t10_d10_reason-then-ask/runs/run-generate-d10/"><span class=disk-p>run-generate-d10/</span><span class=disk-n>2</span></li><li title="t10_d10_reason-then-ask/runs/run-verify-d10-v1/"><span class=disk-p>run-verify-d10-v1/</span><span class=disk-n>1</span></li><li title="t11_d11_reason-first/runs/run-generate-d11/"><span class=disk-p>run-generate-d11/</span><span class=disk-n>2</span></li><li title="t11_d11_reason-first/runs/run-verify-d11-v1/"><span class=disk-p>run-verify-d11-v1/</span><span class=disk-n>1</span></li><li title="t12_d12_reason-question/runs/run-generate-d12/"><span class=disk-p>run-generate-d12/</span><span class=disk-n>2</span></li><li title="t12_d12_reason-question/runs/run-verify-d12-v1/"><span class=disk-p>run-verify-d12-v1/</span><span class=disk-n>1</span></li><li title="t13_d13_sender-first/runs/run-generate-d13/"><span class=disk-p>run-generate-d13/</span><span class=disk-n>2</span></li><li title="t13_d13_sender-first/runs/run-verify-d13-v1/"><span class=disk-p>run-verify-d13-v1/</span><span class=disk-n>1</span></li><li title="t14_d14_ask-only/runs/run-generate-d14/"><span class=disk-p>run-generate-d14/</span><span class=disk-n>2</span></li><li title="t14_d14_ask-only/runs/run-verify-d14-v1/"><span class=disk-p>run-verify-d14-v1/</span><span class=disk-n>1</span></li><li title="t15_d15_reason-then-ask/runs/run-generate-d15/"><span class=disk-p>run-generate-d15/</span><span class=disk-n>2</span></li><li title="t15_d15_reason-then-ask/runs/run-verify-d15-v1/"><span class=disk-p>run-verify-d15-v1/</span><span class=disk-n>1</span></li></ul></details></li></ul></li></ul></div><p class=runs-head><b>Runs</b> <span class=runs-sub>of this Space: pick a type</span></p><div class=runs-types><button type=button class="run-type on" data-type="0" data-label="run-generate-dNN" data-prompt="Run with haipipe-designer-agent. /haipipe-design-unit generate one design of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 from its idea, reading inputs/ only, with its elements.yaml, as run-generate-d&lt;NN&gt; in its Task; then project the draft (haipipe-design-workflow project_draft.py draft)." data-skills="haipipe-design-unit" data-views="" data-waiting="0" data-count="15">run-generate-dNN <span class=run-count>15</span></button><button type=button class="run-type" data-type="1" data-label="run-verify-dNN-v1" data-prompt="Run with haipipe-design-reviewer-agent. /haipipe-design-unit verify one design draft of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 in a fresh context (T0 rules · T1 sources in the manifest · T2 critique when the method lists it), as run-verify-d&lt;NN&gt;-v&lt;k&gt;, k its draft; then project the verdict (project_draft.py verdict)." data-skills="haipipe-design-unit" data-views="" data-waiting="0" data-count="15">run-verify-dNN-v1 <span class=run-count>15</span></button><button type=button class="run-type run-new">+ New Run</button></div><div class=runs-detail><div class=run-list></div><article class=run-card data-type="0" data-run="run-generate-d01" data-name="run-generate-d01" data-targets="" data-state="closed" data-views="" data-label="closed" hidden><p class=run-of>a run of · run-generate-dNN</p><header><b title="run-generate-d01">run-generate-d01</b><span class="run-state st-closed">closed</span><button type=button class=run-copy data-copy="Rerun run-generate-d01 as a new run-generate-dNN run.
 Run with haipipe-designer-agent. /haipipe-design-unit generate one design of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 from its idea, reading inputs/ only, with its elements.yaml, as run-generate-d&lt;NN&gt; in its Task; then project the draft (haipipe-design-workflow project_draft.py draft).">Rerun</button></header><p class=run-skill>Skill <code>haipipe-design-unit</code></p><details class=run-prompt-box><summary>Prompt <button type=button class=run-copy data-copy="Run with haipipe-designer-agent. /haipipe-design-unit generate one design of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 from its idea, reading inputs/ only, with its elements.yaml, as run-generate-d&lt;NN&gt; in its Task; then project the draft (haipipe-design-workflow project_draft.py draft).
 
 Continue run-generate-d01. Ticket: none · Result: Project-DesignDemo/designs/b01_demo_app/j03_g01_m04/t01_d01_reason-first/runs/run-generate-d01/result">Copy</button></summary><pre class=run-prompt>Run with haipipe-designer-agent. /haipipe-design-unit generate one design of Project-DesignDemo/designs/b01_demo_app/j03_g01_m04 from its idea, reading inputs/ only, with its elements.yaml, as run-generate-d&lt;NN&gt; in its Task; then project the draft (haipipe-design-workflow project_draft.py draft).
@@ -478,6 +622,13 @@ Continue run-verify-d15-v1. Ticket: none · Result: Project-DesignDemo/designs/b
     if(compact&&b.classList.contains('on')){c.hidden=true;b.classList.remove('on');return;}
     showCard(c);list.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');});
    if(i===0&&!compact)b.classList.add('on');list.appendChild(b);});
+  /* compact: four rows, then "+N more", as the Disk part above pages its files (b12 s32, 261008) */
+  var rows=[].slice.call(list.querySelectorAll('.run-row'));
+  if(compact&&rows.length>4){rows.slice(4).forEach(function(r){r.hidden=true;});
+   var more=document.createElement('button');more.type='button';more.className='run-more';
+   more.textContent='+'+(rows.length-4)+' more';
+   more.addEventListener('click',function(){rows.forEach(function(r){r.hidden=false;});more.remove();});
+   list.appendChild(more);}
   list.hidden=compact?false:cards.length<2;  /* one run: its title already names it */
   if(!compact)showCard(cards[0]);
  }
@@ -530,14 +681,342 @@ Continue run-verify-d15-v1. Ticket: none · Result: Project-DesignDemo/designs/b
  });
 })();
 
-(function(){function load(d){var f=d.querySelector('iframe');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
+(function(){
+function load(d){var f=d.querySelector('iframe');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
+function hashTarget(){
+  var id;try{id=decodeURIComponent(location.hash.slice(1));}catch(e){return null;}
+  var found=document.getElementById(id);if(found)return found;
+  if(id.indexOf('topic-')!==0)return null;
+  var name=id.slice(6),path=new URL(location.href).searchParams.get('path')||'';
+  var matches=Array.from(document.querySelectorAll('[data-studio-name]')).filter(function(r){return r.dataset.studioName===name&&!r.closest('[data-group-kind]');});
+  return matches.find(function(r){return path.endsWith('/'+r.dataset.studioSource);})||matches[0]||null;
+}
 document.querySelectorAll('details.topic').forEach(function(d){d.addEventListener('toggle',function(){load(d);});});
+// a #question-QNN link opens that Question's card in the Report (b10 s05: each Question is a folding card)
+(function(){var h=decodeURIComponent(location.hash.slice(1));if(h.indexOf('question-')!==0)return;
+  var el=document.getElementById(h),card=el&&el.closest('details.q-card');if(card){card.open=true;el.scrollIntoView();}})();
+document.querySelectorAll('.studio-topics').forEach(function(list){
+  // Groups (b10 s02-D16): Current lives in this browser; every other group is a tag on the topic's
+  // **Tags:** line, written by POST /_board/studio-group, so it is the same for everyone. The same bar
+  // sorts Related's items (data-group-kind=related, JL 261011): there a group is the row's group cell.
+  var rows=Array.from(list.querySelectorAll('details[data-studio-key]'));
+  var nav=list.querySelector('.studio-filters');
+  var empty=list.querySelector('.studio-empty'),status=list.querySelector('.studio-status');
+  var source=list.querySelector('[data-studio-source-filter]');
+  var owner=list.dataset.studioOwner,kind=list.dataset.groupKind||'studio',noun=list.dataset.groupNoun||'topic',pre=kind+'_';
+  var storageKey='workbench.'+kind+'.current.v1:'+owner,groupsKey='workbench.studio.groups.v1:'+owner;
+  var current=new Set(),active='';
+  function buttons(){return Array.from(nav.querySelectorAll('[data-studio-tag]'));}
+  function button(key){return buttons().find(function(b){return b.dataset.studioTag===key;})||null;}
+  function isGroup(key){return key!=='__current__'&&key!=='__untagged__'&&key!=='';}
+  function readList(k){try{var v=JSON.parse(localStorage.getItem(k)||'[]');
+    return Array.isArray(v)?v.filter(function(x){return typeof x==='string';}):[];}catch(e){return [];}}
+  function writeList(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+  function read(){return new Set(readList(storageKey));}
+  current=read();
+  function labels(row){try{return JSON.parse(row.dataset.studioTags||'[]');}catch(e){return [];}}
+  function tags(row){return labels(row).map(function(t){return t.toLowerCase();});}
+  function matches(row,key){var names=tags(row);
+    return !key||(key==='__current__'?current.has(row.dataset.studioKey):key==='__untagged__'?names.length===0:names.indexOf(key)>=0);}
+  function say(text){status.textContent=text;}
+  // the Studio's Timeline follows this bar: a topic's lines show when its row shows (JL 261011)
+  function timeline(key){var tl=document.querySelector('.studio-timeline');if(!tl)return;
+    var hidden={},shown=0;rows.forEach(function(r){hidden[r.dataset.studioKey]=r.hidden;});
+    var peak=0,sums=[];
+    tl.querySelectorAll('[data-tl-key]').forEach(function(t){t.hidden=!!hidden[t.dataset.tlKey];});
+    tl.querySelectorAll('.tl-mrow').forEach(function(r){var n=0;
+      r.querySelectorAll('.tl-cell:not([hidden])').forEach(function(c){n+=Number(c.dataset.tlCount||0);});
+      r.dataset.tlN=n;shown+=n;peak=Math.max(peak,n);sums.push([r,n]);});
+    sums.forEach(function(s){var i=s[0].querySelector('.tl-track i'),b=s[0].querySelector('.tl-bar b');
+      if(i)i.style.width=(peak?Math.round(s[1]/peak*100):0)+'%';if(b)b.textContent=s[1];});
+    // a group's bubble adds up its topics that still show; a group with none left drops its column
+    var gsum={},gpeak=0,gcells=tl.querySelectorAll('.tl-gcell');
+    gcells.forEach(function(c){var n=0,parts={};try{parts=JSON.parse(c.dataset.tlParts||'{}');}catch(e){}
+      Object.keys(parts).forEach(function(k){if(!hidden[k])n+=parts[k];});c.dataset.tlNow=n;gpeak=Math.max(gpeak,n);
+      gsum[c.dataset.tlGroup]=(gsum[c.dataset.tlGroup]||0)+n;});
+    gcells.forEach(function(c){var n=Number(c.dataset.tlNow),b=c.querySelector('.tl-gb');c.hidden=!gsum[c.dataset.tlGroup];
+      if(b){b.hidden=!n;if(n)b.style.setProperty('--s',Math.round(8+22*Math.sqrt(n/gpeak))+'px');}});
+    tl.querySelectorAll('.tl-gcol').forEach(function(h){h.hidden=!gsum[h.dataset.tlGroup];});
+    // the slanted names' header is as tall as the longest name still shown
+    var ln=0;tl.querySelectorAll('.tl-col:not([hidden])').forEach(function(c){ln=Math.max(ln,c.title.length);});
+    var map=tl.querySelector('.tl-map');if(map)map.style.setProperty('--tl-slant',Math.min(Math.round(Math.max(ln-4,0)*7.2*0.71)+40,200)+'px');
+    // the Timeline's own group picker: All, then this bar's buttons, the picked one on (JL 261012)
+    var strip=tl.querySelector('.tl-groups');if(strip){strip.textContent='';
+      var w=document.createElement('span');w.textContent='groups';strip.appendChild(w);
+      [['','All','',rows.length]].concat(buttons().map(function(b){var e=b.querySelector('.grp-emoji'),c=b.querySelector('.tag-count');
+        return [b.dataset.studioTag,b.dataset.studioLabel||b.dataset.studioTag,e?e.textContent+' ':'',c?c.textContent:''];}))
+      .forEach(function(o){var x=document.createElement('button');x.type='button';x.dataset.tlTag=o[0];
+        x.setAttribute('aria-pressed',String(o[0]===key));x.textContent=o[2]+o[1];
+        var n=document.createElement('i');n.textContent=o[3];x.appendChild(n);strip.appendChild(x);});}
+    tlGaps(tl);tl.dispatchEvent(new Event('tl-shown'));
+  }
+  function labelOf(key){var b=button(key);return b?(b.dataset.studioLabel||key):key;}
+  function paint(){
+    buttons().forEach(function(b){var key=b.dataset.studioTag;
+      b.querySelector('.tag-count').textContent=rows.filter(function(r){return matches(r,key);}).length;});
+    rows.forEach(function(r){var b=r.querySelector('.studio-current'),on=current.has(r.dataset.studioKey);
+      b.textContent=on?'Remove from Current':'Add to Current';b.setAttribute('aria-pressed',String(on));});
+  }
+  function apply(key,save){
+    if(!button(key))key='';
+    active=key;
+    rows.forEach(function(row){row.hidden=!matches(row,key)||(source&&source.value!=='__all__'&&row.dataset.studioSource!==source.value);});
+    buttons().forEach(function(b){var on=b.dataset.studioTag===key;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+    paint();
+    empty.hidden=rows.some(function(r){return !r.hidden;})||rows.length===0;
+    if(kind==='studio')timeline(key);
+    empty.textContent=key==='__current__'?'Current is empty. Unpick it to see every '+noun+', then add the ones you want to focus on.':
+      isGroup(key)?'This group is empty. Unpick it to see every '+noun+', then drag '+noun+'s onto it by ⋮⋮.':'No '+noun+'s in this source.';
+    if(save){var url=new URL(location.href);
+      url.searchParams.delete(pre+'tag');url.searchParams.delete(pre+'group');
+      if(key==='__current__')url.searchParams.set(pre+'group','current');
+      else if(key)url.searchParams.set(pre+'tag',key);
+      if(source&&source.value!=='__all__')url.searchParams.set('studio_source',source.value);else url.searchParams.delete('studio_source');
+      var target=hashTarget();if(target&&target.hidden)url.hash='';history.replaceState(null,'',url);}
+  }
+  function setCurrent(row,on){
+    var next=new Set(current);if(on)next.add(row.dataset.studioKey);else next.delete(row.dataset.studioKey);
+    if(!writeList(storageKey,Array.from(next))){say('Could not save Current in this browser. Your selection has not changed.');return false;}
+    current=next;apply(active,false);
+    say(row.dataset.studioName+(on?' added to Current.':' removed from Current.'));return true;
+  }
+  function chips(row){
+    var box=row.querySelector('.topic-tags');
+    if(!box){box=document.createElement('span');box.className='topic-tags';row.querySelector('summary b').after(box);}
+    box.textContent='';
+    var fixed=[];try{fixed=JSON.parse(row.dataset.studioFixed||'[]');}catch(e){}   // a subfolder's or a theme's: no ×
+    labels(row).forEach(function(t){var c=document.createElement('span');c.className='chip';c.dataset.tag=t;c.textContent=t;
+      if(fixed.indexOf(t.toLowerCase())<0){var x=document.createElement('button');x.type='button';x.className='tag-x';
+        x.title='Take out of '+t;x.setAttribute('aria-label','Take '+row.dataset.studioName+' out of '+t);x.textContent='×';
+        c.appendChild(x);}
+      box.appendChild(c);});
+  }
+  function makeGroup(label){
+    var key=label.toLowerCase(),b=button(key);if(b)return b;
+    var wrap=document.createElement('span');wrap.className='grp';
+    b=document.createElement('button');b.type='button';b.className='tab';b.dataset.studioLabel=label;b.dataset.studioTag=key;
+    b.setAttribute('aria-pressed','false');
+    var em=document.createElement('span');em.className='grp-emoji';em.setAttribute('aria-hidden','true');em.textContent=emojiFor(label);
+    b.appendChild(em);b.appendChild(document.createTextNode(label+' '));
+    var n=document.createElement('span');n.className='tag-count';n.textContent='0';b.appendChild(n);
+    var x=document.createElement('button');x.type='button';x.className='grp-x';x.dataset.studioDelete=key;
+    x.title='Delete group '+label;x.setAttribute('aria-label','Delete group '+label);x.textContent='×';
+    wrap.appendChild(b);wrap.appendChild(x);nav.insertBefore(wrap,button('__untagged__')||nav.querySelector('.grp-new'));return b;
+  }
+  var emo={};try{emo=JSON.parse(nav.dataset.studioEmoji||'{}');}catch(e){}
+  function emojiFor(label){var low=label.toLowerCase(),words=emo.words||{},pal=emo.palette||[];
+    var tokens=low.split(/[ _/&+-]+/).filter(Boolean);
+    for(var w in words){var ascii=w.split('').every(function(c){return c.charCodeAt(0)<128;});
+      if(ascii?tokens.some(function(t){return t===w||t.replace(/s$/,'')===w;}):low.indexOf(w)>=0)return words[w];}
+    if(!pal.length)return '';var n=0;for(var ch of label)n+=ch.codePointAt(0);return pal[n%pal.length];}
+  function post(body){body.path=owner;body.kind=kind;
+    return fetch('/_board/studio-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {ok:false,err:'HTTP '+r.status};})
+        .then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||('HTTP '+r.status));return j;});});}
+  function update(j){Object.keys(j.topics||{}).forEach(function(k){
+    var row=rows.find(function(r){return r.dataset.studioKey===k;});
+    if(row){row.dataset.studioTags=JSON.stringify(j.topics[k]);chips(row);}});apply(active,false);}
+  function addTo(row,key){
+    if(key==='__current__'){setCurrent(row,true);return;}
+    var label=labelOf(key),name=row.dataset.studioName;
+    post({op:'add',topic:row.dataset.studioKey,tag:label}).then(function(j){update(j);
+      say(name+(j.changed?' added to ':' is already in ')+label+'.');})
+      .catch(function(e){say('Could not add '+name+' to '+label+': '+e.message);});
+  }
+  function takeOut(row,label){var name=row.dataset.studioName;
+    post({op:'remove',topic:row.dataset.studioKey,tag:label}).then(function(j){update(j);say(name+' taken out of '+label+'.');})
+      .catch(function(e){say('Could not take '+name+' out of '+label+': '+e.message);});
+  }
+  function dropGroup(key){
+    var label=labelOf(key),n=rows.filter(function(r){return tags(r).indexOf(key)>=0;}).length;
+    function gone(){var b=button(key);if(b)(b.closest('.grp')||b).remove();
+      apply(active===key?'':active,active===key);}
+    if(!n){post({op:'delete',tag:label}).then(function(){gone();say('Group '+label+' deleted.');})
+      .catch(function(e){say('Could not delete '+label+': '+e.message);});return;}
+    say('');status.append('Delete group '+label+'? It comes off '+n+' '+noun+(n===1?'':'s')+'; the '+noun+'s stay. ');
+    var yes=document.createElement('button');yes.type='button';yes.className='grp-ok';yes.textContent='Delete';
+    var no=document.createElement('button');no.type='button';no.className='grp-cancel';no.textContent='Cancel';
+    status.append(yes,' ',no);
+    no.addEventListener('click',function(){say('');});
+    yes.addEventListener('click',function(){say('Deleting '+label+' …');
+      post({op:'delete',tag:label}).then(function(j){update(j);gone();
+        say('Group '+label+' deleted. Its '+j.changed+' '+noun+(j.changed===1?' is':'s are')+' still listed.');})
+        .catch(function(e){say('Could not delete '+label+': '+e.message);});});
+  }
+  var newBtn=nav.querySelector('.grp-new'),form=nav.querySelector('.grp-form'),input=form.querySelector('input');
+  function openForm(on){form.hidden=!on;newBtn.hidden=on;if(on){input.value='';input.focus();}}
+  function create(){var label=input.value.trim();
+    if(!label){openForm(false);return;}
+    if(label.length>30||/[`,·|*]/.test(label)||['current','all','untagged'].indexOf(label.toLowerCase())>=0){
+      say('A group name is 1 to 30 characters, without ` , · | or *, and is not Current, All or Untagged.');return;}
+    openForm(false);
+    if(button(label.toLowerCase())){say('Group '+label+' already exists.');return;}
+    post({op:'create',tag:label}).then(function(){makeGroup(label);apply(active,false);
+      say('Group '+label+' made. Drag '+noun+'s onto it by ⋮⋮.');}).catch(function(e){say('Could not make '+label+': '+e.message);});}
+  // groups made before they were saved on disk waited in this browser: save them once, then forget them
+  if(kind==='studio'){readList(groupsKey).forEach(function(label){if(!button(label.toLowerCase()))
+    post({op:'create',tag:label}).then(function(){makeGroup(label);apply(active,false);}).catch(function(){});});
+  try{localStorage.removeItem(groupsKey);}catch(e){}}
+  // drag a group button sideways to move it; the order is saved to studio/ (or related/) _groups.txt (b10 s02-D17)
+  var dragged=false;
+  nav.addEventListener('pointerdown',function(ev){
+    var tab=ev.target.closest('.grp>.tab');if(!tab||ev.button!==0)return;
+    var wrap=tab.parentNode,startX=ev.clientX,startY=ev.clientY,moved=false;
+    function move(e){if(e.pointerId!==ev.pointerId)return;
+      if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
+      if(!moved){moved=true;wrap.classList.add('moving');nav.classList.add('sorting');}
+      var over=Array.from(nav.querySelectorAll('.grp')).find(function(g){if(g===wrap)return false;var r=g.getBoundingClientRect();
+        return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8;});
+      if(over){var r=over.getBoundingClientRect();nav.insertBefore(wrap,e.clientX<r.left+r.width/2?over:over.nextSibling);}
+    }
+    function finish(e){if(e.pointerId!==ev.pointerId)return;
+      document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);
+      if(!moved)return;
+      wrap.classList.remove('moving');nav.classList.remove('sorting');dragged=true;setTimeout(function(){dragged=false;},0);
+      var order=Array.from(nav.querySelectorAll('.grp>.tab')).map(function(b){return b.dataset.studioLabel;});
+      post({op:'order',groups:order}).then(function(){say('Group order saved.');})
+        .catch(function(e2){say('Could not save the group order: '+e2.message);});
+    }
+    document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+  });
+  newBtn.addEventListener('click',function(){openForm(true);});
+  form.querySelector('.grp-ok').addEventListener('click',create);
+  form.querySelector('.grp-cancel').addEventListener('click',function(){openForm(false);});
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();create();}else if(e.key==='Escape'){openForm(false);}});
+  nav.addEventListener('click',function(ev){
+    var del=ev.target.closest('[data-studio-delete]');if(del){ev.preventDefault();dropGroup(del.dataset.studioDelete);return;}
+    var b=ev.target.closest('[data-studio-tag]');if(!b||dragged)return;
+    apply(b.dataset.studioTag===active?'':b.dataset.studioTag,true);});
+  list.addEventListener('click',function(ev){var x=ev.target.closest('.tag-x');if(!x)return;
+    ev.preventDefault();ev.stopPropagation();var row=x.closest('details[data-studio-key]'),chip=x.closest('.chip');
+    if(row&&chip)takeOut(row,chip.dataset.tag);});
+  if(source)source.addEventListener('change',function(){apply(active,true);});
+  rows.forEach(function(row){
+    row.querySelector('.studio-current').addEventListener('click',function(ev){
+      ev.preventDefault();ev.stopPropagation();setCurrent(row,!current.has(row.dataset.studioKey));});
+    var handle=row.querySelector('.studio-drag');
+    if(!handle)return;                      // a theme's own Report card (b10 s05): not draggable, its groups fixed
+    handle.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();});
+    handle.addEventListener('pointerdown',function(ev){
+      if(ev.button!==0)return;ev.preventDefault();ev.stopPropagation();
+      var startX=ev.clientX,startY=ev.clientY,ghost=null,moved=false,hot=null;
+      if(handle.setPointerCapture)handle.setPointerCapture(ev.pointerId);
+      function under(x,y){return buttons().find(function(b){var k=b.dataset.studioTag;if(k==='__untagged__')return false;
+        var r=b.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null;}
+      function mark(b){if(hot)hot.classList.remove('drop-ready');hot=b;if(hot)hot.classList.add('drop-ready');}
+      function move(e){
+        if(e.pointerId!==ev.pointerId)return;
+        if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<6)return;
+        if(!moved){moved=true;row.classList.add('dragging');ghost=document.createElement('div');
+          ghost.className='studio-drag-preview';ghost.textContent=row.dataset.studioName;document.body.appendChild(ghost);}
+        ghost.style.left=(e.clientX+12)+'px';ghost.style.top=(e.clientY+12)+'px';
+        mark(under(e.clientX,e.clientY));
+      }
+      function finish(e){
+        if(e.pointerId!==ev.pointerId)return;
+        document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);
+        row.classList.remove('dragging');mark(null);if(ghost)ghost.remove();
+        var b=moved&&e.type==='pointerup'?under(e.clientX,e.clientY):null;
+        if(b)addTo(row,b.dataset.studioTag);
+      }
+      document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+    });
+  });
+  function restore(){var url=new URL(location.href),group=url.searchParams.get(pre+'group');
+    var key=url.searchParams.get(pre+'tag')||(group==='current'?'__current__':'');
+    if(source){var wanted=url.searchParams.get('studio_source')||'__all__';
+      source.value=Array.from(source.options).some(function(o){return o.value===wanted;})?wanted:'__all__';}
+    var target=hashTarget();
+    if(target&&rows.indexOf(target)>=0){if(!matches(target,key))key='';if(source)source.value='__all__';}
+    apply(key,false);
+  }
+  restore();window.addEventListener('popstate',restore);
+  window.addEventListener('storage',function(ev){
+    if(ev.key===storageKey){current=read();apply(active,false);}});
+});
+function tlGaps(tl){
+  // one real axis (JL 261012: "show the days between them"): a day with nothing shown, between two that have
+  // something, stays as a short row with a hollow dot; a run of more than 3 is one row, "N quiet days".
+  // Before the first such day and after the last, nothing shows. The chart counts what the group shows; the
+  // list below also what is picked.
+  var wrap=tl.querySelector('.tl-wrap');if(!wrap)return;
+  var picking=wrap.classList.contains('picking')&&wrap.dataset.level==='days';
+  function lay(rs,full){var on=rs.map(full),a=on.indexOf(true),b=on.lastIndexOf(true);
+    rs.forEach(function(r,j){var t=r.querySelector('time');if(t.dataset.label===undefined)t.dataset.label=t.textContent;
+      t.textContent=t.dataset.label;r.hidden=a<0||j<a||j>b;r.classList.toggle('tl-quiet',!on[j]);});
+    for(var j=a;a>=0&&j<=b;j++){if(on[j])continue;var k=j;while(k<=b&&!on[k])k++;
+      if(k-j>3){rs[j].querySelector('time').textContent=(k-j)+' quiet days';for(var m=j+1;m<k;m++)rs[m].hidden=true;}j=k;}}
+  lay(Array.from(tl.querySelectorAll('.tl-mrow')),function(r){return Number(r.dataset.tlN||0)>0;});
+  lay(Array.from(tl.querySelectorAll('.tl-day')),function(d){
+    return !!d.querySelector('.tl-topic:not([hidden])'+(picking?':not(.tl-off)':''));});
+}
+document.querySelectorAll('.studio-timeline .tl-levels').forEach(function(nav){
+  // how much the Timeline shows: Days · Topics · Everything (JL 261011), remembered in this browser
+  var axis=nav.closest('.tl-wrap'),saved='';if(!axis)return;
+  function show(level){axis.dataset.level=level;nav.querySelectorAll('[data-tl-level]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(b.dataset.tlLevel===level));});tlGaps(axis.closest('.studio-timeline'));}
+  try{saved=localStorage.getItem('workbench.timeline.level.v1')||'';}catch(e){}
+  if(nav.querySelector('[data-tl-level="'+saved+'"]'))show(saved);
+  nav.addEventListener('click',function(ev){var b=ev.target.closest('[data-tl-level]');if(!b)return;show(b.dataset.tlLevel);
+    try{localStorage.setItem('workbench.timeline.level.v1',b.dataset.tlLevel);}catch(e){}});});
+document.querySelectorAll('.studio-timeline .tl-map').forEach(function(map){
+  // the chart's columns: the topic groups or the topics (JL 261011), remembered in this browser. A picked
+  // group shows its topics; by group shows every group, so it unpicks the group (JL 261012: "我好像没法选了")
+  var nav=map.closest('.tl-wrap').querySelector('.tl-cols'),saved='',pref=map.dataset.cols;if(!nav)return;
+  var bar='.studio-topics:not([data-group-kind]) .studio-filters';
+  function on(){return document.querySelector(bar+' [data-studio-tag].on');}
+  // a group picked from here hides or shows the topic cards above, so the page grows or shrinks over the
+  // Timeline; keep its toolbar where it was on screen (JL 261012: "它会跳到最上面，而不是留在 timeline 这里")
+  var levels=map.closest('.tl-wrap').querySelector('.tl-levels');
+  function keep(fn){var y=levels.getBoundingClientRect().top;fn();
+    var d=levels.getBoundingClientRect().top-y;if(d)window.scrollBy(0,d);}
+  function cols(){var c=on()?'topics':pref;map.dataset.cols=c;nav.querySelectorAll('[data-tl-cols]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(b.dataset.tlCols===c));});}
+  try{saved=localStorage.getItem('workbench.timeline.cols.v1')||'';}catch(e){}
+  if(saved==='groups'||saved==='topics')pref=saved;
+  cols();
+  nav.addEventListener('click',function(ev){var b=ev.target.closest('[data-tl-cols]');if(!b)return;pref=b.dataset.tlCols;
+    try{localStorage.setItem('workbench.timeline.cols.v1',pref);}catch(e){}
+    var g=on();keep(function(){if(pref==='groups'&&g)g.click();cols();});});
+  // the Timeline's group picker clicks the bar's own button: picking the picked one again, or All, unpicks it
+  var strip=map.closest('.tl-wrap').querySelector('.tl-groups');
+  if(strip)strip.addEventListener('click',function(ev){var x=ev.target.closest('[data-tl-tag]');if(!x)return;
+    var k=x.dataset.tlTag,t=k?document.querySelector(bar+' [data-studio-tag="'+CSS.escape(k)+'"]'):on();
+    if(t)keep(function(){t.click();});});
+  // pick topics in the chart (JL 261011: "we can select the topics we are interest in we show there content"):
+  // their decisions, sessions and notes show under it, on the same axis; pick again to drop one
+  var wrap=map.closest('.tl-wrap'),list=wrap.querySelector('.tl-list'),line=wrap.querySelector('.tl-picked'),picked=new Set();
+  function pick(){wrap.classList.toggle('picking',picked.size>0);
+    map.querySelectorAll('.tl-col,.tl-cell').forEach(function(c){c.classList.toggle('on',picked.has(c.dataset.tlKey));});
+    list.querySelectorAll('.tl-topic').forEach(function(t){t.classList.toggle('tl-off',!picked.has(t.dataset.tlKey));});
+    tlGaps(wrap.closest('.studio-timeline'));
+    line.textContent='';if(!picked.size)return;
+    var names=Array.from(map.querySelectorAll('.tl-col')).filter(function(c){return picked.has(c.dataset.tlKey);})
+      .map(function(c){return c.title||c.textContent;});
+    line.appendChild(document.createTextNode('Reading '+names.join(' · ')));
+    var x=document.createElement('button');x.type='button';x.textContent='Clear';
+    x.addEventListener('click',function(){picked.clear();pick();});line.appendChild(x);}
+  // a group or source picked anywhere: the columns follow, and a picked topic that no longer shows is dropped
+  map.closest('.studio-timeline').addEventListener('tl-shown',function(){cols();
+    map.querySelectorAll('.tl-col[hidden]').forEach(function(c){picked.delete(c.dataset.tlKey);});pick();});
+  map.addEventListener('click',function(ev){var g=ev.target.closest('.tl-gcol,.tl-gb');
+    if(g){var key=(g.closest('[data-tl-group]')||g).dataset.tlGroup;
+      var t=document.querySelector(bar+' [data-studio-tag="'+CSS.escape(key)+'"]');
+      keep(function(){if(t&&!t.classList.contains('on'))t.click();cols();});return;}
+    var c=ev.target.closest('.tl-col,.tl-cell');if(!c||(c.classList.contains('tl-cell')&&!c.querySelector('.tl-b')))return;
+    ev.preventDefault();var k=c.dataset.tlKey;if(picked.has(k))picked.delete(k);else picked.add(k);pick();});});
+document.querySelectorAll('.studio-timeline .tl-name').forEach(function(a){a.addEventListener('click',function(ev){
+  // a topic's name in the Timeline opens its row above
+  var d=document.getElementById(decodeURIComponent(a.hash.slice(1)));if(!d)return;
+  ev.preventDefault();d.open=true;load(d);d.scrollIntoView({block:'start'});history.replaceState(null,'',a.hash);});});
 document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addEventListener('click',function(ev){
-  ev.preventDefault();ev.stopPropagation();          // in the row's header: edit, never fold
+  ev.preventDefault();ev.stopPropagation();
   var d=b.closest('details'),f=d.querySelector('iframe'),on=b.textContent==='Edit';
   d.open=true;f.src=on?f.dataset.edit:f.dataset.src;b.textContent=on?'Finish editing':'Edit';});});
-var h=decodeURIComponent(location.hash.slice(1)),t=h&&document.getElementById(h);
-if(t&&t.tagName==='DETAILS'){t.open=true;load(t);t.scrollIntoView({block:'start'});}})();
+document.querySelectorAll('.rp-live').forEach(function(b){b.addEventListener('click',function(){
+  var f=b.querySelector('iframe');if(f&&f.hasAttribute('inert')){f.removeAttribute('inert');b.classList.add('on');}});});
+var t=hashTarget();if(t&&t.tagName==='DETAILS'){t.open=true;load(t);t.scrollIntoView({block:'start'});}
+})();
 
 (function(){var dlg=document.getElementById('frame-pop'),fr=document.getElementById('frame-pop-frame');if(!dlg)return;
 document.addEventListener('click',function(ev){var a=ev.target.closest('a[data-pop]');
@@ -549,6 +1028,28 @@ document.addEventListener('click',function(ev){var a=ev.target.closest('a[data-p
 document.getElementById('frame-pop-x').addEventListener('click',function(){dlg.close();});
 dlg.addEventListener('click',function(ev){if(ev.target===dlg)dlg.close();});
 dlg.addEventListener('close',function(){fr.removeAttribute('src');});})();
+
+(function(){
+  var CSS='html.wb-embed body>header,html.wb-embed body>nav,html.wb-embed body>h1,html.wb-embed .wb-band,'
+   +'html.wb-embed .wb-links{display:none!important}html.wb-embed body{padding-top:4px}';
+  function tidy(f){try{var d=f.contentDocument;if(!d||!d.documentElement)return;
+    var h=d.documentElement;if(h.classList.contains('wb-embed-top'))return;h.classList.add('wb-embed','wb-embed-top');
+    var st=d.createElement('style');st.textContent=CSS;(d.head||h).appendChild(st);}catch(e){}}
+  function hook(f){f.addEventListener('load',function(){tidy(f);});tidy(f);}
+  document.querySelectorAll('iframe.page-view,iframe.space-frame').forEach(hook);
+  new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){
+    if(n.nodeType!==1)return;(n.matches('iframe.page-view,iframe.space-frame')?[n]:
+      [].slice.call(n.querySelectorAll('iframe.page-view,iframe.space-frame'))).forEach(hook);});});})
+   .observe(document.body,{childList:true,subtree:true});
+})();
+
+document.addEventListener('DOMContentLoaded',function(){
+  var f=document.getElementById('wb-guide-frame'),hd=document.querySelector('header.page-title'),h=hd&&hd.querySelector('h1');
+  if(!f||!hd||!h)return;hd.after(f);var own=h.innerHTML,g=h.getAttribute('data-guide');
+  function sync(){var open=document.body.classList.contains('wb-guide-open');
+    if(open&&h.textContent!==g)h.textContent=g;else if(!open&&h.innerHTML!==own)h.innerHTML=own;}
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class']});sync();
+});
 </script><style>.wb-guide-button{font:400 16px system-ui,sans-serif;padding:6px 14px;border:1px solid #ced4da;border-radius:6px;background:#fff;color:#1e1e1e;cursor:pointer}.wb-guide-button[aria-selected=true]{background:#e7f5ff;color:#1864ab;border-color:#1864ab}.wb-guide-frame{display:block;width:100%;border:0;margin:0;height:220px}.wb-guide-frame[hidden]{display:none!important}body.wb-guide-open .wb-guide-native{display:none!important}body.wb-guide-open .wb-guide-nav>button:not(.wb-guide-button),body.wb-guide-open .wb-guide-nav>a:not(.wb-guide-button){background:#fff;color:#1e1e1e;border-color:#ced4da;box-shadow:none}@media(prefers-color-scheme:dark){.wb-guide-button{background:#191c21;color:#edf0f4;border-color:#414852}.wb-guide-button[aria-selected=true]{background:#253749;color:#91caff;border-color:#91caff}body.wb-guide-open .wb-guide-nav>button:not(.wb-guide-button),body.wb-guide-open .wb-guide-nav>a:not(.wb-guide-button){background:#191c21;color:#edf0f4;border-color:#414852}}
 </style><script type="application/json" id="wb-guide-mount">{"family": "design", "context": {"path": "Project-DesignDemo/designs/b01_demo_app/j03_g01_m04/j03_g01_m04.md", "file": "j03_g01_m04.md", "level": "Job"}, "nav": "nav.levels", "native": ".frame-body"}</script><script>(function(){
   'use strict';

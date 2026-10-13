@@ -32,7 +32,7 @@ LEVEL = {
                     ("t", "? until insight_theme.py exists, these cards follow s11's design, not the live frame")],
     "Method": [("c", STEPS), ("t", "method cards"), ("c", G.method_cards(["By protocol reuse"])),
                ("t", "? no card yet for reading across Jobs (replication, test T8)")],
-    "RoadMap Draw": [("w", G.drawings(["s00-insight-structure", "s01-insight-ladder", "s11-block-level", "s02-insight-workbench"])),
+    "RoadMap Draw": [("w", G.drawings(["s04-insight-structure", "s01-insight-ladder", "s11-block-level", "s02-insight-workbench"])),
                      ("t", "? guide.yaml roadmap: names these per level; today the Guide shows only s02")],
     "Related Paper": [("c", G.papers(["by protocol reuse"])[0]),
                       ("t", "? none yet behind reading across Jobs (replication across data versions)")],

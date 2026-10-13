@@ -1,5 +1,6 @@
 # haipipe-design-method · version history
 
+- 261012 · `ref/scorecard.md`: predicted and observed are both pp; a frozen prediction in another unit is never edited, the scorer states how it read it or scores it `?`.
 - 261007 · review fixes (version unchanged): ④ runs T0 and T1 always and T2 when the version lists it; T3 runs inside t99's rank; ② makes N + 5 ideas unless the version says otherwise (stated once in haipipe-design-unit reason.md); run-score is the reviewer agent's and keeps scores.csv in its own folder; the scorecard counts only scored rows.
 
 0.4.0 current · 261007 · First version (JL 261007, b12 s00 · s11 · s12 · s21) (the Design family version is frozen)

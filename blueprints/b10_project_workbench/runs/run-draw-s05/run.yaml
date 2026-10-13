@@ -10,8 +10,46 @@ signs: null
 status: done
 passes:
 - p01-1011
+- p02-1012
+- p03-1012
+- p04-1012
+- p05-1012
+- p06-1011
+- p07-1011
+- p08-1011
+- p09-1011
+- p10-1012
+- p11-1012
+- p12-1012
+- p13-1012
+- p14-1012
+- p15-1012
+- p16-1012
+- p17-1012
+- p18-1012
+- p19-1012
+- p20-1012
+- p21-1012
 writes:
 - studio/s05-report-workbench-skill/ · studio/_build/make.sh
+- studio/s05-report-workbench-skill/s05-report-workbench-skill.md
+- studio/s05-report-workbench-skill/build_s05_report_workbench_skill.py
+- studio/s05-report-workbench-skill/s05-report-workbench-skill.excalidraw
+- studio/s05-report-workbench-skill/s05-report-workbench-skill.png
+- studio/s05-report-workbench-skill/history/
+- studio/s05-report-workbench-skill/
+- servers/workbench/frame.py · board.md · studio/s05-report-workbench-skill/
+- studio/s05-report-workbench-skill/report_groups.py
+- Tools/plugins/haipipe-toolkit/servers/workbench/frame.py
+- Tools/plugins/haipipe-toolkit/servers/workbench-work/work_theme.py
+- Tools/plugins/haipipe-toolkit/servers/workbench-cowork/cowork_theme.py
+- Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py
+- Tools/plugins/haipipe-toolkit/servers/workbench-cowork/tests/test_cowork_theme.py
+- Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/canvas.py
+- Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/CHANGELOG.md
+- Tools/blueprints/b16_theme_paper/studio/s05-paper-report/
+- runs/run-draw-s05/
+- s05-report-workbench-skill.png
 feeds:
 - reports/q03_block_questions
 - reports/q09_studio_report_on_screen

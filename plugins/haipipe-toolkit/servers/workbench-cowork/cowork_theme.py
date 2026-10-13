@@ -5,8 +5,9 @@ email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`t
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.
 
-    Block  Description: Scope · People · Resources (Related: folded inside the Studio) | Audience Report: the base's Question rows
-           (Logic │ Work │ Report, the report's drawing live in Report)
+    Block  Description: Scope · People · Resources (Related: folded inside the Studio) | Audience Report: the base's Question
+           cards under the group bar (each opens on Logic │ Work │ Report, the report's drawing live in Report);
+           Questions · Timeline when a report carries an event table (b10 s05-D05, D09)
            | Work Details: its Jobs, All · open · waiting · done | Delivery: delivery/ (every Job's messages
            out) · Reports · Done jobs
     Job    Description: Job · Files | Audience Report: the Block's Questions citing this Job
@@ -16,13 +17,13 @@ left vanilla and its tab is greyed until a Job has one.
 Idea Studio and Runs read as vanilla (studio/ topics; runs/ grouped by type); the theme adds its
 run types. It reads the Block through coworkboard.py and writes nothing; no run sends a message.
 """
-from src.common import delivery_dir, delivery_lane_dir, delivery_relative
+from src.common import delivery_dir
 import re
 from pathlib import Path
 from urllib.parse import urlencode
 
 from live.coworkboard import DONE, files, header, jobs, notes, people_page, steps, waited
-from live.frame import ROUTE, Space, Theme, esc, link, pop, question_rows, reader, rel, table
+from live.frame import ROUTE, Space, Theme, delivery_view, esc, link, pop, reader, rel, table, work_tree
 from live.task_questions import field, read, register, words
 
 _DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
@@ -91,12 +92,18 @@ def _deliveries(job_dir, block):
     """One message we send per `delivery/<date>-<what>/` of a Job: its draft (.md) and its attachments
     (JL 261009: "add it to the delivery"), newest first."""
     out, d = [], delivery_dir(job_dir)
+    sends = (owner / "delivery" / "delivery.md") if (owner := next((b for b in (job_dir, *job_dir.parents)
+                                                                       if (b / "board.md").is_file()), None)) else None
+    marked = read(sends, block) if sends and sends.is_file() else ""
     for p in sorted(d.iterdir(), reverse=True) if d.is_dir() else []:
         if p.name.startswith((".", "_")):
             continue
         found = sorted(f for f in (p.iterdir() if p.is_dir() else [p]) if f.is_file() and not f.name.startswith("."))
         md = next((f for f in found if f.suffix == ".md"), None)
         text = read(md, block) if md else ""
+        if (p.is_dir() and not re.match(r"\d{4}-\d{2}-\d{2}", p.name)) or (
+                p.is_file() and not re.search(r"(?m)^(Subject|To):", text)):
+            continue      # a built table, form or notes folder, not a <date>-<what>/ message: the cards above list it
         title = re.search(r"(?m)^#\s+(.+)$", text) or re.search(r"(?m)^Subject:\s*(.+)$", text)
         page = md.with_suffix(".html") if md and md.with_suffix(".html").is_file() else None   # email_page.py's
         named = re.search(r"(?m)^Attach:\s*(.+)$", text)                                       # copy page
@@ -104,6 +111,9 @@ def _deliveries(job_dir, block):
         out.append({"date": date.group(1) if date else "",
                     "md": md, "page": page, "title": title.group(1).strip() if title else p.name,
                     "draft": bool(re.search(r"(?m)^\s*status:\s*draft\b", text)) or "draft" in (md.name if md else ""),
+                    # sent is a person's word (haipipe-delivery): its draft says so, or delivery.md has its row sent
+                    "sent": bool(re.search(r"(?m)^\s*status:\s*sent\b", text)) or bool(re.search(
+                        r"(?m)^\|.*" + re.escape(p.name) + r".*\|\s*sent\s*\|\s*$", marked)),
                     "attach": [p / n.strip() for n in named.group(1).split(";") if n.strip()] if named
                               else [f for f in found if md is None or f.stem != md.stem]})
     return out
@@ -115,7 +125,8 @@ def _delivery_rows(job_dir, block, root, with_job=False):
         msg = (pop("/" + rel(m["page"], root), m["title"]) if m["page"]          # the page to copy from
                else link(reader(m["md"], root), m["title"]) if m["md"] else esc(m["title"]))
         files_ = " · ".join(pop("/" + rel(f, root), f.name) for f in m["attach"]) or '<span class=mut>none</span>'
-        row = (esc(m["date"] or "—"), msg, files_, "draft ✎ not sent" if m["draft"] else "sent")
+        row = (esc(m["date"] or "—"), msg, files_, "draft ✎ not sent" if m["draft"] else "sent" if m["sent"]
+               else '<span class=mut>not marked sent</span>')
         rows.append(((_job_link({"name": job_dir.name}, block, root),) if with_job else ()) + row)
     return rows
 
@@ -145,22 +156,22 @@ def _block(block, root, sub):
     out["Description"] = Space(html=body or "", subspaces=("Scope", "People", "Resources"), open=d_sub,
                                run_types=BLOCK_RUNS["Description"])
 
-    q_html, groups = question_rows("Block", block, root, sub)            # one look with the other Block workbenches
-    if sub in groups:
-        from .timeline_view import group_timeline
-        q_html = group_timeline(block, root, _questions(text), sub) or q_html
-    out["Audience Report"] = Space(html=q_html, subspaces=("All",) + tuple(groups) if groups else (),
-                                   open=(sub if sub in groups else "All") if groups else "",
+    # the Report: the base's Question cards under the group bar, the same code as every theme (b10 s05-D05); a
+    # report that carries an event table adds a Timeline view above the list, a lens and not a group (s05-D09)
+    from .timeline_view import group_timeline
+    events = group_timeline(block, root, _questions(text))
+    a_sub = ("Timeline" if sub == "Timeline" else "Questions") if events else ""
+    out["Audience Report"] = Space(html=events if a_sub == "Timeline" else "",       # "": the base's cards
+                                   subspaces=("Questions", "Timeline") if events else (), open=a_sub,
                                    run_types=BLOCK_RUNS["Audience Report"])
 
     w_sub = _pick(sub, ("All", "open", "waiting", "done"))
     keep = {"All": lambda j: True, "open": lambda j: j["open"], "waiting": _waiting,
             "done": lambda j: j["state"].startswith(DONE)}[w_sub]
-    job_rows = [(_job_link(j, block, root), esc(j["state"] or "—"),
-              esc(j["waiting"] if j["open"] else "—") + (f' <span class=mut>· {esc(j["days"])} days</span>'
-                                                         if _waiting(j) and j["days"] is not None else ""),
-              esc(j["next"] or "—")) for j in rows if keep(j)]
-    out["Work Details"] = Space(html=table(("Job", "state", "waiting on", "next"), job_rows),
+    # the base's Work tree (b10 s32-D19, JL 261012: "show the job to the task to the run results"), the Jobs this
+    # view keeps; each Job card says its state, who it waits on and what is next (work_meta)
+    kept = [block / j["name"] for j in rows if keep(j)]
+    out["Work Details"] = Space(html=work_tree("Block", block, root, THEME, jobs=kept) or table(("Job",), []),
                                 subspaces=("All", "open", "waiting", "done"), open=w_sub,
                                 run_types=BLOCK_RUNS["Work Details"])
     out["Runs"] = Space(run_types=BLOCK_RUNS["Runs"])
@@ -173,18 +184,11 @@ def _block(block, root, sub):
     elif v_sub == "Done jobs":
         html = table(("Job", "title", "since"), [(_job_link(j, block, root), esc(j["title"]), esc(j["since"] or "—"))
                                                   for j in rows if j["state"].startswith(DONE)])
-    else:                                                               # Block files and every Job's messages out
-        own = []
-        for lane in ("word", "latex", "web", "slide", "render"):
-            output = delivery_lane_dir(block, lane)
-            found = sorted(f for f in output.rglob("*")
-                           if f.is_file() and not any(p.startswith((".", "_"))
-                                                     for p in f.relative_to(output).parts)) if output.is_dir() else []
-            if found:
-                own.append((esc(lane), " · ".join(pop("/" + rel(f, root), f.name) for f in found)))
+    else:          # the base's result cards under the group bar (b10 s32-D18), then every Job's messages out
         sent = [r for j in rows for r in _delivery_rows(block / j["name"], block, root, with_job=True)]
-        html = (("<h2>Block files</h2>" + table(("lane", "files"), own) if own else "")
-                + (table(("Job", "date", "message", "attachments", "state"), sent) if sent else ""))
+        html = (delivery_view(block, root, THEME)
+                + ("<h3>Messages</h3>" + table(("Job", "date", "message", "attachments", "state"), sent)
+                   if sent else ""))
     out["Delivery"] = Space(html=html, subspaces=("delivery/", "Reports", "Done jobs"), open=v_sub or "delivery/",
                             run_types=BLOCK_RUNS["Delivery"])
     return out
@@ -232,13 +236,8 @@ def _job(job_dir, root, sub):
         body = table(("file", "folder"), found)
     out["Description"] = Space(html=body, subspaces=("Job", "Files"), open=d_sub, run_types=JOB_RUNS["Description"])
 
-    citing = [r for r in _questions(read(block / "board.md", block))
-              if any((w if isinstance(w, str) else words(w.get("path")) if isinstance(w, dict) else "")
-                     .startswith(job_dir.name + "/") for w in (r.get("work") if isinstance(r.get("work"), list) else []))]
-    out["Audience Report"] = Space(
-        html='<p class=mut>The Block\'s Questions that cite this Job.</p>'
-             + table(("Question", "Work", "Report"), _question_rows(citing, block, root)),
-        run_types=JOB_RUNS["Audience Report"])
+    # "": the base's cards under the group bar, the Block's Questions whose work: names this Job (b10 s05-D17)
+    out["Audience Report"] = Space(html="", run_types=JOB_RUNS["Audience Report"])
 
     emails = notes(job_dir / "emails", block, root, job_dir.name)
     meetings = notes(job_dir / "meetings", block, root, job_dir.name)
@@ -258,10 +257,37 @@ def _job(job_dir, root, sub):
                                 run_types=JOB_RUNS["Work Details"])
     out["Runs"] = Space(run_types=JOB_RUNS["Runs"])
     sent = _delivery_rows(job_dir, block, root)
-    out["Delivery"] = Space(html=table(("date", "message", "attachments", "state"), sent) if sent
-                            else '<p class=mut>Nothing to send yet: a message and its attachments go in '
-                                 'delivery/&lt;date&gt;-&lt;what&gt;/.</p>')
+    cards = delivery_view(job_dir, root, THEME)                # this Job's part, as result cards (b10 s32-D18)
+    out["Delivery"] = Space(html=cards + ("<h3>Messages</h3>" + table(("date", "message", "attachments", "state"), sent)
+                                          if sent else "" if cards else
+                                          '<p class=mut>Nothing to send yet: a message and its attachments go in '
+                                          'delivery/&lt;date&gt;-&lt;what&gt;/.</p>'))
     return out
+
+
+def work_meta(folder, root):
+    """A cowork Job's card in the Work tree: its state, who it waits on (and how long) and what is next."""
+    folder = Path(folder)
+    if not (folder.parent / "board.md").is_file():
+        return ""
+    rows, _ = jobs(folder.parent, Path(root))
+    j = next((r for r in rows if r["name"] == folder.name), None)
+    if j is None:
+        return ""
+    wait = (f'waiting on {esc(j["waiting"])}' + (f' · {esc(j["days"])} days' if j["days"] is not None else "")
+            if _waiting(j) else "")
+    return " · ".join(x for x in (esc(j["state"]), wait, f'next: {esc(j["next"])}' if j["next"] else "") if x)
+
+
+def work_body(folder, root):
+    """An opened cowork Job card in the Work tree: its timeline, every dated email, meeting, entry and send."""
+    job_dir, root = Path(folder), Path(root)
+    block = job_dir.parent
+    if not (block / "board.md").is_file():
+        return ""
+    return _timeline(job_dir, block, root, notes(job_dir / "emails", block, root, job_dir.name),
+                     notes(job_dir / "meetings", block, root, job_dir.name),
+                     steps(job_dir / "CHECKLIST.md", block, job_dir.name))
 
 
 def spaces(level, folder, root, sub):
@@ -282,4 +308,7 @@ RUN_NAMES = {"Update the Block status": "run-face-<bNN>", "Add a person": "run-a
              "Add an entry": "run-add-entry-<slug>", "Draft an email": "run-email-<slug>",
              "Write meeting notes": "run-meeting-<slug>", "Review a draft": "run-review-email-<slug>"}
 
-THEME = Theme(name="cowork", label="CoWork", icon="🤝", guide="cowork", spaces=spaces, run_names=RUN_NAMES)
+# the Report's suggested groups, the kinds of question cowork keeps asking (b10 s05-D07): what the study needs from
+# a partner, what already works, what blocks it
+THEME = Theme(name="cowork", label="CoWork", icon="🤝", guide="cowork", spaces=spaces, run_names=RUN_NAMES,
+              report_groups=("Needs", "Works", "Blockers"), work_meta=work_meta, work_body=work_body)

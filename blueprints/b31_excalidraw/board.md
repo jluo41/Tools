@@ -7,13 +7,14 @@ close: Each Excalidraw skill mode in use has a Studio topic naming its steps, it
 
 ## Topic
 
-The Excalidraw skills (`1_base/display/excalidraw-read`, `excalidraw-report`, `excalidraw-slide`) and
-haipipe-studio's writer (`canvas.py`) make the drawings every Block's Studio shows. This Block records how
+The Excalidraw skills (`1_base/display/excalidraw-studio`, the principles every Studio drawing follows, and
+`excalidraw-report`, `-slide`, `-read`, `-section`, `-job`, `-task`) and haipipe-studio's writer (`canvas.py`) make
+the drawings every Block's Studio shows. This Block records how
 they draw, one topic per mode, each from a drawing that was actually made, so the expensive and fragile
 steps are known before the next one.
 
-Excluded: what a Studio topic is and how its folder works (haipipe-studio); the look of a drawing
-(excalidraw-report's rules).
+Excluded: what a Studio topic is and how its folder works (haipipe-studio). The look of a drawing is included since
+261012: b31 s01 holds the principles (excalidraw-studio).
 
 ## Pipeline
 
@@ -25,4 +26,7 @@ a drawing made in some Block -> its steps, scripts and timings -> a Studio topic
 
 No Jobs yet. Studio topics:
 
-- s21-revise-mode-workflow: excalidraw-read's revise mode, from b04_prep_ai's s04 (SHIFT Task 3.1), 2026-10-11
+- s00-background-and-index: the background, the Studio plan and the proposals (closed 261012)
+- s01-drawing-principles: the seven drawing principles, excalidraw-studio's topic (closed 261012)
+- s02 to s07: one topic per skill: excalidraw-report, -slide, -read, -section, -job, -task
+- s21-revise-mode-workflow: excalidraw-revise, from b04_prep_ai's s04 (SHIFT Task 3.1), 2026-10-11

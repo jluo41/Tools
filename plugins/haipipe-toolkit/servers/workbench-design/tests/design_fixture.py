@@ -216,7 +216,8 @@ def _job(block: Path, job: str, goal: str, method: str, version: str, inputs: st
             f"{i},d{k:02d},+x [lo; hi],<why>,{'yes' if i <= kept else 'no'}\n" for i, k in enumerate(order, 1)))
     if released:
         _run(j, f"run-freeze-predictions-{jid}", "freeze-predictions", jid, by="a person")
-        _run(j, f"run-release-{jid}", "release", jid, by="a person")
+        _run(j, f"run-release-{jid}", "release", jid, by="designer agent, signed by <person>",
+             extra={"signed": "<person> 261007 · one by one"})
         designs = [{"job": jid, "design": f"d{k:02d}", "words": SMS[(k - 1) % len(SMS)], "predicted": "+x [lo; hi]",
                     "released": "261007", "pins": {"goal": goal, "method": f"{method} {version}", "inputs": inputs}}
                    for k in (4, 1)]

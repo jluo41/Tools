@@ -13,7 +13,7 @@ screenshots match.
 Read first (the design is the source of truth; never edit these drawings)
 --------------------------------------------------------------------------
 
-- `Tools/blueprints/b11_theme_insight/studio/`: s00-insight-structure (the Project, the two Blocks, two
+- `Tools/blueprints/b11_theme_insight/studio/`: s04-insight-structure (the Project, the two Blocks, two
   clocks, run types by level), s11-block-level, s12-job-level, s13-task-level (one screen per Space,
   "on disk" under each), s31-insight-guide (the Guide by level). Read each `.md`, then its
   `build_*.py` (the SCREENS lists give each Space's views, button rows and run types).

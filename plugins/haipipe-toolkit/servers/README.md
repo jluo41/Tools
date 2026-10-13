@@ -19,7 +19,7 @@ servers/
 │                        bibex exports), folder status, plugview; exporters/ holds the md2tex,
 │                        md2docx and docx2pdf writers
 ├── workbench-paper/     📄 the Paper workbench
-├── workbench-work/      📋 the work theme (once task): Questions as Logic / Work / Report, Studio
+├── workbench-work/      🧪 the work theme (once task): Questions as Logic / Work / Report, Studio
 ├── workbench-cowork/    📨 CoWork Blocks: Jobs, who we wait on, Questions, emails, meetings
 ├── workbench-discovery/ 🔭 Discovery Blocks: papers, Result cards, citations to verify, BibTeX
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs

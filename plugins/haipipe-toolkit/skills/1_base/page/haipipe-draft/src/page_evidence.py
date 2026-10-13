@@ -275,8 +275,8 @@ def current_display_results(page_source: Path) -> tuple[list[dict], bool]:
         document = _result_document(manifest)
         item = str(document.get("item", "")).strip()
         kind = str(document.get("type", "")).strip().upper()
-        if kind not in {"DISPLAY", "TABLE"} and not re.search(r"-(?:DISPLAY|TABLE)-", item, re.I):
-            continue
+        if kind not in {"DISPLAY", "TABLE"} and (kind or not re.search(r"-(?:DISPLAY|TABLE)-", item, re.I)):
+            continue  # an explicit VALUE or CITE type overrides words in the item slug
         saw_display = True
         payload = document.get("payload")
         raw_unit = payload.get("unit") if isinstance(payload, dict) else None

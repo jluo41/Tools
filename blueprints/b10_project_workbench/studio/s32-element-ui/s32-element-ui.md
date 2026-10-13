@@ -12,7 +12,11 @@ of the element, show the different versions, like the gallery, and we will pick 
 for the audience report, we might have different versions as well"). It answers JL's "the current
 UI is very bad, not as good as the previous ones": the previous looks are all here to choose from.
 
-**Feeds:** Q08 (one shared base, a theme each).
+**Feeds:** `reports/` q08_workbench_base (one shared base, a theme each)
+
+Reshot 261012 (JL: "please read s32, it is old enough, right? DO we want to update it again?"): the
+261010 shots showed six theme pages that have since retired or moved. Every theme now draws on the shared
+frame, so the versions are the base and each theme on the frame. Only what is still used is kept (s32-D24).
 
 
 Files
@@ -22,39 +26,53 @@ Files
 s32-element-ui/
 ├── s32-element-ui.md            this face: what is decided, what is open
 ├── build_s32_element_ui.py      the builder: --shoot screenshots each element live, then draws the gallery
-├── shots/                       one screenshot per element and page, and facts.json (each one's computed style)
-├── s32-element-ui.excalidraw    the gallery: one frame per element, one card per version, then Pick
+├── shots/                       one screenshot per element and version, and facts.json (each one's computed style)
+├── s32-element-ui.excalidraw    the gallery: one frame per element and its proposed frame
 └── s32-element-ui.png           its preview
 ```
 
-Shoot (a live host on this SPACE, headless Chrome):
-`uv run --with playwright --with pillow python build_s32_element_ui.py --shoot [--base http://127.0.0.1:5851]`.
-Draw only (what `make.sh` runs): `python build_s32_element_ui.py`.
+Shoot (each page on the host serving its own SPACE, headless Chrome):
+`uv run --with playwright --with pillow --with pyyaml python build_s32_element_ui.py --shoot [--host <SPACE>=<url>]`.
+The hosts default to this computer's (`HOSTS` in the builder: Tools 5623, WellDoc 5622, DrFirst 5604,
+Physician 5599). Draw only (what `make.sh` runs): `python build_s32_element_ui.py`.
 
 
 What the gallery holds
 ----------------------
 
 ```text
-element                         versions today, from
-1 · Top tabs                    8: the frame, paper, work, insight, design, discovery, labeling, Page workbench
-2 · View row (third row)        5: paper (frame), work, insight, discovery, Page workbench
-3 · Audience Report rows        4: the frame (Question │ Work │ Report), work, insight, discovery (a table)
-4 · The Space body              9: every page's open Space, its first screen
-5 · Tables                      3: paper (frame), design, discovery
-6 · Rows and cards              4: the frame's studio rows, work, insight, labeling
-7 · Disk · Runs panel           6: the frame, paper, work, design, discovery, Page workbench (all opened)
-8 · Tags and pills              2: discovery, labeling
-9 · Page header                 8
-(the Disk box was its own element until Disk moved inside the Runs panel, 261007)
+element               versions (shot 261012)
+1 · Top of the page    8: the base and 7 themes on the frame
+2 · Report             8: the same eight; the group bar read live on each
+3 · Studio             8
+4 · Delivery           8
+5 · Description        8
+6 · Work               8
+7 · Disk · Runs panel  8
+8 · Design display     1: a design Job, the design tests' sample Block (no Project holds one yet)
+proposed frames        the base's own picture; Delivery from b12_theme_design and Work from
+                       b02_pretrain_corpus (its first Job open), where b10 has nothing to show; the
+                       Report's also shows one card opened (b10's Q05: Logic │ Report)
 ```
 
-Under each picture: its first control's computed style (font, corner radius, padding, border,
-fill), read live, so two looks that seem alike can be told apart by number.
+The versions, one real folder each: base `b10_project_workbench` (Tools); work `b02_pretrain_corpus`,
+cowork Samsung `b12_epic_streaming`, paper `Paper-ScalingGlucose-NatSeries2026` (WellDoc); insight
+`Insight-SMSR2v1` and its Job j01, design `Design-SMSR2-Stage25-CarryOver-261008`, discovery
+`b01_experimental_learning_evidence` (DrFirst); labeling `b01_aci_bench` (Physician). Under each picture:
+its first control's computed style (font, corner radius, padding, border, fill), read live.
 
-The pages: the frame (`/_board/workbench`, the new base) and every older page still served beside
-it (work-board, insight-board, paper-board, design-board, discovery-board, labeling-board, and one
-Page's Draft view). No cowork Block exists on disk, so cowork has no card.
+
+Finding (read 261012)
+---------------------
+
+1. The Report's group bar shows on 4 of 8: the base, work, cowork and labeling (cowork's Block moved onto
+   the base's cards on 261012, 09:17). Not yet on paper, insight, design and discovery (s05).
+2. A cowork Job's Report is still its own table of the Block's Questions that cite it, not cards.
+3. Two older theme pages are still served: `/_board/insight-board` and `/_board/design-board` (no longer
+   in the gallery, s32-D24). `/_board/paper-board` and `/_board/discovery-board` now redirect to the frame.
+4. The Top of the page is one look on every theme on the frame: 16px, 6px corners, padding 6px 14px,
+   a grey border (s32-D01).
+5. b11_theme_insight's s32 has 33 frames but no decisions and no "Theme elements" list.
 
 
 Decided
@@ -75,7 +93,7 @@ s32-D03 · Done (261007, JL: "some of them are old version and we will not use i
     card whose page is a theme's old board page (its theme draws on the frame now) or the old Page
     workbench (its views are the frame's Task Spaces) is flagged OLD in red, greyed, in a red dashed
     box; read off the code at build time (`old_reason`). Only the frame is current. A look from an
-    old page may still be picked (D · E for the tabs were).
+    old page may still be picked (D · E for the tabs were). (261012: the OLD cards are deleted, s32-D24.)
 
 s32-D04 · Proposed (261007, JL: "we want to unify things ... for each frame, add a new frame to the right
     of it and draw the proposed new one and explain why"): beside each element's gallery frame, a
@@ -131,7 +149,7 @@ s32-D12 · Done (261008, JL: "for your own s32, you should track these theme bas
     b16 paper first, built by their own sessions; b13-b17 as they start) on every build: its folder,
     frames, decisions, open points and the list under its "Theme elements" heading (element · level ·
     Space › view · the base's or its own, and whether the frame draws it). A theme with none reads "not
-    started" in red. Each theme drew its list from its own s11 · s12 · s13.
+    started" in red. Each theme drew its list from its own s11 · s12 · s13. (Frame removed 261012, s32-D21.)
 
 
 s32-D13 · Done (261008, built in the frame and approved: "it is great", JL on the design Job's top: "How do you think we can replace the 🎨 Design ·
@@ -158,13 +176,92 @@ s32-D15 · Done (261011, replaces the short-name sentence of s32-D13): a Job or 
     its ids kept in the face's pins. The rest of s32-D13 (the four lines of the page top) stands.
     `servers/workbench/frame.py` `short_name` returns the name; the delivery chip takes the Job's tag itself.
 
+s32-D16 · Done (261012, JL: "please read s32, it is old enough, right? DO we want to update it again?"):
+    the gallery is reshot from the frame. Its versions are the base and each theme on the shared frame, one
+    real folder each, shot on the host serving that folder's SPACE (`HOSTS`, `--host`); an older theme page
+    still served is a card flagged OLD in its own label. Each element's proposed frame is the base's own
+    picture, the look every theme takes. The elements follow the page as it is now: Top of the page
+    (Studio | Block · Job · Task | Delivery, s02-D18, s03-D04), Report, Studio, Delivery, Description, Work,
+    the Runs panel and the Design display. Dropped: Tables and Rows and cards (each theme's Space body shows
+    them), Tags (none, s32-D09) and One item's display (its pages moved or retired; s32-D10 stands). Pick
+    and the theme Blocks' own s32 are one folder tree (haipipe-studio 0.12.0; removed 261012, s32-D21).
+    (261012: the OLD cards and history/ are deleted, s32-D24; the rest stands.)
+
+
+s32-D17 · Done (261012, JL on 3 · Studio · proposed, a red box round s02's "studio-and-report ↗
+    studio-workbench-reference ↗": "for the studio, remove the content in the block box here"): a Studio topic's
+    row links only its own drawing (↗) and Add to Current; its other drawings get no link on the row (the face
+    lists them). `servers/workbench/frame.py` `_topic_row`.
+s32-D18 · Done (261012, JL on 4 · Delivery · proposed: "for the delivery, we should also have the group tags as
+    well, and have the delivery card, similar to the studio"): the base's Delivery is one folding card per
+    result under the group bar, as the Studio's: ⋮⋮, its name, its groups, where it came from ↗, when built,
+    its size, its sends (the delivery.md rows naming it), Add to Current and each file ↗; opened, the result
+    itself (a PDF, a web page, an image). A result is a file a reader opens, its twins one card, as s03-D08
+    counts. Its file kinds (PDF, Word, Deck, Web page, Sheet, Image) are fixed groups; + Group and a drag add a
+    person's own, written in `delivery/result_groups.md` (| result | group |; no row, no file), the order in
+    `delivery/_groups.txt`. The source row (Block · jNN · tNN) stays above as the part picked (s03-D06).
+    `frame.py` `delivery_items` · `delivery_view` · `_delivery_card`, a fourth group kind `delivery`. Live on
+    b11 and b12; checked over HTTP: a group added, a file kind refused, the group taken out. Settles s03 Open 3.
+s32-D19 · Done (261012, JL on 6 · Work · proposed: "for the work, I want it can show the job to the task to the
+    run results, show all the content. and there are special tasks that human need to interact with as well.
+    Like the labeling the task for the section of writing"): the base's Work is one tree, Job → Task → Run →
+    what it found: a Block shows one folding card per Job, a Job its Tasks open, a Task its Runs; each Run shows
+    its kind and type, its status, its headline (`result/headline.txt`) and its `result/` files. A Task a person
+    works in carries a button and a ✎ mark: ✎ Write opens a Page's Draft (its face says `page-type:`), 🏷 Label
+    opens a labeling Task's Rounds (`Theme.task_action`, the labeling theme's). `frame.py` `work_tree`,
+    `task_action`; `workbench-labeling/labeling_theme.py` `task_action`. Live on b02_pretrain_corpus (4 Jobs) and
+    the labeling Block b01_aci_bench (🏷 Label on t02).
+
+s32-D20 · Done (261012, JL on the Pick frame, which listed every line of the seven theme lists: "this is just not
+    readable, how do you fix this?"): Pick shows each theme in numbers, its elements drawn by the base, its own
+    and its gaps, then only the gaps, red, one short line each (`theme_entries` parses each list's
+    `element · level · where · base or own · drawn, or GAP: …` lines). The full lists stay in each theme's s32.
+    (Frame removed the same day, s32-D21.)
+s32-D21 · Done (261012, JL on "Pick, and each theme's own elements": "I cannot see the meaning of this, delete
+    it"): the Pick frame is gone, and with it the theme Blocks' lists read into this drawing (s32-D12, D20).
+    What is kept shows as the green line at the top of each element's frame; what is still open, red. Each
+    theme's own elements stay in its own s32.
+
+s32-D22 · Done (261012, JL: "please go ahead and do it", on moving the themes that draw their own Delivery and Work
+    onto the base's): Delivery's result cards and group bar on every theme, each theme's own part kept below them:
+    paper (a first view `delivery/`; a version's displays, Sections, Checks and Sent), cowork (Messages sent),
+    insight (the Handoff), design (Released designs). Work's tree on paper (the Board's Jobs view, a version's All),
+    cowork (All · open · waiting · done, each Job card with its state, who it waits on and what is next, opened on
+    its timeline), discovery (Tasks). Two new theme hooks in `frame.py`: `work_meta` (a theme's words on a card) and
+    `work_body` (what an opened Job shows under its Tasks); a soft Run shows its passes, or what its card says it
+    wrote. Design's and insight's Work keep their own: design's tests hold b12's s32 rulings (one card per Job
+    with its designs' words and verdicts), and insight's Job already draws its own Task tree by partition. Tests:
+    the base and the seven themes, 153 passed.
+
+s32-D23 · Done (261012, JL on the opened Q05 card: "we have the report card and it is collapsable, and you can opne
+    it, it will should three columns, for the logic and work and report. Or just the two columns, for the logic
+    and report (which contains the work as well). How do you think about it?"): two columns. An opened Question
+    card is Logic │ Report; the work behind it (its Jobs, Tasks and Runs) is one line in the Report column, under
+    the answer and above the drawing. Why: of b10's 12 Questions, 11 have no work, so a Work column stood empty on
+    nearly every card; the work is the report's evidence, read after its answer; and the drawing gets the width
+    (about 840 px in place of about 380). `frame.py` `Q_HEAD`, `_report_cell(..., work)`, `.q-row.q-two`. Insight
+    keeps its own three columns: its Work cell holds each Question's steps and its run per cut.
+
+s32-D24 · Done (261012, JL: "for the element UI we have just dropped, could you delete them, only keep the ones we
+    are still using"): the gallery keeps only what is still used, the base and the seven themes on the frame, 8
+    versions per element, 4 a row. Deleted: the OLD cards (the old Insight and Design board pages on Top, Report and
+    the Runs panel; s32-D03's flag goes with them) and history/ (the 261010 shots of the dropped elements, Tables,
+    Rows and cards, Tags and One item's display, and the 261011 builder, face and preview); git keeps them all at
+    commit d09005f7. The old pages themselves are still served until Open 4 retires them.
+
+
 Open
 ----
 
-1. Pick one look per element (the Pick frame: write the letter you keep, or draw a new one).
-   The first ask (JL 261007, on the tabs): the Insight board's buttons, square corners and a
-   washed-blue selected button, the view row inside the content box.
-2. Once picked: the base (`servers/workbench/frame.py` CSS, `runs_panel.py`) draws each picked
-   look, every theme gets it, and the older pages keep theirs until they retire.
+1. Pick one look per element: write the letter you keep on its frame, or draw a new one. Kept so far (the
+   green line on each frame): the top of the page, the Report's bar, the Studio, Delivery, Work, the Runs
+   panel and the Design display.
+2. Once picked: the base (`servers/workbench/frame.py` CSS, `runs_panel.py`) draws each picked look,
+   every theme gets it, and the older pages keep theirs until they retire.
+3. The Report's group bar on paper, insight, design, discovery and labeling (Finding 1): each theme's
+   starting groups are s05's (s05-D07); build them there.
+4. The old Insight and Design board pages (Finding 3): retire them, as paper's and discovery's were?
+5. A cowork Job's Report (Finding 2): the Block's Questions it answers as cards, as s05-D10 proposes.
+6. Settled 261012 by s32-D22, except design's and insight's Work, which keep their own (b12's, b11's).
 
 (write here, or mark the drawing in red)

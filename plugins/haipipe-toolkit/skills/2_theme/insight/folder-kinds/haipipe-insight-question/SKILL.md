@@ -53,7 +53,7 @@ an answer. Its id `<L><NN>` fixes its level; its `tNN` stays the same in every r
 ```yaml
 ---
 kind: new question          # new question · fix · retire · cut
-level: information          # the DIKW level it would sit at (blank for a cut)
+level: information          # the DIKW level it would sit at, or executive (X); blank for a cut
 from: j03                   # the Job, report or reading it came from (coverage, q02, a vs-previous row)
 state: open                 # open · taken · declined
 taken-in: ''                # the release that took it

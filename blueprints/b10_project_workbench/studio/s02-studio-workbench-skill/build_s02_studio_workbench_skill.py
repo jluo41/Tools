@@ -562,8 +562,8 @@ DISCUSSION_NAMES = (
 )
 
 
-def changed(x, y, words):
-    L.els.append(canvas.change_note(x, y, words, date="261010", frame=L.FRAME[0], size=20))
+def changed(x, y, words, date="261010"):
+    L.els.append(canvas.change_note(x, y, words, date=date, frame=L.FRAME[0], size=20))
 
 
 def card(x, y, w, h, title, body):
@@ -636,8 +636,9 @@ def frame_shared_levels():
     changed(1600, 401, "shared Studio: only Studio picked, no work row (D09)")
     card(1600, 440, 830, 225, "Studio from a Task: same Block topics",
          "The Task opens the same Block Studio.\nThe Task remains context in the controls.\n[Task] returns to its work Space and view.\nNew topics and topic Runs belong to the Block.")
-    card(1600, 710, 830, 270, "Guide's Index and the separate Report",
-         "Guide: [Index] [Description] [Method]\n[RoadMap Draw] [Related Paper]\nIndex returns to the SPACE studio overview.\nReport: Question -> supporting work -> answer\nReports use selected topic frames and evidence.\nReport ownership follows its own rules.")
+    card(1600, 710, 830, 270, "Guide's SPACE and Project, and the separate Report",
+         "Guide: [SPACE] [Project] | [Description] [Method] ...\nSPACE: the SPACE Home; Project: its Project only.\nBoth leave the workbench.\nReport: Question -> supporting work -> answer\nReports use selected topic frames and evidence.\nReport ownership follows its own rules.")
+    changed(1622, 940, "Index is now SPACE, with a Project link beside it (D31)", "261012")
     changed(1600, 1000, "Studio and Report are separate Spaces (D05)")
     card(0, 1060, 740, 140, "Block source",
          "bNN_<block>/studio/sNN-<topic>/\nOne topic and one source drawing.")

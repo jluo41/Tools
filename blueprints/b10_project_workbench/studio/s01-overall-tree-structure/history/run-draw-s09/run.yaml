@@ -1,0 +1,17 @@
+run: run-draw-s09
+kind: soft
+type: draw
+scope: null
+target: s09
+ticket: run-draw-s09.md
+skill: haipipe-studio
+agent: null
+signs: JL 261011 (Stage → agreed, s09-D09)
+status: done
+passes:
+- p01-1011
+writes:
+- studio/s09-studio-block-job-task-delivery/
+feeds:
+- reports/q03_block_questions
+- reports/q09_studio_report_on_screen

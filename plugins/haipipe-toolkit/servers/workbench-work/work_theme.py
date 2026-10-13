@@ -8,7 +8,8 @@ Question │ Work │ Report, the child Jobs and Tasks). Its Guide is the `work`
 import re
 from pathlib import Path
 
-from live.frame import Space, Theme, esc as _e, face, link as _link, reader as _reader, table as _table
+from live.frame import (Space, Theme, esc as _e, face, link as _link, reader as _reader, report_view,
+                        table as _table)
 
 TASK_RUNS = ({"label": "Plan a Task", "prompt": "/haipipe-task plan {folder}"},
              {"label": "Build the Task", "prompt": "/haipipe-task build {folder}"},
@@ -48,7 +49,8 @@ def spaces(level, folder, root, sub):
     drafts = _files(folder, root, "draft/*.md")
     out["Audience Report"] = Space(
         html=_table(("draft", "bytes"), drafts) if ar_sub == "Draft" else
-        (f'<p>The report is its face: {_link(_reader(md, root), md.name)}</p>' if md else ""),
+        (f'<p>The report is its face: {_link(_reader(md, root), md.name)}</p>' if md else "")
+        + report_view("Task", folder, root, THEME),          # its Questions under the group bar (b10 s05-D17)
         subspaces=("Draft", "Report"), open=ar_sub,
         run_types=({"label": "Write the report", "prompt": "/haipipe-task report {folder}"},))
     wd_sub = sub if sub in ("Code", "Review", "Notebooks") else "Code"
@@ -69,4 +71,6 @@ RUN_NAMES = {"Plan a Task": "run-plan-<tNN>", "Build the Task": "run-build-<tNN>
              "Check a Task": "run-check-<tNN>", "Write the report": "run-write-<tNN>",
              "Review the Task code": "run-review-code-<tNN>"}
 
-THEME = Theme(name="work", label="Work", icon="📋", guide="work", spaces=spaces, run_names=RUN_NAMES)
+# the Report's suggested groups, the kinds of question a work Block keeps asking (b10 s05-D07)
+THEME = Theme(name="work", label="Work", icon="🧪", guide="work", spaces=spaces, run_names=RUN_NAMES,
+              report_groups=("Data", "Pilot", "Evaluation"))

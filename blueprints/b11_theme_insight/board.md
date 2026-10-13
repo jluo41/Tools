@@ -45,7 +45,7 @@ No Jobs yet. The drawings the questions share are in `studio/`:
 
 ```text
 studio/
-├── s00-insight-structure/   the thinking: Prototype versions × data versions, triggers
+├── s04-insight-structure/   the thinking: Prototype versions × data versions, triggers
 ├── s01-insight-ladder/      the proposal: every level, Board to Task, options A and B
 ├── s02-insight-workbench/   today's Insight workbench (the Guide's RoadMap Draw serves it)
 ├── s03-insight-methods/     the methods: the cards, their code, today's screens; and the Guide's methods drawing

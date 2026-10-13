@@ -47,8 +47,8 @@ The two trees
 ├── studio/ · reports/qNN_<topic>/            topics · the Board's questions, answered across Jobs
 ├── runs/run-<type>-<target>/                 every Board Run is soft (add a version, add a Job, readings, …)
 ├── delivery/                                 the signed handoffs: handoff-<W>.md names its pair (pN × vM)
-└── jNN_pN_<D>vM/                             a Job: release pN × data version vM, frozen once closed
-    ├── jNN_pN_<D>vM.md                       release · prototype (the release's path) · hash · data · state ·
+└── jNN_prototype-pN-<slug>_data-<D>vM/     a Job: release pN × data version vM, frozen once closed
+    ├── jNN_prototype-…_data-<D>vM.md         release · prototype (the release's path) · hash · data · state ·
     │                                         moved: start | data | code · previous
     ├── reports/vs-<prev>.md                  run-compare's table: question · previous · this · status · why
     ├── runs/                                 soft: launch · power · compare · propose · close
@@ -64,8 +64,30 @@ The two trees
 `work/`, the Board `Insight-<name>[-<YYMMDD>]` in `insight/`. The folder name is a label: a reader knows each by its
 `board.md` (`board-kind:`; a Board also by `prototype:`). An older `bNN_<topic>` name stays readable. Inside, Jobs and
 Tasks keep `jNN_` and `tNN_`: a release `jNN_pN_<slug>` (the slug says what it is, JL 261008; its id stays
-`pN` in release.yaml, the faces and Run names; an older `jNN_pN` stays readable), a Board Job `jNN_pN_<D>vM` (`<D>` the dataset, `vM` its version:
-`j01_p1_<D>v1`), a question `tNN_<L><NN>_<slug>` (`t03_D03_<slug>`).
+`pN` in release.yaml, the faces and Run names; an older `jNN_pN` stays readable), a Board Job
+`jNN_prototype-pN-<slug>_data-<D>vM` (`<D>` the dataset, `vM` its version), a question `tNN_<L><NN>_<slug>`
+(`t03_D03_<slug>`).
+
+A Board Job's name reads left to right (JL 261012: "make the job folder name to be human readable"):
+`j01_prototype-p1-basic-questions_data-SMSR2v1`. Underscores part its three fields (the number, the release with
+its slug, the data version) and hyphens join the words inside one, as in a Task's name; the Job ▾ menu shows it
+as it is. `ref/open_job.py` writes it (`job_name`); an older `jNN_pN_<D>vM` (`j01_p1_<D>v1`) stays readable. A renamed
+Job keeps its old name in its face, `renamed-from: j01_p1_SMSR2v1`, so an old workbench link still opens it.
+
+**The Executive level, X** (JL 261012: "based on the whole bottom level question, what are the high level question we
+should have?"). Above D, I, K and W, a release may ask a few Executive questions, `tNN_X<NN>_<slug>/` with
+`level: executive`: what a leader asks first (what we ran, the best message, whether patients need different ones,
+what else moves the outcome, what to send next, what the data cannot say). Each is asked on `full`, has only `cite`
+needs on the answers below it and one `judge`, and so gets no ticket; its page answers in plain words and cites each
+point `(K01 · t30)`, as a Wisdom page does. Together they are the Job's **Overall Report** (JL 261012: "before the
+Full, we should have a Overall Report ... we can click and read it"): the Audience Report's first button, before Full,
+reads them as one document, and no cut's table lists them. `ref/overall_report.py <Job>` prints them on one page, the
+Board's `delivery/<job>/overall-report.{html,pdf}` (generated: never edited by hand); `run-overall-j<NN>` writes the
+pages and the print. Each X page also names its figure in its face, `figures:` (JL 261013: "figures to show it to
+quickly get the outcome"): the outcome as its title, a kind (bars, dots, lines, ranges) and the result table of a Run
+the page cites. `ref/overall_figures.py`, called by `overall_report.py`, draws it into `delivery/<job>/figures/`; the
+Overall Report opens with them as **At a glance** (a card per question: its outcome and its figure) and shows each
+under its answer; the print's page 2 holds them.
 
 
 How they work together
@@ -80,7 +102,7 @@ proposals/<slug>.md ◀─────────── propose (questions, a c
 jNN_pN_<slug>/ open ▶ ask · plan · script ─▶ set the cuts ─▶ SIGN (frozen)
                  (another agent reviews each)        a person              │
                                                                           ▼
-                                     data: a new extract ─▶ add v<M> ─▶ add a Job jNN_pN_<D>vM
+                                     data: a new extract ─▶ add v<M> ─▶ add a Job jNN_prototype-…_data-<D>vM
                                                          (frozen)        moved: start | data | code
                                                                           │ launch · power · the hard Runs
                                                                           ▼
@@ -211,12 +233,12 @@ The six Spaces at each level
 
 ```text
           Description                  Idea Studio        Audience Report                 Work Details        Runs · Delivery
-Board     Map (releases × data         question map ·     Partition × Reading: Coverage · the Jobs: All ·     soft Runs ·
-          versions) · Prototype ·      topics             Tracks · Consistency · Findings p1 · p2 …           Handoff
-          Dataset · Partitions
-Job       the Job's line (pN × vM ·    topics             Partition × Period: Current ·   Job → Task → Run    launch · power ·
-          state · moved) atop                             vs previous                     (All · hard · soft) compare · propose ·
-          Prototype · Dataset                                                                                 close
+Board     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft Runs ·
+          versions) · Prototype ·      topics             Partition × Reading: Coverage · p1 · p2 …           Handoff
+          Dataset · Partitions                            Tracks · Consistency · Findings
+Job       the Job's line (pN × vM ·    topics             Overall Report · then           Job → Task → Run    launch · power ·
+          state · moved) atop                             Partition × Period: Current ·   (All · hard · soft) compare · propose ·
+          Prototype · Dataset                             vs previous                                         close
 Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
 Prototype (no level drawing yet: b11 s21 lists its run types; its Spaces follow when one is drawn)
 ```

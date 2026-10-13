@@ -80,8 +80,21 @@ decision, session and note. The browser keeps the level picked. The chart is pla
 page, no chart library (JL 261011: "it is not that beautiful ... like using the versualiaation tools?"). Nothing new is written for it; it reads what the topics already keep: each decision
 `sNN-DNN · … (JL 261011)` by the first date in it, each session `runs/run-draw-<sNN>/passes/pNN-<MMDD>/`,
 and the green change notes `✎ <YYMMDD> …` in the topic's drawings (`frame.timeline_events`,
-`frame.studio_timeline`). It follows the group bar above: pick a group and only its topics' lines stay.
-A topic's name, column or bubble opens its row. Decisions with no date are listed at the end.
+`frame.studio_timeline`). It follows the group bar above, and has its own row of the same groups (All ·
+Current · each group) so a group is picked without scrolling up: a picked group shows only its topics, as
+columns and lines; by group shows every group again. A topic's name, column or bubble opens its row.
+Decisions with no date are left off (b10 s08-D10). By topic, each column, 60 px wide, carries the topic's
+full name: the sNN straight and bold, the rest slanted above it (s08-D12, s08-D14). Every day from the first to the last stays on the axis: a day with nothing shown gets a
+short row and a hollow dot, more than 3 in a row are one row, "N quiet days" (s08-D13).
+
+Folder is the Studio's fourth folding part, under Timeline (JL 261012: "在 related 和 timeline 下面再搞一个 folder，
+这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容"; b10 s09-block-folder): the Block's own
+folder as one tree, folders first, then files, by name. A folder folds and says how many things it holds and what it is
+for (`frame.folder_word`: the names every Block shares by a fixed line, a Run by its card, else its face's title); a
+file opens in the pop-out (a .md in the reader, a drawing as the drawing, else itself) and says its size and its day.
+Only the first level comes with the page; a folder's rows load when it opens, from `?view=dir&path=<folder>`
+(`frame.folder_rows`, `frame_view.py`), 300 at a time with a button for the rest, so a Block of thousands of files
+stays light (b00_rawdata: 5,317). Dotfiles and caches are left out. `path=` is the key the share doors check.
 
 Every theme opens in this one frame (JL 261011). The themes' older Block pages,
 `/_board/cowork-board`, `/_board/work-board` and `/_board/discovery-board`, send a Block to
@@ -91,11 +104,12 @@ frame and keeps its theme's own page.
 
 Studio has one entry immediately after Guide and before the Block / Job / Task controls
 (261010, b03 s02-D07–D09). Like Guide, it opens a shared view: only Studio is highlighted,
-and the work Space and subspace rows are absent. Inside Guide, Index is the first button,
-before Description, Method, RoadMap Draw and Related Paper (s02-D12). It leaves the whole
-workbench for the SPACE's studio index, including from the embedded Guide. Its destination
-defaults to /?view=radial&measure=studios and may be set with the host's --index-url or
-INDEX_URL setting. Studio's title is `<Theme> · Studio · <Block tag> · <Block name>`.
+and the work Space and subspace rows are absent. Inside Guide, SPACE and Project are the first
+buttons, before Description, Method, RoadMap Draw and Related Paper (s02-D12, renamed from Index
+by s02-D31). Both leave the whole workbench, including from the embedded Guide. SPACE opens the
+SPACE Home: it defaults to /?view=radial&measure=studios and may be set with the host's
+--index-url or INDEX_URL setting. Project opens this host's Home showing only the folder's
+Project, /?project=<Project folder>, or its SPACE bucket (shared:space) outside a Project. Studio's title is `<Theme> · Studio · <Block tag> · <Block name>`.
 The topics, Disk, topic sessions and new-topic prompts all use the owning Block, including
 when opened from a Job or Task. A theme's Studio content is taken from its Block adapter.
 

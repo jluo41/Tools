@@ -28,7 +28,7 @@ LEVEL = {
     "Method": [("c", [INPUTS, GOALS] + G.steps({6}) + [SCORE]),
                ("t", "the three families: where a method's rule comes from"), ("c", G.family_cards()),
                ("t", "? each step's 'where today' names the old board and page; the new: Block · Job · Task tabs")],
-    "RoadMap Draw": [("w", G.drawings([("s00-design-structure", "s00 · design structure", "what a method is, how it evolves"),
+    "RoadMap Draw": [("w", G.drawings([("s04-design-structure", "s04 · design structure", "what a method is, how it evolves"),
                                        ("s01-design", "s01 · the ladder", "the ladder at a glance"),
                                        ("s11-design-block", "s11 · the Block", "the Board's screens"),
                                        ("s02-workbench-ui", "s02 · workbench UI", "the old page's drawing")])),

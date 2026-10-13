@@ -74,7 +74,8 @@ def test_a_release_folder_says_what_it_is(tmp_path):
     L("board", board, "--dataset", "Demo", "--prototype", "tasks/Prototype-b01-Demo")
     L("data", board, "v1", "--extract", "_WorkSpace/<store>/demo_v1.parquet")
     L("job", board, "--release", "p1", "--data", "v1")
-    face = _front(board / "j01_p1_Demov1" / "j01_p1_Demov1.md")
+    job = "j01_prototype-p1-first-questions_data-Demov1"                         # read left to right (JL 261012)
+    face = _front(board / job / f"{job}.md")
     assert face["prototype"] == "tasks/Prototype-b01-Demo/j01_p1_first-questions"
     L("run", v / "t01_D01_extract-shape", "plan-evidence")
     assert (v / "t01_D01_extract-shape" / "runs" / "run-plan-evidence-d01" / "run.yaml").is_file()
@@ -150,8 +151,8 @@ def test_board_jobs_one_clock_and_the_reader(project):
     with pytest.raises(SystemExit, match="not a data version"):
         L("job", board, "--release", "p1", "--data", "v2")
     L("job", board, "--release", "p1", "--data", "v1")
-    j1 = board / "j01_p1_Demov1"
-    face = _front(j1 / "j01_p1_Demov1.md")
+    j1 = board / "j01_prototype-p1_data-Demov1"
+    face = _front(j1 / "j01_prototype-p1_data-Demov1.md")
     assert (face["release"], face["data"], face["moved"], face["state"]) == ("p1", "v1", "start", "open")
     assert re.fullmatch(r"[0-9a-f]{12}", face["hash"])
     runs = sorted(r.name for r in (j1 / "t02_I01_rates-by-cut" / "runs").iterdir())
@@ -161,20 +162,20 @@ def test_board_jobs_one_clock_and_the_reader(project):
         L("job", board, "--release", "p1", "--data", "v1")
     L("data", board, "v2", "--extract", "_WorkSpace/<store>/demo_v2.parquet")
     L("job", board, "--release", "p1", "--data", "v2")
-    assert _front(board / "j02_p1_Demov2" / "j02_p1_Demov2.md")["moved"] == "data"
+    assert _front(board / "j02_prototype-p1_data-Demov2" / "j02_prototype-p1_data-Demov2.md")["moved"] == "data"
     L("version", proto)
     _agree_and_need(proto / "j02_p2")
     L("sign", proto / "j02_p2", "--date", "261008")
     with pytest.raises(SystemExit, match="one clock per Job"):
         L("job", board, "--release", "p2", "--data", "v1")
     L("job", board, "--release", "p2", "--data", "v2")
-    assert _front(board / "j03_p2_Demov2" / "j03_p2_Demov2.md")["moved"] == "code"
+    assert _front(board / "j03_prototype-p2_data-Demov2" / "j03_prototype-p2_data-Demov2.md")["moved"] == "code"
 
     L("propose", proto, "a-cut", "--kind", "cut", "--from", "j02", "--why", "<why>")
     L("run", board, "coverage")
-    L("run", board / "j03_p2_Demov2", "compare", "j02")
-    L("run", board / "j03_p2_Demov2" / "t02_I01_rates-by-cut", "write")
-    card = yaml.safe_load((board / "j03_p2_Demov2" / "t02_I01_rates-by-cut" / "runs" / "run-write-t02" /
+    L("run", board / "j03_prototype-p2_data-Demov2", "compare", "j02")
+    L("run", board / "j03_prototype-p2_data-Demov2" / "t02_I01_rates-by-cut", "write")
+    card = yaml.safe_load((board / "j03_prototype-p2_data-Demov2" / "t02_I01_rates-by-cut" / "runs" / "run-write-t02" /
                            "run.yaml").read_text())
     assert card["skill"] == "haipipe-insight-information"
     with pytest.raises(SystemExit, match="does not run at the board level"):
@@ -184,14 +185,15 @@ def test_board_jobs_one_clock_and_the_reader(project):
     import insight_plan_c as C
     assert C.is_plan_c(board)
     b = C.board(board)
-    assert [(j["name"], j["moved"]) for j in b["jobs"]] == [("j01_p1_Demov1", "start"), ("j02_p1_Demov2", "data"),
-                                                           ("j03_p2_Demov2", "code")]
+    assert [(j["name"], j["moved"]) for j in b["jobs"]] == [("j01_prototype-p1_data-Demov1", "start"), ("j02_prototype-p1_data-Demov2", "data"),
+                                                           ("j03_prototype-p2_data-Demov2", "code")]
     assert [r["name"] for r in b["prototype"]["releases"]] == ["p1", "p2"]
     assert "a-cut" in [x["title"] for x in b["prototype"]["proposals"]]
 
 
 def test_a_lower_case_dataset_job_is_still_a_job(project):
-    """j01_p1_<d>v1 with a lower-case dataset also fits a release's name; a Task under it is a Board Task."""
+    """A Job with a lower-case dataset is a Job, and so is one under its older name j01_p1_<d>v1, which also fits a
+    release's name; a Task under either is a Board Task."""
     p, proto, board = project
     v1 = proto / "j01_p1"
     L("board", board, "--dataset", "demo", "--prototype", "tasks/Prototype-b01-Demo")
@@ -200,11 +202,16 @@ def test_a_lower_case_dataset_job_is_still_a_job(project):
     _cuts(v1)
     L("sign", v1, "--date", "261011")
     L("job", board, "--release", "p1", "--data", "v1")
-    task = board / "j01_p1_demov1" / "t02_I01_rates-by-cut"
+    task = board / "j01_prototype-p1_data-demov1" / "t02_I01_rates-by-cut"
     assert IL.level_of(task) == "task"
     assert IL.level_of(v1 / "t02_I01_rates-by-cut") == "question"
     L("run", task, "write", "t02")
     assert (task / "runs" / "run-write-t02" / "run.yaml").is_file()
+    older = board / "j01_p1_demov1"                                              # the name before JL 261012
+    (board / "j01_prototype-p1_data-demov1").rename(older)
+    (older / "j01_prototype-p1_data-demov1.md").rename(older / "j01_p1_demov1.md")
+    assert IL.level_of(older / "t02_I01_rates-by-cut") == "task"
+    assert [j.name for j in IL.jobs(board)] == ["j01_p1_demov1"]
 
 
 def test_a_need_draws_its_declared_figures(tmp_path):

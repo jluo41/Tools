@@ -3,7 +3,9 @@ s51 · Server runtime
 
 **Tags:** `Server`
 
-**Stage:** explore
+**Stage:** closed
+
+**Closed:** 261012 (JL 261012: "looks good, you can close the s51 and s52 now"). The server runs as drawn: one host per SPACE (settings.env's PORT, wb.py space_port), the old board names dropped. Its hosting work went on in s52-host-and-share. The Open list below stays as a record for whoever reopens it.
 
 **Topic:** how the workbench server runs today: how it starts, which folders make it up, how one
 request finds its page, how the base frame draws a folder, which routes each workbench answers,
@@ -21,8 +23,37 @@ workbench from `WORKBENCH_ROUTES`, the themes on the frame from each `*_theme.py
 redraws it from the code as it stands.
 
 
+**The drawing (261012; JL: "one frame should be as large as possible, within the frame, we want the
+workflow map or the mindmap, the frames should be well arrange to form the narrative"):** four maps in two acts,
+each one screen (about 2570 x 1100 to 1460 px), boxes joined by named arrows (haipipe-studio `topic_map.draw_map`),
+and between the frames the story's own arrows. Every count and name is read at build time.
+
+**Redrawn 261012 to excalidraw-studio's six principles** (asked through b31-s01): each frame's key point in the one
+slight colour (`KEYS`: serve.py · one page · /_board/workbench · now), frame titles 60 px (b10 `_build/story.py`
+`key_point`, `big_titles`), ③ one more fact (a share host opens granted paths only), no person named on the
+drawing. `check.py`: all four frames pass. The old builder, face and preview are in `history/` (`-261012-v1`).
+
+```text
+① One SPACE, one host     the chain SPACE → settings.env → /wb → serve.py → a folder is a path,
+                          and below it what runs now → why extra hosts → the fix
+        │ a page is asked for
+② One request             start → live namespace → gates → /_board/<name>, then back along the
+                          frame's own steps: read the folder → fill the Spaces → render → one page
+        │ the frame draws
+③ What the frame answers  a mind map around /_board/workbench: themes, levels, links in;
+                          Task views out; the old board names dropped 261012
+        │ where it stands
+④ Where it stands         done → now → next in order → what closes s51; the open decisions below
+```
+
+**One SPACE, one host (261012; JL: "if things are sharing the same SPACE, they should be of the same port
+number, right?"):** each SPACE's port is `PORT` in its git-ignored `.server_config/settings.env` (WellDoc 5602,
+Physician 5599, REACH 5607, DrFirst 5604; Tools runs 5623 with `--root Tools`). `wb.py`'s `space_port` uses it
+and stops when it is taken, where it used to walk to the next free port: that walk is how WellDoc came to run
+five hosts, Tools three and Physician six. Frame ① reads them off this machine on every build.
+
 **Routes, by who answers them (JL 261007: "how these linked to the themes and workbench base
-URL?"):** frame 3 is a table of the 26 GET routes, one row per server folder: its theme, whether
+URL?"):** (the older table, now frame ③'s mind map) the 26 GET routes, one row per server folder: its theme, whether
 that theme is on the frame, its routes, and how a person gets there. Every Block opens at
 /w/<block>, which redirects to the base URL /_board/workbench; the frame picks the theme from the
 Theme folder the Block sits in, or the theme that claims the Block by what it holds. Every theme
@@ -52,9 +83,9 @@ pageruns                no Space: the Draft view's stepper reads it (json)
 
 **Board pages named as their themes (261007, JL: "make them the same to the theme name"):** every
 theme's board page is `/_board/<theme>-board`; `task-board` is now `work-board` and `paper` is
-`paper-board`. The old names still answer (serve.py `OLD_ROUTES`).
+`paper-board`. The old names answered as them until 261012, when they were dropped (JL: "yes, this one should be droped"; serve.py `OLD_ROUTES` removed, host_registry's aliases too).
 
-**Status and next (261007):** frame 7, read at build time. Done: 18 GET routes (26 this morning);
+**Status and next (261007; now frame ④):** read at build time. Done: 18 GET routes (26 this morning);
 four themes on the frame (cowork, design, paper, work); board pages named as their themes; 10 old
 addresses still answering. Next, in order: restart the live servers (all started before today's
 serve.py change); one route table for do_GET and do_HEAD; discovery, insight and labeling onto the
@@ -68,7 +99,7 @@ Files
 s51-server-runtime/
 ├── s51-server-runtime.md            this face: how it works, what was checked, what is open
 ├── build_s51_server_runtime.py      the builder; reads the server code; marks are kept on rebuild
-├── s51-server-runtime.excalidraw    the drawing: seven frames and Questions
+├── s51-server-runtime.excalidraw    the drawing: four maps, one story (261012)
 └── s51-server-runtime.png           its preview
 ```
 
@@ -124,7 +155,7 @@ ThreadingHTTPServer ── Handler (one class of ~30 mixins, each from live.<mod
 7. **The Guide by level.** A family whose `guide.yaml` has `levels:` (paper, work) draws every Guide
    View as three folding sections, Block · Job · Task, of cards; the words come from
    `workbench/guide/levels.yaml` with the theme's overrides, a Space card's `sub` and `runs` live from
-   the frame; the frame passes its level so that section opens (frame 8; b03 `s31-guide`).
+   the frame; the frame passes its level so that section opens (frame ③; b03 `s31-guide`).
 8. **A Page Task.** A theme whose Tasks are Pages (paper's Sections) returns
    `frame.page_task_spaces`: Description Scope · Plan · Requirement · Records, Audience Report Table ·
    Reading · Questions, Work Details Draft-… · Evidence-…, Delivery LaTeX · Word, each view the Page
@@ -164,7 +195,7 @@ Open
 3. A theme that fails to import falls back to vanilla without a word: say so on the page?
 4. No reload on a code change, and old processes keep serving old code: a restart command, or a
    watch?
-5. Hosting for colleagues (Q12): an always-on host, sign-in, a viewer mode with no writes.
+5. Hosting for colleagues (Q12): an always-on host, sign-in, a viewer mode with no writes. Now its own topic, s52-host-and-share (261012).
 6. `do_GET` and `do_HEAD` each list every route: one route table instead of two if-chains?
 7. One mechanism for a Task's Page views: `page_task_spaces` for every Page Task, then `PAGE_VIEWS` goes?
 8. Evidence-Supporting has no Task runs / Discovery runs card in `run-cards.md` yet, and the cards'
@@ -172,5 +203,10 @@ Open
 9. A Section's Questions: the Work column should list the Runs that worked it and what they changed.
 10. `question_rows`: one heading per group in All, for every theme?
 11. Paper: `Ba-` (Main) and `Bb-` (Appendix) are two Jobs today; s12 draws one version Job (Q01).
+
+12. One SPACE, one host (261012): 12 extra hosts still run (WellDoc 4, Tools 3, Physician 5); stopping them
+    is JL's (`kill` of the 14 processes, given 261012). jluo41-repo runs 5665 while its settings say 5640.
+13. 5623 runs Homebrew's python 3.14 with no `claude_agent_sdk`: the page's chat answers 400. Run it on
+    `.venv/bin/python`?
 
 (write here, or mark the drawing in red)

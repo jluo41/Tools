@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.5 · 2026-10-12 · Back to 0.8.3's rule 2
+
+- JL 261012: "I just mean for the s00 to have the tree, why you make all the others to be the tree as well". The
+  three-frame tree shape added in 0.8.4 is a Block's s00 only (haipipe-studio 0.13.5); rule 2 has its 0.8.3 words.
+
+## 0.8.4 · 2026-10-12 · Never a row of slides
+
+- JL 261012, on a five-frame background drawing: "每一个 frame 都太像一张 slide，而且每个 frame 里的内容又太少，它本身又不是一个
+  tree 结构". Rule 2 now says a studio topic is three frames at most, each a dense folder tree (`canvas.tree`);
+  the rule and its checks live in haipipe-studio 0.12.0, The look.
+
 ## 0.8.3 · 2026-10-09 · No hand-drawn font
 
 - JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". SKILL.md's "readable words" rule also names Comic Shanns (`8`) beside Virgil and Excalifont.

@@ -15,7 +15,7 @@ RENDER="$SKILLS/haipipe-studio/scripts/render_png.py"         # the previewer (m
 # "$PY" "$HERE/build_ladder_trees.py" "$STUDIO/ladder-trees.excalidraw"
 # studio topics: each sNN-<topic>/ holds its own builder
 S01="$STUDIO/s01-overall-tree-structure"
-"$PY" "$S01/build_ladder_v4.py"              # frame 1 -> s01-overall-tree-structure.excalidraw
+"$PY" "$S01/build_ladder_v4.py"              # frames 1 and 2 (was s09) -> s01-overall-tree-structure.excalidraw
 "$PY" "$STUDIO/s02-studio-workbench-skill/build_studio_and_report.py"
 "$PY" "$STUDIO/s05-report-workbench-skill/build_s05_report_workbench_skill.py"
 "$PY" "$STUDIO/s06-run-workbench-skill/build_s06_run_workbench_skill.py"
@@ -57,8 +57,8 @@ done
 "$PY" "$STUDIO/s31-guide/build_s31_guide.py"
 # the server topics (s51 on): how the server runs, read off its code
 "$PY" "$STUDIO/s51-server-runtime/build_s51_server_runtime.py"
-# s21: the base Runs and skills, read off the frame and the skills
-"$PY" "$STUDIO/s21_project-run-skill/build_s21_project_run_skill.py"
+# s10: haipipe-project and the skill behind each Run button, read off the frame and the skills; renders its own PNG
+"$PY" "$STUDIO/s10-haipipe-project/build_s10_haipipe_project.py"
 # the report drawings: every reports/qNN_<topic>/ whose .md lists its ## Figures, built from studio frames
 REPORTS=()
 for md in "$STUDIO"/../reports/q*/q*.md; do
@@ -66,6 +66,6 @@ for md in "$STUDIO"/../reports/q*/q*.md; do
   "$PY" "$SKILLS/haipipe-report/scripts/build_report_drawing.py" "$(dirname "$md")" >/dev/null
   REPORTS+=("${md%.md}.excalidraw")
 done
-for f in "${REPORTS[@]}" "${THEMES[@]}" ${THEME_S32[@]+"${THEME_S32[@]}"} "$B11"/s01-insight-ladder/s01-insight-ladder.excalidraw "$B12"/s01-design/s01-design.excalidraw "$B12"/s1[123]-design-*/s1*-design-*.excalidraw "$S01"/s01-overall-tree-structure.excalidraw "$STUDIO"/s0[2-5]-*/s0*.excalidraw "$STUDIO"/s1[1-3]-*/s1*.excalidraw "$STUDIO"/s3[0-9]-*/s3*.excalidraw "$STUDIO"/s5[0-9]-*/s5*.excalidraw "$STUDIO"/s21_project-run-skill/s21_project-run-skill.excalidraw; do
+for f in "${REPORTS[@]}" "${THEMES[@]}" ${THEME_S32[@]+"${THEME_S32[@]}"} "$B11"/s01-insight-ladder/s01-insight-ladder.excalidraw "$B12"/s01-design/s01-design.excalidraw "$B12"/s1[123]-design-*/s1*-design-*.excalidraw "$S01"/s01-overall-tree-structure.excalidraw "$STUDIO"/s0[2-5]-*/s0*.excalidraw "$STUDIO"/s3[0-9]-*/s3*.excalidraw "$STUDIO"/s5[0-9]-*/s5*.excalidraw; do
   "$PY" "$RENDER" "$f" "${f%.excalidraw}.png"
 done

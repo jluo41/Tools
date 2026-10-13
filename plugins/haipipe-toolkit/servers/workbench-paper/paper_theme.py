@@ -28,7 +28,8 @@ from pathlib import Path
 
 from live import paper as P
 from live.discoveryboard import file_url as disc_file_url
-from live.frame import Space, Theme, esc, face, link, page_task_spaces, pop, reader, rel, studio_cards, table, vanilla
+from live.frame import (Space, Theme, delivery_view, esc, face, link, page_task_spaces, pop, reader, rel, studio_cards,
+                        table, vanilla, work_tree)
 
 
 def _kinds(group: str, views=None) -> tuple:
@@ -161,7 +162,9 @@ def _related_rows(d, block):
     """(group, kind, key, title, venue, why, run) per related item: related/related.md when the Board has
     it (b03 s01-D27), else the current Story's related-papers table; run = the deep read it links, or None.
     A row's `group` cell is comma-separated (b10 s04-D07): a paper bearing on two questions is one row per
-    question. Its subfolder is the Studio's group (s04-D08), not a question, so it is not read here."""
+    question. Its subfolder is the Studio's group (s04-D08), not a question, so it is not read here. A table
+    with a `bears on` column groups by it instead (JL 261013: the Studio's groups are the kinds, "things like
+    meeting, email, paper", so what a paper bears on moves out of `group`)."""
     table = block / "related" / "related.md"
     rows = []
     if table.is_file():
@@ -175,7 +178,8 @@ def _related_rows(d, block):
         for r in body:
             addr = next(iter(P._addresses(get(r, "read", "discovery"))), "")
             run = P._disc_run(d, addr) if addr else None
-            for g in [g.strip() for g in get(r, "group").split(",") if g.strip()] or [OTHER]:
+            about = get(r, "bears on") if "bears on" in heads else get(r, "group")
+            for g in [g.strip() for g in about.split(",") if g.strip()] or [OTHER]:
                 rows.append((g, get(r, "kind") or "paper", get(r, "key"), get(r, "paper", "item"),
                              get(r, "venue"), get(r, "why here", "why"), run))
         return rows
@@ -206,11 +210,15 @@ def _related(d, block, root, skip=()):
     for group in sorted({r[0] for r in rows}, key=order):
         out.append(f"<h3>{esc(group)}</h3>")
         for _, kind, key, title, venue, why, run in (r for r in rows if r[0] == group):
-            drawing = run / f"{run.name}.excalidraw" if run is not None else None
+            # the Result's files carry the Run's name: runs/rNN_<slug>/result/ (one folder per Run) or the
+            # old results/rNN_<slug>/
+            name = (run.parent.name if run.name == "result" else run.name) if run is not None else ""
+            drawing = run / f"{name}.excalidraw" if run is not None else None
             # a Result card is no Page Face, so /_board/page refuses it: open it in the Discovery reader
-            # (<block>/jNN/tNN/results/rNN → the Block is four folders up)
-            card = run / f"{run.name}.md" if run is not None else None
-            read = (link(disc_file_url(run.parents[3], card, root), f"read {run.name.split('_')[0]} ↗")
+            # (<block>/jNN/tNN/runs/rNN/result → the Block is five folders up; results/rNN → four)
+            card = run / f"{name}.md" if run is not None else None
+            read = (link(disc_file_url(run.parents[4 if run.name == "result" else 3], card, root),
+                         f"read {name.split('_')[0]} ↗")
                     if card is not None and card.is_file() else "no deep read yet")
             head = (f'<span><b>{esc((key + " ") if key else "")}{esc(title)}</b>'           # line 1: who · title
                     + (f' <span class=topic-meta>{esc(venue)}</span>' if venue else "")
@@ -688,8 +696,9 @@ def _sections(d, sub):
     opts = ("Jobs", "Main", "Appendix", "Evidence")
     s = _pick(sub, opts)
     rows = P.section_rows(d)
-    if s == "Jobs":                                 # s11: the Board's Work Details are its Jobs
-        html = _jobs(d, d["board"], d["root"])
+    if s == "Jobs":                                 # s11: the Board's Work Details are its Jobs, as the base's tree:
+        html = (work_tree("Block", d["board"], d["root"], THEME)   # Job → Section → Run → result (b10 s32-D19)
+                or _jobs(d, d["board"], d["root"]))
     elif s in ("Main", "Appendix"):
         html = pv(P._section_table(d, [r for r in rows if r["part"] == s.lower()]))
     else:
@@ -862,8 +871,9 @@ def _version_delivery(d, board, job, root):
     dv = d["delivery"]
     if dv["dir"] is None:
         return Space(html=_empty("No delivery/ yet: Build writes it."), run_types=_delivery_runs())
+    cards = delivery_view(job, root, THEME)         # the manuscript, the letters: one card per result (b10 s32-D18)
     out = []
-    for suffix, kind in ((".pdf", "LaTeX"), (".docx", "Word")):
+    for suffix, kind in ((".pdf", "LaTeX"), (".docx", "Word")) if not cards else ():
         main = next((o for o in P._outputs(d, suffix) if "main" in o["what"]), None) or \
             next(iter(P._outputs(d, suffix)), None)
         if main is None:
@@ -876,14 +886,18 @@ def _version_delivery(d, board, job, root):
                           [(esc(r[0]), f"<code>{esc(r[2])}</code>", esc(r[4])) for r in dv["displays"]])
         out.append(("Manuscript", _fold(f"{esc(Path(main['rel']).name)} · {kind}", esc(meta), body,
                                         P._file_link(d, main["path"], "↗") if main["exists"] else "")))
-    cover = P._cover(d)
-    if cover is not None:
+    if cards and dv["displays"]:                    # what the PDF prints, kept beside the cards
+        out.append(("Manuscript", _fold("displays in the build", esc(f'{len(dv["displays"])} printed'),
+                                        table(("printed", "label", "from the Section"),
+                                              [(esc(r[0]), f"<code>{esc(r[2])}</code>", esc(r[4])) for r in dv["displays"]]))))
+    cover = P._cover(d)                             # with cards, a built cover letter is one of them
+    if not cards and cover is not None:
         pdf = (cover.get("outputs") or {}).get("pdf")
         pdf = (dv["dir"] / pdf) if pdf and not Path(pdf).is_absolute() else (Path(pdf) if pdf else None)
         body = _frame(d, pdf, "cover letter") if pdf and pdf.is_file() else _empty("Not built yet.")
         out.append(("Letters", _fold("cover letter", esc(("built" if pdf and pdf.is_file() else "not built") + " · "
                                                          + ("ready" if cover.get("ready") else "not ready")), body)))
-    else:
+    elif not cards:
         out.append(("Letters", _fold("cover letter", "not built", _empty(
             "No cover letter built yet: add a [coverletter] block to delivery/paper-build.toml and run the build."))))
     sections = _section_rows(board, [job], root)
@@ -903,7 +917,7 @@ def _version_delivery(d, board, job, root):
                                                                 if len(files) > 40 else "")
         out.append(("Sent", _fold(f"{frozen.parent.name}/{frozen.name}", f"frozen · {frozen.parent.parent.name} · "
                                   f"{len(files)} files", body)))
-    html, last = "", ""
+    html, last = cards, ""
     for group, card in out:
         html += (f"<h3>{esc(group)}</h3>" if group != last else "") + card
         last = group
@@ -915,9 +929,12 @@ def _delivery_runs():
     return _run_cards("Job", "Delivery")
 
 
-def _delivery(d, sub, opts=("LaTeX", "Word", "Cover letter", "Rounds"), board=None, root=None):
+def _delivery(d, sub, opts=("delivery/", "LaTeX", "Word", "Cover letter", "Rounds"), board=None, root=None):
     s = _pick(sub, opts)
-    if s in ("LaTeX", "Word"):
+    if s == "delivery/":                            # every result of the Board, as the base's cards (b10 s32-D18)
+        html = (delivery_view(board, root, THEME) if board is not None and root is not None else "") or \
+            _empty("No delivery/ yet.")
+    elif s in ("LaTeX", "Word"):
         html = (_empty("No delivery/ yet.") if d["delivery"]["dir"] is None else
                 _built(d, ".pdf" if s == "LaTeX" else ".docx", checks="Checks" not in opts))
         if board is not None and root is not None:      # each version's Sections, in the build or not
@@ -1261,8 +1278,10 @@ def _version_work(d, board, job, root, sub):
                                  h.get("state", "") or "open", "mut", [("report", pop(reader(q, root), q.stem, q.name + " ↗"))]))
         html = pv(P._cards(cards, "No letter Task yet: t31_cover-letter (to the editor) and, in a revision, "
                                   "t32_response (to the reviewers), each a Page Task like a Section."))
+    elif s == "All":                                # every Section, ✎ Write on each, its Runs and what they found (b10 s32-D19)
+        html = work_tree("Job", job, root, THEME) or pv(P._section_table(d, rows))
     else:
-        html = pv(P._section_table(d, [r for r in rows if s == "All" or r["part"] == s.lower()]))
+        html = pv(P._section_table(d, [r for r in rows if r["part"] == s.lower()]))
     return Space(html=html, subspaces=VERSION_WD, open=s,
                  run_types=_run_cards("Job", "Work Details", None if s == "All" else s))
 
@@ -1580,7 +1599,19 @@ def spaces(level, folder, root, sub):
                                    "Delivery": _delivery(d, sub, board=folder, root=root)})
 
 
-THEME = Theme(name="paper", label="Paper", icon="📄", guide="paper",
+def work_meta(folder, root):
+    """A paper's words on a Work card (b10 s32-D19): a Job is a send, the rounds or the story; a Section, its state."""
+    folder = Path(folder)
+    if P.is_section(folder.name):
+        st = _header(face(folder)).get("state", "") if face(folder) else ""
+        return esc(P._state_word(st) or st)
+    if (folder.parent / "board.md").is_file():
+        return ("story (reference)" if folder.name.startswith(("A1-", "j00_")) else
+                "rounds" if folder.name.startswith("Bc-") else "send")
+    return ""
+
+
+THEME = Theme(name="paper", label="Paper", icon="📄", guide="paper", work_meta=work_meta,
               level_names={"Block": "Paper Board", "Job": "Version", "Task": "Section"}, spaces=spaces,
               # today's folders on the ladder, unrenamed (b03, JL 261007: keep the names): a group
               # Ba-/Bb-/Bc-<desk>-<part> or A1-Story is a Job (jNN_ folders are Jobs by their prefix); a

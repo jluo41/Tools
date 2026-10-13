@@ -187,6 +187,16 @@ def spaces(level, folder, root, sub):
     return {}                                       # a Job: vanilla, its Tasks
 
 
+def task_action(task, root):
+    """A labeling job's Task is one a person works in: its rounds, where the item text shows (b10 s32, JL 261012:
+    "there are special tasks that human need to interact with as well. Like the labeling")."""
+    md, block = face(task), _block_of(Path(task))
+    if L is None or not md or not block or _job_for(md, block, Path(root)) is None:
+        return None
+    from live.frame import href
+    return "🏷 Label", href(Path(task), Path(root), THEME, "Work Details", "Rounds")
+
+
 def claims(block):
     """A labeling Block wherever it sits (b61+ Blocks live in tasks/): one labeling schema, its
     schema.yaml beside board.md, or a Board Home opens as a labeling Board (board-kind labeling, or
@@ -208,4 +218,4 @@ RUN_NAMES = {"Prepare a corpus": "run-labeling-corpus-<corpus>", "Open a labelin
              "Scan": "run-labeling-scan-<job>", "Final labels": "run-labeling-final-<job>"}
 
 THEME = Theme(name="labeling", label="Labeling", icon="🏷", guide="labeling", spaces=spaces, claims=claims,
-              run_names=RUN_NAMES)
+              run_names=RUN_NAMES, task_action=task_action)

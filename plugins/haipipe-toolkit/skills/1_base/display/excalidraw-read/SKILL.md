@@ -5,16 +5,13 @@ description: >-
   method, result, claim, limit), its key passages shot from the PDF with the quoted words
   highlighted, a comment on each, and how each passage links to our paper (supports,
   contrasts, borrows, cites, gap) against our paper's own claims. Reads the parts that carry
-  the argument, not every corner. Its revise mode reads a file we change (a co-author's Word
-  file, through the PDF Word makes of it): one screenshot per section, the words each planned
-  change touches highlighted in red, a note per change (the change, why, the evidence needed).
-  Use for "read this paper", "draw this paper", "screenshot the key parts", "how does this
-  paper link to ours", "screenshot each section and say what to change", a paper reading
-  canvas, /excalidraw-read.
+  the argument, not every corner. A file we change, shown section by section with its
+  changes, is excalidraw-revise. Use for "read this paper", "draw this paper", "screenshot
+  the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-11"
+  version: "0.6.0"
+  last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -141,66 +138,33 @@ Worked example: `Knowledge-Base/examples-C1-theory/Project-Psych-Theory/notes/re
 It reads Salvi et al.'s GPT-4 persuasion trial against a megastudy paper's claims C1, C2 and C5.
 
 
-Revise mode: a file we change
------------------------------
+A topic of papers
+-----------------
 
-JL 261011: "take screen shot of the pdf version for each section and then say what to modify and what to
-change"; "you should follow this structure" (b03_event_cgm's s04). The same reading, turned on a file we are
-asked to change: a co-author's Word file and our updated draft of it, both printed to PDF and compared.
-
-```text
-frame 1  the plan in one picture (one screen): shared file ─▶ our copy ─▶ the plan ─▶ tracked Word file ─▶ ? back
-         words per part (file today, updated draft) · who answers the comments · open questions
-frame 2  side by side, per section (read down):
-         the file today (red highlight) │ updated draft, changes accepted (green highlight) │ change · why · who answers
-```
+Several papers on one theme can share one Studio topic (JL 261013: "add more sNN to show the related paper by
+topics ... using /excalidraw-read"): the theme first, then one row per paper, each paper's pages whole with its
+passages highlighted and a numbered note level with each, then its logic and its links to our paper.
 
 ```bash
-R=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read/ref/read_revise.py
-.venv/bin/python $R draw <block>/studio/sNN-<topic>/sNN-<topic>.md --key <plan key> [--updated-pdf <draft accepted>.pdf]
+.venv/bin/python $R text <paper.pdf> --out _WorkSpace/.../<paper>/     # as above, one per paper
+#   write <topic>/reads/<id>-<paper>/reading.yaml, then: $R all <that reading.yaml>
+.venv/bin/python ref/topic_drawing.py draw <topic folder>                # or the topic's own build_sNN_*.py
 ```
 
-1. **Their file first.** Copy it into the Block's `related/materials/`, list it in `related/related.md`, and print
-   it to PDF beside the copy with LibreOffice (the Codex document runtime, as b02 and b04 do), which keeps the
-   file's fonts, colours, header and margins. A mammoth or textutil print shows a new format, not their file.
-   The shared original is never written.
-2. **The plan is a yaml block in the topic's face** (`ref/revise-spec.md`): each change names its section
-   (`part`), the author's exact words (`find`, with `after` when the words repeat), what they become (`new`),
-   why, and the evidence needed with who answers. The author's words stay: only what differs is a change.
-3. **The updated draft** is the tracked Word file (`draft`), printed with its changes accepted; the topic's
-   builder prints it and passes `--updated-pdf`.
-4. **One row per section**, the title block and each Heading 1, cut from each PDF between its heading and the
-   next (`stop_at` ends the last); running headers and footers are left out, the sides cut at the text's edge.
-   See-through boxes, like a marker pen, sit on the words: red on the words that change, green on the new
-   words, gray where only a comment sits (JL 261011: "just use the boxes with transparent to highlight the
-   text part"); they are multiplied into the picture, as paper mode marks its quotes, so the ink stays black. Each
-   note reads `Change:`, `Why:`, and in red `Evidence needed: ... (who)`. No evidence ids.
-5. **Notes small, three columns** (JL 261011: "The content or the font size, can be much smaller, than the
-   main content AND the comments can be much wider, in the right part. more columns"): note words 14 px,
-   titles 16, `canvas.aside`; three columns 360 px wide, each note in the column where it sits highest, level
-   with its words; a change quotes at most 24 of its words. A first-column note gets an arrow; one further
-   right carries the highlight's number. The frame is about 3,320 px wide, over `canvas.FRAME_MAX`'s 2,800 on purpose.
-6. **Sentence mode** (`sentences:` in the plan): the middle column is the updated text, one editable box per
-   sentence, from the topic's `draft/` folder in haipipe-draft's draft grammar (`seed` writes v1.0 once;
-   `edits --apply` folds a person's edits back); haipipe-writing works on the draft, and the Word file is
-   built from it last.
-7. **Delivery, the last step** (`read_revise.py deliver`): the draft's words against the file's, word by word,
-   become the smallest tracked changes by the plan's author (`ref/track_changes.py`), a draft paragraph that starts
-   inside a file paragraph a tracked new paragraph mark, each evidence item a comment; the plan's image changes and
-   guidance deletions are kept. It checks itself: rejecting every change gives the file, accepting every change
-   gives the draft; it stops if either fails. Then it prints the PDF with LibreOffice (`--no-pdf` skips it).
-8. **Files and citations**: each picture column names its file under its heading; a change's evidence may
-   carry `found:`, papers a `haipipe-discovery` Run found, shown as "Found: ..." in its note and Word comment.
-7. **Sentences to edit**: under each section's pictures, the updated draft's sentences, one text box each,
-   green where a tracked change falls (JL 261011: "sentence level editable text box, so I can change them
-   directly"). A person double-clicks one and rewrites it; the edit survives a rebuild, and
-   `read_revise.py edits <face> --key <plan>` lists every changed sentence, Before and After.
-9. **Checked**: the build stops when a change's words are not in its section (a table row's label printed
-   among a cell's lines is looked past, with `after`); `canvas.write` keeps a person's
-   marks and warns about oversized frames and small text.
+1. **The face holds the words.** A `related:` yaml block: `key`, `what`, `why`, the `papers` in reading order
+   (`id`, `item` as its `related/related.md` row starts, `says` in one line) and `open` (see the script's header).
+2. **One reading per paper**, `reads/<id>-<paper>/reading.yaml`, its `paper.pdf` the Block's `related/paper/` file.
+3. **Unread is red.** A paper with no reading yet shows as one red card: "PDF kept, not read yet" or "no PDF yet".
+4. The page frame is excalidraw-task's `transcript_frame` with `noun="paper"`, `us="Our paper"`. Worked example:
+   Physician-SPACE `Paper-LLMRecPhy/studio/s07-related-work-audits-of-who-llms-name/`.
 
-Worked example: `examples-0-cowork/Project-SHIFT-Study/cowork/b04_prep_ai/studio/s04-task31-updated-draft/`
-(Nes Mathioudakis's Task 3.1 file, 20 changes over 7 sections).
+
+Revise mode moved
+-----------------
+
+A file we change (a co-author's Word file, an IRB protocol), drawn section by section beside the updated
+sentences, with the tracked Word file built last, is its own skill since 261013: `excalidraw-revise`
+(`skills/1_base/display/excalidraw-revise/`). It still draws its pages with this skill's `ref/read_paper.py`.
 
 
 Boundary
@@ -208,5 +172,5 @@ Boundary
 
 This skill reads one paper and draws it; it writes nothing into our paper. Adding the citation
 or a claim to our paper belongs to `haipipe-paper` and the Page evidence skills. A Discovery
-Result card for the paper belongs to `haipipe-discovery`. A question's working scratch or
+Result card for the paper belongs to `haipipe-discovery`. A file we change is `excalidraw-revise`. A question's working scratch or
 report drawing is `excalidraw-report`. A paper's own Section map is `excalidraw-section`.

@@ -72,3 +72,6 @@ node_modules/
 blueprints/*/related/meetings/
 blueprints/*/related/emails/
 blueprints/*/related/files/
+
+# local server settings and the share door's access table (emails): never committed (b10 s52, 261012)
+/.server_config/

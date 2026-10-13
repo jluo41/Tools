@@ -78,8 +78,8 @@ WORKBENCH_ROUTES = {
     "page": frozenset({"draft", "outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
                        "value", "display", "probe", "latex", "word", "bibex", "bibex-entry",
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
-    "paper": frozenset({"paper-board", "paper"}),          # paper: its name before 261007
-    "work": frozenset({"work-board", "task-board"}),       # task-board: its name before 261007
+    "paper": frozenset({"paper-board"}),                   # its old name, paper, dropped 261012
+    "work": frozenset({"work-board"}),                     # its old name, task-board, dropped 261012
     "cowork": frozenset({"cowork-board"}),
     "discovery": frozenset({"discovery-board"}),
     # workbench (the base): Studio's draw, chat and terminal routes (Guide is in ALWAYS_ROUTES).

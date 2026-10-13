@@ -64,6 +64,12 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report write the report of one Block question in {folder}/reports/qNN_<topic>/ from the Jobs it names, as run-report-q<NN>; another agent checks it.
 
+🔘 BUTTON   Build the one-page summary · Block › Audience Report · ^run-build-summary · views summary
+🧩 SKILL    haipipe-design-delivery
+🤖 AGENT    haipipe-designer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-design-delivery build the one-page summary of {folder} with scripts/summary.py (--example jNN:dNN to trace a chosen design) into delivery/summary.html · summary.pdf, check the PDF is one page, and say what it shows; as run-build-summary.
+
 🔘 BUTTON   Add the Exp's data · Block › Audience Report · ^run-add-observed- · views predicted-vs-observed
 🧩 SKILL    haipipe-design-method
 🤖 AGENT    haipipe-designer-agent
@@ -157,7 +163,7 @@ in Audience Report › Predicted vs observed and Performance, Runs › Review wh
 🧩 SKILL    haipipe-design-delivery
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    the predictions and the release, once
-💬 PROMPT   /haipipe-design-delivery review and approve {folder}: show me each kept design as it reads, its prediction (predicted · against · why) and its review; when I sign, freeze the predictions and release the designs in one session (release.py --freeze <YYMMDD>), recorded as run-freeze-predictions-j<NN> and run-release-j<NN>.
+💬 PROMPT   /haipipe-design-delivery review and approve {folder}: show me each kept design as it reads, its prediction (predicted · against · why) and its review; when I sign, freeze the predictions and release the designs in one session (release.py --freeze <YYMMDD>), recorded as run-freeze-predictions-j<NN> and run-release-j<NN>, whose card says who signed, when and how in one line (signed: <who> <YYMMDD> · one by one | all N at once).
 
 ## Task › Runs · a design Task's own buttons
 

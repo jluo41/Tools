@@ -32,7 +32,7 @@ LEVEL = {
     "Method": [("c", STEPS), ("t", "method cards"),
                ("c", G.method_cards(["By partition and power", "By heterogeneity"])),
                ("t", "? no card yet for comparing two Jobs (what 'held' means)")],
-    "RoadMap Draw": [("w", G.drawings(["s12-job-level", "s00-insight-structure"])),
+    "RoadMap Draw": [("w", G.drawings(["s12-job-level", "s04-insight-structure"])),
                      ("t", "? guide.yaml roadmap: Job")],
     "Related Paper": [("c", G.papers(["by partition and power", "by heterogeneity; by partition and power", "by heterogeneity"])[0]),
                       ("t", "? none yet behind comparing two Jobs")],

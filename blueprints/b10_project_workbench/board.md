@@ -255,6 +255,13 @@ s31-guide                        s03
 s32-element-ui                   s03 (261008: the element gallery beside the Guide, s3x)
 ```
 
+s11, s12 and s13 were deleted on 2026-10-12 at JL's ask ("I want to delete them"); their numbers are not reused.
+b17's s32 keeps its own copy of the work Block's screens (WORK_BLOCK), and the work Guide no longer links them.
+Merged the same day, at JL's ask: s07 into s05, s21 into s10 (now s10-haipipe-project) and s09 into s01 (its frame
+is s01's frame 2). Each merged topic's decisions keep their ids (s09-D01 to D09 live in s01's face); the numbers
+s07 and s21 are not reused. s09 came back later that day as s09-block-folder (its decisions from s09-D10). b10 has
+13 topics.
+
 ## Renumbered (261010)
 
 JL 261010: "rename the s04 to be the s02 studio-workbench-skill and also have a s03

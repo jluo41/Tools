@@ -17,9 +17,14 @@ import sys
 from pathlib import Path
 
 from live import insight_plan_c as P
-from live.frame import Space, esc, pop, reader, rel, table
+from live.frame import Space, delivery_view, esc, pop, reader, rel, table, themes
 
-LEVELS = (("D", "Data", "may say: counts, what was seen"),
+# X, the Executive level (JL 261012: "based on the whole bottom level question, what are the high level question
+# we should have?"): a few plain questions a leader asks, each answered from the questions below, no run of its own.
+# They are read together as the Overall Report, the Audience Report's first button, before Full (JL 261012: "before
+# the Full, we should have a Overall Report ... we can click and read it"); no cut's table lists them.
+LEVELS = (("X", "Executive", "may say: the plain answer a leader asks for, each resting on the questions below"),
+          ("D", "Data", "may say: counts, what was seen"),
           ("I", "Information", 'may say: rates and contrasts, never "because"'),
           ("K", "Knowledge", "may say: one claim, how sure, its rivals, its limits"),
           ("W", "Wisdom", "may say: advice, signed by a person, for Design"))
@@ -43,7 +48,7 @@ SKILLS = {"Add a data version": ("haipipe-insight-meta",), "Add a Job": ("haipip
           "Check alignment": ("haipipe-insight-check",), "Add a topic": ("haipipe-studio",),
           "Open the release ↗": ("haipipe-insight",), "Open the Prototype Block ↗": ("haipipe-insight",),
           "Write a report": ("haipipe-insight-data", "haipipe-insight-information", "haipipe-insight-knowledge"),
-          "Write the Data report": ("haipipe-insight-data",), "Write the Information report": ("haipipe-insight-information",),
+          "Write the overall report": ("haipipe-insight",), "Write the Data report": ("haipipe-insight-data",), "Write the Information report": ("haipipe-insight-information",),
           "Write the Knowledge report": ("haipipe-insight-knowledge",), "Write the Wisdom report": ("haipipe-insight-wisdom",),
           "Compare with jNN": ("haipipe-insight-knowledge",)}
 
@@ -59,7 +64,8 @@ RUNS = {"Add a data version": "run-add-version-<d>vM", "Add a Job": "run-add-<jN
         "Draw the question map": "run-map-questions", "Run a partition": "rNN_<partition>",
         "Check alignment": "run-check-alignment-<tNN>", "Add a topic": "run-draw-<sNN>", "Write a report": "run-write-<tNN>",
         "Write the Data report": "run-write-<tNN>", "Write the Information report": "run-write-<tNN>",
-        "Write the Knowledge report": "run-write-<tNN>", "Write the Wisdom report": "run-write-<tNN>"}
+        "Write the Knowledge report": "run-write-<tNN>", "Write the Wisdom report": "run-write-<tNN>",
+        "Write the overall report": "run-overall-<jNN>"}
 
 
 def _kind(label: str, prompt: str, *skills: str, rows=(), run: str = "") -> dict:
@@ -303,7 +309,7 @@ def _part_key(label: str) -> str:
 
 # ── a question's row, Question │ Work │ Report, in the old board's richer style (JL 261008) ─────
 STEP = {"compute": "🧮 Compute", "cite": "📎 Reuse", "reuse": "📎 Reuse", "answer": "⚓ Answer", "judge": "⚓ Answer"}
-LEVEL_WORD = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
+LEVEL_WORD = {"X": "Executive", "D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
 MARK = {"ok": "✅", "refused": "🚫", "failed": "❌", "planned": "⏳", "running": "⏳"}
 _SPEC: dict = {}
 
@@ -338,7 +344,7 @@ def _q_logic(qid: str, q: dict, mark: str, root: Path) -> str:
     more += [("asked on", asked if isinstance(asked, str) else ", ".join(asked))] if asked else []
     body = "".join(f'<p><span class=mut>{esc(k)}:</span> {esc(v)}</p>' for k, v in more)
     cited = sorted({str(n["from"]).split(".")[0] for n in _needs(q) if isinstance(n.get("from"), str)
-                    and re.match(r"^[DIKW]\d+", str(n["from"]))})
+                    and re.match(r"^[DIKWX]\d+", str(n["from"]))})
     builds = ""
     if cited:
         by = {}
@@ -411,6 +417,119 @@ def _q_report(name: str, run, root: Path, cut: str, extra: str = "") -> str:
     return lead + nums + extra
 
 
+# ── the Overall Report: a Job's Executive answers as one document to read (JL 261012) ─────────────
+OVERALL = "Overall Report"
+CITE = re.compile(r"\(([DIKWX]\d\d) · (t\d+)\)")
+
+
+def _executive(j: dict) -> list:
+    """The Job's Executive Tasks (X01, X02, ...), in question order; [] when its release asks none."""
+    return sorted((t for t in j["tasks"] if t["qid"][:1] == "X"), key=lambda t: t["qid"])
+
+
+def _sections(page) -> list:
+    """A Task page's body as [(heading, markdown)]: its `# ` title and its **The ask** line left out, since the
+    report shows the question itself."""
+    text = Path(page).read_text(encoding="utf-8") if page and Path(page).is_file() else ""
+    text = text.split("---", 2)[2] if text.startswith("---") else text
+    out, head, buf = [], "", []
+    for line in text.splitlines() + ["## "]:
+        if line.startswith("## "):
+            if "\n".join(buf).strip():
+                out.append((head, "\n".join(buf)))
+            head, buf = line[3:].strip(), []
+        elif not line.startswith(("# ", "**The ask**")):
+            buf.append(line)
+    return out
+
+
+def _cites(body: str, j: dict, root: Path) -> str:
+    """Each `(K01 · t30)` in a rendered page a link to that Task's page, in the pop-out."""
+    tasks = {t["name"].split("_", 1)[0]: t for t in j["tasks"]}
+
+    def link(m):
+        t = tasks.get(m.group(2))
+        return m.group(0) if not t else "(" + pop("/_board/insight-run?answer=" + rel(Path(t["path"]), root),
+                                                  f'{t["name"]} · the page', f"{m.group(1)} · {m.group(2)}") + ")"
+    return CITE.sub(link, body)
+
+
+def _figure(qid: str, spec: dict, part: Path, j: dict, root: Path) -> str:
+    """One figure an Executive page names (`figures:`), as ref/overall_report.py drew it into the Board's
+    delivery/<job>/figures/ (JL 261013: "figures to show it to quickly get the outcome"): its outcome as a
+    heading, the picture (a click opens it full size), and the answer it reads as a link."""
+    title = esc(spec.get("title") or spec.get("name") or "")
+    png = part / "figures" / f'{qid}-{spec.get("name")}.png'
+    tables = [x.get("table", "") for x in spec["rows"]] if isinstance(spec.get("rows"), list) else [spec.get("table", "")]
+    src = ", ".join(dict.fromkeys(f"({m.group(2)} · {m.group(1)})" for t in tables
+                                  if (m := re.match(r"^(t\d+)_([DIKWX]\d\d)_", str(t)))))
+    if not png.is_file():
+        return (f'<p class=rep-lead>{title}</p><p class=mut>Figure not drawn yet: ref/overall_report.py draws it '
+                f'from {esc(src) or "its table"}.</p>')
+    url = "/" + rel(png, root)
+    return (f'<figure class=rep-fig><figcaption>{title}</figcaption><a href="{esc(url)}" target=_blank '
+            f'rel=noopener><img src="{esc(url)}" alt="{title}" loading=lazy></a>'
+            + (f'<p class=mut>from {_cites(esc(src), j, root)}</p>' if src else "") + "</figure>")
+
+
+def _overall(j: dict, b: dict, r: dict, root: Path) -> str:
+    """The Job's Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and
+    read it"): its Executive answers as one document, a section per question from its Task page, each `(K01 · t30)`
+    a link to the Task it rests on, its figure under its answer (JL 261013), and the print beside it. Read-only: an
+    answer changes on its page, a figure by its page's `figures:` and ref/overall_report.py."""
+    from live.page_reader import markdown_html
+    xs = _executive(j)
+    face = j["path"] / f'{j["name"]}.md'
+    title = next((x[2:].strip() for x in face.read_text(encoding="utf-8").splitlines() if x.startswith("# ")),
+                 j["name"]) if face.is_file() else j["name"]
+    done = sum(bool(t["face"].get("answer")) for t in xs)
+    checked = sum(bool(t["face"].get("check")) for t in xs)
+    part = b["path"] / "delivery" / j["name"]
+    prints = sorted(f for f in part.glob("overall-report.*") if f.is_file()) if part.is_dir() else []
+    one = (" · the print: " + " · ".join(f'<a href="/{esc(rel(f, root))}" target=_blank rel=noopener>'
+                                            f'{esc(f.suffix[1:].upper())} ↗</a>' for f in prints)) if prints else \
+        " · no print yet (ref/overall_report.py)"
+    toc, body = [], []
+    for n, t in enumerate(xs, 1):
+        q = _spec(r["questions"].get(t["qid"], {}))
+        name = str(q.get("name") or t["qid"])
+        f = t["face"]
+        first = next((x for x in f.get("figures") or [] if isinstance(x, dict)), None)
+        png = part / "figures" / f'{t["qid"]}-{first.get("name")}.png' if first else None
+        toc.append(f'<a href="#overall-{esc(t["qid"])}"><span>{n} · {esc(name)}</span>'
+                   + (f'<b>{esc(first.get("title") or "")}</b><img src="/{esc(rel(png, root))}" alt="" loading=lazy>'
+                      if png and png.is_file() else f'<b>{esc(f.get("answer") or "not written yet")}</b>') + "</a>")
+        parts = []
+        for head, md in _sections(t["page"]):
+            html_ = _cites(markdown_html(md), j, root)
+            parts.append(f'<details><summary>{esc(head)}</summary>{html_}</details>' if head.lower().startswith("what it rests")
+                         else (f"<h4>{esc(head)}</h4>" if head and head.lower() != "answer" else "") + html_)
+        body.append(f'<section id="overall-{esc(t["qid"])}"><h3>{n}. {esc(name)}</h3>'
+                    f'<p class=rep-ask>{esc(_cap(str(q.get("question") or "")))}</p>'
+                    + (f'<p class=rep-lead>{esc(f["answer"])}</p>' if f.get("answer") else
+                       '<p class=mut>Not written yet: its page answers from the questions below it.</p>')
+                    + (f'<p class=mut>How sure: {esc(f["how-sure"])}</p>' if f.get("how-sure") else "")
+                    + "".join(_figure(t["qid"], spec, part, j, root) for spec in f.get("figures") or [] if isinstance(spec, dict))
+                    + "".join(parts)
+                    + f'<p class=mut>{_task_link(t, root)} · {esc(t["qid"])} · {_st(f.get("answer-status") or "open")}'
+                      f' · CHECK {esc(f.get("check") or "not yet")}</p></section>')
+    return (f'<article class=report-doc><h2>{esc(title)}</h2>'
+            f'<p class=mut>{esc(_rlabel(b, j["release"]))} × {esc(_vlabel(b, j["data"]))} · <code>{esc(j["name"])}</code></p>'
+            f'<p class=mut>{done} of {len(xs)} answers written · {checked} checked{one}</p>'
+            f'<p class=rep-glance-head>At a glance</p><nav class=rep-glance>{"".join(toc)}</nav>{"".join(body)}'
+            '<p class=mut>Each answer rests on the Data, Information, Knowledge and Wisdom questions below it; a '
+            '(K01 · t30) opens that Task\'s page.</p></article>')
+
+
+def _board_overall(b: dict, root: Path, href) -> str:
+    """The Board's Overall Report: its latest Job's, with the earlier Jobs' a click away."""
+    jobs = [j for j in b["jobs"] if _executive(j)]
+    j = jobs[-1]
+    earlier = (" · earlier Jobs: " + ", ".join(_job_link(href, o) for o in jobs[:-1])) if jobs[1:] else ""
+    return (f'<p class=mut>The latest Job\'s report, {_job_link(href, j)}{earlier}.</p>'
+            + _overall(j, b, P.release(b["prototype"], j["release"]), root))
+
+
 # ── the Board ───────────────────────────────────────────────────────────────────────────────────
 def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
     b = P.board(block)
@@ -424,15 +543,18 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
     d_runs = {"Map": (_kind("Add a data version", "Add a data version to the Board {folder}: register the extract, frozen, "
                             "its rows counted per cut (run-add-version-<d>vM)."),
                       _kind("Add a Job", "Add a Job to {folder}: pair a Prototype release with a data version, one clock "
-                                         "moved from its neighbour (run-add-<jNN>; the Job folder j0N_pN_<d>vM carries the pair).", rows=_rows(b["runs"], root, "add"))),
+                                         "moved from its neighbour (run-add-<jNN>; the Job folder jNN_prototype-pN-<slug>_data-<d>vM carries the pair).", rows=_rows(b["runs"], root, "add"))),
               "Prototype": (_kind("Open the Prototype Block ↗", f"Open the Prototype Block {prel}: releases are cut there."),),
               "Dataset": (_kind("Add a data version", "Add a data version to the Board {folder} (run-add-version-<d>vM)."),),
               "Partitions": (_kind("Propose a cut", f"Propose a cut for {prel}/proposals/ (run-propose-cut-<slug>): a cut is plan, so it lands "
                                                     "in the next release."),)}[d_open]
-    a_part, a_read = split(sub, parts, READINGS)
-    a_html = (second_row(href, "Audience Report", a_part, READINGS, a_read, "Reading")
-              + {"Coverage": _coverage, "Tracks": _tracks, "Consistency": _consistency, "Findings": _findings}[a_read](
-                  b, root, _part_key(a_part), href))
+    told = [j for j in b["jobs"] if _executive(j)]          # Jobs whose release asks Executive questions
+    a_subs = ((OVERALL,) if told else ()) + parts
+    a_part, a_read = split(sub, a_subs, READINGS)
+    a_html = _board_overall(b, root, href) if a_part == OVERALL else (
+        second_row(href, "Audience Report", a_part, READINGS, a_read, "Reading")
+        + {"Coverage": _coverage, "Tracks": _tracks, "Consistency": _consistency, "Findings": _findings}[a_read](
+            b, root, _part_key(a_part), href))
     a_runs = {"Coverage": (_kind("Update the coverage", "Update the coverage of {folder}: what each Job asked and answered "
                                  "(run-coverage, reads the Jobs' receipts, never data).", rows=_rows(b["runs"], root, "coverage")),),
               "Tracks": (_kind("Draw a track", "Draw a question's track across the Jobs of {folder} (run-track-<q>).", rows=_rows(b["runs"], root, "track")),),
@@ -443,13 +565,17 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
                            _kind("Write the report", "Write a Block question's report in {folder}/reports/qNN_<topic>/ "
                                  "(run-report-<qNN>), citing the reading it rests on.", rows=_rows(b["runs"], root, "report")),
                            _kind("Check a report", "Check a Block question's report in {folder} (run-check-<qNN>): every claim cites a Job.", run="run-check-<qNN>"))}[a_read]
+    if a_part == OVERALL:                                    # written in the Job; the Board shows the latest one
+        a_runs = (_kind("Open the latest Job ↗", f"Open the latest Job {rel(told[-1]['path'], root)}: its Overall Report "
+                        f"is written there (run-overall-{told[-1]['name'][:3]})."),)
     rels = tuple(r["name"] for r in proto["releases"])
     w_open = sub if sub in rels else "All"
     r_views = ("All", "soft", "from below")
     r_open = sub if sub in r_views else "All"
     return _carded({
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs),
-        "Audience Report": Space(html=a_html, subspaces=parts, open=a_part, run_types=a_runs),
+        "Audience Report": Space(html=a_html, subspaces=a_subs, open=a_part, run_types=a_runs,
+                                 note="The latest Job's report: it is written and checked in that Job." if a_part == OVERALL else ""),
         "Idea Studio": Space(run_types=(_kind("Draw the question map", "Draw the question map of {folder} into studio/ (run-map-questions) "
                                               "(generated from the question files; view only)."),
                                         _kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): studio/sNN-<topic>/, a pass per session."))),
@@ -465,10 +591,12 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
                                        rows=_rows(b["runs"], root, "coverage")),
                                  _kind("Check consistency", "Check consistency between two Jobs of {folder}.",
                                        rows=_rows(b["runs"], root, "consistency")))),
-        "Delivery": Space(html=_handoff(b, root), subspaces=("Handoff",), open="Handoff",
+        "Delivery": Space(html=delivery_view(block, root, themes()["insight"]) + _handoff(b, root),   # cards (b10 s32-D18)
+                          subspaces=("Handoff",), open="Handoff",
                           run_types=(_kind("Write the counsel", "Write the Wisdom counsel of {folder} from the latest Job."),
                                      _kind("Draft the handoff", "Draft the handoff of {folder} for a person to sign."))),
-    }, "Block", {"Description": d_open, "Audience Report": a_read, "Runs": r_open, "Delivery": "handoff"})
+    }, "Block", {"Description": d_open, "Audience Report": "overall-report" if a_part == OVERALL else a_read, "Runs": r_open,
+                 "Delivery": "handoff"})
 
 
 def _job_link(href, j: dict, short: bool = False) -> str:
@@ -688,11 +816,13 @@ def _partitions(b: dict, root: Path, href) -> str:
 
 
 def _questions(b: dict) -> dict:
-    """Every question any release asks, by id, with the release that asks it last."""
+    """Every question any release asks on a cut, by id, with the release that asks it last; the Executive ones
+    are read in the Overall Report instead."""
     out = {}
     for r in b["prototype"]["releases"]:
         for qid, q in r["questions"].items():
-            out[qid] = dict(q, release=r["name"])
+            if qid[:1] != "X":
+                out[qid] = dict(q, release=r["name"])
     return out
 
 
@@ -857,16 +987,21 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
     d_open = sub if sub in desc else "Prototype"
     # no band beside the tab (s12, 261007): the Job's line opens Description › Prototype only
     d_html = (band + _job_prototype(j, r, root)) if d_open == "Prototype" else _job_dataset(j, b, r, root)
-    parts = _part_names(r["partitions"])
+    parts = ((OVERALL,) if _executive(j) else ()) + _part_names(r["partitions"])
     a_part, a_period = split(sub, parts, PERIODS)
     prev = j["previous"][:3]
-    a_html = second_row(href, "Audience Report", a_part, PERIODS, a_period, "Period") + (
+    a_html = _overall(j, b, r, root) if a_part == OVERALL else second_row(
+        href, "Audience Report", a_part, PERIODS, a_period, "Period") + (
         _job_current(j, b, r, root, _part_key(a_part)) if a_period == "Current" else _vs_previous(j, root))
     me = j["name"][:3]
     propose = _kind("Propose questions", f"Propose questions from {me} (run-propose-{me}): file each new or changed "
                     "question, and each gap this Job could not answer, to the Prototype's proposals/<slug>.md (kind · "
                     f"DIKW level · from {me} · why). It writes nothing else.", rows=_rows(j["runs"], root, "propose"))
-    a_runs = ((_kind("Compare with " + prev, f"Compare this Job with {prev} (run-compare-{prev}): it writes "
+    a_runs = ((_kind("Write the overall report", "Write the Overall Report of {folder} (run-overall-<jNN>): each Executive "
+                     "question's page from the answers below it, then its one page (ref/overall_report.py)."),
+               _kind("Check a report", "Check an Executive question's page in {folder} (run-check-<tNN>).", run="run-check-<tNN>"))
+              if a_part == OVERALL else
+              (_kind("Compare with " + prev, f"Compare this Job with {prev} (run-compare-{prev}): it writes "
                      f"reports/vs-{prev}.md, after every check.", rows=_rows(j["runs"], root, "compare")), propose)
               if a_period == "vs previous" and prev else (propose,) if a_period == "vs previous" else
               (_kind("Pool or split", "Run the Cross test of a question in {folder} (rNN_cross): one test of the "
@@ -898,9 +1033,12 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                                rows=_rows(j["runs"], root, "close")),)),
         "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): studio/sNN-<topic>/, a pass per session."),)),
         # page=True: the frame takes this Space's runs and third row as set, even none (frame.lays_out_page)
-        "Delivery": Space(html=_job_delivery(j, b), run_types=(), page=True,
-                          note="Nothing to run here: the Board's Delivery holds the handoff."),
-    }, "Job", {"Audience Report": "cross" if _part_key(a_part) == "cross" else a_period, "Work Details": w_open,
+        "Delivery": Space(html=delivery_view(jdir, root, themes()["insight"]) + _job_delivery(j, b, root),
+                          run_types=(), page=True,
+                          note="Nothing to run here: the Board's Delivery holds the handoff; the Overall Report's one "
+                               "page is printed by haipipe-insight ref/overall_report.py."),
+    }, "Job", {"Audience Report": "overall-report" if a_part == OVERALL else "cross" if _part_key(a_part) == "cross" else a_period,
+               "Work Details": w_open,
                "Runs": r_open},
         {"j<NN>": me, "j<prev>": prev or "j<prev>"},
         keep=lambda c: c["label"] != "Compare with the Job before" or bool(prev))
@@ -952,11 +1090,14 @@ def _method_chips(q: dict, which: str) -> str:
 def _job_current(j: dict, b: dict, r: dict, root: Path, part: str) -> str:
     rows = {}
     for t in j["tasks"]:
+        if t["qid"][:1] == "X":                              # the Executive answers: the Overall Report's
+            continue
         q = r["questions"].get(t["qid"], {})
         run = next((x for x in t["hard"] if x.get("partition") == part), None)
         f = t["face"]
-        if t["qid"][:1] == "W" and not t["hard"]:
-            trail = ['cites the K and I answers; no run of its own']
+        cites = t["qid"][:1] == "W" and not t["hard"]        # Wisdom reads the answers below
+        if cites:
+            trail = ['cites the answers below; no run of its own']
         elif run:
             trail = [f'<code>{esc(j["name"])}</code> › <code>{esc(t["name"])}</code> ▸ '
                      f'{_run_link(run, root)} · {_st(run.get("status"))}']
@@ -966,7 +1107,7 @@ def _job_current(j: dict, b: dict, r: dict, root: Path, part: str) -> str:
         page = (f'<p class=mut>{_task_link(t, root)}'
                 + (f' · CHECK {esc(f["check"])}' if f.get("check") else "") + "</p>"
                 if t.get("page") and f.get("answer") and "answer" not in (run or {}) else "")
-        if t["qid"][:1] == "W" and not t["hard"]:
+        if cites:
             report = (f'<p><span class=chip>Report</span> {_st(f.get("answer-status") or "open")}</p>'
                       f'<p>{esc(f.get("answer") or "the counsel is written on its page, signed by a person")}</p>{page}')
         else:
@@ -1027,11 +1168,20 @@ def _job_runs(j: dict, root: Path, view: str) -> str:
     return "".join(out)
 
 
-def _job_delivery(j: dict, b: dict) -> str:
+def _job_delivery(j: dict, b: dict, root: Path | None = None) -> str:
+    """The Job's part of the Board's delivery/ (its Overall Report on one page, JL 261012), then where its counsel goes."""
+    part = b["path"] / "delivery" / j["name"]
+    files = sorted(f for f in part.iterdir() if f.is_file()) if part.is_dir() else []
+    links = "".join(f'<li><a href="/{esc(rel(f, root))}" target=_blank rel=noopener>{esc(f.name)} ↗</a></li>'
+                    for f in files) if root else ""
+    out = (f'<p><b>Overall Report</b>: its {len(_executive(j))} Executive answers on one page.</p>'
+           f'<ul class=files>{links}</ul>' if files else
+           '<p class=mut>No one-page Overall Report yet: ref/overall_report.py prints it from the Executive answers.</p>'
+           if _executive(j) else "")
     latest = b["jobs"][-1]["name"] if b["jobs"] else ""
     if any(t["qid"][:1] == "W" for t in j["tasks"]) and j["name"] == latest:
-        return "<p>This is the latest Job: its Wisdom counsel goes to Board › Delivery › Handoff, naming this Job.</p>"
-    return "<p class=mut>None of its own: a Job's answers are read by the Board.</p>"
+        return out + "<p>This is the latest Job: its Wisdom counsel goes to Board › Delivery › Handoff, naming this Job.</p>"
+    return out or "<p class=mut>None of its own: a Job's answers are read by the Board.</p>"
 
 
 # ── a Task ──────────────────────────────────────────────────────────────────────────────────────
@@ -1041,7 +1191,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     j = P.job(jdir)
     t = P.task(tdir)
     q = P.question_of(b["prototype"], j["release"], t["qid"])
-    level = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}.get(t["qid"][:1], "")
+    level = LEVEL_WORD.get(t["qid"][:1], "")
     head = f'<p class=mut><code>{esc(t["qid"])}</code> on {esc(j["name"])} · {esc(level)} · {_st(t["face"].get("answer-status", "—"))}</p>'
     d_views = ("Question", "Records")
     d_open = sub if sub in d_views else "Question"
@@ -1095,8 +1245,11 @@ def _task_table(t: dict, q: dict, root: Path) -> str:
     rows = [(f'<b>{esc(r.get("partition"))}</b>', _st(r.get("status")), esc(r.get("answer") or f.get("answer") or "—"),
              esc(r.get("how-sure") or f.get("how-sure") or "—"),
              _run_link(r, root)) for r in t["hard"]]
-    return (f'<p>{_open(t["page"], root, t["name"], "the page")} · CHECK {esc(f.get("check") or "—")}</p>'
-            + table(("partition", "run", "answer", "how sure", "its run"), rows))
+    head = f'<p>{_open(t["page"], root, t["name"], "the page")} · CHECK {esc(f.get("check") or "—")}</p>'
+    if not rows:                                  # Wisdom and Executive: no run, the answer cites the ones below
+        return (head + f'<p><b>Answer</b>: {esc(f.get("answer") or "not written yet")}</p>'
+                f'<p class=mut>How sure: {esc(f.get("how-sure") or "—")} · no runs: it cites the answers below it.</p>')
+    return head + table(("partition", "run", "answer", "how sure", "its run"), rows)
 
 
 def _task_reading(t: dict, q: dict, root: Path) -> str:

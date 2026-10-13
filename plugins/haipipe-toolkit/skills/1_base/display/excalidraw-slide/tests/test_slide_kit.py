@@ -66,6 +66,18 @@ class SlideKitTest(unittest.TestCase):
         bad = GOOD.replace('"notes": "<speaker notes>"},', '"notes": "<speaker notes>", "ask": "<not a list>"},', 1)
         self.assertTrue(any("ask is a list" in t for _, t in self.found(bad)))
 
+    def test_a_screen_or_figure_names_a_file_on_disk(self):
+        # j51 (261012): screens/ retaken by a script, figures/ kept to their shape, each named by `file`
+        screen = GOOD.replace('{"kind": "flow", "steps": ["<a>", "<b>"], "hl": 1}',
+                              '{"kind": "screen", "file": "screens/workbench.png", "hl": ["screen"]}')
+        self.assertIn(("error", "slide 2: visual file screens/workbench.png is not on disk "
+                                "(a screen: retake it with its script; a figure: add it)"), self.found(screen))
+        (self.path.parent / "screens").mkdir()
+        (self.path.parent / "screens" / "workbench.png").write_bytes(b"png")
+        self.assertEqual(self.found(screen), [])
+        unnamed = GOOD.replace('{"kind": "flow", "steps": ["<a>", "<b>"], "hl": 1}', '{"kind": "figure"}')
+        self.assertEqual(self.found(unnamed), [("warn", "slide 2: a figure visual names no file")])
+
     def test_a_slides_py_that_does_not_import_is_a_finding(self):
         found = self.found("SLIDES = [\n")
         self.assertEqual(found[0][0], "error")

@@ -12,8 +12,8 @@ description: >-
   add a paper, /haipipe-related.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-11"
+  version: "0.2.0"
+  last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -42,7 +42,7 @@ The folder
 ├── related.md          one row per item: kind · date · item · link · feeds · group
 ├── _groups.txt         the group buttons, in order (the workbench writes it)
 ├── meetings/           YYYY-MM-DD-HHMM <title>.md, notes or a transcript as it came
-├── papers/             <author><year>.pdf, open-licensed only
+├── papers/             <author><year>.pdf, a free copy: open-licensed (private repo: also arXiv, PMC)
 ├── files/              what we were sent: a draft, a form, slides, as it came
 └── emails/             YYYY-MM-DD-HHMM <subject>.eml, saved from the mail app
 ```
@@ -52,8 +52,11 @@ The folder
    report.
 3. **Made with its first item**: a subfolder exists once something is in it; any other
    subfolder name works too.
-4. **Links, not copies**: a paper that is not open-licensed, a repo, a dataset or a tool is only a
-   row with its link; nothing is copied into the SPACE.
+4. **Links, not copies**: a paper with no free copy, a repo, a dataset or a tool is only a row with
+   its link; nothing else is copied into the SPACE. A paper row opens on its PDF when one is kept
+   (JL 261013: "we want here to show the pdf attached"), so keep the free copy when there is one: an
+   open-licensed version anywhere, and in a private repository an arXiv preprint or a PMC copy too.
+   Check the PDF's first page carries the paper's title before its row links it.
 5. **No private data**: an email or file holding patient or personal data does not land here.
 
 
@@ -72,6 +75,9 @@ The table: related.md
 3. **feeds**: the studio topics (`sNN`) and reports (`qNN`) it feeds; a report cites the row the
    way it cites a Run.
 4. **group**: extra groups, comma-separated; the subfolder is never written here.
+5. **bears on** (a paper Board): what a paper bears on (the closest work, the background, an idea, a
+   research question), comma-separated. Audience Report › Related Papers groups its cards by it;
+   the Studio's groups stay the kinds.
 
 
 Groups
@@ -80,9 +86,11 @@ Groups
 An item's groups are its subfolder first, then its `group` cell (b10 s04-D08, JL 261011: "we have
 the things like subfolders and can give them the group name"). A meeting in `meetings/` is in the
 `meetings` group without any row edit; dragging it onto another group writes that name into its
-cell. The subfolder group has no × and changes only when the file moves. Untagged holds only items
-with no subfolder and an empty cell (a web link). `related/_groups.txt` keeps the buttons' order, as
-`studio/_groups.txt` does for the topics.
+cell. The subfolder group has no × and changes only when the file moves. A row kept as a web link has
+no subfolder, so its `kind` stands in (JL 261013: the groups are "things like meeting, email,
+paper"): the bar reads by what each item is. Untagged holds only a row with no subfolder, no kind and
+an empty cell. `related/_groups.txt` keeps the buttons' order, as `studio/_groups.txt` does for the
+topics. What a paper is about is not a Studio group: it goes in `bears on`.
 
 
 On screen

@@ -2,4 +2,5 @@
 
 target: s05
 ask: work on the studio topic s05-report-workbench-skill
-close: JL moves the topic's Stage to agreed, or names what is still wrong in red on the drawing
+close: JL moves the topic's Stage to agreed, or names what is still wrong in red on the drawing; and settles
+Opens 9 and 10 (shared names or one list; Q11), merged with s07 on 261012 (passes p06 to p18 were run-draw-s07's)

@@ -1,5 +1,28 @@
 # haipipe-insight · version history
 
+## 3.4.0 · 2026-10-12 · A readable Job name, and the Executive level
+
+- JL 261012: "I just want to show the job folder name, and make the job folder name to be human readable".
+  A Board Job is now `jNN_prototype-pN-<release slug>_data-<D>vM/`, such as
+  `j01_prototype-p1-basic-questions_data-SMSR2v1`: underscores part its three fields, hyphens join the words
+  inside one (the Task rule). `ref/open_job.py` writes it (`JOB`, `job_name`, `release_slug`); `ref/run_job.py`
+  and `scripts/insight_ladder.py` read the same `JOB`. An older `jNN_pN_<D>vM` still reads.
+- A new Job's face heading is its name in words: `# Basic question set (p1) on data SMSR2v1`.
+- The workbench's Job ▾ menu shows the folder name as it is (the composed `j01 · plan × freeze` label is gone).
+- The Executive level X (JL 261012: "what are the high level question we should have?"): `tNN_X<NN>_<slug>/`,
+  `level: executive`, cite needs on the answers below and one judge, no ticket. `insight_ladder.py question` takes
+  X ids; a Task with no Run shows its answer.
+- The Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and read it"):
+  the Audience Report's first button, before Full, at the Job and the Board (its latest Job's), reads the Executive
+  answers as one document, each `(K01 · t30)` a link to that Task's page; no cut's table lists X. New run type
+  `run-overall-j<NN>` (Job) writes the X pages and the print.
+- New `ref/overall_report.py <Job>`: the Overall Report in print, the Board's `delivery/<job>/overall-report.html`
+  and `.pdf` (headless Chrome): page 1 the answers, page 2 the figures; the Job's Delivery tab lists them.
+- Figures for the Overall Report (JL 261013: "figures to show it to quickly get the outcome"): an X page names its
+  figure in its face, `figures:` (title = the outcome, kind bars · dots · lines · ranges, a cited Run's result table);
+  new `ref/overall_figures.py` draws it into `delivery/<job>/figures/<X>-<name>.png`. The workbench opens the report
+  with At a glance, a card per question (outcome over figure), and shows each figure under its answer.
+
 ## 3.3.1 · 2026-10-11 · Figures for a dataset picture
 
 - JL 261011: "after we read the q, ... I have a complete picture of what dataset I have". `ref/figures.py`: a heat map

@@ -43,7 +43,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_pN_<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Propose a cut · Block › Description · ^run-propose-cut- · views partitions
 🧩 SKILL    haipipe-insight-question
@@ -109,7 +109,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_pN_<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Close a Job · Block › Work Details · ^run-close-j\d+$
 🧩 SKILL    haipipe-insight-check
@@ -123,7 +123,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_pN_<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Update the coverage · Block › Runs · ^run-coverage$
 🧩 SKILL    haipipe-insight-check
@@ -151,7 +151,13 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 ✍️ SIGNS    the handoff
 💬 PROMPT   /haipipe-insight-wisdom draft the Design handoff of {folder} into delivery/handoff-<W>.md: the finding, its strength and the Knowledge results it rests on, its boundary, its pair (pN × vM), the design consequence and what it must not be read to say, as run-draft-handoff; I sign it (signed: ✅ <YYMMDD>).
 
-## Job › Audience Report · Partition × Period: Current · vs previous
+## Job › Audience Report · Overall Report, then Partition × Period: Current · vs previous
+
+🔘 BUTTON   Write the overall report · Job › Audience Report · ^run-overall-j\d+$ · views overall-report
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight write the Overall Report of {folder}: each Executive question's page (tNN_X<NN>_<slug>.md: a one-line answer, how sure, numbered points each citing the Task it rests on as (K01 · t30), and in its face one figure under figures: whose title says the outcome and whose table is a cited Run's result table) from the answers below it and nothing else, then draw the figures and print it with ref/overall_report.py, as run-overall-j<NN>; another agent checks each page.
 
 🔘 BUTTON   Write the Data report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-data
@@ -177,7 +183,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question a question in {folder} from its Runs' generated reports, a part per cut, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
 
-🔘 BUTTON   Check a report · Job › Audience Report · ^run-check-t\d+$ · views current
+🔘 BUTTON   Check a report · Job › Audience Report · ^run-check-t\d+$ · views current overall-report
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none

@@ -13,7 +13,7 @@ description: >-
   /haipipe-question.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.6.2"
+  version: "0.7.0"
   last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md
 ---
@@ -110,7 +110,7 @@ To create one:
 3. **Register it**: add the entry to `board.md`'s `## Questions` register. Its `group:` line,
    comma-separated, puts its card on the Report's group bar, as a topic's **Tags:** line does in
    the Studio; a drag on the bar writes the line, and a theme may add fixed groups of its own
-   (b10 s07-D01, D02).
+   (b10 s05-D05, D06).
 4. **Frame the report**: the same-stem `.md` with `answers:` and `answer-status: open`, and `page.toml`.
 5. **Hand it on**: from here the report is `haipipe-report`'s (the walk, the Page, its figures).
 
@@ -120,7 +120,10 @@ an existing folder and a work path that is not a Task):
 ```bash
 python Tools/plugins/haipipe-toolkit/skills/1_base/question/haipipe-question/ref/block_questions.py \
   add-question <block> --id Q02 --slug <topic> --title '<short question>' \
-  --question '<the question>' [--hypothesis …] [--acceptance …] [--work jNN_<job>/tNN_<task>]
+  --question '<the question>' [--group '<Group>'] [--hypothesis …] [--acceptance …] [--work jNN_<job>/tNN_<task>]
+
+# a Question's groups: on add (--group 'Handoff'), or later on a registered row (only its group: line changes)
+python …/block_questions.py set-group <block> --id Q-food-1 --group 'Food, All events'
 
 # a report for a Question already in the register (steps 2 and 4, and its report: line)
 python …/block_questions.py add-report <block> --id Q-food-1 --slug input_forms \

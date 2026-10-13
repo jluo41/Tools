@@ -53,8 +53,8 @@ class BlockWorkbenchStyleTest(unittest.TestCase):
 
 
 class BlockWorkbenchTitleTest(unittest.TestCase):
-    """Each page names its kind first (JL 261004): 📋 Task · 🔭 Discovery · 📨 CoWork, then the Block title."""
-    TITLES = {"workbench-work/task_views.py": "📋 Task · ", "workbench-discovery/discovery_views.py": "🔭 Discovery · ",
+    """Each page names its kind first (JL 261004): 🧪 Task · 🔭 Discovery · 📨 CoWork, then the Block title."""
+    TITLES = {"workbench-work/task_views.py": "🧪 Task · ", "workbench-discovery/discovery_views.py": "🔭 Discovery · ",
               "workbench-cowork/cowork_views.py": "📨 CoWork · "}
 
     def test_every_block_workbench_title_names_its_kind(self):
@@ -69,7 +69,7 @@ class BlockWorkbenchTitleTest(unittest.TestCase):
         root = Path("/space")
         self.assertEqual(board_kind(root / "p/cowork/b11_x", root), ("CoWork Board", "📨"))
         self.assertEqual(board_kind(root / "p/discoveries/b01_x", root), ("Discovery Board", "🔭"))
-        self.assertEqual(board_kind(root / "p/tasks/b01_x", root), ("Task Board", "📋"))
+        self.assertEqual(board_kind(root / "p/tasks/b01_x", root), ("Task Board", "🧪"))
 
 
 if __name__ == "__main__":

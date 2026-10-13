@@ -13,4 +13,4 @@ its transcript names colleagues and internal plans.
 
 | kind | date | item | link | feeds | group |
 |---|---|---|---|---|---|
-| meeting | 2026-10-08 | Loop experimental learning agent demo (the SMSR2 design Jobs shown to leadership: goal · method · inputs, traceable designs, a predicted +3.6, one human review before launch) | `../jluo41-repo/examples-A9-meeting/Project-Meetings-2026/Meeting/2026-10/2026-10-08-1346 Loop experimental learning agent demo.md` | s11 · s12 · s61 · q03 | meetings |
+| meeting | 2026-10-08 | Loop experimental learning agent demo (the SMSR2 design Jobs shown to leadership: goal · method · inputs, traceable designs, a predicted +3.6, one human review before launch) | `../jluo41-repo/examples-A9-meeting/Project-Meetings-2026/Meeting/2026-10/2026-10-08-1346 Loop experimental learning agent demo.md` | s11 · s12 · s61 · q03 · q04 · q05 | meetings |

@@ -4,7 +4,7 @@ Infer a Block's Questions and reports from its Jobs and Tasks
 A Question earns its place only when the Block's own Jobs and Tasks answer it (JL 261012: "I don't ask the
 questions that is meaningless ... we might want to ask the questions that are closely related to the jobs and
 tasks"). Read the work, find where its answers differ, and ask about that; never start from a theme's generic
-list. The theme's kinds only name the groups the Questions fall in (b10 s07-D03). b10 s10 is the design.
+list. The theme's kinds only name the groups the Questions fall in (b10 s05-D07). b10 s10 is the design.
 
 
 Read the work
@@ -23,7 +23,7 @@ Which Questions, at which level
 -------------------------------
 
 1. **A Task** asks the sub-questions its own face answers (`### 1 · What is one row?`); its report is its
-   face (s07-D06). Nothing new is registered.
+   face (s05-D10). Nothing new is registered.
 2. **A Job** asks what one Task of a kind in every Job answers for that Job and does not answer the same way
    everywhere: `Is the dataset ready for Source?` (each Job's source Task). Its report is that Task's face,
    linked from the Job's register row (`work: tNN_<task>`), not a new folder.
@@ -43,7 +43,7 @@ The test before a Question is kept
    place`, 14 of 14) is settled; it is a line in a topic, not a Question.
 3. **About this Block's next step**: what a reader, or the next Block, decides from it.
 4. **In the Block's words**: drops, tables, families, Source; not "Data · Pilot · Evaluation".
-5. **Grouped after**: its groups come from the Block's subjects and the theme's kinds (s07-D01, D02).
+5. **Grouped after**: its groups come from the Block's subjects and the theme's kinds (s05-D05, D06).
 
 
 Worked example: b00_rawdata (261012)

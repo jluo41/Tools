@@ -1,0 +1,23 @@
+run: run-draw-s02
+kind: soft
+type: draw
+scope: null
+target: s02
+ticket: run-draw-s02.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1012
+- p02-1012
+writes:
+- studio/s02-excalidraw-report/s02-excalidraw-report.md
+- studio/s02-excalidraw-report/build_s02_excalidraw_report.py
+- studio/s02-excalidraw-report/s02-excalidraw-report.excalidraw
+- studio/s02-excalidraw-report/s02-excalidraw-report.png
+- s02-excalidraw-report.md
+- build_*.py
+- s02-excalidraw-report.excalidraw
+- s02-excalidraw-report.png
+feeds: []

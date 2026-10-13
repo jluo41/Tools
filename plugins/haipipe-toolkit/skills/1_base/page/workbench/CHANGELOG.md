@@ -1,3 +1,159 @@
+## 1.24.1 · 2026-10-12 · A share code reaches jh.edu, and every door sends mail
+
+- JL 261012, from zdi1: "This link will automatically use @jhu.edu ... So I can't get code from zdi1@jh.edu."
+  Two faults. share.py folded jh.edu into jhu.edu for the mail too, so the code went to zdi1@jhu.edu, which is not
+  always a mailbox; and five of the six doors ran on a SPACE .venv without the azure package, so no code was ever
+  sent (the log: `mail to zdi1@jhu.edu failed: ModuleNotFoundError: No module named 'azure'`, four times).
+- `share.mail_to`: the code goes to the address as typed; `canonical_email` still makes jh.edu and jhu.edu one person
+  when matching a grant. The page says "Sent to" the typed address.
+- `share.acs_request` / `acs_send`: Azure Communication Services through its REST API and HMAC-SHA256 signing, the
+  standard library only, so any SPACE's Python sends. Checked on the real key: a signed empty send 400, a wrong key
+  401; then one code each to jluo41@jhu.edu and zdi1@jh.edu, both accepted. The six doors restarted on it.
+- Tests: `test_mail_goes_as_typed_signed_with_the_standard_library`; the sign-in test now expects the typed address.
+  118 server tests; the 13 share tests also pass on Physician-SPACE's .venv (no azure).
+
+## 1.24.0 · 2026-10-12 · /wb <folder> share, and who has it
+
+- JL 261012: "how could you update /wb xxxx to share?" `wb.py <folder> share <email>` (or `--people <list>`) now does
+  what `wb.py share <folder> <email>` does; the folder first is taken only when it is a real folder, so words such as
+  `/wb llmrec share` still search.
+- With nobody named, `wb.py <folder> share` (or `wb.py share <folder>`) writes nothing: it prints who can open that
+  folder now (a grant on it or above it, a group with its head count) and its link (`wb_share.who_has`).
+- SKILL.md: what a share door can reach, in four lines. Test: `test_folder_first_and_who_has_it` (7 workbench tests).
+
+## 1.23.0 · 2026-10-12 · Studio › Folder: the Block's own folder as a tree
+
+- JL 261012: "我想创建一个 s09。这个 s09 我们是要创建 folder，也就是在 related 和 timeline 下面再搞一个 folder，这样我就
+  可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容。" The Studio's fourth folding part, under Timeline:
+  `frame.studio_folder(block, root)`, the Block's folder as one tree, folders first, then files, by name.
+- A folder row folds and says how many things it holds and what it is for, `frame.folder_word`: studio/, reports/,
+  runs/, related/, delivery/, passes/, result/, history/ by a fixed line (`FOLDER_WORDS`), a Run by its card
+  (`_run_word`: `soft · draw · done · 10 passes`), else its face's title; a title that only repeats the folder's
+  name is left out.
+- A file row opens in the pop-out (`_file_url`; a drawing through `_draw_url`) and says its size (Delivery's
+  `_size`) and the day it last changed; an emoji by its kind (`FILE_ICONS`).
+- Only the first level comes with the page. A folder's rows load the first time it opens, from
+  `?view=dir&path=<folder>` (`frame_view.py`, 404 outside the root), 300 at a time, then a button "Show the other N"
+  (`&all=1`), so a Block of thousands of files stays light (b00_rawdata: 5,317). `path=` is the key the share doors
+  already check (servers/_host/live/share.py PATH_KEYS).
+- Dotfiles (a drawing's `.seed.json`), `__pycache__`, `node_modules` and `.ipynb_checkpoints` are left out; a link
+  that leaves the root is named, not followed.
+- Test: `RouteTest.test_studio_folder_shows_the_block_folder_and_loads_a_folder_when_opened`. b10 s09-D10 to D13 (b10 s09-block-folder).
+
+## 1.22.0 · 2026-10-12 · One share door per SPACE
+
+- JL 261012: "maybe we can have each space to be one domain"; then "physician.jjluo.com, welldoc.jjluo.com,
+  drfirst.jjluo.com, reach.jjluo.com and jluo41.jjluo.com and knowledge.jjluo.com". Each SPACE's
+  `.server_config/access.yaml` is its own table and names its door (`public_url:`, `port:`); `wb.py share --serve
+  [<folder>]` starts that door (serve.py --share, --root the SPACE, 127.0.0.1 only) and leaves one already up.
+  block.jjluo.com was Tools-SPACE's door for an hour, then dropped (JL 261012, "we will drop this"; b10
+  s52-D18): Tools-SPACE has no door, and `wb.py share` refuses a SPACE with no table instead of writing a grant
+  that nothing serves.
+- share.py `_save_table`: a grant or a new list keeps the table's own top note (its door) and mode 600; a new
+  people list's header names its own door, no longer block.jjluo.com. 12 share tests.
+- `wb.servers(root, share=False)`: a share door is never one of a SPACE's own hosts, so `/wb` keeps opening the
+  tailnet host; `share=True` lists the doors. `wb.py share --list` prints the door too.
+- servers/_host/live/share.py: the mail key is read from the nearest `.server_config/share.env` at or above the
+  root (one key for every door), the table's `port:` is read, and a link from the Desktop door
+  (`path=<SPACE>/...`) is sent on to the same page on the SPACE's door. 11 share tests, 115 host tests and 6
+  workbench tests pass.
+
+## 1.21.0 · 2026-10-12 · Share mode: an emailed code, then only what the access table grants
+
+- JL 261012: "how could I host it and share it with others? ... share the block with others"; "how could I give
+  differnt people to difference access to different blocks?"; on Debate-AI's sign-in: "Do you think we can do
+  the same things here?"; "CDHAI is me, it is okay. Go ahead". `serve.py --share` (`servers/_host/live/share.py`,
+  `ShareMixin` ahead of `AuthMixin`): a person signs in with a six-digit code sent to a JHU email (jhu.edu,
+  jh.edu folded into it, jhmi.edu; Debate-AI's rules), only an owner or an email `.server_config/access.yaml`
+  names gets a code, and everyone sees the same answer; a signed cookie lasts 7 days; every path a request
+  names must sit inside a grant, else 404; a viewer's Home lists only their Blocks; POST, the terminal and chat
+  are an owner's. Mail is Azure Communication Services from noreply@cdhai.com (`share.env`); without it an
+  owner's code goes to the server log. Design: b10 s52 (D03, D07, D08). Tests: `_host/tests/test_share.py`.
+- JL 261012 (later): `wb.py share <folder> <email>` (`cli/wb_share.py`) writes a grant and prints the link; the
+  host re-reads the table when it changes. `--people <name>`: a list file, `.server_config/people/<name>.txt`, one
+  JHU email a line ("could I only prepare a list of jh emails, only these people can access it"); saved edits apply
+  at the next click. `who: anyone@jhu` opens a Block to every JHU email (unused so far). block.jjluo.com serves the
+  Desktop (every SPACE) through one table; mail from noreply@cdhai.com via Azure Communication Services.
+
+## 1.20.3 · 2026-10-12 · The every-theme group is "Random thoughts"
+
+- JL 261012: "How about Random-Thoughts?". `REPORT_SUGGESTED` is now "Random thoughts" (was "Asked by others"): a
+  question that came up outside the plan, from anyone, parked until it finds its group; Untagged stays the row with
+  no group line. Spelled with a space, like every other group name on the bar (b10 s05-D22).
+
+## 1.20.2 · 2026-10-12 · Old links to a renamed folder still open
+
+- JL 261012: "I cannot open you anymore", after the insight Job `j01_p1_SMSR2v1` became
+  `j01_prototype-p1-basic-questions_data-SMSR2v1`. A renamed folder's face keeps `renamed-from:`; the
+  workbench route sends an old `path=` on with a 302 (`servers/workbench/frame_view.py` `renamed`), part by part,
+  so a Task under an old Job name opens too. Test: `servers/_host/tests/test_renamed_link.py`.
+
+## 1.20.2 · 2026-10-12 · /wb update proposes the groups and their order; a rerun adds only what is new
+
+- JL 261012: "for the studio's group tags, during the updating, you will propose them yourself, is that correct?"
+  Yes: `cli/wb_update.py` gives each proposed topic a first-guess group (the Task kind, or the split's noun:
+  `raw-family` gives Family, no longer "Raw"), and `proposals.md` gains a `## Group order (studio/_groups.txt)`
+  line; the agent rewords both per haipipe-studio `ref/infer-topics.md` § Groups before the tick.
+- A rerun proposes only what no earlier pass of `run-update-<bNN>` named, kept or dropped: on Proj01's six
+  updated Blocks it now finds nothing new (b00 skips 14 candidates, b51 one). A topic counts as covered when an
+  existing topic's name or face names the kind or the split.
+
+## 1.20.1 · 2026-10-12 · Report groups coloured by kind; a Report bar at every level
+
+- JL 261012: "the fixed groups (or the suggested default group labels) ... give them different colors". A Report
+  group button is gray when the theme fixes it (`Theme.report_fixed`, `report_cards`; no ×), amber when the theme
+  suggests it and shows it even empty (`Theme.report_groups`, and `REPORT_SUGGESTED`, "Random thoughts", on every
+  theme), white when the Block added it; the help line names the colours (`group_list(..., fixed=)`,
+  `--grp-fixed-*`, `--grp-sug-*`, light and dark). work suggests Data · Pilot · Evaluation, cowork Needs ·
+  Works · Blockers (b10 s05-D16).
+- JL 261012: "the report group tags for both the block level, job level and task level". `report_view` always
+  returns the bar, with `empty` under it before the first Question (a Task's own Page row); a Job with no
+  Questions of its own also shows the Block's whose register `work:` names its files, so cowork's Job Report is
+  now the base's cards; a work Task shows its bar under Report (b10 s05-D17).
+- Tests: `test_report_bar_at_every_level_and_its_kinds_coloured`; the Report and cowork Job tests updated.
+
+## 1.20.0 · 2026-10-12 · /wb update <Block>: one door to today's rules
+
+- JL 261012: "Suppose I have a totally new block ... How could I audit it and then make its structure to be
+  correct, and then propose it sNN topics and also the reports cross the b j t? ... I want it work like /wb
+  update-to-date path to the block". `cli/wb.py update <Block>` runs `cli/wb_update.py`: shape (haipipe-project
+  `ladder.py audit`), today's rules (`audit --today`), the plan, `--apply` (the safe moves, then a pass of
+  `runs/run-update-<bNN>/` holding `proposals.md`), topics and Questions read off the Block's own Jobs and Tasks
+  (haipipe-studio `block_inventory.py`), and the Studio link. A dry run writes nothing; nothing proposed is
+  made until a person ticks it (b10 s10-D03).
+- `tests/test_wb_update.py`: today's rules found on an old Block, the dry run writes nothing, `--apply` moves
+  only the data file and leaves the pass to tick with no absolute path in it.
+
+## 1.19.3 · 2026-10-12 · The Timeline: its own group row, full topic names, quiet days; no undated line
+
+- JL 261012, on the Timeline's last line "No date on 14 decisions: s01-D01 · …": "for the timelin,e I don'
+  want this". It is gone; `frame.timeline_events` still returns the undated ids for whoever wants them.
+- JL 261012: "我好像没法选了。我这怎么选其他的？比如说 group 呢，或者说 topic 呢？" After a group column was
+  clicked the chart showed only that group's topics, and the only way back was the group bar far above.
+  The Timeline now has its own row of groups, `.tl-groups`: All, Current and each group with its count,
+  filled by the page script's `timeline(key)` from the bar's own buttons and clicking them, so the two
+  never differ. A picked group (or Current) shows its topics as columns; by group unpicks it and shows
+  every group; a picked topic that no longer shows is dropped from "Reading …". The help line says "click
+  a group for its topics, a topic to read it".
+- JL 261012: "for the sNN, here could you give it the full name?" By topic, a column's head is the topic's
+  full name, `s02 studio-workbench-skill`, slanted 45° up to the right so the columns stay 40 px wide. The
+  header is as tall as the longest name still shown (`--tl-slant`, set by `timeline(key)`, at most 200 px).
+  Then JL 261012: "you can make the columns width wider, and make the sNN to be more readable": columns are
+  60 px (`--tl-cell`, was 40), the sNN stands straight and bold at 14 px over its column, and only the rest
+  of the name is slanted, above it (s08-D14).
+- JL 261012: "How could you show the days between them, like from Wed 07 to the Wed 09, there are two
+  days." `studio_timeline` now writes a row for every day from the first to the last (`tl-quiet` when
+  nothing happened), in the chart and in the Topics and Everything lists. The page script's `tlGaps(tl)`
+  lays them out after each group, level or topic pick: a day with nothing shown between two that have
+  something keeps a short row and a hollow dot, a run of more than 3 is one row "N quiet days", and the
+  days before the first and after the last are hidden.
+- JL 261012: "当我 click（点击）这些 button 的时候，它会跳到最上面，而不是留在 timeline 这里。" A group picked
+  from the Timeline hides or shows the topic cards above it, so the page shrank or grew over the Timeline and
+  it left the screen. The `.tl-map` handler's `keep(fn)` now measures the Timeline's toolbar before the pick
+  and scrolls by the difference after it (the group row, a group column or bubble, and by group).
+- A drawing note's link and its words now have a space between them.
+- b10 s08-D10 to s08-D15 recorded; the drawing shows the group row and the quiet days with green notes.
+
 ## 1.19.2 · 2026-10-12 · Pick topics in the chart, read them under it; no counts in the header
 
 - JL 261011: "Or we can select the topics we are interest in we show there content". In the Timeline's Days
@@ -17,7 +173,7 @@
 - `Theme.report_cards(level, folder, root)` -> [{id, title, groups, status, html}]: a theme's own cards that
   are no register row (a paper's ideas, its standing Questions), drawn first under the same bar, not
   draggable, their groups fixed and counted; an op on one is refused (no register line).
-- b10 s07-D09.
+- b10 s05-D13.
 
 ## 1.19.0 · 2026-10-11 · The Report's groups are tags, as the Studio's
 
@@ -31,7 +187,7 @@
 - `Theme.report_fixed(row)` and `Theme.report_groups`: a theme's fixed groups (no ×, `data-studio-fixed`,
   a remove refused) and its starting ones. The chips keep no × on a fixed group after a drag (Related's
   subfolder groups too). A `#question-QNN` link opens its card.
-- b10 s07-D01, D02, D09.
+- b10 s05-D05, D06, D13.
 
 ## 1.18.1 · 2026-10-11 · The chart's columns can be the topic groups
 

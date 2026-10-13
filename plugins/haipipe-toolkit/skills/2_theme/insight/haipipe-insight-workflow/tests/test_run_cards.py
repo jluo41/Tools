@@ -83,7 +83,7 @@ def test_next_run_walks_the_gates(tmp_path):
     L("data", board, "v1", "--extract", "_WorkSpace/<store>/demo_v1.parquet")
     assert NR.state(board)[1] == "run-add-j01"
     L("job", board, "--release", "p1", "--data", "v1")
-    job = board / "j01_p1_Demov1"
+    job = board / "j01_prototype-p1-first_data-Demov1"      # the Job name since haipipe-insight 3.4.0
     assert NR.state(job)[1] == "run-launch-j01"
     (job / "runs" / "run-launch-j01").mkdir(parents=True)
     run = job / "t01_D01_shape" / "runs" / "r01_full"
@@ -97,6 +97,6 @@ def test_next_run_walks_the_gates(tmp_path):
     assert NR.state(job)[1].startswith("run-check-t01")
     _front_set(page, check="✅ 261008")
     assert NR.state(job)[1].startswith("run-close-j01")
-    _front_set(job / "j01_p1_Demov1.md", state="closed")
+    _front_set(job / f"{job.name}.md", state="closed")
     L("data", board, "v2", "--extract", "_WorkSpace/<store>/demo_v2.parquet")
     assert NR.state(board)[1].startswith("run-add-j02 (p1 on v2: data moved)")

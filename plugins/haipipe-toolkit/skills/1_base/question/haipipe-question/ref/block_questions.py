@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Add a Block Question with an empty report Page, a report Page for a Question already
-registered, or a related resource.
+registered, a registered Question's group: line, or a related resource.
 
 This authors a register and Page frame, never an answer, accepted Content or Run. A frame may
 list Evidence links (files inside the Block, e.g. a Task Result or a studio/ drawing); they are
@@ -129,6 +129,8 @@ def update(args):
         entry = dict(id=args.id, title=args.title or args.question, question=args.question,
                      hypothesis=args.hypothesis or "", acceptance=args.acceptance or "",
                      work=args.work, report=new_page.relative_to(board).as_posix())
+        if args.group:
+            entry["group"] = args.group
         questions.append(entry)
         updated = replace_register(original, "Questions", "questions", questions)
         page_title = args.title or args.question
@@ -184,6 +186,42 @@ def update(args):
     return new_page or head
 
 
+def set_group(board: Path, qid: str, groups: list) -> Path:
+    """Write a registered Question's `group:` line (b10 s05-D05): the line replaced, or added after the row's
+    `title:` (else after its `id:`); no groups, no line. Only that line changes, so a long register keeps its
+    comments and layout. The same rule as the workbench's drag on the group bar (frame._register_set_groups)."""
+    md = board.resolve() / "board.md"
+    text = md.read_text(encoding="utf-8")
+    m = re.search(r"(?ms)^## Questions[ \t]*\n.*?```ya?ml\n(.*?)```", text)
+    if not m:
+        raise ValueError("board.md has no ## Questions register")
+    lines = m.group(1).split("\n")
+    start = next((i for i, ln in enumerate(lines)
+                  if re.match(rf"""^\s*-\s+id:\s*['"]?{re.escape(qid)}['"]?\s*$""", ln)), None)
+    if start is None:
+        raise ValueError(f"{qid} is not in the register")
+    dash = len(lines[start]) - len(lines[start].lstrip())
+    indent = lambda ln: len(ln) - len(ln.lstrip())
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].strip() and indent(lines[i]) <= dash), len(lines))
+    pad = " " * next((indent(lines[i]) for i in range(start + 1, end) if lines[i].strip()), dash + 2)
+    value = ", ".join(groups)
+    if re.search(r"""[:#\[\]{}&*!|>'"%@`]""", value) or value[:1] in "-?":
+        value = json.dumps(value, ensure_ascii=False)
+    at = next((i for i in range(start + 1, end) if lines[i].startswith(pad + "group:")), None)
+    if at is not None:
+        if groups:
+            lines[at] = f"{pad}group: {value}"
+        else:
+            del lines[at]
+    elif groups:
+        after = next((i for i in range(start + 1, end) if lines[i].startswith(pad + "title:")), start)
+        while after + 1 < end and lines[after + 1].strip() and indent(lines[after + 1]) > len(pad):
+            after += 1
+        lines.insert(after + 1, f"{pad}group: {value}")
+    md.write_text(text[:m.start(1)] + "\n".join(lines) + text[m.end(1):], encoding="utf-8")
+    return md
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -196,6 +234,7 @@ def main():
     question.add_argument("--hypothesis")
     question.add_argument("--acceptance")
     question.add_argument("--work", action="append", default=[])
+    question.add_argument("--group", help="its groups on the Report's bar, comma-separated (b10 s05-D05)")
     question.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     question.add_argument("--drawing", action="append", default=[],
                           help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
@@ -207,6 +246,10 @@ def main():
     report.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     report.add_argument("--drawing", action="append", default=[],
                         help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
+    grouped = commands.add_parser("set-group", help="a registered Question's group: line, nothing else")
+    grouped.add_argument("block", type=Path)
+    grouped.add_argument("--id", required=True)
+    grouped.add_argument("--group", required=True, help="comma-separated; empty removes the line")
     resource = commands.add_parser("add-resource")
     resource.add_argument("block", type=Path)
     resource.add_argument("--title", required=True)
@@ -216,6 +259,9 @@ def main():
     resource.add_argument("--notes")
     args = parser.parse_args()
     try:
+        if args.command == "set-group":
+            print(set_group(args.block, args.id, [g.strip() for g in args.group.split(",") if g.strip()]))
+            return
         print(update(args))
     except (OSError, ValueError) as error:
         parser.exit(1, f"{error}\n")

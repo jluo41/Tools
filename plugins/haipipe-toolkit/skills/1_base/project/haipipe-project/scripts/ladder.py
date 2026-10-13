@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Audit or update any level of a Project world against the ladder: Block → Job → Task → Run → pass.
 
-    ladder.py audit  <path> [--only] [--quiet]      <path> = a Project, a world, a Block, a Job, a Task or a Run
-    ladder.py update <path> [--apply]               dry run unless --apply
+    ladder.py audit  <path> [--only] [--quiet] [--today]   <path> = a Project, a world, a Block, a Job, a Task or a Run
+    ladder.py update <path> [--apply] [--today]            dry run unless --apply
+
+--today adds b10's rules since 261012 (the table's `today:` key): studio topics, the Questions register,
+reports/ for each Block Question, related/ and delivery/ at the Block only (b10 s10).
 
 The shape rules live in ../ref/ladder.md (its yaml block); this script only reads them.
 """
@@ -326,6 +329,80 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
     return nodes
 
 
+# ── Today's rules (b10 s10) ───────────────────────────────────────────────────
+
+TODAY = T.get("today") or {}
+DRAWING = set(TODAY.get("drawing", [".excalidraw", ".png", ".svg", ".py", ".md", ".json"]))
+
+
+def today_findings(block: Path) -> list[tuple[str, str]]:
+    """The `today:` rules at one Block, as (severity, message); the shape audit does not see them."""
+    out: list[tuple[str, str]] = []
+    topic = re.compile(TODAY.get("topic", r"^s\d{2}[-_]"))
+    studio = block / "studio"
+    entries = sorted(studio.iterdir()) if studio.is_dir() else []
+    topics = [d for d in entries if d.is_dir() and topic.match(d.name)]
+    if not topics:
+        out.append(("debt", "today: studio/ has no sNN-<topic>/ topic"))
+    s00 = TODAY.get("s00", "s00-background-and-index")       # one name, every Block (haipipe-studio; JL 261012)
+    if topics and not (studio / s00).is_dir():
+        out.append(("debt", f"today: studio/ has no {s00}/: draw it with haipipe-studio block_index.py --draw"))
+    for d in topics:
+        if d.name != s00 and (d.name.startswith("s00") or d.name.endswith("background-index")):
+            out.append(("debt", f"today: studio/{d.name}/ is a background index: its one name is {s00}/"))
+    given_up = {h.name[:3] for h in (studio / s00 / "history").glob("pre-s00-*/topic/s[0-9][0-9]-*")
+                if h.name[:3] != "s00"} if (studio / s00 / "history").is_dir() else set()
+    for d in topics:
+        if d.name[:3] in given_up:
+            out.append(("debt", f"today: studio/{d.name}/ reuses {d.name[:3]}, the old index's number: renumber it"))
+    for e in entries:
+        if e.name.startswith((".", "_")) or e in topics or e.name in TODAY.get("keep", []):
+            continue
+        where = ("moves to the Block" if e.is_file() and e.suffix not in DRAWING else
+                 "gather it into a sNN-<topic>/" if e.is_file() else "name it sNN-<topic>/ or move it out")
+        out.append(("debt", f"today: studio/{e.name} is not a topic: {where}"))
+    face = block / "board.md" if (block / "board.md").is_file() else block / f"{block.name}.md"
+    text = face_text(face)
+    reg = re.search(TODAY.get("register", r"(?m)^## Questions[ \t]*$"), text)
+    if not reg:
+        out.append(("debt", f"today: {face.name} has no ## Questions register"))
+    else:
+        ids = re.findall(r"(?m)^\s*-\s+id:\s*(Q\d+)", text[reg.end():])
+        have = {d.name.split("_")[0].upper() for d in (block / "reports").glob("q[0-9]*_*") if d.is_dir()} \
+            if (block / "reports").is_dir() else set()
+        miss = [q for q in ids if q.upper() not in have]
+        if miss:
+            out.append(("debt", f"today: no reports/qNN_*/ for {', '.join(miss)}"))
+    jobs = sorted(d for d in block.iterdir() if d.is_dir() and NAMES["job"].match(d.name))
+    tasks = [t for j in jobs for t in sorted(j.iterdir()) if t.is_dir() and NAMES["task"].match(t.name)]
+    for lvl in jobs + tasks:
+        rel_ = lvl.relative_to(block).as_posix()
+        for name in TODAY.get("block_only", []):
+            if (lvl / name).is_dir():
+                out.append(("debt", f"today: {rel_}/{name}/ belongs at the Block"))
+        if (lvl / "studio").is_dir() and any(topic.match(d.name) for d in (lvl / "studio").iterdir() if d.is_dir()):
+            out.append(("debt", f"today: {rel_}/studio/ holds topics: they belong in the Block's studio/"))
+    return out
+
+
+def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
+    """The one safe move today's rules make: a data file in the Block's studio/ (not a drawing, its builder or
+    a note) to the Block root, never over a file. Drawings wait for a topic a person names (step 5)."""
+    studio = block / "studio"
+    if not studio.is_dir():
+        return []
+    return [(f, block / f.name, "today: studio/ holds topics only") for f in sorted(studio.iterdir())
+            if f.is_file() and f.suffix not in DRAWING and not f.name.startswith((".", "_"))
+            and f.name not in TODAY.get("keep", [])
+            and not (block / f.name).exists()]
+
+
+def add_today(nodes: list[Node]) -> None:
+    for n in walk(nodes):
+        if n.level == "block":
+            n.findings += today_findings(n.path)
+
+
 # ── Report ────────────────────────────────────────────────────────────────────
 
 def walk(nodes: list[Node]):
@@ -607,7 +684,7 @@ def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
     return [m for m in out if not any(o[0] != m[0] and o[0] in m[0].parents for o in out)]
 
 
-def update(path: Path, root: Path, apply: bool) -> int:
+def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
     fam = family_of(block_of(path)) if block_of(path) else "task"
     n_moves = n_cards = 0
     moved: list[tuple[Path, str, Path]] = []
@@ -645,6 +722,8 @@ def update(path: Path, root: Path, apply: bool) -> int:
                 card = make_card(dest, dest.name, kind, ticket, root, moved_from or None, passes)
                 (dest / "run.yaml").write_text(yaml.safe_dump(card, sort_keys=False, allow_unicode=True))
     tidy = tidy_moves(path)
+    if today and block_of(path):
+        tidy += today_moves(block_of(path))
     if tidy:
         print("\ntidy (folders the ladder retires):")
     for a, b, why in tidy:
@@ -694,15 +773,18 @@ def main() -> int:
     ap.add_argument("--quiet", action="store_true", help="audit: hide folders that are ok all the way down")
     ap.add_argument("--summary", action="store_true", help="audit: counts per level only")
     ap.add_argument("--apply", action="store_true", help="update: do the moves (default: dry run)")
+    ap.add_argument("--today", action="store_true", help="also b10's rules since 261012 (the table's today: key)")
     args = ap.parse_args()
     failed = False
     for raw in args.paths:
         path = Path(raw).resolve()
         root = space_root(path)
         if args.verb == "update":
-            update(path, root, args.apply)
+            update(path, root, args.apply, args.today)
             continue
         nodes = audit_path(path, root, args.only)
+        if args.today:
+            add_today(nodes)
         if not args.summary:
             print_tree(nodes, root, args.quiet)
             print()

@@ -440,8 +440,8 @@ def render(snap, view="task"):
     css = ((HERE / 'assets/css/90-task-workbench.css').read_text() + '\n' + PANEL_CSS + SPLIT_CSS
            + '.split{--card:var(--bg)}')
     js = (HERE / 'assets/js/90-task-workbench.js').read_text()
-    content = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>📋 Task · {e(snap['title'])}</title><link rel="icon" href="data:,"><style>{css}</style></head>
-<body class="tw"><main id="task-workbench"><header><h1>📋 Task · {e(snap['title'])}</h1></header>
+    content = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>🧪 Task · {e(snap['title'])}</title><link rel="icon" href="data:,"><style>{css}</style></head>
+<body class="tw"><main id="task-workbench"><header><h1>🧪 Task · {e(snap['title'])}</h1></header>
 <div class="dataset" title="{e(snap['spine'])}">{e(band)}</div>
 <nav class="spaces" aria-label="Spaces">{space_row}</nav>
 <div class="tw-source-issues">{issues(snap['source_issues'])}</div>

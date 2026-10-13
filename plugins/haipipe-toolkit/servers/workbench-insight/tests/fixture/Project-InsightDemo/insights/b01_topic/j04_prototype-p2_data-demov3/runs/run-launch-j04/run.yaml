@@ -1,0 +1,5 @@
+run: run-launch-j04
+kind: soft
+type: launch
+target: j04_prototype-p2_data-demov3
+status: open

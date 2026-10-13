@@ -79,3 +79,5 @@ This skill draws the structure; it writes nothing else. The plan and its Bullets
 `haipipe-draft-structure`; the Evidence Items to `haipipe-draft-evidence`; the Section order
 to the paper board (`haipipe-paper`). Why a Section's claim holds is `draw-logic-tree`. A
 manuscript figure is a display unit (`haipipe-display`); this map is a working drawing.
+A file we change, shown section by section beside its updated sentences with the tracked Word
+file built last (a co-author's draft, an IRB protocol), is `excalidraw-revise`, not this map.

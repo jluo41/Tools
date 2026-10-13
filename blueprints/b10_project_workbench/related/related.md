@@ -10,4 +10,4 @@ order (s04-D07, D08). The skill is `/haipipe-related`.
 
 | kind | date | item | link | feeds | group |
 |---|---|---|---|---|---|
-| meeting | 2026-10-10 | 研究项目工作流程设计与结构优化 (Studio · Report · Delivery across levels) | `meetings/2026-10-10-1800 研究项目工作流程设计与结构优化.md` | s09 · s02 · s03 |  |
+| meeting | 2026-10-10 | 研究项目工作流程设计与结构优化 (Studio · Report · Delivery across levels) | `meetings/2026-10-10-1800 研究项目工作流程设计与结构优化.md` | s01 · s02 · s03 |  |

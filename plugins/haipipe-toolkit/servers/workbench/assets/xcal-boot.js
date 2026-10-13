@@ -119,6 +119,20 @@
   var q = new URLSearchParams(location.search);
   var board = q.get("board");
   if (!board) return start();               // not our URL: leave the app alone
+  // Excalidraw's same-origin referrer check also rejects our workbench iframe.
+  // Some embedded browsers still expose that referrer despite the iframe's
+  // no-referrer policy (the mobile "I'm not a pretzel!" screen). Clear only the
+  // app's document value for a file-backed drawing inside our own workbench;
+  // direct visits, foreign parents and an Excalidraw inside itself stay as-is.
+  if (window.top !== window) {
+    try {
+      var parentLocation = window.parent.location;
+      if (parentLocation.origin === location.origin &&
+          parentLocation.pathname.indexOf("/_board/") === 0) {
+        Object.defineProperty(document, "referrer", { value: "", configurable: true });
+      }
+    } catch (_) {}                          // a foreign frame cannot read its parent
+  }
   var frame = q.get("frame") || "";
   var edit = q.get("edit") === "1";
   var guide = q.get("guide") === "1";

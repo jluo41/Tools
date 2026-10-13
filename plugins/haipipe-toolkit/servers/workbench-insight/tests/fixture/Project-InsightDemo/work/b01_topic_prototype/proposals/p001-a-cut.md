@@ -1,6 +1,6 @@
 ---
 kind: cut
-from: j03_p2_demov2
+from: j03_prototype-p2_data-demov2
 state: open
 ---
 

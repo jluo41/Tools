@@ -266,7 +266,7 @@
    "locked": false
   },
   {
-   "id": "s-65e963919d9b",
+   "id": "s-71cc8e833bc3",
    "type": "text",
    "x": 1284,
    "y": 534,
@@ -291,8 +291,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "b10 s05: every level writes its own Report\nb10 s09 open 2: the centre says what each level reports\nb10 s07 (proposed): the Report gets a group bar; the paper keeps\n  Ideation · Narrative · Research questions · Asked by others",
-   "originalText": "b10 s05: every level writes its own Report\nb10 s09 open 2: the centre says what each level reports\nb10 s07 (proposed): the Report gets a group bar; the paper keeps\n  Ideation · Narrative · Research questions · Asked by others",
+   "text": "b10 s05: every level writes its own Report\nb10 s01 (s09 Later 1): the centre says what each level reports\nb10 s05 (proposed): the Report gets a group bar; the paper keeps\n  Ideation · Narrative · Research questions · Random thoughts",
+   "originalText": "b10 s05: every level writes its own Report\nb10 s01 (s09 Later 1): the centre says what each level reports\nb10 s05 (proposed): the Report gets a group bar; the paper keeps\n  Ideation · Narrative · Research questions · Random thoughts",
    "fontSize": 21,
    "fontFamily": 6,
    "textAlign": "left",
@@ -410,7 +410,7 @@
    "lineHeight": 1.3
   },
   {
-   "id": "s-f150747000ae",
+   "id": "s-bc630db3ec48",
    "type": "text",
    "x": 1260,
    "y": 912,
@@ -435,8 +435,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "s05-D01 · a Question's group: is its kind; its telling is\n  the telling's Feeds: line, read by id (s07 Open 6)\ns05-D02 · b16 keeps the paper's groups and its standing\n  Questions (3 attract rows, J1 to J5); b10 the rule",
-   "originalText": "s05-D01 · a Question's group: is its kind; its telling is\n  the telling's Feeds: line, read by id (s07 Open 6)\ns05-D02 · b16 keeps the paper's groups and its standing\n  Questions (3 attract rows, J1 to J5); b10 the rule",
+   "text": "s05-D01 · a Question's group: is its kind; its telling is\n  the telling's Feeds: line, read by id (b10 s05 Open 14)\ns05-D02 · b16 keeps the paper's groups and its standing\n  Questions (3 attract rows, J1 to J5); b10 the rule",
+   "originalText": "s05-D01 · a Question's group: is its kind; its telling is\n  the telling's Feeds: line, read by id (b10 s05 Open 14)\ns05-D02 · b16 keeps the paper's groups and its standing\n  Questions (3 attract rows, J1 to J5); b10 the rule",
    "fontSize": 21,
    "fontFamily": 6,
    "textAlign": "left",

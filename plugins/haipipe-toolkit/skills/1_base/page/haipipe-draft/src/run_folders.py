@@ -108,6 +108,9 @@ def result_dir(page_folder, run_id: str) -> Path:
     found = passes(page_folder, run_id)
     if found:
         return found[-1]
+    hard = run_dir(page_folder, run_id) / "result"
+    if hard.is_dir():
+        return hard
     return Path(page_folder) / "results" / run_id
 
 
@@ -159,6 +162,8 @@ def result_dirs(page_folder) -> dict[str, Path]:
             latest = passes(page_folder, path.name)
             if latest:
                 out[path.name] = latest[-1]
+            elif (path / "result").is_dir():
+                out[path.name] = path / "result"
     return out
 
 
@@ -212,13 +217,13 @@ def space_of(ticket) -> str:
 def is_result_folder(folder) -> bool:
     """A run's result folder in either layout: `results/<name>/` or `runs/<name>/passes/pNN-<MMDD>/`."""
     folder = Path(folder)
-    return folder.parent.name == "results" or (
+    return (folder.name == "result" and folder.parent.parent.name == "runs") or folder.parent.name == "results" or (
         folder.parent.name == "passes" and bool(_PASS.match(folder.name))
         and folder.parent.parent.parent.name == "runs")
 
 
 def under_page_results(page_folder, path) -> bool:
-    """`path` is inside one of the Page's own run results, in either layout."""
+    """`path` is inside this Page's hard result, soft pass, or legacy results bank."""
     page_folder = Path(page_folder).resolve()
     path = Path(path).resolve()
     try:
@@ -227,7 +232,8 @@ def under_page_results(page_folder, path) -> bool:
         return False
     if rel[:1] == ("results",) and len(rel) > 1:
         return True
-    return (len(rel) > 4 and rel[0] == "runs" and rel[2] == "passes" and bool(_PASS.match(rel[3])))
+    return (len(rel) >= 3 and rel[0] == "runs" and rel[2] == "result") or (
+        len(rel) > 4 and rel[0] == "runs" and rel[2] == "passes" and bool(_PASS.match(rel[3])))
 
 
 def result_roots(page_folder) -> list[Path]:
@@ -240,4 +246,6 @@ def result_roots(page_folder) -> list[Path]:
     for run in sorted(runs.iterdir()) if runs.is_dir() else []:
         if run.is_dir():
             out += passes(page_folder, run.name)
+            if (run / "result").is_dir():
+                out.append(run / "result")
     return out

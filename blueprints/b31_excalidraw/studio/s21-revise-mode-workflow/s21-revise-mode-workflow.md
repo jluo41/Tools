@@ -3,10 +3,10 @@ s21 · Revise mode: how a co-author's file becomes a side-by-side drawing
 
 **Tags:** `Run and Skill`
 
-**Stage:** explore
+**Stage:** agreed
 
 **Topic:** how b04_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side by side)
-was drawn on 2026-10-11, as the worked example of excalidraw-read's revise mode: the steps from a co-author's
+was drawn on 2026-10-11, as the worked example of excalidraw-revise: the steps from a co-author's
 Word file to the side-by-side drawing and the tracked Word draft, the script behind each step, and what each
 step costs, in seconds per rebuild and in rounds with a person (JL 261011: "add a new sNN in
 Tools/blueprints/b31_excalidraw to explain how did we draw the things here? what is the workflow are what are
@@ -79,9 +79,9 @@ draw_steps:
    what: "pdftotext -bbox gives every word's box; running header and footer left out."}
 - {k: b, title: Cut the sections, script: bounds_of, cost: "< 0.1 s",
    what: "The title and each Heading 1 of the .docx, found in the PDF's words."}
-- {k: c, title: Render the left pages, script: "cut (pdftoppm 200 DPI)", cost: "5.9 s", red: "? most expensive: 10 renders of 4 pages; render each once",
+- {k: c, title: Render the left pages, script: "cut (pdftoppm 200 DPI)", cost: "5.9 s", red: "⚠️ most expensive: 10 renders of 4 pages; render each once",
    what: "Each section's pages rendered, cropped at the text's edge, stitched."}
-- {k: d, title: Find each change's words, script: find_in, cost: "< 0.1 s", red: "? most fragile: 4 kinds of miss so far",
+- {k: d, title: Find each change's words, script: find_in, cost: "< 0.1 s", red: "⚠️ most fragile: 4 kinds of miss so far",
    what: "Exact, then a row label left out, then up to 14 words between."}
 - {k: e, title: Highlight, script: "line_boxes, highlight", cost: "0.2 s",
    what: "A see-through red box per printed line of the words that change."}
@@ -149,7 +149,7 @@ peers:
 ```
 
 ```yaml
-open:
+later:
 - "Render each page once and reuse it: 10 renders become 4, about 6 s become 2.5 s."
 - "The side-by-side frame is 3,382 px wide, over the 2,800 rule, kept for the 3 note columns."
 - "Five citations wait for a person's check (bib.verification: pending)."
@@ -160,21 +160,30 @@ open:
 Decided
 -------
 
-s21-D01 · This topic records excalidraw-read's revise mode as b04_prep_ai's s04 used it on 2026-10-11: the
+s21-D01 · This topic records excalidraw-revise as b04_prep_ai's s04 used it on 2026-10-11: the
     workflow, its scripts, the seconds per rebuild and the effort, read from yaml in this face (JL 261011).
 s21-D02 · The workflow drawn is sentence mode (excalidraw-read 0.3.1): seed a haipipe-draft draft, write and revise
     it, draw, edit on the drawing and apply, deliver last; picture mode stays in the rounds as how it began.
-s21-D03 · Delivery is built from the draft (excalidraw-read 0.4.0, `read_revise.py deliver`): the draft's words against
+s21-D03 · Delivery is built from the draft (excalidraw-read 0.4.0, now excalidraw-revise; `read_revise.py deliver`): the draft's words against
     the file's, word by word, become tracked changes, and the build checks that rejecting every change gives the file
     and accepting every change gives the draft (all three SHIFT Blocks pass, 2026-10-11).
+s21-D04 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the topic records revise mode as b04's s04
+    used it; its open points moved to Later, and the drawing's Open list is drawn as Later, plain.
 
 
 Open
 ----
+
+(none open: agreed 261012, s21-D04; 3 points moved to Later)
+
+
+Later
+-----
+
+Not needed now; each comes back as a new point if it is wanted.
 
 1. Render each page once (`read_revise.cut` renders the same page for every section that touches it).
 2. Is 3,382 px wide acceptable for a side-by-side frame, or should the pictures shrink?
 3. Deliver from the draft: done 2026-10-11 (`read_revise.py deliver`); b02 and b03 still point their own delivery
    scripts at it.
 
-(write here, or mark the drawing in red)

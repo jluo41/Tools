@@ -54,14 +54,14 @@ def space_cards(page: str, level: str) -> dict:
 
 
 class CardGuideTest(unittest.TestCase):
-    def test_index_is_first_in_guide_and_leaves_the_parent_workbench(self):
+    def test_space_is_first_in_guide_and_leaves_the_parent_workbench(self):
         for view, _, _ in VIEWS:
             with self.subTest(view=view):
                 page = guide_html("shared", view, {"path": "", "file": ""}, True,
                                   index_url="https://example.test/?view=radial&measure=studios")
                 nav = re.search(r'<nav class="wg-views"[^>]*>(.*?)</nav>', page).group(1)
                 labels = re.findall(r'>([^<]+)</a>', nav)
-                self.assertEqual(labels, ["Index"] + [label for _, label, _ in VIEWS])
+                self.assertEqual(labels, ["SPACE"] + [label for _, label, _ in VIEWS])   # was Index (JL 261012)
                 self.assertIn('href="https://example.test/?view=radial&amp;measure=studios" target="_top" data-guide-index', nav)
                 self.assertEqual(nav.count('aria-current="page"'), 1)
         default = guide_html("shared", "description", {"path": "", "file": ""}, True)
@@ -69,6 +69,25 @@ class CardGuideTest(unittest.TestCase):
         invalid = guide_html("shared", "description", {"path": "", "file": ""}, True,
                              index_url="javascript:alert(1)")
         self.assertNotIn("javascript:alert", invalid)
+
+    def test_project_links_to_the_home_of_the_folders_project(self):
+        # JL 261012: "could you make the index to be SPACE, and also I want to have a link to the Project"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = root / "examples-0-cowork" / "Project-A" / "cowork" / "b01_x"
+            block.mkdir(parents=True)
+            (block / "board.md").write_text("# X\n")
+            shared = root / "blueprints" / "b02_y"
+            shared.mkdir(parents=True)
+            nav = lambda path: re.search(r'<nav class="wg-views"[^>]*>(.*?)</nav>', guide_html(
+                "shared", "description", {"path": path, "file": ""}, True, root=root)).group(1)
+            inside = nav("examples-0-cowork/Project-A/cowork/b01_x")
+            self.assertEqual(re.findall(r'>([^<]+)</a>', inside)[:2], ["SPACE", "Project"])
+            self.assertIn('href="/?project=examples-0-cowork%2FProject-A" target="_top" data-guide-project '
+                          'title="Project-A"', inside)
+            self.assertIn('href="/?project=shared%3Aspace"', nav("blueprints/b02_y"))   # outside a Project
+            self.assertNotIn("data-guide-project", nav(""))                            # no folder, no link
+            self.assertNotIn("data-guide-project", nav("../outside"))
 
     def test_every_view_is_three_folding_level_sections_then_all_levels(self):
         with tempfile.TemporaryDirectory() as tmp:

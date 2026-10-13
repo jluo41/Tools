@@ -2,7 +2,8 @@
 
 The existing Excalidraw proxy opens virtual, source-backed Guide scenes in
 its isolated viewing mode. Working Studio files and their save API retain
-their native ownership. Guide Index may use a configured SPACE URL; other URLs are origin-relative.
+their native ownership. Guide's SPACE link may use a configured SPACE URL; its Project link and other URLs
+are origin-relative.
 """
 
 import hashlib
@@ -517,6 +518,22 @@ def _level_folders(context, root):
     return frame.level_folders(at, Path(root)) if at.is_dir() else {}
 
 
+def project_link(context, root):
+    """(href, name) of the Project the Guide's folder sits in, as SPACE Home's `?project=` names it, or None.
+    A folder outside any Project links to its SPACE bucket (SPACE / Shared) by its key."""
+    path = (context.get("path") or context.get("file") or "").lstrip("/")
+    if not path or root is None:
+        return None
+    from live.home import project_owner
+    root = Path(root).resolve()
+    at = (root / path).resolve()
+    if not at.exists() or not at.is_relative_to(root):
+        return None
+    owner = project_owner(at if at.is_dir() else at.parent, root)
+    key = owner["project_path"] if owner["project_scope"] == "project" else owner["project_key"]
+    return "/?" + urlencode({"project": key}), owner["project"]
+
+
 def space_cards_html(family, profile, level, folders, root):
     """Description: the six Space cards of one level; sub and runs read live from the frame."""
     from live import frame
@@ -658,8 +675,15 @@ def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", 
     if not (index_url.startswith("/") and not index_url.startswith("//")) and not (
             parsed_index.scheme in ("http", "https") and parsed_index.netloc):
         index_url = STUDIO_INDEX
-    # Index leaves the whole workbench, including when Guide is shown in its iframe.
-    tabs = f'<a href="{esc(index_url)}" target="_top" data-guide-index>Index</a>'
+    # SPACE and Project leave the whole workbench, including when Guide is shown in its iframe: SPACE opens
+    # the SPACE Home, Project the Home showing only this folder's Project (JL 261012: "could you make the
+    # index to be SPACE, and also I want to have a link to the Project"); a bar parts them from the Views.
+    tabs = f'<a href="{esc(index_url)}" target="_top" data-guide-index>SPACE</a>'
+    project = project_link(context, root)
+    if project:
+        tabs += (f'<a href="{esc(project[0])}" target="_top" data-guide-project '
+                 f'title="{esc(project[1])}">Project</a>')
+    tabs += '<span class="wg-views-bar" aria-hidden="true"></span>'
     tabs += "".join(f'<a href="{esc(tab_url(key))}" '
                    f'aria-current="{("page" if key == view else "false")}">{label}</a>' for key, label, _ in VIEWS)
     source_links = "".join(f'<li><a href="{esc(url(mode="source", family=family, source=i))}" '

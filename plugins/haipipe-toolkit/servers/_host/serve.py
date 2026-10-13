@@ -113,6 +113,7 @@ from host_registry import WORKBENCH_ROUTES, route_allowed, static_path_allowed  
 # sibling workbench's servers/workbench-* (see _host/live/__init__.py).
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
 from live.auth import AuthMixin, AuthConfigError, host_is_loopback
+from live.share import ShareMixin  # --share: emailed-code sign-in, access per Block (b10 s52)
 from live.activity import ActivityMixin
 from live.home import HomeMixin
 from live.write import WriteMixin
@@ -168,9 +169,8 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
 
 
 # A theme's board page answers at /_board/<theme>-board, named as its theme is (JL 261007: "make them
-# the same to the theme name"). The names two of them had before still answer, so an old link opens the
-# same page: each request's path is renamed before any gate or route reads it.
-OLD_ROUTES = {"/_board/task-board": "/_board/work-board", "/_board/paper": "/_board/paper-board"}
+# the same to the theme name"). The names two had before (task-board, paper) answered as them until 261012,
+# when they were dropped (JL: "yes, this one should be droped"): nothing links them any more.
 # One Page Task's views were a route each (the old Page workbench, one page per tab); they are the
 # frame's Task Spaces now (JL 261007: "why not merge them into the base"), served by the frame route
 # as `/_board/workbench?view=<view>`. A GET or HEAD of an old address answers as that; its POST twin
@@ -181,16 +181,15 @@ PAGE_VIEW_ROUTES = {"/_board/folderstat": "folder", "/_board/draft": "draft", "/
 
 
 def new_route_name(path: str, method: str = "GET") -> str:
-    """`/_board/task-board?x` -> `/_board/work-board?x`; on a GET or HEAD, `/_board/runs?x` ->
-    `/_board/workbench?view=runs&x`; any other path as it is."""
+    """On a GET or HEAD, `/_board/runs?x` -> `/_board/workbench?view=runs&x`; any other path as it is."""
     head, sep, query = path.partition("?")
     view = PAGE_VIEW_ROUTES.get(head) if method in ("GET", "HEAD") else None
     if view:
         return "/_board/workbench?view=" + view + ("&" + query if query else "")
-    return OLD_ROUTES.get(head, head) + sep + query
+    return head + sep + query
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -860,6 +859,9 @@ if __name__ == "__main__":
                          "settings.env DOMAIN); links are printed as <DOMAIN>/w/...")
     ap.add_argument("--index-url", default="",
                     help="workbench Index destination; defaults to this SPACE's studio index")
+    ap.add_argument("--share", action="store_true",
+                    help="share mode (b10 s52): people sign in with an emailed code and open only what "
+                         ".server_config/access.yaml grants them; read-only for all but its owners")
     ap.add_argument("--only", default="",
                     help="serve only these workbenches, comma-separated (%s); terminal, "
                          "chat and Board write routes are then 404. `--only labeling` is the "
@@ -906,7 +908,16 @@ if __name__ == "__main__":
     space_name = (a.space_name or ("Labeling" if only == {"labeling"} else "")
                   or config.get("SPACE_NAME") or "").strip()
     public_url = configured_domain(a.public_url, config)
-    if not host_is_loopback(host) and auth_file is None and not a.no_auth:
+    if a.share:                       # the emailed code is the sign-in; no Basic auth beside it
+        auth_file, a.no_auth = None, False
+        try:
+            shared = Handler.configure_share(a.root)
+        except (OSError, ValueError) as exc:
+            ap.error(f"--share: {exc}")
+        print(f"[share] on: {len(shared.owners)} owner(s), {len(shared.grants)} grant(s), mail "
+              f"{'from ' + shared.mail_from if shared.acs else 'not set up (owner codes go to this log)'}",
+              file=sys.stderr, flush=True)
+    if not host_is_loopback(host) and auth_file is None and not a.no_auth and not a.share:
         ap.error("--auth-file is required when --host is not loopback")
     if a.public_read and auth_file is None:
         ap.error("--public-read requires --auth-file for interactive Board tools")

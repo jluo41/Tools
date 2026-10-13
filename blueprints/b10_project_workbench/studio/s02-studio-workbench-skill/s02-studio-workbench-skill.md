@@ -6,7 +6,7 @@ s02-studio-workbench-skill on 261010 (JL), when s04-studio-and-report was merged
 are s02-D22 to D30 since 261011, once s04-D01 to D09) and Delivery got its own topic,
 s03-delivery-workbench-skill.
 
-**Tags:** `UI` · `Guide` · `Structure`
+**Tags:** `UI` · `Structure`
 
 **Stage:** shaping
 
@@ -76,8 +76,8 @@ Four discussion frames lead in one row (261010), sized to read as whole frames:
    top. Studio opens a shared view like Guide: only Studio is selected, and the work Space
    and subspace rows are absent. Block, Job and Task open the same Block-owned topics,
    Disk and topic sessions. The title says Workbench · Studio · bNN · Block name; the work
-   level stays in the controls. Inside Guide, Index comes before Description and returns
-   to the SPACE's studio index. Below the Studio title,
+   level stays in the controls. Inside Guide, SPACE and Project come before Description:
+   SPACE returns to the SPACE Home, Project to the Home showing only this folder's Project (s02-D31). Below the Studio title,
    Current, topic tags and All focus the list; drag a card into Current or use its button.
    Each row shows its tags and source. Clicking that level returns to its selected work Space and view
    (implemented 261010).
@@ -317,6 +317,13 @@ s02-D29 · One Studio item may have N frames, and only n of N need Question link
 s02-D30 · Keep `qNN` for the Question and its answering Report, which share one identity.
     Keep `rNN` for computational Runs. A Report can hold an open or partial current answer;
     its figure is generated from selected Studio frames (JL 261010, accepted naming proposal).
+s02-D31 · Guide's first button, Index, is now **SPACE**, and a **Project** button follows it (JL 261012: "could
+    you make the index to be SPACE, and also I want to have a link to the Project"). SPACE keeps Index's
+    destination (the host's --index-url or INDEX_URL, default `/?view=radial&measure=studios`); Project opens
+    this host's SPACE Home showing only the folder's Project, `/?project=<Project folder>`, or its SPACE bucket
+    (`shared:space`) outside a Project (s01-D39). Both leave the whole workbench; a bar parts them from
+    Description, Method, RoadMap Draw and Related Paper. This updates D12's name; its place stays
+    (261012, requested and implemented in servers/workbench/workbench_guide.py).
 
 The shared relationship is owned here: `b10_project_workbench/studio/s02-studio-workbench-skill/`,
 at Block level. CoWork and other themes use the same contract. No new Job is needed to draw

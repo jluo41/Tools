@@ -37,6 +37,9 @@ INK = "#1e1e1e"        # every line, box, tree and word
 RED = "#e03131"        # an uncertain or open question
 GREEN = "#2f9e44"      # a change note: what changed, where it changed
 PALETTE = (INK, RED, GREEN)
+# the one slight fill under a frame's key point (excalidraw-studio, principle 5): part of the studio look, so the
+# palette keeps it (found 261012 on b10 s52: a builder writing with the palette on lost every key point)
+KEY = "#fff3bf"
 # inside a slide of a slide draft only (s61-s69): one accent marks the slide's key thing, a muted gray its
 # caption (JL 261007: "make the slide to be a bit colorful by highlight the important things")
 # (owned by excalidraw-slide's slide_kit since 261007; kept here, the same values, for builders that read them
@@ -49,6 +52,10 @@ SLIDE_PALETTE = (ACCENT, MUTED)
 UI = {"wash": "#f8f9fa", "box": "#ffffff", "line": "#ced4da", "edge": "#adb5bd", "text": "#1c1c1c",
       "mut": "#6f6f6b", "link": "#3e5c84", "on": "#1864ab", "on_bg": "#e7f5ff",
       "new": "#7048e8", "new_bg": "#f3f0ff", "dot": "#3e5c84"}   # dot: the Timeline's bubble, var(--acc) at .8
+# a Report group button by its kind, as the workbench colours it (servers/workbench/frame.py --grp-*; b10 s05-D16,
+# JL 261012): a box whose customData has ui_kind "fixed" (the theme's, from the Question) or "suggested" (the theme's
+# starting group); a Block's own group stays a plain button
+UI_KIND = {"fixed": ("#868e96", "#e9ecef"), "suggested": ("#f08c00", "#fff4e6")}
 STATUS_UI = {"answered": "#2b8a3e", "done": "#2b8a3e", "sent": "#2b8a3e", "partial": "#e67700",   # a status word
              "draft": "#e67700", "open": "#868e96", "not judged": "#868e96"}
 STAGE_UI = {"explore": ("#2b8a3e", "#ebfbee"), "shaping": ("#7048e8", "#f3f0ff"),   # the stage pills
@@ -77,18 +84,18 @@ def apply_font(els):
 
 def off_palette(els, slides=False):
     """The elements drawn in a colour outside the studio palette (a stroke not black, red or green, or
-    any fill): a builder can print these before it writes. `slides=True` (a slide draft) also allows the
-    slide accent, its light fill and the muted caption gray."""
+    any fill but the key point's): a builder can print these before it writes. `slides=True` (a slide draft)
+    also allows the slide accent, its light fill and the muted caption gray."""
     strokes = PALETTE + (SLIDE_PALETTE if slides else ())
-    fills = ("transparent", "#ffffff", "") + ((ACCENT_FILL,) if slides else ())
+    fills = ("transparent", "#ffffff", "", KEY) + ((ACCENT_FILL,) if slides else ())
     return [e for e in els if not is_ui(e) and (str(e.get("strokeColor", INK)).lower() not in strokes
             or str(e.get("backgroundColor", "transparent")).lower() not in fills)]
 
 
 def apply_palette(els):
     """The studio look applied to what a builder drew (JL 261007, "Recolour all"): a stroke outside
-    black · red · green becomes black (a transparent one stays), a fill becomes transparent (white
-    stays). An image keeps its stroke, fill and picture. Returns how many elements changed."""
+    black · red · green becomes black (a transparent one stays), a fill becomes transparent (white and the
+    key point's KEY stay). An image keeps its stroke, fill and picture. Returns how many elements changed."""
     n = 0
     for e in els:
         if e.get("type") == "image" or is_ui(e):          # a screen keeps the workbench's colours (ui_frame)
@@ -97,7 +104,7 @@ def apply_palette(els):
         if stroke not in PALETTE + ("transparent", ""):          # an invisible stroke stays invisible
             e["strokeColor"] = INK
             n += 1
-        if fill not in ("transparent", "#ffffff", ""):
+        if fill not in ("transparent", "#ffffff", "", KEY):
             e["backgroundColor"] = "transparent"
             n += 1
     return n
@@ -108,12 +115,57 @@ def is_slide_draft(out):
     return bool(__import__("re").match(r"^s6\d\b|^s6\d-", Path(out).stem))
 
 
+# A text element's width is where Excalidraw stops drawing it: a width guessed for English (0.55 of the size a
+# letter) cut Chinese lines in half (JL 261012, on b32 s00's "EB1A 递交": "this is not complete"). Measure instead.
+_MEASURE_FONT, _measure_fonts = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf", {}
+_EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2300-\u23FF]")
+_CJK = "\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF"
+
+
+def text_width(s, size):
+    """A line's width in px as Excalidraw draws it: Nunito for letters (Arial measured, a little wider), a full
+    em for a Chinese character, a little more for an emoji."""
+    s = str(s).replace("\ufe0f", "").replace("\u200d", "")
+    emoji, rest = len(_EMOJI.findall(s)), _EMOJI.sub("", s)
+    try:
+        from PIL import ImageFont
+        if size not in _measure_fonts:
+            _measure_fonts[size] = ImageFont.truetype(_MEASURE_FONT, size)
+        width = _measure_fonts[size].getlength(rest) * 1.06
+    except Exception:  # no Pillow or no font file: count wide characters as a full em
+        import unicodedata
+        width = sum(size * (1.0 if unicodedata.east_asian_width(c) in "WF" else 0.56) for c in rest)
+    return width + emoji * size * 1.25
+
+
+def wrap_text(s, size, width):
+    """Lines no wider than `width` px: break at a space, before any Chinese character, and inside a word too long
+    for a line. An empty paragraph stays an empty line."""
+    lines = []
+    for para in str(s).split("\n"):
+        line = ""
+        for tok in re.findall(rf"[{_CJK}]|[^\s{_CJK}]+|\s+", para):
+            if text_width(line + tok, size) <= width or not line.strip():
+                line += tok
+            else:
+                lines.append(line.rstrip())
+                line = tok.lstrip()
+            while text_width(line, size) > width and len(line) > 1:      # one word wider than the line
+                k = len(line) - 1
+                while k > 1 and text_width(line[:k], size) > width:
+                    k -= 1
+                lines.append(line[:k])
+                line = line[k:]
+        lines.append(line.rstrip())
+    return lines
+
+
 def change_note(x, y, what, date=None, frame=None, size=16):
     """A short green note `✎ <YYMMDD> <what changed>`, a text element to place beside the thing that
     changed; list the same words in the title frame. `date` defaults to today."""
     import datetime as _dt
     text = f"✎ {date or _dt.date.today().strftime('%y%m%d')} {what}"
-    return {"id": f"note-{x}-{y}", "type": "text", "x": x, "y": y, "width": len(text) * size * 0.55,
+    return {"id": f"note-{x}-{y}", "type": "text", "x": x, "y": y, "width": text_width(text, size) + 4,
             "height": size * 1.25, "angle": 0, "strokeColor": GREEN, "backgroundColor": "transparent",
             "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
             "groupIds": [], "frameId": frame, "roundness": None, "seed": 1, "version": 1, "versionNonce": 1,
@@ -154,6 +206,17 @@ def reads_down(frame):
 
 def is_read_down(e):
     return (e.get("customData") or {}).get("reads") == "down"
+
+
+def large(frame):
+    """Mark a frame drawn larger than a screen on purpose: a chain of concept boxes wider than FRAME_MAX, read by
+    zooming (JL 261012, on a Task's steps: "don't limited yourself of the size of the frame"). Returns it."""
+    frame.setdefault("customData", {})["large"] = True
+    return frame
+
+
+def is_large(e):
+    return bool((e.get("customData") or {}).get("large"))
 
 
 def aside(e):
@@ -220,6 +283,9 @@ def colour_ui(els):
                 stroke, fill = UI["edge"], UI["wash"] if not within[id(b)] else UI["box"]
                 colour = None
                 panes.append((b, [o for o in mine if o is not b and _inside(o, b)]))
+            elif (b.get("customData") or {}).get("ui_kind") in UI_KIND:    # a Report group by its kind
+                stroke, fill = UI_KIND[b["customData"]["ui_kind"]]
+                colour = None
             elif stage and len(words) <= 2:
                 stroke, fill = STAGE_UI[stage]
                 colour = stroke
@@ -263,7 +329,7 @@ def colour_ui(els):
             n += 1
     for f in [e for e in els if e.get("id") in frames and (e.get("customData") or {}).get("ui_since")]:
         what = "the screen in the workbench's colours (JL)"
-        w = len(f"✎ {f['customData']['ui_since']} {what}") * 16 * 0.55
+        w = text_width(f"✎ {f['customData']['ui_since']} {what}", 16)
         els.append(change_note(round(f["x"] + f["width"] - w - 40), round(f["y"] + 16), what,
                                f["customData"]["ui_since"], f["id"]))
     for pane, held in sorted(panes, key=lambda ph: ph[0]["width"] * ph[0]["height"]):   # inner panes first
@@ -318,6 +384,156 @@ def one_column(els):
     """True when 4 or more frames stand in one column, the layout JL turned down (261009)."""
     xs = [round(e["x"]) for e in els if e["type"] == "frame"]
     return len(xs) >= 4 and len(set(xs)) == 1
+
+
+# a frame is not a slide (JL 261012: "每一个 frame 都太像一张 slide，而且每个 frame 里的内容又太少，它本身又不是一个
+# tree 结构 ... 我个人更 prefer 那种 tree 结构，就像 folder tree 那样"): a full 2560 x 1440 screen holds 440 words or
+# more; b04's slide-like s00 frames held 38 to 113 words per million px, its dense ones 150 to 210
+SPARSE_MIN = 120          # words per million px of frame
+MAP_SHARE = 2 / 3          # a map's boxes and named arrows say what words would: it needs two thirds the words
+MAX_FRAMES = 3            # a Block's s00: its background (two at most) and its index; a reads_down piece not counted
+
+
+def is_s00(out):
+    """The Block's s00, its background and index: the one drawing the tree rules are for (JL 261012: "I just mean for
+    the s00 to have the tree, why you make all the others to be the tree as well")."""
+    return Path(out).parent.name.startswith("s00-")
+
+
+def frame_limit(out):
+    """How many frames a drawing may hold: MAX_FRAMES for a Block's s00; no limit for any other topic's drawing."""
+    return MAX_FRAMES if is_s00(out) else None
+
+
+def sparse(els):
+    """Frames that read like a slide: fewer than SPARSE_MIN words per million px, as (name, words, per million).
+    A frame that holds a picture, draws a screen (`ui_frame`), writes no word at all, is over FRAME_MAX (oversized()
+    names it) or belongs to a slide draft is not counted; a map (topic_map's boxes and arrows, customData map) needs
+    MAP_SHARE of the words."""
+    frames = {e["id"]: e for e in els if e["type"] == "frame" and not e.get("isDeleted") and not is_ui(e)}
+    words, pictures = Counter(), set()
+    for e in els:
+        if e.get("frameId") in frames and not e.get("isDeleted"):
+            if e["type"] == "image":
+                pictures.add(e["frameId"])
+            elif e["type"] == "text" and e.get("strokeColor") != GREEN:
+                # a word counts by the room it takes: a 40 px heading fills four times a 20 px line's
+                words[e["frameId"]] += len(e.get("text", "").split()) * (e.get("fontSize", 20) / 20) ** 2
+    out = []
+    for fid, f in frames.items():
+        per = words[fid] / max(f["width"] * f["height"] / 1e6, 0.01)
+        big = f["width"] > FRAME_MAX[0] or f["height"] > FRAME_MAX[1]     # oversized() already names it
+        need = SPARSE_MIN * (MAP_SHARE if (f.get("customData") or {}).get("map") else 1)
+        if fid not in pictures and words[fid] and not big and per < need:          # nor a frame with no words
+            out.append((f.get("name") or fid, round(words[fid]), round(per)))
+    return out
+
+
+# ── a tree, like a folder tree (JL 261012) ─────────────────────────────────────────────────────────────────────
+# A node is a string (a leaf), a one-key mapping {label: [children]}, or {text: ..., children: [...]}; so a
+# yaml list in a topic's face is a tree as written. A leaf that starts "? " or "❓" is red (open), "✎ " green (a
+# change). An emoji in front of a node makes the tree easy to scan (JL 261012: "add the things like the emoji").
+TREE_INDENT, TREE_GAP = 34, 6
+_tree_n = [0]
+
+
+def _tree_node(n):
+    if isinstance(n, str):
+        return n, []
+    if isinstance(n, dict) and "text" in n:
+        return str(n["text"]), list(n.get("children") or [])
+    if isinstance(n, dict) and len(n) == 1:
+        (k, v), = n.items()
+        return str(k), list(v or []) if isinstance(v, list) else [str(v)]
+    return str(n), []
+
+
+def _tree_base(kind, x, y, w, h, frame, **kw):
+    _tree_n[0] += 1
+    e = {"id": f"tree-{_tree_n[0]}", "type": kind, "x": x, "y": y, "width": w, "height": h, "angle": 0,
+         "strokeColor": INK, "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 2,
+         "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "frameId": frame, "roundness": None,
+         "seed": _tree_n[0], "version": 1, "versionNonce": _tree_n[0], "isDeleted": False, "boundElements": [],
+         "updated": 1, "link": None, "locked": False}
+    e.update(kw)
+    return e
+
+
+def tree_text(x, y, text, size=20, width=None, frame=None, color=None):
+    """A text element wrapped to `width` px (Nunito's measure), its colour from its first mark unless given.
+    Returns (element, height)."""
+    text = "\n".join(wrap_text(text, size, width)) if width else str(text)
+    color = color or (RED if text.startswith(("?", "❓")) else GREEN if text.startswith("✎") else INK)
+    lines = text.split("\n")
+    h = len(lines) * size * 1.25
+    return _tree_base("text", x, y, max(text_width(ln, size) for ln in lines) + 4, h, frame, strokeColor=color,
+                      strokeWidth=1, text=text, originalText=text, fontSize=size, fontFamily=FONT,
+                      textAlign="left", verticalAlign="top", containerId=None, autoResize=True,
+                      lineHeight=1.25), h
+
+
+def tree_line(points, frame=None, width=2):
+    """A plain line through `points` (a tree's spine or tick)."""
+    x0, y0 = points[0]
+    xs, ys = [p[0] for p in points], [p[1] for p in points]
+    return _tree_base("line", x0, y0, max(1, max(xs) - min(xs)), max(1, max(ys) - min(ys)), frame,
+                      strokeWidth=width, points=[[px - x0, py - y0] for px, py in points], lastCommittedPoint=None,
+                      startBinding=None, endBinding=None, startArrowhead=None, endArrowhead=None)
+
+
+def _tree_draw(out, node, x, y, width, frame, size, depth, head):
+    """Draw one node and its children at (x, y); return (bottom y, the middle of its first line)."""
+    label, kids = _tree_node(node)
+    s = head if depth == 0 else size
+    e, h = tree_text(x, y, label, s, width, frame)
+    out.append(e)
+    mid, below, y = y + s * 0.65, y + h, y + h + TREE_GAP
+    spine, ticks = x + 10, []
+    for k in kids:
+        y, kmid = _tree_draw(out, k, x + TREE_INDENT, y, width - TREE_INDENT, frame, size, depth + 1, head)
+        ticks.append(kmid)
+    if ticks:                                           # the folder-tree lines: a spine and a tick per child
+        out.append(tree_line([(spine, below + 2), (spine, ticks[-1])], frame))
+        out += [tree_line([(spine, t), (x + TREE_INDENT - 6, t)], frame) for t in ticks]
+    return y + (TREE_GAP if depth == 0 else 0), mid
+
+
+def tree_height(nodes, width, size=20, head=24):
+    """The height a tree would take, drawn nowhere."""
+    out, y = [], 0
+    for n in nodes:
+        y, _ = _tree_draw(out, n, 0, y, width, None, size, 0, head)
+    return y
+
+
+def tree(x, y, nodes, width, frame=None, size=20, head=24, cols=1, gap=60):
+    """Draw `nodes` as a folder tree, in `cols` columns side by side, each `(width - gap) / cols` wide: the
+    top-level nodes are split into columns of about equal height, in order, and a bus line along the top
+    joins the columns into one tree. Returns (elements, height). The frame's own title is the tree's root:
+    the builder writes it above `y`."""
+    cols = max(1, min(cols, len(nodes)))
+    cw = (width - gap * (cols - 1)) / cols
+    hs = [tree_height([n], cw - TREE_INDENT, size, head) for n in nodes]
+    groups, target, cur = [[]], sum(hs) / cols, 0
+    for n, h in zip(nodes, hs):                          # contiguous split near equal heights
+        if groups[-1] and cur + h / 2 > target * len(groups) and len(groups) < cols:
+            groups.append([])
+        groups[-1].append(n)
+        cur += h
+    out, bottom, top = [], y, y + 22
+    if len(groups) > 1:
+        out.append(tree_line([(x + 10, y), (x + (len(groups) - 1) * (cw + gap) + 10, y)]))
+    for i, group in enumerate(groups):
+        cx, yy, ticks = x + i * (cw + gap), top, []
+        for n in group:
+            yy, mid = _tree_draw(out, n, cx + TREE_INDENT, yy, cw - TREE_INDENT, frame, size, 0, head)
+            ticks.append(mid)
+        out.append(tree_line([(cx + 10, y), (cx + 10, ticks[-1])], frame))
+        out += [tree_line([(cx + 10, t), (cx + TREE_INDENT - 6, t)], frame) for t in ticks]
+        bottom = max(bottom, yy)
+    for e in out:
+        e["frameId"] = frame
+    return out, bottom - y
 
 
 KEYS = ("type", "x", "y", "width", "height", "text", "name", "strokeColor", "backgroundColor", "points",
@@ -422,6 +638,14 @@ def write(out, els, source, redraw_frames=(), files=None, palette=None):
     for name, size in ([] if is_slide_draft(out) else small_text(els)):
         print(f"{out.name}: frame '{name}' writes its words at {size} px, under {TEXT_MIN}: they will not read at 50% "
               "zoom; keep the words' size and make room by cutting words (JL 261010)")
+    for name, n, per in (sparse(els) if is_s00(out) else []):              # s00's rule, not every topic's
+        print(f"{out.name}: frame '{name}' holds {n} words, {per} per million px, under {SPARSE_MIN}: it reads like a "
+              "slide; merge it into a fuller frame and draw it as a tree, canvas.tree (JL 261012)")
+    n_frames, limit = sum(e["type"] == "frame" and not is_read_down(e) for e in els), frame_limit(out)
+    if limit and n_frames > limit:
+        print(f"{out.name}: {n_frames} frames, over {limit}: a topic is ① its Background, ② its Tree, ③ one more "
+              "(a screen, or the reference), not a row of slides; merge them (JL 261012: \"如果有 background，大概三个 "
+              "frame 就差不多了\")")
     assign_ids(els)
     old_doc = json.loads(out.read_text()) if out.exists() else {}
     old = old_doc.get("elements", [])

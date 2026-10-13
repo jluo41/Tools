@@ -1506,7 +1506,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-1e6478639861",
+   "id": "s-cda5b18f3ed2",
    "type": "text",
    "x": 40,
    "y": 714,
@@ -1531,8 +1531,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "sub: Questions · Cost · Predicted vs observed · Method scorecard   reads: board.md   runs: run-propose-questi…",
-   "originalText": "sub: Questions · Cost · Predicted vs observed · Method scorecard   reads: board.md   runs: run-propose-questi…",
+   "text": "sub: Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost   reads: board.md   runs:…",
+   "originalText": "sub: Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost   reads: board.md   runs:…",
    "fontSize": 13,
    "fontFamily": 3,
    "textAlign": "left",
@@ -5585,7 +5585,7 @@
    "locked": false
   },
   {
-   "id": "s-c566573836c6",
+   "id": "s-09256e74e7c3",
    "type": "text",
    "x": 3280,
    "y": 428,
@@ -5610,8 +5610,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "▾ s00 · design structure",
-   "originalText": "▾ s00 · design structure",
+   "text": "▾ s04 · design structure",
+   "originalText": "▾ s04 · design structure",
    "fontSize": 17,
    "fontFamily": 6,
    "textAlign": "left",
@@ -5657,7 +5657,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-8ea927e66e7b",
+   "id": "s-e7db6ad44de7",
    "type": "text",
    "x": 3280,
    "y": 456,
@@ -5682,8 +5682,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "source: b12_theme_design/studio/s00-design-structure/   built by: build_s00_design_structure.py   ↗ full size",
-   "originalText": "source: b12_theme_design/studio/s00-design-structure/   built by: build_s00_design_structure.py   ↗ full size",
+   "text": "source: b12_theme_design/studio/s04-design-structure/   built by: build_s04_design_structure.py   ↗ full size",
+   "originalText": "source: b12_theme_design/studio/s04-design-structure/   built by: build_s04_design_structure.py   ↗ full size",
    "fontSize": 13,
    "fontFamily": 3,
    "textAlign": "left",

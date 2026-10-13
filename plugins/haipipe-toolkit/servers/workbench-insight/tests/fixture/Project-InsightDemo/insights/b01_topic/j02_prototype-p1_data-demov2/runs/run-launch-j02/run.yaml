@@ -1,0 +1,5 @@
+run: run-launch-j02
+kind: soft
+type: launch
+target: j02_prototype-p1_data-demov2
+status: closed

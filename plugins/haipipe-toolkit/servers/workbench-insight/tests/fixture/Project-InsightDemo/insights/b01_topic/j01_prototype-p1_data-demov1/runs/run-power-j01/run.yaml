@@ -1,0 +1,5 @@
+run: run-power-j01
+kind: soft
+type: power
+target: j01_prototype-p1_data-demov1
+status: closed

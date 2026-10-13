@@ -198,6 +198,29 @@ def test_add_report_frames_a_registered_question_with_its_drawing(demo):
     assert other.returncode == 1 and "use add-question" in other.stderr
 
 
+def test_a_question_gets_its_group_on_add_and_later(demo):
+    """block_questions.py add-question --group, and set-group on a registered Question: the Report's group bar
+    reads the row's group: line (b10 s05-D05); set-group changes that line alone (b10 s10, /wb update)."""
+    import subprocess
+    import sys
+    from host_paths import skill_dir
+    root, board = demo
+    helper = skill_dir("haipipe-question") / "ref/block_questions.py"
+    run = lambda *a: subprocess.run([sys.executable, str(helper), *a], capture_output=True, text=True)
+    done = run("add-question", str(board), "--id", "Q07", "--slug", "blocked_drops",
+               "--question", "Why are three drops blocked?", "--group", "Handoff")
+    assert done.returncode == 0, done.stderr
+    head = board / "board.md"
+    head.write_text(head.read_text().replace("questions:\n", "questions:\n# kept as written\n", 1))
+    done = run("set-group", str(board), "--id", "Q07", "--group", "Handoff, Profile")
+    assert done.returncode == 0, done.stderr
+    text = head.read_text()
+    assert "# kept as written" in text and "group: Handoff, Profile" in text
+    q = next(q for q in task_board_snapshot(board, root)["questions"] if q["id"] == "Q07")
+    assert q["group"] == "Handoff, Profile"
+    assert run("set-group", str(board), "--id", "Q99", "--group", "X").returncode == 1
+
+
 def test_home_and_short_url_work_before_a_static_build(demo):
     root, board = demo
     assert not (board / "board/index.html").exists()
@@ -213,8 +236,7 @@ def test_home_and_short_url_work_before_a_static_build(demo):
     assert f'href="{short}"' in home
     assert resolve_workbench(root, short[3:])[0].startswith("/_board/workbench?")
     assert route_allowed("/_board/work-board", {"work"})
-    assert route_allowed("/_board/task-board", {"task"})          # its name before 261007 still answers
-    assert not route_allowed("/_board/task-board", {"paper"})
+    assert not route_allowed("/_board/task-board", {"task"})      # its name before 261007, dropped 261012
     # A task-only host omits Page links it cannot serve.
     assert all(not t["page_url"] for t in task_board_snapshot(board, root, {"task"})["tasks"])
 
@@ -261,8 +283,9 @@ def test_http_get_head_post_and_short_redirect(server):
         assert int(response.headers["Content-Length"]) == len(body)
     with urlopen(url + "&format=json") as response:
         assert json.load(response)["totals"]["tasks"] == 6
-    with urlopen(url.replace("/_board/work-board?", "/_board/task-board?")) as response:
-        assert response.read() == body          # its name before 261007 opens the same page
+    with pytest.raises(HTTPError) as gone:      # its name before 261007 answered until 261012: dropped
+        urlopen(url.replace("/_board/work-board?", "/_board/task-board?"))
+    assert gone.value.code == 404
     with urlopen(origin + "/w/" + board.name) as response:
         assert "/_board/work-board?" in response.url
     request = Request(origin + "/_board/work-board", data=json.dumps({"path": path}).encode(),

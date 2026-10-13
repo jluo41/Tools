@@ -1,5 +1,7 @@
 # haipipe-design-delivery · version history
 
+- 261013 · (JL 261012, from the 10-08 demo: an executive summary as a one-page PDF, and a drive-home example) (version unchanged): new `scripts/summary.py` writes the Block's `delivery/summary.html` and `summary.pdf` (goal, the answered questions' Openings, one row per Job, who approved, one design traced, next); `tests/test_summary.py`.
+
 - 261012 · (JL 261012, from the 10-08 Loop demo to leadership; b12 related/) (version unchanged): `release.py` carries `job_name`, `against` and `why` into designs.json;
   designs.md heads each design by its Job's folder name and adds its prediction and why. One review, one sign.
 

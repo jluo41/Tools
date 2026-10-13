@@ -5,15 +5,49 @@ GET /_board/workbench?view=docx&path=<file .docx>       a Word file read in plac
 The base frame (frame.py) over one Block, Job or Task folder, in the theme its Block belongs to
 (or `theme=`), else the vanilla workbench. Without `path` it lists the Blocks under the root.
 
+A link to a folder that was renamed still opens (JL 261012: "I cannot open you anymore"): the folder keeps
+its old name in its face, `renamed-from: <old name>` (or a list), and the old address answers 302 to the new one
+(`renamed`), the Space, subspace and anchor kept.
+
 With `view=`, one Page Task view on its own, the page a Task Space shows in place (frame.PAGE_VIEWS).
 Each was a route of its own (/_board/draft, /_board/runs, ...: the old Page workbench, one page per
 tab); those addresses still answer, as this one (serve.py PAGE_VIEW_ROUTES; JL 261007: "why not
 merge them into the base").
 """
+import re
 from pathlib import Path
 from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse
 
+import yaml
+
 from live import frame
+
+
+def renamed(root: Path, raw: str) -> str:
+    """A missing SPACE-relative path, each gone part replaced by the sibling folder whose face says
+    `renamed-from: <that part>`; '' when some part has no such sibling."""
+    here, out = root, []
+    for part in [x for x in raw.strip("/").split("/") if x]:
+        if (here / part).is_dir() or (here / part).is_file():
+            here, out = here / part, out + [part]
+            continue
+        found = None
+        for sib in (sorted(p for p in here.iterdir() if p.is_dir()) if here.is_dir() else []):
+            md = frame.face(sib)
+            if not md:
+                continue
+            m = re.match(r"(?s)^---\n(.*?)\n---\n", md.read_text(encoding="utf-8", errors="ignore")[:4000])
+            try:
+                was = (yaml.safe_load(m.group(1)) or {}).get("renamed-from") if m else None
+            except yaml.YAMLError:
+                was = None
+            if part in ([was] if isinstance(was, str) else was or []):
+                found = sib
+                break
+        if found is None:
+            return ""
+        here, out = found, out + [found.name]
+    return "/".join(out)
 
 
 def _blocks(root: Path, depth: int = 4) -> list:
@@ -78,6 +112,11 @@ class FrameMixin:
             except Exception as err:                 # a broken message says so, never the server
                 return self.guide_send(f"<p>This .eml could not be read: {frame._e(err)}</p>", 200,
                                        head_only=head_only)
+        if get("view") == "dir":                     # one folder's rows, for Studio › Folder when it opens (b10 s09)
+            here = (root / get("path").lstrip("/")).resolve()
+            if not (here == root or root in here.parents) or not here.is_dir():
+                return self.guide_send("<li class=mut>No such folder under this root.</li>", 404, head_only=head_only)
+            return self.guide_send(frame.folder_rows(here, root, None if get("all") else 300), 200, head_only=head_only)
         raw = get("path").lstrip("/")
         code = 200
         if not raw:
@@ -90,6 +129,15 @@ class FrameMixin:
         if folder.is_file():
             folder = folder.parent
         if root not in folder.parents and folder != root or not folder.is_dir():
+            moved = renamed(root, raw) if root in folder.parents else ""
+            if moved:                                # an old link to a renamed folder: send it on
+                pairs = [(k, moved if k == "path" else v) for k, v in parse_qsl(urlparse(self.path).query,
+                                                                                keep_blank_values=True)]
+                self.send_response(302)
+                self.send_header("Location", f"{frame.ROUTE}?{urlencode(pairs)}")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return None
             return self.guide_send("<h1>Not found</h1><p>No such folder under this root.</p>", 404,
                                    head_only=head_only)
         themes = frame.themes()

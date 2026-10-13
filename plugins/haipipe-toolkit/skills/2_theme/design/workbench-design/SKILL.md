@@ -50,9 +50,16 @@ folder (`j03_g01-review-new-rx_m04-actionable-insights`) shows the same way, by 
 ## What a reader with five minutes sees (JL 261012)
 
 From the 10-08 demo to leadership: the Block's Audience Report opens on **Summary**, one page built only from what the
-Runs wrote (no new claim); **Rounds** is the Block's memory, one round per inputs version; every predicted number
+Runs wrote (no new claim), one row per Job and no design cards: a design and its full reason stay on its own page and
+in its Job's Review whole; **Rounds** is the Block's memory, one round per inputs version; every predicted number
 shows its basis (`against · by · why`: in full on a card, on hover in a table); a held Job says why instead of empty
 counts; and freezing and releasing are one button, **Review and approve**, the one place a person reviews.
+
+The Summary leads with the bottom line, the Opening of each Block question partly or fully answered (open ones are
+left out); it names methods by name, with ids such as `M04 m3 · inputs i1` only on hover (the demo: "without naming
+every part"); each released Job says who approved it and when, from its `run-release-j<NN>` card's `signed:` line, the
+full line on hover; its Next line is plain words, never a Run name; and it links the one-page PDF that
+haipipe-design-delivery's `summary.py` builds into `delivery/summary.pdf` (JL 261013).
 
 ## The six Spaces, level by level
 
@@ -64,7 +71,7 @@ Each view reads the files named beside it; nothing is stored twice and nothing i
 |---|---|---|
 | Description | Map · Goals · Methods · Inputs | `board.md ## Goals`; the Jobs' pins (the Map: goals down × methods across, each cell its chain of Jobs); the method registry (read only); `inputs/iN/manifest.yaml` |
 | Idea Studio | the Block's topics | `studio/sNN-<topic>/` |
-| Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, each Job's state, its top design as it reads with its prediction and why, the next step, `close:`; Rounds: one round per `inputs/iN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
+| Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, the answered questions' Openings, one row per Job (method, state and who approved, top design, prediction with its why on hover), the next step, `close:`, the one-page PDF; no design cards; Rounds: one round per `inputs/iN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
 | Work Details | All · one per goal | one card per Job: goal · method version · inputs · state; open, a preview of its Tasks |
 | Runs | All · Set up · Launch a Job · Report | the Block's `runs/run-<type>-<target>/run.yaml` |
 | Delivery | — | `delivery/designs.json` · `designs.md`: every Job's release |

@@ -82,6 +82,16 @@ families:
     task: [labeling]
     hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by subjective-label
 
+today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
+  topic: '^s\d{2}[-_][A-Za-z0-9]'        # studio/ holds sNN-<topic>/ folders; _groups.txt, _build/ and dot names kept
+  register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-question)
+  report: '^q\d{2}_'                     # reports/qNN_<topic>/, one per registered Block Question
+  block_only: [related, delivery]        # a Job's or a Task's moves to the Block (haipipe-delivery, haipipe-related)
+  drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
+  keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
+  s00: s00-background-and-index          # every Block's background and index has this one name (haipipe-studio); a number
+                                         # an old index gave up when it became s00 is never reused (JL 261012)
+
 checks:
   heavy_mb: 10                           # AGENTS rule 10: a Result is light
   heavy_exempt:                          # a discovery Paper Run keeps its source PDF beside its Result,
@@ -105,3 +115,27 @@ debt     a missing face · the old runs/ + results/ layout · a dated soft name 
 
 A moved Run's old receipt (its run.yaml names `moved_from:`) is history: the paths it recorded
 are not checked (JL 261009). Tickets, run.yaml and every receipt written since stay strict.
+
+## Today's rules (`audit --today`)
+
+The shape above passes a Block made before the studio topics, the Questions and the Block-only
+Delivery existed (b00_rawdata: 1 Block, 14 Jobs, 310 Tasks, all ok). `audit --today` adds the
+`today:` rules, as debt, at the Block it is given (b10 s10, JL 261012). `/wb update <block>` runs
+both and plans the fix.
+
+```text
+debt   studio/ has no sNN-<topic>/ topic                    proposed by /wb update step 5
+       studio/<data file> is not a topic: moves to the Block   moved by update --today --apply
+       studio/ has no s00-background-and-index/                draw it: haipipe-studio block_index.py <block> --draw
+       studio/s00-<other>/ or sNN-…background-index/            renumber it: s00 is only s00-background-and-index
+       studio/sNN-<topic>/ reuses the number of an old index      renumber it to the next free sNN
+       studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
+       a Job's or Task's studio/: its topics go to the Block   the owner moves them (renumbered)
+       the face has no ## Questions register                proposed by /wb update step 6
+       a registered Block Question has no reports/qNN_*/      haipipe-question makes it
+       a Job's or Task's related/ or delivery/               haipipe-delivery moves it to the Block
+```
+
+`update --today --apply` makes the one safe move: a data file in a Block's `studio/` (a `.tsv`, a
+`.yaml`; not a drawing, its builder or a note) goes to the Block root, beside the face, never over a
+file of the same name. A loose drawing waits for the topic a person names. No file's words change.

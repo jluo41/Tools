@@ -43,16 +43,25 @@ The three levels
 
 ```text
           Description                  Idea Studio        Audience Report                 Work Details        Runs · Delivery
-Block     Map (releases × data         question map ·     Partition × Reading: Coverage · the Jobs: All ·     soft · from below ·
-(Board)   versions) · Prototype ·      topics             Tracks · Consistency · Findings p1 · p2 …           Handoff
-          Dataset · Partitions
-Job       the Job's line (pN × vM ·    topics             Partition × Period: Current ·   Job → Task → Run    All · hard · soft ·
-          state · moved) atop                             vs previous                     tree                launch · power ·
-          Prototype · Dataset                                                                                 compare · propose · close
+Block     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft · from below ·
+(Board)   versions) · Prototype ·      topics             Partition × Reading: Coverage · p1 · p2 …           Handoff
+          Dataset · Partitions                            Tracks · Consistency · Findings
+Job       the Job's line (pN × vM ·    topics             Overall Report · then           Job → Task → Run    All · hard · soft ·
+          state · moved) atop                             Partition × Period: Current ·   tree                launch · power ·
+          Prototype · Dataset                             vs previous                                         compare · propose · close
 Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
 ```
 
-The words (JL 261011): the Map's corner reads `analysis plan \ data freeze`, a row `AP1 · first ladder`, a column `F1 · first 5 days`; the Job ▾ menu reads `j01 · first ladder × first 5 days` (`insight_theme.option`, `insight_plan_c.job_title`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
+The words (JL 261011): the Map's corner reads `analysis plan \ data freeze`, a row `AP1 · first ladder`, a column `F1 · first 5 days`; the Job ▾ menu shows the Job's folder name as it is, `j01_prototype-p1-basic-questions_data-SMSR2v1` (JL 261012).
+
+The Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and read it"): when a
+release asks Executive questions (X), the Audience Report's first button, before Full, reads them as one document: a
+section per question from its Task page, its one-line answer and how sure, its figure, its points, each `(K01 · t30)`
+a link to the Task it rests on, and the print (`delivery/<job>/overall-report.pdf`). It opens with **At a glance**
+(JL 261013: "figures to show it to quickly get the outcome"): a card per question, its outcome in bold over its
+figure, a click to its section. The figures are the X pages' `figures:`, drawn by haipipe-insight
+`ref/overall_figures.py` into `delivery/<job>/figures/`; one not drawn yet says so. At the Board it is the latest
+Job's. No cut's table lists the X questions (`insight_views._overall`, `_figure`, `_board_overall`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
 (`release.yaml`, `partitions.md`, each question's `question.md`), a Job's face and `reports/vs-<prev>.md`, a Task's
 page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Prototype in `work/`
 opens in the work theme until a Prototype level is drawn (s21 lists its run types).
