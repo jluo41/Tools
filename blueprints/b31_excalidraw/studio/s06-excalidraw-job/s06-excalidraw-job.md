@@ -145,7 +145,7 @@ commands:
 - "adopt <topic>: a one-Job results topic, now the whole Job"
 - "preview <job> <out>: draw a Job anywhere, its Block untouched"
 first:
-  source: ../Knowledge-Base/examples-C2-tech/Proj10-LLM-Baseline/discovery/b01_ml_foundations/studio
+  source: ../Knowledge-SPACE/examples-2-tech/Proj10-LLM-Baseline/discovery/b01_ml_foundations/studio
   picture: s21-j01-math-classic-ml-results
   topics: [s21-j01-math-classic-ml-results, s22-j02-rl-basics-results, s23-j03-pre-llm-nlp-results]
   open:

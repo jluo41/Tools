@@ -131,7 +131,7 @@ commands:
 - "draw <topic>: redraw one; what its builder calls"
 - "preview <task> <out>: draw a Task anywhere"
 first:
-  source: ../Knowledge-Base/examples-C2-tech/Proj10-LLM-Baseline/discovery
+  source: ../Knowledge-SPACE/examples-2-tech/Proj10-LLM-Baseline/discovery
   picture: b01_ml_foundations/studio/s24-t01-entropy-cross-entropy-kl
   blocks: [b01_ml_foundations, b51_llm_serve]
   open:

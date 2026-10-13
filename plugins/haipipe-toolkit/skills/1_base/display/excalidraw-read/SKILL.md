@@ -134,7 +134,7 @@ Needs poppler (`pdftotext`, `pdftoppm`), Pillow and PyYAML. The writer and the p
 `haipipe-studio`'s `scripts/canvas.py` and `scripts/render_png.py`. For the real Excalidraw
 render of one frame, use `excalidraw-report`'s `ref/render_excalidraw.py --frame "Paper logic"`.
 
-Worked example: `Knowledge-Base/examples-C1-theory/Project-Psych-Theory/notes/reads/salvi-2024-gpt4-persuasion/`.
+Worked example: `Knowledge-SPACE/examples-1-theory/Project-Psych-Theory/notes/reads/salvi-2024-gpt4-persuasion/`.
 It reads Salvi et al.'s GPT-4 persuasion trial against a megastudy paper's claims C1, C2 and C5.
 
 
