@@ -330,8 +330,9 @@ def embed(d: Drawing, path: Path, x: float, y: float, w: float, h: float) -> Non
     """A picture as it is (a formula stays a crisp png), no border."""
     import base64
     fid = "img-" + path.stem
-    d.files[fid] = {"mimeType": "image/png", "id": fid, "created": 1,
-                    "dataURL": "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()}
+    mime = "image/jpeg" if path.suffix.lower() in (".jpg", ".jpeg") else "image/png"
+    d.files[fid] = {"mimeType": mime, "id": fid, "created": 1,
+                    "dataURL": f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode()}
     d.el("image", x, y, w, h, fileId=fid, status="saved", scale=[1, 1])
 
 
@@ -1058,7 +1059,7 @@ def read_of(run: dict, assets: Path):
     return found[0].parent, yaml.safe_load(found[0].read_text()) or {}
 
 
-def transcript_pages(run: dict, assets: Path, dpi: int = 200) -> tuple[list, list, int]:
+def transcript_pages(run: dict, assets: Path, dpi: int = 96) -> tuple[list, list, int]:
     """The reading's PDF (the Run's transcript-article.pdf), each page whole, its excerpts' quotes highlighted in
     place as /excalidraw-read shoots them (read_paper's find, the same marker yellow multiplied onto the page):
     assets/<rid>-transcript-p<N>.jpg, rendered again when the PDF or the reading is newer. A transcript of more than
@@ -1127,7 +1128,7 @@ def transcript_pages(run: dict, assets: Path, dpi: int = 200) -> tuple[list, lis
                 im = im.crop((0, band[0], im.width, min(im.height, band[1])))
             elif ends:
                 im = im.crop((0, 0, im.width, min(im.height, int((max(ends) + 30) * k))))
-            im.save(dst, "JPEG", quality=85, optimize=True)
+            im.save(dst, "JPEG", quality=50, optimize=True)   # JL 261013: 96 dpi, q50 (a 200 dpi q85 page made drawings 20 MB)
         here = marks.get(n, [])
         if band:                                                      # the boxes, measured from the band's top
             here = [(ex, [(x0, y0 - band[0], x1, y1 - band[0]) for x0, y0, x1, y1 in bx]) for ex, bx in here]

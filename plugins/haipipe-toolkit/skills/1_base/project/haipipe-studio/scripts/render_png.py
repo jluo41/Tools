@@ -146,8 +146,18 @@ def render(src, dst, s=None):
                 line_with_emoji(im, dr, x, y + i * step, line, f, e["strokeColor"], e["fontSize"] * s)
             else:
                 dr.text((x, y + i * step), line, fill=e["strokeColor"], font=f)
-    im.save(dst)
+    save_preview(im, dst)
     print(Path(dst).name, im.size)
+
+
+PREVIEW_W = 2400   # JL 261013: a 6000 px preview was 19 MB; 2400 px in 256 colours is 2 MB and still reads
+
+
+def save_preview(im, dst):
+    """Drawn at full scale, then shrunk to PREVIEW_W wide and saved in a 256-colour palette."""
+    if im.width > PREVIEW_W:
+        im = im.resize((PREVIEW_W, max(1, round(im.height * PREVIEW_W / im.width))), Image.LANCZOS)
+    im.quantize(256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG).save(dst, optimize=True)
 
 
 if __name__ == "__main__":
