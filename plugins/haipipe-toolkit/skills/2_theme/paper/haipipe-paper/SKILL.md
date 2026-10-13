@@ -9,8 +9,8 @@ description: >-
   work. Use for paper setup (paper_ladder.py), status, drafting, a Claude and
   Codex session per Section, complete-paper assembly, or comments and reviews.
 metadata:
-  version: "1.12.1"
-  last_updated: "2026-10-11"
+  version: "1.12.2"
+  last_updated: "2026-10-13"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 

@@ -420,10 +420,13 @@ def task_lines(t: dict, cfg: dict, topics: dict, word: str, level: int) -> list[
     found = finding(t, cfg)
     if found and level >= 2:
         found = short(found, 90 if level == 2 else 50)
+    tal = (cfg.get("_tally") or {}).get(t["name"])
     if level >= 5:                                           # the tightest: its marks, its count, its topic
+        if not t["runs"] and tal and tal["runs"]:            # no Run of its own: the design's count (261013)
+            marks = "".join(MARKS[k] for k in ("done", "part", "ticket", "failed") if tal[k])
+            return [f"{marks}{'' if level >= 7 else ' ' + n_of(tal['runs'], 'Run')}" + (f" → {here[:3]}" if here else "")]
         marks = "".join(sorted({r["mark"] for r in t["runs"]})) or "⬜"
         return [f"{marks}{'' if level >= 7 else ' ' + n_of(len(t['runs']), word)}" + (f" → {here[:3]}" if here else "")]
-    tal = (cfg.get("_tally") or {}).get(t["name"])
     lines = [f"{n_of(len(t['runs']), word)}: {states(t['runs'])}" if t["runs"] else
              tally_line(tal, cfg.get("_runs_word", "Runs")) if tal and tal["runs"] else "⬜ no Run yet"]
     if level == 0:
@@ -488,7 +491,10 @@ def plan_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: dic
         d.key(40, y, W - 80, kh)
         para(d, 70, y + 22, ("" if said.startswith("❓") else "🎯 ") + said, W - 140, 30)
         y += kh + 24
-        y = para(d, 40, y, f"📍 {n_of(len(runs), 'Run')}: {states(runs)}." +
+        total = sum((cfg.get("_tally") or {}).values(), Counter())
+        stand_line = (f"📍 {n_of(len(runs), 'Run')}: {states(runs)}." if runs or not total["runs"] else
+                      f"📍 {tally_line(total, cfg.get('_runs_word', 'Runs'))}, read from the design grids (Act 2).")
+        y = para(d, 40, y, stand_line +
                  (f"  {opens[0]}" + (f" (+{len(opens) - 1} more open)" if len(opens) > 1 else "")
                   if opens and level < 6 else ""), W - 80, 28) + 8
         if Drawing.words_small(d.els, f["id"])[0] <= MAP_BUDGET:
@@ -757,7 +763,7 @@ def chart_frame(d: Drawing, info: dict, spec: dict, block: Path, assets: Path, m
 # ── the design: each Task's Runs as grids, one mark per Run ─────────────────────────────────────────────────
 MARKS = {"done": "✅", "part": "🔶", "ticket": "⬜", "failed": "❌", "none": "·"}
 MARK_WORDS = {"done": "every eval found", "part": "some evals found", "ticket": "a ticket, no eval found",
-              "failed": "dropped as failed", "none": "not in the design"}
+              "failed": "listed as failed (why: the caption)", "none": "(a dot) not in the design"}
 
 
 def _found(block: Path, pat: str) -> bool:
@@ -793,18 +799,19 @@ def design_of(block: Path, spec: dict) -> dict:
                                  for f in g.get("failed") or [])
                     state = ("failed" if failed and (ticket or found) else "done" if evals and found == len(evals)
                              else "part" if found else "ticket" if ticket else "none")
-                    cells[(r, v["label"])] = state
+                    bare = bool(g.get("ticket")) and not ticket and state in ("done", "part", "failed")
+                    cells[(r, v["label"])] = (state, bare)             # bare: evaluated, but no ticket in the design
                     if state != "none":
                         t[state] += 1
                         t["runs"] += 1
-                        t["no ticket"] += 0 if ticket or state == "ticket" else 1
+                        t["no ticket"] += bare
             grids.append({"g": g, "rows": rows, "cols": [c["label"] for c in cols], "cells": cells})
     return {"grids": grids, "tally": tally}
 
 
 def tally_line(t: Counter, word: str = "Runs") -> str:
     marks = " · ".join(f"{t[k]} {MARKS[k]}" for k in ("done", "part", "ticket", "failed") if t[k])
-    return f"{t['runs']} {word}: {marks}" + (f" ({t['no ticket']} with no ticket)" if t["no ticket"] else "")
+    return f"{t['runs']} {word}: {marks}" + (f" ({t['no ticket']} with no ticket, marked *)" if t["no ticket"] else "")
 
 
 def grid_size(rows: list, cols: list, title: str, size: float = 28) -> tuple[float, float]:
@@ -831,8 +838,10 @@ def mark_grid(d: Drawing, x: float, y: float, gr: dict, size: float = 28) -> Non
         d.text(x, yy, r, size)
         cx = x + lw
         for c, w in zip(cols, cw):
-            st = cells[(r, c)]
+            st, bare = cells[(r, c)]
             d.text(cx + 10, yy, MARKS[st], size, RED if st == "failed" else (GREY if st == "none" else INK))
+            if bare:                                                    # evaluated, yet no ticket: findable
+                d.text(cx + 10 + size * 1.15, yy - 6, "*", size, GREY)
             cx += w
         yy += size * 1.55
 
@@ -863,6 +872,8 @@ def design_frame(d: Drawing, info: dict, fr: dict, design: dict, mark: str) -> d
         x, row_h = x + gw + 110, max(row_h, gh)
     y += row_h + 30
     legend = "   ".join(f"{MARKS[k]} {MARK_WORDS[k]}" for k in ("done", "part", "ticket", "failed", "none"))
+    if any(b for gr in mine for _, b in gr["cells"].values()):
+        legend += "   * evaluated, but no ticket in the design's folder"
     y = d.para(40, y, legend, W - 80, 26) + 10
     if fr.get("caption"):
         y = d.para(40, y, str(fr["caption"]), W - 80, 26)

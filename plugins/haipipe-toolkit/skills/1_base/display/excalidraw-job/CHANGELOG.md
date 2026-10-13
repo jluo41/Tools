@@ -1,6 +1,21 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.4.0] · 2026-10-13 · The design: each Task's Runs, one mark per Run
+
+- Asked 261013 on Proj11 b01 s21: "How could I see in a glance about the design for each task and their runs? … and
+  for these runs, what are their status?"
+- `design_frame`: `job: design: {runs_word, frames: [{title, sub, key, caption, grids: [{task, title, rows, cols,
+  row_name, col_name, ticket, evals, failed}]}]}`. Each grid is one sweep: a row per row value, a column per setting,
+  one mark per Run read from disk on every build: ✅ every eval found, 🔶 some, ⬜ a ticket and no eval, ❌ a listed
+  failure (red), · not in the design. Patterns take `{row}`, `{col}` and a column's own fields; `<path>:<key>` asks
+  for a value inside a file. Grids flow left to right and wrap; the key point is each Task's tally.
+- The design frames are their own act (Act 2, what each Task ran), before what the Runs found (Act 3); frame marks
+  follow reading order. ② shows a Task's tally from the design when the Task holds no Run of its own, and its 📍 line
+  the whole design's tally.
+- ③ "explained from zero" takes the next free mark, so no two frames share one.
+- First drawn: Proj11-CGM-FM work/b01 s21 (j01 pretrain: 477 Runs in 10 grids).
+
 ## [0.3.0] · 2026-10-12 · Results as b03 reports them: charts and grid tables
 
 - Asked 261012 on Proj10 work/b01: a ③ of text boxes "should be forbiden, so rigid, not vivid"; "should we have a table

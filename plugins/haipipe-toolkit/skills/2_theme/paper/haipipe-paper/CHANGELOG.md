@@ -1,3 +1,10 @@
+## 1.12.2 · 2026-10-13 · Carry-over scripts, run on Paper-AgreeablePrescriptionDiscretion
+
+- Second Board moved with `scripts/carry_over/` (Physician-SPACE, the MISQ paper, version `j01_v0929_misq`); two faults fixed at the source:
+- `migrate_paper.py` and `rename_tasks.py` `move()`: tracked files another session deleted without committing made `git mv` fail with "bad source" on the whole folder; the deletion of those files is staged first (`drop_deleted`), so uncommitted work no longer blocks a move, as the docstring promises. `topics_paper.py` uses the same helper.
+- `git()` in both: a moment's `index.lock` held by another process (an editor, a server) is waited out (up to 10 s) instead of failing a move halfway with no moves map written.
+- Found, not fixed here: `topics_paper.py` reads Story questions only as `#### N · Question N` blocks, so a Story whose §3 is an RQ table makes no Board Questions; `topics_paper.py` left `paper-build.toml` `order =` on the old Story path instead of the version face; a Section's `story-row:` came out as `<version> ## Narrative / <stem> + draft/<story>-outline-v0.2.md ()`.
+
 ## 1.12.1 · 2026-10-11 · Related's subfolders are its groups; emails/
 
 - b10 s04-D08, D09 (JL 261011, sent by b10_BluePrint-ProjectWorkbench-dNN): a subfolder of `related/` is a group of its files, so `meetings/x.md` is in the meetings group without a group cell; a new subfolder `emails/` keeps an `.eml` as it came; the new base skill `haipipe-related` (1_base/project, 0.1.0) owns `related/`, `related.md`, its groups and the Related view.

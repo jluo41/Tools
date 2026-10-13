@@ -9,7 +9,7 @@ description: >-
   job, job drawing, the whole job, job aim plan results, what goes in and out, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   last_updated: "2026-10-12"
   # version history: ./CHANGELOG.md
 ---
@@ -68,6 +68,12 @@ job:
   tasks:                         # every Task folder: what it asked, did and found (with its real numbers)
     t01_<task>: {asked: …, did: …, found: …}
   sure: "…"                      # how sure the reading is, and why (50 words)
+  design:                        # the design, asked 261013: each Task's Runs as grids, one mark per Run, from disk
+    frames:                      # a frame of grids each; a grid is one sweep (rows × cols of Runs)
+      - title: "…"
+        grids:
+          - {task: t01_<task>, title: "…", rows: [1m, 10m], cols: ["0.1", "1"], ticket: "<path with {row} {col}>",
+             evals: ["<path>", "<path>:<key>"], failed: [{row: "*", col: "1", why: "…"}]}
   open: [{item: …, closer: …}]   # each open point and exactly what would close it (strings still work)
 ```
 

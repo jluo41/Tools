@@ -31,6 +31,7 @@ import os
 import re
 import shutil
 import subprocess
+import time
 import sys
 from datetime import date
 from pathlib import Path
@@ -293,7 +294,15 @@ def receipts(board, P):
 
 
 def git(board, *args, check=True):
-    return subprocess.run(["git", "-C", str(board), *args], capture_output=True, text=True, check=check)
+    """One git call; a moment's index.lock held by another process (an editor, a server) is waited out."""
+    for _ in range(20):
+        r = subprocess.run(["git", "-C", str(board), *args], capture_output=True, text=True)
+        if r.returncode != 128 or "index.lock" not in r.stderr:
+            break
+        time.sleep(0.5)
+    if check and r.returncode:
+        raise subprocess.CalledProcessError(r.returncode, r.args, output=r.stdout, stderr=r.stderr)
+    return r
 
 
 def tracked(board, rel):
@@ -301,8 +310,18 @@ def tracked(board, rel):
     return r.returncode == 0 and bool(r.stdout.strip())
 
 
+def drop_deleted(board, rel):
+    """Stage the deletion of tracked files under rel that are already gone from disk: another session's
+    uncommitted delete would otherwise make `git mv` fail with "bad source" on the whole folder."""
+    gone = git(board, "ls-files", "--deleted", "-z", "--", rel, check=False).stdout.split("\0")
+    gone = [g for g in gone if g]
+    if gone:
+        git(board, "rm", "--cached", "--quiet", "--", *gone)
+
+
 def move(board, old, new):
     (board / new).parent.mkdir(parents=True, exist_ok=True)
+    drop_deleted(board, old)
     if tracked(board, old):
         git(board, "mv", old, new)
         return "git mv"
