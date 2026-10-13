@@ -1259,6 +1259,9 @@ def source_frame(d: Drawing, run: dict, w: dict, assets: Path, stairs: bool = Tr
 def draw_task(folder: Path, out: Path, cfg: dict | None = None, source: str = "") -> tuple[Path, list[dict]]:
     """Draw one Task into `out` (canvas.write keeps a person's marks); returns the drawing and its sources in order."""
     cfg = cfg or {}
+    if str(cfg.get("layout") or "stairs") in ("stairs", "staircase"):  # asked 261013: the Job's staircase, for a Task
+        import task_stairs                                              # (task_stairs.py); layout: rows | plain keeps
+        return task_stairs.draw_task(Path(folder), out, cfg, source)    # these frames
     task = parse(task_page(folder))
     runs = reading_order(task, cfg.get("order"))
     words = {str(k): v or {} for k, v in {**(cfg.get("videos") or {}), **(cfg.get("runs") or {})}.items()}

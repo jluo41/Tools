@@ -1,6 +1,6 @@
 interface:
   display_name: "Task Drawing"
-  short_description: "a Task as one Studio drawing: its idea, then one frame per source saying what it told"
+  short_description: "a Task as a staircase: its sources as steps, each one's results as charts, tables and screenshots"
   default_prompt: "Use $excalidraw-task to draw a Task as one Studio topic: its idea first, then one frame per video or paper, in few words."
 policy:
   allow_implicit_invocation: true

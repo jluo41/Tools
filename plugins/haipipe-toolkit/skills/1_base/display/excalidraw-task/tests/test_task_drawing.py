@@ -115,18 +115,22 @@ class TaskDrawingTest(unittest.TestCase):
         self.assertIn("name: j01_decoding/t01_sampling", (topic / f"{topic.name}.md").read_text())
         els, frames = self.frames(outs[0])
         names = [f["name"] for f in frames]
-        self.assertEqual(len(frames), 3)                                       # the idea, then one per video
-        self.assertTrue(names[0].startswith("⓪ t01 · Decoding and Sampling"))
-        self.assertEqual([n.split(" · ")[0] for n in names[1:]], ["r02", "r01"])   # How the videos fit's order
+        self.assertTrue(names[0].startswith("① 🪜 t01 · Decoding and Sampling"))     # the staircase, the main frame
+        self.assertTrue(all("explains" in (f.get("customData") or {}) for f in frames[1:]))   # the rest explain it
         text = " ".join(" ".join(e.get("text", "").split()) for e in els if e["type"] == "text")
+        steps = {e["text"].split(" · ")[0][-3:]: e["y"] for e in els if e["type"] == "text" and
+                 e.get("frameId") == frames[0]["id"] and e["text"][:1] in "⬜✅🔶❌" and " · " in e["text"]}
+        self.assertLess(steps["r02"], steps["r01"])                             # How the videos fit's order, as steps
+        xs = {e["text"].split(" · ")[0][-3:]: e["x"] for e in els if e["type"] == "text" and
+              e.get("frameId") == frames[0]["id"] and e["text"][:1] in "⬜✅🔶❌" and " · " in e["text"]}
+        self.assertLess(xs["r02"], xs["r01"])                                   # each step further right
         self.assertIn("🎯 How do greedy search and sampling shape generated text?", text)
         self.assertNotIn("This page files", text)                              # the Opening's question line only
-        self.assertIn("Softmax turns scores into probabilities.", text)                # How it works: its lead line
-        self.assertIn("① Greedy take the top token every step.", text)               # then its steps, point and why
+        self.assertIn("Why it matters: The same model writes very different text", text)
         self.assertIn("This video explains presence and frequency penalties.", text)
-        self.assertIn("❓ the exact formula on screen", text)
-        self.assertIn("then r01: covers the penalties in full", text)
-        self.assertIn("▪ Why not beam search for chat? The likeliest text is often dull.", text)   # with its answer
+        self.assertIn("❓ the exact formula on screen", text)                   # the page's check, in its results
+        self.assertIn("then r01: covers the penalties in full", text)          # its role, on its stair
+        self.assertIn("Why not beam search for chat?", text)                   # be ready to answer, in ②
         self.assertIn("🔗 https://www.bilibili.com/video/BV1/", text)
         self.assertIn("Result Card", (topic / f"{topic.name}.md").read_text())   # the face's list of videos
 
@@ -140,14 +144,15 @@ class TaskDrawingTest(unittest.TestCase):
             "      hook: Presence once; frequency per repeat.", "      check: [The on-screen formula]",
             "      role: the two penalties"])))
         els, frames = self.frames(self.quiet(td.draw, topic))
-        self.assertIn("r01 · Presence vs frequency penalty", [f["name"] for f in frames])
         text = " ".join(" ".join(e.get("text", "").split()) for e in els if e["type"] == "text")
+        self.assertIn("r01 · Presence vs frequency penalty", text)            # the face's name, on its step
+        self.assertIn("Penalties lower repeated tokens to break a loop.", text)
         self.assertIn("then r01: the two penalties", text)
         self.assertIn("❓ The on-screen formula", text)
-        for f in frames:                                                       # ⑦: few words, none small
-            words, small = Drawing.words_small(els, f["id"])
-            self.assertLessEqual(words, MAP_WORDS, f["name"])
-            self.assertEqual(small, 0, f["name"])
+        main = frames[0]                                                       # ⑦: few words, none small, in the
+        words, small = Drawing.words_small(els, main["id"])                    # main frame; ② may be small
+        self.assertLessEqual(words, MAP_WORDS, main["name"])
+        self.assertEqual(small, 0, main["name"])
 
     def test_one_topic_per_task(self):
         self.quiet(td.make, self.job / "t01_sampling", 1)

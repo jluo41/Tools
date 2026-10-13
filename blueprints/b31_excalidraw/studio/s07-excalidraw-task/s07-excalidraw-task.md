@@ -155,17 +155,16 @@ s07-D04 · A Task follows excalidraw-job's staircase (JL 261013: "you should als
     lower and further right, the current Run marked; each step's results outside the frame, small (charts, curves,
     tables, its figures, a video's screenshots); a small frame for its words and formulas; transcripts only when
     asked. Proposed, not yet built (261013)
+s07-D05 · Built (261013): excalidraw-task 0.5.0, `scripts/task_stairs.py`, the default for every Task;
+    `layout: rows | plain` keeps the frames before it. Each step is level with its results block; first drawn as
+    previews on LLMRec b04 j08 t02 (a work Task) and Proj10 b51 t01 (six videos); tests read the staircase (261013)
 
 
 Open
 ----
 
-1. Build s07-D04 in a new file, excalidraw-task `scripts/task_stairs.py`, reusing excalidraw-job's charts and cards
-   and haipipe-studio's `canvas.stairs` and `canvas.explains`; every `task:` field keeps its meaning; `layout: rows`
-   keeps today's frames.
-2. Hook it into `task_drawing.py`'s `draw_task` once the other session's uncommitted edits to that file land.
-3. Draw two first: a work Task (LLMRec b04 j08 t02) and one Proj10 video Task, and read them before the default
-   changes; Proj10's ten video topics change look on their next rebuild.
+1. Proj10's video Task topics (b01 s24 to s29, b51 s01 to s10) become staircases on their next rebuild: rebuild
+   them in their SPACE and read them; add `current:` and `charts:` where a work Task has numbers.
 
 
 Later

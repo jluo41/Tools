@@ -166,11 +166,15 @@ def chart_run(t: dict, cfg: dict, spec: dict) -> Path | None:
 
 
 def chart_rows(spec: dict, result: Path) -> list[tuple]:
-    """(label, value, low, high) per bar: `bars: [{label, at}]`, or `each: <key>` (a mapping: a bar per entry) with
-    `value`, `low`, `high` read inside each entry; `labels:` renames an entry; largest first unless `sort: false`."""
+    """(label, value, low, high) per bar: `bars: [{label, at, low, high}]` (a CSV's row by `col=v&col2=v.estimate`,
+    its interval by `….ci_lo`, `….ci_hi`: OpioidRx's Stata tables, 261013), or `each: <key>` (a mapping: a bar per
+    entry) with `value`, `low`, `high` read inside each entry; `labels:` renames an entry; largest first unless
+    `sort: false`."""
     data = jr.load(result / spec.get("file", "metrics.json"))
     if spec.get("bars"):
-        rows = [(str(b.get("label", b["at"])), jr.dig(data, b["at"]), None, None) for b in spec["bars"]]
+        rows = [(str(b.get("label", b["at"])), jr.dig(data, b["at"]),
+                 jr.dig(data, b["low"]) if b.get("low") else None,
+                 jr.dig(data, b["high"]) if b.get("high") else None) for b in spec["bars"]]
     else:
         each = jr.dig(data, spec.get("each", "")) or {}
         names = spec.get("labels") or {}
@@ -259,11 +263,15 @@ def task_pictures(t: dict, cfg: dict) -> list[Path]:
 def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
     """The tables the face names from a Task's Run (`tables: {<tNN_task>: [{title, file, columns, rows, sort, run}]}`):
     a CSV under the Run's result, its named columns, its first `rows` rows (6), sorted by `sort` (`-col`: largest
-    first). Returns (title, columns, rows) each, read on every build."""
+    first), only the rows `where` picks (`col=v&col2=v`, as a chart's row selector: one model of a Stata table that
+    holds several, OpioidRx 261013). Returns (title, columns, rows) each, read on every build."""
     out = []
     for spec in ((cfg.get("tables") or {}).get(t["name"]) or [])[:2]:
         result = chart_run(t, cfg, spec)
         data = jr.load(result / spec["file"]) if result else None
+        if isinstance(data, list) and spec.get("where"):
+            want = dict(c.split("=", 1) for c in str(spec["where"]).split("&"))
+            data = [r for r in data if isinstance(r, dict) and all(str(r.get(k)) == v for k, v in want.items())]
         if not isinstance(data, list) or not data:
             out.append((f"❓ table {spec.get('title', spec.get('file'))}: not in the result", [], []))
             continue
@@ -430,7 +438,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         mid = y + nh / 2
         d.line([(spine_x, mid), (nx - 8, mid)], sw=3)                  # the stair from the spine to this step
         steps.append({"y": y, "mid": mid, "right": nx + NODE_W, "task": t, "found": found})
-        y = max(y + nh + 16 + cardh, ry) + STEP_GAP
+        res_h = results_block(Drawing(), 0, 0, t, cfg, found, assets)[0]   # measured, so the step stays level with
+        y = max(y + nh + 16 + cardh, ry, y + res_h) + STEP_GAP             # its results; the rest is room
     if steps:
         d.line([(spine_x, spine_top), (spine_x, steps[-1]["mid"])], arrow=False, sw=3)
 

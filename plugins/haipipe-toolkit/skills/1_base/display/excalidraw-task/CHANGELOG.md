@@ -1,6 +1,23 @@
 excalidraw-task · Changelog
 ===========================
 
+## [0.5.0] · 2026-10-13 · The staircase: a Task's sources as steps, their results beside them
+
+- JL 261013: "you should also think about how to update the /excalidraw-task as well, we try to follow the same idea",
+  after excalidraw-job 0.6.0's staircase ("主次分明", "阶梯状的结构", "你的 results 应该是图和表格呀").
+- `scripts/task_stairs.py`, the default (`draw_task` sends every Task there unless `layout: rows | plain`): ① the
+  Task's question on top, each Run or video a step lower and right in reading order (its name, key point, what it
+  ran, its role in the reading order on its stair); `current: true` marks the Run to read, the others go quiet.
+- Each step's results outside the frame, small and level with it: `charts` (excalidraw-job's chart_png from the
+  Run's result), its `show` numbers as a table, its `plot` curves, two `shots`, the pictures its result holds;
+  without face words, the numbers its result names or its `summary.headline`; `check` (else the page's) in red; its
+  link. Steps are spaced to their measured results, so each line runs straight across.
+- ② words to know, formulas (mathtext), be ready to answer, open: small (`canvas.explains`); ③ the transcript and
+  full frames only with `detail: true`. Frames placed by `canvas.stairs`.
+- Tests read the staircase: reading order as steps moving right, the face's words, roles, checks, links; nothing
+  under 28 px in ①.
+- First drawn: LLMRec b04 j08 t02 (a work Task) and Proj10 b51 t01 (six videos), as previews.
+
 ## [0.4.3] · 2026-10-13 · Long transcripts, rolled out
 
 - Rolled out to every video Task of Proj10's b11 (37) and b51 (10), at JL's ask (261012: "please go ahead to add it

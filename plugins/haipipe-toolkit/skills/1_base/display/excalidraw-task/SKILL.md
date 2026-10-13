@@ -1,17 +1,17 @@
 ---
 name: excalidraw-task
 description: >-
-  A Task drawn as one Studio topic, in few words and large type: its idea first (its question as the key point; what
-  it is, how it works, why it matters; its sources in reading order; the questions to be ready for), then one frame
-  per source (a video, a paper) saying what that source told: its key point, its points in order, how to say it in
-  an interview, and what to check against the source before reuse, in red. Read from the Task page on every build;
-  the face holds the short words. By excalidraw-studio's principles (⑦: few words, none under 28 px). Use to draw a
-  Discovery Task, to read what its videos said at a glance, or to give each Task of a Job its own topic. Trigger:
-  draw the task, task drawing, each task a topic, what did the video say, one frame per video, task details,
+  A Task drawn as one Studio topic, a staircase (the same idea as excalidraw-job's): its question on top, each Run or
+  video a step lower and further right in reading order (the current Run marked, reruns quiet), and each step's
+  results outside the frame, small: charts, its numbers as a table, its curves, its figures, a video's screenshots,
+  what to check in red. A small frame explains it: words to know, formulas, what to be ready to answer, what is open.
+  Read from the Task page, the face and each Run's result on every build. Use to draw a Discovery or work Task, to
+  read what its videos said or its Runs measured at a glance, or to give each Task of a Job its own topic. Trigger:
+  draw the task, task drawing, each task a topic, task staircase, what did the video say, task results as charts,
   /excalidraw-task.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.4.3"
+  version: "0.5.0"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -24,22 +24,23 @@ video told about". The same day, in the Job skill's session: "we even need to ha
 show the details of each tasks". So a Task gets its own topic, and each of its sources gets a frame that says what it
 told, in words short and large enough to read.
 
+The staircase (0.5.0, the default since 261013; JL: "you should also think about how to update the /excalidraw-task as
+well, we try to follow the same idea", after the Job drawing became a staircase: "主次分明 … 一个很大的 frame，然后有一些
+小的 frame 是解释这些大的 frame 的", "一定要用阶梯状的结构 … 留出足够的空白", "你的 results 应该是图和表格呀"):
+
 ```text
-Act 1 · the idea     ⓪ 🎯 the question
-                       💡 what it is ─the words first─▶ 📖 words to know
-                       🧮 the core formula, explained ─how it runs─▶ ⚙️ how it works
-                       🎯 why it matters ─watch─▶ 🎬 the videos in order ─then answer─▶ 🎤 be ready to answer
-                       │ one frame per video, in reading order
-Act 2 · video 1      r04 · The transcript, read ──read, then explained──▶ r04 · Greedy, beam, or sampling?
-  (one row a video)    📄 the transcript PDF's pages         🎯 what it says
-                          ① yellow, numbered passage          📸 what the screen shows (2 to 8, six to a row)
-                          ① its note, level with it:          📖 words to know ─the math─▶ 🧮 the formula, explained
-                          Says · Comment · → this Task        🪜 step by step · 📖 the transcript's argument
-                                                              🎤 say it ─▶ ❓ check (red) ─▶ 🧾 the Run
+① 🪜 t01 · its question (main, large)                                     outside, small, level with each step
+   🎯 the reading
+   🧩 t01 · what it is · why it matters
+    └─▶ ✅ r03 · its name · its key point ───────────────────────────────▶ 📊 2 screenshots · say it · ❓ check · 🔗
+          └─ then r04: what it adds ─▶ ✅ r04 📌 · ⚙️ what it ran ────────▶ 📊 charts · numbers · 📈 curves
+   ❓ what is open → in ②
+     └──▶ ② 📖 words to know · 🧮 formulas · 🎤 be ready to answer · ❓ open (small, canvas.explains)
+            └──▶ ③ in detail: each source's transcript and full frame (only with detail: true)
 ```
 
-A video with a /excalidraw-read reading of its Run's transcript (the topic's `reads/<rid>-*/reading.yaml`) gets the
-transcript frame first (0.4.0); one without it shows its article's pages in its frame instead.
+`layout: rows` (or `plain`) keeps the frames before 0.5.0: the idea frame, then one frame per source, three to a row,
+and a video's transcript frame read with /excalidraw-read (0.4.0).
 
 
 The frames
@@ -47,16 +48,18 @@ The frames
 
 | frame | answers | read from |
 |---|---|---|
-| ⓪ The idea | what the Task asks and the idea behind it; its sources in reading order; what to be ready to answer | the face's `task.idea` and `task.reading`; else the page's `## Opening` and its first division's `**What it is**`, `**How it works**`, `**Why it matters**`, `**Interview questions**` |
-| one per source | what that source told: its key point, its points in its own order, how to say it, what to check | the face's `task.videos.<rNN>`; else the source's division (`### N · rNN · …`): its `**rNN**:` line, `**Key points**`, `**Interview hook**`, `**Check before reuse**`; the title, creator and link from its `Video →` block; its length and ★ from the page's table |
+| ① 🪜 The staircase | what the Task asks, its sources in reading order as steps, what each one is, which Run to read | the face's `task.reading`, `idea.intro`/`what`, `idea.why`; else the page's `## Opening` and first division; per source `name`, `says` (else its `**rNN**:` line), `config`, `role` (else `**How the videos fit**`), `current` |
+| 📊 results, outside ① | what each source showed or measured, small, level with its step | per source: `charts` (as excalidraw-job's, from its result), its `show` numbers as a table, its `plot` curves, its `shots` (two screenshots), the pictures its result holds; no face words: the numbers its result names, else its `summary.headline`; `hook`; `check` (else the page's `**Check before reuse**`) in red; its link |
+| ② 📖 its words | the words to know, the formulas, what to be ready to answer, what is open | `idea.terms`, `idea.formula` (drawn by mathtext), `idea.questions` (else the page's `**Interview questions**`), `open` |
+| ③ in detail | each source's transcript and full frame, read up close | only with `detail: true` |
 
-1. **Few words**: each frame is a map under ⑦: at most 200 words, none under 28 px. The page keeps the full text;
-   the face holds the short version (limits below), so the drawing reads at half zoom.
-2. **Reading order**: the face's `task.order`, else the order the page's `**How the videos fit**` names the sources;
-   the arrow into each frame says what that source does (`task.videos.<rNN>.role`, else the same paragraph).
-3. **Red is real**: ❓ marks what to check against the source and anything missing on the page, never a guess.
-4. **From disk, every build**: an edited page or face is a changed drawing on the next build; a person's marks on the
-   drawing stay (haipipe-studio's `canvas.write`).
+1. **The stairs**: each source a step 380 px lower and right; past four, several share a column; room on purpose.
+2. **Level with its results**: each step is spaced to its results block, so a line runs straight across to it.
+3. **Results are pictures**: charts, a table, curves, screenshots, figures; never a paragraph of numbers.
+4. **Quiet reruns**: once a Run is marked `current: true`, the others are grey names with no results block.
+5. **Nothing under 28 px in ①**: the reading words stay large; ② may be small (canvas.explains).
+6. **Red is real**: ❓ marks what to check against the source and anything missing, never a guess.
+7. **From disk, every build**: an edited page or face is a changed drawing; a person's marks stay (canvas.write).
 
 
 The face's words
@@ -144,6 +147,19 @@ The page keeps the full text. `name` is also how excalidraw-job finds this topic
 `→ details: sNN` on the Task's box.
 
 
+The staircase adds three fields to the face's `task:` yaml; every field above keeps its meaning:
+
+```yaml
+  runs:
+    r04_fold00_six_models_p12: {name: …, says: …, current: true}   # 📌 the Run to read; the others go quiet
+  charts:                       # per source, as excalidraw-job's: bars from its result (each/value/low/high, or bars)
+    r04_fold00_six_models_p12:
+    - {title: "Jaccard by model (95% interval)", each: metrics.by_model, value: jaccard_low.point, fmt: pct}
+  detail: false                 # true: ③, each source's transcript and full frame, after ②
+  layout: ""                    # empty: the staircase; rows (or plain): the frames before 0.5.0
+```
+
+
 Commands
 --------
 
@@ -185,7 +201,9 @@ excalidraw-task/
 ├── SKILL.md                 this file
 ├── CHANGELOG.md             its versions
 ├── agents/openai.yaml       Codex's card
-├── scripts/task_drawing.py  the page reader, the frames, make, draw, preview
+├── scripts/task_drawing.py  the page reader, the frames before 0.5.0, make, draw, preview; draw_task sends a
+│                            Task to the staircase unless the face says layout: rows or plain
+├── scripts/task_stairs.py   the staircase, each source's results block, its words frame
 ├── scripts/video_frames.py  a source video's screenshots: download once, distinct frames, a contact sheet
 └── tests/test_task_drawing.py   a Task made on a small Block, drawn, checked; the face's words win; one topic per Task
 ```

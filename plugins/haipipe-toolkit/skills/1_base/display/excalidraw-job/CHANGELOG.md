@@ -29,6 +29,8 @@ excalidraw-job · Changelog
 - From a fresh-agent trial on LLMRec b03 s21 (the same day): a 📌 current Run never folds into the "more Runs" row;
   a chart's axis has a few ticks with thousands separators (they ran together); a settings or model cell prints
   71,427, not 7.143e+04. New test.
+- Each step is spaced to its measured results block, so it stays level with its results and the line runs straight
+  across; the extra height is room (excalidraw-task 0.5.0 does the same).
 
 ## [0.5.0] · 2026-10-13 · A family of Jobs, a table per Job
 
