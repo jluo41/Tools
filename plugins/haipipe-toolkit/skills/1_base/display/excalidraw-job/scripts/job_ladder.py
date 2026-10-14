@@ -50,6 +50,7 @@ STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
+PAGE_W, PAGE_H = 200, 280                   # one Run's highlighted transcript page, a row of them left to right
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
 PICTURES = (".png", ".jpg", ".jpeg")
 QUESTION = re.compile(r"^(which|what|how|why|who|when|where|does|do|is|are|can|should)\b", re.I)   # a title that asks
@@ -329,6 +330,19 @@ def topic_thumb(topic: Path, out: Path) -> Path | None:
     return out if out.is_file() else None
 
 
+def run_pages(topic: Path, t: dict) -> list[tuple[str, Path]]:
+    """Each Run's highlighted transcript page, its first, as the Task's own topic drew it (excalidraw-task's
+    transcript_pages: assets/<rid>-transcript-p<N>[-band].jpg), in the Task's Run order (JL 261014: "I want you show
+    different run's thumbnail of the pdf")."""
+    a, out = topic / "assets", []
+    for r in t["runs"]:
+        rid = r["name"][:3]
+        pages = sorted(a.glob(f"{rid}-transcript-p*.jpg"), key=lambda q: int(re.search(r"-p(\d+)", q.name).group(1)))
+        if pages:
+            out.append((rid, pages[0]))
+    return out
+
+
 def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str,
                   assets: Path | None, thumb: tuple | None = None) -> tuple[float, bool]:
     """A Task's results, outside the frame, in this order: a small title; its finding in one sentence; the charts the
@@ -336,16 +350,27 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     Run's charts, JL 261013); the tables it names (`tables:`, rows from its Run's CSV); else its current Run's
     picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
-    w = CHART_W + 2 * PAD + (THUMB_W + 28 if thumb else 0)
+    nn, png, link, pages = thumb or (None, None, None, [])
+    right = len(pages) * (PAGE_W + 14) - 14 if pages else THUMB_W if png else 0
+    w = CHART_W + 2 * PAD + (right + 28 if right else 0)
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
     side = yy
-    if thumb:                                       # its own topic, small, linked, to the right of the results, so a
-        nn, png, link = thumb                       # block grows wide, not tall (JL 261014: "from left to right")
-        tx = x + PAD + CHART_W + 28
-        side = d.para(tx, yy, f"🔗 {nn}: its own drawing, click to open it", THUMB_W, T_RES - 6, GREY) + 4
+    if right:                                       # to the right of the results, so a block grows wide, not tall
+        tx = x + PAD + CHART_W + 28                 # (JL 261014: "the results of the png can be from left to right")
+        say = "each Run's transcript, read" if pages else "its own drawing"
+        side = d.para(tx, yy, f"🔗 {nn}: {say}, click to open it", right, T_RES - 6, GREY) + 4
         d.els[-1]["link"] = link
-        side += d.picture(png, tx, side, THUMB_W, THUMB_H, fid=f"thumb-{nn}") + 4
-        d.els[-1]["link"] = link
+        if pages:                                   # one highlighted page per Run, in a row
+            low = side
+            for k, (rid, page) in enumerate(pages):
+                px = tx + k * (PAGE_W + 14)
+                h = d.picture(page, px, side, PAGE_W, PAGE_H, fid=f"page-{nn}-{rid}")
+                d.els[-1]["link"] = link
+                low = max(low, d.para(px, side + h + 6, rid, PAGE_W, T_RES - 8, GREY))
+            side = low + 4
+        else:                                       # no transcript: the topic's first frame, small
+            side += d.picture(png, tx, side, THUMB_W, THUMB_H, fid=f"thumb-{nn}") + 4
+            d.els[-1]["link"] = link
     if found:
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]      # one sentence; the charts carry the numbers
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", CHART_W, T_RES, INK) + 14
@@ -446,8 +471,10 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
         own = (topics or {}).get(f"{t['row']['task'].parent.name}/{t['name']}")
-        png = topic_thumb(assets.parent.parent / own, assets / f"thumb-{own[:3]}.png") if own and assets else None
-        thumb = (own[:3], png, f"../{own}/{own}.excalidraw") if png else None
+        topic = assets.parent.parent / own if own and assets else None
+        pages = run_pages(topic, t) if topic else []
+        png = None if pages or not topic else topic_thumb(topic, assets / f"thumb-{own[:3]}.png")
+        thumb = (own[:3], png, f"../{own}/{own}.excalidraw", pages) if pages or png else None
         under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, 24)}", T_CARD, INK),
                  (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) else "", T_CARD, INK),
                  (f"→ details: {own[:3]}" if own else "", T_CARD, INK),
