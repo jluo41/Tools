@@ -168,6 +168,8 @@ def test_explained_layout_makes_the_words_from_zero_the_main_frame(tmp_path):
     assert "4.70" in words and "3.10" in words and "num" in words          # the Job's chart as a table too
     assert "💡 KL is the extra surprise." in words and "never evaluated" in words   # t02 has no number: dashed
     assert "r01 · video" in words                                         # its Runs, a card each, beside its step
+    assert "read from, under the Project's work/" in words and "→ rmse" in words   # each result names its files
+    assert "b01_demo/j01_losses/t01_entropy_kl/runs/r01_video/result/m.json" in words
     assert check(out)["③"].startswith(("✅", "🔶"))
 
 
@@ -179,3 +181,10 @@ def test_labelled_reads_lists_after_a_blank_and_running_paragraphs():
     assert lab["How it works"]["items"] == ["first step wrapped on", "second step"]
     assert lab["Why it matters"]["body"] == "one sentence that runs on."
     assert lab["Interview questions"]["items"] == ["**Q?** A."]
+
+
+def test_one_file_read_for_many_keys_is_one_line(tmp_path):
+    import job_drawing as jd
+    ats = [f"j02/t06/tables/counts.csv:context={c}.n" for c in ("lbp", "osteo", "cancer", "headache")]
+    lines = jd.file_lines(ats, tmp_path)
+    assert len(lines) == 1 and lines[0][1].startswith("4 values: context=lbp.n")

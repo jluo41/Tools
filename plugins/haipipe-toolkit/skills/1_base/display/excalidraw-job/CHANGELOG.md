@@ -54,6 +54,12 @@ excalidraw-job · Changelog
   `tasks.<t>.title` wins); `fmt_value` keeps a cell short (2.02B, 51.6M, 0.192).
 - 261014: a Task with Run folders still shows its design grids beside them (`run_cards`): Xuzhe's j02 Runs r01, r02
   had hidden the 24 legacy runs t01's grid counts. Found by rebuilding s22 from a copy of GitHub's main.
+- 261014: each result card ends with where its numbers were read (`file_lines`, `path_lines`; JL: "how do you
+  get this? … could you show the files here as well? … give it a path"): a group per key, a path under the
+  Project's work/ folder, files alike folded to one pattern (`eval_clm_*_*_nb/forecast.json`, 24 files), else
+  the folder holding them, broken only after a "/". The j01 table so shows it is read from j03's files.
+- 261014: one file read for many keys is one line, its keys listed (`file_lines`): Physician-SPACE OpioidRx
+  b03 s21's table read 20 values of one CSV and printed its path 20 times.
 - Test: `test_explained_layout_makes_the_words_from_zero_the_main_frame`. First drawn: Proj11 b01 s21.
 
 ## [0.6.2] · 2026-10-13 · Runs as a grid: a Job grows wide, not tall

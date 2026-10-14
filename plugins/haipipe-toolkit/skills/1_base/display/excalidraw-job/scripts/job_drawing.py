@@ -954,6 +954,45 @@ def fmt_value(v) -> str:
             f"{v:,.0f}" if a >= 1000 else f"{v:.1f}" if a >= 100 else f"{v:.2f}" if a >= 1 else f"{v:.3f}")
 
 
+def file_lines(ats: list, block: Path) -> list[tuple[str, str, int]]:
+    """Where a table's numbers come from (JL 261014 of the j01 result: "how do you get this? … could you show the files
+    here as well? … give it a path"): its `at`s, a group per key read, each a path under the Project's work/ folder.
+    Files whose names differ only by a model or a setting fold into one pattern (`*` where they differ); otherwise
+    the folder that holds them all. [(path, key, how many files)]."""
+    import os
+    by_key = {}
+    for a_ in ats:
+        path, _, key = str(a_).partition(":")
+        by_key.setdefault(key, []).append(os.path.normpath(f"{block.name}/{path}"))
+    out = []
+    for key, paths in by_key.items():
+        paths = list(dict.fromkeys(paths))
+        toks = [re.split(r"([/_.\-])", q) for q in paths]
+        if len({(len(t), tuple(t[1::2])) for t in toks}) == 1:          # one shape: a pattern
+            tmpl = "".join(toks[0][i] if all(t[i] == toks[0][i] for t in toks) else "*" for i in range(len(toks[0])))
+        else:                                                           # several shapes: the folder that holds them
+            tmpl = os.path.commonpath(paths) + "/"
+        out.append((tmpl, key, len(paths)))
+    merged = {}                                   # one file read for many keys is one line, its keys listed
+    for tmpl, key, n in out:                      # (b03 s21, 261014: 20 values of one CSV printed its path 20 times)
+        merged.setdefault((tmpl, n), []).append(key)
+    return [x for (tmpl, n), keys in merged.items()                  # up to three keys keep a line each
+            for x in ([(tmpl, k, n) for k in keys] if len(keys) <= 3 else
+                      [(tmpl, f"{len(keys)} values: " + ", ".join(keys[:3]) + ", …", n)])]
+
+
+def path_lines(path: str, width: float, size: float) -> str:
+    """A path broken only after a "/", each line inside `width`."""
+    lines, cur = [], ""
+    for part in re.split(r"(?<=/)", path):
+        if cur and Drawing.measure(cur + part, size) > width:
+            lines.append(cur)
+            cur = "   " + part
+        else:
+            cur += part
+    return "\n".join(lines + [cur])
+
+
 def results_card(d: Drawing, x: float, y: float, title: str, found: str, table: tuple | None, empty: str,
                  w: float = 1150) -> tuple[float, bool]:
     """A step's results as a table, not a figure (JL 261013: "I think we can have the things like table, not this
@@ -966,10 +1005,17 @@ def results_card(d: Drawing, x: float, y: float, title: str, found: str, table: 
         yy = d.para(x + pad, yy, f"💡 {jl.words(jr_first_sentence(found), 26)}", w - 2 * pad, 30) + 14
     is_open = not (table and table[1])
     if not is_open:
-        cols, rows, widths = table
+        cols, rows, widths = table[:3]
         yy = d.grid_table(x + pad, yy, cols, rows, widths, 28, pad=24) + 16
     else:
         yy = d.para(x + pad, yy, empty, w - 2 * pad, 30, RED) + 8
+    files = table[3] if table and len(table) > 3 else []
+    if files:                                                           # where every number in it was read
+        yy = d.para(x + pad, yy, "📁 read from, under the Project's work/ folder:", w - 2 * pad, 24, GREY) + 6
+        for path, key, n in files:
+            yy += d.text(x + pad + 20, yy, path_lines(path, w - 2 * pad - 40, 24), 24, GREY)["height"] + 2
+            yy = d.para(x + pad + 60, yy, f"→ {key}" + (f" · {n} files" if n > 1 else ""), w - 2 * pad - 60, 24,
+                        GREY) + 10
     h = yy - y + pad - 8
     d.box(x, y, w, h, GREY if is_open else INK, 1.5, dashed=is_open)
     return h, is_open
@@ -1138,12 +1184,13 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
         heads = ["Sweep"] + [(str(own[k]) if own and k < len(own) else
                               re.sub(r"(?i)^low( end)?:?\s*", "", cols_all[3 + 2 * k]) if 3 + 2 * k < len(cols_all)
                               else "") + ": low → high" for k in range(pairs)]
-        rows_ = []
+        rows_, ats = [], []
         for r in mine:
             c = list(r.get("cells") or []) + [""] * 8
             cells = [str(c[1])]
             for k in range(pairs):
                 lo, hi = c[3 + 2 * k], c[4 + 2 * k]
+                ats += [x_["at"] for x_ in (lo, hi) if isinstance(x_, dict) and x_.get("at")]
                 if isinstance(lo, dict) and isinstance(hi, dict):
                     vals = [chart_value(job.parent, x_["at"]) if x_.get("at") else None for x_ in (lo, hi)]
                     cells.append({"big": f"{fmt_value(vals[0])} → {fmt_value(vals[1])}", "size": 38,
@@ -1155,7 +1202,7 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
             return None                                                 # only planned rows: nothing measured yet
         inner = 1150 - 2 * jl.PAD
         widths = [inner * 0.34] + [inner * 0.66 / max(1, pairs)] * pairs
-        return heads, rows_, widths
+        return heads, rows_, widths, file_lines(ats, job.parent)
 
     def job_table(chart: dict) -> tuple | None:
         """The face's chart as a table: one row per series, a column per bar."""
@@ -1169,7 +1216,9 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
                   "dim": False} for k in range(max(len(v) for v in vals))]
         inner = JOB_TABLE_W - 2 * jl.PAD
         first = 260
-        return [""] + [str(b_.get("label", "")) for b_ in bars], rows_, [first] + [(inner - first) / len(bars)] * len(bars)
+        ats = [a_ for b_ in bars for a_ in (b_.get("at") if isinstance(b_.get("at"), list) else [b_.get("at")]) if a_]
+        return ([""] + [str(b_.get("label", "")) for b_ in bars], rows_,
+                [first] + [(inner - first) / len(bars)] * len(bars), file_lines(ats, job.parent))
 
     # JL's sketch (WellDoc-SPACE image.png, 261013): a wide, low frame; JOB at its top left; Task 1, 2, 3 each a step
     # lower and further right; from each, one long line out through the frame's right edge to its result, outside,
