@@ -13,7 +13,7 @@ read from disk on every build.
 
 **Source:** `plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read/` (SKILL.md, CHANGELOG.md, ref/), and the
 three canvases the revise mode made on 2026-10-11 in WellDoc-SPACE (`examples-0-cowork/Project-SHIFT-Study/cowork/`,
-b02, b03, b04).
+b32, b21, b31).
 
 **Feeds:** no Question yet (b31 has no `reports/`).
 
@@ -181,9 +181,9 @@ preview is shown. No paper-mode canvas could be found in this workspace (see Ope
 
 ```yaml
 canvases:
-- {block: b04_prep_ai, path: examples-0-cowork/Project-SHIFT-Study/cowork/b04_prep_ai/studio/s04-task31-updated-draft/s04-task31-updated-draft}
-- {block: b03_event_cgm, path: examples-0-cowork/Project-SHIFT-Study/cowork/b03_event_cgm/studio/s04-task21-updated-draft/s04-task21-updated-draft}
-- {block: b02_aid_ai, path: examples-0-cowork/Project-SHIFT-Study/cowork/b02_aid_ai/studio/s04-task32-updated-draft/s04-task32-updated-draft}
+- {block: b31_prep_ai, path: examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/studio/s04-task31-updated-draft/s04-task31-updated-draft}
+- {block: b21_event_cgm, path: examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm/studio/s04-task21-updated-draft/s04-task21-updated-draft}
+- {block: b32_aid_ai, path: examples-0-cowork/Project-SHIFT-Study/cowork/b32_aid_ai/studio/s04-task32-updated-draft/s04-task32-updated-draft}
 picture_note: "Each canvas checked against the drawing principles, one line each, read from its own .excalidraw."
 ```
 

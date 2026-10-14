@@ -286,8 +286,9 @@ def draw_task(folder: Path, out: Path, cfg: dict | None = None, source: str = ""
     if cfg.get("detail") is True:                      # the old full frames, read up close, only when asked
         for r in runs:
             w = entry(cfg, r["rid"])
+            bd = None if r.get("work") else td.board_frame(d, r, w, assets)
             t = None if r.get("work") else td.transcript_frame(d, r, w, assets)
-            extra += ([t] if t else []) + [td.source_frame(d, r, w, assets, True, passages=t is None)]
+            extra += [x for x in (bd, t) if x] + [td.source_frame(d, r, w, assets, True, passages=t is None)]
     below = ([notes] if notes else []) + extra
     placed = canvas.stairs(d.els, [main["id"]] + [(x["id"], 600 if k == 0 else 420) for k, x in enumerate(below)])
     d.fid = None

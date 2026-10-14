@@ -13,7 +13,7 @@ description: >-
   does the pdf go, deliverable, handoff folder, send, sent, /haipipe-delivery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.3"
+  version: "0.3.0"
   last_updated: "2026-10-11"
   # version history: ./CHANGELOG.md
 ---
@@ -59,6 +59,24 @@ The folder
    `jNN`/`tNN` must first join a Block.
 
 
+Items and versions
+------------------
+
+One deliverable is one item on screen, however many files and versions it has (b10 s03-D10; JL
+261014: "all of them should one Delivery Item, and within it, we can see different versions").
+
+1. **Lanes fold in**: a Section's `web/`, `word/` and `latex/` builds, or a deck's `slide/` and its
+   picture in `render/`, are one item, named by its part (`t04_methods`) or its file name.
+2. **Name a version `-v<N>`**: save each new version beside the last (`Deck-v1.pptx`, `Deck-v2.pptx`);
+   never write over a version that was sent. A renamed variant that keeps counting
+   (`Deck-Visual-v12`) or an unnumbered variant of a numbered item (`Deck-Symmetric`) joins it.
+3. **No number, no version**: `Paper-SI` stays its own item beside `Paper`; neither has a number.
+4. **On screen**: a row of versions, newest picked, over that version's preview: a PDF, a web page,
+   a render, a deck drawn slide by slide, or a Word file read from its package.
+5. **The code**: `frame.version_roots` (the rule, shared with Related), `frame.delivery_items`,
+   `frame.version_panes`, `frame.pptx_preview` (`?view=pptx`).
+
+
 Sent is a person's word
 -----------------------
 
@@ -82,7 +100,10 @@ Description · Report · Work Details · Runs            second row: what each l
    (b10 s03-D06, JL 261011: "apply it to all the workbench").
 3. **From the Block**: its view ends with "By source" (part · from · files), each Job and Task
    part linking back to its folder (JL 261010; built 261011, `frame.delivery_by_source`).
-4. **Second row**: Delivery is not there; the workbench frame is `servers/workbench/frame.py`.
+4. **Inside the Studio**: the third folding part, under Related (what came in, then what went
+   out): every result of the Block, as the same cards, each opened on its preview (b10 s03-D09,
+   JL 261014; `frame.studio_delivery`).
+5. **Second row**: Delivery is not there; the workbench frame is `servers/workbench/frame.py`.
 
 
 Moving old local outputs

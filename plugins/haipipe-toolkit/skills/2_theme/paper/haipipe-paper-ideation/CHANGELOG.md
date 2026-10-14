@@ -1,3 +1,12 @@
+## 1.4.0 · 2026-10-14 · The ideation is drawn by excalidraw-ideation, when installed
+
+- `studio/s01-ideation/` is drawn by the new `excalidraw-ideation` skill whenever it is installed (JL 261014:
+  "haipipe-paper-ideation will call it to draw when it is available"): one main frame of every idea as steps, small
+  frames for the setting, one card per lead idea and the path to G0, in Paper-LLMRecPhy's shape (JL 261013). Its
+  words, `s01-ideation-drawing.yaml`, are a projection of the face's divisions; the table in "The drawing" maps them.
+- The drawing's optional ⑧ shows how the lead Idea scores and where it goes: the I2 test verdicts and the venue
+  ladder, a venue's rules only from a verified venue contract (JL 261014).
+
 ## 1.3.0 · 2026-10-11 · The ideation topic carries Tags and Stage
 
 - `studio/s01-ideation/`'s face keeps haipipe-studio's topic marks, `**Tags:**` and `**Stage:**` (b10 s09-D03), beside its divisions; Studio is the Board's alone (b10 s09-D01).

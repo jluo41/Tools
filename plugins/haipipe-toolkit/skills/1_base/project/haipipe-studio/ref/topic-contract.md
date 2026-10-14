@@ -92,6 +92,7 @@ s01-s09   concepts          what the level is, its trees and words
 s11-s19   levels            Block · Job · Task, one topic each
 s21-s29   runs and skills   the Runs, the buttons and the skills that own them
 s31-s39   Guide             the theme's Guide: Description · Method · RoadMap Draw · Related Paper
+s41-s49   Task procedures   one per Task type of a theme: its steps, Runs, disk, tabs, prompts (sNN-task-<type>-procedure)
 s51-s59   server            how the screens are served
 s61-s69   slide drafts      a proposed deck: its logic flow and its slides, before the deck is built
 ```
@@ -193,7 +194,7 @@ pictures they explain) are smaller than it, marked `canvas.aside(e)`, and not co
 ## A proposal topic: one section, drawn so it can be written
 
 A topic that works on one section of a proposal or a paper draws five frames in two rows. The worked
-example is b03_event_cgm's s03 for SHIFT Task 2.1 (JL 261010, on its drawing: "I think this one is very
+example is b21_event_cgm's s03 for SHIFT Task 2.1 (JL 261010, on its drawing: "I think this one is very
 very great!"). The first row is the thinking, each frame one screen; the second row is the long reads,
 each one frame that grows down (`canvas.reads_down`).
 
@@ -249,7 +250,7 @@ What went wrong on the way, so it is not done again (all JL 261010, on s03):
 ❗ evidence stacked under each point       text rows spread apart        ✅ evidence laid out on its own
 ```
 
-The builders to copy from (WellDoc-SPACE, `examples-0-cowork/Project-SHIFT-Study/cowork/b03_event_cgm/studio/`):
+The builders to copy from (WellDoc-SPACE, `examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm/studio/`):
 `s03-related-work-structure/idea_frame.py` draws ① and ②; `draft_pages.py` ④; `task21_section.py` ⑤, with
 its line routing (`evidence_route`); `build_s03_related_work_structure.py` reads the face and the draft,
 draws ③ and sets the rows; `_build/draw_kit.py` and `_build/word_pdf.py` are the level's helpers.

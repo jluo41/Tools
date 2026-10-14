@@ -9,7 +9,7 @@ cookie. What they may open is the SPACE's access table, `.server_config/access.y
       shift: [a@jhu.edu, b@jhmi.edu]
     grants:                                       # what: a Block, Job or Task folder, or a whole Project
       - {who: group:shift, what: examples-0-cowork/Project-SHIFT-Study, level: view}
-      - {who: c@jhu.edu, what: examples-0-cowork/Project-SHIFT-Study/cowork/b03_event_cgm, level: view}
+      - {who: c@jhu.edu, what: examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm, level: view}
       - {who: anyone@jhu, what: Tools-SPACE/blueprints/b10_project_workbench, level: view}   # any JHU email
     extra_domains: []                             # beyond jhu.edu, jh.edu, jhmi.edu and their subdomains
     mail_from: noreply@cdhai.com

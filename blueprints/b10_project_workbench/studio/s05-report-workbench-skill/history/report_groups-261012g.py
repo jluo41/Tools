@@ -158,13 +158,13 @@ THEME_LEVELS = {     # theme: [(level, where, folder or None, why none)]; "tools
                                  "j01_prepare-before-visit_goal-only/t00_reason-ideas", "")],
     "discovery": [("Block", "space", "examples-0-cowork/Project-SHIFT-Study/discovery/b01_shift_proposal_evidence", ""),
                   ("Job", "space", "examples-0-cowork/Project-SHIFT-Study/discovery/b01_shift_proposal_evidence/"
-                                   "j01_task31_citations", ""),
+                                   "j31_task31_citations", ""),
                   ("Task", "space", "examples-0-cowork/Project-SHIFT-Study/discovery/b01_shift_proposal_evidence/"
-                                    "j01_task31_citations/t01_ai_insulin_titration_trials", "")],
-    "labeling": [("Block", "space", "examples-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench", ""),
-                 ("Job", "space", "examples-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench/"
+                                    "j31_task31_citations/t01_ai_insulin_titration_trials", "")],
+    "labeling": [("Block", "space", "examples-6-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench", ""),
+                 ("Job", "space", "examples-6-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench/"
                                   "j01_aci_bench_authority_appeal", ""),
-                 ("Task", "space", "examples-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench/"
+                 ("Task", "space", "examples-6-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench/"
                                    "j01_aci_bench_authority_appeal/t01_aci_bench_transcripts", "")],
 }
 SCREENS = [(t, levels[0][1], levels[0][2]) for t, levels in THEME_LEVELS.items()]      # each theme's Block

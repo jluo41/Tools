@@ -67,7 +67,7 @@ FRAMES = [
     ("discovery", "discovery · b01_experimental_learning_evidence", "DrFirst-SPACE",
      "examples-4-learning/Project-ExpLearn-SMSDesign/discovery/b01_experimental_learning_evidence"),
     ("labeling", "labeling · b01_aci_bench", "Physician-SPACE",
-     "examples-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench"),
+     "examples-6-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench"),
 ]
 PAGES = [(k, label) for k, label, *_ in FRAMES] + [("design-job", "design · a ladder Job (the tests' sample)")]
 # (key, title, what it is, the frame's Space and mode, its selector on the frame).

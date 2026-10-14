@@ -3,15 +3,16 @@ name: excalidraw-job
 description: >-
   A Job drawn as one Studio topic, a staircase: the Job on top (why it exists, when it is done), each Task a step lower
   and further right, its Runs branching from its step (the current one marked, reruns quiet), and each Task's results
-  as charts, tables and the figures it already holds, in a small block outside the frame, level with its step. Smaller
+  as charts, tables and the figures it already holds, in a block outside the frame, its panels side by side, the
+  blocks inside the frame's top and bottom or past both by the same amount. Smaller
   frames that explain it (its words, how sure, what is open) step down and to the right; nothing is left-aligned or
   filled. Read from disk on every build. Use to draw a Job, to turn a Job's results topic (job_results.py) into the
   whole Job, or to see at a glance why a Job exists and what it found. Trigger: draw the job, job drawing, the whole
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-10-13"
+  version: "0.7.4"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
 
@@ -28,9 +29,11 @@ Physician-SPACE's LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 ea
    we might want to add the figures and table from it".
 5. **主次分明**: one large main frame, small frames that explain it ("大小有致"); "棋盘上不能落满所有的子"; "你不能每
    一个都是朝左对齐".
+6. **Results use the room** (261014): "这个 result 右边有这么多的空位你都不用，非要挤着那么一块"; "以 job frame 的上
+   下为界限 … 最上面和最下面的 frame 可以超过 job frame 的最上和最下，但超出部分一定要对称、均匀".
 
 ```text
-① 🪜 the staircase (main, large)                                         outside, small, level with each step
+① 🪜 the staircase (main, large)                    outside: within ①'s top and bottom, or past both equally
    🎯 the reading (the key point)
    🧱 j08 · why · done when · answers ──▶ 📥 in · 📤 out
     └─▶ 🧩 t01 · asks · did ─ r01 · r02 (grey) · r04 📌 current ───────────▶ 📊 t01: one sentence · charts
@@ -54,12 +57,17 @@ The frames
 
 1. **The stairs**: each Task one step lower and 380 px further right; past four Tasks, several share a column.
    A Task's Runs stand in a grid, up to three a row (`run_cols`), so a Job grows wide, not tall.
-   A step is as tall as its own boxes; its results hang outside on their own row, and a Task with its own
-   topic shows that drawing's first frame there, small, linked to it (`topic_thumb`).
+   A big Job keeps its stairs (asked 261014): a family of Tasks is one step, listing its Tasks inside it, its
+   Runs folded by what they do, its results a row or a bar per Task (`members: true`); past six steps, or where
+   the face's `parts:` says, the staircase continues in a second frame, joined by a "continues" arrow.
+   A step is as tall as its own boxes; its results stand outside, placed by rule 10.
 2. **Room on purpose**: 170 px between steps; the frame may be large (`canvas.large`), never filled.
 3. **Quiet reruns**: once a Task marks a 📌 current Run, the others are grey names; only the current one speaks.
 4. **Quiet Runs fold**: a Run with nothing to report never takes a row; past six, the 📌 current ones, then the latest.
-5. **Results are pictures**: a chart per `charts:` entry, a table per `tables:` entry, then the Task's own figures.
+5. **Results are pictures**: a chart per `charts:` entry (three at most), a table per `tables:` entry (two at
+   most), then the Task's own figures. Each block is titled with its step's own name: `📊 t02 · <name>: results`.
+   In a block they stand side by side, up to three a row, each under the shortest column so far; a long table
+   (8 rows or more, a paper table) takes the columns nothing else fills, in parts of at least 4 rows.
 6. **No left-aligned frames**: ② and ③ step down and right (`canvas.stairs`); ② is small (`canvas.explains`).
 7. **Red is real**: ❓ names something missing on disk (no reading, no close, no finding), never a guess.
 8. **The old frames**: `layout: classic` keeps ① why and ② in → Tasks → out; `layout: plain`, the model tables.
@@ -68,6 +76,13 @@ The frames
    to its result, a small table (its `settings` rows, low end → high end), level with it; the skeleton
    (title, Job, Task names, result headers) in type that reads at 10% zoom; ② words, ③ `formula`, the
    design grids small, stepping down.
+10. **Results fill the room, evenly**: the blocks, in step order, are as wide as it takes (1 to 3 panels a row,
+    `place_results`) for them together to stand about as tall as ①. Shorter than ①, each sits as near its step as
+    it can, inside ①'s top and bottom; taller, they are one run centred on ①, rising above it exactly as far as
+    they hang below (`results_layout`). Every other block steps 240 px right (错位). A step's line runs straight to
+    its block where they are level; else it bends in its own lane between ① and the blocks and meets the block at
+    its title, so no two lines cross
+    (`results_lanes`). `canvas.stairs` and `canvas.grid` count results that rise above a frame.
 
 
 The face's words
@@ -82,6 +97,12 @@ job:
   outputs: [ … ]                 # what comes out (1 to 3 drawn); 📤 beside the Job
   tasks:                         # per Task folder
     t01_<task>: {asked: …, did: …, found: …}   # found: one sentence first; the results block shows that sentence
+  steps:                         # a family of Tasks as one step; unasked, past 8 Tasks, 3 or more of one kind
+  - {title: "the 10 diabetes signals", tasks: t17-t26}    # a range or [t14, t15]; `key:` names it in charts:
+    #   frame: true draws the family again as its own staircase, its Tasks as steps; reading: that frame's key
+    #   point; run: + show_each: [{label, at: "file.json:key"}] gives every member Task the same picks
+  parts: [{title: "…"}, {title: "…", from: t27, key: "…"}]   # two staircases (unasked past 6 steps, at the
+                                 #   middle step); key: the second one's key point, else its title
   runs:                          # per Run, `tNN_task/rNN_run`: what it is and what makes it differ (18 words)
     t01_<task>/r04_<run>: {says: "p12: the same audit on parser p1.2", current: true}   # current: 📌, the one to read
   show: {}                       # per Run, values picked from its result (as job_results.py's show); a table when
@@ -96,10 +117,19 @@ job:
        # each: one bar per entry of a mapping (labels: renames; model names are shortened); bars: named values, a
        # CSV's row by col=v&col2=v, each with its own low/high; fmt: pct | int; digits: n; sort: false keeps the
        # file's order; low/high draw 95% whiskers
+    t17-t26:                     # a family step (its key): one bar per member Task, each from its own Run
+    - {title: "Rows per table", members: true, run: r02_profile, file: profile.json, label: table, value: rows,
+       fmt: int}                # tables: the same, `columns: [{label, at, fmt}]`, one row per member Task
   tables:                        # per Task: rows from a CSV under the current Run's result
     t02_<task>:
     - {title: "Rank agreement by model", file: rank_agreement.csv, columns: [model_dir, kendall_tau_b_mean, n],
        sort: -kendall_tau_b_mean, rows: 6}   # where: "col=v&col2=v" keeps only those rows (one model of many)
+                                 #   path: <file under the Block> in place of file: (a Task whose Runs keep none)
+    t01_<papers>:                # a Task of one subject per Run (a paper): a row per Run, cells from each Run
+    - {title: "Its papers", runs: true, rows: 12, columns: [{label: paper, at: "runtime.yaml:subject.title"},
+       {label: says, at: says}]}   # at: says is the face's sentence on that Run; past rows, counted
+                                 #   only: "r0[4-9]_*" keeps the Runs those globs name; a Run with nothing in
+                                 #   the columns takes no row
   figures:                       # per Task: globs under the Task for the pictures to show (default: two found)
     t01_<task>: ["runs/r05_*_figures_*/result/*.png"]   # prefer this: a figure Run draws the charts into its own
                                  #   result/ (JL 261013: "make them run in the run's results"); `charts:` is a
@@ -107,6 +137,7 @@ job:
   terms: [{term: …, means: …}]   # every label the drawing shows, spelled out (means: 25 words); in ②
   sure: "…"                      # how sure the reading is, and why (50 words); in ②
   open: [{item: …, closer: …}]   # each open point and exactly what would close it; in ②
+  later: [{item: …, closer: …}]  # Stage agreed moves open points here: drawn plain in ②, never red (no ❓ left)
   conclusions: {}                # per Task: its finding, when the page's own is not the right one
   layout: ""                     # empty: the staircase; classic: ① why, ② in → Tasks → out; plain: the model tables;
                                  #   explained: one ①, its Tasks as steps, each result a small table outside
@@ -173,7 +204,8 @@ J=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-job/scripts/job
 python $J make <job folder> [--nn NN] [--dry-run]   # the Block's topic studio/sNN-<jNN>-<job>/ (s21-s29), drawn
 python $J draw <topic folder>                       # redraw one (what the topic's builder calls)
 python $J adopt <topic folder> [--aim '…']          # a one-Job results topic, now drawn as the whole Job
-python $J preview <job folder> <out.excalidraw>     # draw a Job anywhere; its Block is not touched
+python $J preview <job folder> <out.excalidraw> [--face <face.md>]   # draw a Job anywhere; its Block is not
+                                                    #   touched; --face draws it with that face's job: yaml
 python Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts/check.py <topic>.excalidraw
 ```
 

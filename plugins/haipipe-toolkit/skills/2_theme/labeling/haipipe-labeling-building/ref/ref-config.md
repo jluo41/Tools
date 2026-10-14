@@ -208,7 +208,7 @@ show after the human locks a first answer. They are never gold.
 `eligible` ids only (`ref-assets.md` §3). The comparison is stored in the
 `reveal` event with `not_gold: true`; an item with no row gets `missing: true`.
 Without this block the reveal is `kind: none`. Worked example:
-`examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-4-dices-unsafe-response/seed/config.seed.yaml`
+`examples-3-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-4-dices-unsafe-response/seed/config.seed.yaml`
 (repo-relative).
 
 ## 4. Executor settings

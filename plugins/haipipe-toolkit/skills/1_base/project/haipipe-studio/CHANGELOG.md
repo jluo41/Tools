@@ -1,6 +1,26 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.13.23] · 2026-10-14 · canvas.stairs and canvas.grid count results that rise above a frame**
+
+- excalidraw-job 0.7.4 centres a staircase's results on it, so they may rise above its top as far as they hang below
+  (JL 261014: "超出部分一定要对称、均匀"). `canvas.stairs` now puts the next frame's highest follower, not its own
+  edge, below the last frame and its followers; `canvas.grid` gives a row the room its followers take above it.
+
+**[0.13.22] · 2026-10-14 · s41-s49: Task procedures**
+
+- A new band, s41-s49, for one topic per Task type of a theme, named `sNN-task-<type>-procedure`: its steps,
+  Runs, disk, tabs and prompts (b15 s41-task-items-procedure, JL 261014: "it should be a new series").
+  `new_topic.py --band procedure`. s51-s59 stays the server band.
+
+**[0.13.21] · 2026-10-14 · canvas.stairs moves what follows a frame**
+
+- `canvas.stairs` moved a frame and what is drawn in it, but not what is marked `customData.follows` its id (a
+  staircase's results, drawn outside it), so a second staircase frame left its results behind; it now moves them, as
+  `canvas.grid` did (excalidraw-job 0.7.2, two staircases for a big Job).
+- The next frame now starts below the last one's followers too, not only below its own edge: a tall results block
+  (two charts beside a 12-Task family step) had run into the second staircase's results.
+
 **[0.13.20] · 2026-10-13 · Stata esttab tables read as rows; small numbers stay plain**
 
 - `job_results.load` reads a Stata esttab CSV (every cell `="…"`) through `esttab_rows`: each cell whole (a comma
@@ -245,7 +265,7 @@ reports, Guides and `reads_down` pieces not counted) and on a frame under `SPARS
 --draw` (or `--all <root>`) draws the face's background trees, then the index read from disk (each topic's stage,
 decisions, passes and first open point; each Job's Tasks and their states; Questions, related, delivery); a
 Block without the face gets one seeded from its own. Drawn for all 84 Blocks of Tools and WellDoc; b11's and
-b12's `s00-*-structure` became s04. First written by b04_prep_ai's session (canvas.tree, sparse, block_index.py).
+b12's `s00-*-structure` became s04. First written by b31_prep_ai's session (canvas.tree, sparse, block_index.py).
 
 **[0.11.1] · 2026-10-12 · A status field is not a topic**
 
@@ -314,7 +334,7 @@ refusing creation. Existing topics and legacy session reads stay intact.
 
 ## [0.8.0] · 2026-10-10 · A proposal topic
 
-- b03_event_cgm's s03 (SHIFT Task 2.1) is the worked example of a topic that works on one section of a
+- b21_event_cgm's s03 (SHIFT Task 2.1) is the worked example of a topic that works on one section of a
   proposal or a paper (JL 261010, on its drawing: "I think this one is very very great!"). Five frames in
   two rows: ① the idea workflow, ② why and the plan, ③ the proposal figure, each one screen; ④ the draft
   today marked up and ⑤ the section written out, each one frame read down. The rules of each frame, the
@@ -323,12 +343,12 @@ refusing creation. Existing topics and legacy session reads stay intact.
   the words live (the face's yaml; a draft passage found by its anchors), what went wrong on the way, and
   the builders to copy from: `ref/topic-contract.md` § A proposal topic; a short section in SKILL.md.
 - `canvas.numbered_frames(els)` finds one piece cut into numbered frames ("X · 1", "X · 2"), and
-  `canvas.write` warns about it (JL asked twice on 261010 for one frame instead of many: b02_aid_ai's s03 and b03_event_cgm's s03). Tested.
+  `canvas.write` warns about it (JL asked twice on 261010 for one frame instead of many: b32_aid_ai's s03 and b21_event_cgm's s03). Tested.
 
 ## [0.7.1] · 2026-10-10 · One long piece, one frame
 
 - A piece read top to bottom (a section written out, a draft's pages marked up) stays ONE frame that grows
-  down; only its width must fit the screen (JL 261010, after b03_event_cgm's s03 had cut Task 2.1 written out
+  down; only its width must fit the screen (JL 261010, after b21_event_cgm's s03 had cut Task 2.1 written out
   into 9 frames and the marked-up draft into 4: "the draft take should be one single frame, and the Written
   out should be one large frame"). `canvas.reads_down(frame)` marks such a frame (`customData.reads`), and
   `canvas.oversized` then checks its width only. 0.7.0's "longer material takes more frames in rows" is
@@ -337,7 +357,7 @@ refusing creation. Existing topics and legacy session reads stay intact.
 ## [0.7.0] · 2026-10-10 · Each frame fits the screen
 
 - A frame is sized to read on one screen: the whole frame at 50% zoom, most of it at 100% (JL 261010, on
-  the 9,200 x 5,650 px idea frame of b03_event_cgm's s03: "This is too huge, what I want is: when I zoom in
+  the 9,200 x 5,650 px idea frame of b21_event_cgm's s03: "This is too huge, what I want is: when I zoom in
   50% I can read the whole workflow, when I read 100%, I can see most part of the frame"). About
   2560 x 1440 px, the workbench's 1280 x 720 pane at 50% zoom, at most 2800 x 1600 (`canvas.FRAME_MAX`);
   body words 20 px or more (`canvas.TEXT_MIN`); room comes from fewer words and boxes sized to them, never
@@ -353,7 +373,7 @@ refusing creation. Existing topics and legacy session reads stay intact.
 
 - A topic's idea is one big connected frame, dense with facts, its key part largest; extra frames only for
   separate material such as a marked-up source (JL 261010 to a Codex session that split s03 of
-  b02_aid_ai into 12 frames: "你这么多 frame，其实只相当于我的一个 frame"). In SKILL.md (The look) and
+  b32_aid_ai into 12 frames: "你这么多 frame，其实只相当于我的一个 frame"). In SKILL.md (The look) and
   `ref/topic-contract.md`.
 
 ## [0.6.0] · 2026-10-09 · Frames in rows

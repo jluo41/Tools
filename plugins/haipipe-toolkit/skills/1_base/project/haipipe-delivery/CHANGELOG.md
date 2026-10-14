@@ -1,6 +1,19 @@
 haipipe-delivery · Changelog
 ============================
 
+**[0.3.0] · 2026-10-14 · One item per deliverable, its versions inside; decks preview**
+
+A deliverable is one item: its lanes (web/, word/, latex/; slide/ and render/) and its versions (`-v<N>`) fold
+in, a row of versions over the picked one's preview (b10 s03-D10; JL 261014: "all of them should one Delivery
+Item, and within it, we can see different versions"). A deck is drawn slide by slide from its package (JL
+261014: "could we do the preview of the slide as well?"). New section: Items and versions.
+
+**[0.2.4] · 2026-10-14 · Delivery folds inside the Studio too**
+
+The Studio's third folding part, under Related: every result of the Block's `delivery/`, as Delivery's
+own cards, each opened on its preview; the top row's Delivery stays the full view (b10 s03-D09; JL 261014:
+"a new item after the Related to name it as the delivery ... show all the delivery and preview them here").
+
 **[0.2.3] · 2026-10-11 · Its twin has a skill**
 
 The boundary names `haipipe-related`, new, which owns `related/` (what came in), as this skill owns `delivery/` (b10 s04-D09).

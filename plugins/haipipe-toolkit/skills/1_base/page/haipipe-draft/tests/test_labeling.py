@@ -262,7 +262,7 @@ class LabelingSurfaceTest(unittest.TestCase):
 
     def test_canonical_status_checks_the_real_job_before_reporting_frontier(self):
         # the private job sits in the SPACE that links this Tools checkout; absolute(), not resolve(), keeps that link
-        rel = "examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-1-acibench-authority/labeling"
+        rel = "examples-3-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/pages/S-Label-1-acibench-authority/labeling"
         pwd = Path(os.environ.get("PWD") or Path.cwd())  # the shell's logical path keeps the SPACE → Tools link
         source = next((base / rel for base in (Path(__file__).absolute().parents[7], pwd, *pwd.parents)
                        if (base / rel).is_dir()), None)

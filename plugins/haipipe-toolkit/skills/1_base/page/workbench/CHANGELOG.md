@@ -1,3 +1,32 @@
+## 1.26.0 · 2026-10-14 · One item per deliverable, with its versions; decks drawn slide by slide
+
+- JL 261014: "for the delivery, I think we just make the item to be the same ... all of them should one Delivery
+  Item, and within it, we can see different versions." `frame.delivery_items` folds a deliverable's lanes (web/,
+  word/, latex/; slide/ and render/) and its versions into one item; `frame.version_roots` is the version rule
+  (`-v<N>`; a numbered name that starts with another's; an unnumbered variant of a numbered item), shared with
+  Related (`_related_versions`). `frame.version_panes`: a row of versions, newest picked, one pane each; the page
+  script loads a pane's preview when it is picked. SHIFT b31 14 cards → 3, b21 34 → 3, b32 14 → 4, ScalingGlucose
+  22 → 8. Two PDFs in one item are named by lane (`PDF · latex`).
+- JL 261014: "could we do the preview of the slide as well?" `frame.pptx_preview` and `GET /_board/workbench?
+  view=pptx&path=<.pptx>`: each slide drawn from its package as one SVG, in points (shapes, free-form paths,
+  connectors and arrowheads, pictures with their crop, text boxes, tables, theme colours, a placeholder's layout
+  position); its pictures come from `&media=ppt/media/…` (`frame.pptx_media`), never inlined. A deck's render
+  (render/) is still shown first. All 355 decks in the SPACEs read, the largest page 1.6 MB.
+- Tests: `test_a_deliverable_is_one_item_with_its_lanes_and_versions`,
+  `test_related_versions_fold_into_the_item_that_has_a_row`, `test_a_deck_is_drawn_slide_by_slide_from_its_package`,
+  `test_a_deck_and_its_pictures_are_served_read_only`. 126 server tests, every theme's suite.
+
+## 1.25.0 · 2026-10-14 · Studio › Delivery: what went out, under Related
+
+- JL 261014: "a new item after the Related to name it as the delivery ... We will show all the delivery and preview
+  them here." The Studio's third folding part, under Related and above Timeline: `frame.studio_delivery(block, root,
+  theme)`, every result of the Block's `delivery/` from every Job and Task, as Delivery's own cards
+  (`delivery_view`), each opened on its preview, under the same group bar. Its line counts the results by kind;
+  with none, it says where a result goes. The top row's Delivery stays the full view (b10 s03-D09).
+- Timeline is now the fourth part, Folder the fifth (s08, s09 faces swept).
+- Tests: `test_studio_delivery_folds_under_related_with_every_result_previewed`; the Studio test checks for no
+  `topic-meta` on the topic rows only, since a Delivery card keeps its meta. 122 server tests, every theme's suite.
+
 ## 1.24.1 · 2026-10-12 · A share code reaches jh.edu, and every door sends mail
 
 - JL 261012, from zdi1: "This link will automatically use @jhu.edu ... So I can't get code from zdi1@jh.edu."
@@ -253,7 +282,7 @@
 
 ## 1.15.1 · 2026-10-11 · Related's groups work like the Studio's
 
-- JL 261011, relayed by the b02_aid_ai session: "for the group in the related, I want it to be things like
+- JL 261011, relayed by the b32_aid_ai session: "for the group in the related, I want it to be things like
   this: 🎯Current 0 / Untagged 4 / + Group — for the studio". `servers/workbench/frame.py`: Related (folded
   in the Studio, every Block, every theme) now sits under the Studio's group bar, not one heading per
   `related/` subfolder. A group is a name in the row's `group` cell of `related/related.md`

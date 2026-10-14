@@ -1,3 +1,7 @@
+## 1.12.3 · 2026-10-14 · rename_tasks.py reads FairGlucose's older names
+
+- `rename_tasks.py`: unnumbered Main Pages (back matter, `S-npjDM-Main-DataAvailability`) become `t0N_` after the last Section, in compile-order order; Rounds named `RD01-positioning-2026-05-14` become `reports/qNN_positioning-0514`; CamelCase titles split (`t21_dataset-statistics`). Tested on a copy of Paper-FairGlucose-preprint: 75 renames, three PDFs unchanged.
+
 ## 1.12.2 · 2026-10-13 · Carry-over scripts, run on Paper-AgreeablePrescriptionDiscretion
 
 - Second Board moved with `scripts/carry_over/` (Physician-SPACE, the MISQ paper, version `j01_v0929_misq`); two faults fixed at the source:

@@ -1,6 +1,6 @@
 """A copy of a Word file with tracked changes: each edit is the smallest Word deletion and insertion by one author.
 
-excalidraw-revise writes the delivery with it (read_revise.py deliver); first written for b04_prep_ai's
+excalidraw-revise writes the delivery with it (read_revise.py deliver); first written for b31_prep_ai's
 delivery/ (2026-10-11), shared here so every Block builds its tracked file the same way.
 
     from track_changes import write_tracked, preview

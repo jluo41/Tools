@@ -10,8 +10,8 @@ description: >-
   the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-13"
+  version: "0.7.0"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
 
@@ -22,17 +22,26 @@ then screenshot the sections with the highlighted part, (no need to check every 
 and then add the comments, and how that will link to our paper."
 
 ```text
-paper.pdf ─▶ paper.txt ─▶ reading.yaml ──────────▶ shots/E1-p3.jpg ... ─▶ <name>.excalidraw
-  (text)      the agent     logic · excerpts ·       quote found by its       Paper logic · Link to
-              reads it      comments · links         words, highlighted,      our paper · Questions ·
-                                                     cropped (shoot)          Excerpts (draw)
+paper.pdf ─▶ paper.txt ─▶ reading.yaml ──────────▶ shots/page-p3.jpg ... ─▶ <name>.excalidraw
+  (text)      the agent     logic · excerpts ·       quote found by its       ① the map ② your call
+              reads it      comments · links         words, highlighted,      ③ … one frame a part,
+                                                     pages shown (shoot)      as stairs (draw)
 ```
 
-The canvas has four frames:
-- **Paper logic**: the argument, one box per step, each naming the excerpts it rests on.
-- **Link to our paper**: each of our claims with the excerpts that touch it.
-- **Questions**: what the person must decide, in red.
-- **Excerpts**: one card per passage: the highlighted shot, `Says:`, `Comment:`, `-> Ours`.
+The canvas is stairs, each frame lower and further right, an act named at its left and a named arrow down
+to the next (excalidraw-studio's principles; JL 261014: "this things are too wordy, I feel you didn't follow
+the principles of draw design"):
+- **① how much changes** (or **its logic, and our link**): the key point in the key-point yellow (a
+  reading's `key`), the argument as a flow of steps, each naming its passages, and what each passage answers
+  to (our target, each passage's number and verdict). At most 200 words, none under 28 px.
+- **② 🙋 Your call**: the `open` choices in red, small on purpose.
+- **③ … one frame per part**: a paper read whole is one part; a Section with `parts` is one frame per
+  subsection (JL 261014: "for the section like s15, we have more subsection, I think we can use the stair to
+  show each subsection as well, to seperate them"). Its pages on the left, each read passage highlighted in
+  place and numbered in the margin; on the right one note per passage, level with it, in three short lines:
+  its verdict and label, what it answers to (target and review points), and `next`, what our paper does
+  with it (JL 261014: "what we want is still the screenshot in the left, and the comments in the right").
+  Its key point is the tally of its passages' verdicts. `says` and `comment` stay in reading.yaml and the face.
 
 
 Steps
@@ -83,11 +92,11 @@ R=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read/ref/read_p
    - **Between 0.8 and 0.99**: the quote is not word for word. Check that the highlight
      covers it all.
 
-   Open the `.png` and read every shot. To change a crop, use one of these `crop` values:
-   - `lines:N` for N lines of context;
-   - `block` for the whole paragraph block;
-   - `page` for the whole page;
-   - a box in PDF points.
+   Open the `.png` and check that each highlight sits on its lines and each note stands level
+   with its passage. A Section read whole takes `section:` (ref/reading-spec.md). `crop`
+   (`lines:N`, `block`, `page`, or a box in PDF points) shapes only the single shots in
+   `shots/<id>-p<N>.jpg`; a table or figure's `crop` box is also what it highlights when it has
+   no `mark`.
 8. **Put the open questions in `open`.** These are choices the person makes (which version to
    cite, whether a domain argument holds), never verdicts we reached for them.
 
@@ -110,10 +119,14 @@ Never move or restyle their marks.
 Rules
 -----
 
-1. **The paper's words, highlighted in place.** A shot is the PDF page itself, cropped
-   around the quote with 3 lines of context from the same column, with the quote under a
-   yellow marker. Shots are JPEGs, so a reading of 8 passages weighs about 2.5 MB. No
-   retyped quotes on the canvas.
+1. **The paper's words, highlighted in place.** The left of each part frame is the PDF's pages
+   themselves (`shots/page-p<N>[-<part>].jpg`, 150 dpi), every quote under a yellow marker where
+   it stands. A short paper shows its pages with passages whole; past 4 pages, each is cut to its
+   passages (6 lines above, 4 below). A reading's `section:` shows a Section of a paper whole,
+   from its heading to the next, cut at its `parts` headings between whole lines; an opening
+   with no passage joins the first part. A nine-page Section weighs about 2 MB. No retyped
+   quotes on the canvas. `shots/<id>-p<N>.jpg`, each passage cropped with 3 lines of context, is
+   still written for excalidraw-task's readings.
 2. **Every excerpt links or says why not.** An excerpt without `link` shows in red under
    "Not linked", and a target with no excerpt shows "no excerpt links here yet". Both are
    prompts, not errors.
@@ -126,9 +139,9 @@ Rules
 4. **Name corrections.** When a published version, erratum or correction changes a number in
    the PDF being read, say so in that excerpt's `comment` with the date. A shot of an
    outdated line must not read as current.
-5. **Readable at 50% zoom.** The canvas keeps words at 20 px or more and frames within one
-   screen, except Excerpts, which reads top to bottom. `canvas.write` prints a warning when
-   either rule breaks.
+5. **Readable at 50% zoom.** Nothing a reader needs is under 28 px, the map frame fits one screen
+   and holds at most 200 words, and a part frame reads top to bottom. After every build, run
+   excalidraw-studio's `scripts/check.py <drawing>`; every frame passes, or say why not.
 
 Needs poppler (`pdftotext`, `pdftoppm`), Pillow and PyYAML. The writer and the previewer are
 `haipipe-studio`'s `scripts/canvas.py` and `scripts/render_png.py`. For the real Excalidraw

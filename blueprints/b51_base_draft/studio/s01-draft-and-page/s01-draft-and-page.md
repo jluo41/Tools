@@ -61,7 +61,7 @@ Open
 2. Where `draft/` lives: b16's answer is beside the face it drafts (`tNN/draft/`,
    `reports/qNN/draft/`), never at a Block or Job root, and not moved to the Block like Studio,
    Related and Delivery; on disk today 102 Task drafts, 6 report drafts, 0 at a root. JL to confirm.
-3. 5 drafts sit inside SHIFT studio topics (`b04_prep_ai/studio/s04-task31-updated-draft/draft/`
+3. 5 drafts sit inside SHIFT studio topics (`b31_prep_ai/studio/s04-task31-updated-draft/draft/`
    and others): stay there, or become a Task or a report once the text is sent?
 4. `page.py adopt` refuses a freshly set-up Page, because its Content is still empty, so a new
    Page cannot reach Content through adopt.

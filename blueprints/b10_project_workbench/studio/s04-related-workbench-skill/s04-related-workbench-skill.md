@@ -100,7 +100,7 @@ s04-D07 · Related uses the Studio's group bar: Current · the groups · Untagge
     `studio/_groups.txt` does for topics. The subfolders only keep the files (until s04-D08 the same
     day: a subfolder is a group). A file no row names yet sat under Untagged ("no row yet"); dragging
     it onto a group writes its row, and a table with no
-    `group` column gets one then. JL 261011 (relayed by the b02_aid_ai and sNN sessions): "🎯Current 0
+    `group` column gets one then. JL 261011 (relayed by the b32_aid_ai and sNN sessions): "🎯Current 0
     / Untagged 4 / + Group, for the studio". Built by the sNN session: `frame.related_items`,
     `_related_set_groups`, `group_list`, `studio_group_op(kind="related")`; workbench 1.15.1.
 s04-D08 · A subfolder of `related/` is a group of its files, and `emails/` is one more subfolder (JL
@@ -123,6 +123,13 @@ s04-D09 · `/haipipe-related` is a skill of its own, `skills/1_base/project/haip
     table, groups and view, as delivery/ does. JL 261011: "for the s04, do we need a haipipe-related
     skill for it? and where it should be in the Tools?". The workbench's `run-add-related-<slug>`
     button names it; haipipe-studio and haipipe-delivery point to it.
+s04-D10 · A second draft of something that came in is kept beside the first, its version in its name
+    (`Proposal-v1.docx`, `Proposal-v2.docx`), never over it, and Related shows them as one item with a
+    row of versions, newest first, by Delivery's rule (s03-D10, `frame.version_roots`; JL 261014: "for
+    the /haipipe-related and /haipipe-delivery ... item 谁谁谁，然后里面可能有 version 1、version 2、version
+    3"). The item keeps the row one of its versions has, so a new version needs no new row. One name in
+    two formats (a .docx and its PDF print) stays two items, each with its own row. A deck previews
+    here too, drawn slide by slide.
 
 
 Open

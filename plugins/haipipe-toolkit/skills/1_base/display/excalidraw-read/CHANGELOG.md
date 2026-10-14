@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.7.0 · 2026-10-14 · Stairs: the map, your call, one frame a part; the pages left, short notes right
+
+- JL 261014, on the notes beside the pages: "this things are too wordy, I feel you didn't follow the principles of
+  draw design, right?" The drawing now follows excalidraw-studio's principles and passes its `check.py`: stairs (each
+  frame lower and further right, an act named at its left, a named arrow down to the next); ① the map: the key point
+  in the key-point yellow (a reading's `key`), the argument as a flow, what each passage answers to; ② 🙋 your call,
+  in red; then one frame per part. Each note is three lines of 28 px or more: verdict and label, target and review
+  points, and the excerpt's new `next` (10 words at most). `says` and `comment` stay in reading.yaml and the face.
+- JL 261014: "for the section like s15, we have more subsection, I think we can use the stair to show each subsection
+  as well, to seperate them". A `section:`'s new `parts` (its subsection headings, in order) cut it into one frame
+  per subsection, cut between whole lines; an opening with no passage joins the first part. Each part's key point
+  is its passages' verdict tally.
+- JL 261014, on the seven Section readings of Paper-TestToLearn-MS2026 (s10 to s16) drawn as two columns of excerpt
+  cards: "not this version"; "what we want is still the screenshot in the left, and the comments in the right". The
+  Excerpts cards are gone: the PDF's pages sit on the left with every passage highlighted where it stands and
+  numbered in the margin, and one note per passage on the right, level with it, as `topic_drawing.py` and
+  excalidraw-task's `transcript_frame` already drew a paper or a transcript.
+- `shoot` also writes `shots/page-p<N>.jpg` and `shots/pages.json` (each passage's height on its page): a short paper's
+  pages with passages whole, a long one's cut to them, a running header ("DRAFT") dropped.
+- A reading's optional `section:` (`name`, `pages`, `from`, `until`) shows one Section whole, from its heading to the
+  next one's, so our own draft can be read paragraph by paragraph against its review. Badges on touching lines stack.
+
 ## 0.6.0 · 2026-10-13 · A topic of papers
 
 - JL 261013: "add more sNN to show the related paper by topics, just like ... s52-t06 ... using /excalidraw-read";
@@ -29,21 +51,21 @@
   plan's image changes and its deletions of guidance are kept; each evidence item is a comment on its anchor (or on
   the first words of its sentence when the anchor's words changed). It checks that rejecting every change gives the
   file and accepting every change gives the draft, then prints the PDF with LibreOffice. All three SHIFT Blocks
-  pass both checks (b04 20 changes, b03 14, b02 27).
+  pass both checks (b31 20 changes, b21 14, b32 27).
 - A comment anchor that is not in the draft, or appears more than once, is reported with the reason before its comment
-  moves to the first words of its sentence (asked by b03_event_cgm, whose table repeated three anchors).
-- `ref/track_changes.py`: b04_prep_ai's tracked-changes writer, shared here, with `split` (cut a paragraph before a
+  moves to the first words of its sentence (asked by b21_event_cgm, whose table repeated three anchors).
+- `ref/track_changes.py`: b31_prep_ai's tracked-changes writer, shared here, with `split` (cut a paragraph before a
   phrase; its new mark is a tracked insertion).
 - JL 261011: "IT IS NOT GOOD WE HAVE ONE PARAGRAPH WITH 17 SENTENCES". The middle column draws one box per draft
   paragraph, labelled `P<n> · <brief>`; a section's heading counts its paragraphs.
 
-## 0.3.2 · 2026-10-11 · Seed fixes found on b02
+## 0.3.2 · 2026-10-11 · Seed fixes found on b32
 
 - A line break inside a Word cell or paragraph is read as a space (a table cell had "issued.Q4" run together).
 - A change whose part is named by its heading ("References", "Overview Figure") is tagged like one named by id.
 - A change of punctuation only (",") tags the sentence its new text sits in.
-  Found by the agent that moved b02_aid_ai's s04 to sentence mode; checked by reseeding b02 (all 26 changes with
-  text tagged) and b04 (unchanged) on copies.
+  Found by the agent that moved b32_aid_ai's s04 to sentence mode; checked by reseeding b32 (all 26 changes with
+  text tagged) and b31 (unchanged) on copies.
 
 ## 0.3.1 · 2026-10-11 · Sentence mode reads a haipipe-draft draft
 
@@ -52,7 +74,7 @@
   haipipe-draft's own `plan_layout`), `previous/` for older versions, `records/` for the writing log. A Bullet is
   a sentence (`- B<k> · S<n> · <sentence>` in `## 3 · Draft`); its Point and `Change:` line sit in `## 1 ·
   Structure`. Paragraphs follow the file's. `seed` writes v1.0; `edits --apply` writes by address (C3.P5.B7).
-- The one-line-per-sentence file of 0.3.0 is retired (b04's moved into `draft/`).
+- The one-line-per-sentence file of 0.3.0 is retired (b31's moved into `draft/`).
 
 ## 0.3.0 · 2026-10-11 · Revise mode: the updated text as sentences
 
@@ -61,10 +83,10 @@
   haipipe-writing"; "the delivery, we can think about it in the last step".
 - Plan key `sentences`: the middle column becomes one editable text box per sentence, read from a draft file in
   the topic (format in `ref/revise-spec.md` § Sentence mode); changed sentences green with their change numbers,
-  notes level with them; no updated PDF is printed or rendered (a rebuild of b04 s04 went from about 20 s to 7 s).
+  notes level with them; no updated PDF is printed or rendered (a rebuild of b31 s04 went from about 20 s to 7 s).
 - `read_revise.py seed` writes that file once from the tracked Word file, each sentence tagged with the changes
   whose added words fall in it; `edits --apply` folds a person's sentence edits into it. Built on the sentence
-  reader (`draft_units`, `split_sentences`) and `edits` command added the same day by the b04_prep_ai_content
+  reader (`draft_units`, `split_sentences`) and `edits` command added the same day by the b31_prep_ai_content
   session.
 
 ## 0.2.1 · 2026-10-11 · Revise mode: notes smaller, in three columns
@@ -91,7 +113,7 @@
 - Margin numbers (JL 261011, on 10 and 11 drawn over each other: "this is not well"): centred on their first
   line; two changes on one line share one label ("10 11"); a number on the next line steps left. GAP2 50 to 80.
 - A change whose words a table row's label splits (LibreOffice prints a two-line cell's "Year 3" between the
-  lines; found by b02) is found again with the `after` label's words left out.
+  lines; found by b32) is found again with the `after` label's words left out.
 
 ## 0.2.0 · 2026-10-11 · Revise mode: a file we change, section by section
 
@@ -99,14 +121,14 @@
   change", and, on where it belongs: "for the /excalidraw-read, this should be what we want to have".
 - New `ref/read_revise.py draw <face.md> --key <plan>`: one screenshot per section of the PDF Word makes of a
   co-author's file, each planned change's words in a numbered red outline, an arrow to Change · Why ·
-  Evidence needed; then the evidence asks by who can answer. Its look is b04_prep_ai s03's "The Task 3.1
+  Evidence needed; then the evidence asks by who can answer. Its look is b31_prep_ai s03's "The Task 3.1
   file today" frame; it reuses read_paper.py's drawing helpers and haipipe-studio's canvas.write.
 - New `ref/revise-spec.md`: the plan's yaml. SKILL.md: section "Revise mode: a file we change".
-- Same day, following b03_event_cgm's s04 (JL: "you should follow this structure"): two frames, the plan in one
+- Same day, following b21_event_cgm's s04 (JL: "you should follow this structure"): two frames, the plan in one
   picture and the file today | updated draft | notes per section; `--updated-pdf`, `after`, line breaks as " / ",
-  running headers and footers left out, sides cut at the text's edge (b02 kept the page tops at the text's edge).
+  running headers and footers left out, sides cut at the text's edge (b32 kept the page tops at the text's edge).
   Both PDFs printed by LibreOffice through the Codex document runtime.
-- First use: b04_prep_ai s04-task31-updated-draft (Nes Mathioudakis's Task 3.1 file, 20 changes, 7 sections).
+- First use: b31_prep_ai s04-task31-updated-draft (Nes Mathioudakis's Task 3.1 file, 20 changes, 7 sections).
 
 ## 0.1.2 · 2026-10-10 · Highlights to the last word, crops without slivers
 

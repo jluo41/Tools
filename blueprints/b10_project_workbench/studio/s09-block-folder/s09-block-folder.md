@@ -5,7 +5,7 @@ s09 · Block folder: what the Block's folder holds
 
 **Tags:** `UI` · `Structure`
 
-**Topic:** the Studio's fourth folding part, Folder, under the topic cards, Related and Timeline: the Block's own
+**Topic:** the Studio's fifth folding part, Folder, under the topic cards, Related, Delivery and Timeline: the Block's own
 folder as a tree, so a person sees what each folder of the Block holds without leaving the workbench. Asked by JL
 261012: "我想创建一个 s09。这个 s09 我们是要创建 folder，也就是在 related 和 timeline 下面再搞一个 folder，这样我就可以
 看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容。" Then: "I want to make it to be the s09-block-folder"
@@ -53,8 +53,8 @@ frames:
      tree: ["{block}/", "{files} files in {dirs} folders", "b00_rawdata: 5,317 files"]}
   - {id: read, at: [1, 0], title: 🔎 folder_rows, why: one folder's rows, cols: 1,
      tree: [dotfiles and caches left out, "folders first, then files, by name", "300 rows, then: Show the other N"]}
-  - {id: screen, at: [2, 0], title: 🖥️ Studio › Folder, why: the fourth folding part, cols: 1, key: true,
-     tree: [under Related and Timeline, the first level comes with the page, "a folder's rows: when it opens"]}
+  - {id: screen, at: [2, 0], title: 🖥️ Studio › Folder, why: the fifth folding part, cols: 1, key: true,
+     tree: [under Related, Delivery and Timeline, the first level comes with the page, "a folder's rows: when it opens"]}
   - {id: share, at: [0, 1], title: 🔒 a shared viewer, why: "the share doors check path=", cols: 1,
      tree: [sees only the folders of their grant, "a path outside the root: 404"]}
   - {id: folder, at: [1, 1], title: 📂 a folder row, why: it folds, cols: 1,
@@ -93,7 +93,7 @@ s09-D10 · A topic of its own for the Studio's Folder part, s09-block-folder (JL
     s09-block-folder"). First made as s33-studio-folder the same day, since s09 had merged into s01 that morning
     (s01-D37); renamed at JL's ask. The old s09's decisions keep s09-D01 to D09 in s01, so this topic's start at
     D10, and its one session, `runs/run-draw-s09/`, moved to s01's `history/run-draw-s09/`.
-s09-D11 · Folder is the Studio's fourth folding part, under Timeline: the Block's own folder as one tree, folders
+s09-D11 · Folder is the Studio's fifth folding part (fourth until s03-D09 put Delivery under Related), under Timeline: the Block's own folder as one tree, folders
     first, then files, by name; a folder says its count and what it is for, a file its size and its day; a file
     opens in the pop-out (JL 261012: "这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容").
 s09-D12 · A folder's rows load when it is opened (`?view=dir&path=`), 300 at a time with a button for the rest:

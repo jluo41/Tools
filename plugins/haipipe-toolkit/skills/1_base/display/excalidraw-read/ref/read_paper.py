@@ -239,19 +239,25 @@ def page_png(pdf, n, cache):
     return Image.open(p).convert("RGB")
 
 
-def shoot_one(pdf, pages, ex, shots, cache):
-    """Highlight the quote's words (or the `mark` boxes) and crop around them; returns the shot's record."""
-    if not ex.get("quote"):                           # a table or figure: a given box, marked by boxes
-        return shoot_region(pdf, ex, shots, cache)
+def best_page(pages, ex):
+    """(ratio, page number, hits) of the excerpt's quote: the page the reading names first, then the rest."""
     order = [ex["page"]] if ex.get("page") else []
     order += [i for i in range(1, len(pages) + 1) if i not in order]
     r, n, hits = 0.0, order[0], []
-    for p in order:                                   # the page the reading names first, then the rest
+    for p in order:
         rp, hp = find(pages[p - 1], ex["quote"])
         if rp > r:
             r, n, hits = rp, p, hp
         if r >= 0.8:
             break
+    return r, n, hits
+
+
+def shoot_one(pdf, pages, ex, shots, cache):
+    """Highlight the quote's words (or the `mark` boxes) and crop around them; returns the shot's record."""
+    if not ex.get("quote"):                           # a table or figure: a given box, marked by boxes
+        return shoot_region(pdf, ex, shots, cache)
+    r, n, hits = best_page(pages, ex)
     rec = {"id": ex["id"], "page": n, "match": round(r, 2), "asked_page": ex.get("page")}
     if r < 0.8:
         rec["status"] = "not found"
@@ -305,6 +311,173 @@ def shoot_region(pdf, ex, shots, cache):
     return rec
 
 
+# ---------------------------------------------------------------- pages: the source whole, its passages in place
+
+PAGE_DPI = 150        # a page shown whole: legible at 100% zoom, a nine-page Section near 2 MB
+LONG_PDF = 4          # past this many pages and no `section:`, only the pages with passages, each cut to them
+
+
+def locate(pages, ex):
+    """(page number, [line boxes in PDF points]) where an excerpt stands, or (None, []): a quote by its words, a
+    table or figure by its `mark` boxes (else its `crop` box)."""
+    if not ex.get("quote"):
+        crop = ex.get("crop")
+        boxes = [[float(v) for v in b] for b in ex.get("mark") or []] or \
+            ([[float(v) for v in crop]] if isinstance(crop, list) and len(crop) == 4 else [])
+        return (ex["page"], boxes) if ex.get("page") and boxes else (None, [])
+    r, n, hits = best_page(pages, ex)
+    if r < 0.8:
+        return None, []
+    by_line = {}
+    for w, bi, li in hits:
+        by_line.setdefault((bi, li), []).append(w["b"])
+    return n, sorted((union(b) for b in by_line.values()), key=lambda b: (b[1], b[0]))
+
+
+def line_tops(page):
+    """Every text line of a page as (top, bottom, its words), top to bottom, in PDF points."""
+    return sorted((ln["b"][1], ln["b"][3], " ".join(w["t"] for w in ln["w"])) for bl in page["blocks"] for ln in bl["l"])
+
+
+def heading_top(page, s, after=-1.0):
+    """The top of the first row of the page, below `after`, that starts with s (spacing and punctuation ignored), or
+    None. A row is the lines that share a height, left to right: pdftotext gives a heading's number and its words as
+    two lines."""
+    want, rows = norm(s), []
+    for bl in page["blocks"]:
+        for ln in bl["l"]:
+            mid = (ln["b"][1] + ln["b"][3]) / 2
+            row = next((r for r in rows if abs(r["mid"] - mid) < 3), None)
+            if row is None:
+                rows.append(row := {"mid": mid, "top": ln["b"][1], "lines": []})
+            row["top"] = min(row["top"], ln["b"][1])
+            row["lines"].append((ln["b"][0], " ".join(w["t"] for w in ln["w"])))
+    for r in sorted(rows, key=lambda r: r["top"]):
+        if r["top"] > after and want and norm(" ".join(t for _, t in sorted(r["lines"]))).startswith(want):
+            return r["top"]
+    return None
+
+
+def gap_above(page, at):
+    """Where to cut above a heading at `at`: 16 pt above it, but never through the line before it."""
+    before = [e for _, e, _ in line_tops(page) if e < at - 1]
+    return max(at - 16, (max(before) + 2) if before else 0.0)
+
+
+def shoot_pages(pdf, pages, spec, shots, cache):
+    """The pages the drawing shows on its left, every passage highlighted where it stands (JL 261014: "what we want
+    is still the screenshot in the left, and the comments in the right"). A reading's `section:` shows its pages
+    whole, the first from its `from` heading and the last up to its `until` heading (a Section of our own paper,
+    read whole); its `parts`, the subsection headings in order, cut it into parts, each from its heading to the next
+    one's (JL 261014: "for the section like s15, we have more subsection ... use the stair to show each subsection
+    as well, to seperate them"), and the words between the Section's heading and its first part are its opening.
+    Without `section:`, every page holding a passage, whole for a short paper and cut to its passages past LONG_PDF
+    pages. Writes shots/page-p<N>[-<k>].jpg and shots/pages.json: {parts: [{name, cuts: [{page, shot, size, marks:
+    [{id, top}]}]}]}, each passage's top in its shot's pixels."""
+    marks = {}
+    for ex in spec.get("excerpts", []):
+        n, boxes = locate(pages, ex)
+        if n:
+            marks.setdefault(n, []).append((ex["id"], boxes))
+    sec = spec.get("section") or {}
+    span = [int(v) for v in sec.get("pages") or []]
+    shown = sorted(set(range(span[0], span[-1] + 1) if span else []) | set(marks))
+    whole = bool(span) or len(pages) <= LONG_PDF
+
+    def body(page):                                   # the page's words, not its page number
+        return [bl["b"] for bl in page["blocks"] if not "".join(w["t"] for ln in bl["l"] for w in ln["w"]).isdigit()]
+    edges = [b for n in shown for b in body(pages[n - 1])]
+    x0 = max(0.0, min((b[0] for b in edges), default=0.0) - 14)
+    x1 = max((b[2] for b in edges), default=pages[0]["w"]) + 14
+    heads = {line_tops(pages[n - 1])[0][2] if line_tops(pages[n - 1]) else "" for n in shown}
+    running = len(shown) > 1 and len(heads) == 1 and heads != {""}   # a header every page repeats ("DRAFT")
+
+    def limits(n):                                    # a page's own cut: under a running header, above its number
+        page, rows = pages[n - 1], line_tops(pages[n - 1])
+        return (rows[0][1] + 4 if running and len(rows) > 1 else 0.0,   # just under it: a picture is never cut
+                max((b[3] for b in body(page)), default=page["h"]) + 18)
+
+    names, cuts = [], []                              # cuts: [part index, page, top, bottom] in PDF points
+    if span:
+        n, t = span[0], limits(span[0])[0]
+        if sec.get("from"):
+            at = heading_top(pages[n - 1], sec["from"])
+            t = max(0.0, at - 16) if at is not None else t
+        starts = [[sec.get("name") or "", n, t]]      # the opening
+        for name in sec.get("parts") or []:
+            hit = next(((m, gap_above(pages[m - 1], at)) for m in range(starts[-1][1], span[-1] + 1)
+                        if (at := heading_top(pages[m - 1], name, starts[-1][2] if m == starts[-1][1] else -1))
+                        is not None), None)
+            if hit is None:
+                print(f"  part not found on pages {span[0]}-{span[-1]}: {name!r}")
+                continue
+            between = hit[0] > starts[-1][1] or any(starts[-1][2] + 20 < t < hit[1] + 14
+                                                    for t, _, _ in line_tops(pages[hit[0] - 1]))
+            if not between:                           # the heading right under the last one: the part starts there
+                starts[-1][0] = name
+            else:
+                starts.append([name, *hit])
+        end = [span[-1], limits(span[-1])[1]]
+        if sec.get("until"):
+            at = heading_top(pages[span[-1] - 1], sec["until"])
+            end[1] = at - 8 if at is not None else end[1]
+        for k, (name, n, t) in enumerate(starts):
+            n2, t2 = (starts[k + 1][1:] if k + 1 < len(starts) else end)
+            names.append(name)
+            for m in range(n, n2 + 1):
+                top, bottom = (t if m == n else limits(m)[0]), (t2 if m == n2 else limits(m)[1])
+                if bottom - top > 24:                 # two lines at least: never a sliver of the next page
+                    cuts.append([k, m, top, bottom])
+    else:
+        names = [None]
+        for n in shown:
+            top, bottom = limits(n)
+            here = [b for _, bx in marks.get(n, []) for b in bx]
+            if not whole:                             # cut between whole lines: 6 above the first passage, 4 below
+                rows = line_tops(pages[n - 1])
+                above = [t for t, _, _ in rows if t < min(b[1] for b in here)][-6:]
+                below = [e for _, e, _ in rows if e > max(b[3] for b in here)][:4]
+                top = max(0.0, (above[0] if above else min(b[1] for b in here)) - 4)
+                bottom = (below[-1] if below else max(b[3] for b in here)) + 6
+            cuts.append([0, n, top, bottom])
+    held = {k: [] for k in range(len(cuts))}          # each passage in the cut that holds its first line
+    for n, found in marks.items():
+        for i, bx in found:
+            same = [k for k, c in enumerate(cuts) if c[1] == n]
+            if not same:                              # outside the Section: its own cut, in the last part
+                cuts.append([len(names) - 1, n, *limits(n)])
+                held[len(cuts) - 1], same = [], [len(cuts) - 1]
+            k = min(same, key=lambda k: 0 if cuts[k][2] <= bx[0][1] < cuts[k][3] else
+                    min(abs(bx[0][1] - cuts[k][2]), abs(bx[0][1] - cuts[k][3])))
+            held[k].append((i, bx))
+            cuts[k][2] = min(cuts[k][2], min(b[1] for b in bx) - 16)
+            cuts[k][3] = max(cuts[k][3], max(b[3] for b in bx) + 8)
+    if len(names) > 1 and not any(held[k] for k, c in enumerate(cuts) if c[0] == 0):
+        names[1] = f"opening and {names[1]}"          # an opening with no passage read: it joins the first part
+        names.pop(0)
+        for c in cuts:
+            c[0] = max(0, c[0] - 1)
+    many = {n for n in {c[1] for c in cuts} if sum(c[1] == n for c in cuts) > 1}
+    k_pt, s = DPI / 72, PAGE_DPI / 72
+    parts = [{"name": name, "cuts": []} for name in names]
+    for k, (part, n, top, bottom) in sorted(enumerate(cuts), key=lambda c: (c[1][0], c[1][1], c[1][2])):
+        im = page_png(pdf, n, cache)
+        mask = Image.new("RGB", im.size, (255, 255, 255))
+        d = ImageDraw.Draw(mask)
+        for bx0, by0, bx1, by1 in (b for _, bx in held[k] for b in bx):
+            d.rectangle([bx0 * k_pt - 2, by0 * k_pt - 1, bx1 * k_pt + 2, by1 * k_pt + 2], fill=HIGHLIGHT)
+        im = ImageChops.multiply(im, mask).crop((int(x0 * k_pt), max(0, int(top * k_pt)),
+                                                 min(im.width, int(x1 * k_pt)), min(im.height, int(bottom * k_pt))))
+        im = im.resize((round(im.width * PAGE_DPI / DPI), round(im.height * PAGE_DPI / DPI)), Image.LANCZOS)
+        dst = shots / (f"page-p{n}-{part + 1}.jpg" if n in many else f"page-p{n}.jpg")
+        im.save(dst, "JPEG", quality=60, optimize=True)
+        parts[part]["cuts"].append({"page": n, "shot": str(dst.relative_to(shots.parent)), "size": list(im.size),
+                                    "marks": [{"id": i, "top": round((bx[0][1] - top) * s, 1)}
+                                              for i, bx in sorted(held[k], key=lambda h: h[1][0][1])]})
+    (shots / "pages.json").write_text(json.dumps({"parts": parts}, indent=1))
+    return [c for p in parts for c in p["cuts"]]
+
+
 def load(spec_path):
     spec_path = Path(spec_path).resolve()
     spec = yaml.safe_load(spec_path.read_text())
@@ -335,9 +508,11 @@ def cmd_shoot(a):
         old.unlink()
     with tempfile.TemporaryDirectory() as tmp:        # full-page renders stay out of the reading folder
         recs = [shoot_one(pdf, pages, ex, shots, Path(tmp)) for ex in spec.get("excerpts", [])]
+        shown = shoot_pages(pdf, pages, spec, shots, Path(tmp))
     (shots / "index.json").write_text(json.dumps(recs, indent=1))
     for r in recs:
         print(f"  {r['id']:<4} p{r['page']:<3} match {r['match']:.2f}  {r['status']}  {r.get('shot', '')}")
+    print(f"  pages shown: {', '.join('p%d' % p['page'] for p in shown) or 'none'}")
     bad = [r for r in recs if r["match"] < 0.8]
     if bad:
         print(f"{len(bad)} excerpt(s) not shot: copy the quote exactly from paper.txt, one sentence within one "
@@ -399,14 +574,18 @@ def arrow(x0, y0, x1, y1, color=INK, dashed=False):
              startArrowhead=None, endArrowhead="arrow")
 
 
-def picture(x, y, path, width):
+def picture(x, y, path, width, as_is=False):
+    """An image `width` wide; `as_is` embeds a JPEG this script already sized and compressed (a shown page)."""
     im = Image.open(path).convert("RGB")
-    k = min(1.0, 1600 / max(im.size))
-    if k < 1:
-        im = im.resize((round(im.width * k), round(im.height * k)))
-    buf = io.BytesIO()
-    im.save(buf, "JPEG", quality=85, optimize=True)
-    raw = buf.getvalue()
+    if as_is:
+        raw = Path(path).read_bytes()
+    else:
+        k = min(1.0, 1600 / max(im.size))
+        if k < 1:
+            im = im.resize((round(im.width * k), round(im.height * k)))
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=85, optimize=True)
+        raw = buf.getvalue()
     fid = hashlib.sha1(raw).hexdigest()
     FILES[fid] = {"mimeType": "image/jpeg", "id": fid, "created": 1790900000000,
                   "dataURL": "data:image/jpeg;base64," + base64.b64encode(raw).decode()}
@@ -425,117 +604,246 @@ def frame(name, w, h=10):
     return e
 
 
-def draw_logic(spec, x=60, w=1240):
-    fr = frame("Paper logic", w + 120)
-    p = spec["paper"]
-    y = para(x, 40, p.get("title", ""), w, 34)
-    y = para(x, y + 10, p.get("cite", ""), w, 22, GRAY)
-    if p.get("link"):
-        y += 6 + text(x, y + 6, path_lines(p["link"], w, 20), 20, GRAY, CODE, link=p["link"])["height"] + 6
-    y += 40
-    for i, node in enumerate(spec.get("logic", [])):
+T_TITLE, T_KEY, T_HEAD, T_NODE, T_TEXT, T_ACT = 60, 38, 44, 30, 28, 40   # excalidraw-studio ⑤ ⑦: none a reader needs under 28
+VERDICTS = {"KEEP": "✅", "REWRITE": "✏️", "CUT": "✂️", "MOVE": "➡️"}
+ROLES = {"question": "🔎", "gap": "🕳️", "method": "🛠️", "result": "📊", "claim": "💬", "limit": "⚠️"}
+POINTS = re.compile(r"^((?:[A-Z]\d+(?:\.\d+)?)(?:,\s*[A-Z]\d+(?:\.\d+)?)*):\s*")
+W_FRAME = 2750                                       # every frame one width: a page's column and its notes'
+PAGE_W, NOTE_W = 1300, 1100                          # a shown page's width on the canvas; a note's
+
+
+def circled(n):
+    return chr(0x2460 + n - 1) if 1 <= n <= 20 else f"({n})"
+
+
+def numbers(spec):
+    """Each excerpt's number: E3 is 3; any other id, its place in the reading."""
+    return {e["id"]: (int(e["id"][1:]) if re.fullmatch(r"E\d+", str(e["id"])) else k)
+            for k, e in enumerate(spec.get("excerpts", []), 1)}
+
+
+def verdict_of(ex):
+    """KEEP, REWRITE, CUT or MOVE when the comment begins with one (a Section of our own paper read for a
+    redesign), else ''."""
+    m = re.match(r"\s*(KEEP|REWRITE|CUT|MOVE)\b", str(ex.get("comment", "")))
+    return m.group(1) if m else ""
+
+
+def target_name(spec, tid):
+    """A target as the drawing names it: our own new Section by its label's head ("The new §1"), else its id."""
+    t = next((t for t in (spec.get("ours") or {}).get("targets", []) if t["id"] == tid), {})
+    label = str(t.get("label", ""))
+    return label.split(":")[0] if str(tid).startswith("new-") and label else str(tid)
+
+
+def why_line(spec, ex):
+    """A note's second line: what the passage answers to, by its target's name and the review points cited."""
+    ln = ex.get("link") or {}
+    if not ln.get("to"):
+        return "not linked to our paper"
+    name = target_name(spec, ln["to"])
+    if str(ln["to"]).startswith("new-"):
+        return f"{'carried into' if ln.get('relation') in ('borrows', 'supports', 'cites') else 'what is missing in'} {name}"
+    m = POINTS.match(str(ln.get("how", "")))
+    return f"{name} · {m.group(1)}" if m else name
+
+
+def box_start(x, y, w, color=INK, fill=None, dashed=False):
+    """A box drawn before its words, so a filled one never covers them; its height is set once they are drawn."""
+    b = base("rectangle", x, y, w, 10, color, dashed=dashed)
+    if fill:
+        b.update(backgroundColor=fill, fillStyle="solid")
+    return b
+
+
+def draw_overview(spec, x=60):
+    """Act 1, the map: the key point (how much of the Section changes, in the key-point yellow), the argument as a
+    flow of steps, each naming its passages, and what each passage answers to. Every passage's says and comment stay
+    in reading.yaml and the face (excalidraw-studio ⑦ few words in a map, ⑨ never a wall of text)."""
+    canvas = __import__("canvas")
+    sec, p, num = spec.get("section") or {}, spec["paper"], numbers(spec)
+    exs = spec.get("excerpts", [])
+    fr = frame(f"① {sec['name']}: how much changes" if sec.get("name") else "① Its logic, and our link", W_FRAME)
+    y = para(x, 30, f"{sec['name']} as submitted" if sec.get("name") else p.get("title", ""), W_FRAME - 2 * x, T_TITLE)
+    key = spec.get("key") or sec.get("key")
+    if key:
+        lines = key if isinstance(key, list) else [key]
+        b = box_start(x, y + 20, W_FRAME - 2 * x, fill=canvas.KEY)
+        first = re.sub(r"\b(\d+) (KEEP|REWRITE|CUT|MOVE)\b", lambda m: f"{m[1]} {VERDICTS[m[2]]} {m[2]}", lines[0])
+        yy = para(x + 30, y + 38, first, W_FRAME - 2 * x - 60, T_KEY)       # the verdicts' emoji, named once
+        for more in lines[1:]:
+            yy = para(x + 30, yy + 6, more, W_FRAME - 2 * x - 60, T_NODE)
+        b["height"] = yy - (y + 20) + 18
+        y = yy + 18
+    lw, rx = 1300, x + 1300 + 130
+    rw = W_FRAME - x - rx
+    yl = para(x, y + 36, "🧭 its argument", lw, T_HEAD) + 18
+    for i, st in enumerate(spec.get("logic", [])):    # one box a step: its role, its passages, its words
         if i:
-            arrow(x + 60, y - 46, x + 60, y - 8)
-        top = y
-        refs = "  ".join(node.get("excerpts", []))
-        text(x + 24, y + 14, f"{node.get('role', '').upper()}" + (f"   ·   {refs}" if refs else ""), 22, GRAY)
-        bottom = para(x + 24, y + 48, node["text"], w - 60, 24)
-        base("rectangle", x, top, w, bottom - top + 22)
-        y = bottom + 22 + 54
-    fr["height"] = y
+            arrow(x + 60, yl - 34, x + 60, yl - 4)
+        refs = " ".join(circled(num[e]) for e in st.get("excerpts", []) if e in num)
+        b = box_start(x, yl, lw)
+        yy = para(x + 24, yl + 12, f"{ROLES.get(st.get('role'), '▪')} {st.get('role', '')} {refs}: {st['text']}",
+                  lw - 48, T_NODE)
+        b["height"] = yy - yl + 12
+        yl = yy + 12 + 32
+    yr = para(rx, y + 36, "🎯 what each answers to", rw, T_HEAD) + 18
+    seen = []
+    for ex in exs:
+        to = (ex.get("link") or {}).get("to")
+        if to and to not in seen:
+            seen.append(to)
+    for to in seen + ([None] if any(not ex.get("link") for ex in exs) else []):
+        mine = [ex for ex in exs if (ex.get("link") or {}).get("to") == to]
+        b = box_start(rx, yr, rw, INK if to else RED)
+        yy = para(rx + 24, yr + 14, target_name(spec, to) if to else "not linked yet", rw - 48, T_NODE, INK if to else RED)
+        yy = para(rx + 24, yy + 6, "   ".join(f"{circled(num[ex['id']])} " + (VERDICTS[verdict_of(ex)] if verdict_of(ex)
+                                             else (ex.get('link') or {}).get('relation', '')) for ex in mine), rw - 48, T_TEXT)
+        b["height"] = yy - yr + 14
+        yr = yy + 14 + 22
+    fr["height"] = max(yl, yr) + 20
     return fr
 
 
-def draw_ours(spec, recs, x=60, w=1480):
-    ours = spec.get("ours") or {}
-    fr = frame("Link to our paper", w + 120)
-    y = para(x, 40, "Our paper: " + ours.get("title", "(not named)"), w, 30)
-    if ours.get("source"):
-        y += 6 + text(x, y + 6, path_lines(ours["source"], w, 20), 20, GRAY, CODE)["height"] + 6
-    y += 30
-    exs = spec.get("excerpts", [])
-    for t in ours.get("targets", []):
-        top = y
-        y = para(x + 24, y + 16, f"{t['id']}  {t.get('label', '')}", w - 60, 26)
-        linked = [e for e in exs if (e.get("link") or {}).get("to") == t["id"]]
-        if not linked:
-            y = para(x + 48, y + 8, "no excerpt links here yet", w - 100, 22, RED)
-        for e in linked:
-            ln = e["link"]
-            y = para(x + 48, y + 8, f"{e['id']} {ln['relation']}: {ln.get('how', '')}", w - 100, 22)
-        base("rectangle", x, top, w, y - top + 18)
-        y += 48
-    loose = [e for e in exs if not e.get("link")]
-    if loose:
-        y = para(x, y, "Not linked: " + ", ".join(e["id"] for e in loose), w, 22, RED) + 20
+def draw_questions(spec, x=60, w=1500):
+    """Act 2, small on purpose (canvas.explains): the person's open choices, in red, with room to answer."""
+    canvas = __import__("canvas")
+    fr = canvas.explains(frame("② 🙋 Your call", w + 2 * x))
+    y = para(x, 40, "🙋 Your call: mark the drawing in red, or answer in the face's Open", w, T_HEAD) + 30
+    for q in spec.get("open", []) or ["(none yet)"]:
+        b = box_start(x, y, w, RED)
+        yy = para(x + 24, y + 14, q, w - 48, T_TEXT, RED)
+        b["height"] = yy - y + 16
+        y = yy + 16 + 30
+    fr["height"] = y + 120                                   # room to answer under the last question
+    return fr
+
+
+def badge(x, y, n, size=56):
+    """A passage's number in a circle of the key-point yellow, beside the passage and beside its note, so no
+    arrow has to cross between them (excalidraw-task's transcript_frame does the same)."""
+    e = base("ellipse", x, y, size, size, INK, sw=2, rough=0)
+    e.update(backgroundColor=__import__("canvas").KEY, fillStyle="solid", roundness=None)
+    s = str(n)
+    text(x + (size - len(s) * 30 * 0.55) / 2, y + (size - 30 * 1.25) / 2, s, 30)
+
+
+def part_title(spec, part, many):
+    sec = spec.get("section") or {}
+    whole = sec.get("name") or "The paper"
+    if not part.get("name") or part["name"] == whole:
+        return f"{whole}: opening" if many else f"{whole}, read"
+    head = whole.split()[0] if whole.startswith("§") else whole
+    return f"{head} · {part['name']}"
+
+
+def draw_part(spec, part, mark, many, x=60):
+    """One part of the reading (a subsection of a Section, or the paper read whole): its pages on the left, every
+    passage highlighted where it stands and numbered in the margin, and on the right one note per passage, level
+    with it, in three short lines: its verdict and name, what it answers to, what the new paper does (`next`).
+    A passage the PDF does not hold is a red note under the last one, never hidden."""
+    canvas = __import__("canvas")
+    folder, num = Path(spec["_folder"]), numbers(spec)
+    exs = {e["id"]: e for e in spec.get("excerpts", [])}
+    title = part_title(spec, part, many)
+    fr = canvas.reads_down(frame(f"{mark} {title}", W_FRAME))
+    cuts = part["cuts"]
+    pages = sorted({c["page"] for c in cuts})
+    ids = [m["id"] for c in cuts for m in c["marks"] if m["id"] in exs]
+    y = para(x, 40, title, W_FRAME - 2 * x, T_HEAD)
+    where = (f"page {pages[0]}" if len(pages) == 1 else f"pages {pages[0]}-{pages[-1]}") if pages else "no page"
+    tally = [(v, sum(verdict_of(exs[i]) == v for i in ids)) for v in VERDICTS]
+    say = " · ".join(f"{VERDICTS[v]} {n} {v}" for v, n in tally if n) if any(n for _, n in tally) else \
+        f"{len(ids)} passage{'s' if len(ids) != 1 else ''} read" if ids else "no passage read here: see the face's table"
+    b = box_start(x, y + 14, W_FRAME - 2 * x, fill=canvas.KEY)  # its key point: what happens to this part
+    yy = para(x + 24, y + 26, f"{where} · {say}", W_FRAME - 2 * x - 48, T_NODE)
+    b["height"] = yy - (y + 14) + 12
+    y = yy + 40
+    px, nx = x + 90, x + 90 + PAGE_W + 140
+    top, notes = y, []
+    for c in cuts:
+        w, h = c["size"]
+        sc = PAGE_W / w
+        text(x, top + 4, f"p.{c['page']}", T_TEXT, GRAY)
+        picture(px, top, folder / c["shot"], PAGE_W, as_is=True)
+        notes += [(top + m["top"] * sc, c["page"], exs[m["id"]]) for m in c["marks"] if m["id"] in exs]
+        top += h * sc + 50
+    below, margin = y, y - 100
+    for at, n, ex in sorted(notes, key=lambda t: t[0]):
+        margin = max(at - 10, margin + 62)           # passages on touching lines: their badges stack, never overlap
+        badge(px - 70, margin, num[ex["id"]])
+        ny = max(at - 16, below)                     # level with its passage, else just under the note above
+        badge(nx - 72, ny + 4, num[ex["id"]])
+        ln, v = ex.get("link"), verdict_of(ex)
+        b = box_start(nx, ny, NOTE_W, INK if ln else RED)
+        yy = para(nx + 24, ny + 14, f"{VERDICTS.get(v, '')} {v} · {ex.get('label', '')}" if v else ex.get("label", ""),
+                  NOTE_W - 48, 34)
+        yy = para(nx + 24, yy + 8, why_line(spec, ex), NOTE_W - 48, T_TEXT, INK if ln else RED)
+        if ex.get("next"):
+            yy = para(nx + 24, yy + 6, "→ " + ex["next"], NOTE_W - 48, T_TEXT)
+        b["height"] = yy - ny + 18
+        below = yy + 18 + 36
+    fr["height"] = max(top, below) + 40
+    return fr
+
+
+def draw_missing(spec, placed, x=60):
+    """The excerpts no page shows (a quote the PDF does not hold), red, so none is hidden; None when every one shows."""
+    lost = [e for e in spec.get("excerpts", []) if e["id"] not in placed]
+    if not lost:
+        return None
+    fr = frame("❓ Not found in the PDF", 1500 + 2 * x)
+    y = 40
+    for ex in lost:
+        b = box_start(x, y, 1500, RED, dashed=True)
+        yy = para(x + 24, y + 14, f"{ex['id']} · copy its quote again from paper.txt", 1452, T_NODE, RED)
+        yy = para(x + 24, yy + 8, f"Quote: {ex.get('quote', '')}", 1452, T_TEXT, RED)
+        b["height"] = yy - y + 16
+        y = yy + 16 + 30
     fr["height"] = y + 20
     return fr
 
 
-def draw_excerpts(spec, recs, x=60, card=1220, gap=80):
-    canvas = __import__("canvas")
-    fr = canvas.reads_down(frame("Excerpts", 2 * card + gap + 120))
-    by_id = {r["id"]: r for r in recs}
-    folder = Path(spec["_folder"])
-    y_row, col = 40, 0
-    row_bottom = 40
-    for ex in spec.get("excerpts", []):
-        cx = x + col * (card + gap)
-        rec = by_id.get(ex["id"], {})
-        y = para(cx, y_row, f"{ex['id']}  ·  p.{rec.get('page', ex.get('page', '?'))}  ·  {ex.get('label', '')}",
-                 card, 26)
-        if rec.get("shot"):
-            y = picture(cx, y + 12, folder / rec["shot"], card) + 18
-        else:
-            miss = f"quote not found in the PDF: \"{ex['quote'][:120]}\"" if ex.get("quote") else rec.get(
-                "status", "not shot")
-            y = para(cx, y + 12, miss, card, 22, RED) + 12
-        if ex.get("says"):
-            y = para(cx, y, "Says: " + ex["says"], card, 22)
-        if ex.get("comment"):
-            y = para(cx, y + 8, "Comment: " + ex["comment"], card, 22)
-        ln = ex.get("link")
-        if ln:
-            y = para(cx, y + 8, f"-> Ours {ln['to']} ({ln['relation']}): {ln.get('how', '')}", card, 22)
-        row_bottom = max(row_bottom, y)
-        col += 1
-        if col == 2:
-            col, y_row = 0, row_bottom + 90
-    fr["height"] = row_bottom + 60
-    return fr
-
-
-def draw_questions(spec, x=60, w=900):
-    fr = frame("Questions", w + 120)
-    y = 40
-    for q in spec.get("open", []) or ["(none yet)"]:
-        top = y
-        y = para(x + 20, y + 14, q, w - 40, 24, RED)
-        base("rectangle", x, top, w, y - top + 16, RED, sw=1)
-        y += 44
-    fr["height"] = y + 200                                   # room to answer beside each question
-    return fr
-
-
 def cmd_draw(a, recs=None):
+    """The reading as stairs (excalidraw-studio ③: each frame lower and further right, an act named at its left,
+    a named arrow down to the next): ① the map of how much changes, ② the person's open choices, then one frame
+    per part of the paper, each part's pages beside its short notes."""
     spec_path, spec, _ = load(a.spec)
     folder = spec_path.parent
     spec["_folder"] = str(folder)
+    idx = folder / "shots" / "pages.json"
     if recs is None:
-        idx = folder / "shots" / "index.json"
-        recs = json.loads(idx.read_text()) if idx.exists() else cmd_shoot(a)
+        old = json.loads(idx.read_text()) if idx.exists() else None
+        recs = cmd_shoot(a) if not isinstance(old, dict) else json.loads((folder / "shots" / "index.json").read_text())
     canvas = __import__("canvas")
-    logic, ours, qs = draw_logic(spec), draw_ours(spec, recs), draw_questions(spec)
-    exc = draw_excerpts(spec, recs)
+    parts = [p for p in json.loads(idx.read_text())["parts"] if p["cuts"]]
+    order = [draw_overview(spec), draw_questions(spec)]
+    acts = ["Act 1 · how much changes" if (spec.get("section") or {}).get("name") else "Act 1 · its logic", "Act 2 · your call"]
+    words = ["what to decide", "its pages, part by part" if len(parts) > 1 else "its pages"]
+    for k, part in enumerate(parts):
+        order.append(draw_part(spec, part, circled(k + 3), len(parts) > 1))
+        acts.append(f"Act {k + 3} · {part_title(spec, part, len(parts) > 1)}")
+        words.append("next part")
+    placed = {m["id"] for p in parts for c in p["cuts"] for m in c["marks"]}
+    lost = draw_missing(spec, placed)
+    if lost:
+        order.append(lost)
+        acts.append(f"Act {len(acts) + 1} · not found")
     FRAME[0] = None
-    canvas.grid(els, [[logic["id"], ours["id"], qs["id"]], [exc["id"]]])
+    canvas.stairs(els, [f["id"] for f in order], gap=300, step=520)
+    for f, name in zip(order, acts):                   # each act named at the left of its frame
+        para(f["x"] - 840, f["y"] + 20, name, 760, T_ACT)
+    for f, g, w in zip(order, order[1:], words):        # a named arrow down the gap to the next step
+        ax = g["x"] + 160
+        arrow(ax, f["y"] + f["height"] + 16, ax, g["y"] - 16)
+        para(ax + 28, (f["y"] + f["height"] + g["y"]) / 2 - 26, w, 900, 36)
     out = folder / f"{a.name or folder.name}.excalidraw"
     canvas.write(out, els, "excalidraw-read/ref/read_paper.py", files=FILES)
     png = out.with_suffix(".png")
     subprocess.run([sys.executable, str(STUDIO / "render_png.py"), str(out), str(png), "0.45"], check=False)
     if png.exists():                                  # a preview, not the drawing: 256 colours keep it light
         Image.open(png).convert("RGB").quantize(256).save(png, optimize=True)
-    print(f"drew {len(spec.get('logic', []))} logic steps, {len(recs)} excerpts -> {out}")
+    print(f"drew {len(spec.get('logic', []))} logic steps, {len(recs)} excerpts, {len(parts)} parts -> {out}")
 
 
 def main():

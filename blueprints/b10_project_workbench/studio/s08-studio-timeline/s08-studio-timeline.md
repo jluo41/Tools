@@ -5,7 +5,7 @@ s08 · Timeline: what moved when, down one axis
 
 **Tags:** `UI` · `Structure`
 
-**Topic:** the Studio's third folding part, Timeline, under the topic cards and Related: what moved in this
+**Topic:** the Studio's fourth folding part, Timeline, under the topic cards, Related and Delivery (s03-D09): what moved in this
 Block's Studio and when, drawn as a real timeline, one axis down the page with a dot per day, at three
 levels of detail. Started from JL 261011 ("for the layout of the studio, I think we can also add another
 section of the Timeline"), then: "I want it to be a real timelne, and make it very concise ... Like the

@@ -357,7 +357,7 @@ s52-D18 · Decided (JL 261012, on the Tools-SPACE row of the door table: "we wil
     ("has no share door"), instead of writing a grant that nothing serves.
 s52-D19 · Shared (JL 261012: "could we share this to zdi1", Physician-SPACE's Project-LLMRec-Physician): group
     llmrec, `Physician-SPACE/.server_config/people/llmrec.txt` (zdi1@jh.edu), view on the whole Project. Link:
-    https://physician.jjluo.com/_board/workbench?path=examples/Project-LLMRec-Physician&studio=1. Checked on the live
+    https://physician.jjluo.com/_board/workbench?path=examples-3-nlp/Project-LLMRec-Physician&studio=1. Checked on the live
     door with zdi1's cookie: the Project and b02 200, their Home lists LLMRec only, PhyTrait's b01 404, a change 403.
     Fixed on the way: a grant kept the table's own note only by luck (now `_save_table` keeps it), and a new list's
     header named block.jjluo.com (now its own door).

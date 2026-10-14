@@ -1,3 +1,28 @@
+## 0.29.0 · 2026-10-14 · A labeling Job's five Task types on the shared frame
+
+- The frame's labeling theme (`servers/workbench-labeling/labeling_theme.py`) types each Task of a Job by
+  its `task-type:` line: items (`data`) · keys (`raw`) · building (`labeling-building`) · scanning
+  (`labeling-scanning`) · score (`eval`); today's `labeling` Page is building and scanning at once
+  (b15 s13, JL 261014).
+- Job › Work: each Task's type and state, and a dashed card per type still to make; the Task ▾ dropdown
+  is grouped by type; the Job's Description shows its `schema.yaml`.
+- The items Task follows b15 s41-task-items-procedure: three steps (read the raw data · make the items, its recipe
+  signed · embed the items), each a tab named the same in Work and Report (1 · Data · 2 · Items · 3 · Embedding).
+  Work: the step's state and Copy prompt, then ① big numbers and one sentence, ② the picture (one row as cards of
+  made-up values; one made-up item and the item list by id and size; the map), ③ the details folded. Report: ① and
+  ② only, the results. No Draft, Evidence or Value views on an items Task; older tab links open the matching tab.
+  Uses the base's new `.stat-row` and `.card-row` looks.
+- Real data shows (b15 s41-D07): 1 · Data folds the raw rows as they are; 2 · Items draws the first real item and
+  lists the real items. Step 3 is the items Task's own Run, `rNN_embedding_<model>` (`scripts/embed_items.py` on the
+  engine's encoder, groups and map); 3 · Embedding draws its map (a dot per item, coloured by group) and the
+  groups' keywords, or names the ready ticket a person presses.
+- Step 1 (1 · Data) shows the raw file's Table Card from a `rNN_raw_read` Run: one row and its checks, the columns
+  by meaning group, a made-up sample in the real columns (synth_df, never a real row), what to watch out for; its
+  prompt names haipipe-task-for-description. The items come from the newest Run that wrote a manifest.
+- A scanning Task reads the Job's labeling Page; Scan moved from a Task's Delivery into Work.
+- `labeling.py` `_task_runs` reads one folder per Run (`runs/<run>/result/`), so the Job data card shows
+  its Tasks' Runs again; the flat layout still reads.
+
 ## 0.28.2 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

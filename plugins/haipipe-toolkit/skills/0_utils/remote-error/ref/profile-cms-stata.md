@@ -6,7 +6,7 @@ Medicare claims that never leave that machine.
 Load this profile only when the user or verified project configuration names
 the CMS secure-server environment. Stata `r(nnn)`, `.do`, `.ps1`, or log-path
 shapes alone do not establish CMS. Home repo: `Physician-SPACE`, project
-`examples/Project-Personality-OpioidRx`; unrelated projects use their own
+`examples-2-cms/Project-Personality-OpioidRx`; unrelated projects use their own
 profile or the generic method.
 
 Two skills own the other half of this environment and should be read alongside:

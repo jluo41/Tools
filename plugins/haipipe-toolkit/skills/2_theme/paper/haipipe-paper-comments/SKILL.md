@@ -8,8 +8,8 @@ description: >-
   response. Use when taking in comments, triaging them, answering a review, or turning recurring comments
   into questions. Replaces haipipe-paper-round (renamed 2026-10-07).
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-10-11"
+  version: "1.3.0"
+  last_updated: "2026-10-14"
   group-token: "CM"
   legacy-group-token: "RD"
   outline:
@@ -296,6 +296,12 @@ table in the batch Page, beside the concern table:
   analysis), or `declined`.
 - **reply**: the paragraph id in the Response Package (role 7).
 - **state**: the states above; an item is `answered` only when every point it cites is.
+- **hits** (optional): the part of the sent study the item attacks, by the paper's building-map keys (a foundation
+  card's `key` such as `stage2`, a Task id such as `T1`), or `—`.
+- **fixed by** (optional): the work that answers it: a building-map key, a Story §6/§7 row (`T9`, `D2`), a claim id
+  (`C2`), a Question's landing (`Q1`), or a Section stem (`t03_research-design`). Both are joined by " · ";
+  `excalidraw-workflow` reads them and draws the review overlay on the paper's building map: red on what was hit,
+  green on what fixes it, and under the map the items fixed only in the writing or by nothing yet (JL 261014).
 
 The workbench reads this table as written: a version's Audience Report › Comments shows one row per item
 (Review Item │ Work │ Report), and each Section's Comments view shows the items that land on it.

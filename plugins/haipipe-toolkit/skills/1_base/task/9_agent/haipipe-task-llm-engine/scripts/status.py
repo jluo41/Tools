@@ -11,7 +11,7 @@ from typing import Any
 
 
 PACKAGES = ("claude-agent-sdk", "openai-codex")
-PROJECT = Path("examples/Project-LLMRec-Physician")
+PROJECT = Path("examples-3-nlp/Project-LLMRec-Physician")
 
 
 def locate_root(start: Path) -> Path:

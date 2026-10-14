@@ -3,7 +3,7 @@
 Two frames in one row, both read from the yaml blocks in this topic's face:
   1. the workflow in one picture: the steps in their lanes, the loop back from a person's edits, step 7
      (read_revise.py draw) opened into its parts, seconds per rebuild as bars, and where the effort went;
-  2. how b04_prep_ai's s04 got here on 2026-10-11: JL's asks, what changed, the pass, then the open points.
+  2. how b31_prep_ai's s04 got here on 2026-10-11: JL's asks, what changed, the pass, then the open points.
 A rebuild keeps whatever a person drew on the canvas (canvas.write, a seed snapshot beside the drawing).
 
     python build_s21_revise_mode_workflow.py
@@ -85,7 +85,7 @@ def workflow(d):
     W = 2560
     f = frame("s21 · Revise mode: the workflow in one picture", W, 1440)
     para(40, 28, "s21 · Revise mode: how a co-author's file becomes a side-by-side drawing", W - 80, 34)
-    para(40, 78, "How b04_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file) is drawn, step by step, in sentence "
+    para(40, 78, "How b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file) is drawn, step by step, in sentence "
                  "mode: the updated text comes from a haipipe-draft draft and the Word file is built last. The seconds "
                  "are one rebuild on JL's Mac (2026-10-11); red marks what costs most or is still open.", W - 80, 20)
 
@@ -166,8 +166,8 @@ def workflow(d):
 def history(d):
     """Frame 2: how s04 got here, one row per ask, then the peers and the open points."""
     W = 2200
-    f = frame("s21 · How b04's s04 got here, 2026-10-11", W, 1440)
-    para(40, 28, "How b04's s04 got here: one row per ask, 2026-10-11", W - 80, 34)
+    f = frame("s21 · How b31's s04 got here, 2026-10-11", W, 1440)
+    para(40, 28, "How b31's s04 got here: one row per ask, 2026-10-11", W - 80, 34)
     cols = [(40, "#", 40), (90, "JL's words", 640), (760, "What changed", 1060), (1850, "pass", 140),
             (2010, "kept", 150)]
     y = 100

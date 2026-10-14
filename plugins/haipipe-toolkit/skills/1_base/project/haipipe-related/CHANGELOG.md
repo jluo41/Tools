@@ -1,6 +1,12 @@
 haipipe-related · Changelog
 ===========================
 
+**[0.3.0] · 2026-10-14 · Versions of one thing are one item; decks preview**
+
+A second draft is kept beside the first with its version in its name, and Related shows them as one item with a
+row of versions, newest first, by Delivery's rule (`frame.version_roots`; b10 s04-D10; JL 261014: "item 谁谁谁，
+然后里面可能有 version 1、version 2、version 3"). A `.pptx` previews, drawn slide by slide. New section: Versions.
+
 **[0.2.0] · 2026-10-13 · Groups are kinds; a paper row opens on its PDF**
 
 The Studio's Related bar now reads by what each item is (JL 261013: "this one should [be] things like

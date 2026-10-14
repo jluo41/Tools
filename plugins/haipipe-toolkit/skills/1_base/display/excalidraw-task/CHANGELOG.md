@@ -1,6 +1,21 @@
 excalidraw-task · Changelog
 ===========================
 
+## [0.6.0] · 2026-10-14 · A board or cover, read for the reader
+
+- JL 261014, on 海安雨's video covers in his GitHub index (each one the finished whiteboard, no text): "you can try
+  to add your comments and understanding for the readers".
+- `task_drawing.py`: `board_frame` draws "rNN · The board, read" (or "The cover, read" for `kind: cover`, a paper
+  video's first slide) from the topic's `reads/<rid>-*/board.yaml`, in the transcript frame's layout: the picture
+  on the left, each part outlined and numbered, one note per part on the right (Board shows · Our reading · → this
+  Task). Outlines only (a fill hid the picture in the png); yellow on a cover's dark slide. The picture is copied
+  to `assets/<rid>-board.jpg`, since `embed` keys a picture by its file name.
+- `draw_task` (rows) and `task_stairs.draw_task` (with `detail: true`) put it before the transcript frame; a topic
+  with no board.yaml draws as before.
+- After a cold reviewer: a box's number moves to its top-right corner when its top-left sits in an earlier box;
+  the line under the title says what a note holds and what → names; covers embedded at JPEG q60.
+- First drawn: Proj10 b13 s31 (r06 board, r07 and r08 covers).
+
 ## [0.5.0] · 2026-10-13 · The staircase: a Task's sources as steps, their results beside them
 
 - JL 261013: "you should also think about how to update the /excalidraw-task as well, we try to follow the same idea",

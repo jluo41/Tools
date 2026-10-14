@@ -1,3 +1,9 @@
+## 0.7.4 · 2026-10-14 · Two venue sources read
+
+- `references/external-skill-map.md` lists Nature-Paper-Skills' `nature-portfolio-playbook` (life-science Nature
+  journals only, so not vendored) and the awesome-journal-skills packs (observed patterns for haipipe-paper-venue,
+  never desk rules), read for Paper-LoopExpLearning's venue frame (JL 261014).
+
 ## 0.7.3 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

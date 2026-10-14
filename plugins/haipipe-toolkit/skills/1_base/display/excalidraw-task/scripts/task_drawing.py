@@ -1192,6 +1192,76 @@ def transcript_frame(d: Drawing, run: dict, w: dict, assets: Path, noun: str = "
     return fit(d, f, bottom, detail=True)
 
 
+BOARD_W = 2400                                                     # a whiteboard's width on the canvas
+
+
+def board_of(run: dict, assets: Path):
+    """A video's board reading (the topic's reads/<rid>-*/board.yaml): (its folder, the spec), or None."""
+    found = sorted((assets.parent / "reads").glob(f"{run['rid']}-*/board.yaml"))
+    if not found or yaml is None:
+        return None
+    return found[0].parent, yaml.safe_load(found[0].read_text()) or {}
+
+
+def board_frame(d: Drawing, run: dict, w: dict, assets: Path, us: str = "This Task") -> dict | None:
+    """A whiteboard video's finished board, read for the reader (JL 261014, on 海安雨's boards from his GitHub index:
+    "you can try to add your comments and understanding for the readers"): the board whole on the left, each part
+    it teaches outlined and numbered in teaching order, and to its right one note per part, in one column
+    (Board shows · Our reading · → this Task), the same layout as the transcript, read. What the board shows is
+    kept apart from our reading of it. `board.kind: cover` reads a paper video's first slide the same way. None
+    when the video has no board reading."""
+    got = board_of(run, assets)
+    if not got:
+        return None
+    folder, spec = got
+    b = spec.get("board") or {}
+    src = (folder / str(b.get("image") or "board.jpg")).resolve()
+    if not src.is_file():
+        return None
+    img = assets / f"{run['rid']}-board.jpg"                       # embed() keys a picture by its file name:
+    if not img.is_file() or img.stat().st_mtime < src.stat().st_mtime:  # every reads/*/board.jpg would be one picture
+        from PIL import Image
+        assets.mkdir(parents=True, exist_ok=True)                  # q60, as the transcript pages keep the drawing
+        Image.open(src).convert("RGB").save(img, "JPEG", quality=60, optimize=True)   # small (JL 261013)
+    ours = spec.get("ours") or ((read_of(run, assets) or (None, {}))[1].get("ours") or {})
+    targets = {t["id"]: t.get("label", t["id"]) for t in ours.get("targets") or []}
+    noun = str(b.get("kind") or "board")                          # board: a hand-drawn whiteboard; cover: a slide
+    name = f"{run['rid']} · The {noun}, read"
+    f = d.frame(name, W, TALLEST)
+    d.room(f)
+    sub = (f"🎨 {b.get('source') or src.name} · each outlined box is a part the {noun} teaches, its yellow number in teaching"
+           f" order; its note on the right carries the same number: what the {noun} shows (translated), then our reading"
+           f" of it; → names the point of {us.lower()} it cites, supports or contrasts")
+    y = heading(d, name, sub, str(spec.get("key") or w.get("says") or run["summary"] or f"❓ no key for {run['rid']}"), W)
+    (iw, ih), px = size_of(img), 150
+    sc = BOARD_W / iw
+    d.box(px - 2, y - 2, BOARD_W + 4, ih * sc + 4, INK, 1)
+    embed(d, img, px, y, BOARD_W, ih * sc)
+    nx, below, drawn = px + BOARD_W + 200, y, []
+    inside = lambda x, yy: any(a <= x <= c and b_ <= yy <= e for a, b_, c, e in drawn)
+    for k, r in enumerate(spec.get("regions") or [], 1):
+        num = excerpt_number(r.get("id", ""), k)
+        box = r.get("box") or []
+        if len(box) == 4:                                          # the part, boxed on the board, its number on
+            x0, y0, x1, y1 = box                                   # the box's corner
+            d.el("rectangle", px + x0 * sc, y + y0 * sc, (x1 - x0) * sc, (y1 - y0) * sc, strokeColor=MARKER if noun == "cover" else INK,
+                 strokeWidth=5, roundness={"type": 3})      # an outline only: a fill hides the board in the png;
+                                                            # yellow on a cover's dark slide, where black is lost
+            cx = x1 if inside(x0, y0) and not inside(x1, y0) else x0   # top-left, or top-right when the top-left
+            number_badge(d, px + cx * sc - 28, y + y0 * sc - 28, num, 56)   # sits in an earlier box (reviewer 261014)
+            drawn.append(box)
+        link = r.get("link") or {}
+        body = [f"{noun.capitalize()} shows: {r.get('shows', '')}", f"Our reading: {r.get('comment', '')}"] + \
+            ([f"→ {us}, {targets.get(link['to'], link['to'])} ({link.get('relation', '')}): {link.get('how', '')}"]
+             if link.get("to") else [])
+        title = r.get("label", "") + ("" if len(box) == 4 else " · ❓ not boxed on the board")
+        hh = card_height(title, body, NOTE_W)
+        number_badge(d, nx - 96, below + 10, num)
+        card(d, nx, below, NOTE_W, hh, title, body, INK if len(box) == 4 else RED)
+        below += hh + 40
+    return fit(d, f, max(y + ih * sc, below - 40), detail=True)
+
+
 def source_frame(d: Drawing, run: dict, w: dict, assets: Path, stairs: bool = True, passages: bool = True) -> dict:
     """One video for someone who knows nothing yet: what it says; what the screen shows and the words to know
     first; its formula explained and its steps, each with why; how to say it and what to check (red)."""
@@ -1277,8 +1347,9 @@ def draw_task(folder: Path, out: Path, cfg: dict | None = None, source: str = ""
     groups = []                                                    # per source: its transcript, read, then its frame
     for r in runs:
         ww = words.get(r["rid"]) or {}
+        bd = None if r.get("work") else board_frame(d, r, ww, assets)
         t = None if r.get("work") else transcript_frame(d, r, ww, assets)
-        groups.append(([t["id"]] if t else []) + [source_frame(d, r, ww, assets, stairs, passages=t is None)["id"]])
+        groups.append([x["id"] for x in (bd, t) if x] + [source_frame(d, r, ww, assets, stairs, passages=t is None)["id"]])
     acts = [{"name": "Act 1 · The idea", "frames": [idea["id"]]}]
     if noun == "Runs":                                             # three Runs to a row
         frames = [g[0] for g in groups]

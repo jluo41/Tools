@@ -14,8 +14,8 @@ description: >-
   logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
   /haipipe-paper-story.
 metadata:
-  version: "0.20.0"
-  last_updated: "2026-10-11"
+  version: "0.21.0"
+  last_updated: "2026-10-14"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -571,9 +571,15 @@ reruns each `build_*.py` and looks at the result in the Idea Studio (the `Redraw
 `haipipe-paper-workflow/ref/run-cards.md`). The scripts write through the studio's canvas writer, so a mark a
 person adds on the canvas survives the next run; the builder's own boxes are never moved by hand.
 
-A workflow drawing is the usual first one: data → the study's tasks → the answer, then one row per question:
-analysis → hypothesis and claim → where the answer lands. For a new paper, copy an existing builder and change
-only its SPEC (the card text, the task folders, the state of each piece of work).
+A workflow drawing is the usual first one, the paper's building map: data → the study's tasks → the answer, then
+one row per question: analysis → hypothesis and claim → where the answer lands. It is `excalidraw-workflow`'s
+(`1_base/display/excalidraw-workflow/`): run `workflow_drawing.py make <topic>` for the forwarding builder and a
+`<topic>-drawing.yaml` holding only the foundation cards, their links and the displays; every other word is read
+from the telling, the Board Questions' reports and the Task folders on every build. When a version has a comments
+report whose Review Items fill `hits` and `fixed by` (haipipe-paper-comments), the map marks in red what the
+reviewers asked to change and in green the work that fixes it (JL 261014: "highlight that which part the reviewers
+wanted us to change, and how will our new field experiment and analsysis will fix it"). Never copy an older paper's
+`make_paper_workflow.py` again; move it to the topic's `history/` and draw through the skill.
 
 ## 🧲 Narrative · will the story attract its readers?
 

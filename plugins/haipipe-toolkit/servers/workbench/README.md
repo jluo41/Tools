@@ -67,7 +67,17 @@ wrapped by `frame.studio_related`). Every theme shows this one view; paper's car
 Report › Related Papers. Folded by default; a
 `space=Related` link, or an older `space=Description&sub=Related` one, opens the Studio with it unfolded.
 
-Timeline is the Studio's third folding part, under Related (JL 261011: "add another section of the
+Delivery is the Studio's third folding part, under Related (JL 261014: "a new item after the Related to
+name it as the delivery ... show all the delivery and preview them here"; b10 s03-D09): what came in, then
+what went out. Every result of the Block's `delivery/`, from every Job and Task, as Delivery's own cards
+(`frame.delivery_view`, wrapped by `frame.studio_delivery`), each opened on its preview, under the same
+group bar; its line counts the results by kind. The top row's Delivery stays the full view.
+A deliverable is one item, its lanes and versions folded in (`frame.delivery_items`, `frame.version_roots`, the
+version rule Related shares; b10 s03-D10): a row of versions, newest picked, over that version's preview. A deck
+with no render is drawn slide by slide from its package (`frame.pptx_preview`, `?view=pptx&path=<.pptx>`, its
+pictures from `&media=`).
+
+Timeline is the Studio's fourth folding part, under Delivery (JL 261011: "add another section of the
 Timeline"; b10 s08-studio-timeline): what moved when, on one axis down the page, the oldest day at the
 top and the newest at the bottom, a dot per day (JL 261011: "a real timelne ... with a axis down", "up to
 down"). Three levels of detail (JL: "different level of details"): Days, the default, a chart, a row per
@@ -87,7 +97,7 @@ Decisions with no date are left off (b10 s08-D10). By topic, each column, 60 px 
 full name: the sNN straight and bold, the rest slanted above it (s08-D12, s08-D14). Every day from the first to the last stays on the axis: a day with nothing shown gets a
 short row and a hollow dot, more than 3 in a row are one row, "N quiet days" (s08-D13).
 
-Folder is the Studio's fourth folding part, under Timeline (JL 261012: "在 related 和 timeline 下面再搞一个 folder，
+Folder is the Studio's fifth folding part, under Timeline (JL 261012: "在 related 和 timeline 下面再搞一个 folder，
 这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容"; b10 s09-block-folder): the Block's own
 folder as one tree, folders first, then files, by name. A folder folds and says how many things it holds and what it is
 for (`frame.folder_word`: the names every Block shares by a fixed line, a Run by its card, else its face's title); a

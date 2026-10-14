@@ -1,14 +1,14 @@
 """A studio topic: scaffold one, or save a session on it (haipipe-studio, b03 s21, 261007).
 
     python new_topic.py topic <level folder> --slug <topic> --title '<title>'
-                              [--band concept|level|run|guide|server|slides] [--nn NN] [--feeds q01_x,q02_y]
+                              [--band concept|level|run|guide|procedure|server|slides] [--nn NN] [--feeds q01_x,q02_y]
                               [--builder] [--dry-run]
     python new_topic.py session <level folder> sNN --title '…' [--ask '…'] [--summary '…'] [--changed a,b]
                               [--date MMDD]
 
 `topic` makes `studio/sNN-<topic>/` in the owning Block (also from a Job/Task input), with its face `sNN-<topic>.md` (Topic ·
 Feeds · Files · Decided · Open), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
-skills · s31-s39 Guide · s51-s59 server · s61-s69 slide drafts. `--builder` adds `build_sNN_<topic>.py`, a builder on excalidraw-studio's draw.py that draws
+skills · s31-s39 Guide · s41-s49 Task procedures · s51-s59 server · s61-s69 slide drafts. `--builder` adds `build_sNN_<topic>.py`, a builder on excalidraw-studio's draw.py that draws
 through canvas.write (a rebuild keeps the person's marks), and runs it once.
 
 `session` saves one working session as a pass of the topic's soft Run `runs/run-draw-<sNN>/`
@@ -29,7 +29,7 @@ RUN_SCRIPTS = HERE.parents[1] / "haipipe-run" / "scripts"
 # the ticket said `close: <what settles it>` and the Run had no end (b10 s06-D06, 261011)
 DRAW_CLOSE = "a person moves the topic's Stage to agreed, or names what is still wrong in red on the drawing"
 RECOMMENDED_TOPICS = 10
-BANDS = {"concept": (1, 9), "level": (11, 19), "run": (21, 29), "guide": (31, 39), "server": (51, 59),
+BANDS = {"concept": (1, 9), "level": (11, 19), "run": (21, 29), "guide": (31, 39), "procedure": (41, 49), "server": (51, 59),
          "slides": (61, 69)}
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 

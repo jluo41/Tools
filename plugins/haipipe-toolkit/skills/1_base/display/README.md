@@ -24,6 +24,8 @@ excalidraw-read/            🗺 one paper on a canvas · its logic, key passage
                                with the quote highlighted, comments, links to our paper
 excalidraw-revise/          🗺 a file we change · each section's page beside the updated
                                sentences, a note per change, the tracked Word file last
+excalidraw-workflow/        🗺 a paper's building map · data → sources → tests → analysis →
+                               claim → Section, with what the reviewers hit (red) and fixes (green)
 html-to-svg/ · icon-to-svg/ 🔧 converters
 figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and

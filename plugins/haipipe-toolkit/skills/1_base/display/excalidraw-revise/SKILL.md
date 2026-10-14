@@ -53,7 +53,7 @@ R=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-revise/ref/read
 .venv/bin/python $R deliver <face> --key <plan> [--no-pdf]  # last: the tracked Word file, checked, then its PDF
 ```
 
-A topic keeps a small builder beside its face that calls these (b03's `build_s04_task21_updated_draft.py` is
+A topic keeps a small builder beside its face that calls these (b21's `build_s04_task21_updated_draft.py` is
 the shortest; b01_irb's `build_s03_for_cir2_changes.py` adds `--base`, below).
 
 
@@ -107,8 +107,8 @@ Steps
 Worked examples
 ---------------
 
-- `examples-0-cowork/Project-SHIFT-Study/cowork/b04_prep_ai/studio/s04-task31-updated-draft/`: Nes
-  Mathioudakis's Task 3.1 file, a co-author's draft (b02 s04 and b03 s04 are the same shape).
+- `examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/studio/s04-task31-updated-draft/`: Nes
+  Mathioudakis's Task 3.1 file, a co-author's draft (b32 s04 and b21 s04 are the same shape).
 - `examples-0-cowork/Project-Samsung/cowork/b01_irb/studio/s03-for-cir2-changes/`: the study protocol (eForm A)
   for CIR 2, a Change in Research; its own filed file, `sections` for the form's headings, the tracked file
   first written from the plan, `deliver` into `delivery/j04_cir2_epic_data/`.

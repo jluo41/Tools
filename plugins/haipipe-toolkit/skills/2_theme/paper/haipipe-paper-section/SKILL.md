@@ -9,8 +9,8 @@ description: >-
   to typed Page-local Evidence Item Results. Use when adding, outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-10-11"
+  version: "0.12.0"
+  last_updated: "2026-10-14"
   page_ruling: none
   group-token: "t0N_<title> | t2N_<title> (legacy S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>)"
   outline:
@@ -103,7 +103,8 @@ Each Section Task holds its face, the Page workflow's `draft/`, `runs/` and `res
 `reports/qNN_<topic>/` (the discussion questions kept while it is changed, each a row in the face's
 `## Questions`, shown in Report › Questions as Question │ Work │ Report; b16 s13, JL 261007). It keeps no
 `studio/` and no `delivery/` (b10 s09-D01, s03-D06; JL 261011: "for the section, we will do not have the
-related studio and delivery"): its drawings (the logic by hand, the Section map) are Board topics,
+related studio and delivery"): its drawings (the logic by hand, the Section map, the reading of the Section as
+last sent) are Board topics,
 `studio/sNN-<topic>/`, and its built output is the Board's `delivery/jNN_<version>/tNN_<section>/`.
 
 A Section is a Task of its version, named by series (JL 261007: "no more S-xxx"): the number band says the
@@ -374,6 +375,40 @@ On a venue change:
 4. Return changed item meaning to OUTLINE/SHAPE, changed Run design to
    OUTLINE/SURVEY, and stale Results to EVIDENCE/LAND.
 5. Run CONTENT/WRITE and CHECK the new built version.
+
+## 🧾 Reworking a sent Section (0.12.0)
+
+When a version follows a sent one whose review came back (its comments report, `haipipe-paper-comments`, holds
+the Review Items), each Section first reads itself as sent, before OUTLINE/SHAPE, so the person sees how much
+changes and why (JL 261014: "How much we will chnage them ... could you use /excalidraw-read to work on each of
+the section, and make each section (main section) to be a sNN tNN from the new job ... we can put thing there to
+discuss").
+
+```text
+sent PDF (j01 delivery) ─▶ studio/sNN-tNN-<section>/reading.yaml ─▶ the drawing: how much changes ·
+                           section · parts · key · a verdict          your call · one frame a subsection
+                           and next per passage                       (pages left, short notes right)
+                                      │
+                                      ▼
+face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: KEEP carried, REWRITE redone,
+                                                                  MOVE sent on, CUT never back
+```
+
+1. **One Board topic per Main Section**, `studio/sNN-tNN-<section>/`, tagged with the sent version
+   (`draft-v<MMDD>`) and the Task stem; its **Feeds:** names the new Task and the comments report.
+2. **Its `reading.yaml`** (excalidraw-read 0.7.0) reads the sent PDF: `section:` with `name`, `pages`, `from`,
+   `until`, `parts` (the subsection headings) and `key` (the count line); each passage's `comment` begins with
+   `KEEP`, `REWRITE`, `CUT` or `MOVE`, its `link` goes to the Review Item that hits it (`how` begins with the
+   point ids) or to `new-<task>`, and its `next` says in 10 words what the new Section does with it.
+3. **Its face's How much changes table** gives every paragraph of the sent Section a row (`¶ · page · starts
+   with · verdict · why`), then the count line and an estimate of the words that survive, said as an estimate.
+4. **The new Section uses it.** CONTEXT cites the topic as a bounded related link; SHAPE carries a KEEP row as a
+   slot, rewrites a REWRITE row, sends a MOVE row to the Section it names, and never brings a CUT row back.
+5. **Routes agree.** Every Review Item a reading links lands on this Section in the comments report's `lands on`
+   column; a missing route is fixed in the report, never only in the reading.
+
+Worked example: Paper-TestToLearn-MS2026, s10 to s16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
+107 rows, 13 KEEP · 47 REWRITE · 26 CUT · 21 MOVE.
 
 ## ✅ Closing checks
 

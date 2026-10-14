@@ -1,6 +1,6 @@
 """s09 · Block folder: what the Block's folder holds: s09-block-folder.excalidraw, two frames in one act, drawn by this builder.
 
-    ① The Folder on screen   the Studio's fourth folding part, drawn from this Block's own folder on every build and
+    ① The Folder on screen   the Studio's fifth folding part, drawn from this Block's own folder on every build and
                               read through the server's own helpers (frame.folder_word, _size, _when), in the
                               workbench's colours (canvas.ui_frame); studio/ and this topic's folder are opened
     ② How a row is read      every word is the face's `frames:` yaml: boxes joined by named arrows (topic_map), the
@@ -81,7 +81,7 @@ def screen(els: list) -> None:
     t, h = canvas.tree_text(40, 28, "① The Folder on screen", M.FRAME_SIZE, 2400, fid)
     t["id"] = "scr-title"
     els.append(t)
-    sub, h2 = canvas.tree_text(40, 28 + h + 10, "Studio › Folder, under the topic cards, Related and Timeline: this "
+    sub, h2 = canvas.tree_text(40, 28 + h + 10, "Studio › Folder, under the topic cards, Related, Delivery and Timeline: this "
                                "Block's own folder, read at build time, studio/ and this topic opened", 22, 2400, fid)
     sub["id"] = "scr-sub"
     els.append(sub)

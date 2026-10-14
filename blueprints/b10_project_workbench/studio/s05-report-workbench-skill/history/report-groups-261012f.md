@@ -60,7 +60,7 @@ cowork     Samsung b12_epic_streaming · j01_pace_request · (a cowork Job holds
 paper      Paper-ScalingGlucose-NatSeries2026 · j01_v1009_nmi · t00_abstract
 insight    Insight-SMSR2v1 · j01_prototype-p1-basic-questions_data-SMSR2v1 · t01_D01_extract-shape-and-quality
 design     Design-PreVisitChecklist · j01_prepare-before-visit_goal-only · t00_reason-ideas
-discovery  SHIFT b01_shift_proposal_evidence · j01_task31_citations · t01_ai_insulin_titration_trials
+discovery  SHIFT b01_shift_proposal_evidence · j31_task31_citations · t01_ai_insulin_titration_trials
 labeling   b01_aci_bench (Physician-SPACE) · j01_aci_bench_authority_appeal · t01_aci_bench_transcripts
 ```
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Workflow Drawing"
+  short_description: "a paper's building map (data, sources, tests, analysis, claims, sections) with a review overlay: red on what the reviewers hit, green on what fixes it"
+  default_prompt: "Use $excalidraw-workflow to draw a paper's workflow topic: the building map from the data to where each answer lands, and the review overlay read from the version's Review Items."
+policy:
+  allow_implicit_invocation: true

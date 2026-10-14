@@ -125,6 +125,26 @@ s03-D06 · From a Job or Task, the top row's Delivery opens the Block's Delivery
     picked, and each source's part shows inside it. This refines s09-D05's "the Job and Task views
     show their own part": the part is now a pick inside the Block's Delivery, not a separate page.
     Built by the b16 session in servers/workbench/frame.py (render's Delivery mode).
+s03-D09 · Delivery also folds inside the Studio, the third part, under Related and above Timeline (JL
+    261014: "a new item after the Related to name it as the delivery ... We will show all the delivery
+    and preview them here"): what came in, then what went out. It holds every result of the Block's
+    delivery/, from every Job and Task, as Delivery's own cards (s03-D08, `delivery_view`), each opened
+    on its preview, under the same group bar; its line counts the results by kind (PDF · Word · Web
+    page). The top row's Delivery (s03-D04) stays the full view: its source row, By source, its build.
+    Built 261014 in servers/workbench/frame.py (`studio_delivery`).
+s03-D10 · One deliverable is one item, however many files and versions it has (JL 261014: "for the
+    delivery, I think we just make the item to be the same ... all of them should one Delivery Item,
+    and within it, we can see different versions"; "一个东西，我们会有一个 version 又一个 version ...
+    怎么去比较好地去 handle that?"). Its lanes fold in: a Section's web/, word/ and latex/ builds, a
+    deck's slide/ and its picture in render/. Its versions fold in by name, `-v<N>`: stems that differ
+    only by the number; a numbered stem whose name starts with another's (`…-Evaluation-Visual-v12`
+    joins `…-Evaluation`); an unnumbered variant of a numbered item (`…-Workflow-Symmetric`). Names with
+    no number stay apart (`Paper-SI` beside `Paper`). Opened, a row of versions, newest picked, over
+    that version's preview; a deck with no render is drawn slide by slide from its package (JL 261014:
+    "could we do the preview of the slide as well?"). One rule for Related too (s04-D10). Checked on
+    the real Blocks: SHIFT b31 14 cards → 3, b21 34 → 3, b32 14 → 4, ScalingGlucose 22 → 8; all 355
+    decks in the SPACEs read. Built 261014 in frame.py (`version_roots`, `delivery_items`,
+    `version_panes`, `pptx_preview`, `?view=pptx`).
 
 
 Proposed

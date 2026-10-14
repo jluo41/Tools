@@ -1,6 +1,7 @@
 """GET /_board/workbench?path=<folder>[&space=<Space>][&sub=<subspace>][&studio=1][&theme=<name>][&format=json]
 GET /_board/workbench?view=<view>&path=<Page .md>[&...]
 GET /_board/workbench?view=docx&path=<file .docx>       a Word file read in place (frame.docx_preview)
+GET /_board/workbench?view=pptx&path=<file .pptx>       a deck drawn slide by slide (frame.pptx_preview)
 
 The base frame (frame.py) over one Block, Job or Task folder, in the theme its Block belongs to
 (or `theme=`), else the vanilla workbench. Without `path` it lists the Blocks under the root.
@@ -36,9 +37,12 @@ def renamed(root: Path, raw: str) -> str:
             md = frame.face(sib)
             if not md:
                 continue
-            m = re.match(r"(?s)^---\n(.*?)\n---\n", md.read_text(encoding="utf-8", errors="ignore")[:4000])
+            text = md.read_text(encoding="utf-8", errors="ignore")[:4000]
+            m = re.match(r"(?s)^---\n(.*?)\n---\n", text)
+            # a cowork face keeps its fields as bare lines under its title, not as front matter
+            head = m.group(1) if m else "\n".join(x for x in text.splitlines()[:60] if x.startswith("renamed-from:"))
             try:
-                was = (yaml.safe_load(m.group(1)) or {}).get("renamed-from") if m else None
+                was = (yaml.safe_load(head) or {}).get("renamed-from") if head else None
             except yaml.YAMLError:
                 was = None
             if part in ([was] if isinstance(was, str) else was or []):
@@ -101,6 +105,21 @@ class FrameMixin:
                 return self.guide_send(frame.docx_preview(doc, root), 200, head_only=head_only)
             except Exception as err:                 # a broken package says so, never the server
                 return self.guide_send(f"<p>This .docx could not be read: {frame._e(err)}</p>", 200,
+                                       head_only=head_only)
+        if get("view") == "pptx":                    # a deck drawn slide by slide, read only (JL 261014)
+            deck = (root / get("path").lstrip("/")).resolve()
+            if root not in deck.parents or deck.suffix.lower() != ".pptx" or not deck.is_file():
+                return self.guide_send("<h1>Not found</h1><p>No such .pptx under this root.</p>", 404,
+                                       head_only=head_only)
+            if get("media"):                         # one picture of a slide, from inside the package
+                got = frame.pptx_media(deck, get("media"))
+                if not got:
+                    return self.guide_send("<h1>Not found</h1>", 404, head_only=head_only)
+                return self.guide_send(got[0], 200, got[1], head_only=head_only)
+            try:
+                return self.guide_send(frame.pptx_preview(deck, root), 200, head_only=head_only)
+            except Exception as err:                 # a broken package says so, never the server
+                return self.guide_send(f"<p>This .pptx could not be read: {frame._e(err)}</p>", 200,
                                        head_only=head_only)
         if get("view") == "eml":                     # an email saved as it came, read only (b10 s04-D08)
             mail = (root / get("path").lstrip("/")).resolve()

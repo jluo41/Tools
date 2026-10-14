@@ -13,7 +13,7 @@ description: >-
   block_index.py.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.20"
+  version: "0.13.23"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -92,6 +92,7 @@ Numbering
 ```text
 s00     background and index: one per Block, drawn by block_index.py (next section), never by hand
 s01-s09 concepts · s11-s19 levels · s21-s29 runs and skills · s31-s39 Guide · s51-s59 server
+s41-s49 Task procedures: one per Task type of a theme, sNN-task-<type>-procedure (b15, JL 261014)
 s61-s69 slide drafts: a proposed deck, its logic flow and its slides, before the deck is built
 ```
 
@@ -316,7 +317,7 @@ The face's Decided list records the decision; the green note shows where the dra
 A proposal topic
 ----------------
 
-A topic that works on one section of a proposal or a paper copies b03_event_cgm's s03 (SHIFT Task 2.1;
+A topic that works on one section of a proposal or a paper copies b21_event_cgm's s03 (SHIFT Task 2.1;
 JL 261010: "I think this one is very very great!"): five frames in two rows.
 
 ```text

@@ -23,7 +23,8 @@ def instance_manifests(root):
     candidates = set(root.glob("*/workflow/insight.yaml"))
     if (root / "workflow/insight.yaml").is_file():
         candidates.add(root / "workflow/insight.yaml")
-    for name in ("examples", "examples-nlp", "diagram", "board", "insights"):
+    worlds = sorted(p.name for p in root.glob("examples*") if p.is_dir())   # examples, examples-1-data, ...
+    for name in (*worlds, "diagram", "board", "insights"):
         if (root / name).is_dir():
             candidates.update((root / name).glob("**/workflow/insight.yaml"))
     return sorted(candidates)

@@ -5,14 +5,14 @@ s21 · Revise mode: how a co-author's file becomes a side-by-side drawing
 
 **Stage:** agreed
 
-**Topic:** how b04_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side by side)
+**Topic:** how b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side by side)
 was drawn on 2026-10-11, as the worked example of excalidraw-revise: the steps from a co-author's
 Word file to the side-by-side drawing and the tracked Word draft, the script behind each step, and what each
 step costs, in seconds per rebuild and in rounds with a person (JL 261011: "add a new sNN in
 Tools/blueprints/b31_excalidraw to explain how did we draw the things here? what is the workflow are what are
 the steps? how which steps are most expensive?").
 
-**Source:** the worked example `examples-0-cowork/Project-SHIFT-Study/cowork/b04_prep_ai/studio/s04-task31-updated-draft/`
+**Source:** the worked example `examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/studio/s04-task31-updated-draft/`
 (in WellDoc-SPACE), its session passes `runs/run-draw-s04/passes/p01-1011` to `p07-1011`, and the scripts named
 below. The seconds were measured once on 2026-10-11 on JL's Mac (cProfile of one rebuild); the builder reads
 them from the yaml blocks here and measures nothing itself.
@@ -92,7 +92,7 @@ draw_steps:
 ```
 
 ```yaml
-seconds:                   # one sentence-mode rebuild of b04 s04, measured 2026-10-11 (cProfile); was about 20 s
+seconds:                   # one sentence-mode rebuild of b31 s04, measured 2026-10-11 (cProfile); was about 20 s
 - {step: "7c render the left pages", s: 5.9}
 - {step: "9 print the tracked draft (last)", s: 4.6}
 - {step: "2 print the original (once)", s: 1.6}
@@ -109,7 +109,7 @@ effort:
 - {title: "The look: 9 passes, 5 ways to show the pages",
    what: "Text rows, mammoth + Chrome, textutil, then LibreOffice pictures on both sides, then the updated side as editable sentences (kept)."}
 - {title: "Finding the words: 4 kinds of miss",
-   what: "A running header inside a section; a side crop that cut first letters; a table row label inside a cell (b02); a row split across pages (b02)."}
+   what: "A running header inside a section; a side crop that cut first letters; a table row label inside a cell (b32); a row split across pages (b32)."}
 - {title: "The plan: 21 changes, 10 evidence asks",
    what: "Each find appears once in the file; the file's words stay, so each change is the smallest one."}
 - {title: "Writing: 2 passes, 19 sentences",
@@ -123,12 +123,12 @@ How s04 got here
 ----------------
 
 ```yaml
-rounds:                    # 2026-10-11; pass = runs/run-draw-s04/passes/pNN-1011 in b04_prep_ai
+rounds:                    # 2026-10-11; pass = runs/run-draw-s04/passes/pNN-1011 in b31_prep_ai
 - {ask: "\"It should not be changed that much\"", did: "Light tracked edits on Nes Mathioudakis's own file (track_changes.py)", pass: "", kept: true}
 - {ask: "\"I want to see the excalidraw\"", did: "Rows of text, one per change", pass: "", kept: false}
 - {ask: "\"I don't want a new format!!!!\"", did: "Pictures from mammoth + Chrome, then textutil: not the file's look", pass: "", kept: false}
 - {ask: "\"take screen shot of the pdf version for each section\"", did: "read_revise.py: LibreOffice prints, one picture per section", pass: "p01, p02", kept: true}
-- {ask: "\"you should follow this structure\" (b03's s04)", did: "Two frames: the plan in one picture, then side by side", pass: "p03", kept: true}
+- {ask: "\"you should follow this structure\" (b21's s04)", did: "Two frames: the plan in one picture, then side by side", pass: "p03", kept: true}
 - {ask: "\"Nes is HE!!! You give the full name\"", did: "Full names everywhere; a standing rule saved", pass: "", kept: true}
 - {ask: "\"the font size can be much smaller ... more columns\"", did: "Notes 14 px in 3 columns, level with their words", pass: "p04", kept: true}
 - {ask: "\"use the boxed with transparent to highlight\"", did: "See-through highlights instead of outlines", pass: "p05", kept: true}
@@ -144,8 +144,8 @@ rounds:                    # 2026-10-11; pass = runs/run-draw-s04/passes/pNN-101
 
 ```yaml
 peers:
-- "b03_event_cgm: the two-frame structure of its s04 (Gordon Gao's Task 2.1)."
-- "b02_aid_ai: cut() at the body text's edge, the row-label retry's case, and the retry with up to 14 words between."
+- "b21_event_cgm: the two-frame structure of its s04 (Gordon Gao's Task 2.1)."
+- "b32_aid_ai: cut() at the body text's edge, the row-label retry's case, and the retry with up to 14 words between."
 ```
 
 ```yaml
@@ -160,14 +160,14 @@ later:
 Decided
 -------
 
-s21-D01 · This topic records excalidraw-revise as b04_prep_ai's s04 used it on 2026-10-11: the
+s21-D01 · This topic records excalidraw-revise as b31_prep_ai's s04 used it on 2026-10-11: the
     workflow, its scripts, the seconds per rebuild and the effort, read from yaml in this face (JL 261011).
 s21-D02 · The workflow drawn is sentence mode (excalidraw-read 0.3.1): seed a haipipe-draft draft, write and revise
     it, draw, edit on the drawing and apply, deliver last; picture mode stays in the rounds as how it began.
 s21-D03 · Delivery is built from the draft (excalidraw-read 0.4.0, now excalidraw-revise; `read_revise.py deliver`): the draft's words against
     the file's, word by word, become tracked changes, and the build checks that rejecting every change gives the file
     and accepting every change gives the draft (all three SHIFT Blocks pass, 2026-10-11).
-s21-D04 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the topic records revise mode as b04's s04
+s21-D04 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the topic records revise mode as b31's s04
     used it; its open points moved to Later, and the drawing's Open list is drawn as Later, plain.
 
 
@@ -184,6 +184,6 @@ Not needed now; each comes back as a new point if it is wanted.
 
 1. Render each page once (`read_revise.cut` renders the same page for every section that touches it).
 2. Is 3,382 px wide acceptable for a side-by-side frame, or should the pictures shrink?
-3. Deliver from the draft: done 2026-10-11 (`read_revise.py deliver`); b02 and b03 still point their own delivery
+3. Deliver from the draft: done 2026-10-11 (`read_revise.py deliver`); b32 and b21 still point their own delivery
    scripts at it.
 

@@ -10,9 +10,13 @@ JL 261007: "no more S-xxx … just use MMDD". A version is named for the day it 
     jNN_v<N>_<desk>/                           -> jNN_v<MMDD>_<desk>/          the version, dated
     S-<desk>-Main-Abstract/                    -> t00_abstract/                Main, the abstract first
     S-<desk>-Main-<N>-<Title>/                 -> t0<N>_<title>/               Main, in reading order (t00-t19)
+    S-<desk>-Main-<Title>/  (no number)        -> t0<n>_<title>/               back matter, after the last Section,
+                                                                               in the compile-order block's order
     S-<desk>-Appendix-<L>-<Title>/             -> t2<i>_<title>/               Appendix, A = t21 (t20-t29)
     RD<NN>-<desk>-<event>-<YYYYMMDD>/          -> reports/qNN_<event>-<MMDD>/  a comments batch: a report of type
-                                                                               comments (page-type: comments)
+    RD<NN>-<event>-<YYYY>-<MM>-<DD>/                                           comments (page-type: comments)
+
+A CamelCase title is split at its capitals: DatasetStatistics -> dataset-statistics.
 
 JL 261007: "comments … are a special type of report … it should be in the reports/ but you can say its type is
 the Comments". A batch is not a Task: it moves into the version's reports/, numbered after the reports already
@@ -44,6 +48,9 @@ ABSTRACT = re.compile(r"^S-[A-Za-z0-9]+-Main-Abstract$")
 MAIN = re.compile(r"^S-[A-Za-z0-9]+-Main-(\d+)-(.+)$")
 APPENDIX = re.compile(r"^S-[A-Za-z0-9]+-Appendix-([A-Z])-(.+)$")
 BATCH = re.compile(r"^(?:RD|CM)(\d+)-[A-Za-z0-9]+-(.+)-\d{4}(\d{4})$")
+BATCH_DASHED = re.compile(r"^(?:RD|CM)(\d+)-(.+)-\d{4}-(\d{2})-(\d{2})$")   # RD01-positioning-2026-05-14
+BACK = re.compile(r"^S-[A-Za-z0-9]+-Main-([A-Za-z].*)$")                      # S-npjDM-Main-DataAvailability
+ORDER = re.compile(r"(?s)<!-- haipipe:compile-order:start -->(.*?)<!-- haipipe:compile-order:end -->")
 TEXT = {".md", ".toml", ".yaml", ".yml", ".txt", ".json", ".py", ".sh"}
 SKIP = {"results", "notebooks", "runs", "sent", "released", "board", "_archive", ".git", "__pycache__",
         "node_modules", "delivery"}
@@ -52,6 +59,7 @@ KEEP_IN_DELIVERY = {"paper-build.toml"}           # a source that lives in deliv
 
 
 def slug(s):
+    s = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", s)          # DatasetStatistics -> Dataset-Statistics
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", s.lower())).strip("-")
 
 
@@ -68,7 +76,27 @@ def new_name(old):
     m = BATCH.match(old)
     if m:                                                  # a report; plan() numbers it after the version's reports
         return f"reports/qNN_{slug(m.group(2))}-{m.group(3)}"
+    m = BATCH_DASHED.match(old)
+    if m:
+        return f"reports/qNN_{slug(m.group(2))}-{m.group(3)}{m.group(4)}"
+    m = BACK.match(old)
+    if m and not ABSTRACT.match(old):                      # back matter; number_back() numbers it after the Sections
+        return f"tNN_{slug(m.group(1))}"
     return None
+
+
+def number_back(board, pages):
+    """Give each unnumbered Main Page (back matter) the next t0N after the numbered Sections, in compile order."""
+    order = []
+    for f in board.rglob("*.md"):
+        if not skipped(f.relative_to(board).as_posix()) and (m := ORDER.search(read(f))):
+            order = [ln[2:].strip() for ln in m.group(1).splitlines() if ln.startswith("- ")]
+            break
+    n = max((int(b[1:3]) for _, b in pages if re.match(r"^t0\d_", b)), default=0)
+    back = sorted((a for a, b in pages if b.startswith("tNN_")),
+                  key=lambda a: (order.index(a) if a in order else len(order), a))
+    rank = {a: i for i, a in enumerate(back, start=n + 1)}
+    return [(a, b.replace("tNN_", f"t{rank[a]:02d}_") if a in rank else b) for a, b in pages]
 
 
 def number_reports(v, pages):
@@ -142,6 +170,7 @@ def plan(board, mmdd):
     n, _, desk = VERSION.match(v.name).groups()
     v_new = f"{n}_v{mmdd}_{desk}" if mmdd else v.name
     pages = number_reports(v, [(d.name, new_name(d.name)) for d in sorted(v.iterdir()) if d.is_dir() and new_name(d.name)])
+    pages = number_back(board, pages)
     news = [b for _, b in pages]
     if len(set(news)) != len(news):
         sys.exit(f"stop: two Pages would take one name: {sorted(x for x in news if news.count(x) > 1)}")

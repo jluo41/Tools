@@ -504,13 +504,20 @@ def _page_heading(page: Path) -> str:
 
 
 def _task_runs(task: Path) -> list[dict]:
-    """One row per Run ticket of a Task: its state and headline, from its Result."""
-    rows = []
-    runs = task / "runs"
+    """One row per Run of a Task: its state and headline, from its Result. A Run is one folder,
+    runs/<run>/<run>.sh with runs/<run>/result/ (since 261010); a flat runs/<run>.sh with
+    results/<run>/ still reads."""
+    runs, results = task / "runs", {}
+    for folder in sorted(runs.glob("r[0-9][0-9]_*/")) if runs.is_dir() else []:
+        if (folder / f"{folder.name}.sh").is_file() or (folder / "run.yaml").is_file():
+            results[folder.name] = folder / "result"
     for ticket in sorted(runs.glob("r[0-9][0-9]_*.sh")) if runs.is_dir() else []:
-        result = task / "results" / ticket.stem
+        results.setdefault(ticket.stem, task / "results" / ticket.stem)
+    rows = []
+    for name in sorted(results):
+        result = results[name]
         summary = _read_json(result / "metrics.json").get("summary")
-        rows.append({"run": ticket.stem,
+        rows.append({"run": name,
                      "status": _yaml_top_scalar(result / "runtime.yaml", "status") or "not run",
                      "headline": str((summary or {}).get("headline") or "") if isinstance(summary, dict) else ""})
     return rows

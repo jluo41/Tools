@@ -249,7 +249,8 @@ def audit(project: Path) -> Result:
 
 def project_paths(args: argparse.Namespace) -> Iterable[Path]:
     if args.all:
-        roots = [Path(r).resolve() for r in (args.root or ["examples", "examples-nlp"])]
+        worlds = args.root or sorted(str(p) for p in Path(".").glob("examples*") if p.is_dir())
+        roots = [Path(r).resolve() for r in worlds]
         yield from sorted(
             path
             for root in roots
@@ -291,7 +292,7 @@ def main() -> int:
     parser.add_argument("--all", action="store_true")
     parser.add_argument(
         "--root", action="append", default=None,
-        help="project world to walk with --all; repeatable; default: examples and examples-nlp",
+        help="project world to walk with --all; repeatable; default: every examples* folder here",
     )
     parser.add_argument("--format", choices={"text", "markdown"}, default="text")
     parser.add_argument("--deep", action="store_true", help="also count every level below each Project (ladder.py)")

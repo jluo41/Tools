@@ -11,7 +11,7 @@ description: >-
   Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /workbench-labeling.
 metadata:
-  version: "0.28.2"
+  version: "0.29.0"
   last_updated: "2026-10-09"
 ---
 
@@ -141,6 +141,27 @@ capability switch: a paper section, algorithm Page, or other Folder may open
 the same plugin before a job exists and route P0 creation through Chat. The
 control Page `S-Label-Dash` owns no job, so it gets no Page-level lane; it
 opens the Board-level view instead.
+
+## 🪜 On the shared frame: a Job's Task types
+
+The labeling theme on the shared frame (`servers/workbench-labeling/labeling_theme.py`, b15 s13,
+JL 261014) reads a labeling Job as one dataset × one label whose Tasks come in five types, each named
+by the Task face's `task-type:` line, never by its number:
+
+```text
+📦 items     task-type: data                three steps, a tab each in Work and Report: 1 · Data · 2 · Items ·
+                                           3 · Embedding; ① numbers ② a picture ③ details folded (b15 s41)
+🔑 keys      task-type: raw                 the dataset's own labels; building and scanning never read it
+🏗 building  task-type: labeling-building   Work: Preparation · Embedding · Definition · Rounds · Guideline
+🔍 scanning  task-type: labeling-scanning   Work: Test · Evaluation · Scan · Audit; reads the Handoff
+📊 score     task-type: eval                final labels against the keys and the raters' spread
+(today)     task-type: labeling            one Page that is building and scanning at once
+```
+
+Job › Work shows each Task's type and state and a dashed card for each type still to make (items,
+building, scanning; score once the Job has keys). The Task ▾ dropdown groups Tasks by type. A building
+or scanning Task links each step to this workbench's view at the Job's labeling Page; the frame is
+read only and never renders item text.
 
 ## 🖼 Surface law
 

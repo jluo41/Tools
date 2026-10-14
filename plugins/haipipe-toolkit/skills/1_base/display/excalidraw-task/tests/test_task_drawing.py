@@ -163,5 +163,35 @@ class TaskDrawingTest(unittest.TestCase):
         self.assertTrue(re.match(r"^\[.*t02_more", str(td.tasks_of(self.job)[1:])))
 
 
+
+class BoardFrameTest(unittest.TestCase):
+    """A video's cover, read (0.6.0): the picture, one outlined and numbered box per part, one note per part."""
+
+    def test_a_board_reading_draws_its_parts_and_keys_its_picture_by_run(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as t:
+            topic = Path(t) / "s31-t05-example"
+            assets = topic / "assets"
+            for rid, bv, kind in (("r06", "BV1aa", "board"), ("r07", "BV1bb", "cover")):
+                folder = topic / "reads" / f"{rid}-{bv}"
+                folder.mkdir(parents=True)
+                Image.new("RGB", (400, 250), "white").save(folder / "board.jpg")
+                (folder / "board.yaml").write_text(json.dumps({
+                    "board": {"kind": kind, "image": "board.jpg", "source": "a cover"},
+                    "key": "Our reading: one idea.",
+                    "ours": {"targets": [{"id": "M1", "label": "How ①: a step"}]},
+                    "regions": [{"id": f"B{k}", "label": f"part {k}", "box": [10, 10 + 50 * k, 300, 50 + 50 * k],
+                                 "shows": "what is drawn", "comment": "what it means",
+                                 "link": {"to": "M1", "relation": "supports", "how": "a step"}} for k in (1, 2, 3)]}))
+            d = Drawing()
+            frames = [td.board_frame(d, {"rid": rid, "summary": ""}, {}, assets) for rid in ("r06", "r07")]
+            self.assertEqual([f["name"] for f in frames], ["r06 · The board, read", "r07 · The cover, read"])
+            for f in frames:
+                mine = [e for e in d.els if e.get("frameId") == f["id"]]
+                self.assertEqual(sum(e["type"] == "ellipse" for e in mine), 6)          # a number on the box and the note
+                self.assertTrue(any("Our reading: what it means" in str(e.get("text")) for e in mine))
+            self.assertEqual(sorted(k for k in d.files if "board" in k), ["img-r06-board", "img-r07-board"])
+            self.assertIsNone(td.board_frame(d, {"rid": "r08", "summary": ""}, {}, assets))  # no reading, no frame
+
 if __name__ == "__main__":
     unittest.main()

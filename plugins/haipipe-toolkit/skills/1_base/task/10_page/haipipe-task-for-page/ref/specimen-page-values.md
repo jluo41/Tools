@@ -15,13 +15,13 @@ questions:
                                     # order and values.yaml records the final filename
     ask: "What is the estimated effect of physician agreeableness on opioid
           days supplied, in SD units, in the baseline pain-cohort model?"
-    upstream: examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid
+    upstream: examples-2-cms/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid
     extract: "results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
   - id: cohort-physician-count
     evidence_slug: cohort-physician-count
     ask: "How many physicians remain in the pooled five-pain-cohort analysis
           sample after exclusions?"
-    upstream: examples/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid
+    upstream: examples-2-cms/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid
     extract: "results/j03_cohort_build/r02_pooled/sample_flow.csv#final.n_physicians"
 ```
 
@@ -32,8 +32,8 @@ questions:
 computed: "260831 1710"
 upstream:                     # pin the JOB that reported, not the block; a folder
                               # with no workflow/report.yaml records its dir mtime instead
-  - examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair · report.yaml 260828
-  - examples/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid · no report.yaml; dir mtime 260821
+  - examples-2-cms/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair · report.yaml 260828
+  - examples-2-cms/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid · no report.yaml; dir mtime 260821
 values:
   - id: adjusted-effect
     question: 1-agreeableness-effect

@@ -41,6 +41,14 @@ class RenamedLinkTest(unittest.TestCase):
                          "Project-Demo/insight/Insight-Demo/j01_prototype-p1-basic-questions_data-Demov1/"
                          "t01_D01_extract-shape")
 
+    def test_a_cowork_block_with_bare_header_lines(self):
+        block = self.root / "Project-Demo" / "cowork" / "b21_event_cgm"
+        (block / "studio").mkdir(parents=True)
+        (block / "board.md").write_text("# Event CGM\nboard-kind: cowork-block\nrenamed-from: b03_event_cgm\n"
+                                        "state: ACTIVE\n", encoding="utf-8")
+        self.assertEqual(renamed(self.root, "Project-Demo/cowork/b03_event_cgm/studio"),
+                         "Project-Demo/cowork/b21_event_cgm/studio")
+
     def test_a_list_of_old_names_and_an_unknown_name(self):
         self.assertTrue(renamed(self.root, "Project-Demo/insight/Insight-Demo/j02_old").endswith("_data-Demov2"))
         self.assertEqual(renamed(self.root, "Project-Demo/insight/Insight-Demo/j99_never"), "")

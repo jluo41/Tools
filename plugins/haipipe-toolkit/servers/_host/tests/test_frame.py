@@ -3,9 +3,12 @@ panel, the vanilla defaults read from disk, a theme laid over them, and the rout
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
 import tempfile
 import unittest
+import zipfile
 from html import unescape
 from urllib.parse import parse_qs, urlparse
 from pathlib import Path
@@ -40,6 +43,39 @@ def project(tmp: str) -> Path:
     (task / "runs" / "r01_fit" / "run.yaml").write_text("run: r01_fit\nkind: hard\ntype: [fit, evaluate]\nstatus: done\n")
     (task / "runs" / "run-build-t01" / "run.yaml").write_text("run: run-build-t01\nkind: soft\ntype: build\nstatus: open\n")
     return root
+
+
+def tiny_deck(path: Path) -> Path:
+    """A one-slide .pptx written by hand: a rounded box with text, an arrow and a picture."""
+    A = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'
+    P = 'xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'
+    R = 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+    rel = lambda rid, kind, target: (f'<Relationship Id="{rid}" Type="http://schemas.openxmlformats.org/officeDocument/'
+                                     f'2006/relationships/{kind}" Target="{target}"/>')
+    rels = lambda *r: ('<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                       + "".join(r) + "</Relationships>")
+    box = ('<p:sp><p:nvSpPr><p:cNvPr id="2" name="box"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm>'
+           '<a:off x="127000" y="127000"/><a:ext cx="2540000" cy="1270000"/></a:xfrm><a:prstGeom prst="roundRect">'
+           '<a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="1F3A68"/></a:solidFill></p:spPr><p:txBody>'
+           '<a:bodyPr anchor="ctr"/><a:p><a:pPr algn="ctr"/><a:r><a:rPr sz="2400" b="1"><a:solidFill>'
+           '<a:srgbClr val="FFFFFF"/></a:solidFill></a:rPr><a:t>Prep AI &amp; you</a:t></a:r></a:p></p:txBody></p:sp>')
+    arrow = ('<p:cxnSp><p:nvCxnSpPr><p:cNvPr id="3" name=""/><p:cNvCxnSpPr/><p:nvPr/></p:nvCxnSpPr><p:spPr><a:xfrm>'
+             '<a:off x="2794000" y="762000"/><a:ext cx="1270000" cy="0"/></a:xfrm><a:prstGeom prst="straightConnector1">'
+             '<a:avLst/></a:prstGeom><a:ln w="25400"><a:solidFill><a:srgbClr val="C92A2A"/></a:solidFill>'
+             '<a:tailEnd type="triangle"/></a:ln></p:spPr></p:cxnSp>')
+    pic = ('<p:pic><p:nvPicPr><p:cNvPr id="4" name=""/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill>'
+           '<a:blip r:embed="rImg"/><a:stretch/></p:blipFill><p:spPr><a:xfrm><a:off x="4318000" y="127000"/>'
+           '<a:ext cx="1270000" cy="1270000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>')
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr("ppt/presentation.xml", f'<p:presentation {P} {R}><p:sldIdLst><p:sldId id="256" r:id="rS1"/>'
+                   '</p:sldIdLst><p:sldSz cx="9144000" cy="5143500"/></p:presentation>')
+        z.writestr("ppt/_rels/presentation.xml.rels", rels(rel("rS1", "slide", "slides/slide1.xml")))
+        z.writestr("ppt/slides/slide1.xml", f'<p:sld {P} {A} {R}><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" '
+                   f'name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr/>{box}{arrow}{pic}</p:spTree>'
+                   '</p:cSld></p:sld>')
+        z.writestr("ppt/slides/_rels/slide1.xml.rels", rels(rel("rImg", "image", "/ppt/media/image1.png")))
+        z.writestr("ppt/media/image1.png", b"\x89PNG\r\n\x1a\nfake")
+    return path
 
 
 class LadderTest(unittest.TestCase):
@@ -308,6 +344,90 @@ class FrameTest(unittest.TestCase):
                     self.assertIn("Its part of the Block's Delivery", page)
                     self.assertIn("· Delivery · <span class=lv>b01</span>", page)
 
+    def test_a_deliverable_is_one_item_with_its_lanes_and_versions(self):
+        # JL 261014: "for the delivery, I think we just make the item to be the same ... all of them should one
+        # Delivery Item, and within it, we can see different versions"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            shutil.rmtree(block / "delivery")
+            slide, render = block / "delivery/slide", block / "delivery/render"
+            slide.mkdir(parents=True), render.mkdir(parents=True)
+            for n, name in enumerate(("Deck-v1", "Deck-v2", "Deck-Visual-v3")):
+                f = tiny_deck(slide / f"{name}.pptx")
+                os.utime(f, (1_700_000_000 + n * 100,) * 2)
+            (render / "Deck-Visual-v3.png").write_bytes(b"png")                       # its render: same version
+            os.utime(render / "Deck-Visual-v3.png", (1_700_000_300,) * 2)
+            sec = block / "delivery/j01_job/t01_task"
+            for lane, files in (("web", ("index.html",)), ("word", ("t01_task.docx", "t01_task.pdf")),
+                                ("latex", ("t01_task.pdf",))):
+                (sec / lane).mkdir(parents=True)
+                for name in files:
+                    (sec / lane / name).write_bytes(b"x")
+            (block / "delivery/word").mkdir()
+            (block / "delivery/word/Paper.docx").write_bytes(b"x")
+            (block / "delivery/word/Paper-SI.docx").write_bytes(b"x")              # no number: its own item
+            items = {i["title"]: i for i in frame.delivery_items(block)}
+            self.assertEqual(sorted(items), ["Deck", "Paper", "Paper-SI", "t01_task"])
+            deck = items["Deck"]
+            self.assertEqual([v["label"] for v in deck["versions"]], ["Visual-v3", "v2", "v1"])
+            self.assertEqual([f.name for f in deck["versions"][0]["files"]], ["Deck-Visual-v3.pptx", "Deck-Visual-v3.png"])
+            self.assertEqual(items["t01_task"]["fixed"], ["PDF", "Word", "Web page"])     # three lanes, one item
+            self.assertEqual(items["t01_task"]["source"], "j01_job › t01_task")
+            page = frame.render(frame.VANILLA, root, block, "Delivery")
+            card = page.split('data-studio-key="Deck"', 1)[1].split("</details>", 1)[0]
+            self.assertIn("3 versions, newest Visual-v3", card)
+            self.assertEqual(re.findall(r'data-dv="(\d)" aria-pressed="(\w+)"', card),
+                             [("0", "true"), ("1", "false"), ("2", "false")])
+            self.assertIn('<img class=related-img loading=lazy alt="Deck-Visual-v3.png"', card)   # the render first
+            self.assertIn(frame._e(frame.ROUTE + "?view=pptx&path=Project%2Ftasks%2Fb01_topic%2Fdelivery%2Fslide%2F"
+                                   "Deck-v2.pptx"), card)                                    # else the deck, drawn
+            self.assertIn('<div class=dv-pane data-dv="1" hidden>', card)
+            self.assertIn("PDF · latex ↗", page)                                            # two PDFs: by lane
+
+    def test_related_versions_fold_into_the_item_that_has_a_row(self):
+        # JL 261014: "一个东西，我们会有一个 version 又一个 version ... 怎么去比较好地去 handle that?" The same rule as Delivery
+        with tempfile.TemporaryDirectory() as tmp:
+            block = Path(tmp) / "Project/work/b01_topic"
+            (block / "related/files").mkdir(parents=True)
+            for n, name in enumerate(("Proposal-v1.docx", "Proposal-v2.docx", "Proposal-v3.pptx")):
+                (block / "related/files" / name).write_bytes(b"x")
+                os.utime(block / "related/files" / name, (1_700_000_000 + n * 100,) * 2)
+            (block / "related/files/Budget.xlsx").write_bytes(b"x")
+            (block / "related/files/Budget.pdf").write_bytes(b"x")                 # one name, two formats: apart
+            (block / "related/related.md").write_text(
+                "| kind | date | item | link | feeds | group |\n|---|---|---|---|---|---|\n"
+                "| file | 2026-10-01 | The proposal | `files/Proposal-v1.docx` | s01 | IRB |\n", encoding="utf-8")
+            items = frame.related_items(block)
+            self.assertEqual([i["title"] for i in items], ["The proposal", "Budget.pdf", "Budget.xlsx"])
+            item = items[0]
+            self.assertEqual([v["label"] for v in item["versions"]], ["v3", "v2", "v1"])    # newest first
+            self.assertEqual(item["groups"], ["files", "IRB"])                             # the row's, kept
+            self.assertIn("3 versions", item["meta"])
+            html_ = frame.related_view(block, Path(tmp)).html
+            self.assertIn('class="row dv-vers"', html_)
+            self.assertIn(frame._e("view=pptx&path=Project%2Fwork%2Fb01_topic%2Frelated%2Ffiles%2FProposal-v3.pptx"),
+                          html_)                                                            # a deck previews here too
+
+    def test_a_deck_is_drawn_slide_by_slide_from_its_package(self):
+        # JL 261014: "could we do the preview of the slide as well?"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            deck = tiny_deck(root / "deck.pptx")
+            page = frame.pptx_preview(deck, root)
+            self.assertIn("deck.pptx · read from the deck package: 1 slide · 1 pictures", page)
+            self.assertIn('viewBox="0 0 720.00 405.00"', page)                       # 9,144,000 EMU = 720 pt
+            self.assertIn('fill="#1f3a68"', page)                                    # the box, its colour
+            self.assertIn('translate(10.00 10.00)', page)
+            self.assertIn("Prep AI &amp; you</span>", page)                           # its text, escaped
+            self.assertIn("font-size:24.00px;font-weight:700;color:#ffffff", page)
+            self.assertIn('stroke="#c92a2a" stroke-width="2.00"', page)               # the arrow
+            self.assertIn('marker-end="url(#pm0)"', page)
+            self.assertIn(frame._e("?view=pptx&path=deck.pptx&media=ppt%2Fmedia%2Fimage1.png"), page)
+            self.assertNotIn("base64", page)                                         # pictures by link, not inlined
+            self.assertEqual(frame.pptx_media(deck, "ppt/media/image1.png"), (b"\x89PNG\r\n\x1a\nfake", "image/png"))
+            self.assertIsNone(frame.pptx_media(deck, "ppt/slides/slide1.xml"))      # only pictures leave the package
+
     def test_a_related_item_is_grouped_by_its_kind(self):
         # JL 261013 (the groups are "things like meeting, email, paper"): a kept file sits under its subfolder,
         # a row kept as a web link under its kind; the group cell still adds more (b10 s04-D08)
@@ -511,8 +631,9 @@ class FrameTest(unittest.TestCase):
                         self.assertIn("runs-panel", page)
             studio = self._space(root, block, "Idea Studio")
             self.assertIn('<details class=topic id="topic-s01-flow" data-studio-tags="[]"', studio)  # one closed row per topic
-            self.assertNotIn("class=topic-meta", studio)
-            self.assertNotIn("class=topic-source", studio)
+            topics = studio.split("id=studio-related", 1)[0]                 # the topic rows, before Related
+            self.assertNotIn("class=topic-meta", topics)                     # (Delivery's cards keep their meta)
+            self.assertNotIn("class=topic-source", topics)
             self.assertIn('data-src="/_excalidraw/?board=Project%2Ftasks%2Fb01_topic%2Fstudio%2Fs01-flow%2Fflow.excalidraw"',
                           studio)                                            # its canvas loads when opened
             self.assertIn("s02-&lt;topic&gt;", studio)                       # where the next topic goes
@@ -541,7 +662,7 @@ class FrameTest(unittest.TestCase):
                 self.assertEqual(h.sent["Location"], "/_board/workbench?path=Project%2Ftasks%2Fb01_topic" + space)
 
     def test_studio_timeline_reads_dated_decisions_sessions_and_change_notes(self):
-        # JL 261011: "add another section of the Timeline" to the Studio, the third folding part
+        # JL 261011: "add another section of the Timeline" to the Studio, now the fourth folding part
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
             block = root / "Project/tasks/b01_topic"
@@ -1132,6 +1253,47 @@ class RouteTest(unittest.TestCase):
         handler.root, handler.path = str(root), path
         handler.workbench_frame_view()
         return sent
+
+    def test_a_deck_and_its_pictures_are_served_read_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            tiny_deck(root / "Project/tasks/b01_topic/deck.pptx")
+            sent = self._get(root, "/_board/workbench?view=pptx&path=Project/tasks/b01_topic/deck.pptx")
+            self.assertEqual(sent["code"], 200)
+            self.assertIn("<svg", sent["body"])
+            sent = self._get(root, "/_board/workbench?view=pptx&path=Project/tasks/b01_topic/deck.pptx"
+                                   "&media=ppt/media/image1.png")
+            self.assertEqual((sent["code"], sent["type"]), (200, "image/png"))
+            self.assertEqual(self._get(root, "/_board/workbench?view=pptx&path=../outside.pptx")["code"], 404)
+            self.assertEqual(self._get(root, "/_board/workbench?view=pptx&path=Project/tasks/b01_topic/deck.pptx"
+                                             "&media=ppt/slides/slide1.xml")["code"], 404)
+
+    def test_studio_delivery_folds_under_related_with_every_result_previewed(self):
+        # JL 261014: "a new item after the Related to name it as the delivery ... show all the delivery and
+        # preview them here": what came in, then what went out, from every level
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            task = block / "j01_job/t01_task"
+            shutil.rmtree(block / "delivery")                                # the fixture's own result out
+            page = frame.render(frame.VANILLA, root, task, studio=True)
+            self.assertIn("Nothing delivered yet.", page)
+            self.assertIn("delivery/ · 0 results", page)
+            (block / "delivery/j01_job/t01_task").mkdir(parents=True)
+            (block / "delivery/j01_job/t01_task/report.pdf").write_bytes(b"%PDF-1.4")
+            (block / "delivery/j01_job/t01_task/report.docx").write_bytes(b"x")
+            (block / "delivery/j01_job/slides.html").write_text("<p>x</p>", encoding="utf-8")
+            for folder in (block, task):                                     # the Block's, at every level
+                with self.subTest(folder=folder.name):
+                    page = frame.render(frame.VANILLA, root, folder, studio=True)
+                    self.assertLess(page.index("id=studio-related"), page.index("id=studio-delivery"))
+                    self.assertLess(page.index("id=studio-delivery"), page.index("id=studio-timeline"))
+                    fold = page.split("id=studio-delivery", 1)[1].split("id=studio-timeline", 1)[0]
+                    self.assertIn("<summary><b>Delivery</b><span class=related-meta>delivery/ · 2 results · "
+                                  "PDF 1 · Word 1 · Web page 1</span>", fold)
+                    self.assertIn('data-src="/Project/tasks/b01_topic/delivery/j01_job/t01_task/report.pdf"', fold)
+                    self.assertIn('data-src="/Project/tasks/b01_topic/delivery/j01_job/slides.html"', fold)
+                    self.assertIn(frame._e(frame.href(block, root, frame.VANILLA, "Delivery")), fold)
 
     def test_studio_folder_shows_the_block_folder_and_loads_a_folder_when_opened(self):
         # JL 261012: "在 related 和 timeline 下面再搞一个 folder ... 这个 block 的 folder 都长什么内容" (b10 s09)

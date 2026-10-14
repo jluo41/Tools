@@ -5,11 +5,15 @@ answer-status: open
 
 ## Opening
 
-Proposed (261007), waiting for JL: the engine's one labeling job is a **Task**, not the Job. The
-labeling Task (`tNN_<dataset>_labeling/`, holding `labeling/`) gets today's page-level workbench,
-recast into the six Spaces. The **Job** is one dataset × one label: four step Tasks
-(prepare · keys · label · score) and a new, thin Job tab. The **Block** groups these Jobs by label.
-The Run is one operation, `rNN_<operation>_<target>/`.
+Agreed with JL (261014): the **Job** is one dataset × one label, and its Tasks come in five
+**types**, each named by the Task face's `task-type:` line: 📦 items (`data`), 🔑 keys (`raw`),
+🏗 building (`labeling-building`), 🔍 scanning (`labeling-scanning`), 📊 score (`eval`). Building and
+scanning meet only at the signed Label Handoff; today's one labeling Page (`task-type: labeling`) is
+both. The workbench shows this since 261014: Job › Work gives each Task its type and state and a
+dashed card for each type still to make; the items Task's Report opens on Itemization · Embedding.
+Drawn in [s13-labeling-task](../../studio/s13-labeling-task/s13-labeling-task.md). The 261007 proposal
+below (four step Tasks, prepare · keys · label · score) is the earlier form of these types. The
+**Block** groups the Jobs; the Run is one operation, `rNN_<operation>_<target>/`.
 
 **Where this Page sits:** [Q01 · What do the labeling Block, a dataset × label Job, a step Task and an operation Run each hold and show on screen, and which of today's four Spaces (Data · Labeling · Quality · Delivery) moves to which level?](../../board.md).
 
@@ -20,7 +24,25 @@ workbench views are built from this answer, level by level.
 
 ### Answer
 
-The board's hypothesis was "the Job is today's page-level workbench". It does not hold. Two
+**The Task types (261014).** One Job, five Task types, as a design Job has three (b12 s13:
+`t00` · `tNN_d<NN>` · `t99`). The type is the face's `task-type:` line, never the number, since keys
+and score are optional and the numbers shift.
+
+```text
+type        task-type            what it does                                       on screen
+📦 items     data                 raw rows become items; ground truth kept apart     Report: Itemization · Embedding
+🔑 keys      raw                  the dataset's own labels; optional; fenced         vanilla, a fence note
+🏗 building  labeling-building    Contract → Rounds → G0 → Freeze → signed Handoff   Work: Preparation … Guideline
+🔍 scanning  labeling-scanning    reads the Handoff: Test → Scan → Audit → labels    Work: Test · Evaluation · Scan · Audit
+📊 score     eval                 final labels against the keys, raters' spread      vanilla, a note
+(today)     labeling             one Page that is building and scanning at once     both rows of views
+```
+
+A Job needs items, building and scanning to close, and score once it has keys. The three real Jobs
+read as they are: dices350 j01 shows ✅ t01 items · ✅ t02 keys · 🔶 t03 building + scanning · ⬜ t04
+score (not made yet); aci_bench and redsm5 have items and a labeling Page, no keys.
+
+**Earlier (261007).** The board's hypothesis was "the Job is today's page-level workbench". It does not hold. Two
 existing contracts put the engine's job in a Task:
 
 - haipipe-project (`labelings/`, JL 261005): a Job is one dataset with one label and **many
@@ -78,6 +100,11 @@ the Runs with a Building · Scanning third row.
 
 ### Evidence
 
+- [labeling Task types](../../studio/s13-labeling-task/s13-labeling-task.excalidraw): the five types as
+  one flow, the dices350 Job's Work list, and the items Task's Itemization (261014).
+- Code: `Tools/plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py` (`TYPES`,
+  `types_of`, `option`, `work_meta`, `_job_spaces`, `_itemization`), tested in
+  `servers/workbench-labeling/tests/test_labeling_theme.py` (12 passed, 261014).
 - [labeling ladder](../../studio/s01-labeling-ladder/s01-labeling-ladder.excalidraw): the Block,
   Job and Task frames, each with its folder, skills and proposed screens above today's (dashed).
   Red = open.
@@ -95,10 +122,11 @@ the Runs with a Building · Scanning third row.
 
 Open, red in the drawing:
 
-1. **Real Blocks differ.** The labeling Blocks under `examples-6-labeling/` sit in `tasks/`,
-   keep `schema.yaml` at the Block, and name Jobs by side (`j01_building_corpus/`, a planned
-   j02 for Scanning), with one labeling Task per corpus. Moving them to
-   `labelings/bNN_<topic>/jNN_<dataset>_<label>/` changes real Project folders: JL's call.
+1. **Real Jobs keep one labeling Page.** Since 261010 the real Blocks sit at
+   `examples-6-labeling/<Project>/labeling/bNN_<dataset>/jNN_<dataset>_<label>/` with `schema.yaml` per
+   Job (aci_bench, dices350, redsm5), and each holds one `task-type: labeling` Page that is building and
+   scanning at once. Splitting it into a building and a scanning Task at the Handoff changes real
+   Project folders and the engine's one lane per Page: JL's call (s13 Open 1, 2).
 2. **schema.yaml: Block or Job?** The contract says per Job; the real Blocks hold one schema at
    the Block and teach it on one corpus. Settled in Q03.
 3. **Is a labeling Run hard?** Its canonical output lands in the Task's `labeling/` lane, not
@@ -114,12 +142,12 @@ Open, red in the drawing:
    `<Project>/labeling/bNN_<topic>/jNN_<dataset>_<label>/tNN_<dataset>_labeling/labeling/`.
    Depth tells them apart (the Theme's parent is the Project; the lane's parent is a `tNN_`
    folder with its own `.md`). Proposed: keep the lane's name, since the engine, receipts and
-   26 Run types all write `labeling/…`. The workbench's `_labeling_job` (`labeling.py`) checks
-   only for `labelings`; it must read both names through `haipipe-draft/src/themes.py` at
-   build time.
+   26 Run types all write `labeling/…`. The workbench's `_labeling_job` (`labeling.py`) now reads
+   both `labeling` and `labelings`; its `_task_runs` reads one folder per Run,
+   `runs/<run>/result/`, since 261014.
 
 ### Next
 
-- JL: agree or mark the drawing; decide whether the real labeling Blocks move (limit 1).
-- Then Q02 and Q03, then build: the skill contract and scaffold (new Block · Job · Task · Run),
-  then the workbench views, on a demo Block in a temp dir.
+- JL: mark s13's drawing; decide whether the real Jobs' labeling Page splits at the Handoff (limit 1).
+- Then the skill contract and scaffold: `haipipe-labeling` names the five types and adds a Task of
+  each; Q03 settles where a scanning Task's records live.

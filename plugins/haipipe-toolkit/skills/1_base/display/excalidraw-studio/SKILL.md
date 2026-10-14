@@ -14,8 +14,8 @@ description: >-
   frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.3.8"
-  last_updated: "2026-10-13"
+  version: "0.3.9"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
 
@@ -125,6 +125,7 @@ Shapes that keep their own rules
 | a file we change, section by section beside its updated sentences | two frames: the plan, then the side-by-side that reads down (3,320 px wide on purpose) | excalidraw-revise |
 | a paper's Sections as a map | excalidraw-section | excalidraw-section |
 | a Job as one drawing: why, in and out, what it concluded, its tables | four frames in two acts | excalidraw-job |
+| a paper's ideation, s01: every idea as steps from the question | one main frame; small frames as stairs: the setting, a card per lead idea, the path to G0 | excalidraw-ideation |
 
 
 The helpers: scripts/draw.py

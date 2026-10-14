@@ -1,6 +1,76 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.7.4] · 2026-10-14 · results fill the room beside the frame, evenly
+
+- Asked 261014 on LLMRec b04 s27 (a screenshot of its results, one narrow column hanging 4,800 px below a 3,218 px
+  frame): "这个 result 右边有这么多的空位你都不用，非要挤着那么一块。而且我这个跟左边的 frame 也不好对齐"; then the rule:
+  "以 job frame 的上下为界限 … 最上面和最下面的 frame 可以超过 job frame 的最上和最下，但超出部分一定要对称、均匀";
+  and "你想想这个 results … 你到底想好去怎么 display 是非常重要的".
+- A results block lays its panels (charts, figures, tables, the picked numbers) side by side, up to three a row,
+  each under the shortest column so far (`results_block(cols=)`); never a column with nothing in it. A long table
+  takes the columns nothing else fills, in parts of at least 4 rows, each part's header level with the first's.
+- `place_results`: each block is measured at 1, 2 and 3 panels a row; the narrowest width at which the blocks
+  together fit ①'s height is used, else the widest. Shorter than ①, each block sits as near its step as it can,
+  inside ①'s top and bottom; taller, they are one run centred on ①, as far above it as below (`results_layout`).
+  Every other block steps 240 px right (was 520, and only for transcript columns).
+- A step's line runs straight to its block where they are level; else it bends in its own lane between ① and the
+  blocks: lines that turn up take lanes left to right, lines that both turn down right to left, so none cross
+  (`results_lanes`).
+- haipipe-studio `canvas.stairs` and `canvas.grid` now count results that rise above a frame, so a second
+  staircase's results never reach into the frame above it.
+- Each chart is drawn once a build (`chart_png` keeps it), though a block is measured three times.
+- A fresh-agent test of this version (261014, j08 drawn into a scratch folder): the layout held (137 px above ①,
+  137 below, no overlaps, no crossings), and it found three gaps, now closed. Each block is titled with its step's
+  own name, larger (`📊 t02 · <name>: results`); a bent line meets its block at that title, not its blank bottom;
+  `preview --face <face.md>` draws a Job with a face's `job:` yaml (before, preview ignored every face).
+- LLMRec's 25 Job topics redrawn: b04 s27's results 3,530 px tall beside a 3,218 px frame (155 px above and
+  below), was 6,924 tall with 4,789 below it; Discovery b01 s22, 5,033 beside 3,209 (912 above and
+  below), 9,750 before its paper tables stood in parts.
+- Tests: results inside the frame or past it evenly, never overlapping; lanes that never cross; panels side by side.
+
+## [0.7.3] · 2026-10-14 · a family step drawn again as its own staircase
+
+- Asked 261014 on PD2D b00's j51, over its four family steps: "we can make them into different job frames as well
+  … just like this" (the second staircase). A face step with `frame: true` keeps its compact step in the main
+  staircase, now pointing "→ each Task: frame ③", and is drawn again after it as its own staircase: each member
+  Task a step with its page, its Runs and its results. The question the members share is said once, in the frame's
+  key point (`reading:`), not on every step. `run:` with `show_each: [{label, at}]` gives every member the same
+  picks from its own Run (`expand_each`), so each table shows its rows, columns and patients.
+- j51: 7 frames (two staircases, four family staircases, its words); frame ① stays under 600 words.
+
+## [0.7.3] · 2026-10-14 · a table per Run, and Later drawn plain for an agreed topic
+
+- Asked 261014 on Physician-SPACE LLMRec's 25 Job topics: "make the report of the task to be shown as the table,
+  then make it to the level 3 of the agreed".
+- A row per Run (`tables: <t>: [{runs: true, columns: [{label, at}]}]`, `run_rows`): a Task whose every Run is
+  one subject (a Discovery paper) is a table, its cells read from each Run's own result (`<file>:<key>`) or the
+  face's `says`; `rows` caps it (12), the rest counted. Its Run column is narrow.
+- `later:` (`notes_frame`): stage agreed means no red ❓ and no open point (haipipe-studio topic contract), so an
+  agreed topic's open points move to `later:`, drawn plain in ② as "⏳ Later, and what would start it".
+- Then a fresh reader review of 6 LLMRec topics: "no Task page is named" in any of them. Each step now ends
+  `📄 page: <tNN_task>/<tNN_task>.md`, linked to the page. A Run table takes `only:` (globs on the Run names) and
+  skips a Run with nothing in its columns; the picked numbers' table is headed `measure (<its Run>)` · `value`.
+- A table may read a file anywhere in the Block (`path:`), for a Task whose own Runs keep no result. A picked
+  number keeps its unit: the row splits at the face's own label ("Claude transport response | 1,326 chars").
+- Tests: a row per Run, capped and counted; Later plain, never red; the page line and its link; `only:`;
+  `path:`; a unit beside its number.
+
+## [0.7.2] · 2026-10-14 · a big Job keeps its stairs: a family of Tasks as one step, two staircases
+
+- Asked 261014 on a 33-Task raw-data Job (one Task per table), drawn 14,780 px tall: "if possibel, let's still be
+  the steps / stairs", then "if the job is too large, in the sNN jNN, you can have two frames to arange that".
+- A family step (`step_groups`): the face's `steps: [{title, tasks: t17-t26}]`, else, past 8 Tasks, each run of 3 or
+  more Tasks of one kind (the folder's first word: `profile`, `procdf`). It lists its Tasks two a row with their
+  marks, folds their Runs by what they do (`r02 · profile semantics × 10`), and its results read one value per
+  member Task from that Task's own Run: `charts:` and `tables:` entries with `members: true` (`family_step`,
+  `member_rows`). The 33-Task Job: 6 steps, 2,346 px.
+- Two staircases (`split_steps`): past 6 steps, at the middle step, or where the face's `parts:` says; the second
+  is named by what it holds (never "· 1", "· 2"), has its own key point and results, and is joined by "continues".
+  haipipe-studio's `canvas.stairs` now moves the results that follow a frame, as `canvas.grid` did.
+- A page title's address (`B00/J51/T14 · …`) is dropped from the step, which already says its id (`bare`).
+- Tests: a family is one step; named steps, a named split and the split past six.
+
 ## [0.7.1] · 2026-10-14 · the staircase: wide cards, Task thumbnails, compact steps
 
 - Wide cards (JL 261013 on Proj10 b01 s22: "make it wider, each one to be a few lines, and much wider"): a Task's

@@ -12,7 +12,7 @@ description: >-
   add a paper, /haipipe-related.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -93,14 +93,25 @@ an empty cell. `related/_groups.txt` keeps the buttons' order, as `studio/_group
 topics. What a paper is about is not a Studio group: it goes in `bears on`.
 
 
+Versions
+--------
+
+1. **Keep each version**: a second draft goes beside the first, its version in its name
+   (`Proposal-v1.docx`, `Proposal-v2.docx`), never over it (b10 s04-D10, JL 261014).
+2. **One item**: the workbench folds them by Delivery's rule (`frame.version_roots`), newest first,
+   a row of versions, each opening its own preview.
+3. **One row is enough**: the item keeps the row one of its versions has; a new version needs none.
+4. **Two formats are not versions**: a `.docx` and its PDF print stay two items, each with its row.
+
+
 On screen
 ---------
 
 1. **Inside the Studio**: Related is the Studio's second folding part, under the topic cards; the
    top row stays `Guide · Studio | Block · Job · Task | Delivery` (s04-D05).
 2. **One row per item**: opened, a row is the file itself: Markdown read in place (an Obsidian
-   note's quote blocks folded), Word from its package, an email with its headers, a PDF, a page or
-   a picture (s04-D06).
+   note's quote blocks folded), Word from its package, a deck drawn slide by slide, an email with
+   its headers, a PDF, a page or a picture (s04-D06); versions of one thing are one row (s04-D10).
 3. **The group bar**: Current · the groups · Untagged · + Group, the Studio's own (s04-D07).
 4. **The code**: `servers/workbench/frame.py` (`related_items`, `related_view`, `studio_related`,
    `_related_preview`, `docx_preview`, `eml_preview`, `_related_set_groups`), and

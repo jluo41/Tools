@@ -43,7 +43,7 @@ T, SUB, BODY, HEAD, CODE = 34, 22, 21, 24, 20             # frame title · line 
 SCREENS = [  # (where, folder, what it is): one Delivery screen for each shape there is today
     ("tools", "blueprints/b11_theme_insight", "a plain Block"),
     ("space", "examples-0-cowork/Project-Samsung/cowork/b12_epic_streaming", "cowork: a folder per send"),
-    ("space", "examples-0-cowork/Project-SHIFT-Study/cowork/b04_prep_ai", "cowork: delivery.md"),
+    ("space", "examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai", "cowork: delivery.md"),
     ("space", "examples-2-nn/Proj11-CGM-FM/paper/Paper-ScalingGlucose-NatSeries2026", "a paper Board"),
     ("space", "examples-2-nn/Proj11-CGM-FM/paper/Paper-ScalingGlucose-NatSeries2026/j01_v1009_nmi/t01_introduction",
      "a paper Section (a Page Task)"),

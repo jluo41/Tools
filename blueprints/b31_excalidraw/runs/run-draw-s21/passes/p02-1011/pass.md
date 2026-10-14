@@ -2,7 +2,7 @@
 
 ## Ask
 
-b04_prep_ai_content: s21 describes picture mode only; add the sentence-mode steps
+b31_prep_ai_content: s21 describes picture mode only; add the sentence-mode steps
 
 ## Summary
 

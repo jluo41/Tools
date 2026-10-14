@@ -1,3 +1,11 @@
+## 1.3.0 · 2026-10-14 · Review Items say what they hit and what fixes them
+
+- Two optional Review Items cells, `hits` and `fixed by`, name the part of the sent study a concern attacks and the
+  work that answers it, by the building map's keys, Story rows, claim ids, Question landings or Section stems.
+  `excalidraw-workflow` draws them on the paper's building map, red and green (JL 261014: "highlight that which part
+  the reviewers wanted us to change, and how will our new field experiment and analsysis will fix it").
+- First use: Paper-TestToLearn-MS2026's RD01, 49 points in 20 Review Items, each with its hits and fixed by.
+
 ## 1.2.1 · 2026-10-11 · A meeting's notes live in related/meetings/
 
 - A meeting batch cites its notes in the Board's `related/meetings/` (one row in `related/related.md`, b10 s04-D01) instead of holding a copy in the batch; letters and memos stay in `feedback/`; an older batch's `meeting/` folder is still read.

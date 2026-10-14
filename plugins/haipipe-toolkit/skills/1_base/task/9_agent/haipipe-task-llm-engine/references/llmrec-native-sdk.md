@@ -13,7 +13,7 @@
 | Per-job batch runner | `jNN_*/sbatch/run_all_arms.sh <scale>` (the cross-job chain scripts were retired with j05 on 260830; order is held by `required_audits` receipts) |
 
 All `work/...` paths above are relative to
-`examples/Project-LLMRec-Physician/` unless otherwise stated.
+`examples-3-nlp/Project-LLMRec-Physician/` unless otherwise stated.
 
 ## Protocol
 

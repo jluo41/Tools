@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ideation Drawing"
+  short_description: "an ideation as one main frame of ideas as steps, with small frames: the setting, a card per lead idea, the path to G0"
+  default_prompt: "Use $excalidraw-ideation to draw a paper's s01-ideation topic: every idea as steps from the question, the setting in its real numbers, one card per lead idea, and the path to G0."
+policy:
+  allow_implicit_invocation: true

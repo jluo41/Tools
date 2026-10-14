@@ -187,18 +187,19 @@ def grid(els, rows, gap=150):
     def follows(e, fid):                    # drawn outside the frame but belonging to it (a staircase's results)
         return (e.get("customData") or {}).get("follows") == fid
 
-    def reach(fid):                         # the frame's width and height, grown by what follows it
-        f = frames[fid]
+    def reach(fid):                         # the frame's width and height, grown by what follows it, and how far
+        f = frames[fid]                     #   what follows rises above it (a Job's results, centred on it)
         own = [e for e in els if follows(e, fid)]
+        rise = f["y"] - min([f["y"]] + [e["y"] for e in own])
         return (max([f["x"] + f["width"]] + [e["x"] + e.get("width", 0) for e in own]) - f["x"],
-                max([f["y"] + f["height"]] + [e["y"] + e.get("height", 0) for e in own]) - f["y"])
+                max([f["y"] + f["height"]] + [e["y"] + e.get("height", 0) for e in own]) - f["y"] + rise, rise)
     y = 0
     for row in rows:
         x, tall = 0, 0
         for fid in row:
             f = frames[fid]
-            w, h = reach(fid)
-            dx, dy = x - f["x"], y - f["y"]
+            w, h, rise = reach(fid)
+            dx, dy = x - f["x"], y + rise - f["y"]
             for e in els:
                 if e["id"] == fid or e.get("frameId") == fid or follows(e, fid):
                     e["x"], e["y"] = e["x"] + dx, e["y"] + dy
@@ -229,17 +230,20 @@ def stairs(els, order, gap=260, step=520):
     ids = [o[0] if isinstance(o, tuple) else o for o in order]
     assert sorted(ids) == sorted(frames), f"stairs() places each frame once: {ids} vs {list(frames)}"
     x = y = 0
-    placed = []
+    placed, bottom = [], 0
     for k, o in enumerate(order):
         fid, dx = o if isinstance(o, tuple) else (o, step)
         f = frames[fid]
-        if k:
-            x, y = x + dx, placed[-1]["y"] + placed[-1]["height"] + gap
+        if k:                                                   # below the last frame and what follows it;
+            x, y = x + dx, bottom + gap                         #   what follows this one may rise above it
+            y += f["y"] - min([f["y"]] + [e["y"] for e in els if (e.get("customData") or {}).get("follows") == fid])
         mx, my = x - f["x"], y - f["y"]
         for e in els:
-            if e["id"] == fid or e.get("frameId") == fid:
+            if e["id"] == fid or e.get("frameId") == fid or (e.get("customData") or {}).get("follows") == fid:
                 e["x"], e["y"] = e["x"] + mx, e["y"] + my
         placed.append(f)
+        bottom = max([f["y"] + f["height"]] + [e["y"] + e.get("height", 0) for e in els
+                     if (e.get("customData") or {}).get("follows") == fid])
     return placed
 
 

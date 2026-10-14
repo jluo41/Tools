@@ -1,3 +1,12 @@
+## 0.21.0 · 2026-10-14 · The workflow drawing is excalidraw-workflow's
+
+- A telling's workflow drawing, the paper's building map, is drawn by the new `excalidraw-workflow` skill
+  (`workflow_drawing.py make | draw <topic>`, the words in `<topic>-drawing.yaml`) instead of a copied
+  `make_paper_workflow.py` (JL 261014: "How do you think we can add it to the themes/paper skills set"; "or call it
+  /excalidraw-workflow"). Five copies had drifted apart and still read the retired `A1-Story/` Page.
+- The map carries the review overlay: a version's Review Items with `hits` and `fixed by` (haipipe-paper-comments
+  1.3.0) mark what the reviewers attacked in red and the work that fixes it in green.
+
 ## 0.20.0 · 2026-10-11 · The P-board lives in related/related.md; topics carry Tags and Stage
 
 - The P-board's rows move from the telling's Novelty basis to the Board's `related/related.md`, one row of kind `paper` each (b10 s01-D27, D34, s04-D01), so every telling and the build read one list; the Novelty basis names its closest rows by `key`. The columns keep the P-board's (`role`, `keep`, `bears on`, the Paper Run as `read`), with `group` for the question. An older telling's own table is still read (the paper workbench falls back to it).

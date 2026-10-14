@@ -5,7 +5,8 @@ Asked 261012, on b01_ml_foundations' s21 to s23, which showed only their Runs' s
     python job_drawing.py make <job folder> [--nn NN] [--dry-run]   the Block's topic sNN-<jNN>-<job>, drawn
     python job_drawing.py draw <topic folder>                       redraw one (what its builder calls)
     python job_drawing.py adopt <topic folder>                      a one-Job results topic (job_results.py) redrawn here
-    python job_drawing.py preview <job folder> <out.excalidraw>     draw a Job anywhere; its Block is not touched
+    python job_drawing.py preview <job folder> <out.excalidraw> [--face <topic face .md>]
+                                                                    draw a Job anywhere; its Block is not touched
 
 Four frames in two acts, by excalidraw-studio's principles:
 
@@ -1484,7 +1485,7 @@ def job_yaml(name: str, aim: str = "", reading: str = "", open_: list | None = N
 
 def files_block(topic: Path, builder: str) -> list[str]:
     return ["```text", f"{topic.name}/", f"├── {topic.name}.md   this face",
-            f"├── {topic.name}.excalidraw   four frames in two acts; a person's marks are kept",
+            f"├── {topic.name}.excalidraw   its staircase, then its words; a person's marks are kept",
             f"├── {topic.name}.png   its preview", f"└── {builder}   calls excalidraw-job's job_drawing.py", "```"]
 
 
@@ -1507,7 +1508,10 @@ def make(job: Path, nn: int | None = None, dry: bool = False) -> Path:
     topic.mkdir(parents=True)
     builder = f"build_s{nn:02d}_{slug.replace('-', '_')}.py"
     title = f"s{nn:02d} · {job.name[:3]} · {jr.title_of(job)}: the whole Job"
-    feeds = sorted(set(re.findall(r"q\d\d_[A-Za-z0-9_]+", jr.field(job, "answers"))))
+    answers = jr.field(job, "answers")                                   # `Q01, Q51` names the report folders
+    ids = set(re.findall(r"\bQ(\d\d)\b", answers))                    #   q01_<topic>, q51_<topic>
+    feeds = sorted(set(re.findall(r"q\d\d_[A-Za-z0-9_]+", answers)) |
+                   {q.name for q in (block / "reports").glob("q[0-9][0-9]_*") if q.is_dir() and q.name[1:3] in ids})
     face = [title, "=" * len(title), "", "**Tags:** `Jobs`", "", "**Stage:** explore", "",
             f"**Topic:** The Job `{job.name}` as one drawing: why it exists, what goes in and comes out, what it "
             "concluded, and its tables, formulas and pictures, read from its face, its Task pages and its Runs on "
@@ -2015,6 +2019,7 @@ def main(argv=None) -> int:
     p = sub.add_parser("preview", help="draw a Job anywhere; its Block is not touched")
     p.add_argument("job", type=Path)
     p.add_argument("out", type=Path)
+    p.add_argument("--face", type=Path, help="a topic face whose job: yaml to draw with (its charts, tables, words)")
     a = ap.parse_args(argv)
     if a.cmd == "make":
         print(make(a.job, a.nn, a.dry_run))
@@ -2025,7 +2030,7 @@ def main(argv=None) -> int:
     elif a.cmd == "group":
         print(draw_group(a.topic))
     else:
-        print(draw_job(a.job, a.out.resolve())[0])
+        print(draw_job(a.job, a.out.resolve(), face_cfg(a.face) if a.face else None)[0])
     return 0
 
 

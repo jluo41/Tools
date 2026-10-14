@@ -309,7 +309,7 @@ SCREENS = [   # (theme, where, the Block or Job read live): "tools" is this Tool
                          "j01_prototype-p1-basic-questions_data-SMSR2v1"),
     ("design", "space", "examples-5-design/ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist"),
     ("discovery", "space", "examples-2-nn/Proj11-CGM-FM/discovery/b01_scaling_law_literature"),
-    ("labeling", "space", "examples-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench"),
+    ("labeling", "space", "examples-6-labeling/Project-Labeling-ClinicalDialogue/labeling/b01_aci_bench"),
 ]
 # the proposal per theme (s07-D03, D05, D10): starting groups (red when guessed), what stays a row above the list,
 # and how the list reads; every theme also starts with Random thoughts (s07-D02)

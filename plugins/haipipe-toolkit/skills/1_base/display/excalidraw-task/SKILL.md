@@ -11,7 +11,7 @@ description: >-
   /excalidraw-task.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -36,12 +36,19 @@ well, we try to follow the same idea", after the Job drawing became a staircase:
           └─ then r04: what it adds ─▶ ✅ r04 📌 · ⚙️ what it ran ────────▶ 📊 charts · numbers · 📈 curves
    ❓ what is open → in ②
      └──▶ ② 📖 words to know · 🧮 formulas · 🎤 be ready to answer · ❓ open (small, canvas.explains)
-            └──▶ ③ in detail: each source's transcript and full frame (only with detail: true)
+            └──▶ ③ in detail: each source's board read, transcript and full frame (only with detail: true)
 ```
 
 `layout: rows` (or `plain`) keeps the frames before 0.5.0: the idea frame, then one frame per source, three to a row,
 and a video's transcript frame read with /excalidraw-read (0.4.0).
 
+
+**A board or cover, read** (0.6.0, JL 261014: "you can try to add your comments and understanding for the readers"):
+a video whose cover is its finished whiteboard (or, `kind: cover`, a paper video's first slide) gets the frame
+"rNN · The board, read" before its transcript: the picture whole on the left, each part it teaches outlined and
+numbered in teaching order, and one note per part on the right (Board shows · Our reading · → this Task). It reads
+`reads/<rid>-<BV>/board.yaml`: `board` {kind, image, source, link}, `key`, optional `ours`, and `regions`, each
+{id, label, box [x0, y0, x1, y1] in the picture's pixels, shows, comment, link}. No transcript is needed.
 
 The frames
 ----------
@@ -51,7 +58,7 @@ The frames
 | ① 🪜 The staircase | what the Task asks, its sources in reading order as steps, what each one is, which Run to read | the face's `task.reading`, `idea.intro`/`what`, `idea.why`; else the page's `## Opening` and first division; per source `name`, `says` (else its `**rNN**:` line), `config`, `role` (else `**How the videos fit**`), `current` |
 | 📊 results, outside ① | what each source showed or measured, small, level with its step | per source: `charts` (as excalidraw-job's, from its result), its `show` numbers as a table, its `plot` curves, its `shots` (two screenshots), the pictures its result holds; no face words: the numbers its result names, else its `summary.headline`; `hook`; `check` (else the page's `**Check before reuse**`) in red; its link |
 | ② 📖 its words | the words to know, the formulas, what to be ready to answer, what is open | `idea.terms`, `idea.formula` (drawn by mathtext), `idea.questions` (else the page's `**Interview questions**`), `open` |
-| ③ in detail | each source's transcript and full frame, read up close | only with `detail: true` |
+| ③ in detail | each source's board or cover read, its transcript, and its full frame, read up close | only with `detail: true`; the board frame only when the topic has `reads/<rid>-*/board.yaml` |
 
 1. **The stairs**: each source a step 380 px lower and right; past four, several share a column; room on purpose.
 2. **Level with its results**: each step is spaced to its results block, so a line runs straight across to it.

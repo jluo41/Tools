@@ -18,7 +18,7 @@ changing anything; a status or explanation request is read-only.
 
 | Context | Runtime | Rule |
 |---|---|---|
-| Physician LLMRec | `code/haiutils/agent_sdk/` plus the per-Job entry scripts in `examples/Project-LLMRec-Physician/work/b02_llm_recommendation_runs/jNN_*/src/` | This is the active experiment runtime. Never replace it with `ref/engine/`. |
+| Physician LLMRec | `code/haiutils/agent_sdk/` plus the per-Job entry scripts in `examples-3-nlp/Project-LLMRec-Physician/work/b02_llm_recommendation_runs/jNN_*/src/` | This is the active experiment runtime. Never replace it with `ref/engine/`. |
 | Generic agent task | `code/haiutils/llm_engine/` | Maintain only when that package exists or the user explicitly asks to create it. |
 | Generic reference | `ref/engine/` | Template for generic tasks, not an LLMRec protocol implementation. |
 
@@ -75,7 +75,7 @@ From the repository root:
 .venv/bin/python .codex/skills/haipipe-task-llm-engine/scripts/status.py --root .
 
 # Deterministic LLMRec contract validation; no provider call
-B=examples/Project-LLMRec-Physician/work/b02_llm_recommendation_runs
+B=examples-3-nlp/Project-LLMRec-Physician/work/b02_llm_recommendation_runs
 .venv/bin/python $B/j03_B_open_recommendation/t05_transport_smoke_claude_codex/scripts/verify_llmrec_agent_sdk.py
 
 # One model at one scale = three tickets in order, each auditing ITS OWN outputs into a receipt

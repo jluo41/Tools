@@ -23,7 +23,7 @@ s01-labeling-ladder/
 └── build_s01_labeling_ladder.py
 ```
 
-Rebuild: `python build_s01_labeling_ladder.py` (or b03's `studio/_build/make.sh`).
+Rebuild: `python build_s01_labeling_ladder.py` (or b10's `studio/_build/make.sh`).
 
 Proposed so far
 ---------------
@@ -37,6 +37,8 @@ Proposed so far
    label · score (t01-t04). Its tab is new: Audience Report = our labels vs the dataset's keys
    (was Quality › External gold), Work Details = the four steps (was Data › Preparation's Task
    list). A scan-only Job reads another Job's handoff.
+   Since 261014 these steps are five Task types, named by the face's `task-type:` line: items ·
+   keys · building · scanning · score (`../s13-labeling-task/`); the workbench shows them.
 3. (261007, for Q01) A Run is one operation: `runs/rNN_<operation>_<target>/` (was
    `runs/run-labeling-<op>-<MMDD>-<target>.yaml` + `results/<same>/`); a resumed human session
    is a pass.

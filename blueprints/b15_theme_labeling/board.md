@@ -13,18 +13,21 @@ The labeling Theme teaches and freezes what one identified person means by a vag
 (Building: contract, definition, calibration rounds, guideline, the signed Label Handoff), then
 qualifies executors on a sealed test, scans the corpus and audits the labels (Scanning). Its
 Block holds one Job per dataset × label (`jNN_<dataset>_<label>/`, its `schema.yaml`); its Tasks
-are the steps (prepare · keys · label · score); its Runs are one per operation.
+come in five types, named by each face's `task-type:` line: 📦 items · 🔑 keys · 🏗 building ·
+🔍 scanning · 📊 score (s13, JL 261014); its Runs are one per operation.
 
-Today the Labeling workbench shows a job at page level in four Spaces (Data · Labeling ·
-Quality · Delivery), and a board level lists the jobs. The skills came from the
-subjective-label plugin (b04 q03).
+Today the labeling theme sits on the shared frame (`servers/workbench-labeling/labeling_theme.py`):
+Job › Work shows each Task's type and state and a dashed card for each type still to make; the items
+Task's Report opens on Itemization · Embedding; a building or scanning Task links each step to the
+engine's own Labeling workbench (`labeling.py`: Data · Labeling · Quality · Delivery), still the one
+place a person labels. The skills came from the subjective-label plugin (b04 q03).
 
-The shared ladder (b03) gives every level the same six Spaces: Description · Idea Studio ·
-Audience Report | Work Details | Runs · Delivery. This Block asks how labeling fits that ladder level
-by level, and what it needs that no other Theme has.
+The shared ladder (b10) gives every level one frame: Guide · Studio | Block · Job · Task | Delivery on
+top, Description | Report | Work | Runs at each level. This Block asks how labeling fits that ladder
+level by level, and what it needs that no other Theme has.
 
 Most answers here are a change to the labeling skills (`2_theme/labeling/haipipe-labeling` and its view skills, `haipipe-labeling-building`, `haipipe-labeling-scanning`), the Labeling workbench
-server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
+server, or b10's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
 Excluded: the ladder itself and what every Theme shares (b10_project_workbench); moving the plugin's files
@@ -40,9 +43,12 @@ chat section -> Related question -> haipipe-question -> skill, workbench or buil
 ## Pages
 
 No Jobs yet. The shared drawing is `studio/s01-labeling-ladder/s01-labeling-ladder.excalidraw`:
-every labeling row, Block to Run, proposed and today. It is drawn from b03's shared definitions
+every labeling row, Block to Run, proposed and today. It is drawn from b10's shared definitions
 (`b10_project_workbench/studio/s01-overall-tree-structure/`) by `b10_project_workbench/studio/_build/theme_ladder.py`
-and rebuilt by b03's `studio/_build/make.sh`.
+and rebuilt by b10's `studio/_build/make.sh`.
+
+`studio/s13-labeling-task/` is a labeling Job's five Task types (261014), as b12's s13 is a design
+Job's three: one flow, the Handoff as its key point, and the dices350 Job and its items Task on screen.
 
 `studio/s02-labeling-workbench/` is the Labeling workbench as built today (moved from the
 server, 261007): the "before" the s01 proposal replaces, shown in its Guide › RoadMap Draw.

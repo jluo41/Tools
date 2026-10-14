@@ -1437,11 +1437,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-dca07d6f547c",
+   "id": "s-df3a0aa30343",
    "type": "text",
    "x": 800.0,
    "y": 746.5,
-   "width": 306.861875,
+   "width": 316.203125,
    "height": 75.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -1462,8 +1462,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "How does excalidraw-read put a\npaper, or a file we revise, onto a\ncanvas?",
-   "originalText": "How does excalidraw-read put a\npaper, or a file we revise, onto a\ncanvas?",
+   "text": "How does excalidraw-read put a\npaper onto a canvas (a file we\nrevise is excalidraw-revise, s21)?",
+   "originalText": "How does excalidraw-read put a\npaper onto a canvas (a file we\nrevise is excalidraw-revise, s21)?",
    "fontSize": 20,
    "fontFamily": 6,
    "textAlign": "left",
@@ -2985,12 +2985,12 @@
    "endArrowhead": null
   },
   {
-   "id": "s-dc643f661a9d",
+   "id": "s-4750b2d549a9",
    "type": "rectangle",
    "x": 1816,
    "y": 161.5,
    "width": 928,
-   "height": 623.0,
+   "height": 598.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -3164,12 +3164,12 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-3852a564872a",
+   "id": "s-cdd8749cc5e7",
    "type": "text",
    "x": 1908.0,
    "y": 356.5,
-   "width": 337.96625,
-   "height": 75.0,
+   "width": 325.676875,
+   "height": 50.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -3189,8 +3189,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "What does excalidraw-read's revise\nmode cost, step by step, on a real\nfile?",
-   "originalText": "What does excalidraw-read's revise\nmode cost, step by step, on a real\nfile?",
+   "text": "What does excalidraw-revise cost,\nstep by step, on a real file?",
+   "originalText": "What does excalidraw-revise cost,\nstep by step, on a real file?",
    "fontSize": 20,
    "fontFamily": 6,
    "textAlign": "left",
@@ -3203,7 +3203,7 @@
    "id": "s-877e65e433c1",
    "type": "text",
    "x": 1908.0,
-   "y": 437.5,
+   "y": 412.5,
    "width": 176.08437500000002,
    "height": 25.0,
    "angle": 0,
@@ -3239,7 +3239,7 @@
    "id": "s-342f1d563e87",
    "type": "text",
    "x": 1908.0,
-   "y": 468.5,
+   "y": 443.5,
    "width": 301.97593750000004,
    "height": 25.0,
    "angle": 0,
@@ -3272,12 +3272,12 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-e7081722692d",
+   "id": "s-247739ad4623",
    "type": "line",
    "x": 1884.0,
    "y": 352.5,
    "width": 1,
-   "height": 129.0,
+   "height": 104.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -3304,7 +3304,7 @@
     ],
     [
      0.0,
-     129.0
+     104.0
     ]
    ],
    "lastCommittedPoint": null,
@@ -3356,10 +3356,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-ebafda1e8cbd",
+   "id": "s-3d876d375f99",
    "type": "line",
    "x": 1884.0,
-   "y": 450.5,
+   "y": 425.5,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -3398,10 +3398,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-c6ee6e1d458c",
+   "id": "s-faec4c98458b",
    "type": "line",
    "x": 1884.0,
-   "y": 481.5,
+   "y": 456.5,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -3443,7 +3443,7 @@
    "id": "s-ad9a3402e82c",
    "type": "text",
    "x": 1874.0,
-   "y": 505.5,
+   "y": 480.5,
    "width": 287.12468750000005,
    "height": 60.0,
    "angle": 0,
@@ -3479,7 +3479,7 @@
    "id": "s-f2a08dcf05d8",
    "type": "text",
    "x": 1908.0,
-   "y": 571.5,
+   "y": 546.5,
    "width": 344.558125,
    "height": 100.0,
    "angle": 0,
@@ -3515,7 +3515,7 @@
    "id": "s-32e65f853ed1",
    "type": "text",
    "x": 1908.0,
-   "y": 677.5,
+   "y": 652.5,
    "width": 204.37312500000002,
    "height": 25.0,
    "angle": 0,
@@ -3551,7 +3551,7 @@
    "id": "s-4f4f60c76c53",
    "type": "text",
    "x": 1908.0,
-   "y": 708.5,
+   "y": 683.5,
    "width": 324.3684375,
    "height": 50.0,
    "angle": 0,
@@ -3584,10 +3584,10 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-536b2d45d797",
+   "id": "s-0548affa2d3a",
    "type": "line",
    "x": 1884.0,
-   "y": 567.5,
+   "y": 542.5,
    "width": 1,
    "height": 154.0,
    "angle": 0,
@@ -3626,10 +3626,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-a5d0f7d9c204",
+   "id": "s-ea0277aefdf1",
    "type": "line",
    "x": 1884.0,
-   "y": 584.5,
+   "y": 559.5,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -3668,10 +3668,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-1b8f4de894a0",
+   "id": "s-82cda1b4a909",
    "type": "line",
    "x": 1884.0,
-   "y": 690.5,
+   "y": 665.5,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -3710,10 +3710,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-1ff445bc919f",
+   "id": "s-f57061aa3115",
    "type": "line",
    "x": 1884.0,
-   "y": 721.5,
+   "y": 696.5,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -3752,12 +3752,12 @@
    "endArrowhead": null
   },
   {
-   "id": "s-2266f807b8c9",
+   "id": "s-fd16bb254e99",
    "type": "line",
    "x": 1850.0,
    "y": 298.5,
    "width": 1,
-   "height": 222.60000000000002,
+   "height": 197.60000000000002,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -3784,7 +3784,7 @@
     ],
     [
      0.0,
-     222.60000000000002
+     197.60000000000002
     ]
    ],
    "lastCommittedPoint": null,
@@ -3836,10 +3836,10 @@
    "endArrowhead": null
   },
   {
-   "id": "s-26b5096b44f7",
+   "id": "s-c58a96b2dbea",
    "type": "line",
    "x": 1850.0,
-   "y": 521.1,
+   "y": 496.1,
    "width": 18.0,
    "height": 1,
    "angle": 0,
@@ -6016,11 +6016,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-f3a6a6ea6488",
+   "id": "s-0a7f3de296f5",
    "type": "text",
    "x": 1178,
    "y": 3045.5,
-   "width": 840.770625,
+   "width": 797.178125,
    "height": 50.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -6041,8 +6041,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "what the skill excalidraw-job draws and how: a Job as one Studio topic of its Block, in two\nframes and few words …",
-   "originalText": "what the skill excalidraw-job draws and how: a Job as one Studio topic of its Block, in two\nframes and few words …",
+   "text": "what the skill excalidraw-job draws and how: a Job as one Studio topic of its Block, a\nstaircase (since 0.6.0, 261013).",
+   "originalText": "what the skill excalidraw-job draws and how: a Job as one Studio topic of its Block, a\nstaircase (since 0.6.0, 261013).",
    "fontSize": 20,
    "fontFamily": 6,
    "textAlign": "left",
@@ -6254,7 +6254,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-b356db178a6b",
+   "id": "s-633e8c8f6ffc",
    "type": "text",
    "x": 1178,
    "y": 3470.5,
@@ -6279,8 +6279,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "how b04_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side\nby side) was drawn on 2026-10-11, as …",
-   "originalText": "how b04_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side\nby side) was drawn on 2026-10-11, as …",
+   "text": "how b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side\nby side) was drawn on 2026-10-11, as …",
+   "originalText": "how b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side\nby side) was drawn on 2026-10-11, as …",
    "fontSize": 20,
    "fontFamily": 6,
    "textAlign": "left",

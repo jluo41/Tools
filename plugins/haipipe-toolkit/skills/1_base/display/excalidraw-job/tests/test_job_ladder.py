@@ -190,3 +190,136 @@ def test_terms_past_the_cap_are_counted_and_millions_stay_short(tmp_path):
     png = job_ladder.chart_png({"file": "rows.json", "bars": [{"label": "a", "at": "a"}, {"label": "b", "at": "b"}]},
                                res, tmp_path / "c.png")
     assert png and png.is_file()
+
+
+def fake_tasks(names: list[str], tmp: Path) -> list[dict]:
+    """Task dicts as task_info makes them, enough for the steps: an id, a folder name, a title, Runs, a row."""
+    out = []
+    for n in names:
+        folder = tmp / "j51_raw" / n
+        out.append({"id": n[:3], "name": n, "title": f"B00/J51/T{n[1:3]} · {n[4:].replace('_', ' ')}",
+                    "question": "What does this table hold?", "lab": {},
+                    "runs": [{"name": "r01_profile", "mark": "✅", "state": "ok", "values": [], "result": folder}],
+                    "row": {"task": folder}})
+    return out
+
+
+def test_a_family_of_tasks_is_one_step(tmp_path):
+    """Past eight Tasks, three or more of one kind in a row stand as one step; others stay their own (261014)."""
+    tasks = fake_tasks(["t01_intake", "t02_catalog"] + [f"t{n}_profile_x{n}" for n in range(11, 21)] + ["t91_route"],
+                       tmp_path)
+    steps = job_ladder.step_groups(tasks, {})
+    assert [s["id"] for s in steps] == ["t01", "t02", "t11–t20", "t91"]
+    fam = steps[2]
+    assert len(fam["members"]) == 10 and len(fam["runs"]) == 10 and fam["question"] == "What does this table hold?"
+    assert job_ladder.bare(tasks[0]["title"]) == "intake"                 # the page's address is not said twice
+
+
+def test_the_face_names_steps_and_two_staircases(tmp_path):
+    """The face's steps group Tasks by range; past six steps, or where parts says, the Job is two staircases."""
+    tasks = fake_tasks(["t01_intake"] + [f"t{n}_profile_x{n}" for n in range(11, 17)] + ["t91_route", "t92_time",
+                                                                                         "t93_handoff"], tmp_path)
+    cfg = {"steps": [{"title": "cohort", "tasks": "t11-t13"}, {"title": "signals", "tasks": ["t14", "t15", "t16"]}]}
+    steps = job_ladder.step_groups(tasks, cfg)
+    assert [s["id"] for s in steps] == ["t01", "t11–t13", "t14–t16", "t91", "t92", "t93"]
+    assert job_ladder.split_steps(steps, cfg) == [("", steps)]           # six steps: one staircase
+    parts = job_ladder.split_steps(steps, {"parts": [{"title": "in"}, {"title": "out", "from": "t91"}]})
+    assert [(t, [s["id"] for s in ss]) for t, ss in parts] == [("in", ["t01", "t11–t13", "t14–t16"]),
+                                                               ("out", ["t91", "t92", "t93"])]
+    seven = steps + job_ladder.step_groups(fake_tasks(["t94_more"], tmp_path), {})
+    assert len(job_ladder.split_steps(seven, {})) == 2                    # past six: halves, named by their Tasks
+
+
+def test_a_row_per_run_and_later_drawn_plain(tmp_path):
+    """LLMRec 261014: "make the report of the task to be shown as the table, then make it to the level 3 of the
+    agreed". A Task of one subject per Run is a table, a row per Run, its cells read from each Run's result; an agreed
+    topic's open points move to `later:`, drawn plain in ②, so no red ❓ is left."""
+    job = job_with_results(tmp_path)
+    for r in ("r01_first", "r02_rerun", "r03_fixed"):
+        (job / "t01_overlap/runs" / r / "result/runtime.yaml").write_text(
+            f"status: complete\nsubject:\n  title: Paper of {r}\n")
+    cfg = dict(CFG, tables={"t01_overlap": [{"title": "Its papers", "runs": True, "rows": 2, "columns": [
+        {"label": "paper", "at": "runtime.yaml:subject.title"}, {"label": "says", "at": "says"}]}]},
+        later=[{"item": "A third engine", "closer": "when one is licensed"}])
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, cfg)
+    els = json.loads(out.read_text())["elements"]
+    words = " ".join(e["text"].replace("\n", " ") for e in els if e["type"] == "text")
+    assert "Its papers" in words and "Paper of r01_first" in words and "the first pass" in words
+    assert "1 more Run, not shown" in words                                      # capped, counted, never dropped
+    assert "⏳ A third engine" in words and "when one is licensed" in words
+    red = [e["text"] for e in els if e["type"] == "text" and e.get("strokeColor") == job_ladder.RED]
+    assert not any("A third engine" in t or "Later" in t for t in red)            # later is plain, never red
+
+
+def test_each_step_names_its_page_and_run_tables_filter(tmp_path):
+    """Reader review 261014 (LLMRec): "no Task page is named". Each step says where its page is, linked; a row per Run
+    keeps only the Runs `only:` names, and a Run with nothing in the columns takes no row; the picked numbers' table
+    says which Run it reads."""
+    job = job_with_results(tmp_path)
+    for r in ("r01_first", "r02_rerun"):
+        (job / "t01_overlap/runs" / r / "result/runtime.yaml").write_text(f"status: complete\nn: {len(r)}\n")
+    cfg = dict(CFG, tables={"t01_overlap": [{"title": "Only r0[12]", "runs": True, "only": "r0[12]_*",
+                                             "columns": [{"label": "n", "at": "runtime.yaml:n"}]}]})
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, cfg)
+    els = json.loads(out.read_text())["elements"]
+    page = [e for e in els if e["type"] == "text" and e["text"].startswith("📄 page: t01_overlap/t01_overlap.md")]
+    assert page and page[0].get("link", "").endswith("t01_overlap/t01_overlap.md")
+    words = " ".join(e["text"].replace("\n", " ") for e in els if e["type"] == "text")
+    assert "Only r0[12]" in words and "r03" not in [e["text"] for e in els if e["type"] == "text"]
+    assert "measure (r01 · tau)" in words                                       # t02's picks name their Run
+
+
+def test_a_unit_stays_with_its_number_and_a_block_path_table(tmp_path):
+    """Reader review 261014 (LLMRec b02 s23): "Claude transport response 1,326 | chars", the unit split off as a
+    second cell. A pick's own label splits it. A table may read a file anywhere in the Block (`path:`)."""
+    job = job_with_results(tmp_path)
+    (job.parent / "shared.csv").write_text("pair,rate\na-b,0.6\na-c,0.7\n")
+    cfg = dict(CFG, show={"t02_order/r01_tau": [{"label": "Kendall tau", "at": "metrics.json:tau", "unit": "units"}]},
+               tables={"t01_overlap": [{"title": "From the Block", "path": "shared.csv", "columns": ["pair", "rate"]}]})
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, cfg)
+    cells = [e["text"] for e in json.loads(out.read_text())["elements"] if e["type"] == "text"]
+    assert "Kendall tau" in cells and "0.02 units" in cells
+    assert "From the Block" in cells and "a-c" in cells
+
+
+def test_results_stay_inside_the_frame_or_overflow_it_evenly():
+    """JL 261014: the results may pass the frame's top and bottom, but by the same amount; shorter, they stay inside
+    it, each as near its own step as it can be, and never overlap."""
+    tall = job_ladder.results_layout([0, 0], [900, 900], 100, 1100, 90)            # 1,890 tall for 1,000 of frame
+    assert abs((100 - tall[0]) - (tall[1] + 900 - 1100)) < 1                      # as far above as below
+    short = job_ladder.results_layout([150, 600, 1000], [200, 200, 200], 100, 1100, 90)
+    assert short[0] == 150 and short[1] == 600                                    # level with their steps
+    assert short[2] + 200 <= 1100                                                 # pulled up inside the bottom
+    assert all(b >= a + 200 + 90 for a, b in zip(short, short[1:]))              # never overlapping
+
+
+def test_bent_links_take_lanes_that_never_cross():
+    """Links that turn up take lanes left to right in step order; links that both turn down, right to left; a
+    straight one takes none."""
+    lanes = job_ladder.results_lanes([(500, 100), (900, 400), (1300, 1300), (1700, 2100), (2100, 2600)])
+    assert lanes[0] < lanes[1] < lanes[4] < lanes[3] and 2 not in lanes
+
+
+def test_a_results_block_lays_its_panels_side_by_side(tmp_path):
+    """Asked 261014 ("这个 result 右边有这么多的空位你都不用"): given two columns, a block's two charts stand side by
+    side, and the block is shorter than with one; a small Job's results, which fit beside its frame, keep one."""
+    job = job_with_results(tmp_path)
+    cfg = {"charts": {"t01_overlap": [
+        {"title": "J by model", "file": "metrics.json", "each": "by_model", "value": "j.p"},
+        {"title": "J by model, again", "file": "metrics.json", "each": "by_model", "value": "j.p"}]}}
+    jd = job_ladder.jd
+    t = jd.task_info(jd.jr.job_rows(job.parent, job, {"show": {}})[0], {"show": {}})
+    one, two = job_ladder.Drawing(), job_ladder.Drawing()
+    w1, h1, _ = job_ladder.results_block(one, 0, 0, t, cfg, "", tmp_path / "assets", cols=1)
+    w2, h2, _ = job_ladder.results_block(two, 0, 0, t, cfg, "", tmp_path / "assets", cols=2)
+    charts = [e for e in two.els if e["type"] == "image"]
+    assert abs(charts[0]["y"] - charts[1]["y"]) < 1 and charts[0]["x"] < charts[1]["x"]
+    assert w2 > w1 and h2 < h1
+    _, h3, _ = job_ladder.results_block(job_ladder.Drawing(), 0, 0, t, cfg, "", tmp_path / "assets", cols=3)
+    assert h3 == h2                                                               # never a column with nothing in it

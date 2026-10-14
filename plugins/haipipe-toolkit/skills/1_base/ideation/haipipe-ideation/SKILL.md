@@ -13,8 +13,8 @@ description: >-
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.3"
-  last_updated: "2026-10-09"
+  version: "0.7.4"
+  last_updated: "2026-10-14"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none

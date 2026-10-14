@@ -1,3 +1,12 @@
+## 0.12.0 · 2026-10-14 · Reworking a sent Section
+
+- New step before OUTLINE/SHAPE when a version follows a sent one whose review came back: the Section reads itself as
+  sent in one Board topic, `studio/sNN-tNN-<section>/`, with excalidraw-read 0.7.0 (`section:` with `parts` and `key`;
+  a KEEP, REWRITE, CUT or MOVE verdict, a Review Item link and a `next` per passage), and its face's How much changes
+  table gives every paragraph a verdict. CONTEXT cites it, SHAPE follows the verdicts, and the comments report's
+  `lands on` routes agree with the readings (JL 261014: "How much we will chnage them ... use /excalidraw-read to work
+  on each of the section"). First use: Paper-TestToLearn-MS2026 s10 to s16.
+
 ## 0.11.1 · 2026-10-11 · A Section keeps no studio/ or delivery/
 
 - A Section holds its face, `draft/`, `runs/`, `results/` and `reports/`; its drawings are Board topics and its build is the Board's `delivery/jNN_<version>/tNN_<section>/` (b10 s09-D01, s03-D06; JL 261011). Matches haipipe-paper 1.12.0's scaffold, which no longer makes them.
