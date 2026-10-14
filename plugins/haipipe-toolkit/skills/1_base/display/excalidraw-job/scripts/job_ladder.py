@@ -51,7 +51,7 @@ RUN_WORDS = 240                             # the words every Run sentence of a 
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
-PAGE_W, PAGE_H = 200, 280                   # one Run's highlighted transcript page
+PAGE_W, PAGE_H = 300, 420                   # each page of a Run's highlighted transcript, as stored (readable)
 SHOT_W, SHOT_H, MAX_SHOTS = 240, 200, 4     # beside it, its video's screenshots, each with its caption
 CASCADE_DX = 140                            # each Run's row a step further right: free style, not a column (261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
@@ -534,8 +534,24 @@ def run_pages(topic: Path, t: dict) -> list[dict]:
             f = a / f"{rid}-t{int(sh.get('at', 0)):04d}.jpg" if isinstance(sh, dict) else None
             if f and f.is_file():
                 shots.append((f, str(sh.get("says") or "")))
-        out.append({"rid": rid, "page": pages[0], "shots": shots[:MAX_SHOTS]})
+        out.append({"rid": rid, "pages": pages, "shots": shots[:MAX_SHOTS]})   # every page: the whole transcript
     return out
+
+
+def embed_page(d: Drawing, path: Path, x: float, y: float, w: float, fid: str, link: str | None) -> float:
+    """A transcript page as stored (96 dpi, already small), not shrunk again, so its words read when zoomed
+    (JL 261014: "could you make it a bit more readable?"). Returns its height."""
+    import base64
+    from PIL import Image
+    with Image.open(path) as im:
+        h = w * im.height / im.width
+    d.files[fid] = {"mimeType": "image/jpeg", "id": fid, "created": 1,
+                    "dataURL": "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode()}
+    d.box(x - 2, y - 2, w + 4, h + 4, GREY, 1)
+    d.el("image", x, y, w, h, fileId=fid, status="saved", scale=[1, 1])
+    if link:
+        d.els[-1]["link"] = link
+    return h
 
 
 def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str,
@@ -546,9 +562,9 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
     nn, png, link, pages = thumb or (None, None, None, [])
-    most = max((len(g["shots"]) for g in pages), default=0)
-    right = ((len(pages) - 1) * CASCADE_DX + PAGE_W + (16 + most * (SHOT_W + 12) if most else 0) if pages
-             else THUMB_W if png else 0)
+    row = max((len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
+               for g in pages), default=0)
+    right = (len(pages) - 1) * CASCADE_DX + row if pages else THUMB_W if png else 0
     w = CHART_W + 2 * PAD + (right + 28 if right else 0)
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
     side = yy
@@ -561,10 +577,12 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
             gy = side                               # then its screenshots with their captions (JL 261014)
             for k, g in enumerate(pages):
                 gx = tx + k * CASCADE_DX
-                h = d.picture(g["page"], gx, gy, PAGE_W, PAGE_H, fid=f"page-{nn}-{g['rid']}")
-                d.els[-1]["link"] = link
-                low = d.para(gx, gy + h + 6, g["rid"], PAGE_W, T_RES - 8, GREY)
-                sx = gx + PAGE_W + 16
+                low, px = gy, gx
+                for n, page in enumerate(g["pages"], 1):           # the whole transcript, page by page
+                    h = embed_page(d, page, px, gy, PAGE_W, f"page-{nn}-{g['rid']}-p{n}", link)
+                    low = max(low, d.para(px, gy + h + 6, f"{g['rid']} · p{n}", PAGE_W, T_RES - 8, GREY))
+                    px += PAGE_W + 10
+                sx = px + 6
                 for j, (shot, cap) in enumerate(g["shots"]):
                     sh = d.picture(shot, sx, gy, SHOT_W, SHOT_H, fid=f"shot-{nn}-{g['rid']}-{j}")
                     low = max(low, d.para(sx, gy + sh + 6, words(cap, 12), SHOT_W, 18, GREY))
