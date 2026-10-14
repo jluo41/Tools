@@ -60,6 +60,25 @@ def test_columns_step_right_and_share_past_four():
     assert job_ladder.columns(0) == []
 
 
+def test_runs_stand_in_a_grid_so_a_job_grows_wide_not_tall(tmp_path):
+    """JL 261013 on j01: six Runs that each say something are two rows of three, not a column six cards tall."""
+    assert [job_ladder.run_cols(n) for n in (0, 1, 2, 4, 5, 9)] == [1, 1, 2, 2, 3, 3]
+    job = job_with_results(tmp_path)
+    for k in range(4, 7):
+        res = job / f"t01_overlap/runs/r0{k}_more/result"
+        res.mkdir(parents=True)
+        (res / "runtime.yaml").write_text("status: complete\n")
+        (res / "metrics.json").write_text(json.dumps({"summary": {"headline": f"pass {k} adds a case"}}))
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, {"reading": "A and B share little."})   # no current Run: all six speak
+    heads = [t for t in texts(out) if t["text"].split("\n")[0].endswith(("· first", "· rerun", "· fixed", "· more"))]
+    rows = sorted({round(t["y"]) for t in heads})
+    assert len(heads) == 6 and len(rows) == 2, [(t["text"][:20], t["x"], t["y"]) for t in heads]
+    frame = next(e for e in json.loads(out.read_text())["elements"] if e["type"] == "frame")
+    assert frame["width"] > frame["height"]
+
+
 def test_short_key_drops_a_repeated_prefix_and_a_date():
     assert job_ladder.short_key("claude-claude-haiku-4-5-20251001") == "claude-haiku-4-5"
     assert job_ladder.short_key("deepseek-deepseek-v4-flash-harness") == "deepseek-v4-flash"
@@ -134,3 +153,40 @@ def test_a_current_run_never_folds_away():
     names = [r["name"] for r in keep]
     assert "r02_m2" in names and len(keep) <= job_ladder.MOST and names == sorted(names)
     assert len(keep) + len(folded) == 9
+
+
+def test_a_stata_csv_gives_bars_with_whiskers_and_a_filtered_table(tmp_path):
+    """OpioidRx 261013: a Stata table holds several models; a chart picks rows by `col=v&col2=v` with each bar's interval
+    (`low`, `high`), and a table shows only the rows its `where` picks."""
+    job = job_with_results(tmp_path)
+    res = job / "t02_order/runs/r01_tau/result"
+    (res / "slopes.csv").write_text("model_id,context,estimate,ci_lo,ci_hi\n"
+                                    "m2,lbp,9.19,4.20,14.18\nm2,cancer,0.12,-0.93,1.16\nm5,lbp,12.6,5.4,19.8\n")
+    spec = {"file": "slopes.csv", "bars": [
+        {"label": "low back pain", "at": "model_id=m2&context=lbp.estimate",
+         "low": "model_id=m2&context=lbp.ci_lo", "high": "model_id=m2&context=lbp.ci_hi"},
+        {"label": "cancer", "at": "model_id=m2&context=cancer.estimate"}]}
+    rows = job_ladder.chart_rows(spec, res)
+    assert rows[0] == ("low back pain", 9.19, 4.20, 14.18) and rows[1][2] is None
+    cfg = dict(CFG, tables={"t02_order": [{"title": "Slopes, model m2", "file": "slopes.csv", "where": "model_id=m2",
+                                           "columns": ["context", "estimate"]}]})
+    t = {"name": "t02_order", "runs": [{"name": "r01_tau", "result": res}]}
+    (title, cols, shown), = job_ladder.task_tables(t, cfg)
+    assert [r["cells"][0] for r in shown] == ["lbp", "cancer"]                     # m5's row is left out
+
+
+def test_terms_past_the_cap_are_counted_and_millions_stay_short(tmp_path):
+    """OpioidRx 261013: a face with more terms than ② draws says how many more, never drops them silently; a chart
+    of counts in the millions labels its bars 113.2M, not 113,219,741 run off the edge."""
+    job = job_with_results(tmp_path)
+    cfg = dict(CFG, terms=[{"term": f"T{k}", "means": "x"} for k in range(job_ladder.TERMS + 3)])
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, cfg)
+    words = " ".join(e["text"].replace("\n", " ") for e in texts(out))
+    assert "3 more terms in the face" in words
+    res = job / "t02_order/runs/r01_tau/result"
+    (res / "rows.json").write_text(json.dumps({"a": 113219741, "b": 2397223}))
+    png = job_ladder.chart_png({"file": "rows.json", "bars": [{"label": "a", "at": "a"}, {"label": "b", "at": "b"}]},
+                               res, tmp_path / "c.png")
+    assert png and png.is_file()

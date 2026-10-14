@@ -1,6 +1,29 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.6.2] · 2026-10-13 · Runs as a grid: a Job grows wide, not tall
+
+- JL on Proj10 b01 s21 (j01, two Tasks of six and four Runs): "the width is kind of small, you can make it wider
+  … I don't want to make it very tall and narrow". A Task's Runs now stand in a grid beside its step, `run_cols`
+  a row (one alone, two up to four, three past that), each row as tall as its tallest card; the branch meets each
+  row's first card, and the frame widens to the widest grid. j01's ① went from 2140 x 3863 to 3476 x 2572.
+
+## [0.6.1] · 2026-10-13 · Stata tables: bars with their own intervals, a table's row filter
+
+- Asked 261013 on Physician-SPACE's OpioidRx Blocks ("for each jobs, make the plan first", then redraw them as
+  staircases): its Stata Runs write one CSV per kind (`tables/h2-slopes.csv`) holding several models, so a chart
+  picks rows by `col=v&col2=v` and each bar may now carry its own `low:` and `high:` (`chart_rows`), and a table
+  shows only the rows its `where: "col=v&col2=v"` picks (`task_tables`).
+- From the five Block agents' reports the same day: ② drew only 12 `terms` and dropped the rest silently; it now
+  draws 16 (`TERMS`) and counts the rest ("… 3 more terms in the face"). A chart of counts in the millions labels
+  its bars and ticks `113.2M`, not 113,219,741 run off the edge.
+- JL the same evening: "for the figures etc. you should make them run in the run's results". A Task's figures
+  (`figures:`, a figure Run's PNGs) now come right after its finding, before its tables; SKILL.md says to prefer
+  a figure Run over `charts:`. "Done when" shows 34 words, not 22 (four reviews found its end cut).
+- Tests: `test_a_stata_csv_gives_bars_with_whiskers_and_a_filtered_table`,
+  `test_terms_past_the_cap_are_counted_and_millions_stay_short`.
+- First drawn: OpioidRx `work/b03_CD_visit_pain/studio/s22` (t06's pooled slopes, r02 and r01, with 95% intervals).
+
 ## [0.6.0] · 2026-10-13 · The staircase: Tasks as steps, results as charts and tables, frames as stairs
 
 - Asked 261013 on Physician-SPACE's LLMRec Blocks, with a hand sketch: "先是 Job，下面跟着 Task 1、Task 2、Task 3 …

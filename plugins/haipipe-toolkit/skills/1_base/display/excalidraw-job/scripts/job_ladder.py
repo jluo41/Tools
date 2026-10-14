@@ -42,9 +42,11 @@ jr, Drawing, canvas = jd.jr, jd.Drawing, jd.canvas
 INK, RED, GREY = jd.INK, jd.RED, jd.GREY
 
 PAD, MOST = 22, 6                           # inside a box; Runs drawn per Task before the rest fold into one row
+TERMS = 16                                  # terms drawn in ② before the rest are counted, never dropped
 SHIFT, NODE_W, CARD_W, RUN_W = 380, 820, 660, 640   # a step right; a Task's box, its card, a Run's box
 JOB_W, IO_W = 1100, 760                     # the Job's box; its in and out
 STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame out to the results
+RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
 PICTURES = (".png", ".jpg", ".jpeg")
@@ -132,6 +134,12 @@ def columns(n: int) -> list[int]:
     return [i * c // n for i in range(n)] if n else []
 
 
+def run_cols(n: int) -> int:
+    """How many Runs stand side by side: one alone, two up to four, then RUN_COLS; a Task of six Runs is two rows,
+    not a column six cards tall (JL 261013 on j01: "I don't want to make it very tall and narrow")."""
+    return 1 if n <= 1 else 2 if n <= 4 else RUN_COLS
+
+
 # ── boxes ────────────────────────────────────────────────────────────────────────────────────────────────────
 def lines_h(lines: list, w: float) -> float:
     return sum(Drawing.height(s, w - 2 * PAD, size) + 6 for s, size, _ in lines if s) + 2 * PAD - 6
@@ -201,7 +209,10 @@ def chart_png(spec: dict, result: Path | None, out: Path) -> Path | None:
     pct = spec.get("fmt") == "pct"
     k = 100 if pct else 1
     digits = int(spec.get("digits", 1 if pct else (0 if spec.get("fmt") == "int" else 3)))
-    show = (lambda v: f"{v:.{digits}f}%") if pct else (lambda v: f"{v:,.{digits}f}")
+    big = not pct and max(abs(r[1]) for r in rows) >= 1e6              # 113.2M, not 113,219,741 run off the edge;
+    short = (lambda v: f"{v / 1e6:,.1f}M" if abs(v) >= 1e6 else       # each bar its own unit, so 226,893 and
+             f"{v / 1e3:,.0f}K" if abs(v) >= 1e4 else f"{v:,.{digits}f}")   # 222,433 stay apart (227K, 222K)
+    show = (lambda v: f"{v:.{digits}f}%") if pct else short if big else (lambda v: f"{v:,.{digits}f}")
     n = len(rows)
     fig, ax = plt.subplots(figsize=(9, 0.62 * n + 0.9), dpi=100)
     ys = list(range(n))[::-1]
@@ -224,7 +235,7 @@ def chart_png(spec: dict, result: Path | None, out: Path) -> Path | None:
     ax.set_yticklabels([r[0] for r in rows], fontsize=22, color="#1e1e1e")
     from matplotlib.ticker import FuncFormatter, MaxNLocator
     ax.xaxis.set_major_locator(MaxNLocator(nbins=4))                   # a few ticks, never run together
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.0f}%" if pct else
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.0f}%" if pct else f"{v / 1e6:g}M" if big else
                                                f"{v:,.0f}" if abs(v) >= 100 else f"{v:g}"))
     ax.tick_params(axis="x", labelsize=16, colors="#868e96")
     ax.tick_params(axis="y", length=0)
@@ -290,8 +301,9 @@ def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
 def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str,
                   assets: Path | None) -> tuple[float, bool]:
     """A Task's results, outside the frame, in this order: a small title; its finding in one sentence; the charts the
-    face names (`charts:`, drawn here from its Run's result); the tables it names (`tables:`, rows from its Run's
-    CSV); else its current Run's picked numbers as a table; then the figures the Task already holds (task_pictures).
+    face names (`charts:`, drawn here from its Run's result); the figures the Task holds (task_pictures: a figure
+    Run's charts, JL 261013); the tables it names (`tables:`, rows from its Run's CSV); else its current Run's
+    picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
     w = CHART_W + 2 * PAD
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
@@ -308,6 +320,11 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         yy = d.para(x + PAD, yy, str(spec.get("title", "")), w - 2 * PAD, T_RES, INK) + 4
         yy += d.picture(png, x + PAD, yy, CHART_W, 900, fid=f"chart-{t['name']}-{k}") + 16
         drawn += 1
+    charted = drawn
+    for k, p in enumerate(task_pictures(t, cfg)):                       # its own figures, as its Runs drew them:
+        yy += d.picture(p, x + PAD, yy, CHART_W, 640, fid=f"fig-{t['name']}-{k}") + 6   # a figure Run's charts
+        yy = d.para(x + PAD, yy, str(p.relative_to(t["row"]["task"])), w - 2 * PAD, 20, GREY) + 16   # come first
+        drawn += 1                                                      # (JL 261013), then the exact rows
     tabled = False
     for title, cols, rows in task_tables(t, cfg):                       # its tables, from its Run's own files
         if not rows:
@@ -318,17 +335,13 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         rest = (CHART_W - first) / max(1, len(cols) - 1)
         yy = d.grid_table(x + PAD, yy, cols, rows, [first] + [rest] * (len(cols) - 1), 24, pad=20) + 16
         tabled = True
-    if not drawn and not tabled:
+    if not charted and not tabled:
         now = [r for r in t["runs"] if run_current(cfg, t["name"], r["name"])]
         vals = [v for r in (now or [r for r in t["runs"] if r["values"]][-1:]) for v in r["values"]]
         if vals:                                                       # no chart or table named: its numbers, a table
             rows = [{"cells": list(v.rsplit(" ", 1)) if " " in v else [v, ""], "dim": False} for v in vals]
             yy = d.grid_table(x + PAD, yy, ["", ""], rows, [CHART_W * 0.62, CHART_W * 0.38], T_RES, pad=24) + 10
             tabled = True
-    for k, p in enumerate(task_pictures(t, cfg)):                       # its own figures, as its Runs drew them
-        yy += d.picture(p, x + PAD, yy, CHART_W, 640, fid=f"fig-{t['name']}-{k}") + 6
-        yy = d.para(x + PAD, yy, str(p.relative_to(t["row"]["task"])), w - 2 * PAD, 20, GREY) + 16
-        drawn += 1
     is_open = not (found or drawn or tabled)
     if is_open:
         yy = d.para(x + PAD, yy, "❓ nothing found yet" if t["runs"] else "⬜ no Run yet", w - 2 * PAD, T_RES,
@@ -347,7 +360,9 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     tight = len(tasks) > 6 or sum(len(shown_runs(t, cfg)[0]) for t in tasks) > 14   # a big Job: fewer words a step
     say_most = 14 if tight else 20
     cols = columns(len(tasks))
-    width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 110 + RUN_W + 60, 40 + JOB_W + 120 + IO_W + 60)
+    grid = max((run_cols(len(k) + bool(fo)) for k, fo in (shown_runs(t, cfg) for t in tasks)), default=1)
+    runs_w = grid * RUN_W + (grid - 1) * RUN_GAP
+    width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 110 + runs_w + 60, 40 + JOB_W + 120 + IO_W + 60)
     title = f"🪜 {info['id']} · {info['title']}"
     f = d.frame(f"{mark} {title}: why it exists, its Tasks as steps", width)
     Drawing.room(f)                         # the room between the steps is the point; measured over the boxes
@@ -369,7 +384,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     aim = str(cfg.get("aim") or info.get("goal") or "")
     jh = card(d, 40, y, JOB_W, [(f"🧱 {info['id']} · {info['title']}", T_JOB, INK)], sw=3)
     why = [(f"Why: {words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", T_CARD, None),
-           (f"Done when: {words(info['close'], 22)}" if info.get("close") else
+           (f"Done when: {words(info['close'], 34)}" if info.get("close") else   # 22 cut its end in four
+                                                                                 # OpioidRx reviews (261013)
             "❓ close: not written on the Job face", T_CARD, None),
            (f"Answers: {info['answers']}" if info.get("answers") else "", T_CARD, INK)]
     ch = card(d, 110, y + jh + 20, JOB_W - 110, why)
@@ -396,15 +412,14 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                  (f"→ details: {own[:3]}" if own else "", T_CARD, INK),
                  ("" if t["runs"] else "⬜ no Run yet", T_CARD, GREY)]
         cardh = card(d, nx + 36, y + nh + 16, CARD_W, under) + 16 if any(s for s, _, _ in under) else 0
-        # its Runs branch to the right, below the line that goes out to its results
+        # its Runs branch to the right, below the line that goes out to its results, as a grid (run_cols a row)
         keep, folded = shown_runs(t, cfg)
         rx, ry, said, mids = nx + NODE_W + 110, y + nh + 24, {}, []
         marked = any(run_current(cfg, t["name"], r["name"]) for r in t["runs"])
+        boxes = []                                                      # (lines, width, stroke, dashed), in order
         for r in keep:
             if marked and not run_current(cfg, t["name"], r["name"]):   # a rerun the current Run replaces: its name
-                h = card(d, rx, ry, RUN_W - 160, [(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY)], sw=1)
-                mids.append(ry + h / 2)
-                ry += h + 14
+                boxes.append(([(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY)], RUN_W - 160, 1, False))
                 continue
             own_say = run_says(cfg, t["name"], r["name"])
             says = own_say or ("" if r["values"] else headline(r["result"], say_most))
@@ -417,19 +432,23 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 if says:
                     said[says] = r["name"][:3]
             now = run_current(cfg, t["name"], r["name"])
-            h = card(d, rx, ry, RUN_W, [(f"{r['mark']} {run_label(r['name'])}{'  📌 current' if now else ''}",
-                                         T_RUNS, INK), line], sw=2.5 if now else 1.2)
-            mids.append(ry + 30)
-            ry += h + 18
-        if folded:                                                      # one row: their names, their states
+            boxes.append(([(f"{r['mark']} {run_label(r['name'])}{'  📌 current' if now else ''}", T_RUNS, INK), line],
+                          RUN_W, 2.5 if now else 1.2, False))
+        if folded:                                                      # one box: their names, their states
             tally = Counter(f"{r['mark']} {r['state']}" for r in folded)
             names = " · ".join(r["name"][:3] for r in folded[:5]) + (f" … {folded[-1]['name'][:3]}" if len(folded) > 5 else "")
             quiet = not any(tells(r, cfg, t["name"]) for r in folded)
-            h = card(d, rx, ry, RUN_W, [(f"{jd.n_of(len(folded), 'more Run' if keep else 'Run')}: {names}", T_RUNS, GREY),
-                                        (" · ".join(f"{n} {s}" for s, n in tally.most_common()) +
-                                         (" · nothing in their local result/" if quiet else ""), T_RUNS, GREY)], dashed=True)
-            mids.append(ry + 30)
-            ry += h + 18
+            boxes.append(([(f"{jd.n_of(len(folded), 'more Run' if keep else 'Run')}: {names}", T_RUNS, GREY),
+                           (" · ".join(f"{n} {s}" for s, n in tally.most_common()) +
+                            (" · nothing in their local result/" if quiet else ""), T_RUNS, GREY)], RUN_W, 1.5, True))
+        per = run_cols(len(boxes))
+        for i in range(0, len(boxes), per):                             # a row of the grid: as tall as its tallest
+            row = boxes[i:i + per]
+            row_h = max(lines_h(lines, w) for lines, w, _, _ in row)
+            for k, (lines, w, sw, dashed) in enumerate(row):
+                card(d, rx + k * (RUN_W + RUN_GAP), ry, w, lines, dashed=dashed, sw=sw)
+            mids.append(ry + 30)                                        # the branch meets each row's first card
+            ry += row_h + 18
         if mids:                                                        # the step's branches to its Runs
             bx = nx + NODE_W - 60                                       # right of its card, so no line crosses it
             d.line([(bx, y + nh), (bx, mids[-1])], arrow=False, sw=1.5)
@@ -486,12 +505,13 @@ def notes_frame(d: Drawing, info: dict, cfg: dict, mark: str = "②") -> dict | 
     Drawing.room(f)
     d.text(40, 22, "📖 Words to know", 40)
     y = 100
-    for t in (cfg.get("terms") or [])[:12]:
+    terms = [t for t in cfg.get("terms") or [] if (t.get("term") if isinstance(t, dict) else t)]
+    for t in terms[:TERMS]:
         term, means = (t.get("term"), t.get("means")) if isinstance(t, dict) else (str(t), "")
-        if not term:
-            continue
         y = d.para(40, y, str(term), NW - 80, T_RES) + 2
         y = d.para(70, y, words(means, 25), NW - 110, 24) + 14 if means else y + 10
+    if len(terms) > TERMS:                  # never drop a term silently (found on OpioidRx b02, 261013)
+        y = d.para(40, y, f"… {jd.n_of(len(terms) - TERMS, 'more term')} in the face", NW - 80, 24, GREY) + 14
     if cfg.get("sure"):
         y += 24
         d.text(40, y, "🎯 How sure", 34)

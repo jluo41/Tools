@@ -10,7 +10,7 @@ description: >-
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.6.0"
+  version: "0.6.2"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -53,6 +53,7 @@ The frames
 | ③ on, in detail | only what the face asks for, or the Job's own pictures (not a Task's) | `design`, `models`, `chart`, `settings`, `detail: true`; `.png` and `.jpg` in the Job's folders outside its Tasks |
 
 1. **The stairs**: each Task one step lower and 380 px further right; past four Tasks, several share a column.
+   A Task's Runs stand in a grid, up to three a row (`run_cols`), so a Job grows wide, not tall.
 2. **Room on purpose**: 170 px between steps; the frame may be large (`canvas.large`), never filled.
 3. **Quiet reruns**: once a Task marks a 📌 current Run, the others are grey names; only the current one speaks.
 4. **Quiet Runs fold**: a Run with nothing to report never takes a row; past six, the 📌 current ones, then the latest.
@@ -83,14 +84,19 @@ job:
     - {title: "Jaccard with Google, by model (95% interval)", file: metrics.json, each: metrics.by_model,
        value: jaccard_low.point, low: jaccard_low.ci_lower, high: jaccard_low.ci_upper, fmt: pct}
     - {title: "What Google's rows became", bars: [{label: matched, at: metrics.g.rows_npi_auto}], fmt: int}
-       # each: one bar per entry of a mapping (labels: renames; model names are shortened); bars: named values;
-       # fmt: pct | int; digits: n; sort: false keeps the file's order; low/high draw 95% whiskers
+    - {title: "Slope by context (95% CI)", file: tables/h2-slopes.csv, sort: false, bars: [{label: low back pain,
+       at: "model_id=m5&context=lbp.estimate", low: "model_id=m5&context=lbp.ci_lo", high: "…ci_hi"}]}
+       # each: one bar per entry of a mapping (labels: renames; model names are shortened); bars: named values, a
+       # CSV's row by col=v&col2=v, each with its own low/high; fmt: pct | int; digits: n; sort: false keeps the
+       # file's order; low/high draw 95% whiskers
   tables:                        # per Task: rows from a CSV under the current Run's result
     t02_<task>:
     - {title: "Rank agreement by model", file: rank_agreement.csv, columns: [model_dir, kendall_tau_b_mean, n],
-       sort: -kendall_tau_b_mean, rows: 6}
+       sort: -kendall_tau_b_mean, rows: 6}   # where: "col=v&col2=v" keeps only those rows (one model of many)
   figures:                       # per Task: globs under the Task for the pictures to show (default: two found)
-    t01_<task>: ["runs/r04_*/result/*.png"]
+    t01_<task>: ["runs/r05_*_figures_*/result/*.png"]   # prefer this: a figure Run draws the charts into its own
+                                 #   result/ (JL 261013: "make them run in the run's results"); `charts:` is a
+                                 #   quick look drawn into the topic's assets/, for a Task with no figure Run yet
   terms: [{term: …, means: …}]   # every label the drawing shows, spelled out (means: 25 words); in ②
   sure: "…"                      # how sure the reading is, and why (50 words); in ②
   open: [{item: …, closer: …}]   # each open point and exactly what would close it; in ②
