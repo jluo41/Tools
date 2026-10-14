@@ -51,7 +51,9 @@ RUN_WORDS = 240                             # the words every Run sentence of a 
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
-PAGE_W, PAGE_H = 200, 280                   # one Run's highlighted transcript page, a row of them left to right
+PAGE_W, PAGE_H = 200, 280                   # one Run's highlighted transcript page
+SHOT_W, SHOT_H, MAX_SHOTS = 240, 200, 4     # beside it, its video's screenshots, each with its caption
+CASCADE_DX = 140                            # each Run's row a step further right: free style, not a column (261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
 PICTURES = (".png", ".jpg", ".jpeg")
 QUESTION = re.compile(r"^(which|what|how|why|who|when|where|does|do|is|are|can|should)\b", re.I)   # a title that asks
@@ -510,16 +512,29 @@ def topic_thumb(topic: Path, out: Path) -> Path | None:
     return out if out.is_file() else None
 
 
-def run_pages(topic: Path, t: dict) -> list[tuple[str, Path]]:
+def run_pages(topic: Path, t: dict) -> list[dict]:
     """Each Run's highlighted transcript page, its first, as the Task's own topic drew it (excalidraw-task's
-    transcript_pages: assets/<rid>-transcript-p<N>[-band].jpg), in the Task's Run order (JL 261014: "I want you show
-    different run's thumbnail of the pdf")."""
+    transcript_pages: assets/<rid>-transcript-p<N>[-band].jpg), and its video's screenshots with their captions (the
+    topic face's videos.<rid>.shots, files assets/<rid>-t<sec>.jpg), in the Task's Run order (JL 261014: "show
+    different run's thumbnail of the pdf", then "add more the screenshot ... the scripts and screenshot")."""
+    import yaml
     a, out = topic / "assets", []
+    try:
+        m = re.search(r"```yaml\s*\n(task:.*?)```", (topic / f"{topic.name}.md").read_text(), re.S)
+        vids = {str(k)[:3]: v or {} for k, v in ((yaml.safe_load(m.group(1)) or {}).get("task", {}).get("videos") or {}).items()}
+    except (OSError, AttributeError, yaml.YAMLError):
+        vids = {}
     for r in t["runs"]:
         rid = r["name"][:3]
         pages = sorted(a.glob(f"{rid}-transcript-p*.jpg"), key=lambda q: int(re.search(r"-p(\d+)", q.name).group(1)))
-        if pages:
-            out.append((rid, pages[0]))
+        if not pages:
+            continue
+        shots = []
+        for sh in (vids.get(rid) or {}).get("shots") or []:
+            f = a / f"{rid}-t{int(sh.get('at', 0)):04d}.jpg" if isinstance(sh, dict) else None
+            if f and f.is_file():
+                shots.append((f, str(sh.get("says") or "")))
+        out.append({"rid": rid, "page": pages[0], "shots": shots[:MAX_SHOTS]})
     return out
 
 
@@ -531,7 +546,9 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
     nn, png, link, pages = thumb or (None, None, None, [])
-    right = len(pages) * (PAGE_W + 14) - 14 if pages else THUMB_W if png else 0
+    most = max((len(g["shots"]) for g in pages), default=0)
+    right = ((len(pages) - 1) * CASCADE_DX + PAGE_W + (16 + most * (SHOT_W + 12) if most else 0) if pages
+             else THUMB_W if png else 0)
     w = CHART_W + 2 * PAD + (right + 28 if right else 0)
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
     side = yy
@@ -540,14 +557,20 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         say = "each Run's transcript, read" if pages else "its own drawing"
         side = d.para(tx, yy, f"🔗 {nn}: {say}, click to open it", right, T_RES - 6, GREY) + 4
         d.els[-1]["link"] = link
-        if pages:                                   # one highlighted page per Run, in a row
-            low = side
-            for k, (rid, page) in enumerate(pages):
-                px = tx + k * (PAGE_W + 14)
-                h = d.picture(page, px, side, PAGE_W, PAGE_H, fid=f"page-{nn}-{rid}")
+        if pages:                                   # a Run a row, each a step further right: its transcript page,
+            gy = side                               # then its screenshots with their captions (JL 261014)
+            for k, g in enumerate(pages):
+                gx = tx + k * CASCADE_DX
+                h = d.picture(g["page"], gx, gy, PAGE_W, PAGE_H, fid=f"page-{nn}-{g['rid']}")
                 d.els[-1]["link"] = link
-                low = max(low, d.para(px, side + h + 6, rid, PAGE_W, T_RES - 8, GREY))
-            side = low + 4
+                low = d.para(gx, gy + h + 6, g["rid"], PAGE_W, T_RES - 8, GREY)
+                sx = gx + PAGE_W + 16
+                for j, (shot, cap) in enumerate(g["shots"]):
+                    sh = d.picture(shot, sx, gy, SHOT_W, SHOT_H, fid=f"shot-{nn}-{g['rid']}-{j}")
+                    low = max(low, d.para(sx, gy + sh + 6, words(cap, 12), SHOT_W, 18, GREY))
+                    sx += SHOT_W + 12
+                gy = low + 40
+            side = gy - 36
         else:                                       # no transcript: the topic's first frame, small
             side += d.picture(png, tx, side, THUMB_W, THUMB_H, fid=f"thumb-{nn}") + 4
             d.els[-1]["link"] = link
