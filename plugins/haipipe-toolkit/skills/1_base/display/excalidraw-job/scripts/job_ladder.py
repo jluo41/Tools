@@ -47,12 +47,13 @@ SHIFT, NODE_W, CARD_W, RUN_W = 380, 1200, 1080, 960   # a step right; a Task's b
                                                     #   each says itself in two or three lines (JL 261013)
 JOB_W, IO_W = 1400, 1000                    # the Job's box; its in and out (wide like the steps, 261013)
 STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame out to the results
-RUN_WORDS = 240                             # the words every Run sentence of a big Job shares in ① (check.py ⑨: 600)
+RUN_WORDS = 280                             # the words every Run card (title + sentence) shares in ① (check.py ⑨: 600)
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
 PAGE_W, PAGE_H = 300, 420                   # each page of a Run's highlighted transcript, as stored (readable)
 SHOT_W, SHOT_H, MAX_SHOTS = 240, 200, 4     # beside it, its video's screenshots, each with its caption
+NAME_W = 280                                # a Run's original name, left of its row
 STAGGER = 520                               # every other results block sits this much further right (错落有致)
 CASCADE_DX = 140                            # each Run's row a step further right: free style, not a column (261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
@@ -520,8 +521,26 @@ def run_pages(topic: Path | None, t: dict) -> list[dict]:
                 if f and f.is_file():
                     shots.append((f, str(sh.get("says") or "")))
         if pages:
-            out.append({"rid": rid, "pages": pages, "shots": shots[:MAX_SHOTS]})   # every page: the whole transcript
+            out.append({"rid": rid, "title": run_title(r), "pages": pages,   # every page: the whole transcript
+                        "shots": shots[:MAX_SHOTS]})
     return out
+
+
+def run_title(r: dict) -> str:
+    """A Run's original name: its Result Card's title, a video's own title as filed (JL 261014: "show what is the
+    original name for this run"); empty when the card's title is only the Run's id."""
+    res = Path(r["result"]) if r.get("result") else None
+    try:
+        first = next(ln for ln in (res / f"{r['name']}.md").read_text().splitlines() if ln.startswith("# "))[2:].strip()
+    except (OSError, StopIteration, TypeError):
+        return ""
+    return "" if first.lower().startswith((r["name"][:3].lower(), r["name"].lower())) else first
+
+
+def clip(s: str, most: int) -> str:
+    """At most `most` characters (a title may be Chinese, with no spaces to cut at)."""
+    s = str(s).strip()
+    return s if len(s) <= most else s[:most].rstrip() + "…"
 
 
 def embed_page(d: Drawing, path: Path, x: float, y: float, w: float, fid: str, link: str | None) -> float:
@@ -548,7 +567,7 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
     nn, png, link, pages = thumb or (None, None, None, [])
-    row = max((len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
+    row = max((NAME_W + 16 + len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
                for g in pages), default=0)
     right = (len(pages) - 1) * CASCADE_DX + row if pages else 0
     w = CHART_W + 2 * PAD + (right + 28 if right else 0)
@@ -560,7 +579,8 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
             gy = side                               # then its screenshots with their captions (JL 261014)
             for k, g in enumerate(pages):
                 gx = tx + k * CASCADE_DX
-                low, px = gy, gx
+                low = d.para(gx, gy, f"{g['rid']} · {g['title']}" if g["title"] else g["rid"], NAME_W, T_RES - 4, INK)
+                px = gx + NAME_W + 16                                  # its original name first, then its pages
                 for n, page in enumerate(g["pages"], 1):           # the whole transcript, page by page
                     h = embed_page(d, page, px, gy, PAGE_W, f"page-{nn}-{g['rid']}-p{n}", None)
                     low = max(low, d.para(px, gy + h + 6, f"{g['rid']} · p{n}", PAGE_W, T_RES - 8, GREY))
@@ -629,7 +649,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     n_runs = sum(len(t["runs"]) for t in tasks)
     tight = len(tasks) > 6 or sum(len(shown_runs(t, cfg)[0]) for t in tasks) > 14   # a big Job: fewer words a step
     shown = sum(len(shown_runs(t, cfg)[0]) for t in tasks)
-    say_most = max(6, min(14, RUN_WORDS // max(1, shown))) if tight else 20   # a big Job's Runs share one budget
+    say_most = max(8, min(26, RUN_WORDS // max(1, shown)))      # every Job: its Run cards share one budget (261014)
     cols = columns(len(tasks))
     grid = max((run_cols(len(k) + bool(fo)) for k, fo in (shown_runs(t, cfg) for t in tasks)), default=1)
     runs_w = grid * RUN_W + (grid - 1) * RUN_GAP
@@ -705,9 +725,11 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
             if marked and not run_current(cfg, t["name"], r["name"]):   # a rerun the current Run replaces: its name
                 boxes.append(([(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY)], RUN_W - 160, 1, False))
                 continue
+            title = run_title(r)                                        # its original name (JL 261014): the card's
+            short = clip(title, 20 if say_most >= 20 else 10) if title else ""   # share holds it and its sentence
             own_say = run_says(cfg, t["name"], r["name"])
-            if own_say and tight:                                       # a big Job: its own sentences cut too, so
-                own_say = words(own_say, say_most)                          # ① stays a map (261014: b12 s21's 22 Runs)
+            if own_say:
+                own_say = words(own_say, max(5, say_most - Drawing.words_in(short)))
             says = own_say or ("" if r["values"] else headline(r["result"], say_most))
             if says and says in said:                                   # a rerun that says the same: say so, once
                 line = (f"↺ as {said[says]}", T_RUNS, GREY)
@@ -718,7 +740,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 if says:
                     said[says] = r["name"][:3]
             now = run_current(cfg, t["name"], r["name"])
-            label = r["name"][:3] if tight and own_say else run_label(r["name"])   # its sentence names it
+            label = (f"{r['name'][:3]} · {short}" if short else
+                     r["name"][:3] if tight and own_say else run_label(r["name"]))
             boxes.append(([(f"{r['mark']} {label}{'  📌 current' if now else ''}", T_RUNS, INK), line],
                           RUN_W, 2.5 if now else 1.2, False))
         if folded:                                                      # one box: their names, their states
@@ -769,7 +792,10 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     d.fid = None
     first = len(d.els)
     column = any(s["thumb"] for s in steps)    # transcripts and screenshots make tall results: their own column,
-    rx0, last = width + RES_GAP, (f["y"] - 120 if column else -1e9)   # from the frame's top, room between, an elbow
+    tall = [results_block(Drawing(), 0, 0, s["task"], cfg, s["found"], assets, s["thumb"])[0] for s in steps] \
+        if column else []                       # measured first, then centred on ①: it may rise above the Job's
+    start = f["y"] + f["height"] / 2 - (sum(tall) + 120 * max(0, len(tall) - 1)) / 2   # frame (JL 261014: "the
+    rx0, last = width + RES_GAP, (start - 120 if column else -1e9)   # results can above the job frame"), an elbow
     for k, s in enumerate(steps):                                       # to each step (JL 261014: "make it like this")
         top = last + 120 if column else max(s["y"], last + 40)
         bx = rx0 + (STAGGER if column and k % 2 else 0)                  # 错落有致: the blocks zig-zag, not one column

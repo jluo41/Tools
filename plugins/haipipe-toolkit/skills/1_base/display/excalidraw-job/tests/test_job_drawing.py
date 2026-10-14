@@ -83,7 +83,8 @@ def test_make_draws_the_whole_job(tmp_path):
     assert "Explain the losses LLMs use." in words                       # the Job row: its aim, from the goal: line
     assert "How are entropy and KL related" in words                     # a Task row: its question
     assert "❓ close: not written on the Job face" in words               # the Job row: what is missing, in red
-    assert "r01 · video" in words and "⬜ no Run yet" in words           # a Run row under its Task; an empty Task
+    assert "r01 · 熵与交叉熵" in words and "⬜ no Run yet" in words        # a Run by its original name (its Result
+                                                                          # Card's title, 261014); an empty Task
     assert "Cross-entropy is the next-token loss of every LLM." in words  # right of the Task: its finding
     assert "a video's own point" not in words                             # division 1 only, not a Run's
     assert "Is KL a distance?" not in words                               # a Task's detail is its own topic's
