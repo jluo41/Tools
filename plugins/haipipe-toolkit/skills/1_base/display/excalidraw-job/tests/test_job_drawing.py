@@ -93,15 +93,16 @@ def test_make_draws_the_whole_job(tmp_path):
         assert f["①"].startswith("✅") and "key point yes" in f["⑤"] and f["⑦"].startswith("✅"), f
 
 
-def test_a_task_topic_is_named_in_the_workflow(tmp_path):
-    """A face whose `task:` yaml names a Task (excalidraw-task's) is pointed to from that Task's row."""
+def test_a_task_topic_is_no_longer_pointed_to(tmp_path):
+    """The Job carries each Task's results itself, so it no longer points to a Task topic (JL 261014: "we don't need
+    the links here ... we will retire the sNN tNN")."""
     job = block(tmp_path)
     other = job.parent / "studio/s24-j01-t01-entropy-kl"
     other.mkdir(parents=True)
     (other / f"{other.name}.md").write_text("s24 · t01\n\n```yaml\ntask:\n  name: j01_losses/t01_entropy_kl\n```\n")
     out = job_drawing.make(job)
     words = " ".join(e.get("text", "") for e in json.loads(out.read_text())["elements"] if e["type"] == "text")
-    assert "→ details: s24" in words
+    assert "→ details" not in words and "click to open" not in words
 
 
 def test_adopt_keeps_the_results_words(tmp_path):

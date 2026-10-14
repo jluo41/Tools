@@ -53,6 +53,7 @@ CHART_W, NW = 800, 1200                     # a results chart on the canvas; the
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
 PAGE_W, PAGE_H = 300, 420                   # each page of a Run's highlighted transcript, as stored (readable)
 SHOT_W, SHOT_H, MAX_SHOTS = 240, 200, 4     # beside it, its video's screenshots, each with its caption
+STAGGER = 520                               # every other results block sits this much further right (错落有致)
 CASCADE_DX = 140                            # each Run's row a step further right: free style, not a column (261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
 PICTURES = (".png", ".jpg", ".jpeg")
@@ -443,7 +444,8 @@ def task_pictures(t: dict, cfg: dict) -> list[Path]:
             for p in sorted(base.rglob("*")):
                 parts = p.relative_to(folder).parts[:-1]
                 if p.suffix.lower() in PICTURES and p not in found and \
-                        not any(q.startswith((".", "_")) or q in ("studio", "history") for q in parts):
+                        not any(q.startswith((".", "_")) or q in ("studio", "history", "read", "shots") for q in parts):
+                    # read/ and shots/ are a video Run's transcript pages and screenshots, drawn beside it (261014)
                     found.append(p)
     return found[:2]
 
@@ -483,58 +485,42 @@ def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
     return out
 
 
-def topic_thumb(topic: Path, out: Path) -> Path | None:
-    """A Task's own topic, small: its first frame rendered into this topic's assets/ (generated, never tracked), so
-    the Job shows each Task's drawing without loading it (JL 261013: "use one excalidraw to embed the other one").
-    Excalidraw cannot embed a drawing file in another; a picture of it, linked to it, can stand in. Redrawn when
-    the Task's drawing is newer."""
-    import json
-    src = topic / f"{topic.name}.excalidraw"
-    if not src.is_file():
-        return None
-    if out.is_file() and out.stat().st_mtime >= src.stat().st_mtime:
-        return out
-    doc = json.loads(src.read_text())
-    els = [e for e in doc.get("elements", []) if not e.get("isDeleted")]
-    frames = [e for e in els if e["type"] == "frame"]
-    if not frames:
-        return None
-    first = next((e for e in frames if str(e.get("name", "")).startswith("①")), frames[0])
-    out.parent.mkdir(parents=True, exist_ok=True)
-    tmp = out.with_name(f".{out.stem}.excalidraw")
-    tmp.write_text(json.dumps({**doc, "elements": [first] + [e for e in els if e.get("frameId") == first["id"]]},
-                              ensure_ascii=False))
-    from render_png import render
-    try:
-        render(tmp, out)
-    finally:
-        tmp.unlink(missing_ok=True)
-    return out if out.is_file() else None
-
-
-def run_pages(topic: Path, t: dict) -> list[dict]:
-    """Each Run's highlighted transcript page, its first, as the Task's own topic drew it (excalidraw-task's
-    transcript_pages: assets/<rid>-transcript-p<N>[-band].jpg), and its video's screenshots with their captions (the
-    topic face's videos.<rid>.shots, files assets/<rid>-t<sec>.jpg), in the Task's Run order (JL 261014: "show
-    different run's thumbnail of the pdf", then "add more the screenshot ... the scripts and screenshot")."""
+def run_pages(topic: Path | None, t: dict) -> list[dict]:
+    """Each Run's highlighted transcript, every page, and its video's screenshots with their captions, in the Task's
+    Run order. Read from the Run's own result/ first (read/p<N>.jpg; shots/shots.yaml naming shots/t<sec>.jpg, as
+    job_level3.py's carry writes them), so a Job draws its Tasks' results with no Task topic (JL 261014: "we will
+    retire the sNN tNN"); else from the Task's topic while one is kept (assets/<rid>-transcript-p<N>.jpg, its
+    face's videos.<rid>.shots, assets/<rid>-t<sec>.jpg)."""
     import yaml
-    a, out = topic / "assets", []
-    try:
-        m = re.search(r"```yaml\s*\n(task:.*?)```", (topic / f"{topic.name}.md").read_text(), re.S)
-        vids = {str(k)[:3]: v or {} for k, v in ((yaml.safe_load(m.group(1)) or {}).get("task", {}).get("videos") or {}).items()}
-    except (OSError, AttributeError, yaml.YAMLError):
-        vids = {}
+    vids = {}
+    if topic:
+        try:
+            m = re.search(r"```yaml\s*\n(task:.*?)```", (topic / f"{topic.name}.md").read_text(), re.S)
+            vids = {str(k)[:3]: v or {} for k, v in
+                    ((yaml.safe_load(m.group(1)) or {}).get("task", {}).get("videos") or {}).items()}
+        except (OSError, AttributeError, yaml.YAMLError):
+            vids = {}
+    out = []
     for r in t["runs"]:
-        rid = r["name"][:3]
-        pages = sorted(a.glob(f"{rid}-transcript-p*.jpg"), key=lambda q: int(re.search(r"-p(\d+)", q.name).group(1)))
-        if not pages:
-            continue
+        rid, res = r["name"][:3], (Path(r["result"]) if r.get("result") else None)
+        pages = sorted((res / "read").glob("p*.jpg"), key=lambda q: int(re.sub(r"\D", "", q.stem) or 0)) \
+            if res and (res / "read").is_dir() else []
         shots = []
-        for sh in (vids.get(rid) or {}).get("shots") or []:
-            f = a / f"{rid}-t{int(sh.get('at', 0)):04d}.jpg" if isinstance(sh, dict) else None
-            if f and f.is_file():
-                shots.append((f, str(sh.get("says") or "")))
-        out.append({"rid": rid, "pages": pages, "shots": shots[:MAX_SHOTS]})   # every page: the whole transcript
+        if res and (res / "shots" / "shots.yaml").is_file():
+            for sh in yaml.safe_load((res / "shots" / "shots.yaml").read_text()) or []:
+                f = res / "shots" / str((sh or {}).get("file", ""))
+                if f.is_file():
+                    shots.append((f, str(sh.get("says") or "")))
+        a = topic / "assets" if topic else None
+        if a and not pages:
+            pages = sorted(a.glob(f"{rid}-transcript-p*.jpg"), key=lambda q: int(re.search(r"-p(\d+)", q.name).group(1)))
+        if a and not shots:
+            for sh in (vids.get(rid) or {}).get("shots") or []:
+                f = a / f"{rid}-t{int(sh.get('at', 0)):04d}.jpg" if isinstance(sh, dict) else None
+                if f and f.is_file():
+                    shots.append((f, str(sh.get("says") or "")))
+        if pages:
+            out.append({"rid": rid, "pages": pages, "shots": shots[:MAX_SHOTS]})   # every page: the whole transcript
     return out
 
 
@@ -564,22 +550,19 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     nn, png, link, pages = thumb or (None, None, None, [])
     row = max((len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
                for g in pages), default=0)
-    right = (len(pages) - 1) * CASCADE_DX + row if pages else THUMB_W if png else 0
+    right = (len(pages) - 1) * CASCADE_DX + row if pages else 0
     w = CHART_W + 2 * PAD + (right + 28 if right else 0)
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
     side = yy
     if right:                                       # to the right of the results, so a block grows wide, not tall
         tx = x + PAD + CHART_W + 28                 # (JL 261014: "the results of the png can be from left to right")
-        say = "each Run's transcript, read" if pages else "its own drawing"
-        side = d.para(tx, yy, f"🔗 {nn}: {say}, click to open it", right, T_RES - 6, GREY) + 4
-        d.els[-1]["link"] = link
         if pages:                                   # a Run a row, each a step further right: its transcript page,
             gy = side                               # then its screenshots with their captions (JL 261014)
             for k, g in enumerate(pages):
                 gx = tx + k * CASCADE_DX
                 low, px = gy, gx
                 for n, page in enumerate(g["pages"], 1):           # the whole transcript, page by page
-                    h = embed_page(d, page, px, gy, PAGE_W, f"page-{nn}-{g['rid']}-p{n}", link)
+                    h = embed_page(d, page, px, gy, PAGE_W, f"page-{nn}-{g['rid']}-p{n}", None)
                     low = max(low, d.para(px, gy + h + 6, f"{g['rid']} · p{n}", PAGE_W, T_RES - 8, GREY))
                     px += PAGE_W + 10
                 sx = px + 6
@@ -589,9 +572,6 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
                     sx += SHOT_W + 12
                 gy = low + 40
             side = gy - 36
-        else:                                       # no transcript: the topic's first frame, small
-            side += d.picture(png, tx, side, THUMB_W, THUMB_H, fid=f"thumb-{nn}") + 4
-            d.els[-1]["link"] = link
     if found:
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]      # one sentence; the charts carry the numbers
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", CHART_W, T_RES, INK) + 14
@@ -707,15 +687,13 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
         own = (topics or {}).get(f"{t['row']['task'].parent.name}/{t['name']}")
-        topic = assets.parent.parent / own if own and assets else None
-        pages = run_pages(topic, t) if topic else []
-        png = None if pages or not topic else topic_thumb(topic, assets / f"thumb-{own[:3]}.png")
-        thumb = (own[:3], png, f"../{own}/{own}.excalidraw", pages) if pages or png else None
+        topic = assets.parent.parent / own if own and assets else None          # a Task topic, while one is kept
+        pages = run_pages(topic, t)                                             # its Runs' results/ first
+        thumb = (t["id"], None, None, pages) if pages else None                 # no links: the results are here
         ask_most = 12 if tight else 24                                  # a big Job: fewer words a step, and no Did
         under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, ask_most)}", T_CARD, INK),
                  (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) and not (tight and t["runs"]) else "",
                   T_CARD, INK),                                         # line beside Runs that already say it
-                 (f"→ details: {own[:3]}" if own else "", T_CARD, INK),
                  ("" if t["runs"] else "⬜ no Run yet", T_CARD, GREY)]
         cardh = card(d, nx + 36, y + nh + 16, CARD_W, under) + 16 if any(s for s, _, _ in under) else 0
         # its Runs branch to the right, below the line that goes out to its results, as a grid (run_cols a row)
@@ -790,13 +768,15 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     # outside the frame, to its right: each Task's results, small, level with its step (the sketch's "T1 Results")
     d.fid = None
     first = len(d.els)
-    rx0, last = width + RES_GAP, -1e9
-    for s in steps:
-        top = max(s["y"], last + 40)
-        h, is_open = results_block(d, rx0, top, s["task"], cfg, s["found"], assets, s["thumb"])
+    column = any(s["thumb"] for s in steps)    # transcripts and screenshots make tall results: their own column,
+    rx0, last = width + RES_GAP, (f["y"] - 120 if column else -1e9)   # from the frame's top, room between, an elbow
+    for k, s in enumerate(steps):                                       # to each step (JL 261014: "make it like this")
+        top = last + 120 if column else max(s["y"], last + 40)
+        bx = rx0 + (STAGGER if column and k % 2 else 0)                  # 错落有致: the blocks zig-zag, not one column
+        h, is_open = results_block(d, bx, top, s["task"], cfg, s["found"], assets, s["thumb"])
         hit = top + 32
         pts = [(s["right"] + 10, s["mid"]), (width + 60, s["mid"])] + \
-              ([(width + 60, hit)] if abs(hit - s["mid"]) > 4 else []) + [(rx0 - 12, hit)]
+              ([(width + 60, hit)] if abs(hit - s["mid"]) > 4 else []) + [(bx - 12, hit)]
         d.line(pts, sw=2, dashed=is_open)
         last = top + h
     for e in d.els[first:]:                 # the results follow ① when a builder lays frames out (canvas.grid,
