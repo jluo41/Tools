@@ -43,8 +43,9 @@ INK, RED, GREY = jd.INK, jd.RED, jd.GREY
 
 PAD, MOST = 22, 6                           # inside a box; Runs drawn per Task before the rest fold into one row
 TERMS = 16                                  # terms drawn in ② before the rest are counted, never dropped
-SHIFT, NODE_W, CARD_W, RUN_W = 380, 820, 660, 640   # a step right; a Task's box, its card, a Run's box
-JOB_W, IO_W = 1100, 760                     # the Job's box; its in and out
+SHIFT, NODE_W, CARD_W, RUN_W = 380, 1200, 1080, 960   # a step right; a Task's box, its card, a Run's box: wide, so
+                                                    #   each says itself in two or three lines (JL 261013)
+JOB_W, IO_W = 1400, 1000                    # the Job's box; its in and out (wide like the steps, 261013)
 STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame out to the results
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
