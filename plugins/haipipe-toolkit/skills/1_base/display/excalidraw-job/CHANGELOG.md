@@ -1,6 +1,19 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.7.1] · 2026-10-14 · the staircase: wide cards, Task thumbnails, compact steps
+
+- Wide cards (JL 261013 on Proj10 b01 s22: "make it wider, each one to be a few lines, and much wider"): a Task's
+  box 820 → 1200, its card 660 → 1080, a Run's card 640 → 960, the Job's box 1100 → 1400, its in and out
+  760 → 1000. Committed as 0ec97be0 without this note.
+- Task thumbnails (JL 261013: "use one excalidraw to embed the other one"): Excalidraw cannot embed a drawing in
+  another, so `topic_thumb` renders a Task topic's first frame into the Job topic's assets/ (redrawn when that
+  drawing is newer) and its results block shows it, the picture and its caption linked to the Task's
+  `.excalidraw`. Landed inside 0.7.0's commit without this note.
+- Compact steps (JL 261014: "I don't want the margin between the two tasks be too large … this should be in
+  different rows"): a step is as tall as its own boxes; its results block hangs outside on its own row and its
+  line bends down to it, so a tall results block no longer pushes the next Task away. j02's ① 2820 → 2042 tall.
+
 ## [0.7.0] · 2026-10-13 · layout: explained, JL's sketch: a wide frame, Tasks as steps, results outside
 
 - Asked 261013 on WellDoc Proj11 `work/b01_clm_foundation_model` s21 (j01 pretrain), over one evening: "make ⑦ 📚 j01

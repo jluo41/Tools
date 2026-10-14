@@ -10,7 +10,7 @@ description: >-
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.7.0"
+  version: "0.7.1"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -54,6 +54,8 @@ The frames
 
 1. **The stairs**: each Task one step lower and 380 px further right; past four Tasks, several share a column.
    A Task's Runs stand in a grid, up to three a row (`run_cols`), so a Job grows wide, not tall.
+   A step is as tall as its own boxes; its results hang outside on their own row, and a Task with its own
+   topic shows that drawing's first frame there, small, linked to it (`topic_thumb`).
 2. **Room on purpose**: 170 px between steps; the frame may be large (`canvas.large`), never filled.
 3. **Quiet reruns**: once a Task marks a 📌 current Run, the others are grey names; only the current one speaks.
 4. **Quiet Runs fold**: a Run with nothing to report never takes a row; past six, the 📌 current ones, then the latest.

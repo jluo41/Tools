@@ -495,8 +495,11 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         mid = y + nh / 2
         d.line([(spine_x, mid), (nx - 8, mid)], sw=3)                  # the stair from the spine to this step
         steps.append({"y": y, "mid": mid, "right": nx + NODE_W, "task": t, "found": found, "thumb": thumb})
-        res_h = results_block(Drawing(), 0, 0, t, cfg, found, assets, thumb)[0]   # measured, so the step stays level with
-        y = max(y + nh + 16 + cardh, ry, y + res_h) + STEP_GAP             # its results; the rest is room
+        y = max(y + nh + 16 + cardh, ry) + STEP_GAP                       # a step is as tall as its own boxes: its
+                                                                        # results hang outside on their own row and
+                                                                        # bend down when taller (JL 261014: "I don't
+                                                                        # want the margin between the two tasks be
+                                                                        # too large")
     if steps:
         d.line([(spine_x, spine_top), (spine_x, steps[-1]["mid"])], arrow=False, sw=3)
 
