@@ -47,6 +47,7 @@ SHIFT, NODE_W, CARD_W, RUN_W = 380, 1200, 1080, 960   # a step right; a Task's b
                                                     #   each says itself in two or three lines (JL 261013)
 JOB_W, IO_W = 1400, 1000                    # the Job's box; its in and out (wide like the steps, 261013)
 STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame out to the results
+RUN_WORDS = 240                             # the words every Run sentence of a big Job shares in ① (check.py ⑨: 600)
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
@@ -143,6 +144,175 @@ def run_cols(n: int) -> int:
     return 1 if n <= 1 else 2 if n <= 4 else RUN_COLS
 
 
+# ── a step that stands for a family of Tasks (asked 261014 on a 33-Task raw-data Job, drawn 14,780 px tall: "if
+# possible, let's still be the steps / stairs"): a big Job keeps its staircase when one step holds several Tasks of
+# one stage, lists them inside it, folds their Runs by what they do, and shows one result per Task outside ──────────
+FAMILY_MIN, BIG_JOB = 3, 8                  # a family: 3 Tasks or more of one kind; grouped unasked past 8 Tasks
+ADDRESS = re.compile(r"^\s*B\d+/J\d+/T\d+\s*[·:.\-]?\s*", re.I)     # "B00/J51/T14 · …": a page title's address
+
+
+def bare(title: str) -> str:
+    """A Task's title without the address its page may lead with: the drawing already says its id."""
+    return ADDRESS.sub("", str(title))
+
+
+def task_ids(spec, tasks: list[dict]) -> list[str]:
+    """The Task ids a face step names: ids or folder names, or a range `t11-t13`."""
+    out = []
+    for it in spec if isinstance(spec, list) else [spec]:
+        m = re.fullmatch(r"(t\d+)\s*[-–]\s*(t\d+)", str(it).strip())
+        if m:
+            lo, hi = int(m.group(1)[1:]), int(m.group(2)[1:])
+            out += [t["id"] for t in tasks if lo <= int(t["id"][1:]) <= hi]
+        else:
+            out += [t["id"] for t in tasks if str(it) in (t["id"], t["name"])]
+    return out
+
+
+def kind_of(t: dict) -> str:
+    """A Task's kind: the first word of its folder name after tNN_ (`t14_profile_signal_…` is a profile)."""
+    return t["name"].split("_")[1] if t["name"].count("_") else ""
+
+
+def family(members: list[dict], title: str, key: str, asked: str = "") -> dict:
+    """One step for several Tasks: their Runs together, the Job's folder as its own, the question they share."""
+    first, last = members[0], members[-1]
+    qs = {m.get("question") or "" for m in members}
+    return {**first, "id": f"{first['id']}–{last['id']}", "name": key, "title": title, "members": members,
+            "runs": [r for m in members for r in m["runs"]], "row": {**first["row"], "task": first["row"]["task"].parent},
+            "question": asked or (qs.pop() if len(qs) == 1 else ""), "lab": {}}
+
+
+def step_groups(tasks: list[dict], cfg: dict) -> list[dict]:
+    """The staircase's steps. The face's `steps: [{title, tasks: [t11-t13] or [t14, t15], key, asked}]` makes each
+    a step in the place of its first Task; with none, past BIG_JOB Tasks, each run of FAMILY_MIN or more Tasks of one
+    kind is one step. Every other Task is its own step."""
+    named = cfg.get("steps") or []
+    if named:
+        at, seen = {}, set()
+        for s in named:
+            ms = [t for t in tasks if t["id"] in task_ids(s.get("tasks") or [], tasks) and t["id"] not in seen]
+            if not ms:
+                continue
+            seen |= {t["id"] for t in ms}
+            at[ms[0]["id"]] = ms[0] if len(ms) == 1 else \
+                family(ms, str(s.get("title") or f"{kind_of(ms[0])} · {len(ms)} Tasks"),
+                       str(s.get("key") or f"{ms[0]['id']}-{ms[-1]['id']}"), str(s.get("asked") or ""))
+        return [at.get(t["id"], t) for t in tasks if t["id"] in at or t["id"] not in seen]
+    if len(tasks) <= BIG_JOB:
+        return tasks
+    out, i = [], 0
+    while i < len(tasks):
+        j = i
+        while j + 1 < len(tasks) and kind_of(tasks[i]) and kind_of(tasks[j + 1]) == kind_of(tasks[i]):
+            j += 1
+        ms = tasks[i:j + 1]
+        out += [family(ms, f"{kind_of(ms[0])} · {len(ms)} Tasks", f"{ms[0]['id']}-{ms[-1]['id']}")] \
+            if len(ms) >= FAMILY_MIN else ms
+        i = j + 1
+    return out
+
+
+SPLIT_AT = 6                                # past this many steps, a Job is drawn as two staircases
+
+
+def split_steps(steps: list[dict], cfg: dict) -> list[tuple[str, list[dict]]]:
+    """A Job too large for one staircase is drawn as two, the second continuing the first (asked 261014: "if the
+    job is too large, in the sNN jNN, you can have two frames to arrange that"): where the face's `parts: [{title},
+    {title, from: t91}]` says, else past SPLIT_AT steps at the middle step. Each is named by what it holds, never
+    "· 1", "· 2"."""
+    parts = cfg.get("parts") or []
+    if len(parts) >= 2 and parts[1].get("from"):
+        at = next((i for i, s in enumerate(steps) if s["id"].split("–")[0] == str(parts[1]["from"])
+                   or s["name"] == str(parts[1]["from"])), None)
+        if at:
+            return [(str(parts[0].get("title") or ""), steps[:at]), (str(parts[1].get("title") or ""), steps[at:])]
+    if len(steps) <= SPLIT_AT:
+        return [("", steps)]
+    h = (len(steps) + 1) // 2
+    name = lambda ss: f"its Tasks {ss[0]['id'].split('–')[0]} to {ss[-1]['id'].split('–')[-1]}"
+    return [(name(steps[:h]), steps[:h]), (name(steps[h:]), steps[h:])]
+
+
+def member_mark(m: dict) -> str:
+    """A Task in a family, by its Runs: ✅ when every Run is, else the first Run's mark that is not; ⬜ with none."""
+    marks = [r["mark"] for r in m["runs"]]
+    return "⬜" if not marks else next((k for k in marks if k != "✅"), "✅")
+
+
+def member_value(m: dict, cfg: dict, spec: dict, at: str):
+    """One value from a family member's Run (`spec.run`, else its current or last Run with a result)."""
+    result = chart_run(m, cfg, spec)
+    data = jr.load(result / spec.get("file", "metrics.json")) if result else None
+    return jr.dig(data, at) if data is not None and at else None
+
+
+def member_label(m: dict, cfg: dict, spec: dict) -> str:
+    """A member's row name: the value `spec.label` reads from its Run, else its title without its kind word."""
+    lab = member_value(m, cfg, spec, str(spec.get("label") or ""))
+    return str(lab) if lab not in (None, "") else re.sub(rf"^{kind_of(m)}\s+", "", bare(m["title"]), flags=re.I)
+
+
+def member_rows(t: dict, cfg: dict, spec: dict) -> list[tuple]:
+    """A family's chart: one bar per member, `value` read from each member's own Run (`members: true`)."""
+    rows = [(member_label(m, cfg, spec), member_value(m, cfg, spec, str(spec.get("value") or "")), None, None)
+            for m in t["members"]]
+    rows = [r for r in rows if isinstance(r[1], (int, float)) and not isinstance(r[1], bool)]
+    return sorted(rows, key=lambda r: -r[1]) if spec.get("sort", True) else rows
+
+
+def family_step(d: Drawing, nx: float, y: float, t: dict, cfg: dict, spine_x: float) -> tuple[dict, float]:
+    """A family's step: its box, the question each member asks, the members two a row with their marks, and their
+    Runs folded by what they do (`r02 · profile semantics × 28`). Returns the step and the next step's y."""
+    nh = card(d, nx, y, NODE_W, [(f"🧩 {t['id']} · {t['title']}", T_STEP, INK)], sw=2.5)
+    asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
+    did = did_of(t, cfg)
+    head = [(f"Asks, of each: {words(asked, 24)}" if asked else "", T_CARD, INK),
+            (f"Did: {words(did, 24)}" if did else "", T_CARD, INK)]
+    chips = [f"{member_mark(m)} {m['id']} · "
+             f"{jd.short(re.sub(rf'^{kind_of(m)}[ _]+', '', bare(m['title']), flags=re.I), 34)}" for m in t["members"]]
+    half = (len(chips) + 1) // 2
+    cx, cy, cw = nx + 36, y + nh + 16, (CARD_W - 2 * PAD) / 2
+    yy = cy + PAD
+    for s, size, color in head:
+        if s:
+            yy = d.para(cx + PAD, yy, s, CARD_W - 2 * PAD, size, color) + 6
+    yy += 4
+    low = yy
+    for k, col in enumerate((chips[:half], chips[half:])):            # one line each, two columns
+        cy2 = yy
+        for chip in col:
+            cy2 = d.para(cx + PAD + k * cw, cy2, chip, cw - 12, T_RUNS - 2, INK) + 4
+        low = max(low, cy2)
+    cardh = low - cy + PAD
+    d.box(cx, cy, CARD_W, cardh, INK, 1.2)
+    folds = {}
+    for m in t["members"]:
+        for r in m["runs"]:
+            folds.setdefault(run_label(r["name"]), []).append(r)
+    rx, ry, mids = nx + NODE_W + 110, y + nh + 24, []
+    boxes = [([(f"{name} × {len(rs)}", T_RUNS, INK),
+               (" · ".join(f"{n} {s}" for s, n in Counter(f"{r['mark']} {r['state']}" for r in rs).most_common()),
+                T_RUNS, GREY)], RUN_W, 1.5, False) for name, rs in folds.items()]
+    per = run_cols(len(boxes))
+    for i in range(0, len(boxes), per):
+        row = boxes[i:i + per]
+        row_h = max(lines_h(lines, w) for lines, w, _, _ in row)
+        for k, (lines, w, sw, dashed) in enumerate(row):
+            card(d, rx + k * (RUN_W + RUN_GAP), ry, w, lines, dashed=dashed, sw=sw)
+        mids.append(ry + 30)
+        ry += row_h + 18
+    if mids:
+        bx = nx + NODE_W - 60
+        d.line([(bx, y + nh), (bx, mids[-1])], arrow=False, sw=1.5)
+        for m in mids:
+            d.line([(bx, m), (rx - 8, m)], sw=1.5)
+    mid = y + nh / 2
+    d.line([(spine_x, mid), (nx - 8, mid)], sw=3)
+    step = {"y": y, "mid": mid, "right": nx + NODE_W, "task": t, "found": jd.finding(t, cfg), "thumb": None}
+    return step, max(y + nh + 16 + cardh + 16, ry) + STEP_GAP
+
+
 # ── boxes ────────────────────────────────────────────────────────────────────────────────────────────────────
 def lines_h(lines: list, w: float) -> float:
     return sum(Drawing.height(s, w - 2 * PAD, size) + 6 for s, size, _ in lines if s) + 2 * PAD - 6
@@ -181,6 +351,8 @@ def chart_rows(spec: dict, result: Path) -> list[tuple]:
     its interval by `….ci_lo`, `….ci_hi`: OpioidRx's Stata tables, 261013), or `each: <key>` (a mapping: a bar per
     entry) with `value`, `low`, `high` read inside each entry; `labels:` renames an entry; largest first unless
     `sort: false`."""
+    if "_rows" in spec:                                                 # a family's bars, one per member Task
+        return spec["_rows"]
     data = jr.load(result / spec.get("file", "metrics.json"))
     if spec.get("bars"):
         rows = [(str(b.get("label", b["at"])), jr.dig(data, b["at"]),
@@ -281,6 +453,14 @@ def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
     holds several, OpioidRx 261013). Returns (title, columns, rows) each, read on every build."""
     out = []
     for spec in ((cfg.get("tables") or {}).get(t["name"]) or [])[:2]:
+        if spec.get("members") and t.get("members"):                    # a family: a row per member Task, each
+            cols = spec.get("columns") or []                            #   cell read from that Task's own Run
+            out.append((str(spec.get("title", spec.get("file", ""))),
+                        [str(spec.get("first", "Task"))] + [str(c.get("label", c.get("at"))) for c in cols],
+                        [{"cells": [member_label(m, cfg, spec)] +
+                          [jr.number(member_value(m, cfg, spec, str(c.get("at"))), str(c.get("fmt", ""))) for c in cols],
+                          "dim": False} for m in t["members"]]))
+            continue
         result = chart_run(t, cfg, spec)
         data = jr.load(result / spec["file"]) if result else None
         if isinstance(data, list) and spec.get("where"):
@@ -376,7 +556,10 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", CHART_W, T_RES, INK) + 14
     drawn = 0
     for k, spec in enumerate(((cfg.get("charts") or {}).get(t["name"]) or [])[:3]):
-        png = chart_png(spec, chart_run(t, cfg, spec), assets / f"chart-{t['name']}-{k}.png") if assets else None
+        if spec.get("members") and t.get("members"):                    # a family: a bar per member Task
+            spec = {**spec, "_rows": member_rows(t, cfg, spec)}
+        src = t["row"]["task"] if "_rows" in spec else chart_run(t, cfg, spec)
+        png = chart_png(spec, src, assets / f"chart-{t['name']}-{k}.png") if assets else None
         if not png:
             yy = d.para(x + PAD, yy, f"❓ chart {spec.get('title', k)}: no values in its result", CHART_W,
                         T_RES - 2, RED) + 8
@@ -417,18 +600,22 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
 
 # ── ① the staircase, the main frame ──────────────────────────────────────────────────────────────────────────
 def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: dict | None = None,
-                 mark: str = "①", assets: Path | None = None) -> dict:
+                 mark: str = "①", assets: Path | None = None, part: str = "", cont: bool = False,
+                 last: bool = True, grouped: bool = False) -> dict:
     """The Job as a staircase: the Job at the top, each Task a step lower and further right, its Runs branching to
     its right; each Task's results in a small block outside the frame, level with its step."""
+    tasks = tasks if grouped else step_groups(tasks, cfg)               # a family of Tasks stands as one step
     n_runs = sum(len(t["runs"]) for t in tasks)
     tight = len(tasks) > 6 or sum(len(shown_runs(t, cfg)[0]) for t in tasks) > 14   # a big Job: fewer words a step
-    say_most = 14 if tight else 20
+    shown = sum(len(shown_runs(t, cfg)[0]) for t in tasks)
+    say_most = max(6, min(14, RUN_WORDS // max(1, shown))) if tight else 20   # a big Job's Runs share one budget
     cols = columns(len(tasks))
     grid = max((run_cols(len(k) + bool(fo)) for k, fo in (shown_runs(t, cfg) for t in tasks)), default=1)
     runs_w = grid * RUN_W + (grid - 1) * RUN_GAP
     width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 110 + runs_w + 60, 40 + JOB_W + 120 + IO_W + 60)
-    title = f"🪜 {info['id']} · {info['title']}"
-    f = d.frame(f"{mark} {title}: why it exists, its Tasks as steps", width)
+    title = f"🪜 {info['id']} · {part if cont and part else info['title']}"   # a second staircase: what it holds
+    f = d.frame(f"{mark} {title}: " + ("its Tasks as steps, continued" if cont else "why it exists, its Tasks as steps"),
+                width)
     Drawing.room(f)                         # the room between the steps is the point; measured over the boxes
     if width > canvas.FRAME_MAX[0]:
         canvas.large(f)
@@ -436,37 +623,45 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     sub = f"{info.get('block') or ''} · {jd.n_of(len(tasks), 'Task')} · {jd.n_of(n_runs, 'Run')}: " \
           f"{jd.states([r for t in tasks for r in t['runs']])}"
     d.para(40, 112, sub.strip(" ·"), width - 80, T_RUNS, GREY)
-    y = 180
-    reading = str(cfg.get("reading") or "")
-    key = f"🎯 {reading}" if reading else "❓ no reading yet: write the face's job.reading (what this Job found)"
-    kh = Drawing.height(key, width - 140, 34) + 44
-    d.key(40, y, width - 80, kh)
-    d.para(70, y + 22, key, width - 140, 34)
-    y += kh + 80
+    if cont:                                                            # the staircase continued: no Job box
+        spine_x, spine_top, most_open = 60, 180, 3                    #   again, its spine starts at the top
+        y = 240
+    else:
+        y = 180
+        reading = str(cfg.get("reading") or "")
+        key = f"🎯 {reading}" if reading else "❓ no reading yet: write the face's job.reading (what this Job found)"
+        kh = Drawing.height(key, width - 140, 34) + 44
+        d.key(40, y, width - 80, kh)
+        d.para(70, y + 22, key, width - 140, 34)
+        y += kh + 80
 
-    # the top step: the Job, why it exists and when it is done; what goes in and comes out branch to its right
-    aim = str(cfg.get("aim") or info.get("goal") or "")
-    jh = card(d, 40, y, JOB_W, [(f"🧱 {info['id']} · {info['title']}", T_JOB, INK)], sw=3)
-    why = [(f"Why: {words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", T_CARD, None),
-           (f"Done when: {words(info['close'], 34)}" if info.get("close") else   # 22 cut its end in four
-                                                                                 # OpioidRx reviews (261013)
-            "❓ close: not written on the Job face", T_CARD, None),
-           (f"Answers: {info['answers']}" if info.get("answers") else "", T_CARD, INK)]
-    ch = card(d, 110, y + jh + 20, JOB_W - 110, why)
-    most_io, io_words, most_open = (2, 10, 3) if tight else (3, 14, 4)
-    io_x, yy = 40 + JOB_W + 120, y
-    for label, items in (("📥 In", (cfg.get("inputs") or [])[:most_io]), ("📤 Out", (cfg.get("outputs") or [])[:most_io])):
-        if items:
-            h = card(d, io_x, yy, IO_W, [(label, T_STEP - 6, INK)] + [(f"· {words(x, io_words)}", T_RUNS, INK) for x in items])
-            d.line([(40 + JOB_W + 12, y + jh / 2), (io_x - 12, yy + 32)], sw=2)
-            yy += h + 24
-    spine_x, spine_top = 60, y + jh
-    y = max(y + jh + 20 + ch, yy) + STEP_GAP
+        # the top step: the Job, why it exists and when it is done; what goes in and comes out branch to its right
+        aim = str(cfg.get("aim") or info.get("goal") or "")
+        jh = card(d, 40, y, JOB_W, [(f"🧱 {info['id']} · {info['title']}", T_JOB, INK)], sw=3)
+        why = [(f"Why: {words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", T_CARD, None),
+               (f"Done when: {words(info['close'], 34)}" if info.get("close") else   # 22 cut its end in four
+                                                                                     # OpioidRx reviews (261013)
+                "❓ close: not written on the Job face", T_CARD, None),
+               (f"Answers: {info['answers']}" if info.get("answers") else "", T_CARD, INK)]
+        ch = card(d, 110, y + jh + 20, JOB_W - 110, why)
+        most_io, io_words, most_open = (2, 10, 3) if tight else (3, 14, 4)
+        io_x, yy = 40 + JOB_W + 120, y
+        for label, items in (("📥 In", (cfg.get("inputs") or [])[:most_io]), ("📤 Out", (cfg.get("outputs") or [])[:most_io])):
+            if items:
+                h = card(d, io_x, yy, IO_W, [(label, T_STEP - 6, INK)] + [(f"· {words(x, io_words)}", T_RUNS, INK) for x in items])
+                d.line([(40 + JOB_W + 12, y + jh / 2), (io_x - 12, yy + 32)], sw=2)
+                yy += h + 24
+        spine_x, spine_top = 60, y + jh
+        y = max(y + jh + 20 + ch, yy) + STEP_GAP
 
     steps = []
     for t, col in zip(tasks, cols):
         nx = 130 + col * SHIFT
-        name = re.sub(rf"^{t['id']}\s*[·:.\-]?\s*", "", t["title"], flags=re.I)   # "T01 Comparison …" says t01 twice
+        if t.get("members"):                                            # one step for a family of Tasks
+            step, y = family_step(d, nx, y, t, cfg, spine_x)
+            steps.append(step)
+            continue
+        name = re.sub(rf"^{t['id']}\s*[·:.\-]?\s*", "", bare(t["title"]), flags=re.I)   # "T01 Comparison …" says t01 twice
         nh = card(d, nx, y, NODE_W, [(f"🧩 {t['id']} · {name}", T_STEP, INK)], sw=2.5)
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
@@ -475,8 +670,10 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         pages = run_pages(topic, t) if topic else []
         png = None if pages or not topic else topic_thumb(topic, assets / f"thumb-{own[:3]}.png")
         thumb = (own[:3], png, f"../{own}/{own}.excalidraw", pages) if pages or png else None
-        under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, 24)}", T_CARD, INK),
-                 (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) else "", T_CARD, INK),
+        ask_most = 12 if tight else 24                                  # a big Job: fewer words a step, and no Did
+        under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, ask_most)}", T_CARD, INK),
+                 (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) and not (tight and t["runs"]) else "",
+                  T_CARD, INK),                                         # line beside Runs that already say it
                  (f"→ details: {own[:3]}" if own else "", T_CARD, INK),
                  ("" if t["runs"] else "⬜ no Run yet", T_CARD, GREY)]
         cardh = card(d, nx + 36, y + nh + 16, CARD_W, under) + 16 if any(s for s, _, _ in under) else 0
@@ -490,6 +687,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 boxes.append(([(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY)], RUN_W - 160, 1, False))
                 continue
             own_say = run_says(cfg, t["name"], r["name"])
+            if own_say and tight:                                       # a big Job: its own sentences cut too, so
+                own_say = words(own_say, say_most)                          # ① stays a map (261014: b12 s21's 22 Runs)
             says = own_say or ("" if r["values"] else headline(r["result"], say_most))
             if says and says in said:                                   # a rerun that says the same: say so, once
                 line = (f"↺ as {said[says]}", T_RUNS, GREY)
@@ -500,7 +699,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 if says:
                     said[says] = r["name"][:3]
             now = run_current(cfg, t["name"], r["name"])
-            boxes.append(([(f"{r['mark']} {run_label(r['name'])}{'  📌 current' if now else ''}", T_RUNS, INK), line],
+            label = r["name"][:3] if tight and own_say else run_label(r["name"])   # its sentence names it
+            boxes.append(([(f"{r['mark']} {label}{'  📌 current' if now else ''}", T_RUNS, INK), line],
                           RUN_W, 2.5 if now else 1.2, False))
         if folded:                                                      # one box: their names, their states
             tally = Counter(f"{r['mark']} {r['state']}" for r in folded)
@@ -533,7 +733,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     if steps:
         d.line([(spine_x, spine_top), (spine_x, steps[-1]["mid"])], arrow=False, sw=3)
 
-    opens = [str(o.get("item") if isinstance(o, dict) else o) for o in (cfg.get("open") or []) if o]
+    opens = [str(o.get("item") if isinstance(o, dict) else o) for o in (cfg.get("open") or []) if o] if last else []
     y -= STEP_GAP - 60
     if opens and has_notes(cfg):
         y = d.para(40, y, f"❓ {jd.n_of(len(opens), 'point')} still open: what would close each is in the frame below",
@@ -623,9 +823,14 @@ def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") ->
     tasks = [jd.task_info(r, {"show": cfg.get("show") or {}}) for r in rows]
     info = jd.job_info(job)
     d = Drawing()
-    ladder = ladder_frame(d, info, tasks, cfg, jd.task_topics(job.parent), assets=out.parent / "assets")
-    notes = notes_frame(d, info, cfg)
-    nxt = iter("③④⑤⑥⑦⑧⑨⑩" if notes else "②③④⑤⑥⑦⑧⑨⑩")
+    parts = split_steps(step_groups(tasks, cfg), cfg)                   # a big Job: two staircases, one story
+    marks = iter("①②③④⑤⑥⑦⑧⑨⑩")
+    ladders = [ladder_frame(d, info, steps, cfg, jd.task_topics(job.parent), next(marks), out.parent / "assets",
+                            part=title, cont=k > 0, last=k == len(parts) - 1, grouped=True)
+               for k, (title, steps) in enumerate(parts)]
+    ladder = ladders[0]
+    notes = notes_frame(d, info, cfg, next(marks)) if has_notes(cfg) else None
+    nxt = marks
     extra = [jd.design_frame(d, info, fr, design, next(nxt)) for fr in (cfg.get("design") or {}).get("frames") or []]
     if cfg.get("models"):
         extra.append(jd.matrix_frame(d, info, cfg["models"], job, next(nxt)))
@@ -640,13 +845,14 @@ def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") ->
     if cfg.get("detail") is True:
         extra.append(jd.detail_frame(d, info, tasks, jd.task_topics(job.parent), cfg, out.parent / "assets",
                                      next(nxt)))
-    below = ([notes] if notes else []) + [x for x in extra if x]
+    below = ladders[1:] + ([notes] if notes else []) + [x for x in extra if x]
+    labels = ["continues"] * (len(ladders) - 1) + (["its words"] if notes else []) + ["in detail"] * len(below)
     placed = canvas.stairs(d.els, [ladder["id"]] + [(x["id"], 600 if k == 0 else 420) for k, x in enumerate(below)])
     d.fid = None
     for k, (a, b) in enumerate(zip(placed, placed[1:])):
         x = b["x"] + min(b["width"], 600) / 2
         d.line([(x, a["y"] + a["height"] + 14), (x, b["y"] - 14)], sw=5)
-        d.text(x + 20, (a["y"] + a["height"] + b["y"]) / 2 - 24, "its words" if (k == 0 and notes) else "in detail", 36)
+        d.text(x + 20, (a["y"] + a["height"] + b["y"]) / 2 - 24, labels[k], 36)
     d.write(out, source or f"excalidraw-job scripts/job_ladder.py {job.name}")
     from render_png import render
     render(out, out.with_suffix(".png"))
