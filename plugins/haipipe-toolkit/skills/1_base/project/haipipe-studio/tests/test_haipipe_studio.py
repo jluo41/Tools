@@ -543,3 +543,15 @@ class StairsTest(unittest.TestCase):
         self.assertEqual(next(e for e in els if e["id"] == "t")["x"], 610)
         with self.assertRaises(AssertionError):
             canvas.stairs(els, ["main", "a"])                         # every frame placed once
+
+    def test_grid_carries_what_follows_a_frame_and_gives_it_room(self):
+        """A staircase's results sit outside its frame, marked customData.follows: grid moves them with the frame
+        and the next row starts below them (261014, b01 s24: the results stayed behind when Acts laid it out)."""
+        els = [{"id": "f0", "type": "frame", "x": 500, "y": 500, "width": 400, "height": 300},
+               {"id": "r", "type": "rectangle", "x": 1000, "y": 500, "width": 200, "height": 600,
+                "customData": {"follows": "f0"}},
+               {"id": "f1", "type": "frame", "x": 0, "y": 0, "width": 100, "height": 100}]
+        canvas.grid(els, [["f0"], ["f1"]], gap=20)
+        r = next(e for e in els if e["id"] == "r")
+        self.assertEqual((r["x"], r["y"]), (500, 0))                  # moved with f0 by (-500, -500)
+        self.assertEqual(els[2]["y"], 620)                            # f1 below r's bottom (600) + gap, not f0's

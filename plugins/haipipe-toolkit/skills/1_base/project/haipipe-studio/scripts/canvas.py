@@ -177,22 +177,34 @@ def change_note(x, y, what, date=None, frame=None, size=16):
 def grid(els, rows, gap=150):
     """Place the frames in rows, read left to right and then down, never one long column (JL 261009:
     "don't put all the things in one column"). `rows` lists every frame id once, row by row; each frame
-    moves with everything drawn in it. A builder draws each frame where it likes, then calls this once,
+    moves with everything drawn in it and everything marked `customData.follows` its id (drawn outside it, as a
+    staircase's results), and takes their room in its row. A builder draws each frame where it likes, then calls this once,
     before `write`."""
     frames = {e["id"]: e for e in els if e["type"] == "frame"}
     placed = [fid for row in rows for fid in row]
     assert sorted(placed) == sorted(frames), f"grid() places each frame once: {placed} vs {list(frames)}"
+
+    def follows(e, fid):                    # drawn outside the frame but belonging to it (a staircase's results)
+        return (e.get("customData") or {}).get("follows") == fid
+
+    def reach(fid):                         # the frame's width and height, grown by what follows it
+        f = frames[fid]
+        own = [e for e in els if follows(e, fid)]
+        return (max([f["x"] + f["width"]] + [e["x"] + e.get("width", 0) for e in own]) - f["x"],
+                max([f["y"] + f["height"]] + [e["y"] + e.get("height", 0) for e in own]) - f["y"])
     y = 0
     for row in rows:
-        x = 0
+        x, tall = 0, 0
         for fid in row:
             f = frames[fid]
+            w, h = reach(fid)
             dx, dy = x - f["x"], y - f["y"]
             for e in els:
-                if e["id"] == fid or e.get("frameId") == fid:
+                if e["id"] == fid or e.get("frameId") == fid or follows(e, fid):
                     e["x"], e["y"] = e["x"] + dx, e["y"] + dy
-            x += f["width"] + gap
-        y += max(frames[fid]["height"] for fid in row) + gap
+            x += w + gap
+            tall = max(tall, h)
+        y += tall + gap
     return els
 
 

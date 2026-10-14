@@ -49,6 +49,7 @@ JOB_W, IO_W = 1400, 1000                    # the Job's box; its in and out (wid
 STEP_GAP, RES_GAP = 170, 220                # room between steps; from the frame out to the results
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
 CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
+THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
 PICTURES = (".png", ".jpg", ".jpeg")
 QUESTION = re.compile(r"^(which|what|how|why|who|when|where|does|do|is|are|can|should)\b", re.I)   # a title that asks
@@ -335,38 +336,40 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     Run's charts, JL 261013); the tables it names (`tables:`, rows from its Run's CSV); else its current Run's
     picked numbers as a table.
     Returns (height, open): open, dashed, when it shows none of these."""
-    w = CHART_W + 2 * PAD
+    w = CHART_W + 2 * PAD + (THUMB_W + 28 if thumb else 0)
     yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} results", w - 2 * PAD, T_RES - 4, GREY) + 4
+    side = yy
+    if thumb:                                       # its own topic, small, linked, to the right of the results, so a
+        nn, png, link = thumb                       # block grows wide, not tall (JL 261014: "from left to right")
+        tx = x + PAD + CHART_W + 28
+        side = d.para(tx, yy, f"🔗 {nn}: its own drawing, click to open it", THUMB_W, T_RES - 6, GREY) + 4
+        d.els[-1]["link"] = link
+        side += d.picture(png, tx, side, THUMB_W, THUMB_H, fid=f"thumb-{nn}") + 4
+        d.els[-1]["link"] = link
     if found:
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]      # one sentence; the charts carry the numbers
-        yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", w - 2 * PAD, T_RES, INK) + 14
-    if thumb:                                       # its own topic, small, linked: (sNN, picture, link)
-        nn, png, link = thumb
-        yy = d.para(x + PAD, yy, f"🔗 {nn}: its own drawing, click to open it", w - 2 * PAD, T_RES - 4, GREY) + 4
-        d.els[-1]["link"] = link
-        yy += d.picture(png, x + PAD, yy, CHART_W, 560, fid=f"thumb-{nn}") + 16
-        d.els[-1]["link"] = link
+        yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", CHART_W, T_RES, INK) + 14
     drawn = 0
     for k, spec in enumerate(((cfg.get("charts") or {}).get(t["name"]) or [])[:3]):
         png = chart_png(spec, chart_run(t, cfg, spec), assets / f"chart-{t['name']}-{k}.png") if assets else None
         if not png:
-            yy = d.para(x + PAD, yy, f"❓ chart {spec.get('title', k)}: no values in its result", w - 2 * PAD,
+            yy = d.para(x + PAD, yy, f"❓ chart {spec.get('title', k)}: no values in its result", CHART_W,
                         T_RES - 2, RED) + 8
             continue
-        yy = d.para(x + PAD, yy, str(spec.get("title", "")), w - 2 * PAD, T_RES, INK) + 4
+        yy = d.para(x + PAD, yy, str(spec.get("title", "")), CHART_W, T_RES, INK) + 4
         yy += d.picture(png, x + PAD, yy, CHART_W, 900, fid=f"chart-{t['name']}-{k}") + 16
         drawn += 1
     charted = drawn
     for k, p in enumerate(task_pictures(t, cfg)):                       # its own figures, as its Runs drew them:
         yy += d.picture(p, x + PAD, yy, CHART_W, 640, fid=f"fig-{t['name']}-{k}") + 6   # a figure Run's charts
-        yy = d.para(x + PAD, yy, str(p.relative_to(t["row"]["task"])), w - 2 * PAD, 20, GREY) + 16   # come first
+        yy = d.para(x + PAD, yy, str(p.relative_to(t["row"]["task"])), CHART_W, 20, GREY) + 16   # come first
         drawn += 1                                                      # (JL 261013), then the exact rows
     tabled = False
     for title, cols, rows in task_tables(t, cfg):                       # its tables, from its Run's own files
         if not rows:
-            yy = d.para(x + PAD, yy, title, w - 2 * PAD, T_RES - 2, RED) + 8
+            yy = d.para(x + PAD, yy, title, CHART_W, T_RES - 2, RED) + 8
             continue
-        yy = d.para(x + PAD, yy, title, w - 2 * PAD, T_RES, INK) + 4
+        yy = d.para(x + PAD, yy, title, CHART_W, T_RES, INK) + 4
         first = CHART_W * 0.46
         rest = (CHART_W - first) / max(1, len(cols) - 1)
         yy = d.grid_table(x + PAD, yy, cols, rows, [first] + [rest] * (len(cols) - 1), 24, pad=20) + 16
@@ -380,9 +383,9 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
             tabled = True
     is_open = not (found or drawn or tabled)
     if is_open:
-        yy = d.para(x + PAD, yy, "❓ nothing found yet" if t["runs"] else "⬜ no Run yet", w - 2 * PAD, T_RES,
+        yy = d.para(x + PAD, yy, "❓ nothing found yet" if t["runs"] else "⬜ no Run yet", CHART_W, T_RES,
                     RED if t["runs"] else GREY) + 8
-    h = yy - y + PAD - 8
+    h = max(yy, side) - y + PAD - 8                                    # the taller of the two columns
     d.box(x, y, w, h, GREY if is_open else INK, 1.5, dashed=is_open)
     return h, is_open
 
@@ -518,6 +521,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
 
     # outside the frame, to its right: each Task's results, small, level with its step (the sketch's "T1 Results")
     d.fid = None
+    first = len(d.els)
     rx0, last = width + RES_GAP, -1e9
     for s in steps:
         top = max(s["y"], last + 40)
@@ -527,6 +531,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
               ([(width + 60, hit)] if abs(hit - s["mid"]) > 4 else []) + [(rx0 - 12, hit)]
         d.line(pts, sw=2, dashed=is_open)
         last = top + h
+    for e in d.els[first:]:                 # the results follow ① when a builder lays frames out (canvas.grid,
+        e.setdefault("customData", {})["follows"] = f["id"]   # d.acts), so they never stay behind (261014)
     return f
 
 
