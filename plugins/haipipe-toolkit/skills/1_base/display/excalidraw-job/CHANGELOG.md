@@ -52,6 +52,8 @@ excalidraw-job · Changelog
   live only in the legacy notebooks: `run_num_1m_next2h.ipynb:test-id.kl`), so no number is copied beside a face. A
   settings row may name its own measures (`heads:`); a Task page's "SCAFFOLD" line is no title (a face's
   `tasks.<t>.title` wins); `fmt_value` keeps a cell short (2.02B, 51.6M, 0.192).
+- 261014: a Task with Run folders still shows its design grids beside them (`run_cards`): Xuzhe's j02 Runs r01, r02
+  had hidden the 24 legacy runs t01's grid counts. Found by rebuilding s22 from a copy of GitHub's main.
 - Test: `test_explained_layout_makes_the_words_from_zero_the_main_frame`. First drawn: Proj11 b01 s21.
 
 ## [0.6.2] · 2026-10-13 · Runs as a grid: a Job grows wide, not tall

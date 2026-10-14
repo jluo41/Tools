@@ -981,14 +981,13 @@ RUN_CARD_W = 760                            # a Run card beside its step
 def run_cards(t: dict, design: dict, cfg: dict) -> list[dict]:
     """A step's Runs, every one shown (JL 261013: "for the tasks, I want the runs to be fully displayed here, so I can
     know for this task what are the runs we have"): its Run folders, a card each (its mark, its name, its state);
-    when the Task holds none yet, a card per design grid (a sweep) holding the whole grid, a mark per Run, its row and
-    column naming it, with its count by state, why a mark is red, and where its tickets are. [{lines, grid, dashed}]."""
+    then a card per design grid (a sweep) holding the whole grid, a mark per Run, its row and column naming it, with
+    its count by state, why a mark is red, and where its tickets are. Both show: a new Run folder never hides the
+    legacy Runs a grid still counts (Proj11 j02, 261014). [{lines, grid, dashed}]."""
     import job_ladder as jl
-    if t["runs"]:
-        return [{"lines": [(f"{r['mark']} {jl.run_label(r['name'])}", jl.T_RUNS, INK),
-                           (str(r.get("state") or ""), jl.T_RUNS - 4, GREY)], "grid": None, "dashed": False}
-                for r in t["runs"]]
-    cards = []
+    cards = [{"lines": [(f"{r['mark']} {jl.run_label(r['name'])}", jl.T_RUNS, INK),
+                        (str(r.get("state") or ""), jl.T_RUNS - 4, GREY)], "grid": None, "dashed": False}
+             for r in t["runs"]]
     for gr in design["grids"]:
         g = gr["g"]
         if str(g.get("task", "")) != t["name"]:
@@ -1007,6 +1006,7 @@ def run_cards(t: dict, design: dict, cfg: dict) -> list[dict]:
         cards.append({"lines": [(f"{n_of(n, 'Run')}: {status}" if status else "⬜ none on disk", jl.T_RUNS - 2, INK)],
                       "grid": {**gr, "g": {**g, "title": f"🧪 {title}"}}, "after": after, "dashed": not c["done"]})
     return cards or [{"lines": [("⬜ no Run yet", jl.T_RUNS, GREY)], "grid": None, "dashed": True}]
+
 
 
 GRID_COLOURS = {"done": "#2f9e44", "part": "#f08c00", "ticket": "#ced4da", "failed": "#e03131", "none": "#ffffff"}
