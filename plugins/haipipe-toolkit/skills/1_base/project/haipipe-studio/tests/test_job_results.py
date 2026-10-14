@@ -76,6 +76,19 @@ class JobResultsTest(unittest.TestCase):
         drawn = (topic / f"{topic.name}.excalidraw").read_text()
         self.assertIn("SFT lifts accuracy", drawn)
 
+    def test_an_esttab_csv_reads_as_rows_and_small_numbers_stay_plain(self):
+        """OpioidRx 261013: Stata esttab writes every cell ="…" (a comma inside ="1,208,934" is not a column), a
+        standard-error row with no label; 0.0000375 prints plain, never 3.75e-05."""
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "main-ols.csv"
+            f.write_text('="Main OLS: y ~ trait_l2"\n\n="",="(1)",="(2)"\n="",="SPEC1",="SPEC2"\n\n'
+                         '="trait_l2",="-0.0025***",="0.0000"\n="",="(0.0006)",="(0.0007)"\n\n'
+                         '="N",="1,208,934",="1,197,766"\n\n="* p<0.10, ** p<0.05, *** p<0.01"\n')
+            rows = job_results.load(f)
+        self.assertEqual([r["term"] for r in rows], ["model", "trait_l2", "trait_l2_se", "N"])
+        self.assertEqual(job_results.dig(rows, "term=N.(1)"), "1,208,934")
+        self.assertEqual(job_results.number(0.0000375), "0.0000375")
+
 
 if __name__ == "__main__":
     unittest.main()

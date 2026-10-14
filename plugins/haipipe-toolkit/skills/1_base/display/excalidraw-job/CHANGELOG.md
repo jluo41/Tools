@@ -1,6 +1,46 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.7.0] · 2026-10-13 · layout: explained, JL's sketch: a wide frame, Tasks as steps, results outside
+
+- Asked 261013 on WellDoc Proj11 `work/b01_clm_foundation_model` s21 (j01 pretrain), over one evening: "make ⑦ 📚 j01
+  · pretrain: explained from zero to be the main … others to support it"; "make it to be per tasks"; "each task to a
+  row, did you really carefully read the content of the /excalidraw-job????"; "why you don't just make the main frame
+  to be wider"; "read [the Paper-LLMRecPhy-work] session" (its rules: 主次分明, stairs, 留白, results small, never a
+  full board); then a sketch (WellDoc-SPACE `image.png`): a wide, low frame, JOB at its top left, Task 1, 2, 3 each a
+  step lower and further right, a long line from each out through the frame's edge to "result 1, 2, 3", level.
+  Four tries before it missed that sketch: frames stacked beside ①, two Tasks a row, results as big tables and grids
+  of ✅ inside a tall frame. Each one broke a rule this skill already wrote down.
+- `draw_explained` (`job_drawing.py`): ① the reading; the Job (why, done when) with In and Out (job_ladder's cards);
+  each Task a step 560 px further right, its stair hanging off the last one's, a small card under it (asks, did, its
+  Runs or the design's tally, → its topic); the frame ends where its widest step ends (JL: "too much margin"; 3,600 px at least); outside it, level
+  with each step, a small results card (`results_card`): one sentence and a table (a settings row's low end → high end;
+  the face's `chart` for the Job), dashed when no number is on disk.
+  Below, stepping down and right (`canvas.stairs`): ② job_ladder's `notes_frame`, ③ `formula_frame`, the design grids.
+- Shared on the way: `lay_grids` (design_frame's grid loop), `grid_note` (a grid's note wraps to its width),
+  `mark_grid`/`grid_size` take `small`; a Task box with no Run folder says where its runs are counted.
+- Then JL: "how could you list the runs and the running status as well". Each step's Runs branch right below its
+  line out, as small cards in a row (`run_cards`, `job_ladder.run_cols`): a card per Run folder (its mark, its
+  name, its state); when the Task holds none yet, a card per design grid (a sweep): its Runs by state (evaluated,
+  half evaluated, not evaluated, failed), why a mark is red, where its tickets are.
+- Then: "for the tasks, I want the runs to be fully displayed here, so I can know for this task what are the runs
+  we have". A sweep's card holds its whole grid as a picture (`grid_png`): a square per Run, its row and column
+  naming it, green evaluated, orange half, grey a ticket not evaluated, red failed, a dot for no ticket; long
+  column names tilt. The design frames below are gone: every Run now stands beside its step.
+- Then: "could you make this 10% to be the same size of 40% or 50%?" and "I think we can have the things like table,
+  not this figure". Two type sizes: the skeleton (the title 160 px, the reading's first sentence, the Job and each
+  Task by its folder's words at `BIG` 120 px, each result's header at `MID` 80 px) reads at 10% zoom as 28 px reads
+  at about 45%; the detail stays 24 to 34 px. Results are tables (`results_card`): a Task's settings rows as
+  sweep, then each measure's low → high, the numbers large and their settings small under them; the Job's `chart`
+  as a row per series, a column per bar. `pair_png` is gone.
+- Then: "how to make the j02 and j03 as well … could you make it work the same way?". Drawn on Proj11 b01 s22
+  (j02 finetune) and s23 (j03 evaluate). An `at` now reads (`read_data`) a JSON past job_results' 4 MB cap (j03 t01's
+  7 MB token counts) and an executed notebook's printed results, each output line `<name>: {…}` a key (j02's scores
+  live only in the legacy notebooks: `run_num_1m_next2h.ipynb:test-id.kl`), so no number is copied beside a face. A
+  settings row may name its own measures (`heads:`); a Task page's "SCAFFOLD" line is no title (a face's
+  `tasks.<t>.title` wins); `fmt_value` keeps a cell short (2.02B, 51.6M, 0.192).
+- Test: `test_explained_layout_makes_the_words_from_zero_the_main_frame`. First drawn: Proj11 b01 s21.
+
 ## [0.6.2] · 2026-10-13 · Runs as a grid: a Job grows wide, not tall
 
 - JL on Proj10 b01 s21 (j01, two Tasks of six and four Runs): "the width is kind of small, you can make it wider

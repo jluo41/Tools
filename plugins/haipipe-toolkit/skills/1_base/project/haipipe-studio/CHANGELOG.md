@@ -1,6 +1,15 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.13.20] · 2026-10-13 · Stata esttab tables read as rows; small numbers stay plain**
+
+- `job_results.load` reads a Stata esttab CSV (every cell `="…"`) through `esttab_rows`: each cell whole (a comma
+  inside `="1,208,934"` is not a column), the title and notes dropped, the first column `term`, a standard-error row
+  `<term>_se`; so `tables:` and `show` can pick `term=trait_l2.(5)`. Found on Physician-SPACE OpioidRx's v0618 cohort
+  tables, which excalidraw-job could not show (261013).
+- `number`: 0.0000375, never 3.75e-05.
+- Test: `test_an_esttab_csv_reads_as_rows_and_small_numbers_stay_plain`.
+
 **[0.13.19] · 2026-10-13 · Frames as stairs, a small frame that explains, a name with a dot**
 
 - `canvas.stairs(els, order, gap, step)`: the main frame at the origin, each next frame lower and further right

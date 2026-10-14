@@ -136,6 +136,41 @@ def test_one_topic_per_job(tmp_path):
         job_drawing.make(job)
 
 
+def test_explained_layout_makes_the_words_from_zero_the_main_frame(tmp_path):
+    """layout: explained (JL 261013 on Proj11 b01's s21, with a sketch: a wide, low frame; JOB at its top left; each
+    Task a step lower and further right; from each, one line out through the frame's edge to its result, level with
+    it): each result a small table outside ① (JL: "like table, not this figure"), read from the Task's settings rows."""
+    job = block(tmp_path)
+    res = job / "t01_entropy_kl/runs/r01_video/result/m.json"
+    res.write_text('{"rmse": 4.7, "mae": 3.1}')
+    at = "j01_losses/t01_entropy_kl/runs/r01_video/result/m.json:"
+    cfg = {"layout": "explained", "reading": "Entropy explains the loss.",
+           "tasks": {"t01_entropy_kl": {"found": "KL is the extra surprise."}},
+           "chart": {"title": "📈 RMSE", "key": "one bar", "legend": ["num", "tkn"],
+                     "bars": [{"label": "a", "at": [at + "rmse", at + "mae"]}]},
+           "settings": {"columns": ["Task", "Sweep", "Form", "Low", "High"],
+                        "rows": [{"state": "done", "cells": ["t01", "size", "num", {"label": "1m", "at": at + "rmse"},
+                                                            {"label": "1b", "at": at + "mae"}]}]}}
+    out, _ = job_drawing.draw_job(job, tmp_path / "x.excalidraw", cfg)
+    els = json.loads(out.read_text())["elements"]
+    fs = [e for e in els if e["type"] == "frame"]
+    assert len(fs) == 1 and fs[0]["name"].startswith("① 📚") and "explained from zero" in fs[0]["name"]
+    f = fs[0]
+    assert f["width"] <= 3600                                             # it ends at its widest step, no margin
+    texts = {e["text"].split("\n")[0]: e for e in els if e["type"] == "text"}
+    steps = [next(e for k_, e in texts.items() if k_.startswith(f"🧩 {k} ·")) for k in ("t01", "t02")]
+    assert steps[1]["y"] > steps[0]["y"] and steps[1]["x"] > steps[0]["x"]  # a step lower and further right
+    r1, r2 = (texts[f"📊 {t} result"] for t in ("t01", "t02"))
+    assert r1["x"] > f["width"] and not r1.get("frameId")                 # outside ①, on its right
+    assert abs(r1["y"] - steps[0]["y"]) < 40 and abs(r2["y"] - steps[1]["y"]) < 40   # level with its step
+    words = " ".join(e["text"] for e in els if e["type"] == "text")
+    assert "4.70 → 3.10" in words and "1m → 1b" in words                 # its result a table: low → high, from disk
+    assert "4.70" in words and "3.10" in words and "num" in words          # the Job's chart as a table too
+    assert "💡 KL is the extra surprise." in words and "never evaluated" in words   # t02 has no number: dashed
+    assert "r01 · video" in words                                         # its Runs, a card each, beside its step
+    assert check(out)["③"].startswith(("✅", "🔶"))
+
+
 def test_labelled_reads_lists_after_a_blank_and_running_paragraphs():
     """Found by the Proj10 session: a label, a blank line, then its list; and a paragraph past the label's line."""
     page = ("**How it works**:\n\n- first step\n  wrapped on\n- second step\n\n"

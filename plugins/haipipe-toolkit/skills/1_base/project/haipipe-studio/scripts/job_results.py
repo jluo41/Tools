@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -62,6 +63,28 @@ def read(path: Path) -> str:
         return ""
 
 
+def esttab_rows(text: str) -> list[dict]:
+    """A Stata esttab CSV (every cell written `="…"`, OpioidRx 261013) as rows: each `="…"` cell read whole (a
+    comma inside `="1,208,934"` is not a column), its title line and blank lines dropped, its first row of two or
+    more cells the header (the first column named `term`), a standard-error row (no label, under a labelled row)
+    named `<term>_se`, a label row above the first term named `model`. Cells stay as written (`-0.0025***`,
+    `1,208,934`), so a table shows them the way the paper's table does."""
+    cells = [[c.replace('""', '"') for c in re.findall(r'="((?:[^"]|"")*)"', line)] for line in text.splitlines()]
+    cells = [row for row in cells if any(c.strip() for c in row)]
+    head = next((i for i, row in enumerate(cells) if len(row) >= 2), None)
+    if head is None:
+        return []
+    keys = ["term"] + [c or f"col{k}" for k, c in enumerate(cells[head][1:], 1)]
+    rows, prev = [], ""
+    for row in cells[head + 1:]:
+        if len(row) < 2:
+            continue                                                 # a note under the table
+        term = row[0] or (f"{prev}_se" if prev else "model")
+        prev = row[0] or prev
+        rows.append(dict(zip(keys, [term] + row[1:])))
+    return rows
+
+
 def load(path: Path):
     """A receipt's data: JSON, or YAML when PyYAML is there; None when unreadable or too large."""
     if not path.is_file() or path.stat().st_size > 4_000_000:
@@ -79,6 +102,8 @@ def load(path: Path):
                     return float(v) if any(c in v for c in ".eE") else int(v)
                 except (TypeError, ValueError):
                     return v
+            if text.lstrip().startswith('="'):
+                return esttab_rows(text)
             return [{k: num(v) for k, v in row.items()} for row in csv.DictReader(text.splitlines())]
     except Exception:                     # a broken receipt reads as missing, never stops the build
         return None
@@ -263,6 +288,8 @@ def number(v, fmt: str = "") -> str:
         return f"{v:.1f}"
     if abs(v) >= 10:
         return f"{v:.1f}"
+    if 0 < abs(v) < 0.001:                  # 0.0000375, never 3.75e-05 (OpioidRx b04, 261013)
+        return f"{v:.{2 - int(math.floor(math.log10(abs(v))))}f}"
     return f"{v:.3g}"
 
 

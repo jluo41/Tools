@@ -10,7 +10,7 @@ description: >-
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.6.2"
+  version: "0.7.0"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---
@@ -61,6 +61,11 @@ The frames
 6. **No left-aligned frames**: ② and ③ step down and right (`canvas.stairs`); ② is small (`canvas.explains`).
 7. **Red is real**: ❓ names something missing on disk (no reading, no close, no finding), never a guess.
 8. **The old frames**: `layout: classic` keeps ① why and ② in → Tasks → out; `layout: plain`, the model tables.
+9. **From zero as the main**: `layout: explained`, as JL's sketch: one frame ① titled "explained from zero", as
+   wide as its widest step and no wider, the Job at its top left, each Task a step lower and further right, and from each one line out of the frame
+   to its result, a small table (its `settings` rows, low end → high end), level with it; the skeleton
+   (title, Job, Task names, result headers) in type that reads at 10% zoom; ② words, ③ `formula`, the
+   design grids small, stepping down.
 
 
 The face's words
@@ -101,7 +106,9 @@ job:
   sure: "…"                      # how sure the reading is, and why (50 words); in ②
   open: [{item: …, closer: …}]   # each open point and exactly what would close it; in ②
   conclusions: {}                # per Task: its finding, when the page's own is not the right one
-  layout: ""                     # empty: the staircase; classic: ① why, ② in → Tasks → out; plain: the model tables
+  layout: ""                     # empty: the staircase; classic: ① why, ② in → Tasks → out; plain: the model tables;
+                                 #   explained: one ①, its Tasks as steps, each result a small table outside
+                                 #   it (a settings row whose first cell is t01 is t01's: its low end → high end)
   design: {frames: [ … ]}        # each Task's Runs as grids, one mark per Run (0.4.0); in ③
   detail: false                  # true: ③ "explained from zero" (intro, terms, formula, a box per Task); in ③
 ```
@@ -203,8 +210,8 @@ excalidraw-job/
 ├── SKILL.md                    this file
 ├── CHANGELOG.md                its versions
 ├── agents/openai.yaml          Codex's card
-├── scripts/job_drawing.py      the readers, make, draw, adopt, preview; the classic and plain frames; draw_job
-│                               sends every Job to the staircase unless the face says layout: classic or plain
+├── scripts/job_drawing.py      the readers, make, draw, adopt, preview; the classic, plain and explained frames; draw_job
+│                               sends every Job to the staircase unless the face says layout: classic, plain or explained
 ├── scripts/job_ladder.py       the staircase, its results blocks (charts, tables, figures), its words frame
 ├── tests/test_job_drawing.py   a Job made on a small Block, drawn, checked; one topic per Job; a Task's pointer
 └── tests/test_job_ladder.py    steps move right, quiet reruns, charts and tables from results, frames as stairs

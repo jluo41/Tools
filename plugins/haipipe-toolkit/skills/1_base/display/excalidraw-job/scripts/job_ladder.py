@@ -299,8 +299,37 @@ def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
     return out
 
 
+def topic_thumb(topic: Path, out: Path) -> Path | None:
+    """A Task's own topic, small: its first frame rendered into this topic's assets/ (generated, never tracked), so
+    the Job shows each Task's drawing without loading it (JL 261013: "use one excalidraw to embed the other one").
+    Excalidraw cannot embed a drawing file in another; a picture of it, linked to it, can stand in. Redrawn when
+    the Task's drawing is newer."""
+    import json
+    src = topic / f"{topic.name}.excalidraw"
+    if not src.is_file():
+        return None
+    if out.is_file() and out.stat().st_mtime >= src.stat().st_mtime:
+        return out
+    doc = json.loads(src.read_text())
+    els = [e for e in doc.get("elements", []) if not e.get("isDeleted")]
+    frames = [e for e in els if e["type"] == "frame"]
+    if not frames:
+        return None
+    first = next((e for e in frames if str(e.get("name", "")).startswith("①")), frames[0])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out.with_name(f".{out.stem}.excalidraw")
+    tmp.write_text(json.dumps({**doc, "elements": [first] + [e for e in els if e.get("frameId") == first["id"]]},
+                              ensure_ascii=False))
+    from render_png import render
+    try:
+        render(tmp, out)
+    finally:
+        tmp.unlink(missing_ok=True)
+    return out if out.is_file() else None
+
+
 def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str,
-                  assets: Path | None) -> tuple[float, bool]:
+                  assets: Path | None, thumb: tuple | None = None) -> tuple[float, bool]:
     """A Task's results, outside the frame, in this order: a small title; its finding in one sentence; the charts the
     face names (`charts:`, drawn here from its Run's result); the figures the Task holds (task_pictures: a figure
     Run's charts, JL 261013); the tables it names (`tables:`, rows from its Run's CSV); else its current Run's
@@ -311,6 +340,12 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     if found:
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]      # one sentence; the charts carry the numbers
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18)}", w - 2 * PAD, T_RES, INK) + 14
+    if thumb:                                       # its own topic, small, linked: (sNN, picture, link)
+        nn, png, link = thumb
+        yy = d.para(x + PAD, yy, f"🔗 {nn}: its own drawing, click to open it", w - 2 * PAD, T_RES - 4, GREY) + 4
+        d.els[-1]["link"] = link
+        yy += d.picture(png, x + PAD, yy, CHART_W, 560, fid=f"thumb-{nn}") + 16
+        d.els[-1]["link"] = link
     drawn = 0
     for k, spec in enumerate(((cfg.get("charts") or {}).get(t["name"]) or [])[:3]):
         png = chart_png(spec, chart_run(t, cfg, spec), assets / f"chart-{t['name']}-{k}.png") if assets else None
@@ -408,6 +443,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
         own = (topics or {}).get(f"{t['row']['task'].parent.name}/{t['name']}")
+        png = topic_thumb(assets.parent.parent / own, assets / f"thumb-{own[:3]}.png") if own and assets else None
+        thumb = (own[:3], png, f"../{own}/{own}.excalidraw") if png else None
         under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, 24)}", T_CARD, INK),
                  (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) else "", T_CARD, INK),
                  (f"→ details: {own[:3]}" if own else "", T_CARD, INK),
@@ -457,8 +494,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 d.line([(bx, m), (rx - 8, m)], sw=1.5)
         mid = y + nh / 2
         d.line([(spine_x, mid), (nx - 8, mid)], sw=3)                  # the stair from the spine to this step
-        steps.append({"y": y, "mid": mid, "right": nx + NODE_W, "task": t, "found": found})
-        res_h = results_block(Drawing(), 0, 0, t, cfg, found, assets)[0]   # measured, so the step stays level with
+        steps.append({"y": y, "mid": mid, "right": nx + NODE_W, "task": t, "found": found, "thumb": thumb})
+        res_h = results_block(Drawing(), 0, 0, t, cfg, found, assets, thumb)[0]   # measured, so the step stays level with
         y = max(y + nh + 16 + cardh, ry, y + res_h) + STEP_GAP             # its results; the rest is room
     if steps:
         d.line([(spine_x, spine_top), (spine_x, steps[-1]["mid"])], arrow=False, sw=3)
@@ -481,7 +518,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
     rx0, last = width + RES_GAP, -1e9
     for s in steps:
         top = max(s["y"], last + 40)
-        h, is_open = results_block(d, rx0, top, s["task"], cfg, s["found"], assets)
+        h, is_open = results_block(d, rx0, top, s["task"], cfg, s["found"], assets, s["thumb"])
         hit = top + 32
         pts = [(s["right"] + 10, s["mid"]), (width + 60, s["mid"])] + \
               ([(width + 60, hit)] if abs(hit - s["mid"]) > 4 else []) + [(rx0 - 12, hit)]

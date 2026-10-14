@@ -35,7 +35,7 @@ sys.path.insert(0, str(SKILLS / "display/excalidraw-studio/scripts"))
 sys.path.insert(1, str(SKILLS / "display/excalidraw-task/scripts"))   # ③ uses excalidraw-task's boxes
 import canvas  # noqa: E402
 import job_results as jr  # noqa: E402
-from draw import GREY, INK, MAP_WORDS, RED, W, Drawing  # noqa: E402
+from draw import GREY, INK, MAP_WORDS, RED, T_ACT, W, Drawing  # noqa: E402
 
 MAP_BUDGET = MAP_WORDS - 8                # ② stays under ⑦ with room for the badge's change of words
 
@@ -502,11 +502,13 @@ def plan_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: dic
     return finish(d, f, y)
 
 
-def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: dict, assets: Path, mark: str = "③") -> dict:
+def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: dict, assets: Path, mark: str = "③",
+                 steps=None) -> dict:
     """③ the Job explained from zero (asked 261012: "this is very thin … If I am a reader, will this answer my
     questions for this job"): what it is for and the words to know; what goes in and what comes out; its core formula;
     each Task (asked, did, found, its numbers, → its topic); what it concluded and how sure; what is open and what
-    would close it. Words from the face's job: yaml; numbers and states from disk. Built with excalidraw-task's boxes."""
+    would close it. Words from the face's job: yaml; numbers and states from disk. Built with excalidraw-task's boxes.
+    `steps(d, f, y, boxes)`, given by layout: explained, draws the Tasks itself, as stairs, and returns the y below."""
     import task_drawing as td
     f = d.frame(f"{mark} 📚 {info['id']} · {info['title']}: explained from zero", td.W, 1600)   # the next free mark
     runs = [r for t in tasks for r in t["runs"]]
@@ -528,26 +530,33 @@ def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: d
         body = [f"Asked: {w['asked']}" if w.get("asked") else f"Asked: {t['question'] or '❓ no question on its page'}"]
         if w.get("did"):
             body.append(f"Did: {w['did']}")
-        body.append(f"{n_of(len(t['runs']), 'Run')}: {states(t['runs'])}" if t["runs"] else "⬜ no Run yet")
+        tal = (cfg.get("_tally") or {}).get(t["name"])
+        body.append(f"{n_of(len(t['runs']), 'Run')}: {states(t['runs'])}" if t["runs"] else
+                    f"⬜ no Run folder in the Task yet; its {tal['runs']} {cfg.get('_runs_word', 'Runs')} are read from "
+                    "the design's tickets and evals" if tal and tal["runs"] else "⬜ no Run yet")
         if t["values"]:
             body.append("📈 " + " · ".join(t["values"][:6]))
         found = w.get("found") or finding(t, cfg)
         body.append(f"Found: {found}" if found else "❓ no finding written")
         if here:
-            body.append(f"→ details: its own topic, studio/{here}/ (the Task page: "
-                        f"{t['row']['task'].parent.name}/{t['name']}/{t['name']}.md)")
+            body.append(f"→ details: its own topic, studio/{here}/; the Task page, "
+                        f"{t['row']['task'].parent.name}/{t['name']}/{t['name']}.md")
         boxes.append((f"🧩 {t['id']} · {t['title']}", body, INK))
     task_rows = [boxes[k:k + 2] for k in range(0, len(boxes), 2)]
     opens = [open_line(o) for o in cfg.get("open") or []]
     concluded = [str(cfg.get("reading") or "❓ no reading yet")] + ([f"How sure: {cfg['sure']}"] if cfg.get("sure") else [])
     middle = ([("📖 Words to know first", terms, INK, 1.2)] if terms else []) + \
         [("📥 What goes in", ins, INK, 1), ("📤 What comes out", outs, INK, 1)]
-    rows = [[("💡 What this Job is for", [intro], INK, 1), ("🎯 What it concluded, and how sure", concluded, INK, 1)],
-            middle] + ([[("🧮 The core formula, explained", formulas, INK)]] if formulas else []) + task_rows + \
-        [[("❓ What is open, and what would close it", opens or ["nothing open is listed"], RED)]]
-    labels = ["so it found", "the words first" if terms else "what goes in"] + \
-        (["what goes in"] if terms else []) + ["comes out"] + (["the math"] if formulas else []) + ["the Tasks"] + \
-        ["then"] * max(0, len(boxes) - 1) + ["still open"]
+    top = [[("💡 What this Job is for", [intro], INK, 1), ("🎯 What it concluded, and how sure", concluded, INK, 1)],
+           middle] + ([[("🧮 The core formula, explained", formulas, INK)]] if formulas else [])
+    said = ["so it found", "the words first" if terms else "what goes in"] + \
+        (["what goes in"] if terms else []) + ["comes out"] + (["the math"] if formulas else [])
+    still = [("❓ What is open, and what would close it", opens or ["nothing open is listed"], RED)]
+    if steps:                                   # layout: explained: the Tasks as stairs, their results beside them
+        y = steps(d, f, td.rows_of(d, y, top, said) + 190, boxes)
+        return td.fit(d, f, td.rows_of(d, y, [still], []), detail=True)
+    rows = top + task_rows + [still]
+    labels = said + ["the Tasks"] + ["then"] * max(0, len(boxes) - 1) + ["still open"]
     bottom = td.rows_of(d, y, rows, labels)
     return td.fit(d, f, bottom, detail=True)
 
@@ -566,10 +575,44 @@ def shown_frame(d: Drawing, info: dict, pics: list[Path], job: Path) -> dict:
     return finish(d, f, top + max(hs) + 20)
 
 
+NB_LINE = re.compile(r"^\s*([\w.\-]+):\s*(\{.*\})\s*$")
+
+
+def read_data(path: Path):
+    """A file's data for an `at`: job_results.load (JSON, YAML, CSV up to 4 MB); a larger JSON still (one value is
+    worth reading: j03 t01's 7 MB token counts); an executed notebook's printed results, each output line
+    `<name>: {…}` a key (the legacy finetune notebooks print `test-id: {'kl': 0.19, …}`, 261013)."""
+    data = jr.load(path)
+    if data is not None or not path.is_file():
+        return data
+    try:
+        if path.suffix == ".json" and path.stat().st_size < 200_000_000:
+            import json
+            return json.loads(path.read_text(encoding="utf-8"))
+        if path.suffix == ".ipynb":
+            import ast
+            import json
+            out = {}
+            for cell in json.loads(path.read_text(encoding="utf-8")).get("cells") or []:
+                for o in cell.get("outputs") or []:
+                    text = "".join(o.get("text") or (o.get("data") or {}).get("text/plain") or [])
+                    for line in text.splitlines():
+                        m = NB_LINE.match(line)
+                        if m:
+                            try:
+                                out[m.group(1)] = ast.literal_eval(m.group(2))
+                            except (ValueError, SyntaxError):
+                                pass
+            return out or None
+    except (OSError, ValueError):
+        return None
+    return None
+
+
 def chart_value(block: Path, at: str):
     """`<path under the Block>:<key.inside>`, read from disk: a chart's numbers are never typed."""
     path, _, key = str(at).partition(":")
-    v = jr.dig(jr.load(block / path), key)
+    v = jr.dig(read_data(block / path), key)
     return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
 
@@ -775,7 +818,7 @@ def _found(block: Path, pat: str) -> bool:
     p = block / path
     if not key:
         return p.exists()
-    return jr.dig(jr.load(p), key) is not None if p.is_file() else False
+    return jr.dig(read_data(p), key) is not None if p.is_file() else False
 
 
 def design_of(block: Path, spec: dict) -> dict:
@@ -817,24 +860,30 @@ def tally_line(t: Counter, word: str = "Runs") -> str:
     return f"{t['runs']} {word}: {marks}" + (f" ({t['no ticket']} with no ticket, marked *)" if t["no ticket"] else "")
 
 
-def grid_size(rows: list, cols: list, title: str, size: float = 28) -> tuple[float, float]:
+def grid_size(rows: list, cols: list, title: str, size: float = 28, small: float = 24) -> tuple[float, float]:
     lw = max([Drawing.measure(r, size) for r in rows] + [60]) + 30
-    cw = [max(Drawing.measure(c, 24) + 26, 66) for c in cols]
+    cw = [max(Drawing.measure(c, small) + 26, 66) for c in cols]
     return max(lw + sum(cw), Drawing.measure(title, 32) + 20), 56 + 44 + len(rows) * size * 1.55 + 10
 
 
-def mark_grid(d: Drawing, x: float, y: float, gr: dict, size: float = 28) -> None:
-    """One grid: its title, its column names small and grey, a row per row value, a mark per Run (❌ red)."""
+def grid_note(gr: dict) -> str:
+    g = gr["g"]
+    return f"rows: {g.get('row_name', '')} · columns: {g.get('col_name', '')}" if g.get("col_name") or g.get("row_name") else ""
+
+
+def mark_grid(d: Drawing, x: float, y: float, gr: dict, size: float = 28, small: float = 24) -> None:
+    """One grid: its title, its column names small and grey, a row per row value, a mark per Run (❌ red); what its
+    rows and columns are, wrapped to the grid's own width so it never runs into the next grid."""
     rows, cols, cells = gr["rows"], gr["cols"], gr["cells"]
     lw = max([Drawing.measure(r, size) for r in rows] + [60]) + 30
-    cw = [max(Drawing.measure(c, 24) + 26, 66) for c in cols]
+    cw = [max(Drawing.measure(c, small) + 26, 66) for c in cols]
     d.text(x, y, str(gr["g"].get("title", "")), 32)
-    if gr["g"].get("col_name") or gr["g"].get("row_name"):
-        d.text(x, y + 100 + len(rows) * size * 1.55, f"rows: {gr['g'].get('row_name', '')} · columns: "
-               f"{gr['g'].get('col_name', '')}", 20, GREY)
+    if grid_note(gr):
+        gw = grid_size(rows, cols, str(gr["g"].get("title", "")), size, small)[0]
+        d.para(x, y + 100 + len(rows) * size * 1.55, grid_note(gr), gw, small if small >= 28 else small - 4, GREY)
     cx = x + lw
     for c, w in zip(cols, cw):
-        d.text(cx, y + 56, c, 24, GREY)
+        d.text(cx, y + 56, c, small, GREY)
         cx += w
     yy = y + 100
     for r in rows:
@@ -847,6 +896,19 @@ def mark_grid(d: Drawing, x: float, y: float, gr: dict, size: float = 28) -> Non
                 d.text(cx + 10 + size * 1.15, yy - 6, "*", size, GREY)
             cx += w
         yy += size * 1.55
+
+
+def lay_grids(d: Drawing, x0: float, y: float, mine: list, right: float, gap: float = 110, small: float = 24) -> float:
+    """Grids left to right, wrapped at `right`; returns the y below them."""
+    x, row_h = x0, 0
+    for gr in mine:
+        gw, gh = grid_size(gr["rows"], gr["cols"], str(gr["g"].get("title", "")), small=small)
+        gh += (Drawing.height(grid_note(gr), gw, small if small >= 28 else small - 4) + 6) if grid_note(gr) else 0
+        if x > x0 and x + gw > right:
+            x, y, row_h = x0, y + row_h + 60, 0
+        mark_grid(d, x, y, gr, small=small)
+        x, row_h = x + gw + gap, max(row_h, gh)
+    return y + row_h + 30
 
 
 def design_frame(d: Drawing, info: dict, fr: dict, design: dict, mark: str) -> dict:
@@ -865,15 +927,7 @@ def design_frame(d: Drawing, info: dict, fr: dict, design: dict, mark: str) -> d
     d.key(40, y, W - 80, kh)
     d.para(70, y + 20, key, W - 140, 34)
     y += kh + 50
-    x, row_h = 40, 0
-    for gr in mine:
-        gw, gh = grid_size(gr["rows"], gr["cols"], str(gr["g"].get("title", "")))
-        gh += 30 if (gr["g"].get("col_name") or gr["g"].get("row_name")) else 0
-        if x > 40 and x + gw > W - 40:
-            x, y, row_h = 40, y + row_h + 60, 0
-        mark_grid(d, x, y, gr)
-        x, row_h = x + gw + 110, max(row_h, gh)
-    y += row_h + 30
+    y = lay_grids(d, 40, y, mine, W - 40)
     legend = "   ".join(f"{MARKS[k]} {MARK_WORDS[k]}" for k in ("done", "part", "ticket", "failed", "none"))
     if any(b for gr in mine for _, b in gr["cells"].values()):
         legend += "   * evaluated, but no ticket in the design's folder"
@@ -883,6 +937,370 @@ def design_frame(d: Drawing, info: dict, fr: dict, design: dict, mark: str) -> d
     return finish(d, f, y)
 
 
+# ── layout: explained · the staircase (job_ladder, JL's s27 and sketch), titled "explained from zero": ① the Job and
+#    its Tasks as steps, each Task's results a small chart inside ① on the right; ② its words, ③ its formula and the
+#    design grids small, stepping down and right ────────────────────────────────────────────────────────────────────
+BIG, MID, JOB_TABLE_W = 120, 80, 1900                          # the skeleton's type (JL 261013: "make this 10% to be the same size
+                                            #   of 40% or 50%"): read at 10% zoom as 28 px reads at about 45%; the
+                                            #   detail stays 24 to 32 px, read when zoomed in
+
+
+def fmt_value(v) -> str:
+    """A number short enough for its cell: 2.02B, 51.6M, 34K; 3 places under 1 (0.192 and 0.187 stay apart)."""
+    if v is None:
+        return "?"
+    a = abs(v)
+    return (f"{v / 1e9:.2f}B" if a >= 1e9 else f"{v / 1e6:.1f}M" if a >= 1e6 else f"{v / 1e3:.0f}K" if a >= 1e4 else
+            f"{v:,.0f}" if a >= 1000 else f"{v:.1f}" if a >= 100 else f"{v:.2f}" if a >= 1 else f"{v:.3f}")
+
+
+def results_card(d: Drawing, x: float, y: float, title: str, found: str, table: tuple | None, empty: str,
+                 w: float = 1150) -> tuple[float, bool]:
+    """A step's results as a table, not a figure (JL 261013: "I think we can have the things like table, not this
+    figure"): its title large (MID), its finding in one sentence, then the table (cols, rows, widths); dashed with
+    `empty` in red when it has no row."""
+    import job_ladder as jl
+    pad = jl.PAD
+    yy = d.para(x + pad, y + pad, title, w - 2 * pad, MID) + 8
+    if found:
+        yy = d.para(x + pad, yy, f"💡 {jl.words(jr_first_sentence(found), 26)}", w - 2 * pad, 30) + 14
+    is_open = not (table and table[1])
+    if not is_open:
+        cols, rows, widths = table
+        yy = d.grid_table(x + pad, yy, cols, rows, widths, 28, pad=24) + 16
+    else:
+        yy = d.para(x + pad, yy, empty, w - 2 * pad, 30, RED) + 8
+    h = yy - y + pad - 8
+    d.box(x, y, w, h, GREY if is_open else INK, 1.5, dashed=is_open)
+    return h, is_open
+
+
+RUN_CARD_W = 760                            # a Run card beside its step
+
+
+def run_cards(t: dict, design: dict, cfg: dict) -> list[dict]:
+    """A step's Runs, every one shown (JL 261013: "for the tasks, I want the runs to be fully displayed here, so I can
+    know for this task what are the runs we have"): its Run folders, a card each (its mark, its name, its state);
+    when the Task holds none yet, a card per design grid (a sweep) holding the whole grid, a mark per Run, its row and
+    column naming it, with its count by state, why a mark is red, and where its tickets are. [{lines, grid, dashed}]."""
+    import job_ladder as jl
+    if t["runs"]:
+        return [{"lines": [(f"{r['mark']} {jl.run_label(r['name'])}", jl.T_RUNS, INK),
+                           (str(r.get("state") or ""), jl.T_RUNS - 4, GREY)], "grid": None, "dashed": False}
+                for r in t["runs"]]
+    cards = []
+    for gr in design["grids"]:
+        g = gr["g"]
+        if str(g.get("task", "")) != t["name"]:
+            continue
+        c = Counter(st for st, _ in gr["cells"].values() if st != "none")
+        n = sum(c.values())
+        status = " · ".join(f"{c[k]} {MARKS[k]}" for k in ("done", "part", "ticket", "failed") if c[k])
+        title = re.sub(rf"^{t['id']}\s*·\s*", "", str(g.get("title", "")))
+        after = []
+        for fl in g.get("failed") or []:
+            at = ", ".join(str(fl.get(k)) for k in ("row", "col") if str(fl.get(k, "*")) != "*") or "all"
+            after.append((f"❌ {at}: {jl.words(str(fl.get('why', '')), 9)}", jl.T_RUNS - 4, RED))
+        if g.get("ticket"):
+            unit = str(g["ticket"]).split("/runs/")[0].rstrip("/").split("/")[-1]
+            after.append((f"tickets: {unit}/runs/", jl.T_RUNS - 6, GREY))
+        cards.append({"lines": [(f"{n_of(n, 'Run')}: {status}" if status else "⬜ none on disk", jl.T_RUNS - 2, INK)],
+                      "grid": {**gr, "g": {**g, "title": f"🧪 {title}"}}, "after": after, "dashed": not c["done"]})
+    return cards or [{"lines": [("⬜ no Run yet", jl.T_RUNS, GREY)], "grid": None, "dashed": True}]
+
+
+GRID_COLOURS = {"done": "#2f9e44", "part": "#f08c00", "ticket": "#ced4da", "failed": "#e03131", "none": "#ffffff"}
+
+
+def grid_png(gr: dict, out: Path) -> Path:
+    """A sweep's Runs as a picture: a square per Run, its row and column naming it, coloured by where it stands (green
+    evaluated, orange half, grey a ticket not evaluated, red failed, white not in the design; a dot: evaluated with no
+    ticket). A picture, so a step's every Run shows without a wall of words."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
+    rows, cols, cells = gr["rows"], gr["cols"], gr["cells"]
+    cell, lab = 0.5, 0.12 * max(len(r) for r in rows) + 0.3
+    tilt = max(len(str(c)) for c in cols) > 3                           # a long column name stands tilted, never on
+    top = 0.13 * max(len(str(c)) for c in cols) + 0.35 if tilt else 0.45   # its neighbour
+    fig = plt.figure(figsize=(lab + cell * len(cols) + (0.6 if tilt else 0.15), top + cell * len(rows) + 0.1), dpi=100)
+    ax = fig.add_axes([lab / fig.get_figwidth(), 0.1 / fig.get_figheight(),
+                       cell * len(cols) / fig.get_figwidth(), cell * len(rows) / fig.get_figheight()])
+    for i, r in enumerate(rows):
+        for j, c in enumerate(cols):
+            st, bare = cells[(r, c)]
+            ax.add_patch(Rectangle((j + 0.08, len(rows) - 1 - i + 0.08), 0.84, 0.84, color=GRID_COLOURS[st],
+                                   ec="#adb5bd" if st == "none" else "none", lw=1))
+            if bare:
+                ax.plot(j + 0.5, len(rows) - 1 - i + 0.5, "o", color="white", ms=4)
+    ax.set_xlim(0, len(cols))
+    ax.set_ylim(0, len(rows))
+    ax.set_xticks([j + 0.5 for j in range(len(cols))])
+    ax.set_xticklabels(cols, fontsize=15, color="#495057", rotation=40 if tilt else 0, ha="left" if tilt else "center")
+    ax.xaxis.tick_top()
+    ax.set_yticks([len(rows) - 1 - i + 0.5 for i in range(len(rows))])
+    ax.set_yticklabels(rows, fontsize=15, color="#1e1e1e")
+    ax.tick_params(length=0, pad=3)
+    for side in ax.spines.values():
+        side.set_visible(False)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, dpi=100)
+    plt.close(fig)
+    return out
+
+
+def run_card(d: Drawing, x: float, y: float, card: dict, assets: Path) -> tuple[float, float]:
+    """One Run card: its title and count by state, then its grid as a picture (every Run a square), what its rows and
+    columns are, why a square is red, where its tickets are; returns (width, height)."""
+    import job_ladder as jl
+    gr, pad = card.get("grid"), jl.PAD
+    png = grid_png(gr, assets / f"runs-{re.sub(r'[^a-z0-9]+', '-', str(gr['g'].get('title', '')).lower()).strip('-')}"
+                               f".png") if gr else None
+    pw = 0
+    if png:
+        from PIL import Image
+        with Image.open(png) as im:
+            pw, ph = im.size
+    head = ([(str(gr["g"].get("title", "")), jl.T_RUNS, INK)] if gr else []) + card["lines"]
+    tail = ([(grid_note(gr), 20, GREY)] if gr and grid_note(gr) else []) + card.get("after", [])
+    w = max(RUN_CARD_W if not gr else 0, pw + 2 * pad, 420)
+    yy = y + pad
+    for s_, z, col in head:
+        yy = d.para(x + pad, yy, s_, w - 2 * pad, z, col) + 6
+    if png:
+        yy += d.picture(png, x + pad, yy + 4, pw, ph, fid=f"runs-{png.stem}") + 10
+    for s_, z, col in tail:
+        yy = d.para(x + pad, yy, s_, w - 2 * pad, z, col) + 6
+    h = yy - y + pad - 6
+    d.box(x, y, w, h, GREY if card.get("dashed") else INK, 1.2, dashed=card.get("dashed"))
+    return w, h
+
+
+SAY_STATE = {"done": "evaluated", "part": "half evaluated", "ticket": "not evaluated", "failed": "failed"}
+
+
+def jr_first_sentence(s: str) -> str:
+    return re.split(r"(?<=[.!?])\s+", str(s).strip())[0]
+
+
+def formula_frame(d: Drawing, info: dict, cfg: dict, assets: Path, mark: str) -> dict | None:
+    """The face's formula, small, explaining ①: the law, in words, its symbols, a worked example."""
+    import task_drawing as td
+    items = td.formula_items(cfg.get("formula"), assets)
+    if not items:
+        return None
+    f = d.frame(f"{mark} 🧮 {info['id']}: the formula behind it", 1500)
+    Drawing.room(f)
+    h = td.card_height("🧮 The core formula, explained", items, 1400)
+    td.card(d, 40, 40, 1400, h, "🧮 The core formula, explained", items, INK)
+    canvas.explains(f)
+    f["height"] = h + 80
+    return f
+
+
+def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[Path, list[dict]]:
+    """layout: explained (asked 261013 of Proj11 b01's s21: "make ⑦ 📚 j01 · pretrain: explained from zero to be the
+    main … others to support it", "make it to be per tasks", "each task to a row", "make the main frame to be wider",
+    then "read [the Paper-LLMRecPhy-work] session": the staircase JL drew and approved there, LLMRec b04 s27).
+    ① the main frame, large and roomy: the reading; the Job (why, done when) with its In and Out; each Task a step
+    lower and further right on a spine (job_ladder.columns), a small card under it (asks, did, → its topic) and its
+    Runs as one small card branching right (a design's tally when its Runs are not yet in the Task); inside ① on its
+    right, level with each step, its results as a small card: one sentence and a chart (a Task's: each settings row's
+    low end → high end, the row's first cell naming the Task; the Job's: the face's chart, two series). Then the
+    small frames that explain ①, stepping down and right (canvas.stairs): ② its words, how sure, what is open and
+    what closes it (job_ladder.notes_frame); ③ its formula; then the design grids, every Run a mark."""
+    import job_ladder as jl
+    job = job.resolve()
+    design = design_of(job.parent, cfg["design"]) if cfg.get("design") else {"grids": [], "tally": {}}
+    cfg = {**cfg, "_tally": design["tally"], "_runs_word": str((cfg.get("design") or {}).get("runs_word") or "Runs")}
+    rows = jr.job_rows(job.parent, job, {"show": cfg.get("show") or {}})
+    tasks = [task_info(r, {"show": cfg.get("show") or {}}) for r in rows]
+    info = job_info(job)
+    assets = out.parent / "assets"
+    topics = task_topics(job.parent)
+    words_of = cfg.get("tasks") or {}
+    table = (cfg.get("settings") or {}).get("rows") or []
+    has_notes, has_formula = jl.has_notes(cfg), bool(cfg.get("formula"))
+    marks = iter("②③④⑤⑥⑦⑧⑨⑩")
+    m_notes = next(marks) if has_notes else ""
+    m_formula = next(marks) if has_formula else ""
+    cols_all = [str(c) for c in (cfg.get("settings") or {}).get("columns") or []]
+
+    def task_table(t: dict) -> tuple | None:
+        """Its settings rows as a table: the sweep, then each measure's low end → high end, the numbers large and
+        the settings they come from small under them."""
+        mine = [r for r in table if str((r.get("cells") or [""])[0]).strip() == t["id"]]
+        if not mine:
+            return None
+        pairs = (max(len(r.get("cells") or []) for r in mine) - 3) // 2
+        own = next((r["heads"] for r in mine if r.get("heads")), None)   # a Task measuring other things names them
+        heads = ["Sweep"] + [(str(own[k]) if own and k < len(own) else
+                              re.sub(r"(?i)^low( end)?:?\s*", "", cols_all[3 + 2 * k]) if 3 + 2 * k < len(cols_all)
+                              else "") + ": low → high" for k in range(pairs)]
+        rows_ = []
+        for r in mine:
+            c = list(r.get("cells") or []) + [""] * 8
+            cells = [str(c[1])]
+            for k in range(pairs):
+                lo, hi = c[3 + 2 * k], c[4 + 2 * k]
+                if isinstance(lo, dict) and isinstance(hi, dict):
+                    vals = [chart_value(job.parent, x_["at"]) if x_.get("at") else None for x_ in (lo, hi)]
+                    cells.append({"big": f"{fmt_value(vals[0])} → {fmt_value(vals[1])}", "size": 38,
+                                  "tag": f"{lo.get('label', '')} → {hi.get('label', '')}"})
+                else:
+                    cells.append(str(lo or ""))
+            rows_.append({"cells": cells, "dim": str(r.get("state")) in ("planned", "candidate")})
+        if all(not any(isinstance(x_, dict) for x_ in r_["cells"]) for r_ in rows_):
+            return None                                                 # only planned rows: nothing measured yet
+        inner = 1150 - 2 * jl.PAD
+        widths = [inner * 0.34] + [inner * 0.66 / max(1, pairs)] * pairs
+        return heads, rows_, widths
+
+    def job_table(chart: dict) -> tuple | None:
+        """The face's chart as a table: one row per series, a column per bar."""
+        bars = chart.get("bars") or []
+        if not bars:
+            return None
+        names = list(chart.get("legend") or ["first", "second"])
+        vals = [[chart_value(job.parent, a_) for a_ in (b_.get("at") if isinstance(b_.get("at"), list)
+                                                       else [b_.get("at")])] for b_ in bars]
+        rows_ = [{"cells": [names[k] if k < len(names) else ""] + [fmt_value(v[k]) if k < len(v) else "" for v in vals],
+                  "dim": False} for k in range(max(len(v) for v in vals))]
+        inner = JOB_TABLE_W - 2 * jl.PAD
+        first = 260
+        return [""] + [str(b_.get("label", "")) for b_ in bars], rows_, [first] + [(inner - first) / len(bars)] * len(bars)
+
+    # JL's sketch (WellDoc-SPACE image.png, 261013): a wide, low frame; JOB at its top left; Task 1, 2, 3 each a step
+    # lower and further right; from each, one long line out through the frame's right edge to its result, outside,
+    # level with it. Measured first (each row as tall as its step or its result), then the frame is made wide.
+    d = Drawing()
+    STEP_X, ROW_GAP, OUT_GAP = 560, 150, 240                           # a step right; between rows; frame to results
+    f = d.frame(f"① 📚 {info['id']} · {info['title']}: explained from zero", 4000)
+    Drawing.room(f)
+    d.text(40, 30, f"📚 {info['id']} · {info['title']}, explained from zero", 160)
+    d.para(40, 250, f"{info.get('block') or ''} · {n_of(len(tasks), 'Task')}, a step each; each one's result outside, "
+           "on the right; each square one Run: green evaluated · orange half · grey not evaluated · red failed · "
+           "a dot no ticket" +
+           (f"; below: {m_notes} its words, {m_formula} its formula" if m_notes and m_formula else ""), 3500,
+           jl.T_RUNS, GREY)
+    y = 340
+    reading = str(cfg.get("reading") or "")
+    head = f"🎯 {jr_first_sentence(reading)}" if reading else "❓ no reading yet: write the face's job.reading"
+    rest = reading[len(jr_first_sentence(reading)):].strip() if reading else ""
+    kh = Drawing.height(head, 3600 - 140, MID) + (Drawing.height(rest, 3600 - 140, 34) + 14 if rest else 0) + 50
+    key_box = d.key(40, y, 3600 - 80, kh)
+    yk = d.para(70, y + 22, head, 3600 - 140, MID) + 14
+    if rest:
+        d.para(70, yk, rest, 3600 - 140, 34)
+    y += kh + 110
+
+    rows_out = []                                                       # (line y, from x, title, found, png, empty)
+    aim = str(cfg.get("intro") or cfg.get("aim") or info.get("goal") or "")
+    job_label = f"🧱 {info['id']} · {info['title']}"
+    job_w = max(jl.JOB_W, Drawing.measure(job_label, BIG) + 2 * jl.PAD + 30)
+    jh = jl.card(d, 40, y, job_w, [(job_label, BIG, INK)], sw=3)
+    why = [(f"Why: {jl.words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", jl.T_CARD, None),
+           (f"Done when: {jl.words(info['close'], 34)}" if info.get("close") else "", jl.T_CARD, None)]
+    ch = jl.card(d, 110, y + jh + 20, jl.JOB_W - 110, why)
+    io_x, yy = 40 + job_w + 120, y
+    for label, items in (("📥 In", (cfg.get("inputs") or [])[:3]), ("📤 Out", (cfg.get("outputs") or [])[:3])):
+        if items:
+            h = jl.card(d, io_x, yy, jl.IO_W, [(label, jl.T_STEP - 6, INK)] +
+                        [(f"· {jl.words(x, 14)}", jl.T_RUNS, INK) for x in items])
+            d.line([(40 + job_w + 12, y + jh / 2), (io_x - 12, yy + 32)], sw=2)
+            yy += h + 24
+    right = io_x + jl.IO_W
+    chart = cfg.get("chart") or {}
+    job_res = 0
+    if chart:
+        spec = (f"📊 {info['id']} result", f"{chart.get('title', '')}: {chart.get('key', '')}".strip(": "),
+                job_table(chart), "❓ no value on disk for its table", JOB_TABLE_W)
+        job_res = results_card(Drawing(), 0, 0, *spec)[0]
+        rows_out.append((y + 60, io_x + jl.IO_W, *spec))
+    spine_x, spine_top = 60, y + jh
+    y = max(y + jh + 20 + ch, yy, y + job_res) + ROW_GAP
+
+    prev = (spine_x, spine_top)                                        # where the next stair hangs from
+    for i, t in enumerate(tasks):
+        w = words_of.get(t["name"]) or {}
+        nx = 130 + i * STEP_X
+        name = re.sub(rf"^{t['id']}\s*[·:.\-]?\s*", "", t["title"], flags=re.I)
+        short = re.sub(rf"^{t['id']}_", "", t["name"]).replace("_", " ")   # its folder's words: short, so large
+        label = f"🧩 {t['id']} · {short}"
+        node_w = max(jl.NODE_W, Drawing.measure(label, BIG) + 2 * jl.PAD + 30)
+        nh = jl.card(d, nx, y, node_w, [(label, BIG, INK)], sw=2.5)
+        own = topics.get(f"{t['row']['task'].parent.name}/{t['name']}")
+        full = str(w.get("title") or ("" if re.match(r"(?i)\W*scaffold", name) else name))   # a placeholder is no title
+        under = [(full, 34, INK),
+                 (f"Asks: {jl.words(w.get('asked') or t.get('question') or '', 22)}" if (w.get("asked") or
+                  t.get("question")) else "", jl.T_CARD, INK),
+                 (f"Did: {jl.words(str(w.get('did') or ''), 22)}" if w.get("did") else "", jl.T_CARD, INK),
+                 (f"→ details: {own[:3]}" if own else "", jl.T_CARD - 2, GREY)]
+        cardh = jl.card(d, nx + 36, y + nh + 16, jl.CARD_W, under) + 16
+        # its Runs and where each stands, branching right below the line out (JL 261013: "how could you list the
+        # runs and the running status as well"): its Run folders, else one card per design grid (a sweep)
+        cards = run_cards(t, design, cfg)
+        rxr, ry, row_h = nx + node_w + 110, y + nh + 24, 0
+        xx = rxr
+        for c_ in cards:                                                # one row: the frame grows wide, not tall
+            cw, chh = run_card(d, xx, ry, c_, assets)
+            xx, row_h = xx + cw + 40, max(row_h, chh)
+        if cards:
+            bx = nx + node_w - 60                                       # right of its card, so no line crosses it
+            d.line([(bx, y + nh), (bx, ry + 30)], arrow=False, sw=1.5)
+            d.line([(bx, ry + 30), (rxr - 8, ry + 30)], sw=1.5)
+            right = max(right, xx - 40)
+            ry += row_h
+        mid = y + nh / 2
+        d.line([prev, (prev[0], mid), (nx - 8, mid)], sw=4)            # the stair: down from the last, right into it
+        prev = (nx - 20, mid)                                           # the next hangs off this stair, left of the box
+        right = max(right, nx + node_w)
+        found = str(w.get("found") or finding(t, cfg) or "")
+        spec = (f"📊 {t['id']} result", found, task_table(t), "❓ never evaluated: no number on disk yet", 1150)
+        res = results_card(Drawing(), 0, 0, *spec)[0]
+        rows_out.append((mid, nx + node_w, *spec))
+        y = max(y + nh + 16 + cardh, ry, y + res - 20) + ROW_GAP
+    opens = [o for o in cfg.get("open") or [] if o]
+    y -= ROW_GAP - 60
+    if opens:
+        y = d.para(40, y, f"❓ {n_of(len(opens), 'point')} still open" + (f": what would close each is in {m_notes}"
+                   if m_notes else ""), 3000, jl.T_CARD, RED) + 8
+    height = y + 60
+    width = max(right + 120, 3600)                                     # the frame ends where its widest step ends
+                                                                        #   (JL 261013: "too much margin … the width of
+                                                                        #   the frame … the same width [as] the last
+                                                                        #   tasks"); the room is between the steps
+    f["width"], f["height"] = width, height
+    key_box["width"] = width - 80
+    canvas.large(f)
+    if Drawing.words_small(d.els, f["id"])[0] > MAP_WORDS:              # read up close, as job_ladder's ① is
+        Drawing.detail(f)
+    d.badge(f)
+    main = f
+    d.fid = None                                                        # the lines cross the frame's edge
+    rx = width + OUT_GAP
+    for ly, fx, title, found, tbl, empty, cw in rows_out:
+        top = ly - 60
+        h, open_ = results_card(d, rx, top, title, found, tbl, empty, cw)
+        d.line([(fx + 16, ly), (rx - 14, ly)], sw=4, dashed=open_)
+
+    below = [x for x in ([jl.notes_frame(d, info, cfg, m_notes)] if has_notes else []) +
+             ([formula_frame(d, info, cfg, assets, m_formula)] if has_formula else []) +
+             [] if x]
+    placed = canvas.stairs(d.els, [main["id"]] + [(x["id"], 600 if k == 0 else 420) for k, x in enumerate(below)])
+    d.fid = None
+    names = ["its words" if has_notes else "in detail", "its formula" if has_formula else "in detail"]
+    for k, (a_, b_) in enumerate(zip(placed, placed[1:])):
+        x = b_["x"] + min(b_["width"], 600) / 2
+        d.line([(x, a_["y"] + a_["height"] + 14), (x, b_["y"] - 14)], sw=5)
+        d.text(x + 20, (a_["y"] + a_["height"] + b_["y"]) / 2 - 24, names[k] if k < 2 else "every Run", 36)
+    d.write(out, source or f"excalidraw-job scripts/job_drawing.py {job.name}")
+    from render_png import render
+    render(out, out.with_suffix(".png"))
+    return out, rows
+
+
 # ── the drawing ──────────────────────────────────────────────────────────────────────────────────────────────
 def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") -> tuple[Path, list[dict]]:
     """Draw one Job into `out` (and its preview beside it); returns the drawing and its Task rows."""
@@ -890,6 +1308,8 @@ def draw_job(job: Path, out: Path, cfg: dict | None = None, source: str = "") ->
     if str(cfg.get("layout") or "ladder") == "ladder":                 # asked 261013: Job → Tasks → Runs, each
         import job_ladder                                               # row's result to its right (job_ladder.py)
         return job_ladder.draw_job(Path(job), out, cfg, source)
+    if str(cfg.get("layout")) == "explained":                          # asked 261013: ⑦ explained from zero
+        return draw_explained(job, out, cfg, source)                    # is the main; the others back it
     job = job.resolve()
     design = design_of(job.parent, cfg["design"]) if cfg.get("design") else {"grids": [], "tally": {}}
     cfg = {**cfg, "_tally": design["tally"], "_runs_word": str((cfg.get("design") or {}).get("runs_word") or "Runs")}
