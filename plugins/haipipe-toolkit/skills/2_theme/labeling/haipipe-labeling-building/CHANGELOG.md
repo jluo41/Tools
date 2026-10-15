@@ -1,5 +1,26 @@
 # label-building · CHANGELOG
 
+## 0.10.0 · 2026-10-14 · lm_labeler, with open-model engines
+
+- `engine/label.py` gains `lm_labeler(job_root, item_ids, guideline, engine)` (b15 s42-D54): label, region,
+  confidence and reason per item, the turns before shown with the reply. New engines `openrouter`
+  (OPENROUTER_API_KEY) and `ollama` (local) serve the panel of open models; a missing key holds before sending.
+
+## 0.9.1 · 2026-10-14 · The seven pools, named
+
+- § The register names each pool: Settled high · low · none, Degree border (HL), Presence border (LN), Clash (HN),
+  Unmapped (HLN), each with what the guideline needs; it points to the guideline format.
+- `engine/job.py revise-regions` (`revise_region_meanings`, `region_revisions`): the region meanings change only by a
+  recorded revision before any round, as the label meanings do; `status` checks the region chain. Tests in
+  `test_definition_discussion.py`.
+
+## 0.9.0 · 2026-10-14 · The corpus tools
+
+- `engine/corpus_tools.py` (b15 s42 Ⓔ): stats · sample · search · find_neighbours · get. Ids, counts and scores
+  out; text only through `get`, logged and held to a step's reading budget; sealed items never reachable.
+  `find_neighbours(seed, k, corpus, rank_by)` ranks by `nearest` today; the other rankings wait for a round.
+  `ref/ref-embeddings.md` §6.
+
 ## 0.8.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

@@ -7,8 +7,8 @@ s13 · Labeling Task: five types in one Job
 
 **Topic:** the types a labeling Job's Tasks come in. A labeling Job is one dataset × one label; inside it the
 Tasks have different jobs, the way a design Job's do (b12 s13: `t00` reason ideas · `tNN_d<NN>` one design ·
-`t99` review whole). Here there are five: items, keys, building, scanning, score, each read from the Task
-face's `task-type:` line, never from its number (keys and score are optional, so numbers shift). Building and
+`t99` review whole). Here there are five: items, ground truth, building, scanning, score, each read from the Task
+face's `task-type:` line, never from its number (ground truth and score are optional, so numbers shift). Building and
 scanning meet only at the signed Label Handoff, the engine's one crossing. Asked by JL 261014; the workbench
 shows the types since the same day (`servers/workbench-labeling/labeling_theme.py`, `TYPES`).
 
@@ -39,20 +39,21 @@ The five types
 ```text
 type        task-type line       what it does                                         its skill
 📦 items     data                 raw rows become items; the ground truth kept apart   haipipe-task-for-data
-🔑 keys      raw                  the dataset's own labels; optional; fenced           haipipe-task-for-raw
+📏 ground    raw                  the dataset's own labels; optional; fenced           haipipe-task-for-raw
+   truth
 🏗 building  labeling-building    Contract → Rounds → G0 → Freeze → signed Handoff     haipipe-labeling-building
 🔍 scanning  labeling-scanning    reads the Handoff: Test → Scan → Audit → final labels haipipe-labeling-scanning
-📊 score     eval                 final labels against the keys and raters' spread     haipipe-task-for-eval
+📊 score     eval                 final labels against the ground truth and raters' spread     haipipe-task-for-eval
 (today)     labeling             one Page that is building and scanning at once
 ```
 
-A Job needs items, building and scanning to close; once it has keys, it needs score too. G0 is the gate where
+A Job needs items, building and scanning to close; once it has ground truth, it needs score too. G0 is the gate where
 the person confirms what each label means; the Label Handoff is the frozen, signed guideline plus the person's
 gold labels.
 
 ```yaml
 key: "One Job = one dataset × one label; each Task is one of five types. Proposed: building and scanning as two Tasks, split at the signed Label Handoff."
-close: "To close: items + building + scanning; score too once keys exist."
+close: "To close: items + building + scanning; score too once ground truth exists."
 sub: "dataset × label · each Task typed by its task-type line, never its number"
 unshown: "❓ their screens: not drawn (the labeling Page is never opened in a browser)"
 relate: "same raw rows"
@@ -75,10 +76,10 @@ types:
 - id: score
   title: "📊 score"
   line: "task-type: eval"
-  does: ["final labels vs the keys", "within the raters' spread"]
-  screen: "needed once the Job has keys"
-keys:
-  title: "🔑 keys"
+  does: ["final labels vs the ground truth", "within the raters' spread"]
+  screen: "needed once the Job has ground truth"
+ground_truth:
+  title: "📏 ground truth"
   line: "task-type: raw"
   does: ["the dataset's own labels", "optional"]
   fence: "fenced: only score reads it"
@@ -89,7 +90,7 @@ screens:
 - file: shots/job-work-dices350.png
   title: "② dices350 j01 today, Job › Work"
   sub: "each Task's type and state from its face; the type the Job still lacks, dashed"
-  read: "✅ t01 items, 4 Runs · ✅ t02 keys, 1 Run · 🔶 t03 building + scanning on one Page, 0 Runs · ⬜ t04 score, not made yet"
+  read: "✅ t01 items, 4 Runs · ✅ t02 ground truths, 1 Run · 🔶 t03 building + scanning on one Page, 0 Runs · ⬜ t04 score, not made yet"
 - file: shots/items-itemization-dices350.png
   title: "③ the items Task, Report › Itemization"
   sub: "read from its face and its newest Run's result/; Embedding beside it"
@@ -109,7 +110,7 @@ glossary:
   - ["Test (P3)", "the person's gold on the sealed set scores the executors; one route qualifies, or none"]
   - ["Scan (P4)", "the qualified route labels every item in scope"]
   - ["Audit (P5)", "the scanned labels checked; on pass they become the final labels"]
-  - ["keys", "the dataset's own labels; fenced, so building and scanning cannot copy them"]
+  - ["ground truth", "the dataset's own labels; fenced, so building and scanning cannot copy them"]
   - ["raters' spread", "how the dataset's many raters split on each item (DICES-350: 123 raters)"]
   jobs:
   - ["dices350 · response safety", "✅ t01", "✅ t02: raters' majority = experts on 65.5%", "🔶 t03 one Page, OPEN", "⬜ needed"]
@@ -127,7 +128,9 @@ glossary:
 Decided
 -------
 
-s13-D01 · One labeling Job = one dataset × one label; its Tasks come in five types, items · keys · building ·
+s13-D10 · The type once called keys is ground truth (📏; JL 261014: "could we do not use the term of key, is this
+    widely used or not?"): papers say ground truth or gold labels, not keys. Its `task-type: raw` line is unchanged.
+s13-D01 · One labeling Job = one dataset × one label; its Tasks come in five types, items · ground truth · building ·
     scanning · score, each named by its face's `task-type:` line (data · raw · labeling-building ·
     labeling-scanning · eval), never by its number (JL 261014: "one job is a data+labeling ... in the job, we
     might have different types of tasks").
@@ -135,7 +138,7 @@ s13-D02 · Building and scanning split at the signed Label Handoff, the engine's
     `task-type: labeling` Page counts as both, so the three real Jobs read as they are (proposed by Claude
     261014; the real Jobs keep their folders until JL says).
 s13-D03 · Job › Work shows each Task's type and state, then a dashed card for each type the Job still lacks
-    (items, building, scanning; score once it has keys), keys and score as optional otherwise (JL 261014: "I
+    (items, building, scanning; score once it has ground truth), ground truth and score as optional otherwise (JL 261014: "I
     think the kind things is here, right? To prepare these tasks to be finished"; built 261014).
 s13-D04 · The items Task's Report opens on Itemization · Embedding (JL 261014: "we can call them Itemization,
     and Embedding"): Itemization reads the face's Data, Method and Result parts and the newest Run's
@@ -155,7 +158,7 @@ s13-D09 · The items Task's procedure moved to its own topic, s41-task-items-pro
     tabs 1 · Data · 2 · Items · 3 · Embedding, which replace D07's four; D07 and D08 stay as the record.
 s13-D08 · Step 1's result is the raw file's Table Card (haipipe-task-for-description), from a `rNN_raw_read` Run:
     what one row is and its checks, every column by meaning group, what to watch out for, and a sample made up
-    in the real columns (synth_df), never a real row: a chat's text is a future item and its answers are keys
+    in the real columns (synth_df), never a real row: a chat's text is a future item and its answers are ground truth
     (JL 261014: "you should also show what is the sample of the data, so people can view it"). The Step 1 prompt
     names haipipe-task-for-description; it named haipipe-task-for-raw, which extracts from a database. First Run:
     dices350 t01 r05_raw_read, 43,050 rows × 41 columns, started by JL pasting the prompt (261014).

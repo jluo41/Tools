@@ -238,7 +238,7 @@ No study tests this whole loop. Its order is our own judgment.
 6 · Why it works
 ----------------
 
-6.1 · A subjective label has no answer key
+6.1 · A subjective label has no single ground truth
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 "How unsafe is this reply?" has no answer waiting to be found; someone has to decide what

@@ -1,3 +1,38 @@
+## 0.32.0 · 2026-10-14 · The building Task works as b15 s42 draws it
+
+- A building Task's Work and Report have one tab per Stage: 1 · Contract · 2 · Initial Labeling Definition ·
+  3 · Rounds · 4 · Handoff, the first Stage not done open. Each shows Operation (the Stage and its chip, its Input,
+  each agent step's 👁 reading budget, the prompt with notes), then Result (one folded card per topic); Report shows
+  Result only. Sizes are named by symbol (n m u r b) until the job's record gives the number.
+- Stage 3's Input names the pick funnel: seed → retrieve over X∖S → score v(x) → read ≤ c_pick → b.
+- A Sign (G0) or a round's rulings open the Labeling workbench, still the one write door; scanning's views
+  (Test · Evaluation · Scan · Audit) follow the four Stage tabs.
+
+## 0.31.1 · 2026-10-14 · keys is now ground truth
+
+- The Task type once called keys is ground truth (📏): papers say ground truth or gold labels, not keys; its
+  `task-type: raw` line is unchanged.
+
+## 0.31.0 · 2026-10-14 · Concise: no small grey words
+
+- Surface law gains the rule: a card or folded row shows its title only; no grey preview, summary, caption or
+  explanation line. The items Task's cards, samples, steps and one-line prompts follow it; One row (made up) is one
+  table, group · column · value.
+
+## 0.30.0 · 2026-10-14 · The items Task works as b15 s41 draws it
+
+- Each tab (1 · Data · 2 · Items · 3 · Embedding) opens with its step: what we have, read from disk (the Job's
+  dataset and files · the Data cards · the items); the recipe or the build the agent proposed, with Sign or Agree
+  (s41-D10); the prompt, whose notes area goes with Copy prompt and takes a pasted image (s41-D14). A done step
+  folds to one line (s41-D15). Below it, one card per topic, a list read down (s41-D09, D12, D13, D16): Data ·
+  Random samples (Draw again) · Background · Basic description · One row drawn · Current labels · The text to label
+  · Watch out; Items · Random items · The items · Statistics (histograms) · One item drawn · The item check · Kept
+  out · The version, then "Make the items, again" with the revise prompt; Embedding · the map · groups (typical
+  items) · near-duplicates · outliers · the builds · for building. Report shows the cards only.
+- Every prompt names `haipipe-labeling-preparation` (s41-D11); an items Task is also `task-type: items`.
+- Three narrow doors: `GET /_board/labeling/sample`, `POST /_board/labeling/items` (sign), `POST
+  /_board/labeling/notes` (an image note into the Task's notes/).
+
 ## 0.29.0 · 2026-10-14 · A labeling Job's five Task types on the shared frame
 
 - The frame's labeling theme (`servers/workbench-labeling/labeling_theme.py`) types each Task of a Job by

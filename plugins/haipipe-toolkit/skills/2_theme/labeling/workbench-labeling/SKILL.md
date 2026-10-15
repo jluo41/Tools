@@ -11,8 +11,8 @@ description: >-
   Use when designing, opening, diagnosing, or
   implementing the labeling Workbench, tab, or folder, or /workbench-labeling.
 metadata:
-  version: "0.29.0"
-  last_updated: "2026-10-09"
+  version: "0.32.0"
+  last_updated: "2026-10-14"
 ---
 
 # /workbench-labeling · one job, one folder, one operated surface
@@ -149,21 +149,43 @@ JL 261014) reads a labeling Job as one dataset × one label whose Tasks come in 
 by the Task face's `task-type:` line, never by its number:
 
 ```text
-📦 items     task-type: data                three steps, a tab each in Work and Report: 1 · Data · 2 · Items ·
-                                           3 · Embedding; ① numbers ② a picture ③ details folded (b15 s41)
-🔑 keys      task-type: raw                 the dataset's own labels; building and scanning never read it
-🏗 building  task-type: labeling-building   Work: Preparation · Embedding · Definition · Rounds · Guideline
+📦 items     task-type: items (or data)     three steps, a tab each in Work and Report: 1 · Data · 2 · Items ·
+                                           3 · Embedding (b15 s41); Work: the step (what we have · the recipe or
+                                           build to Sign / Agree · the prompt, which takes notes), folded once done,
+                                           then one card per topic; Report: the cards only
+📏 ground truth task-type: raw                 the dataset's own labels; building and scanning never read it
+🏗 building  task-type: labeling-building   four Stages, a tab each in Work and Report: 1 · Contract · 2 · Initial
+                                           Labeling Definition · 3 · Rounds · 4 · Handoff (b15 s42); Work: the
+                                           Stage (its Input, each 👁 reading budget, the prompt), then Result cards
 🔍 scanning  task-type: labeling-scanning   Work: Test · Evaluation · Scan · Audit; reads the Handoff
-📊 score     task-type: eval                final labels against the keys and the raters' spread
+📊 score     task-type: eval                final labels against the ground truth and the raters' spread
 (today)     task-type: labeling            one Page that is building and scanning at once
 ```
 
+An items Task's tabs have their own three narrow doors, apart from the job's write door; each checks that the
+folder is an items Task inside the served root, and the writes refuse a cross-origin request:
+
+```text
+GET  /_board/labeling/sample?task=<Task>&kind=raw|items&seed=N   Draw again: random rows or items, read live
+POST /_board/labeling/items  {action: sign, task, run, by}       a person signs a recipe or agrees a build
+POST /_board/labeling/notes  {folder: <Task>, data: <data URL>}   an image pasted into a prompt's notes, kept in
+                                                                 the Task's notes/, its path written into them
+```
+
+Every step runs through `haipipe-labeling-preparation` (its "The items Task"); the frame's shared script copies a
+prompt with its notes and keeps unsent notes in the browser.
+
 Job › Work shows each Task's type and state and a dashed card for each type still to make (items,
-building, scanning; score once the Job has keys). The Task ▾ dropdown groups Tasks by type. A building
-or scanning Task links each step to this workbench's view at the Job's labeling Page; the frame is
-read only and never renders item text.
+building, scanning; score once the Job has ground truth). The Task ▾ dropdown groups Tasks by type. A building
+Task's Sign and rulings, and a scanning Task's steps, open this workbench's view at the Job's labeling Page; the
+frame is read only and never renders item text.
 
 ## 🖼 Surface law
+
+**Concise: no small grey words** (JL 261014: "No need to have this small words, remove all of them"). A card or a
+folded row shows its title only: no grey preview, summary, subtitle, caption or explanation line beside or under
+it. A step's title is its name and a status tag; a prompt is one line, its detail in the skill. A meaning goes in a
+hover title, a count in the card's own table or numbers. Grey stays only for a value's label inside a grid.
 
 The surface uses one location word: **Space**. In this plugin, "Space" and
 "Workspace" are the same concept. There are four Spaces, in this order:

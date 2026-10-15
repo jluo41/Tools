@@ -1,4 +1,4 @@
-"""The labeling theme on the base frame (labeling_theme.py): status and links only, read only.
+"""The labeling theme on the base frame (labeling_theme.py): status and links; rendering writes nothing.
 
 A placeholder Project with one labeling Block (schema.yaml, one Job, one labeling Task Page with no
 labeling/ lane yet): the Block's Description and Work Details, the Task's views, each linking to the
@@ -95,12 +95,11 @@ class LabelingThemeTest(unittest.TestCase):
 
     def test_a_job_page_opens_each_view_in_the_labeling_workbench(self):
         s = spaces(self.theme, self.root, self.task)
-        work = [v[2] for v in T.WORK]
-        self.assertEqual(s["Work Details"]["subspaces"][:len(work)], work)
+        scan = [T.VIEW[v][2] for v in T.SCAN_WORK]
+        self.assertEqual(s["Work Details"]["subspaces"], list(T.BUILD_TABS) + scan)
         self.assertEqual(s["Description"]["subspaces"][:2], ["Scope", "Contract"])
         self.assertEqual(s["Delivery"]["subspaces"][:3], ["Files", "Handoff", "Final labels"])
-        for sub, space, view in (("Rounds", "Work Details", "space=labeling&amp;view=rounds"),
-                                 ("Audit", "Work Details", "space=quality&amp;view=audit"),
+        for sub, space, view in (("Audit", "Work Details", "space=quality&amp;view=audit"),
                                  ("Scan", "Work Details", "space=delivery&amp;view=scan"),
                                  ("Handoff", "Delivery", "space=delivery&amp;view=handoff"),
                                  ("Contract", "Description", "space=data&amp;view=contract")):
@@ -108,6 +107,21 @@ class LabelingThemeTest(unittest.TestCase):
                 page = frame.render(self.theme, self.root, self.task, space, sub)
                 self.assertIn(view, page)
                 self.assertEqual(spaces(self.theme, self.root, self.task, sub)[space]["run_doing"], [sub])
+
+    def test_building_works_one_stage_per_tab(self):
+        """b15 s42: the four Stages are tabs; each shows Operation (Input, 👁 budget, the prompt) then Result."""
+        for i, (tab, title) in enumerate(zip(T.BUILD_TABS, ("Stage 1 · Contract", "Stage 2 · Initial Labeling Definition",
+                                                             "Stage 3 · Rounds", "Stage 4 · Handoff"))):
+            with self.subTest(tab=tab):
+                page = frame.render(self.theme, self.root, self.task, "Work Details", tab)
+                self.assertIn(title, page)
+                self.assertIn("/haipipe-labeling-building", page)
+                self.assertIn("👁", page)
+                self.assertIn(">Operation<", page)
+                self.assertIn(">Result<", page)
+        report = frame.render(self.theme, self.root, self.task, "Audience Report", "3 · Rounds")
+        self.assertNotIn(">Operation<", report)
+        self.assertIn("seed → retrieve over X∖S", frame.render(self.theme, self.root, self.task, "Work Details", "3 · Rounds"))
 
     def test_it_writes_nothing_and_shows_no_items(self):
         before = sorted(p.relative_to(self.root).as_posix() for p in self.root.rglob("*"))
@@ -135,7 +149,7 @@ class LabelingThemeTest(unittest.TestCase):
         job = self.task.parent
         self.assertEqual(T.types_of(self.task), ("building", "scanning"))
         self.assertEqual(T.types_of(items_task(job)), ("items",))
-        self.assertEqual(T.types_of(task(job, "t03_demo_keys", "raw")), ("keys",))
+        self.assertEqual(T.types_of(task(job, "t03_demo_ground_truth", "raw")), ("ground_truth",))
         self.assertEqual(T.types_of(task(job, "t04_demo_scanning", "labeling-scanning")), ("scanning",))
         self.assertEqual(T.types_of(job), ())
 
@@ -150,9 +164,9 @@ class LabelingThemeTest(unittest.TestCase):
         page = frame.render(self.theme, self.root, job, "Work Details", "")
         self.assertIn("📦 items · ✅ DONE", page)
         self.assertIn("🏗 building + 🔍 scanning", page)
-        self.assertIn("optional", page)                      # keys and score: optional while there are no keys
+        self.assertIn("optional", page)                      # ground truth and score: optional until there is ground truth
         self.assertNotIn("not made yet", page)
-        task(job, "t03_demo_keys", "raw")                    # with keys, a score Task is needed
+        task(job, "t03_demo_ground_truth", "raw")            # with ground truth, a score Task is needed
         page = frame.render(self.theme, self.root, job, "Work Details", "")
         self.assertIn("⬜ t04_building_demo_score", page)
         self.assertIn("not made yet", page)
@@ -164,40 +178,44 @@ class LabelingThemeTest(unittest.TestCase):
         s = spaces(self.theme, self.root, items)
         self.assertEqual(s["Audience Report"]["subspaces"], ["1 · Data", "2 · Items", "3 · Embedding"])
         page = frame.render(self.theme, self.root, items, "Audience Report", "2 · Items")
-        for words in ("class=stat-row", "items", "One item = main: the placeholder text", "The items", "demo-00",
-                      "placeholder words here", "One item, drawn"):                      # the real items (s41-D07)
+        for words in ("class=stat-row", "main: the placeholder text", "📊 Items", "demo-00",
+                      "placeholder words here", "🧩 One item", "🎲 Random items", "📈 Statistics",
+                      "📦 Version"):                                               # the cards, real items (s41-D07)
             with self.subTest(words=words):
                 self.assertIn(words, page)
-        for words in ("Copy prompt", "The recipe, as signed"):                           # Work's only
+        for words in ("Copy prompt", "The recipe, as signed", "What we have", "Make the items, again"):  # Work's only
             with self.subTest(absent=words):
                 self.assertNotIn(words, page)
         page = frame.render(self.theme, self.root, items, "Audience Report", "3 · Embedding")
-        self.assertIn("models built", page)
-        self.assertIn("Not built yet", page)
+        self.assertIn("Step 3 fills this", page)
         page = frame.render(self.theme, self.root, items, "Audience Report", "3 · Item list")    # an older link
-        self.assertIn("One item = main: the placeholder text", page)
+        self.assertIn("main: the placeholder text", page)
 
     def test_the_items_task_works_one_step_per_tab_with_its_prompt_and_details(self):
         items = items_task(self.task.parent)
         s = spaces(self.theme, self.root, items)
         self.assertEqual(s["Work Details"]["subspaces"], ["1 · Data", "2 · Items", "3 · Embedding"])
-        tabs = {"1 · Data": ("📥 Step 1 · Read the raw data", "✓ done", "next: 🧱 Step 2 · Make the items"),
-                "2 · Items": ("🧱 Step 2 · Make the items", "✓ done", "The recipe, as signed", "All 3 items",
-                              "scripts/items_transform.py", "Each row becomes one placeholder item.",
-                              "What the Run recorded", "Yes 5 · No 5", "r01_demo"),
-                "3 · Embedding": ("🗺 Step 3 · Embed the items", "→ next", "Not built yet",
-                                  "holds back the sealed set")}
+        where = "Project-X/labeling/b61_demo_label/j01_building_demo/t02_demo_items"
+        tabs = {"1 · Data": ("📥 Step 1 · Data", "→ next", "Input",
+                             "next: 🧱 Step 2 · Items", f"/haipipe-labeling-preparation {where} describe:"),
+                "2 · Items": ("🧱 Step 2 · Items", "✓ done", "Recipe, signed · r01_demo", "All 3 items",
+                              "scripts/items_transform.py", "Each row becomes one placeholder item.", "📦 Version",
+                              "Yes 5 · No 5", "🧱 Revise the items", f"{where} revise: read my notes"),
+                "3 · Embedding": ("🗺 Step 3 · Embedding", "→ next", "Step 3 fills this",
+                                  f"{where} embed: plan the embedding Run")}
         for sub, words in tabs.items():
             page = frame.render(self.theme, self.root, items, "Work Details", sub)
             for w in words:
                 with self.subTest(sub=sub, words=w):
                     self.assertIn(w, page)
-            with self.subTest(sub=sub, copy=True):
-                self.assertEqual(page.count('class="run-copy work-act" data-copy="'), 1)
+            with self.subTest(sub=sub, copy=True):         # Items has two prompts: the step's and its revise
+                self.assertEqual(page.count('class="run-copy work-act" data-copy="'), 2 if sub == "2 · Items" else 1)
+                self.assertIn("<textarea class=run-notes", page)   # every prompt takes the person's notes (s41-D14)
+        page = frame.render(self.theme, self.root, items, "Work Details", "2 · Items")
+        self.assertIn('<details class="topic work-task items-step"><summary>', page)     # a done step folds (D15)
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
-        self.assertIn("<details class=run-prompt-box open>", page)                             # the step to do now
-        page = frame.render(self.theme, self.root, items, "Work Details", "1 · Data")
-        self.assertIn("Project-X/labeling/b61_demo_label/j01_building_demo/t02_demo_items: a new rNN_raw_read Run", page)
+        self.assertIn('<details class="topic work-task items-step" open>', page)          # the step to do now
+        self.assertIn("<details class=run-prompt-box open>", page)
 
     def test_step_one_shows_the_raw_table_card_with_a_made_up_row(self):
         items = items_task(self.task.parent)
@@ -214,16 +232,22 @@ class LabelingThemeTest(unittest.TestCase):
                 {"name": "item_id", "filled": 1.0, "distinct": 5, "typical": "1 to 5"},
                 {"name": "response", "filled": 1.0, "distinct": 5, "typical": "4 words median"}]}],
             "synth_df": {"story": "A made-up chat.", "rows": [{"item_id": 9001, "response": "an invented reply"}]},
+            "background": {"what": "a placeholder corpus", "license": "CC BY 4.0"},
+            "labels": [{"column": "gold", "who": "expert", "counted_per": "item_id", "values": {"Yes": 3, "No": 2}}],
+            "text_to_label": {"columns": [{"column": "response", "words_median": 4, "words_min": 2, "words_max": 9,
+                                           "values": 5, "lines_median": 1}]},
+            "samples": {"seed": 7, "rows": [1, 2]},
             "gotchas": ["a placeholder note"]}))
-        page = frame.render(self.theme, self.root, items, "Work Details", "1 · Data")
-        for words in ("class=stat-row", "<b>10</b><span>rows</span>", "<b>5</b><span>items</span>",
-                      "One placeholder rating of one chat.", "One row, drawn", "class=card-row", "an invented reply",
-                      "The 2 columns, by group", "4 words median", "Checks", "a placeholder note", "raw.csv · read by r02_raw_read"):
-            with self.subTest(words=words):
-                self.assertIn(words, page)
-        page = frame.render(self.theme, self.root, items, "Audience Report", "1 · Data")
-        self.assertIn("One row, drawn", page)
-        self.assertNotIn("The 2 columns, by group", page)                   # the details stay in Work
+        for space in ("Work Details", "Audience Report"):
+            page = frame.render(self.theme, self.root, items, space, "1 · Data")
+            for words in ("🎲 Random samples", "📖 Background", "a placeholder corpus", "📊 Basic description",
+                          '<b style="font-size:20px">10</b><span>rows</span>', '<b style="font-size:20px">5</b><span>items</span>',
+                          "One placeholder rating of one chat.", "🧩 One row (made up)", "rowspan=2", "an invented reply",
+                          "🏷 Current labels", "<code>gold</code>", "💬 Text to label", "⚠️ Watch out",
+                          "a placeholder note", "2 columns", "4 words median", "r02_raw_read"):
+                with self.subTest(space=space, words=words):
+                    self.assertIn(words, page)
+        self.assertNotIn("<h4>Input</h4>", page)                              # Report: the cards only
         page = frame.render(self.theme, self.root, items, "Work Details", "2 · Items")
         self.assertIn("r01_demo", page)                                     # the items still come from the Run that made them
 
@@ -233,26 +257,38 @@ class LabelingThemeTest(unittest.TestCase):
         planned.mkdir(parents=True)
         (planned / "r03_embedding_minilm.sh").write_text("echo placeholder\n")
         (planned / "run.yaml").write_text("run: r03_embedding_minilm\nkind: hard\ntype:\n- embedding-build\nstatus: planned\n")
+        (items / "scripts" / "config").mkdir()
+        (items / "scripts" / "config" / "r03_embedding_minilm.yaml").write_text(
+            "operation: embed\nmodel: sentence-transformers/all-MiniLM-L6-v2\ninput: main\nmap: tsne\n")
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
-        self.assertIn("its ticket is ready (r03_embedding_minilm)", page)
-        self.assertIn("run Project-X/labeling/b61_demo_label/j01_building_demo/t02_demo_items/runs/r03_embedding_minilm/"
-                      "r03_embedding_minilm.sh", page)                    # the prompt names the ready ticket
+        for words in ("Build · r03_embedding_minilm", "all-MiniLM-L6-v2", "data-post=\"/_board/labeling/items\"",
+                      ">Agree</button>", "✍ sign",
+                      "I Agree r03_embedding_minilm on the screen first; then run"):
+            with self.subTest(words=words):
+                self.assertIn(words, page)
+        (planned / "run.yaml").write_text("run: r03_embedding_minilm\nkind: hard\ntype:\n- embedding-build\n"
+                                          "status: planned\nsigns:\n  by: a person\n  at: today\n")
+        page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
+        self.assertIn("✓ agreed</span> by a person", page)
+        self.assertIn("run r03_embedding_minilm and settle it", page)
         (planned / "result").mkdir()
         (planned / "result" / "runtime.yaml").write_text("run: r03_embedding_minilm\nstatus: complete\n")
         (planned / "result" / "map.json").write_text(json.dumps(
             [{"item_id": f"demo-{i:02d}", "x": i * 1.0, "y": i % 2, "group": i % 2} for i in range(3)]))
         (planned / "result" / "groups.json").write_text(json.dumps(
-            [{"group": 0, "size": 2, "keywords": ["picnic", "park"]}, {"group": 1, "size": 1, "keywords": ["tax"]}]))
+            [{"group": 0, "size": 2, "keywords": ["picnic", "park"], "typical": ["demo-00"]},
+             {"group": 1, "size": 1, "keywords": ["tax"]}]))
         (planned / "result" / "manifest.yaml").write_text("model: sentence-transformers/all-MiniLM-L6-v2\ndim: 384\n"
-                                                          "items: 3\ngroups: 2\ninput: the reply, then the context\n")
+                                                          "items: 3\ngroups: 2\ninput: main\n")
         for space in ("Work Details", "Audience Report"):
             page = frame.render(self.theme, self.root, items, space, "3 · Embedding")
-            for words in ("<b>1</b><span>models built</span>", "<b>2</b><span>groups</span>", "The map", "<svg",
-                          "<title>demo-01 · G2</title>", "picnic · park", "all-MiniLM-L6-v2"):
+            for words in ("📍 Map", "<svg", "data-item=\"demo-01\" data-group=\"1\"", "🧩 Groups", "picnic · park",
+                          "all-MiniLM-L6-v2", "📏 Near-duplicates", "🧭 Outliers", "⚙️ Builds"):
                 with self.subTest(space=space, words=words):
                     self.assertIn(words, page)
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
         self.assertIn("✓ done", page)
+        self.assertIn("Build, agreed · r03_embedding_minilm", page)
 
     def test_a_scanning_task_carries_out_the_jobs_labeling_job(self):
         scanning = task(self.task.parent, "t02_demo_scanning", "labeling-scanning")

@@ -13,7 +13,7 @@ The labeling Theme teaches and freezes what one identified person means by a vag
 (Building: contract, definition, calibration rounds, guideline, the signed Label Handoff), then
 qualifies executors on a sealed test, scans the corpus and audits the labels (Scanning). Its
 Block holds one Job per dataset × label (`jNN_<dataset>_<label>/`, its `schema.yaml`); its Tasks
-come in five types, named by each face's `task-type:` line: 📦 items · 🔑 keys · 🏗 building ·
+come in five types, named by each face's `task-type:` line: 📦 items · 📏 ground truth · 🏗 building ·
 🔍 scanning · 📊 score (s13, JL 261014); its Runs are one per operation.
 
 Today the labeling theme sits on the shared frame (`servers/workbench-labeling/labeling_theme.py`):

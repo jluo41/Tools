@@ -88,7 +88,7 @@ element · level · Space › view · the base's, or its own and why · drawn to
   Preparation in Description and Scan in Work Details (today in Delivery), with a Building | Scanning divider;
   Evidence and Value show the Preparation Run
 - Question rows · Block · Audience Report · base (the Insight row) · drawn
-- Question rows · Job · Audience Report › Scored · Building (ours vs the dataset's keys) · base row, the
+- Question rows · Job · Audience Report › Scored · Building (ours vs the dataset's ground truth) · base row, the
   labeling words · GAP: not drawn; the Job has no reports/ and no t04 scoring Task yet
 - Question rows · Task · Audience Report › Report (REPORT.md) · base (a work Task's Report) · drawn
 - Space body + Disk · Runs · every level · every Space · base · drawn
@@ -141,7 +141,7 @@ Discuss the label meanings    job page › Labeling › Definition definition-di
 Draw one round                job page › Labeling › Rounds   round-prepare           run-labeling-round-<NN>
 You label one round           job page › Labeling › Rounds   human-calibration       run-labeling-round-<NN>
 Edit the schema               planned (s12, Job)             —                       run-labeling-schema-<jNN>
-Score against the keys        planned (s12, Job)             —                       run-labeling-score-<jNN>
+Score against the ground truth        planned (s12, Job)             —                       run-labeling-score-<jNN>
 Render the report             planned (s13, Task)            —                       run-labeling-report-<job>
 ```
 
@@ -188,7 +188,7 @@ Open
 2. Gaps 3 – 9 and the 12 Run names belong in `labeling_theme.py` (its views and RUN_NAMES); they wait for
    JL (b03, 261008). Server code is not changed from this topic.
 3. Job › Description has no Run and no face: `j01_building_corpus/` holds no `j01_building_corpus.md`.
-4. Job › Audience Report draws no rows; s12 plans ours vs the dataset's keys from t04's scoring Runs.
+4. Job › Audience Report draws no rows; s12 plans ours vs the dataset's ground truth from t04's scoring Runs.
 5. Task › Work Details mixes the labeling views with the base's Evidence · Value, which show the Preparation
    Run; s13 plans Preparation in Description and Scan in Work Details with a Building | Scanning divider.
 6. The Block lists its jobs twice: Work Details › Jobs (the jNN_ folders) and › Labeling (the jobs).

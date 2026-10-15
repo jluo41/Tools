@@ -5,8 +5,8 @@ description: >-
   writes the guideline versions: a first guideline candidate and, after each round, the next guideline drafted from the human's accepted judgments. Every Run in this view names this skill, and no other view uses it.
   Use for guideline, guideline-seed, guideline-learn, policy_draft, a guideline patch, backward impact, or /haipipe-labeling-guideline.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-29"
+  version: "0.2.0"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -35,13 +35,22 @@ and its Result `<Page>/results/<run>/`, beside `labeling/`.
 separately commissioned; the first guideline `G_00` is written by
 `corpus-contract`, so this Run is never a prerequisite.
 
+## The guideline format
+
+Every version `G_t` has one format, read by two readers: the person (`guideline.md`) and the labelers
+(`cheatsheet.md`, their prompt), both rendered from one source of rule cards (`rules.yaml`). Seven sections (question
+and scope · classes · rules · borders · procedure · uncertainty · changes), a rule card (if · then · border ·
+precedence · evidence · since · why · status), and the seven pools named (Settled high · low · none · Degree border ·
+Presence border · Clash · Unmapped): [ref/guideline-format.md](ref/guideline-format.md).
+
 After any item is judged, a change to a label's meaning is no longer a
 `definition-discussion`: it is a guideline patch here.
 
 ### LEARN
 
 1. From accepted human evidence, draft the smallest general patch into
-   `policy_draft/`, typed semantic / procedural / casebook / wrapper / editorial.
+   `policy_draft/`, typed semantic / procedural / casebook / wrapper / editorial; a semantic patch is a rule card
+   (ref/guideline-format.md) naming the border pool it settles and its evidence.
 2. Compute backward impact: every prior gold row the patch would flip, into
    `policy_draft/regression.jsonl`.
 3. Present each substantive patch with its impact for the human's ruling.

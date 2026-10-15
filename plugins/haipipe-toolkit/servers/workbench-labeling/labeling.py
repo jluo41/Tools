@@ -4435,6 +4435,104 @@ class LabelingMixin:
         count = len(board_jobs(board_dir, path_q, probe=True)["jobs"])
         return {"url": "/_board/labeling-board?path=%s" % quote(path_q), "jobs": count}, None
 
+    # ── the items Task's three narrow doors (b15 s41): Draw again reads, Sign/Agree and a pasted note write ──
+    NOTE_TYPES = {"image/png": ".png", "image/jpeg": ".jpg", "image/gif": ".gif", "image/webp": ".webp"}
+    NOTE_MAX = 8 * 1024 * 1024
+
+    def _items_task_target(self, task_q):
+        """A SPACE-relative items Task folder inside the served root, or (None, why)."""
+        if (not isinstance(task_q, str) or not task_q or task_q.startswith("/") or "\\" in task_q
+                or "\x00" in task_q or any(part in {"", ".", ".."} for part in task_q.strip("/").split("/"))):
+            return None, "unsafe Task path"
+        root = self.root.resolve()
+        task = (root / task_q.strip("/")).resolve()
+        try:
+            task.relative_to(root)
+        except ValueError:
+            return None, "Task is outside the served root"
+        if not (task / f"{task.name}.md").is_file():
+            return None, "not a Task folder"
+        from live import labeling_theme as T
+        if T.types_of(task) != ("items",) or T.IT is None:
+            return None, "not an items Task, or the preparation engine is absent"
+        return task, None
+
+    def _same_origin(self):
+        origin = self.headers.get("Origin") or ""
+        return not origin or urlparse(origin).netloc == (self.headers.get("Host") or "")
+
+    def labeling_sample_view(self, head_only=False):
+        """Draw again: random raw rows or items, read live; nothing written (s41-D12)."""
+        q = parse_qs(urlparse(self.path).query)
+        task, err = self._items_task_target((q.get("task") or [""])[0])
+        if task is None:
+            return self.reply(400, {"ok": False, "err": err})
+        kind = (q.get("kind") or [""])[0]
+        if kind not in ("raw", "items"):
+            return self.reply(400, {"ok": False, "err": "kind is raw or items"})
+        try:
+            seed = int((q.get("seed") or ["7"])[0])
+        except ValueError:
+            return self.reply(400, {"ok": False, "err": "seed is a whole number"})
+        from live import labeling_theme as T
+        body = T.sample_html(task, self.root.resolve(), kind, seed).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
+
+    def labeling_items_act(self, p):
+        """A person signs a recipe or agrees a build on a planned Run's card; only then may it run (s41-D10)."""
+        if not self._same_origin():
+            return 403, {"ok": False, "err": "cross-origin write refused"}
+        task, err = self._items_task_target(p.get("task"))
+        if task is None:
+            return 400, {"ok": False, "err": err}
+        if p.get("action") != "sign":
+            return 400, {"ok": False, "err": "the only action here is sign"}
+        run = str(p.get("run") or "")
+        if not re.fullmatch(r"r\d\d_[A-Za-z0-9_]+", run):
+            return 400, {"ok": False, "err": "a Run is named rNN_<name>"}
+        if not str(p.get("by") or "").strip():
+            return 400, {"ok": False, "err": "type your name to sign"}
+        from live import labeling_theme as T
+        try:
+            signs = T.IT.sign(task, run, str(p["by"]))
+        except SystemExit as e:
+            return 409, {"ok": False, "err": str(e)}
+        return 200, {"ok": True, "signs": signs}
+
+    def labeling_notes(self, p):
+        """A pasted image, kept in the Task's notes/ so the prompt can carry its path (s41-D14)."""
+        import base64
+        from datetime import datetime
+        if not self._same_origin():
+            return 403, {"ok": False, "err": "cross-origin write refused"}
+        task, err = self._items_task_target(p.get("folder"))
+        if task is None:
+            return 400, {"ok": False, "err": err}
+        m = re.fullmatch(r"data:([\w/+.-]+);base64,(.+)", str(p.get("data") or ""), re.S)
+        if not m or m.group(1) not in self.NOTE_TYPES:
+            return 400, {"ok": False, "err": "a pasted note is a png, jpeg, gif or webp image"}
+        try:
+            raw = base64.b64decode(m.group(2), validate=True)
+        except ValueError:
+            return 400, {"ok": False, "err": "the image is not valid base64"}
+        if len(raw) > self.NOTE_MAX:
+            return 413, {"ok": False, "err": "an image note is at most 8 MB"}
+        notes = task / "notes"
+        notes.mkdir(exist_ok=True)
+        stamp = datetime.now().strftime("%y%m%d-%H%M%S")
+        n = 1
+        while (notes / f"{stamp}-{n}{self.NOTE_TYPES[m.group(1)]}").exists():
+            n += 1
+        out = notes / f"{stamp}-{n}{self.NOTE_TYPES[m.group(1)]}"
+        out.write_bytes(raw)
+        return 200, {"ok": True, "path": out.relative_to(self.root.resolve()).as_posix()}
+
     def labeling_act(self, p):
         """The only write door: every action re-checks authority in the engine.
 

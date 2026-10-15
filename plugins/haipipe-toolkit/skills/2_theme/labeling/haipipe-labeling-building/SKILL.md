@@ -9,8 +9,8 @@ description: >-
   new labeling jobs, calibration rounds, human annotation sessions, boundary
   discovery, guideline revision, stopping decisions, freeze, which Building Run comes next, or /haipipe-labeling-building.
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-10-09"
+  version: "0.9.1"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -90,6 +90,23 @@ as cells, each `open`, `covered`, or `risky`. A round card names the cell(s)
 it targets; CLOSE settles them. The Building side may route to Freeze only
 when no cell is `open`, or the human has explicitly accepted a named open cell
 as a limitation carried into the handoff.
+
+Each pool has a name that says why an item sits there and what the guideline needs (JL 261014: "for the seven
+pool, I think we could name each of them"); screens, cards and the guideline's §4 use the names, the letters stay
+the ids:
+
+```text
+H     Settled high      every reader reads it high
+L     Settled low       every reader reads it low
+N     Settled none      every reader reads it none
+HL    Degree border     present; how much is unclear       → a severity rule
+LN    Presence border   present at all?                    → a threshold rule
+HN    Clash             opposite readings of the concept    → the meaning clarified
+HLN   Unmapped          anything plausible; no rule yet     → a new rule
+```
+
+What a guideline version holds (its sections, the rule card, the two renderings for the person and for the
+labelers) is `haipipe-labeling-guideline`'s `ref/guideline-format.md`.
 
 ## Human gates
 

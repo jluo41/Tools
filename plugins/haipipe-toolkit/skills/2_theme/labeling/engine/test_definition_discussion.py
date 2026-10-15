@@ -223,3 +223,41 @@ def test_each_revision_starts_where_the_last_one_ended(tmp_path: Path) -> None:
     record["before"]["high"] = "a wording no revision ever wrote"
     second.write_text(json.dumps(record, indent=2) + "\n")
     assert "meaning revision 2: does not start from revision 1" in job.status(root)["p0_integrity_errors"]
+
+
+NAMED_REGIONS = {"H": "Settled high", "L": "Settled low", "N": "Settled none", "HL": "Degree border",
+                 "LN": "Presence border", "HN": "Clash", "HLN": "Unmapped"}
+
+
+def test_region_meanings_change_by_one_recorded_revision_and_ask_for_g0_again(tmp_path: Path) -> None:
+    """The seven pools named (b15 s42-D54): a region change keeps before and after, retires G0, and the chain holds."""
+    root, _ = tc.confirmed_job(tmp_path)
+    regions = list(job.load_mapping(root / "config.yaml")["regions"]["values"])
+    meanings = {r: NAMED_REGIONS.get(r, f"region {r}") for r in regions}
+    run = dd.start(root, human_id="JL")["run"]
+    with pytest.raises(RuntimeError, match="must match"):
+        job.revise_region_meanings(job_root=root, human_id="someone", meanings=meanings, run=run, revised_at="t")
+    with pytest.raises(RuntimeError, match="one meaning for each region"):
+        job.revise_region_meanings(job_root=root, human_id="JL", meanings={regions[0]: "x"}, run=run, revised_at="t")
+    done = job.revise_region_meanings(job_root=root, human_id="JL", meanings=meanings, run=run, revised_at="t1")
+    assert done["changed"] is True and done["revision"] == "gates/region-revisions/001.json"
+    config = job.load_mapping(root / "config.yaml")
+    assert config["regions"]["meanings"] == meanings
+    assert config["authority"]["meaning_confirmed"] is False and not (root / "gates" / "g0" / "receipt.json").exists()
+    state = job.status(root)
+    assert state["p0_contract_integrity_valid"] and not state["p0_integrity_errors"]
+    again = job.revise_region_meanings(job_root=root, human_id="JL", meanings=meanings, run=run, revised_at="t2")
+    assert again["changed"] is False
+
+
+def test_a_hand_edited_region_meaning_breaks_the_chain(tmp_path: Path) -> None:
+    root, _ = tc.confirmed_job(tmp_path)
+    regions = list(job.load_mapping(root / "config.yaml")["regions"]["values"])
+    run = dd.start(root, human_id="JL")["run"]
+    job.revise_region_meanings(job_root=root, human_id="JL", meanings={r: f"named {r}" for r in regions}, run=run,
+                               revised_at="t1")
+    config_path = root / "config.yaml"
+    config = job.load_mapping(config_path)
+    config["regions"]["meanings"][regions[0]] = "edited by hand"
+    config_path.write_bytes(job.yaml_bytes(config))
+    assert "region meanings in config.yaml differ from the last region revision" in job.status(root)["p0_integrity_errors"]

@@ -5,8 +5,8 @@ description: >-
   settles what each label means: outside evidence, the definition discussion with the identified human, and the G0 Confirm meaning gate. Every Run in this view names this skill, and no other view uses it.
   Use for discussing the label meanings, definition-discussion, revising a label's wording, Confirm meaning, G0, meaning receipt, discovery search, or /haipipe-labeling-definition.
 metadata:
-  version: "0.1.4"
-  last_updated: "2026-09-29"
+  version: "0.2.0"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -66,6 +66,14 @@ unrecorded edit is caught. Close this Run before releasing a round: the release
 writer refuses an open discussion, and the discussion writer refuses any later
 turn, decision, or close once a round card exists. After release, a meaning
 change is a later guideline patch for `guideline-learn`.
+
+The region meanings (each pool's name, `haipipe-labeling-building` § The register) change the same way, through
+`engine/job.py revise-regions --job-root <job> --human-id <human> --run <deciding Run> --meanings <map.yaml>`
+(`job.revise_region_meanings`): only the configured human, only before any item is judged or any round released.
+It writes `gates/region-revisions/<seq>.json` (before, after, the deciding Run), retires the meaning confirmation
+and G0 receipt, and `status` checks the chain as it does for the labels, so a hand edit of `regions.meanings` is
+caught. Record the person's decision as a `say` turn in the open discussion first, and name that Run as `--run`.
+G_00's files keep the contract's words; the next guideline version renders the new ones.
 
 `authority_hold(config)` is true for simulation/proxy authority, imported
 source labels without a locally appointed human, a missing human id, or any

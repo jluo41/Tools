@@ -160,3 +160,29 @@ Built today: the initialization step (`engine/embedding_build.py build`, P0
 `embedding-build`), which embeds, maps, and groups the development pool, plus
 read helpers for the Board: `neighbors`, `group_examples`, and `item_text`. Not
 built: later-round region retrieval, novelty search, and deduplication review.
+
+## 6. The corpus tools
+
+`engine/corpus_tools.py` is how the agent reads a job's corpus without holding it (b15 s42 Ⓔ). Every tool
+returns ids, counts or scores; only `get` returns text.
+
+```text
+stats             the development items, the groups (from an embedding's map.json), how many were shown
+sample            random items from one group or all, by seed
+search            items whose context or text holds every word of a query (keyword only)
+find_neighbours   k items near a seed set (a pool, your corrections), ranked by rank_by
+get               items' text, logged to exposure/group_examples.jsonl, held to the step's reading budget
+```
+
+1. **Development items only**: every tool reads `corpus/items.jsonl` rows marked eligible; a sealed or
+   unknown id is refused as a seed or a read, even when the vectors hold it.
+2. **Every read logged**: `get` appends to the exposure log the item table and the Embedding view share,
+   under `corpus tools · <step>`; an item read twice in one step counts once.
+3. **Budgets**: `get --step <name> --budget <c>` refuses a read that would take the step past c items
+   (c_ask a talk pass, c_pick a PICK, c_learn a LEARN).
+4. **rank_by**: `nearest` (the best cosine to any seed item) works from the vectors alone; `confidence`,
+   `disagree`, `classifier` and `value` refuse, naming what they need, until a round's panel labels and the
+   person's gold exist.
+5. **Vectors** are read where they lie: a folder with `rows.jsonl` and `vectors.npy` (the job's
+   `cache/embeddings/<version>/`, or an items Task's embedding Run's heavy folder); groups from that Run's
+   `map.json`. Nothing is copied.

@@ -48,7 +48,7 @@ def main():
     face = words()
     d = Drawing()
 
-    # ① the five types, as stairs: items → building ─🔒 Handoff─▶ scanning → score; keys below, fenced to score
+    # ① the five types, as stairs: items → building ─🔒 Handoff─▶ scanning → score; ground truth below, fenced to score
     f1 = d.frame("① A labeling Job: five Task types")
     d.heading("① One labeling Job, five Task types", face["sub"])
     d.key(40, 190, 2000, 120)
@@ -65,7 +65,7 @@ def main():
         else:
             d.text(ax + aw + 20, ay + 14, label, 28)
     bx0, by0, bw0, bh0 = boxes[0]
-    k = face["keys"]
+    k = face["ground_truth"]
     kx, ky, kw, kh = step(d, X0, 1040, W_, {**k, "screen": ""}, dashed=True)
     d.line([(bx0 + bw0 / 2, by0 + bh0 + 8), (bx0 + bw0 / 2, ky - 8)], sw=3, dashed=True)
     d.text(bx0 + bw0 / 2 + 18, (by0 + bh0 + ky) / 2 - 18, face["relate"], 28)
@@ -100,7 +100,7 @@ def main():
     f4 = canvas.explains(d.frame(g["title"], 1900, 1600))
     d.heading(g["title"], g["sub"], 1300)
     y = d.grid_table(40, 180, ["word", "what it means"], [{"cells": w} for w in g["words"]], [360, 1460], 26, 16)
-    y = d.grid_table(40, y + 60, ["Job (dataset · label)", "📦 items", "🔑 keys", "🏗🔍 building + scanning", "📊 score"],
+    y = d.grid_table(40, y + 60, ["Job (dataset · label)", "📦 items", "📏 ground truth", "🏗🔍 building + scanning", "📊 score"],
                      [{"cells": j} for j in g["jobs"]], [470, 170, 560, 450, 190], 26, 16)
     d.para(40, y + 40, face["close"], 1820, 30)
     y += 40 + d.height(face["close"], 1820, 30) + 24

@@ -1,3 +1,11 @@
+## 0.39.0 · 2026-10-14 · Delivery grouped by Section series
+
+- Delivery's results take a fixed group from their source and are listed in reading order (JL 261014: "there
+  should be groups for the section-task group"): the version's own build is 📄 Paper, then each Section under
+  Main (t00, t0N), Appendix (t2N) or Letters (t3N), by Task number. The groups show on the bar with no ×.
+- The base frame gains the Theme hook `delivery_fixed(item) -> (groups, order)`; with none, Delivery keeps its
+  newest-first list. Test `DeliveryGroupsTest`.
+
 ## 0.38.1 · 2026-10-11 · Related Papers: each question, no emails
 
 - b10 s04-D07, D09: a related row's `group` cell is comma-separated, and an email is no related work. `paper_theme._related_rows` gives a paper one row per question in its cell, so Report › Related Papers lists it under each; `NOT_PAPERS` adds `email`. The subfolder group (s04-D08) stays the Studio's and is not read as a question. Test `test_related_papers_by_each_question_and_no_email`.

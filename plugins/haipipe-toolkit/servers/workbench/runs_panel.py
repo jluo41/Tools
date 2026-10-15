@@ -512,7 +512,45 @@ PANEL_JS = r"""
   ev.preventDefault();  /* a Copy inside a folded summary copies without opening it */
   var text=b.dataset.copy||'';
   if(!text){var pre=b.closest('.run-card')&&b.closest('.run-card').querySelector('.run-prompt');text=pre?pre.textContent:'';}
+  /* a prompt box that takes notes (b15 s41-D14): the person's notes go with the prompt */
+  var nb=b.closest('.run-prompt-box'),notes=nb&&nb.querySelector('textarea.run-notes');
+  if(notes&&notes.value.trim())text+='\nuser feedback: '+notes.value.trim();
   copy(text,b);
+ });
+ /* the notes stay in this browser until sent; a pasted image is kept by the host and its path written in */
+ document.querySelectorAll('textarea.run-notes[data-key]').forEach(function(t){
+  var v=store(t.dataset.key);if(v&&!t.value)t.value=v;
+  t.addEventListener('input',function(){store(t.dataset.key,t.value);});
+ });
+ document.addEventListener('paste',function(ev){
+  var t=ev.target.closest&&ev.target.closest('textarea.run-notes[data-upload]');if(!t)return;
+  var items=(ev.clipboardData&&ev.clipboardData.items)||[];
+  for(var i=0;i<items.length;i++){if(items[i].type.indexOf('image/')!==0)continue;
+   ev.preventDefault();var r=new FileReader();
+   r.onload=function(){fetch(t.dataset.upload,{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({folder:t.dataset.folder,data:r.result})}).then(function(x){return x.json();}).then(function(j){
+     var line=j.ok?('🖼 an image, kept at '+j.path):('✗ the image was not kept: '+j.err);
+     t.value=(t.value?t.value.replace(/\s*$/,'\n'):'')+line+'\n';store(t.dataset.key,t.value);});};
+   r.readAsDataURL(items[i].getAsFile());return;}
+ });
+ /* a button that writes (data-post: a JSON body, plus the named inputs beside it) or reads into a target
+    (data-fetch, with a fresh seed): an items Task's Sign, Agree and Draw again (b15 s41) */
+ document.addEventListener('click',function(ev){
+  var b=ev.target.closest('button[data-post]');if(!b)return;ev.preventDefault();
+  var body={};try{body=JSON.parse(b.dataset.body||'{}');}catch(e){}
+  var row=b.parentNode;(b.dataset.fields||'').split(' ').filter(Boolean).forEach(function(n){
+   var i=row.querySelector('[name="'+n+'"]');if(i){body[n]=i.value;store('sign:'+n,i.value);}});
+  b.disabled=true;
+  fetch(b.dataset.post,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+   .then(function(x){return x.json();}).then(function(j){if(j.ok){location.reload();return;}
+    b.disabled=false;b.title=j.err||'';b.textContent='✗ '+(j.err||'refused');});
+ });
+ document.querySelectorAll('input.sign-by').forEach(function(i){var v=store('sign:by');if(v&&!i.value)i.value=v;});
+ document.addEventListener('click',function(ev){
+  var b=ev.target.closest('button[data-fetch]');if(!b)return;ev.preventDefault();
+  var t=document.getElementById(b.dataset.target);if(!t)return;
+  var seed=Math.floor(Math.random()*1e6);
+  fetch(b.dataset.fetch+'&seed='+seed).then(function(x){return x.text();}).then(function(h){t.innerHTML=h;});
  });
  function matches(card,target){
   if(!target)return true;

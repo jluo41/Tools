@@ -471,5 +471,18 @@ class LayoutsTest(unittest.TestCase):
         self.assertEqual(T.OTHER, "Datasets and repos")
 
 
+
+class DeliveryGroupsTest(unittest.TestCase):
+    """JL 261014: "there should be groups for the section-task group": the whole paper, then Main, Appendix, Letters."""
+
+    def test_each_result_goes_under_its_section_series_in_reading_order(self):
+        from live import paper_theme as P
+        items = [{"source": s} for s in ("j01_v1014_acl › t21_guideline-examples", "j01_v1014_acl",
+                                         "j01_v1014_acl › t03_framework", "j01_v1014_acl › t00_abstract",
+                                         "j01_v1014_acl › t31_cover-letter")]
+        got = sorted((P.delivery_fixed(i) for i in items), key=lambda g: g[1])
+        self.assertEqual([g[0][0] for g in got], ["📄 Paper", "Main", "Main", "Appendix", "Letters"])
+        self.assertEqual(got[1][1], (1, 0))
+
 if __name__ == "__main__":
     unittest.main()

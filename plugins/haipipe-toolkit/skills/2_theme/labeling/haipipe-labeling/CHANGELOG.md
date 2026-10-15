@@ -1,3 +1,15 @@
+## 0.11.1 · 2026-10-14 · keys is now ground truth
+
+- The Task type once called keys is ground truth (📏): papers say ground truth or gold labels, not keys; its
+  `task-type: raw` line is unchanged.
+
+## 0.11.0 · 2026-10-14 · Start from a Job
+
+- `/haipipe-labeling <Job folder>` is the person's one start message: `scripts/start.py` reads the Job (its Tasks
+  by `task-type:`), opens the workbench on the tab of the step the Job is at (through /wb), and prints the ladder,
+  the step now and who does it; the door then guides that one step and stops. The items Task's steps go to
+  `haipipe-labeling-preparation` (b15 s41); after the items, the no-argument behaviour runs on the building Task.
+
 # haipipe-labeling · CHANGELOG
 
 ## 0.10.0 · 2026-10-07

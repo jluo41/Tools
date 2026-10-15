@@ -11,6 +11,22 @@ status: done
 passes:
 - p01-1014
 - p02-1014
+- p03-1014
+- p04-1014
+- p05-1014
+- p06-1014
+- p07-1014
+- p08-1014
+- p09-1014
+- p10-1014
+- p11-1014
+- p12-1014
+- p13-1014
+- p14-1014
+- p15-1014
+- p16-1014
+- p17-1014
+- p18-1014
 writes:
 - studio/s41-task-items-procedure/ face
 - builder
@@ -19,6 +35,11 @@ writes:
 - studio/s41 face
 - shots; t01 scripts/embed_items.py
 - runs/r06_embedding_minilm
+- haipipe-labeling-preparation SKILL.md
+- face yaml and D18
+- 'D19; builder: Operation/Result headings'
+- card titles only
+- the interactive map; history -261014b
 feeds:
 - reports/q01_labeling_ladder
 - reports/q02_building_scanning_gates

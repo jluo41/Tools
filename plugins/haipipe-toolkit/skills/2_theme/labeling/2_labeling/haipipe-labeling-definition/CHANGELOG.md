@@ -1,5 +1,10 @@
 # subjective-label-definition · CHANGELOG
 
+## 0.2.0 · 2026-10-14
+
+- Region meanings change by a recorded revision: `job.py revise-regions` (`revise_region_meanings`), the same law
+  as the label meanings; `status` checks the region chain.
+
 ## 0.1.4 · 2026-09-29
 
 - Block G0 confirmation until every label has nonblank human-reviewable

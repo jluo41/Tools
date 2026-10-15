@@ -1611,7 +1611,26 @@ def work_meta(folder, root):
     return ""
 
 
-THEME = Theme(name="paper", label="Paper", icon="📄", guide="paper", work_meta=work_meta,
+# ── Delivery: each result in its Section series (JL 261014: "there should be groups for the section-task group") ──
+# A version's own build (the whole paper) first, then its Sections by series, each series in reading order:
+# t00 Abstract and t0N Main, t2N Appendix, t3N Letters (haipipe-paper ref/paper-ladder.md).
+SERIES = (("📄 Paper", None), ("Main", ("0",)), ("Appendix", ("2",)), ("Letters", ("3",)))
+
+
+def delivery_fixed(item: dict):
+    """(groups, order) of one Delivery result: its version's whole build is "📄 Paper"; a Section's result goes
+    under its series, ordered by its Task number."""
+    parts = item.get("source", "").split(" › ")
+    task = next((p for p in parts if re.match(r"^t\d{2}_", p)), None)
+    if task is None:
+        return ["📄 Paper"], (0, 0)
+    for n, (name, leads) in enumerate(SERIES):
+        if leads and task[1] in leads:
+            return [name], (n, int(task[1:3]))
+    return ["Sections"], (9, int(task[1:3]))
+
+
+THEME = Theme(name="paper", label="Paper", icon="📄", guide="paper", work_meta=work_meta, delivery_fixed=delivery_fixed,
               level_names={"Block": "Paper Board", "Job": "Version", "Task": "Section"}, spaces=spaces,
               # today's folders on the ladder, unrenamed (b03, JL 261007: keep the names): a group
               # Ba-/Bb-/Bc-<desk>-<part> or A1-Story is a Job (jNN_ folders are Jobs by their prefix); a

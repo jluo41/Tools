@@ -354,6 +354,9 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
         if self.path.split("?", 1)[0] == "/_board/insight-run":
             # 🔎 one task call's results, the Insight workbench's run pop-out
             return self.insight_run_view()
+        if self.path.split("?", 1)[0] == "/_board/labeling/sample":
+            # 🏷 an items Task's Draw again: random rows or items, read live (b15 s41-D12)
+            return self.labeling_sample_view()
         if self.path.split("?", 1)[0] == "/_board/labeling-board":
             # 🏷 every labeling job on this Board; click one to zoom in
             return self.labeling_board_view()
@@ -471,6 +474,8 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return self.insight_page_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/insight-run":
             return self.insight_run_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/labeling/sample":
+            return self.labeling_sample_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling-board":
             return self.labeling_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling":
@@ -615,6 +620,14 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             res, err = self.design_board_act(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/labeling/items":
+            # an items Task's Sign or Agree on a planned Run's card (b15 s41-D10)
+            code, res = self.labeling_items_act(p)
+            return self.reply(code, res)
+        if self.path == "/_board/labeling/notes":
+            # an image pasted into a prompt's notes, kept in the Task's notes/ (b15 s41-D14)
+            code, res = self.labeling_notes(p)
+            return self.reply(code, res)
         if self.path == "/_board/labeling/act":
             # The Labeling door resolves Board-backed and standalone Page targets itself.
             code, res = self.labeling_act(p)

@@ -1,0 +1,134 @@
+run: run-draw-s42
+kind: soft
+type: draw
+scope: Tools/blueprints/b15_theme_labeling
+target: s42
+ticket: run-draw-s42.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1014
+- p02-1014
+- p03-1014
+- p04-1014
+- p05-1014
+- p06-1014
+- p07-1014
+- p08-1014
+- p09-1014
+- p10-1014
+- p11-1014
+- p12-1014
+- p13-1014
+- p14-1014
+- p15-1014
+- p16-1014
+- p17-1014
+- p18-1014
+- p19-1014
+- p20-1014
+- p21-1014
+- p22-1014
+- p23-1014
+- p24-1014
+- p25-1014
+- p26-1014
+- p27-1014
+- p28-1014
+- p29-1014
+- p30-1014
+- p31-1014
+- p32-1014
+- p33-1014
+- p34-1014
+- p35-1014
+- p36-1014
+- p37-1014
+- p38-1014
+- p39-1014
+- p40-1014
+- p41-1014
+- p42-1014
+- p43-1014
+- p44-1014
+- p45-1014
+writes:
+- 'new topic: face'
+- yaml
+- builder from s41
+- D01-D03
+- Open 1-4
+- face rewritten D01-D08
+- 'Opens 1-2; builder: workflow_map'
+- algorithm_frame; history -261014a
+- face D09
+- 'Open 3; builder: problem/novelty boxes'
+- ✨ marks
+- face D10
+- D11
+- corpus yaml; builder corpus_frame
+- face D12-D14
+- 'Opens 4-5; builder: four lanes'
+- ledger_frame
+- face yaml
+- D15
+- face D16
+- D17
+- corpus.table; builder steps_frame
+- wrapped step labels
+- 'face changes: yaml and screen changed: lines; builder mark_change'
+- face D18
+- corpus frame title; builder corpus_frame rewritten
+- steps_frame removed
+- face D19
+- yaml words and changes
+- 'builder: mark placement; face: note position'
+- face D20
+- ledger steps and bars
+- drawn part; builder journey_frame (corpus_frame
+- ledger_frame removed)
+- face D21
+- yaml words
+- face D22
+- yaml map
+- algorithm
+- ledger
+- parts
+- screens; builder map spacing
+- face D23
+- map note
+- face D24; yaml map
+- algorithm line 9
+- Ⓑ rows
+- ⑥
+- notes
+- face D25; yaml map
+- ⑥ ⑦ ⑨; builder bar labels on one line
+- face D26
+- D27
+- round yaml
+- map row names; builder round_frame
+- placement
+- face D28
+- tree yaml; builder tree_frame
+- face D29
+- § 1 tree
+- yaml names
+- face D30
+- D31
+- reader and versions yaml
+- Open 1 settled; builder reader_frame
+- versions_frame
+- face D32
+- D33; builder tree_table inside round_frame
+- s42 face
+- drawing
+- builder
+- engine/corpus_tools.py
+- test_corpus_tools.py
+- haipipe-labeling-building 0.9.0
+- s42 Ⓔ note
+feeds:
+- reports/q02_building_scanning_gates

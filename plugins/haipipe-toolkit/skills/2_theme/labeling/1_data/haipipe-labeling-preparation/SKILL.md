@@ -1,16 +1,87 @@
 ---
 name: haipipe-labeling-preparation
 description: >-
-  Prepare raw transcript conversations into versioned, checked labeling items,
-  reserve whole source groups for sealed test, and link an accepted package to
-  a Labeling Page before Contract. Use for Data → Preparation or when a source
-  is not yet a pre-unitized, safely fenced corpus.
+  The one main skill of a labeling Job's items Task: read the Job's raw data
+  once and fill the Data cards (describe), make the items under a recipe a
+  person signs and run the item check (items), revise them from the person's
+  notes into a new version (revise), and embed them under a build a person
+  agrees (embed). Also prepares raw transcript conversations into versioned,
+  checked labeling items, reserves whole source groups for sealed test, and
+  links an accepted package to a Labeling Page before Contract. Use for an
+  items Task's prompts, Data → Preparation, or a source that is not yet a
+  pre-unitized, safely fenced corpus.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-29"
+  version: "0.2.0"
+  last_updated: "2026-10-14"
 ---
 
 # /haipipe-labeling-preparation
+
+## The items Task (b15 s41-task-items-procedure)
+
+An items Task (`task-type: items`, or the older `data`) turns its Job's raw data into the items a person labels.
+This skill is its one main skill: every prompt its three tabs copy names it, and it calls any other skill itself.
+The engine is `$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/engine/items_task.py`; each step is a
+hard Run in the Task's own `runs/`, run through its ticket, whose worker is the Task's `scripts/prepare.py` (a
+forwarder `plan` writes).
+
+**Start from a path** (JL 261014: "I want to run this, and make it work"). Called with only a Job or Task folder,
+`/haipipe-labeling-preparation <Job or Task>` (or the labeling door, `/haipipe-labeling <Job>`), first open the UI and
+read where the Job stands with the labeling door's start script:
+
+```text
+"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/haipipe-labeling/scripts/start.py" <path>
+```
+
+It opens the workbench in the browser on the tab of the step now (starting the SPACE's host when none runs) and
+prints the Job's Tasks, the step, `who` does it, `do` what, and `open`: the full link. Tell the person in a few
+lines: the steps done, the step now, and that tab, giving the full `open` link (never a bare `/_board/...` path).
+Then:
+
+1. `who: agent`: do that step now, as below, and stop at its end: after describe, say to reload 1 · Data; after
+   planning items or embed, say to read the proposal in the tab and press Sign or Agree.
+2. `who: person`: do nothing; say what to press, in which tab, and that the next message is the same start message.
+3. Called again: the script reads the Job again; when it says `agent` and a ticket, run it, settle, say which tab to
+   reload. A `note` (items made before recipes were signed, say) is said to the person as it is.
+
+Below, `items_task.py` stands for `"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/engine/items_task.py"`:
+spell the whole command out each time, never through a shell variable (zsh does not split `$I` into words).
+
+```text
+1 describe  plan → type the config → run the ticket → settle      result/description.json: the Data cards
+2 items     plan (the recipe, proposed) → a person Signs → run → settle   items-vN/ in the store; check, stats
+  revise    the person's notes → plan revise (the recipe changed, `changed` typed) → Sign → run → items-vN+1
+3 embed     plan (the build, proposed) → a person Agrees → run → settle   map, groups, near-duplicates, outliers
+```
+
+```text
+items_task.py plan   <task> describe|items|revise|embed [--notes "<the person's notes>"] [--model <id>] [--data <path>]
+items_task.py sign   <task> <rNN_run> --by <person>      the person's word; the workbench's Sign / Agree buttons write it
+items_task.py settle <task>                              after a ticket: each finished Run's card takes its receipt's status
+items_task.py sample <task> raw|items [--seed N]         what Draw again shows; reads, writes nothing
+items_task.py status <task>
+items_task.py next   <Job or Task>                       where it stands; who does the next thing, and what
+bash <task>/runs/<rNN_run>/<rNN_run>.sh       the one way a step runs
+```
+
+1. **The data comes from the Job.** Its face's `dataset:` and `data:` lines name it; nothing is typed in the Task.
+2. **describe:** `plan` guesses the unit, the text and the answer columns. Type what the config asks, never
+   guessing a meaning: what one row is; the background from the data's SOURCE.md or paper; the column groups and
+   their meanings; the answer columns (`labels: {expert: [...], rater: [...]}`); the text to label. Then run it.
+3. **items:** `plan` proposes the recipe from the Data cards: the unit, the item id, the text judged (`main`), the
+   context before (its column and the tags that open a turn, each named, e.g. `<TAG>: Person`), after, the
+   columns kept out (every answer), the group never split, and the next free `items-vN`. Correct it, then stop:
+   the worker refuses an unsigned recipe. After the person signs, run it. The item check (unique ids, one item
+   per unit, nothing judged empty, no label inside) is its gate; a version is never rewritten.
+4. **revise:** the person's notes come in the prompt (an image note is a file in the Task's `notes/`, its path in
+   the notes). `plan revise --notes "..."` copies the last recipe; change what the notes ask, type `changed`, stop
+   for the Sign. Each pass is a new Run and a new version; the notes stay in its config.
+5. **embed:** `plan embed` proposes the build (a sentence-transformers model when installed, else `tfidf-svd`);
+   stop for the Agree, then run it. The vectors go to `$HEAVY_DIR`, the map and groups to `result/`. A group or a
+   place on the map never sets a label.
+6. **Settle** after every ticket, so the Run's card says what its receipt says.
+
+## Corpus preparation for a Labeling Page
 
 This is the upstream owner for Data → Preparation. Read
 `$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/CORPUS-PREPARATION.md` for the unit,

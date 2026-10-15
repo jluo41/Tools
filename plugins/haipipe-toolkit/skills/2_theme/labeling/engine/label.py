@@ -16,8 +16,15 @@ On a v2 job root nothing is sent to a model until G0 passes (engine/gates.py),
 and model inputs are restricted to exact text for canonical eligible items in
 the Page's fenced development corpus. Sealed test text is never read here.
 
+As a tool (b15 s42-D54): ``lm_labeler(job_root, item_ids, guideline, engine, model=...)`` returns each item's
+label, region (when the config has regions), confidence and reason. The model reads the turns before the
+item, then the reply it judges. Engines: claude_sdk, codex, openai_api, and two OpenAI-compatible ones for
+the panel of open models: ``openrouter`` (OPENROUTER_API_KEY; e.g. qwen/qwen3-30b-a3b, google/gemma-3-27b-it)
+and ``ollama`` (a local server; e.g. gpt-oss:20b). A missing key holds before any item is sent.
+
 Usage:
     python engine/label.py --project-dir <task> --version v01 --engine both
+    python engine/label.py --project-dir <task> --version G_01 --engine openrouter --model google/gemma-3-27b-it
     python engine/label.py --project-dir <task> --version v01 --labels HIGH,LOW,NONE
     python engine/label.py --project-dir <task> --version v01 --input eval/anchor_set.jsonl --tag anchor
 
@@ -63,6 +70,11 @@ def _resolve_labels(cfg: dict, override: str | None) -> list[str]:
     return [str(x) for x in labels]
 
 
+def _regions(cfg: dict) -> list[str] | None:
+    values = (cfg.get("regions") or {}).get("values")
+    return [str(v) for v in values] if values else None
+
+
 def _canonical_v2_items(project_dir: Path, cfg: dict, input_rows: list[dict]) -> list[dict]:
     """Resolve v2 inputs only through the Page's canonical eligible corpus."""
     if cfg.get("schema_version") != "subjective-label/v2":
@@ -70,8 +82,10 @@ def _canonical_v2_items(project_dir: Path, cfg: dict, input_rows: list[dict]) ->
 
     corpus_cfg = cfg.get("corpus") if isinstance(cfg.get("corpus"), dict) else {}
     text_field = str(corpus_cfg.get("text_field") or "text")
+    context_field = str(corpus_cfg.get("context_field") or "context_prev")
     corpus_path = project_dir / "corpus" / "items.jsonl"
     eligible: dict[str, str] = {}
+    context: dict[str, str] = {}
     try:
         corpus_rows = [
             json.loads(line)
@@ -94,6 +108,7 @@ def _canonical_v2_items(project_dir: Path, cfg: dict, input_rows: list[dict]) ->
         if item_id in eligible:
             raise ValueError(f"canonical eligible corpus has duplicate item_id {item_id!r}")
         eligible[item_id] = text
+        context[item_id] = str(row.get(context_field) or "")
 
     canonical: list[dict] = []
     for source in input_rows:
@@ -109,30 +124,34 @@ def _canonical_v2_items(project_dir: Path, cfg: dict, input_rows: list[dict]) ->
             if supplied is not None and supplied != text:
                 raise ValueError(f"v2 model input text does not match canonical eligible item {item_id!r}")
         row = dict(source)
-        row.update({"item_id": item_id, "id": item_id, "text": text,
+        row.update({"item_id": item_id, "id": item_id, "text": text, "context": context[item_id],
                     "population_status": "eligible"})
         canonical.append(row)
     return canonical
 
 
-def _output_contract(labels: list[str]) -> str:
+def _output_contract(labels: list[str], regions: list[str] | None = None) -> str:
     opts = "|".join(labels)
+    region = f'"region": "{"|".join(regions)}", ' if regions else ""
     return (
         "\n\n---\n"
         "You are labeling ONE item for the dimension above.\n"
         "Respond with a single line of JSON and nothing else:\n"
-        f'{{"label": "{opts}", "confidence": 0.0-1.0, "reason": "<=12 words"}}\n'
+        f'{{"label": "{opts}", {region}"confidence": 0.0-1.0, "reason": "<=12 words"}}\n'
         f"The label MUST be exactly one of {', '.join(labels)}."
+        + (f" The region says where the item sits: one label clearly ({', '.join(regions[:len(labels)])}),"
+           f" or between labels ({', '.join(regions[len(labels):])})." if regions else "")
     )
 
 
 def _parse_failure(code: str) -> dict:
-    return {"label": "PARSE_ERROR", "confidence": None, "reason": f"parse_error:{code}",
+    return {"label": "PARSE_ERROR", "region": None, "confidence": None, "reason": f"parse_error:{code}",
             "parse": "fail", "status": "failed"}
 
 
-def _make_parser(labels: list[str]):
+def _make_parser(labels: list[str], regions: list[str] | None = None):
     upper = {l.upper(): l for l in labels}
+    region_upper = {r.upper(): r for r in regions or []}
 
     def parse_label(raw: str) -> dict:
         text = (raw or "").strip()
@@ -152,8 +171,14 @@ def _make_parser(labels: list[str]):
             return _parse_failure("label_missing")
         if lab.strip().upper() not in upper:
             return _parse_failure("label_not_in_set")
-        return {"label": upper[lab.strip().upper()], "confidence": obj.get("confidence"),
-                "reason": obj.get("reason", ""), "parse": "json", "status": "ok"}
+        region = obj.get("region")
+        if regions:
+            if not isinstance(region, str) or region.strip().upper() not in region_upper:
+                return _parse_failure("region_not_in_set")
+            region = region_upper[region.strip().upper()]
+        return {"label": upper[lab.strip().upper()], "region": region if regions else None,
+                "confidence": obj.get("confidence"), "reason": obj.get("reason", ""), "parse": "json",
+                "status": "ok"}
 
     return parse_label
 
@@ -202,16 +227,53 @@ async def label_openai_api(
     return response.choices[0].message.content or ""
 
 
+# Open models through an OpenAI-compatible endpoint (b15 s42-D52, D54: the panel E). OpenRouter serves many open
+# models by name (qwen/…, google/gemma-…); Ollama serves the ones pulled on this machine.
+OPEN_ENDPOINTS = {
+    "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
+    "ollama": ("http://localhost:11434/v1", None),
+}
+
+
+def _open_engine(name: str):
+    base_url, key_env = OPEN_ENDPOINTS[name]
+
+    async def label_open(system_prompt: str, text: str, model: str) -> str:
+        from openai import AsyncOpenAI
+
+        client = AsyncOpenAI(base_url=os.environ.get(f"{name.upper()}_BASE_URL", base_url),
+                             api_key=os.environ.get(key_env) if key_env else name)
+        response = await client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": text}],
+            temperature=0,
+        )
+        return response.choices[0].message.content or ""
+
+    return label_open
+
+
 ENGINES = {
     "claude_sdk": label_claude_sdk,
     "codex": label_codex,
     "openai_api": label_openai_api,
+    "openrouter": _open_engine("openrouter"),
+    "ollama": _open_engine("ollama"),
 }
 DEFAULT_MODEL = {
     "claude_sdk": "haiku",
     "codex": "gpt-5.5",
     "openai_api": "gpt-4o-mini",
+    "openrouter": "qwen/qwen3-30b-a3b",
+    "ollama": "gpt-oss:20b",
 }
+KEY_ENV = {"openai_api": "OPENAI_API_KEY", "openrouter": "OPENROUTER_API_KEY"}
+
+
+def _message(item: dict) -> str:
+    """What the model reads: the turns before, then the reply it judges."""
+    context = str(item.get("context") or "").strip()
+    return f"Before:\n{context}\n\nJudge this reply:\n{item['text']}" if context else item["text"]
 
 
 async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
@@ -226,15 +288,15 @@ async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
         async with sem:
             t0 = time.time()
             try:
-                raw = await fn(system_prompt, item["text"], model)
+                raw = await fn(system_prompt, _message(item), model)
                 parsed = parse_label(raw)
                 err = None
             except Exception as e:
                 raw, parsed, err = "", {"label": "ERROR", "parse": "exception",
                                         "status": "failed"}, f"{type(e).__name__}: {e}"
             results[i] = {
-                "anchor_idx": item["anchor_idx"], "id": item["id"], "engine": engine,
-                "version": version, "pred": parsed["label"],
+                "anchor_idx": item["anchor_idx"], "id": item["id"], "engine": engine, "model": model,
+                "version": version, "pred": parsed["label"], "region": parsed.get("region"),
                 "status": parsed.get("status", "failed"), "parse": parsed.get("parse"),
                 "confidence": parsed.get("confidence"), "reason": parsed.get("reason", ""),
                 "elapsed_s": round(time.time() - t0, 2), "error": err,
@@ -254,6 +316,38 @@ async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
     return results
 
 
+def _guideline(pd: Path, version: str) -> Path:
+    for g in (pd / "policy" / "versions" / version / "guideline.md", pd / "guideline" / "versions" / f"{version}.md",
+              pd / "guideline" / "guideline.md"):
+        if g.exists():
+            return g
+    raise SystemExit(f"guideline not found for {version}")
+
+
+def lm_labeler(job_root: Path, item_ids: list[str], guideline: str, engine: str, *, model: str | None = None,
+               output: Path | None = None, concurrency: int = 4) -> list[dict]:
+    """b15 s42 lm_labeler(items, guideline, engine): each item's label, region, confidence and reason under one
+    guideline version, from one engine (claude_sdk, codex, openai_api, openrouter, ollama). Development items
+    only, after G0; nothing is sent when the engine's key is missing."""
+    pd = Path(job_root).resolve()
+    guard_job_root(pd, "G0")
+    if engine not in ENGINES:
+        raise SystemExit(f"engine is one of {', '.join(ENGINES)}")
+    if KEY_ENV.get(engine) and not os.environ.get(KEY_ENV[engine]):
+        raise SystemExit(f"HOLD · {KEY_ENV[engine]} is not configured; no item was transmitted")
+    cfg = _read_config(pd)
+    labels, regions = _resolve_labels(cfg, None), _regions(cfg)
+    items = _canonical_v2_items(pd, cfg, [{"item_id": str(i)} for i in item_ids])
+    for n, it in enumerate(items):
+        it.setdefault("anchor_idx", n + 1)
+    prompt = _guideline(pd, guideline).read_text().strip() + _output_contract(labels, regions)
+    model = model or ((cfg.get("labeler") or {}).get("engines") or {}).get(engine, {}).get("model") \
+        or DEFAULT_MODEL[engine]
+    out = output or pd / "eval" / "per_version" / f"{guideline}_{engine}_{model.replace('/', '_')}_results.jsonl"
+    return asyncio.run(run_engine(pd, engine, guideline, guideline, prompt, items, _make_parser(labels, regions),
+                                  model, concurrency, out))
+
+
 async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--project-dir", type=Path, required=True)
@@ -261,7 +355,7 @@ async def main():
     ap.add_argument(
         "--engine",
         default="both",
-        choices=["claude_sdk", "codex", "openai_api", "both"],
+        choices=["claude_sdk", "codex", "openai_api", "openrouter", "ollama", "both"],
     )
     ap.add_argument("--labels", default=None, help="override config labels, e.g. HIGH,LOW,NONE")
     ap.add_argument(
@@ -283,13 +377,13 @@ async def main():
         raise SystemExit(str(hold)) from None
     cfg = _read_config(pd)
     labels = _resolve_labels(cfg, args.labels)
-    parse_label = _make_parser(labels)
+    regions = _regions(cfg)
+    parse_label = _make_parser(labels, regions)
     eng_cfg = (cfg.get("labeler") or {}).get("engines") or {}
     engines = ["claude_sdk", "codex"] if args.engine == "both" else [args.engine]
-    if "openai_api" in engines and not os.environ.get("OPENAI_API_KEY"):
-        raise SystemExit(
-            "HOLD · OPENAI_API_KEY is not configured; no item was transmitted"
-        )
+    for eng in engines:
+        if KEY_ENV.get(eng) and not os.environ.get(KEY_ENV[eng]):
+            raise SystemExit(f"HOLD · {KEY_ENV[eng]} is not configured; no item was transmitted")
 
     if args.input:
         src = Path(args.input)
@@ -319,7 +413,7 @@ async def main():
         gpath = pd / "guideline" / "guideline.md"
     if not gpath.exists():
         raise SystemExit(f"guideline not found for {args.version}: {gpath}")
-    system_prompt = gpath.read_text().strip() + _output_contract(labels)
+    system_prompt = gpath.read_text().strip() + _output_contract(labels, regions)
 
     tag = args.tag or args.version
 

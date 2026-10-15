@@ -8,10 +8,12 @@ description: >-
   completed labels. Use for starting, resuming, routing, or checking a
   subjective annotation job; defining H/L/N and boundary regions; calibration
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
-  or /haipipe-labeling (named subjective-label until 2026-10-07).
+  or /haipipe-labeling (named subjective-label until 2026-10-07). Called with
+  a labeling Job folder, it opens the workbench on the step the Job is at and
+  guides the person through it, one step at a time, from the items Task on.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-10-07"
+  version: "0.11.1"
+  last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -29,6 +31,31 @@ it has one. A Page path and a source path remain relative to the current
 workspace (or may be absolute); do not assume the tools checkout is the
 current directory. Set `PYTHON_BIN` to that workspace's Python interpreter
 (for example `.venv/bin/python`, or `python3` when no project venv is used).
+
+## Start from a Job: `/haipipe-labeling <Job folder>`
+
+The person's one start message (JL 261014: "from /haipipe-labeling <path to job> and it will open the UI for me,
+and guide me step by step"). A labeling Job is one dataset × one label; its Tasks are typed by their faces'
+`task-type:` lines (items · ground truth · building · scanning · score), and the work goes items → building → scanning.
+
+1. **Open and read.** Run `"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/haipipe-labeling/scripts/start.py" <Job>`.
+   It reads the Job from disk (writes nothing), opens the workbench on the tab of the step the Job is at
+   (starting the SPACE's host through /wb when none runs) and prints the Job's Tasks, the one step now, `who`
+   does it and what. `--no-open` only prints; `--json` for the fields.
+2. **Say where it stands**, in a few lines: the Job's Tasks with ▶ on the current one, the data it reads, the step
+   now, any `note` as it is, and the tab now open by its full `open` link (never a bare `/_board/...` path).
+3. **Guide that one step**, then stop:
+   - `who: agent` on the items Task: do it now through `/haipipe-labeling-preparation` (its "The items Task"):
+     describe runs to the end; items and embed stop once their recipe or build is proposed. Then tell the person
+     what to look at in the open tab, and what to press.
+   - `who: person`: say exactly what to press in which tab (Sign the recipe, Agree the build), and that the next
+     message is this same start message, or the tab's own Copy prompt.
+   - the building Task: the items are ready; continue with the no-argument behaviour below on that Task.
+4. **Every message after** is the same start message (or a tab's prompt, with its `user feedback:` line). The
+   script reads the Job again, so the guide moves on by itself; nothing is remembered between messages.
+
+A person's feedback rides on the message as a `user feedback:` line; on the items Task it goes into the step's
+config as its notes (and a revision's reason).
 
 ## Architecture
 

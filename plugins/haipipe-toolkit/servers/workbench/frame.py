@@ -129,6 +129,10 @@ class Theme:
     # work_body(folder, root) -> html: what an opened Job card shows below its Tasks (a cowork Job's timeline of
     # emails, meetings and steps, which are its work); "" for none
     work_body: Callable | None = None
+    # delivery_fixed(item) -> (groups, order): a Delivery result's groups by the theme's rule, shown with no ×, and
+    # its place in the list (a paper's whole build, then its Main, Appendix and Letters Sections in reading order;
+    # JL 261014: "there should be groups for the section-task group"); None keeps the base's newest-first list
+    delivery_fixed: Callable | None = None
 
     def level_name(self, level: str) -> str:
         return self.level_names.get(level, level)
@@ -3848,8 +3852,17 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
     items = delivery_items(block, None if folder.resolve() == block.resolve() else delivery_dir(folder))
     if not items:
         return ""
-    rows = "".join(_delivery_card(i, root, _send_rows(deliv), theme or VANILLA) for i in items)
-    kinds = tuple(k for k in DELIVERY_OPENS.values() if any(k in i["fixed"] for i in items))
+    theme = theme or VANILLA
+    extra = ()
+    if theme.delivery_fixed:                       # the theme's own groups (no ×) and reading order
+        placed = [(i, theme.delivery_fixed(i)) for i in items]
+        for i, (groups, _) in placed:
+            i["fixed"] = list(groups) + i["fixed"]
+            i["groups"] = list(groups) + [g for g in i["groups"] if g not in groups]
+        extra = tuple(dict.fromkeys(g for _, (groups, _) in placed for g in groups))
+        items = [i for i, _ in sorted(placed, key=lambda p: (p[1][1], -p[0]["when"]))]
+    rows = "".join(_delivery_card(i, root, _send_rows(deliv), theme) for i in items)
+    kinds = extra + tuple(k for k in DELIVERY_OPENS.values() if any(k in i["fixed"] for i in items))
     return group_list(block, root, "delivery", [i["groups"] for i in items], rows, fixed=kinds)
 
 

@@ -223,7 +223,7 @@ PROPOSALS = {
                ["one Question │ Work │ Report row per Question at every level (b10 s02-D25)",
                 "the Question cell as the Insight row (b03 s32-D05): label and state dot, short name, one sentence, › More"],
                "kept: the Question cell as Insight's (b03 s32-D05)",
-               "? Job › Audience Report draws no rows: s12 plans ours vs the dataset's keys (Scored · Building), "
+               "? Job › Audience Report draws no rows: s12 plans ours vs the dataset's ground truth (Scored · Building), "
                "read from t04's scoring Runs; j01 has no reports/ and no t04 yet"),
     "space": (F("block", "Work Details", "Labeling"), ".split",
               ["one content box and one right column, Disk · Runs, at every labeling level",
@@ -311,7 +311,7 @@ THEME_ELEMENTS = [
     ("view row", "Task", "Work Details › Preparation … Audit, then Evidence · Value", "base row, the theme's views",
      "yes", "s13: Preparation to Description, Scan to Work Details, a Building | Scanning divider"),
     ("Question rows", "Block", "Audience Report", "base (the Insight row)", "", ""),
-    ("Question rows", "Job", "Audience Report › Scored · Building (ours vs the keys)", "base row, the labeling words",
+    ("Question rows", "Job", "Audience Report › Scored · Building (ours vs the ground truth)", "base row, the labeling words",
      "no", "not drawn: no reports/ in the Job, no t04 scoring Task yet"),
     ("Question rows", "Task", "Audience Report › Report (REPORT.md)", "base (a work Task's Report)", "yes",
      "REPORT.md is the engine's render; s13: the guideline's cheatsheet inside it"),
@@ -366,7 +366,7 @@ OP_RUN = {"source-normalize": "run-labeling-corpus-<corpus>", "unit-recipe": "ru
           "audit-human-gold": "run-labeling-audit-<job>", "audit-analyze": "run-labeling-audit-<job>",
           "dstar-materialize": "run-labeling-final-<job>"}
 WORDS_RUN = {"copy setup request": "run-labeling-corpus-<corpus>", "edit the schema": "run-labeling-schema-<jNN>",
-             "score against the keys": "run-labeling-score-<jNN>", "render the report": "run-labeling-report-<job>",
+             "score against the ground truth": "run-labeling-score-<jNN>", "render the report": "run-labeling-report-<job>",
              "confirm meaning": "run-labeling-definition-<job>"}
 # the planned screens' buttons (b03's s11 · s12 · s13 rows for labeling), checked the same way
 PLANNED_BUTTONS = sorted({b for spec in (list(L.VIEW_FAMILY["labeling"].values()) + list(LV.JOB_FAMILY_VIEWS["labeling"].values())

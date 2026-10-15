@@ -45,6 +45,8 @@ P0_FILES = (
 REGIONS = ("H", "L", "N", "HL", "LN", "HN", "HLN")
 MEANING_REVISIONS = "gates/meaning-revisions"  # one JSON per human-decided change to the label meanings
 MEANING_REVISION_SCHEMA = "subjective-label-meaning-revision/v1"
+REGION_REVISIONS = "gates/region-revisions"  # one JSON per human-decided change to the region meanings
+REGION_REVISION_SCHEMA = "subjective-label-region-revision/v1"
 POLICY_COMPONENTS = (
     "guideline.md",
     "boundaries.yaml",
@@ -169,6 +171,29 @@ def _revision_chain_errors(config: dict, revisions: list[dict]) -> list[str]:
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
     if revisions and labels.get("meanings") != revisions[-1].get("after"):
         errors.append("label meanings in config.yaml differ from the last meaning revision")
+    return errors
+
+
+def region_revisions(job_root: Path) -> list[dict]:
+    """Every recorded change to the region meanings, oldest first (see ``revise_region_meanings``)."""
+    base = Path(job_root) / REGION_REVISIONS
+    if not base.is_dir() or base.is_symlink():
+        return []
+    rows = [load_mapping(path) for path in base.glob("*.json") if not path.is_symlink()]
+    return sorted(rows, key=lambda row: int(row.get("seq") or 0))
+
+
+def _region_chain_errors(config: dict, revisions: list[dict]) -> list[str]:
+    """As for the label meanings: each region revision starts where the last ended; config.yaml holds the last."""
+    errors = []
+    for index, revision in enumerate(revisions, start=1):
+        if revision.get("schema") != REGION_REVISION_SCHEMA or revision.get("seq") != index:
+            errors.append(f"region revision {index}: malformed or out of sequence")
+        elif index > 1 and revision.get("before") != revisions[index - 2].get("after"):
+            errors.append(f"region revision {index}: does not start from revision {index - 1}")
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    if revisions and regions.get("meanings") != revisions[-1].get("after"):
+        errors.append("region meanings in config.yaml differ from the last region revision")
     return errors
 
 
@@ -1234,6 +1259,88 @@ def revise_meanings(
             "updated_files": updated, "next_action": after_state["next_action"]}
 
 
+def revise_region_meanings(
+    *,
+    job_root: Path,
+    human_id: str,
+    meanings: dict,
+    run: str,
+    revised_at: str,
+) -> dict:
+    """Record one human-decided change to the region meanings (each pool's name and sense), before round release.
+
+    The same law as ``revise_meanings`` for the labels: only the configured human, only before any item is judged
+    or any round released; the revision keeps before, after and the deciding Run, and retires the meaning
+    confirmation and G0 receipt, since G0 confirms the regions too. The G_00 policy files keep the words they were
+    created with; the next guideline version renders the new ones.
+    """
+    job_root = job_root.resolve()
+    before_state = status(job_root)
+    if before_state["missing"] or before_state["p0_integrity_errors"]:
+        raise RuntimeError(f"P0 contract integrity must pass first: {before_state['p0_integrity_errors']}")
+    if before_state["hold"]:
+        raise RuntimeError(f"HOLD · {before_state['hold_reason']}")
+    config_path = job_root / "config.yaml"
+    config_bytes = config_path.read_bytes()
+    config = load_mapping(config_path)
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    if not human_id or authority.get("human_id") != human_id:
+        raise RuntimeError("caller-supplied human_id must match the configured semantic authority")
+    judged = _judged_items(job_root)
+    if judged:
+        raise RuntimeError("the region meanings can change only before any item is judged; already judged: "
+                           + ", ".join(judged[:5]))
+    if any((job_root / "rounds").glob("round_*/card.md")):
+        raise RuntimeError("the region meanings cannot change after a round is released")
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    values = [str(v) for v in regions.get("values") or []]
+    current = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
+    if set(meanings) != set(values) or any(not str(meanings[v] or "").strip() for v in values):
+        raise RuntimeError(f"give one meaning for each region: {values}")
+    after = {v: " ".join(str(meanings[v]).split()) for v in values}
+    if after == current:
+        return {"job_root": str(job_root), "changed": False, "updated_files": [],
+                "next_action": before_state["next_action"]}
+
+    revisions = region_revisions(job_root)
+    new_config = copy.deepcopy(config)
+    new_config["regions"]["meanings"] = after
+    new_authority = new_config.setdefault("authority", {})
+    retired = new_authority.get("meaning_receipt")
+    new_authority["meaning_confirmed"] = False
+    new_authority["meaning_receipt"] = None
+    g0_path = job_root / "gates" / "g0" / "receipt.json"
+    g0_prior = g0_path.read_bytes() if g0_path.is_file() else None
+    archive = _g0_history_path(job_root, g0_prior) if g0_prior is not None else None
+    record = {
+        "schema": REGION_REVISION_SCHEMA,
+        "seq": len(revisions) + 1,
+        "run": run,
+        "human_id": human_id,
+        "identity_assurance": "caller_attested_not_authenticated",
+        "revised_at": revised_at,
+        "before": copy.deepcopy(current),
+        "after": after,
+        "retired_meaning_receipt": retired,
+        "retired_g0_receipt": archive.relative_to(job_root).as_posix() if archive else None,
+    }
+    updated: list[str] = []
+    revision_path = job_root / REGION_REVISIONS / f'{record["seq"]:03d}.json'
+    write_once(revision_path, (json.dumps(record, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
+    updated.append(revision_path.relative_to(job_root).as_posix())
+    if archive is not None and g0_prior is not None:
+        write_once(archive, g0_prior)
+        g0_path.unlink()
+        updated.extend([archive.relative_to(job_root).as_posix(), "gates/g0/receipt.json (retired)"])
+    _replace_exact(config_path, config_bytes, yaml_bytes(new_config))
+    updated.append("config.yaml")
+    after_state = status(job_root)
+    if not after_state["p0_contract_integrity_valid"]:
+        raise RuntimeError(f"region revision left P0 invalid: {after_state['p0_integrity_errors']}")
+    return {"job_root": str(job_root), "changed": True, "revision": revision_path.relative_to(job_root).as_posix(),
+            "updated_files": updated, "next_action": after_state["next_action"]}
+
+
 CORPUS_STATUSES = ("eligible", "sealed")
 
 
@@ -1386,6 +1493,10 @@ def status(job_root: Path) -> dict:
             p0_integrity_errors.append(f"meaning revisions unreadable: {error}")
         else:
             p0_integrity_errors.extend(_revision_chain_errors(config, revisions))
+        try:
+            p0_integrity_errors.extend(_region_chain_errors(config, region_revisions(job_root)))
+        except (OSError, ValueError, TypeError) as error:
+            p0_integrity_errors.append(f"region revisions unreadable: {error}")
 
     source_attestation = sealed_status.get("source_fence_attestation")
     exclusion_asserted = False
@@ -1582,6 +1693,13 @@ def main() -> None:
     inspect = sub.add_parser("status", help="derive the P0 frontier without writing")
     inspect.add_argument("--job-root", type=Path, required=True)
 
+    regions = sub.add_parser("revise-regions", help="record the human's region meanings, before any round")
+    regions.add_argument("--job-root", type=Path, required=True)
+    regions.add_argument("--human-id", required=True)
+    regions.add_argument("--run", required=True, help="the deciding Run, e.g. the open definition-discussion")
+    regions.add_argument("--meanings", type=Path, required=True, help="a YAML or JSON map: region -> meaning")
+    regions.add_argument("--revised-at", default=datetime.now().astimezone().isoformat(timespec="seconds"))
+
     args = parser.parse_args()
     if args.command == "create":
         result = create_contract(
@@ -1602,6 +1720,10 @@ def main() -> None:
             accept_current_schema=args.accept_current_schema,
             attest_as_human=args.attest_as_human,
         )
+    elif args.command == "revise-regions":
+        result = revise_region_meanings(job_root=args.job_root, human_id=args.human_id,
+                                        meanings=load_mapping(args.meanings), run=args.run,
+                                        revised_at=args.revised_at)
     else:
         result = status(args.job_root)
     print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
