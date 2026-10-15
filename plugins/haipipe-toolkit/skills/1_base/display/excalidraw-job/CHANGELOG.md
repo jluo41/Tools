@@ -18,6 +18,8 @@ excalidraw-job · Changelog
   still cuts the name, so ① stays under 600 words.
 - A Task shows up to 8 Runs before the rest fold into one row (was 6), and a screenshot's caption up to 20 words at
   20 px (was 12 words at 18 px), so the Runs of a Job of about 12 and their captions read whole.
+- A card whose full name takes all its room shows the name alone, not a file count in place of its sentence
+  (found on Proj10 b61, 261015).
 
 ## [0.7.4] · 2026-10-14 · results fill the room beside the frame, evenly
 

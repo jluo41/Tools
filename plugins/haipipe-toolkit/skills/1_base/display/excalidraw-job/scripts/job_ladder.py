@@ -868,8 +868,11 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
             left = say_most - Drawing.words_in(short)                   #   run's name is not full?"), its sentence
             if own_say:                                                 #   in what is left, none when too little
                 own_say = words(own_say, max(5, left)) if left >= 4 or not whole else ""
-            says = own_say or ("" if r["values"] else headline(r["result"], say_most))
-            if says and says in said:                                   # a rerun that says the same: say so, once
+            quiet = bool(whole and run_says(cfg, t["name"], r["name"]) and not own_say)   # its name took the room:
+            says = own_say or ("" if r["values"] or quiet else headline(r["result"], say_most))   # no file counts
+            if quiet:                                                   #   in place of its sentence (b61, 261015)
+                line = ("", T_RUNS, INK)
+            elif says and says in said:                                   # a rerun that says the same: say so, once
                 line = (f"↺ as {said[says]}", T_RUNS, GREY)
             else:
                 line = (says if own_say else f"“{says}”", T_RUNS, INK) if says else \
