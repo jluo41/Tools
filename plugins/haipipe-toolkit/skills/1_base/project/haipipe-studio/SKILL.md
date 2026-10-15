@@ -13,7 +13,7 @@ description: >-
   block_index.py.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.23"
+  version: "0.13.24"
   last_updated: "2026-10-13"
   # version history: ./CHANGELOG.md
 ---

@@ -44,7 +44,8 @@ import job_drawing as jd  # noqa: E402
 jr, Drawing, canvas = jd.jr, jd.Drawing, jd.canvas
 INK, RED, GREY = jd.INK, jd.RED, jd.GREY
 
-PAD, MOST = 22, 6                           # inside a box; Runs drawn per Task before the rest fold into one row
+PAD, MOST = 22, 8                           # inside a box; Runs drawn per Task before the rest fold into one row
+                                            # (8, was 6: a Job keeps to about 12 Runs now, so its Tasks' Runs show)
 TERMS = 16                                  # terms drawn in ② before the rest are counted, never dropped
 SHIFT, NODE_W, CARD_W, RUN_W = 380, 1200, 1080, 960   # a step right; a Task's box, its card, a Run's box: wide, so
                                                     #   each says itself in two or three lines (JL 261013)
@@ -60,6 +61,7 @@ NAME_W = 280                                # a Run's original name, left of its
 STAGGER = 240                               # every other results block sits this much further right (错位, 261014)
 RES_COLS, PANEL_GAP, RES_VGAP = 3, 48, 90   # a results block's panels a row, at most; between panels; between blocks
 TABLE_PART = 4                              # rows, at least, in each part of a long table split side by side
+SPILL, COL_GAP = 2.0, 140                   # results past twice ①'s height stand in columns; between two columns
 LANE_X, LANE_W = 60, 30                     # the first lane right of ① for a results link that bends; one lane's room
 CASCADE_DX = 140                            # each Run's row a step further right: free style, not a column (261014)
 T_TITLE, T_JOB, T_STEP, T_CARD, T_RUNS, T_RES = 64, 46, 38, 28, 28, 28   # 大小有致: the logic large, details smaller
@@ -710,13 +712,16 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     row = max((NAME_W + 16 + len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
                for g in pages), default=0)
     right = (len(pages) - 1) * CASCADE_DX + row if pages else 0
-    w = area + 2 * PAD + (right + 28 if right else 0)
-    name = re.sub(rf"^{re.escape(t['id'])}\s*[·:.\-]?\s*", "", bare(t["title"]), flags=re.I)   # its step's own name, so a
-    yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} · {name}: results", area, T_RES + 2, INK) + 6   # block reads
-                                                                    # as its step's without its line (261014)
+    under = bool(pages) and not panels              # transcripts only: its title and finding across the top, the Runs'
+    w = right + 2 * PAD if under else area + 2 * PAD + (right + 28 if right else 0)   # rows under them, no empty
+    name = re.sub(rf"^{re.escape(t['id'])}\s*[·:.\-]?\s*", "", bare(t["title"]), flags=re.I)   # column (261014); a
+    yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} · {name}: results", right if under else area, T_RES + 2, INK) + 6
+    if under and found:                             # block reads as its step's without its line (261014)
+        first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]
+        yy = d.para(x + PAD, yy, f"💡 {words(first, 30)}", min(right, 1800), T_RES, INK) + 24
     side = yy
     if right:                                       # to the right of the results, so a block grows wide, not tall
-        tx = x + PAD + area + 28                    # (JL 261014: "the results of the png can be from left to right")
+        tx = x + PAD + (0 if under else area + 28)                    # (JL 261014: "the results of the png can be from left to right")
         if pages:                                   # a Run a row, each a step further right: its transcript page,
             gy = side                               # then its screenshots with their captions (JL 261014)
             for k, g in enumerate(pages):
@@ -730,11 +735,11 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
                 sx = px + 6
                 for j, (shot, cap) in enumerate(g["shots"]):
                     sh = d.picture(shot, sx, gy, SHOT_W, SHOT_H, fid=f"shot-{nn}-{g['rid']}-{j}")
-                    low = max(low, d.para(sx, gy + sh + 6, words(cap, 12), SHOT_W, 18, GREY))
+                    low = max(low, d.para(sx, gy + sh + 6, words(cap, 20), SHOT_W, 20, GREY))   # whole, readable
                     sx += SHOT_W + 12
                 gy = low + 40
             side = gy - 36
-    if found:                                       # one sentence; the panels carry the numbers
+    if found and not under:                         # one sentence; the panels carry the numbers
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18 if cols == 1 else 30)}", area, T_RES, INK) + 14
     tops = [yy] * cols
@@ -857,10 +862,12 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 boxes.append(([(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY)], RUN_W - 160, 1, False))
                 continue
             title = run_title(r)                                        # its original name (JL 261014): the card's
-            short = clip(title, 20 if say_most >= 20 else 10) if title else ""   # share holds it and its sentence
-            own_say = run_says(cfg, t["name"], r["name"])
-            if own_say:
-                own_say = words(own_say, max(5, say_most - Drawing.words_in(short)))
+            whole = title and Drawing.words_in(title) <= say_most           # share holds it and its sentence: the
+            short = title if whole else clip(title, 20 if say_most >= 20 else 10) if title else ""   # whole name
+            own_say = run_says(cfg, t["name"], r["name"])               #   when it fits (JL 261014: "why here the
+            left = say_most - Drawing.words_in(short)                   #   run's name is not full?"), its sentence
+            if own_say:                                                 #   in what is left, none when too little
+                own_say = words(own_say, max(5, left)) if left >= 4 or not whole else ""
             says = own_say or ("" if r["values"] else headline(r["result"], say_most))
             if says and says in said:                                   # a rerun that says the same: say so, once
                 line = (f"↺ as {said[says]}", T_RUNS, GREY)
@@ -976,6 +983,10 @@ def place_results(d: Drawing, f: dict, width: float, steps: list[dict], cfg: dic
     tall = {c: sum(h for _, h in sz) + RES_VGAP * (len(sz) - 1) for c, sz in sizes.items()}
     cols = next((c for c in sorted(tall) if tall[c] <= bottom - top), min(tall, key=lambda c: (tall[c], c)))
     hs = [h for _, h in sizes[cols]]
+    if sum(hs) + RES_VGAP * (len(hs) - 1) > SPILL * (bottom - top):    # one run would stand far past the frame:
+        groups = results_columns(hs, SPILL * (bottom - top), RES_VGAP)  #   side-by-side columns instead (261014)
+        if len(groups) > 1:
+            return results_in_columns(d, f, width, steps, cfg, assets, cols, sizes[cols], groups)
     tops = results_layout([s["y"] for s in steps], hs, top, bottom, RES_VGAP)
     links = [(s["mid"], s["mid"] if y + 40 <= s["mid"] <= y + h - 40 else y + 40)   # level: straight; else it
              for s, y, h in zip(steps, tops, hs)]                       #   meets the block at its title
@@ -990,6 +1001,81 @@ def place_results(d: Drawing, f: dict, width: float, steps: list[dict], cfg: dic
         else:                                                           # its step's middle meets its block: straight
             pts = [(s["right"] + 10, m), (bx - 12, m)]
         d.line(pts, sw=2, dashed=is_open)
+
+
+def results_columns(hs: list[float], limit: float, gap: float) -> list[list[int]]:
+    """The blocks, in step order, cut into the fewest columns whose tallest stands within `limit` (or within the
+    tallest block, when one alone is taller); each cut so its tallest column is as short as it can be."""
+    n, pre = len(hs), [0.0]
+    for h in hs:
+        pre.append(pre[-1] + h)
+
+    def run(a: int, b: int) -> float:                                   # blocks a..b-1 stacked
+        return pre[b] - pre[a] + gap * (b - a - 1)
+
+    for m in range(1, n + 1):
+        best = [[float("inf")] * (m + 1) for _ in range(n + 1)]
+        cut = [[0] * (m + 1) for _ in range(n + 1)]
+        best[0][0] = 0.0
+        for i in range(1, n + 1):
+            for k in range(1, min(m, i) + 1):
+                for j in range(k - 1, i):
+                    v = max(best[j][k - 1], run(j, i))
+                    if v < best[i][k]:
+                        best[i][k], cut[i][k] = v, j
+        if best[n][m] <= max(limit, max(hs)):
+            groups, i = [], n
+            for k in range(m, 0, -1):
+                groups.insert(0, list(range(cut[i][k], i)))
+                i = cut[i][k]
+            return groups
+    return [[k] for k in range(n)]
+
+
+def results_in_columns(d: Drawing, f: dict, width: float, steps: list[dict], cfg: dict, assets: Path | None,
+                       cols: int, sizes: list[tuple[float, float]], groups: list[list[int]]) -> None:
+    """Results too tall for one run beside ① (JL 261014: "这个 result 右边有这么多的空位你都不用，非要挤着那么一块"): its
+    blocks in columns left to right, in step order, each column centred on ① so what rises above it equals what
+    hangs below. The first column's links bend in lanes beside ① (results_lanes); a later column's link goes
+    down beside ①, under the columns before it, and up the gap left of its own column, so no two links cross."""
+    top, bottom = f["y"], f["y"] + f["height"]
+    middle = (top + bottom) / 2
+    hs = [h for _, h in sizes]
+    tops = [0.0] * len(steps)
+    for g in groups:                                                    # each column centred on ①
+        y = middle - (sum(hs[k] for k in g) + RES_VGAP * (len(g) - 1)) / 2
+        for k in g:
+            tops[k] = y
+            y += hs[k] + RES_VGAP
+    hit = [min(max(steps[k]["mid"], tops[k] + 40), tops[k] + hs[k] - 40) for k in range(len(steps))]
+    later = [k for g in groups[1:] for k in g]
+    lanes = results_lanes([(steps[k]["mid"], hit[k]) for k in groups[0]])
+    below = {k: width + LANE_X + LANE_W * (len(later) - 1 - i) for i, k in enumerate(later)}   # a lower step nearer ①
+    x0 = width + LANE_X + LANE_W * (len(later) + len(lanes)) + 60
+    floor = max(tops[k] + hs[k] for k in range(len(steps))) + 80        # under every column
+    xs, x = {}, x0
+    for c, g in enumerate(groups):
+        if c:
+            x += LANE_W * len(g)                                        # the lanes up into this column
+        for p, k in enumerate(g):
+            xs[k] = x + (STAGGER // 2 if p % 2 else 0)                  # 错位 inside a column
+        x = max(xs[k] + sizes[k][0] for k in g) + COL_GAP
+    for c, g in enumerate(groups):
+        for p, k in enumerate(g):
+            s, bx = steps[k], xs[k]
+            _, h, is_open = results_block(d, bx, tops[k], s["task"], cfg, s["found"], assets, s["thumb"], cols)
+            m = s["mid"]
+            if c == 0 and p in lanes:                                   # first column: out, along its lane, in
+                lx = width + LANE_X + LANE_W * (len(later) + lanes[p])
+                pts = [(s["right"] + 10, m), (lx, m), (lx, hit[k]), (bx - 12, hit[k])]
+            elif c == 0:
+                pts = [(s["right"] + 10, m), (bx - 12, m)]
+            else:                                                       # down, under the columns before, up its gap
+                low = floor + 40 * later.index(k)
+                gx = min(xs[q] for q in g) - 60 - LANE_W * (len(g) - 1 - p)
+                pts = [(s["right"] + 10, m), (below[k], m), (below[k], low), (gx, low), (gx, hit[k]),
+                       (bx - 12, hit[k])]
+            d.line(pts, sw=2, dashed=is_open)
 
 
 # ── ② the words it uses, how sure, what would close each open point: small, it explains ① ───────────────────

@@ -323,3 +323,42 @@ def test_a_results_block_lays_its_panels_side_by_side(tmp_path):
     assert w2 > w1 and h2 < h1
     _, h3, _ = job_ladder.results_block(job_ladder.Drawing(), 0, 0, t, cfg, "", tmp_path / "assets", cols=3)
     assert h3 == h2                                                               # never a column with nothing in it
+
+
+def test_results_too_tall_stand_in_columns_centred_and_uncrossed(monkeypatch):
+    """Past twice ①'s height the blocks stand in side-by-side columns (JL 261014), each centred on ①, so what rises
+    above it equals what hangs below; no two blocks overlap and no two links cross."""
+    groups = job_ladder.results_columns([1900] * 5, 2 * 3000, 90)
+    assert len(groups) == 2 and [k for g in groups for k in g] == list(range(5))
+    assert all(sum(1900 for _ in g) + 90 * (len(g) - 1) <= 6000 for g in groups)
+
+    blocks = []
+
+    def fake(d, x, y, t, cfg, found, assets, thumb=None, cols=1):
+        blocks.append((x, y, 1500, t["h"]))
+        return 1500, t["h"], False
+    monkeypatch.setattr(job_ladder, "results_block", fake)
+    d = job_ladder.Drawing()
+    f = {"x": 0, "y": 0, "width": 4000, "height": 3000}
+    steps = [{"task": {"h": h}, "found": "", "thumb": None, "y": 300 + 500 * k, "mid": 340 + 500 * k,
+              "right": 3000} for k, h in enumerate([2200, 1900, 2100, 2000, 2300])]
+    sizes = [(1500, s["task"]["h"]) for s in steps]
+    job_ladder.results_in_columns(d, f, 4000, steps, {}, None, 1, sizes, job_ladder.results_columns(
+        [h for _, h in sizes], 6000, 90))
+    top = min(y for _, y, _, _ in blocks)
+    bottom = max(y + h for _, y, _, h in blocks)
+    assert abs((0 - top) - (bottom - 3000)) < 1                         # equal above and below
+    for i, a in enumerate(blocks):
+        for b in blocks[i + 1:]:
+            assert a[0] + a[2] <= b[0] or b[0] + b[2] <= a[0] or a[1] + a[3] <= b[1] or b[1] + b[3] <= a[1]
+    segs = []
+    for k, e in enumerate(e for e in d.els if e["type"] in ("arrow", "line")):
+        pts = [(e["x"] + px, e["y"] + py) for px, py in e["points"]]
+        segs += [(k, p, q) for p, q in zip(pts, pts[1:])]
+
+    def cross(p, q, r, s):                                              # an H and a V segment that properly meet
+        (h1, h2), (v1, v2) = ((p, q), (r, s)) if p[1] == q[1] else ((r, s), (p, q))
+        if h1[1] != h2[1] or v1[0] != v2[0]:
+            return False
+        return min(h1[0], h2[0]) < v1[0] < max(h1[0], h2[0]) and min(v1[1], v2[1]) < h1[1] < max(v1[1], v2[1])
+    assert not [(a, b) for a, p, q in segs for b, r, s in segs if a < b and cross(p, q, r, s)]

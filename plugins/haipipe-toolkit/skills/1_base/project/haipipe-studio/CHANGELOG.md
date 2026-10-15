@@ -1,6 +1,12 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.13.24] · 2026-10-15 · a Job's Runs list names each Run's own state**
+
+- `job_results.tally` named every blocked, running or draft Run "partly", while excalidraw-job's drawing named it
+  blocked (found by the b13 reader review, 261014: "8 partly" beside "8 blocked"). The list now says each 🔶 Run's own
+  word: `8 Runs: 8 blocked`.
+
 **[0.13.23] · 2026-10-14 · canvas.stairs and canvas.grid count results that rise above a frame**
 
 - excalidraw-job 0.7.4 centres a staircase's results on it, so they may rise above its top as far as they hang below

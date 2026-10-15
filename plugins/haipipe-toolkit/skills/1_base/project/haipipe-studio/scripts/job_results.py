@@ -450,7 +450,12 @@ def tally(rows: list[dict]) -> str:
     if not runs:
         return "no Run yet"
     parts = [(sum(r["mark"] == m for r in runs), w) for m, w in
-             (("✅", "done"), ("🔶", "partly"), ("❌", "failed"), ("⬜", "not run"))]
+             (("✅", "done"), ("❌", "failed"), ("⬜", "not run"))]
+    middle = {}                                                         # 🔶 by the Run's own word (blocked, running,
+    for r in runs:                                                      #   draft), as the drawing names it (b13 review
+        if r["mark"] == "🔶":                                           #   261014: "8 partly" beside "8 blocked")
+            middle[r["state"]] = middle.get(r["state"], 0) + 1
+    parts = parts[:1] + [(n, s) for s, n in sorted(middle.items(), key=lambda x: -x[1])] + parts[1:]
     return f"{len(runs)} Run{'s' if len(runs) > 1 else ''}: " + ", ".join(f"{n} {w}" for n, w in parts if n)
 
 

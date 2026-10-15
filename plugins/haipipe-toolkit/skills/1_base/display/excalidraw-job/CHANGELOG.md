@@ -1,6 +1,24 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.7.5] · 2026-10-14 · results too tall for one run stand in columns
+
+- Asked 261014 on Proj10 b12 s21 (five transcript blocks, about 10,000 px in one run beside a 3,614 px frame; the
+  rule "以 job frame 的上下为界限 … 超出部分一定要对称、均匀"): past `SPILL` (2) times ①'s height, the blocks stand
+  in side-by-side columns, in step order, the fewest whose tallest fits (`results_columns`), each column centred on
+  ① so what rises above it equals what hangs below (`results_in_columns`). Below that, 0.7.4's one run is unchanged.
+- Links never cross: the first column's bend in `results_lanes`; a later column's link drops beside ①, runs under
+  the columns before it and climbs the gap left of its own column.
+- A block with transcript rows and no chart, figure or table puts its title and finding across the top and the Run
+  rows under them, instead of an empty column beside them.
+- Proj10 b12 s21: two columns, 1,170 px above and below ① (was one run of about 10,000 px).
+- Tests: columns that fit, overflow equal above and below, no overlap, no crossing link.
+- A Run card names its Run in full when the name fits the card's share of ①'s words (asked 261014: "why here the
+  run's name is not full?"); its sentence takes what is left, none when under 4 words. A Job past about 12 Runs
+  still cuts the name, so ① stays under 600 words.
+- A Task shows up to 8 Runs before the rest fold into one row (was 6), and a screenshot's caption up to 20 words at
+  20 px (was 12 words at 18 px), so the Runs of a Job of about 12 and their captions read whole.
+
 ## [0.7.4] · 2026-10-14 · results fill the room beside the frame, evenly
 
 - Asked 261014 on LLMRec b04 s27 (a screenshot of its results, one narrow column hanging 4,800 px below a 3,218 px

@@ -11,7 +11,7 @@ description: >-
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.7.4"
+  version: "0.7.5"
   last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
@@ -33,7 +33,8 @@ Physician-SPACE's LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 ea
    下为界限 … 最上面和最下面的 frame 可以超过 job frame 的最上和最下，但超出部分一定要对称、均匀".
 
 ```text
-① 🪜 the staircase (main, large)                    outside: within ①'s top and bottom, or past both equally
+① 🪜 the staircase (main, large)                    outside: within ①'s top and bottom, or past both equally;
+                                                     past twice ①'s height: side-by-side columns
    🎯 the reading (the key point)
    🧱 j08 · why · done when · answers ──▶ 📥 in · 📤 out
     └─▶ 🧩 t01 · asks · did ─ r01 · r02 (grey) · r04 📌 current ───────────▶ 📊 t01: one sentence · charts
