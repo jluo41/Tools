@@ -388,9 +388,9 @@ def _disk(level: str, view: str, folder: Path) -> tuple:
 
 # ── Block (s11) ──────────────────────────────────────────────────────────────────────────────
 B_SKILLS = {"add-goal": ("haipipe-design-goal",), "setup-rules": ("haipipe-design-goal",), "add-inputs": ("haipipe-design-goal",),
-            "add-job": ("haipipe-design",), "propose": ("haipipe-design-method",), "propose-questions": ("haipipe-question",),
-            "report": ("haipipe-question", "haipipe-draft"), "add-observed": ("haipipe-design-method",),
-            "score": ("haipipe-design-method",), "draw": ("workbench-studio",), "release": ("haipipe-design-delivery",)}
+            "add-job": ("haipipe-design",), "propose": ("haipipe-design-method",), "propose-questions": ("haipipe-report",),
+            "report": ("haipipe-report", "haipipe-draft"), "add-observed": ("haipipe-design-method",),
+            "score": ("haipipe-design-method",), "draw": ("haipipe-studio",), "release": ("haipipe-design-delivery",)}
 
 
 def _bk(b: dict, root: Path, label: str, rtype: str, prompt: str) -> dict:
@@ -636,7 +636,7 @@ def _q_asks(q: dict) -> str:
 
 
 def _q_evidence(q: dict) -> list:
-    """The Jobs a question rests on: `evidence:` (the design register), else `work:` (haipipe-question's)."""
+    """The Jobs a question rests on: `evidence:` (the design register), else `work:` (haipipe-report's)."""
     return [str(e).split("_")[0] for e in (q.get("evidence") or q.get("work") or [])]
 
 
@@ -951,7 +951,7 @@ J_SKILLS = {"setup-goal": ("haipipe-design-goal",), "setup-method": ("haipipe-de
             "verify": ("haipipe-design-unit",), "revise": ("haipipe-design-unit",), "rank": ("haipipe-design-unit",),
             "freeze-predictions": ("haipipe-design-delivery",), "release": ("haipipe-design-delivery",),
             "close": ("haipipe-design-workflow",),
-            "draw": ("workbench-studio",)}
+            "draw": ("haipipe-studio",)}
 
 
 def _task_runs(j: dict) -> list:
@@ -1297,7 +1297,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     rs = R.runs(tdir)
     rows = lambda *t: _rows(rs, root, *t)
     draw = _kind("run-draw-s01", "Draw a studio topic about this Task: {folder}/studio/sNN-<topic>/ (run-draw-<sNN>).",
-                 "workbench-studio")
+                 "haipipe-studio")
     if kind == "t00":
         r = _kind("run-reason-t00", "Reason ideas for the Job (② run-reason-t00): inputs/ only, topic by topic, to N + 5 "
                   "ideas, each naming its source.", "haipipe-design-unit", rows=rows("reason"), level="Task")

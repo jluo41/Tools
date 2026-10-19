@@ -14,8 +14,8 @@ description: >-
   logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
   /haipipe-paper-story.
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-10-14"
+  version: "0.22.0"
+  last_updated: "2026-10-19"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -205,6 +205,11 @@ Cover:
   presuming that the answer will be favorable.
 - **Question logic** — which questions depend on others and how their answers
   jointly resolve the paper's puzzle.
+
+Open §3 with **the story, question by question**: `**The paper's question**: …`, then a numbered list of the
+research questions in reading order, each a plain question with its answer so far and its mark. Read top to bottom
+the list is the paper's narrative, and each question's Section is where the paper answers it (JL 261019: "the
+quesiton can be the narrative as well"). excalidraw-story titles its steps from this list.
 
 Write one block per question (JL 260929: "the question is the main block"): a
 `#### 3.N · Question N · RQn` heading, the question's own fields, then four
@@ -571,9 +576,19 @@ reruns each `build_*.py` and looks at the result in the Idea Studio (the `Redraw
 `haipipe-paper-workflow/ref/run-cards.md`). The scripts write through the studio's canvas writer, so a mark a
 person adds on the canvas survives the next run; the builder's own boxes are never moved by hand.
 
-A workflow drawing is the usual first one, the paper's building map: data → the study's tasks → the answer, then
+**The story drawing comes first** (JL 261019: "In the story studio s02-story, I think we might need to list the
+research questions, and how could we support them"; "please make the story, I think it should be composed a list of
+the questions to answer, and the quesiton can be the narrative as well"). The story is the list of research
+questions it answers, and read in order the questions are its narrative. `excalidraw-story`
+(`1_base/excalidraw/excalidraw-story/`) draws it from the telling's face: the paper's question, each research
+question as a step titled by its narrative question, beside it the answer so far, its claim and the E rows and T
+rows behind it (✅ answered, 🔶 partly, ⬜ nothing yet, red and dashed), the pitch, what we will not claim, and the
+Runs still to make. Run `story_drawing.py make <topic>` once for the forwarding builder, then the builder after
+every change to the face. First user: Paper-LLMRecPhy `studio/s02-story-misq-agent-physician-visibility/`.
+
+A workflow drawing is the usual second one, the paper's building map: data → the study's tasks → the answer, then
 one row per question: analysis → hypothesis and claim → where the answer lands. It is `excalidraw-workflow`'s
-(`1_base/display/excalidraw-workflow/`): run `workflow_drawing.py make <topic>` for the forwarding builder and a
+(`1_base/excalidraw/excalidraw-workflow/`): run `workflow_drawing.py make <topic>` for the forwarding builder and a
 `<topic>-drawing.yaml` holding only the foundation cards, their links and the displays; every other word is read
 from the telling, the Board Questions' reports and the Task folders on every build. When a version has a comments
 report whose Review Items fill `hits` and `fixed by` (haipipe-paper-comments), the map marks in red what the

@@ -322,7 +322,7 @@ resources:
   contribution: Serves a family's method file, cards and methods canvas in Guide ›
     Method.
   notes: ''
-- title: draw-logic-tree and excalidraw-section skills
+- title: draw-logic-tree and excalidraw-draft skills
   url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree
   questions:
   - Q11

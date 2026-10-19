@@ -128,9 +128,9 @@ mindmap:
     summary: "one question's working material, not a paper figure"
     by: standing
     leaves:
-    - "excalidraw-section draws a paper's structure from its Draft"
+    - "excalidraw-draft draws a paper's structure from its Draft"
     - "a manuscript figure is a display unit (haipipe-display)"
-    - "the report's words belong to haipipe-draft and haipipe-question"
+    - "the report's words belong to haipipe-draft and haipipe-report"
     - "⏳ later: does a report drawing follow the drawing principles?"
 ```
 
@@ -188,7 +188,7 @@ Real folders, read from disk on every build; the changelog lines are its newest 
 
 ```yaml
 skill:
-  path: plugins/haipipe-toolkit/skills/1_base/display/excalidraw-report
+  path: plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-report
   open: [ref]
   notes:
     SKILL.md: "both modes, rules, steps"

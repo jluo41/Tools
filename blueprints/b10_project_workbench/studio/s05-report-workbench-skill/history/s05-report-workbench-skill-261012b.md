@@ -14,7 +14,7 @@ own. The Report used to share a topic with the Studio
 
 **Topic:** the Report seen from both sides: what a report is and how a level answers its Questions,
 its workbench (the Report Space on Block, Job and Task: one row per Question, Logic │ Work │ Report)
-and its skill (`/haipipe-report`, with `/haipipe-question` asking). Unlike Studio, Delivery and
+and its skill (`/haipipe-report`). Unlike Studio, Delivery and
 Related, which the Block alone holds, every level keeps its own reports, as it keeps its own Runs (s06).
 
 **Feeds:** `reports/` q03_block_questions · q09_studio_report_on_screen
@@ -50,7 +50,7 @@ s05-report-workbench-skill/
 ├── .s05-report-workbench-skill.seed.json    generated snapshot for preserving marks
 └── history/                                 the 261011 builder, face, drawing and preview
 skill: Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/
-       (asking: Tools/plugins/haipipe-toolkit/skills/1_base/question/haipipe-question/)
+       (asking: Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/)
 ```
 
 Rebuild: `python build_s05_report_workbench_skill.py`.
@@ -72,7 +72,7 @@ skills/1_base/project/
 └── haipipe-run/        s06 Run
 servers/workbench/frame.py         question_rows · _report_cell · _answering · _opening
 servers/workbench/page_reader.py   page_document, a report Page in the reader
-skills/1_base/question/haipipe-question/   asks: the row, the folder
+skills/1_base/project/haipipe-report/   asks: the row, the folder
 ```
 
 

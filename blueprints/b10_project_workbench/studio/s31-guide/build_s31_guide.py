@@ -56,7 +56,7 @@ COMPARE = [  # what · the Guide tab · a level tab (Block · Job · Task)
 QUESTIONS = [
     "? levels.yaml: the base's home for the default card words (Block · Job · Task × the six Spaces)",
     "? folds: the tab you came from opens its level and folds the other two; remember a person's folds?",
-    "? the page family (workbench/task-page): its own Guide, or the Task sections of each theme's Guide",
+    "? the page family (workbench/workbench-task-draft): its own Guide, or the Task sections of each theme's Guide",
     "? a Method step whose 'where' is not one of the six Spaces: fail the tests, or warn on the page",
     "? RoadMap Draw per level: which drawings each theme lists first",
     "? b03's s11 · s12 · s13 (Block · Job · Task variants): draw their screens in this style",
@@ -184,7 +184,7 @@ def frame_tree(x0, y0):
     rel([(1184, 1000), (1240, 1000), (1240, 1096), (1184, 1096)], "pdf column", (1250, 1040))
     text(x0 + 420, oy + 80, "? levels.yaml: the base's home for the default words", 14, RED)
     text(x0, oy + 1190, "The same tree in every theme; workbench_guide.py reads each theme's guide/ and related/ "
-                        "(the Page Task's own is workbench/task-page/).", 18, INK)
+                        "(the Page Task's own is workbench/workbench-task-draft/).", 18, INK)
     L.close_frame(fr)
     return fr
 

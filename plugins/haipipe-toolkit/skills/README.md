@@ -15,17 +15,17 @@ The skill folders sit in three layers:
 ```text
 skills/
 ├── 0_utils/    generic helpers, not tied to the Block -> Job -> Task ladder
-│               (response-format, diagram-ascii, table-workbench, table-papers, ...)
+│               (response-format, diagram-ascii, ask-questions, table-workbench, table-papers, ...)
 ├── 1_base/     what every theme is built on: project (the ladder, Runs) · task (the work
-│               Task) · page (the Page Task) · question · writing · display · ideation · search
+│               Task) · draft (the words) · evidence · display · excalidraw · workbench · ideation · search
 └── 2_theme/    one folder per theme: cowork · design · discovery · insight · labeling · paper,
                 each holding its haipipe-<theme> skills and its workbench-<theme>
 ```
 
 A skill in `0_utils` is one folder deep (`0_utils/<skill>/`); a skill in `1_base`
-or `2_theme` sits in its family (`1_base/page/haipipe-draft/`, `2_theme/paper/workbench-paper/`).
+or `2_theme` sits in its family (`1_base/draft/haipipe-draft/`, `2_theme/paper/workbench-paper/`).
 Code finds the skills root by its folder name and a skill by its folder name
-(`servers/_host/host_paths.py` `skill_dir`, `1_base/page/haipipe-draft/src/skill_paths.py`),
+(`servers/_host/host_paths.py` `skill_dir`, `1_base/draft/haipipe-draft/src/skill_paths.py`),
 never by counting parent folders, so moving a family to another layer breaks no path.
 The servers pair with the layers the same way: `servers/workbench` is the base
 every workbench reuses, and each `servers/workbench-<theme>` gives its theme.
@@ -83,9 +83,8 @@ item, execution version, RF, Result path and hash; they never mean “latest”.
 The Page workflow
 =================
 
-The Page family is canonical under `skills/1_base/page/` (the Board family was retired
-into it, JL 261005): `haipipe-draft`, `haipipe-folder`, `haipipe-sentence`, `workbench`,
-`haipipe-draft-workflow` with its Run skills under `workflow-runs/`, and the two Page workbench skills, `workbench-page` and `workbench-studio`. The Page runtime owns file intake,
+The Page family is canonical under `skills/1_base/draft/` (the Board family was retired
+into it, JL 261005): `haipipe-draft`, `haipipe-draft-writing`, `haipipe-draft-workflow` with its Run pages (context, structure, scratch in `haipipe-draft/ref/`; revise in `haipipe-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is haipipe-studio's. The Page runtime owns file intake,
 individual rendering and standalone editing/hosting, the Board checker and the
 Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
@@ -94,13 +93,13 @@ The Page Face is a small, numbered workflow. The numbers are records, not
 extra folder levels:
 
 ```text
-00 CONTEXT   -> haipipe-draft-context   gather policy, requirements, audience,
+00 CONTEXT   -> haipipe-draft-logic   gather policy, requirements, audience,
                                          source scope, and freeze the brief
-01 OUTLINE   -> haipipe-draft-structure   SHAPE the plan; SURVEY evidence items
-02 EVIDENCE  -> haipipe-draft-evidence LAND Supporting/Local Run Results;
+01 OUTLINE   -> haipipe-draft-logic   SHAPE the plan; SURVEY evidence items
+02 EVIDENCE  -> haipipe-evidence (ref/page-evidence.md) LAND Supporting/Local Run Results;
                                          EMBED accepted evidence
 03 CONTENT   -> haipipe-draft-writing  WRITE -> DRAFT -> REVISE -> BUILD
-04 CHECK     -> haipipe-draft-check    whole-page consistency and readiness
+04 CHECK     -> haipipe-draft-review    whole-page consistency and readiness
 ```
 
 The outline workbench owns the Draft and Evidence Spaces. The evidence
@@ -160,7 +159,7 @@ an existing immutable Result or open the shallowest new Run. The consuming
 Page, not the executor, records the Supporting/Local relationship.
 A board's own Questions are a different thing: topics recorded in its
 `reports/qNN_<topic>/` folders, each answered by a report Page. They are owned
-by `1_base/question/haipipe-question`.
+by `1_base/project/haipipe-report/`.
 
 
 Current skill buckets
@@ -169,9 +168,8 @@ Current skill buckets
 ```text
 0_connect / 0_utils   connectors and shared helpers
 board                 Board format, renderer, Page/Folder contracts
-question              questions on any board: a topic and its asks, reports/qNN_<topic>/, the register,
-                      shaping an ask (question-asking methods), reviewing it (Q1-Q7), chat matching
-project               project container setup
+project               project container setup; haipipe-report holds board questions (a topic and its
+                      asks, reports/qNN_<topic>/, the register), shaping an ask and reviewing it (Q1-Q7)
 task                  internal execution and task-domain families
 discovery             Search, Review, and Synthesize external evidence
 run                   neutral Level-4 Run/Result contract
@@ -204,8 +202,8 @@ Where to read next
 
 * `README.md` — user-facing doors and the Run/Result overview.
 * `skills/1_base/project/haipipe-run/SKILL.md` — the neutral Level-4 contract.
-* `skills/1_base/page/haipipe-draft-workflow/SKILL.md` — the Page loop.
-* `skills/1_base/page/workbench-page/` — Bullet/Evidence
+* `skills/1_base/draft/haipipe-draft-workflow/SKILL.md` — the Page loop.
+* `skills/1_base/workbench/workbench-task-draft/` — Bullet/Evidence
   Workspaces, the evidence-item table, and `ref/run-space.md`, the
   read-only Runs view.
 * `skills/2_theme/paper/workbench-paper/` — the Paper Board's Setup, Ideation,

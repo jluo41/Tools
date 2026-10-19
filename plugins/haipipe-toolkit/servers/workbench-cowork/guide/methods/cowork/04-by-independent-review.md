@@ -33,4 +33,4 @@ returns: a verdict with its route.
 verify: The reviewer differs from every writer of the thing (T2, T7).
 risk: A reviewer that sees the writer's reasoning may adopt it; it reads only the files (ours).
 evidence on ai: Self-preference [Panickssery 2024] is why the writer never reviews its own draft.
-skill: haipipe-writing
+skill: haipipe-draft-review

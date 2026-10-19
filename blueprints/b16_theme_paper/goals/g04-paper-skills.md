@@ -111,7 +111,7 @@ The phases
    on a temp version, add → route → reply makes one item answered.
 
 5 · Section skill (-section): `t0N_` · `t2N_` · `t3N_`; the reader contract; `ref/requirement.md` (V and W
-   rules, the four-axis rubric `1_base/writing/haipipe-writing/ref/evaluation-rubric.md`, the `SUB-*` rows); a Section's own
+   rules, the four-axis rubric `1_base/draft/haipipe-draft-review/ref/evaluation-rubric.md`, the `SUB-*` rows); a Section's own
    `studio/` and `reports/`; `create_section_sessions.py` finds `t0N_` Sections; `ref/section-sessions.md`.
    Check: `paper_ladder.py task` makes a Section the Page workflow opens; `section-stats.py` runs on it.
 
@@ -133,7 +133,7 @@ What the level sessions said (261007)
   Comments), `_version_work` (the sections kinds) and `_delivery_runs` (Build, Check). Their prompts use older
   wording; the cards carry the new prompts.
 - **Section (design_b16_theme_paper-task):** `section_spaces` and its helpers never call `_kinds`; a Section's run
-  types come from the frame's `PAGE_TASK_RUNS` and the Page's run-cards.md. For phase 5, what is live and
+  types come from the frame's `DRAFT_TASK_RUNS` and the Page's run-cards.md. For phase 5, what is live and
   decided: Sections `t00_abstract` · `t0N_<title>` · `t2N_<title>`; the story-row from the version face's
   `## Narrative`; undated Run names (`page.py run-names` renames dated ones); comments as
   `reports/qNN_<kind>-<MMDD>/` of type comments. s13's Requirement row is the drawing for `ref/requirement.md`.
@@ -161,7 +161,7 @@ Never
 
 - Hand-edit a generated file (`workbench-table.md` outputs, `delivery/**`, `results/**`, receipts; AGENTS.md rule 0).
 - Edit `servers/workbench/` or `servers/_host/` (ask design-b03-project-workbench-UI), the Page skills under
-  `1_base/page/` (ask its owner), or `venue/`.
+  `1_base/draft/` (ask its owner), or `venue/`.
 - Commit, push, reset, clean or stash; write an absolute `/Users/…` path; put a project, Board or person's name
   in a skill file (placeholders only).
 

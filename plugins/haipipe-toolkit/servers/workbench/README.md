@@ -77,7 +77,16 @@ version rule Related shares; b10 s03-D10): a row of versions, newest picked, ove
 with no render is drawn slide by slide from its package (`frame.pptx_preview`, `?view=pptx&path=<.pptx>`, its
 pictures from `&media=`).
 
-Timeline is the Studio's fourth folding part, under Delivery (JL 261011: "add another section of the
+Runs is the Studio's fourth folding part, under Delivery (JL 261019: "list another one to show the Hard Run, for
+each task, and just show their status"; b10 s06-D07): every hard Run (`runs/rNN_*`) of every Task under the Block,
+grouped Job → Task, one line each: its mark, its status and the day it finished (`frame.hard_runs`,
+`frame.studio_runs`). A Job and a Task each carry a tally (✅ complete · ❌ failed · 🟧 blocked · ▶️ running · ⏳ queued
+· ⬜ planned or not run). It reads each Run's `result/runtime.yaml`, else its `run.yaml`; soft Runs (`run-*`) and
+`history/` copies are left out, and nothing is written. SPACE Home uses the same reader (`frame.runs_tally`,
+`frame.runs_list`): a Project's line and each Block row count their Runs, and an opened Block row lists them
+(b10 s06-D08).
+
+Timeline is the Studio's fifth folding part, under Runs (JL 261011: "add another section of the
 Timeline"; b10 s08-studio-timeline): what moved when, on one axis down the page, the oldest day at the
 top and the newest at the bottom, a dot per day (JL 261011: "a real timelne ... with a axis down", "up to
 down"). Three levels of detail (JL: "different level of details"): Days, the default, a chart, a row per
@@ -97,7 +106,7 @@ Decisions with no date are left off (b10 s08-D10). By topic, each column, 60 px 
 full name: the sNN straight and bold, the rest slanted above it (s08-D12, s08-D14). Every day from the first to the last stays on the axis: a day with nothing shown gets a
 short row and a hollow dot, more than 3 in a row are one row, "N quiet days" (s08-D13).
 
-Folder is the Studio's fifth folding part, under Timeline (JL 261012: "在 related 和 timeline 下面再搞一个 folder，
+Folder is the Studio's sixth folding part, under Timeline (JL 261012: "在 related 和 timeline 下面再搞一个 folder，
 这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容"; b10 s09-block-folder): the Block's own
 folder as one tree, folders first, then files, by name. A folder folds and says how many things it holds and what it is
 for (`frame.folder_word`: the names every Block shares by a fixed line, a Run by its card, else its face's title); a
@@ -142,7 +151,8 @@ sees the same ones. `studio/_groups.txt` keeps the groups in button order, empty
 included; dragging a group button sideways rewrites it (s02-D17). Each group shows an emoji
 picked from its name by `group_emoji` (a word table, else a fixed palette pick); the × controls
 show only under the mouse.
-Current is personal: drop a card on it, or use Add to Current / Remove from Current. It is
+Current is personal: drop a card on it, or use Add to Current / Remove from Current (a Delivery
+card has no such button, only the drop; JL 261014). It is
 saved in localStorage under the Block's relative path and shared across that Block's
 Block, Job and Task views. It does not sync to another browser or machine. A failed save
 keeps the old selection and reports the failure. The URL stores studio_tag, or
@@ -159,8 +169,19 @@ separate work in s02's Open list; this update does not move their files.
 Two words keep apart: the **level** Task (a `tNN_<task>/` folder, a Task / Page in every theme)
 and a **theme** (work, discovery, paper, insight, design, cowork, labeling; the old "task" theme is
 work). The base owns the levels, shared Guide and Studio, the five work Spaces and their order, the third row, the
-Runs panel and the look; `task-page/` holds the Page Task's own views (outline, evidence, value,
+Runs panel and the look; `workbench-task-draft/` holds the Page Task's own views (outline, evidence, value,
 delivery, exports).
+
+**A Task type** (b32 s41-D15, JL 261016) is one folder, `workbench-task-<type>/`, holding everything a Task of that
+type shows: its layout `task_<type>.py` (`TASK_TYPE`, `spaces(folder, root, sub)`), its views, their
+`assets/`, its tests. A Task's face picks it with `task-type: <type>`; `frame.task_layouts()` finds every
+such folder through `host_registry.task_folders()`, and the theme's own Spaces go on top. Its manual is the
+skill `workbench-task-<type>`. A type every theme can use sits here, a theme's own type in its theme:
+
+```text
+servers/workbench/workbench-task-draft/                  task_draft.py   ⟷ workbench-task-draft     (today)
+servers/workbench-<theme>/workbench-task-<type>/         task_<type>.py  ⟷ workbench-task-<type>    (a theme's own)
+```
 
 **A theme** is `servers/workbench-<theme>/<theme>_theme.py` exporting `THEME = Theme(...)`:
 `name`, `label`, `icon`, `guide` (its Guide family), `levels`, `level_names`, and
@@ -202,7 +223,7 @@ Studio and Report follow b03's `studio/s02-studio-workbench-skill` (s02-D04, D06
 The frame's page carries the base's shared styles and no theme's own (JL 261007, "base styles only"):
 a theme's Space html uses only base classes: the frame's `.topic` folds (`.topic.missing`: a dashed
 card awaiting a Run), `.wf-table`, `.q-row`, `.chip`, `.mut`, the status marks `.st-ok` and
-`.st-warn`; `SPACE_VIEW_CSS` (`task-page/space_views.py`: Space tabs and views, evidence tables, the
+`.st-warn`; `SPACE_VIEW_CSS` (`workbench-task-draft/space_views.py`: Space tabs and views, evidence tables, the
 Supporting Runs tree) and `WORK_ITEM_CSS` (`work_items.py`: the `bj-` and `lw-` work rows). A
 component a theme lacks goes into the base for every theme. `_host/tests/test_frame.py` StyleTest
 keeps these styles off the frame's own parts.
@@ -218,7 +239,7 @@ This folder holds what every Workbench family reuses instead of owning a copy:
 
 | Component | Writes? | Contract | What it serves |
 |---|---|---|---|
-| **Studio** | Yes, through its own routes | [workbench-studio](../../skills/1_base/page/workbench-studio/SKILL.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
+| **Studio** | Yes, through its own routes | [haipipe-studio](../../skills/1_base/project/haipipe-studio/ref/screen.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
 | **Guide** | Never | This README | Family explanations: skills, methods, UI and folder maps, RoadMap Draw |
 
 Any Workbench that shows a drawing (Paper Story › RoadMap Draw, Task Scope ›
@@ -232,7 +253,7 @@ Guide embeds the same canvas in its isolated viewing mode and never saves.
 A theme's Guide lives with its server folder, and the base only reads it:
 
 ```text
-servers/workbench-<theme>/            (the base: servers/workbench/; the Page Task: workbench/task-page/)
+servers/workbench-<theme>/            (the base: servers/workbench/; a Task type: workbench-task-<type>/)
 ├── <theme>_theme.py                  the theme on the frame
 ├── guide/                            Guide › Description · Method · RoadMap Draw
 │   ├── guide.yaml                    family, label, presenter, description, method steps, spaces,
@@ -251,7 +272,7 @@ entry there, which is deleted once the theme has moved). Paths in `guide.yaml`: 
 a skill's file, found by name (the Workbench Table stays in the skill: it is the run-type, agent
 and skill contract); `Tools/…` is SPACE-relative (the RoadMap drawing, built in the theme's design
 Block). Worked examples: `servers/workbench/guide/guide.yaml` (the base, family `shared`) and
-`servers/workbench/task-page/guide/guide.yaml` (family `page`). Check: `_host/tests` and the
+`servers/workbench/workbench-task-draft/guide/guide.yaml` (family `page`). Check: `_host/tests` and the
 Guide page `/_board/guide?family=<family>` for each of its four Views.
 
 Where things stand (261007): every family (shared, page, task, paper, labeling, discovery, cowork,
@@ -322,8 +343,8 @@ Guide › <View>
 
 Its routes form the `shared` row of `_host/host_registry.WORKBENCH_ROUTES`;
 a `--only` host without `shared` serves no terminal, chat or drawing save.
-The lane contracts are [ref/draw.md](../../skills/1_base/page/workbench-studio/ref/draw.md)
-and [ref/chat.md](../../skills/1_base/page/workbench-studio/ref/chat.md).
+The lane contracts are [ref/draw.md](../../skills/1_base/project/haipipe-studio/ref/draw.md)
+and [ref/chat.md](../../skills/1_base/project/haipipe-studio/ref/chat.md).
 
 ## Guide
 
@@ -658,4 +679,4 @@ current proposal:
 - [Paper design studio](../../../../blueprints/b16_theme_paper/studio/s01-paper-tree/s01-paper-tree.excalidraw)
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
 - [Insight design studio](../../../../blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw)
-- [Studio contract](../../skills/1_base/page/workbench-studio/SKILL.md)
+- [Studio contract](../../skills/1_base/project/haipipe-studio/ref/screen.md)

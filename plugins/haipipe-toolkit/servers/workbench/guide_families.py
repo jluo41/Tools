@@ -22,7 +22,7 @@ def at(name, rest=""):
 
 # The Page workbench design drawing, hand-made (JL 261003: "update your workbench design as well");
 # Paper's is named in servers/workbench-paper/guide/guide.yaml.
-PAGE_DESIGN = "Tools/" + TOOLKIT + "servers/workbench/task-page/studio/page-workbench-design.excalidraw"
+PAGE_DESIGN = "Tools/" + TOOLKIT + "servers/workbench/workbench-task-draft/studio/page-workbench-design.excalidraw"
 
 
 def skill(name, role):
@@ -34,7 +34,7 @@ FAMILIES = {
     # "task", the work theme's Guide, lives in servers/workbench-work/guide/guide.yaml (261007)
     # "cowork", the CoWork Guide, lives in servers/workbench-cowork/guide/guide.yaml (261007)
     # "discovery" lives in servers/workbench-discovery/guide/guide.yaml (261007)
-    # "page", the Page Task's Guide, lives in servers/workbench/task-page/guide/guide.yaml (261007)
+    # "page", the Page Task's Guide, lives in servers/workbench/workbench-task-draft/guide/guide.yaml (261007)
     # "insight", the Insight family's Guide, lives in servers/workbench-insight/guide/guide.yaml (261007)
     # "design", the design theme's Guide, lives in servers/workbench-design/guide/guide.yaml (261007)
     # "labeling", the Labeling Guide, lives in servers/workbench-labeling/guide/guide.yaml (261007)

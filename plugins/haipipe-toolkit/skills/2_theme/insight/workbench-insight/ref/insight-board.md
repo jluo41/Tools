@@ -48,7 +48,7 @@ Work and Report, each with a decision tree and its cards), checking (T0 to T8, e
 step, and the evidence), why it works, and the Reference, folded (terms and people with
 checked links, the type and task map, where the rules come from). Related Paper holds
 `servers/workbench-insight/related/papers.md`.
-The method file lists one card per method (`1_base/question/haipipe-question-asking/methods/`, `servers/workbench-insight/guide/methods/answer/`,
+The method file lists one card per method (`1_base/project/haipipe-report/ref/asking-methods/`, `servers/workbench-insight/guide/methods/answer/`,
 `servers/workbench-insight/guide/methods/read/`): closed, the move, what it reads and
 returns, its tests and whether any study tests it; open, What the literature says beside
 Applied to AI. A bracketed source opens its paper's card. No board writes these files.

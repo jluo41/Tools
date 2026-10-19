@@ -65,7 +65,7 @@ def method_cards(names):
     for block in METHOD.split("| family |")[1:]:
         for r in _table(("| family |" + block).splitlines()[:40]):
             if r.get("method") in names and r.get("card", "").endswith(".md"):
-                where = "Question-asking skill" if "question-asking" in r["card"] else "guide/" + r["card"]
+                where = "Question-asking skill" if "asking-methods" in r["card"] else "guide/" + r["card"]
                 out.append((r["method"] + " ↗", r["family"] + " · a method card", where))
     return list(dict.fromkeys(out))
 

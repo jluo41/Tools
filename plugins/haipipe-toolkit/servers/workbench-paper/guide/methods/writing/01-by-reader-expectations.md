@@ -39,4 +39,4 @@ verify: Each Section's Page check passed (T4).
 risk: Sections written separately can repeat or contradict each other; the Narrative
   review reads them together (ours).
 evidence on ai: No study tests these rules on agent-written Sections (ours).
-skill: haipipe-paper-section
+skill: haipipe-paper-draft

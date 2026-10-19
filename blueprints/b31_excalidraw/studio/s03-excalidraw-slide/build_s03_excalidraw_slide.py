@@ -22,8 +22,8 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 TOOLS = HERE.parents[3]                                           # Tools-SPACE (the folder holding blueprints/)
-SKILL = TOOLS / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-slide"
-sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts"))
+SKILL = TOOLS / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-slide"
+sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts"))
 sys.path.insert(0, str(SKILL / "scripts"))
 from draw import H, INK, RED, T_KEY, T_NODE, T_SMALL, T_TEXT, W, Drawing  # noqa: E402
 import slide_kit  # noqa: E402

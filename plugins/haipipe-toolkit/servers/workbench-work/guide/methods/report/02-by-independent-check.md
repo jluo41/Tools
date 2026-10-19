@@ -45,4 +45,4 @@ risk: A checker that sees the writer's reasoning may adopt it; it reads the Logi
   Results and the report (ours).
 evidence on ai: Self-preference [Panickssery 2024] and failed self-correction [Huang 2023]
   are why the writer never checks its own report.
-skill: haipipe-draft-check
+skill: haipipe-draft-review

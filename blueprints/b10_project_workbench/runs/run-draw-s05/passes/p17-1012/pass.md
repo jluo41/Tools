@@ -17,5 +17,5 @@ The group every theme starts with is Random thoughts (was Asked by others): an u
 - `studio/s05-report-workbench-skill/history/`
 - `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py`
-- `Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/CHANGELOG.md`
+- `Tools/plugins/haipipe-toolkit/skills/1_base/draft/workbench/CHANGELOG.md`
 - `Tools/blueprints/b16_theme_paper/studio/s05-paper-report/`

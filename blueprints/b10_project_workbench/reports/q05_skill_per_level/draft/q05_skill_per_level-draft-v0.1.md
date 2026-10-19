@@ -68,7 +68,7 @@ arc: One skill per level, one per shared Space; themes keep their own over them.
 
 ### C1.P1
 The skills line up with the ladder as separate level skills, not as one haipipe-project door with a sub-skill per level: haipipe-block owns the Block, haipipe-job the Job, and haipipe-task the Task, each with its face, its scaffold and its level's own buttons.
-The Spaces every level shares have one skill each at every level: haipipe-studio the Idea Studio, haipipe-question the asking and haipipe-report the rest of the Audience Report, and haipipe-run the Runs.
+The Spaces every level shares have one skill each at every level: haipipe-studio the Idea Studio, haipipe-report the asking and haipipe-report the rest of the Audience Report, and haipipe-run the Runs.
 Each theme keeps its own skills over these, the way its theme file sits over the base frame, so the theme owners stay apart from the level owners.
 Of the four skills the question names, haipipe-block returns as the Block skill (the static board site it once built stays retired), haipipe-task is left as it is, haipipe-run is extended with the Run types by Space and a soft-Run writer, and haipipe-folder's place is not yet written.
 Every Run button of the frame now names the skill that owns it, through a `skills:` field on its run type.

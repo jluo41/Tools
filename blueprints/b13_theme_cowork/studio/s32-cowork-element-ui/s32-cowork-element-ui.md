@@ -172,7 +172,7 @@ Open
 3. A Job's email and meeting rows link to the Page reader, which answers 404 "Not a Page" (an email is
    not a Page Face) and leaves the frame. The report link works (200) but leaves the frame too.
 4. The cowork Task (`t01_protocol/`) draws the vanilla Task (Face · Folder | Folders · Evidence · Value
-   | run-<type>-<target>), not the base's Page Task views (`page_task_spaces`), which Q01 names.
+   | run-<type>-<target>), not the base's Page Task views (`draft_task_spaces`), which Q01 names.
 5. Run names: `run-review-questions` has no target, and Draft a follow-up, the planned Close the Job and
    the drawing and form buttons have no Run (the table above).
 6. People shows `j00_people.md` as written; s11 plans person · role · waiting on · since rows. Whether
@@ -184,7 +184,7 @@ Open
     fields, and Timeline rows carry no state except draft ✎ (s12 plans one per row).
 
 None of these is changed here. b03 placed 2, 3, 4, 5 and 6 in `servers/workbench-cowork/cowork_theme.py`
-(question_cell() rows, pop() for email and meeting rows, page_task_spaces for the Task, the unnamed
+(question_cell() rows, pop() for email and meeting rows, draft_task_spaces for the Task, the unnamed
 buttons, People as rows); they wait for JL (b03, 261008).
 
 (write here, or mark the drawing in red)

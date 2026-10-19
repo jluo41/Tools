@@ -17,6 +17,7 @@ bootstrap()
 
 from live import frame  # noqa: E402
 from live import labeling_theme as T  # noqa: E402
+from live import task_labeling as TL  # noqa: E402
 
 
 def project(tmp: str) -> tuple[Path, Path, Path]:
@@ -96,7 +97,7 @@ class LabelingThemeTest(unittest.TestCase):
     def test_a_job_page_opens_each_view_in_the_labeling_workbench(self):
         s = spaces(self.theme, self.root, self.task)
         scan = [T.VIEW[v][2] for v in T.SCAN_WORK]
-        self.assertEqual(s["Work Details"]["subspaces"], list(T.BUILD_TABS) + scan)
+        self.assertEqual(s["Work Details"]["subspaces"], list(TL.BUILD_TABS) + scan)
         self.assertEqual(s["Description"]["subspaces"][:2], ["Scope", "Contract"])
         self.assertEqual(s["Delivery"]["subspaces"][:3], ["Files", "Handoff", "Final labels"])
         for sub, space, view in (("Audit", "Work Details", "space=quality&amp;view=audit"),
@@ -110,7 +111,7 @@ class LabelingThemeTest(unittest.TestCase):
 
     def test_building_works_one_stage_per_tab(self):
         """b15 s42: the four Stages are tabs; each shows Operation (Input, 👁 budget, the prompt) then Result."""
-        for i, (tab, title) in enumerate(zip(T.BUILD_TABS, ("Stage 1 · Contract", "Stage 2 · Initial Labeling Definition",
+        for i, (tab, title) in enumerate(zip(TL.BUILD_TABS, ("Stage 1 · Contract", "Stage 2 · Initial Labeling Definition",
                                                              "Stage 3 · Rounds", "Stage 4 · Handoff"))):
             with self.subTest(tab=tab):
                 page = frame.render(self.theme, self.root, self.task, "Work Details", tab)

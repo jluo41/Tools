@@ -8,7 +8,7 @@ description: >-
   Question reports read. Routes a request to the skill that owns it: the Task
   folder and its Plan, Build, Execute, Report contract (haipipe-task), the work
   workbench (workbench-work), a kind of work Task (haipipe-task-for-<kind>), a
-  Run graph (haipipe-workflow), a Block Question (haipipe-question). Owns no
+  Run graph (haipipe-workflow), a Block Question (haipipe-report). Owns no
   folder contract of its own yet. Trigger: work theme, work Block, work Job,
   which work skill, where does this work go, /haipipe-work.
 metadata:
@@ -42,8 +42,8 @@ Route
 | open or read the work Block on screen (Scope, Task, Check, Delivery, Runs panel) | `workbench-work` | `2_theme/work/` |
 | a Task of one kind | `haipipe-task-for-<kind>`: data, raw, description, algo, fit, eval, endpoint, individual, display, stata, agent, page | `1_base/task/<N>_<kind>/` |
 | plan a Run graph: Run Specs, dependencies, gates, routes | `haipipe-workflow` | `1_base/task/` |
-| a Block Question, its register and its report folder | `haipipe-question` | `1_base/question/` |
-| write a Question's report Page | `haipipe-draft` | `1_base/page/` |
+| a Block Question, its register and its report folder | `haipipe-report` | `1_base/project/haipipe-report/` |
+| write a Question's report Page | `haipipe-draft` | `1_base/draft/` |
 | the stage pipelines a Task runs (data, nn, end, individual) | `haipipe-data`, `haipipe-nn`, `haipipe-end`, `haipipe-individual` | `1_base/task/<N>_<stage>/`; not part of the theme |
 
 Name the skill you route to before acting; never perform its work here.

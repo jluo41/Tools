@@ -104,11 +104,11 @@ LAYERS = [  # (layer, node, [specials], [variants])
             "define": "its soft Runs, one folder each: run-<type>-<target>/ writes into one item above; "
                       "no hard Run, no evidence; on screen the Runs Space",
             "node": "README.md", "node_define": "the run types it has: tools write it, never by hand",
-            "tree": [("run-question-<qNN>", "→ the face's Questions · haipipe-question-asking"),
+            "tree": [("run-question-<qNN>", "→ the face's Questions · haipipe-report"),
                      ("run-draw-<sNN>", "→ studio/sNN-<topic>/ · workbench-studio"),
                      ("run-report-<qNN>", "→ reports/qNN_<topic>/ · haipipe-draft-writing"),
-                     ("run-check-<qNN>", "→ a verdict on reports/qNN · haipipe-draft-check"),
-                     ("run-delivery-<lane>", "→ delivery/<lane>/ · haipipe-draft-delivery"),
+                     ("run-check-<qNN>", "→ a verdict on reports/qNN · haipipe-draft-review"),
+                     ("run-delivery-<lane>", "→ delivery/<lane>/ · haipipe-delivery"),
                      ("each type: its Runs", "name · state · last pass, read from run.yaml")]}),
         sp("jNN_<job>/ …", "holds its work Jobs; on screen Work Details", holds=True)],
      ["work Block", "discovery Block", "cowork Block", "paper Board", "insight Block (DIKW)",
@@ -172,7 +172,7 @@ SKILLS = {  # Tools/ at the far right; one skills box per layer, read right to l
     "Project": ["haipipe-project"],
     "Theme": ["haipipe-task", "haipipe-discovery", "haipipe-cowork", "haipipe-paper",
               "haipipe-insight", "haipipe-design", "haipipe-labeling"],
-    "Block": ["haipipe-<family>  (owns bNN_<topic>.md)", "haipipe-question", "workbench-<family>",
+    "Block": ["haipipe-<family>  (owns bNN_<topic>.md)", "haipipe-report", "workbench-<family>",
               "excalidraw-report  (studio/)"],
     "Job": ["haipipe-task", "haipipe-cowork", "later: one Job skill per Theme"],   # s01-D40: closed, no longer red
     "Task": ["haipipe-task", "haipipe-draft", "haipipe-draft-workflow", "haipipe-discovery-inquiry"],
@@ -872,7 +872,7 @@ TASK_RUNS = [
     ("work Task", "tNN_<task>/", f"{TK}/2_theme/work/workbench-work", {"Task", "Check"},
      {"Plan the report", "Write the report", "Check a report"}, "rNN_<noun>_<qualifier>.sh",
      "Task workbench · /w/<block>"),
-    ("Page Task", "tNN_<task>/", f"{TK}/1_base/page/workbench-page", {"Draft", "Evidence", "Delivery"},
+    ("Page Task", "tNN_<task>/", f"{TK}/1_base/workbench/workbench-page", {"Draft", "Evidence", "Delivery"},
      set(), "soft only: run-<type>-<target>", "Page workbench · one Page"),
     ("paper Section", "S-<desk>-<Section>/", f"{TK}/2_theme/paper/workbench-paper", {"Sections"},
      set(), "soft only: run-section-<target> · run-delivery-latex", "Paper workbench · /w/<paper>"),
@@ -917,11 +917,11 @@ def ui_tree(table):
 # ── the skills of each variant: who owns its folder, who works in it, who shows it ──────────────
 VARIANT_SKILLS = {
     # Blocks
-    "work Block": [("owns", ["haipipe-task", "haipipe-question  (reports/)", "excalidraw-report  (studio/)"]),
+    "work Block": [("owns", ["haipipe-task", "haipipe-report  (reports/)", "excalidraw-report  (studio/)"]),
                    ("shows", ["workbench-work"])],
-    "discovery Block": [("owns", ["haipipe-discovery", "haipipe-question  (reports/)"]),
+    "discovery Block": [("owns", ["haipipe-discovery", "haipipe-report  (reports/)"]),
                         ("shows", ["workbench-discovery"])],
-    "cowork Block": [("owns", ["haipipe-cowork", "haipipe-question  (reports/)"]),
+    "cowork Block": [("owns", ["haipipe-cowork", "haipipe-report  (reports/)"]),
                      ("shows", ["workbench-cowork"])],
     "paper Board": [("owns", ["haipipe-paper"]),
                     ("works", ["haipipe-paper-workflow", "haipipe-paper-ideation", "haipipe-paper-story"]),
@@ -934,7 +934,7 @@ VARIANT_SKILLS = {
     "design Board": [("owns", ["haipipe-design", "haipipe-design-brief"]),
                      ("works", ["haipipe-design-workflow", "haipipe-design-goal"]),
                      ("shows", ["workbench-design"])],
-    "labeling Block": [("owns", ["haipipe-labeling", "haipipe-question  (reports/)"]),
+    "labeling Block": [("owns", ["haipipe-labeling", "haipipe-report  (reports/)"]),
                        ("works", ["haipipe-labeling-workflow  (which Job is next)"]),
                        ("shows", ["workbench-labeling"])],
     # Jobs
@@ -942,8 +942,8 @@ VARIANT_SKILLS = {
                  ("shows", ["workbench-work"])],
     "discovery Job": [("owns", ["haipipe-discovery", "haipipe-discovery-inquiry"]),
                       ("shows", ["workbench-discovery"])],
-    "Page Job": [("owns", ["haipipe-task", "haipipe-task-for-page"]), ("shows", ["workbench-work"])],
-    "paper version": [("owns", ["haipipe-paper"]), ("works", ["haipipe-paper-section", "haipipe-paper-assemble"]),
+    "Page Job": [("owns", ["haipipe-task", "haipipe-task-for-evidence"]), ("shows", ["workbench-work"])],
+    "paper version": [("owns", ["haipipe-paper"]), ("works", ["haipipe-paper-draft", "haipipe-paper-assemble"]),
                    ("shows", ["workbench-paper"])],
     "cowork Job": [("owns", ["haipipe-cowork"]), ("shows", ["workbench-cowork"])],
     "DIKW level": [("owns", ["haipipe-insight"]), ("works", ["haipipe-insight-data · -information",
@@ -955,12 +955,12 @@ VARIANT_SKILLS = {
                      ("works", ["haipipe-labeling-preparation  (prepare)", "haipipe-task  (keys · score)"]),
                      ("shows", ["workbench-labeling"])],
     # Tasks
-    "work Task": [("owns", ["haipipe-task", "haipipe-folder"]), ("works", ["haipipe-task-for-<type>", "haipipe-run"]),
+    "work Task": [("owns", ["haipipe-task"]), ("works", ["haipipe-task-for-<type>", "haipipe-run"]),
                   ("shows", ["workbench-work"])],
-    "Page Task": [("owns", ["haipipe-draft", "haipipe-folder", "haipipe-paper-section  (a Section)"]),
+    "Page Task": [("owns", ["haipipe-draft", "haipipe-paper-draft  (a Section)"]),
                   ("works", ["haipipe-draft-workflow", "haipipe-run"]),
                   ("shows", ["workbench-page  (a Section opens here)", "workbench-studio  (studio/)"])],
-    "paper Section": [("owns", ["haipipe-paper-section", "haipipe-draft"]),
+    "paper Section": [("owns", ["haipipe-paper-draft", "haipipe-draft"]),
                       ("works", ["haipipe-draft-workflow", "haipipe-run"]), ("shows", ["workbench-paper"])],
     "discovery Task": [("owns", ["haipipe-discovery-inquiry"]),
                        ("works", ["haipipe-discovery-search · -review", "haipipe-discovery-synthesize",
@@ -996,7 +996,7 @@ def draw_skills(x, y, variant):
 UI_TABLES = {"task": f"{TK}/2_theme/work/workbench-work", "discovery": f"{TK}/2_theme/discovery/workbench-discovery",
              "cowork": f"{TK}/2_theme/cowork/workbench-cowork", "paper": f"{TK}/2_theme/paper/workbench-paper",
              "insight": f"{TK}/2_theme/insight/workbench-insight", "design": f"{TK}/2_theme/design/workbench-design",
-             "page": f"{TK}/1_base/page/workbench-page",
+             "page": f"{TK}/1_base/workbench/workbench-page",
              "labeling": "haipipe-toolkit/skills/2_theme/labeling/workbench-labeling"}
 # The Block workbench, proposed (JL 261006, frames 6-7): Level = the tab (Guide · Block · Job · Task);
 # Space = the row below it; Subspace = the third row, an item (sNN · qNN · a delivery part) or a group.
@@ -1184,7 +1184,7 @@ def short(s, n):
 
 
 def mini_map(x, y, w, h):
-    """A drawing embedded in a list row, view only: a Section's map (excalidraw-section) in small, its
+    """A drawing embedded in a list row, view only: a Section's map (excalidraw-draft) in small, its
     paragraphs left to right, each with its evidence card."""
     base("rectangle", x, y, w, h, GRAY, 1)
     base("rectangle", x + 4, y + h / 2 - 3, 8, 6, INK, 1)                  # the Section
@@ -1490,7 +1490,7 @@ FAMILY_COLUMNS = {"insight": {"Scope": ("Description", "Dataset", "Scope"),
                               "Runs": ("Runs", None, "Runs"), "Preview": ("Runs", None, "Preview"),
                               "Delivery": ("Delivery", "Handoff", "Delivery")}}
 # a note under a screen: what changed and what is open ("?" = open, in red)
-FAMILY_CAPTIONS = {("paper", "Jobs"): "▢ = the Section's map (excalidraw-section), embedded, view only",
+FAMILY_CAPTIONS = {("paper", "Jobs"): "▢ = the Section's map (excalidraw-draft), embedded, view only",
                    ("insight", "Jobs"):"was Prototype › Data · Information …: now each DIKW level's Job tab",
                    ("insight-reg", "Jobs"): "carry over: each register → a DIKW level Job ?",
                    # discovery (b14 Q01, 261007): where today's Discovery Views went

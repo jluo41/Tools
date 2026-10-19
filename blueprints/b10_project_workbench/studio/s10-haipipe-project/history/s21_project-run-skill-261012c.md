@@ -17,7 +17,7 @@ changed.
 **Source:** read from disk on every build:
 
 - the base frame's Run buttons per level and Space (`servers/workbench/frame.py`: `vanilla()` through
-  `spaces_for`, and the Page Task's `page_task_spaces`), and whether each names a skill
+  `spaces_for`, and the Page Task's `draft_task_spaces`), and whether each names a skill
 - each skill's folder in `Tools/`, found by name: its `SKILL.md` version and what it holds (ref ·
   scripts · tests), every skill in `skills/1_base/project/`, and the themes in `skills/2_theme/` and
   `servers/workbench-<theme>/`
@@ -124,7 +124,7 @@ frames:
     at: [1, 0]
     title: 🧱 Skills of one level
     why: One per level, plus asking; each owns a face
-    tree: ["@skills:haipipe-block,haipipe-job,haipipe-task,haipipe-question"]
+    tree: ["@skills:haipipe-block,haipipe-job,haipipe-task,haipipe-report"]
     most: 1
   - id: shared
     at: [1, 1]
@@ -200,8 +200,7 @@ button; the Studio one opens the Block's shared Studio. Work Details is called W
 read showed no Description button: the probe folders had no face; fixed 261010.)
 
 In `Tools/` (261011): the buttons name 15 skills. Five of them are among the seven in
-`plugins/haipipe-toolkit/skills/1_base/project/`; `haipipe-question` and `haipipe-task` sit in `1_base/question/`
-and `1_base/task/`; the Page Task's seven draft skills in `1_base/page/workflow-runs/`, and `haipipe-display`
+`plugins/haipipe-toolkit/skills/1_base/project/`; `haipipe-report` is in `1_base/project/` and `haipipe-task` in `1_base/task/`; the Page Task's seven draft skills in `1_base/draft/workflow-runs/`, and `haipipe-display`
 in `1_base/display/`. Each reaches Claude
 through a link, `~/.claude/skills/<name>`. `haipipe-delivery` (0.2.2) is there but no button names it, and
 it holds only its `SKILL.md`: the Block's and Job's Delivery buttons name `haipipe-block` and `haipipe-job`
@@ -227,7 +226,7 @@ Guide    ─▶   workbench-<theme>
     - haipipe-job (new): the Job's face, its Tasks in order, a new-Job scaffold, a theme's own Job names.
     - haipipe-task: not touched (JL 261007: "you should not touch the haipipe-task"); the Task level's
       buttons name it as they are. `skills/1_base/task/` keeps every folder: the task kinds (1_data …
-      10_page), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
+      10_evidence), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
     - haipipe-studio (new): `studio/sNN-<topic>/` at any level, its face and builders that keep marks, the
       numbering (s0x concepts · s1x levels · s2x runs and skills · s3x Guide · s5x server), sessions as passes
       of `run-draw-<sNN>`; takes the scratch mode of excalidraw-report and `canvas.py` · `render_png.py`.
@@ -235,7 +234,7 @@ Guide    ─▶   workbench-<theme>
       report"): the Question │ Work │ Report row at any level, what each cell reads, how work links to a
       question (`answers:` on a Job or Task face, a need id like `QK10.E1`), the walk open → partial →
       answered (→ checked, proposed), the report Page (Opening · Answer · Evidence · Limits · Next), its
-      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-question keeps the asking.
+      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-report keeps the asking.
     - haipipe-run (extended): names without `<MMDD>`, `run.yaml` as the Runs Space reads it, a Run type table
       per Space that names each button's skill.
 

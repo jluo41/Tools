@@ -6,7 +6,7 @@ JL 261011: "for the s21, I think we also need to show what is the skill folder l
 
 ## Summary
 
-Added a frame under ②, "Each skill is one folder in Tools/", read from disk on every build: the tree from Tools/ to each skill the buttons name (frame.py and runs_panel.py, the seven skills of 1_base/project, haipipe-question, haipipe-task, the Page draft skills, haipipe-display, the themes), each with its version, what it holds and the buttons that name it; haipipe-report opened file by file; the ~/.claude/skills link. Found: haipipe-delivery is named by no button and holds only SKILL.md (Open 1). Fixed "a pass (s05)" to s06 in ③ and in s02-D27; swept the old path Tools/designs/b03_project_workbench to Tools/blueprints/b10_project_workbench in four Run cards and one pass. s21-D06 recorded.
+Added a frame under ②, "Each skill is one folder in Tools/", read from disk on every build: the tree from Tools/ to each skill the buttons name (frame.py and runs_panel.py, the seven skills of 1_base/project, haipipe-report, haipipe-task, the Page draft skills, haipipe-display, the themes), each with its version, what it holds and the buttons that name it; haipipe-report opened file by file; the ~/.claude/skills link. Found: haipipe-delivery is named by no button and holds only SKILL.md (Open 1). Fixed "a pass (s05)" to s06 in ③ and in s02-D27; swept the old path Tools/designs/b03_project_workbench to Tools/blueprints/b10_project_workbench in four Run cards and one pass. s21-D06 recorded.
 
 ## Changed
 

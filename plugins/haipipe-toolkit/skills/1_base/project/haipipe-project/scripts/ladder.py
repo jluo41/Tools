@@ -260,7 +260,7 @@ def audit_task(path: Path, fam: str, root: Path, only: bool = False) -> Node:
     text = face_text(face)
     if not text:
         node.add("debt", f"no face {face.name}")
-    work_task = field_of(text, "task-kind") != "page"
+    work_task = field_of(text, "task-kind") != "page" and field_of(text, "task-type") != "draft"
     ladder_dirs(path, "task", fam, None, node)
     if (path / "runs").is_dir() and not only:
         audit_runs(node, path / "runs", fam, work_task, root)
@@ -303,7 +303,8 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
     fam = family_of(block_of(path)) if block_of(path) else "task"
     if path.parent.name == "runs":
         holder = path.parent.parent
-        work = NAMES["task"].match(holder.name) and field_of(face_text(holder / f"{holder.name}.md"), "task-kind") != "page"
+        held = face_text(holder / f"{holder.name}.md")
+        work = NAMES["task"].match(holder.name) and field_of(held, "task-kind") != "page" and field_of(held, "task-type") != "draft"
         where = "task" if NAMES["task"].match(holder.name) else ("job" if NAMES["job"].match(holder.name) else "block")
         return [audit_run(path, fam, bool(work), where, root)]
     if NAMES["task"].match(name):

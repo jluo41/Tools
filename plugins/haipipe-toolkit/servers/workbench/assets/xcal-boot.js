@@ -119,6 +119,22 @@
   var q = new URLSearchParams(location.search);
   var board = q.get("board");
   if (!board) return start();               // not our URL: leave the app alone
+  // The tab names the drawing, not "Excalidraw Whiteboard": "<block> · <topic>" for a Studio topic
+  // (b32_draft · s41-task-draft-procedure), else the file's own name (JL 261019). The app may set its
+  // own title later, so the <title> is watched and put back.
+  (function () {
+    var parts = board.replace(/^\/+/, "").split("/"), at = parts.indexOf("studio");
+    var name = at > 0 && parts[at + 1] && parts[at + 1] !== parts[parts.length - 1]
+      ? parts[at - 1] + " · " + parts[at + 1]
+      : parts[parts.length - 1].replace(/\.excalidraw$/, "");
+    var put = function () { if (document.title !== name) document.title = name; };
+    put();
+    document.addEventListener("DOMContentLoaded", function () {
+      put();
+      var t = document.querySelector("title");
+      if (t) new MutationObserver(put).observe(t, { childList: true, characterData: true, subtree: true });
+    });
+  })();
   // Excalidraw's same-origin referrer check also rejects our workbench iframe.
   // Some embedded browsers still expose that referrer despite the iframe's
   // no-referrer policy (the mobile "I'm not a pretzel!" screen). Clear only the

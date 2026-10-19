@@ -32,7 +32,7 @@ synthesis (b16_theme_paper).
 ## Pipeline
 
 ```text
-chat section -> Related question -> haipipe-question -> skill, workbench or builder change -> report Page
+chat section -> Related question -> haipipe-report -> skill, workbench or builder change -> report Page
                                                      -> studio/ drawings (shared by the questions)
 ```
 

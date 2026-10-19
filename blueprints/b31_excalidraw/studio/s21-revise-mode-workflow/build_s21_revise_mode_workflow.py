@@ -97,7 +97,7 @@ def workflow(d):
     lanes = {}
     for s, x in zip(steps, xs):
         lanes.setdefault(s["lane"], []).append(x)
-    names = {"once": "once per file", "plan": "plan · agent", "draft": "draft · haipipe-draft, haipipe-writing",
+    names = {"once": "once per file", "plan": "plan · agent", "draft": "draft · haipipe-draft",
              "build": "build · script", "look": "look · a person", "last": "last · delivery"}
     for lane, lx in lanes.items():
         text(lx[0], top - 44, names.get(lane, lane), 23)
@@ -125,7 +125,7 @@ def workflow(d):
     seven = next(s for s in steps if s["n"] == 7)
     most = max(d["draw_steps"], key=lambda s: float(re.sub(r"[^\d.]", "", s["cost"]) or 0))
     line([(at[7] + bw / 2, top + bh + 4), (at[7] + bw / 2, oy - 6)], dashed=True)
-    text(40, oy, f"7 opened · excalidraw-revise/ref/read_revise.py draw: {seven['cost']}, of which {most['cost']} "
+    text(40, oy, f"7 opened · excalidraw-draft/ref/read_revise.py draw: {seven['cost']}, of which {most['cost']} "
                  f"{most['title'][0].lower() + most['title'][1:]}", 23)
     dg, dy, dh = 28, oy + 44, 320
     dw = (W - 80 - dg * (len(d["draw_steps"]) - 1)) // len(d["draw_steps"])

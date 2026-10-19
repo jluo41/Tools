@@ -136,6 +136,23 @@ s06-D06 · A topic's soft Run starts with its close rule (261011; settles the ol
     on the drawing" into `run-draw-<sNN>`'s ticket (haipipe-studio 0.9.2). `soft_run.py new` still
     takes any rule with `--close`; it does not refuse a ticket without one, since other Run types
     have no default. b10's five placeholders were filled with the same words, naming JL.
+s06-D07 · The Studio's fourth folding part is Runs, under Delivery (JL 261019, on b01 Prediction reliability's
+    Studio: "should also list another one to show the Hard Run, for each task, and just show their status"):
+    every hard Run (`runs/rNN_*`) of every Task under the Block, Job → Task, one line each with its mark,
+    status and finish day, a tally per Job and Task; read from each Run's `result/runtime.yaml`, else its
+    `run.yaml`; soft Runs and history copies left out. Settles Open 4 for the Studio: rolled up from every
+    level below. Built in `servers/workbench/frame.py` (`hard_runs`, `studio_runs`), tested in
+    `_host/tests/test_frame.py`; Timeline and Folder moved to the fifth and sixth parts.
+s06-D08 · SPACE Home counts Runs too (JL 261019: "能不能整个 project level 也看一下它跑得怎么样", "在 project level
+    下面，也可以加个 run"): a Project's line carries its hard Runs by status (`▶️ 284 · ✅96 ❌46 🟧90 ⏳4 ⬜48`
+    for Proj12), each Block row its own tally, and an opened Block row a third group, ▶️ Runs, after Studio and
+    Jobs, drawn by the same `frame.runs_list` as the Studio's Runs part. Built in `servers/space-home/home.py`,
+    tested in haipipe-draft `tests/test_home.py`.
+s06-D09 · The Runs read as card rows, like the Jobs rows (JL 261019, on bare nested lists: "they are not in the good
+    format, right?"): one folded card per Job with its Task and Run counts and its tally on the right; opened,
+    each Task a heading and its Runs an aligned table (mark · Run · status · finish day); the legend one short
+    line. One look on both pages: `frame.RUN_CSS`, used by the Studio and SPACE Home (class `rn-card`, not
+    `topic`, so the Studio's topic scripts leave it alone).
 
 
 Proposed
@@ -162,7 +179,8 @@ Open
 1. Wet Runs: add the protocol ticket and the person-signed receipt to haipipe-run?
 2. Block and Job Runs are soft only: where does a Job's batch launch (`run-launch-<group>`) go?
 3. A hard Run's heavy output: show it on screen, or only its `heavy.yaml` pointer?
-4. The Runs Space: this level's Runs only, or rolled up from the levels below?
+4. The Runs Space: this level's Runs only, or rolled up from the levels below? (The Studio's Runs part rolls
+   up, s06-D07; the per-level Runs Space is still open.)
 5. A soft pass: when does it close, and who writes its `touched.yaml`?
 6. The older layout: when does haipipe-project `update` move each Project's Runs?
 7. The Runs Space: build s06-D01's seven columns and the pop-out?

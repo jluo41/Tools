@@ -412,7 +412,7 @@ class CoworkBoardMixin:
             from argparse import Namespace
             import importlib.util
             from host_paths import skill_dir
-            script = skill_dir("haipipe-question") / "ref/block_questions.py"
+            script = skill_dir("haipipe-report") / "ref/block_questions.py"
             values = {name: payload.get(name, "") for name in ("title", "url", "contribution", "notes")}
             ids = payload.get("questions", [])
             if (any(not isinstance(value, str) or len(value) > 10000 for value in values.values())

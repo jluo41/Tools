@@ -21,7 +21,7 @@ from pathlib import Path
 
 SKILLS = Path(__file__).resolve().parents[4] / "plugins/haipipe-toolkit/skills/1_base"
 sys.path.insert(0, str(SKILLS / "project/haipipe-studio/scripts"))
-sys.path.insert(0, str(SKILLS / "display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(SKILLS / "excalidraw/excalidraw-studio/scripts"))
 import canvas  # noqa: E402
 from draw import KEY, T_FRAME  # noqa: E402  (excalidraw-studio principle 5: the key point's colour, a title's size)
 

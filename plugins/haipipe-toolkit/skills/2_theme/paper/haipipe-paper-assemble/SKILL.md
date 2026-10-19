@@ -22,7 +22,7 @@ metadata:
 > ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). Since 0.8.4 the engine writes none: `build-manifest.json` lists inputs by path, a version is its number and date, and a stale fragment is found by file time.
 
 This is the paper-level document contract. It is different from
-`workbench-page/ref/delivery.md`, which exports one Board Page for a coauthor. Assembly
+`workbench-task-draft/ref/delivery.md`, which exports one Board Page for a coauthor. Assembly
 combines the Story's Section Narrative rows and the Section Pages into the complete deliverable
 for one desk.
 

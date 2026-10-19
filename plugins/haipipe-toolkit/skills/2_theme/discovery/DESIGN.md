@@ -188,7 +188,7 @@ runtime.yaml
 ~~~
 
 PDF, raw extraction, and captured Trigger are optional. Result Card cite key
-and Bib key are identical. `workbench-page/ref/evidence/citations.md`
+and Bib key are identical. `workbench-task-draft/ref/evidence/citations.md`
 owns the deterministic derived union of complete Result Bibs; conflicts
 hard-fail. The nested `draft/evidence/supporting-runs/` lane is pointer-only
 lineage for Page Evidence Items, not a second Discovery Run inventory.

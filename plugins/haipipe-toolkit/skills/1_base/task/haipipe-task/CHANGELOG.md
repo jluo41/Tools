@@ -1,11 +1,21 @@
-## 1.13.0 · 2026-10-11 · A Task may hold a draft; a Task is not a Page (JL 261011, b51_base_draft)
+## 1.15.0 · 2026-10-14 · task-type page is task-type evidence (JL 261014, b32_draft s03)
+
+- `task/10_page/haipipe-task-for-page` is `task/10_evidence/haipipe-task-for-evidence`, its type `evidence`,
+  so `page` and `draft` stop being confused; no Task face used `task-type: page`.
+
+## 1.14.0 · 2026-10-14 · draft is a Task type (JL 261014, b32_draft s03)
+
+- The Task types table gains `draft` (haipipe-draft, run by haipipe-draft-workflow): a Task that writes,
+  its face saying `task-type: draft`; every theme's workbench opens it on `servers/workbench/workbench-task-draft/`.
+
+## 1.13.0 · 2026-10-11 · A Task may hold a draft; a Task is not a Page (JL 261011, b32_draft)
 
 - "Task Folder = Page Folder = Page" is gone from SKILL.md, `ref/hierarchy.md`, `ref/task-structure.md`,
   `ref/block-job-task-run.md` and the three Task agents: a Task Folder is `tNN_<task>/`, its face, and a
   draft (`draft/`) when it writes prose. 102 Task folders in WellDoc hold a draft; compute Tasks hold none.
 - `tests/test_task_folder_vocabulary.py` checks the new phrase and reads `haipipe-folder` at its
-  `1_base/page/` path (the old `board/` path failed before this change).
-- `haipipe-page` is now `haipipe-draft` (b51); every reference here was swept.
+  `1_base/draft/` path (the old `board/` path failed before this change).
+- `haipipe-page` is now `haipipe-draft` (b32); every reference here was swept.
 
 ## 1.12.1 · 2026-10-09 · Theme folders are singular
 

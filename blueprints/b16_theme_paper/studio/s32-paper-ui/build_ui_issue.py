@@ -33,7 +33,7 @@ FRAME_ISSUES = [
     ("F2", "Section › Runs",
      "Embeds the Page's own runs screen with a fourth tab row (Workflow map · Page Writing · …); \"No <kind> Run "
      "yet.\" four times; the side panel says \"No runs yet.\" while the body counts Writing Runs.",
-     "One runs list in the Space's own look; one empty note.", "page_task_spaces"),
+     "One runs list in the Space's own look; one empty note.", "draft_task_spaces"),
     ("F3", "Section › Table, Reading, Draft-…, Evidence-…",
      "Each view is an iframe card inside the Space card, with its own inner tab row (All items · Card · Source): "
      "a box in a box. The fixed frame height leaves a large blank area under a short view.",
@@ -160,7 +160,7 @@ TASK_ISSUES = [
      "paper_theme.py _contract"),
     ("T5", "Disk boxes",
      "Work Details says \"its own folders ./ N\" instead of the file the view reads; Comments lists the Questions "
-     "files; a studio topic link 404s.", "Name the file each view reads.", "page_task_spaces disk"),
+     "files; a studio topic link 404s.", "Name the file each view reads.", "draft_task_spaces disk"),
 ]
 
 # a map per tab: (Space, [(view, [issue ids])]); an empty id list = no issue found

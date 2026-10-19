@@ -342,7 +342,7 @@ def frame_screen(qs, space, versions):
     rect(xr, yr + 510, 700, 230)
     say(xr + 24, yr + 528, "Around it", HEAD)
     by = yr + 574
-    for s in [f"haipipe-question {versions['question']} asks: the row, the folder",
+    for s in [f"haipipe-report {versions['question']} asks: the row, the folder",
               "haipipe-draft writes the report's prose",
               "haipipe-studio feeds it frames (s02)", "haipipe-delivery keeps the built files (s03)"]:
         by = say(xr + 24, by, s, BODY)
@@ -404,7 +404,7 @@ def frame_open(qs, unread):
     return fr
 
 
-TOOLS_SKILLS = ("1_base/project/haipipe-report", "1_base/question/haipipe-question")
+TOOLS_SKILLS = ("1_base/project/haipipe-report", "1_base/project/haipipe-report/")
 TOOLS_CODE = [("servers/workbench/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
               ("servers/workbench/page_reader.py", ["page_document"])]
 AROUND = ["haipipe-draft writes the prose", "haipipe-studio feeds it frames (s02)",
@@ -476,12 +476,12 @@ def frame_tools():
     A, B, C, WA, WC = 0, 880, 1760, 740, 880
     top = y + 20
     w_home = boxed(A, top, WA, where, "📁 Where it sits, beside its kin")
-    w_q = boxed(A, w_home[1] + w_home[3] + 90, WA, tree(question), f"🧰 /haipipe-question {skill_ver(question)}")
+    w_q = boxed(A, w_home[1] + w_home[3] + 90, WA, tree(question), f"🧰 /haipipe-report {skill_ver(question)}")
     w_r = boxed(B, top, WA, tree(report), f"🧰 /haipipe-report {skill_ver(report)}")
     w_code = boxed(B, w_r[1] + w_r[3] + 70, WA, code, "💻 The code that draws its row")
     w_around = boxed(B, w_code[1] + w_code[3] + 60, WA, around, "🤝 Around it")
     w_md = boxed(C, top, WC, outline(report), "📖 Its SKILL.md, top to bottom")
-    w_qmd = boxed(C, w_md[1] + w_md[3] + 60, WC, outline(question), "📖 haipipe-question's SKILL.md")
+    w_qmd = boxed(C, w_md[1] + w_md[3] + 60, WC, outline(question), "📖 haipipe-report's SKILL.md")
     G.arrow(w_home, w_r, "its skill")
     G.arrow(w_q, w_r, "asks")
     G.arrow(w_r, w_code, "its row is drawn by", side="v")
@@ -510,7 +510,7 @@ def main():
     qs, unread = questions(frame)
     space = report_space(frame)
     versions = {"report": version(SKILLS / "project/haipipe-report"),
-                "question": version(SKILLS / "question/haipipe-question")}
+                "question": version(SKILLS / "project/haipipe-report")}
     KEY_LINES.clear()
     story = [frame_story(qs), frame_screen(qs, space, versions)]     # Act 1: two frames, ① ② ③ were one idea
     themes, flow, mind = G.draw(frame)                # Acts 2 to 4, merged from s07 (JL 261012)

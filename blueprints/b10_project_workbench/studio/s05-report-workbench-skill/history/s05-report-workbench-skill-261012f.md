@@ -19,7 +19,7 @@ citation renamed with them (s05-D24).
 **Topic:** the Report seen from both sides: what a report is and how a level answers its Questions,
 its workbench (the Report Space on Block, Job and Task: one card per Question, opened as Logic │ Report with
 the work inside the Report, b10 s32-D23)
-and its skill (`/haipipe-report`, with `/haipipe-question` asking). Unlike Studio, Delivery and
+and its skill (`/haipipe-report`). Unlike Studio, Delivery and
 Related, which the Block alone holds, every level keeps its own reports, as it keeps its own Runs (s06).
 And how a Report groups its Questions, theme by theme: one group bar at every level, each theme's
 suggested groups, a Block's own (merged from s07, below).
@@ -59,7 +59,7 @@ s05-report-workbench-skill/
 └── history/                                 earlier builders, faces and previews; s07's as report_groups-* and
                                              report-groups-*, as they were
 skill: Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/
-       (asking: Tools/plugins/haipipe-toolkit/skills/1_base/question/haipipe-question/)
+       (asking: Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/)
 ```
 
 Rebuild: `python build_s05_report_workbench_skill.py`.
@@ -84,7 +84,7 @@ servers/workbench/frame.py         question_rows · _report_cell · _answering �
                                    report_view · group_list · studio_group_op · REPORT_SUGGESTED
 servers/workbench/page_reader.py   page_document, a report Page in the reader
 servers/workbench-<theme>/<theme>_theme.py   each theme's Report today; its suggested groups, report_groups
-skills/1_base/question/haipipe-question/   asks: the row, the folder; a Question's group: line
+skills/1_base/project/haipipe-report/   asks: the row, the folder; a Question's group: line
 ```
 
 

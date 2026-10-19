@@ -3,11 +3,13 @@
 A server folder is one of:
   · ``servers/_host``            the transport (this folder; its mixins sit in ``live/``)
   · ``servers/space-home``    Board-level presenters (home, structure, write, activity)
-  · ``servers/haipipe-page``     the standalone Page server and the reader appearance
+  · ``servers/workbench/workbench-task-draft/reader``     the standalone Page server and the reader appearance
   · ``servers/workbench``        the base workbench: Guide, Studio and what every theme reuses
-  · ``servers/workbench/task-page``   the base's Task level: one Page's tabs (outline, evidence, runs,
-                                 delivery, exports), once the workbench-page folder
+  · ``servers/workbench/workbench-task-<type>``  one Task type's screen, for every theme: its layout
+                                 ``task_<type>.py`` and its views and assets (workbench-task-draft: one Page's
+                                 tabs, outline, evidence, runs, delivery, exports; once workbench-page)
   · ``servers/workbench-<name>`` one theme's live tab, the served face of ``workbench-<name>``
+  · ``servers/workbench-<name>/workbench-task-<type>``  a Task type only that theme has
   · ``plugins/<other>/servers/workbench-<name>``  a workbench shipped by another workbench
 
 Every folder may hold ``*.py`` mixins, importable as ``live.<module>`` through
@@ -22,35 +24,46 @@ from host_paths import HOST, WORKBENCHES, SERVERS, TOOLKIT
 
 
 def workbench_folders():
-    """The base ``workbench`` folder and its level folders, then the ``workbench-*`` themes, then
-    every sibling plugin's."""
+    """The base ``workbench`` folder and its Task type folders, then the ``workbench-*`` themes, each
+    followed by its own Task type folders, then every sibling plugin's."""
     base = SERVERS / "workbench"
-    found = [base] + [base / lv for lv in LEVELS if (base / lv).is_dir()] if base.is_dir() else []
-    found += sorted(p for p in SERVERS.glob("workbench-*") if p.is_dir())
+    found = [base] + _task_types(base) if base.is_dir() else []
+    themes = sorted(p for p in SERVERS.glob("workbench-*") if p.is_dir())
     for workbench in sorted(WORKBENCHES.iterdir()):
         if workbench == TOOLKIT or not (workbench / "servers").is_dir():
             continue
-        found.extend(sorted(p for p in (workbench / "servers").glob("workbench-*") if p.is_dir()))
+        themes.extend(sorted(p for p in (workbench / "servers").glob("workbench-*") if p.is_dir()))
+    for theme in themes:
+        found += [theme] + _task_types(theme)
     return found
 
 
-# The base workbench's level folders, each a server folder of its own (mixins, assets): Task is the
-# Page Task's views (task-page: once workbench-page, JL 261007); the frame itself is the base's own code.
-LEVELS = ("task-page",)
+def _task_types(folder):
+    """A workbench's Task type folders, ``workbench-task-<type>/`` (b32 s41-D15): each a server folder of its own
+    (its layout ``task_<type>.py``, its views, its assets)."""
+    return sorted(p for p in folder.glob("workbench-task-*") if p.is_dir())
+
+
+def task_folders():
+    """Every Task type folder the host serves: the base's (every theme's types), then each theme's own."""
+    return [f for f in workbench_folders() if f.name.startswith("workbench-task-")]
 
 
 def workbench_name(folder):
     """A workbench folder's name in WORKBENCH_ROUTES: ``workbench-<name>`` -> ``<name>``; the base
     ``workbench`` folder answers the ``shared`` routes (Studio's draw, chat and terminal), and its
     Task level the ``page`` routes."""
-    if folder.parent == SERVERS / "workbench":
-        return {"task-page": "page"}.get(folder.name, folder.name)
+    if folder.name.startswith("workbench-task-"):   # a Task type: the base's draft one answers the ``page``
+        if folder.parent.name != "workbench":        # routes; a theme's own answers its theme's
+            return workbench_name(folder.parent)
+        return {"workbench-task-draft": "page"}.get(folder.name, folder.name)
     return folder.name.split("-", 1)[1] if "-" in folder.name else "shared"
 
 
 def server_folders():
     """Every folder that may contribute mixins or asset parts, in load order."""
-    folders = [HOST, SERVERS / "space-home", SERVERS / "haipipe-page"]
+    # the reader (once servers/haipipe-page) keeps its old slot, so its css still loads before the base
+    folders = [HOST, SERVERS / "space-home", SERVERS / "workbench" / "workbench-task-draft" / "reader"]
     folders.extend(workbench_folders())
     return [f for f in folders if f.is_dir()]
 
@@ -74,7 +87,7 @@ def asset_roots(kind):
 # `/b/` and `/w/` addresses, static Board pages, and nothing else: no terminal,
 # no chat, no Board write route. Keep a workbench's row next to its folder.
 WORKBENCH_ROUTES = {
-    # workbench/task-page (once workbench-page): one Page's tabs
+    # workbench/workbench-task-draft (once workbench-page): one Page's tabs
     "page": frozenset({"draft", "outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
                        "value", "display", "probe", "latex", "word", "bibex", "bibex-entry",
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),

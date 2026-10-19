@@ -10,6 +10,6 @@ Built /wb update (workbench 1.20.0) and ladder --today (haipipe-project 0.15.0);
 
 ## Changed
 
-- `plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_update.py`
+- `plugins/haipipe-toolkit/skills/1_base/draft/workbench/cli/wb_update.py`
 - `plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/scripts/ladder.py`
 - `blueprints/b10_project_workbench/studio/s10-update-block/s10-update-block.md`

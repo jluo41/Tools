@@ -47,15 +47,15 @@ clinic visits reads, one row per visit, with a Task that counts the visits per c
 ----------------------------------------
 
 A Block's Question is one main topic, recorded once in the register in `board.md` with its
-report folder `reports/qNN_<topic>/` (`haipipe-question`). Its Logic is three lines a
+report folder `reports/qNN_<topic>/` (`haipipe-report`). Its Logic is three lines a
 person signs: the question, what we expect, and what would answer it. In the example:
 "How does the visits extract read?", "one row per visit, one clinic per row", and "a card
 with the row count, the clinics and the columns, citing the Tasks' Results".
 
 The question is shaped and judged by the question skills every board shares, not by this
-workbench: `haipipe-question-asking` picks the method that fixes what the question needs
+workbench: `haipipe-report` picks the method that fixes what the question needs
 first (its level, its goal, its type, the number that answers it, a cause, the analysis,
-where and with how much data, or the same plan on new data), and `haipipe-question-review`
+where and with how much data, or the same plan on new data), and `haipipe-report`
 judges it by seven tests (one thing, logic, consumer, level, answerable, new, open) by an
 agent that did not write it. A Task Block's Question is a topic: the asks inside it are its
 Tasks' Runs.

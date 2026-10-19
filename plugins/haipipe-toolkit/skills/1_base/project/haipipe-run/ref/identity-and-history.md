@@ -85,7 +85,7 @@ Published Results and closed history are immutable.
 
 ## Page interaction
 
-Read the [interactive profile](../../../page/haipipe-draft-workflow/ref/interactive-writing-run.md)
+Read the [interactive profile](../../../draft/haipipe-draft-workflow/ref/interactive-writing-run.md)
 for concrete journals, working state and human closure.
 
 - Structure `run-structure-<target>` combines SHAPE and SURVEY; participants share that

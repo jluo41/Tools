@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 TOOLS = HERE.parents[3]                                   # s10 -> studio -> b10 -> blueprints -> Tools
 TOOLKIT = TOOLS / "plugins" / "haipipe-toolkit"
 FAMILY = TOOLKIT / "skills" / "1_base" / "project"        # haipipe-project and the level skills beside it
-sys.path.insert(0, str(TOOLKIT / "skills" / "1_base" / "display" / "excalidraw-studio" / "scripts"))
+sys.path.insert(0, str(TOOLKIT / "skills" / "1_base" / "excalidraw" / "excalidraw-studio" / "scripts"))
 sys.path.insert(0, str(TOOLKIT / "servers" / "_host"))
 from draw import RED, T_SMALL, W, Drawing, canvas  # noqa: E402
 
@@ -57,7 +57,7 @@ def buttons():
     (each button once), read through the frame itself (s21's reading, 261010)."""
     from host_paths import bootstrap
     bootstrap()
-    from live import frame
+    from live import frame, task_draft
     out = []
     with tempfile.TemporaryDirectory(dir=TOOLS, prefix=".s10-probe-") as tmp:
         block = Path(tmp) / "b99_probe"                   # a real Block › Job › Task, each with its face
@@ -70,9 +70,9 @@ def buttons():
             out += [(level, SHORT.get(s, s), list(k.get("skills") or [])) for s in SPACES if s in views
                     for k in views[s].run_types]
     seen = set()
-    for space, subs in frame.PAGE_TASK_SUBS.items():
+    for space, subs in task_draft.DRAFT_TASK_SUBS.items():
         for sub in subs or ("",):
-            for k in frame.page_task_spaces(TOOLS / "<tNN>", TOOLS, sub)[space].run_types:
+            for k in task_draft.draft_task_spaces(TOOLS / "<tNN>", TOOLS, sub)[space].run_types:
                 if (space, k["label"]) not in seen:
                     seen.add((space, k["label"]))
                     out.append(("Page Task", SHORT.get(space, space), list(k.get("skills") or [])))

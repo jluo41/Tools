@@ -106,10 +106,9 @@ OLDER = re.compile(r"older|still read|legacy|historical|was |were |carry_over|ca
 # the base skills insight borrows, by what they do for it
 BORROWS = [("the ladder: Board · Job · studio · report", ["haipipe-block", "haipipe-job", "haipipe-studio",
                                                           "haipipe-report"]),
-           ("questions: asked, shaped and reviewed", ["haipipe-question", "haipipe-question-asking",
-                                                      "haipipe-question-review"]),
+           ("questions: asked, shaped and reviewed", ["haipipe-report"]),
            ("execution: the hard Runs, their tickets, Run names by Space", ["haipipe-task", "haipipe-run"]),
-           ("pages: every answering page", ["haipipe-draft", "haipipe-draft-workflow", "haipipe-draft-check"]),
+           ("pages: every answering page", ["haipipe-draft", "haipipe-draft-workflow", "haipipe-draft-review"]),
            ("supporting", ["haipipe-discovery", "table-papers", "excalidraw-report"])]
 # a run type the workbench table has no row for: its owner skill (decided 261007; the plan gives each its card)
 OWNER = {"Add a data version": "haipipe-insight-meta", "Add a Job": "haipipe-insight",
@@ -118,8 +117,8 @@ OWNER = {"Add a data version": "haipipe-insight-meta", "Add a Job": "haipipe-ins
          "Propose questions": "haipipe-insight-question", "Take the proposals": "haipipe-insight-question",
          "Update the coverage": "haipipe-insight-check", "Draw a track": "haipipe-insight-check",
          "Check consistency": "haipipe-insight-knowledge", "Compare with j02": "haipipe-insight-knowledge",
-         "Ask a Block question": "haipipe-question", "Write the report": "haipipe-report",
-         "Write a report": "haipipe-insight-<level>", "Check a report": "haipipe-draft-check",
+         "Ask a Block question": "haipipe-report", "Write the report": "haipipe-report",
+         "Write a report": "haipipe-insight-<level>", "Check a report": "haipipe-draft-review",
          "Open a version": "haipipe-insight", "Set the cuts": "haipipe-insight", "Sign a release": "haipipe-insight-workflow",
          "Open the Prototype Block ↗": "the frame", "Open the release ↗": "the frame", "Add a topic": "the frame"}
 # one name per Run, run-<type>-<target> (as b16's s21); a hard Run keeps rNN_<partition>
@@ -272,7 +271,7 @@ CHANGES = {
              "decided: a run type with no table row gets its owner skill and its run-<type>-<target> name here; "
              "phase 2 gives each its card",
              "decided (with s11): a cut is set in the release (Set the cuts); the Board only proposes one",
-             "a Board's report is haipipe-report's (b03 261007: Question │ Work │ Report; haipipe-question keeps the asking)",
+             "a Board's report is haipipe-report's (b03 261007: Question │ Work │ Report; haipipe-report keeps the asking)",
              "aligned with the live theme's skills: map (s11): Check a report = haipipe-report; Add a topic = haipipe-studio; "
              "the Open … links = haipipe-insight",
              "a frame button keeps the frame's Run name (haipipe-run ref/run-types-by-space.md): run-add-<jNN> (was "

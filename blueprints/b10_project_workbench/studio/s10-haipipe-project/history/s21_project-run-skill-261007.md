@@ -17,10 +17,10 @@ changed.
 **Source:** read from disk on every build:
 
 - the base frame's Run buttons per level and Space (`servers/workbench/frame.py`: `vanilla()` through
-  `spaces_for`, and the Page Task's `page_task_spaces`), and whether each names a skill
+  `spaces_for`, and the Page Task's `draft_task_spaces`), and whether each names a skill
 - each skill's version and size from its `SKILL.md`, found by name
-- the skill folders of `1_base/project` · `task` · `question` · `page/workbench-studio` ·
-  `display/excalidraw-report`, and the studio scripts in this Block's `_build/`
+- the skill folders of `1_base/project` · `task` · `question` · `draft/workbench-studio` ·
+  `excalidraw/excalidraw-report`, and the studio scripts in this Block's `_build/`
 
 Typed, since they are the proposal: each button's owning skill and Run name, the skills table's "owns" and
 "takes from", the skill × Space grid, the folders after, the plan, and JL's four calls.
@@ -85,7 +85,7 @@ Guide    ─▶   workbench-<theme>
     - haipipe-job (new): the Job's face, its Tasks in order, a new-Job scaffold, a theme's own Job names.
     - haipipe-task: not touched (JL 261007: "you should not touch the haipipe-task"); the Task level's
       buttons name it as they are. `skills/1_base/task/` keeps every folder: the task kinds (1_data …
-      10_page), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
+      10_evidence), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
     - haipipe-studio (new): `studio/sNN-<topic>/` at any level, its face and builders that keep marks, the
       numbering (s0x concepts · s1x levels · s2x runs and skills · s3x Guide · s5x server), sessions as passes
       of `run-draw-<sNN>`; takes the scratch mode of excalidraw-report and `canvas.py` · `render_png.py`.
@@ -93,7 +93,7 @@ Guide    ─▶   workbench-<theme>
       report"): the Question │ Work │ Report row at any level, what each cell reads, how work links to a
       question (`answers:` on a Job or Task face, a need id like `QK10.E1`), the walk open → partial →
       answered (→ checked, proposed), the report Page (Opening · Answer · Evidence · Limits · Next), its
-      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-question keeps the asking.
+      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-report keeps the asking.
     - haipipe-run (extended): names without `<MMDD>`, `run.yaml` as the Runs Space reads it, a Run type table
       per Space that names each button's skill.
 
@@ -124,7 +124,7 @@ skills/1_base/project/
 ├── haipipe-studio/   0.1.0  ref/topic-contract.md · scripts/canvas.py · render_png.py · new_topic.py · tests (7)
 ├── haipipe-report/   0.1.0  ref/report-contract.md · scripts/build_report_drawing.py · check_report.py · tests (15)
 └── haipipe-run/      0.32.0 + ref/run-types-by-space.md · scripts/soft_run.py · tests (6)
-skills/1_base/question/haipipe-question/   0.6.0, asking only; its report part points to haipipe-report
+skills/1_base/project/haipipe-report/   0.6.0, asking only; its report part points to haipipe-report
 ```
 
 1. Every frame button names its skill (s21-D02): `frame.py`'s run types carry `skills:`; frame 1
@@ -159,7 +159,7 @@ Settled (261007)
 
 - Decided (JL 261007): haipipe-task is not touched.
 - Decided (261007, s21-D03): Delivery stays in each level skill; the Page Task's in haipipe-draft-delivery.
-- Decided (JL 261007): haipipe-report defines the Question │ Work │ Report workflow; haipipe-question
+- Decided (JL 261007): haipipe-report defines the Question │ Work │ Report workflow; haipipe-report
    keeps the asking. Decided (261007, s21-D04): "checked" is not a fourth state.
 - Handed to design_b04_skill_folder (261007): where the new skills finally sit, and any renames.
 

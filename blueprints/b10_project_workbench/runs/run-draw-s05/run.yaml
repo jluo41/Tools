@@ -46,7 +46,7 @@ writes:
 - Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py
 - Tools/plugins/haipipe-toolkit/servers/workbench-cowork/tests/test_cowork_theme.py
 - Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/canvas.py
-- Tools/plugins/haipipe-toolkit/skills/1_base/page/workbench/CHANGELOG.md
+- Tools/plugins/haipipe-toolkit/skills/1_base/draft/workbench/CHANGELOG.md
 - Tools/blueprints/b16_theme_paper/studio/s05-paper-report/
 - runs/run-draw-s05/
 - s05-report-workbench-skill.png

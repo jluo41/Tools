@@ -6811,11 +6811,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-99731a0b7e33",
+   "id": "s-4904d2734394",
    "type": "text",
    "x": 3325,
    "y": 3142.0,
-   "width": 554.4000000000001,
+   "width": 450.45000000000005,
    "height": 26.25,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -6836,8 +6836,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "→ the face's Questions · haipipe-question-asking",
-   "originalText": "→ the face's Questions · haipipe-question-asking",
+   "text": "→ the face's Questions · haipipe-report",
+   "originalText": "→ the face's Questions · haipipe-report",
    "fontSize": 21,
    "fontFamily": 6,
    "textAlign": "left",
@@ -7027,11 +7027,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-e957e184b364",
+   "id": "s-0772604573cd",
    "type": "text",
    "x": 3325,
    "y": 3250.0,
-   "width": 554.4000000000001,
+   "width": 565.95,
    "height": 26.25,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -7052,8 +7052,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "→ a verdict on reports/qNN · haipipe-draft-check",
-   "originalText": "→ a verdict on reports/qNN · haipipe-draft-check",
+   "text": "→ a verdict on reports/qNN · haipipe-draft-review",
+   "originalText": "→ a verdict on reports/qNN · haipipe-draft-review",
    "fontSize": 21,
    "fontFamily": 6,
    "textAlign": "left",
@@ -14834,11 +14834,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-f77d848b13f8",
+   "id": "s-a732f2299098",
    "type": "text",
    "x": 5238.55,
    "y": 1834.0,
-   "width": 211.2,
+   "width": 184.79999999999998,
    "height": 27.5,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -14859,8 +14859,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "haipipe-question",
-   "originalText": "haipipe-question",
+   "text": "haipipe-report",
+   "originalText": "haipipe-report",
    "fontSize": 22,
    "fontFamily": 3,
    "textAlign": "left",
@@ -20194,10 +20194,13 @@
    "boundElements": [],
    "updated": 1,
    "link": null,
-   "locked": false
+   "locked": false,
+   "customData": {
+    "aside": true
+   }
   },
   {
-   "id": "s-bd4740de2976",
+   "id": "s-10d6e4294224",
    "type": "text",
    "x": 8480.55,
    "y": 1809.25,
@@ -20222,8 +20225,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "🪶 150 words, 7% small",
-   "originalText": "🪶 150 words, 7% small",
+   "text": "🪶 141 words, 7% small",
+   "originalText": "🪶 141 words, 7% small",
    "fontSize": 24,
    "fontFamily": 6,
    "textAlign": "left",
@@ -20554,7 +20557,10 @@
    "boundElements": [],
    "updated": 1,
    "link": null,
-   "locked": false
+   "locked": false,
+   "customData": {
+    "aside": true
+   }
   },
   {
    "id": "s-0d92d0c79f38",

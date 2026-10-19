@@ -77,15 +77,15 @@ def draw():
     cy = y + 200
     for c in ["? task/ (49 skills) mixes three things: the Task folder contract (haipipe-task), the kinds of work Task",
               "  (haipipe-task-for-<kind>) and the HAI-Pipe stage pipelines (data, nn, end, individual), in the same",
-              "  numbered folders; 10_page sorts before 2_nn. (Q03, with b17 Q04)",
+              "  numbered folders; 10_evidence sorts before 2_nn. (Q03, with b17 Q04)",
               "? page/ holds the Page engine and three workbench skills (workbench, -studio, -page) plus 9 agents in",
               "  workbench/agents: is the workbench part its own base family? (Q04, with b03)",
               "? agents sit in three families only (page, task, display), each in a different place. (Q02)",
               "? ideation/ has paper-only skills (journal fit, Nature-paper review, paper-reviewer): base, or the",
               "  paper theme? (Q03)",
-              "? display/ has drawing helpers (excalidraw-report, excalidraw-section, *-to-svg) beside the renderers:",
+              "? display/ has drawing helpers (excalidraw-report, excalidraw-draft, *-to-svg) beside the renderers:",
               "  display, or 0_utils? (Q03)",
-              "? Sub-folder names differ: task 1_data ... 10_page, ideation 1_generate, search 1_search,",
+              "? Sub-folder names differ: task 1_data ... 10_evidence, ideation 1_generate, search 1_search,",
               "  writing 1_style / 2_evaluate. One naming rule for a family's sub-folders? (Q02)",
               "? Some skills have no CHANGELOG.md (red lines above); every theme skill has one. (Q02)"]:
         cy = concern(0, cy, c) + 6

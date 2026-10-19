@@ -56,6 +56,7 @@ drawing:
       - "README.md: the human entry"
       - "project.yaml: profile (research · software · hybrid) and git_mode (workspace · submodule)"
       - "no empty Theme folder: its owner makes it with the first real file"
+      - "note/: the inbox; each note or thought names its next Block and sNN"
     - title: 🗂 The Theme folders, each with its owner
       summary: the root says who owns each folder and never writes inside one
       leaves:
@@ -189,6 +190,14 @@ drawing:
 Decided
 -------
 
+s10-D10 · Decided (JL 261016: "in the project level, we will have the note folder, that the other AI session will
+    just write the quick note ... should ask the AI to try to go one step further"; "change the notes to note";
+    "sometimes the random thoughts will be helpful"): a Project's `note/` is its one inbox, at the Project level.
+    Any session writes `note/YYMMDD-<slug>.md`, a finding, a gap or a random thought; its `next:` names the Block
+    and the Job or sNN topic it feeds (or `new Block`; a thought's best guess marked `?`). No Block-level
+    `s99-note`. Written in haipipe-project 0.16.0 (`ref/project-structure.md` § note/, `ROOT_DIRS` in
+    `audit_projects.py`) and in Knowledge-SPACE `AGENTS.md` § Quick notes; the 14 old `notes/` folders renamed.
+
 s10-D09 · Decided (JL 261012): s10 and s21 merge into `s10-haipipe-project`, a topic about the haipipe-project
     skill, drawn with excalidraw-studio's `draw.py` in three acts. s21's number is retired; its decisions keep their
     ids. Its old drawing stays in `history/` for q05's figure.
@@ -206,7 +215,7 @@ s10-D01 · Proposed (JL 261012): one door, `/wb update <path>` (the workbench sk
     3 plan         what moves, what is made, what is proposed          dry run, printed and saved
     4 apply        the moves, never a word rewritten                   --apply
     5 topics       sNN topics proposed from the face's sections       haipipe-studio new_topic
-    6 Questions    per level, in the theme's kinds (s05-D07)           haipipe-question
+    6 Questions    per level, in the theme's kinds (s05-D07)           haipipe-report
     7 open         the workbench at the Block; the pass is a soft Run  run-update-<bNN>, its passes
     ```
 s10-D02 · Proposed (JL 261012: "this should be vary depeneding what are the theme of that block"; revised the
@@ -256,7 +265,7 @@ s10-D06 · Built (JL 261012: "is the /wb update ready to use now?" ... "examples
 s10-D07 · Done (JL 261012: "could you call the subagents to work on them together?", which stood in for the
     ticks): six agents, one per Proj01 Block, made every proposed line: `new_topic.py topic` per topic (each
     face with its **Tags:** group, Topic and Open), `block_questions.py add-question --group` per Block
-    Question (haipipe-question 0.7.0 added `--group` and `set-group`), a register row per Job Question in
+    Question (haipipe-report 0.7.0 added `--group` and `set-group`), a register row per Job Question in
     the Job's face, the ticks in `proposals.md`, and pass p02 of each `run-update-<bNN>`. b01's and b51's
     loose drawings moved into their topics with their builders, and each builder ran from there.
     `audit --today` then passed on all six (6 Blocks, 72 Jobs, 562 Tasks, 1073 Runs, 0 debt); today's
@@ -280,7 +289,7 @@ s21-D01 · Proposed (JL 261007): the base skills are one per level and one per s
               Description    Studio          Report            Work            Runs          Delivery
 Block    ─▶   haipipe-block  haipipe-studio  haipipe-report    haipipe-block   haipipe-run   haipipe-block ?
 Job      ─▶   haipipe-job    haipipe-studio  haipipe-report    haipipe-job     haipipe-run   haipipe-job ?
-Task     ─▶   haipipe-task   haipipe-studio  haipipe-report*   haipipe-task    haipipe-run   haipipe-draft-delivery
+Task     ─▶   haipipe-task   haipipe-studio  haipipe-report*   haipipe-task    haipipe-run   haipipe-delivery (ref/page-delivery.md)
 Guide    ─▶   workbench-<theme>
 ```
 
@@ -289,7 +298,7 @@ Guide    ─▶   workbench-<theme>
     - haipipe-job (new): the Job's face, its Tasks in order, a new-Job scaffold, a theme's own Job names.
     - haipipe-task: not touched (JL 261007: "you should not touch the haipipe-task"); the Task level's
       buttons name it as they are. `skills/1_base/task/` keeps every folder: the task kinds (1_data …
-      10_page), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
+      10_evidence), agents, page-types, haipipe-task, haipipe-workflow, haipipe-page-task.
     - haipipe-studio (new): `studio/sNN-<topic>/` at any level, its face and builders that keep marks, the
       numbering (s0x concepts · s1x levels · s2x runs and skills · s3x Guide · s5x server), sessions as passes
       of `run-draw-<sNN>`; takes the scratch mode of excalidraw-report and `canvas.py` · `render_png.py`.
@@ -297,7 +306,7 @@ Guide    ─▶   workbench-<theme>
       report"): the Question │ Work │ Report row at any level, what each cell reads, how work links to a
       question (`answers:` on a Job or Task face, a need id like `QK10.E1`), the walk open → partial →
       answered (→ checked, proposed), the report Page (Opening · Answer · Evidence · Limits · Next), its
-      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-question keeps the asking.
+      `## Figures` and drawing; a comments batch is a report kind (b16). haipipe-report keeps the asking.
     - haipipe-run (extended): names without `<MMDD>`, `run.yaml` as the Runs Space reads it, a Run type table
       per Space that names each button's skill.
 
@@ -306,7 +315,7 @@ s21-D02 · Proposed: every frame button names its skill (a `skills:` field on it
     `Write the report` → haipipe-report, `Run` → haipipe-run.
 
 s21-D03 · Decided (261007): Block and Job delivery stay in their level skills (haipipe-block,
-    haipipe-job), following the theme's delivery rule; a Page Task's is haipipe-draft-delivery's. No
+    haipipe-job), following the theme's delivery rule; a Page Task's is haipipe-delivery (ref/page-delivery.md)'s. No
     haipipe-delivery until a theme's Block delivery needs more than the level skill holds. Reason: no
     Block or Job delivers anything yet, so a separate skill would have nothing to build.
 
@@ -384,8 +393,7 @@ button; the Studio one opens the Block's shared Studio. Work Details is called W
 read showed no Description button: the probe folders had no face; fixed 261010.)
 
 In `Tools/` (261011): the buttons name 15 skills. Five of them are among the seven in
-`plugins/haipipe-toolkit/skills/1_base/project/`; `haipipe-question` and `haipipe-task` sit in `1_base/question/`
-and `1_base/task/`; the Page Task's seven draft skills in `1_base/page/workflow-runs/`, and `haipipe-display`
+`plugins/haipipe-toolkit/skills/1_base/project/`; `haipipe-report` is in `1_base/project/` and `haipipe-task` in `1_base/task/`; the Page Task's seven draft skills in `1_base/draft/workflow-runs/`, and `haipipe-display`
 in `1_base/display/`. Each reaches Claude
 through a link, `~/.claude/skills/<name>`. `haipipe-delivery` (0.2.2) is there but no button names it, and
 it holds only its `SKILL.md`: the Block's and Job's Delivery buttons name `haipipe-block` and `haipipe-job`

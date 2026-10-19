@@ -52,7 +52,7 @@ LEVEL = {
     "Description": [
         ("t", "one Section, a Page Task: it tells one Narrative row to its reader"),
         ("c", SPACES),
-        ("m", "skills   haipipe-paper-section owns · haipipe-draft-workflow works · workbench-paper shows"),
+        ("m", "skills   haipipe-paper-draft owns · haipipe-draft-workflow works · workbench-paper shows"),
         ("t", "? variants: Section (Main · Appendix) · Round · Letter; only the Section is drawn yet"),
     ],
     "Method": [
@@ -80,7 +80,7 @@ ON_DISK = {
     "Method": [
         ("servers/workbench-paper/guide/method.md", ""),
         ("    Task · one Section, a Page", "the step cards (today one row)"),
-        ("servers/workbench/task-page/guide/methods/", "the Page method's cards"),
+        ("servers/workbench/workbench-task-draft/guide/methods/", "the Page method's cards"),
         ("servers/workbench-paper/guide/methods/writing/", "the paper's Writing cards"),
     ],
     "RoadMap Draw": [

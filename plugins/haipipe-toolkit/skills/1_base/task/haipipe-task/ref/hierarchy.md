@@ -45,7 +45,7 @@ work/bNN_<block>/
 ```
 
 A Block contains Jobs and documentation, including its Question Report Pages
-(`haipipe-question` (`skills/1_base/question/haipipe-question/ref/block-questions.md`)). A report may have Page-owned writing/evidence Runs
+(`haipipe-report` (`skills/1_base/project/haipipe-report/ref/block-questions.md`)). A report may have Page-owned writing/evidence Runs
 inside its own Folder; it is not a `tNN` Task and gets no BJTR execution address.
 The Block root has no code, config, Ticket, Result, notebook, or batch lane.
 The tree owns executable Board membership and default
@@ -242,7 +242,7 @@ tNN_<task>/
 │   └── r02_<run>.sh
 ├── sbatch/                      optional; serves only this Task
 └── studio/                      optional; the Page's kept chat and draw
-    └── chat/<YYMMDD-HHMM>/      one kept session (workbench-studio)
+    └── chat/<YYMMDD-HHMM>/      one kept session (haipipe-studio)
         ├── digest.md            what it decided · the reading path
         └── transcript.md        the raw exchange · reference only
 ```

@@ -168,7 +168,7 @@ be adapted and verified; never silently run its default dataset.
 Page numeric evidence keeps the existing single page-serving collection route
 and named producing Run/Result bindings. Cross-Folder evidence enters through full
 Supporting Run Results; each typed make-item still owes its local Evidence
-Item Run. Load `workbench-page/ref/item-table.md` when mapping those
+Item Run. Load `workbench-task-draft/ref/item-table.md` when mapping those
 dependencies. The new item dialect does not authorize direct raw-result
 reading from a consuming Page or a second numeric computation path.
 

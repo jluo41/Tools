@@ -59,7 +59,7 @@ exists reads as declared work. Return `HOLD` naming the missing admitted input o
 
 🚫 **Never reach into the workspace for a number.** The caller already admitted
 the Evidence Item's Local Input and recorded source, Run, and path; a second
-disagree with it (`1_base/page/workbench-page/ref/evidence/displays.md` §❄️).
+disagree with it (`1_base/workbench/workbench-task-draft/ref/evidence/displays.md` §❄️).
 
 🚫 **Never type a value into a recipe.** The recipe READS the frozen intake at
 run time, so re-running it yields the same bytes and a reader can check any
@@ -148,5 +148,5 @@ skills/1_base/display/agents/
 
 The door is `../haipipe-display`; the unit's shape is
 `../ref/display-unit-output-contract.md`; the page-side rules are
-`1_base/page/workbench-page/ref/evidence/displays.md`; the intake law is that lane's
-§❄️; the judge is `page/workbench/agents/haipipe-block-reviewer-agent`.
+`1_base/workbench/workbench-task-draft/ref/evidence/displays.md`; the intake law is that lane's
+§❄️; the judge is `draft/haipipe-draft/agents/haipipe-block-reviewer-agent`.

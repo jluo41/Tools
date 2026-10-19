@@ -36,7 +36,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-_PAGE_ENGINE = next(p for p in Path(globals().get("__engine_dir__") or __file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+_PAGE_ENGINE = next(p for p in Path(globals().get("__engine_dir__") or __file__).resolve().parents if p.name == "skills") / "1_base" / "draft" / "haipipe-draft"
 if str(_PAGE_ENGINE) not in sys.path:
     sys.path.insert(0, str(_PAGE_ENGINE))
 from src.common import delivery_dir, delivery_owner, delivery_source, delivery_lane_dir, delivery_lane_dirs
@@ -114,7 +114,7 @@ ENGINE_DIR = Path(globals().get("__engine_dir__") or Path(__file__).resolve().pa
 DOCX_ENGINE = ENGINE_DIR / "latex_room_to_docx.py"
 COVER_LETTER = ENGINE_DIR / "cover_letter.py"            # 0.9.0: run-delivery-coverletter
 # the Page workbench's renderer: a PDF drawn from the .docx package itself, so a reader can see the Word output
-DOCX2PDF = next(p for p in ENGINE_DIR.parents if p.name == "skills").parent / "servers" / "workbench" / "task-page" / "exporters" / "docx2pdf.py"
+DOCX2PDF = next(p for p in ENGINE_DIR.parents if p.name == "skills").parent / "servers" / "workbench" / "workbench-task-draft" / "exporters" / "docx2pdf.py"
 def _engine_version():
     skill = ENGINE_DIR.parent / "SKILL.md"
     if skill.exists():

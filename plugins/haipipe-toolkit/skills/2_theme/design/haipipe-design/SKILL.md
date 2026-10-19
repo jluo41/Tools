@@ -65,7 +65,7 @@ inputs), so a change in the designs has one cause.
 | where a Job stands and which Run is next, the gates, the run cards, a design's state and its projections (draft, verdict, predictions), `run-close` | `haipipe-design-workflow` |
 | the release, the frozen predictions, `designs.json`: `run-freeze-predictions`, `run-release` | `haipipe-design-delivery` |
 | what the workbench shows at each level | `workbench-design` |
-| a Block question and its report: `run-propose-questions`, `run-report` | `haipipe-question` · `haipipe-report` |
+| a Block question and its report: `run-propose-questions`, `run-report` | `haipipe-report` |
 | the Run folder, its `run.yaml`, passes and receipts | `haipipe-run` |
 | a channel's style rules (SMS, email, push, UI card …) | `venue/venue-<channel>/` |
 

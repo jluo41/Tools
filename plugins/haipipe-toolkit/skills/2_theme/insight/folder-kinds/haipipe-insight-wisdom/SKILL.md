@@ -22,7 +22,7 @@ metadata:
 
 # /haipipe-insight-wisdom · counsel, then hand off
 
-Load `haipipe-folder`, `haipipe-draft`, `haipipe-insight`, and the workflow.
+Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and the workflow.
 Read `../../haipipe-insight/ref/page-v2-adapter.md` before authoring counsel or
 exporting the handoff.
 

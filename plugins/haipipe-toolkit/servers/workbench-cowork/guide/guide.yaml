@@ -19,7 +19,7 @@ description: 'The CoWork Workbench reads one CoWork Block: one coordination topi
 skills:
 - skill: haipipe-cowork
   role: The Block, its Jobs and their folders
-- skill: haipipe-question
+- skill: haipipe-report
   role: A Block's Questions, their register and report folders
 - skill: workbench-cowork
   role: Scope, Work, Check and Delivery over the Block's files

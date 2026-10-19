@@ -37,7 +37,7 @@ TOPICS, QUESTIONS = [], []
 STEPS = [("1 shape", "haipipe-project ladder.py", "shape"), ("2 today", "the b10 rules as checks", "today"),
          ("3 plan", "a dry run: moves, made, proposed", "plan"), ("4 apply", "--apply: the moves only", "apply"),
          ("5 topics", "haipipe-studio: infer, then new_topic", "topics"),
-         ("6 Questions", "haipipe-report: infer; haipipe-question", "qs"),
+         ("6 Questions", "haipipe-report: infer; haipipe-report", "qs"),
          ("7 open", "the workbench; run-update-<bNN>", "open")]
 
 

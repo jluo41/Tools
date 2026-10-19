@@ -694,7 +694,7 @@ First interpret this message's scope using /haipipe-draft:
 - No matching Run: establish the typed Run through its owning Page workflow after
   checking prerequisites. A new independent goal or target needs a new Run.
 - An explicit published-source maintenance request outside a writing Run follows
-  haipipe-sentence: exact source match, preserved signed lanes, and an edit record.
+  haipipe-draft-writing: exact source match, preserved signed lanes, and an edit record.
 - Evidence work belongs to its typed RE and owner-native Supporting Runs. Current
   evidence comes from the exact Result selected in the Evidence Item ledger;
   never silently substitute legacy display/bib folders or an older Result.
@@ -734,7 +734,7 @@ BOARD_RULES_BODY = """The board folder given below holds `board.md` (title · `s
 ## Topic / ## Pipeline / ## Pages) and one page folder per page. Board-level work is
 yours: which page to act on next, the ## Pages order, grouping and group intros,
 cross-page consistency. Deep work inside one page belongs to that page's own chat
-and follows workbench-studio/ref/chat.md §🗺. Never hand-edit board/ (generated). Every page
+and follows haipipe-studio/ref/chat.md §🗺. Never hand-edit board/ (generated). Every page
 you change gets one record at the top of its draft/records/<stem>-log.md:
 `### YYMMDD HHMM · chat: <what changed>`. Preserve every signed `> Comment` and `> ✎`
 line beneath the sentence it concerns.

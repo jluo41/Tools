@@ -33,7 +33,28 @@ s02-paper-studio/
 Decided
 -------
 
-(none yet: a decision is one line, s02-DNN · <what was decided> (<who> <date>))
+s02-D01 · Each part of a paper answers one question at one grain (JL 261019: "What is the differneces between idea,
+related work, and story, and then sections, right, and then evidence, etc."): idea, which question is worth a paper
+(`studio/s01-ideation/`, many, one picked at G0); related work, who did nearly this and what we add (s10-s19,
+haipipe-paper-related); story, what paper we make from the picked idea (`studio/s02-story-<desk>-<idea>/`); a
+research question's report, what its answer is (`reports/qNN_`); a version, what we send to whom (a Job); a
+Section, what one part says (a draft Task); evidence, what backs one sentence (its cards). Literature is
+`discovery/`'s wide reading, not related work.
+
+s02-D02 · Related work is its own owner and band: `haipipe-paper-related`, s10 the map, s11-s19 one topic per type
+of closest work (JL 261019: "for the related work we can do things like s10-related-work, and after that, we have
+s11 s12"; "it is different from the literature"; "go ahead and do it")
+
+s02-D04 · The story is the list of research questions it answers; read in order, the questions are its narrative,
+and each is drawn with what supports it and what is missing (JL 261019: "please make the story, I think it should be
+composed a list of the questions to answer, and the quesiton can be the narrative as well"; "should we have a things
+named /excalidraw-story?"). Built: `1_base/excalidraw/excalidraw-story` 0.1.0, haipipe-paper-story 0.22.0; a telling
+may open before G0, which is then JL's mark on it ("there are not s02, why????"). First: Paper-LLMRecPhy
+`studio/s02-story-misq-agent-physician-visibility/`, six questions, 2 answered.
+
+s02-D03 · A Section is a draft Task: `haipipe-paper-section` is `haipipe-paper-draft`, and the new
+`haipipe-paper-evidence` keeps the paper's evidence rules and one ledger per version (JL 261019: "okay, please go
+ahead and do it"; "use the draft? so we have the draft task, right?"); s21 has the detail
 
 
 Open
@@ -41,8 +62,12 @@ Open
 
 1. The group names, proposed: Ideation · Story · Plan · Figures · Review · Talk. JL picks.
 2. Who writes a paper Board's `studio/_groups.txt`: the paper scaffold (`paper_ladder.py`) or a person.
-3. The numbers inside a paper Board: s01 ideation, tellings and plans from s02, figures and reviews after
-   them, talks in s61-s69?
+3. The numbers inside a paper Board, proposed 261019 (s10-s19 decided, s02-D02): s00 index · s01 ideation ·
+   s02-s09 the story, each telling then its paper workflow · s10-s19 related work · s21-s29 versions and their
+   Sections (results, section canvases) · s61-s69 slide drafts. Today four papers number four ways, and
+   TestToLearn's Section drawings sit at s10-s16 (DrFirst moves them, with `renamed-from:`). JL picks.
+8. The other three story topics (MISQ AgreeablePrescription, FairGlucose, TestToLearn) still write §3 as the older
+   table or have no drawing; each moves to the question list and excalidraw-story when its owner asks.
 4. A version's Studio view: only the telling it is built from, or every topic of the Board?
 5. A Figures topic against a Section's display units (haipipe-display): where a figure's design ends and
    its build begins.

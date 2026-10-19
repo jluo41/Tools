@@ -33,7 +33,7 @@ snapshot remains useful for historical comparisons.
 
 For a paragraph Run, use this order:
 
-1. Realize the approved outline/evidence slice with `haipipe-writing`.
+1. Realize the approved outline/evidence slice with `haipipe-draft-writing` (`ref/`); the audit below belongs to `haipipe-draft-review`.
 2. Apply the frozen Writing DNA packet, if one was supplied.
 3. Select at most one external anti-slop reference for a focused audit.
 4. Preserve facts, citations, numbers, argument order, and the Haipipe `✎`

@@ -41,7 +41,7 @@ TK = TOOLS / "plugins" / "haipipe-toolkit"
 SERVER = TK / "servers" / "workbench-insight"
 GUIDE = SERVER / "guide"
 PAPERS = SERVER / "related" / "papers.md"
-ASKING = TK / "skills" / "1_base" / "question" / "haipipe-question-asking"
+ASKING = TK / "skills" / "1_base" / "project" / "haipipe-report" / "ref"
 INSIGHT = TK / "skills" / "2_theme" / "insight"
 CODE = {  # the code that runs or checks a question: key -> (file, what it does)
     "check_block": (INSIGHT / "haipipe-insight-check/ref/check_block.py", "question rules: SPEC fields, agreed, power declared"),
@@ -149,7 +149,7 @@ def frame_flow(x0, y0):
     text(x0, y0 + 50, "No arrow leaves the cards for a question's run: the code runs the steps, not a method.", 20, GRAY)
     y0 += 110                                             # the diagram starts under the title
     W, H = 420, 60
-    src = [(f"{len(CARDS['Question-asking'])} asking cards", rel(ASKING / "methods") + "/"),
+    src = [(f"{len(CARDS['Question-asking'])} asking cards", rel(ASKING / "asking-methods") + "/"),
            (f"{len(CARDS['Question-answering'])} + {len(CARDS['Question-results reading'])} answer, read cards",
             rel(GUIDE / "methods") + "/{answer,read}/"),
            ("guide/method.md", "the six steps, trees, T0-T8, the card index"),
@@ -321,7 +321,7 @@ FILES = {  # screen -> (tree line, what on screen it feeds); a path in [] is che
         ("├── guide/methods/read/01-03", "the reading cards (§ 4)"),
         ("├── guide/methods.excalidraw", "the Methods drawing fold (methods_drawing.py)"),
         ("└── insightboard.py", "_render_methods, render_methods_embed"),
-        ("skills/1_base/question/haipipe-question-asking/", ""),
+        ("skills/1_base/project/haipipe-report/ref/asking.md", ""),
         ("└── methods/01-08", "the asking cards (§ 2)"),
         ("servers/workbench-design/designboard.py", "method_cards: closed head, open two columns"),
         ("skills/2_theme/insight/workbench-insight/", "ref/workbench-table.md: the Add a method run"),

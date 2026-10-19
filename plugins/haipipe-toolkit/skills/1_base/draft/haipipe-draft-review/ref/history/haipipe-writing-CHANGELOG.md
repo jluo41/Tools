@@ -1,0 +1,380 @@
+## 0.22.4 · 2026-10-16 · Avoid the semicolon (JL 261016)
+
+- `ref/anti-slop-rules.json`: regex rule `semicolon` (style, weight 2) flags a semicolon outside parentheses; one between
+  citations inside parentheses is kept. `ref/plain-rules.md` § 3 carries the rule with JL's words and a C2 example.
+
+## 0.22.3 · 2026-09-29 · outline/ to draft/ (JL 260929)
+
+- `cli/agree.py`: its comment's example path is `draft/evidence/`.
+
+## 0.22.2 · 2026-09-28 · No content hashes (JL 260928)
+
+- Method, rubric, profile and anti-slop records carry path and version, never a content hash: `sha256` catalog override, `profile_hash`, `rules_sha256` and the input/report hashes in `trace.md` are removed. The anti-slop catalog entry's `version` is `skill-version` instead of `content-hash`.
+
+## 0.22.1 · 2026-09-28
+
+- A ninth typed lane, `> Supporting Run:` (⚙️): the Task or Discovery Run behind a sentence's
+  evidence, written by `page.py adopt` (haipipe-draft 0.119.0). Lane counts and lists updated.
+
+## 0.22.0 · 2026-09-22
+
+- The external skills this worker calls are vendored beside it in numbered
+  folders: `1_style/writing-dna-skill` (@ee3d97ee), `2_evaluate/academic-humanizer`
+  (0.3.2 @02281d83), and the new general-register evaluator `2_evaluate/humanizer`
+  (blader 3.0.0 @9862685f, adapter `ref/methods/humanizer.md`). The catalog's
+  `academic-humanizer` entry resolves to its copy instead of `path: null`; the
+  `writing-dna` entry names its distiller.
+- `ref/external/README.md` digests the anti-AI writing shelf: fourteen references,
+  which three we call, and what each read-only one gave. Taken the same day: Adam's
+  two guardrail lists and deslop's "do not dilute" and "match register" into
+  `ref/ai-tells.md` §3 and §4; stop-slop-zh rules 1, 2, 3 and 6 as `lang: zh`
+  entries in `ref/anti-slop-rules.json` (1.1.0; 38 phrases, 4 patterns, covered by
+  `tests/test_anti_slop.py`). Rows added to `ref/anti-slop-attribution.md`.
+- The empty `haipipe-paper-revise-humanizer/` husk is gone.
+
+## 0.21.0 · 2026-09-21
+
+- Document how host-specific submission-readiness overlays reuse the shared
+  four-axis rubric without becoming a second scoring system.
+
+## 0.20.0 · 2026-09-20
+
+- Make Writing the common Section/Paragraph/file entry for draft, revise and evaluate.
+- Add the scoped request, selected-method catalog/adapters, shared four-axis rubric,
+  candidate-specific evaluation and bounded revision; Page retains lifecycle and acceptance.
+- Retire the standalone HAI humanizer after moving preservation/venue constraints,
+  provenance and useful rhythm percentages into shared Writing. External academic
+  humanization is selected through an available skill entry, never assumed installed.
+- Correct unsupported examples, current owner references, no-op records, tool usage
+  and legacy Paper Note checking claims. Keep Page clean Before/After and Board diffs.
+- Restore the misplaced 0.19.0 entry to the local release sequence; its stated
+  record-first behavior was already present in SKILL.md.
+
+## 0.19.0 · 2026-09-13
+
+- Keep the Writing worker record-first between interactive Steps and require
+  host approval before optional heavy work or delegated analysis.
+
+## 0.18.0 · 2026-09-13
+
+- Clarify that interactive Page Steps record only the local editing reason;
+  broader preference inference is deferred to post-run analysis.
+
+## 0.17.0 · 2026-09-13
+
+- Keep follow-up Page Steps record-first: make the scoped prose edit and record
+  its local reason, while deferring preference inference to post-run analysis.
+
+## 0.16.0 · 2026-09-13
+
+- Follow the Page host's rapid foreground mode for local feedback turns:
+  reuse loaded context, make the smallest patch, and return after the narrow
+  check without blocking on rescoring, corpus reads, exports, or review work.
+
+## 0.15.0 · 2026-09-12
+
+- Emit Track Changes metadata only for material wording edits; feedback that
+  changes no prose returns an ordinary disposition without Before/After or a
+  preference card.
+
+## 0.14.0 · 2026-09-12
+
+- Return Page-hosted feedback classification and bounded preference inference
+  alongside clean Before/After and rationale, while keeping visual diff markup
+  out of prose and one-off inferences out of shared policy.
+
+## 0.13.0 · 2026-09-12
+
+- Follow the Page host's three-link Step handoff, including the readable
+  Current Run history projection.
+
+## 0.12.0 · 2026-09-11
+
+- Support scoped interactive candidates before publication gates; retain original feedback, item dispositions and accepted text. Use current policy on local edits and the shared final Workspace link packet.
+
+# haipipe-writing
+## 0.11.0 · 2026-09-11
+
+**Make surgical revision the highest-priority writing rule.**
+
+Existing prose is now preservation-first: a local request authorizes only the
+named span and the smallest necessary seam. Untouched claims, logic, order,
+examples, citations, hedges, terms, voice, and paragraph function stay frozen;
+paragraph-wide or structural rewriting requires explicit scope from the
+person. Ambiguity resolves toward the smaller edit, and broader concerns are
+reported rather than silently repaired.
+
+## 0.10.0 · 2026-09-09
+
+**Make the default Page prose style concrete and expose the two reader workspaces.**
+
+Paragraph realization now defaults to subject-first, specific, one-move
+sentences with natural rhythm and no process-shaped or AI-shaped scaffolding;
+owner/venue policies remain authoritative. Page-changing hosts must return
+direct Bullet Workspace and Evidence Workspace links from the verified Board
+route, with compact or embedded views only as secondary projections.
+
+## 0.9.0 — 2026-09-08
+
+**Add an optional anti-slop audit adapter without bypassing HAI write paths.**
+
+Added `cli/anti_slop.py`, a Python stdlib diagnostic that ports the useful
+rules-as-data, transparent pattern/structure signals, and preservation-sensitive
+fact comparison from the referenced MIT-licensed humanizer tools. It also
+tracks author-year citation tokens so a rewrite cannot silently swap a cited
+source. The copied rule data lives in `ref/anti-slop-rules.json` with
+provenance and notices; the adapter never rewrites prose, never treats a score
+as acceptance, and never writes a Page. Paragraph Runs may record
+`anti-slop.json`, route findings back to CONTENT for a bounded revision,
+compare facts, and then use `wdiff.py` for the durable `✎` trail.
+
+## 0.8.1 — 2026-09-08
+
+**Carry Page-level narrative organization into paragraph realization.**
+
+The Writing DNA adapter now treats the Page's optional `Narrative Decision` as
+an approved paragraph-organization input. It explains why the paragraph has
+its selected reader order or form, while remaining separate from Evidence and
+from the style-only DNA profile. A Paragraph Run may honor or report a
+conflict with that decision, but it may not invent or rewrite it.
+
+## 0.8.0 — 2026-09-08
+
+**Make Writing DNA operational at the paragraph Run boundary.**
+
+Added `ref/writing-dna-adapter.md`, which defines the frozen adapter packet
+between the external `writing-dna-skill` and HAI paragraph realization. It
+separates a three-pass content/style/audit workflow, preserves Outline and
+Evidence authority, specifies missing/partial-profile routing, and adds a
+recoverable style trace for profile artifacts, selected exemplars, observable
+choices, and conflicts. The adapter remains documentation-only and does not
+make the distiller a runtime dependency.
+
+## 0.7.0 — 2026-09-04
+
+**Make writing plan/evidence-aware without taking ownership of either.**
+
+The writing worker now documents a second input path: an approved outline,
+section handoff, or division writing ticket plus folded evidence can be realized
+as prose before any sentence-level polish. The new
+`ref/realize-from-plan.md` defines the temporary writing packet, readiness gates,
+authority routing, recipe selection, style precedence, and sentence-consumer
+check. `wdiff.py`, its `✎` contract, and the existing rewrite/check path are
+unchanged.
+
+The reference incorporates the useful ideas behind paper-logic graphs, Compound
+Writing, Writing DNA, sepia, and Stop That Shit as local, opt-in methods. None is
+a runtime dependency, and none may override the host's approved outline,
+evidence, venue, or claim contract.
+
+## 0.6.1 — 2026-08-02
+
+**A split rewrite anchored its record on the LAST new line, not the first.**
+
+`ref/change-record.md` §3 states both halves of the rule: the diff covers the
+whole rewritten run, and the record sits under the FIRST of the new lines.
+`apply` wrote `[first] + tail + kept + [rec]`, which puts it under the last. So a
+40-word sentence broken into three short ones carried its record on sentence
+three, describing words that had moved up to sentence one. That is the exact
+mis-anchoring this tool exists to prevent, in the tool.
+
+It survived four releases because every rewrite it had been handed was
+single-line, where `tail` is empty and the two orders produce the same string.
+Found on `QBv1-misq.md` (260802), on the first rewrite that split one source line
+into three.
+
+- `cli/wdiff.py` — `[first] + kept + [rec] + tail`. The existing lane run still
+  travels with the sentence it belonged to, and the new record still joins the
+  END of that run; only the rest of the split now follows it.
+- `tests/test_roundtrip.py` — a split case, asserting the record sits under line
+  one after its existing `> Citation:` lane, that line two follows it, and that
+  the diff still covers the whole run.
+
+## 0.6.0 — 2026-08-02
+
+**`cli/agree.py`: two statements of one fact, compared** (JL 260802, from `QA10`
+aim 7). Three defects surfaced that afternoon and all three were one shape, two
+halves of a contract disagreeing with nothing that compares them: a path cited
+one way by a skill and another way by its own hub, a frontmatter version against
+its changelog, and `apply` writing a record `check` rejected. Each was found by a
+person looking. This checks the two that are static.
+
+    version   SKILL.md frontmatter against the newest CHANGELOG.md heading
+    path      every cross-skill citation against what is actually on disk,
+              reporting DEAD and, separately, "resolves only from the workbench
+              root", which is the humanizer's defect exactly
+
+**Two things it got wrong first, both worth recording.** The first sweep skipped
+fenced blocks, on the theory that a checker must not report its own examples.
+That made it blind to its own reason for existing: the instruction it was written
+to catch lives inside an untagged fence holding prose. Unlike a `\cite{TOADD}`
+marker, a path does not become an example by being quoted, so fences are no
+longer skipped.
+
+The second sweep then returned 1393 path findings, of which the common ones were
+`1-probes/`, `results/`, `QA/`, `runs/<RUN>.sh`: shapes a skill DESCRIBES, not
+files it cites. A path is now checked only when it points into the skills tree.
+152 folders, 57 path findings, 2 version disagreements.
+
+**And the version comparator was itself an instance of the bug it hunts.** Its
+regex missed `## [0.6.1] — …`, the bracketed Keep-a-Changelog form, so the scan
+fell through to the heading below and reported the wrong number: 35 of 152
+folders flagged, nearly all of them agreeing perfectly. Fixed, and left in the
+docstring, because the checker written to catch two-halves-disagreeing shipped
+its first draft with two halves disagreeing.
+
+**`tests/test_roundtrip.py`.** What `apply` writes, `check` must accept, over a
+bare sentence, a sentence with one lane, one with three lanes and a comment, one
+already carrying a signed record, and a paper-host call beside a board record. It
+also asserts the three things `check` must still reject. Verified to FAIL against
+the pre-0.5.0 `check`, so it locks the repair in rather than merely passing. A
+round trip is not a grep and `agree.py` could never have seen it.
+
+## 0.5.0 — 2026-08-02
+
+**The host is a flag, not an instruction** (JL 260802, from `QA10` aim 5).
+`record` and `apply` take `--host {board,paper}`. One `difflib` computation, two
+notations: `~old~ *new*` behind `> ✎` for a board, `~~old~~ **new**` behind
+`> Note:` for a paper.
+
+Until now it emitted the board notation only, and `haipipe-paper-revise/SKILL.md`
+told its caller to "double the tildes and turn `*new*` into `**inserted**` for
+this host". That is a hand step inside the one tool whose entire design argument
+is that this class of hand step gets done wrong. The computation was in one
+place and the OUTPUT was not, so the last transformation before marks reached a
+manuscript was performed by the reader the skill exists to protect. Both callers
+now pass `--host paper` and convert nothing.
+
+**`check` and `apply` had contradicted each other since 0.1.0, and it surfaced
+while testing the flag.** `apply` appends a record to the END of the sentence's
+lane run, which 0.4.0 made explicit and which `QB4`'s Law requires. `check`
+looked exactly one line up and demanded prose there. So every record written
+under a sentence that already carried a `> Citation:`, `> Value:` or any other
+lane was written correctly by one half of the tool and rejected by the other.
+Nothing had caught it because the corpus it was validated against,
+`QB4-overall.md`, happens to carry its 31 records on sentences with no other
+lane.
+
+`check` now walks the `>` run back to the sentence it hangs under. A record under
+no prose at all is still caught, and a malformed one still is: verified against
+both negative cases and against the 31-record corpus, which stays at 0 problems.
+
+**Two guards where there was one.** `apply` asserts that the host's own record
+count GREW by one, and separately that the count of signed `> ✎` lines never
+SHRANK. A paper-host call has no more right to destroy a board record than a
+board-host call does, and the single 0.4.0 guard could not express both.
+
+## 0.4.0 — 2026-08-02
+
+Aligned with the sentence apparatus, which 0.1.0 through 0.3.0 had ignored
+(JL: "how could you make haipipe-writing consistent with the evidence card and
+comments as well? Did you ever considered about it?"). No, it had not been.
+
+The gap was that `ref/change-record.md` described `✎` as a standalone grammar,
+creating a SECOND authority on something already owned by
+`draft/haipipe-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
+lanes, a 💬 comment, and the ✎ record, with a badge naming the kind.
+
+- `ref/change-record.md` rewritten to CITE the owning contract instead of
+  restating it. It now carries only what is this skill's: how the diff is
+  computed and where the record is placed.
+- `ref/holes.md` §4 rewritten. The "board dialect" had been invented; the real
+  one is the typed lanes, and `QB4 §3.3.3` already states the one-to-one map
+  `> Citation:` ←→ `\cite{TOADD}`, `> Value:` ←→ `{VAL:? …}`, `> Display:` ←→ a
+  display id. That mapping is how the board reaches `/haipipe-paper`.
+- `cli/holes.py` board dialect rebuilt on the eight real lanes. A lane stating
+  what it FOUND is no longer counted as a hole; `> Check:` and `> Q-consumer:`
+  are holes by definition.
+- `cli/wdiff.py apply` now honours three lane rules it had been breaking:
+  it APPENDS to the end of the sentence's lane run rather than splitting it,
+  it REFUSES to rewrite a lane, and it REFUSES to write a result containing
+  fewer `✎` lines than it started with.
+
+That last guard exists because the rule was already written, in
+`haipipe-block/ref/writing-rules.md:66` ("do not erase them"), and was broken
+by hand on 260801: eighteen `✎` records were removed with a regex to reposition
+them. Repositioning is the legitimate need; erasing was the wrong way to get it.
+
+## 0.3.0 — 2026-08-01
+
+Second look at `paper/2-phase/0-draft`, on JL's ask. The first pass reported
+nothing general there and was wrong: the strongest pattern in the phase is
+general, and it reads as paper machinery only because every rule is written in
+`\cite{TOADD}`, `{VAL:?}` and `Q-<Stage>-<n>`.
+
+- `ref/holes.md` — the hole discipline. Never invent a fact to close a gap;
+  every hole names an owner; sweep after writing, not during; one writer per
+  file. Three dialects (paper, board, plain) over one contract.
+- `cli/holes.py` — the checker, both directions. FORWARD catches an unowned
+  hole; REVERSE catches a hole pointing at an owner that does not exist, which
+  is the worse of the two because it looks owned.
+- `haipipe-paper-draft` Step 4c now RUNS the checker instead of verifying by
+  hand. That step already described this exact audit in prose.
+
+## 0.2.0 — 2026-08-01
+
+Migration in from `paper/` (JL: "do you think for some skills, we can immigrate
+them out to the haipipe-writing?"). Whole skills did NOT move: every unit in
+`0-draft/` and `2-revise/` is bound to LaTeX, to `%%` comments, to `\cite{TOADD}`
+placeholders, or to venue voice. What moved is the general writing knowledge that
+was only reachable by loading a paper skill.
+
+- `ref/ai-tells.md` — Layer 1 of the humanizer's pattern catalog. It describes
+  how a machine writes in any register; Layers 2 to 6 stayed, because
+  over-claiming, citation dumping, venue voice and proposal register do not
+  generalize. The humanizer now points here for Layer 1.
+- `ref/weaving.md` — the paragraph-flow pass (arc, hinges, rhythm) from
+  `haipipe-paper-revise-content`. Generalized: the recording grammar is now the
+  host's, so the same method serves `%% {CC-content}:` and `> ✎`.
+  `haipipe-paper-revise-content` still owns WHEN the pass runs.
+- `haipipe-paper-revise-humanizer` now calls `cli/wdiff.py` to compute its
+  candidate diffs rather than writing them by hand.
+
+## 0.1.0 — 2026-08-01
+
+First cut. Extracted from one evening of hand-rewriting the design board's `QB4`
+page with JL, who asked for the capability after watching the same work be done
+by hand: "I think we need to add it to the skills to make this work."
+
+- `cli/wdiff.py` — word-level diff and anchored record insertion. `record`,
+  `apply`, `check`. The diff is `difflib`, not judgment; the placement is by
+  position, not by where the writer stopped typing.
+- `cli/score.py` — read-only ranking against the weak-English test. Counts house
+  words, long words, sentence length, and the AI tells this repo has actually
+  produced. Reports; never rewrites.
+- `ref/plain-rules.md` — the rules, each with the ruling that produced it.
+- `ref/change-record.md` — the `✎` grammar, the anchoring law, the two host
+  dialects, the badge, and what `check` fails on.
+
+Validated against real prose on the day it was written: `check` passed all 31
+records on `QB4-overall.md`, and `score` independently surfaced the same `### 3`
+sentences that had been flagged by hand, while reporting 0 bad headings on a
+division whose headings had just been repaired.
+
+Not built yet: an end-to-end driver for the `realize` and `rewrite` paths. Today
+the host or a person/model supplies the candidate prose and calls `wdiff apply`
+per sentence or rewritten run.
+## 2026-09-22 · call or read
+
+- `writing/` takes the numbered-folder shape of `discovery/` and `task/`: the door
+  `haipipe-writing/`, then `1_style/` and `2_evaluate/` holding the external skills
+  it calls as adapted copies (writing-dna-skill, academic-humanizer, blader's
+  humanizer). Every other anti-AI writing reference stays in `references/` and is
+  digested in `haipipe-writing/ref/external/README.md`. haipipe-writing 0.22.0.
+- The writer is the door. There is no `1_write/` folder because no external skill
+  writes; the three read-only sources worth taking are taken (`ref/ai-tells.md` §3
+  and §4, the `lang: zh` rules).
+
+## 2026-09-20 · one Writing entry
+
+- haipipe-writing 0.20.0 connects Page Section/Paragraph Runs to selected external
+  methods and shared evaluation. Retire haipipe-paper-revise-humanizer from active
+  discovery; preserve its useful HAI rules and attribution in the shared worker.
+- Keep repository history and external installations separate from skill discovery.
+
+# writing (bucket)
+
+## 2026-08-01 — bucket created
+`haipipe-writing` 0.1.0 shipped as the first and only unit (JL). The bucket
+exists because its consumer is any authored prose rather than one kind of
+artifact, which is the test `QC1b §7` applies to a new unit.

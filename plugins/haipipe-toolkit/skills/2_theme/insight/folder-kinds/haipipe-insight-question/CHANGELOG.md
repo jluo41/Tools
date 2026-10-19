@@ -15,7 +15,7 @@
 
 ## 1.10.0 · 2026-10-03 · The review moves to the question world (JL 261003)
 
-- The seven tests and the verdict now live in `question/haipipe-question-review`, written for any board's ask; this skill keeps what Insight adds: Q4 is the level, Q5 is the extract, retired needs and successor ids, carried words. An Insight question is an ask; its topic, if any, is a `haipipe-question` board Question.
+- The seven tests and the verdict now live in `haipipe-report/ref/review.md`, written for any board's ask; this skill keeps what Insight adds: Q4 is the level, Q5 is the extract, retired needs and successor ids, carried words. An Insight question is an ask; its topic, if any, is a `haipipe-report` board Question.
 
 ## 1.9.0 · 2026-10-02 · The question review, Q1-Q7 (JL 261002)
 

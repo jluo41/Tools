@@ -643,7 +643,7 @@ that the authoritative Result entry was person-verified.
 
 The Result is not Page evidence merely because it exists under `runs/`.
 D1 SYNTHESIZE rebuilds the derived aggregate through
-`workbench-page/ref/evidence/citations.md`, then dispatches the Page
+`workbench-task-draft/ref/evidence/citations.md`, then dispatches the Page
 workflow. The D1 root Page uses direct Result/Card/cite lineage and does not
 declare a redundant typed CITE item or local Evidence Item Run for its own
 Results. A consumer Page may use a Discovery Result as Supporting evidence and

@@ -5,7 +5,7 @@ The Task Block Workbench (`servers/workbench-work/`) follows the Insight Workben
 a bare header, the shared Space order with Delivery last, every View opened by a heading
 and one lead sentence, the work Space as one Logic / Work / Report table, the drawings in
 the setup Space, and Guide › Method served by the shared method page. Questions use the
-skills in `skills/1_base/question/`. This file is the plan; the work is done in the phases below,
+skills in `skills/1_base/project/haipipe-report/`. This file is the plan; the work is done in the phases below,
 each verified before the next starts.
 
 The reference is the Haipipe-Insight-v5 session and what it built: read its decisions
@@ -70,7 +70,7 @@ Phase 2 · The Task Space as one table
 
 1. Register: an optional `group:` on each Question (free text, for example the series a
    Question belongs to). `task_questions.extend_snapshot` carries it; `block-questions.md`
-   and `haipipe-question` document it; the helper writes it through unchanged.
+   and `haipipe-report` document it; the helper writes it through unchanged.
 2. Views: one per group, in the order the register first names it; a register with no
    groups gets one View, "Questions". View keys are `q-<slug>`; the old key `task` opens
    the first one.
@@ -137,8 +137,8 @@ already serve Method: a method file with fold cards and a methods drawing. Task 
    - 1 · The steps: `| step | what happens | methods | where in the workbench | who signs |`
      for Ask the question · Plan the Task · Build it · Review the code · Run the Ticket ·
      Report the Run · Write the report · Check, each naming its Space › View and runs.
-   - 2 · Step 1 in depth: question-asking. Points to `haipipe-question-asking` (its eight
-     cards) and `haipipe-question-review` (Q1 to Q7); no copies here.
+   - 2 · Step 1 in depth: question-asking. Points to `haipipe-report` (its eight
+     cards) and `haipipe-report` (Q1 to Q7); no copies here.
    - 3 · Steps 2 to 6 in depth: building and running, with Task's own cards.
    - 4 · Steps 7 and 8 in depth: reporting from exact Results, and the independent check.
    - 5 · Checking: `| test | asks | when | source |`: code review before the Ticket
@@ -162,8 +162,8 @@ already serve Method: a method file with fold cards and a methods drawing. Task 
 Phase 6 · Skills in the Workbench Table
 ---------------------------------------
 
-1. Ask a Question: skill `haipipe-question-asking`; it records through `haipipe-question`.
-2. Review the questions: skill `haipipe-question-review`, a different agent from the asker.
+1. Ask a Question: skill `haipipe-report`.
+2. Review the questions: skill `haipipe-report`, a different agent from the asker.
 3. `haipipe-task-question (new)` leaves the planned list for those two rows.
 4. `table-workbench --check` passes; `task-workbench-design.py` is rerun so Guide ›
    RoadMap Draw shows the new table.

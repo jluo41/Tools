@@ -23,12 +23,12 @@ import yaml
 HERE = Path(__file__).resolve().parent
 ROOT = (HERE / "../../../..").resolve()                                   # the Tools SPACE
 TOOLKIT = ROOT / "plugins/haipipe-toolkit"
-sys.path.insert(0, str(TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import Drawing, T_NODE, INK, RED, W  # noqa: E402
 from check import check  # noqa: E402
 
 FACE = HERE / f"{HERE.name}.md"
-SKILL = TOOLKIT / "skills/1_base/display/excalidraw-task"
+SKILL = TOOLKIT / "skills/1_base/excalidraw/excalidraw-task"
 EXAMPLES = HERE / "examples"
 
 

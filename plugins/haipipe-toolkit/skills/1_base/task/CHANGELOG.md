@@ -18,7 +18,7 @@ check uses file modification time. Display-input provenance
 (`haipipe-individual` 0.1.2) and the report `meta.json` binding
 (`haipipe-individual-inference` 0.1.2, `-report` 0.1.2, `-judge` 0.1.3) drop
 their hash fields. Wording follows in `haipipe-page-task` 0.1.2,
-`haipipe-task-for-page` 0.4.1, `haipipe-task-for-stata` 0.3.1,
+`haipipe-task-for-evidence` 0.4.1, `haipipe-task-for-stata` 0.3.1,
 `haipipe-workflow` 0.3.2, `haipipe-data-source` 0.3.3, `haipipe-data` 0.3.5,
 `haipipe-task-gpu-training` 0.2.1, `haipipe-task-llm-engine`, and the task
 agents 3.2.1. Pipeline-internal hashes stay: duplicate-row counting, cache

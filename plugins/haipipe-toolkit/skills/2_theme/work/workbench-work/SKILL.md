@@ -96,9 +96,9 @@ for rereading without silently changing either field. This display is not a Page
 evidence certification, adoption or release.
 
 For creating a Question, writing a Report or adding a resource, read
-`../../../1_base/question/haipipe-question/ref/block-questions.md` (the register, its optional
-`group:`, report folders). A Question is shaped by `haipipe-question-asking` and judged by
-`haipipe-question-review`; Page owns the Report writing flow. Keep report Page Folders out
+`../../../1_base/project/haipipe-report/ref/block-questions.md` (the register, its optional
+`group:`, report folders). A Question is shaped by `haipipe-report` and judged by
+`haipipe-report`; Page owns the Report writing flow. Keep report Page Folders out
 of native Task iteration and BJTR counters. The resource form adds only its register
 entry; it does not download a paper or execute a Discovery workflow.
 

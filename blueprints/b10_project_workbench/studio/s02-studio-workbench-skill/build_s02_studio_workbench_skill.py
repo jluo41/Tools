@@ -49,7 +49,7 @@ LABELING = L.PLUGINS / "haipipe-toolkit/servers/workbench-labeling"
 # the workbenches, left to right: (column name, folder, its bench in level_views.SERVER)
 BENCHES = [("work", SERVERS / "workbench-work", "task"), ("discovery", SERVERS / "workbench-discovery", "discovery"),
            ("cowork", SERVERS / "workbench-cowork", "cowork"), ("insight", SERVERS / "workbench-insight", "insight"),
-           ("paper", SERVERS / "workbench-paper", "paper"), ("page", SERVERS / "workbench" / "task-page", "page"),
+           ("paper", SERVERS / "workbench-paper", "paper"), ("page", SERVERS / "workbench" / "workbench-task-draft", "page"),
            ("design", SERVERS / "workbench-design", "design"), ("labeling", LABELING, "labeling")]
 SHARED = SERVERS / "workbench"
 # the parts, top to bottom: (label, where it lives, pattern that shows a workbench uses it)
@@ -71,7 +71,7 @@ def own_files(folder):
         rel = p.relative_to(folder)
         if (p.suffix in (".py", ".css", ".js") and p.is_file()
                 and not {"studio", "tests", "__pycache__", "checks"} & set(rel.parts)
-                and not (folder.name == "workbench" and rel.parts[0] == "task-page")):
+                and not (folder.name == "workbench" and rel.parts[0] == "workbench-task-draft")):
             out.append(p)               # the base's Page Task views (once workbench-page) are their own column
     return out
 
@@ -236,7 +236,7 @@ def today_tree():
                 shown.append((f"{key}_*.py  ×{len(fs)}", "", GRAY))
             else:
                 shown += [(f, *FILE_MEANING.get(f, ("the Page Task's own views (once workbench-page)", TEAL)
-                                                if f == "task-page/" else ("", GRAY))) for f in fs]
+                                                if f == "workbench-task-draft/" else ("", GRAY))) for f in fs]
         for k, (f, m, c) in enumerate(shown):
             pre = ("    " if last else "│   ") + ("└── " if k == len(shown) - 1 else "├── ")
             rows.append((pre + f, m, c))
@@ -249,7 +249,7 @@ PROPOSED_TREE = [   # what is done (teal) and what is left (red), 261007
     ("├── workbench/   (done: was workbench-shared)", "the base; vanilla with no theme", TEAL),
     ("│   ├── frame.py · frame_view.py   (done)", "levels, six Spaces, third row, vanilla defaults", TEAL),
     ("│   ├── runs_panel.py   (done, moved)", "the Runs panel, every theme's", TEAL),
-    ("│   ├── task-page/   (done: was workbench-page)", "the Page Task's own views", TEAL),
+    ("│   ├── workbench-task-draft/   (done: was workbench-page)", "the Page Task's own views", TEAL),
     ("│   ├── guide/ · related/   (done)", "the base's own Guide, read from guide/guide.yaml", TEAL),
     ("│   ├── work_items.py   open ?", "the BJTR tree under every Work: the frame lists only the children", RED),
     ("│   ├── one look   open ?", "the frame has one CSS; the old pages keep theirs until each theme moves", RED),
@@ -344,11 +344,11 @@ THEMES = [   # (theme folder, [(field, value, colour)]); views/ = a Space's own 
         ("Work (Job)", "its Sections, in compile order", INK), ("Delivery (Job)", "the whole paper: LaTeX · Word", INK),
         ("run types", "its workbench table", INK), ("Guide", "workbench-paper/guide/ (done)", INK),
         ("views/", "story.py: the Story (spine, claims) ?  open", RED)]),
-    ("workbench/task-page/   (in the base)", [
+    ("workbench/workbench-task-draft/   (in the base)", [
         ("level", "Task: a Page Task  (a Section is one)", INK), ("theme", "any: the Page views of the base", INK),
         ("Report", "Table · Reading", INK),
         ("Work", "Draft-Scratch · Draft-Revise ·\nEvidence-Citation · -Display ·\n-Value · -Supporting Runs", INK),
-        ("Runs", "structure · section · display · delivery", INK), ("Guide", "task-page/guide/ (done)", INK),
+        ("Runs", "structure · section · display · delivery", INK), ("Guide", "workbench-task-draft/guide/ (done)", INK),
         ("views", "outline editor · evidence · exports\n(moved in from workbench-page)", TEAL)])]
 MAY = ["name its levels", "pick which levels it has", "name the subspaces in each Space", "add fields to a Space",
        "list its run types", "keep its own guide/ and related/", "replace one Space's body with its own view"]

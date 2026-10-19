@@ -10,11 +10,14 @@ description: >-
   How a topic's drawing looks and reads is excalidraw-studio's: load
   /excalidraw-studio before drawing or redrawing a topic (its principles,
   draw.py, check.py). Scripts: canvas.py, render_png.py, new_topic.py and
-  block_index.py.
+  block_index.py. Also the Page's Studio screen: one tab with the live drawing above
+  the chat, and its lane contracts (ref/screen.md, chat.md, draw.md). Trigger: studio
+  workbench, studio tab, page chat, keep this session, autodraw, chat and draw
+  together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.24"
-  last_updated: "2026-10-13"
+  version: "0.14.1"
+  last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
 
@@ -77,7 +80,11 @@ the same bar: there an item's groups are its subfolder (`meetings/` → meetings
 its row's `group` cell of `related/related.md`, and `related/_groups.txt` keeps their order (JL
 261011); `haipipe-related` owns that folder.
 
-Timeline, folded under Related, shows what moved when on one axis down the page, the oldest day at the
+Runs, folded under Delivery, lists every hard Run (`runs/rNN_*`) of every Task under the Block, Job → Task, each
+with its mark, status and finish day, and a tally per Job and Task (JL 261019; b10 s06-D07). It reads the Runs'
+receipts; nothing is written for it.
+
+Timeline, folded under Runs, shows what moved when on one axis down the page, the oldest day at the
 top, at three levels (Days · Topics · Everything), and follows the same bar (JL 261011; b10 s08). It reads only what a topic keeps: a decision's date in its brackets (`sNN-DNN · …
 (JL 261011)`), a session's pass `pNN-<MMDD>`, a drawing's green `✎ <YYMMDD>` notes. A decision with no
 date is left off it (b10 s08-D10), so date every decision.
@@ -94,6 +101,8 @@ s00     background and index: one per Block, drawn by block_index.py (next secti
 s01-s09 concepts · s11-s19 levels · s21-s29 runs and skills · s31-s39 Guide · s51-s59 server
 s41-s49 Task procedures: one per Task type of a theme, sNN-task-<type>-procedure (b15, JL 261014)
 s61-s69 slide drafts: a proposed deck, its logic flow and its slides, before the deck is built
+s10-s19 a paper Board's related work: s10 the map, s11-s19 one type each (haipipe-paper-related); a paper
+        Board draws no level topics, so the band is free there (JL 261019)
 ```
 
 The next free number in the band; a number is never reused, unless a person asks for it back (b10 s09, 261012):
@@ -185,7 +194,7 @@ Add, redraw, save
 
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts
-X=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts
+X=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts
 python $S/new_topic.py topic <level> --slug <topic> --title '<title>' --band run [--feeds q01_x] [--builder]
 python <block>/studio/sNN-<topic>/build_sNN_<topic>.py          # redraw: the person's marks are kept
 python $S/render_png.py <drawing>.excalidraw <drawing>.png        # the preview
@@ -213,7 +222,7 @@ python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--su
 The look
 --------
 
-**How a topic's drawing reads now lives in `excalidraw-studio`** (`skills/1_base/display/excalidraw-studio/`,
+**How a topic's drawing reads now lives in `excalidraw-studio`** (`skills/1_base/excalidraw/excalidraw-studio/`,
 agreed on b31 s01-drawing-principles, 261012): its principles (one frame as large as a screen; a workflow
 map or a mind map inside; the frames as one story, in acts, joined by named arrows; a folder tree only for real
 folders; big words and one slight colour for the key point; each frame's density measured; few words in a
@@ -377,13 +386,22 @@ Boundary
 
 | Owner | Owns |
 |---|---|
-| `haipipe-studio` | the topic folder, its face, numbering, builders and their writer, previews, sessions |
+| `haipipe-studio` | the topic folder, its face, numbering, builders and their writer, previews, sessions; the Page's Studio screen (`ref/screen.md`) |
 | `excalidraw-studio` | how a topic's drawing looks and reads: its principles, `draw.py`, `check.py`; loaded before drawing |
 | `excalidraw-job` | a Job as one topic: why, in and out, what it concluded, its tables; reads `job_results.py`'s readers |
 | `excalidraw-report` | a report's drawing and a scratch: their modes, elements, plot kit, pictures |
 | `haipipe-report` | a report's own drawing, built from studio frames its `## Figures` lists |
 | `haipipe-run` | the soft Run `run-draw-<sNN>` and its card |
-| `workbench-studio` | the Page's Studio tab (drawing and chat together) |
+
+
+The Studio screen
+-----------------
+
+The Page's Studio tab is this skill's too (folded in from the retired `workbench-studio`, 2026-10-16, s21-D05):
+one tab with the live Excalidraw editor above the chat, so the scene the chat redraws changes in front of the
+person talking. `ref/screen.md` is the screen manual (load `workbench` first); `ref/chat.md` and `ref/draw.md` are
+its two lane contracts, `ref/workbench-table.md` its table. The code is `servers/workbench/`. The old name
+`/workbench-studio` still triggers this skill.
 
 
 Files
@@ -396,6 +414,10 @@ haipipe-studio/
 ├── agents/openai.yaml
 ├── ref/topic-contract.md      the folder, face, numbering, builders, sessions, buttons, a proposal topic
 ├── ref/infer-topics.md        topics inferred from a Block's Jobs and Tasks (b10 s10)
+├── ref/screen.md              the Page's Studio screen: drawing above, chat below
+├── ref/chat.md · ref/draw.md  the screen's two lane contracts
+├── ref/workbench-table.md     the Studio screen's table
+├── ref/history/               the retired workbench-studio changelog
 ├── scripts/canvas.py          the merge-safe writer
 ├── scripts/render_png.py      the offline PNG preview
 ├── scripts/new_topic.py       topic · session

@@ -1,3 +1,13 @@
+## 0.16.0 · 2026-10-16 · `note/`, the Project's inbox
+
+- `ref/project-structure.md` gains `## note/` (JL 261016, b10 s10-D10): any session writes a quick note or a random
+  thought (`kind: finding · gap · thought`) as `note/YYMMDD-<slug>.md`, and goes one step further: its `next:`
+  names the Block and the Job or `sNN` topic it feeds (or `new Block`; a thought's best guess is marked `?`). One
+  inbox per Project, at the Project level; no Block-level `s99-note`. `note/reads/` keeps reading notes.
+- `audit_projects.py`: `note/` is an allowed root folder in every profile (`ROOT_DIRS`, not a Theme). The 14
+  Knowledge-SPACE Projects that had a `notes/` folder now have `note/`, their links patched; five declared it as
+  legacy debt and no longer do.
+
 ## 0.15.2 · 2026-10-13 · a moved ticket that spells its own Result folder
 
 - `ladder.py` `patch_ticket(text, run)`: a ticket that writes `$task_dir/results/<its own name>` (not `$RUN`), or uses a

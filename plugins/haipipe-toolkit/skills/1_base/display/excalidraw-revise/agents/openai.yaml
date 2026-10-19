@@ -1,6 +1,0 @@
-interface:
-  display_name: "Revise a File"
-  short_description: "a file we change: each section today beside the updated sentences, the changes, the tracked Word file"
-  default_prompt: "Use $excalidraw-revise to show what we change in a Word file: the plan in a topic's face, each section's page picture with the changing words marked beside the updated sentences, a note per change with who answers, and last the tracked Word file, checked both ways."
-policy:
-  allow_implicit_invocation: true

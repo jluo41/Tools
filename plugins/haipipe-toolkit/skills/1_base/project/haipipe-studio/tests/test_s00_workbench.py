@@ -10,7 +10,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-sys.path.insert(0, str(SCRIPTS.parents[2] / "page/workbench/cli"))
+sys.path.insert(0, str(SCRIPTS.parents[2] / "workbench/workbench/cli"))
 import block_index
 import wb
 

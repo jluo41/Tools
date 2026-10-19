@@ -38,7 +38,7 @@ RUNS = [("Block", [   # every Block Run is soft (JL 261007)
             ("run-add-job-j<NN>", "soft", "launch a Job", "designer agent", "-", "haipipe-design", "Map · Work Details"),
             ("run-add-observed-e<NN>", "soft", "add the Exp's data", "designer agent", "manifest sha256", "haipipe-design", "Predicted vs observed"),
             ("run-score-e<NN>", "soft", "score the predictions", "another agent", "-", "haipipe-design", "Predicted vs observed"),
-            ("run-propose-questions", "soft", "propose questions", "designer agent", "another agent agrees", "haipipe-question", "Questions"),
+            ("run-propose-questions", "soft", "propose questions", "designer agent", "another agent agrees", "haipipe-report", "Questions"),
             ("run-report-q<NN>", "soft", "write a report", "designer agent", "another agent checks", "haipipe-draft", "Questions"),
             ("run-propose-method-<slug>", "soft", "propose a method", "designer agent", "a person", "haipipe-design-unit", "Methods (the registry)"),
             ("run-draw-s<NN>", "soft", "draw a topic", "designer agent", "-", "excalidraw-report", "Idea Studio")]),
@@ -84,7 +84,7 @@ SKILLS = [("haipipe-design", "the door: the ladder contract (design-ladder.md) a
            "read by generate (part 1, see input)", "-"),
           ("haipipe-designer-agent", "the agent that runs one design Run ticket",
            "every agent step above", "? a reviewer agent of its own for ④ ⑤, which also predicts"),
-          ("shared: haipipe-run · haipipe-question", "the Run folder contract · the Block's questions",
+          ("shared: haipipe-run · haipipe-report", "the Run folder contract · the Block's questions",
            "every Run · reports/", "-"),
           ("proposed: by-<method> (13)", "the Guide's cards say a skill per method",
            "generate, by method", "one unit skill reading registered method cards (M01 …)")]

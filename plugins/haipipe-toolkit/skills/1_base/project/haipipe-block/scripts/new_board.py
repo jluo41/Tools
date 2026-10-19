@@ -3,7 +3,7 @@
 A Block sits in a Project's Theme folder (work/, discovery/, cowork/, paper/, insight/, design/,
 labeling/; the older plural names still read). The face carries the title line, its header fields (board-kind, spine, close, and an
 optional workbench: naming the theme that reads it when the Theme folder names another), a Topic, and,
-with --questions, an empty Questions register for haipipe-question. No empty folders are made: studio/,
+with --questions, an empty Questions register for haipipe-report. No empty folders are made: studio/,
 reports/, runs/ and the Jobs come with their first content.
 
     python new_board.py <theme folder> --slug <topic> --title '<title>'

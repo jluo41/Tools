@@ -86,19 +86,19 @@ What does the question need fixed first?
 ```
 
 These eight methods serve any board's question, so they live in the question world
-(`haipipe-question-asking`); whether an ask is a good one is judged by its seven tests
-(`haipipe-question-review`).
+(`haipipe-report`); whether an ask is a good one is judged by its seven tests
+(`haipipe-report`).
 
 | family | method | card |
 |---|---|---|
-| Question-asking | By level | ../../../skills/1_base/question/haipipe-question-asking/methods/01-by-level.md |
-| Question-asking | By goal-question-metric | ../../../skills/1_base/question/haipipe-question-asking/methods/02-by-goal-question-metric.md |
-| Question-asking | By question type | ../../../skills/1_base/question/haipipe-question-asking/methods/03-by-question-type.md |
-| Question-asking | By estimand | ../../../skills/1_base/question/haipipe-question-asking/methods/04-by-estimand.md |
-| Question-asking | By target trial | ../../../skills/1_base/question/haipipe-question-asking/methods/05-by-target-trial.md |
-| Question-asking | By analysis plan | ../../../skills/1_base/question/haipipe-question-asking/methods/06-by-analysis-plan.md |
-| Question-asking | By partition and power | ../../../skills/1_base/question/haipipe-question-asking/methods/07-by-partition-and-power.md |
-| Question-asking | By protocol reuse | ../../../skills/1_base/question/haipipe-question-asking/methods/08-by-protocol-reuse.md |
+| Question-asking | By level | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/01-by-level.md |
+| Question-asking | By goal-question-metric | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/02-by-goal-question-metric.md |
+| Question-asking | By question type | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/03-by-question-type.md |
+| Question-asking | By estimand | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/04-by-estimand.md |
+| Question-asking | By target trial | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/05-by-target-trial.md |
+| Question-asking | By analysis plan | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/06-by-analysis-plan.md |
+| Question-asking | By partition and power | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/07-by-partition-and-power.md |
+| Question-asking | By protocol reuse | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/08-by-protocol-reuse.md |
 
 
 3 · Step 3 in depth: run each partition

@@ -11,7 +11,7 @@ modes in one place, beside b31 s01 (the principles of a Studio drawing) and s21 
 real drawing); it does not repeat s21. The version, the ref files, the commands and the three real canvases are
 read from disk on every build.
 
-**Source:** `plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read/` (SKILL.md, CHANGELOG.md, ref/), and the
+**Source:** `plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-read/` (SKILL.md, CHANGELOG.md, ref/), and the
 three canvases the revise mode made on 2026-10-11 in WellDoc-SPACE (`examples-0-cowork/Project-SHIFT-Study/cowork/`,
 b32, b21, b31).
 
@@ -158,7 +158,7 @@ The words of frame ③: where it lives
 
 ```yaml
 folder:
-  path: plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read
+  path: plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-read
   open: [ref]
   notes:
     read_paper.py: "read mode: text, boxes, shoot, draw, all"

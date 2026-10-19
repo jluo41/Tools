@@ -547,7 +547,7 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
             % (route, quote(f"{rel}/{page_rel}", safe="/"), quote(page_rel, safe="/"))), "ok"
 
 
-# A tab of a Task's Page -> its Space and subspace in the frame (frame.PAGE_VIEWS, JL 261007)
+# A tab of a Task's Page -> its Space and subspace in the frame (workbench-task-draft/task_draft.py PAGE_VIEWS, JL 261007)
 TAB_SPACE = {"draft": ("Audience Report", "Draft"), "runs": ("Runs", "Page Runs"),
              "delivery": ("Delivery", "Lanes"), "folderstat": ("Description", "Folder"),
              "evidence": ("Work Details", "Evidence"), "value": ("Work Details", "Value")}
@@ -696,6 +696,28 @@ def _job_rows(jobs: list[dict[str, object]]) -> str:
     return f'<div class="topic-rows">{"".join(rows)}</div>'
 
 
+def _runs_of(block: Path) -> list:
+    """The Block's hard Runs (workbench frame.hard_runs), [] when the workbench is absent."""
+    try:
+        from live import frame
+    except ImportError:
+        return []
+    return frame.hard_runs(block)
+
+
+def _runs_group(runs: list) -> tuple[str, str]:
+    """A Block's third group, its hard Runs Job → Task → Run with their status, and its tally for the row
+    (JL 261019: "在 project level 下面，也可以加个 run，看看能不能把它的 run 给弄出来")."""
+    if not runs:
+        return "", ""
+    from live import frame
+    tally = frame.runs_tally(runs)
+    body = (f'<section class="block-cards" data-group="runs"><h4 class="block-cards-head">⚙️ Runs '
+            f'<span class="block-cards-count">{len(runs)}</span></h4>{frame.runs_list(runs)}'
+            f'<p class="rn-legend">{html.escape(frame.RUN_LEGEND)}</p></section>')
+    return body, f'<span class="home-runs-tally" title="hard Runs, by status (▶️ is running)">⚙️ {len(runs)} Runs · {html.escape(tally)}</span>'
+
+
 def _block_groups(node: dict[str, object] | None) -> tuple[str, str, str]:
     """A Block's two groups, its Studio topics (sNN) and its Jobs (jNN), each a list of folded rows as the
     workbench's Studio list draws them, read from the same chart data the Chart · Progress view draws. Returns
@@ -716,8 +738,16 @@ def _block_groups(node: dict[str, object] | None) -> tuple[str, str, str]:
     return f'<div class="block-groups">{"".join(groups)}</div>', counts, words
 
 
+def _project_runs(runs: list) -> str:
+    """A Project's hard Runs over all its shown Blocks, counted on its line."""
+    if not runs:
+        return ""
+    from live import frame
+    return f'<span class="project-runs" title="hard Runs in this Project, by status (▶️ is running)">⚙️ {len(runs)} Runs · {html.escape(frame.runs_tally(runs))}</span>'
+
+
 def _home_row(card: dict[str, object], project_name: str, href: str,
-              shown: bool, node: dict[str, object] | None = None) -> str:
+              shown: bool, node: dict[str, object] | None = None, runs: list | None = None) -> str:
     """One Block card, folded: kind emoji, title (the link that opens the Block), folder, its counts and
     the Board's state word; open, its Studio topics and its Jobs as two groups of cards (JL 261012)."""
     kind_key = str(card["kind_key"])
@@ -729,6 +759,10 @@ def _home_row(card: dict[str, object], project_name: str, href: str,
     state_html = (f'<span class="home-state" title="Board state">{state}</span>'
                   if state else "")
     groups, counts, words = _block_groups(node)
+    runs_html, runs_tally = _runs_group(runs or [])
+    if runs_html:                                       # the Runs, a third group after Studio and Jobs
+        groups = groups[:-len("</div>")] + runs_html + "</div>"
+    counts = runs_tally + counts
     row_search = html.escape(
         " ".join((project_name, str(card["title"]), str(card["slug"]),
                   str(card["path"]), str(card["spine"]), str(card["kind"]),
@@ -834,14 +868,17 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
                 themes.setdefault(label, []).append(card)
             theme_html = []
             project_count = 0
+            project_runs: list = []
             for theme in sorted(themes, key=theme_sort_key):
                 theme_cards = sorted(themes[theme], key=lambda c: (
                     "/_" in "/" + str(c["path"]), str(c["path"]).lower()))
                 count = sum(shown(card) for card in theme_cards)
                 project_count += count
+                block_runs = {str(c["path"]): _runs_of(root / str(c["path"])) for c in theme_cards}
+                project_runs.extend(r for c in theme_cards if shown(c) for r in block_runs[str(c["path"])])
                 rows = "".join(_home_row(card, project_name,
                                          block_link(card, slug_counts), shown(card),
-                                         nodes.get(str(card["path"])))
+                                         nodes.get(str(card["path"])), block_runs[str(card["path"])])
                                for card in theme_cards)
                 theme_attr = html.escape(theme, quote=True)
                 hidden = "" if count else " hidden"
@@ -861,7 +898,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
   aria-controls="{group_id}"><span class="project-grip"
   role="img" aria-label="Drag to reorder {project_label}" title="Drag to reorder">⠿</span>
   <span class="project-name">{project_label}</span>
-  <span class="project-count" aria-label="{project_count} blocks">{project_count}</span></summary>
+  <span class="project-count" aria-label="{project_count} blocks">{project_count}</span>{_project_runs(project_runs)}</summary>
   <div id="{group_id}" class="project-list" aria-label="{project_label} blocks">
   {''.join(theme_html)}</div></details>''')
         section_id = f"space-title-{len(groups)}"
@@ -914,6 +951,11 @@ def render_home(root: Path, space_name: str = "", public_url: str = "",
         scope_line = (f'<p class="home-scope">No Project matches “{html.escape(project)}”; '
                       'showing every Project.</p>')
     chart_markup, chart_css, chart_js = chart_parts(root, open_cards, space_name.strip() or HOME_BRAND, chart)
+    try:                                           # the Runs cards' look, shared with the Studio's Runs part
+        from live import frame as _frame
+        run_css = _frame.RUN_CSS
+    except ImportError:
+        run_css = ""
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title><style>
@@ -925,12 +967,12 @@ main{{max-width:none;margin:0;padding:34px clamp(14px,2.5vw,32px) 90px}}
 .site-head{{margin:0 0 22px}}h1{{font-size:26px;line-height:1.35;margin:0;font-weight:700}}
 .toolbar{{margin:0 0 12px}}.search{{display:block;max-width:420px}}.search input{{width:100%;min-height:38px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card);color:var(--fg);font:inherit;padding:5px 9px;outline:none}}.search input::placeholder{{color:var(--mut)}}.search input:focus{{border-color:var(--accent)}}
 .kind-filter{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}}.kind-toggle{{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font-size:14px;text-decoration:none}}.kind-toggle:hover{{border-color:var(--accent)}}.kind-toggle[aria-pressed="true"]{{border-color:var(--accent);background:var(--accent);color:var(--bg)}}.kind-count{{color:inherit;opacity:.7;font:12px/1 ui-monospace,Menlo,monospace}}
-.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-block{{margin:6px 0;min-width:0}}.home-block>.ir{{margin:0;cursor:pointer;list-style:none;align-items:center}}.home-block>.ir::-webkit-details-marker{{display:none}}.home-block>.ir::before{{content:"▸";flex:none;width:12px;color:var(--accent);font-size:15px;line-height:1}}.home-block[open]>.ir::before{{content:"▾"}}.home-block[open]>.ir{{border-radius:var(--radius-surface) var(--radius-surface) 0 0}}.ir a.t{{align-self:flex-start;color:var(--fg);text-decoration:none}}.ir a.t:hover{{color:var(--accent);text-decoration:underline}}.home-counts{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.block-groups{{display:grid;gap:10px;padding:10px 12px 12px 26px;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius-surface) var(--radius-surface)}}.block-cards-head{{margin:0 0 4px;font-size:12px;line-height:1.5;letter-spacing:.06em;color:var(--mut);font-weight:600}}.block-cards-count{{font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-cards-empty{{margin:0;color:var(--mut);font-size:13px}}
+.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-block{{margin:6px 0;min-width:0}}.home-block>.ir{{margin:0;cursor:pointer;list-style:none;align-items:center}}.home-block>.ir::-webkit-details-marker{{display:none}}.home-block>.ir::before{{content:"▸";flex:none;width:12px;color:var(--accent);font-size:15px;line-height:1}}.home-block[open]>.ir::before{{content:"▾"}}.home-block[open]>.ir{{border-radius:var(--radius-surface) var(--radius-surface) 0 0}}.ir a.t{{align-self:flex-start;color:var(--fg);text-decoration:none}}.ir a.t:hover{{color:var(--accent);text-decoration:underline}}.home-counts{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.home-runs-tally{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap;margin-right:10px}}.project-runs{{margin-left:auto;color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-groups{{display:grid;gap:10px;padding:10px 12px 12px 26px;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius-surface) var(--radius-surface)}}.block-cards-head{{margin:0 0 4px;font-size:12px;line-height:1.5;letter-spacing:.06em;color:var(--mut);font-weight:600}}.block-cards-count{{font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-cards-empty{{margin:0;color:var(--mut);font-size:13px}}
 .topic-rows .topic{{border:1px solid var(--line);border-radius:10px;background:var(--bg);margin:0 0 6px;overflow:hidden}}.topic-rows .topic>summary{{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}}.topic-rows .topic>summary::-webkit-details-marker{{display:none}}.topic-rows .topic>summary::before{{content:"▸";color:var(--mut)}}.topic-rows .topic[open]>summary::before{{content:"▾"}}.topic-rows .topic[open]>summary{{border-bottom:1px solid var(--line)}}.topic-rows .topic>summary>b{{font-size:15px;overflow-wrap:anywhere}}.topic-tags{{display:inline-flex;gap:6px;flex-wrap:wrap}}.topic-tags .chip{{display:inline-block;padding:0 8px;border:1px solid var(--line);border-radius:999px;color:var(--mut);font-size:12px}}.topic-pop{{margin-left:auto}}.topic-pop a{{color:var(--accent);text-decoration:none;font-size:15px}}.topic-none{{margin:8px 12px;color:var(--mut);font-size:13px}}.st-frame{{display:block;width:100%;height:520px;border:0;background:#fff}}.job-frame{{height:440px;border-top:1px solid var(--line)}}.topic-rows .topic-meta{{color:var(--mut);font-size:13px;overflow-wrap:anywhere}}.job-tasks{{margin:8px 0;padding:0 14px 0 34px;font-size:14px}}.job-tasks li{{margin:3px 0}}.job-tasks a{{color:var(--fg);text-decoration:none}}.job-st{{display:inline-block;padding:0 9px;border:1px solid var(--mut);border-radius:999px;color:var(--mut);font-size:12px;font-weight:600;white-space:nowrap}}.job-st-active{{color:#2b8a3e;border-color:#2b8a3e}}.job-st-open{{color:#1971c2;border-color:#1971c2}}.job-st-done{{color:#495057;border-color:#495057}}.job-st-blocked{{color:#e03131;border-color:#e03131}}
 .stage{{--st:#868e96;--st-bg:#f1f3f5;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 10px 2px 8px;border:1px solid var(--st);border-radius:999px;white-space:nowrap;color:var(--st);background:var(--st-bg)}}.stage-explore{{--st:#2b8a3e;--st-bg:#ebfbee}}.stage-shaping{{--st:#7048e8;--st-bg:#f3f0ff}}.stage-agreed{{--st:#1971c2;--st-bg:#e7f5ff}}.stage-closed{{--st:#495057;--st-bg:#f1f3f5}}@media(prefers-color-scheme:dark){{.stage{{--st-bg:transparent}}.stage-explore{{--st:#8ce99a}}.stage-shaping{{--st:#b197fc}}.stage-agreed{{--st:#74c0fc}}.stage-closed{{--st:#adb5bd}}}}.stage-steps{{display:inline-flex;gap:2px}}.stage-steps b{{width:7px;height:7px;border-radius:2px;border:1px solid var(--st);opacity:.55}}.stage-steps b.on{{background:var(--st);opacity:1}}.stage-none{{color:var(--mut);border-style:dashed;font-weight:400}}
 .home-scope{{margin:4px 0 0;color:var(--mut);font-size:14px}}.home-scope b{{color:var(--fg)}}.home-scope a{{color:var(--accent)}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
 @media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}.theme-group{{margin-left:8px}}.block-groups{{padding-left:12px}}}}
-{chart_css}
+{chart_css}{run_css}
 </style></head><body><main><header class="site-head"><h1>{heading}</h1>{scope_line}</header>
 <div class="toolbar"><label class="search"><span class="sr-only">Search boards</span><input id="board-filter" type="search" placeholder="Search boards" aria-label="Search boards" autocomplete="off"></label>{kind_bar}</div>
 {chart_markup}

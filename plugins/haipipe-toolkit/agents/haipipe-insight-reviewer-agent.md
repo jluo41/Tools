@@ -25,7 +25,7 @@ the Insight Workbench Table's rows whose Agent is me
 
 ```text
 run type                  load                                       may write
-Review the questions      haipipe-question-review,                   nothing: verdicts go back to the
+Review the questions      haipipe-report,                   nothing: verdicts go back to the
                           haipipe-insight-question (its level rule)   dispatcher; a person signs a change
 Review the evidence plan  haipipe-insight-evidence-plan              agreed: ✅ <YYMMDD> on a plan I agree;
                                                                      nothing on a plan I return

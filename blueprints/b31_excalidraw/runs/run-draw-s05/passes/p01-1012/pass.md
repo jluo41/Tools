@@ -1,4 +1,4 @@
-# The topic on excalidraw-section
+# The topic on excalidraw-draft
 
 ## Ask
 
@@ -6,7 +6,7 @@ asked 261012: we should have the s02, 03, 04, 05 for them as well
 
 ## Summary
 
-Made b31 s05: four frames in two acts (mind map, workflow, folders, the one real paper map) on excalidraw-section, facts read from the skill.
+Made b31 s05: four frames in two acts (mind map, workflow, folders, the one real paper map) on excalidraw-draft, facts read from the skill.
 
 ## Changed
 

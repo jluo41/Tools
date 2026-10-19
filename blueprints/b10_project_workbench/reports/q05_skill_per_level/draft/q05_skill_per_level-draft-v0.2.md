@@ -50,7 +50,7 @@ arc: One skill per level; the shared Spaces have their own; the levels around th
 - B2 · [Limit] Where the skills finally sit is b04's.
 - B3 · [Limit] Page Tasks still write Runs the old way; the audit calls it debt. (finding 6: link ladder.md)
 - B4 · [Limit] haipipe-task still routes to old owners. (finding 2)
-  Note: board rendering to haipipe-draft; Block reports through haipipe-question. Not touched (JL 261007).
+  Note: board rendering to haipipe-draft; Block reports through haipipe-report. Not touched (JL 261007).
 
 ### C4.P4 · What to do next
 - B1 · [Next] Decide haipipe-folder against the level skills.
@@ -61,14 +61,14 @@ arc: One skill per level; the shared Spaces have their own; the levels around th
 
 ### C1.P1
 The skills line up with the ladder as separate level skills, not as one haipipe-project door with a sub-skill per level: haipipe-block owns the Block, haipipe-job the Job, and haipipe-task the Task, each with its face, its scaffold and its level's own buttons.
-The Spaces every level shares have their owners at every level: haipipe-studio the Idea Studio, haipipe-question (the asking) and haipipe-report (the rest) the Audience Report, and haipipe-run the Runs.
+The Spaces every level shares have their owners at every level: haipipe-studio the Idea Studio, haipipe-report the Audience Report, and haipipe-run the Runs.
 Each theme keeps its own skills over these, the way its theme file sits over the base frame, so the theme owners stay apart from the level owners.
 The levels around them keep their owners: haipipe-project the Project root, haipipe-run each Run, and each theme's own skills its Theme, Guide included; a Page Task's own buttons belong to the haipipe-draft skills.
 Of the four skills the question names, haipipe-block returns as the Block skill (the static board site it once built stays retired), haipipe-task keeps its role (only its paths were fixed on 261007), haipipe-run is extended with the Run types by Space and a soft-Run writer, and haipipe-folder's place is not yet written.
 Every Run button of the frame now names the skill that owns it, through a `skills:` field on its run type.
 
 ### C2.P2
-The level and Space skills are haipipe-block, haipipe-job, haipipe-studio, haipipe-question and haipipe-report; haipipe-task, haipipe-run and haipipe-project hold the levels around them.
+The level and Space skills are haipipe-block, haipipe-job, haipipe-studio, haipipe-report; haipipe-task, haipipe-run and haipipe-project hold the levels around them.
 The button table is haipipe-run's run-types-by-space reference, and the frame sets each button's skill in frame.py.
 The s21 topic reads the frame back at build time and finds every button naming its owner; two of its frames are this report's figures.
 
@@ -76,7 +76,7 @@ The s21 topic reads the frame back at build time and finds every button naming i
 haipipe-folder is not placed: the register asks where it goes, and s21 did not decide it.
 Where these skills finally sit, and any renames, were handed to the skill-folder design Block.
 Page Tasks still write their Runs in the older layout, which the ladder audit reports as debt; that is the Page engine's change, not the level skills'.
-haipipe-task still says Board rendering belongs to haipipe-draft and routes a Block report through haipipe-question; it was left untouched on purpose, so its routing trails the new owners.
+haipipe-task still says Board rendering belongs to haipipe-draft and routes a Block report through haipipe-report; it was left untouched on purpose, so its routing trails the new owners.
 
 ### C4.P4
 Decide whether haipipe-folder's Page Face and Task Face contract folds into the level skills or stays its own.

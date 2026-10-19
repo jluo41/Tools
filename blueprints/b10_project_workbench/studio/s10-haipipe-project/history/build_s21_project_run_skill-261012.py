@@ -64,9 +64,9 @@ def frame_buttons():
                            " · ".join(k.get("skills") or []))
                           for space in spaces for k in views[space].run_types]
     page, seen = [], {}
-    for space, subs in frame.PAGE_TASK_SUBS.items():
+    for space, subs in frame.DRAFT_TASK_SUBS.items():
         for sub in subs or ("",):
-            for k in frame.page_task_spaces(ROOT / "<tNN>", ROOT, sub)[space].run_types:
+            for k in frame.draft_task_spaces(ROOT / "<tNN>", ROOT, sub)[space].run_types:
                 if (space, k["label"]) in seen:
                     continue
                 seen[(space, k["label"])] = len(page)
@@ -278,7 +278,7 @@ def frame_tools(buttons):
     base = sorted((d for d in project.iterdir() if (d / "SKILL.md").is_file()),
                   key=lambda d: (BASE_ORDER.index(d.name) if d.name in BASE_ORDER else 99, d.name))
     homes = {}                                   # the other skills the buttons name, by the folder that holds them
-    for s in sorted(named - {d.name for d in base} - {"haipipe-question", "haipipe-task"}):
+    for s in sorted(named - {d.name for d in base} - {"haipipe-report", "haipipe-task"}):
         homes.setdefault(dirs[s].parent, []).append(s)
     themes = sorted(d.name for d in (TOOLKIT / "skills/2_theme").iterdir() if d.is_dir())
     servers = sorted(d.name for d in (TOOLKIT / "servers").iterdir() if d.name.startswith("workbench-"))
@@ -298,7 +298,7 @@ def frame_tools(buttons):
         else:
             red = False
         rows.append((f"    │   {'└' if k == len(base) - 1 else '├'}── {d.name}/", d, where, red))
-    for name in ("haipipe-question", "haipipe-task"):
+    for name in ("haipipe-report", "haipipe-task"):
         rows.append((f"    ├── {rel(dirs[name].parent)[len('plugins/haipipe-toolkit/'):]}/{name}/", dirs[name],
                      used_by(name, buttons), False))
     short = lambda p: p.relative_to(TOOLKIT).as_posix()                   # noqa: E731

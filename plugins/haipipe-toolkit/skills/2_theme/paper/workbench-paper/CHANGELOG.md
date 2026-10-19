@@ -1,3 +1,9 @@
+## 0.39.1 · 2026-10-19 · The Section's skill is haipipe-paper-draft
+
+- `paper_theme.py` reads a Section's reader contract from `haipipe-paper-draft` (was haipipe-paper-section,
+  JL 261019: "use the draft? so we have the draft task, right?"); the six hosts were restarted with their own
+  flags and answer HTTP 200, and MISQ's `t05_results` opens with its Scope.
+
 ## 0.39.0 · 2026-10-14 · Delivery grouped by Section series
 
 - Delivery's results take a fixed group from their source and are listed in reading order (JL 261014: "there
@@ -76,7 +82,7 @@
 
 ## 0.30.0 · 2026-10-07 · A Section's tab: the paper's four lines over the Page Task
 
-- `paper_theme.section_spaces` (b16 s13, JL 261007): a Section opens on the base's Page Task (`frame.page_task_spaces`), and the paper adds one line to four Spaces, its subspaces unchanged. Description › Scope: the reader contract, read from the face's header (reader-question, entry and exit state, must-establish, must-refuse, transitions, story-row, section_kind, structure). Description › Requirement: after the base's V/W rules and rubric, the Section's `SUB-*` rows from `haipipe-paper/ref/submission-readiness.md`, picked by its `section_kind`, folded. Audience Report › Table: the form now (paragraphs, sentences, words, citations per sentence) measured by `haipipe-paper-section/cli/section-stats.py`. Delivery: "ready for the build" (outline approved · every display has its preview.pdf · the Section PDF compiles), shown apart from "done" (the Page CHECK).
+- `paper_theme.section_spaces` (b16 s13, JL 261007): a Section opens on the base's Page Task (`task_draft.draft_task_spaces`), and the paper adds one line to four Spaces, its subspaces unchanged. Description › Scope: the reader contract, read from the face's header (reader-question, entry and exit state, must-establish, must-refuse, transitions, story-row, section_kind, structure). Description › Requirement: after the base's V/W rules and rubric, the Section's `SUB-*` rows from `haipipe-paper/ref/submission-readiness.md`, picked by its `section_kind`, folded. Audience Report › Table: the form now (paragraphs, sentences, words, citations per sentence) measured by `haipipe-paper-draft/cli/section-stats.py`. Delivery: "ready for the build" (outline approved · every display has its preview.pdf · the Section PDF compiles), shown apart from "done" (the Page CHECK).
 - Tests: `test_a_section_carries_the_paper_lines` (a placeholder Section in a temp folder); workbench-paper 5/5.
 - The old Board page is retired (JL 261007: "could we also remove the old page?"): `/_board/paper-board` now forwards (302) to the paper Board on the shared frame, so old links still land; its renderers in `paper.py` stay only as the readers `paper_theme.py` uses. Delivery: the base now draws a Page Task's Delivery as item cards with no third row; the paper's "ready for the build" and "done" are the first card group, ◆ Ready.
 - Delivery is one card per kind of delivery (JL 261007: "each card is a type of delivery … the card and the preview of the results, the embedded content"): `_delivery_previews` draws Web · LaTeX · Word · Slides · Render, each with its state from the Page's own check and its result embedded (the PDF, the web page, Word through its PDF twin, the deck; a LaTeX lane with no PDF shows the .tex), after ◆ Ready. The form line over the Table is removed (JL 261007: "I don't want this"; the prose lives in the draft, so it read empty on every Section).
@@ -109,7 +115,7 @@
 
 ## 0.26.0 · 2026-10-03 · Generated drawings open view only
 
-- Story › RoadMap Draw opens a drawing whose `source` names a script (the paper map `studio/paper-sections.excalidraw`, drawn by `excalidraw-section`) view only, its tab marked "generated"; the person's drawings stay editable (JL 261003).
+- Story › RoadMap Draw opens a drawing whose `source` names a script (the paper map `studio/paper-sections.excalidraw`, drawn by `excalidraw-draft`) view only, its tab marked "generated"; the person's drawings stay editable (JL 261003).
 
 ## 0.25.0 · 2026-10-03 · The Method page in Design's shape
 

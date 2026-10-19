@@ -12,7 +12,7 @@ of `haipipe-paper-workflow/ref/run-cards.md`, whose Space field is
 Agent, Skill and Person signs. View is the third-row view the button shows in
 (All = every view of the Space). The Guide rows have no card: Guide's own Runs
 panel reads them from this table. A Section (the Task level) is a Page Task:
-its rows are the Page Workbench Table's (`workbench-page/ref/workbench-table.md`).
+its rows are the Page Workbench Table's (`workbench-task-draft/ref/workbench-table.md`).
 
 Makers and judges stay apart: every row that reviews or checks (Idea review,
 Claim review, Task review, Narrative review, Review for an audience, Review the
@@ -33,8 +33,8 @@ but not built yet.
 | block | Related | All | Add a related item | haipipe-draft-writing-agent | haipipe-paper | none |
 | block | Related | All | Read a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check |
 | block | Idea Studio | All | Redraw | haipipe-studio-agent (new) | haipipe-studio | none |
-| block | Idea Studio | All | Redraw the paper map | haipipe-studio-agent (new) | excalidraw-section | none |
-| block | Audience Report | ideation · related-questions | Ask a Question | haipipe-draft-writing-agent | haipipe-question | none |
+| block | Idea Studio | All | Redraw the paper map | haipipe-studio-agent (new) | excalidraw-draft | none |
+| block | Audience Report | ideation · related-questions | Ask a Question | haipipe-draft-writing-agent | haipipe-report | none |
 | block | Audience Report | ideation | Generate ideas | haipipe-ideation-agent (new) | haipipe-ideation-generate | none |
 | block | Audience Report | ideation | Test idea | haipipe-ideation-agent (new) | haipipe-ideation-test | none |
 | block | Audience Report | ideation | Idea review | haipipe-block-reviewer-agent | haipipe-paper-ideation | none |
@@ -53,7 +53,7 @@ but not built yet.
 | block | Runs | All | Update the Board status | haipipe-draft-writing-agent | haipipe-paper | none |
 | job | Description | version | Update the version | haipipe-draft-writing-agent | haipipe-paper | none |
 | job | Description | venue-rules | Check the rules | haipipe-draft-check-agent | haipipe-paper-venue | none |
-| job | Audience Report | questions | Ask a Question | haipipe-draft-writing-agent | haipipe-question | none |
+| job | Audience Report | questions | Ask a Question | haipipe-draft-writing-agent | haipipe-report | none |
 | job | Audience Report | questions | Write the report | haipipe-draft-writing-agent | haipipe-report | none |
 | job | Audience Report | questions | Review the report | haipipe-draft-check-agent | haipipe-report | the answer (G2) |
 | job | Audience Report | questions | Rebuild report drawing | haipipe-draft-writing-agent | haipipe-report | none |
@@ -64,12 +64,12 @@ but not built yet.
 | job | Audience Report | comments | Reply to an item | haipipe-draft-writing-agent | haipipe-paper-comments | none |
 | job | Audience Report | cover-letter | Write the cover letter | haipipe-draft-writing-agent | haipipe-paper-assemble | the letter |
 | job | Audience Report | cover-letter | Check the letter | haipipe-draft-check-agent | haipipe-paper-assemble | none |
-| job | Work Details | main · appendix | Add a Section | haipipe-draft-writing-agent | haipipe-paper-section | none |
-| job | Work Details | main · appendix | Draft runs | haipipe-draft-writing-agent | haipipe-paper-section | none |
-| job | Work Details | main · appendix | Evidence runs | haipipe-draft-evidence-agent | haipipe-draft-evidence | none |
-| job | Work Details | main · appendix | Delivery runs | haipipe-draft-writing-agent | haipipe-draft-delivery | none |
-| job | Work Details | main · appendix | Page check | haipipe-draft-check-agent | haipipe-draft-check | none |
-| job | Work Details | letters | Add a letter | haipipe-draft-writing-agent | haipipe-paper-section | none |
+| job | Work Details | main · appendix | Add a Section | haipipe-draft-writing-agent | haipipe-paper-draft | none |
+| job | Work Details | main · appendix | Draft runs | haipipe-draft-writing-agent | haipipe-paper-draft | none |
+| job | Work Details | main · appendix | Evidence runs | haipipe-draft-evidence-agent | haipipe-evidence | none |
+| job | Work Details | main · appendix | Delivery runs | haipipe-draft-writing-agent | haipipe-delivery | none |
+| job | Work Details | main · appendix | Page check | haipipe-draft-check-agent | haipipe-draft-review | none |
+| job | Work Details | letters | Add a letter | haipipe-draft-writing-agent | haipipe-paper-draft | none |
 | job | Work Details | letters | Cover letter | haipipe-draft-writing-agent | haipipe-paper-assemble | the letter |
 | job | Work Details | letters | Response | haipipe-draft-writing-agent | haipipe-paper-comments | every response answered (G5) |
 | job | Runs | All | Update the version | haipipe-draft-writing-agent | haipipe-paper | none |
@@ -81,7 +81,7 @@ Notes
 -----
 
 - **One skill per row.** The cards for Story revise and Draft runs used to name
-  two skills (`haipipe-paper-story · haipipe-writing`, `haipipe-paper-section ·
+  two skills (`haipipe-paper-story · haipipe-draft`, `haipipe-paper-draft ·
   haipipe-draft-writing`); the row names the one that owns the work, and the
   writing skill is loaded by it.
 - **Gates.** Person signs carries the gates G0–G5 of `workbench-paper`:

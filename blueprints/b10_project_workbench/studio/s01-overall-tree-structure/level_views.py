@@ -182,7 +182,7 @@ TASK_DEFAULT = {
     "Delivery": ([], ["Build the report", "Release"]),     # drawn as cards (DELIVERY_CARDS)
 }
 TASK_GROUPS_BY_SPACE = {   # variant -> Space -> its third row, where it differs from the default
-    "Page Task": {"Delivery": []},   # one card per kind of delivery (b16 s13; frame PAGE_TASK_SUBS)
+    "Page Task": {"Delivery": []},   # one card per kind of delivery (b16 s13; task_draft DRAFT_TASK_SUBS)
     "paper Section": {"Delivery": ["LaTeX"]},
     "labeling Task": {"Delivery": ["All", "Handoff", "Final labels", "Audit"]},
 }
@@ -311,7 +311,7 @@ WORK_GROUPS = {"work Task": ["Code", "Review", "Notebooks"],
                "labeling Task": ["Embedding", "Definition", "Rounds", "Guideline", "|",
                                  "Test", "Evaluation", "Scan", "Audit"],
                "Page Task": ["Draft-Scratch", "Draft-Revise", "Evidence-Citation", "Evidence-Display",
-                                 "Evidence-Value", "Evidence-Supporting"],   # as the frame (PAGE_TASK_SUBS)
+                                 "Evidence-Value", "Evidence-Supporting"],   # as the frame (DRAFT_TASK_SUBS)
                "paper Section": ["Draft-Scratch", "Draft-Revise", "Evidence-Citation", "Evidence-Display",
                                  "Evidence-Value", "Evidence-Supporting Runs"]}
 OPEN_GROUP = {("labeling Task", "Work Details"): "Rounds", ("work Task", "Audience Report"): "Report", ("Page Task", "Work Details"): "Evidence-Citation",
@@ -323,7 +323,7 @@ PAGE_VIEW_SUBS = {"Description": ["Folder"], "Work Details": ["Evidence", "Value
 PAGE_VIEW_TASKS = {"work Task"}
 RUN_GROUPS = {"work Task": ["All", "run", "build", "report"], "labeling Task": ["All", "Building", "Scanning"],
               "discovery Task": ["All", "read", "write", "check", "delivery"],   # b14 Q01
-              "Page Task": [],   # no third row: the Page's own Runs view, by lane (b16 s13; frame PAGE_TASK_SUBS)
+              "Page Task": [],   # no third row: the Page's own Runs view, by lane (b16 s13; task_draft DRAFT_TASK_SUBS)
               "paper Section": ["All", "structure", "section", "evidence", "delivery"]}
 # A work Task's Delivery: no third row; today's style, its items as cards under group headings (JL 261006)
 DELIVERY_CARDS = {"work Task": [("Reports", [("web/", "web · LaTeX · released"), ("latex/", "draft")]),

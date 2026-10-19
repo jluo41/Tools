@@ -58,7 +58,7 @@ Three points the notes imply but do not say:
 Two places where the drawing on the canvas and the skills disagree today:
 
 1. The canvas calls `studio/` and `reports/` "two special Jobs". Every contract
-   (`haipipe-task`, `haipipe-question`, `haipipe-project`) treats them as Block-level
+   (`haipipe-task`, `haipipe-report`, `haipipe-project`) treats them as Block-level
    folders beside the `jNN_` Jobs, with no `jNN` number. This proposal keeps them as
    folders (open question 2).
 2. The canvas sketch writes `sNN_<topic>` (underscore); JL's first real folder is
@@ -79,7 +79,7 @@ Where this belongs in `Tools/designs/b03_project/` (register in `board.md`, Q01 
 | Q06 "Which skill owns each level?" | Who owns a Block's `studio/` topics: today nobody (open question 6). |
 | Q08 "How do we host the SPACE?" | Small: a viewer may leave suggestions on a report drawing, never a scratch edit. |
 
-Two new Questions, proposed (created only if JL agrees, through `haipipe-question`, with the
+Two new Questions, proposed (created only if JL agrees, through `haipipe-report`, with the
 next free ids):
 
 - proposed Q09 `q09_shared_drawings`: "How do a person and a generator share one drawing?"
@@ -111,10 +111,10 @@ Paths are under `Tools/plugins/haipipe-toolkit/skills/`.
 |---|---|---|
 | `0_utils/response-format` | Widen "Related question" to "Related": a section links ONE studio topic (creation) or ONE report question (presentation). Forms below. A studio link opens `view=studio#studio-sNN`; until that anchor exists, link the topic's `.md` or folder. `(proposed) <Board> sNN-<topic>` allowed, offered in Summary and Next as today. | JL note 4. Today the line only knows `qNN`, so design and drafting sections are forced onto a Question they do not answer yet. |
 | `question/ask-questions` | Match each section to a studio topic or a Question; rule: making, exploring, drafting a drawing or contract = studio; a result, answer, evidence = report. | It is the skill that does the association `response-format` points to. |
-| `question/haipipe-question` | (a) Report folder = `qNN_<topic>.md` + `qNN_<topic>.excalidraw` (same stem, beside the Page) + `draft/` + `page.toml`; `reports/qNN_<topic>/studio/` becomes a readable old form. (b) `--drawing` writes the same-stem drawing. (c) The Block's `studio/` is described as topic folders, not "drawings the whole Block shares". (d) If JL agrees it owns them: `block_questions.py add-topic <block> --slug <topic>` makes `studio/sNN-<topic>/` with the next free NN and a frame `sNN-<topic>.md` (`feeds:`). | JL's tree. Today the skill says a report's drawing lives in `reports/qNN/studio/`, which the new layout drops. |
-| `display/excalidraw-report` | Scratch mode: (a) default shape is a tree of boxes and lines (the `build_ladder_trees.py` shape), with wide gutters and new content placed in new columns, so the person's marks keep lining up; this softens the 261005 "loose clusters" wording rather than reversing "not too structured". (b) The builder lives at `studio/sNN-<topic>/sNN-<topic>.py`, its snapshot at `studio/sNN-<topic>/.sNN-<topic>.seed.json`. (c) Move the merge writer `canvas.py` from `Tools/designs/b03_project/studio/_build/` into the skill (`ref/canvas.py`) so every Block imports one copy. (d) Write a `mode` into the scene (`scratch`, `report`, `generated`) so the workbench knows whether to give the pen. Report mode: add a "Suggestions" section: the person may edit or leave notes; the agent reads them (non-`s-` ids and edited `s-` elements), answers in blue, folds each into the builder, rebuilds; once the builder draws the edited content the element is absorbed as seed. | JL notes 1 and 3. The skill already has the seed-snapshot writer and the comment loop, but only for scratches; the report mode has no edit rule at all. |
+| `project/haipipe-report` | (a) Report folder = `qNN_<topic>.md` + `qNN_<topic>.excalidraw` (same stem, beside the Page) + `draft/` + `page.toml`; `reports/qNN_<topic>/studio/` becomes a readable old form. (b) `--drawing` writes the same-stem drawing. (c) The Block's `studio/` is described as topic folders, not "drawings the whole Block shares". (d) If JL agrees it owns them: `block_questions.py add-topic <block> --slug <topic>` makes `studio/sNN-<topic>/` with the next free NN and a frame `sNN-<topic>.md` (`feeds:`). | JL's tree. Today the skill says a report's drawing lives in `reports/qNN/studio/`, which the new layout drops. |
+| `excalidraw/excalidraw-report` | Scratch mode: (a) default shape is a tree of boxes and lines (the `build_ladder_trees.py` shape), with wide gutters and new content placed in new columns, so the person's marks keep lining up; this softens the 261005 "loose clusters" wording rather than reversing "not too structured". (b) The builder lives at `studio/sNN-<topic>/sNN-<topic>.py`, its snapshot at `studio/sNN-<topic>/.sNN-<topic>.seed.json`. (c) Move the merge writer `canvas.py` from `Tools/designs/b03_project/studio/_build/` into the skill (`ref/canvas.py`) so every Block imports one copy. (d) Write a `mode` into the scene (`scratch`, `report`, `generated`) so the workbench knows whether to give the pen. Report mode: add a "Suggestions" section: the person may edit or leave notes; the agent reads them (non-`s-` ids and edited `s-` elements), answers in blue, folds each into the builder, rebuilds; once the builder draws the edited content the element is absorbed as seed. | JL notes 1 and 3. The skill already has the seed-snapshot writer and the comment loop, but only for scratches; the report mode has no edit rule at all. |
 | `page/haipipe-workbench-studio` (`ref/chat.md`) | Add a Block-topic keep: one file per session in `studio/sNN-<topic>/chat/`, a summary with section links, no raw transcript. Fix the Page keep: `transcript_markdown` and the keep head write `source:` as the absolute jsonl path (breaks AGENTS.md rule 7); write the session id and agent instead. Name Codex as a second source. | JL note 2; privacy; rule 7. |
-| `page/haipipe-draft` | One paragraph: a Page's `studio/{chat,draw}/` (lanes of one Page) is not a Block's `studio/sNN-<topic>/` (topics of a Block). Same word, two shapes; say which is which. | Two contracts share the name `studio/`. |
+| `draft/haipipe-draft` | One paragraph: a Page's `studio/{chat,draw}/` (lanes of one Page) is not a Block's `studio/sNN-<topic>/` (topics of a Block). Same word, two shapes; say which is which. | Two contracts share the name `studio/`. |
 | `task/haipipe-task` | SKILL tree, `ref/hierarchy.md`, `ref/block-board-template.md`: Block `studio/` = `sNN-<topic>/` + `_build/` (shared helpers only). `ref/check_task_tree.py`: Block rows (topic names, one drawing per topic named after it, `chat/` file names, no transcript dumps, report folder holds only `.md`, `.excalidraw`, `.png`, `draft/`, `page.toml`). Task-level S4 unchanged. | The checker reads only Task-level `studio/` today. |
 | `project/haipipe-project` | `ref/project-structure.md`: "Drawings are rebuilt by their scripts, never edited by hand" (cowork Block) and "question-map ... never edited" stay true only for `mode: generated`. A seeded scratch or report drawing is merged, never overwritten, and the person may draw on it. | Today's wording contradicts "keep human's scratch". |
 | later: `haipipe-insight`, `haipipe-paper`, `haipipe-cowork` | They use flat `studio/*.excalidraw` (question map, Story drawings). Align after the task Block works. | Keep the first wave small. |
@@ -224,7 +224,7 @@ Plan
 ```text
 1  xcal.py plain revision check          bug fix, one file + one client line, no contract change
 2  response-format Related: sNN or qNN   text only; file-link fallback until anchors exist
-3  contracts: haipipe-question,          studio/sNN-<topic>/, report draft/ + same-stem drawing,
+3  contracts: haipipe-report,          studio/sNN-<topic>/, report draft/ + same-stem drawing,
    haipipe-task, haipipe-project, -page  the "never edited by hand" wording narrowed to generated
 4  excalidraw-report                     tree scratch, report Suggestions, canvas.py into ref/, mode
 5  workbench RoadMap Draw + Report       topic rows + anchors, pen by mode, + Add topic, same-stem
@@ -253,7 +253,7 @@ Open questions for JL
 5. **A folded suggestion.** On a report drawing, after the agent folds a suggestion into the
    builder, does the person's note stay where it is, move into a "Suggestions" frame, or does
    the person clear it?
-6. **Owner of studio topics.** `haipipe-question` (beside reports, with `add-topic`), a new
+6. **Owner of studio topics.** `haipipe-report` (beside reports, with `add-topic`), a new
    small skill, or `haipipe-workbench-studio`?
 7. **Raw transcripts.** Summary only for Block topics (proposed). Should the Page lane also stop
    committing `transcript.md` by default, given the HIPAA rule?

@@ -7,7 +7,7 @@
 
 ## (was) /haipipe-insight-question · make the board's ask explicit
 
-Load `haipipe-folder`, `haipipe-draft`, `haipipe-insight`, and the workflow.
+Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and the workflow.
 Existing registers may retain `page-type: question`; new ones use
 `folder-kind: question` plus `question-level:`.
 
@@ -157,10 +157,10 @@ Folder's GI conditions still govern citation and register settlement.
 ## The question review (Q1-Q7)
 
 Whether a question is a GOOD question is judged before its needs are run, by a reviewer
-agent that did not write it, through `haipipe-question-review` (the seven tests, the
+agent that did not write it, through `haipipe-report` (the seven tests, the
 keep / split / merge / move verdict, a person signs, a signed change retires). An Insight
 question is an ask in that skill's sense; its topic, when it has one, is a board Question
-(`haipipe-question`). What Insight adds:
+(`haipipe-report`). What Insight adds:
 
 - **Q4 level is the level**: Data observes, Information derives with no cause word,
   Knowledge claims with rivals, Wisdom counsels.

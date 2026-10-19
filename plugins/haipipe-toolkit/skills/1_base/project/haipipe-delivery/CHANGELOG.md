@@ -1,6 +1,20 @@
 haipipe-delivery · Changelog
 ============================
 
+**[0.5.0] · 2026-10-19 · A round: render and read back (b32 s41-D21, D23)**
+
+`scripts/word_round.py`, made shared from b21_event_cgm's `delivery/word_versions.py`: numbered versions, `render`
+(each version's pages as pictures in `render/<name>-v<N>/`), `push`, and `pull`, the read back: OneDrive's changed
+copy as the next version, rendered, its new comments listed, a `back` row in delivery.md. New section: A round;
+`ref/page-delivery.md` no longer says render is Design-only (JL 2026-10-19: "after the delivery, we will also have
+the render").
+
+**[0.4.0] · 2026-10-16 · A Page's Delivery Runs fold in (s41-D11)**
+
+The skill haipipe-draft-delivery is now `ref/page-delivery.md` (its changelog: `ref/history/haipipe-draft-delivery-CHANGELOG.md`).
+Run names are unchanged (run-delivery-webpage, -latex, -word). New section: A Page's Delivery Runs; its triggers
+join the description (JL 2026-10-16).
+
 **[0.3.0] · 2026-10-14 · One item per deliverable, its versions inside; decks preview**
 
 A deliverable is one item: its lanes (web/, word/, latex/; slide/ and render/) and its versions (`-v<N>`) fold

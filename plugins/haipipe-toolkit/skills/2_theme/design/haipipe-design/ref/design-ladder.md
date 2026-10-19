@@ -134,7 +134,7 @@ Block  run-add-goal-<goal>              soft  a goal into the goal list; a perso
        run-propose-method-<slug>        soft  a method change, to the registry          haipipe-design-method
        run-add-observed-e<NN>           soft  an Exp's per-arm totals                   haipipe-design-method
        run-score-e<NN>                  soft  every arm's design scored (reviewer)      haipipe-design-method
-       run-propose-questions            soft  the Block's questions; another agent agrees haipipe-question
+       run-propose-questions            soft  the Block's questions; another agent agrees haipipe-report
        run-report-q<NN>                 soft  a question's report                       haipipe-report
        run-draw-s<NN>                   soft  a studio topic                            excalidraw-report
 Job    run-setup-goal-j<NN>             soft  confirm the pin names a signed goal       haipipe-design-goal

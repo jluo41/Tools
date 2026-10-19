@@ -173,7 +173,7 @@ split into **Jobs** (JL 261004). `haipipe-cowork` owns the Block: its number ran
 |---|---|
 | `board.md` | required: header (state, spine, close, status), text, Questions register |
 | `studio/` | drawings, decks, video; their build scripts in `studio/_build/` |
-| `reports/` | a Question's report Page, `reports/qNN_<topic>/` (haipipe-question) |
+| `reports/` | a Question's report Page, `reports/qNN_<topic>/` (haipipe-report) |
 | `_old/` | replaced material; do not use |
 | `j00_people/` | required: who to ask for help (a Job with state 📇 REFERENCE) |
 | `jNN_<job>/` | one line of work: `jNN_<job>.md` (its header holds state, waiting-on, since, next), `Timeline.md`, `CHECKLIST.md`, and `design/`, `materials/`, `emails/`, `meetings/` only when it has them |
@@ -243,6 +243,43 @@ insight/
 
 The internals belong to `haipipe-insight` (`ref/block-contract.md`); a Project audit
 checks only that `insight/` holds these folder kinds.
+
+## `note/`
+
+`note/` is the Project's inbox, kept at the Project level (JL 261016, b10 s10-D10). Any AI session,
+working anywhere, writes a quick note here when it learns something that should shape later work,
+discovery or a Studio topic but has no place in the work it is doing now. A random thought is welcome
+too: it is often the one that helps later. One note, one file, written fast:
+
+```text
+note/
+├── YYMMDD-<slug>.md     a quick note (this section)
+└── reads/               reading notes, as before (one folder per source)
+```
+
+```markdown
+# <the point in one line>
+
+date: 261016
+from: <the session's task, one line>
+kind: finding            # finding · gap · thought
+status: open             # open · moved · dropped
+next: work/b03_<topic>/ · s04-<topic>     # the one step further (below)
+first-step: <the Run, Job or topic edit that would use it>
+
+<what was seen, with its path or link; a claim says where it came from>
+```
+
+**One step further.** A note never stops at the Project. Before saving, the session reads the
+Project's Blocks (`work/`, `discovery/`, and the other Theme folders) and its Studio topics, and names
+in `next:` the one place the note feeds: a Block, and inside it the Job or the `sNN` topic. When
+nothing fits, it writes `next: new Block bNN_<topic>` with one line on why. A thought with no clear
+home still gets a best guess, marked `?` (`next: discovery/b02_<topic>/ ?`). The note stays in
+`note/`; there is no Block-level note topic (no `s99-note`), so the Project keeps one inbox.
+
+**Moving it.** When a person or a session acts on a note (a Run, a Job, a topic edit), the note's
+`status:` becomes `moved` and `next:` keeps the path it went to; a dropped note keeps one line on why.
+Notes are interpretation, not findings: a report cites the Run or source, never the note.
 
 ## Root prohibitions and debt
 

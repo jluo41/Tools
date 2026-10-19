@@ -62,9 +62,9 @@ def frame_buttons():
                            " · ".join(k.get("skills") or []))
                           for space in spaces for k in views[space].run_types]
     page, seen = [], {}
-    for space, subs in frame.PAGE_TASK_SUBS.items():
+    for space, subs in frame.DRAFT_TASK_SUBS.items():
         for sub in subs or ("",):
-            for k in frame.page_task_spaces(ROOT / "<tNN>", ROOT, sub)[space].run_types:
+            for k in frame.draft_task_spaces(ROOT / "<tNN>", ROOT, sub)[space].run_types:
                 if (space, k["label"]) in seen:
                     continue
                 seen[(space, k["label"])] = len(page)

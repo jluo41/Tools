@@ -18,7 +18,7 @@ which `table-workbench --check --cards` checks (JL 261003). `🏷 RUN` names the
 shows it as the button's name and the label in small under it (JL 261007: "for all the soft run, the name of them
 will be run-xxxx-xxx"; haipipe-run `ref/run-types-by-space.md`). Where a paper button does a base button's job it
 makes the base Run and names the base skill: run-face-*, run-add-<jNN>, run-add-<tNN>, run-draw-<sNN> (haipipe-studio),
-run-ask-<qNN> (haipipe-question), run-report-<qNN>, run-figures-<qNN>, run-check-<qNN> (haipipe-report),
+run-ask-<qNN> (haipipe-report), run-report-<qNN>, run-figures-<qNN>, run-check-<qNN> (haipipe-report),
 run-delivery-<target>. `💬 PROMPT` is the text the button copies; `{folder}`
 is the Board or version folder the frame shows, `<target>` the row picked.
 
@@ -86,20 +86,20 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 
 🔘 BUTTON   Redraw the paper map · Block › Idea Studio · ^run-draw-
 🏷 RUN      run-draw-<sNN>
-🧩 SKILL    excalidraw-section
+🧩 SKILL    excalidraw-draft
 🤖 AGENT    haipipe-studio-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /excalidraw-section {folder}: redraw one version's map as a Board studio topic (studio/sNN-papermap-<version>/; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
+💬 PROMPT   /excalidraw-draft {folder}: redraw one version's map as a Board studio topic (studio/sNN-papermap-<version>/; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
 
 
 ## Block › Audience Report · Ideation, Narrative, the research questions, Related Questions, Related Papers
 
 🔘 BUTTON   Ask a Question · Block › Audience Report · ^run-ask- · views ideation related-questions
 🏷 RUN      run-ask-<qNN>
-🧩 SKILL    haipipe-question
+🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-question {folder}: one question a reviewer, a coauthor, an editor or a reader will ask of this paper; register it in board.md ## Questions with group: <who asks>, and its folder reports/qNN_<topic>/.
+💬 PROMPT   /haipipe-report {folder}: one question a reviewer, a coauthor, an editor or a reader will ask of this paper; register it in board.md ## Questions with group: <who asks>, and its folder reports/qNN_<topic>/.
 
 🔘 BUTTON   Generate ideas · Block › Audience Report · ^run-generate-ideas · views ideation
 🏷 RUN      run-generate-ideas
@@ -255,10 +255,10 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 
 🔘 BUTTON   Ask a Question · Job › Audience Report · ^run-ask- · views questions
 🏷 RUN      run-ask-<qNN>
-🧩 SKILL    haipipe-question
+🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-question {folder}: one question this send must answer (why this venue, the writing principles, ready to send, what changed); register it in the face's ## Questions with its report.
+💬 PROMPT   /haipipe-report {folder}: one question this send must answer (why this venue, the writing principles, ready to send, what changed); register it in the face's ## Questions with its report.
 
 🔘 BUTTON   Write the report · Job › Audience Report · ^run-report- · views questions
 🏷 RUN      run-report-<qNN>
@@ -337,45 +337,45 @@ A Section's Runs are its own Page Runs; these buttons open them from the version
 
 🔘 BUTTON   Add a Section · Job › Work Details · ^run-add-t · views main appendix
 🏷 RUN      run-add-<tNN>
-🧩 SKILL    haipipe-paper-section
+🧩 SKILL    haipipe-paper-draft
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-paper-section add a Section to {folder}: python haipipe-paper/scripts/paper_ladder.py task {folder} t0N_<title> (t2N_ for the Appendix), dry run first, then its row in the face's ## Narrative.
+💬 PROMPT   /haipipe-paper-draft add a Section to {folder}: python haipipe-paper/scripts/paper_ladder.py task {folder} t0N_<title> (t2N_ for the Appendix), dry run first, then its row in the face's ## Narrative.
 
 🔘 BUTTON   Draft runs · Job › Work Details · - · views main appendix
 🏷 RUN      run-<kind>-<slug> (the Section's)
-🧩 SKILL    haipipe-paper-section
+🧩 SKILL    haipipe-paper-draft
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-draft run <target> from Draft: continue this Section's Draft in its own Task tab.
 
 🔘 BUTTON   Evidence runs · Job › Work Details · - · views main appendix
 🏷 RUN      run-<value|citation|display>-<slug> (the Section's)
-🧩 SKILL    haipipe-draft-evidence
+🧩 SKILL    haipipe-evidence
 🤖 AGENT    haipipe-draft-evidence-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-draft evidence <target>: land and verify this Section's open Evidence Items, then bind their Results.
 
 🔘 BUTTON   Delivery runs · Job › Work Details · - · views main appendix
 🏷 RUN      run-delivery-<lane> (the Section's)
-🧩 SKILL    haipipe-draft-delivery
+🧩 SKILL    haipipe-delivery
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-draft export <target>: rerun this Section's Delivery Runs (run-delivery-webpage, _latex, _word); say which files changed.
 
 🔘 BUTTON   Page check · Job › Work Details · ^run-check- · views main appendix
 🏷 RUN      run-check-<page> (the Section's)
-🧩 SKILL    haipipe-draft-check
+🧩 SKILL    haipipe-draft-review
 🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-draft-check <target>: judge the Section's current built version against its Narrative row, evidence and venue; route CLOSE or name what must change.
+💬 PROMPT   /haipipe-draft-review <target>: judge the Section's current built version against its Narrative row, evidence and venue; route CLOSE or name what must change.
 
 🔘 BUTTON   Add a letter · Job › Work Details · ^run-add-t3 · views letters
 🏷 RUN      run-add-<tNN>
-🧩 SKILL    haipipe-paper-section
+🧩 SKILL    haipipe-paper-draft
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-paper-section add a letter to {folder}: python haipipe-paper/scripts/paper_ladder.py task {folder} t31_cover-letter (t32_response for a revision), dry run first.
+💬 PROMPT   /haipipe-paper-draft add a letter to {folder}: python haipipe-paper/scripts/paper_ladder.py task {folder} t31_cover-letter (t32_response for a revision), dry run first.
 
 🔘 BUTTON   Cover letter · Job › Work Details · ^run-write-letter- · views letters
 🏷 RUN      run-write-letter-<tNN>

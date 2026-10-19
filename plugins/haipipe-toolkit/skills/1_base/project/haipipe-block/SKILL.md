@@ -39,7 +39,7 @@ is `haipipe-project`'s, and each theme adds its words over the face.
 ```text
 <Project>/<theme folder>/bNN_<topic>/
 ├── board.md             the face: # bNN · <title> · board-kind · spine · close · Topic
-├── studio/ reports/     Idea Studio (haipipe-studio) · Audience Report (haipipe-question, haipipe-report)
+├── studio/ reports/     Idea Studio (haipipe-studio) · Audience Report (haipipe-report)
 ├── runs/ delivery/      soft Runs (haipipe-run) · what it hands on
 └── jNN_<job>/           its Jobs (haipipe-job)
 ```
@@ -77,7 +77,7 @@ python $S/new_board.py <Project>/tasks --slug <topic> --title '<title>' [--quest
 1. **Number**: the next free `bNN` in the Theme folder, or `--nn`; a taken one is refused.
 2. **Kind**: the Theme folder's default `board-kind`, or `--kind`.
 3. **Face only**: `board.md`; no empty folder until its first content.
-4. **Questions**: `--questions` adds an empty register; add each with `haipipe-question`.
+4. **Questions**: `--questions` adds an empty register; add each with `haipipe-report`.
 5. **Check**: `haipipe-project audit <block>` for its shape.
 
 
@@ -91,7 +91,7 @@ The buttons it owns
 | Delivery | Build the delivery | `run-delivery-<target>` | the theme's delivery rule (decided 261007: stays here) |
 
 The other Spaces' buttons are their skills': Idea Studio `haipipe-studio`, Audience Report
-`haipipe-question` and `haipipe-report`, Runs `haipipe-run`. The full table, every level:
+`haipipe-report`, Runs `haipipe-run`. The full table, every level:
 `haipipe-run`'s `ref/run-types-by-space.md`.
 
 
@@ -116,7 +116,7 @@ Boundary
 | `haipipe-project` | the Project root, the Theme folders, the ladder's shape and its audit |
 | `haipipe-block` | the Block face, its Block-level Spaces and buttons, the scaffold, theme claims |
 | `haipipe-job` | the Jobs inside it |
-| `haipipe-question` · `haipipe-report` | its Questions register · their reports |
+| `haipipe-report` | its Questions register · their reports |
 | `haipipe-studio` | its studio topics |
 | theme skills | their own Block template and fields over this one (work: `haipipe-task` `ref/block-board-template.md`) |
 | `servers/workbench/frame.py` | drawing the Spaces |

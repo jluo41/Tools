@@ -25,16 +25,16 @@ import yaml
 HERE = Path(__file__).resolve().parent
 TOOLS = HERE.parents[3]                                    # .../Tools (the folder with plugins/ and blueprints/)
 SKILLS = TOOLS / "plugins/haipipe-toolkit/skills/1_base"
-sys.path.insert(0, str(SKILLS / "display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(SKILLS / "excalidraw/excalidraw-studio/scripts"))
 from draw import Drawing, KEY, RED, INK, W, H, T_SMALL, T_TEXT, T_KEY  # noqa: E402
 
 FACE = HERE / f"{HERE.name}.md"
-READ = TOOLS / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-read"
-REVISE = READ.parent / "excalidraw-revise"     # the revise mode, its own skill since 261013
+READ = TOOLS / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-read"
+REVISE = READ.parent / "excalidraw-draft"     # the revise mode, its own skill since 261013
 
 
 def ref(py):
-    """A script in excalidraw-read's ref/, or, for the revise mode, in excalidraw-revise's."""
+    """A script in excalidraw-read's ref/, or, for the revise mode, in excalidraw-draft's."""
     return next((d / "ref" / py for d in (READ, REVISE) if (d / "ref" / py).is_file()), READ / "ref" / py)
 STUDIO_SCRIPTS = SKILLS / "project/haipipe-studio/scripts"
 SPACE = TOOLS.parent / "WellDoc-SPACE"                      # where the SHIFT cowork canvases live (checkout beside Tools)

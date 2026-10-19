@@ -86,10 +86,10 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 💬 PROMPT   /haipipe-insight-knowledge check two Jobs of {folder} against each other: each shared question held, changed or not comparable, and why, as run-consistency-<jA>-<jB>.
 
 🔘 BUTTON   Ask a Block question · Block › Audience Report · ^run-ask-q\d+$ · views findings
-🧩 SKILL    haipipe-question
+🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-question ask a Board question of {folder}: a row in board.md ## Questions and reports/qNN_<topic>/, answered across Jobs, as run-ask-q<NN>; another agent agrees it before it stands.
+💬 PROMPT   /haipipe-report ask a Board question of {folder}: a row in board.md ## Questions and reports/qNN_<topic>/, answered across Jobs, as run-ask-q<NN>; another agent agrees it before it stands.
 
 🔘 BUTTON   Write the report · Block › Audience Report · ^run-report-q\d+$ · views findings
 🧩 SKILL    haipipe-report
@@ -370,10 +370,10 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 💬 PROMPT   /haipipe-insight-question ask one question into the open release {folder} from plain words: its level, id (never reused) and Task tNN_<L><NN>_<slug>/question.md (insight_ladder.py question), as run-ask-<l><nn>; never answer it here.
 
 🔘 BUTTON   Review the questions · Release › Work Details · ^run-review-questions-p\d+$
-🧩 SKILL    haipipe-question-review
+🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    a change
-💬 PROMPT   /haipipe-question-review review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-p<N>: propose keep, split, merge or move, never reword; I sign each change.
+💬 PROMPT   /haipipe-report review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-p<N>: propose keep, split, merge or move, never reword; I sign each change.
 
 ## Release › Description · its cuts
 

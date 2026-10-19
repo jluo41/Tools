@@ -68,7 +68,7 @@ builders, the paper and Page `run-cards.md`, the paper workbench (`paper_theme.p
   (`studio/s01-ideation/`), `-venue` (`venues/<venue>/`, `ref/call-template.md`).
 - **Phase 4 · version:** `review_items.py route · reply`; `build.py send|release` into a comments report; the
   cover letter from the `t31_` Task; the Send card; J1-J5 in the workflow skill.
-- **Phase 5 · Section:** `haipipe-paper-section` (the Narrative row, `ref/requirement.md`, a Section's own
+- **Phase 5 · Section:** `haipipe-paper-draft` (the Narrative row, `ref/requirement.md`, a Section's own
   `studio/` and `reports/`); `create_section_sessions.py` reads `tNN_` Sections.
 - **Phase 6 · old names:** 0 old names left as current in the nine skills; each touched skill has its version and
   CHANGELOG line.
@@ -83,7 +83,7 @@ not have the related studio and delivery"; "also for the Jobs"). The paper skill
 
 - **Scaffold:** `paper_ladder.py spaces` gives a version only `reports/` and `runs/`; `next` copies a Section's
   face and `draft/`, not a `studio/` (haipipe-paper 1.12.0, its contract `ref/paper-ladder.md`).
-- **Section:** `haipipe-paper-section` 0.11.1 drops the Section's own `studio/` and `delivery/` (Phase 5 above
+- **Section:** `haipipe-paper-draft` 0.11.1 drops the Section's own `studio/` and `delivery/` (Phase 5 above
   gave it a `studio/`).
 - **Related papers:** one home, the Board's `related/related.md`; the Story's P-board is its rows
   (haipipe-paper-story 0.20.0); a meeting batch cites `related/meetings/` (haipipe-paper-comments 1.2.1).
@@ -100,4 +100,4 @@ not have the related studio and delivery"; "also for the Jobs"). The paper skill
 
 ## Questions this raises
 
-- Should a Section's Requirement rubric live in `haipipe-paper-section` or in the Page's own skills?
+- Should a Section's Requirement rubric live in `haipipe-paper-draft` or in the Page's own skills?

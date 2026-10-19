@@ -53,10 +53,10 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 ## Block › Audience Report · questions, cost, predicted vs observed, the scorecard
 
 🔘 BUTTON   Propose questions · Block › Audience Report · ^run-propose-questions · views questions
-🧩 SKILL    haipipe-question
+🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-question propose {folder}'s report questions from the Map, the scores and the scorecard into board.md ## Questions, as run-propose-questions; another agent agrees before they stand.
+💬 PROMPT   /haipipe-report propose {folder}'s report questions from the Map, the scores and the scorecard into board.md ## Questions, as run-propose-questions; another agent agrees before they stand.
 
 🔘 BUTTON   Write a report · Block › Audience Report · ^run-report- · views questions
 🧩 SKILL    haipipe-report

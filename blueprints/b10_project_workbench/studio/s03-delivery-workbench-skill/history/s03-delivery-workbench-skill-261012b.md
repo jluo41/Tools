@@ -51,7 +51,7 @@ skills/1_base/project/
 └── haipipe-run/        s06 Run
 servers/workbench/frame.py                        delivery_parts · _delivery_row · delivery_by_source
                                                   · _delivery_cards (a Page Task's card per lane)
-skills/1_base/page/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
+skills/1_base/draft/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
 ```
 
 

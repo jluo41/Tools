@@ -16,16 +16,6 @@ ref/                        📜 THE CONSTITUTION · display-unit-output-contrac
                                + display-intake-contract.md; every renderer obeys them
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
-excalidraw-section/         🗺 working drawing · paper → Sections → paragraphs → Bullets
-                               → evidence cards, left to right, generated from the plans
-excalidraw-report/          🗺 dense hand-drawn scratch · real trees, receipts, counts,
-                               open-question stickies; the person keeps drawing on it
-excalidraw-read/            🗺 one paper on a canvas · its logic, key passages shot
-                               with the quote highlighted, comments, links to our paper
-excalidraw-revise/          🗺 a file we change · each section's page beside the updated
-                               sentences, a note per change, the tracked Word file last
-excalidraw-workflow/        🗺 a paper's building map · data → sources → tests → analysis →
-                               claim → Section, with what the reviewers hit (red) and fixes (green)
 html-to-svg/ · icon-to-svg/ 🔧 converters
 figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and
@@ -33,14 +23,15 @@ _todo/                      🗃 parked, not deleted · retired 260816: the post
                                content-plan spec that only they used
 ```
 
-Start at `haipipe-display/SKILL.md`.
+Start at `haipipe-display/SKILL.md`. The Excalidraw drawing skills (excalidraw-studio, -report, -section, -read,
+-revise, -workflow, -job, -task, -slide, -ideation) live in `../excalidraw/` since 2026-10-16.
 Page DISPLAY Results, View pages, and Paper sections are callers; each supplies
 its unit path and owns the resulting acceptance decision. A Page Result unit uses
 `<page>/results/<re-run>/payload/<unit>/`. The Paper adapter may project that
 source unit into generated delivery files. The View caller keeps its unit at the
 View-owned path in the shared contract.
 
-A Board Page talk is authored by the `workbench-page` Slides lane from
+A Board Page talk is authored by the `workbench-task-draft` Slides lane from
 the page and framed in its own tab; it is not a display renderer's job.
 
 ## Unit and Run boundary

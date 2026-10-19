@@ -1635,7 +1635,7 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
              "prompt": f"/haipipe-insight carry a register board over into this board's Prototype ({rel})."},
             {"label": "Register a cut", "skill": "haipipe-insight-partition (new)", "rows": [],
              "prompt": f"/haipipe-insight add a partition to the Prototype's 0-Meta/partitions.md, with its filter and why ({rel})."},
-            {"label": "Review the questions", "skill": "haipipe-question-review", "rows": [],
+            {"label": "Review the questions", "skill": "haipipe-report", "rows": [],
              "prompt": f"/haipipe-insight review the Prototype's questions by Q1-Q7 and propose keep, split, merge or move ({rel})."},
             {"label": "Plan the evidence", "skill": "haipipe-insight-evidence-plan", "rows": [],
              "prompt": f"/haipipe-insight-evidence-plan {{question}}: write its needs, each with a full work spec ({rel})."},
@@ -1670,7 +1670,7 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
         "check": [
             {"label": "Mechanical check", "skill": "cli/check.py", "rows": [],
              "prompt": f"/haipipe-insight application {rel} check"},
-            {"label": "Answer review", "skill": "haipipe-draft-check", "rows": [],
+            {"label": "Answer review", "skill": "haipipe-draft-review", "rows": [],
              "prompt": f"/haipipe-insight application {rel} review {{question}} {{partition}}"},
         ],
         "delivery": [

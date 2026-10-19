@@ -73,5 +73,5 @@ The receipt `runtime.yaml` gives `status`, `subject.kind`, `analysis.reading_dep
 ## Boundary
 
 The Workbench reads; `haipipe-discovery` and its agents write the Block, its Task Pages
-and Runs; `haipipe-question` the Questions; `haipipe-draft` the reports. The Project view
+and Runs; `haipipe-report` the Questions; `haipipe-draft` the reports. The Project view
 only lists Blocks and their counts.

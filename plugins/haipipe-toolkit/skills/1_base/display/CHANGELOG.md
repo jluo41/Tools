@@ -3,12 +3,19 @@ display — Changelog
 
 Family-level changes. Skill implementation history stays in each skill's own CHANGELOG.
 
+## 2026-10-16 · the Excalidraw skills move out (JL 261016)
+
+- excalidraw-studio, -report, -section, -read, -revise, -workflow, -job, -task, -slide and -ideation move to
+  `1_base/excalidraw/` ("we also need a 1_base/excalidraw to put the excalidraw-xxx skills into here"). Every path
+  in the seven SPACEs is swept (425 files, then 16 scripts that built the path in pieces); no link is left at the old
+  place (JL: "do not use the symlink within the Tools"). The drawings that recorded the old path were rebuilt.
+
 ## 2026-10-10 · excalidraw-read joins the family
 
 JL 261010: read a paper's PDF, extract its logic, screenshot the key parts with the quote
 highlighted, comment on each, and link each to our paper. `excalidraw-read` 0.1.0 does it with
 one script (`text`, `shoot`, `draw`) and `haipipe-studio`'s merge-safe canvas writer. It is a
-working drawing, like `excalidraw-report` and `excalidraw-section`, not a display unit.
+working drawing, like `excalidraw-report` and `excalidraw-draft`, not a display unit.
 
 ## 2026-09-28 · No content hashes (JL 260928)
 

@@ -7,7 +7,7 @@
 
 ## (was) /haipipe-insight-workflow · execute Runs and record their dependencies
 
-Load `haipipe-insight`, `haipipe-folder`, and `haipipe-run`. This controller
+Load `haipipe-insight`, `haipipe-draft` (its `ref/folder.md`), and `haipipe-run`. This controller
 owns the selected Run Spec graph, requested answer targets, GI0-GI6 assertion
 policies, and aggregate Runtime. Folder skills own their resources; native
 Run owners keep their Tickets, Results, receipts and closure rules. The

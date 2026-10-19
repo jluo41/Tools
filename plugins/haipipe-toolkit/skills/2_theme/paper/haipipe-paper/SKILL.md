@@ -9,8 +9,8 @@ description: >-
   work. Use for paper setup (paper_ladder.py), status, drafting, a Claude and
   Codex session per Section, complete-paper assembly, or comments and reviews.
 metadata:
-  version: "1.12.2"
-  last_updated: "2026-10-13"
+  version: "1.13.0"
+  last_updated: "2026-10-19"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -36,7 +36,7 @@ Route a request by the level it names:
 |---|---|---|
 | Board | `Paper-<Slug>/`: face, `studio/`, `reports/`, `runs/`, `venues/`, `related/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
 | version | `jNN_v<MMDD>_<desk>/`: face with `## Narrative` and `## Questions`, its Tasks; output in Block `delivery/jNN_<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
-| Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-section` over the shared Page workflow |
+| Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-draft` over the shared Page workflow |
 | Run | `runs/run-<type>-<target>/` (its `run.yaml`, ticket and `passes/`, as `haipipe-run` has it); a Section's are the Page engine's | the run cards, `haipipe-paper-workflow/ref/run-cards.md` |
 
 Use two orders for two different jobs. First route the family request:
@@ -55,7 +55,7 @@ haipipe-draft
   → current Run Workflow / Run Spec owner
   → haipipe-paper-workflow (Folder-owning workflow)
   → the exact Page Type: haipipe-paper-ideation · haipipe-paper-story ·
-    haipipe-paper-section · haipipe-paper-comments, or haipipe-paper-venue
+    haipipe-paper-draft · haipipe-paper-comments, or haipipe-paper-venue
   → Run Spec references / the Story's Section row and style policy
   → haipipe-run + selected workers, only where Runs exist
   → paper/haipipe-paper/ref/page-integration.md and ref/run-naming.md when a
@@ -63,7 +63,7 @@ haipipe-draft
 ```
 
 For CONTEXT, OUTLINE, and EVIDENCE, the exact material contracts are
-`workbench-page/ref/...` files. The Page surface already installs the
+`workbench-task-draft/ref/...` files. The Page surface already installs the
 shared Outline presenter; it is not a final execution dependency.
 
 Read [`ref/page-integration.md`](ref/page-integration.md) for the Paper-specific
@@ -82,9 +82,11 @@ Page containers, status reads and gate records do not allocate Runs.
 | Owner | Paper responsibility |
 |---|---|
 | Ideation | the idea pool as `studio/s01-ideation/` and Questions (group ideation); `haipipe-paper-ideation` |
+| Related work | the closest work: `studio/s10-related-work-map/` maps it beside ours, `s11`-`s19` read one type each; `haipipe-paper-related` |
 | Story | each telling as `studio/sNN-story-<telling>/`, its research questions as Board Questions with reports, the Narrative; `haipipe-paper-story` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
-| Section | reader-ordered manuscript unit and its wording/evidence; `haipipe-paper-section` |
+| Section (draft) | one Section, the Abstract or a letter, a draft Task: its plan and sentences in `draft/`; `haipipe-paper-draft` (was haipipe-paper-section) |
+| Evidence | what backs each Section (`evidence/`, `display/`) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |
 | Comments | one batch of comments (a review, a meeting, a coauthor pass) and its answers; `haipipe-paper-comments` |
 
 Use native receipts to report the current owner, accepted Result/version,
@@ -98,7 +100,7 @@ exact PageType contract for its content rules; this router does not restate it.
 
 Paper Pages use the shared Page Face, Page Run, Evidence Item and Page CHECK
 contracts. `haipipe-draft` and `haipipe-draft-workflow` own the lifecycle;
-`workbench-page` presents typed CITE, VALUE and DISPLAY Results. Load
+`workbench-task-draft` presents typed CITE, VALUE and DISPLAY Results. Load
 [`ref/page-integration.md`](ref/page-integration.md) for the Paper-specific
 ownership, release, source/projection and Run boundaries, and
 [`ref/run-naming.md`](ref/run-naming.md) for Paper context and identities.
@@ -122,12 +124,13 @@ Resolve the paper root and target Page before changing anything.
 | draft or review the whole paper, its research roadmaps or section narrative | `haipipe-paper-story` |
 | release work, inspect execution progress, accept a receipt, or release a Section | `haipipe-paper-workflow` plus the exact Discovery/Task/Section owner; use Story for the resulting paper meaning |
 | inspect or record a target venue | `haipipe-paper-venue` (shared reference library) |
-| write or revise one manuscript/appendix unit | `haipipe-paper-section` |
+| write or revise one manuscript/appendix unit | `haipipe-paper-draft` |
+| check a Section's or a version's evidence, citations, numbers or displays | `haipipe-paper-evidence` |
 | give each Section Page its own session, or message the Section sessions | `/haipipe-paper sessions`: [`ref/section-sessions.md`](ref/section-sessions.md) and `scripts/create_section_sessions.py` |
 | take in or answer one batch of comments (review, meeting, coauthor, advisor) | `haipipe-paper-comments` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-draft-workflow` |
-| compile or export one Page | `workbench-page`, using its LaTeX or Word lane |
+| compile or export one Page | `workbench-task-draft`, using its LaTeX or Word lane |
 | assemble the paper | `haipipe-paper-assemble` from the Section Pages' own `delivery/latex/` outputs and accepted bindings |
 | respond to reviewers | `haipipe-paper-comments`: a comments report in the version that answers it, its Review Items routed to the Sections |
 | start a paper, a version, a Section or a Run | `scripts/paper_ladder.py` (`board`, `version`, `next`, `task`, `run`) |
@@ -166,8 +169,8 @@ hint to resume from its latest receipt.
 | computation, experiments, reusable execution | `haipipe-task` → selected Task worker |
 | native Run identities and closure | `haipipe-run`, when commissioning/resuming a Run |
 | a concrete Page | `haipipe-draft` + `haipipe-draft-workflow` + its exact Paper PageType |
-| Page outline/evidence material | the relevant `workbench-page/ref/...` contract; presenter already installed |
-| one Page export | `workbench-page` and the selected format reference |
+| Page outline/evidence material | the relevant `workbench-task-draft/ref/...` contract; presenter already installed |
+| one Page export | `workbench-task-draft` and the selected format reference |
 | a display Evidence Item | `haipipe-display` and the chosen worker, through the Page RE Result contract |
 | Paper board presentation | `workbench-paper`; `haipipe-draft` owns rendering/checking |
 
@@ -185,13 +188,13 @@ screen's own rules are in `workbench-paper`.
 | Board › Audience Report › Ideation | the ideation Questions and their `studio/s01-ideation/` work | `haipipe-paper-ideation` |
 | Board › Audience Report › Narrative | what the story says, how it is drawn, how it is told, whether it attracts an editor, a reviewer, the public | `haipipe-paper-story` |
 | Board › Audience Report › High-level logic + Low-level work | each research question: Question │ Work │ Report | `haipipe-paper-story`; the work in `haipipe-task`, `haipipe-discovery` |
-| Board › Audience Report › Related Questions | the reviewer, coauthor, editor and reader questions | `haipipe-question` |
+| Board › Audience Report › Related Questions | the reviewer, coauthor, editor and reader questions | `haipipe-report` |
 | Board › Work Details | the versions (and grants, slides) | `haipipe-paper` (`paper_ladder.py`) |
 | version › Description › Version · Venue rules | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
-| version › Audience Report › Questions · Draft-Main · Draft-Appendix | the standing J1–J5 and the version's Questions; each Section as Question │ Work │ Report, the rendered draft beside its drawing | `haipipe-question` · `haipipe-paper-story` (Narrative review, G3 release) |
+| version › Audience Report › Questions · Draft-Main · Draft-Appendix | the standing J1–J5 and the version's Questions; each Section as Question │ Work │ Report, the rendered draft beside its drawing | `haipipe-report` · `haipipe-paper-story` (Narrative review, G3 release) |
 | version › Audience Report › Comments · Cover letter | the Review Items of its comments reports; the letter, paragraph by paragraph | `haipipe-paper-comments` · `haipipe-paper-assemble` |
-| version › Work Details › Main · Appendix · Letters | its Tasks | `haipipe-paper-section` |
-| Section › every Space | the Page Task's views, plus the reader contract, Requirement, Comments and "ready for the build" | `haipipe-paper-section` over the Page skills |
+| version › Work Details › Main · Appendix · Letters | its Tasks | `haipipe-paper-draft` |
+| Section › every Space | the Page Task's views, plus the reader contract, Requirement, Comments and "ready for the build" | `haipipe-paper-draft` over the Page skills |
 | any level › Runs | that level's own Runs, by run type | the run cards (`haipipe-paper-workflow`) |
 
 Load only what the request uses. Reuse an already loaded owner; do not recurse

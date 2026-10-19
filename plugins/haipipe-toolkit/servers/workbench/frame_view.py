@@ -10,7 +10,7 @@ A link to a folder that was renamed still opens (JL 261012: "I cannot open you a
 its old name in its face, `renamed-from: <old name>` (or a list), and the old address answers 302 to the new one
 (`renamed`), the Space, subspace and anchor kept.
 
-With `view=`, one Page Task view on its own, the page a Task Space shows in place (frame.PAGE_VIEWS).
+With `view=`, one Page Task view on its own, the page a Task Space shows in place (workbench-task-draft/task_draft.py PAGE_VIEWS).
 Each was a route of its own (/_board/draft, /_board/runs, ...: the old Page workbench, one page per
 tab); those addresses still answer, as this one (serve.py PAGE_VIEW_ROUTES; JL 261007: "why not
 merge them into the base").
@@ -76,10 +76,8 @@ def _blocks(root: Path, depth: int = 4) -> list:
     return found[:300]
 
 
-# a Page Task view -> the method that draws it (workbench/task-page/); each reads path= and file=
-VIEW_METHODS = {"folder": "folderstat_view", "draft": "outline_view", "value": "value_view",
-                "evidence": "evidence_tab_view", "delivery": "delivery_tab_view", "runs": "runs_view",
-                "pageruns": "pageruns_view"}
+# a Page Task view -> the method that draws it; each reads path= and file= (workbench-task-draft/task_draft.py)
+from live.task_draft import VIEW_METHODS  # noqa: E402
 
 
 class FrameMixin:

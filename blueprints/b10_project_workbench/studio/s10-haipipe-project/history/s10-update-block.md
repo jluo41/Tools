@@ -68,7 +68,7 @@ s10-D01 · Proposed (JL 261012): one door, `/wb update <path>` (the workbench sk
     3 plan         what moves, what is made, what is proposed          dry run, printed and saved
     4 apply        the moves, never a word rewritten                   --apply
     5 topics       sNN topics proposed from the face's sections       haipipe-studio new_topic
-    6 Questions    per level, in the theme's kinds (s05-D07)           haipipe-question
+    6 Questions    per level, in the theme's kinds (s05-D07)           haipipe-report
     7 open         the workbench at the Block; the pass is a soft Run  run-update-<bNN>, its passes
     ```
 s10-D02 · Proposed (JL 261012: "this should be vary depeneding what are the theme of that block"; revised the
@@ -118,7 +118,7 @@ s10-D06 · Built (JL 261012: "is the /wb update ready to use now?" ... "examples
 s10-D07 · Done (JL 261012: "could you call the subagents to work on them together?", which stood in for the
     ticks): six agents, one per Proj01 Block, made every proposed line: `new_topic.py topic` per topic (each
     face with its **Tags:** group, Topic and Open), `block_questions.py add-question --group` per Block
-    Question (haipipe-question 0.7.0 added `--group` and `set-group`), a register row per Job Question in
+    Question (haipipe-report 0.7.0 added `--group` and `set-group`), a register row per Job Question in
     the Job's face, the ticks in `proposals.md`, and pass p02 of each `run-update-<bNN>`. b01's and b51's
     loose drawings moved into their topics with their builders, and each builder ran from there.
     `audit --today` then passed on all six (6 Blocks, 72 Jobs, 562 Tasks, 1073 Runs, 0 debt); today's

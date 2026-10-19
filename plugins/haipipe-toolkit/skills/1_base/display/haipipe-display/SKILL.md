@@ -2,7 +2,7 @@
 name: haipipe-display
 description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
 metadata:
-  version: "0.3.6"
+  version: "0.3.7"
   last_updated: "2026-09-08"
 ---
 
@@ -80,12 +80,17 @@ FigureSpec routes.
 
 ## 🚪 Where the unit lands
 
-The caller supplies the unit directory. For a Page DISPLAY Result, that is
+**In a draft Task: `<task>/display/Display<n>-<slug>/`**, beside `draft/` and `evidence/` (JL 261016). A display is
+built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.yaml` (CITE 4, WORK 1), and the numbers
+it shows come from those cards' Runs, read with haipipe-evidence's `scripts/cards.py`, so a figure and the sentence
+citing it cannot disagree.
+
+For an older Page, the caller supplies the unit directory. For a Page DISPLAY Result, that is
 `<page>/results/<re-run>/payload/<unit>/`; a Paper Section Page uses the same Page-owned Result
 address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
 supplies its unit path through its Paper adapter. Renderers never choose a paper root or create a
 second unit copy. Page citations and the human `accepted:` decision belong to
-`1_base/page/workbench-page/ref/evidence/displays.md`.
+`1_base/workbench/workbench-task-draft/ref/evidence/displays.md`.
 
 ## 📂 Files
 

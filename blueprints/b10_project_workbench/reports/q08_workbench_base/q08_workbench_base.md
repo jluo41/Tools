@@ -13,7 +13,7 @@ Done so far (261007)
 --------------------
 
 - `servers/workbench-shared` → `servers/workbench`: the base; with no theme, the vanilla workbench.
-- `workbench-page` → `servers/workbench/task-page`: the Page Task's own views (the level is Task;
+- `workbench-page` → `servers/workbench/workbench-task-draft`: the Page Task's own views (the level is Task;
   a Task is a Page in every theme).
 - `workbench-task` → `servers/workbench-work` and the skill `workbench-work`: the old "task" theme
   is the work theme.

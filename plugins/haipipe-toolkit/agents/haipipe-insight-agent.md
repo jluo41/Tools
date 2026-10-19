@@ -41,7 +41,7 @@ Draft the handoff           haipipe-insight-wisdom                 the handoff d
 Add a method                workbench-insight              a method card and its index row
 ```
 
-Shaping a new ask uses `haipipe-question-asking`; a person asks the question and signs it.
+Shaping a new ask uses `haipipe-report`; a person asks the question and signs it.
 
 ## Rules
 

@@ -20,7 +20,7 @@ import yaml
 HERE = Path(__file__).resolve().parent
 TOOLS = HERE.parents[3]
 SKILLS = TOOLS / "plugins/haipipe-toolkit/skills/1_base"
-sys.path.insert(0, str(SKILLS / "display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(SKILLS / "excalidraw/excalidraw-studio/scripts"))
 from draw import Drawing, KEY, RED, W, H, T_NODE, T_TEXT, T_SMALL  # noqa: E402
 
 FACE = HERE / f"{HERE.name}.md"
@@ -110,7 +110,7 @@ def main():
                "haipipe-report/scripts/build_report_drawing.py: report drawing from studio frames",
                "excalidraw-studio/scripts/draw.py: the helpers a Studio topic builder imports"):
         ok = (SKILLS / "project" / ln.split("/scripts/")[0] / "scripts" / ln.split("/scripts/")[1].split(":")[0]).is_file() \
-            or (SKILLS / "display" / ln.split("/scripts/")[0] / "scripts" / ln.split("/scripts/")[1].split(":")[0]).is_file()
+            or (SKILLS / "excalidraw" / ln.split("/scripts/")[0] / "scripts" / ln.split("/scripts/")[1].split(":")[0]).is_file()
         yy = d.para(1100, yy + 6, ("· " if ok else "❓ missing: ") + ln, 1420, 24)
     PLOTS = ("hbar", "compare", "share_bar", "columns", "spans", "gauge", "trend")
     yy = d.para(1100, yy + 30, "The plot helpers of ref/plot_kit.py, from their docstrings", 1400, T_NODE) + 6

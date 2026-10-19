@@ -5,7 +5,7 @@ missed the Workbench UI draw"). Three screens, left to right:
 2. Guide on every workbench: the Guide button mounted first on a family's Space row.
 3. Studio inside a workbench: the drawing above, the chat below, and the files that serve them.
 
-Studio style (skills/1_base/page/workbench-studio/ref/draw.md): transparent boxes, colored
+Studio style (skills/1_base/draft/workbench-studio/ref/draw.md): transparent boxes, colored
 strokes, every label bound inside its box, every arrow bound at both ends, Comic Shanns.
 
     python3 plugins/haipipe-toolkit/servers/workbench/studio/shared-workbench-ui.py

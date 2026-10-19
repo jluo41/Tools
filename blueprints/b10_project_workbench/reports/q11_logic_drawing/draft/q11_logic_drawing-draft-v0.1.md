@@ -35,7 +35,7 @@ arc: Two drawings, left to right: the person's logic tree and a generated Sectio
 
 ### C2.P2 · The skills and the Abstract
 - B1 · [Evidence] The rules and checks live in two skills.
-  Note: draw-logic-tree, excalidraw-section.
+  Note: draw-logic-tree, excalidraw-draft.
   Evidence: none · reads the files linked under Evidence
 - B2 · [Evidence] Both drawings pass on the Abstract.
   Note: Ten Bullets, nine cards.
@@ -79,7 +79,7 @@ arc: Two drawings, left to right: the person's logic tree and a generated Sectio
 - B4 · Only one canvas on a page is editable, the logic tree in Draft › RoadMap Draw; the Section map, Guide's methods canvas and the paper map open view only, because two editable canvases share the browser's drawing storage and one can save the other's drawing.
 
 ### C2.P2 · The skills and the Abstract
-- B1 · The rules and checks are in [draw-logic-tree](../../../../../plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/SKILL.md) and [excalidraw-section](../../../../../plugins/haipipe-toolkit/skills/display/excalidraw-section/SKILL.md).
+- B1 · The rules and checks are in [draw-logic-tree](../../../../../plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/SKILL.md) and [excalidraw-draft](../../../../../plugins/haipipe-toolkit/skills/excalidraw/excalidraw-draft/ref/map.md).
 - B2 · On S-ManSci-Main-Abstract both drawings pass their checks: ten Bullets, nine evidence cards, and the claim's own card under the claim.
 - B3 · On 2026-10-03 at 20:50 the Abstract's logic drawing was overwritten by Paper's methods canvas, open for editing in Guide at the same time; it was restored from a copy, and Guide's methods canvas now opens view only.
 

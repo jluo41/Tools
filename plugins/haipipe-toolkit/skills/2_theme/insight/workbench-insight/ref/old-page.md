@@ -8,7 +8,7 @@
 
 ## (was) /workbench-insight · one dataset, logic left and work right
 
-**LOAD `../../../1_base/page/workbench/SKILL.md` FIRST.** It owns what any
+**LOAD `../../../1_base/workbench/workbench/SKILL.md` FIRST.** It owns what any
 workbench is: lane, surface, writer, boundary. This file owns only the Insight
 workbench's delta: what the board shows, the two pop-outs, and the fact that
 nothing here writes. The domain itself, DIKW, RI Runs, registers,
@@ -168,14 +168,14 @@ server derives it from `path=`.
 
 - `ref/insight-board.md` · one dataset, four Spaces, the High/Low table, the pop-outs
 - `ref/workbench-table.md` · the Workbench Table (`table-workbench` shape, `--check` passes)
-- `../../../../servers/workbench-insight/guide/` (`guide.yaml`, `method.md`, `methods/{answer,read}/`, `methods.excalidraw`) · the Guide: its entry, the Insight method, its cards and canvas; the question-asking cards are `1_base/question/haipipe-question-asking`
+- `../../../../servers/workbench-insight/guide/` (`guide.yaml`, `method.md`, `methods/{answer,read}/`, `methods.excalidraw`) · the Guide: its entry, the Insight method, its cards and canvas; the question-asking cards are `1_base/project/haipipe-report/ref/asking.md`
 - `../../../../servers/workbench-insight/related/papers.md` · the papers behind the methods (verified DOIs)
 - `../haipipe-insight/ref/evidence-needs.md` · the join the Work column will show per need
 - `../../../../../../design/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw` · the design drawing (its Block: b11_theme_insight)
 - `../haipipe-insight/SKILL.md` · the Insight door and its vocabulary
 - `../haipipe-insight-workflow/SKILL.md` · the owner-native Runs this surface projects
 - `../haipipe-page-insight/SKILL.md` · the Task-side Insight Page and RI contract
-- `../../../1_base/page/workbench/SKILL.md` · lane · surface · writer · boundary
+- `../../../1_base/workbench/workbench/SKILL.md` · lane · surface · writer · boundary
 - `../../../../servers/workbench-insight/insightboard.py` · the board and both pop-outs
 - `../../../../servers/workbench-insight/insight_run_specs.py` · frozen Run Spec reader
 - `../../../../servers/workbench-insight/insight_handoff.py` · handoff eligibility reader

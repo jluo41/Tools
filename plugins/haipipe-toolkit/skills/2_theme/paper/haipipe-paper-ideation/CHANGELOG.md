@@ -1,3 +1,9 @@
+## 1.4.1 · 2026-10-19 · Closest work comes from s10
+
+- A novelty check reads each claim's closest work from `studio/s10-related-work-map/` and its s11-s19 types,
+  owned by the new `haipipe-paper-related` (JL 261019).
+- A telling may open before G0, which is then JL's mark on its face (JL 261019: "there are not s02, why????").
+
 ## 1.4.0 · 2026-10-14 · The ideation is drawn by excalidraw-ideation, when installed
 
 - `studio/s01-ideation/` is drawn by the new `excalidraw-ideation` skill whenever it is installed (JL 261014:

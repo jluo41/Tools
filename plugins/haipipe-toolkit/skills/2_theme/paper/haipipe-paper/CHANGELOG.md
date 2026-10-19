@@ -1,3 +1,20 @@
+## 1.13.0 · 2026-10-19 · A Section is a draft Task: haipipe-paper-draft and haipipe-paper-evidence
+
+- The Section owner is `haipipe-paper-draft` (was `haipipe-paper-section`, kept as an alias), and the new
+  `haipipe-paper-evidence` owns what backs each Section and one evidence ledger per version (JL 261019: "it is
+  like we have the paper to combine the evidence and draft together to make a draft task, right?"; "okay,
+  please go ahead and do it"). The owner table and the routing table name both.
+
+## 1.12.5 · 2026-10-19 · Related work is its own owner, haipipe-paper-related
+
+- The owner table and `ref/paper-ladder.md` name `haipipe-paper-related`: `studio/s10-related-work-map/` and
+  s11-s19, one topic per type of closest work (JL 261019: "it is different from the literature").
+
+## 1.12.4 · 2026-10-15 · New Sections say task-type: draft (b32_draft s03-D04)
+
+- `scripts/paper_ladder.py` writes `task-type: draft` in a new Section's face (was `task-kind: page`);
+  `ref/paper-ladder.md` names it.
+
 ## 1.12.3 · 2026-10-14 · rename_tasks.py reads FairGlucose's older names
 
 - `rename_tasks.py`: unnumbered Main Pages (back matter, `S-npjDM-Main-DataAvailability`) become `t0N_` after the last Section, in compile-order order; Rounds named `RD01-positioning-2026-05-14` become `reports/qNN_positioning-0514`; CamelCase titles split (`t21_dataset-statistics`). Tested on a copy of Paper-FairGlucose-preprint: 75 renames, three PDFs unchanged.

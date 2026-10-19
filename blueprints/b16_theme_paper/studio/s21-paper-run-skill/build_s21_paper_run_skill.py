@@ -48,7 +48,7 @@ TK = Path(__file__).resolve().parents[4] / "plugins" / "haipipe-toolkit"
 SKILLS = TK / "skills"
 PAPER = SKILLS / "2_theme" / "paper"
 CARDS = PAPER / "haipipe-paper-workflow" / "ref" / "run-cards.md"
-PAGE_CARDS = SKILLS / "1_base" / "page" / "haipipe-draft-workflow" / "ref" / "run-cards.md"
+PAGE_CARDS = SKILLS / "1_base" / "draft" / "haipipe-draft-workflow" / "ref" / "run-cards.md"
 LIVE = TK / "servers" / "workbench-paper" / "paper_theme.py"          # the paper workbench as it runs today
 BASE = TK / "servers" / "workbench"                                    # the frame every theme shares
 LEVELS = [("Block", "s11-paper-block/build_s11_paper_block.py"),
@@ -74,19 +74,19 @@ SKILL_JOB = {
                                "done 261007"),
     "haipipe-paper-comments": ("comments reports; review_items.py add · route · reply",
                                "done 261007"),
-    "haipipe-paper-section": ("a Section Task: Narrative row, Requirement, studio/ reports/",
+    "haipipe-paper-draft": ("a Section Task: Narrative row, Requirement, studio/ reports/",
                               "done 261007: ref/requirement.md")}
 # old names a skill should no longer write (the ladder and Q04 replaced them, 261007)
 STALE = r"Story Page|Ideation Page|A1-Story|\bB[abc]-|RD<NN>|RD\d\d-|S-<desk>|S-[A-Z][A-Za-z]+-Main|-<MMDD>-"
 # the base skills a paper borrows, by what they do for it
 BORROWS = [("Page workflow: every Section and letter Task",
-            ["haipipe-draft-workflow", "haipipe-draft-context", "haipipe-draft-structure", "haipipe-draft-evidence",
-             "haipipe-draft-writing", "haipipe-draft-scratch", "haipipe-draft-revise", "haipipe-draft-delivery",
-             "haipipe-draft-check"]),
+            ["haipipe-draft-workflow", "haipipe-draft-context", "haipipe-draft-structure", "haipipe-evidence",
+             "haipipe-draft-writing", "haipipe-draft-scratch", "haipipe-draft-revise", "haipipe-delivery",
+             "haipipe-draft-review"]),
            ("Ideation: the idea pool", ["haipipe-ideation", "haipipe-ideation-generate", "haipipe-ideation-test",
                                         "haipipe-ideation-select"]),
            ("supporting work: other themes' hard Runs", ["haipipe-task", "haipipe-discovery"]),
-           ("shared", ["haipipe-question", "haipipe-run", "haipipe-display", "excalidraw-section", "table-papers"])]
+           ("shared", ["haipipe-report", "haipipe-run", "haipipe-display", "excalidraw-draft", "table-papers"])]
 # a run type with no card yet: its proposed owner skill (the plan gives each its card)
 OWNER = {"Update the Board": "haipipe-paper",
          "Add a resource": "haipipe-paper",
@@ -98,20 +98,20 @@ OWNER = {"Update the Board": "haipipe-paper",
          "Check the rules": "haipipe-paper-venue",
          "Add a related item": "haipipe-paper",
          "Read a paper": "haipipe-discovery",
-         "Ask a Question": "haipipe-question",
-         "Ask a question": "haipipe-question",
+         "Ask a Question": "haipipe-report",
+         "Ask a question": "haipipe-report",
          "Generate ideas": "haipipe-paper-ideation",
          "Test idea": "haipipe-paper-ideation",
          "Review for an audience": "haipipe-paper-story",
          "Build reference.bib": "haipipe-paper-assemble",
-         "Redraw the paper map": "excalidraw-section",
+         "Redraw the paper map": "excalidraw-draft",
          "Release a Section": "haipipe-paper-workflow",
-         "Add comments": "haipipe-paper-comments", "Add a letter": "haipipe-paper-section",
+         "Add comments": "haipipe-paper-comments", "Add a letter": "haipipe-paper-draft",
          "Route an item": "haipipe-paper-comments",
          "Reply to an item": "haipipe-paper-comments",
          "Write the cover letter": "haipipe-paper-assemble",
          "Check the letter": "haipipe-paper-assemble",
-         "Add a Section": "haipipe-paper-section",
+         "Add a Section": "haipipe-paper-draft",
          "Send": "haipipe-paper-assemble",
          "Draw": "the frame", "+ Add topic": "the frame",
          "Add a method": "the frame", "Add a paper": "the frame",
@@ -186,7 +186,7 @@ PLAN = [("1 · contract", "haipipe-paper",
         ("4 · Job", "haipipe-paper-workflow",
          "the version face: ## Narrative and the standing J1-J5 questions; the G3 release",
          "Release a Section", "a Section released on j02"),
-        ("5 · Task", "haipipe-paper-section",
+        ("5 · Task", "haipipe-paper-draft",
          "t0N_ · t2N_ · t3N_; reader contract; Requirement = V · W rules + rubric + SUB-*; studio/ reports/",
          "Add a Section (the rest are the Page's, carded)", "a new Section scaffolds"),
         ("6 · old words", "all nine",
@@ -250,7 +250,7 @@ FOLDERS = {
         "reads the t31_cover-letter Task", "letters are t3N_ Tasks now", "4"),
     "haipipe-paper-assemble/profiles/misq.toml": ("haipipe-paper-assemble/profiles/misq.toml", "keep ?",
         "or into venues/<venue>/kit/", "one home for a venue's rules (Q02 ?)", "3"),
-    "haipipe-paper-section/SKILL.md": ("haipipe-paper-section/SKILL.md", "rewrite",
+    "haipipe-paper-draft/SKILL.md": ("haipipe-paper-draft/SKILL.md", "rewrite",
         "t0N_ names; reader contract; Requirement tab", "it still names S-<desk>-Main-N", "5"),
     "README.md": ("README.md", "edit", "the family by level", "it lists the skills by Page type", "6"),
     "venue/": ("venue/ ?", "move ?", "outside skills/, registered", "its own 821 MB repo the installer scans", "6"),
@@ -271,8 +271,8 @@ haipipe-paper-assemble/tests/run.sh haipipe-paper-assemble/tests/test_build_deli
 haipipe-paper-assemble/tests/test_latex_room_to_docx.py
 haipipe-paper-comments/SKILL.md haipipe-paper-comments/agents/openai.yaml
 haipipe-paper-ideation/SKILL.md
-haipipe-paper-section/SKILL.md haipipe-paper-section/cli/resolve-structure.py haipipe-paper-section/cli/section-stats.py
-haipipe-paper-section/ref/generic-template.md
+haipipe-paper-draft/SKILL.md haipipe-paper-draft/cli/resolve-structure.py haipipe-paper-draft/cli/section-stats.py
+haipipe-paper-draft/ref/generic-template.md
 haipipe-paper-story/SKILL.md haipipe-paper-story/agents/openai.yaml haipipe-paper-story/ref/integration.md
 haipipe-paper-venue/SKILL.md haipipe-paper-venue/ref/profile-examples.md haipipe-paper-venue/template.md
 haipipe-paper-workflow/SKILL.md haipipe-paper-workflow/ref/run-cards.md haipipe-paper-workflow/ref/run-workflow.md
@@ -289,7 +289,7 @@ NEW_FILES = [
      "several frame views still draw with them (pv)", "2"),
     ("haipipe-paper-venue/ref/call-template.md", "the venues/<venue>/call.md scaffold",
      "a Board's own copy of a venue's call", "3"),
-    ("haipipe-paper-section/ref/requirement.md", "V · W rules, the four-axis rubric, SUB-* rows",
+    ("haipipe-paper-draft/ref/requirement.md", "V · W rules, the four-axis rubric, SUB-* rows",
      "s13 made Requirement its own tab", "5")]
 
 CHANGES = {

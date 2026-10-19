@@ -68,7 +68,7 @@ Rules
    claim are blue.
 6. **Studio style.** Transparent boxes, colored strokes, every label bound inside its box,
    every connector bound at both ends, words in Nunito (`fontFamily` 6), never a hand-drawn font
-   (`workbench-studio/ref/draw.md`; JL 261009).
+   (`haipipe-studio/ref/draw.md`; JL 261009).
    Connectors run down from the parent and across just above the child's row.
 7. **The drawing is the source.** After the first draw the person edits the logic on the
    canvas. Never replace an existing RoadMap without the person asking (`--force`); to
@@ -157,7 +157,7 @@ Boundary
 --------
 
 This skill owns the logic tree's shape, its first draw and its check. The Page's Bullets
-and their wording belong to the Draft plan (`haipipe-draft-structure`, `haipipe-draft-writing`);
+and their wording belong to the Draft plan (`haipipe-draft-logic (ref/structure.md)`, `haipipe-draft-writing`);
 when the tree exposes a missing or misplaced Bullet, route a Structure revise rather than
 inventing a Bullet in the drawing. The canvas and its saving belong to the shared Studio
-(`workbench-studio`); the View that shows the drawing to `workbench-page`.
+(`haipipe-studio`); the View that shows the drawing to `workbench-task-draft`.

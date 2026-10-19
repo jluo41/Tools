@@ -89,7 +89,7 @@ RUN = {
                                "haipipe-design-method", None),
     "run-score-e<NN>": ("soft", "score each arm's design", "another agent", "-", "haipipe-design-method", None),
     "run-propose-questions": ("soft", "propose the Block's questions", "designer agent", "another agent agrees",
-                              "haipipe-question", None),
+                              "haipipe-report", None),
     "run-report-q<NN>": ("soft", "write a question's report", "designer agent", "another agent checks",
                          "haipipe-draft", None),
     "run-propose-method-<slug>": ("soft", "propose a method or a version", "designer agent", "a person signs",
@@ -152,7 +152,7 @@ NEW_SKILLS = []
 STALE = (r"Design Item|\bCommission\b|Design-<NN>|Design-NN|Design-\d\d|run-design-|_by-|\brd\d\d_|rNN_|"
          r"2-Design|0-BR-brief|ITEM\d\d")
 # the base skills a design borrows, by what they do for it
-BORROWS = [("shared Run and question contracts", ["haipipe-run", "haipipe-question"]),
+BORROWS = [("shared Run and question contracts", ["haipipe-run", "haipipe-report"]),
            ("a Block question's report", ["haipipe-draft"]),
            ("drawings in Idea Studio", ["excalidraw-report"]),
            ("the signed insight a design reads", ["haipipe-insight"]),

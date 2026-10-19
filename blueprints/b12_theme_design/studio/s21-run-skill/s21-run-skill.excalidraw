@@ -2474,11 +2474,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-f77d848b13f8",
+   "id": "s-a732f2299098",
    "type": "text",
    "x": 2268,
    "y": 274,
-   "width": 144.0,
+   "width": 126.0,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -2499,8 +2499,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "haipipe-question",
-   "originalText": "haipipe-question",
+   "text": "haipipe-report",
+   "originalText": "haipipe-report",
    "fontSize": 15,
    "fontFamily": 3,
    "textAlign": "left",
@@ -4634,12 +4634,12 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-e4190da077fe",
+   "id": "s-b6f435b7c999",
    "type": "text",
    "x": 0,
    "y": 530,
-   "width": 46.2,
-   "height": 17.5,
+   "width": 53.900000000000006,
+   "height": 35.0,
    "angle": 0,
    "strokeColor": "#1e1e1e",
    "backgroundColor": "transparent",
@@ -4659,8 +4659,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "7 card",
-   "originalText": "7 card",
+   "text": "6 card\n1 drawn",
+   "originalText": "6 card\n1 drawn",
    "fontSize": 14,
    "fontFamily": 6,
    "textAlign": "left",
@@ -6824,14 +6824,14 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-a06626d8f6ec",
+   "id": "s-34f5e973a9e1",
    "type": "text",
    "x": 1458,
    "y": 674,
-   "width": 33.0,
+   "width": 57.75000000000001,
    "height": 18.75,
    "angle": 0,
-   "strokeColor": "#1e1e1e",
+   "strokeColor": "#e03131",
    "backgroundColor": "transparent",
    "fillStyle": "solid",
    "strokeWidth": 1,
@@ -6849,8 +6849,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "card",
-   "originalText": "card",
+   "text": "drawn ?",
+   "originalText": "drawn ?",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -6860,11 +6860,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-09ee371a1407",
+   "id": "s-05cb8799d86b",
    "type": "text",
    "x": 1548,
    "y": 674,
-   "width": 181.50000000000003,
+   "width": 8.25,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -6885,8 +6885,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "Freeze the predictions",
-   "originalText": "Freeze the predictions",
+   "text": "-",
+   "originalText": "-",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -6932,7 +6932,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-05cb8799d86b",
+   "id": "s-3ab656a4965b",
    "type": "text",
    "x": 1998,
    "y": 674,
@@ -7118,7 +7118,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-3ab656a4965b",
+   "id": "s-77e83b48cc1f",
    "type": "text",
    "x": 488,
    "y": 708,
@@ -7226,7 +7226,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-7f81324c40a5",
+   "id": "s-a06626d8f6ec",
    "type": "text",
    "x": 1458,
    "y": 708,
@@ -7334,7 +7334,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-77e83b48cc1f",
+   "id": "s-ae87ab601020",
    "type": "text",
    "x": 1998,
    "y": 708,
@@ -7520,7 +7520,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-ae87ab601020",
+   "id": "s-c3c85f24f5a6",
    "type": "text",
    "x": 488,
    "y": 742,
@@ -7628,7 +7628,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-b19a8da6237c",
+   "id": "s-7f81324c40a5",
    "type": "text",
    "x": 1458,
    "y": 742,
@@ -7664,11 +7664,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-bcdb3eba18e7",
+   "id": "s-446cd41075b0",
    "type": "text",
    "x": 1548,
    "y": 742,
-   "width": 57.75000000000001,
+   "width": 148.5,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -7689,8 +7689,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "Release",
-   "originalText": "Release",
+   "text": "Review and approve",
+   "originalText": "Review and approve",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -8396,7 +8396,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-c3c85f24f5a6",
+   "id": "s-72bf3ab03f84",
    "type": "text",
    "x": 488,
    "y": 836,
@@ -8504,7 +8504,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-f923c9e938e9",
+   "id": "s-b19a8da6237c",
    "type": "text",
    "x": 1458,
    "y": 836,
@@ -8798,7 +8798,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-72bf3ab03f84",
+   "id": "s-6c2a07c4158c",
    "type": "text",
    "x": 488,
    "y": 870,
@@ -8906,7 +8906,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-016ddfd95c65",
+   "id": "s-f923c9e938e9",
    "type": "text",
    "x": 1458,
    "y": 870,
@@ -9200,7 +9200,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-6c2a07c4158c",
+   "id": "s-0faf5c05950e",
    "type": "text",
    "x": 488,
    "y": 904,
@@ -9308,7 +9308,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-59db909610ce",
+   "id": "s-016ddfd95c65",
    "type": "text",
    "x": 1458,
    "y": 904,
@@ -9602,7 +9602,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-0faf5c05950e",
+   "id": "s-800e8f48c00c",
    "type": "text",
    "x": 488,
    "y": 938,
@@ -9710,7 +9710,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-777b5e3e835e",
+   "id": "s-59db909610ce",
    "type": "text",
    "x": 1458,
    "y": 938,
@@ -9818,7 +9818,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-800e8f48c00c",
+   "id": "s-44c1393ec316",
    "type": "text",
    "x": 1998,
    "y": 938,
@@ -10004,7 +10004,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-44c1393ec316",
+   "id": "s-8bf38f82a99d",
    "type": "text",
    "x": 488,
    "y": 972,
@@ -10112,7 +10112,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-3428832b2a5e",
+   "id": "s-777b5e3e835e",
    "type": "text",
    "x": 1458,
    "y": 972,
@@ -10406,7 +10406,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-b6270762bba7",
+   "id": "s-3428832b2a5e",
    "type": "text",
    "x": 128,
    "y": 1086,
@@ -11894,11 +11894,11 @@
    "endArrowhead": null
   },
   {
-   "id": "s-aaffe33ba9d1",
+   "id": "s-cb81131b1276",
    "type": "text",
    "x": 0,
    "y": 1390,
-   "width": 1376.1000000000001,
+   "width": 1366.2,
    "height": 22.5,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -11919,8 +11919,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "carded today: Block 90% · Job 100% · Task 100% (261007, after the skills were applied: was Block 30% · Job 42% · Task 40%, all old buttons)",
-   "originalText": "carded today: Block 90% · Job 100% · Task 100% (261007, after the skills were applied: was Block 30% · Job 42% · Task 40%, all old buttons)",
+   "text": "carded today: Block 90% · Job 85% · Task 100% (261007, after the skills were applied: was Block 30% · Job 42% · Task 40%, all old buttons)",
+   "originalText": "carded today: Block 90% · Job 85% · Task 100% (261007, after the skills were applied: was Block 30% · Job 42% · Task 40%, all old buttons)",
    "fontSize": 18,
    "fontFamily": 6,
    "textAlign": "left",
@@ -14382,7 +14382,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-04c5fb6cea3b",
+   "id": "s-23b62f7cd088",
    "type": "text",
    "x": 428,
    "y": 2638.0,
@@ -14407,8 +14407,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "40",
-   "originalText": "40",
+   "text": "41",
+   "originalText": "41",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -14820,7 +14820,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-8bf38f82a99d",
+   "id": "s-04e305525a21",
    "type": "text",
    "x": 1098,
    "y": 2672.0,
@@ -15078,7 +15078,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-1c479f565083",
+   "id": "s-ffc06ad441b8",
    "type": "text",
    "x": 508,
    "y": 2706.0,
@@ -15103,8 +15103,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "112",
-   "originalText": "112",
+   "text": "136",
+   "originalText": "136",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -16362,7 +16362,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-1bb1d247fd35",
+   "id": "s-fc619f4b803e",
    "type": "text",
    "x": 428,
    "y": 2842.0,
@@ -16387,8 +16387,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "8",
-   "originalText": "8",
+   "text": "9",
+   "originalText": "9",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -16692,7 +16692,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-6ad0d02dba39",
+   "id": "s-fef90d83c0e6",
    "type": "text",
    "x": 428,
    "y": 2876.0,
@@ -16717,8 +16717,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "31",
-   "originalText": "31",
+   "text": "32",
+   "originalText": "32",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -16728,7 +16728,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-3bf9ce54794a",
+   "id": "s-15430ed34bba",
    "type": "text",
    "x": 508,
    "y": 2876.0,
@@ -16753,8 +16753,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "126",
-   "originalText": "126",
+   "text": "148",
+   "originalText": "148",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -16800,7 +16800,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-04e305525a21",
+   "id": "s-6bff22acfe1d",
    "type": "text",
    "x": 1098,
    "y": 2876.0,
@@ -17244,7 +17244,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-6bff22acfe1d",
+   "id": "s-4e6f5c534bdc",
    "type": "text",
    "x": 1178,
    "y": 3004.0,
@@ -17322,11 +17322,11 @@
    "endArrowhead": null
   },
   {
-   "id": "s-1a5469520dc4",
+   "id": "s-d11e2fe8142a",
    "type": "text",
    "x": 8,
    "y": 3038.0,
-   "width": 144.0,
+   "width": 126.0,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -17347,8 +17347,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "haipipe-question",
-   "originalText": "haipipe-question",
+   "text": "haipipe-report",
+   "originalText": "haipipe-report",
    "fontSize": 15,
    "fontFamily": 3,
    "textAlign": "left",
@@ -17394,11 +17394,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-9e5d0a88c660",
+   "id": "s-f9746ebb152f",
    "type": "text",
    "x": 778,
    "y": 3038.0,
-   "width": 132.0,
+   "width": 123.75000000000001,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -17419,8 +17419,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "1_base/question/",
-   "originalText": "1_base/question/",
+   "text": "1_base/project/",
+   "originalText": "1_base/project/",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -17580,11 +17580,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-9f8f860e7169",
+   "id": "s-7ec9ba0c275f",
    "type": "text",
    "x": 778,
    "y": 3072.0,
-   "width": 99.00000000000001,
+   "width": 107.25000000000001,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -17605,8 +17605,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "1_base/page/",
-   "originalText": "1_base/page/",
+   "text": "1_base/draft/",
+   "originalText": "1_base/draft/",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -17766,11 +17766,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-f7029df41b34",
+   "id": "s-704b021aba18",
    "type": "text",
    "x": 778,
    "y": 3106.0,
-   "width": 123.75000000000001,
+   "width": 148.5,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -17791,8 +17791,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "1_base/display/",
-   "originalText": "1_base/display/",
+   "text": "1_base/excalidraw/",
+   "originalText": "1_base/excalidraw/",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -17988,7 +17988,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-4e6f5c534bdc",
+   "id": "s-e05afd5fa97c",
    "type": "text",
    "x": 1178,
    "y": 3140.0,
@@ -18174,7 +18174,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-e05afd5fa97c",
+   "id": "s-a7bcd99919e5",
    "type": "text",
    "x": 1178,
    "y": 3174.0,
@@ -18360,7 +18360,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-a7bcd99919e5",
+   "id": "s-58585cac1891",
    "type": "text",
    "x": 1178,
    "y": 3208.0,
@@ -18624,7 +18624,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-c092d67e52a9",
+   "id": "s-1588c870cd23",
    "type": "text",
    "x": 338,
    "y": 3336.0,
@@ -18649,8 +18649,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "17 files · 33 KB",
-   "originalText": "17 files · 33 KB",
+   "text": "19 files · 38 KB",
+   "originalText": "19 files · 38 KB",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -24886,7 +24886,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-58585cac1891",
+   "id": "s-d21af7a29099",
    "type": "text",
    "x": 8,
    "y": 5836.0,
@@ -25180,7 +25180,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-d21af7a29099",
+   "id": "s-b748dd8ac29b",
    "type": "text",
    "x": 8,
    "y": 5870.0,
@@ -25474,7 +25474,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-b748dd8ac29b",
+   "id": "s-ce510717910c",
    "type": "text",
    "x": 8,
    "y": 5904.0,
@@ -26062,7 +26062,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-ce510717910c",
+   "id": "s-8649d745b6d8",
    "type": "text",
    "x": 8,
    "y": 5972.0,
@@ -26356,7 +26356,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-8649d745b6d8",
+   "id": "s-32414cd7c719",
    "type": "text",
    "x": 8,
    "y": 6006.0,
@@ -26650,7 +26650,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-32414cd7c719",
+   "id": "s-495bb6e1c8d4",
    "type": "text",
    "x": 8,
    "y": 6040.0,
@@ -26944,7 +26944,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-495bb6e1c8d4",
+   "id": "s-346ee7b5516e",
    "type": "text",
    "x": 8,
    "y": 6074.0,
@@ -27238,7 +27238,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-346ee7b5516e",
+   "id": "s-da518ffee4da",
    "type": "text",
    "x": 8,
    "y": 6108.0,
@@ -27532,7 +27532,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-da518ffee4da",
+   "id": "s-548dd0082063",
    "type": "text",
    "x": 8,
    "y": 6142.0,
@@ -27826,7 +27826,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-548dd0082063",
+   "id": "s-b1ab070a73f5",
    "type": "text",
    "x": 8,
    "y": 6176.0,
@@ -28120,7 +28120,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-b1ab070a73f5",
+   "id": "s-d809e2f0d1b6",
    "type": "text",
    "x": 8,
    "y": 6210.0,
@@ -29884,7 +29884,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-d809e2f0d1b6",
+   "id": "s-3f5949c7b1d7",
    "type": "text",
    "x": 8,
    "y": 6414.0,
@@ -30178,7 +30178,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-3f5949c7b1d7",
+   "id": "s-4ff1db50a682",
    "type": "text",
    "x": 8,
    "y": 6448.0,
@@ -30472,7 +30472,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-4ff1db50a682",
+   "id": "s-570c4e20049a",
    "type": "text",
    "x": 8,
    "y": 6482.0,
@@ -32236,7 +32236,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-570c4e20049a",
+   "id": "s-791d14a16109",
    "type": "text",
    "x": 8,
    "y": 6686.0,
@@ -32530,7 +32530,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-791d14a16109",
+   "id": "s-b406e1e7408f",
    "type": "text",
    "x": 8,
    "y": 6720.0,
@@ -32824,7 +32824,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-b406e1e7408f",
+   "id": "s-39976e091f87",
    "type": "text",
    "x": 8,
    "y": 6754.0,
@@ -33412,7 +33412,7 @@
    "endArrowhead": null
   },
   {
-   "id": "s-39976e091f87",
+   "id": "s-b8993df8ac26",
    "type": "text",
    "x": 8,
    "y": 6822.0,
@@ -35816,11 +35816,11 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-30222c467100",
+   "id": "s-78c34b72db33",
    "type": "text",
    "x": 1368,
    "y": 7458.0,
-   "width": 132.0,
+   "width": 115.50000000000001,
    "height": 18.75,
    "angle": 0,
    "strokeColor": "#1e1e1e",
@@ -35841,8 +35841,8 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "haipipe-question",
-   "originalText": "haipipe-question",
+   "text": "haipipe-report",
+   "originalText": "haipipe-report",
    "fontSize": 15,
    "fontFamily": 6,
    "textAlign": "left",
@@ -44410,7 +44410,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-b8993df8ac26",
+   "id": "s-14bc3b17b644",
    "type": "text",
    "x": 1378,
    "y": 9251.0,
@@ -45442,7 +45442,7 @@
    "lineHeight": 1.25
   },
   {
-   "id": "s-14bc3b17b644",
+   "id": "s-a052951687e2",
    "type": "text",
    "x": 1378,
    "y": 9387.0,

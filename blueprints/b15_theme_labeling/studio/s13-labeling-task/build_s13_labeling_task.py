@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str((HERE / "../../../../plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts").resolve()))
+sys.path.insert(0, str((HERE / "../../../../plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts").resolve()))
 from draw import GREY, RED, Drawing, canvas  # noqa: E402  (excalidraw-studio's helpers; canvas.write keeps a person's marks)
 
 # every change to this drawing: (date YYMMDD, what changed, where). Each gets a green note where it changed

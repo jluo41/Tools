@@ -25,7 +25,7 @@ Read-only: nothing here writes. Every link is origin-relative (`/_board/workbenc
 """
 from __future__ import annotations
 
-from src.common import delivery_dir, delivery_owner, delivery_read_lane_dir, delivery_relative
+from src.common import delivery_dir, delivery_owner, delivery_relative
 import datetime
 import html
 import os
@@ -77,7 +77,7 @@ class Space:
     run_types: tuple = ()
     keep: tuple = ()           # the base's subspaces a theme keeps beside its own (a Task's Page views)
     note: str = ""             # one line at the top of the Runs panel (a view no run changes says so)
-    page: bool = False         # laid out by page_task_spaces (a theme that extends it keeps the mark)
+    page: bool = False         # laid out by a Task type's spaces (workbench-task-<type>/; a theme that extends it keeps the mark)
     disk: tuple = ()           # what the screen reads: (path under the open folder, what it feeds); a glob counts
 
 
@@ -121,7 +121,7 @@ class Theme:
     report_cards: Callable | None = None
     # task_action(task, root) -> (label, href) for a Task a person works inside (a labeling Task's rounds), or
     # None; the Work tree gives it its button and a mark (b10 s32, JL 261012: "there are special tasks that human
-    # need to interact with"). A Page a person writes (its face's page-type:) needs no hook: the base opens its Draft.
+    # need to interact with"). A Task a person writes (its face's `task-type: draft`) needs no hook: the base opens its Draft.
     task_action: Callable | None = None
     # work_meta(folder, root) -> html: the theme's own words on a Job's or Task's card in the Work tree (a cowork
     # Job's state and who it waits on, a design's verdict), after the base's title and counts; "" for none
@@ -337,53 +337,6 @@ def _table(heads, rows) -> str:
     return f"<table class=wf-table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
 
 
-# A Task's Page views (workbench/task-page/), each once a route and a page of its own, shown in place as
-# a subspace of the Space it belongs to (JL 261007: "why not merge them into the base"):
-# {Space: ((subspace, view), ...)}; the view is served by this route, `?view=<view>&path=<face>`.
-PAGE_VIEWS = {"Description": (("Folder", "folder"),),
-              "Audience Report": (("Draft", "draft"),),
-              "Work Details": (("Evidence", "evidence"), ("Value", "value")),
-              "Runs": (("Page Runs", "runs"),),
-              "Delivery": (("Lanes", "delivery"),)}
-
-
-# what each Page view reads, for the Disk box (workbench/task-page/: each module's docstring)
-PAGE_VIEW_DISK = {"folder": (("./", "every lane of the Page folder, and how old each is"),),
-                  "draft": (("{face}", "the Page: its Content divisions, aims and states"),
-                            ("draft/", "the plan versions, Scratch and Revise")),
-                  "evidence": (("runs/*/passes/*/result.yaml", "one card per Evidence Result, by type (older Pages: results/*/)"),),
-                  "value": (("evidence/probe/*/card.md", "## Values: the numbers a probe card holds"),
-                            ("{face}", "the sentences that cite PP<NN>.v<n>")),
-                  "runs": (("runs/", "the Page's Runs: planned, registered, done"),),
-                  "delivery": (("delivery/", "one segment per lane: latex · word · slide · render"),)}
-
-
-def page_view(view: str, md: Path, root: Path) -> str:
-    """One Page view, in place: the page its route draws, framed."""
-    src = ROUTE + "?" + urlencode({"view": view, "path": _rel(md, root)})
-    return (f'<iframe class=page-view src="{_e(src)}&amp;embed=1" loading=lazy title="{_e(view)}"></iframe>'
-            f'<p class=mut>{_link(src, "open on its own ↗")}</p>')
-
-
-def with_page_views(out: dict, level: str, folder: Path, root: Path, sub: str, first: dict) -> dict:
-    """Add a Task's Page views to its Spaces: each Space's own content becomes its first subspace
-    (named in `first`), the views follow; the open one is drawn."""
-    md = face(folder)
-    if level != "Task" or not md or md.name == "board.md":
-        return out
-    for space, views in PAGE_VIEWS.items():
-        v = out.get(space, Space())
-        own = v.subspaces or (first[space],)
-        views = tuple((n, view) for n, view in views if n not in own)   # a theme's own view of that name wins
-        names = tuple(n for n, _ in views)
-        opened = sub if sub in names else (v.open or own[0])
-        html_ = next((page_view(view, md, root) for n, view in views if n == sub), v.html)
-        disk = next((tuple((d.replace("{face}", md.name), m) for d, m in PAGE_VIEW_DISK[view])
-                     for n, view in views if n == sub), v.disk)
-        out[space] = replace(v, html=html_, subspaces=own + names, open=opened, keep=names, disk=disk)
-    return out
-
-
 def run_type(name: str, doing: str, prompt: str, skill: str, **more) -> dict:
     """A Runs-panel type named by the soft Run it makes (JL 261007: "for all the soft run, the name of
     them will be run-xxxx-xxx"; haipipe-run ref/run-types-by-space.md), what it does in small under it."""
@@ -447,7 +400,7 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "", theme: "Theme |
     rows_html = report_view(level, folder, root, theme, empty=page_row)
     out["Audience Report"] = Space(rows_html, run_types=(
         run_type("run-ask-<qNN>", "ask a Question", "Ask a new Question of {folder}: its register row and "
-                 "reports/qNN_<topic>/.", "haipipe-question"),
+                 "reports/qNN_<topic>/.", "haipipe-report"),
         run_type("run-report-<qNN>", "write the report", "Write or update a report of {folder}.", "haipipe-report"),
         run_type("run-figures-<qNN>", "rebuild the report drawing", "Rebuild a report drawing of {folder} from its "
                  "## Figures list: haipipe-report scripts/build_report_drawing.py <report folder>.", "haipipe-report"),
@@ -502,6 +455,7 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "", theme: "Theme |
         extra = tuple((source.relative_to(folder.resolve()).as_posix() + "/studio/s*/", "existing topics from " + short_name(source.name))
                       for source in old_sources)
         out["Idea Studio"] = replace(out["Idea Studio"], disk=out["Idea Studio"].disk + extra)
+    from live.task_draft import with_page_views       # a Task with a Page face: its Page views (workbench-task-draft/)
     return with_page_views(out, level, folder, root, sub, {"Description": "Face", "Audience Report": "Report",
                                                            "Work Details": "Folders", "Runs": "All",
                                                            "Delivery": "Files"})
@@ -922,12 +876,12 @@ _DOCX_CACHE: dict = {}
 
 def docx_preview(path: Path, root: Path) -> str:
     """A .docx as a page: the Word renderer's projection of its package (text, tables, images, comments in
-    the margin; workbench/task-page/exporters/docx2pdf.py `docx_html`), read only, cached by the file's stamp."""
+    the margin; workbench/workbench-task-draft/exporters/docx2pdf.py `docx_html`), read only, cached by the file's stamp."""
     import importlib.util
     stamp = (str(path), path.stat().st_mtime_ns, path.stat().st_size)
     if stamp not in _DOCX_CACHE:
         spec = importlib.util.spec_from_file_location(
-            "docx2pdf", Path(__file__).resolve().parent / "task-page" / "exporters" / "docx2pdf.py")
+            "docx2pdf", Path(__file__).resolve().parent / "workbench-task-draft" / "exporters" / "docx2pdf.py")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         page, counts = module.docx_html(path)
@@ -1714,7 +1668,7 @@ def studio_delivery(block: Path, root: Path, theme=None) -> str:
             f'<span class=related-meta>{_e(meta)}</span></summary><div class=related-in>{body}</div></details>')
 
 
-# ── Studio › Timeline: what moved when, the fourth folding part (JL 261011) ─────────────────
+# ── Studio › Timeline: what moved when, the fifth folding part (JL 261011; fourth until Runs came, 261019) ─────────────────
 # Read from what is already on disk, nothing new to write: each topic's dated decisions (sNN-DNN …
 # (JL 261011)), its sessions (runs/run-draw-<sNN>/passes/pNN-<MMDD>/) and the green change notes in
 # its drawing (✎ <YYMMDD> <what>, haipipe-studio's change notes). Newest day first; the page script
@@ -1839,7 +1793,7 @@ TIMELINE_KINDS = (("decided", "decided", "decided"), ("session", "session", "ses
 
 
 def studio_timeline(block: Path, root: Path) -> str:
-    """The Studio's fourth folding part, Timeline, under Delivery (b10 s08; JL 261011: "add another section of
+    """The Studio's fifth folding part, Timeline, under Runs (b10 s08; JL 261011: "add another section of
     the Timeline", "a real timelne ... very concise ... with a axis down", "up to down", "different level of
     details", then "it is not that beautiful ... like using the visualization tools"): time runs down one
     axis, the oldest day at the top. Days, the default, is a chart: a row per day, a column per topic, a
@@ -2058,13 +2012,138 @@ def folder_rows(folder: Path, root: Path, most: int | None = 300) -> str:
 
 
 def studio_folder(block: Path, root: Path) -> str:
-    """The Studio's fifth folding part, Folder, under Timeline (b10 s09-block-folder; JL 261012: "在 related 和 timeline 下面
+    """The Studio's sixth folding part, Folder, under Timeline (b10 s09-block-folder; JL 261012: "在 related 和 timeline 下面
     再搞一个 folder，这样我就可以看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容"): the Block's own
     folder as a tree. Its first level is drawn here; each folder's rows load when it is opened."""
     rel = _rel(block, root)
     return (f'<details class="studio-related studio-folder" id=studio-folder><summary><b>Folder</b></summary>'
             f'<div class=related-in><p class=fd-root>{_e(rel)}/</p>'
             f'<ul class=fd-tree>{folder_rows(block, root)}</ul></div></details>')
+
+
+# ── Studio › Runs: every Task's hard Runs and their status, the fourth folding part (JL 261019) ───────────
+_HARD_RUN = re.compile(r"^r\d{2,3}_")
+_RUN_SKIP = {"history", "_old", "_archive", "results", "result", "node_modules"}
+RUN_MARK = {"complete": "✅", "completed": "✅", "done": "✅", "failed": "❌", "error": "❌", "blocked": "🟧",
+            "running": "▶️", "queued": "⏳", "queued_conditional": "⏳", "planned": "⬜", "not run": "⬜",
+            "no receipt": "⬜"}
+
+
+def _receipt(paths) -> tuple:
+    """(status, when) from the first of these files that names a status: a finished Run its finish day; a running
+    one when it started and its `progress:` line, when its runner writes one (JL 261019: "show the current run
+    progress"); none of them, no receipt on this machine (it may have run elsewhere, so never "not run")."""
+    for p in paths:
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        m = re.search(r"(?m)^status:\s*['\"]?([A-Za-z_ ]+?)['\"]?\s*$", text)
+        if m and m.group(1).strip() not in ("null", "None", ""):
+            status = m.group(1).strip()
+            if status == "running":
+                since = re.search(r"(?m)^started_at:\s*['\"]?\d{4}-(\d{2}-\d{2})[T ](\d{2}:\d{2})", text)
+                done = re.search(r"(?m)^progress:\s*['\"]?([^'\"\n]+)", text)
+                return status, " · ".join(x for x in (since and f"since {since.group(1)} {since.group(2)}",
+                                                     done and done.group(1).strip()) if x)
+            day = re.search(r"(?m)^finished_at:\s*['\"]?(\d{4}-\d{2}-\d{2})", text)
+            return status, day.group(1) if day else ""
+    return "no receipt", ""
+
+
+def _run_status(run: Path) -> tuple:
+    """(status, when) of one hard Run folder: its result's receipt first, else its card."""
+    return _receipt((run / "result/runtime.yaml", run / "run.yaml"))
+
+
+def hard_runs(block: Path) -> list:
+    """[(job, task, run, status, day)] for every hard Run (runs/rNN_*) of every Task under the Block, in folder order;
+    soft Runs (run-*) and history copies are left out. A Run is a folder, or in the older flat layout a ticket
+    runs/rNN_*.sh with its receipt in the Task's results/rNN_*/ or the Job's results/<task>/rNN_*/ (Proj11 b01)."""
+    out = []
+    def walk(d: Path, job: str, depth: int) -> None:
+        if depth > 6:
+            return
+        try:
+            kids = sorted(p for p in d.iterdir() if p.is_dir() and p.name not in _RUN_SKIP and not p.name.startswith("."))
+        except OSError:
+            return
+        for k in kids:
+            if k.name == "runs":
+                seen = set()
+                for r in sorted(p for p in k.iterdir() if _HARD_RUN.match(p.name)):
+                    name = r.name if r.is_dir() else r.stem if r.suffix == ".sh" else ""
+                    if not name or name in seen:
+                        continue
+                    seen.add(name)
+                    out.append((job, d.name, name, *(_run_status(r) if r.is_dir() else _receipt((
+                        d / "results" / name / "runtime.yaml", d.parent / "results" / d.name / name / "runtime.yaml")))))
+            elif re.match(r"^[jt]\d{2}", k.name) or depth == 0:
+                walk(k, k.name if k.name[:1] == "j" and depth <= 1 else job, depth + 1)
+    walk(block, "", 0)
+    return out
+
+
+def runs_tally(rows: list) -> str:
+    """The marks of these Runs, counted: `✅12 ⏳4 ⬜35` (the Studio's Runs part and SPACE Home share it)."""
+    return _tally(rows)
+
+
+def runs_list(rows: list) -> str:
+    """Hard Runs as card rows like the Jobs rows (JL 261019, on the bare lists: "they are not in the good format"):
+    one folded card per Job, its Task and Run counts and tally on the right; opened, each Task a heading and its
+    Runs an aligned table: mark · Run · status · finish day."""
+    jobs: dict = {}
+    for r in rows:
+        jobs.setdefault(r[0] or "(no Job)", {}).setdefault(r[1], []).append(r)
+    cards = []
+    for job, tasks in jobs.items():
+        jrows = [r for rs in tasks.values() for r in rs]
+        body = []
+        for task, rs in tasks.items():
+            cells = "".join(f'<span class=rn-mark title="{_e(st)}">{RUN_MARK.get(st, "⬜")}</span><code>{_e(name)}</code>'
+                            f'<span class=rn-st>{_e(st)}</span><span class=rn-day>{_e(day)}</span>' for _, _, name, st, day in rs)
+            body.append(f'<div class=rn-task><b>{_e(task)}</b><span class=rn-meta>{len(rs)} Run{"s" * (len(rs) != 1)}'
+                        f'</span><span class=rn-tally>{_tally(rs)}</span></div><div class=rn-grid>{cells}</div>')
+        nt, nr = len(tasks), len(jrows)
+        cards.append(f'<details class=rn-card><summary><b>{_e(job)}</b><span class=rn-meta>{nt} Task{"s" * (nt != 1)} · '
+                     f'{nr} Run{"s" * (nr != 1)}</span><span class=rn-tally>{_tally(jrows)}</span></summary>'
+                     f'<div class=rn-body>{"".join(body)}</div></details>')
+    return f'<div class=rn-rows>{"".join(cards)}</div>'
+
+
+RUN_LEGEND = "✅ complete · ❌ failed · 🟧 blocked · ▶️ running, since when · ⏳ queued · ⬜ not run or no receipt here"
+RUN_CSS = (".rn-rows{display:grid;gap:6px}.rn-card{border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden}"
+           ".rn-card>summary{display:flex;gap:10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}"
+           ".rn-card>summary::-webkit-details-marker{display:none}.rn-card>summary::before{content:'▸';color:var(--mut)}"
+           ".rn-card[open]>summary::before{content:'▾'}.rn-card[open]>summary{border-bottom:1px solid var(--line)}"
+           ".rn-card>summary>b{font-size:15px;overflow-wrap:anywhere}.rn-meta{color:var(--mut);font-size:13px}"
+           ".rn-tally{margin-left:auto;font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}"
+           ".rn-body{padding:6px 12px 10px 30px}.rn-task{display:flex;gap:10px;align-items:baseline;margin:8px 0 4px}"
+           ".rn-task>b{font-size:14px}.rn-grid{display:grid;grid-template-columns:22px minmax(0,1fr) 150px minmax(96px,auto);"
+           "column-gap:12px;row-gap:3px;align-items:baseline;margin-left:4px}.rn-grid code{font:13px ui-monospace,Menlo,monospace;"
+           "overflow-wrap:anywhere}.rn-st,.rn-day{color:var(--mut);font-size:12px}.rn-day{text-align:right}"
+           ".rn-legend{color:var(--mut);font-size:12px;margin:6px 0 0}")
+
+
+def _tally(rows: list) -> str:
+    from collections import Counter
+    c = Counter(RUN_MARK.get(r[3], "⬜") for r in rows)
+    return " ".join(f"{m}{c[m]}" for m in ("✅", "❌", "🟧", "▶️", "⏳", "⬜") if c[m])
+
+
+def studio_runs(block: Path, root: Path, theme=None) -> str:
+    """The Studio's Runs, under Delivery (JL 261019: "list another one to show the Hard Run, for each task, and just
+    show their status"): each Job, each of its Tasks, each hard Run with its mark, status and finish day. Read from
+    the Runs' receipts; nothing is written. A Job and a Task each carry their tally."""
+    rows = hard_runs(block)
+    meta = f"{len(rows)} hard Run{'s' if len(rows) != 1 else ''}" + (f" · {_tally(rows)}" if rows else "")
+    if not rows:
+        body = _empty_view("No hard Run yet: a Task's executable Runs (runs/rNN_*) list here with their status.")
+    else:
+        body = runs_list(rows) + f'<p class=rn-legend>{RUN_LEGEND}; read from each Run\'s result/runtime.yaml, else its run.yaml</p>'
+    return (f'<details class=studio-related id=studio-runs><summary><b>Runs</b>'
+            f'<span class=related-meta>{_e(meta)}</span></summary><div class=related-in>{body}</div></details>')
 
 
 def _topic_rows(folder: Path, root: Path, words: tuple) -> str:
@@ -2726,12 +2805,13 @@ esc, link, reader, rel, table, title, fields = _e, _link, _reader, _rel, _table,
 
 
 def lays_out_page(name: str, subspaces, space=None) -> bool:
-    """True when a theme laid the Page out in this Space itself: page_task_spaces marked it
+    """True when a theme laid the Page out in this Space itself: draft_task_spaces marked it
     (Space.page), or its subspaces start with the base's Page Task views; it may add its own after
     them (paper's Reviews, b16 s13)."""
     if space is not None and getattr(space, "page", False):
         return True
-    page = PAGE_TASK_SUBS.get(name)
+    from live.task_draft import DRAFT_TASK_SUBS
+    page = DRAFT_TASK_SUBS.get(name)
     return bool(page) and tuple(subspaces)[:len(page)] == page
 
 
@@ -2739,7 +2819,11 @@ def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = ""
     """The theme's Spaces over the vanilla default, field by field."""
     base = vanilla(level, folder, root, sub, theme)
     own = theme.spaces(level, folder, root, sub) if theme.spaces else {}
-    if theme.run_names:                         # the theme's buttons named by their Runs, this folder's tag filled
+    layout = task_layouts(theme.name).get(task_type(folder)) if level == "Task" else None
+    if layout and not any(getattr(s, "page", False) for s in own.values()):
+        # a Task type the base lays out (b32 s03): its layout first, the theme's own Spaces on top
+        own = {**layout(folder, root, sub), **own}
+    if theme.run_names:                        # the theme's buttons named by their Runs, this folder's tag filled
         names = {k: fill_tag(n, folder) for k, n in theme.run_names.items()}
         own = {k: replace(v, run_types=named(v.run_types, names)) for k, v in own.items()}
     out = {}
@@ -2755,7 +2839,7 @@ def spaces_for(theme: Theme, level: str, folder: Path, root: Path, sub: str = ""
             merged = replace(merged, run_types=t.run_types, subspaces=t.subspaces,
                              open=t.open if t.subspaces else "")
         # the base's Page views stay beside the theme's own subspaces, unless the theme laid the Page
-        # out in this Space itself (page_task_spaces: the Page's exact views, embedded)
+        # out in this Space itself (draft_task_spaces: the Page's exact views, embedded)
         if v.keep and not lays_out_page(name, t.subspaces, t):
             theirs = t.subspaces or v.subspaces           # a view the theme names too keeps its place
             merged = replace(merged, subspaces=theirs + tuple(k for k in v.keep if k not in theirs))
@@ -3019,6 +3103,7 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .pop-x{border:0;background:transparent;font-size:20px;cursor:pointer;color:var(--fg)}.pop-frame{flex:1;border:0;width:100%;background:#fff}
 @media(max-width:600px){body{padding:12px}.row{flex-wrap:nowrap;overflow-x:auto}.q-row,.q-row.q-two{grid-template-columns:1fr}.q-row>div+div{border-left:0;border-top:1px solid var(--line)}.q-head-row{display:none}}
 """
+CSS += RUN_CSS                                  # the Runs cards, shared with SPACE Home (JL 261019)
 
 # Idea Studio: a topic's canvas loads when its row opens; Edit switches that canvas to the editor in
 # place; #topic-<name> in the address opens that row (the Audience Report links here).
@@ -3773,20 +3858,6 @@ def delivery_items(block: Path, part: Path | None = None) -> list:
     return sorted(out, key=lambda i: -i["when"])
 
 
-def _send_rows(deliv: Path) -> list:
-    """delivery/delivery.md's send rows (date · for · from · status), as dicts."""
-    md, rows, cols = deliv / "delivery.md", [], None
-    for line in (md.read_text(encoding="utf-8", errors="ignore").splitlines() if md.is_file() else []):
-        if not line.strip().startswith("|"):
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if cols is None:
-            cols = [c.lower() for c in cells]
-        elif not set("".join(cells)) <= set("-: "):
-            rows.append(dict(zip(cols, cells)))
-    return [r for r in rows if "status" in r]
-
-
 def _size(n: int) -> str:
     return f"{n / 1e6:.1f} MB" if n >= 1e6 else f"{max(1, round(n / 1e3))} KB"
 
@@ -3818,29 +3889,23 @@ def _delivery_links(files: list, root: Path) -> str:
                     for f, k in zip(files, kinds))
 
 
-def _delivery_card(i: dict, root: Path, sends: list, theme) -> str:
-    """One closed row per deliverable, as a Studio topic's: ⋮⋮, its name and groups, where it came from, when its
-    newest version was built, its sends, Add to Current and that version's files ↗; opened, a row of its versions
-    (newest first, picked) over the picked version itself."""
-    attrs, handle, current, chips = _group_parts(i["key"], i["title"], i["groups"], noun="result", fixed=i["fixed"])
+def _delivery_card(i: dict, root: Path) -> str:
+    """One closed row per deliverable, as a Studio topic's: ⋮⋮, its name and groups and its newest version's files ↗,
+    with no line under the name and no Add to Current (JL 261014: "too hard to read, why you give so many unnecessary
+    information", then "remove the add to current, this is not good to see": where it came from, when it was built,
+    its size and its sends are gone, delivery.md keeps the sends; a card still drops on Current by its ⋮⋮); opened,
+    a row of its versions (newest first, picked) over the picked version itself."""
+    attrs, handle, _, chips = _group_parts(i["key"], i["title"], i["groups"], noun="result", fixed=i["fixed"])
     versions = i.get("versions") or [{"label": "", "number": None, "files": i["files"], "when": i["when"],
                                       "size": i["size"]}]
     newest = versions[0]
-    mine = [s for s in sends if any(f.name in s.get("from", "") for f in i["files"])]
-    sent = " · ".join(f'{_e(s.get("date", ""))} to {_e(re.sub(r"`[^`]*`", "", s.get("for", "")).split(":")[0].strip())}'
-                      f' ({_e(s.get("status", ""))})' for s in mine)
-    back = (_link(href(i["folder"], root, theme, "Work Details"), i["source"]) if i["folder"].is_dir()
-            else _e(i["source"]))
-    count = f' · {len(versions)} versions, newest {_e(newest["label"])}' if len(versions) > 1 else ""
-    meta = (f'from {back} · built {datetime.date.fromtimestamp(newest["when"]).isoformat()} · {_size(newest["size"])}'
-            + count + (f' · sent: {sent}' if sent else ' · <span class=mut>not sent</span>'))
     many = len(versions) > 1
     body = version_panes(versions, lambda v: (f'<p class="mut dv-files">{_e(v["label"])}: '
                                               f'{_delivery_links(v["files"], root)}</p>' if many else "")
                          + _delivery_preview(v["files"], root))
     return (f'<details class=topic data-studio-tags="{_e(json.dumps(i["groups"]))}"{attrs}><summary>{handle}'
-            f'<span class=related-head><b>{_e(i["title"])}</b>{chips}<br><span class=topic-meta>{meta}</span></span>'
-            f'<span class=topic-pop>{current} {_delivery_links(newest["files"], root)}</span></summary>'
+            f'<span class=related-head><b>{_e(i["title"])}</b>{chips}</span>'
+            f'<span class=topic-pop>{_delivery_links(newest["files"], root)}</span></summary>'
             f'{body}</details>')
 
 
@@ -3848,7 +3913,6 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
     """Delivery's cards: every result of the Block (from the Block), or of the picked Job's or Task's part,
     under the Block's group bar; the file kinds are fixed groups, + Group adds a person's own."""
     block = delivery_owner(folder)
-    deliv = block / "delivery"
     items = delivery_items(block, None if folder.resolve() == block.resolve() else delivery_dir(folder))
     if not items:
         return ""
@@ -3861,7 +3925,7 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
             i["groups"] = list(groups) + [g for g in i["groups"] if g not in groups]
         extra = tuple(dict.fromkeys(g for _, (groups, _) in placed for g in groups))
         items = [i for i, _ in sorted(placed, key=lambda p: (p[1][1], -p[0]["when"]))]
-    rows = "".join(_delivery_card(i, root, _send_rows(deliv), theme) for i in items)
+    rows = "".join(_delivery_card(i, root) for i in items)
     kinds = extra + tuple(k for k in DELIVERY_OPENS.values() if any(k in i["fixed"] for i in items))
     return group_list(block, root, "delivery", [i["groups"] for i in items], rows, fixed=kinds)
 
@@ -3871,14 +3935,13 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
 # that human need to interact with as well") ────────────────────────────────────────────────────────────────
 def task_action(task: Path, root: Path, theme=None):
     """(label, href) when a person works inside this Task, else None: the theme's own rule (a labeling Task's
-    rounds), or a Page a person writes (its face says `page-type:`), opened on its Draft."""
+    rounds), or a draft a person writes (its face says `task-type: draft`), opened on its Draft."""
     theme = theme or VANILLA
     if theme.task_action:
         got = theme.task_action(task, root)
         if got:
             return got
-    md = face(task)
-    if md and re.search(r"(?m)^page-type:\s*\S", md.read_text(encoding="utf-8", errors="ignore")[:3000]):
+    if task_type(task) == "draft":
         return "✎ Write", href(task, root, theme, "Audience Report", "Draft")
     return None
 
@@ -4058,10 +4121,10 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
     view = views["Idea Studio" if studio else space]
     if studio:                                  # Related, the second folding part under the topic cards
         part = studio_related(views.get("Related") or Space(), owner, root, unfold)
-        # then Delivery, the third: what went out (JL 261014); Timeline, the fourth: what moved when (JL 261011);
-        # then Folder, the fifth: what the folder holds
+        # then Delivery, the third: what went out (JL 261014); Runs, the fourth: each Task's hard Runs and their
+        # status (JL 261019); Timeline, the fifth: what moved when (JL 261011); Folder, the sixth: what the folder holds
         view = replace(view, html=view.html + part.html + studio_delivery(owner, root, theme)
-                       + studio_timeline(owner, root) + studio_folder(owner, root),
+                       + studio_runs(owner, root, theme) + studio_timeline(owner, root) + studio_folder(owner, root),
                        run_types=tuple(view.run_types) + tuple(part.run_types),
                        disk=tuple(view.disk) + tuple(part.disk))
     rel = _rel(owner, root)
@@ -4151,204 +4214,41 @@ def themes() -> dict:
     return found
 
 
-# ── a Page Task on the frame (b03 s13-task-variants, b16 s13-paper-task; 261007) ───────────────────
-# A Task that is a Page (its face is a Page under its Block, as a paper Section is) shows the Page's own
-# views in the six Spaces. Each view is the Page itself, embedded (`/_board/draft?…&embed=1`, task-page/
-# outline.py EMBED_HTML), so its tables, Scratch and Revise work exactly as in the Page workbench. A theme
-# whose Tasks are Pages returns page_task_spaces(...) from its spaces() at Task level, and adds its own.
-PAGE_TASK_SUBS = {
-    "Description": ("Scope", "Plan", "Requirement", "Records"),
-    "Audience Report": ("Table", "Reading", "Questions"),
-    "Work Details": ("Draft-Scratch", "Draft-Revise", "Evidence-Citation", "Evidence-Display",
-                     "Evidence-Value", "Evidence-Supporting"),
-    "Runs": (),                # no third row: the Page's own Runs view, by lane, a card per Run (b16 s13)
-    "Delivery": (),            # no third row: one card per kind of delivery, its result embedded
-}
-# a Work Details or Delivery view -> its run cards, by label, from the Page's run-cards.md (b16 s13
-# Decided 5, JL 261007): the Audience Report is for reading, so Table and Reading carry none; the
-# Runs in Work Details change the content. A card not in run-cards.md yet is left out.
-PAGE_TASK_RUNS = {
-    "Draft-Scratch": ("Scratch", "Structure revise", "Evidence embed"),
-    "Draft-Revise": ("Section revise", "Paragraph revise", "Revise edits", "Auto write"),
-    "Evidence-Citation": ("Bind / update citation",), "Evidence-Display": ("Build figure / table",),
-    "Evidence-Value": ("Bind / update value",), "Evidence-Supporting": ("Task runs", "Discovery runs"),
-    "Delivery": ("Build", "Check"),
-}
-# a Page run card -> the Run it makes (JL 261007: buttons named by their Runs; the Page skills' own
-# names: haipipe-draft-scratch · -structure · -writing · -revise · -evidence, haipipe-display); the two
-# Supporting kinds are hard Runs of other Tasks
-PAGE_RUN_NAMES = {"Scratch": "run-scratch-<target>", "Structure revise": "run-structure-<slug>",
-                  "Evidence embed": "run-<value|display|citation>-<slug>", "Section revise": "run-section-<slug>",
-                  "Paragraph revise": "run-paragraph-<slug>", "Revise edits": "run-revise-<target>",
-                  "Auto write": "run-section-<slug>", "Bind / update citation": "run-citation-<slug>",
-                  "Build figure / table": "run-display-<slug>", "Bind / update value": "run-value-<slug>",
-                  "Task runs": "rNN_<slug> (a work Task)", "Discovery runs": "rNN_<author><year>_<subject>",
-                  "Build": "run-delivery-<target>", "Check": "run-check-<page>"}
-PAGE_QUESTION_RUNS = (
-    {"label": "run-ask-<qNN>", "doing": "ask a question",
-     "prompt": "Ask a new question of {folder}: its ## Questions row and reports/qNN_<topic>/.",
-     "skills": ["haipipe-question"]},
-    {"label": "run-report-<qNN>", "doing": "write the report",
-     "prompt": "Write or update a question's report in {folder}/reports/qNN_<topic>/: "
-               "Answer · Evidence · Limits · Next, and what it changed in the draft.",
-     "skills": ["haipipe-report"]})
-RUBRIC = Path(__file__).resolve().parents[2] / "skills/1_base/writing/haipipe-writing/ref/evaluation-rubric.md"
-# a subspace -> the Page's (Space, Draft view, tab) it opens embedded
-PAGE_TASK_VIEWS = {
-    "Table": ("bullet", "table", ""), "Reading": ("bullet", "reading", ""),
-    "Draft-Scratch": ("bullet", "scratch", ""), "Draft-Revise": ("bullet", "revise", ""),
-    "Evidence-Citation": ("evidence", "", "citations"), "Evidence-Display": ("evidence", "", "displays"),
-    "Evidence-Value": ("evidence", "", "values"), "Evidence-Supporting": ("evidence", "", "supporting"),
-}
+# ── a Task's type picks its layout (b32 s03, JL 261014: "for the theme, we can have different type of tasks,
+# and the tasks can have different layout"; s41-D15, JL 261016: one folder per type) ──────────────────────────
+# A Task's face says its type (`task-type: draft`). Each type has its own folder, `workbench-task-<type>/`, holding its layout
+# `task_<type>.py` (TASK_TYPE, spaces) and every view and asset it shows: servers/workbench/workbench-task-<type>/ for a type
+# every theme uses, servers/workbench-<theme>/workbench-task-<type>/ for a theme's own. The theme's own Spaces go on top.
+_TASK_TYPE = re.compile(r"(?m)^\**task-type\**:\s*`?([\w-]+)")
 
 
-def page_view_url(folder: Path, root: Path, sub: str) -> str:
-    """The Page workbench's address for one of its views, embedded: path= the Block's face, file= the
-    Task's face from the Block, as every Page link of a Board has it."""
-    block, md = chain(folder, root).get("Block"), face(folder)
-    if not block or not md or not face(block):
+def task_type(folder: Path) -> str:
+    """The `task-type:` a Task's face declares, or "" when it names none."""
+    md = face(folder) if folder else None
+    if not md:
         return ""
-    space, mode, tab = PAGE_TASK_VIEWS[sub]
-    query = {"path": _rel(face(block), root), "file": md.relative_to(block).as_posix(), "embed": "1",
-             "space": space, **({"view": mode} if mode else {}), **({"tab": tab} if tab else {})}
-    return "/_board/draft?" + urlencode(query)
+    m = _TASK_TYPE.search(md.read_text(encoding="utf-8", errors="ignore")[:3000])
+    return m.group(1) if m else ""
 
 
-def _page_runs(sub: str) -> tuple:
-    """The run cards of one Page view, as Runs-panel kinds; none for a view with no cards."""
-    try:
-        from live.runs_panel import run_types
-        cards = {c["label"]: c for c in run_types()}
-    except Exception:                               # no run cards: the view still opens
-        return ()
-    def skills(value):                              # run-cards.md gives a list, or "a · b"
-        items = value if isinstance(value, (list, tuple)) else str(value or "").split("·")
-        return [str(x).strip() for x in items if str(x).strip()]
-    return tuple({"label": PAGE_RUN_NAMES.get(c["label"], c["label"]), "doing": c["label"].lower(),
-                  "prompt": c["prompt"], "skills": skills(c.get("skills"))}
-                 for c in (cards.get(label) for label in PAGE_TASK_RUNS.get(sub, ())) if c)
-
-
-def _rubric(root: Path) -> str:
-    """The shared prose rubric the draft is judged by (haipipe-writing base-v1), folded."""
-    if not RUBRIC.is_file():
-        return ""
-    inside = root.resolve() in RUBRIC.parents                  # a reader link only for a file the root serves
-    body = (_source(RUBRIC, root, "") if inside else
-            f'<pre class=space-source>{_e(RUBRIC.read_text(encoding="utf-8", errors="replace"))}</pre>')
-    return (f'<details class=topic><summary><b>Rubric · Mechanics · Function · Evidence · Readability</b>'
-            f'<span class=topic-meta>the four axes the draft is judged by</span></summary>'
-            f'<div style="padding:8px 14px">{body}</div></details>')
-
-
-def _source(path: Path | None, root: Path, empty: str) -> str:
-    """A Markdown file shown as it is, with a link to the Page reader; or why there is none."""
-    if not path or not path.is_file():
-        return f'<p class=space-empty>{_e(empty)}</p>'
-    return (f'<p class=space-reads>{pop(_reader(path, root), path.name, _rel(path, root) + " ↗")}</p>'
-            f'<pre class=space-source>{_e(path.read_text(encoding="utf-8", errors="replace"))}</pre>')
-
-
-LANE_ICON = {"web": "🌐", "latex": "📄", "word": "📝", "slide": "🖥", "render": "🖼"}
-
-
-def _delivery_cards(folder: Path, root: Path, md: Path | None) -> str:
-    """Delivery (JL 261007: "each card is a type of delivery … the card and the preview of the results,
-    the embedded content", as the old paper page's Preview did): one card per kind of delivery, from
-    the Page's own read-only check (task-page/delivery.py check_delivery). Its head: the kind, its
-    state (current · stale · not built), its files as ↗ links; its body: the result embedded (the web
-    page, the PDF, Word through the PDF twin the build writes beside the .docx, the deck), a LaTeX
-    piece with no PDF yet shown as it is, or "not built yet: run Build"."""
-    stem = md.stem if md else folder.name
-    try:
-        from live.delivery import check_delivery
-        lanes = check_delivery(md).get("lanes", []) if md else []
-    except Exception:                               # no Page engine: no cards, never no page
-        lanes = []
-    url = lambda f: "/" + quote(_rel(f, root))
-    cards = []
-    for lane in lanes:
-        key = lane.get("lane", "")
-        ldir = delivery_read_lane_dir(folder, key)
-        files = sorted(f for f in ldir.rglob("*") if f.is_file() and not f.name.startswith(".")) if ldir.is_dir() else []
-        state = lane.get("state", "")
-        legacy_note = ('<p class="mut dl-note">Old local output: read only; rebuild from source into Block Delivery.</p>'
-                       if lane.get("legacy") else "")
-        mark = {"pass": "st-ok", "stale": "st-warn"}.get(state, "mut")
-        word = {"pass": "current", "stale": "stale", "not-built": "not built"}.get(state, state)
-        show = {"web": [ldir / "index.html"], "latex": [ldir / f"{stem}.pdf"], "word": [ldir / f"{stem}.pdf"],
-                "slide": [ldir / f"{stem}-deck.html"]}.get(key, [f for f in files if f.suffix in (".pdf", ".html")][:1])
-        shown = next((f for f in show if f.is_file()), None)
-        links = " · ".join(pop(url(f), f.name, f.relative_to(ldir).as_posix()) for f in files)
-        head = (f'<div class=st-bar><span><b>{LANE_ICON.get(key, "")} {_e(lane.get("label", key))}</b> '
-                f'<span class={mark}>{_e(word)}</span></span><span class=mut>{links}</span></div>')
-        if shown:
-            body = f'<iframe class=dl-frame loading=lazy title="{_e(shown.name)}" src="{_e(url(shown))}"></iframe>'
-        elif key == "latex" and (ldir / f"{stem}.tex").is_file():     # no PDF compiled yet: the piece itself
-            body = (f'<p class="mut dl-note">{_e(stem)}.pdf is not compiled yet; the piece:</p>'
-                    f'<pre class="space-source dl-src">{_e((ldir / f"{stem}.tex").read_text(encoding="utf-8", errors="replace"))}</pre>')
-        elif files:
-            body = '<p class="mut dl-note">built; no preview for this kind yet</p>'
-        else:
-            body = '<p class="mut dl-note">not built yet: run Build</p>'
-        cards.append(f'<div class=topic>{head}{legacy_note}{body}</div>')
-    return ("<h2>Deliveries</h2>" + "".join(cards) if cards else
-            '<p class=space-empty>Nothing built yet: delivery/ holds no files. Run Build.</p>')
-
-
-def page_task_spaces(folder: Path, root: Path, sub: str = "") -> dict:
-    """{Space: Space} for a Page Task: Description is Scope (its face) · Plan · Requirement · Records;
-    Audience Report, Work Details and Delivery each open the Page's own view, embedded. Idea Studio
-    and Runs are the vanilla defaults."""
-    folder, root = folder.resolve(), root.resolve()
-    md = face(folder)
-    out = {}
-    for space, subs in PAGE_TASK_SUBS.items():
-        if space == "Runs":                             # the Page Runs view, embedded (JL 261007: "is this
-            block = chain(folder, root).get("Block")    # a table what what?"): lanes, counts, a card per Run
-            src = ("/_board/runs?" + urlencode({"path": _rel(face(block), root), "file": md.relative_to(block).as_posix(),
-                                                "embed": "1"}) if block and md and face(block) else "")
-            out[space] = Space(html=(f'<iframe class=space-frame title="Runs" src="{_e(src)}"></iframe>' if src else
-                                     '<p class=space-empty>This Task has no face under a Block, so it shows no Page Runs.</p>'),
-                               run_types=(RUN_ANY,), page=True)
+def task_layouts(theme: str = "") -> dict:
+    """{task type: spaces(folder, root, sub)} for one theme: every `workbench-task-<type>/task_<type>.py` in
+    servers/workbench/ (every theme's), then the theme's own in servers/workbench-<theme>/ (that theme's only, so
+    a labeling `task-type: eval` never lays out a work Task). A layout names its TASK_TYPE, or several TASK_TYPES."""
+    import importlib
+    from host_registry import task_folders, workbench_name
+    found = {}
+    for folder in task_folders():
+        owner = folder.parent.name
+        if owner != "workbench" and workbench_name(folder.parent) != theme:
             continue
-        if space == "Delivery":                         # no third row: item cards, Build · Check
-            out[space] = Space(html=_delivery_cards(folder, root, md), run_types=_page_runs("Delivery"), page=True)
-            continue
-        opened = sub if sub in subs else subs[0]
-        if space == "Description":
-            if opened == "Scope":
-                body = ""                               # the vanilla Description: the face and its fields
-            elif opened == "Plan":
-                try:
-                    from src.outline_version import latest_outline, plan_dir
-                    plan = latest_outline(plan_dir(folder), md.stem) if md else None
-                except Exception:                       # no Page engine: say so, never break the frame
-                    plan = None
-                body = _source(plan, root, "No plan yet: the Page's plan is written by its Structure Run.")
-            elif opened == "Requirement":                # its V (venue) and W (own) rules, then the rubric
-                req = folder / "draft" / "records" / f"{md.stem if md else folder.name}-requirement.md"
-                body = (_source(req, root, "No requirement record yet (draft/records/<stem>-requirement.md).")
-                        + _rubric(root))
-            else:
-                recs = sorted((folder / "draft" / "records").glob("*.md")) if (folder / "draft" / "records").is_dir() else []
-                body = (_table(("record", "bytes"), [(pop(_reader(r, root), r.name, r.name + " ↗"), _e(r.stat().st_size))
-                                                     for r in recs]) if recs else
-                        '<p class=space-empty>No records yet (draft/records/).</p>')
-            out[space] = Space(html=body, subspaces=subs, open=opened, page=True, run_types=(
-                {"label": f"run-face-{folder.name.split('_', 1)[0]}", "doing": "update the description",
-                 "prompt": "Update the face of {folder}.", "skills": [LEVEL_SKILL["Task"]]},))
-            continue
-        if opened == "Questions":                   # the Section's questions, Question │ Work │ Report
-            rows, _ = question_rows("Task", folder, root)
-            out[space] = Space(html=rows, subspaces=subs, open=opened, run_types=PAGE_QUESTION_RUNS, page=True)
-            continue
-        url = page_view_url(folder, root, opened)
-        body = (f'<iframe class=space-frame title="{_e(opened)}" src="{_e(url)}"></iframe>' if url else
-                '<p class=space-empty>This Task has no face under a Block, so it opens no Page view.</p>')
-        # no read-only note in the Runs panel (JL 261008: "we don't need to add these details")
-        out[space] = Space(html=body, subspaces=subs, open=opened, run_types=_page_runs(opened), page=True)
-    return out
+        kind = folder.name[len("workbench-task-"):]
+        module = f"task_{kind.replace('-', '_')}"
+        if (folder / f"{module}.py").is_file():
+            layout = importlib.import_module(f"live.{module}")
+            for name in getattr(layout, "TASK_TYPES", None) or (layout.TASK_TYPE,):
+                found[name] = layout.spaces
+    return found
 
 
 # ── what the Guide's Space cards read live (b03 s31-D06): each level's sub · runs, from here ─────

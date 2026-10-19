@@ -6,7 +6,7 @@ family: shared
 label: Workbench
 presenter: shared_workbench.py
 standalone: true
-table: skill:workbench-studio/ref/workbench-table.md
+table: skill:haipipe-studio/ref/workbench-table.md
 papers_table: related/papers.md
 description: 'The base workbench is what every theme reuses instead of owning a copy: the Block · Job
   · Task frame with its six Spaces, the Runs panel, Studio and the Guide; with no theme on top it is the
@@ -14,7 +14,7 @@ description: 'The base workbench is what every theme reuses instead of owning a 
   and keeps a chat and a terminal beside them; its Guide explains how each Workbench family works. It
   has no Board and no data of its own.'
 skills:
-- skill: workbench-studio
+- skill: haipipe-studio
   role: 'Studio: the drawing canvas, chat and terminal every workbench reuses'
 - skill: workbench
   role: 'The Workbench contract: storage, surface, writer and boundary'
@@ -37,7 +37,7 @@ method:
     rerun it, never the drawing. A RoadMap with a Workbench Table is drawn from that table each time Guide
     opens.'
 - - Follow the Studio style
-  - 'Every generated scene keeps the style in workbench-studio/ref/draw.md: transparent boxes, one colored
+  - 'Every generated scene keeps the style in haipipe-studio/ref/draw.md: transparent boxes, one colored
     stroke per role, every label bound inside its box, every arrow bound at both ends, Comic Shanns, and
     a compact span. ✨ Draw it (autodraw.py) authors a scene from the page''s own Markdown under the same
     rules and refuses a hand-drawn scene.'

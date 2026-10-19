@@ -37,7 +37,7 @@ JOB = {"haipipe-paper": ("the door: routes a request to its owner", "all"),
        "haipipe-paper-venue": ("Venue Page: one journal or funder", "Block · Description › Venue ?"),
        "haipipe-paper-assemble": ("build the whole paper into delivery/", "Job · version Delivery ? (Q02)"),
        "haipipe-paper-comments": ("comments → Review Items (reviews, meetings)", "Job · reports/ (type)"),
-       "haipipe-paper-section": ("Section Page: one Section", "Task")}
+       "haipipe-paper-draft": ("Section Page: one Section", "Task")}
 # the base skills a paper borrows, by what they do for it
 BORROWS = [("Page workflow (every Story and Section Page)",
             ["haipipe-draft-workflow", "haipipe-draft-context", "haipipe-draft-structure", "haipipe-draft-evidence",
@@ -46,7 +46,7 @@ BORROWS = [("Page workflow (every Story and Section Page)",
            ("Ideation (the idea pool)", ["haipipe-ideation", "haipipe-ideation-generate", "haipipe-ideation-test",
                                          "haipipe-ideation-select"]),
            ("supporting work (other themes' hard Runs)", ["haipipe-task", "haipipe-discovery"]),
-           ("shared", ["haipipe-question", "haipipe-run", "haipipe-display", "excalidraw-section", "table-papers"])]
+           ("shared", ["haipipe-report", "haipipe-run", "haipipe-display", "excalidraw-draft", "table-papers"])]
 # each run card's level (proposal, Q01): Block = the Board and its Story Pages; Job = a version; Task = a Section
 LEVEL = {"Generate ideas": "Block", "Test idea": "Block", "Select idea": "Block", "Idea review": "Block",
          "Story revise": "Block", "Claim review": "Block", "Write the report": "Block",
@@ -56,7 +56,7 @@ LEVEL = {"Generate ideas": "Block", "Test idea": "Block", "Select idea": "Block"
          "Page check": "Task"}
 # the run types Q01 proposes that no card has yet
 NEW = [("Block", "Add a venue", "run-venue-<venue>", "haipipe-paper-venue"),
-       ("Block", "Ask a Question", "run-question-<qNN>", "haipipe-question"),
+       ("Block", "Ask a Question", "run-question-<qNN>", "haipipe-report"),
        ("Block", "Open a version", "run-version-<jNN>", "haipipe-paper"),
        ("Job", "Check the submission", "run-check-submit", "haipipe-paper-assemble")]
 # which Runs on disk each card counts (a stem pattern, and the shelf it sits on)
@@ -202,7 +202,7 @@ def draw():
     sticky(0, y, 560, "A paper owns its Pages (Ideation, Story,\nVenue, Section, Round), their workflow and\n"
                       "its build. Everything else is borrowed.", "idea")
     sticky(600, y, 560, "A Section is a Page: its writing, evidence\nand delivery Runs are the Page workflow's,\n"
-                        "named by haipipe-paper-section.", "idea")
+                        "named by haipipe-paper-draft.", "idea")
     cy = y + 150
     for c in ["? venue/ (venue playbooks and journal PDFs) is its own git repo inside the skills tree the installer scans;",
               "  .gitmodules names it, but Tools does not register it. Mount it outside skills/, and register it?",

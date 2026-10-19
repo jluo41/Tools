@@ -123,7 +123,7 @@
   Since the 09-20 export refactor no Page writes `<page>-complete.bib`, so a full build merged a stale
   09-13 copy for the Introduction and stopped at Literature Review. The page-PDF readiness check no
   longer accepts a stale `<page>-complete.pdf` either. Flagged by the S-MISQ-Main-5-Results session.
-- SKILL.md and haipipe-paper-section name the current Page delivery files: `<page>.tex` (fragment),
+- SKILL.md and haipipe-paper-draft name the current Page delivery files: `<page>.tex` (fragment),
   `<page>-master.tex` → `<page>.pdf` (standalone), `selected-bibliography/<page>.bib`.
 - A fragment's page-relative `\input{…}` / `\includegraphics{…}` that is not a display unit is rewritten
   to resolve from the master's folder (`from_master`), with a warning when it reads a retired `_archive`

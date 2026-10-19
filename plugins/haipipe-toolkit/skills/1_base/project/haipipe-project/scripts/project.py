@@ -45,7 +45,7 @@ import rename_themes as RT  # noqa: E402
 STEPS = ["tools", "root", "themes", "convert", "runs", "faces"]
 SKILLS = HERE.parents[3]                    # …/skills (1_base/project/haipipe-project/scripts → skills)
 TEMPLATE = SKILLS / "1_base/task/haipipe-task/ref/run-sh-template.sh"
-THEMES_PY = SKILLS / "1_base/page/haipipe-draft/src/themes.py"
+THEMES_PY = SKILLS / "1_base/draft/haipipe-draft/src/themes.py"
 NEW_JOB = SKILLS / "1_base/project/haipipe-job/scripts/new_job.py"
 BOARD_SYNC = SKILLS / "2_theme/discovery/haipipe-discovery/scripts/board_sync.py"
 V081 = "Canonical haipipe-task v0.8.1 execution context"

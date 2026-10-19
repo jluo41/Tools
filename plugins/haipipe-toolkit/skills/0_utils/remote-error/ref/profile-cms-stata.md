@@ -23,7 +23,7 @@ register default   _WorkSpace/0-CMS-Store/Issue-From-CMS-Server/
 register index     SERVER-READY-CHECK.md
 issue file         ${REGISTER}/<YYMMDD>/issue-00N-<slug>.md
 daily findings     ${REGISTER}/<YYMMDD>/FINDINGS.md
-issue template     ../ref/issue-file-template.md
+issue template     issue-file-template.md
 status file        <task-folder>/ISSUES.md
 static gate        python3 work/_tools/check_server_ready.py <UNIT>    19 rules
 lessons file       work/LESSON.MD

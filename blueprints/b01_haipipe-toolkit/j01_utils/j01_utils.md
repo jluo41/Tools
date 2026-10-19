@@ -10,7 +10,7 @@ The `0_utils` skillset holds skills every session leans on: `response-format` (h
 are shaped), `diagram-ascii`, `draw-logic-tree`, `table-workbench`, `remote-error`, `call-peer`, `notebook-cell-python` and two
 personal connectors. Its questions are about the skills themselves: what a skill should own,
 where an instruction should live, and how a rule should be phrased. The question skills
-(`haipipe-question`, `ask-questions`) left `0_utils` for `skills/1_base/question/` on 2026-10-03; how
+(`haipipe-report`, `ask-questions`) moved into `skills/1_base/project/` on 2026-10-16 (haipipe-report folded the question skills in); how
 questions are recorded and answered stays a question of this Block until it outgrows it.
 
 Most answers here are a change to a `SKILL.md`, its `CHANGELOG.md` or an instruction file that
@@ -23,7 +23,7 @@ board), which get their own Blocks.
 ## Pipeline
 
 ```text
-chat section -> Related question (recorded, or proposed + folder offer) -> haipipe-question -> skill change -> report Page
+chat section -> Related question (recorded, or proposed + folder offer) -> haipipe-report -> skill change -> report Page
 ```
 
 ## Pages
@@ -101,14 +101,14 @@ resources:
     evidence for Q01.
   notes: AGENTS.md rule 5 in the SPACE now points here instead of restating it.
 - title: ask-questions skill
-  url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/1_base/question/ask-questions
+  url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/0_utils/ask-questions
   questions:
   - Q01
   - Q02
   contribution: Matches a chat section to a recorded board question, or proposes a
     topic question on the board that owns the work.
   notes: The route by which chat questions reach this register.
-- title: question skillset (haipipe-question, ask-questions)
+- title: question skillset (haipipe-report, ask-questions)
   url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/question
   questions:
   - Q02

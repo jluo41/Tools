@@ -6,7 +6,7 @@ s13 · Task level
 **Stage:** shaping
 
 **Topic:** a paper Section's tab. A Section is a Page Task, so its six Spaces are the base's Page Task views
-(`servers/workbench/task-page`); ◆ marks the few things the paper theme adds: the Section's row in
+(`servers/workbench/workbench-task-draft`); ◆ marks the few things the paper theme adds: the Section's row in
 the version's Narrative, its venue's section norms, and the LaTeX fragment the version pulls in.
 Then Guide › Method opened from the Task tab: the Page method's steps and cards (JL 261007).
 
@@ -42,7 +42,7 @@ Reading. Work Details: Draft-Scratch · Draft-Revise · Evidence-Citation · -Di
 Supporting. Runs: All (the type tabs filter it). Delivery: LaTeX · Word. Then Guide › Method.
 
 
-Proposed (261007, redrawn from haipipe-paper-section and the Section folders as they are)
+Proposed (261007, redrawn from haipipe-paper-draft and the Section folders as they are)
 -----------------------------------------------------------------------------------------
 
 1. The paper adds four things to a Page Task: the reader contract in the face's header (Description ›
@@ -68,12 +68,12 @@ Decided (JL 261007, on the row drawing)
 
 1. Description › Requirement is its own tab (today a lens in the Outline). It shows the venue's
    rules (V), the Page's own (W), and the rubric the draft is judged by: the shared four axes
-   (Mechanics · Function · Evidence · Readability, `haipipe-writing/ref/evaluation-rubric.md`) and,
+   (Mechanics · Function · Evidence · Readability, `haipipe-draft-review/ref/evaluation-rubric.md`) and,
    at submission, the Section's `SUB-*` rows (`haipipe-paper/ref/submission-readiness.md`).
 2. A Section folder has its own `studio/` and `reports/`, as every Task: `studio/sNN-<topic>/` for its
    drawings (the logic by hand, the Section map), `reports/qNN_<topic>/` for its questions. Both start
    empty and fill as they are made.
-3. Audience Report › Table follows today's Draft table (`servers/workbench/task-page/outline.py`,
+3. Audience Report › Table follows today's Draft table (`servers/workbench/workbench-task-draft/outline.py`,
    `plan_card`): a Reads line, then one folding row per paragraph with its (+) notes, then
    Bullet │ Draft, each Bullet its address, [role], statement and evidence chips.
 
@@ -108,7 +108,7 @@ Decided (JL 261007, on the row drawing)
    its files as small links and its result embedded (the PDF; the web page; Word through its PDF twin;
    the deck), as the old paper page's Preview did. Not built: "run Build". Live in
    `paper_theme._delivery_previews`. No form line over the Table (JL 261007: "I don't want this").
-8. Runs is drawn as today's Page Runs view (`servers/workbench/task-page/runs.py`), not a thin
+8. Runs is drawn as today's Page Runs view (`servers/workbench/workbench-task-draft/runs.py`), not a thin
    Run │ type │ state table (JL 261007: "is this a table what what?"): the view's own lane tabs
    (Workflow map · Page Writing · Evidence · Supporting Runs), count pills, then one group per kind, each
    Run a card (its name, its state, what it does; › opens its Result). No third row. Live in the base
@@ -125,7 +125,7 @@ Decided (JL 261007, on the row drawing)
 Live (261007)
 -------------
 
-A Section opens on the frame's Task tab: the base's Page Task views (`frame.page_task_spaces`) with the
+A Section opens on the frame's Task tab: the base's Page Task views (`task_draft.draft_task_spaces`) with the
 paper's lines over them (`servers/workbench-paper/paper_theme.py`, `section_spaces`): the reader
 contract (Scope), the Section's SUB-* rows (Requirement), "ready for the build" apart from "done"
 and one preview card per kind of delivery (Delivery), and Comments read from the comments Pages' `## Review Items`.

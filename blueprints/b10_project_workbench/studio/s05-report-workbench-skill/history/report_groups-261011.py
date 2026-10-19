@@ -466,7 +466,7 @@ def main():
     L.close_frame(fr)
     today = today_frame()
     tools = L.tools_frame(
-        "In Tools: haipipe-question", ["1_base/question/haipipe-question", "1_base/project/haipipe-report"],
+        "In Tools: haipipe-report", ["1_base/project/haipipe-report/", "1_base/project/haipipe-report"],
         [("servers/workbench/frame.py", ["question_rows", "group_list", "studio_group_op", "_group_members"])],
         around=["each theme's Report row: servers/workbench-<theme>/<theme>_theme.py",
                 "haipipe-studio: the group bar's first home (s02)", "haipipe-related: its own groups (s04)",

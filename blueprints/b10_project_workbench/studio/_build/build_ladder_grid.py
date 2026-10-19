@@ -43,7 +43,7 @@ DEFINE = {
     "Task": "tNN_<task>/  = a Page folder\none bounded piece of work and its\nPage tNN_<task>.md; holds scripts/,\nruns/ and results/",
     "Run": "runs/rNN_<slug>.*  +  results/<same>/\none commission with a close rule:\nTicket, Result and runtime.yaml\nshare one stem; run: = stem",
 }
-OWNER = {"Block": "haipipe-block", "reports": "haipipe-question · haipipe-draft", "Job": "the Theme's own skill",
+OWNER = {"Block": "haipipe-block", "reports": "haipipe-report · haipipe-draft", "Job": "the Theme's own skill",
          "Task": "haipipe-task · haipipe-draft", "Run": "haipipe-run"}
 COWORK = {"Block": "bNN_<topic>/ by rule\nboard-kind: cowork-block", "reports": "reports/qNN_<topic>/ by rule", "Job": "jNN_<job>/ by rule\njNN_<job>.md + Timeline.md",
           "Task": "none by rule\n\"no tNN level in cowork\"", "Run": "none by rule\ncode runs in a Task Block"}

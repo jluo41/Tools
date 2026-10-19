@@ -235,7 +235,7 @@ mismatch, or invalid terminal gate explicitly. Count one row per allocated
 logical Run, never per episode, capability tag, domain artifact, item, chat,
 API call, or attempt. Put active and recovery-needed rows first.
 
-`workbench-labeling` owns operation. `workbench-page/ref/run-space.md` presents the
+`workbench-labeling` owns operation. `workbench-task-draft/ref/run-space.md` presents the
 same envelopes read-only and may group them by compatibility tag or episode. Show only safe
 targets, counts, status, and Result pointers. Never add a second
 approve, reveal, freeze, final, or run control.

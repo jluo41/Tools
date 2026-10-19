@@ -74,7 +74,7 @@ When the Block is cohesive and its shared narrative is ready, create
 progress, and design records, then bundle the canvas. Do not invent diagram
 content merely to fill the folder.
 
-For a question-driven Block, follow `haipipe-question` (`skills/1_base/question/haipipe-question/ref/block-questions.md`): register the
+For a question-driven Block, follow `haipipe-report` (`skills/1_base/project/haipipe-report/ref/block-questions.md`): register the
 Questions in `board.md`, place their Report Pages in `reports/`, and use
 `studio/` for freeform Excalidraw drawings. Create these when requested or when
 the Block's questions are known; do not prefill invented questions or answers.
@@ -95,7 +95,7 @@ Step 5 - Check the new Board
 Run both contracts before reporting the scaffold complete:
 
 ```bash
-python3 Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-draft/cli/check.py <block>
+python3 Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/check.py <block>
 python3 Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/ref/check_task_tree.py <block>
 ```
 

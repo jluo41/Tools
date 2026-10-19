@@ -20,7 +20,7 @@ skills:
   role: 'The work theme''s door: which skill owns each part of the work'
 - skill: haipipe-task
   role: Block / Job / Task / Run ownership and execution
-- skill: haipipe-question
+- skill: haipipe-report
   role: A Block's Questions, their register and report folders
 - skill: haipipe-draft-workflow
   role: Task Page reasoning, evidence and readings

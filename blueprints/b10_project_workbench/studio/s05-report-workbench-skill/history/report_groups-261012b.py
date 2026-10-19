@@ -563,7 +563,7 @@ def tree_nodes(reads):
             " · ".join(f"{g} " + " ".join(q for q, v in B10_GROUPS.items() if v == g) for g in order)]
          + ["? Q11, how a Page's logic is drawn: Guide or UI? (Open 2)"]},
         {"In Tools: Tools/plugins/haipipe-toolkit/": [
-            {"skills/1_base/question/haipipe-question/": ["the register: a Question's group: line"]},
+            {"skills/1_base/project/haipipe-report/": ["the register: a Question's group: line"]},
             {"skills/1_base/project/haipipe-report/": ["the Report itself (s05)"]},
             {"servers/workbench/frame.py": ["report_view · group_list · _register_set_groups · question_rows"]},
             {"servers/workbench-<theme>/<theme>_theme.py": [

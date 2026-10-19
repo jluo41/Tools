@@ -3,7 +3,7 @@
 # is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in blueprints/b15_theme_labeling).
 family: labeling
 label: Labeling
-presenter: labeling.py
+presenter: workbench-task-labeling/labeling.py
 table: skill:workbench-labeling/ref/workbench-table.md
 method_doc: guide/method.md
 method_drawing: guide/methods.excalidraw

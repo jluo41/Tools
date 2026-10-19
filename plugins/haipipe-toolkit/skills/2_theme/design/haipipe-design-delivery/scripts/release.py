@@ -18,7 +18,7 @@ from pathlib import Path
 
 import yaml
 
-_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "draft" / "haipipe-draft"
 sys.path.insert(0, str(_PAGE_ENGINE))
 from src.common import delivery_dir
 

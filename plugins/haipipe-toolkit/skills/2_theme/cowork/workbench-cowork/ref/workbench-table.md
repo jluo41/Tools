@@ -23,17 +23,17 @@ by the agent that wrote it. Reports are Pages: `haipipe-draft-writing-agent` wri
 | board | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check | Tools › related/papers.md |
 | board | Scope | Block | Update the Block status | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › board.md (header) |
 | board | Scope | People | Add a person | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › j00_people/j00_people.md |
-| board | Scope | Resources | Add a resource | haipipe-cowork-agent (new) | haipipe-question | none | Block › board.md (Related resources) |
-| board | Scope | RoadMap Draw | Draw | haipipe-cowork-agent (new) | workbench-studio | none | Block › studio/<name>.excalidraw |
+| board | Scope | Resources | Add a resource | haipipe-cowork-agent (new) | haipipe-report | none | Block › board.md (Related resources) |
+| board | Scope | RoadMap Draw | Draw | haipipe-cowork-agent (new) | haipipe-studio | none | Block › studio/<name>.excalidraw |
 | board | Work | Jobs | Open a job | haipipe-cowork-agent (new) | haipipe-cowork | the request | Block › jNN_<job>/jNN_<job>.md |
 | board | Work | Jobs | Update a job | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/jNN_<job>.md (header) · Timeline.md · CHECKLIST.md |
-| board | Work | Questions | Ask a Question | haipipe-cowork-agent (new) | haipipe-question-asking | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
-| board | Work | Questions | Review the questions | haipipe-cowork-reviewer-agent (new) | haipipe-question-review | a change | none |
+| board | Work | Questions | Ask a Question | haipipe-cowork-agent (new) | haipipe-report | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
+| board | Work | Questions | Review the questions | haipipe-cowork-reviewer-agent (new) | haipipe-report | a change | none |
 | board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
-| board | Work | Emails | Draft an email | haipipe-cowork-agent (new) | haipipe-writing | the send | Block › jNN_<job>/emails/<thread>.md · CHECKLIST.md |
+| board | Work | Emails | Draft an email | haipipe-cowork-agent (new) | haipipe-draft | the send | Block › jNN_<job>/emails/<thread>.md · CHECKLIST.md |
 | board | Work | Meetings | Write meeting notes | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/meetings/YYYY-MM-DD-<topic>.md |
-| board | Check | Waiting on | Draft a follow-up | haipipe-cowork-agent (new) | haipipe-writing | the send | Block › jNN_<job>/emails/<thread>.md |
-| board | Check | Drafts | Review a draft | haipipe-cowork-reviewer-agent (new) | haipipe-writing | the send | none |
-| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-check | release or hold | none |
+| board | Check | Waiting on | Draft a follow-up | haipipe-cowork-agent (new) | haipipe-draft | the send | Block › jNN_<job>/emails/<thread>.md |
+| board | Check | Drafts | Review a draft | haipipe-cowork-reviewer-agent (new) | haipipe-draft-review | the send | none |
+| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-review | release or hold | none |
 | board | Delivery | Reports | none | none | none | none | none |
 | board | Delivery | Done jobs | none | none | none | none | none |

@@ -27,9 +27,9 @@ skills/
 │   ├── project   2   haipipe-project (the Project and its worlds) · haipipe-run (the Run contract)
 │   ├── task     50   haipipe-task, workbench-task, the task-for-* variants, and the data ·
 │   │                 nn · end · individual pipeline skills
-│   ├── page     15   haipipe-draft, haipipe-folder, haipipe-sentence, haipipe-draft-workflow and
+│   ├── page     15   haipipe-draft, haipipe-folder, haipipe-draft-writing, haipipe-draft-workflow and
 │   │                 its Run skills, workbench (the contract), workbench-page, workbench-studio
-│   ├── question  4   haipipe-question, -asking, -review, ask-questions
+│   ├── question  4   haipipe-report, -asking, -review, ask-questions
 │   ├── writing   4   haipipe-writing, humanizer, academic-humanizer, writing-dna-skill
 │   ├── display  12   haipipe-display and its renderers, html-ppt, excalidraw-*, *-to-svg
 │   ├── ideation 13   haipipe-ideation and its generate · test · select skills
@@ -52,8 +52,8 @@ How the servers pair with them
 
 | Layer | Skill (contract) | Server (served face) |
 |---|---|---|
-| 1_base | `page/workbench` (Storage · Surface · Writer · Boundary) and `page/workbench-studio` | `servers/workbench` (Studio, Guide, the base) |
-| 1_base | `page/workbench-page` (the Page Task's Spaces) | `servers/workbench/task` (the base's Task level, once workbench-page) |
+| 1_base | `draft/workbench` (Storage · Surface · Writer · Boundary) and `draft/workbench-studio` | `servers/workbench` (Studio, Guide, the base) |
+| 1_base | `draft/workbench-page` (the Page Task's Spaces) | `servers/workbench/task` (the base's Task level, once workbench-page) |
 | 2_theme | `<theme>/workbench-<theme>` for cowork · design · discovery · insight · labeling · paper · work | `servers/workbench-<theme>` |
 | outside | none | `servers/_host` (transport), `space-home`, `haipipe-page` (standalone Page server) |
 
@@ -69,7 +69,7 @@ Open choices
 
 1. Where workbench-page sits.
    It is the Page Task's workbench, so it could move to `2_theme/page` while the Page core
-   (haipipe-draft, the workflow, its Runs) stays in `1_base/page`. JL settled the server side on
+   (haipipe-draft, the workflow, its Runs) stays in `1_base/draft`. JL settled the server side on
    2026-10-07: workbench-page's server became the base workbench's Task level,
    `servers/workbench/task`. Recommendation: keep the skill in `1_base`, so skill and server
    stay in the same layer. A `2_theme/page` would then hold nothing.
@@ -78,10 +78,10 @@ Open choices
    b03's design (`blueprints/b10_project_workbench/studio/s02-studio-workbench-skill/`; b03's s08, then b02's s01, back in
    b03 when b02 merged into it on 2026-10-07) proposes that the base workbench own the Block · Job · Task frame, and that
    each theme give only its `theme.py` and views. Its contract already exists in parts:
-   `1_base/page/workbench` (the four-part contract) and `1_base/page/workbench-studio` (Studio).
+   `1_base/draft/workbench` (the four-part contract) and `1_base/draft/workbench-studio` (Studio).
    Recommendation: give them their own base family, `1_base/workbench/`, holding `workbench`
    (the frame contract), `workbench-studio`, and `workbench-page` as the Task level. This pairs
-   one to one with `servers/workbench/` and `servers/workbench/task/`, and leaves `1_base/page`
+   one to one with `servers/workbench/` and `servers/workbench/task/`, and leaves `1_base/draft`
    to the Page core.
 
 3. Whether servers/ mirrors the layers.

@@ -39,7 +39,7 @@ background:
   - 🎯 Done when:
     - each Excalidraw skill has a topic here that names what it draws, how, and what it made, checked on a real drawing
   - 📖 What it is about:
-    - "seven skills draw what every Block's Studio shows: excalidraw-studio (how a topic's drawing reads), excalidraw-report, excalidraw-slide, excalidraw-read, excalidraw-section, excalidraw-job, excalidraw-task"
+    - "seven skills draw what every Block's Studio shows: excalidraw-studio (how a topic's drawing reads), excalidraw-report, excalidraw-slide, excalidraw-read, excalidraw-draft, excalidraw-job, excalidraw-task"
     - "s01 holds the principles every topic drawing follows; s02 to s07 one topic per skill; s21 one mode measured"
   - 🧱 What it owns:
     - the principles, and how each skill draws
@@ -100,14 +100,14 @@ studio_proposals:
   group: Kinds
   priority: 2
   status: created
-  question: How does excalidraw-read put a paper onto a canvas (a file we revise is excalidraw-revise, s21)?
+  question: How does excalidraw-read put a paper onto a canvas (a file we revise is excalidraw-draft, s21)?
   output: its read and revise modes, checked on real canvases
 - id: s05
-  title: excalidraw-section
+  title: excalidraw-draft
   group: Kinds
   priority: 2
   status: created
-  question: How does excalidraw-section draw a paper's Sections as a map?
+  question: How does excalidraw-draft draw a paper's Sections as a map?
   output: from Draft plans and Evidence Items to the map, checked on a real one
 - id: s06
   title: excalidraw-job
@@ -128,7 +128,7 @@ studio_proposals:
   group: Measured
   priority: 3
   status: created
-  question: What does excalidraw-revise cost, step by step, on a real file?
+  question: What does excalidraw-draft cost, step by step, on a real file?
   output: its steps, scripts and seconds
 - id: s22
   title: Every builder on draw.py

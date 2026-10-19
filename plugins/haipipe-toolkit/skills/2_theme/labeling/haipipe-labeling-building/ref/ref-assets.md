@@ -221,7 +221,7 @@ and the audit-arm metric it should move, before the first item is shown.
 `prelabels/<executor>.jsonl` holds one executor's immutable sealed rows (none in
 round 1). `sessions/` is append-only. Its `events.jsonl` holds the
 numbered show, first, lock, reveal, and final events per item (`seq` 1, 2, 3
-with no gap); the field list is in `../../haipipe-labeling-building/ref/step-order.md` §JUDGE. Policy proposals
+with no gap); the field list is in `step-order.md` §JUDGE. Policy proposals
 and backward-impact candidates also belong under `sessions/` once LEARN is
 built. `human_final.jsonl`
 is the per-item final decision with its change type; its rows point to their

@@ -24,7 +24,7 @@ Only one canvas on a page is editable, the logic tree in Draft › RoadMap Draw;
 
 ### 2 · Evidence
 
-The rules and checks are in [draw-logic-tree](../../../../plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/SKILL.md) and [excalidraw-section](../../../../plugins/haipipe-toolkit/skills/1_base/display/excalidraw-section/SKILL.md). <!-- realizes: C2.P2.B1 -->
+The rules and checks are in [draw-logic-tree](../../../../plugins/haipipe-toolkit/skills/0_utils/draw-logic-tree/SKILL.md) and [excalidraw-draft](../../../../plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-draft/ref/map.md). <!-- realizes: C2.P2.B1 -->
 On S-ManSci-Main-Abstract both drawings pass their checks: ten Bullets, nine evidence cards, and the claim's own card under the claim. <!-- realizes: C2.P2.B2 -->
 On 2026-10-03 at 20:50 the Abstract's logic drawing was overwritten by Paper's methods canvas, open for editing in Guide at the same time; it was restored from a copy, and Guide's methods canvas now opens view only. <!-- realizes: C2.P2.B3 -->
 

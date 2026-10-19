@@ -20,7 +20,7 @@ if (HOST / "host_paths.py").is_file() and str(HOST) not in sys.path:
     sys.path.insert(0, str(HOST))
 SPEC =importlib.util.spec_from_file_location(
     "subjective_label_workbench_preparation_test",
-    TOOLKIT / "servers" / "workbench-labeling" / "labeling.py",
+    TOOLKIT / "servers" / "workbench-labeling" / "workbench-task-labeling" / "labeling.py",
 )
 assert SPEC and SPEC.loader
 workbench = importlib.util.module_from_spec(SPEC)

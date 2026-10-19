@@ -32,7 +32,7 @@ GREEN = L.GREEN          # a change note (JL 261007: "add the changes with green
 text, path, base = L.text, L.path, L.base
 TK = TOOLS / "plugins" / "haipipe-toolkit"
 GUIDE = TK / "servers" / "workbench-paper" / "guide"
-PAGE_GUIDE = TK / "servers" / "workbench" / "task-page" / "guide" / "guide.yaml"
+PAGE_GUIDE = TK / "servers" / "workbench" / "workbench-task-draft" / "guide" / "guide.yaml"
 
 wrap = lambda s, n: textwrap.wrap(s, n, break_on_hyphens=False) or [""]
 read = lambda p: p.read_text(encoding="utf-8", errors="ignore") if p.is_file() else ""
@@ -88,7 +88,7 @@ def level_cards(level):
     """(family, method) of the cards a level's section shows: the paper's, or the Page method's at Task."""
     if level == "Task":                              # a Section is a Page: the Page method's cards
         return [(p.parent.name.capitalize(), read(p).splitlines()[0].strip())
-                for p in sorted((Path(__file__).resolve().parents[4] / 'plugins/haipipe-toolkit/servers/workbench/task-page/guide' / "methods").rglob("*.md"))]
+                for p in sorted((Path(__file__).resolve().parents[4] / 'plugins/haipipe-toolkit/servers/workbench/workbench-task-draft/guide' / "methods").rglob("*.md"))]
     return [(f.split(":")[0], m) for f, m, _ in CARDS if FAMILY_LEVEL.get(f.split(":")[0]) == level]
 
 
@@ -260,7 +260,7 @@ def guide_method(level):
     return ("Method", None, ["Add a method", "Add a paper"], "",
             body, [("servers/workbench-paper/guide/method.md", "the steps · ? a Block · Job · Task part each"),
                    ("servers/workbench-paper/guide/methods/<family>/", "one card per method"),
-                   ("servers/workbench/task-page/guide/guide.yaml", "the Task section: the Page method")], True)
+                   ("servers/workbench/workbench-task-draft/guide/guide.yaml", "the Task section: the Page method")], True)
 
 
 # ── the open questions, loose ───────────────────────────────────────────────────────────────

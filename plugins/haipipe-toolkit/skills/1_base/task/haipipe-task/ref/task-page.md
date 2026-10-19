@@ -195,7 +195,7 @@ and Result path; never paste a regenerating result as an untraceable value. A
 page-local static source may enter the frozen Local Input. A cross-Folder fact
 must enter through a Supporting Run Result.
 
-The Run overview belongs to `workbench-page/ref/run-space.md`; the evidence state belongs
+The Run overview belongs to `workbench-task-draft/ref/run-space.md`; the evidence state belongs
 to `draft/<stem>-evidence-items.md` and the Evidence Results it binds. Neither becomes
 a Content division.
 

@@ -20,8 +20,8 @@ class TaskFolderVocabularyTest(unittest.TestCase):
     def test_three_core_contracts_name_one_physical_folder(self):
         paths = (
             SKILL / "SKILL.md",
-            TOOLKIT_SKILLS / "1_base" / "page" / "haipipe-folder" / "SKILL.md",
-            TOOLKIT_SKILLS / "1_base" / "page" / "haipipe-draft" / "SKILL.md",
+            TOOLKIT_SKILLS / "1_base" / "draft" / "haipipe-draft" / "ref" / "folder.md",
+            TOOLKIT_SKILLS / "1_base" / "draft" / "haipipe-draft" / "SKILL.md",
         )
         for path in paths:
             with self.subTest(path=path):

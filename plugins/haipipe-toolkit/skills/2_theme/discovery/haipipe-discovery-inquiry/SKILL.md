@@ -160,7 +160,7 @@ second local Evidence Run merely to repackage a paper.
 
 ## Workbenches
 
-- **required**: Folder/Page surface and `workbench-page`; Outline owns
+- **required**: Folder/Page surface and `workbench-task-draft`; Outline owns
   the Evidence Workspace and derived Discovery aggregate. Each
   Discovery Result owns its one-entry Bib verification receipt in
   `runtime.yaml`.
@@ -221,9 +221,9 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 - `../haipipe-discovery/ref/page-types.md` — type-specific payload promises.
 - `../haipipe-discovery/ref/paper-run-contract.md` — Level-4 artifacts.
 - `../haipipe-discovery/scripts/paper_runs.py` — deterministic gate.
-- `../../../1_base/page/haipipe-draft-workflow/SKILL.md` — the only
+- `../../../1_base/draft/haipipe-draft-workflow/SKILL.md` — the only
   Page lifecycle and phase router.
-- `../../../1_base/page/workbench-page/SKILL.md` — Outline and
+- `../../../1_base/workbench/workbench-task-draft/SKILL.md` — Outline and
   Evidence Workspace owner.
-- `../../../1_base/page/workbench-page/ref/evidence/citations.md`
+- `../../../1_base/workbench/workbench-task-draft/ref/evidence/citations.md`
   — CITE verification and derived Bib authority.

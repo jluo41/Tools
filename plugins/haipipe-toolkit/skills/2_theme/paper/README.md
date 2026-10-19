@@ -60,7 +60,7 @@ Outline Evidence Workspace of the Page that consumes them.
 The paper is a Board on the ladder (`haipipe-paper/ref/paper-ladder.md`; b16 Q01, Q04, Q05):
 
 ```text
-Paper-<Slug>/                        Block: board.md · studio/ (s01-ideation, sNN-story-<desk>-<idea>) ·
+Paper-<Slug>/                        Block: board.md · studio/ (s01-ideation, sNN-story-<desk>-<idea>, s10-s19 related work) ·
 │                                    reports/qNN_ · runs/ · venues/<venue>/ · related/related.md
 └── jNN_v<MMDD>_<desk>/              Job: one send · its face (## Narrative, ## Questions) · studio/ reports/ runs/
     ├── t00_abstract · t0N_<title>   Tasks: the Abstract and the Main Sections; t2N_ the Appendix
@@ -81,11 +81,13 @@ paper/                              by the level each serves
 ├── haipipe-paper-workflow/         all: the run cards by <Level> › <Space>, gates G0-G2 (Board) and G3-G5 (version)
 ├── workbench-paper/                all: the paper theme on the shared frame; ref/workbench-table.md
 ├── haipipe-paper-ideation/         Board: studio/s01-ideation/ and the ideation Questions
+├── haipipe-paper-related/          Board: studio/s10-s19, the closest work: one map, one topic per type
 ├── haipipe-paper-story/            Board: each telling as a studio topic, its Questions, the Narrative
 ├── haipipe-paper-venue/            Board: venues/<venue>/ and the shared Venue Pages (QBv bank)
 ├── haipipe-paper-comments/         version: comments reports, Review Items (scripts/review_items.py)
 ├── haipipe-paper-assemble/         version: the build, the cover letter, send and release
-├── haipipe-paper-section/          Section: one Section, the Abstract or a letter (a Page Task)
+├── haipipe-paper-draft/            Section: one Section, the Abstract or a letter, a draft Task (was -section)
+├── haipipe-paper-evidence/         Section and version: what backs each Section; one evidence ledger per version
 ├── tests/                          the family's tests (the ladder scaffold, run naming)
 └── venue/                          the shared QBv desk bank, prose playbooks and the literature bank
 ```
@@ -101,7 +103,7 @@ before reporting migration or approval status; a skill edit alone does not certi
 
 ## Complete-paper document build
 
-There are two different Word exports. `workbench-page/ref/delivery.md` renders one Page
+There are two different Word exports. `workbench-task-draft/ref/delivery.md` renders one Page
 for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
 from the Section Pages' own `delivery/latex/<page>.tex` body fragments,
 regenerating the paper's `delivery/latex/` whole (0.4.0). The latter is

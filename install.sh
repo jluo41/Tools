@@ -141,7 +141,7 @@ echo "  /plugin install inlab-human@jluo41-tools"
 
 # Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree.
 # Discovery is recursive because haipipe-toolkit nests skills in layers and
-# families, e.g. skills/2_theme/paper/haipipe-paper-section.
+# families, e.g. skills/2_theme/paper/haipipe-paper-draft.
 # A folder whose name starts with "_" is never descended (one rule instead of a
 # list of retired folders, so a layer move cannot leave a prune pointing nowhere).
 # Prints one line per skill: "<absolute_skill_dir>\t<plugin_name>\t<rel_path_from_plugin_skills>"

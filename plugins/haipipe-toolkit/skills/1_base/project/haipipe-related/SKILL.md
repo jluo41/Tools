@@ -12,8 +12,8 @@ description: >-
   add a paper, /haipipe-related.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-13"
+  version: "0.3.1"
+  last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
 
@@ -29,6 +29,9 @@ haipipe-studio    studio/sNN-<topic>/    think       one per Block, opened from 
 haipipe-report    reports/qNN_<topic>/   answer      every level its own
 haipipe-delivery  delivery/              went out    one per Block, opened from every level
 ```
+
+On a paper Board, `haipipe-paper-related` marks the closest papers in this table (`bears on` = `Closest: <type>`,
+`key` ★) and reads them in `studio/s10-related-work-map/` and s11-s19; this skill still owns the table and the files.
 
 Decided in b10 (Tools/blueprints/b10_project_workbench): s01-D27 and s01-D34 (the folder and its
 table), s04-D01 to s04-D09. Its design topic is `studio/s04-related-workbench-skill/`.
@@ -124,7 +127,7 @@ Add an item: run-add-related-<slug>
 1. **Put the file**: as it came, in its subfolder; name it by date and title.
 2. **Write its row**: kind, date, item, link (in backticks), feeds; group only if it needs more.
 3. **Say what it feeds**: a meeting that raises a question becomes a Question in the Block's face
-   and a `qNN` (haipipe-question); a thought it starts goes to a studio topic (haipipe-studio).
+   and a `qNN` (haipipe-report); a thought it starts goes to a studio topic (haipipe-studio).
 4. **Check**: open the Studio's Related; the item sits under its subfolder's group.
 
 An email is saved from the mail app as `.eml` (Outlook and Apple Mail: File › Save As); a thread

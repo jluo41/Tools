@@ -1,4 +1,4 @@
-"""s61 · build the deck: slides.py → ../../delivery/insight-slides/.
+"""s61 · build the deck: slides.py → ../../delivery/insight-slides
 
 The same build as b12's s61 build_deck.py: one 1280 × 720 SVG per slide (svg/NN-<slug>.svg) drawn by b12's
 slide_kit.py, merged into insight-slides.pdf, and insight-slides.pptx with native, editable shapes and text

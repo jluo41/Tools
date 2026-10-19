@@ -21,7 +21,7 @@ It consumes governed Result artifacts from upstream Runs and produces a small,
 display-ready `source_data.csv` plus `provenance.json`.
 A non-Page display holder may materialize that input into its Intake directly.
 A Board Page must first route every numeric value through its one
-`task-type: page` collection Job; the page-service Result, not this upstream
+`task-type: evidence` collection Job; the page-service Result, not this upstream
 aggregate directly, becomes the Supporting Run edge.
 
 ## Output contract
@@ -74,7 +74,7 @@ Cross-reference to pipeline skill
 No corresponding pipeline skill: display-input Tasks are independent; they
 read upstream governed Results and write a verified aggregate, not a
 publication asset. A non-Page display holder may consume it through an Intake
-manifest. A Page routes it through `haipipe-task-for-page` first, preserving
+manifest. A Page routes it through `haipipe-task-for-evidence` first, preserving
 the Page family's one numeric door.
 
 

@@ -305,7 +305,7 @@ skills:
   - "scripts/topic_map.py and block_index.py: s00's tree and boxes, for s00 only"
   link: enforces ① ③ ⑤ ⑥
 - name: excalidraw-studio
-  path: 1_base/display/excalidraw-studio
+  path: 1_base/excalidraw/excalidraw-studio
   key: true
   why: how a Studio topic's drawing reads, one place to read before drawing
   holds:
@@ -315,39 +315,39 @@ skills:
   - "haipipe-studio keeps the topic itself: its folder, face, numbering, sessions and canvas.write"
   link: holds the look
 - name: excalidraw-report
-  path: 1_base/display/excalidraw-report
+  path: 1_base/excalidraw/excalidraw-report
   why: how a drawing looks in two modes, a scratch and a report's drawing
   holds:
   - "a scratch: loose clusters, sticky notes, red marks"
   - "a report's drawing: its answer and its evidence"
   link: a report's drawing
 - name: excalidraw-slide
-  path: 1_base/display/excalidraw-slide
+  path: 1_base/excalidraw/excalidraw-slide
   why: a slide draft, s61 to s69, one frame per slide
   holds:
   - "its own colours and one frame per slide, by design"
   link: a slide draft
 - name: excalidraw-read
-  path: 1_base/display/excalidraw-read
+  path: 1_base/excalidraw/excalidraw-read
   why: one paper read onto a canvas, its passages and links
   holds:
   - "the revise mode: a co-author's file, one shot per section (b31 s21)"
   link: a paper reading
-- name: excalidraw-section
-  path: 1_base/display/excalidraw-section
+- name: excalidraw-draft
+  path: 1_base/excalidraw/excalidraw-draft
   why: a paper's Sections as a map, read left to right
   holds:
   - "generated from the Draft plans and Evidence Items"
   link: a paper map
 - name: excalidraw-job
-  path: 1_base/display/excalidraw-job
+  path: 1_base/excalidraw/excalidraw-job
   why: a Job as one drawing, why, what it did, what it found
   holds:
   - "two frames in few words, read from the Job on disk"
   link: a Job
   since: "✎ 261012 added, asked on this frame (b31 s06)"
 - name: excalidraw-task
-  path: 1_base/display/excalidraw-task
+  path: 1_base/excalidraw/excalidraw-task
   why: a Task as one drawing, its idea, then each video
   holds:
   - "a frame per video: what it told, what to check"
@@ -490,7 +490,7 @@ s01-D06 · Decided (JL 261012: "gurantee which frame's information density"): pr
 s01-D07 · Decided (JL 261012: "add a frame to b31-s01 about what are the skill folder for it"): frame ④, the
     skill folders that hold the principles, read from disk.
 s01-D08 · Decided and built (JL 261012: "should we also have a excalidraw-studio?", then "Please go ahead and do it"):
-    yes; built as `skills/1_base/display/excalidraw-studio/` 0.1.0 (SKILL.md, scripts/draw.py, a test), and
+    yes; built as `skills/1_base/excalidraw/excalidraw-studio/` 0.1.0 (SKILL.md, scripts/draw.py, a test), and
     haipipe-studio's "The look" now points to it (haipipe-studio 0.13.7). A skill `excalidraw-studio`
     beside excalidraw-report, -slide, -read and -section, owning how a Studio topic's drawing looks: these
     principles as its SKILL.md, the patterns (mind map, workflow of stages, screen, checked examples, folder

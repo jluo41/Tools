@@ -35,7 +35,7 @@ run_specs:
     cells:
       - {workspace_id: create, mode: action, owner_skill: haipipe-task-for-data, worker_skill_chain: [haipipe-task-for-data], interaction: author file, authority_change: create, source_projection: authoritative Result}
       - {workspace_id: review, mode: empty, owner_skill: none, worker_skill_chain: [], interaction: none, authority_change: none, source_projection: none}
-      - {workspace_id: runtime, mode: read-only, owner_skill: workbench-page, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
+      - {workspace_id: runtime, mode: read-only, owner_skill: workbench-task-draft, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
 
   - id: review
     run_type: evaluation.validate
@@ -54,7 +54,7 @@ run_specs:
     cells:
       - {workspace_id: create, mode: read-only, owner_skill: haipipe-task-for-data, worker_skill_chain: [], interaction: inspect candidate, authority_change: none, source_projection: author Result}
       - {workspace_id: review, mode: review, owner_skill: haipipe-task-reviewer-agent, worker_skill_chain: [haipipe-task-reviewer-agent], interaction: independent review, authority_change: bind, source_projection: authoritative verdict}
-      - {workspace_id: runtime, mode: read-only, owner_skill: workbench-page, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
+      - {workspace_id: runtime, mode: read-only, owner_skill: workbench-task-draft, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
 
 entry: [author]
 terminal: [CLOSE, HOLD]

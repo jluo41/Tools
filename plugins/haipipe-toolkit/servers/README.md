@@ -10,14 +10,15 @@ lab, or one deployment.
 servers/
 ├── _host/               the transport: serve.py, auth, config, the `live` namespace, shell JS
 ├── space-home/          SPACE Home and Board-level writes (home, structure, write, activity)
-├── haipipe-page/        the standalone Page server and the reader appearance (page.css, css/)
 ├── workbench/           🧭 the base, under every theme: 🎨 Studio (draw/Excalidraw, chat,
 │                        terminal, slides, vendored xterm) and the read-only Guide Space;
 │                        with no theme on top it is the vanilla workbench
-│   └── task/            the base's Task level, once workbench-page: everything one Page's
-│                        tabs render: outline, evidence, value, runs, delivery (latex/word/
-│                        bibex exports), folder status, plugview; exporters/ holds the md2tex,
-│                        md2docx and docx2pdf writers
+│   └── workbench-task-draft/      the layout of a `task-type: draft` Task (once task-page, once
+│       │                workbench-page): outline, evidence, value, runs, delivery (latex/word/
+│       │                bibex exports), folder status, plugview; exporters/ holds the md2tex,
+│       │                md2docx and docx2pdf writers
+│       └── reader/      the standalone Page server and the reader appearance (page.css, css/);
+│                        once servers/haipipe-page (JL 261014)
 ├── workbench-paper/     📄 the Paper workbench
 ├── workbench-work/      🧪 the work theme (once task): Questions as Logic / Work / Report, Studio
 ├── workbench-cowork/    📨 CoWork Blocks: Jobs, who we wait on, Questions, emails, meetings
@@ -30,7 +31,7 @@ servers/
 ## Two words, two things
 
 A **skill** named `workbench-<x>` is the contract: what the lane holds
-on disk and who writes it (`skills/1_base/page/workbench-page` says what
+on disk and who writes it (`skills/1_base/workbench/workbench-task-draft` says what
 `outline/`, `runs/`, `results/` and `delivery/` hold). A **workbench** folder
 named `workbench-<x>` is that contract's served face, where a person works on
 it in the browser. Same name on both sides, except the Studio contract, which
@@ -38,8 +39,8 @@ every workbench reuses and so is served from `workbench/`:
 
 | skill (`skills/`) | workbench (`servers/`) |
 |---|---|
-| `1_base/page/workbench-page` (Outline · Run Space · Delivery · Folder) | `workbench/task-page/` (the base's Task level) |
-| `1_base/page/workbench-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench/` |
+| `1_base/workbench/workbench-task-draft` (Outline · Run Space · Delivery · Folder) | `workbench/workbench-task-draft/` (the base's Task level) |
+| `1_base/project/haipipe-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench/` |
 | `2_theme/design/workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `2_theme/paper/workbench-paper` | `workbench-paper/` |
 | `2_theme/work/workbench-work` | `workbench-work/` (the work theme) |
@@ -137,7 +138,7 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | Boards, a project, or a SPACE root | `python servers/_host/serve.py --root <root>` |
 | One workbench only, own port and DOMAIN, no terminal, chat or Board writes | `python servers/_host/serve.py --root <root> --only <workbench>` |
 | The labeling host, for annotators | `python plugins/haipipe-toolkit/servers/_host/serve.py --only labeling --root <root>` |
-| One standalone Page Folder | `python skills/1_base/page/haipipe-draft/cli/page.py serve <page>` (imports `servers/haipipe-page/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
+| One standalone Page Folder | `python skills/1_base/draft/haipipe-draft/cli/page.py serve <page>` (imports `servers/workbench/workbench-task-draft/reader/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
 | One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page_reader.py`) |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
 
@@ -190,11 +191,11 @@ Families older than a rule are listed in that test's `GAPS` with what they still
 ## Rules
 
 1. **Arrow one way.** Servers import the Page engine's grammar
-   (`skills/1_base/page/haipipe-draft/src/`) and its `cli/` helpers (`check.py`, the Board
+   (`skills/1_base/draft/haipipe-draft/src/`) and its `cli/` helpers (`check.py`, the Board
    checker; `draw.py`; `refs.py`). The Board skill is retired (JL 261005): its live
    parts moved into the Page skill, the rest was deleted. Skills import nothing from here, with one
-   declared bridge: `skills/1_base/page/haipipe-draft/src/page_assets.py` reads the Page
-   look from `haipipe-page/assets`, so the reader and the web delivery agree.
+   declared bridge: `skills/1_base/draft/haipipe-draft/src/page_assets.py` reads the Page
+   look from `workbench/workbench-task-draft/reader/assets`, so the reader and the web delivery agree.
 
    **One reader (JL 261004).** A Page is shown in exactly one way, the Page engine's
    `render_page`: in every workbench pop-out, at `/_board/page`, behind `/b/<board>/<page>`,

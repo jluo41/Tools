@@ -79,7 +79,7 @@ Where the code and skills sit, under `Tools/plugins/haipipe-toolkit/`; the drawi
 reads the same off the disk on every build.
 
 ```text
-skills/1_base/question/haipipe-question/   the register: a Question's group: line
+skills/1_base/project/haipipe-report/   the register: a Question's group: line
 skills/1_base/project/haipipe-report/      the Report (s05)
 servers/workbench/frame.py                 question_rows · group_list · studio_group_op
                                            AUDIENCE_VIEWS · WHO_ASKS, the four buttons today

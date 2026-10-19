@@ -12,8 +12,8 @@ description: >-
   owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.15.2"
-  last_updated: "2026-10-13"
+  version: "0.16.0"
+  last_updated: "2026-10-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -29,6 +29,8 @@ Task, Discovery, Paper, Application, Page, or Run.
 examples/ProjNN-<domain>-<purpose>/
 ├── README.md       required human entry
 ├── project.yaml    required machine contract
+├── note/           optional/lazy · the inbox: any session's quick note or
+│                   thought, each naming its next Block and sNN (ref § note/)
 ├── work/          optional/lazy · computational evidence bank
 ├── discovery/    optional/lazy · external-evidence bank
 ├── cowork/         optional/lazy · coordination text: tickets, people, emails,

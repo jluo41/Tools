@@ -45,7 +45,7 @@ ON_DISK = {
                     ("? servers/workbench-insight/insight_theme.py", "? then the cards read the live frame")],
     "Method": [("servers/workbench-insight/guide/method.md", "today: one six-step table (Prototype · Instance)"),
                ("? method.md **Block · …** table", "? add a version · add a Job · read across Jobs · hand off"),
-               ("skills/1_base/question/haipipe-question-asking/methods/", "the asking cards, used in the Prototype")],
+               ("skills/1_base/project/haipipe-report/ref/asking-methods/", "the asking cards, used in the Prototype")],
     "RoadMap Draw": [("guide.yaml explain: roadmap-draw", "today: the one design drawing (s02)"),
                      ("? guide.yaml roadmap: Block", "? s00 · s01 · s11 · s02")],
     "Related Paper": [("servers/workbench-insight/related/papers.md", "rows by group; ? no level column yet"),

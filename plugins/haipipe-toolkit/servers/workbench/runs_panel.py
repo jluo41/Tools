@@ -70,7 +70,7 @@ def run_types(cards: Path = CARDS) -> list[dict]:
 
 
 def _skill_list(text: str) -> list[str]:
-    """`haipipe-draft-writing · haipipe-writing` → both names, without a leading slash."""
+    """`haipipe-draft-writing · haipipe-draft` → both names, without a leading slash."""
     return [s.strip().lstrip("/") for s in re.split(r"[·,]", text or "") if s.strip()]
 
 

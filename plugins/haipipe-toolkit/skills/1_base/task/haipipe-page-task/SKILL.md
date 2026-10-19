@@ -96,7 +96,7 @@ claims that the Page is complete.
 ## 📦 Unit contract · one display is one inspectable folder
 
 Every Page display unit lives in its typed DISPLAY Result
-(`workbench-page/ref/evidence/displays.md`):
+(`workbench-task-draft/ref/evidence/displays.md`):
 
     <task>/results/<re-run>/payload/<stem>-Display<N>-<slug>/
 
@@ -129,7 +129,7 @@ Numbers in a table, figure, or counted diagram arrive through the Page's
 approved Evidence graph:
 
     producing Task Result
-      → haipipe-task-for-page page-service values.yaml
+      → haipipe-task-for-evidence page-service values.yaml
       → Evidence Item Local Input
       → display/intake/ snapshot
       → renderer recipe
@@ -188,7 +188,7 @@ names it as missing instead of returning an older preview.
 ## 🚧 Boundaries
 
 - Do not execute, rerun, or repair the producing Task from this Page skill.
-- Do not bypass haipipe-task-for-page for numeric Page evidence.
+- Do not bypass haipipe-task-for-evidence for numeric Page evidence.
 - Do not convert a VALUE Item into a DISPLAY Item by implication; create the
   typed DISPLAY contract and its own Result.
 - Do not tick approved:, accepted:, Decide, or a human READING ruling.
@@ -200,9 +200,9 @@ names it as missing instead of returning an older preview.
 - haipipe-draft/SKILL.md · shared Page Face and reader-facing packet
 - haipipe-task/ref/task-page.md · Task Page grammar and READING closure
 - haipipe-task/ref/task-page-template.md · new Task Page shape
-- workbench-page/ref/plan-grammar.md · typed DISPLAY planning
-- workbench-page/ref/item-table.md · DISPLAY Result envelope
-- workbench-page/ref/evidence/displays.md · Page display lane and chip
+- workbench-task-draft/ref/plan-grammar.md · typed DISPLAY planning
+- workbench-task-draft/ref/item-table.md · DISPLAY Result envelope
+- workbench-task-draft/ref/evidence/displays.md · Page display lane and chip
 - haipipe-display/SKILL.md · renderer routing
 - display/ref/display-unit-output-contract.md · unit files and invariants
 - display/ref/display-intake-contract.md · approved numeric intake

@@ -597,7 +597,7 @@ def delivery_design(x0):
     card(x0 + 710, 650, 540, 130, "SENT  to NMI", "a row in delivery.md: draft → sent\nset by a person, never by a build", 23, 20)
     card(x0, 1080, 1250, 140, "SKILL  /haipipe-delivery  (skills/1_base/project)",
          "owns: the Block's delivery/, its paths, the Delivery view, sent by a person\n"
-         "builds by: haipipe-draft-delivery · haipipe-paper-assemble · haipipe-design-delivery · haipipe-cowork", 23, 20)
+         "builds by: haipipe-delivery · haipipe-paper-assemble · haipipe-design-delivery · haipipe-cowork", 23, 20)
     note(x0, 1232, "the skill haipipe-delivery is made: one owner for the Block-only rule (JL)")
     text(x0, 840, "Rules", 25)
     text(x0, 884, "Jobs and Tasks make deliveries but keep no delivery/; they keep their own Report (s09-D02)\n"
@@ -649,10 +649,11 @@ def main():
     L.close_frame(fr)
     tools = L.tools_frame(                                # the skill's folder and its code (JL 261011)
         "In Tools: haipipe-delivery", ["1_base/project/haipipe-delivery"],
-        [("servers/workbench/frame.py", ["delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"]),
-         ("skills/1_base/page/haipipe-draft/src/common.py",
+        [("servers/workbench/frame.py", ["delivery_parts", "_delivery_row", "delivery_by_source"]),
+         ("servers/workbench/workbench-task-draft/task_draft.py", ["_delivery_cards"]),
+         ("skills/1_base/draft/haipipe-draft/src/common.py",
           ["delivery_owner", "delivery_dir", "delivery_source", "delivery_relative"])],
-        around=["haipipe-draft-delivery builds a Page's lanes", "haipipe-paper-assemble builds the paper",
+        around=["haipipe-delivery builds a Page's lanes", "haipipe-paper-assemble builds the paper",
                 "haipipe-design-delivery releases a design Job", "haipipe-cowork keeps a drafted email or reply",
                 "haipipe-related keeps what came in, the twin"],
         note="its skill's folder and code, read from disk (JL)")

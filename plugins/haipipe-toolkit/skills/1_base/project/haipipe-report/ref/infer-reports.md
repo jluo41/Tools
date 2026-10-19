@@ -31,7 +31,7 @@ Which Questions, at which level
    - a status the Jobs do not share (`ready 11 · blocked 3`): why the few differ, and what settles them;
    - a gap many Tasks report (`no event time` in 60 tables): which, and whether the next Block can still use them;
    - a sub-question answered "none" by part of a kind (`What should Source watch out for?`: none in 59 of 280).
-   Its report is a new `reports/qNN_<topic>/`, citing the Tasks (haipipe-question makes the row and folder).
+   Its report is a new `reports/qNN_<topic>/`, citing the Tasks (haipipe-report makes the row and folder).
 
 
 The test before a Question is kept

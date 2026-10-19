@@ -14,8 +14,8 @@ description: >-
   generation, novelty testing, pressure testing, and selection to
   haipipe-ideation.
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-10-14"
+  version: "1.4.1"
+  last_updated: "2026-10-19"
   group-token: "s01-ideation"
   outline:
     mode: grammar
@@ -143,7 +143,7 @@ Evidence Queue, Execution order). Studio is the Board's alone (b10 s09-D01): a v
 Each admitted Idea is also a Board Question, `board.md ## Questions` with `group: ideation`, its report in
 `reports/qNN_<idea>/` holding its tests; the Block's Audience Report › Ideation shows them as Question │ Work │
 Report. Its buttons (Generate ideas, Test idea, Idea review, Select idea, Ask a Question) are the
-`Block › Audience Report` run cards; the G0 choice is Select idea. A selected idea's telling opens as
+`Block › Audience Report` run cards; the G0 choice is Select idea. A telling may open before the G0 choice, which is then JL's mark on its face (JL 261019: "there are not s02, why????"). A selected idea's telling opens as
 `studio/sNN-story-<desk>-<idea>/` (haipipe-paper-story). The sections below say "Page" for this topic face; an
 older Board's `A1-Story/Story00-ideation/` Page is still read, and `carry_over/topics_paper.py` moves it.
 
@@ -154,7 +154,7 @@ older Board's `A1-Story/Story00-ideation/` Page is still read, and `carry_over/t
 test, a pilot, the G0 choice), refresh the drawing's words and redraw:
 
 ```bash
-I=Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-ideation/scripts/ideation_drawing.py
+I=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-ideation/scripts/ideation_drawing.py
 python $I make studio/s01-ideation       # once: the forwarding builder and s01-ideation-drawing.yaml
 python studio/s01-ideation/build_s01_ideation.py
 ```
@@ -171,7 +171,8 @@ The words in `s01-ideation-drawing.yaml` are a projection of this face, never a 
 
 A novelty check (`novelty-check`, `haipipe-ideation-test`) lands in the face first: the Idea's Core Claims / Novelty
 Check (each claim, its closest work, what stays new, the verdict) and Reviewer's Likely Objection (each reviewer
-comment and what was done about it); the drawing then carries its two lines. The lead group is the person's or the machine's recommended attention order, not a selection: the drawing makes no
+comment and what was done about it); the drawing then carries its two lines. Each claim's closest work is read from the Board's related-work map,
+`studio/s10-related-work-map/`, and its s11-s19 types (haipipe-paper-related) when the Board has them. The lead group is the person's or the machine's recommended attention order, not a selection: the drawing makes no
 choice the face does not hold. When `excalidraw-ideation` is not installed, the face stands alone and nothing else
 changes.
 

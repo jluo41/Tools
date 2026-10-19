@@ -18,7 +18,7 @@ description: 'The Discovery Workbench reads one Discovery Block: one reading top
 skills:
 - skill: haipipe-discovery
   role: The Block, its Jobs, Task Pages and Paper Runs
-- skill: haipipe-question
+- skill: haipipe-report
   role: A Block's Questions, their register and report folders
 - skill: workbench-discovery
   role: Scope, Work, Check and Delivery over the Block's Runs

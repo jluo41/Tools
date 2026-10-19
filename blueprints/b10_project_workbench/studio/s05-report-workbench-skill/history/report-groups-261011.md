@@ -48,7 +48,7 @@ when I see it in the highlevel, I cannot get the main point"):
                                  a view above, + Group, a standing Question)
 2. Across the themes             the four sources of a name, the table, by level, b10's 12 Questions
 3. Paper and insight today       what each Report shows now and what each part becomes
-4. In Tools                      haipipe-question, haipipe-report, frame.py's group code
+4. In Tools                      haipipe-report, frame.py's group code
 ```
 
 
@@ -59,7 +59,7 @@ Where the code and skills sit, under `Tools/plugins/haipipe-toolkit/`; the drawi
 reads the same off the disk on every build.
 
 ```text
-skills/1_base/question/haipipe-question/   the register: a Question's group: line
+skills/1_base/project/haipipe-report/   the register: a Question's group: line
 skills/1_base/project/haipipe-report/      the Report (s05)
 servers/workbench/frame.py                 question_rows · group_list · studio_group_op
                                            AUDIENCE_VIEWS · WHO_ASKS, the four buttons today

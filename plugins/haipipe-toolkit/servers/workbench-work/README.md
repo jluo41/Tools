@@ -47,7 +47,7 @@ tasks/bNN_<block>/
 └── jNN_<job>/tNN_<task>/            executable work, Tickets and Results
 ```
 
-See the authoritative [Block Questions contract](../../skills/1_base/question/haipipe-question/ref/block-questions.md)
+See the authoritative [Block Questions contract](../../skills/1_base/project/haipipe-report/ref/block-questions.md)
 for the optional fenced YAML registers and authoring helper, and the
 [report contract](../../skills/1_base/project/haipipe-report/ref/report-contract.md) for report metadata.
 The helper creates an empty report Page and registers it; it allocates no

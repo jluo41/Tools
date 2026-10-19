@@ -32,7 +32,7 @@ Tools skills and servers   ~330 files name a Theme folder (docs, refs, code, tes
   where the Theme list lives today:
     servers/space-home/home.py                    THEMES, THEME_KIND
     skills/1_base/project/haipipe-project/scripts/ladder.py   LADDER_WORLDS
-    skills/1_base/page/haipipe-draft/src/common.py, dialect_paper.py
+    skills/1_base/draft/haipipe-draft/src/common.py, dialect_paper.py
     skills/2_theme/discovery/haipipe-discovery/scripts (3 files), servers/workbench-* (8)
 Projects on disk           DrFirst-SPACE 24 Theme folders in 12 project repos (submodules)
                            WellDoc-SPACE 19, Physician-SPACE 5 (each has its own Tools)
@@ -78,7 +78,7 @@ new names, plus one test that an old-layout project still opens. Ship Tools.
 Check: the haipipe-draft and server tests pass; `audit_projects.py` and the workbench open
 one old-layout and one new-layout project.
 
-Done 261007: the table is `skills/1_base/page/haipipe-draft/src/themes.py` (kind · folder · old
+Done 261007: the table is `skills/1_base/draft/haipipe-draft/src/themes.py` (kind · folder · old
 folder; `theme_dir`, `theme_dirs`, `kind_of`). Read through it: space-home `home.py`, haipipe-draft
 `common.py`, `dialect_paper.py`, `item_table.py`, and the workbench servers (discovery, design,
 work, insight, paper, `workbench/related_papers.py`). Standalone scripts carry the same pairs

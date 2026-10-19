@@ -36,23 +36,23 @@ def _run(label, verb):
 
 BLOCK_RUNS = {"Description": (_run("Update the Block status", "update the Block status of"),
                               _run("Add a person", "add a person to"), _run("Add a resource", "add a resource to")),
-              "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-question-asking {folder}"},
-                                  {"label": "Review the questions", "prompt": "/haipipe-question-review {folder}"},
+              "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-report ask {folder}"},
+                                  {"label": "Review the questions", "prompt": "/haipipe-report review {folder}"},
                                   {"label": "Write the report", "prompt": "/haipipe-draft-writing {folder}/reports/"},
-                                  {"label": "Check a report", "prompt": "/haipipe-draft-check {folder}/reports/"}),
+                                  {"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"}),
               "Work Details": (_run("Open a job", "open a job in"), _run("Update a job", "update a job in")),
               "Runs": (_run("Update the Block status", "update the Block status of"),
-                       {"label": "Draw", "prompt": "/workbench-studio draw a topic in {folder}/studio/"}),
-              "Delivery": ({"label": "Check a report", "prompt": "/haipipe-draft-check {folder}/reports/"},)}
+                       {"label": "Draw", "prompt": "/haipipe-studio draw a topic in {folder}/studio/"}),
+              "Delivery": ({"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"},)}
 JOB_RUNS = {"Description": (_run("Update the Job", "update the job"), _run("Add a file", "add a file to")),
-            "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-question-asking {folder}"},),
+            "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-report ask {folder}"},),
             "Work Details": (_run("Add an entry", "add a Timeline entry to"),
-                             {"label": "Draft an email", "prompt": "/haipipe-writing draft an email in {folder}/emails/"},
+                             {"label": "Draft an email", "prompt": "/haipipe-draft draft an email in {folder}/emails/"},
                              _run("Write meeting notes", "write meeting notes in")),
             "Runs": (_run("Update the Job", "update the job"),
-                     {"label": "Draft an email", "prompt": "/haipipe-writing draft an email in {folder}/emails/"},
+                     {"label": "Draft an email", "prompt": "/haipipe-draft draft an email in {folder}/emails/"},
                      _run("Write meeting notes", "write meeting notes in"),
-                     {"label": "Review a draft", "prompt": "/haipipe-writing review the draft in {folder}/emails/"})}
+                     {"label": "Review a draft", "prompt": "/haipipe-draft-review review the draft in {folder}/emails/"})}
 
 
 def _pick(sub, options):

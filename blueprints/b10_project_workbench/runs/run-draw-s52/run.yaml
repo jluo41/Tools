@@ -34,7 +34,7 @@ writes:
 - plugins/haipipe-toolkit/servers/_host/live/share.py
 - plugins/haipipe-toolkit/servers/_host/serve.py
 - plugins/haipipe-toolkit/servers/_host/tests/test_share.py
-- plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_share.py
+- plugins/haipipe-toolkit/skills/1_base/draft/workbench/cli/wb_share.py
 - s52-host-and-share.md
 - build_s52_host_and_share.py
 - s52-host-and-share.excalidraw

@@ -10,5 +10,5 @@ Share host rooted at the Desktop behind block.jjluo.com (JL ran the stop; start 
 
 ## Changed
 
-- `plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_share.py`
+- `plugins/haipipe-toolkit/skills/1_base/draft/workbench/cli/wb_share.py`
 - `blueprints/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.md`

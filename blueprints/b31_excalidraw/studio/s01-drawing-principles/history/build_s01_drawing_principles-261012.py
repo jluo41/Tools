@@ -21,7 +21,7 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 TOOLKIT = (HERE / "../../../../plugins/haipipe-toolkit").resolve()
-sys.path.insert(0, str(TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import FLOOR, H, INK, KEY, MAP_FLOOR, RED, T_KEY, T_NODE, T_SMALL, T_TEXT, W, Drawing, canvas  # noqa: E402
 from check import check as check_drawing  # noqa: E402
 

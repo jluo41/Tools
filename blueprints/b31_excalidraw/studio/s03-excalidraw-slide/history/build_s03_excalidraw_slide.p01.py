@@ -18,8 +18,8 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 TOOLS = HERE.parents[3]                                           # Tools/ (the folder holding blueprints/)
-SKILL = TOOLS / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-slide"
-sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts"))
+SKILL = TOOLS / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-slide"
+sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import Drawing, INK, RED, W, T_SMALL, T_KEY  # noqa: E402
 
 FACE = HERE / f"{HERE.name}.md"

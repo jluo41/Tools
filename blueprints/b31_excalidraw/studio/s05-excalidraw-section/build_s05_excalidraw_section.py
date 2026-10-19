@@ -1,4 +1,4 @@
-"""s05 · excalidraw-section: s05-excalidraw-section.excalidraw (b31_excalidraw).
+"""s05 · excalidraw-draft: s05-excalidraw-section.excalidraw (b31_excalidraw).
 
 Four frames in two acts, each a screen or less, joined by named arrows (b31 s01 principles):
   1. the skill as a mind map (columns, where its words come from, colours, depths, what it never does, its script);
@@ -20,11 +20,11 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 TOOLKIT = (HERE / "../../../../plugins/haipipe-toolkit").resolve()
-sys.path.insert(0, str(TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import Drawing, T_FRAME, T_SMALL, T_NODE, INK, RED, W  # noqa: E402
 
 FACE = HERE / f"{HERE.name}.md"
-SKILL = (HERE / "../../../../plugins/haipipe-toolkit/skills/1_base/display/excalidraw-section").resolve()
+SKILL = (HERE / "../../../../plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-draft").resolve()
 SAMPLE = HERE / "examples/paper-sections-sample"
 H_MAX = 1600
 
@@ -73,7 +73,7 @@ def data():
 
 def mind_map(d, y):
     f = d.frame("① What it draws: the skill as one mind map", W, 1440)
-    d.heading("🧠 What excalidraw-section draws", "a paper's Sections as a map, read left to right; every word of the "
+    d.heading("🧠 What excalidraw-draft draws", "a paper's Sections as a map, read left to right; every word of the "
               "map comes from the Draft plans and Evidence Items, never typed; the six branches below are its "
               "columns, its sources, its colours, its depths, its limits and its script")
     bottom = d.mind_map(y["mindmap"]["centre"], y["mindmap"]["branches"])

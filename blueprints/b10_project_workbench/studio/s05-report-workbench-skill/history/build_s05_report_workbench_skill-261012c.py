@@ -173,7 +173,7 @@ def fills(qs, unread, space, versions):
         return ["📄 " + " · ".join(x for x in parts if not x.endswith("/")),
                 "📁 " + " · ".join(x for x in parts if x.endswith("/"))]
     skills = [{f"📝 haipipe-report  {versions['report']}": folder(SKILLS / "project/haipipe-report")},
-              {f"📌 haipipe-question  {versions['question']}": folder(SKILLS / "question/haipipe-question")}]
+              {f"📌 haipipe-report  {versions['question']}": folder(SKILLS / "project/haipipe-report")}]
     btn = [{"▶️ Runs panel buttons": [f"{b[0]}  ({b[2]})" for b in buttons]}]
     return {"states": states, "work": work, "code": code, "fed": fed, "figures": figs, "skills": skills,
             "buttons": btn}
@@ -266,7 +266,7 @@ def main():
     qs, unread = questions(frame)
     space = report_space(frame)
     versions = {"report": version(SKILLS / "project/haipipe-report"),
-                "question": version(SKILLS / "question/haipipe-question")}
+                "question": version(SKILLS / "project/haipipe-report")}
     jobs = [p for p in BLOCK.glob("j[0-9]*_*/") if p.is_dir()]
     frames = frames_from_face(fills(qs, unread, space, versions), {"nq": len(qs), "nj": len(jobs)})
 

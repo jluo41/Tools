@@ -242,7 +242,7 @@ references:
     type: git-submodule
     url: https://github.com/AIScientists-Dev/academic-humanizer
     license: MIT
-    notes: "Academic and grant-proposal humanizer; vendored copy at plugins/haipipe-toolkit/skills/writing/2_evaluate/academic-humanizer (commit 02281d83, 2026-09-22). Builds on blader/humanizer."
+    notes: "Academic and grant-proposal humanizer; vendored copy at plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft-review/2_evaluate/academic-humanizer (commit 02281d83, 2026-09-22). Builds on blader/humanizer."
 
   - name: stop-slop-zh
     path: references/stop-slop-zh

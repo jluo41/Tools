@@ -11,5 +11,5 @@ Groups read a list file (people/<name>.txt), watched for edits; wb.py share --pe
 ## Changed
 
 - `plugins/haipipe-toolkit/servers/_host/live/share.py`
-- `plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_share.py`
+- `plugins/haipipe-toolkit/skills/1_base/draft/workbench/cli/wb_share.py`
 - `blueprints/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.md`

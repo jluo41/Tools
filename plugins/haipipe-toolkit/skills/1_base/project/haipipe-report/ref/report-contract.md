@@ -2,9 +2,9 @@
 
 Read for anything about a Question's answer: the row the Audience Report draws, how
 work links to a Question, where a Question stands, the report Page, its figures and its
-check. Asking the Question (its size, id, register row, folder) is `haipipe-question`;
+check. Asking the Question (its size, id, register row, folder) is `haipipe-report`;
 writing the Page's prose is `haipipe-draft`. This reference was moved here from
-`haipipe-question/ref/block-questions.md` (b03 s21, 261007); the words are kept.
+`haipipe-report/ref/block-questions.md` (b03 s21, 261007); the words are kept.
 
 ## The row
 
@@ -18,11 +18,11 @@ the register row                 the Jobs and Tasks that answer it   reports/qNN
 id · title · group · status      a face's answers: <id>              title · Opening's first paragraph
 the studio topics that feed it   (or a need, answers: <id>.E<n>)     its one drawing · answer-status
 (**Feeds:** in a topic's face)   then the register's work:           report qNN · <status>
-owner: haipipe-question (ask)    owner: the theme's work skills;     owner: haipipe-report
-       haipipe-report (status)          haipipe-report the link
+owner: haipipe-report            owner: the theme's work skills;     owner: haipipe-report
+                                haipipe-report the link
 ```
 
-1. **Question cell**: the face's `## Questions` register row (`haipipe-question`), its
+1. **Question cell**: the face's `## Questions` register row (`haipipe-report`), its
    answer-status from the report, and each studio topic whose face says
    `**Feeds:** qNN_<topic>` (`haipipe-studio`).
 2. **Work cell**: each Job or Task under this level whose face says `answers: <id>`,
@@ -65,7 +65,7 @@ open  ─▶  partial  ─▶  answered
 asked     some Work     the report states the answer from exact Results
 ```
 
-1. **open**: asked, no answer yet. `haipipe-question` creates the report frame in this state.
+1. **open**: asked, no answer yet. `haipipe-report` creates the report frame in this state.
 2. **partial**: some Work answers part of it; the report says which part.
 3. **answered**: the Opening states the answer; Evidence links the exact Results or Pages.
 4. **Who moves it**: the report's writer (Write the report), never the frame, never a Run's
@@ -214,7 +214,7 @@ in a fresh context by an agent that wrote none of it (`haipipe-draft-check-agent
 
 | Button (Audience Report) | Run (soft, in the level's `runs/`) | does |
 |---|---|---|
-| Ask a Question | `run-ask-<qNN>` | `haipipe-question`: register row, folder, open frame |
+| Ask a Question | `run-ask-<qNN>` | `haipipe-report`: register row, folder, open frame |
 | Write the report | `run-report-<qNN>` | the Page flow over Opening · Answer · Evidence · Limits · Next; moves the walk |
 | Rebuild report drawing | `run-figures-<qNN>` | `build_report_drawing.py`, then its preview |
 | Check a report | `run-check-<qNN>` | `check_report.py`, then the Page's CHECK in a fresh context |

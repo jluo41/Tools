@@ -46,6 +46,8 @@ paper/Paper-<Slug>/                  Board: one paper
 ├── studio/                          Studio, the Board's only: the paper's thinking, one topic per folder; each
 │                                    face has **Tags:** and **Stage:** (haipipe-studio topic contract)
 │   ├── s01-ideation/                the ideas, ranked, admitted and eliminated (haipipe-paper-ideation)
+│   ├── s10-related-work-map/        the closest work on one map beside ours (haipipe-paper-related);
+│   │                                s11-s19: one topic per type of closest work, each paper read in full
 │   ├── sNN-story-<desk>-<idea>/     a telling (haipipe-paper-story): identity · pitch · stakes · roadmaps;
 │   │                                feeds: its Questions; an earlier telling is an ended topic
 │   └── sNN-<topic>/                 any other topic: its drawings and its builder
@@ -73,7 +75,7 @@ paper/Paper-<Slug>/                  Board: one paper
     ├── t0N_<title>/                 Task: a Main Section, in reading order (t01-t19)
     ├── t2N_<title>/                 Task: an Appendix Section, A = t21 (t20-t29)
     ├── t3N_<title>/                 Task: a letter (t30-t39): t31_cover-letter · t32_response
-    │   ├── tNN_<title>.md           its face: task-kind: page · page-type: section · the reader contract · story-row
+    │   ├── tNN_<title>.md           its face: task-type: draft · page-type: section · the reader contract · story-row
     │   ├── draft/ · reports/        its writing and its own Questions (no studio/: the Board's)
     │   └── runs/ · results/              Page workflow; outputs in Block delivery/jNN/tNN/
     └── (no delivery here)          generated paper in Block delivery/jNN_<version>/
@@ -127,7 +129,7 @@ Naming and routing invariants
   `- ` ids.
 - `reports/` (every level) and `studio/` (the Board only) are level folders, not Page groups: board.md lists
   neither. A report answers one
-  Question in the shape `haipipe-question` gives every board's questions (`state:`, `answers:`,
+  Question in the shape `haipipe-report` gives every board's questions (`state:`, `answers:`,
   `answer-status:`, an Opening whose first paragraph is the answer, then Answer · Evidence · Limits · Next, and a
   `page.toml`). A research question's report is the G2 record.
 - Task Roadmap work lives in the work theme's Task folders. The paper records the evidence need and consumes the

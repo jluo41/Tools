@@ -1,6 +1,20 @@
 haipipe-studio · Changelog
 ==========================
 
+**[0.14.1] · 2026-10-19 · s10-s19 is a paper Board's related work (JL 261019)**
+
+- Numbering: on a paper Board, s10 is the related-work map and s11-s19 one topic per type of closest work,
+  owned by the new `haipipe-paper-related` (JL 261019: "for the related work we can do things like
+  s10-related-work, and after that, we have s11 s12, etc"). A paper Board draws no level topics, so the band is free.
+- `new_topic.py`: `--band related` takes the next free s10-s19.
+
+**[0.14.0] · 2026-10-16 · The Studio screen folds in from workbench-studio (JL 261016, s21-D05)**
+
+- `workbench-studio` is retired into this skill: its manual is `ref/screen.md`, its lane contracts `ref/chat.md` and
+  `ref/draw.md`, its table `ref/workbench-table.md`, its changelog `ref/history/workbench-studio-CHANGELOG.md`.
+  `SKILL.md` gains a short "The Studio screen" section and the screen's triggers (`/workbench-studio` stays one).
+- Relative links in the moved files re-pointed to `../../../workbench/workbench/` and `../../../draft/`.
+
 **[0.13.24] · 2026-10-15 · a Job's Runs list names each Run's own state**
 
 - `job_results.tally` named every blocked, running or draft Run "partly", while excalidraw-job's drawing named it
@@ -321,7 +335,7 @@ In Related, under the topics, an item's subfolder is its first group (`meetings/
 
 **[0.8.3] · 2026-10-11 · Side notes smaller than the content**
 
-A note beside the main content (excalidraw-revise: the change, why and who answers, beside the
+A note beside the main content (excalidraw-draft: the change, why and who answers, beside the
 page pictures) is written smaller than the pictures it explains (JL 261011: "The content or the font size,
 can be much smaller, than the main content"). `canvas.aside(e)` marks such a note, and `small_text` leaves it
 out, as it leaves out green change notes.

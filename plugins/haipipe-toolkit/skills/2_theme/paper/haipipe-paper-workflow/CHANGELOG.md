@@ -29,7 +29,7 @@
 - Gates by level: G0-G2 are signed at the Board, G3-G5 in a version. G3 releases a row of the version face's `## Narrative`; G5 closes a comments report.
 - The ownership map and file-system projection follow the ladder (`haipipe-paper/ref/paper-ladder.md`).
 - `workbench-paper/ref/workbench-table.md` matches the cards: `table-workbench --check --cards` PASS.
-- Every card has a `🏷 RUN` line, the Run it makes; the workbench names the button by it, its label under it (haipipe-run `ref/run-types-by-space.md`). Shared buttons make the base Runs and name the base skills: run-face-*, run-add-<jNN|tNN>, run-draw-<sNN> (haipipe-studio), run-ask-<qNN> (haipipe-question), run-report-<qNN> · run-figures-<qNN> · run-check-<qNN> (haipipe-report), run-delivery-<target>. New card: Rebuild report drawing.
+- Every card has a `🏷 RUN` line, the Run it makes; the workbench names the button by it, its label under it (haipipe-run `ref/run-types-by-space.md`). Shared buttons make the base Runs and name the base skills: run-face-*, run-add-<jNN|tNN>, run-draw-<sNN> (haipipe-studio), run-ask-<qNN> (haipipe-report), run-report-<qNN> · run-figures-<qNN> · run-check-<qNN> (haipipe-report), run-delivery-<target>. New card: Rebuild report drawing.
 
 ## 1.7.0 · 2026-09-30 · Task review is paper.judgment.task; the Redraw card
 

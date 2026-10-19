@@ -22,16 +22,16 @@ Reports are Pages: `haipipe-draft-writing-agent` writes, `haipipe-draft-check-ag
 | board | Guide | RoadMap Draw | none | none | none | none | none |
 | board | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check | Tools › related/papers.md |
 | board | Scope | Block | none | none | none | none | none |
-| board | Scope | Questions | Ask a Question | haipipe-discovery-creator-agent | haipipe-question-asking | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
-| board | Scope | Questions | Review the questions | haipipe-discovery-reviewer-agent | haipipe-question-review | a change | none |
-| board | Scope | Resources | Add a resource | haipipe-discovery-creator-agent | haipipe-question | none | Block › board.md (Related resources) |
-| board | Scope | RoadMap Draw | Draw | haipipe-discovery-creator-agent | workbench-studio | none | Block › studio/<name>.excalidraw |
+| board | Scope | Questions | Ask a Question | haipipe-discovery-creator-agent | haipipe-report | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
+| board | Scope | Questions | Review the questions | haipipe-discovery-reviewer-agent | haipipe-report | a change | none |
+| board | Scope | Resources | Add a resource | haipipe-discovery-creator-agent | haipipe-report | none | Block › board.md (Related resources) |
+| board | Scope | RoadMap Draw | Draw | haipipe-discovery-creator-agent | haipipe-studio | none | Block › studio/<name>.excalidraw |
 | board | Work | Papers | Find papers | haipipe-discovery-search-worker-agent | haipipe-discovery-search | none | none |
 | board | Work | Papers | Read a paper | haipipe-discovery-creator-agent | haipipe-discovery-review | none | Block › jNN_<job>/tNN_<task>/runs/rNN_<paper>/rNN_<paper>.sh · runs/rNN_<paper>/result/ |
 | board | Work | Tasks | Synthesize a Task | haipipe-discovery-creator-agent | haipipe-discovery-synthesize | none | Block › jNN_<job>/tNN_<task>/summary.md |
 | board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
 | board | Check | Runs | Review a Run | haipipe-discovery-reviewer-agent | haipipe-discovery-review | none | none |
 | board | Check | Citations | Verify a citation | haipipe-discovery-reviewer-agent | haipipe-discovery-search | the citation | Block › jNN_<job>/tNN_<task>/runs/rNN_<paper>/result/rNN_<paper>.bib |
-| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-check | release or hold | none |
+| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-review | release or hold | none |
 | board | Delivery | Reports | none | none | none | none | none |
 | board | Delivery | BibTeX | none | none | none | none | none |

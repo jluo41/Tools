@@ -28,7 +28,7 @@ def skills(folder: Path) -> int:
 
 def rows():
     out = [["skills · 0_utils", "skills/0_utils/", f"{skills(TK / 'skills/0_utils')} skills", "j01_utils"]]
-    for fam in sorted(p for p in (TK / "skills/1_base").iterdir() if p.is_dir()):
+    for fam in sorted(p for p in (TK / "skills/1_base").iterdir() if p.is_dir() and not p.is_symlink()):
         job = "b10_project_workbench" if fam.name == "project" else "j02_base"
         out.append([f"skills · 1_base · {fam.name}", f"skills/1_base/{fam.name}/", f"{skills(fam)} skills", job])
     for th in sorted(p for p in (TK / "skills/2_theme").iterdir() if p.is_dir()):

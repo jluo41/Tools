@@ -115,7 +115,7 @@ the Runs with a Building · Scanning third row.
 - Contracts read: `Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/ref/project-structure.md`
   (`labelings/`), `skills/2_theme/labeling/haipipe-labeling-building/ref/ref-assets.md` (the job's disk
   layout), `ref-space-mapping.md` (today's Spaces and 26 Run types),
-  `servers/workbench-labeling/labeling.py` (`_labeling_job`: the page already finds its Job's
+  `servers/workbench-labeling/workbench-task-labeling/labeling.py` (`_labeling_job`: the page already finds its Job's
   data and gold Tasks).
 
 ### Limits

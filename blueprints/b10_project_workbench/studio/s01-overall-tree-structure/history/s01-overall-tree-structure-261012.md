@@ -218,7 +218,7 @@ s01-D25 · Proposed (261007, JL: "should we put the venue resources here?"): a p
     Add a venue, Check the rules.
 s01-D26 · Proposed (261007, JL's marks on the s11 proposal): every Section row in a paper Board's
     Work Details (and in a version's Sections, on the Job tab) carries that Section's map,
-    embedded and view only. The map is the one the excalidraw-section skill already draws,
+    embedded and view only. The map is the one the excalidraw-draft skill already draws,
     `S-<…>/studio/<stem>-sections.excalidraw`, generated from the Section's plan and its
     Evidence Items, so the row shows how far the Section is (each paragraph, each evidence card
     and its state), not only "done" or "check". Clicking it opens the Section's Idea Studio. A
@@ -301,7 +301,7 @@ s01-D35 · Folder names: a place is singular, a set of numbered things is plural
     folders and 149 `qNN` reports today, read by 54 Python files. On screen every tab is singular
     (Studio, Report, Delivery, Related).
 s01-D36 · A Task is a folder that may hold a draft, not a Page (JL 261011, asked in b16: "so in this
-    way, we will not have the so call the task = page?"; built in b51_base_draft). Every level has a
+    way, we will not have the so call the task = page?"; built in b32_draft). Every level has a
     face .md; a folder that writes prose holds `draft/` (its logic, sentences and evidence) beside its
     face; the Page is the face and its built output. haipipe-task 1.13.0, haipipe-folder 0.8.0 and
     haipipe-draft 0.126.0 (was haipipe-page) say so. In WellDoc, 102 Task folders hold `draft/`;

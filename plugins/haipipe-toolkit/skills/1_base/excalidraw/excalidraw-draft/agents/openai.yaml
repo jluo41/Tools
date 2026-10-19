@@ -1,0 +1,6 @@
+interface:
+  display_name: "Draft Drawing"
+  short_description: "a draft drawn: its Section map, or a file's changes beside the updated sentences and the tracked Word file"
+  default_prompt: "Use $excalidraw-draft to draw a draft: in Map mode a paper's Sections, paragraphs, Bullets and evidence cards; in Revise mode a file we change, each section's page beside the updated sentences, a note per change, and last the tracked Word file, checked both ways."
+policy:
+  allow_implicit_invocation: true

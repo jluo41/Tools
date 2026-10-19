@@ -28,7 +28,7 @@ TK = TOOLS / "plugins" / "haipipe-toolkit"
 SERVER = TK / "servers" / "workbench-insight"
 GUIDE = SERVER / "guide"
 PAPERS = SERVER / "related" / "papers.md"
-ASKING = TK / "skills" / "1_base" / "question" / "haipipe-question-asking"
+ASKING = TK / "skills" / "1_base" / "project" / "haipipe-report" / "ref"
 INSIGHT = TK / "skills" / "2_theme" / "insight"
 
 wrap = lambda s, n: textwrap.wrap(s, n, break_on_hyphens=False) or [""]
@@ -58,7 +58,7 @@ def card(p):
 
 
 FAMS = [  # (family, 中文, step, its question, card folder, the step whose tests check it)
-    ("Question-asking", "提问", 1, "what exactly are we asking, and what would answer it?", ASKING / "methods", 2),
+    ("Question-asking", "提问", 1, "what exactly are we asking, and what would answer it?", ASKING / "asking-methods", 2),
     ("Question-answering", "求答", 3, "how does the run find the answer: look first, or ask first?", GUIDE / "methods/answer", 4),
     ("Question-results reading", "解读", 5, "does the answer survive the ways it could be wrong?", GUIDE / "methods/read", 5)]
 CARDS = {f[0]: [card(p) for p in sorted(f[4].glob("*.md"))] for f in FAMS}

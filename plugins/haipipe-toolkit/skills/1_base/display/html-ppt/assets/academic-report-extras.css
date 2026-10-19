@@ -1,6 +1,6 @@
 /* academic-report-extras — component conventions for the HOUSE DEFAULT style.
    Link AFTER base.css + themes/academic-report.css:
-     <link rel="stylesheet" href="../assets/academic-report-extras.css">
+     <link rel="stylesheet" href="academic-report-extras.css">
    Codifies the layout rules settled on the REACH-ADHD PO briefing deck:
    1. no kicker above titles, no rule under them, no page index
    2. strict Times New Roman on every element (code spans included)

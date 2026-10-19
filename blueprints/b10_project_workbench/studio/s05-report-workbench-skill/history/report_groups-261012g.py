@@ -32,7 +32,7 @@ sys.path.insert(0, str(HERE.parent / "_build"))
 import build_ladder_v4 as L  # noqa: E402  (the shared drawing helpers)
 sys.path.insert(0, str((HERE / "../../../../plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts").resolve()))
 import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
-sys.path.insert(0, str(L.TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(L.TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import KEY, MAP_FLOOR, FLOOR, Drawing  # noqa: E402  (excalidraw-studio: the key colour, density)
 
 INK, RED, MONO = L.INK, L.RED, L.MONO

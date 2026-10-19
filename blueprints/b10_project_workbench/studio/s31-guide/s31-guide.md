@@ -123,7 +123,7 @@ Open
 
 - `levels.yaml`: the base's home for the default card words (Block · Job · Task × the six Spaces)?
 - Folds: the tab you came from opens its level and folds the other two; remember a person's folds?
-- The page family (`workbench/task-page`): its own Guide, or the Task sections of each theme's Guide?
+- The page family (`workbench/workbench-task-draft`): its own Guide, or the Task sections of each theme's Guide?
 - A wrong "where": fail the tests, or warn on the page?
 - RoadMap Draw per level: which drawings each theme lists first?
 - b03's s11 · s12 · s13: draw their screens in this style?

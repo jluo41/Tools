@@ -22,7 +22,7 @@ Newest first.
 ## [0.3.2] — 2026-09-04
 
 - Preserve the Page family's single numeric door: a display-input aggregate
-  feeds `haipipe-task-for-page` before becoming a Page Supporting Run; only a
+  feeds `haipipe-task-for-evidence` before becoming a Page Supporting Run; only a
   non-Page holder may consume it directly.
 
 ## [0.3.1] — 2026-09-04

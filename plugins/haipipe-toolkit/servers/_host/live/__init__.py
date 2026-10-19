@@ -3,7 +3,7 @@
 ``serve.py`` composes its handler from mixins named ``live.<module>``. The
 transport mixins (``base``, ``auth``) sit in this package; every other module
 sits in the server folder that owns it (``servers/space-home``,
-``servers/workbench/task-page``, ``servers/workbench-labeling``,
+``servers/workbench/workbench-task-draft``, ``servers/workbench-labeling``,
 ...) and is grafted onto this package's search path here. Module names are
 unique across folders, so ``from live.outline import OutlineMixin`` resolves the
 same way wherever the file lives.

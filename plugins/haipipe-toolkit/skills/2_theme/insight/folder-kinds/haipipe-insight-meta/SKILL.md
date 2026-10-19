@@ -23,7 +23,7 @@ metadata:
 
 # /haipipe-insight-meta · establish what the board can know
 
-Load `haipipe-folder`, `haipipe-draft`, `haipipe-insight`, and
+Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and
 `haipipe-insight-workflow`. Existing folders may retain `page-type: meta`;
 new owner-authored folders use `folder-kind: meta`.
 Read `../../haipipe-insight/ref/page-v2-adapter.md` for Page lifecycle and

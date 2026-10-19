@@ -1,6 +1,6 @@
 ---
 name: html-ppt
-description: HTML PPT Studio — author standalone static HTML decks with templates, themes, and keyboard navigation. Use when the user explicitly wants an HTML deck, a standalone slide deck, or an HTML deliverable such as an 小红书 carousel. Do not use for a Board Page talk or Page Delivery Slides lane; those are owned by workbench-page.
+description: HTML PPT Studio — author standalone static HTML decks with templates, themes, and keyboard navigation. Use when the user explicitly wants an HTML deck, a standalone slide deck, or an HTML deliverable such as an 小红书 carousel. Do not use for a Board Page talk or Page Delivery Slides lane; those are owned by workbench-task-draft.
 ---
 
 # html-ppt — HTML PPT Studio
@@ -33,7 +33,7 @@ One command, no build. Pure static HTML/CSS/JS with only CDN webfonts.
 
 Use when the user wants a standalone HTML presentation or carousel built from
 an outline, content brief, or supplied notes. For a Board Page talk, use the
-Page's `workbench-page` Slides lane, which reads the Page and writes
+Page's `workbench-task-draft` Slides lane, which reads the Page and writes
 its derived deck under `delivery/slide/`. Do not create a second deck from a
 Page request through this standalone skill.
 

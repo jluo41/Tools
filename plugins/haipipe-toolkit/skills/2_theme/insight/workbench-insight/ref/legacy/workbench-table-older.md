@@ -20,7 +20,7 @@ routes Runs and evaluates the GI gates; it is no row's Skill.
 | board | Scope | Questions | Ask | haipipe-insight-agent | haipipe-insight-question | the question | Prototype › <q>/<L><NN>-<name>.md |
 | board | Prototype | Meta | Carry a board over | haipipe-insight-agent | haipipe-insight | none | Prototype › board.md · 0-Meta/ · <level>/level.md · <q>/ |
 | board | Prototype | Meta | Register a cut | haipipe-insight-agent | haipipe-insight-partition (new) | the cut | Prototype › 0-Meta/partitions.md |
-| board | Prototype | Data · Information · Knowledge · Wisdom | Review the questions | haipipe-insight-reviewer-agent | haipipe-question-review | a change | Prototype › <q>/<L><NN>-<name>.md (a signed change) |
+| board | Prototype | Data · Information · Knowledge · Wisdom | Review the questions | haipipe-insight-reviewer-agent | haipipe-report | a change | Prototype › <q>/<L><NN>-<name>.md (a signed change) |
 | board | Prototype | Data · Information · Knowledge · Wisdom | Plan the evidence | haipipe-insight-agent | haipipe-insight-evidence-plan | none | Prototype › <q>/<L><NN>-<name>.md (needs) |
 | board | Prototype | Data · Information · Knowledge · Wisdom | Review the evidence plan | haipipe-insight-reviewer-agent | haipipe-insight-evidence-plan | none | Prototype › <q>/<L><NN>-<name>.md (agreed:) |
 | board | Prototype | Data · Information · Knowledge · Wisdom | Write the script | haipipe-task-creator-agent | haipipe-insight | none | Prototype › <q>/scripts/ |
@@ -51,7 +51,7 @@ Notes
 - **The question rows.** "Carry a board over" moves a register board's
   questions into an Insight Block word for word (`../../haipipe-insight/ref/carry_over.py`);
   "Review the questions" judges each by Q1-Q7 and proposes keep, split, merge or
-  move, and a person signs any change (`haipipe-question-review`, with Insight's level
+  move, and a person signs any change (`haipipe-report`, with Insight's level
   rule from `haipipe-insight-question`).
 - **The alignment rows.** "Plan the evidence" writes each question's evidence
   needs before any run, and "Review the evidence plan" has a different agent agree

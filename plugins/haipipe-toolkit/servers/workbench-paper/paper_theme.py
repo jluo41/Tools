@@ -28,8 +28,9 @@ from pathlib import Path
 
 from live import paper as P
 from live.discoveryboard import file_url as disc_file_url
-from live.frame import (Space, Theme, delivery_view, esc, face, link, page_task_spaces, pop, reader, rel, studio_cards,
+from live.frame import (Space, Theme, delivery_view, esc, face, link, pop, reader, rel, studio_cards,
                         table, vanilla, work_tree)
+from live.task_draft import draft_task_spaces
 
 
 def _kinds(group: str, views=None) -> tuple:
@@ -1354,7 +1355,7 @@ def _jobs(d, board, root):
     return table(("Job", "kind", "Pages"), rows) if rows else _empty("No Job yet.")
 
 
-SECTION_SKILL = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper-section"
+SECTION_SKILL = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper-draft"
 READINESS = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper/ref/submission-readiness.md"
 CONTRACT = ("reader-question", "entry-state", "exit-state", "must-establish", "must-refuse", "transition-in",
             "transition-out", "story-row", "section_kind", "structure-source", "structure-division")
@@ -1374,7 +1375,7 @@ def _header(md):
 
 
 def _contract(md):
-    """◆ Scope: the reader contract, read from the face's header (haipipe-paper-section's fields)."""
+    """◆ Scope: the reader contract, read from the face's header (haipipe-paper-draft's fields)."""
     head = _header(md)
     rows = [(esc(k), esc(head[k]) if head.get(k) else '<span class=mut>—</span>') for k in CONTRACT]
     return ('<h3>◆ The reader contract</h3><p class=mut>read from the face\'s header; a stale story-row sends '
@@ -1473,7 +1474,7 @@ def section_spaces(folder, root, sub):
     """A Section's six Spaces: the base's Page Task, each paper line added to the Space it belongs to;
     the subspaces stay the base's."""
     from dataclasses import replace
-    out = page_task_spaces(folder, root, sub)
+    out = draft_task_spaces(folder, root, sub)
     md = face(folder)
     d, a, w = out["Description"], out["Audience Report"], out["Delivery"]
     if d.open == "Scope":
@@ -1483,7 +1484,7 @@ def section_spaces(folder, root, sub):
         out["Description"] = replace(d, html=d.html + _sub_rows(md))
     if sub == "Comments":                         # ◆ the paper's own view, after the Page's three
         a = Space(html=_reviews(folder, root), open="Comments", run_types=())
-    out["Audience Report"] = replace(a, subspaces=tuple(page_task_spaces(folder, root, "")["Audience Report"].subspaces)
+    out["Audience Report"] = replace(a, subspaces=tuple(draft_task_spaces(folder, root, "")["Audience Report"].subspaces)
                                      + ("Comments",), note="")   # no read-only note in the Runs panel (JL 261008)
     out["Delivery"] = replace(w, html=_ready(folder, md) + w.html)   # ◆ Ready over the base's cards
     return out
@@ -1581,8 +1582,8 @@ def spaces(level, folder, root, sub):
     if level == "Task" and P.is_section(folder.name):   # a Section is a Page Task (S-… or t00-t29): the base's Page views
         return section_spaces(folder, root, sub)    # (b16 s13), with the paper's own lines (◆) over them
     if level == "Task":                             # a review batch (RD<NN> · CM<NN>) or a Story Page: the
-        from live.frame import page_task_spaces      # plain Page Task views until Q03
-        return page_task_spaces(folder, root, sub)
+        from live.task_draft import draft_task_spaces      # plain Page Task views until Q03
+        return draft_task_spaces(folder, root, sub)
     if level == "Job" and folder.name.startswith(("A1-", "j00_")):   # the Story Job (g03 D1)
         return story_spaces(folder, root, sub)
     if level == "Job":                              # a version (s12): today's group, or jNN_v<N>_<desk>/

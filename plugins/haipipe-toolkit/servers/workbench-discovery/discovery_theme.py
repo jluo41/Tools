@@ -12,7 +12,7 @@ drawn in the base's look only (JL 261007: no theme stylesheet): wf-table, the fo
     Task   Audience Report: Synthesis | Work Details: Papers · Notes | Runs: its Paper Runs
 
 Idea Studio reads as vanilla (studio/ topics). A discovery Task is a Discovery Task Page, not a Page
-workbench Page: its own views are its papers and synthesis, so it does not use page_task_spaces. Run
+workbench Page: its own views are its papers and synthesis, so it does not use draft_task_spaces. Run
 types come from the family's Workbench Table (skills/…/workbench-discovery/ref/workbench-table.md) and
 only copy their prompt. Read-only: nothing here writes.
 """

@@ -65,13 +65,13 @@ Questions                   what is still open
 What it found (261007)
 ----------------------
 
-1. 16 method cards: 8 asking (in the base skill `haipipe-question-asking`), 5 answering and
+1. 16 method cards: 8 asking (in the base skill `haipipe-report`), 5 answering and
    3 reading (in the insight server's `guide/methods/`). Steps 2, 4 and 6 have no methods, only
    rules.
 2. The methods are text the workbench shows. No code reads a card. `run_question.py`,
    `check_block.py`, `check_evidence.py` and `record_check.py` enforce the steps and T0-T6, not
    a method.
-3. No file records which method a question used. `haipipe-question-asking` returns `method:`,
+3. No file records which method a question used. `haipipe-report` returns `method:`,
    but `question.md` has no field for it, and nothing names an answering or reading method.
 4. 7 of the 16 cards name a skill that has no folder yet (`haipipe-insight-by-<method>`).
 5. T7 (robustness) and T8 (replication) have no code. `rivals` is a plan field only, and the

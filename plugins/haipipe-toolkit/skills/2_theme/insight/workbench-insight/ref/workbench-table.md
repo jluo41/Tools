@@ -16,7 +16,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Block | Audience Report | coverage | Propose questions | haipipe-insight-agent | haipipe-insight-question | none | Board › runs/`run-propose-coverage/` |
 | Block | Audience Report | tracks | Draw a track | haipipe-insight-agent | haipipe-insight-check | none | Board › runs/`run-track-<q>/` |
 | Block | Audience Report | consistency | Check consistency | haipipe-insight-reviewer-agent | haipipe-insight-knowledge | none | Board › runs/`run-consistency-<jA>-<jB>/` |
-| Block | Audience Report | findings | Ask a Block question | haipipe-insight-agent | haipipe-question | none | Board › runs/`run-ask-q<NN>/` |
+| Block | Audience Report | findings | Ask a Block question | haipipe-insight-agent | haipipe-report | none | Board › runs/`run-ask-q<NN>/` |
 | Block | Audience Report | findings | Write the report | haipipe-insight-agent | haipipe-report | none | Board › runs/`run-report-q<NN>/` |
 | Block | Audience Report | findings | Check a report | haipipe-draft-check-agent | haipipe-report | none | Board › runs/`run-check-q<NN>/` |
 | Block | Work Details | every view | Add a Job | haipipe-insight-agent | haipipe-insight | none | Board › runs/`run-add-j<NN>/` |
@@ -59,7 +59,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Prototype | Idea Studio | every view | Draw the question map | haipipe-insight-agent | haipipe-insight | none | Prototype › runs/`run-map-questions/` |
 | Prototype | Runs | every view | Carry a board over | haipipe-insight-agent | haipipe-insight | the carry | Prototype › runs/`run-carry-<board>/` |
 | Release | Work Details | every view | Ask a question | haipipe-insight-agent | haipipe-insight-question | none | Release › runs/`run-ask-<l><nn>/` |
-| Release | Work Details | every view | Review the questions | haipipe-insight-reviewer-agent | haipipe-question-review | a change | Release › runs/`run-review-questions-p<N>/` |
+| Release | Work Details | every view | Review the questions | haipipe-insight-reviewer-agent | haipipe-report | a change | Release › runs/`run-review-questions-p<N>/` |
 | Release | Description | partitions | Set the cuts | haipipe-insight-agent | haipipe-insight | the cuts | Release › runs/`run-set-cuts-p<N>/` |
 | Release | Delivery | every view | Sign the release | haipipe-insight-agent | haipipe-insight | the release | Release › runs/`run-sign-release-p<N>/` |
 | Question | Work Details | every view | Plan the evidence | haipipe-insight-agent | haipipe-insight-evidence-plan | none | Question › runs/`run-plan-evidence-<l><nn>/` |

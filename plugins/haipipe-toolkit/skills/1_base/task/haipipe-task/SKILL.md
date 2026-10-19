@@ -13,8 +13,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.13.0"
-  last_updated: "2026-10-11"
+  version: "1.15.0"
+  last_updated: "2026-10-14"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -198,7 +198,7 @@ Its Result envelope and receipt still live under
 
 ## Question and Insight routing
 
-For a Block Question or its readable Report, load `haipipe-question` (`skills/1_base/question/haipipe-question/ref/block-questions.md`);
+For a Block Question or its readable Report, load `haipipe-report` (`skills/1_base/project/haipipe-report/ref/block-questions.md`);
 it owns the register, the question's size and its report folder.
 The Block's `board.md` registers the question, its logic, native work references
 and `reports/qNN_<topic>/qNN_<topic>.md`. This Report is written through
@@ -230,8 +230,15 @@ display     haipipe-task-for-display           display family
 individual  haipipe-task-for-individual        haipipe-individual
 agent       haipipe-task-for-agent             haipipe-task-llm-engine
 endpoint    haipipe-task-for-endpoint          haipipe-end
-page        haipipe-task-for-page              one Board Page's evidence route
+evidence    haipipe-task-for-evidence          one Board Page's evidence route
+draft       haipipe-draft                      haipipe-draft-workflow (context ▶ structure ▶ evidence ▶ writing ▶ check)
 ```
+
+A `draft` Task writes: a paper Section, a report, an email, a discovery or insight page. Its
+face says `task-type: draft`; its work is the draft's Runs in its `draft/` subfolder, not Plan ▶
+Build ▶ Execute ▶ Report, and every theme's workbench opens it on the base's draft layout
+(`servers/workbench/workbench-task-draft/`), with the theme's own Spaces on top (b32 s03, JL 261014). `evidence`
+above is a different type: a job that collects the numbers one Page needs (it was `page` until 261014).
 
 Stata execution routes wholly to `haipipe-task-for-stata`. A Block prefix does
 not encode type. Infer type from explicit input, then Task code, then request

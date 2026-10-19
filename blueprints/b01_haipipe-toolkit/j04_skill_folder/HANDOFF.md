@@ -4,8 +4,8 @@ What happened
 -------------
 JL regrouped plugins/haipipe-toolkit/skills/ by plain `mv` into three layers. Old -> new, relative to skills/:
 
-  page/ -> 1_base/page/        task/ -> 1_base/task/        project/ -> 1_base/project/
-  question/ -> 1_base/question/   writing/ -> 1_base/writing/   display/ -> 1_base/display/
+  page/ -> 1_base/draft/        task/ -> 1_base/task/        project/ -> 1_base/project/
+  question/ -> 1_base/question/   writing/ -> 1_base/draft/writing/   display/ -> 1_base/display/
   ideation/ -> 1_base/ideation/   search/ -> 1_base/search/
   paper/ -> 2_theme/paper/     insight/ -> 2_theme/insight/   design/ -> 2_theme/design/
   discovery/ -> 2_theme/discovery/   cowork/ -> 2_theme/cowork/   (0_utils/ unchanged)
@@ -19,7 +19,7 @@ q02 · path fix (do this first)
 2. Code inside skills/** (.py .sh .js .toml .yaml .json): literal old paths (`SKILLS / "page/..."`, `Tools/plugins/haipipe-toolkit/skills/page/haipipe-draft/cli/page.py`, ...) and depth-based paths (`Path(__file__).resolve().parents[N]`, `.parent.parent`, `ENGINE.parents[1]`) that reach the skills root, the toolkit root or servers/_host: every skill is now one folder deeper. Prefer `next(p for p in Path(__file__).resolve().parents if p.name == "skills")` over bumping N.
 3. Markdown: broken relative links in skills/**, servers/**/*.md, the toolkit README and agents, Tools/README.md, Tools/AGENTS.md (resolve each missing link from the file's pre-move location, map the target forward, rewrite relative); written old paths (`skills/page/...`); the SPACE-root AGENTS.md rule 8 (`Tools/plugins/haipipe-toolkit/skills/page/haipipe-draft/cli/page.py`) and its Skills section (task/1_data/... now under 1_base/task/). Add a short section to skills/README.md describing the three layers (0_utils generic, not tied to the ladder; 1_base what every theme is built on; 2_theme one folder per theme with its haipipe-<theme> skills and workbench-<theme>).
 Skip generated or history files (AGENTS.md rule 0): *.excalidraw, *.png, .seed.json, static board/ sites and _assets/board.js, delivery/ outputs, CHANGELOG.md, _legacy/, _old/. No absolute /Users/... paths in tracked files.
-Checks: ast-parse edited .py; pytest (from the SPACE root: `source .venv/bin/activate && source env.sh`) for servers/_host/tests, workbench-task/tests, workbench-cowork/tests, workbench-discovery/tests, skills/1_base/page/haipipe-draft/tests (11 failures were the baseline before the move), haipipe-draft-workflow/tests and any tests beside changed code; a script that checks every path in guide_families.FAMILIES exists; a link checker over the Markdown; a final grep for `skills/(page|paper|task|project|question|writing|display|insight|design|discovery|cowork|ideation|search)/` returning only skipped files. Then rerun `../Tools-SPACE/install.sh --no-marketplace --project "$(pwd)"` from the SPACE root so the skill links follow (tell JL a restart loads them).
+Checks: ast-parse edited .py; pytest (from the SPACE root: `source .venv/bin/activate && source env.sh`) for servers/_host/tests, workbench-task/tests, workbench-cowork/tests, workbench-discovery/tests, skills/1_base/draft/haipipe-draft/tests (11 failures were the baseline before the move), haipipe-draft-workflow/tests and any tests beside changed code; a script that checks every path in guide_families.FAMILIES exists; a link checker over the Markdown; a final grep for `skills/(page|paper|task|project|question|writing|display|insight|design|discovery|cowork|ideation|search)/` returning only skipped files. Then rerun `../Tools-SPACE/install.sh --no-marketplace --project "$(pwd)"` from the SPACE root so the skill links follow (tell JL a restart loads them).
 
 q03 · merge plugins/subjective-label into haipipe-toolkit (after q02 passes)
 ------------------------------------------------------------------------------
@@ -36,6 +36,6 @@ Checks: the engine tests; haipipe-draft tests/test_labeling.py; `serve.py --only
 
 q01 · skill layers
 ------------------
-Write down, in reports/q01_skill_layers/, what is in each layer now and the open choices JL raised: workbench-page sits in 1_base/page (it is the Page theme's workbench, so it could go to 2_theme/page while the page core stays in base); a workbench-shared skill (the frame contract) would belong in 1_base; whether servers/ mirror the layers. The design behind it is Tools/blueprints/b10_project_workbench/studio/s02-studio-workbench-skill/ and s13-task-variants/.
+Write down, in reports/q01_skill_layers/, what is in each layer now and the open choices JL raised: workbench-page sits in 1_base/draft (it is the Page theme's workbench, so it could go to 2_theme/page while the page core stays in base); a workbench-shared skill (the frame contract) would belong in 1_base; whether servers/ mirror the layers. The design behind it is Tools/blueprints/b10_project_workbench/studio/s02-studio-workbench-skill/ and s13-task-variants/.
 
 Report to JL in chat as each Question finishes: what changed (files, one line each), the checks and their counts, what is left.

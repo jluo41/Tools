@@ -2424,7 +2424,7 @@ def roadmap_html(d):
     files = files or [own]
 
     def generated(f):
-        """A drawing a script writes (its `source` names the script, as excalidraw-section's paper
+        """A drawing a script writes (its `source` names the script, as excalidraw-draft's paper
         map does) opens view only: it is redrawn from its files, never edited (JL 261003)."""
         try:
             return str(json.loads(f.read_text(encoding="utf-8")).get("source", "")).endswith(".py")

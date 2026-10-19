@@ -1,6 +1,17 @@
 haipipe-report · Changelog
 ==========================
 
+## [0.3.0] · 2026-10-16 · Folds in haipipe-question, -asking and -review
+
+- JL: "no need for the question anymore" (Fold into haipipe-report). `skills/1_base/question/` is gone.
+- SKILL.md gains `## Questions`: what a board Question is, its size, `reports/qNN_<topic>/`, the register,
+  the open report frame, add-question usage. Old triggers (question, /haipipe-question, /haipipe-question-asking,
+  /haipipe-question-review) now fire this skill.
+- Moved in: `ref/block-questions.md`, `ref/block_questions.py` (from haipipe-question), `ref/asking.md` and
+  `ref/asking-methods/` (from haipipe-question-asking), `ref/review.md` (from haipipe-question-review).
+- `ask-questions` moved, unchanged, to `skills/0_utils/ask-questions/`.
+- Old history: haipipe-question 0.7.0, asking 0.1.0, review 0.1.0 (see git).
+
 ## [0.2.0] · 2026-10-12 · Questions inferred from the work, at each level
 
 - `ref/infer-reports.md`: a Task asks its own sub-questions (its report is its face); a Job, what its one Task

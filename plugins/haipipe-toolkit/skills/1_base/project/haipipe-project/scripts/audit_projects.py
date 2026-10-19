@@ -32,6 +32,8 @@ WORLD_DIRS = {
 }
 OLD_WORLD_DIRS = {"tasks": "work", "discoveries": "discovery", "papers": "paper", "insights": "insight",
                   "designs": "design", "labelings": "labeling", "ideations": "ideation"}
+# Not a Theme: the Project's inbox, quick notes from any session, each naming its next Block (b10 s10-D10)
+ROOT_DIRS = {"note"}
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
 # cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
 # Studio soft Runs live at Block scope; the one delivery/ of a Block holds every Job's built output
@@ -199,7 +201,7 @@ def audit(project: Path) -> Result:
     if not values.get("mission", "").strip():
         errors.append("mission is required")
 
-    allowed = set(WORLD_DIRS)
+    allowed = set(WORLD_DIRS) | ROOT_DIRS
     if profile in {"software", "hybrid"}:
         allowed.update(CODE_DIRS)
 

@@ -50,10 +50,10 @@ when no `draft/` exists). It holds the current plan
 Task or a whole `work/` tree, `page.py check-page-folder <task-folder | tasks-dir>`
 says whether each Page is on the latest layout and names the fix, and
 `page.py draft-layout <task-folder | tasks-dir> --sort-runs` migrates it
-(both under `<toolkit>/skills/1_base/page/haipipe-draft/cli/`).
+(both under `<toolkit>/skills/1_base/draft/haipipe-draft/cli/`).
 
 Because a Task Folder is a Board Page, it may hold the Page-owned `studio/`
-lane, whose storage and writer belong to `workbench-studio`. A Task never
+lane, whose storage and writer belong to `haipipe-studio`. A Task never
 invents its own chat or diagram home, and `studio/` holds no executable
 material: no worker, ticket, config or Result lives there.
 
@@ -64,7 +64,7 @@ material: no worker, ticket, config or Result lives there.
 - Direct executable children are Jobs named `jNN_*`.
 - May contain `diagram/` for the shared narrative.
 - May contain `studio/*.excalidraw` and Question Report Pages in `reports/`
-  (`haipipe-question` (`skills/1_base/question/haipipe-question/ref/block-questions.md`)). A report Folder may hold its Page-owned Draft,
+  (`haipipe-report` (`skills/1_base/project/haipipe-report/ref/block-questions.md`)). A report Folder may hold its Page-owned Draft,
   Runs and Results under the Page contract; it acquires no native Task address.
 - The Block root must not contain code, config, Tickets, Results, notebooks,
   or batchers. Executable Task work stays under Jobs and Tasks.

@@ -7,8 +7,12 @@ their served face, one `workbench-<theme>` beside the others.
 servers/
 ├── _host/serve.py             the shared haipipe host; `--only labeling` makes it the Labeling host
 └── workbench-labeling/        🏷 the served face of workbench-labeling
-    ├── labeling.py            LabelingMixin: labeling-board, labeling, and the one write door
-    ├── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
+    ├── labeling_theme.py      the theme on the frame: Block and Job levels
+    ├── guide/ · related/      the family's Guide
+    └── workbench-task-labeling/   a labeling Task's screen ⟷ skill workbench-task-labeling (b32 s41-D15)
+        ├── task_labeling.py   the frame's Spaces for a labeling Task, by its type
+        ├── labeling.py        LabelingMixin: labeling-board, labeling, and the one write door
+        └── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
     (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/)
 ```
 
@@ -45,10 +49,10 @@ and `<page>` a Page id (`S-Label-1`). The server fills in `path=`, `file=` and
 
 ## Dependency
 
-`workbench-labeling/labeling.py` is a mixin for the shared host: it takes
+`workbench-labeling/workbench-task-labeling/labeling.py` is a mixin for the shared host: it takes
 `target()`, `reply()` and the HTTP plumbing from `haipipe-toolkit/servers/_host`,
 and reads a Board's page list through one adapter, `_board_pages()`, which is
-the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/page/haipipe-draft/src`).
+the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/draft/haipipe-draft/src`).
 The dedicated Page-folder route uses its own checked resolver and does not
 call the Board parser.
 The shared Guide Space is mounted through

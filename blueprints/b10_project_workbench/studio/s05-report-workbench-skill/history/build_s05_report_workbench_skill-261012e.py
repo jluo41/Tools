@@ -323,7 +323,7 @@ def frame_screen(qs, space, versions):
     rect(xr, yr + 510, 700, 230)
     say(xr + 24, yr + 528, "Around it", HEAD)
     by = yr + 574
-    for s in [f"haipipe-question {versions['question']} asks: the row, the folder",
+    for s in [f"haipipe-report {versions['question']} asks: the row, the folder",
               "haipipe-draft writes the report's prose",
               "haipipe-studio feeds it frames (s02)", "haipipe-delivery keeps the built files (s03)"]:
         by = say(xr + 24, by, s, BODY)
@@ -388,7 +388,7 @@ def main():
     qs, unread = questions(frame)
     space = report_space(frame)
     versions = {"report": version(SKILLS / "project/haipipe-report"),
-                "question": version(SKILLS / "question/haipipe-question")}
+                "question": version(SKILLS / "project/haipipe-report")}
     story = [frame_levels(qs), frame_link(qs), frame_answer(qs), frame_screen(qs, space, versions)]
     tall = max(f["height"] for f in story)
     for f in story:                                   # one strip: every chapter the same height
@@ -396,10 +396,10 @@ def main():
     themes, flow, mind = G.draw(frame)                # Acts 2 to 4, merged from s07 (JL 261012)
     below = [frame_open(qs, unread), frame_reference(qs),
              L.tools_frame("In Tools: haipipe-report",                # its skills' folders and code (JL 261011)
-                           ["1_base/project/haipipe-report", "1_base/question/haipipe-question"],
+                           ["1_base/project/haipipe-report", "1_base/project/haipipe-report/"],
                            [("servers/workbench/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
                             ("servers/workbench/page_reader.py", ["page_document"])],
-                           around=["haipipe-question asks: the row, the folder", "haipipe-draft writes the prose",
+                           around=["haipipe-report asks: the row, the folder", "haipipe-draft writes the prose",
                                    "haipipe-studio feeds it frames (s02)", "haipipe-delivery keeps built files (s03)"],
                            note="its skills' folders and code, read from disk (JL)")]
     for fr in story + below:                          # every frame measured, as Acts 2 to 4 are (excalidraw-studio ⑥)

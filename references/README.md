@@ -15,7 +15,7 @@ These entries are tracked as Git submodules so their upstream history stays sepa
 - Deck and slide skills: `presentation-agent` (a transcript-to-deck agent with an HTML deck kit; no upstream license, read only).
 - Agent governance and writing-style skills: `writing-dna-skill`, `sepia`, `stop-that-shit`, `stop-slop`, `stop-slop-zh`, `llm-wiki-skill`.
 - Anti-AI writing comparison shelf: [`anti-ai-writing-skills.md`](anti-ai-writing-skills.md); it records the ten screenshot items and the exact `SKILL.md` path for each source.
-- HAI integration: `haipipe-writing/ref/anti-slop-adapter.md` and its
+- HAI integration: `haipipe-draft-review/ref/anti-slop-adapter.md` and its
   read-only `cli/anti_slop.py` adapter consume one selected reference after
   paragraph drafting; the references here remain independently updateable.
 - Tool libraries used as references: `tools/statsmodels`, `tools/dowhy`, `tools/causalml`, `tools/econml`, `tools/python-causality-handbook`, `tools/chatgpt-comparison-detection`.

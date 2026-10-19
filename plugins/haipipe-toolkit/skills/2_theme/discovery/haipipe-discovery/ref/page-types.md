@@ -137,7 +137,7 @@ this layout a Result belongs to exactly one division, which is the point: the
 many-to-many rule below is for Pages that argue across sources, not for Pages
 that file them. A Run moved to another Page takes its division with it. The
 per-page reorganization job that moves an existing four-division Page into
-this layout is written in `haipipe-task-for-page` (section "Reorganize a
+this layout is written in `haipipe-task-for-evidence` (section "Reorganize a
 Discovery Page into one division per Run").
 
 When human Page interaction is needed, the shared Page workflow starts with

@@ -1,5 +1,10 @@
 # haipipe-display · Changelog
 
+## 0.3.7 · 2026-10-16 · display/ beside draft/ and evidence/ (JL 261016)
+
+- § Where the unit lands: a draft Task's units go to `<task>/display/Display<n>-<slug>/`, and each names the
+  `built_on:` cards it reads from `<task>/evidence/cards.yaml` through haipipe-evidence.
+
 ## 0.3.6 · 2026-09-28 · No content hashes (JL 260928)
 
 - AGENTS.md rule 9: `ref/display-intake-contract.md`, `ref/intake-manifest.template.yaml` and `ref/display-unit-output-contract.md` drop `origin.sha256` and `snapshot.sha256`; `snapshot.materialized_at` is required, and a local canonical artifact newer than it means the snapshot is stale.

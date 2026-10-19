@@ -17,6 +17,7 @@ from host_paths import bootstrap
 bootstrap()
 
 from live import frame  # noqa: E402
+from live import task_draft  # noqa: E402
 from live.frame_view import FrameMixin  # noqa: E402
 
 
@@ -123,7 +124,7 @@ class FillTagTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = project(tmp)
             task = root / "Project/tasks/b01_topic/j01_job/t01_task"
-            out = frame.with_page_views({"Audience Report": frame.Space(subspaces=("Draft", "Report"), open="Draft")},
+            out = task_draft.with_page_views({"Audience Report": frame.Space(subspaces=("Draft", "Report"), open="Draft")},
                                         "Task", task, root, "Draft", {"Description": "Face", "Audience Report": "Report",
                                         "Work Details": "Work", "Runs": "All", "Delivery": "Files"})
             self.assertEqual(out["Audience Report"].subspaces, ("Draft", "Report"))
@@ -189,7 +190,7 @@ class LevelPatternTest(unittest.TestCase):
 
 
 class PageTaskTest(unittest.TestCase):
-    # A Page Task on the frame (frame.page_task_spaces, b03 s13 / b16 s13): the Page's own views, embedded.
+    # A Page Task on the frame (task_draft.draft_task_spaces, b03 s13 / b16 s13): the Page's own views, embedded.
     def test_a_page_task_opens_the_pages_views_in_the_six_spaces(self):
         from urllib.parse import parse_qs, urlparse
         with tempfile.TemporaryDirectory() as tmp:
@@ -200,8 +201,8 @@ class PageTaskTest(unittest.TestCase):
             (board / "board.md").write_text("# Paper\n\ndialect: paper\n")
             (section / "S-Desk-Main-1-Intro.md").write_text("# Intro\n")
             (section / "draft" / "records" / "S-Desk-Main-1-Intro-requirement.md").write_text("V1 · at most 900 words\n")
-            spaces = frame.page_task_spaces(section, root)
-            self.assertEqual({k: v.subspaces for k, v in spaces.items()}, frame.PAGE_TASK_SUBS)
+            spaces = task_draft.draft_task_spaces(section, root)
+            self.assertEqual({k: v.subspaces for k, v in spaces.items()}, task_draft.DRAFT_TASK_SUBS)
             src = re.search(r'src="([^"]+)"', spaces["Audience Report"].html).group(1)
             q = parse_qs(urlparse(src.replace("&amp;", "&")).query)
             self.assertEqual(urlparse(src).path, "/_board/draft")
@@ -211,11 +212,11 @@ class PageTaskTest(unittest.TestCase):
             (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "draft-bibliography").mkdir(parents=True)
             (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "S-Desk-Main-1-Intro.tex").write_text("x")
             (board / "delivery" / "Ba-Desk-Main/S-Desk-Main-1-Intro" / "latex" / "draft-bibliography" / "S-Desk-Main-1-Intro.bib").write_text("x")
-            runs = frame.page_task_spaces(section, root)["Runs"]               # the Page Runs view, embedded (s13)
+            runs = task_draft.draft_task_spaces(section, root)["Runs"]               # the Page Runs view, embedded (s13)
             self.assertEqual((runs.subspaces, runs.page), ((), True))
             self.assertIn("/_board/runs?", runs.html)
             self.assertIn("embed=1", runs.html)
-            deliv = frame.page_task_spaces(section, root)["Delivery"]          # item cards, no third row (s13 1b)
+            deliv = task_draft.draft_task_spaces(section, root)["Delivery"]          # item cards, no third row (s13 1b)
             self.assertEqual((deliv.subspaces, deliv.page), ((), True))
             self.assertIn("<h2>Deliveries</h2>", deliv.html)                    # one card per kind, its result inside
             self.assertIn("📄 LaTeX", deliv.html)
@@ -224,14 +225,14 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("not built yet: run Build", deliv.html)                # Word, Web … not built
             self.assertEqual([k["label"] for k in deliv.run_types], ["run-delivery-<target>", "run-check-<page>"])
             self.assertTrue(all(isinstance(x, str) and not x.startswith("[") for k in deliv.run_types for x in k["skills"]))
-            merged = frame.spaces_for(frame.Theme(name="paper", spaces=lambda *a: frame.page_task_spaces(section, root)),
+            merged = frame.spaces_for(frame.Theme(name="paper", spaces=lambda *a: task_draft.draft_task_spaces(section, root)),
                                       "Task", section, root)["Delivery"]
             self.assertEqual((merged.subspaces, [k["label"] for k in merged.run_types]),
                              ((), ["run-delivery-<target>", "run-check-<page>"]))
-            self.assertIn("tab=supporting", frame.page_task_spaces(section, root, "Evidence-Supporting")["Work Details"].html)
-            self.assertIn("at most 900 words", frame.page_task_spaces(section, root, "Requirement")["Description"].html)
-            self.assertIn("-requirement.md", frame.page_task_spaces(section, root, "Records")["Description"].html)
-            self.assertIn("No plan yet", frame.page_task_spaces(section, root, "Plan")["Description"].html)
+            self.assertIn("tab=supporting", task_draft.draft_task_spaces(section, root, "Evidence-Supporting")["Work Details"].html)
+            self.assertIn("at most 900 words", task_draft.draft_task_spaces(section, root, "Requirement")["Description"].html)
+            self.assertIn("-requirement.md", task_draft.draft_task_spaces(section, root, "Records")["Description"].html)
+            self.assertIn("No plan yet", task_draft.draft_task_spaces(section, root, "Plan")["Description"].html)
             self.assertEqual(spaces["Description"].html, "")              # Scope: the vanilla face and fields
 
     def test_a_page_task_reads_in_the_audience_report_and_works_in_work_details(self):
@@ -263,7 +264,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual([r.split("-")[:2] for r in runs("Scope", "Description")], [["run", "face"]])
             spaces = frame.spaces_for(theme, "Task", section, root, "Questions")
             self.assertIn("Why this order?", spaces["Audience Report"].html)
-            self.assertIn("Rubric", frame.page_task_spaces(section, root, "Requirement")["Description"].html)
+            self.assertIn("Rubric", task_draft.draft_task_spaces(section, root, "Requirement")["Description"].html)
 
     def test_a_theme_may_add_its_own_views_after_the_pages(self):
         # b16 s13 (JL 261007): paper adds Reviews after Table · Reading · Questions; the Space stays the
@@ -276,17 +277,43 @@ class PageTaskTest(unittest.TestCase):
             (section / "S-Desk-Main-1-Intro.md").write_text("# Intro\n")
 
             def spaces(level, folder, root, sub):
-                out = frame.page_task_spaces(folder, root, sub)
+                out = task_draft.draft_task_spaces(folder, root, sub)
                 ar = out["Audience Report"]
                 out["Audience Report"] = frame.Space(html=ar.html, open=ar.open, run_types=ar.run_types,
                                                      subspaces=ar.subspaces + ("Reviews",))
                 return out
             theme = frame.Theme(name="paper", label="Paper", spaces=spaces)
             ar = frame.spaces_for(theme, "Task", section, root)["Audience Report"]
-            self.assertEqual(ar.subspaces, frame.PAGE_TASK_SUBS["Audience Report"] + ("Reviews",))
+            self.assertEqual(ar.subspaces, task_draft.DRAFT_TASK_SUBS["Audience Report"] + ("Reviews",))
             self.assertEqual(ar.run_types, ())
             self.assertTrue(frame.lays_out_page("Audience Report", ar.subspaces))
             self.assertFalse(frame.lays_out_page("Audience Report", ("Reviews", "Table")))
+
+    def test_a_draft_task_type_opens_the_draft_layout_in_any_theme(self):
+        # b32 s03 (JL 261014): the face's `task-type: draft` picks the base's draft layout, whatever the theme;
+        # another type keeps the theme's (here vanilla) layout, and a theme's own Space goes on top
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            job = root / "Project-X/work/b01_topic/j01_job"
+            for name, kind in (("t01_note", "draft"), ("t02_data", "data")):
+                (job / name).mkdir(parents=True)
+                (job / name / f"{name}.md").write_text(f"# {name}\n\nfolder-kind: task\ntask-type: {kind}\n")
+            (job.parent / "board.md").write_text("# Topic\n")
+            self.assertEqual((frame.task_type(job / "t01_note"), frame.task_type(job / "t02_data")), ("draft", "data"))
+            draft = frame.spaces_for(frame.VANILLA, "Task", job / "t01_note", root)
+            data = frame.spaces_for(frame.VANILLA, "Task", job / "t02_data", root)
+            self.assertEqual(draft["Work Details"].subspaces, task_draft.DRAFT_TASK_SUBS["Work Details"])
+            self.assertNotEqual(data["Work Details"].subspaces, task_draft.DRAFT_TASK_SUBS["Work Details"])
+            mine = frame.Space(html="<p>mine</p>")
+            themed = frame.spaces_for(frame.Theme(name="t", spaces=lambda *a: {"Idea Studio": mine}), "Task",
+                                      job / "t01_note", root)
+            self.assertEqual(themed["Audience Report"].subspaces, task_draft.DRAFT_TASK_SUBS["Audience Report"])
+            self.assertEqual(frame.task_action(job / "t01_note", root)[0], "✎ Write")
+            self.assertIsNone(frame.task_action(job / "t02_data", root))
+            # the older `page-type:` alone no longer marks a draft (s03-D04, 261015): the face says task-type
+            (job / "t03_old").mkdir()
+            (job / "t03_old" / "t03_old.md").write_text("# t03_old\n\npage-type: section\n")
+            self.assertIsNone(frame.task_action(job / "t03_old", root))
 
     def test_the_page_view_embeds_without_its_own_chrome(self):
         from live.outline import EMBED_HTML
@@ -376,7 +403,9 @@ class FrameTest(unittest.TestCase):
             self.assertEqual(items["t01_task"]["source"], "j01_job › t01_task")
             page = frame.render(frame.VANILLA, root, block, "Delivery")
             card = page.split('data-studio-key="Deck"', 1)[1].split("</details>", 1)[0]
-            self.assertIn("3 versions, newest Visual-v3", card)
+            self.assertNotIn("topic-meta", card)          # no line under the name (JL 261014: "so many unnecessary
+            self.assertNotIn("versions, newest", card)    # information")
+            self.assertNotIn("Add to Current", card)      # JL 261014: "remove the add to current"
             self.assertEqual(re.findall(r'data-dv="(\d)" aria-pressed="(\w+)"', card),
                              [("0", "true"), ("1", "false"), ("2", "false")])
             self.assertIn('<img class=related-img loading=lazy alt="Deck-Visual-v3.png"', card)   # the render first
@@ -744,6 +773,47 @@ class FrameTest(unittest.TestCase):
             self.assertRegex(page, r'<b>s02-bare</b>.*?<span class=topic-pop>.*?</span><span class="stage stage-none"')
             note.write_text(note.read_text().replace("shaping", "maybe"))     # an unknown word shows no stage
             self.assertIn('data-stage=""', frame.render(frame.VANILLA, root, block, studio=True))
+
+    def test_studio_runs_lists_every_hard_run_with_its_status(self):
+        """JL 261019: "list another one to show the Hard Run, for each task, and just show their status"."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            runs = block / "j01_job/t01_task/runs"
+            (runs / "r01_done/result").mkdir(parents=True)
+            (runs / "r01_done/result/runtime.yaml").write_text("status: complete\nfinished_at: '2026-10-19T12:00:00'\n")
+            (runs / "r02_waits").mkdir(parents=True)
+            (runs / "r02_waits/run.yaml").write_text("run: r02_waits\nstatus: planned\n")
+            (runs / "run-draw-s01").mkdir(parents=True)                       # a soft Run: not listed
+            page = frame.render(frame.VANILLA, root, block, studio=True)
+            self.assertIn("id=studio-runs", page)
+            self.assertIn("3 hard Runs · ✅2 ⬜1", page)                     # with the fixture's r01_fit (done)
+            self.assertRegex(page, r"✅</span><code>r01_done</code><span class=rn-st>complete</span><span class=rn-day>2026-10-19")
+            self.assertRegex(page, r"⬜</span><code>r02_waits</code><span class=rn-st>planned")
+            self.assertNotIn("<code>run-draw-s01</code>", page)
+            self.assertNotIn("<code>run-build-t01</code>", page)
+            self.assertLess(page.index("id=studio-delivery"), page.index("id=studio-runs"))
+            self.assertLess(page.index("id=studio-runs"), page.index("id=studio-timeline") if "id=studio-timeline" in page else len(page))
+
+    def test_hard_runs_read_flat_tickets_and_show_a_running_runs_start(self):
+        """JL 261019: "show the current run progress"; Proj11 b01 keeps runs/rNN_*.sh tickets, receipts in results/."""
+        with tempfile.TemporaryDirectory() as tmp:
+            block = Path(tmp) / "b01_topic"
+            task = block / "j04_job/t01_task"
+            (task / "runs").mkdir(parents=True)
+            for name in ("r01_done", "r02_going", "r03_elsewhere"):
+                (task / "runs" / f"{name}.sh").write_text("#!/bin/bash\n")
+            (task / "runs/eval_old.sh").write_text("#!/bin/bash\n")               # not rNN_: not a hard Run
+            (task / "results/r01_done").mkdir(parents=True)
+            (task / "results/r01_done/runtime.yaml").write_text("status: complete\nfinished_at: 2026-10-10T18:36:27-04:00\n")
+            (block / "j04_job/results/t01_task/r02_going").mkdir(parents=True)  # the Job's results/<task>/<run>/
+            (block / "j04_job/results/t01_task/r02_going/runtime.yaml").write_text(
+                "status: running\nstarted_at: 2026-10-19T13:02:11-04:00\nprogress: 1200/5000 steps\n")
+            self.assertEqual(frame.hard_runs(block), [
+                ("j04_job", "t01_task", "r01_done", "complete", "2026-10-10"),
+                ("j04_job", "t01_task", "r02_going", "running", "since 10-19 13:02 · 1200/5000 steps"),
+                ("j04_job", "t01_task", "r03_elsewhere", "no receipt", "")])
+            self.assertEqual(frame.runs_tally(frame.hard_runs(block)), "✅1 ▶️1 ⬜1")
 
     def test_studio_tags_are_explicit_shared_and_keep_untyped_topics_visible(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1209,9 +1279,9 @@ class ButtonSkillTest(unittest.TestCase):
             for space, view in frame.spaces_for(frame.VANILLA, level, folder, root).items():
                 for k in view.run_types:
                     yield level, space, k
-        for space, subs in frame.PAGE_TASK_SUBS.items():
+        for space, subs in task_draft.DRAFT_TASK_SUBS.items():
             for sub in subs or ("",):
-                for k in frame.page_task_spaces(task, root, sub)[space].run_types:
+                for k in task_draft.draft_task_spaces(task, root, sub)[space].run_types:
                     yield "Page Task", space + " " + sub, k
 
     def test_every_button_names_a_skill_that_exists(self):

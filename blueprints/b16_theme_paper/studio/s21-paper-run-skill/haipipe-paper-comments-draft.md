@@ -144,7 +144,7 @@ reader), citing the points it came from:
 RV1  Is the effect causal, or selection?   ← cites R1.1 · M2.3   → reports/qNN_<topic>/
 ```
 
-The skill proposes; a person adds it through `haipipe-question` (Ask a Question). A meeting or advisor batch
+The skill proposes; a person adds it through `haipipe-report` (Ask a Question). A meeting or advisor batch
 often ends here: its points become questions rather than Section changes.
 
 ## ✋ Human authority

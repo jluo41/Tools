@@ -1,7 +1,7 @@
 # Labeling Space · UI ↔ Page Folder ↔ Run mapping
 
 This is the orientation contract for the Labeling Workbench surface of
-`workbench-labeling` (`plugins/haipipe-toolkit/servers/workbench-labeling/labeling.py`). It uses one location word:
+`workbench-labeling` (`plugins/haipipe-toolkit/servers/workbench-labeling/workbench-task-labeling/labeling.py`). It uses one location word:
 **Space = Workspace** (one concept). The current adapter retains P0-P5 in the
 Workflow drawer's Phases card (`?drawer=workflow`) as compatibility capability tags. They
 are not Workflow nodes, Run owners, or routing authority. The adapter may use

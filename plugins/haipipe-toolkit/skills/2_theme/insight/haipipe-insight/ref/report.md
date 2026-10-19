@@ -48,7 +48,7 @@ questions; the register cell is the join.
 
 Every answering page is written the `haipipe-draft` way (its `SKILL.md`,
 `ref/page-template.md`, `ref/page-checklist.md`; the Board's
-`ref/writing-rules.md`; the plan grammar in `workbench-page/ref/plan-grammar.md`):
+`ref/writing-rules.md`; the plan grammar in `workbench-task-draft/ref/plan-grammar.md`):
 
 ```text
 1 needs      the questions' needs and specs are planned and bound          evidence-needs.md

@@ -1,4 +1,4 @@
-"""s61 · build the deck: slides.py → ../../delivery/design-slides/.
+"""s61 · build the deck: slides.py → ../../delivery/design-slides
 
 Writes one 1280 × 720 SVG per slide (svg/NN-<slug>.svg), merges them into design-slides.pdf, and
 builds design-slides.pptx with native, editable shapes and text boxes and each slide's speaker notes.

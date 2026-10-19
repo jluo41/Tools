@@ -53,7 +53,7 @@ Chinese mnemonic:
 | `7_display` | Display | 图 / 图表 | Prepare display source data and provenance; final visual artifacts belong to the Display family. |
 | `8_stata` | Stata | 统 / 统计 | Stata-engine work, including CMS/case/data/reg stages. |
 | `9_agent` | Agent | 代 / 代理 | LLM-agent compute that produces task evidence. |
-| `10_page` | Page service | 页 / 页面 | Produce reusable values and Supporting Run Results for a Page. |
+| `10_evidence` | Page service | 页 / 页面 | Produce reusable values and Supporting Run Results for a Page. |
 
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.

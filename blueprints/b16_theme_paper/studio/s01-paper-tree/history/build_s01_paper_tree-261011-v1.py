@@ -211,7 +211,7 @@ OPEN = ["? the two lines, proposed: the venue (Board | Job) and one Section (Job
         "? venues/ into the Job: s11 (Block › Description › Venue) and Q02's hypothesis put it on the Board",
         "? a telling's name: sNN-story-<desk>-<idea> -> sNN-story-<idea> (haipipe-paper-story, paper_ladder.py)",
         "? the Job's standard topics: s01-venue-fit · s02-narrative-cut · s03-figure-plan · s04-response-map",
-        "? Task-level reports/: haipipe-question calls a one-Section question too narrow; drop them?",
+        "? Task-level reports/: haipipe-report calls a one-Section question too narrow; drop them?",
         "? a Task's studio/: only sNN-argument-flow, when a Section's logic needs drawing?",
         "? on screen: the Venue view moves from Block › Description to Job › Description",
         "? the Board's Related view: by question only, the target venue's papers shown in the Job",

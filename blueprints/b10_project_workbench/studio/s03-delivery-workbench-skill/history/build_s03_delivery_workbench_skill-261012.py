@@ -650,7 +650,7 @@ def main():
     tools = L.tools_frame(                                # the skill's folder and its code (JL 261011)
         "In Tools: haipipe-delivery", ["1_base/project/haipipe-delivery"],
         [("servers/workbench/frame.py", ["delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"]),
-         ("skills/1_base/page/haipipe-draft/src/common.py",
+         ("skills/1_base/draft/haipipe-draft/src/common.py",
           ["delivery_owner", "delivery_dir", "delivery_source", "delivery_relative"])],
         around=["haipipe-draft-delivery builds a Page's lanes", "haipipe-paper-assemble builds the paper",
                 "haipipe-design-delivery releases a design Job", "haipipe-cowork keeps a drafted email or reply",

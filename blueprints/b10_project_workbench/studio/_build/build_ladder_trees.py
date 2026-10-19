@@ -11,7 +11,7 @@ join the boxes (red dashed = open), routed around the trees; open questions are 
 Replies to the person's red comments are drawn in blue beside the comment (REPLIES).
 
 Sources: haipipe-project ref/project-structure.md, haipipe-task SKILL.md and ref/hierarchy.md,
-haipipe-question SKILL.md, haipipe-run SKILL.md. "?" lines are open, not settled.
+haipipe-report SKILL.md, haipipe-run SKILL.md. "?" lines are open, not settled.
 
     python build_ladder_trees.py [out.excalidraw]
 """
@@ -177,7 +177,7 @@ REPLIES = [  # our answers to the person's red comments, in blue, beside the com
                   "   no runs/, no results/: it cites Job, Task or Run by address\n\n"
                   "updated: the qNN tree, line for line, so your marks still point right.\n"
                   "what this changes elsewhere:\n"
-                  "   · haipipe-question puts a report's drawings in its studio/ (261004)\n"
+                  "   · haipipe-report puts a report's drawings in its studio/ (261004)\n"
                   "   · Page writing Runs (run-section-...) sit in reports/qNN/runs/ today\n\n"
                   "recommend: no writing Runs. The .md and the drawing are edited\n"
                   "directly and git keeps their history; only work that makes\n"
@@ -201,7 +201,7 @@ REPLIES = [  # our answers to the person's red comments, in blue, beside the com
 ]
 
 
-LIGHT_PAGE = [  # header lines are haipipe-question's own; the four headings are its report divisions
+LIGHT_PAGE = [  # header lines are haipipe-report's own; the four headings are its report divisions
     "# <the Question, as the audience asks it>",
     "answers: QNN",
     "answer-status: open | partial | answered",

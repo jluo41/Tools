@@ -122,7 +122,7 @@ ThreadingHTTPServer ── Handler (one class of ~30 mixins, each from live.<mod
    shows on the next reload. Code is different: the server never reloads, so a code change
    needs a restart.
 2. **Many folders, one namespace.** Every folder under `servers/` (the host, `space-home`,
-   `haipipe-page`, the base `workbench` and its `task-page`, each `workbench-<theme>`) puts its
+   `workbench/workbench-task-draft/reader`, the base `workbench` and its `workbench-task-draft`, each `workbench-<theme>`) puts its
    `*.py` on one package, `live`, so `from live.frame import ...` works wherever the file sits. Their
    `assets/js` and `assets/css` are joined into one `board.js` and one `board.css`.
 3. **One request.** `do_GET` checks sign-in, the terminal switch and `--only` first, then tries
@@ -152,7 +152,7 @@ ThreadingHTTPServer ── Handler (one class of ~30 mixins, each from live.<mod
    `workbench/guide/levels.yaml` with the theme's overrides, a Space card's `sub` and `runs` live from
    the frame; the frame passes its level so that section opens (frame ③; b03 `s31-guide`).
 8. **A Page Task.** A theme whose Tasks are Pages (paper's Sections) returns
-   `frame.page_task_spaces`: Description Scope · Plan · Requirement · Records, Audience Report Table ·
+   `frame.draft_task_spaces`: Description Scope · Plan · Requirement · Records, Audience Report Table ·
    Reading · Questions, Work Details Draft-… · Evidence-…, Delivery LaTeX · Word, each view the Page
    itself embedded (`/_board/draft?…&embed=1`); run cards per view, none on Table and Reading. The
    paper theme adds its own lines over it. Other Tasks keep the Page views as extra tabs
@@ -192,7 +192,7 @@ Open
    watch?
 5. Hosting for colleagues (Q12): an always-on host, sign-in, a viewer mode with no writes. Now its own topic, s52-host-and-share (261012).
 6. `do_GET` and `do_HEAD` each list every route: one route table instead of two if-chains?
-7. One mechanism for a Task's Page views: `page_task_spaces` for every Page Task, then `PAGE_VIEWS` goes?
+7. One mechanism for a Task's Page views: `draft_task_spaces` for every Page Task, then `PAGE_VIEWS` goes?
 8. Evidence-Supporting has no Task runs / Discovery runs card in `run-cards.md` yet, and the cards'
    `views` lines still put Structure revise, Evidence embed and Auto write on Table and Reading.
 9. A Section's Questions: the Work column should list the Runs that worked it and what they changed.

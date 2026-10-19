@@ -17,9 +17,9 @@ skills/1_base/
 │               haipipe-task-for-<kind> skills, the HAI-Pipe stage pipelines (data, nn, end,
 │               individual), haipipe-workflow, haipipe-page-task, the task agents
 ├── page/       haipipe-draft (the Page engine), haipipe-draft-workflow and its Run skills,
-│               haipipe-folder, haipipe-sentence, workbench, workbench-studio, workbench-page
-├── question/   haipipe-question (a Block's Questions and report folders), -asking, -review
-├── writing/    haipipe-writing, humanizer, academic-humanizer, writing-dna-skill
+│               haipipe-draft-writing, workbench, workbench-studio, workbench-page
+├── question/   haipipe-report (a Block's Questions and report folders), -asking, -review
+├── draft/      also haipipe-draft-review (the judge: humanizer, academic-humanizer, writing-dna-skill); drafting prose is haipipe-draft/ref/writing
 ├── display/    haipipe-display and its renderers, html-ppt, excalidraw-*, *-to-svg
 ├── ideation/   haipipe-ideation and its generate · test · select skills
 └── search/     haipipe-search, arxiv, openalex, semantic-scholar, ...
@@ -63,7 +63,7 @@ questions:
   title: What does each base family give the themes?
   question: For each base family, what does it provide (contract, engine, CLI, agents),
     and which themes and other base families call it?
-  hypothesis: Every theme calls haipipe-task, haipipe-run, haipipe-draft and haipipe-question;
+  hypothesis: Every theme calls haipipe-task, haipipe-run, haipipe-draft and haipipe-report;
     no theme calls another theme; a few base skills are called by one theme only,
     which makes them candidates to move into that theme.
   acceptance: Answered when a map of base family x caller (theme or base family) is
@@ -77,7 +77,7 @@ questions:
     agents, tests, CHANGELOG), and which families differ from that shape today?
   hypothesis: The shape matches a theme's (a haipipe-<family> door at the family top,
     its agents in one place); the families differ mainly in where agents live and
-    in nested sub-families (task's 1_data ... 10_page, ideation's 1_generate ... 3_select).
+    in nested sub-families (task's 1_data ... 10_evidence, ideation's 1_generate ... 3_select).
   acceptance: Answered when the common shape is written down and one row per family
     shows where it differs, drawn in studio/.
   work: []

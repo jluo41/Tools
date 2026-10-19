@@ -28,7 +28,7 @@ board).
 | Block | `run-propose-method-<slug>` | soft | a method change, sent to the registry | designer agent | — | a person | haipipe-design-method |
 | Block | `run-add-observed-e<NN>` | soft | an Exp's per-arm totals, `observed/eNN_<exp>/` | designer agent | manifest sha256 | none | haipipe-design-method |
 | Block | `run-score-e<NN>` | soft | every arm's design scored, `scores.csv` in its own folder | reviewer agent | — | none | haipipe-design-method |
-| Block | `run-propose-questions` | soft | the Block's questions into `board.md ## Questions` | designer agent | another agent agrees | none | haipipe-question |
+| Block | `run-propose-questions` | soft | the Block's questions into `board.md ## Questions` | designer agent | another agent agrees | none | haipipe-report |
 | Block | `run-report-q<NN>` | soft | a question's report in `reports/qNN_<topic>/` | designer agent | another agent | none | haipipe-report |
 | Block | `run-draw-s<NN>` | soft | a studio topic and its builder | designer agent | — | none | excalidraw-report |
 | Job | `run-setup-goal-j<NN>` | soft | confirm the face's `goal:` pin names a signed goal; record it in its pass | designer agent | signed at the Block | none | haipipe-design-goal |

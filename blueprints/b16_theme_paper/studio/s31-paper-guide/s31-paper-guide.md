@@ -46,7 +46,7 @@ Proposed at the Block level (261007)
    (Description › Scope · Venue · Related; runs Add a venue · Add a related item · Read a paper),
    signed by naming the target venue. Today the Board has the Spaces and the run types but no step.
 2. Skills by level: the Block section names the Board's own skills (haipipe-paper owns;
-   haipipe-paper-story, -ideation, -venue and haipipe-question work; workbench-paper shows).
+   haipipe-paper-story, -ideation, -venue and haipipe-report work; workbench-paper shows).
 3. Two pairs of words kept apart: Description › Related (what one paper sits beside) and Guide ›
    Related Paper (the papers behind the method); the Guide's RoadMap Draw (the theme's drawings) and a
    paper's own RoadMap drawing (its Idea Studio).

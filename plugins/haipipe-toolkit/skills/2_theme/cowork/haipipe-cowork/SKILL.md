@@ -32,7 +32,7 @@ Project/
     └── bNN_<topic>/                Block = CoWork Board
         ├── board.md                fixed: header, the text, the Questions register
         ├── studio/                 fixed: the Idea Studio, one topic per sNN-<topic>/ (haipipe-studio)
-        ├── reports/qNN_<topic>/    fixed: a Question's report Page (haipipe-question); its own
+        ├── reports/qNN_<topic>/    fixed: a Question's report Page (haipipe-report); its own
         │                           drawings in reports/qNN_<topic>/studio/
         ├── _old/                   fixed: replaced material; do not use
         ├── j00_people/             who to ask for help (state 📇 REFERENCE)
@@ -124,7 +124,7 @@ onedrive: <SPACE-relative OneDrive folders of this Block, comma separated; optio
 ```
 
 Then the text (what the Block is, its Jobs and where things are), then the optional
-`## Questions` register (`haipipe-question`, `ref/block-questions.md`; in a cowork Block
+`## Questions` register (`haipipe-report`, `ref/block-questions.md`; in a cowork Block
 a Question's `work:` names files inside the Block) and `## Related resources`.
 
 ## Rules
@@ -167,5 +167,5 @@ still answers, and lists every Block of a Project at `?path=<Project>/cowork`.
    `python <haipipe-project>/scripts/audit_projects.py <Project>`.
 
 Boundary: `haipipe-project` owns the `cowork/` world inside a Project and its audit;
-`haipipe-question` owns Questions and report Pages; this skill owns the Block, its Jobs
+`haipipe-report` owns Questions and report Pages; this skill owns the Block, its Jobs
 and their folders.

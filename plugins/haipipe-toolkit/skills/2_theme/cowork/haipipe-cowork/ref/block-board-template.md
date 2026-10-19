@@ -17,6 +17,6 @@ A migrated topic README's text goes here, its file lists turned into the Jobs li
 questions: []
 ```
 
-<!-- Add Questions with haipipe-question's ref/block_questions.py add-question;
+<!-- Add Questions with haipipe-report's ref/block_questions.py add-question;
 in a cowork Block, --work names a file inside the Block (a job page or a
 design note inside a Job). Reports live in reports/qNN_<topic>/qNN_<topic>.md. -->

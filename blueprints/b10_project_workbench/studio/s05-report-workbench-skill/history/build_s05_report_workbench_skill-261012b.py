@@ -221,7 +221,7 @@ def tree_nodes(qs, unread, space, versions):
             {"Runs panel buttons": [f"{b[0]}  {b[1]}  ({b[2]})" for b in buttons]}]},
         {"5 In Tools": [
             {f"haipipe-report  {versions['report']}": skill_folder(SKILLS / "project/haipipe-report")},
-            {f"haipipe-question  {versions['question']}": skill_folder(SKILLS / "question/haipipe-question")[:5]},
+            {f"haipipe-report  {versions['question']}": skill_folder(SKILLS / "project/haipipe-report")[:5]},
             {"servers/workbench/": [where(f, fn) for f in ("question_rows", "_report_cell", "_answering", "_opening")]
                                    + [where("page_document", SERVERS / "workbench/page_reader.py")]},
             "haipipe-draft writes the prose; haipipe-studio feeds frames (s02); haipipe-delivery keeps built files (s03)"]},
@@ -288,7 +288,7 @@ def main():
     qs, unread = questions(frame)
     space = report_space(frame)
     versions = {"report": version(SKILLS / "project/haipipe-report"),
-                "question": version(SKILLS / "question/haipipe-question")}
+                "question": version(SKILLS / "project/haipipe-report")}
     ui = screen_frame(qs, frame)
     bg = tree_frame("Background: the Report", "Background: the Report, for a newcomer",
                     ["What the topic is about, the words it uses, and where it sits. The topic itself is the Tree."],

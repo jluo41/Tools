@@ -9,8 +9,8 @@ description: >-
   Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
   Section tab, paper spaces, /workbench-paper.
 metadata:
-  version: "0.39.0"
-  last_updated: "2026-10-11"
+  version: "0.39.1"
+  last_updated: "2026-10-19"
 ---
 
 # /workbench-paper · the paper theme on the shared frame
@@ -56,7 +56,7 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 | Job › Audience Report | Questions · Draft-Main · Draft-Appendix · Comments · Cover letter | the face's `## Questions` and the standing J1–J5; each Section as Question │ Work │ Report with its rendered draft beside its drawing; the comments reports' `## Review Items`; the letter by paragraph |
 | Job › Work Details | All · Main · Appendix · Letters | its `t0N_` · `t2N_` · `t3N_` Tasks; the comments reports the letters answer |
 | Job › Runs · Delivery | (Delivery) one card per kind: manuscript · letters · Sections · checks · sent | the version's `runs/`; its part of the Board's delivery, `delivery/jNN_<version>/` |
-| Task › every Space | the Page Task's own views (`servers/workbench/task-page`) | the Section folder; the paper adds the reader contract (Scope), its `SUB-*` rows (Requirement), Comments, and "ready for the build" apart from "done" (Delivery) |
+| Task › every Space | the Page Task's own views (`servers/workbench/workbench-task-draft`) | the Section folder; the paper adds the reader contract (Scope), its `SUB-*` rows (Requirement), Comments, and "ready for the build" apart from "done" (Delivery) |
 
 **Markdown is the only truth source (JL 260918).** Every view is drawn from the paper's `.md` files (and
 authored config, `paper-build.toml`; and receipts, `build-manifest.json`, `runtime.yaml`) on each open; a

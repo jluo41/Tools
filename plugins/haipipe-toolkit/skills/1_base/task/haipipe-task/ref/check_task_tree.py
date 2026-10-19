@@ -304,7 +304,7 @@ def check(root):
                 # behind that. Half a keep reads as a whole one, so a reader trusts
                 # a decision list with no exchange under it, or scrolls an exchange
                 # nobody ever drew a conclusion from. Storage law and writer belong
-                # to workbench-studio; this row only refuses the half-write.
+                # to haipipe-studio; this row only refuses the half-write.
                 chat_lane = t/"studio"/"chat"
                 if chat_lane.is_dir():
                     for kept in sorted(k for k in chat_lane.iterdir() if k.is_dir()):
@@ -316,7 +316,7 @@ def check(root):
                     for stray in sorted(p for p in (t/"studio").iterdir()
                                         if p.name not in ("chat", "draw")):
                         bad("S4", f"{t.name}/studio/{stray.name}",
-                            "studio/ holds only chat/ and draw/ (workbench-studio)")
+                            "studio/ holds only chat/ and draw/ (haipipe-studio)")
 
                 if (t/"configs").is_dir():
                     bad("S14", t.name, "plural config lane at Task root; config lives in scripts/config/")

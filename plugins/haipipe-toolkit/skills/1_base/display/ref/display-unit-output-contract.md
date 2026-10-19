@@ -200,7 +200,7 @@ input; a concept unit that displays verified figures declares a separate `role: 
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
   they are not canonical assets until a display unit accepts and renders them. For a Board Page,
   this aggregate first crosses the Page family's one numeric door through
-  `haipipe-task-for-page`; only a non-Page holder consumes it directly.
+  `haipipe-task-for-evidence`; only a non-Page holder consumes it directly.
 - Split out of the paper skill on 2026-07-26: this half is generic, and the paper-specific half
   (unit placement, paper-root-relative paths, the combined gallery, caption/label/placement
   ownership, and the lifecycle handoff) moved to the paper adapter named above.

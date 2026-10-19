@@ -1,3 +1,14 @@
+## 0.22.0 · 2026-10-19 · The story is its questions, drawn by excalidraw-story
+
+- The story is the list of research questions it answers, and read in order the questions are its narrative (JL
+  261019: "please make the story, I think it should be composed a list of the questions to answer, and the quesiton
+  can be the narrative as well"). §3 opens with the paper's question and the questions in reading order.
+- A telling's first drawing is the new `excalidraw-story`: each question a step, beside it the answer so far, its
+  claim, its E and T rows and their marks; the pitch, what we will not claim, the Runs still to make. The workflow
+  drawing (excalidraw-workflow) is the second.
+- A telling may open before G0 (JL 261019: "there are not s02, why????"); G0 is JL's mark on its face. First user:
+  Paper-LLMRecPhy `studio/s02-story-misq-agent-physician-visibility/`.
+
 ## 0.21.0 · 2026-10-14 · The workflow drawing is excalidraw-workflow's
 
 - A telling's workflow drawing, the paper's building map, is drawn by the new `excalidraw-workflow` skill

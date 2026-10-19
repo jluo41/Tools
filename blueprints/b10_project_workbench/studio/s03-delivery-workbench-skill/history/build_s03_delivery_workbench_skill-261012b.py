@@ -310,8 +310,8 @@ def tools_nodes():
         {f"skills/1_base/project/haipipe-delivery/  (version {ver.group(1) if ver else '?'})": kids},
         {"servers/workbench/frame.py": where_defined("servers/workbench/frame.py", [
             "delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"])},
-        {"skills/1_base/page/haipipe-draft/src/common.py": where_defined(
-            "skills/1_base/page/haipipe-draft/src/common.py",
+        {"skills/1_base/draft/haipipe-draft/src/common.py": where_defined(
+            "skills/1_base/draft/haipipe-draft/src/common.py",
             ["delivery_owner", "delivery_dir", "delivery_source", "delivery_relative"])},
         ]}
 

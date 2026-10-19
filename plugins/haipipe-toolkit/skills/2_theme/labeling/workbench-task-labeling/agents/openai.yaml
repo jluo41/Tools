@@ -1,0 +1,6 @@
+interface:
+  display_name: "HAI Pipe · Labeling Task"
+  short_description: "A labeling Task's screen: four Spaces, the Runs panel, one write door"
+  default_prompt: "Use $workbench-task-labeling to inspect this labeling Task's screen and identify its one honest next action."
+policy:
+  allow_implicit_invocation: true

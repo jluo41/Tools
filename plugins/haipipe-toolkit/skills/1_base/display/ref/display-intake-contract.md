@@ -109,7 +109,7 @@ raw data, or choose a subset by itself.
 
 A Board Page is the scoped exception to the direct route above.
 An upstream display-input Task never feeds a Page display Intake directly.
-It first feeds the Page's `task-type: page` collection Job, which emits the
+It first feeds the Page's `task-type: evidence` collection Job, which emits the
 page-service `values.yaml`; that admitted Result becomes the Evidence Item's
 Local Input, and only that Local Input may be frozen into the Page display
 unit's Intake:

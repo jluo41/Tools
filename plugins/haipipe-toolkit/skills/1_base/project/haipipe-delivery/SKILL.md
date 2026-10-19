@@ -6,15 +6,18 @@ description: >-
   path; the Delivery view at the right end of the top row (Studio | Block · Job · Task |
   Delivery); the rule that only a person marks a delivery sent; moving old local outputs into
   the Block; and the shared path helpers in haipipe-draft/src/common.py. How a file is built
-  stays with its lane owner (haipipe-draft-delivery, haipipe-paper-assemble,
+  stays with its lane owner (a Page's lanes: this skill's ref/page-delivery.md; the rest: haipipe-paper-assemble,
   haipipe-design-delivery, haipipe-cowork, haipipe-labeling-handoff). Use to find where an
   output goes, check that no Job or Task keeps its own delivery/, move old local outputs into
-  the Block, or propose a delivery item. Trigger: delivery, Block delivery, delivery/, where
-  does the pdf go, deliverable, handoff folder, send, sent, /haipipe-delivery.
+  the Block, or propose a delivery item. Also a Page's Delivery Runs (the old haipipe-draft-delivery,
+  now ref/page-delivery.md): delivery run, build the pdf, build the docx, build the web page, rebuild
+  delivery, stale delivery, /haipipe-draft-delivery. Trigger: delivery, Block delivery, delivery/,
+  where does the pdf go, deliverable, handoff folder, send, sent, render the Word file, read back,
+  the file came back, pull from OneDrive, next round, /haipipe-delivery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-11"
+  version: "0.5.0"
+  last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
 
@@ -131,11 +134,41 @@ no `dNN` card or prefix (b10 s03-D05, JL 261011). Each send is one row of `deliv
 | date   | for        | from        | status |
 | 261009 | NMI        | jNN_<job>/  | sent   |
 | 261012 | co-authors | jNN_<job>/  | draft  |
+| 261019 | back from Gordon Gao | word/<name>-v9.docx | back |
 ```
 
-A resend or a second reader is a new row, never a copy of the folder. A build may add a `draft` row;
-only a person writes `sent`. `related/related.md` lists what came in (b10 s01-D34); this lists what
+A resend or a second reader is a new row, never a copy of the folder. A build may add a `draft` row and a
+read back a `back` row; only a person writes `sent`. `related/related.md` lists what came in (b10 s01-D34); this lists what
 went out.
+
+
+A round: send, render, read back
+--------------------------------
+
+A file we share goes round until a person says stop (b32 s41-D21, D23; JL 261019: "the render haved changed a
+while, and we need to read it again, and start another round of changing, and then send it back").
+
+```text
+build ─▶ adopt (-v<N>) ─▶ render (pictures) ─▶ ✍ push, at a person's word ─▶ ⏳ they edit OneDrive
+pull: their copy as -v<N+1>, rendered, new comments listed, a `back` row ─▶ the next round's plan
+```
+
+1. **One script**: `scripts/word_round.py` (`status`, `adopt`, `import`, `render`, `push`, `pull`), given the lane
+   folder, the file's name and its OneDrive copy; a Block's own script may pass them fixed (`main(**fixed)`).
+2. **Never written over**: each state is `<name>-v<N>.docx` with its PDF; OneDrive holds one copy, the one people edit.
+3. **Render**: each version's pages go to `render/<name>-v<N>/p-<N>.png` beside the lane, the pictures a Section
+   canvas shows as "the file today"; the same lane the Delivery view's 📱 Render lists.
+4. **Read back** (`pull`): only when OneDrive's copy matches no version; else it says nothing came back.
+5. **Rows**: `push` adds a `draft` row, `pull` a `back` row; only a person writes `sent`.
+
+
+A Page's Delivery Runs
+----------------------
+
+A Page's lanes are built by one fixed Run each: `run-delivery-webpage`, `run-delivery-latex`,
+`run-delivery-word`, rerun in place by `page.py export`; the built files are the result. This was the skill
+haipipe-draft-delivery until 2026-10-16 (s41-D11); the text is `ref/page-delivery.md`, the Run names are
+unchanged, and Pages made before then keep working.
 
 
 Boundary
@@ -144,7 +177,7 @@ Boundary
 | Owner | Owns |
 |---|---|
 | `haipipe-delivery` | the Block's `delivery/` folder, its paths and helpers, the Delivery view, sent by a person, moving old outputs |
-| `haipipe-draft-delivery` | building one Page's web, LaTeX and Word lanes (`page.py export`) |
+| `haipipe-delivery` (`ref/page-delivery.md`) | building one Page's web, LaTeX and Word lanes (`page.py export`) |
 | `haipipe-paper-assemble` | the whole paper, built from its Sections' lanes |
 | `haipipe-design-delivery` | releasing a design Job: `designs.json`, `designs.md`, `screens/` |
 | `haipipe-cowork` | an email or reply drafted and kept at `delivery/jNN_<job>/<date>-<what>/` |
@@ -161,5 +194,8 @@ Files
 haipipe-delivery/
 ├── SKILL.md
 ├── CHANGELOG.md
+├── ref/page-delivery.md
+├── scripts/word_round.py      a round: versions, render, push, read back
+├── ref/history/haipipe-draft-delivery-CHANGELOG.md
 └── agents/openai.yaml
 ```

@@ -14,8 +14,7 @@ Agents: `haipipe-task-creator-agent` makes a Task (plan, build, report of a Run)
 read-only and returns its review, which the orchestrator saves. `haipipe-task-orchestrator-agent`
 runs a Ticket. The Block-level writes (the Questions register, a report scaffold, a
 drawing) need an agent of their own, planned as `haipipe-task-block-agent (new)`.
-Questions are asked and reviewed by the question skills in `skills/1_base/question/`
-(`haipipe-question-asking`, `haipipe-question-review`), recorded by `haipipe-question`.
+Questions are recorded, asked and reviewed by `haipipe-report` (`skills/1_base/project/haipipe-report/`).
 Reports are Pages: one agent plans, another writes, `haipipe-draft-check-agent` checks.
 `haipipe-task` routes and gates; it is no row's Skill: each row names the small skill
 that does the work, `(new)` where it is still to be split out of `haipipe-task`.
@@ -27,23 +26,23 @@ that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 | board | Guide | RoadMap Draw | none | none | none | none | none |
 | board | Guide | Related Paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | the source check | Tools › servers/workbench-work/related/papers.md |
 | board | Scope | Block | none | none | none | none | none |
-| board | Scope | Questions | Ask a Question | haipipe-task-block-agent (new) | haipipe-question-asking | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
-| board | Scope | Questions | Review the questions | haipipe-task-reviewer-agent | haipipe-question-review | a change | none |
-| board | Scope | Resources | Add a resource | haipipe-task-block-agent (new) | haipipe-question | none | Block › board.md (Related resources) |
+| board | Scope | Questions | Ask a Question | haipipe-task-block-agent (new) | haipipe-report | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
+| board | Scope | Questions | Review the questions | haipipe-task-reviewer-agent | haipipe-report | a change | none |
+| board | Scope | Resources | Add a resource | haipipe-task-block-agent (new) | haipipe-report | none | Block › board.md (Related resources) |
 | board | Scope | RoadMap Draw | Draw the question map | haipipe-task-block-agent (new) | workbench-work | none | Block › studio/question-map.excalidraw |
-| board | Scope | RoadMap Draw | Draw | haipipe-task-block-agent (new) | workbench-studio | none | Block › studio/<name>.excalidraw |
+| board | Scope | RoadMap Draw | Draw | haipipe-task-block-agent (new) | haipipe-studio | none | Block › studio/<name>.excalidraw |
 | board | Task | each group | Plan a Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/plan.yaml · board.md (Questions › work) |
 | board | Task | each group | Review the plan | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | none |
 | board | Task | each group | Build the Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/scripts/ · runs/rNN_<run>.sh |
 | board | Task | each group | Review the Task code | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | Block › CODE_REVIEW.md beside the code it reviews |
 | board | Task | each group | Run a Task | haipipe-task-orchestrator-agent | haipipe-task-run (new) | none | $OUTPUT_ROOT › tNN_<task>/results/rNN_<run>/ |
 | board | Task | each group | Report the Run | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/report.yaml · RUN_AUDIT.md |
-| board | Task | each group | Plan the report | haipipe-draft-structure-agent | haipipe-draft-structure | none | Block › reports/qNN_<topic>/draft/ |
+| board | Task | each group | Plan the report | haipipe-draft-structure-agent | haipipe-draft-logic | none | Block › reports/qNN_<topic>/draft/ |
 | board | Task | each group | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
 | board | Check | Runs | none | none | none | none | none |
 | board | Check | Tasks | Check a Task | haipipe-task-reviewer-agent | haipipe-task-audit (new) | none | none |
-| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-check | none | Block › reports/qNN_<topic>/runs/ |
-| board | Delivery | Reports | Build the report | haipipe-draft-writing-agent | haipipe-draft-delivery | the release | Block › reports/qNN_<topic>/ (web, LaTeX, Word) |
+| board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-review | none | Block › reports/qNN_<topic>/runs/ |
+| board | Delivery | Reports | Build the report | haipipe-draft-writing-agent | haipipe-delivery | the release | Block › reports/qNN_<topic>/ (web, LaTeX, Word) |
 
 Notes
 -----

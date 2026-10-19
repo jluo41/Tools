@@ -1,6 +1,6 @@
 """The browser assets, assembled from parts across every server folder.
 
-Each server folder (``_host``, ``space-home``, ``haipipe-page``,
+Each server folder (``_host``, ``space-home``, ``workbench/workbench-task-draft/reader``,
 ``workbench-*``, and sibling workbenches' ``servers/workbench-*``) keeps its own
 parts under ``assets/js/**`` and ``assets/css/**``. They are gathered here and
 concatenated in sorted RELATIVE path order, so a part's numeric prefix still

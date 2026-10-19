@@ -1,0 +1,19 @@
+run: run-draw-s41
+kind: soft
+type: draw
+scope: null
+target: s41
+ticket: run-draw-s41.md
+skill: haipipe-studio
+agent: null
+signs: null
+status: done
+passes:
+- p01-1015
+- p02-1015
+- p03-1015
+- p04-1015
+- p05-1015
+writes:
+- blueprints/b32_draft/studio/s41-task-draft-procedure/
+feeds: []

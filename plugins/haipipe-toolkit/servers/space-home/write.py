@@ -241,24 +241,24 @@ class WriteMixin:
 
     @staticmethod
     def _wdiff():
-        """-> haipipe-writing's `wdiff` function, or None if it is not here.
+        """-> haipipe-draft's `wdiff` function, or None if it is not here.
 
         ONE COMPUTATION, NOT TWO THAT AGREE (JL 260802: "we also need to have a
         very good writing diff to track the changes along the way"). This file
-        and `haipipe-writing/cli/wdiff.py` both computed the word-level diff
+        and `haipipe-draft/cli/wdiff.py` both computed the word-level diff
         with difflib, and on 260802 they produced byte-identical output on
         every case tried, which is agreement by luck rather than by
         construction: the next edit to either one splits them silently, and the
         `> ✎` record is a durable review trail.
 
         It is looked up rather than imported, because every unit in this family
-        must stay deletable from every other. If `haipipe-writing` is not
+        must stay deletable from every other. If `haipipe-draft` is not
         installed the local computation below still answers, and
         `tests/test_change_diff.py` fails the moment the two stop matching.
         """
         import importlib.util
         from host_paths import skill_dir
-        f = skill_dir("haipipe-writing") / "cli" / "wdiff.py"
+        f = skill_dir("haipipe-draft") / "cli" / "wdiff.py"
         if not f.exists():
             return None
         try:

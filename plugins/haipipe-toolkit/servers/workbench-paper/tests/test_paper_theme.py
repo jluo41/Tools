@@ -146,13 +146,13 @@ class PaperThemeTest(unittest.TestCase):
         self.assertNotIn("no deep read yet", page)
 
     def test_a_section_folder_is_left_to_the_base(self):
-        # a Section is a Page Task: its Spaces are the base's Page Task views (frame.page_task_spaces,
+        # a Section is a Page Task: its Spaces are the base's Page Task views (task_draft.draft_task_spaces,
         # b16 s13), which the paper's own lines will go over
-        from live.frame import PAGE_TASK_SUBS, page_task_spaces
+        from live.task_draft import DRAFT_TASK_SUBS, draft_task_spaces
         from live.paper_theme import spaces
         section = self.board / "Ba-desk-Main" / "S-desk-Main-1-Introduction"
         got = spaces("Task", section, self.root, "")
-        want = dict(PAGE_TASK_SUBS, **{"Audience Report": PAGE_TASK_SUBS["Audience Report"] + ("Comments",)})
+        want = dict(DRAFT_TASK_SUBS, **{"Audience Report": DRAFT_TASK_SUBS["Audience Report"] + ("Comments",)})
         self.assertEqual({k: v.subspaces for k, v in got.items()}, want)
         reviews = spaces("Task", section, self.root, "Comments")["Audience Report"]
         self.assertEqual((reviews.open, reviews.run_types), ("Comments", ()))
@@ -164,7 +164,7 @@ class PaperThemeTest(unittest.TestCase):
         self.assertIn("Review-demo-claim", reviews)
         self.assertIn("run-revise-demo-claim", reviews)
         self.assertNotIn("Review-other-page", reviews)
-        base = page_task_spaces(section, self.root, "")
+        base = draft_task_spaces(section, self.root, "")
         for name in ("Work Details",):                                # the paper adds nothing here
             self.assertEqual(got[name], base[name])
 

@@ -14,7 +14,7 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parents[3] / "plugins/haipipe-toolkit/skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(HERE.parents[3] / "plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import T_KEY, T_SMALL, W, Drawing, canvas  # noqa: E402
 
 

@@ -23,7 +23,7 @@ writes:
 - Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-block
 - Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-job
 - Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio
-- Tools/plugins/haipipe-toolkit/skills/1_base/display/excalidraw-slide
+- Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-slide
 - Tools/plugins/haipipe-toolkit/servers/workbench/frame.py
 - build_s21_project_run_skill.py · s21_project-run-skill.md · .excalidraw · .png ·
   history/

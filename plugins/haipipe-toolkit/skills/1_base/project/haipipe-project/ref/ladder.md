@@ -84,7 +84,7 @@ families:
 
 today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
   topic: '^s\d{2}[-_][A-Za-z0-9]'        # studio/ holds sNN-<topic>/ folders; _groups.txt, _build/ and dot names kept
-  register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-question)
+  register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-report)
   report: '^q\d{2}_'                     # reports/qNN_<topic>/, one per registered Block Question
   block_only: [related, delivery]        # a Job's or a Task's moves to the Block (haipipe-delivery, haipipe-related)
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
@@ -132,7 +132,7 @@ debt   studio/ has no sNN-<topic>/ topic                    proposed by /wb upda
        studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
        a Job's or Task's studio/: its topics go to the Block   the owner moves them (renumbered)
        the face has no ## Questions register                proposed by /wb update step 6
-       a registered Block Question has no reports/qNN_*/      haipipe-question makes it
+       a registered Block Question has no reports/qNN_*/      haipipe-report makes it
        a Job's or Task's related/ or delivery/               haipipe-delivery moves it to the Block
 ```
 

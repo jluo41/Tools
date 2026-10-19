@@ -6,7 +6,7 @@ before its code, its code read by another agent before it runs, every Result wri
 Ticket with its receipt, the work held as a declared Block → Job → Task → Run tree, a light
 Result with heavy output in its store (Run methods); and the Question's answer written from
 exact Results, then checked by an agent that did not write it (Report methods). How a
-Question is asked and reviewed belongs to the question skills (`skills/1_base/question/`), whose
+Question is asked and reviewed belongs to `haipipe-report` (`skills/1_base/project/haipipe-report/`), whose
 papers live with the workbench that shows their cards. Guide › Related Paper shows this
 file; each `group` is one method card, so a card lists its own papers.
 

@@ -94,11 +94,11 @@ ON_SCREEN = {
 }
 SKILLS = {
     "Theme": ["haipipe-paper  (the door)"],
-    "Board": ["haipipe-paper", "haipipe-paper-ideation", "haipipe-paper-story", "haipipe-question",
+    "Board": ["haipipe-paper", "haipipe-paper-ideation", "haipipe-paper-story", "haipipe-report",
               "workbench-paper"],
     "Version": ["haipipe-paper-workflow", "haipipe-paper-venue", "haipipe-paper-assemble",
                 "haipipe-paper-comments"],
-    "Section": ["haipipe-paper-section", "haipipe-draft-workflow", "haipipe-draft-structure · -evidence · -writing"],
+    "Section": ["haipipe-paper-draft", "haipipe-draft-workflow", "haipipe-draft-structure · -evidence · -writing"],
     "Run": ["haipipe-run  (soft)"],
 }
 LAYER_NOTES = {}
@@ -113,7 +113,7 @@ def link_back(frame):
         return next(e for e in L.els if e["type"] == "text" and str(e.get("text", "")).startswith(prefix))
     runs = find("holds its Runs: run-section")
     deliv = find("the Board's only delivery/")
-    skills_x = find("haipipe-paper-section")["x"]
+    skills_x = find("haipipe-paper-draft")["x"]
     right = max(e["x"] + e["width"] for e in L.els if e["type"] in ("text", "rectangle")
                 and deliv["y"] - 20 <= e["y"] <= runs["y"] + 40 and e["x"] < skills_x - 60)
     x = right + 120

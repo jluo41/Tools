@@ -156,7 +156,7 @@ OWNERS = [
     "Project    haipipe-project        root, manifest, Theme folders",
     "Theme      haipipe-project        the boundary; inside: its domain skill",
     "Block      haipipe-block          board.md, studio/",
-    "           haipipe-question       Questions register, reports/qNN_",
+    "           haipipe-report       Questions register, reports/qNN_",
     "Job        domain skill           task, discovery, insight, design, paper, cowork",
     "Task       haipipe-task           Plan -> Build -> Execute -> Report",
     "           haipipe-draft           the Task's Page face",

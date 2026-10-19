@@ -54,7 +54,7 @@ def record(page, verdict, review):
     if verdict not in VERDICTS:
         raise SystemExit(f"VERDICT is one of {', '.join(sorted(VERDICTS))}")
     root = space_root(page)
-    cli = [str(root / ".venv/bin/python"), str(root / "Tools/plugins/haipipe-toolkit/skills/1_base/page/haipipe-draft/cli/page.py")]
+    cli = [str(root / ".venv/bin/python"), str(root / "Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py")]
     before = set((page / "runs").glob("run-check-*.md"))
     subprocess.run(cli + ["open-run", str(page), "--kind", "check", "--slug", "page check", "--target", "C1",
                           "--by", "check agent", "--goal", "independent CHECK of the current draft"],

@@ -55,7 +55,7 @@ answers: Q01                    # optional: the Block Question it answers (haipi
 |---|---|---|
 | Description | the face: title, goal, close, answers | Update the description → **haipipe-job** |
 | Idea Studio | the Job's studio topics | `run-draw-<sNN>` (add · redraw · save a session) → haipipe-studio |
-| Audience Report | its Questions' rows, if it has a register | Ask → haipipe-question; Write · Rebuild drawing · Check → haipipe-report |
+| Audience Report | its Questions' rows, if it has a register | Ask · Write · Rebuild drawing · Check → haipipe-report |
 | Work Details | its Tasks: name · title · Runs | Add a Task → **haipipe-job** |
 | Runs | the Job's soft Runs | Run → haipipe-run |
 | Delivery | `delivery/` items | Build the delivery → **haipipe-job** |

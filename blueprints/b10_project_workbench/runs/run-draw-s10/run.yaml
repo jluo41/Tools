@@ -18,10 +18,10 @@ passes:
 writes:
 - studio/s10-update-block/
 - haipipe-studio · haipipe-report · studio/s10-update-block/
-- plugins/haipipe-toolkit/skills/1_base/page/workbench/cli/wb_update.py
+- plugins/haipipe-toolkit/skills/1_base/draft/workbench/cli/wb_update.py
 - plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/scripts/ladder.py
 - blueprints/b10_project_workbench/studio/s10-update-block/s10-update-block.md
-- plugins/haipipe-toolkit/skills/1_base/question/haipipe-question/ref/block_questions.py
+- plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/ref/block_questions.py
 - plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/ref/ladder.md
 - plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/new_topic.py
 - studio/s10-haipipe-project/s10-haipipe-project.excalidraw

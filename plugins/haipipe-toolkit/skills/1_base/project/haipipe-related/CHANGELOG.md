@@ -1,6 +1,11 @@
 haipipe-related · Changelog
 ===========================
 
+**[0.3.1] · 2026-10-19 · A paper Board's closest work**
+
+One paragraph: on a paper Board, `haipipe-paper-related` marks the closest rows here (`Closest: <type>`, ★) and
+reads them in studio s10-s19 (JL 261019); this skill keeps the table and the files.
+
 **[0.3.0] · 2026-10-14 · Versions of one thing are one item; decks preview**
 
 A second draft is kept beside the first with its version in its name, and Related shows them as one item with a

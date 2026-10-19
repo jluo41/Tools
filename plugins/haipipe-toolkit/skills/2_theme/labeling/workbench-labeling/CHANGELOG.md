@@ -8,6 +8,15 @@
 - A Sign (G0) or a round's rulings open the Labeling workbench, still the one write door; scanning's views
   (Test · Evaluation · Scan · Audit) follow the four Stage tabs.
 
+
+## 0.33.0 · 2026-10-16 · The Task screen is its own skill (JL 261016, b32 s41-D15)
+
+- A labeling Task's screen moved to `workbench-task-labeling`, beside its code
+  `servers/workbench-labeling/workbench-task-labeling/` (`task_labeling.py`, `labeling.py`, the tab's js). It took
+  the Page level, the four-part contract, the Task types, Surface law, Views and their Runs, Write and authority law,
+  Relationship to Runs, Operate or implement, and `ref/view-structure.md`. This skill keeps the host, the Board level,
+  Block and Job, and the Guide.
+
 ## 0.31.1 · 2026-10-14 · keys is now ground truth
 
 - The Task type once called keys is ground truth (📏): papers say ground truth or gold labels, not keys; its

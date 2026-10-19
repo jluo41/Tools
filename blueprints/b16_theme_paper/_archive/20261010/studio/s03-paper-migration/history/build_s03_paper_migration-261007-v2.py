@@ -128,7 +128,7 @@ MATRIX = [("paper.collect() · page_file()", "board.md ## Pages headings", "✓"
           ("paper_theme.py (Block tab)", "collect()", "✓", "✓", "none"),
           ("frame level_patterns (Job · Task)", "folder names", "✓ B<x>- is a Job", "! ✓ jNN_ is a Job; Bb-/Bc- merge into it", "none; ? one Job per send (JL)"),
           ("Page workbench links (/_board/draft)", "board.md, at request time", "✓", "✓", "none: links are built, never stored"),
-          ("excalidraw-section (paper map)", "board.md ## Pages", "✓", "✓ after the heading rewrite", "none; redraw the map"),
+          ("excalidraw-draft (paper map)", "board.md ## Pages", "✓", "✓ after the heading rewrite", "none; redraw the map"),
           ("haipipe-paper-assemble (build)", "paper-build.toml [pages]", "✓", "✗ until edited", "3 paths per Board, then rebuild delivery/"),
           ("guide.yaml folders:", "glob patterns", "✓", "✗", "add the new patterns beside the old"),
           ("paper skills' docs (14 files)", "the layout, as taught", "✓", "✗", "! one contract: paper-structure.md first"),

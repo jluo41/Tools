@@ -6,7 +6,7 @@ s21 · Revise mode: how a co-author's file becomes a side-by-side drawing
 **Stage:** agreed
 
 **Topic:** how b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side by side)
-was drawn on 2026-10-11, as the worked example of excalidraw-revise: the steps from a co-author's
+was drawn on 2026-10-11, as the worked example of excalidraw-draft: the steps from a co-author's
 Word file to the side-by-side drawing and the tracked Word draft, the script behind each step, and what each
 step costs, in seconds per rebuild and in rounds with a person (JL 261011: "add a new sNN in
 Tools/blueprints/b31_excalidraw to explain how did we draw the things here? what is the workflow are what are
@@ -62,7 +62,7 @@ workflow_steps:
    what: "One Paper Run per paper, BibTeX from Crossref; found: on the evidence."}
 - {n: 5, lane: draft, title: Seed the draft, script: "read_revise.py seed", cost: "once",
    what: "draft/<stem>-draft-v1.0.md in haipipe-draft's three sections, one Bullet per sentence, Change lines."}
-- {n: 6, lane: draft, title: Write and revise, script: "haipipe-writing", cost: "agent + person", costly: true,
+- {n: 6, lane: draft, title: Write and revise, script: "haipipe-draft", cost: "agent + person", costly: true,
    what: "Each pass a new version, the old one in previous/, Before and After in records/."}
 - {n: 7, lane: build, title: Draw, script: "read_revise.py draw", cost: "7.2 s",
    what: "Left: the file's page, red highlights. Middle: the draft's sentences. Right: notes. Opened below."}
@@ -160,11 +160,11 @@ later:
 Decided
 -------
 
-s21-D01 · This topic records excalidraw-revise as b31_prep_ai's s04 used it on 2026-10-11: the
+s21-D01 · This topic records excalidraw-draft as b31_prep_ai's s04 used it on 2026-10-11: the
     workflow, its scripts, the seconds per rebuild and the effort, read from yaml in this face (JL 261011).
 s21-D02 · The workflow drawn is sentence mode (excalidraw-read 0.3.1): seed a haipipe-draft draft, write and revise
     it, draw, edit on the drawing and apply, deliver last; picture mode stays in the rounds as how it began.
-s21-D03 · Delivery is built from the draft (excalidraw-read 0.4.0, now excalidraw-revise; `read_revise.py deliver`): the draft's words against
+s21-D03 · Delivery is built from the draft (excalidraw-read 0.4.0, now excalidraw-draft; `read_revise.py deliver`): the draft's words against
     the file's, word by word, become tracked changes, and the build checks that rejecting every change gives the file
     and accepting every change gives the draft (all three SHIFT Blocks pass, 2026-10-11).
 s21-D04 · Stage → agreed (JL 261012: "I think for others sNN, we can give them to level 3 as well"): the topic records revise mode as b31's s04

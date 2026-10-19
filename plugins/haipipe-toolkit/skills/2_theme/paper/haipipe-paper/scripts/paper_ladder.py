@@ -43,7 +43,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "page" / "haipipe-draft"
+_PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "draft" / "haipipe-draft"
 sys.path.insert(0, str(_PAGE_ENGINE))
 from src.common import delivery_dir
 
@@ -305,8 +305,8 @@ def task(run, ver, stem):
     part = {0: "Main", 1: "Main", 2: "Appendix", 3: "Letters"}[band]
     title = m.group(3).replace("-", " ").capitalize()
     run.create[f"{ver}/{stem}/{stem}.md"] = (
-        f"# {stem} · {title}\n\ntask-kind: page\npage-type: section\nfolder-kind: section\nsection_kind: {kind}\n"
-        f"structure-source: paper/haipipe-paper-section/ref/generic-template.md\nstate: ⬜ OPEN · plan to write\n"
+        f"# {stem} · {title}\n\ntask-type: draft\npage-type: section\nfolder-kind: section\nsection_kind: {kind}\n"
+        f"structure-source: paper/haipipe-paper-draft/ref/generic-template.md\nstate: ⬜ OPEN · plan to write\n"
         f"story-row: {ver} ## Narrative / {stem}\nreader-question: <what the reader asks here>\n"
         "entry-state: <what the reader holds coming in>\nexit-state: <what the reader holds going out>\n"
         "must-establish: <the claim this Section must land>\nmust-refuse: <what it must not overstate>\n"

@@ -27,11 +27,11 @@ Page Face and a Task Face. It never references its
 consumer upward; consumers link to its public Run Results, typed records, or
 Page Evidence Items from their own side.
 
-For durable work, LOAD haipipe-folder and haipipe-draft for the two Faces, and
+For durable work, LOAD haipipe-draft (its ref/folder.md: the Task folder and its face), and
 the Block container is read live in the workbench (the Board skill is retired). Load
-`workbench-page` for the Page's Outline + Evidence Workspace and its
+`workbench-task-draft` for the Page's Outline + Evidence Workspace and its
 CITE-item/aggregate-Bib authority. Once the Task Page owns a Paper Run, LOAD `haipipe-run`
-for the neutral Level-4 contract. Then LOAD `workbench-page/ref/run-space.md` for its
+for the neutral Level-4 contract. Then LOAD `workbench-task-draft/ref/run-space.md` for its
 read-only Run/Result surface. The retired standalone Evidence entry is a
 compatibility redirect only; do not treat it as a public workbench or citation
 owner. Then read only the relevant Discovery authorities:
@@ -49,9 +49,9 @@ ref/source-format.md           human source presentation
 ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 ref/external-capability-registry.md
                                 normalized external packets and family routing
-../../page/workbench-page/ref/item-table.md
+../../../1_base/workbench/workbench-task-draft/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
-../../page/workbench-page/ref/evidence/citations.md
+../../../1_base/workbench/workbench-task-draft/ref/evidence/citations.md
                                 CITE authority and derived Bib aggregation
 ~~~
 
@@ -456,7 +456,7 @@ python scripts/paper_runs.py check <task>
 ~~~
 
 After the shared Page workflow has produced and CHECKed the root Task Page,
-use `workbench-page/ref/evidence/citations.md` to validate the derived
+use `workbench-task-draft/ref/evidence/citations.md` to validate the derived
 aggregate under `draft/evidence/bibex/`, append
 `discovery.yaml report:`, reconcile its Run counts and canonical `evidence_bib`
 path with the inventory, reconcile the Page `state:` line, set the truthful terminal

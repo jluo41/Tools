@@ -23,7 +23,7 @@ from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent
 LABELING = HERE.parents[1]                                     # skills/2_theme/labeling
-WB = LABELING.parents[1] / "1_base" / "page" / "workbench" / "cli" / "wb.py"
+WB = LABELING.parents[1] / "1_base" / "workbench" / "workbench" / "cli" / "wb.py"
 TYPES = (("items", "📦", ("items", "data")), ("ground_truth", "📏", ("raw",)),
          ("building", "🏗", ("labeling-building", "labeling")), ("scanning", "🔍", ("labeling-scanning", "labeling")),
          ("score", "📊", ("eval",)))

@@ -135,7 +135,7 @@ paper/source-only local Run inventory. Page-owned `rpNN` interaction remains
 outside that inventory and must satisfy the Page release barrier before CONTENT.
 When useful, D1 may write one
 optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
-D1 SYNTHESIZE asks `workbench-page/ref/evidence/citations.md` to build
+D1 SYNTHESIZE asks `workbench-task-draft/ref/evidence/citations.md` to build
 the deterministic citation aggregate under `draft/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
 not replace the owning Result. After Page `04 CHECK`, rebuild and strictly

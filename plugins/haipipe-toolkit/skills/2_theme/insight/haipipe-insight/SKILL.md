@@ -72,7 +72,7 @@ haipipe-insight                the door; the ladder contract and scaffold; open 
                                the hard Runs' runner (ref/run_job.py, ref/run_question.py), the question map, carry-over;
                                the Executive level X, read as the Overall Report (ref/overall_report.py, figures ref/overall_figures.py)
 haipipe-insight-question       proposals and their triage; asking a question into a version; Q1-Q7 with
-                               haipipe-question-review
+                               haipipe-report
 haipipe-insight-evidence-plan  one question's needs and work specs, planned before any run, agreed by another agent
 haipipe-insight-meta           a dataset and its data versions (board.md versions:, meta/meta.md)
 haipipe-insight-data · -information · -knowledge   what an answering page may say at its level; -knowledge also
@@ -81,7 +81,7 @@ haipipe-insight-wisdom         the counsel and the Design handoff a person signs
 haipipe-insight-check          readings across Jobs (coverage, tracks), each answer against its question, the status grid
 haipipe-insight-workflow       run cards by level and Space, signing a release, launching and closing a Job, dispatch
 workbench-insight              the insight theme on the shared workbench frame
-haipipe-report · haipipe-draft-check   a Board question's report; another agent's CHECK of any page
+haipipe-report · haipipe-draft-review   a Board question's report; another agent's CHECK of any page
 haipipe-insight-bind           answers.yaml, for register boards only (no ladder Run binds)
 haipipe-page-insight           the Task-side Insight Page and its RI Runs (its own route)
 ```

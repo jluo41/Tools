@@ -22,7 +22,7 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 TOOLKIT = (HERE / "../../../../plugins/haipipe-toolkit").resolve()
-sys.path.insert(0, str(TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"))
+sys.path.insert(0, str(TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"))
 from draw import H, INK, MAP_WORDS, RED, SMALL, T_SMALL, T_TEXT, W, Drawing, canvas  # noqa: E402
 from check import check as check_drawing  # noqa: E402
 
@@ -101,7 +101,7 @@ def principles(data_):
 # ── ② the checks, one workflow map of stages ───────────────────────────────────────────────────────────────
 STAGES = {"build": "⚙️ Build", "size": "🖼️ Size and density", "inside": "🗺️ Inside a frame", "story": "📖 The story",
           "look": "🔍 The look", "write": "💾 Write", "agree": "👤 A person agrees"}
-SCRIPTS = TOOLKIT / "skills/1_base/display/excalidraw-studio/scripts"
+SCRIPTS = TOOLKIT / "skills/1_base/excalidraw/excalidraw-studio/scripts"
 CT, CL = 38, SMALL                                    # a stage's title, a check's line (⑦: none small)
 
 

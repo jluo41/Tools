@@ -118,7 +118,7 @@ comes last, being mostly the Page's.
 4. **Job** (haipipe-paper-comments, -assemble, -workflow): Add a review, Route an item, Reply to an item over
    `## Review Items`; build, check and Send from the version folder, the cover letter from `t31_`; the version
    face's `## Narrative` and J1-J5; Release a Section (G3).
-5. **Task** (haipipe-paper-section): `t0N_` · `t2N_` · `t3N_`, the reader contract, Requirement with the rubric,
+5. **Task** (haipipe-paper-draft): `t0N_` · `t2N_` · `t3N_`, the reader contract, Requirement with the rubric,
    a Section's own studio/ and reports/; Add a Section.
 6. **Old words out** (all nine): no Story Page, `B[abc]-`, `RD<NN>`, `S-<desk>`, `-<MMDD>-`; versions and CHANGELOGs.
 
@@ -130,6 +130,35 @@ haipipe-paper-comments (261007)
 anymore"). Designed here first (moved from s22), in `haipipe-paper-comments-draft.md`. A batch is a report of type
 comments, `reports/qNN_<kind>-<MMDD>/` in the version that answers it (1.1.0); its points keep ids by source (R1.1 ·
 E1.2 · A1.1 · M2.3 · V1.1); Review Items (`Review-<slug>`) are what gets routed and answered.
+
+
+haipipe-paper-draft and haipipe-paper-evidence (261019)
+-------------------------------------------------------
+
+A paper Section is a draft Task (b32_draft s03, s41-D06): `draft/`, `evidence/` and `display/` side by side, one
+writer each. So the paper pairs with the base trio (JL 261019: "should we chagne this to haipipe-paper-draft? and also
+have a haipipe-paper-evidence? ... it is like we have the paper to combine the evidence and draft together to make a
+draft task, right?"; then "okay, please go ahead and do it"; and on the name, "use the draft? so we have the draft
+task, right?"):
+
+```text
+base (every theme)      paper adds                  one Section Task
+haipipe-draft      ─▶   haipipe-paper-draft    ─┐   tNN_<section>/
+haipipe-evidence   ─▶   haipipe-paper-evidence ─┼─▶ ├── draft/
+haipipe-display    ─▶   (in paper-evidence)    ─┘   ├── evidence/
+                                                    └── display/
+```
+
+1. **haipipe-paper-draft 0.13.0** was haipipe-paper-section; `aliases: [haipipe-paper-section]` until the second
+   Tools clone (DrFirst's `platforms/SMSDesign-SPACE/Tools/`) pulls. It declares `folder_owner: canonical` and
+   `legacy_page_type: section`, so a face's `page-type: section` finds it by declaration, not by folder name. Faces
+   keep `task-type: draft` over `page-type: section` (b32 s03-D04). 192 mentions in 153 files swept across Tools,
+   Physician, WellDoc, DrFirst and REACH; 62 context records rewritten by `context-record.py`.
+2. **haipipe-paper-evidence 0.1.0** is new: the paper's rules on top of `haipipe-evidence` and `haipipe-display`
+   (citations from verified CITE Results, never `bank.bib`; one result, one number, one Run in every Section; displays
+   numbered for the paper and within the venue's limit; claim words fit the design), and `scripts/evidence_ledger.py`,
+   one version read as one ledger. First read, MISQ `j01_v0929_misq`: Metformin is 3.75e-05 in the Introduction's
+   Result and −0.07 in the Results'.
 
 
 Open

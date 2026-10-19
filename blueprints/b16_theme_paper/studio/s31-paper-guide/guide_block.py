@@ -8,7 +8,7 @@ settles it. The proposals (261007):
    Description groups and three run types for them (Add a venue, Add a related item, Read a paper),
    but no Method step says when they are done or who signs.
 2. Skills by level: guide.yaml lists the paper's skills in one list; the Block section names the
-   Board's own (haipipe-paper owns; -story, -ideation, -venue, haipipe-question work; workbench-paper shows).
+   Board's own (haipipe-paper owns; -story, -ideation, -venue, haipipe-report work; workbench-paper shows).
 3. Two words kept apart: Description › Related (what the paper sits beside) and Guide › Related Paper
    (the papers behind the method); RoadMap Draw (the theme's drawings) and the Story's RoadMap Draw
    (one paper's drawing, now in its Idea Studio).
@@ -21,7 +21,7 @@ green CHANGES; what is still open draws red.
 """
 import paper_guide_live as G
 
-SKILLS = "skills   haipipe-paper owns · haipipe-paper-story · -ideation · -venue · haipipe-question work · workbench-paper shows"
+SKILLS = "skills   haipipe-paper owns · haipipe-paper-story · -ideation · -venue · haipipe-report work · workbench-paper shows"
 
 LEVEL = {
     "Description": [("t", G.role("Block")), ("c", G.space_cards("Block")), ("m", SKILLS),

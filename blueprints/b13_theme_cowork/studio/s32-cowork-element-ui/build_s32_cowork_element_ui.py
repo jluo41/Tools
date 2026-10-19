@@ -239,7 +239,7 @@ PROPOSALS = {
               ["one content box and one right column, Disk · Runs", "the cowork theme fills the box; it draws no page of its own"],
               "kept: the base's body at every level",
               "? the Task level draws the vanilla Task (Face · Folder | Folders · Evidence · Value), not the base's "
-              "Page Task views (page_task_spaces), which b13 Q01 names for a document written in rounds"),
+              "Page Task views (draft_task_spaces), which b13 Q01 names for a document written in rounds"),
     "table": (fx("Block", "Work Details", "All"), "table.wf-table",
               ["the base's light table: small grey heads, rows ruled by one line",
                "Jobs, the Job's fields, the checklist, files and Runs are this table; an item with a body is a row (6)"],

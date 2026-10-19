@@ -51,7 +51,7 @@ skills/1_base/project/
 └── haipipe-run/        s06 Run
 servers/workbench/frame.py                        delivery_parts · _delivery_row · delivery_by_source
                                                   · _delivery_cards (a Page Task's card per lane)
-skills/1_base/page/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
+skills/1_base/draft/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
 ```
 
 
@@ -104,7 +104,7 @@ s03-D02 · The path is the link: each subfolder leads back to its source, `deliv
     `delivery_dir()` in haipipe-draft/src/common.py map one to the other (JL 261010: "track the
     subfolder to link to the job folder and job/task folder").
 s03-D03 · One skill owns the rule: `/haipipe-delivery`, beside haipipe-studio and haipipe-report;
-    haipipe-block, haipipe-report, haipipe-cowork and haipipe-draft-delivery point to it instead of
+    haipipe-block, haipipe-report, haipipe-cowork and haipipe-delivery (ref/page-delivery.md) point to it instead of
     each keeping a copy. How a file is built stays with its lane owner (JL 261010: "should we have a
     skill named /haipipe-delivery? ... just as we have the /haipipe-studio").
 s03-D04 · Delivery sits at the right end of the top row and opens like Studio: only it selected, the

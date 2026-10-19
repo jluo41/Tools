@@ -192,7 +192,7 @@ Prototype  run-triage-proposals-p<N>        soft  take a batch of proposals into
            run-map-questions                soft  draw the question map                      haipipe-insight
            run-carry-<board>                soft  carry an older Block or board in, once     haipipe-insight
 version    run-ask-<l><nn>                  soft  a new question's Task                      haipipe-insight-question
-           run-review-questions-p<N>        soft  Q1–Q7 on the release (another agent)       haipipe-question-review
+           run-review-questions-p<N>        soft  Q1–Q7 on the release (another agent)       haipipe-report
            run-set-cuts-p<N>                soft  partitions.md · thresholds.yaml (a person) haipipe-insight
            run-sign-release-p<N>            soft  freeze the release (a person signs)        haipipe-insight
 question   run-plan-evidence-<l><nn>        soft  its needs and work specs                   haipipe-insight-evidence-plan
@@ -205,7 +205,7 @@ Board      run-add-version-v<M>             soft  a data version, frozen        
            run-propose-<target>             soft  questions, into proposals/ (coverage gaps) haipipe-insight-question
            run-coverage · run-track-<q>     soft  readings across Jobs                       haipipe-insight-check
            run-consistency-<jA>-<jB>        soft  two Jobs' answers, judged by the reviewer  haipipe-insight-knowledge
-           run-ask-q<NN> · run-report-q<NN> soft  the Board's own questions                  haipipe-question · -report
+           run-ask-q<NN> · run-report-q<NN> soft  the Board's own questions                  haipipe-report · -report
            run-check-q<NN>                  soft  a Board report's CHECK (another agent)     haipipe-report
            run-write-counsel                soft  the Wisdom counsel                         haipipe-insight-wisdom
            run-draft-handoff                soft  the Design handoff (a person signs)        haipipe-insight-wisdom

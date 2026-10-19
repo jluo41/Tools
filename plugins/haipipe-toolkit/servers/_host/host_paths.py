@@ -10,7 +10,7 @@ that resolves back into it.
 
 Dependency arrow: servers import skills. Skills never import servers, except
 that the Page engine reads the served asset bundle through
-``skills/1_base/page/haipipe-draft/src/assets.py`` and ``src/page_assets.py``.
+``skills/1_base/draft/haipipe-draft/src/assets.py`` and ``src/page_assets.py``.
 
 Skills sit in three layers (``skills/0_utils``, ``skills/1_base``, ``skills/2_theme``), so a
 server finds a skill or a family by its folder name (``skill_dir``), never by a fixed layer path.

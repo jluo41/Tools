@@ -73,7 +73,7 @@ Open
 3. `venues/<venue>/` into the Job (`jNN_…/venue/call.md`, frozen with each send): s11 (Block › Description › Venue) and Q02's hypothesis put it on the Board.
 4. A telling's name drops the desk: `sNN-story-<desk>-<idea>` → `sNN-story-<idea>` (haipipe-paper-story, `paper_ladder.py`); ScalingGlucose's `s02-story-nmi-cgm-scaling-axes` → `s02-story-cgm-scaling-axes`, its venue bits (the `desk:` line, the Opening sentence, D4, the NMI-first order of §5.3) to j01.
 5. The Job's standard topics, names to pick: `s01-venue-fit` · `s02-narrative-cut` · `s03-figure-plan` · `s04-response-map` (a revision).
-6. Task-level `reports/`: haipipe-question calls a one-Section question too narrow ("lift it a level"); drop them from the ladder?
+6. Task-level `reports/`: haipipe-report calls a one-Section question too narrow ("lift it a level"); drop them from the ladder?
 7. A Task's `studio/`: only `sNN-argument-flow`, when a Section's logic needs drawing?
 8. Edges, proposed: a reviewer's new work and a Section's missing number are both asks the work's Tasks run; the Job only cites, the Task only binds; a Section never asks a new research question.
 9. On screen: the Venue view moves from Block › Description to Job › Description; Description › Related keeps the list of every related item; Audience Report › Related Papers shows them by question.

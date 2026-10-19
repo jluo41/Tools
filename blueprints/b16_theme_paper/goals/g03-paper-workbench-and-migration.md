@@ -24,7 +24,7 @@ Read first
   (a Section), s31-paper-guide (the Guide by level), s01-paper-tree (current design). The historical
   migration design is `_archive/20261010/studio/s03-paper-migration/`, including its history/ folder.
 - Code: `Tools/plugins/haipipe-toolkit/servers/workbench-paper/paper_theme.py` and `paper.py`;
-  `servers/workbench/frame.py` (`level_patterns`, `question_rows`, `page_task_spaces`) and `servers/workbench/README.md`
+  `servers/workbench/frame.py` (`level_patterns`, `question_rows`), `servers/workbench/workbench-task-draft/task_draft.py` (`draft_task_spaces`) and `servers/workbench/README.md`
   (the base classes a Space may use).
 
 

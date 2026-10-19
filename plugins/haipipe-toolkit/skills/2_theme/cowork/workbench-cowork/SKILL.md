@@ -93,6 +93,6 @@ Today's Check Space has no place here; where waiting-on and drafts show is b13 Q
 
 ## Boundary
 
-The Workbench reads; `haipipe-cowork` and its agents write the Block, `haipipe-question`
+The Workbench reads; `haipipe-cowork` and its agents write the Block, `haipipe-report`
 the Questions, `haipipe-draft` the reports. The Project view only lists Blocks and their
 open Jobs; it has no registers of its own.

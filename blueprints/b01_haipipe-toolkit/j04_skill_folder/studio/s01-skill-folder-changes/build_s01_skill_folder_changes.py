@@ -133,7 +133,7 @@ def draw():
              ("2 parents[N] in skill code", "-> next(p ... if p.name == 'skills')"),
              ("3 globs over skills/", "'*/haipipe-*' -> '*/*/haipipe-*'"),
              ("4 written skills/<family>/", "210 rewritten with their layer"),
-             ("5 bare tokens page/haipipe-draft/...", "39 rewritten as 1_base/page/..."),
+             ("5 bare tokens draft/haipipe-draft/...", "39 rewritten as 1_base/draft/..."),
              ("6 relative links", "105 re-resolved from the pre-move spot"),
              ("7 paper venue submodule", ".git file, core.worktree, .gitmodules")]
     for i, (k, fix) in enumerate(kinds):
@@ -194,7 +194,7 @@ REPLIES = [  # (x, y, text): beside the person's mark, never over it
                  "so their structure check was already off. The fix is editing those 32 Pages\n"
                  "to 2_theme/paper/venue/...; it turns the check on, so it is that project's call."),
     (1580, 1500, "Still used: workbench-paper links every Section to /_board/draft, the Page\n"
-                 "workbench (now servers/workbench/task-page), and about 60 files name the skill.\n"
+                 "workbench (now servers/workbench/workbench-task-draft), and about 60 files name the skill.\n"
                  "It can go once the base frame's Task level shows a Page (b02 Q03): then fold\n"
                  "workbench-page into the frame contract."),
 ]

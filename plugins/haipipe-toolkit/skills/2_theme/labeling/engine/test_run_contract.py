@@ -186,8 +186,8 @@ def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():
         TOOLKIT_ROOT
         / "skills"
         / "1_base"
-        / "page"
-        / "workbench-page"
+        / "workbench"
+        / "workbench-task-draft"
         / "ref"
         / "run-space.md",
         PLUGIN_ROOT / "haipipe-labeling" / "SKILL.md",

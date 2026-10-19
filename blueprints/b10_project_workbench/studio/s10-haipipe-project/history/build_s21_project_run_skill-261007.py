@@ -7,9 +7,9 @@ gray, red for what is open, green ✎ for what changed.
 Read from disk on every build:
 
 - the base frame's Run buttons per level and Space (servers/workbench/frame.py: vanilla() through
-  spaces_for, the Page Task's page_task_spaces), and whether each names a skill
+  spaces_for, the Page Task's draft_task_spaces), and whether each names a skill
 - each skill's version and size from its SKILL.md, found by name; the deleted ones said so
-- the skill folders of 1_base/project · task · question · page/workbench-studio · display/excalidraw-report,
+- the skill folders of 1_base/project · task · question · draft/workbench-studio · excalidraw/excalidraw-report,
   and the studio scripts in this Block's _build/
 
 Typed, since they are the proposal: the owning skill of each Run, its run-<type>-<target> name, the skills
@@ -42,7 +42,7 @@ LEVEL_SKILL = {"Block": "haipipe-block", "Job": "haipipe-job", "Task": "haipipe-
 # the proposal: the Run a button makes -> its owning skill; "{level}" is the level's skill. Keyed by the
 # Run since the frame names each button by its Run (261007); a Page Task's own Runs are the Page family's
 OWNER_BY_RUN = [
-    ("run-face-", "{level}"), ("run-draw-", "haipipe-studio"), ("run-ask-", "haipipe-question"),
+    ("run-face-", "{level}"), ("run-draw-", "haipipe-studio"), ("run-ask-", "haipipe-report"),
     ("run-report-", "haipipe-report"), ("run-figures-", "haipipe-report"), ("run-check-<q", "haipipe-report"),
     ("run-check-q", "haipipe-report"), ("run-add-<j", "haipipe-block"), ("run-add-j", "haipipe-block"),
     ("run-add-<t", "haipipe-job"), ("run-add-t", "haipipe-job"), ("run-build-", "haipipe-task"),
@@ -56,7 +56,7 @@ SKILLS_TABLE = [
     ("haipipe-job", "Job: its face, its Tasks in order, a new-Job scaffold, each theme's own Job names (level_patterns)",
      "haipipe-task's job iteration"),
     ("haipipe-task", "Task: unchanged (JL 261007: \"you should not touch the haipipe-task\"); the level skills sit beside it",
-     "nothing; it keeps its Task-family door and its task-kind skills (1_data … 10_page)"),
+     "nothing; it keeps its Task-family door and its task-kind skills (1_data … 10_evidence)"),
     ("haipipe-studio", "Idea Studio at any level: studio/sNN-<topic>/ (face · drawings · build_*.py that keep marks), "
      "numbering s0x · s1x · s2x · s3x · s5x · s6x, sessions as passes of run-draw-<sNN>; the look: black, "
      "red = open, green = change, enforced by canvas.write",
@@ -65,9 +65,9 @@ SKILLS_TABLE = [
      "how work links to a question (answers: on a Job or Task face, a need id like QK10.E1), the walk open → partial → "
      "answered (no checked state: s21-D04), the report Page (Opening · Answer · Evidence · Limits · Next), its ## Figures and drawing; "
      "a comments batch is a report kind",
-     "haipipe-question's report part; frame.question_rows' column rules; the Q │ W │ R row each theme restates "
+     "haipipe-report's report part; frame.question_rows' column rules; the Q │ W │ R row each theme restates "
      "(cowork · discovery · paper · work); excalidraw-report's report mode and ref/build_report_drawing.py"),
-    ("haipipe-question", "the Question cell: asking, a Question's size, its register row, its folder; "
+    ("haipipe-report", "the Question cell: asking, a Question's size, its register row, its folder; "
      "haipipe-report runs the rest of the row", "stays, smaller (JL 261007)"),
     ("haipipe-run", "Runs at any level: hard rNN_ and soft run-<type>-<target> (no <MMDD>), run.yaml as the Runs Space "
      "reads it, passes, one Run type table per Space naming its skill", "extends 0.31"),
@@ -88,9 +88,9 @@ AFTER = [
     "├── haipipe-report/           NEW  ref/report-contract.md · scripts/build_report_drawing.py · check_report.py",
     "└── haipipe-run/              + ref/run-types-by-space.md · scripts/soft_run.py",
     "skills/1_base/task/           unchanged: haipipe-task, its task kinds, agents, page-types",
-    "skills/1_base/question/haipipe-question/   asking only",
-    "skills/1_base/display/excalidraw-report/   drawing kit only (plot kit, report frames)",
-    "skills/1_base/display/excalidraw-slide/    NEW  ref/slide-draft.md · scripts/slide_kit.py",
+    "skills/1_base/project/haipipe-report/   asking only",
+    "skills/1_base/excalidraw/excalidraw-report/   drawing kit only (plot kit, report frames)",
+    "skills/1_base/excalidraw/excalidraw-slide/    NEW  ref/slide-draft.md · scripts/slide_kit.py",
 ]
 
 PLAN = [
@@ -114,7 +114,7 @@ CALLS = [
     "✎ 261007 decided: Delivery stays in each level skill (Block · Job), the Page Task's in haipipe-draft-delivery; "
     "no haipipe-delivery until a theme's Block delivery needs one",
     "✎ 261007 decided: \"checked\" is not a fourth state; the report Page's CHECK verdict shows beside answered",
-    "✎ JL 261007: haipipe-report defines the Question │ Work │ Report workflow; haipipe-question keeps the asking",
+    "✎ JL 261007: haipipe-report defines the Question │ Work │ Report workflow; haipipe-report keeps the asking",
     "? folder moves and renames: handed to design_b04_skill_folder (b04's call), 261007",
 ]
 
@@ -158,13 +158,13 @@ def wrap(text, n):
 # ── facts, read from disk ───────────────────────────────────────────────────────────────────────
 QWR = [  # (column, what it reads, who owns it) -- the row frame.question_rows draws
     ("Question", "the face's ## Questions register row: id · title · group · status, and the studio topics whose "
-                 "Feeds: name it", "haipipe-question (ask) · haipipe-report (status)"),
+                 "Feeds: name it", "haipipe-report"),
     ("Work", "every Job and Task whose face says answers: <id> (or a need, <id>.E<n>), then the register's work:; "
              "each opens its Runs", "the theme's work skills; haipipe-report the link rule"),
     ("Report", "reports/qNN_<topic>/qNN_<topic>.md: its title, its Opening's first paragraph, its drawing "
                "(qNN_<topic>.png, built from ## Figures), answer-status", "haipipe-report"),
 ]
-WALK = [("open", "asked; no answer yet", "Ask a Question (haipipe-question)"),
+WALK = [("open", "asked; no answer yet", "Ask a Question (haipipe-report)"),
         ("partial", "some Work answers part of it", "Write the report (haipipe-report)"),
         ("answered", "the report states the answer from exact Results", "Write the report"),
 ]
@@ -202,9 +202,9 @@ def frame_buttons():
         out[level] = [(space, k["label"], k.get("doing", ""), " · ".join(k.get("skills") or [])) for space in SPACES
                       for k in views[space].run_types]
     page, seen = [], {}
-    for space, subs in frame.PAGE_TASK_SUBS.items():
+    for space, subs in frame.DRAFT_TASK_SUBS.items():
         for sub in subs or ("",):
-            for k in frame.page_task_spaces(ROOT / ".no-page", ROOT, sub)[space].run_types:
+            for k in frame.draft_task_spaces(ROOT / ".no-page", ROOT, sub)[space].run_types:
                 if (space, k["label"]) in seen:          # one button on every sub-tab: one row, the Space alone
                     page[seen[(space, k["label"])]] = (space, k["label"], k.get("doing", ""),
                                                        " · ".join(k.get("skills") or []))
@@ -236,7 +236,7 @@ def plan_state(buttons):
                                                                   "run-types-by-space.md").is_file() else "? not yet",
         "5": ("✎ old copies retired, builders switched, old words out; ? folder moves: b04's call"
               if builders_switched() and gone(B03 / "_build" / "canvas.py") and gone(
-                  SKILLS / "1_base/display/excalidraw-report/ref/build_report_drawing.py") else "? not yet"),
+                  SKILLS / "1_base/excalidraw/excalidraw-report/ref/build_report_drawing.py") else "? not yet"),
     }
 
 
@@ -257,7 +257,7 @@ TASK_KINDS = {  # a folder of skills/1_base/task -> what it is (typed); its skil
     "1_data": "Stage 1-4 data: Source · Record · Case · AIData", "2_nn": "Stage 5 models: algo · tuner · instance · modelset",
     "3_end": "Stage 6 endpoints: develop · package · deploy", "4_individual": "individual inference and its report",
     "5_fit": "fit Tasks and GPU training", "6_eval": "evaluation Tasks", "7_display": "display Tasks (figures, tables)",
-    "8_stata": "Stata Tasks", "9_agent": "agent and LLM-engine Tasks", "10_page": "Page Tasks (writing as a Task)",
+    "8_stata": "Stata Tasks", "9_agent": "agent and LLM-engine Tasks", "10_evidence": "Page Tasks (writing as a Task)",
     "agents": "the Task creator · orchestrator · reviewer agents", "page-types": "Insight Page type",
     "haipipe-task": "the Task-family door: Block → Job → Task → Run, P-B-E-R",
     "haipipe-workflow": "a Workflow as a list of Runs: specs, routes, gates",
@@ -267,7 +267,7 @@ TASK_KINDS = {  # a folder of skills/1_base/task -> what it is (typed); its skil
 
 def tree_today():
     lines = []
-    for rel in ("1_base/project", "1_base/task", "1_base/question", "1_base/page/workbench-studio",
+    for rel in ("1_base/project", "1_base/task", "1_base/draft/workbench-studio",
                 "1_base/display"):
         d = SKILLS / rel
         if not d.is_dir():
@@ -302,7 +302,7 @@ def main():
     fr = L.open_frame("1 · Runs by level and Space")
     L.text(0, 0, "Every Run button of the base frame, by level and Space, and who owns it", 30)
     L.text(0, 46, "read from servers/workbench/frame.py at build time (the vanilla Spaces through spaces_for, and the Page "
-                  "Task's page_task_spaces) · a button is named by the Run it makes, what it does under it · "
+                  "Task's draft_task_spaces) · a button is named by the Run it makes, what it does under it · "
                   "names (read): the skills its run type carries · proposed: its owner · red ? = open", 16, L.GRAY)
     cols = [("Space", 300), ("button = its Run (read)", 380), ("what it does (read)", 360), ("names (read)", 260),
             ("proposed skill", 260)]
@@ -335,7 +335,7 @@ def main():
     notes(0, yb + 30, ["✎ 261007 JL: \"haipipe-block, haipipe-job, haipipe-studio, haipipe-report, haipipe-run\"",
                        "✎ 261007 built: " + " · ".join(f"{n} {version(n).split(' ·')[0]}" for n in
                                                      ("haipipe-block", "haipipe-job", "haipipe-studio", "haipipe-report",
-                                                      "haipipe-run", "haipipe-question")),
+                                                      "haipipe-run", "haipipe-report")),
                        "✎ 261008 excalidraw-slide " + version("excalidraw-slide").split(" ·")[0]
                        + ": slide drafts moved out of haipipe-studio; haipipe-studio enforces the black · red · green look",
                        "✎ 261008 decided (s21-D01): each theme keeps its own skills (haipipe-paper, haipipe-insight …) over these, as its <theme>_theme.py does over the frame"])

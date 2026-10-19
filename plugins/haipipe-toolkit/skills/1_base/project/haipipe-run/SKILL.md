@@ -104,7 +104,7 @@ under it; buttons that make one Run are one button (JL 261007):
 ```text
 Description      Update the description   haipipe-block · haipipe-job · haipipe-task   run-face-<level>
 Idea Studio      add · redraw · save       haipipe-studio                               run-draw-<sNN> (one button)
-Audience Report  Ask                       haipipe-question                             run-ask-<qNN>
+Audience Report  Ask                       haipipe-report                             run-ask-<qNN>
                  Write · Drawing · Check   haipipe-report                               run-report|figures|check-<qNN>
 Work Details     Add a Job · Add a Task    haipipe-block · haipipe-job                  run-add-<jNN|tNN>
                  Build the Task            haipipe-task                                 run-build-<tNN>
@@ -147,7 +147,7 @@ for each call. Ordinary shell commands do not automatically become Runs.
 | Allocate, reuse, retry, reopen, or resolve storage | [Identity and history](ref/identity-and-history.md) |
 | Scaffold/read receipts, report status, count, or audit | [Receipts and inventory](ref/receipts-and-inventory.md) |
 | Compose multiple Runs or maintain a shared frontier | [Workflow](../../task/haipipe-workflow/SKILL.md) and its [runtime contract](../../task/haipipe-workflow/ref/workflow-runtime.md) |
-| Present Runs in a Page | [Run presenter](../../page/workbench-page/ref/run-space.md) |
+| Present Runs in a Page | [Run presenter](../../workbench/workbench-task-draft/ref/run-space.md) |
 
 ## What earns a Run
 

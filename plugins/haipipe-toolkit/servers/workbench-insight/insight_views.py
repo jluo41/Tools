@@ -41,7 +41,7 @@ SKILLS = {"Add a data version": ("haipipe-insight-meta",), "Add a Job": ("haipip
           "Run the Job": ("haipipe-insight-workflow",), "Propose a cut": ("haipipe-insight-question",),
           "Propose questions": ("haipipe-insight-question",), "Update the coverage": ("haipipe-insight-check",),
           "Draw a track": ("haipipe-insight-check",), "Check consistency": ("haipipe-insight-knowledge",),
-          "Pool or split": ("haipipe-insight-knowledge",), "Ask a Block question": ("haipipe-question",),
+          "Pool or split": ("haipipe-insight-knowledge",), "Ask a Block question": ("haipipe-report",),
           "Write the report": ("haipipe-report",), "Check a report": ("haipipe-report",),
           "Write the counsel": ("haipipe-insight-wisdom",), "Draft the handoff": ("haipipe-insight-wisdom",),
           "Draw the question map": ("haipipe-insight",), "Run a partition": ("haipipe-insight",),

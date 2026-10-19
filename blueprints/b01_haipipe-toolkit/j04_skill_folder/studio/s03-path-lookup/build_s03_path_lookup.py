@@ -67,7 +67,7 @@ def draw():
             "skill code     next(p ... if p.name == 'skills')         the skills root by name",
             "Page engine    src/skill_paths.skill_dir / in_skills     + paths written before the layers",
             "host           host_registry.workbench_folders()         workbench, workbench-* by name",
-            "Markdown       written from the layer: 1_base/page/...   a reader opens it directly"]
+            "Markdown       written from the layer: 1_base/draft/...   a reader opens it directly"]
     r, b = mono(0, 0, flow, "who finds a skill, and how")
 
     n = [f"skill_dir(...) calls                 {f['skill_dir'][0]:>4} in {f['skill_dir'][1]} files",

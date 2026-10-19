@@ -54,7 +54,7 @@ The neutral spine is `skills/1_base/project/haipipe-run/SKILL.md`; its
 profiles, and its references define identity/history and receipt/inventory
 rules. Workflow agents, domain owners, workers and presenters use these rules.
 Page evidence wiring is
-owned by `skills/1_base/page/workbench-page/`.
+owned by `skills/1_base/workbench/workbench-task-draft/`.
 
 
 Commands
@@ -159,10 +159,9 @@ Where to read next
 
 ```
 skills/1_base/project/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
-skills/1_base/page/haipipe-draft-workflow/  the Page workflow: the list of Runs and their routes
-skills/1_base/page/workflow-runs/                 one skill per Page Run: context · structure · scratch · writing · evidence · revise · delivery · check
+skills/1_base/draft/haipipe-draft-workflow/  the Page workflow: the list of Runs and their routes
 skills/STRUCTURE.md      the skill-tree mental model
-skills/1_base/page/workbench/agents/README.md   the Page agents, the Board reviewer among them
+skills/1_base/draft/haipipe-draft/agents/README.md   the Page agents, the Board reviewer among them
 ```
 
 

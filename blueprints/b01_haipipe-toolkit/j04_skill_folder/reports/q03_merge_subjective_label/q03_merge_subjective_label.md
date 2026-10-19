@@ -33,10 +33,10 @@ What changed
 ============
 
 Code:
-- `servers/workbench-labeling/labeling.py`: the engine is found with
+- `servers/workbench-labeling/workbench-task-labeling/labeling.py`: the engine is found with
   `host_paths.skill_dir("labeling") / "engine"`, replacing the walk up to a sibling
   `subjective-label/`. The space-mapping ref is read at `labeling/label-building/ref/`.
-- `servers/haipipe-page/standalone_server.py`: the Page plugin presenter is
+- `servers/workbench/workbench-task-draft/reader/standalone_server.py`: the Page plugin presenter is
   `skill_dir("labeling") / "engine" / "page_plugin.py"`.
 - `servers/_host/serve.py`: unconditional `LabelingMixin`, new `--only` help text, and the
   `Labeling` SPACE name default. `servers/_host/live/__init__.py` docstring updated.
@@ -74,7 +74,7 @@ Checks
   (see Limits). The other is `test_prepared_page_is_discovered_before_contract_and_has_live_runs`,
   which fails on the Workbench's Page-URL check ("requires the matching generated Page URL"),
   not on a path.
-- `skills/1_base/page/haipipe-draft/tests/test_labeling.py` plus `servers/_host/tests`:
+- `skills/1_base/draft/haipipe-draft/tests/test_labeling.py` plus `servers/_host/tests`:
   96 passed, 1 skipped. `_host/tests` alone: 41 passed.
 - `serve.py --only labeling` on a temporary Board with one Page-local `labeling/` job:
   `/_board/labeling-board`, `/_board/labeling` and `/workbench/labeling` return 200;
@@ -90,8 +90,8 @@ Checks
   only history is left (this Block's HANDOFF.md and its q03 question text, the q02 report, and a
   dated "checked 261006 in ..." comment in b03 `level_views.py`).
 - Whole live tree: _host 41 · workbench-task (now workbench-work) 20 · cowork 8 · discovery 4 passed;
-  servers/haipipe-page 34 passed, 5 failed; haipipe-draft-workflow 17 passed, 6 failed;
-  skills/1_base/page/haipipe-draft 906 passed, 11 failed. None of these failures is a path or
+  servers/workbench/workbench-task-draft/reader 34 passed, 5 failed; haipipe-draft-workflow 17 passed, 6 failed;
+  skills/1_base/draft/haipipe-draft 906 passed, 11 failed. None of these failures is a path or
   import error (see q02).
 
 

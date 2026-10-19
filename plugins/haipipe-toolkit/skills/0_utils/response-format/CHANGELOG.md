@@ -72,8 +72,8 @@ anchor, following the promotion of the former b01/j03 area.
 
 - Questions get their own skillset, `skills/question/` (JL 261003: "should I put all the
   question related skills into here"). The granularity tests and the topic/decision table
-  move to `haipipe-question`; this skill keeps one paragraph and points to it, and creating
-  a proposed question's folder goes through `haipipe-question`. `ask-questions` moved to
+  move to `haipipe-report`; this skill keeps one paragraph and points to it, and creating
+  a proposed question's folder goes through `haipipe-report`. `ask-questions` moved to
   `skills/question/ask-questions/`; its link here follows.
 
 ## [0.16.0] — 2026-10-03

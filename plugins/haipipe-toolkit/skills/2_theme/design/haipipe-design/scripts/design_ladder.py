@@ -48,7 +48,7 @@ TYPES = {
     "propose-method": ("Block", "haipipe-design-method", "designer agent", "a person"),
     "add-observed": ("Block", "haipipe-design-method", "designer agent", "none"),
     "score": ("Block", "haipipe-design-method", "reviewer agent", "none"),
-    "propose-questions": ("Block", "haipipe-question", "designer agent", "another agent agrees"),
+    "propose-questions": ("Block", "haipipe-report", "designer agent", "another agent agrees"),
     "report": ("Block", "haipipe-report", "designer agent", "another agent checks"),
     "draw": ("any", "excalidraw-report", "designer agent", "none"),
     "setup-goal": ("Job", "haipipe-design-goal", "designer agent", "none"),

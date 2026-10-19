@@ -53,10 +53,10 @@ What depends on it
 
 1. `_host/serve.py` imports `labeling_tui_hold` from `term.py`: the labeling workbench's TUI hold.
 2. Tests: `_host/tests/` (test_auth, test_workbench_short, gate_live), `_host/checks/` (chatui, guichat,
-   tuichat, scopechat, switchback, termnav, pty_e2e), `servers/haipipe-page/tests/test_standalone_server.py`,
-   and twelve tests in `skills/1_base/page/haipipe-draft/tests/` (test_hold, test_chatlog,
+   tuichat, scopechat, switchback, termnav, pty_e2e), `servers/workbench/workbench-task-draft/reader/tests/test_standalone_server.py`,
+   and twelve tests in `skills/1_base/draft/haipipe-draft/tests/` (test_hold, test_chatlog,
    test_sentence_chat, test_labeling, test_paper_workbench, test_quality_check, …).
-3. Skill docs: `skills/1_base/page/workbench-studio/ref/chat.md`, `skills/1_base/page/workbench/ref/roster.md`.
+3. Skill docs: `skills/1_base/project/haipipe-studio/ref/chat.md`, `skills/1_base/workbench/workbench/ref/roster.md`.
 
 
 To retire it (Q01, if decided)

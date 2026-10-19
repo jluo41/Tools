@@ -64,7 +64,7 @@
 ## 0.5.1 · 2026-10-04
 
 - Named Question ids (JL 261004): `Q-food-1` and `Q-exercise-2` open beside `Q01` (rule
-  in `servers/workbench-task/task_questions.py`, owned by `haipipe-question`); the Logic
+  in `servers/workbench-task/task_questions.py`, owned by `haipipe-report`); the Logic
   cell shows a named id as itself, and a Question with no `title` prints its question
   once instead of twice. Guide's Task › Report folder row matches `reports/q*_*/*.md`.
   Test: `test_named_question_ids_and_a_question_without_a_title`.
@@ -91,8 +91,8 @@
   and Report methods, the tests T0 to T8, why it works, Reference), seven method cards in
   `ref/methods/`, and `ref/task-methods.excalidraw`, first drawn by
   `workbench-shared/studio/method-canvas.py`. `ref/task-papers.md` is grouped by card.
-- Workbench Table: Ask a Question uses `haipipe-question-asking`, Review the questions
-  `haipipe-question-review`; Draw and "Draw the question map" sit in Scope › RoadMap Draw;
+- Workbench Table: Ask a Question uses `haipipe-report`, Review the questions
+  `haipipe-report`; Draw and "Draw the question map" sit in Scope › RoadMap Draw;
   Task rows are "each group"; Delivery › Reports runs "Build the report".
 
 ## 0.4.0 · 2026-10-03

@@ -174,7 +174,7 @@ def test_add_report_frames_a_registered_question_with_its_drawing(demo):
     write(head, replace_register(head.read_text(), "Questions", "questions", rows))
     drawing = sorted((board / "studio").glob("*.excalidraw"))[0]
     from host_paths import skill_dir
-    helper = skill_dir("haipipe-question") / "ref/block_questions.py"
+    helper = skill_dir("haipipe-report") / "ref/block_questions.py"
     run = lambda *extra: subprocess.run([sys.executable, str(helper), "add-report", str(board), "--id", "Q-food-1",
                                          "--slug", "input_forms", *extra], capture_output=True, text=True)
     done = run("--evidence", f"Food drawing|studio/{drawing.name}")
@@ -205,7 +205,7 @@ def test_a_question_gets_its_group_on_add_and_later(demo):
     import sys
     from host_paths import skill_dir
     root, board = demo
-    helper = skill_dir("haipipe-question") / "ref/block_questions.py"
+    helper = skill_dir("haipipe-report") / "ref/block_questions.py"
     run = lambda *a: subprocess.run([sys.executable, str(helper), *a], capture_output=True, text=True)
     done = run("add-question", str(board), "--id", "Q07", "--slug", "blocked_drops",
                "--question", "Why are three drops blocked?", "--group", "Handoff")

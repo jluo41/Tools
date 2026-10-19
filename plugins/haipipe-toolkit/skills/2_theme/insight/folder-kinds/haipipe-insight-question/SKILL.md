@@ -6,7 +6,7 @@ description: >-
   question · fix · retire · cut, written by a Board's or a Job's Propose Run),
   their triage into one release per batch, asking a question into a release
   (its id, its tNN, its question.md), and the question review (Q1–Q7, with
-  haipipe-question-review). Never answers a question and never signs. Use to
+  haipipe-report). Never answers a question and never signs. Use to
   propose, triage, ask, change, retire or review an insight question, or to
   read the older question registers until they are carried over. Trigger:
   insight question, propose a question, proposals, triage, ask a question,
@@ -113,7 +113,7 @@ run-ask-<l><nn>             Release › Work Details    haipipe-insight-agent   
 run-propose-j<NN>           Job › Audience Report     haipipe-insight-agent            signs none
 run-propose-coverage        Block › Audience Report   haipipe-insight-agent            signs none
 run-propose-cut-<slug>      Block › Description       haipipe-insight-agent            signs none
-run-review-questions-p<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-question-review)
+run-review-questions-p<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-report)
 ```
 
 Their cards are `haipipe-insight-workflow/ref/run-cards.md`; no code or analysis Run belongs to a question here.
@@ -121,7 +121,7 @@ Their cards are `haipipe-insight-workflow/ref/run-cards.md`; no code or analysis
 ## Gate and Closure
 
 `run-review-questions-pN`: before a release is signed, a reviewer agent that wrote none of its new or changed
-questions judges each through `haipipe-question-review` (the seven tests; keep, split, merge or move; a person signs a
+questions judges each through `haipipe-report` (the seven tests; keep, split, merge or move; a person signs a
 change; never a reworded ask). What insight adds:
 
 - **Q4 the level is the level**: Data observes, Information derives with no cause word, Knowledge claims with rivals,

@@ -47,7 +47,7 @@ MOST_TASKS, MOST_ITEMS = 8, 6                          # a Job's Tasks, a relate
 KEY = canvas.KEY                                       # the one slight colour, kept by canvas.write
 SLIDE = 2560 * 1440 / 3                                # under this a frame reads as a slide (excalidraw-studio ①):
                                                        # a background that small is merged into the index, not padded
-EXCALIDRAW_STUDIO = HERE.parents[2] / "display" / "excalidraw-studio" / "scripts"
+EXCALIDRAW_STUDIO = HERE.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts"
 
 
 EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u270D\u270F-\u27BF\u2B00-\u2BFF\u2300-\u23FF\uFE0F\u200D\u20E3]")

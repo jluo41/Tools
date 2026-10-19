@@ -26,7 +26,7 @@ One shared renderer, `method_page_html` in workbench, serves any family that nam
 ### 2 · Evidence
 
 The rule is written in [servers/README.md](../../../../plugins/haipipe-toolkit/servers/README.md), under Adding a workbench. <!-- realizes: C2.P2.B1 -->
-The renderer is [workbench_guide.py](../../../../plugins/haipipe-toolkit/servers/workbench/workbench_guide.py); the method files are the Page Task's [method.md](../../../../plugins/haipipe-toolkit/servers/workbench/task-page/guide/method.md) and the paper theme's [method.md](../../../../plugins/haipipe-toolkit/servers/workbench-paper/guide/method.md), each with seven method cards whose papers pass the online check. <!-- realizes: C2.P2.B2 -->
+The renderer is [workbench_guide.py](../../../../plugins/haipipe-toolkit/servers/workbench/workbench_guide.py); the method files are the Page Task's [method.md](../../../../plugins/haipipe-toolkit/servers/workbench/workbench-task-draft/guide/method.md) and the paper theme's [method.md](../../../../plugins/haipipe-toolkit/servers/workbench-paper/guide/method.md), each with seven method cards whose papers pass the online check. <!-- realizes: C2.P2.B2 -->
 The shape went through three rounds on 2026-10-03: a page of parts A to E, then the steps as the spine, then every part as a fold, all closed at first. <!-- realizes: C2.P2.B3 -->
 
 ### 3 · Limits

@@ -32,7 +32,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parents[2] / "display" / "excalidraw-studio" / "scripts"))
+sys.path.insert(0, str(HERE.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts"))
 import canvas  # noqa: E402
 from draw import INK, RED, W, Drawing  # noqa: E402
 

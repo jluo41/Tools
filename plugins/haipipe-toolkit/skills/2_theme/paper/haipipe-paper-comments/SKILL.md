@@ -327,7 +327,7 @@ governing Story. A request about the telling becomes a human-approved §8 candid
 foreign Section or let the batch write a second manuscript.
 
 **Where a routed item LANDS on its owner**: the owning page's `draft/records/<stem>-feedback.md` (a section per
-batch), a register the page projects from this table during its own OUTLINE pass (`haipipe-draft-structure` ⓪
+batch), a register the page projects from this table during its own OUTLINE pass (`haipipe-draft-logic (ref/structure.md)` ⓪
 COLLECT). This page never writes into another page's folder, and it never dispatches an agent at its targets:
 it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands every register in one process with no
 agent at all, and `cli/feedback.py reopen <board>` lists which pages hold an open row, in the order this table's
@@ -355,7 +355,7 @@ RV1  Is the effect causal, or selection?   ← cites R1.1 · M2.3   → reports/
 ```
 
 The batch proposes; a person adopts, declines or defers each one, and an adopted question is added through
-`haipipe-question` (Ask a Question). A meeting or advisor batch often ends here: its points become questions
+`haipipe-report` (Ask a Question). A meeting or advisor batch often ends here: its points become questions
 rather than Section changes.
 
 ## 🃏 Evidence and delivery boundary
