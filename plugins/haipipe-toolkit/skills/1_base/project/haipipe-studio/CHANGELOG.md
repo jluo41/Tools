@@ -1,6 +1,14 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.4] · 2026-10-20 · Feeds finds a report by its Question id
+
+- `scripts/job_results.py`: a new results topic's **Feeds:** line reads the Job's `answers:` as Question ids (`Q01`,
+  `Q-food-1`; a need `Q01.E2` counts for `Q01`) and names each one's `reports/<id>_<topic>/` folder; before, it read
+  only `qNN_` folder names, so a Job answering `Q-food-1` was written "none yet" (b51 261020). `--jobs` with one Job
+  now gives the one-Job title (`j01 · ext food: current results`), not "ext food and more". Test:
+  `test_feeds_find_the_report_of_each_answered_id`.
+
 **[0.14.1] · 2026-10-19 · s10-s19 is a paper Board's related work (JL 261019)**
 
 - Numbering: on a paper Board, s10 is the related-work map and s11-s19 one topic per type of closest work,
